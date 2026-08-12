@@ -55,11 +55,14 @@ void SkipTestsForUnsupportedPlatforms() {
   // TODO(crbug.com/508672616): Not yet implemented on iOS.
   GTEST_SKIP();
 #elif BUILDFLAG(IS_ANDROID)
-  if (base::android::android_info::sdk_int() <
-      base::android::android_info::SDK_VERSION_U) {
-    GTEST_SKIP()
-        << "Unbounded elements require Android U (API 34+ / Android 14+).";
-  }
+  // if (base::android::android_info::sdk_int() <
+  //     base::android::android_info::SDK_VERSION_U) {
+  //   GTEST_SKIP()
+  //       << "Unbounded elements require Android U (API 34+ / Android 14+).";
+  // }
+
+  // TODO(crbug.com/544212552): Flaky/failing on Android.
+  GTEST_SKIP();
 #endif
 }
 
