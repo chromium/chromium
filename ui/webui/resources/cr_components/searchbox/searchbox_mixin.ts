@@ -362,6 +362,18 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         return;
       }
 
+      if (this.shouldAcceptQuestionMarkKeywordEntry(input)) {
+        this.inputKeywordModel = {
+          type: KeywordType.kInKeyword,
+          keyword: '?',
+          displayText: '',
+        };
+        this.getInputElement().setInputText('');
+        this.queryAutocomplete(
+            '', /*preventInlineAutocomplete=*/ false, /*isOnFocus=*/ false);
+        return;
+      }
+
       const isEmpty = !input.trim() &&
           this.inputKeywordModel?.type !== KeywordType.kInKeyword;
       if (isEmpty) {
@@ -691,6 +703,32 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       // Space triggering must be enabled.
       // TODO(b/504669216): webUI isn't aware of
       //   `kKeywordSpaceTriggeringEnabled` pref.
+
+      return true;
+    }
+
+    private shouldAcceptQuestionMarkKeywordEntry(input: string): boolean {
+      // Input must be '?'.
+      if (input !== '?') {
+        return false;
+      }
+
+      // Cursor must be after '?'.
+      if (this.getInputElement().inputElement.selectionStart !== 1) {
+        return false;
+      }
+
+      // Must not already be in keyword mode.
+      if (this.inputKeywordModel?.type === KeywordType.kInKeyword) {
+        return false;
+      }
+
+      // Input must have been typed, not backspaced to '?'. E.g. '?q<backspace>'
+      // should not enter keyword mode.
+      // TODO(b/504669216): this isn't handled yet.
+
+      // Input must have been typed, not pasted.
+      // TODO(b/504669216): webUI doesn't track paste state yet.
 
       return true;
     }

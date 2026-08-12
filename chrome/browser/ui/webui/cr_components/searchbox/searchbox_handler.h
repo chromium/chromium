@@ -206,6 +206,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void set_delegate(Delegate* delegate) { omnibox_delegate_ = delegate; }
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(SearchboxHandlerTest, QuestionMarkKeywordInput);
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest,
                            AutocompleteController_StartWithSuggestInventory);
