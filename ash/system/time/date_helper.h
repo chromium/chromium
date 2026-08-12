@@ -77,10 +77,6 @@ class DateHelper : public LocaleChangeObserver,
   // 7:00, which is Mar 31st 00:00 PST.
   ASH_EXPORT base::Time GetLocalMidnight(base::Time date);
 
-  icu::SimpleDateFormat& twenty_four_hour_clock_formatter() {
-    return twenty_four_hour_clock_formatter_;
-  }
-
   icu::SimpleDateFormat& day_of_week_formatter() {
     return day_of_week_formatter_;
   }
@@ -140,9 +136,6 @@ class DateHelper : public LocaleChangeObserver,
   // (For example: different languages are set in different accounts, and the
   // login screen will use the owener's locale setting.)
   void OnLocaleChanged() override;
-
-  // Formatter for 24 hour clock hours and minutes.
-  icu::SimpleDateFormat twenty_four_hour_clock_formatter_;
 
   // Formatter for getting the day of week. Returns 1 - 7.
   icu::SimpleDateFormat day_of_week_formatter_;
