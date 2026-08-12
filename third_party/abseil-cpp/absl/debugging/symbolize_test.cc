@@ -244,8 +244,8 @@ static const char *SymbolizeStackConsumption(void *pc, int *stack_consumed) {
 }
 
 static int GetStackConsumptionUpperLimit() {
-  // Symbolize stack consumption should be within 2kB.
-  int stack_consumption_upper_limit = 2048;
+  // Symbolize stack consumption should be within 4kB.
+  int stack_consumption_upper_limit = 4096;
 #if defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
     defined(ABSL_HAVE_MEMORY_SANITIZER) || defined(ABSL_HAVE_THREAD_SANITIZER)
   // Account for sanitizer instrumentation requiring additional stack space.

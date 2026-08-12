@@ -73,6 +73,7 @@ class StatusPrivateAccessor;
 class StatusPrivateAccessorForStatusBuilder;
 #endif  // !SWIG
 
+#ifndef SWIG
 // Container for status payloads.
 struct Payload {
   std::string type_url;
@@ -91,6 +92,7 @@ class StatusRep {
         message_(message_arg),
         payloads_(std::move(payloads_arg)) {}
 
+#ifndef SWIG
   template <typename String,
             typename = std::enable_if_t<std::is_same_v<String, std::string>>>
   StatusRep(absl::StatusCode code_arg, String&& message_arg,
@@ -99,6 +101,7 @@ class StatusRep {
         code_(code_arg),
         message_(std::forward<String>(message_arg)),
         payloads_(std::move(payloads_arg)) {}
+#endif  // SWIG
 
   absl::StatusCode code() const { return code_; }
   const std::string& message() const { return message_; }
@@ -172,6 +175,7 @@ const char* absl_nonnull MakeCheckFailString(
     const absl::Status* absl_nonnull status, const char* absl_nonnull prefix);
 
 }  // namespace status_internal
+#endif  // SWIG
 
 ABSL_NAMESPACE_END
 }  // namespace absl

@@ -206,11 +206,11 @@ namespace base_internal {
     const char* source_type, const char* target_type);
 
 template <typename To, typename From>
-inline void ValidateDownCast(From* f ABSL_ATTRIBUTE_UNUSED) {
+inline void ValidateDownCast(From* f) {
   // Assert only if RTTI is enabled and in debug mode or hardened asserts are
   // enabled.
-#ifdef ABSL_INTERNAL_HAS_RTTI
-#if !defined(NDEBUG) || (ABSL_OPTION_HARDENED == 1)
+#if defined(ABSL_INTERNAL_HAS_RTTI) && \
+    (!defined(NDEBUG) || (ABSL_OPTION_HARDENED == 1))
   // Suppress erroneous nonnull comparison warning on older GCC.
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
@@ -223,7 +223,8 @@ inline void ValidateDownCast(From* f ABSL_ATTRIBUTE_UNUSED) {
     absl::base_internal::BadDownCastCrash(
         typeid(*f).name(), typeid(std::remove_pointer_t<To>).name());
   }
-#endif
+#else
+  (void)f;  // Denote this as "used" to avoid warning
 #endif
 }
 

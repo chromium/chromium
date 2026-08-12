@@ -40,7 +40,9 @@ namespace crc_internal {
 
 using ::absl::base_internal::CpuType;
 using ::absl::base_internal::GetCpuType;
+#if defined(__aarch64__)
 using ::absl::base_internal::SupportsArmCRC32PMULL;
+#endif
 
 #if defined(ABSL_INTERNAL_CAN_USE_SIMD_CRC32C)
 
@@ -218,6 +220,7 @@ enum class PclmulStreamType {
   PCLMUL,
   VPCLMUL,
   NEON_PCLMUL,
+  NEON_PCLMUL_EOR3,
 };
 
 // Base class for CRC32AcceleratedX86ARMCombinedMultipleStreams containing the
@@ -234,6 +237,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreamsBase
   // https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/fast-crc-computation-generic-polynomials-pclmulqdq-paper.pdf
   // We are applying it to CRC32C polynomial.
 #if defined(ABSL_CRC_INTERNAL_HAVE_ARM_SIMD)
+  template <bool kUseEor3 = false>
   ABSL_ATTRIBUTE_ALWAYS_INLINE void Process64BytesNeonPclmul(
       const uint8_t* p, V128* partialCRC) const {
     V128 loopMultiplicands =
@@ -256,14 +260,10 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreamsBase
     partialCRC2 = V128_PMulLow(partialCRC2, loopMultiplicands);
     partialCRC3 = V128_PMulLow(partialCRC3, loopMultiplicands);
     partialCRC4 = V128_PMulLow(partialCRC4, loopMultiplicands);
-    partialCRC1 = V128_Xor(tmp1, partialCRC1);
-    partialCRC2 = V128_Xor(tmp2, partialCRC2);
-    partialCRC3 = V128_Xor(tmp3, partialCRC3);
-    partialCRC4 = V128_Xor(tmp4, partialCRC4);
-    partialCRC1 = V128_Xor(partialCRC1, data1);
-    partialCRC2 = V128_Xor(partialCRC2, data2);
-    partialCRC3 = V128_Xor(partialCRC3, data3);
-    partialCRC4 = V128_Xor(partialCRC4, data4);
+    partialCRC1 = V128_Xor3<kUseEor3>(tmp1, partialCRC1, data1);
+    partialCRC2 = V128_Xor3<kUseEor3>(tmp2, partialCRC2, data2);
+    partialCRC3 = V128_Xor3<kUseEor3>(tmp3, partialCRC3, data3);
+    partialCRC4 = V128_Xor3<kUseEor3>(tmp4, partialCRC4, data4);
     partialCRC[0] = partialCRC1;
     partialCRC[1] = partialCRC2;
     partialCRC[2] = partialCRC3;
@@ -272,6 +272,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreamsBase
 
   // Reduce partialCRC produced by Process64BytesNeonPclmul into a single value,
   // that represents crc checksum of all the processed bytes.
+  template <bool kUseEor3 = false>
   ABSL_ATTRIBUTE_ALWAYS_INLINE uint64_t
   FinalizeNeonPclmulStream(V128* partialCRC) const {
     V128 partialCRC1 = partialCRC[0];
@@ -286,22 +287,19 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreamsBase
     V128 low = V128_PMulLow(reductionMultiplicands, partialCRC1);
     V128 high = V128_PMulHi(reductionMultiplicands, partialCRC1);
 
-    partialCRC1 = V128_Xor(low, high);
-    partialCRC1 = V128_Xor(partialCRC1, partialCRC3);
+    partialCRC1 = V128_Xor3<kUseEor3>(low, high, partialCRC3);
 
     low = V128_PMulLow(reductionMultiplicands, partialCRC2);
     high = V128_PMulHi(reductionMultiplicands, partialCRC2);
 
-    partialCRC2 = V128_Xor(low, high);
-    partialCRC2 = V128_Xor(partialCRC2, partialCRC4);
+    partialCRC2 = V128_Xor3<kUseEor3>(low, high, partialCRC4);
 
     reductionMultiplicands =
         V128_Load(reinterpret_cast<const V128*>(kFoldAcross128Bits));
 
     low = V128_PMulLow(reductionMultiplicands, partialCRC1);
     high = V128_PMulHi(reductionMultiplicands, partialCRC1);
-    V128 fullCRC = V128_Xor(low, high);
-    fullCRC = V128_Xor(fullCRC, partialCRC2);
+    V128 fullCRC = V128_Xor3<kUseEor3>(low, high, partialCRC2);
 
     // Reduce fullCRC into scalar value.
     uint32_t crc = 0;
@@ -393,9 +391,11 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreamsBase
     return crc;
   }
 
+  template <bool kUseEor3 = false>
   ABSL_ATTRIBUTE_ALWAYS_INLINE void Process64BytesNeonPclmul(const uint8_t*,
                                                              V128*) const {}
 
+  template <bool kUseEor3 = false>
   ABSL_ATTRIBUTE_ALWAYS_INLINE uint64_t FinalizeNeonPclmulStream(V128*) const {
     return 0;
   }
@@ -796,8 +796,12 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
           V256_Broadcast128(reinterpret_cast<const V128*>(kFoldAcross512Bits));
       Process64BytesVpclmul(*pclmul_stream, reinterpret_cast<V256*>(partialCRC),
                             loopMultiplicands);
-    } else if constexpr (pclmul_stream_type == PclmulStreamType::NEON_PCLMUL) {
-      Process64BytesNeonPclmul(*pclmul_stream, partialCRC);
+    } else if constexpr (pclmul_stream_type == PclmulStreamType::NEON_PCLMUL ||
+                         pclmul_stream_type ==
+                             PclmulStreamType::NEON_PCLMUL_EOR3) {
+      constexpr bool kUseEor3 =
+          (pclmul_stream_type == PclmulStreamType::NEON_PCLMUL_EOR3);
+      Process64BytesNeonPclmul<kUseEor3>(*pclmul_stream, partialCRC);
     } else {
       Process64BytesPclmul(*pclmul_stream, partialCRC);
     }
@@ -808,8 +812,12 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
   FinalizePclmulStream(V128* partialCRC) const {
     if constexpr (pclmul_stream_type == PclmulStreamType::VPCLMUL) {
       return FinalizeVpclmulStream(reinterpret_cast<V256*>(partialCRC));
-    } else if constexpr (pclmul_stream_type == PclmulStreamType::NEON_PCLMUL) {
-      return FinalizeNeonPclmulStream(partialCRC);
+    } else if constexpr (pclmul_stream_type == PclmulStreamType::NEON_PCLMUL ||
+                         pclmul_stream_type ==
+                             PclmulStreamType::NEON_PCLMUL_EOR3) {
+      constexpr bool kUseEor3 =
+          (pclmul_stream_type == PclmulStreamType::NEON_PCLMUL_EOR3);
+      return FinalizeNeonPclmulStream<kUseEor3>(partialCRC);
     } else {
       return CRC32AcceleratedX86ARMCombinedMultipleStreamsBase::
           FinalizePclmulStream(partialCRC);
@@ -869,18 +877,20 @@ CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           3, 0, PclmulStreamType::PCLMUL>();
     case CpuType::kArmNeoverseN1:
-    case CpuType::kArmNeoverseN2:
     case CpuType::kArmNeoverseV1:
+      return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
+          1, 1, PclmulStreamType::NEON_PCLMUL>();
+    case CpuType::kArmNeoverseN2:
     case CpuType::kArmNeoverseN3:
     case CpuType::kNvidiaGrace:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
-          1, 1, PclmulStreamType::NEON_PCLMUL>();
+          1, 1, PclmulStreamType::NEON_PCLMUL_EOR3>();
     case CpuType::kAmpereSiryn:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
-          3, 2, PclmulStreamType::NEON_PCLMUL>();
+          3, 2, PclmulStreamType::NEON_PCLMUL_EOR3>();
     case CpuType::kArmNeoverseV2:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
-          1, 2, PclmulStreamType::NEON_PCLMUL>();
+          1, 2, PclmulStreamType::NEON_PCLMUL_EOR3>();
 #if defined(__aarch64__)
     default:
       // Not all ARM processors support the needed instructions, so check here

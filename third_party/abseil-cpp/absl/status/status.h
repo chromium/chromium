@@ -75,6 +75,10 @@
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
+#ifndef SWIG  // SWIG chokes on enum class
+// The following canonical error codes should always be in sync with
+// https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto.
+
 // absl::StatusCode
 //
 // An `absl::StatusCode` is an enumerated type indicating either no error ("OK")
@@ -352,6 +356,7 @@ inline StatusToStringMode& operator^=(StatusToStringMode& lhs,
   lhs = lhs ^ rhs;
   return lhs;
 }
+#endif  // SWIG
 
 // absl::Status
 //
@@ -460,6 +465,7 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
   Status(absl::StatusCode code, absl::string_view msg,
          absl::SourceLocation loc = SourceLocation::current());
 
+#ifndef SWIG
   // Same as above but for rvalue string.
   // Note: using a template to disambiguate the case of matching string_view and
   // string&& (e.g. char*) as a template lowers the priority of the overload.
@@ -467,6 +473,7 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
             typename = std::enable_if_t<std::is_same_v<String, std::string>>>
   Status(absl::StatusCode code, String&& msg,
          absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
 
   // Create a status from a `base_status` and a `loc`. The `loc` will be
   // appended to the location chain of the new status, iff the `base_status` is
@@ -475,19 +482,23 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
       : Status(base_status) {
     AddSourceLocation(loc);
   }
+#ifndef SWIG
   Status(Status&& base_status, absl::SourceLocation loc)
       : Status(std::move(base_status)) {
     AddSourceLocation(loc);
   }
+#endif  // SWIG
 
   Status(const Status&);
   Status& operator=(const Status& x);
 
+#ifndef SWIG
   // Move operators
 
   // The moved-from state is valid but unspecified.
   Status(Status&&) noexcept;
   Status& operator=(Status&&) noexcept;
+#endif  // SWIG
 
   ~Status();
 
@@ -507,7 +518,9 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
   //   overall_status.Update(new_status);
   //
   void Update(const Status& new_status);
+#ifndef SWIG
   void Update(Status&& new_status);
+#endif  // SWIG
 
   // Status::ok()
   //
@@ -533,6 +546,8 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
   // wire format. Use `Status::code()` for error handling.
   int raw_code() const;
 
+#ifndef SWIG
+
   // Status::message()
   //
   // Returns the error message associated with this error code, if available.
@@ -540,9 +555,14 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
   // for the error message to be the empty string. As a result, prefer
   // `operator<<` or `Status::ToString()` for debug logging.
   absl::string_view message() const;
+#endif  // SWIG
 
   friend bool operator==(const Status&, const Status&);
   friend bool operator!=(const Status&, const Status&);
+
+#ifndef SWIG
+  // `ToString` has stubs in SWIG to remain backward compatible with the old
+  // format by calling `util::StatusToString`, to save migration cost.
 
   // Status::ToString()
   //
@@ -563,6 +583,7 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
   friend void AbslStringify(Sink& sink, const Status& status) {
     sink.Append(status.ToString(StatusToStringMode::kWithEverything));
   }
+#endif  // SWIG
 
   // Status::IgnoreError()
   //
@@ -574,7 +595,11 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
   // swap()
   //
   // Swap the contents of one status with another.
+#ifndef SWIG
   friend void swap(Status& a, Status& b) noexcept;
+#else
+  friend void swap(Status& a, Status& b);
+#endif  // SWIG
 
   //----------------------------------------------------------------------------
   // Payload Management APIs
@@ -639,9 +664,14 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
   //
   // NOTE: Any mutation on the same 'absl::Status' object during visitation is
   // forbidden and could result in undefined behavior.
+  // FunctionRef doesn't work nicely with Swig.
+  // TODO(b/189736749): Consider making this available once FunctionRef is
+  // supported.
+#ifndef SWIG
   void ForEachPayload(
       absl::FunctionRef<void(absl::string_view, const absl::Cord&)> visitor)
       const;
+#endif  // SWIG
 
   absl::Span<const absl::SourceLocation> GetSourceLocations() const {
     if (IsInlined(rep_)) return {};
@@ -660,6 +690,8 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
     // helps the optimizer remove that check.
     ABSL_ASSUME(!okay);
   }
+
+#ifndef SWIG
 
   // Status::WithSourceLocation()
   //
@@ -695,6 +727,7 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
     AddSourceLocation(loc);
     return std::move(*this);
   }
+#endif  // SWIG
 
  private:
   friend Status CancelledError();
@@ -722,10 +755,12 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
                                          absl::string_view msg,
                                          absl::SourceLocation loc);
 
+#ifndef SWIG
   // Same as above but for rvalue string.
   static uintptr_t MakeRepFromStringRvalue(uintptr_t inlined_rep,
                                            std::string&& msg,
                                            absl::SourceLocation loc);
+#endif  // SWIG
 
   template <typename StringOrView>
   friend uintptr_t MakeStatusRepImpl(uintptr_t inlined_rep, StringOrView msg,
@@ -920,11 +955,13 @@ inline Status::Status(absl::StatusCode code, absl::string_view msg,
                       absl::SourceLocation loc)
     : Status(MakeRepFromStringView(CodeToInlinedRep(code), msg, loc)) {}
 
+#ifndef SWIG
 template <typename String, typename>
 inline Status::Status(absl::StatusCode code, String&& msg,
                       absl::SourceLocation loc)
     : Status(MakeRepFromStringRvalue(CodeToInlinedRep(code),
                                      std::forward<String>(msg), loc)) {}
+#endif  // SWIG
 
 inline Status::Status(const Status& x) : Status(x.rep_) { Ref(rep_); }
 
@@ -938,6 +975,7 @@ inline Status& Status::operator=(const Status& x) {
   return *this;
 }
 
+#ifndef SWIG
 inline Status::Status(Status&& x) noexcept : Status(x.rep_) {
   x.rep_ = MovedFromRep();
 }
@@ -951,6 +989,7 @@ inline Status& Status::operator=(Status&& x) noexcept {
   }
   return *this;
 }
+#endif  // SWIG
 
 inline void Status::Update(const Status& new_status) {
   if (ok()) {
@@ -958,11 +997,13 @@ inline void Status::Update(const Status& new_status) {
   }
 }
 
+#ifndef SWIG
 inline void Status::Update(Status&& new_status) {
   if (ok()) {
     *this = std::move(new_status);
   }
 }
+#endif  // SWIG
 
 inline Status::~Status() { Unref(rep_); }
 
@@ -1005,10 +1046,17 @@ inline void Status::IgnoreError() const {
   // no-op
 }
 
+#ifndef SWIG
 inline void swap(absl::Status& a, absl::Status& b) noexcept {
   using std::swap;
   swap(a.rep_, b.rep_);
 }
+#else
+inline void swap(absl::Status& a, absl::Status& b) {
+  using std::swap;
+  swap(a.rep_, b.rep_);
+}
+#endif  // SWIG
 
 inline std::optional<absl::Cord> Status::GetPayload(
     absl::string_view type_url) const {
@@ -1074,7 +1122,9 @@ inline void Status::Unref(uintptr_t rep) {
   if (!IsInlined(rep)) RepToPointer(rep)->Unref();
 }
 
+#ifndef SWIG
 inline Status OkStatus() { return Status(); }
+#endif  // SWIG
 
 // Creates a `Status` object with the `absl::StatusCode::kCancelled` error code
 // and an empty message. It is provided only for efficiency, given that
@@ -1095,6 +1145,7 @@ namespace status_internal {
 template <int error_code>
 Status MakeErrorImpl(string_view message, SourceLocation loc);
 // Make the instantiations extern to reduce bloat on callers.
+#ifndef SWIG
 extern template Status MakeErrorImpl<0>(string_view, SourceLocation);
 extern template Status MakeErrorImpl<1>(string_view, SourceLocation);
 extern template Status MakeErrorImpl<2>(string_view, SourceLocation);
@@ -1112,6 +1163,7 @@ extern template Status MakeErrorImpl<13>(string_view, SourceLocation);
 extern template Status MakeErrorImpl<14>(string_view, SourceLocation);
 extern template Status MakeErrorImpl<15>(string_view, SourceLocation);
 extern template Status MakeErrorImpl<16>(string_view, SourceLocation);
+#endif  // SWIG
 
 template <StatusCode error_code>
 Status MakeError(string_view message, SourceLocation loc) {

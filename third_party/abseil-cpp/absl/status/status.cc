@@ -130,11 +130,13 @@ uintptr_t Status::MakeRepFromStringView(uintptr_t inlined_rep,
   return MakeStatusRepImpl<absl::string_view>(inlined_rep, msg, loc);
 }
 
+#ifndef SWIG
 uintptr_t Status::MakeRepFromStringRvalue(uintptr_t inlined_rep,
                                           std::string&& msg,
                                           absl::SourceLocation loc) {
   return MakeStatusRepImpl<std::string&&>(inlined_rep, std::move(msg), loc);
 }
+#endif  // SWIG
 
 uintptr_t Status::AddSourceLocationImpl(uintptr_t rep,
                                         absl::SourceLocation loc) {
