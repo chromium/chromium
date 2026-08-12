@@ -199,6 +199,23 @@ TEST_F(DesktopCaptureUtilTest,
   EXPECT_FALSE(identifier->pid.has_value());
 }
 
+TEST_F(DesktopCaptureUtilTest,
+       GetApplicationAudioCaptureIdForProcess_InvalidBundleId) {
+  DesktopCaptureUtilFakeNSRunningApplication* fake_app =
+      [[DesktopCaptureUtilFakeNSRunningApplication alloc] init];
+  fake_app.bundleIdentifier = @"com.example.app:withcolon";
+  fake_app.processIdentifier = 123;
+  g_mock_app = (NSRunningApplication*)fake_app;
+
+  base::apple::ScopedObjCClassSwizzler swizzler(
+      [NSRunningApplication class],
+      [DesktopCaptureUtilMockNSRunningApplication class],
+      @selector(runningApplicationWithProcessIdentifier:));
+
+  auto identifier = GetApplicationAudioCaptureIdForProcess(123);
+  EXPECT_FALSE(identifier.has_value());
+}
+
 struct BundleIdTestParams {
   NSString* input_bundle_id;
   std::string expected_truncated_id;
