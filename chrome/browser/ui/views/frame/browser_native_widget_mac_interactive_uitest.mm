@@ -192,8 +192,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
 
   const auto top_element_info = browser_view->GetFrameElementInfo();
   int expected_height = top_element_info.top_area_height() +
-                        top_element_info.toolbar_preferred_height +
-                        GetGlassCornerPadding();
+                        top_element_info.toolbar_preferred_height;
 
   EXPECT_EQ(NSHeight(glass_view.frame), expected_height);
   EXPECT_LT(NSHeight(glass_view.frame), NSHeight(content_view.bounds));

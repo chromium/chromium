@@ -289,7 +289,6 @@ std::optional<int> BrowserNativeWidgetMac::GetGlassFrameHeight() const {
   const auto top_element_info = browser_view_->GetFrameElementInfo();
   height += top_element_info.top_area_height();
   height += top_element_info.toolbar_preferred_height;
-  height += GetGlassCornerPadding();
   return height;
 }
 
