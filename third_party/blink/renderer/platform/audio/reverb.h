@@ -52,6 +52,7 @@ class PLATFORM_EXPORT Reverb final {
   Reverb(AudioBus* impulse_response_buffer,
          unsigned render_slice_size,
          unsigned max_fft_size,
+         bool use_background_threads,
          bool normalize);
   Reverb(const Reverb&) = delete;
   Reverb& operator=(const Reverb&) = delete;
@@ -68,6 +69,7 @@ class PLATFORM_EXPORT Reverb final {
   void Initialize(AudioBus* impulse_response_buffer,
                   unsigned render_slice_size,
                   unsigned max_fft_size,
+                  bool use_background_threads,
                   float scale);
 
   size_t impulse_response_length_;

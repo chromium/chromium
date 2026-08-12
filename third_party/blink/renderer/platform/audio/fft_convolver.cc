@@ -28,8 +28,6 @@
 
 #include "third_party/blink/renderer/platform/audio/fft_convolver.h"
 
-#include <algorithm>
-
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -45,30 +43,42 @@ FFTConvolver::FFTConvolver(unsigned fft_size)
 void FFTConvolver::Process(const FFTFrame* fft_kernel,
                            base::span<const float> source,
                            base::span<float> dest) {
+  const size_t frames_to_process = source.size();
   DCHECK_EQ(source.size(), dest.size());
 
   unsigned half_size = FftSize() / 2;
 
+  // framesToProcess must be an exact multiple of halfSize,
+  // or halfSize is a multiple of framesToProcess when halfSize >
+  // framesToProcess.
+  bool is_good =
+      !(half_size % frames_to_process && frames_to_process % half_size);
+  DCHECK(is_good);
+
+  size_t number_of_divisions =
+      half_size <= frames_to_process ? (frames_to_process / half_size) : 1;
+  size_t division_size =
+      number_of_divisions == 1 ? frames_to_process : half_size;
+
   base::span<float> input_buffer_span = input_buffer_.as_span();
   base::span<float> output_buffer_span = output_buffer_.as_span();
 
-  while (!source.empty()) {
-    size_t frames_to_copy =
-        std::min(source.size(), half_size - read_write_index_);
+  for (size_t i = 0; i < number_of_divisions; ++i) {
+    base::span<const float> source_segment = source.take_first(division_size);
+    base::span<float> dest_segment = dest.take_first(division_size);
 
-    // Copy samples to input buffer
-    DCHECK_LE(read_write_index_ + frames_to_copy, input_buffer_.size());
+    // Copy samples to input buffer (note constraint above!)
+    DCHECK_LE(read_write_index_ + division_size, input_buffer_.size());
 
-    input_buffer_span.subspan(read_write_index_, frames_to_copy)
-        .copy_from(source.take_first(frames_to_copy));
+    input_buffer_span.subspan(read_write_index_, division_size)
+        .copy_from(source_segment);
 
     // Copy samples from output buffer
-    DCHECK_LE(read_write_index_ + frames_to_copy, output_buffer_.size());
+    DCHECK_LE(read_write_index_ + division_size, output_buffer_.size());
 
-    dest.take_first(frames_to_copy)
-        .copy_from(
-            output_buffer_span.subspan(read_write_index_, frames_to_copy));
-    read_write_index_ += frames_to_copy;
+    dest_segment.copy_from(
+        output_buffer_span.subspan(read_write_index_, division_size));
+    read_write_index_ += division_size;
 
     // Check if it's time to perform the next FFT
     if (read_write_index_ == half_size) {

@@ -26,57 +26,62 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_FFT_CONVOLVER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_FFT_CONVOLVER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_REVERB_INPUT_BUFFER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_REVERB_INPUT_BUFFER_H_
+
+#include <atomic>
 
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
-#include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class FFTConvolver final {
-  USING_FAST_MALLOC(FFTConvolver);
+// ReverbInputBuffer is used to buffer input samples for deferred processing by
+// the background threads.
+class ReverbInputBuffer final {
+  DISALLOW_NEW();
 
  public:
-  // fftSize must be a power of two
-  explicit FFTConvolver(unsigned fft_size);
-  FFTConvolver(const FFTConvolver&) = delete;
-  FFTConvolver& operator=(const FFTConvolver&) = delete;
+  explicit ReverbInputBuffer(size_t length);
+  ReverbInputBuffer(const ReverbInputBuffer&) = delete;
+  ReverbInputBuffer& operator=(const ReverbInputBuffer&) = delete;
 
-  // For now, with multiple calls to Process(), the sizes of the source spans
-  // MUST add up EXACTLY to fftSize / 2
-  //
-  // FIXME: Later, we can do more sophisticated buffering to relax this
-  // requirement...
-  //
-  // The input to output latency is equal to fftSize / 2
-  //
-  // Processing in-place is allowed...
-  void Process(const FFTFrame* fft_kernel,
-               base::span<const float> source,
-               base::span<float> dest);
+  // The realtime audio thread keeps writing samples here.
+  // The assumption is that the buffer's length is evenly divisible by
+  // numberOfFrames (for nearly all cases this will be fine).
+  // FIXME: remove numberOfFrames restriction...
+  void Write(base::span<const float> source, size_t number_of_frames);
+
+  // Background threads can call this to check if there's anything to read...
+  size_t WriteIndex() const {
+    return write_index_.load(std::memory_order_acquire);
+  }
+
+  // The individual background threads read here (and hope that they can keep up
+  // with the buffer writing).
+  // readIndex is updated with the next readIndex to read from...
+  // The assumption is that the buffer's length is evenly divisible by
+  // numberOfFrames.
+  // FIXME: remove numberOfFrames restriction...
+  base::span<const float> DirectReadFrom(size_t* read_index,
+                                         size_t number_of_frames);
 
   void Reset();
 
-  unsigned FftSize() const { return frame_.FftSize(); }
-
  private:
-  FFTFrame frame_;
+  void SetWriteIndex(size_t new_index) {
+    write_index_.store(new_index, std::memory_order_release);
+  }
 
-  // Buffer input until we get fftSize / 2 samples then do an FFT
-  size_t read_write_index_;
-  AudioFloatArray input_buffer_;
+  AudioFloatArray buffer_;
 
-  // Stores output which we read a little at a time
-  AudioFloatArray output_buffer_;
-
-  // Saves the 2nd half of the FFT buffer, so we can do an overlap-add with the
-  // 1st half of the next one
-  AudioFloatArray last_overlap_buffer_;
+  // |write_index_| can be accessed from several threads.  Only use
+  // the getter and setter to access it atomically.  Don't access
+  // directly!
+  std::atomic_size_t write_index_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_FFT_CONVOLVER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_REVERB_INPUT_BUFFER_H_
