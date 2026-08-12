@@ -9,6 +9,12 @@
 #include "base/synchronization/lock_metrics_recorder.h"
 
 namespace base {
+
+const LockMetricTag& GetBaseLockMetricTag() {
+  static constinit LockMetricTag tag("BaseLock");
+  return tag;
+}
+
 namespace internal {
 
 LockImpl::LockImpl() : native_handle_(SRWLOCK_INIT) {}
@@ -16,7 +22,7 @@ LockImpl::LockImpl() : native_handle_(SRWLOCK_INIT) {}
 LockImpl::~LockImpl() = default;
 
 void LockImpl::LockInternal() {
-  LockMetricsRecorder::ScopedLockAcquisitionTimer timer;
+  LockMetricsRecorder::ScopedLockAcquisitionTimer timer(GetBaseLockMetricTag());
   ::AcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&native_handle_));
 }
 

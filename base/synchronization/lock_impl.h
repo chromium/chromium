@@ -28,6 +28,9 @@
 namespace base {
 class Lock;
 class ConditionVariable;
+class LockMetricTag;
+
+BASE_EXPORT const LockMetricTag& GetBaseLockMetricTag();
 
 namespace win {
 namespace internal {

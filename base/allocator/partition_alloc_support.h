@@ -23,7 +23,13 @@
 #include "partition_alloc/partition_alloc_constants.h"
 #endif
 
+namespace base {
+class LockMetricTag;
+}
+
 namespace base::allocator {
+
+BASE_EXPORT const LockMetricTag& GetPartitionAllocLockMetricTag();
 
 // Starts a periodic timer on the current thread to purge all thread caches.
 BASE_EXPORT void StartThreadCachePeriodicPurge();

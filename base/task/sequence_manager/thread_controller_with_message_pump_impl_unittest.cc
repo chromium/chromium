@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/partition_alloc_support.h"
 #include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +20,7 @@
 #include "base/message_loop/message_pump.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/synchronization/lock_impl.h"
 #include "base/synchronization/lock_metrics_recorder.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
@@ -2282,18 +2284,17 @@ TEST_F(ThreadControllerWithMessagePumpTest, LockMetricsReportedOnIdle) {
 
   HistogramTester histogram_tester;
 
-  constexpr LockMetricsRecorder::LockMetricSample kBaseLockMetricSample = {
-      test_sample1, LockMetricsRecorder::LockType::kBaseLock};
-  constexpr LockMetricsRecorder::LockMetricSample
-      kPartitionAllocLockMetricSample = {
-          test_sample2, LockMetricsRecorder::LockType::kPartitionAllocLock};
+  const LockMetricsRecorder::LockMetricSample base_lock_metric_sample = {
+      test_sample1, &GetBaseLockMetricTag()};
+  const LockMetricsRecorder::LockMetricSample pa_lock_metric_sample = {
+      test_sample2, &allocator::GetPartitionAllocLockMetricTag()};
 
   base::LockMetricsRecorder::GetForCurrentThread()->RecordLockAcquisitionTime(
-      kBaseLockMetricSample);
+      base_lock_metric_sample);
   base::LockMetricsRecorder::GetForCurrentThread()->RecordLockAcquisitionTime(
-      kPartitionAllocLockMetricSample);
+      pa_lock_metric_sample);
   base::LockMetricsRecorder::GetForCurrentThread()->RecordLockAcquisitionTime(
-      kPartitionAllocLockMetricSample);
+      pa_lock_metric_sample);
 
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce([&](MessagePump::Delegate* delegate) {

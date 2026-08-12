@@ -190,7 +190,7 @@ class LockMetricsRecorderSupport
       recorder->RecordLockAcquisitionTime(
           base::LockMetricsRecorder::LockMetricSample{
               Microseconds(sample.InMicroseconds()),
-              base::LockMetricsRecorder::LockType::kPartitionAllocLock});
+              &GetPartitionAllocLockMetricTag()});
     }
   }
 };
@@ -293,6 +293,11 @@ void MemoryReclaimerSupport::MaybeScheduleTask(TimeDelta delay) {
   task_runner_->PostDelayedTask(
       FROM_HERE, BindOnce(&MemoryReclaimerSupport::Run, base::Unretained(this)),
       actual_delay);
+}
+
+const LockMetricTag& GetPartitionAllocLockMetricTag() {
+  static constinit LockMetricTag tag("PartitionAllocLock");
+  return tag;
 }
 
 void StartThreadCachePeriodicPurge() {
