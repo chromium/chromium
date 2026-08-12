@@ -246,7 +246,7 @@ gfx::Size UnpinnedTabContainerViewLayout::CalculateHorizontalMinimumSize(
     }
   }
   int overlap_total = 0;
-  for (size_t i = 0; i < visible_children.size() - 1; ++i) {
+  for (size_t i = 0; i + 1 < visible_children.size(); ++i) {
     overlap_total +=
         GetChildOverlap(visible_children[i], visible_children[i + 1]);
   }

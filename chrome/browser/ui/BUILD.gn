@@ -2866,6 +2866,8 @@ static_library("ui") {
       "views/tabs/groups/tab_group_accessibility.h",
       "views/tabs/groups/tab_group_editor_bubble_view.cc",
       "views/tabs/groups/tab_group_editor_bubble_view.h",
+      "views/tabs/horizontal/tab_scroll_button_container.cc",
+      "views/tabs/horizontal/tab_scroll_button_container.h",
       "views/tabs/hovercard/fade_footer_view.cc",
       "views/tabs/hovercard/fade_footer_view.h",
       "views/tabs/hovercard/fade_label_view.cc",
