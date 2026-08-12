@@ -2901,20 +2901,6 @@ static_library("ui") {
       "views/tabs/new_tab_button.h",
       "views/tabs/tab.cc",
       "views/tabs/tab.h",
-      "views/tabs/tab/alert_indicator_button.cc",
-      "views/tabs/tab/alert_indicator_button.h",
-      "views/tabs/tab/glow_hover_controller.cc",
-      "views/tabs/tab/glow_hover_controller.h",
-      "views/tabs/tab/tab_accessibility.cc",
-      "views/tabs/tab/tab_accessibility.h",
-      "views/tabs/tab/tab_close_button.cc",
-      "views/tabs/tab/tab_close_button.h",
-      "views/tabs/tab/tab_context_menu_controller.cc",
-      "views/tabs/tab/tab_context_menu_controller.h",
-      "views/tabs/tab/tab_icon.cc",
-      "views/tabs/tab/tab_icon.h",
-      "views/tabs/tab/tab_title.cc",
-      "views/tabs/tab/tab_title.h",
       "views/tabs/tab_container.cc",
       "views/tabs/tab_container.h",
       "views/tabs/tab_container_controller.h",
@@ -3179,6 +3165,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/tabs/organizer",
       "//chrome/browser/ui/views/tabs/shared",
       "//chrome/browser/ui/views/tabs/shared:impl",
+      "//chrome/browser/ui/views/tabs/tab",
+      "//chrome/browser/ui/views/tabs/tab:impl",
       "//chrome/browser/ui/views/tabs/vertical",
       "//chrome/browser/ui/views/tabs/vertical:impl",
       "//chrome/browser/ui/views/translate",
@@ -3215,10 +3203,9 @@ static_library("ui") {
     # Any circular includes must depend on the target
     # "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
-      # TODO(crbug.com/353332589): Remove these circular dependencies when the
-      # following headers get componentized:
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following header gets componentized:
       # c/b/ui/browser_tabstrip.h
-      # c/b/ui/views/tabs/tab/tab_context_menu_controller.h
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
 
       # c/b/ui/tab_ui_helper.h
@@ -3422,6 +3409,13 @@ static_library("ui") {
       # - c/b/ui/views/tabs/common/tab_strip_collection_controller.h
       "//chrome/browser/ui/views/tabs/common:impl",
 
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following headers get componentized:
+      # - c/b/ui/views/frame/browser_view.h
+      # - c/b/ui/views/tabs/tab.h
+      # - c/b/ui/views/tabs/tab_slot_controller.h
+      "//chrome/browser/ui/views/tabs/tab:impl",
+
       # TODO(crbug.com/451609048): Remove this circular dependency when the
       # following headers get componentized:
       # - c/b/ui/browser_commands.h
@@ -3437,13 +3431,6 @@ static_library("ui") {
       # - c/b/ui/views/tabs/hovercard/hover_card_anchor_target.h
       # - c/b/ui/views/tabs/hovercard/tab_hover_card_controller.h
       # - c/b/ui/views/tabs/new_tab_button.h
-      # - c/b/ui/views/tabs/tab/alert_indicator_button.h
-      # - c/b/ui/views/tabs/tab/glow_hover_controller.h
-      # - c/b/ui/views/tabs/tab/tab_accessibility.h
-      # - c/b/ui/views/tabs/tab/tab_close_button.h
-      # - c/b/ui/views/tabs/tab/tab_context_menu_controller.h
-      # - c/b/ui/views/tabs/tab/tab_icon.h
-      # - c/b/ui/views/tabs/tab/tab_title.h
       # - c/b/ui/views/tabs/tab_slot_view.h
       "//chrome/browser/ui/views/tabs/vertical:impl",
 
@@ -3492,7 +3479,6 @@ static_library("ui") {
       #   public :user_education target)
       # c/b/ui/views/frame/contents_web_view.h
       # c/b/ui/views/frame/custom_corners_background.h
-      # c/b/ui/views/tabs/tab/tab_icon.h
       # c/b/ui/views/web_apps/web_app_install_dialog_delegate.h
       "//chrome/browser/ui/views/user_education:impl",
 

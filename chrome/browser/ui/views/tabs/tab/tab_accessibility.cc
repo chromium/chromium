@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/tabs/tab/tab_accessibility.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
@@ -86,8 +85,7 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
   }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
-  Browser* browser = browser_view->browser();
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  const TabStripModel* tab_strip_model = bwi->GetTabStripModel();
 
   const TabData& tab_data =
       browser_view->tab_strip_view()->GetTabData(tab->GetHandle());

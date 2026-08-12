@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_TAB_CLOSE_BUTTON_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/masked_targeter_delegate.h"

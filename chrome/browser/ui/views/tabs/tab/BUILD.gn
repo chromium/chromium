@@ -1,0 +1,107 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(toolkit_views)
+
+source_set("tab") {
+  public = [
+    "alert_indicator_button.h",
+    "glow_hover_controller.h",
+    "tab_accessibility.h",
+    "tab_close_button.h",
+    "tab_context_menu_controller.h",
+    "tab_icon.h",
+    "tab_title.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/performance_manager",
+    "//components/prefs",
+    "//components/tabs:public",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+# frame/browser_view.h, tabs/tab.h, and tabs/tab_slot_controller.h are all
+# still monolithic in ui:ui (crbug.com/353332589) and are only ever needed
+# by the .cc files below, never by the public headers above -- so this
+# :impl target is the one that carries the real dependency and the
+# corresponding allow_circular_includes_from grant on ui:ui, not the
+# public :tab target.
+source_set("impl") {
+  sources = [
+    "alert_indicator_button.cc",
+    "glow_hover_controller.cc",
+    "tab_accessibility.cc",
+    "tab_close_button.cc",
+    "tab_context_menu_controller.cc",
+    "tab_icon.cc",
+    "tab_title.cc",
+  ]
+
+  deps = [
+    ":tab",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
+    "//chrome/browser/actor/resources:grit",
+    "//chrome/browser/favicon",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/interaction",
+    "//chrome/browser/ui/location_bar",
+    "//chrome/browser/ui/performance_controls",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/tabs:favicon_theming",
+    "//chrome/browser/ui/tabs:tab_menu",
+    "//chrome/browser/ui/tabs/alert:tab_alert",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/permissions/chip",
+    "//chrome/browser/ui/window_metadata",
+    "//chrome/common",
+    "//components/feature_engagement/public",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/views",
+  ]
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_context_menu_controller_unittest.cc" ]
+
+  deps = [
+    ":tab",
+    "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "alert_indicator_button_browsertest.cc" ]
+
+  deps = [
+    ":tab",
+    "//chrome/browser/media/webrtc:webrtc_browser_tests_base",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+  ]
+}

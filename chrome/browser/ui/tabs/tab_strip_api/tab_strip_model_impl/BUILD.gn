@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
 # This target contains all the tab strip model specific implementation.
 source_set("tab_strip_model_impl") {
   sources = [
@@ -39,6 +41,18 @@ source_set("tab_strip_model_impl") {
     "//components/browser_apis/tab_strip/observation",
     "//components/browser_apis/tab_strip/types",
   ]
+
+  # tab_context_menu_adapter_impl.{h,cc} include tab_context_menu_controller.h
+  # and construct a real TabContextMenuController unconditionally (no
+  # BUILDFLAG guard), so this target can only ever build where toolkit_views
+  # is available -- guard the dependency accordingly rather than assuming
+  # this target is never evaluated on Android.
+  if (toolkit_views) {
+    deps += [
+      "//chrome/browser/ui/views/tabs/tab",
+      "//chrome/browser/ui/views/tabs/tab:impl",
+    ]
+  }
 }
 
 source_set("unit_tests") {

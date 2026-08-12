@@ -2573,6 +2573,14 @@ source_set("browser_tests") {
     deps += [ "//chrome/browser/ui/views/supervised_user" ]
   }
 
+  # api/context_menus/context_menu_apitest.cc's include of
+  # tab_context_menu_controller.h is itself guarded by
+  # #if BUILDFLAG(ENABLE_EXTENSIONS) -- matches the supervised_user grant
+  # right above.
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/ui/views/tabs/tab" ]
+  }
+
   public_deps = []
 
   data = [
