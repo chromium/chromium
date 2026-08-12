@@ -357,6 +357,18 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
     }
   }
 
+  // Check policy restrictions regardless of if the study has a filter or not.
+  // (E.g. if policies dictate that no studies should apply, then fitlerless
+  // studies should not apply).
+  // Note: a filterless study will default to having a policy_restriction of
+  // NONE.
+  if (!CheckStudyPolicyRestriction(study.filter(),
+                                    client_state.policy_restriction)) {
+    DVLOG(1) << "Filtered out study " << study.name()
+              << " due to policy restriction.";
+    return false;
+  }
+
   if (study.has_filter()) {
     if (!CheckStudyChannel(study.filter(), client_state.channel)) {
       DVLOG(1) << "Filtered out study " << study.name() << " due to channel.";
@@ -419,13 +431,6 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
                                 client_state.is_low_end_device)) {
       DVLOG(1) << "Filtered out study " << study.name()
                << " due to is_low_end_device.";
-      return false;
-    }
-
-    if (!CheckStudyPolicyRestriction(study.filter(),
-                                     client_state.policy_restriction)) {
-      DVLOG(1) << "Filtered out study " << study.name()
-               << " due to policy restriction.";
       return false;
     }
 
