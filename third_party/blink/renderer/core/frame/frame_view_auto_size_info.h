@@ -24,7 +24,7 @@ class FrameViewAutoSizeInfo final
   void ConfigureAutoSizeMode(const gfx::Size& min_size,
                              const gfx::Size& max_size);
   // Returns true if the LocalFrameView was resized.
-  bool AutoSizeIfNeeded();
+  bool AutoSizeIfNeeded(bool should_reset_for_layout);
   void Clear();
 
   void Trace(Visitor*) const;
@@ -40,6 +40,8 @@ class FrameViewAutoSizeInfo final
   bool in_auto_size_;
   // True if autosize has been run since m_shouldAutoSize was set.
   bool did_run_autosize_;
+  // True once the post-load minimum-size reset has been handled.
+  bool handled_post_load_reset_ = false;
   // The number of autosize passes that have been made since the last call to
   // Clear();
   bool running_first_autosize_ = false;

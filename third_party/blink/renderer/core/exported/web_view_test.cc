@@ -222,13 +222,16 @@ class AutoResizeWebViewClient : public WebViewClient {
   // WebViewClient methods
   void DidAutoResize(const gfx::Size& new_size) override {
     test_data_.SetSize(new_size);
+    ++resize_count_;
   }
 
   // Local methods
   TestData& GetTestData() { return test_data_; }
+  int ResizeCount() const { return resize_count_; }
 
  private:
   TestData test_data_;
+  int resize_count_ = 0;
 };
 
 class WebViewTest : public testing::Test {
@@ -304,6 +307,9 @@ class WebViewTest : public testing::Test {
                       int expected_height,
                       HorizontalScrollbarState expected_horizontal_state,
                       VerticalScrollbarState expected_vertical_state);
+  WebLocalFrameImpl* InitializeAutoResizeWebView(
+      const std::string& html,
+      AutoResizeWebViewClient& client);
 
   void TestTextInputType(WebTextInputType expected_type,
                          const std::string& html_file);
@@ -956,6 +962,20 @@ void WebViewTest::TestAutoResize(
   web_view_helper_.Reset();
 }
 
+WebLocalFrameImpl* WebViewTest::InitializeAutoResizeWebView(
+    const std::string& html,
+    AutoResizeWebViewClient& client) {
+  WebViewImpl* web_view = web_view_helper_.Initialize(nullptr, &client);
+  client.GetTestData().SetWebView(web_view);
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(), html,
+      url_test_helpers::ToKURL("http://example.com/"));
+  UpdateAllLifecyclePhases();
+  web_view->EnableAutoResizeMode(gfx::Size(25, 25), gfx::Size(800, 600));
+  UpdateAllLifecyclePhases();
+  return web_view->MainFrameImpl();
+}
+
 TEST_F(WebViewTest, AutoResizeMinimumSize) {
   gfx::Size min_auto_resize(91, 56);
   gfx::Size max_auto_resize(403, 302);
@@ -1075,6 +1095,108 @@ TEST_F(WebViewTest, AutoResizeUsesScrollWidthForGridOverflow) {
   const int scroll_width =
       frame->GetFrame()->GetDocument()->documentElement()->scrollWidth();
   EXPECT_GE(client.GetTestData().Width(), scroll_width);
+
+  frame_view->SetNeedsLayout();
+  UpdateAllLifecyclePhases();
+  const int measured_scroll_width =
+      frame->GetFrame()->GetDocument()->documentElement()->scrollWidth();
+  EXPECT_GE(client.GetTestData().Width(), measured_scroll_width);
+
+  web_view_helper_.Reset();
+}
+
+TEST_F(WebViewTest, AutoResizeShrinkPreservesHorizontalOverflow) {
+  ScopedAutoSizeUsesScrollWidthForOverflowForTest scoped_feature(true);
+  AutoResizeWebViewClient client;
+  WebLocalFrameImpl* frame = InitializeAutoResizeWebView(
+      R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body { margin: 0; position: relative; width: 400px; }
+          div { position: absolute; width: 300px; height: 1px; }
+        </style>
+        <div></div>
+      )HTML",
+      client);
+  EXPECT_EQ(400, client.GetTestData().Width());
+
+  frame->ExecuteScript(WebScriptSource("document.body.style.width = '200px';"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(300, client.GetTestData().Width());
+
+  web_view_helper_.Reset();
+}
+
+TEST_F(WebViewTest, AutoResizeShrinksAfterContentWidthDecreases) {
+  ScopedAutoSizeUsesScrollWidthForOverflowForTest scoped_feature(true);
+  AutoResizeWebViewClient client;
+  WebLocalFrameImpl* frame = InitializeAutoResizeWebView(
+      R"HTML(
+        <!DOCTYPE html>
+        <style>body { width: 200px; }</style>
+        <div>Current Width: <span id="current-width">200px</span></div>
+        <button id="resize-button">Toggle Size</button>
+        <script>
+          document.getElementById('resize-button').addEventListener(
+              'click', () => {
+                const currentWidth =
+                    document.getElementById('current-width');
+                const newWidth = currentWidth.textContent === '200px'
+                    ? '400px'
+                    : '200px';
+                document.body.style.width = newWidth;
+                currentWidth.textContent = newWidth;
+              });
+        </script>
+      )HTML",
+      client);
+  std::array<int, 3> widths;
+  widths[0] = client.GetTestData().Width();
+
+  frame->ExecuteScript(
+      WebScriptSource("document.getElementById('resize-button').click();"));
+  UpdateAllLifecyclePhases();
+  widths[1] = client.GetTestData().Width();
+
+  frame->ExecuteScript(
+      WebScriptSource("document.getElementById('resize-button').click();"));
+  UpdateAllLifecyclePhases();
+  widths[2] = client.GetTestData().Width();
+
+  EXPECT_EQ((std::array<int, 3>{216, 416, 216}), widths);
+
+  web_view_helper_.Reset();
+}
+
+TEST_F(WebViewTest, AutoResizeDoesNotResetWithoutLayout) {
+  ScopedAutoSizeUsesScrollWidthForOverflowForTest scoped_feature(true);
+  AutoResizeWebViewClient client;
+  WebLocalFrameImpl* frame = InitializeAutoResizeWebView(
+      "<!DOCTYPE html><style>body { margin: 0; width: 200px; }</style>",
+      client);
+  EXPECT_EQ(200, client.GetTestData().Width());
+  const int resize_count = client.ResizeCount();
+
+  frame->GetFrame()->View()->UpdateStyleAndLayout();
+
+  EXPECT_EQ(200, client.GetTestData().Width());
+  EXPECT_EQ(resize_count, client.ResizeCount());
+
+  web_view_helper_.Reset();
+}
+
+TEST_F(WebViewTest, AutoResizeShrinksFromMaximumWidth) {
+  ScopedAutoSizeUsesScrollWidthForOverflowForTest scoped_feature(true);
+  AutoResizeWebViewClient client;
+  WebLocalFrameImpl* frame = InitializeAutoResizeWebView(
+      "<!DOCTYPE html><style>body { margin: 0; width: 1000px; }</style>"
+      "<div>content</div>",
+      client);
+  EXPECT_EQ(800, client.GetTestData().Width());
+
+  frame->ExecuteScript(WebScriptSource("document.body.style.width = '200px';"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(200, client.GetTestData().Width());
 
   web_view_helper_.Reset();
 }

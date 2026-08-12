@@ -36,9 +36,10 @@ void FrameViewAutoSizeInfo::ConfigureAutoSizeMode(const gfx::Size& min_size,
   min_auto_size_ = min_size;
   max_auto_size_ = max_size;
   did_run_autosize_ = false;
+  handled_post_load_reset_ = false;
 }
 
-bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
+bool FrameViewAutoSizeInfo::AutoSizeIfNeeded(bool should_reset_for_layout) {
   DCHECK(!in_auto_size_);
   base::AutoReset<bool> change_in_auto_size(&in_auto_size_, true);
 
@@ -50,16 +51,39 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
   if (!document_element)
     return false;
 
-  // If this is the first time we run autosize, start from small height and
-  // allow it to grow.
+  const bool uses_scroll_width =
+      RuntimeEnabledFeatures::AutoSizeUsesScrollWidthForOverflowEnabled();
   gfx::Size size = frame_view_->Size();
-  if (!did_run_autosize_) {
+
+  // Start initial autosizing at the minimum height, or at the full minimum size
+  // for scroll-width autosizing so narrower content can be measured.
+  const bool is_first_autosize = !did_run_autosize_;
+  if (is_first_autosize) {
     running_first_autosize_ = true;
     did_run_autosize_ = true;
-    if (size.height() != min_auto_size_.height()) {
-      frame_view_->Resize(size.width(), min_auto_size_.height());
-      return true;
-    }
+  }
+
+  // Once loading finishes, remeasure for any suppressed shrink and on
+  // subsequent layout changes.
+  const bool load_finished = document->LoadEventFinished();
+  const bool should_reset_after_load =
+      uses_scroll_width && load_finished &&
+      (should_reset_for_layout || !handled_post_load_reset_);
+  if (should_reset_after_load) {
+    handled_post_load_reset_ = true;
+  }
+
+  const bool should_reset_to_min_size =
+      uses_scroll_width && (is_first_autosize || should_reset_after_load);
+  gfx::Size reset_size = size;
+  if (should_reset_to_min_size) {
+    reset_size = min_auto_size_;
+  } else if (is_first_autosize) {
+    reset_size.set_height(min_auto_size_.height());
+  }
+  if (reset_size != size) {
+    frame_view_->Resize(reset_size);
+    return true;
   }
 
   PaintLayerScrollableArea* layout_viewport = frame_view_->LayoutViewport();
@@ -146,7 +170,7 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
   }
 
   if (change_size)
-    frame_view_->Resize(new_size.width(), new_size.height());
+    frame_view_->Resize(new_size);
 
   // Force the scrollbar state to avoid the scrollbar code adding them and
   // causing them to be needed. For example, a vertical scrollbar may cause

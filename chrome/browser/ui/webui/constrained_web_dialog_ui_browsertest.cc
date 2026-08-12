@@ -48,6 +48,17 @@ bool IsEqualSizes(gfx::Size expected,
   return expected == dialog_delegate->GetConstrainedWebDialogPreferredSize();
 }
 
+bool IsSizeWithinUpperTolerance(gfx::Size expected_size,
+                                int upper_tolerance_dip,
+                                ConstrainedWebDialogDelegate* dialog_delegate) {
+  const gfx::Size actual_size =
+      dialog_delegate->GetConstrainedWebDialogPreferredSize();
+  return actual_size.width() >= expected_size.width() &&
+         actual_size.height() >= expected_size.height() &&
+         actual_size.width() <= expected_size.width() + upper_tolerance_dip &&
+         actual_size.height() <= expected_size.height() + upper_tolerance_dip;
+}
+
 std::string GetChangeDimensionsScript(int dimension) {
   return base::StringPrintf(
       "window.document.body.style.width = %d + 'px';"
@@ -193,15 +204,16 @@ IN_PROC_BROWSER_TEST_P(ConstrainedWebDialogBrowserAutosizeTest,
                        MAYBE_ContentResizeInAutoResizingDialog) {
   // During auto-resizing, dialogs size to (WebContents size) + 16.
   constexpr int kDialogBorderSpace = 16;
+  // Fractional scale factors may round the preferred size up by one DIP.
+  constexpr int kPreferredSizeUpperTolerance = 1;
 
   // Expected dialog sizes after auto-resizing.
   const gfx::Size min_size(100, 100);
+  const gfx::Size max_size(200, 200);
   const gfx::Size initial_size(150 + kDialogBorderSpace,
                                150 + kDialogBorderSpace);
   const gfx::Size resized_size(175 + kDialogBorderSpace,
                                175 + kDialogBorderSpace);
-  const gfx::Size minimum_content_size =
-      GetParam() ? gfx::Size(191, 100) : min_size;
 
   auto delegate =
       std::make_unique<AutoResizingTestWebDialogDelegate>(GURL(kTestDataURL));
@@ -213,7 +225,6 @@ IN_PROC_BROWSER_TEST_P(ConstrainedWebDialogBrowserAutosizeTest,
   content::TestNavigationObserver observer(nullptr);
   observer.StartWatchingNewWebContents();
 
-  gfx::Size max_size = gfx::Size(200, 200);
   gfx::Size initial_dialog_size;
 
   delegate->GetDialogSize(&initial_dialog_size);
@@ -249,17 +260,19 @@ IN_PROC_BROWSER_TEST_P(ConstrainedWebDialogBrowserAutosizeTest,
   ASSERT_TRUE(RunLoopUntil(
       base::BindRepeating(&IsEqualSizes, resized_size, dialog_delegate)));
 
-  // Resize to dimensions smaller than the minimum bounds.
+  // Resize the content below the minimum bounds.
   EXPECT_TRUE(
       ExecJs(dialog_delegate->GetWebContents(), GetChangeDimensionsScript(50)));
-  ASSERT_TRUE(RunLoopUntil(base::BindRepeating(
-      &IsEqualSizes, minimum_content_size, dialog_delegate)));
+  ASSERT_TRUE(RunLoopUntil(
+      base::BindRepeating(&IsSizeWithinUpperTolerance, min_size,
+                          kPreferredSizeUpperTolerance, dialog_delegate)));
 
-  // Resize to dimensions greater than the maximum bounds.
+  // Resize the content above the maximum bounds.
   EXPECT_TRUE(ExecJs(dialog_delegate->GetWebContents(),
                      GetChangeDimensionsScript(250)));
   ASSERT_TRUE(RunLoopUntil(
-      base::BindRepeating(&IsEqualSizes, max_size, dialog_delegate)));
+      base::BindRepeating(&IsSizeWithinUpperTolerance, max_size,
+                          kPreferredSizeUpperTolerance, dialog_delegate)));
 }
 
 // Tests that dialog does not autoresize when autoresizing is not enabled.
