@@ -11,9 +11,7 @@
 namespace audio {
 
 SystemInfo::SystemInfo(media::AudioManager* audio_manager)
-    : helper_(audio_manager) {
-  DETACH_FROM_SEQUENCE(binding_sequence_checker_);
-}
+    : helper_(audio_manager) {}
 
 SystemInfo::~SystemInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(binding_sequence_checker_);
