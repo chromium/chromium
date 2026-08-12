@@ -330,18 +330,25 @@ void HighlightRegistry::ScheduleRepaint() {
 
 void HighlightRegistry::SetForTesting(AtomicString highlight_name,
                                       Highlight* highlight) {
+  // Register before deregistering the Highlight being replaced, so the
+  // registration count doesn't transiently drop to zero when a name is set to
+  // the Highlight it already maps to.
+  highlight->RegisterIn(this);
   auto highlights_iterator = GetMapIterator(highlight_name);
   if (highlights_iterator != highlights_.end()) {
-    highlights_iterator->Get()->highlight->DeregisterFrom(this);
-    // It's necessary to delete it and insert a new entry to the registry
-    // instead of just modifying the existing one so the insertion order is
-    // preserved.
-    NotifyIteratorsWillRemoveEntry(highlights_iterator->Get());
-    highlights_.erase(highlights_iterator);
+    // Map semantics: setting an existing key replaces the value without
+    // changing the entry's position, so the entry is updated in place instead
+    // of being erased and reinserted (which would move it to the end of the
+    // iteration order). The registration position is still updated so the
+    // highlight keeps stacking above the previously registered ones.
+    HighlightRegistryMapEntry* entry = highlights_iterator->Get();
+    entry->highlight->DeregisterFrom(this);
+    entry->highlight = highlight;
+    entry->registration_position = highlights_registered_++;
+  } else {
+    highlights_.insert(MakeGarbageCollected<HighlightRegistryMapEntry>(
+        highlight_name, highlight, highlights_registered_++));
   }
-  highlights_.insert(MakeGarbageCollected<HighlightRegistryMapEntry>(
-      highlight_name, highlight, highlights_registered_++));
-  highlight->RegisterIn(this);
   ScheduleRepaint();
 }
 

@@ -1495,4 +1495,217 @@ TEST_F(HighlightRegistryTest, LiveIterationDeleteAndReaddVisited) {
   EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
 }
 
+TEST_F(HighlightRegistryTest, SetExistingKeyPreservesIterationOrder) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  auto* highlight3 = CreateHighlight(text, 2, text, 3);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+  registry->SetForTesting(AtomicString("h3"), highlight3);
+
+  // Overwriting an existing key replaces the value in place: the size and the
+  // iteration order stay the same, following Map semantics.
+  auto* new_highlight1 = CreateHighlight(text, 0, text, 2);
+  registry->SetForTesting(AtomicString("h1"), new_highlight1);
+  EXPECT_EQ(registry->size(), 3u);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+  EXPECT_EQ(value, new_highlight1);
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h2");
+  EXPECT_EQ(value, highlight2);
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h3");
+  EXPECT_EQ(value, highlight3);
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, SetExistingKeyUpdatesStackingPosition) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  AtomicString highlight1_name("h1");
+  AtomicString highlight2_name("h2");
+  registry->SetForTesting(highlight1_name, CreateHighlight(text, 0, text, 4));
+  registry->SetForTesting(highlight2_name, CreateHighlight(text, 2, text, 4));
+
+  EXPECT_EQ(HighlightRegistry::kOverlayStackingPositionBelow,
+            registry->CompareOverlayStackingPosition(highlight1_name,
+                                                     highlight2_name));
+
+  // Overwriting an existing key registers the Highlight again, so it keeps
+  // stacking above the previously registered ones even though its position in
+  // the iteration order doesn't change.
+  registry->SetForTesting(highlight1_name, CreateHighlight(text, 0, text, 4));
+  EXPECT_EQ(HighlightRegistry::kOverlayStackingPositionAbove,
+            registry->CompareOverlayStackingPosition(highlight1_name,
+                                                     highlight2_name));
+}
+
+TEST_F(HighlightRegistryTest, SetExistingKeyKeepsRegistrationBalanced) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  // Registering the same Highlight twice under the same name must not
+  // increase the number of times it's considered registered in the registry,
+  // otherwise removing it once would leave it registered forever.
+  auto* highlight = CreateHighlight(text, 0, text, 1);
+  AtomicString name("h1");
+  registry->SetForTesting(name, highlight);
+  registry->SetForTesting(name, highlight);
+  registry->RemoveForTesting(name, highlight);
+  EXPECT_EQ(registry->size(), 0u);
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(registry->GetForceMarkersValidationForTesting());
+
+  // The Highlight is no longer in the registry, so modifying it must not
+  // schedule a repaint.
+  highlight->setPriority(1);
+  EXPECT_FALSE(registry->GetForceMarkersValidationForTesting());
+}
+
+TEST_F(HighlightRegistryTest, SetExistingKeyKeepsOtherNamesRegistered) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  // The same Highlight registered under two names is registered twice.
+  auto* highlight = CreateHighlight(text, 0, text, 1);
+  AtomicString name1("h1");
+  AtomicString name2("h2");
+  registry->SetForTesting(name1, highlight);
+  registry->SetForTesting(name2, highlight);
+
+  // Overwriting one of the names with a different Highlight leaves it
+  // registered under the other name.
+  registry->SetForTesting(name1, CreateHighlight(text, 1, text, 2));
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(registry->GetForceMarkersValidationForTesting());
+  highlight->setPriority(1);
+  EXPECT_TRUE(registry->GetForceMarkersValidationForTesting());
+
+  // Removing the remaining name deregisters it completely.
+  registry->RemoveForTesting(name2, highlight);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(registry->GetForceMarkersValidationForTesting());
+  highlight->setPriority(2);
+  EXPECT_FALSE(registry->GetForceMarkersValidationForTesting());
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationSetExistingKeyDuringIteration) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  registry->SetForTesting(AtomicString("h1"),
+                          CreateHighlight(text, 0, text, 1));
+  registry->SetForTesting(AtomicString("h2"),
+                          CreateHighlight(text, 1, text, 2));
+  registry->SetForTesting(AtomicString("h3"),
+                          CreateHighlight(text, 2, text, 3));
+
+  // Overwriting the entry the iterator is pointing at must not move it, so the
+  // iteration visits every key exactly once and terminates.
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  String key;
+  Highlight* value;
+  Vector<String> visited;
+  while (iter->FetchNextItem(nullptr, key, value)) {
+    visited.push_back(key);
+    ASSERT_LE(visited.size(), 10u) << "iteration doesn't terminate";
+    registry->SetForTesting(AtomicString(key),
+                            CreateHighlight(text, 0, text, 4));
+  }
+
+  ASSERT_EQ(visited.size(), 3u);
+  EXPECT_EQ(visited[0], "h1");
+  EXPECT_EQ(visited[1], "h2");
+  EXPECT_EQ(visited[2], "h3");
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationSetExistingKeyBehindCursor) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight3 = CreateHighlight(text, 2, text, 3);
+  registry->SetForTesting(AtomicString("h1"),
+                          CreateHighlight(text, 0, text, 1));
+  registry->SetForTesting(AtomicString("h2"),
+                          CreateHighlight(text, 1, text, 2));
+  registry->SetForTesting(AtomicString("h3"), highlight3);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h2");
+
+  // Overwriting a key the iterator has already moved past doesn't move it to
+  // the end, so the iterator doesn't visit it a second time.
+  registry->SetForTesting(AtomicString("h1"),
+                          CreateHighlight(text, 0, text, 4));
+
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h3");
+  EXPECT_EQ(value, highlight3);
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationSetExistingKeyAheadOfCursor) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight3 = CreateHighlight(text, 2, text, 3);
+  registry->SetForTesting(AtomicString("h1"),
+                          CreateHighlight(text, 0, text, 1));
+  registry->SetForTesting(AtomicString("h2"),
+                          CreateHighlight(text, 1, text, 2));
+  registry->SetForTesting(AtomicString("h3"), highlight3);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+
+  // Overwriting a key the iterator hasn't reached yet keeps it in place, so it
+  // is still visited in its original position with the new Highlight.
+  auto* new_highlight2 = CreateHighlight(text, 0, text, 4);
+  registry->SetForTesting(AtomicString("h2"), new_highlight2);
+
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h2");
+  EXPECT_EQ(value, new_highlight2);
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h3");
+  EXPECT_EQ(value, highlight3);
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
 }  // namespace blink
