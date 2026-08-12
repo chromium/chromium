@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/ash/holding_space",
   "+chrome/browser/ui/browser.h",
   "+chrome/test/base",

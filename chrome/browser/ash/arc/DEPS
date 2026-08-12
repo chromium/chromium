@@ -42,7 +42,6 @@ include_rules = [
   "+chrome/browser/sharesheet",
   "+chrome/browser/signin",
   "+chrome/browser/speech",
-  "+chrome/browser/sync",
   "+chrome/browser/tab_contents",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_commands.h",
