@@ -243,7 +243,7 @@ public class WebViewChromiumAwInit {
             new WebViewChromiumRunQueue();
 
     private final AtomicInteger mChromiumFirstStartupRequestMode =
-            new AtomicInteger(StartupTasksRunner.UNSET);
+            new AtomicInteger(StartupTasksRunner.StartupRequestMode.UNSET);
     // Only accessed from the UI thread
     private StartupTasksRunner mStartupTasksRunner;
     private RuntimeException mStartupException;
@@ -564,7 +564,8 @@ public class WebViewChromiumAwInit {
             preBrowserProcessStartTasks.addLast(
                     () -> {
                         AwBrowserProcess.runPreBrowserProcessStart();
-                        if (mStartupTasksRunner.getRunState() == StartupTasksRunner.ASYNC) {
+                        if (mStartupTasksRunner.getRunState()
+                                == StartupTasksRunner.StartupRequestMode.ASYNC) {
                             AwBrowserProcess.triggerAsyncBrowserProcess(callback);
                         }
                     });
@@ -579,7 +580,8 @@ public class WebViewChromiumAwInit {
                         // Starts browser process synchronously.
                         AwBrowserProcess.runPreBrowserProcessStart();
                         AwBrowserProcess.finishBrowserProcessStart();
-                        if (mStartupTasksRunner.getRunState() == StartupTasksRunner.ASYNC) {
+                        if (mStartupTasksRunner.getRunState()
+                                == StartupTasksRunner.StartupRequestMode.ASYNC) {
                             // Tell the StartupTaskRunner to continue with the
                             // postBrowserProcessStartQueue.
                             mStartupTasksRunner.finishAsyncRun();
@@ -791,12 +793,15 @@ public class WebViewChromiumAwInit {
         }
         try (DualTraceEvent e1 =
                 DualTraceEvent.scoped(
-                        "WebViewChromiumFactoryProvider.triggerChromiumStartupAndReturnTrueIfStartupIsFinished")) {
+                        "WebViewChromiumFactoryProvider."
+                                + "triggerChromiumStartupAndReturnTrueIfStartupIsFinished")) {
             maybeSetChromiumUiThread(Looper.getMainLooper());
             boolean runSynchronously = !alwaysPost && ThreadUtils.runningOnUiThread();
             mChromiumFirstStartupRequestMode.compareAndSet(
-                    StartupTasksRunner.UNSET,
-                    runSynchronously ? StartupTasksRunner.SYNC : StartupTasksRunner.ASYNC);
+                    StartupTasksRunner.StartupRequestMode.UNSET,
+                    runSynchronously
+                            ? StartupTasksRunner.StartupRequestMode.SYNC
+                            : StartupTasksRunner.StartupRequestMode.ASYNC);
             if (runSynchronously) {
                 mWebViewStartUpDiagnostics.setSynchronousChromiumInitLocation(
                         new Throwable(
@@ -1042,6 +1047,4 @@ public class WebViewChromiumAwInit {
             return mDefaultProfile;
         }
     }
-
-
 }

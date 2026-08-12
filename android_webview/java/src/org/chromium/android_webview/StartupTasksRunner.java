@@ -25,43 +25,16 @@ import java.util.Locale;
 public final class StartupTasksRunner {
     private static final String TAG = "StartupTasksRunner";
 
-    public interface Delegate {
-        void onStartupComplete(
-                @StartupCallSite int startCallSite,
-                @StartupCallSite int finishCallSite,
-                long startTimeMs,
-                long totalTimeTakenMs,
-                long longestUiBlockingTaskTimeMs,
-                @StartupMode int startupMode);
-
-        void onStartupFailed(RuntimeException e);
-
-        void onStartupFailed(Error e);
-
-        boolean isStartupFinished();
+    @IntDef({
+        StartupRequestMode.UNSET,
+        StartupRequestMode.SYNC,
+        StartupRequestMode.ASYNC,
+    })
+    public @interface StartupRequestMode {
+        int UNSET = 0;
+        int SYNC = 1;
+        int ASYNC = 2;
     }
-
-    private final Delegate mDelegate;
-    private final ArrayDeque<Runnable> mPreBrowserProcessStartQueue;
-    private final ArrayDeque<Runnable> mPostBrowserProcessStartQueue;
-    private final int mPreBrowserProcessStartTasksSize;
-    private final int mNumTasks;
-    private final boolean mRunStartupTasksAsync;
-    private final int mChromiumFirstStartupRequestMode;
-
-    private boolean mAsyncHasBeenTriggered;
-    private long mLongestUiBlockingTaskTimeMs;
-    private long mTotalTimeTakenMs;
-    private long mStartupTimeMs;
-    private boolean mStartupStarted;
-    private @StartupCallSite int mStartCallSite = StartupCallSite.COUNT;
-    private @StartupCallSite int mFinishCallSite = StartupCallSite.COUNT;
-    private boolean mFirstTaskFromSynchronousCall;
-    private int mRunState = StartupTasksRunner.UNSET;
-
-    public static final int UNSET = 0;
-    public static final int SYNC = 1;
-    public static final int ASYNC = 2;
 
     // LINT.IfChange(WebViewChromiumStartupMode)
     @IntDef({
@@ -72,30 +45,75 @@ public final class StartupTasksRunner {
         StartupMode.COUNT,
     })
     public @interface StartupMode {
-        // Startup was triggered on the UI thread and completed synchronously
+        /** Startup was triggered on the UI thread and completed synchronously. */
         int FULLY_SYNC = 0;
-        // Startup was triggered on a background thread and completed asynchronously
+
+        /** Startup was triggered on a background thread and completed asynchronously. */
         int FULLY_ASYNC = 1;
-        // Startup was triggered on a background thread, some tasks ran asynchronously. Then
-        // another init call on the UI thread preempted the async run and startup completed
-        // synchronously
+
+        /**
+         * Startup was triggered on a background thread, some tasks ran asynchronously. Then another
+         * init call on the UI thread preempted the async run and startup completed synchronously.
+         */
         int PARTIAL_ASYNC_THEN_SYNC = 2;
-        // Startup was triggered on a background thread, the posted task was not run yet. Then
-        // another init call on the UI thread was started before the posted task and startup
-        // fully completed synchronously
+
+        /**
+         * Startup was triggered on a background thread, but the posted task was not run yet. Then
+         * another init call on the UI thread was started before the posted task and startup fully
+         * completed synchronously.
+         */
         int ASYNC_BUT_FULLY_SYNC = 3;
-        // Remember to update WebViewStartupMode in enums.xml when adding new values here.
+
         int COUNT = 4;
     }
 
     // LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewChromiumStartupMode,//tools/metrics/histograms/metadata/android/enums.xml:WebViewChromiumStartupMode)
+
+    /** Delegate interface for communicating back with the startup coordinator. */
+    public interface Delegate {
+        /** Called when all tasks are complete to record metrics and notify listeners. */
+        void onStartupComplete(
+                @StartupCallSite int startCallSite,
+                @StartupCallSite int finishCallSite,
+                long startTimeMs,
+                long totalTimeTakenMs,
+                long longestUiBlockingTaskTimeMs,
+                @StartupMode int startupMode);
+
+        /** Called when a startup task throws a runtime exception. */
+        void onStartupFailed(RuntimeException e);
+
+        /** Called when a startup task throws an error. */
+        void onStartupFailed(Error e);
+
+        /** Returns true if startup has already finished. */
+        boolean isStartupFinished();
+    }
+
+    private final Delegate mDelegate;
+    private final ArrayDeque<Runnable> mPreBrowserProcessStartQueue;
+    private final ArrayDeque<Runnable> mPostBrowserProcessStartQueue;
+    private final int mPreBrowserProcessStartTasksSize;
+    private final int mNumTasks;
+    private final boolean mRunStartupTasksAsync;
+    private final @StartupRequestMode int mChromiumFirstStartupRequestMode;
+
+    private boolean mAsyncHasBeenTriggered;
+    private long mLongestUiBlockingTaskTimeMs;
+    private long mTotalTimeTakenMs;
+    private long mStartupTimeMs;
+    private boolean mStartupStarted;
+    private @StartupCallSite int mStartCallSite = StartupCallSite.COUNT;
+    private @StartupCallSite int mFinishCallSite = StartupCallSite.COUNT;
+    private boolean mFirstTaskFromSynchronousCall;
+    private @StartupRequestMode int mRunState = StartupRequestMode.UNSET;
 
     public StartupTasksRunner(
             Delegate delegate,
             ArrayDeque<Runnable> preBrowserProcessStartTasks,
             ArrayDeque<Runnable> postBrowserProcessStartTasks,
             boolean runStartupTasksAsync,
-            int chromiumFirstStartupRequestMode) {
+            @StartupRequestMode int chromiumFirstStartupRequestMode) {
         mDelegate = delegate;
         mPreBrowserProcessStartQueue = preBrowserProcessStartTasks;
         mPostBrowserProcessStartQueue = postBrowserProcessStartTasks;
@@ -123,7 +141,7 @@ public final class StartupTasksRunner {
         }
 
         if (mRunStartupTasksAsync && !triggeredFromUIThread) {
-            // Prevents triggering async run multiple times and thus reduce the interval between
+            // Prevents triggering async run multiple times and thus reduces the interval between
             // tasks.
             if (mAsyncHasBeenTriggered) {
                 return;
@@ -131,14 +149,42 @@ public final class StartupTasksRunner {
             mAsyncHasBeenTriggered = true;
             startAsyncRun();
         } else {
-            // This lets us track the reason for a sync finish, especially relevant if we
-            // started off asynchronously.
+            // This lets us track the reason for a sync finish, especially relevant if we started
+            // off asynchronously.
             mFinishCallSite = callSite;
             try (DualTraceEvent event =
                     DualTraceEvent.scoped("WebViewChromiumAwInit.startChromiumLockedSync")) {
                 timedRunWithExceptionHandling(this::runSync);
             }
         }
+    }
+
+    /**
+     * Continues running tasks in postBrowserProcessStartQueue. Often called inline, so post the
+     * next task in order to maintain the gap between the previous task and the next task.
+     */
+    public void finishAsyncRun() {
+        AwThreadUtils.postToUiThreadLooper(
+                () ->
+                        runAsyncStartupTaskAndPostNext(
+                                mPreBrowserProcessStartTasksSize + 1,
+                                mPostBrowserProcessStartQueue));
+    }
+
+    /**
+     * Records metrics for tasks that were posted by BrowserStartupController since
+     * StartupTasksRunner cannot account for them directly.
+     */
+    public void recordContentMetrics(BrowserStartupController.@Nullable StartupMetrics metrics) {
+        assert metrics != null;
+        mLongestUiBlockingTaskTimeMs =
+                Math.max(mLongestUiBlockingTaskTimeMs, metrics.getLongestDurationOfPostedTasksMs());
+        mTotalTimeTakenMs += metrics.getTotalDurationOfPostedTasksMs();
+    }
+
+    /** Returns the state in which the StartupTasksRunner is running (UNSET, SYNC, or ASYNC). */
+    public int getRunState() {
+        return mRunState;
     }
 
     private void runSync() {
@@ -149,7 +195,7 @@ public final class StartupTasksRunner {
             return;
         }
 
-        mRunState = SYNC;
+        mRunState = StartupRequestMode.SYNC;
 
         Runnable task = mPreBrowserProcessStartQueue.poll();
         while (task != null) {
@@ -169,17 +215,6 @@ public final class StartupTasksRunner {
         runAsyncStartupTaskAndPostNext(/* taskNum= */ 1, mPreBrowserProcessStartQueue);
     }
 
-    // Continues running the tasks in the postBrowserProcessStartQueue. This method is often
-    // called inline, so post the next task in order to maintain the gap between the previous
-    // task and the next task.
-    public void finishAsyncRun() {
-        AwThreadUtils.postToUiThreadLooper(
-                () ->
-                        runAsyncStartupTaskAndPostNext(
-                                mPreBrowserProcessStartTasksSize + 1,
-                                mPostBrowserProcessStartQueue));
-    }
-
     private void runAsyncStartupTaskAndPostNext(int taskNum, ArrayDeque<Runnable> queue) {
         assert ThreadUtils.runningOnUiThread();
 
@@ -188,7 +223,7 @@ public final class StartupTasksRunner {
             return;
         }
 
-        mRunState = ASYNC;
+        mRunState = StartupRequestMode.ASYNC;
 
         try (DualTraceEvent event =
                 DualTraceEvent.scoped(
@@ -238,15 +273,6 @@ public final class StartupTasksRunner {
         }
     }
 
-    // Record metrics for tasks that were posted by the BrowserStartupController since the
-    // StartupTaskRunner cannot account for them directly.
-    public void recordContentMetrics(BrowserStartupController.@Nullable StartupMetrics metrics) {
-        assert metrics != null;
-        mLongestUiBlockingTaskTimeMs =
-                Math.max(mLongestUiBlockingTaskTimeMs, metrics.getLongestDurationOfPostedTasksMs());
-        mTotalTimeTakenMs += metrics.getTotalDurationOfPostedTasksMs();
-    }
-
     // To determine the startup mode, we track:
     // 1. Whether the initial startup request was synchronous or asynchronous.
     // 2. Whether the first task ran synchronously or asynchronously.
@@ -258,16 +284,12 @@ public final class StartupTasksRunner {
         }
 
         if (mFirstTaskFromSynchronousCall) {
-            return mChromiumFirstStartupRequestMode == SYNC
+            return mChromiumFirstStartupRequestMode == StartupRequestMode.SYNC
                     ? StartupMode.FULLY_SYNC
                     : StartupMode.ASYNC_BUT_FULLY_SYNC;
         }
-        return mRunState == SYNC ? StartupMode.PARTIAL_ASYNC_THEN_SYNC : StartupMode.FULLY_ASYNC;
-    }
-
-    // Returns the state in which the StartupTaskRunner is running. Either async or
-    // synchronously.
-    public int getRunState() {
-        return mRunState;
+        return mRunState == StartupRequestMode.SYNC
+                ? StartupMode.PARTIAL_ASYNC_THEN_SYNC
+                : StartupMode.FULLY_ASYNC;
     }
 }
