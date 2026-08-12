@@ -817,6 +817,7 @@ void ZeroSuggestProvider::OnURLLoadComplete(
   if (!response_parsed) {
     loader_.reset();
     done_ = true;
+    MaybePopulateFallbackMatches(input);
     return;
   }
 
@@ -847,6 +848,11 @@ void ZeroSuggestProvider::OnURLLoadComplete(
   LogOmniboxZeroSuggestRequest(RemoteRequestEvent::kResponseConvertedToMatches,
                                result_type,
                                /*is_prefetch=*/false);
+
+  if (empty_results) {
+    MaybePopulateFallbackMatches(input);
+  }
+
   NotifyListeners(/*updated_matches=*/true);
 }
 
