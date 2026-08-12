@@ -56,6 +56,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+
 import java.util.List;
 
 /** Unit tests for {@link TabStateStore}. */
@@ -419,6 +424,69 @@ public class TabStateStoreUnitTest {
         callbacks.get(1).onResult(mIncognitoData);
 
         verify(mModelTrackingOrchestrator, times(2)).onRestoreCancelled();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testLoadAndRestore_WillCloseAllTabs_CancelsLoading() {
+        mTabStateStore.onNativeLibraryReady();
+        when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
+        when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mTabCreator);
+
+        TabState tabState = new TabState();
+        tabState.contentsState = mock(WebContentsState.class);
+        LoadedTabState loadedTabState = new LoadedTabState(0, tabState);
+        when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {loadedTabState});
+
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
+
+        ArgumentCaptor<TabModelObserver> captor = ArgumentCaptor.forClass(TabModelObserver.class);
+        verify(mRegularTabModel).addObserver(captor.capture());
+        TabModelObserver observer = captor.getValue();
+
+        observer.willCloseAllTabs(false);
+
+        verify(mTabStateStorageService)
+                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
+
+        List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
+
+        callbacks.get(0).onResult(mRegularData);
+
+        verify(mModelTrackingOrchestrator).onRestoreCancelled();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testLoadAndRestore_WillCloseAllTabs_CancelsLoading_WillCloseTabs() {
+        mTabStateStore.onNativeLibraryReady();
+        when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
+        when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mTabCreator);
+
+        TabState tabState = new TabState();
+        tabState.contentsState = mock(WebContentsState.class);
+        LoadedTabState loadedTabState = new LoadedTabState(0, tabState);
+        when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {loadedTabState});
+
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
+
+        ArgumentCaptor<TabModelObserver> captor = ArgumentCaptor.forClass(TabModelObserver.class);
+        verify(mRegularTabModel).addObserver(captor.capture());
+        TabModelObserver observer = captor.getValue();
+
+        Tab tab = createMockTabWithParentCollection(0, mProfile);
+        observer.willCloseTabs(List.of(tab), /* isAllTabs= */ true, /* allowUndo= */ false);
+
+        verify(mTabStateStorageService)
+                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
+
+        List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
+
+        callbacks.get(0).onResult(mRegularData);
+
+        verify(mModelTrackingOrchestrator).onRestoreCancelled();
     }
 
     @Test
