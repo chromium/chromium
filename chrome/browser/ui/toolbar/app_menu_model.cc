@@ -2146,6 +2146,13 @@ bool AppMenuModel::IsCommandIdAlerted(int command_id) const {
 bool AppMenuModel::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
+  // Reading mode uses different command IDs for different ways of opening
+  // it, so adjust to use the command ID for the keyboard shortcut to grab
+  // the proper accelerator.
+  if (command_id == IDC_SHOW_READING_MODE_SIDE_PANEL) {
+    return provider_->GetAcceleratorForCommandId(IDC_SHOW_READING_MODE_KEYBOARD,
+                                                 accelerator);
+  }
   return provider_->GetAcceleratorForCommandId(command_id, accelerator);
 }
 

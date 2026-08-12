@@ -251,6 +251,19 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
       *accel = ui::Accelerator(ui::VKEY_U, ui::EF_CONTROL_DOWN);
       return true;
 
+    case IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE: {
+      ui::AcceleratorProvider* accelerator_provider =
+          GetBrowserAcceleratorProvider();
+      if (!accelerator_provider) {
+        return false;
+      }
+      // Reading mode uses different command IDs for different ways of opening
+      // it, so adjust to use the command ID for the keyboard shortcut to grab
+      // the proper accelerator.
+      return accelerator_provider->GetAcceleratorForCommandId(
+          IDC_SHOW_READING_MODE_KEYBOARD, accel);
+    }
+
     case IDC_CONTENT_CONTEXT_EMOJI:
 #if BUILDFLAG(IS_WIN)
       *accel = ui::Accelerator(ui::VKEY_OEM_PERIOD, ui::EF_COMMAND_DOWN);
