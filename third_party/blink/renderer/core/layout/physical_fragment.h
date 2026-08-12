@@ -683,7 +683,11 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return propagated_data_ ? propagated_data_->scroll_initial_target : nullptr;
   }
   const Member<const LayoutObject> PropagatedScrollInitialTarget() const {
-    return IsScrollContainer() ? nullptr : ScrollInitialTarget();
+    // Check the plain field access first: it's null for the common case
+    // (nothing set an initial scroll target), which makes the result null
+    // either way without needing IsScrollContainer()'s virtual call.
+    const Member<const LayoutObject> target = ScrollInitialTarget();
+    return (!target || IsScrollContainer()) ? nullptr : target;
   }
 
   const GCedHeapVector<Member<Element>>* SnapAreas() const {

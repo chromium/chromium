@@ -130,11 +130,23 @@ FragmentBuilder::EnsureStickyDescendants() {
 
 void FragmentBuilder::PropagateStickyDescendants(
     const PhysicalFragment& child) {
+  const bool has_sticky_position = child.HasStickyConstrainedPosition();
+  const auto& sticky_descendants = child.StickyDescendants();
+
+  // GetOverflowScrollAxes() is only used below when `child` itself is
+  // sticky-positioned or has sticky descendants pending propagation; skip it
+  // (a checked downcast plus a scrollable-area lookup) otherwise, mirroring
+  // the cheap-check-before-expensive-work gating already done for e.g.
+  // block-fragmentation propagation above.
+  if (!has_sticky_position && sticky_descendants.empty()) {
+    return;
+  }
+
   const PhysicalAxes scrollable_axes = GetOverflowScrollAxes();
 
   bool single_axis_scroller_position_sticky = false;
 
-  if (child.HasStickyConstrainedPosition()) {
+  if (has_sticky_position) {
     const PhysicalAxes axes =
         LayoutBoxModelObject::StickyConstrainedAxes(child.Style());
     const PhysicalAxes consumed = scrollable_axes & axes;
@@ -150,7 +162,7 @@ void FragmentBuilder::PropagateStickyDescendants(
         pending);
   }
 
-  for (const auto& item : child.StickyDescendants()) {
+  for (const auto& item : sticky_descendants) {
     if (auto* pending_obj = item.GetIfPending()) {
       const PhysicalAxes consumed = scrollable_axes & item.PendingAxes();
       const PhysicalAxes pending = item.PendingAxes() ^ consumed;
