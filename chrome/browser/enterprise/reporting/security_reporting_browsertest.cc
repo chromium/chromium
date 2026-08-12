@@ -11,11 +11,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/reporting/test/test_utils.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -27,7 +31,9 @@
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
+#include "components/enterprise/browser/reporting/report_uploader.h"
 #include "components/enterprise/browser/reporting/report_util.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -37,12 +43,22 @@
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "crypto/keypair.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
+#include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/ssl/client_cert_identity.h"
+#include "net/ssl/client_cert_identity_test_util.h"
+#include "net/ssl/client_cert_store.h"
+#include "net/ssl/ssl_private_key.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
@@ -63,6 +79,42 @@ namespace {
 
 const char* kCookieHeaderName = "Cookie";
 const char* kSetCookiePath = "/set-cookie";
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+constexpr net::BackoffEntry::Policy kTestBackoffPolicy = {
+    0,   // Number of initial errors to ignore before applying exponential
+         // back-off rules.
+    10,  // Initial delay in ms.
+    2,   // Factor by which the waiting time will be multiplied.
+    0,   // Fuzzing percentage.
+    -1,  // No maximum delay.
+    -1,  // It's up to the caller to reset the backoff time.
+    false,
+};
+
+class FakeClientCertStore : public net::ClientCertStore {
+ public:
+  FakeClientCertStore() = default;
+  ~FakeClientCertStore() override = default;
+
+  void GetClientCerts(
+      scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
+      ClientCertListCallback callback) override {
+    net::ClientCertIdentityList cert_identities;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      auto identity = net::FakeClientCertIdentity::CreateFromCertAndKeyFiles(
+          net::GetTestCertsDirectory(), "client_1.pem", "client_1.pk8");
+      if (identity) {
+        cert_identities.push_back(std::move(identity));
+      }
+    }
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(cert_identities)));
+  }
+};
+#endif
 
 struct CapturedProfileReportRequest {
   std::optional<em::DeviceManagementRequest> request{std::nullopt};
@@ -98,13 +150,18 @@ class SecurityReportingBrowserTest
       public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
  protected:
   SecurityReportingBrowserTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    enabled_features.push_back(
+        enterprise_signals::features::kCertificateCollectionEnabled);
     if (are_policies_enabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
+      enabled_features.push_back(
           enterprise_signals::features::kPolicyDataCollectionEnabled);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
+      disabled_features.push_back(
           enterprise_signals::features::kPolicyDataCollectionEnabled);
     }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     management_mixin_ = ManagementContextMixin::Create(
         &mixin_host_, this,
         {
@@ -122,7 +179,29 @@ class SecurityReportingBrowserTest
     net::test_server::RegisterDefaultHandlers(&embedded_https_test_server());
 
     CHECK(embedded_https_test_server().InitializeAndListen());
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    ReportUploader::SetBackoffPolicyForTesting(&kTestBackoffPolicy);
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  Profile* profile = Profile::FromBrowserContext(context);
+                  ProfileNetworkContextServiceFactory::GetForContext(profile)
+                      ->set_client_cert_store_factory_for_testing(
+                          base::BindRepeating(
+                              []() -> std::unique_ptr<net::ClientCertStore> {
+                                return std::make_unique<FakeClientCertStore>();
+                              }));
+                }));
+#endif
     MixinBasedPlatformBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    ReportUploader::SetBackoffPolicyForTesting(nullptr);
+#endif
+    MixinBasedPlatformBrowserTest::TearDown();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -146,6 +225,14 @@ class SecurityReportingBrowserTest
     embedded_https_test_server().StartAcceptingConnections();
 
     MixinBasedPlatformBrowserTest::SetUpOnMainThread();
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    ProfileNetworkContextServiceFactory::GetForContext(GetProfile())
+        ->set_client_cert_store_factory_for_testing(
+            base::BindRepeating([]() -> std::unique_ptr<net::ClientCertStore> {
+              return std::make_unique<FakeClientCertStore>();
+            }));
+#endif
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -167,9 +254,32 @@ class SecurityReportingBrowserTest
       return std::make_unique<net::test_server::BasicHttpResponse>();
     }
 
+    if (action_name ==
+        policy::dm_protocol::kValueRequestGenerateChromeProfileChallenge) {
+      challenge_requests_count_++;
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      em::DeviceManagementResponse resp_proto;
+      resp_proto.mutable_generate_chrome_profile_challenge_response()
+          ->set_challenge(
+              base::StrCat({"fake_challenge_bytes_",
+                            base::NumberToString(challenge_requests_count_)}));
+      response->set_content(resp_proto.SerializeAsString());
+      return response;
+    }
+
     if (action_name != policy::dm_protocol::kValueRequestChromeProfileReport) {
       SCOPED_TRACE("Not a Profile report.");
       return nullptr;
+    }
+
+    profile_report_requests_count_++;
+
+    if (fail_profile_reports_count_ > 0) {
+      fail_profile_reports_count_--;
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+      return response;
     }
 
     if (!pending_capture_.is_null()) {
@@ -268,6 +378,20 @@ class SecurityReportingBrowserTest
     return is_device_managed() && is_affiliated();
   }
 
+  int challenge_requests_count() const { return challenge_requests_count_; }
+  void clear_challenge_requests_count() { challenge_requests_count_ = 0; }
+
+  int profile_report_requests_count() const {
+    return profile_report_requests_count_;
+  }
+  void clear_profile_report_requests_count() {
+    profile_report_requests_count_ = 0;
+  }
+
+  void set_fail_profile_reports_count(int count) {
+    fail_profile_reports_count_ = count;
+  }
+
   ManagementContextMixin* management_mixin() { return management_mixin_.get(); }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -289,15 +413,22 @@ class SecurityReportingBrowserTest
   }
 
  private:
+  int challenge_requests_count_ = 0;
+  int profile_report_requests_count_ = 0;
+  int fail_profile_reports_count_ = 0;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ManagementContextMixin> management_mixin_;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  base::CallbackListSubscription create_services_subscription_;
+#endif
 };
 
 // Tests that a security-only report is sent when only the security reports
 // user policy is enabled. It should also not include the cookie, as the
 // authenticated reporting policy is not set.
 IN_PROC_BROWSER_TEST_P(SecurityReportingBrowserTest, SecurityReportOnly) {
+  clear_challenge_requests_count();
   SetFakeCookieValue();
 
   base::test::TestFuture<CapturedProfileReportRequest> test_future;
@@ -310,9 +441,139 @@ IN_PROC_BROWSER_TEST_P(SecurityReportingBrowserTest, SecurityReportOnly) {
       {policy::key::kUserSecuritySignalsReporting, base::Value(true)});
   management_mixin()->SetCloudUserPolicies(std::move(policy_values));
 
-  VerifyRequest(test_future.Get(),
+  CapturedProfileReportRequest captured_request = test_future.Get();
+  VerifyRequest(captured_request,
                 em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS);
+  EXPECT_EQ(challenge_requests_count(), 0);
+
+  ASSERT_TRUE(captured_request.request);
+  ASSERT_TRUE(captured_request.request->has_chrome_profile_report_request());
+  const auto& profile_report =
+      captured_request.request->chrome_profile_report_request();
+  ASSERT_TRUE(profile_report.has_browser_report());
+  ASSERT_EQ(1,
+            profile_report.browser_report().chrome_user_profile_infos_size());
+  const auto& user_profile_info =
+      profile_report.browser_report().chrome_user_profile_infos(0);
+  EXPECT_FALSE(user_profile_info.has_certificates_were_truncated());
+  EXPECT_EQ(user_profile_info.certificates_size(), 0);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Tests that when SecuritySignalsClientCertificatesSelectors policy and
+// certificate collection feature flag are set, security report is successfully
+// generated.
+IN_PROC_BROWSER_TEST_P(SecurityReportingBrowserTest,
+                       SecurityReportWithCertificatesSelectors) {
+  clear_challenge_requests_count();
+  SetFakeCookieValue();
+
+  base::test::TestFuture<CapturedProfileReportRequest> test_future;
+  pending_capture_ =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         test_future.GetCallback());
+
+  base::ListValue policy_list;
+  base::DictValue selector;
+  base::DictValue issuer;
+  issuer.Set("CN", "B CA");
+  selector.Set("ISSUER", std::move(issuer));
+  policy_list.Append(std::move(selector));
+
+  base::flat_map<std::string, std::optional<base::Value>> policy_values;
+  policy_values.insert(
+      {policy::key::kUserSecuritySignalsReporting, base::Value(true)});
+  policy_values.insert(
+      {policy::key::kSecuritySignalsClientCertificatesSelectors,
+       base::Value(std::move(policy_list))});
+  management_mixin()->SetCloudUserPolicies(std::move(policy_values));
+
+  CapturedProfileReportRequest captured_request = test_future.Get();
+  VerifyRequest(captured_request,
+                em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS);
+  EXPECT_GT(challenge_requests_count(), 0);
+
+  ASSERT_TRUE(captured_request.request);
+  ASSERT_TRUE(captured_request.request->has_chrome_profile_report_request());
+  const auto& profile_report =
+      captured_request.request->chrome_profile_report_request();
+  ASSERT_TRUE(profile_report.has_browser_report());
+  ASSERT_EQ(1,
+            profile_report.browser_report().chrome_user_profile_infos_size());
+  const auto& user_profile_info =
+      profile_report.browser_report().chrome_user_profile_infos(0);
+  if (can_collect_pii_signals()) {
+    EXPECT_TRUE(user_profile_info.has_certificates_were_truncated());
+    EXPECT_EQ(1, user_profile_info.certificates_size());
+    EXPECT_FALSE(user_profile_info.certificates(0).data().empty());
+    EXPECT_FALSE(user_profile_info.certificates(0).signature().empty());
+  } else {
+    EXPECT_FALSE(user_profile_info.has_certificates_were_truncated());
+    EXPECT_EQ(0, user_profile_info.certificates_size());
+  }
+}
+
+// Tests that when an upload attempt for a report with certificate signals fails
+// with a transient error, the scheduler retries the upload with a newly
+// generated challenge and successfully completes the upload.
+IN_PROC_BROWSER_TEST_P(SecurityReportingBrowserTest,
+                       SecurityReportWithCertificates_RetryOnTransientError) {
+  clear_challenge_requests_count();
+  clear_profile_report_requests_count();
+  set_fail_profile_reports_count(1);
+  SetFakeCookieValue();
+
+  base::test::TestFuture<CapturedProfileReportRequest> test_future;
+  pending_capture_ =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         test_future.GetCallback());
+
+  base::ListValue policy_list;
+  base::DictValue selector;
+  base::DictValue issuer;
+  issuer.Set("CN", "B CA");
+  selector.Set("ISSUER", std::move(issuer));
+  policy_list.Append(std::move(selector));
+
+  base::flat_map<std::string, std::optional<base::Value>> policy_values;
+  policy_values.insert(
+      {policy::key::kUserSecuritySignalsReporting, base::Value(true)});
+  policy_values.insert(
+      {policy::key::kSecuritySignalsClientCertificatesSelectors,
+       base::Value(std::move(policy_list))});
+  management_mixin()->SetCloudUserPolicies(std::move(policy_values));
+
+  CapturedProfileReportRequest captured_request = test_future.Get();
+  VerifyRequest(captured_request,
+                em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS);
+
+  // Verifies that 2 challenge requests were made (one for initial attempt,
+  // one for retry).
+  EXPECT_EQ(challenge_requests_count(), 2);
+  // Verifies that 2 profile report requests were sent (one failed, one
+  // succeeded).
+  EXPECT_EQ(profile_report_requests_count(), 2);
+
+  ASSERT_TRUE(captured_request.request);
+  ASSERT_TRUE(captured_request.request->has_chrome_profile_report_request());
+  const auto& profile_report =
+      captured_request.request->chrome_profile_report_request();
+  ASSERT_TRUE(profile_report.has_browser_report());
+  ASSERT_EQ(1,
+            profile_report.browser_report().chrome_user_profile_infos_size());
+  const auto& user_profile_info =
+      profile_report.browser_report().chrome_user_profile_infos(0);
+  if (can_collect_pii_signals()) {
+    EXPECT_TRUE(user_profile_info.has_certificates_were_truncated());
+    EXPECT_EQ(1, user_profile_info.certificates_size());
+    EXPECT_FALSE(user_profile_info.certificates(0).data().empty());
+    EXPECT_FALSE(user_profile_info.certificates(0).signature().empty());
+  } else {
+    EXPECT_FALSE(user_profile_info.has_certificates_were_truncated());
+    EXPECT_EQ(0, user_profile_info.certificates_size());
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // Tests that a combined Profile report is sent when all user
 // policies are enabled, with cookies.

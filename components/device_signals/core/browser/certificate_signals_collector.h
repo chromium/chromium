@@ -86,6 +86,7 @@ class CertificateSignalsCollector : public BaseSignalsCollector {
           void(std::optional<enterprise_management::SignedCertificateDetails>)>
           barrier_callback,
       std::unique_ptr<std::vector<uint8_t>> bound_data_to_sign,
+      scoped_refptr<net::SSLPrivateKey> private_key,
       net::Error error,
       const std::vector<uint8_t>& signature);
 

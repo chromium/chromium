@@ -100,12 +100,22 @@ void RecordProfilePolicyStatus(const em::ChromeProfileReportRequest& request,
       request.browser_report().chrome_user_profile_infos_size());
 }
 
+const net::BackoffEntry::Policy* g_backoff_policy_for_testing = nullptr;
+
 }  // namespace
+
+// static
+void ReportUploader::SetBackoffPolicyForTesting(  // IN-TEST
+    const net::BackoffEntry::Policy* backoff_policy) {
+  g_backoff_policy_for_testing = backoff_policy;
+}
 
 ReportUploader::ReportUploader(policy::CloudPolicyClient* client,
                                int maximum_number_of_retries)
     : client_(client),
-      backoff_entry_(&kDefaultReportUploadBackoffPolicy),
+      backoff_entry_(g_backoff_policy_for_testing
+                         ? g_backoff_policy_for_testing
+                         : &kDefaultReportUploadBackoffPolicy),
       maximum_number_of_retries_(maximum_number_of_retries) {}
 ReportUploader::~ReportUploader() {
   CHECK(!listener_);

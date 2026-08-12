@@ -73,6 +73,11 @@ class ReportUploader {
 
   void NotifyReportWillRetry(const ReportGenerationConfig& config);
 
+  // Overrides the backoff policy used for retrying requests. If nullptr is
+  // passed, the default policy is restored.
+  static void SetBackoffPolicyForTesting(
+      const net::BackoffEntry::Policy* backoff_policy);
+
  private:
   // Uploads the first request in the queue.
   void Upload();

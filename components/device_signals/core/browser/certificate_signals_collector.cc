@@ -253,7 +253,7 @@ void CertificateSignalsCollector::OnPrivateKeyAcquired(
       base::BindOnce(&CertificateSignalsCollector::OnCertificateDetailsSigned,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(serialized_details_vec), barrier_callback,
-                     std::move(data_to_sign)));
+                     std::move(data_to_sign), private_key));
 }
 
 void CertificateSignalsCollector::OnCertificateDetailsSigned(
@@ -262,6 +262,7 @@ void CertificateSignalsCollector::OnCertificateDetailsSigned(
         void(std::optional<enterprise_management::SignedCertificateDetails>)>
         barrier_callback,
     std::unique_ptr<std::vector<uint8_t>> bound_data_to_sign,
+    scoped_refptr<net::SSLPrivateKey> private_key,
     net::Error error,
     const std::vector<uint8_t>& signature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
