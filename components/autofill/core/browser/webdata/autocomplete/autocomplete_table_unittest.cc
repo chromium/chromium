@@ -29,8 +29,9 @@ namespace {
 using AutocompleteEntrySet =
     std::set<AutocompleteEntry,
              bool (*)(const AutocompleteEntry&, const AutocompleteEntry&)>;
-using base::Time;
-using testing::ElementsAre;
+using ::base::Time;
+using ::testing::ElementsAre;
+using ::testing::Property;
 
 bool CompareAutocompleteEntries(const AutocompleteEntry& a,
                                 const AutocompleteEntry& b) {
@@ -157,50 +158,49 @@ TEST_F(AutocompleteTableTest, Autocomplete) {
   // should be decreasing order by count.
   EXPECT_TRUE(
       table().GetFormValuesForElementName(u"Name", std::u16string(), 6, v));
-  EXPECT_EQ(v.size(), 3U);
-  if (v.size() == 3) {
-    EXPECT_EQ(v[0].key().value(), u"Clark Kent");
-    EXPECT_EQ(v[1].key().value(), u"Clark Sutter");
-    EXPECT_EQ(v[2].key().value(), u"Superman");
-  }
+  EXPECT_THAT(
+      v,
+      ElementsAre(Property(&AutocompleteEntry::key,
+                           Property(&AutocompleteKey::value, u"Clark Kent")),
+                  Property(&AutocompleteEntry::key,
+                           Property(&AutocompleteKey::value, u"Clark Sutter")),
+                  Property(&AutocompleteEntry::key,
+                           Property(&AutocompleteKey::value, u"Superman"))));
 
   // If we query again limiting the list size to 1, we should only get the most
   // frequent entry.
   EXPECT_TRUE(
       table().GetFormValuesForElementName(u"Name", std::u16string(), 1, v));
-  EXPECT_EQ(v.size(), 1U);
-  if (v.size() == 1) {
-    EXPECT_EQ(v[0].key().value(), u"Clark Kent");
-  }
+  EXPECT_THAT(v, ElementsAre(Property(
+                     &AutocompleteEntry::key,
+                     Property(&AutocompleteKey::value, u"Clark Kent"))));
 
   // Querying for suggestions given a prefix is case-insensitive, so the prefix
   // "cLa" should get suggestions for both Clarks.
   EXPECT_TRUE(table().GetFormValuesForElementName(u"Name", u"cLa", 6, v));
-  EXPECT_EQ(v.size(), 2U);
-  if (v.size() == 2) {
-    EXPECT_EQ(v[0].key().value(), u"Clark Kent");
-    EXPECT_EQ(v[1].key().value(), u"Clark Sutter");
-  }
+  EXPECT_THAT(
+      v, ElementsAre(
+             Property(&AutocompleteEntry::key,
+                      Property(&AutocompleteKey::value, u"Clark Kent")),
+             Property(&AutocompleteEntry::key,
+                      Property(&AutocompleteKey::value, u"Clark Sutter"))));
 
   // Removing all elements since the beginning of this function should remove
   // everything from the database.
   changes.clear();
   EXPECT_TRUE(table().RemoveFormElementsAddedBetween(begin, Time(), changes));
 
-  const auto kExpectedChanges = std::array{
-      AutocompleteChange(AutocompleteChange::REMOVE,
-                         AutocompleteKey(u"Name", u"Superman")),
-      AutocompleteChange(AutocompleteChange::REMOVE,
-                         AutocompleteKey(u"Name", u"Clark Kent")),
-      AutocompleteChange(AutocompleteChange::REMOVE,
-                         AutocompleteKey(u"Name", u"Clark Sutter")),
-      AutocompleteChange(AutocompleteChange::REMOVE,
-                         AutocompleteKey(u"Favorite Color", u"Green")),
-  };
-  EXPECT_EQ(kExpectedChanges.size(), changes.size());
-  for (size_t i = 0; i < std::size(kExpectedChanges); ++i) {
-    EXPECT_EQ(kExpectedChanges[i], changes[i]);
-  }
+  EXPECT_THAT(
+      changes,
+      ElementsAre(
+          AutocompleteChange(AutocompleteChange::REMOVE,
+                             AutocompleteKey(u"Name", u"Superman")),
+          AutocompleteChange(AutocompleteChange::REMOVE,
+                             AutocompleteKey(u"Name", u"Clark Kent")),
+          AutocompleteChange(AutocompleteChange::REMOVE,
+                             AutocompleteKey(u"Name", u"Clark Sutter")),
+          AutocompleteChange(AutocompleteChange::REMOVE,
+                             AutocompleteKey(u"Favorite Color", u"Green"))));
 
   EXPECT_EQ(GetAutocompleteEntryCount(u"Name", u"Clark Kent", &db()), 0);
 
@@ -355,18 +355,16 @@ TEST_F(AutocompleteTableTest, Autocomplete_RemoveBetweenChanges) {
 
   changes.clear();
   EXPECT_TRUE(table().RemoveFormElementsAddedBetween(t1, t2, changes));
-  ASSERT_EQ(changes.size(), 1U);
-  EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
-                               AutocompleteKey(u"Name", u"Superman")),
-            changes[0]);
+  EXPECT_THAT(changes, ElementsAre(AutocompleteChange(
+                           AutocompleteChange::UPDATE,
+                           AutocompleteKey(u"Name", u"Superman"))));
   changes.clear();
 
   EXPECT_TRUE(
       table().RemoveFormElementsAddedBetween(t2, t2 + base::Days(1), changes));
-  ASSERT_EQ(changes.size(), 1U);
-  EXPECT_EQ(AutocompleteChange(AutocompleteChange::REMOVE,
-                               AutocompleteKey(u"Name", u"Superman")),
-            changes[0]);
+  EXPECT_THAT(changes, ElementsAre(AutocompleteChange(
+                           AutocompleteChange::REMOVE,
+                           AutocompleteKey(u"Name", u"Superman"))));
 }
 
 TEST_F(AutocompleteTableTest, Autocomplete_AddChanges) {
@@ -375,18 +373,16 @@ TEST_F(AutocompleteTableTest, Autocomplete_AddChanges) {
   field.set_name(u"Name");
   field.set_value(u"Superman");
   EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-  ASSERT_EQ(changes.size(), 1U);
-  EXPECT_EQ(AutocompleteChange(AutocompleteChange::ADD,
-                               AutocompleteKey(u"Name", u"Superman")),
-            changes[0]);
+  EXPECT_THAT(changes, ElementsAre(AutocompleteChange(
+                           AutocompleteChange::ADD,
+                           AutocompleteKey(u"Name", u"Superman"))));
 
   changes.clear();
   AdvanceClock(base::Days(1));
   EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-  ASSERT_EQ(changes.size(), 1U);
-  EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
-                               AutocompleteKey(u"Name", u"Superman")),
-            changes[0]);
+  EXPECT_THAT(changes, ElementsAre(AutocompleteChange(
+                           AutocompleteChange::UPDATE,
+                           AutocompleteKey(u"Name", u"Superman"))));
 }
 
 TEST_F(AutocompleteTableTest, Autocomplete_UpdateOneWithOneTimestamp) {
@@ -399,8 +395,7 @@ TEST_F(AutocompleteTableTest, Autocomplete_UpdateOneWithOneTimestamp) {
 
   std::vector<AutocompleteEntry> all_entries;
   ASSERT_TRUE(table().GetAllAutocompleteEntries(&all_entries));
-  ASSERT_EQ(all_entries.size(), 1U);
-  EXPECT_EQ(entry, all_entries[0]);
+  EXPECT_THAT(all_entries, ElementsAre(entry));
 }
 
 TEST_F(AutocompleteTableTest, Autocomplete_UpdateOneWithTwoTimestamps) {
@@ -413,8 +408,7 @@ TEST_F(AutocompleteTableTest, Autocomplete_UpdateOneWithTwoTimestamps) {
 
   std::vector<AutocompleteEntry> all_entries;
   ASSERT_TRUE(table().GetAllAutocompleteEntries(&all_entries));
-  ASSERT_EQ(all_entries.size(), 1U);
-  EXPECT_EQ(entry, all_entries[0]);
+  EXPECT_THAT(all_entries, ElementsAre(entry));
 }
 
 TEST_F(AutocompleteTableTest, Autocomplete_GetAutofillTimestamps) {
@@ -460,9 +454,7 @@ TEST_F(AutocompleteTableTest, Autocomplete_UpdateNullTerminated) {
 
   std::vector<AutocompleteEntry> all_entries;
   ASSERT_TRUE(table().GetAllAutocompleteEntries(&all_entries));
-  ASSERT_EQ(all_entries.size(), 2U);
-  EXPECT_EQ(entry0, all_entries[0]);
-  EXPECT_EQ(entry1, all_entries[1]);
+  EXPECT_THAT(all_entries, ElementsAre(entry0, entry1));
 }
 
 TEST_F(AutocompleteTableTest, Autocomplete_UpdateReplace) {
@@ -480,8 +472,7 @@ TEST_F(AutocompleteTableTest, Autocomplete_UpdateReplace) {
 
   std::vector<AutocompleteEntry> all_entries;
   ASSERT_TRUE(table().GetAllAutocompleteEntries(&all_entries));
-  ASSERT_EQ(all_entries.size(), 1U);
-  EXPECT_EQ(entry, all_entries[0]);
+  EXPECT_THAT(all_entries, ElementsAre(entry));
 }
 
 TEST_F(AutocompleteTableTest, Autocomplete_UpdateDontReplace) {
@@ -533,13 +524,12 @@ TEST_F(AutocompleteTableTest, Autocomplete_AddFormFieldValues) {
   std::vector<AutocompleteChange> changes;
   table().AddFormFieldValues(elements, &changes);
 
-  ASSERT_EQ(changes.size(), 2U);
-  EXPECT_EQ(changes[0],
-            AutocompleteChange(AutocompleteChange::ADD,
-                               AutocompleteKey(u"firstname", u"Joe")));
-  EXPECT_EQ(changes[1],
-            AutocompleteChange(AutocompleteChange::ADD,
-                               AutocompleteKey(u"lastname", u"Smith")));
+  EXPECT_THAT(
+      changes,
+      ElementsAre(AutocompleteChange(AutocompleteChange::ADD,
+                                     AutocompleteKey(u"firstname", u"Joe")),
+                  AutocompleteChange(AutocompleteChange::ADD,
+                                     AutocompleteKey(u"lastname", u"Smith"))));
 
   std::vector<AutocompleteEntry> all_entries;
   ASSERT_TRUE(table().GetAllAutocompleteEntries(&all_entries));
@@ -606,10 +596,9 @@ TEST_F(AutocompleteTableTest,
   changes.clear();
   EXPECT_TRUE(table().RemoveFormElementsAddedBetween(
       base::Time::Now() - base::Seconds(50), base::Time::Now(), changes));
-  ASSERT_EQ(changes.size(), 1U);
-  EXPECT_EQ(AutocompleteChange(AutocompleteChange::REMOVE,
-                               AutocompleteKey(field.name(), field.value())),
-            changes[0]);
+  EXPECT_THAT(changes, ElementsAre(AutocompleteChange(
+                           AutocompleteChange::REMOVE,
+                           AutocompleteKey(field.name(), field.value()))));
   EXPECT_EQ(GetAutocompleteEntryCount(field.name(), field.value(), &db()), 0);
 }
 
@@ -632,10 +621,9 @@ TEST_F(AutocompleteTableTest,
   EXPECT_TRUE(table().RemoveFormElementsAddedBetween(
       base::Time::Now() - base::Seconds(10),
       base::Time::Now() + base::Seconds(10), changes));
-  ASSERT_EQ(changes.size(), 1U);
-  EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
-                               AutocompleteKey(field.name(), field.value())),
-            changes[0]);
+  EXPECT_THAT(changes, ElementsAre(AutocompleteChange(
+                           AutocompleteChange::UPDATE,
+                           AutocompleteKey(field.name(), field.value()))));
   EXPECT_EQ(GetAutocompleteEntryCount(field.name(), field.value(), &db()), 4);
   std::optional<AutocompleteEntry> entry =
       table().GetAutocompleteEntry(field.name(), field.value());
@@ -663,10 +651,9 @@ TEST_F(AutocompleteTableTest,
   EXPECT_TRUE(table().RemoveFormElementsAddedBetween(
       base::Time::Now() - base::Seconds(50),
       base::Time::Now() - base::Seconds(10), changes));
-  ASSERT_EQ(changes.size(), 1U);
-  EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
-                               AutocompleteKey(field.name(), field.value())),
-            changes[0]);
+  EXPECT_THAT(changes, ElementsAre(AutocompleteChange(
+                           AutocompleteChange::UPDATE,
+                           AutocompleteKey(field.name(), field.value()))));
   EXPECT_EQ(GetAutocompleteEntryCount(field.name(), field.value(), &db()), 2);
   std::optional<AutocompleteEntry> entry =
       table().GetAutocompleteEntry(field.name(), field.value());
@@ -699,10 +686,9 @@ TEST_F(AutocompleteTableTest,
   changes.clear();
   EXPECT_TRUE(table().RemoveFormElementsAddedBetween(
       base::Time(), base::Time::Now() - base::Days(30), changes));
-  ASSERT_EQ(changes.size(), 1U);
-  EXPECT_EQ(AutocompleteChange(AutocompleteChange::REMOVE,
-                               AutocompleteKey(u"Name", u"Clark Sutter")),
-            changes[0]);
+  EXPECT_THAT(changes, ElementsAre(AutocompleteChange(
+                           AutocompleteChange::REMOVE,
+                           AutocompleteKey(u"Name", u"Clark Sutter"))));
   EXPECT_EQ(GetAutocompleteEntryCount(u"Name", u"Clark Sutter", &db()), 0);
   EXPECT_EQ(GetAutocompleteEntryCount(u"Name", u"Superman", &db()), 1);
   EXPECT_EQ(GetAutocompleteEntryCount(u"Name", u"Clark Kent", &db()), 1);
