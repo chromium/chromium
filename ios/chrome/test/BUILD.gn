@@ -501,6 +501,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/profile/model:unit_tests",
     "//ios/chrome/browser/promos_manager/coordinator:unit_tests",
     "//ios/chrome/browser/promos_manager/model:unit_tests",
+    "//ios/chrome/browser/providers/device_resources:unit_tests",
     "//ios/chrome/browser/providers/intelligence/signin:unit_tests",
     "//ios/chrome/browser/push_notification/coordinator:unit_tests",
     "//ios/chrome/browser/push_notification/model:unit_tests",
