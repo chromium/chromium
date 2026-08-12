@@ -79,7 +79,9 @@ void PeerConnectionProcess::Start(
     const std::string& client_jid,
     mojo::PendingRemote<mojom::DesktopSession> control_remote,
     mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver,
-    const DesktopEnvironmentOptions& desktop_environment_options) {
+    const DesktopEnvironmentOptions& desktop_environment_options,
+    const SessionPolicies& session_policies,
+    const SessionOptions& session_options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!peer_session_);
 
@@ -109,7 +111,7 @@ void PeerConnectionProcess::Start(
   event_handler_.Bind(std::move(event_handler));
   peer_session_->Start(event_handler_.get(), client_jid,
                        desktop_environment_options, /*extensions=*/{},
-                       SessionPolicies(), SessionOptions());
+                       session_policies, session_options);
 }
 
 void PeerConnectionProcess::DisconnectSession(

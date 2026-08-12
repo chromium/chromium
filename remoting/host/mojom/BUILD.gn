@@ -45,6 +45,18 @@ mojom("mojom") {
       mojom = "remoting.mojom.SourceLocation"
       cpp = "::remoting::SourceLocation"
     },
+    {
+      mojom = "remoting.mojom.PortRange"
+      cpp = "::remoting::PortRange"
+    },
+    {
+      mojom = "remoting.mojom.SessionPolicies"
+      cpp = "::remoting::SessionPolicies"
+    },
+    {
+      mojom = "remoting.mojom.SessionOptions"
+      cpp = "::remoting::SessionOptions"
+    },
   ]
   if (remoting_multi_process) {
     mojom_typemap_types += [

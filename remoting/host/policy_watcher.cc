@@ -128,8 +128,7 @@ bool VerifyWellformedness(const base::DictValue& changed_policies) {
   const std::string* udp_port_range_string =
       changed_policies.FindString(policy::key::kRemoteAccessHostUdpPortRange);
   if (udp_port_range_string) {
-    PortRange unused_port_range;
-    if (!PortRange::Parse(*udp_port_range_string, &unused_port_range)) {
+    if (!PortRange::Parse(*udp_port_range_string).has_value()) {
       return false;
     }
   }

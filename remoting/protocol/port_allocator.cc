@@ -55,8 +55,8 @@ void PortAllocator::ApplyNetworkSettings(
   }
 
   set_flags(flags);
-  SetPortRange(network_settings.port_range.min_port,
-               network_settings.port_range.max_port);
+  SetPortRange(network_settings.port_range.min_port(),
+               network_settings.port_range.max_port());
   Initialize();
   network_settings_applied_ = true;
 }

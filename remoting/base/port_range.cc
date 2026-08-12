@@ -9,67 +9,69 @@
 #include <stdlib.h>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
 namespace remoting {
 
-bool PortRange::operator==(const PortRange&) const = default;
+PortRange::PortRange() = default;
+PortRange::~PortRange() = default;
 
-void PortRange::reset() {
-  min_port = 0;
-  max_port = 0;
-}
+PortRange::PortRange(const PortRange&) = default;
+PortRange& PortRange::operator=(const PortRange&) = default;
+PortRange::PortRange(PortRange&&) = default;
+PortRange& PortRange::operator=(PortRange&&) = default;
 
-bool PortRange::is_valid() const {
-  return is_null() || (min_port > 0 && min_port <= max_port);
+PortRange::PortRange(uint16_t min_port, uint16_t max_port)
+    : min_port_(min_port), max_port_(max_port) {}
+
+// static
+std::optional<PortRange> PortRange::Create(uint16_t min_port,
+                                           uint16_t max_port) {
+  bool is_range_valid = (min_port == 0 && max_port == 0) ||
+                        (min_port > 0 && min_port <= max_port);
+  if (!is_range_valid) {
+    return std::nullopt;
+  }
+  return PortRange(min_port, max_port);
 }
 
 // static
-bool PortRange::Parse(const std::string& port_range, PortRange* result) {
-  DCHECK(result);
-
+std::optional<PortRange> PortRange::Parse(std::string_view port_range) {
   if (port_range.empty()) {
-    result->reset();
-    return true;
+    return PortRange();
   }
 
-  size_t separator_index = port_range.find('-');
-  if (separator_index == std::string::npos) {
-    return false;
+  auto pieces = base::SplitStringOnce(port_range, '-');
+  if (!pieces) {
+    return std::nullopt;
   }
 
-  std::string min_port_string, max_port_string;
-  base::TrimWhitespaceASCII(port_range.substr(0, separator_index),
-                            base::TRIM_ALL, &min_port_string);
-  base::TrimWhitespaceASCII(port_range.substr(separator_index + 1),
-                            base::TRIM_ALL, &max_port_string);
+  std::string_view min_port_string =
+      base::TrimWhitespaceASCII(pieces->first, base::TRIM_ALL);
+  std::string_view max_port_string =
+      base::TrimWhitespaceASCII(pieces->second, base::TRIM_ALL);
 
   unsigned min_port, max_port;
   if (!base::StringToUint(min_port_string, &min_port) ||
       !base::StringToUint(max_port_string, &max_port)) {
-    return false;
+    return std::nullopt;
   }
 
   if (min_port == 0 || min_port > USHRT_MAX || max_port == 0 ||
       max_port > USHRT_MAX) {
-    return false;
+    return std::nullopt;
   }
 
-  PortRange candidate{static_cast<uint16_t>(min_port),
-                      static_cast<uint16_t>(max_port)};
-  if (!candidate.is_valid()) {
-    return false;
-  }
-
-  *result = candidate;
-  return true;
+  return Create(static_cast<uint16_t>(min_port),
+                static_cast<uint16_t>(max_port));
 }
 
 std::ostream& operator<<(std::ostream& os, const PortRange& port_range) {
   if (port_range.is_null()) {
     os << "<no port range specified>";
   } else {
-    os << "[" << port_range.min_port << ", " << port_range.max_port << "]";
+    os << "[" << port_range.min_port() << ", " << port_range.max_port() << "]";
   }
   return os;
 }

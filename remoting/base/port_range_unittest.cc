@@ -12,95 +12,81 @@
 namespace remoting {
 
 TEST(PortRange, ParseEmpty) {
-  PortRange port_range;
-
-  EXPECT_TRUE(PortRange::Parse("", &port_range));
-  EXPECT_TRUE(port_range.is_null());
-  EXPECT_TRUE(port_range.is_valid());
+  auto port_range = PortRange::Parse("");
+  ASSERT_TRUE(port_range.has_value());
+  EXPECT_TRUE(port_range->is_null());
 }
 
 TEST(PortRange, ParseValid) {
-  PortRange port_range;
+  auto port_range = PortRange::Parse("1-65535");
+  ASSERT_TRUE(port_range.has_value());
+  EXPECT_FALSE(port_range->is_null());
+  EXPECT_EQ(port_range->min_port(), 1u);
+  EXPECT_EQ(port_range->max_port(), 65535u);
 
-  EXPECT_TRUE(PortRange::Parse("1-65535", &port_range));
-  EXPECT_FALSE(port_range.is_null());
-  EXPECT_TRUE(port_range.is_valid());
-  EXPECT_EQ(port_range.min_port, 1u);
-  EXPECT_EQ(port_range.max_port, 65535u);
+  port_range = PortRange::Parse(" 1 - 65535 ");
+  ASSERT_TRUE(port_range.has_value());
+  EXPECT_FALSE(port_range->is_null());
+  EXPECT_EQ(port_range->min_port(), 1u);
+  EXPECT_EQ(port_range->max_port(), 65535u);
 
-  EXPECT_TRUE(PortRange::Parse(" 1 - 65535 ", &port_range));
-  EXPECT_FALSE(port_range.is_null());
-  EXPECT_TRUE(port_range.is_valid());
-  EXPECT_EQ(port_range.min_port, 1u);
-  EXPECT_EQ(port_range.max_port, 65535u);
-
-  EXPECT_TRUE(PortRange::Parse("12400-12400", &port_range));
-  EXPECT_FALSE(port_range.is_null());
-  EXPECT_TRUE(port_range.is_valid());
-  EXPECT_EQ(port_range.min_port, 12400u);
-  EXPECT_EQ(port_range.max_port, 12400u);
+  port_range = PortRange::Parse("12400-12400");
+  ASSERT_TRUE(port_range.has_value());
+  EXPECT_FALSE(port_range->is_null());
+  EXPECT_EQ(port_range->min_port(), 12400u);
+  EXPECT_EQ(port_range->max_port(), 12400u);
 }
 
 TEST(PortRange, ParseInvalid) {
-  PortRange port_range;
-  port_range.min_port = 123;
-  port_range.max_port = 456;
+  EXPECT_FALSE(PortRange::Parse("-65535").has_value());
+  EXPECT_FALSE(PortRange::Parse("1-").has_value());
+  EXPECT_FALSE(PortRange::Parse("-").has_value());
+  EXPECT_FALSE(PortRange::Parse("-1-65535").has_value());
+  EXPECT_FALSE(PortRange::Parse("1--65535").has_value());
+  EXPECT_FALSE(PortRange::Parse("1-65535-").has_value());
+  EXPECT_FALSE(PortRange::Parse("0-65535").has_value());
+  EXPECT_FALSE(PortRange::Parse("0-0").has_value());
+  EXPECT_FALSE(PortRange::Parse("1-65536").has_value());
+  EXPECT_FALSE(PortRange::Parse("1-4294967295").has_value());
+  EXPECT_FALSE(PortRange::Parse("1foo-2bar").has_value());
+  EXPECT_FALSE(PortRange::Parse("10-1").has_value());
+}
 
-  EXPECT_FALSE(PortRange::Parse("-65535", &port_range));
-  EXPECT_FALSE(PortRange::Parse("1-", &port_range));
-  EXPECT_FALSE(PortRange::Parse("-", &port_range));
-  EXPECT_FALSE(PortRange::Parse("-1-65535", &port_range));
-  EXPECT_FALSE(PortRange::Parse("1--65535", &port_range));
-  EXPECT_FALSE(PortRange::Parse("1-65535-", &port_range));
-  EXPECT_FALSE(PortRange::Parse("0-65535", &port_range));
-  EXPECT_FALSE(PortRange::Parse("0-0", &port_range));
-  EXPECT_FALSE(PortRange::Parse("1-65536", &port_range));
-  EXPECT_FALSE(PortRange::Parse("1-4294967295", &port_range));
-  EXPECT_FALSE(PortRange::Parse("1foo-2bar", &port_range));
+TEST(PortRange, Create) {
+  EXPECT_TRUE(PortRange::Create(0, 0).has_value());
+  EXPECT_TRUE(PortRange::Create(0, 0)->is_null());
+  EXPECT_TRUE(PortRange::Create(12400, 12409).has_value());
+  EXPECT_EQ(PortRange::Create(12400, 12409)->min_port(), 12400u);
+  EXPECT_EQ(PortRange::Create(12400, 12409)->max_port(), 12409u);
+  EXPECT_TRUE(PortRange::Create(12400, 12400).has_value());
 
-  EXPECT_FALSE(PortRange::Parse("10-1", &port_range));
-
-  // Unsuccessful parses should NOT modify their output.
-  EXPECT_EQ(port_range.min_port, 123u);
-  EXPECT_EQ(port_range.max_port, 456u);
+  EXPECT_FALSE(PortRange::Create(100, 50).has_value());
+  EXPECT_FALSE(PortRange::Create(0, 80).has_value());
+  EXPECT_FALSE(PortRange::Create(80, 0).has_value());
+  EXPECT_FALSE(PortRange::Create(1, 0).has_value());
 }
 
 TEST(PortRange, Output) {
-  PortRange port_range;
-  port_range.min_port = 123;
-  port_range.max_port = 456;
+  auto port_range = PortRange::Create(123, 456);
+  ASSERT_TRUE(port_range.has_value());
 
   std::ostringstream str;
-  str << port_range;
+  str << *port_range;
 
   EXPECT_THAT(str.str(), testing::MatchesRegex(".*123.*456.*"));
 }
 
 TEST(PortRange, Equality) {
-  PortRange port_range_1;
-  port_range_1.min_port = 123;
-  port_range_1.max_port = 456;
+  auto port_range_1 = PortRange::Create(123, 456);
+  auto port_range_2 = PortRange::Create(123, 456);
+  auto port_range_3 = PortRange::Create(456, 789);
 
-  PortRange port_range_2;
-  port_range_2.min_port = 123;
-  port_range_2.max_port = 456;
+  ASSERT_TRUE(port_range_1.has_value());
+  ASSERT_TRUE(port_range_2.has_value());
+  ASSERT_TRUE(port_range_3.has_value());
 
-  PortRange port_range_3;
-  port_range_3.min_port = 456;
-  port_range_3.max_port = 789;
-
-  EXPECT_EQ(port_range_1, port_range_2);
-  EXPECT_NE(port_range_1, port_range_3);
-}
-
-TEST(PortRange, IsValid) {
-  EXPECT_TRUE(PortRange().is_valid());
-  EXPECT_TRUE((PortRange{12400, 12409}).is_valid());
-  EXPECT_TRUE((PortRange{12400, 12400}).is_valid());
-  EXPECT_FALSE((PortRange{100, 50}).is_valid());
-  EXPECT_FALSE((PortRange{0, 80}).is_valid());
-  EXPECT_FALSE((PortRange{80, 0}).is_valid());
-  EXPECT_FALSE((PortRange{1, 0}).is_valid());
+  EXPECT_EQ(*port_range_1, *port_range_2);
+  EXPECT_NE(*port_range_1, *port_range_3);
 }
 
 }  // namespace remoting

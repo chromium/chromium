@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/byte_string_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_protobuf.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -28,7 +29,10 @@
 #include "remoting/base/buildflags.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/ipc_fifo_buffer.h"
+#include "remoting/base/port_range.h"
 #include "remoting/base/result.h"
+#include "remoting/base/session_options.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/base/source_location.h"
 #include "remoting/host/mojom/common.mojom-shared.h"
 
@@ -1573,6 +1577,139 @@ class StructTraits<remoting::mojom::SourceLocationDataView,
 
   static bool Read(remoting::mojom::SourceLocationDataView data_view,
                    ::remoting::SourceLocation* out_source_info);
+};
+
+template <>
+class StructTraits<remoting::mojom::PortRangeDataView, ::remoting::PortRange> {
+ public:
+  static uint16_t min_port(const ::remoting::PortRange& range) {
+    return range.min_port();
+  }
+  static uint16_t max_port(const ::remoting::PortRange& range) {
+    return range.max_port();
+  }
+  static bool Read(remoting::mojom::PortRangeDataView data_view,
+                   ::remoting::PortRange* out_range);
+};
+
+template <>
+class StructTraits<remoting::mojom::SessionPoliciesDataView,
+                   ::remoting::SessionPolicies> {
+ public:
+  static std::optional<uint64_t> clipboard_size_bytes(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.clipboard_size_bytes;
+  }
+
+  static std::optional<bool> allow_stun_connections(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.allow_stun_connections;
+  }
+
+  static std::optional<bool> allow_relayed_connections(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.allow_relayed_connections;
+  }
+
+  static const ::remoting::PortRange& host_udp_port_range(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.host_udp_port_range;
+  }
+
+  static std::optional<bool> allow_file_transfer(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.allow_file_transfer;
+  }
+
+  static std::optional<bool> allow_uri_forwarding(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.allow_uri_forwarding;
+  }
+
+  static std::optional<base::TimeDelta> maximum_session_duration(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.maximum_session_duration;
+  }
+
+  static std::optional<bool> curtain_required(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.curtain_required;
+  }
+
+  static std::optional<bool> host_username_match_required(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.host_username_match_required;
+  }
+
+  static std::optional<bool> allow_remote_input(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.allow_remote_input;
+  }
+
+  static std::optional<bool> allow_webauthn_forwarding(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.allow_webauthn_forwarding;
+  }
+
+  static std::optional<bool> allow_gnubby_forwarding(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.allow_gnubby_forwarding;
+  }
+
+  static bool Read(remoting::mojom::SessionPoliciesDataView data_view,
+                   ::remoting::SessionPolicies* out_policies);
+};
+
+template <>
+class StructTraits<remoting::mojom::SessionOptionsDataView,
+                   ::remoting::SessionOptions> {
+ public:
+  static std::optional<bool> detect_updated_region(
+      const ::remoting::SessionOptions& options) {
+    return options.detect_updated_region;
+  }
+
+  static std::optional<bool> capture_video_on_dedicated_thread(
+      const ::remoting::SessionOptions& options) {
+    return options.capture_video_on_dedicated_thread;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  static std::optional<bool> enable_sck_capturer(
+      const ::remoting::SessionOptions& options) {
+    return options.enable_sck_capturer;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+  static std::optional<bool> allow_dxgi_capturer(
+      const ::remoting::SessionOptions& options) {
+    return options.allow_dxgi_capturer;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  static std::optional<bool> disable_udp(
+      const ::remoting::SessionOptions& options) {
+    return options.disable_udp;
+  }
+
+  static std::optional<int32_t> vp9_encoder_speed(
+      const ::remoting::SessionOptions& options) {
+    return options.vp9_encoder_speed;
+  }
+
+  static std::optional<bool> av1_active_map(
+      const ::remoting::SessionOptions& options) {
+    return options.av1_active_map;
+  }
+
+  static std::optional<int32_t> av1_encoder_speed(
+      const ::remoting::SessionOptions& options) {
+    return options.av1_encoder_speed;
+  }
+
+  static bool Read(remoting::mojom::SessionOptionsDataView data_view,
+                   ::remoting::SessionOptions* out_options);
 };
 
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)

@@ -53,7 +53,9 @@ interface PeerSession {
         string client_jid,
         pending_remote<DesktopSession> control_remote,
         pending_receiver<DesktopSessionEvents> events_receiver,
-        DesktopEnvironmentOptions desktop_environment_options);
+        DesktopEnvironmentOptions desktop_environment_options,
+        SessionPolicies session_policies,
+        SessionOptions session_options);
 
   // Disconnects the peer session and tears down transport and desktop
   // resources. `error_details` is a human-readable diagnostic string intended

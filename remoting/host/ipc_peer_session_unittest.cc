@@ -42,15 +42,34 @@ class MockPeerSessionReceiver : public mojom::PeerSession {
     receiver_.set_disconnect_handler(std::move(handler));
   }
 
+  void set_start_closure(base::OnceClosure closure) {
+    start_closure_ = std::move(closure);
+  }
+
   bool is_bound() const { return receiver_.is_bound(); }
+  bool start_called() const { return start_called_; }
+  const SessionPolicies& last_session_policies() const {
+    return last_session_policies_;
+  }
+  const SessionOptions& last_session_options() const {
+    return last_session_options_;
+  }
 
   // mojom::PeerSession implementation:
-  void Start(
-      mojo::PendingRemote<mojom::PeerSessionEventHandler> event_handler,
-      const std::string& client_jid,
-      mojo::PendingRemote<mojom::DesktopSession> control_remote,
-      mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver,
-      const DesktopEnvironmentOptions& desktop_environment_options) override {}
+  void Start(mojo::PendingRemote<mojom::PeerSessionEventHandler> event_handler,
+             const std::string& client_jid,
+             mojo::PendingRemote<mojom::DesktopSession> control_remote,
+             mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver,
+             const DesktopEnvironmentOptions& desktop_environment_options,
+             const SessionPolicies& session_policies,
+             const SessionOptions& session_options) override {
+    start_called_ = true;
+    last_session_policies_ = session_policies;
+    last_session_options_ = session_options;
+    if (start_closure_) {
+      std::move(start_closure_).Run();
+    }
+  }
   void DisconnectSession(protocol::ErrorCode error,
                          const std::string& error_details,
                          const SourceLocation& error_location) override {}
@@ -60,6 +79,10 @@ class MockPeerSessionReceiver : public mojom::PeerSession {
 
  private:
   mojo::Receiver<mojom::PeerSession> receiver_{this};
+  base::OnceClosure start_closure_;
+  bool start_called_ = false;
+  SessionPolicies last_session_policies_;
+  SessionOptions last_session_options_;
 };
 
 class MockPeerSessionManager : public mojom::PeerSessionManager {
@@ -265,6 +288,41 @@ TEST_F(IpcPeerSessionTest,
   EXPECT_TRUE(mock_desktop_manager.get_desktop_session_called());
   ASSERT_TRUE(mock_desktop_manager.last_options());
   EXPECT_EQ(mock_desktop_manager.last_options()->required_username, "testuser");
+}
+
+TEST_F(IpcPeerSessionTest, StartPropagatesSessionPoliciesAndOptions) {
+  mojo::PendingRemote<mojom::PeerSession> remote;
+  MockPeerSessionReceiver receiver;
+  receiver.Bind(remote.InitWithNewPipeAndPassReceiver());
+
+  base::RunLoop run_loop;
+  receiver.set_start_closure(run_loop.QuitClosure());
+
+  IpcPeerSession session(
+      std::move(remote),
+      base::BindLambdaForTesting(
+          [](mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+             mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+             mojom::DesktopSessionOptionsPtr options) {}));
+
+  SessionPolicies policies;
+  policies.allow_file_transfer = false;
+  policies.clipboard_size_bytes = 2048;
+
+  SessionOptions options;
+  options.detect_updated_region = true;
+  options.disable_udp = true;
+
+  MockEventHandler event_handler;
+  session.Start(&event_handler, "test_client_jid", DesktopEnvironmentOptions(),
+                {}, policies, options);
+
+  run_loop.Run();
+  EXPECT_TRUE(receiver.start_called());
+  EXPECT_EQ(receiver.last_session_policies().allow_file_transfer, false);
+  EXPECT_EQ(receiver.last_session_policies().clipboard_size_bytes, 2048u);
+  EXPECT_EQ(receiver.last_session_options().detect_updated_region, true);
+  EXPECT_EQ(receiver.last_session_options().disable_udp, true);
 }
 
 TEST_F(IpcPeerSessionTest, CreateReturnsNullWhenManagerUnbound) {

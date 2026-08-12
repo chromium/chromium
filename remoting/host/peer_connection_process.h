@@ -65,12 +65,13 @@ class PeerConnectionProcess : public IPC::Listener,
       mojo::PendingReceiver<mojom::PeerSession> session_receiver) override;
 
   // mojom::PeerSession implementation.
-  void Start(
-      mojo::PendingRemote<mojom::PeerSessionEventHandler> event_handler,
-      const std::string& client_jid,
-      mojo::PendingRemote<mojom::DesktopSession> control_remote,
-      mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver,
-      const DesktopEnvironmentOptions& desktop_environment_options) override;
+  void Start(mojo::PendingRemote<mojom::PeerSessionEventHandler> event_handler,
+             const std::string& client_jid,
+             mojo::PendingRemote<mojom::DesktopSession> control_remote,
+             mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver,
+             const DesktopEnvironmentOptions& desktop_environment_options,
+             const SessionPolicies& session_policies,
+             const SessionOptions& session_options) override;
   void DisconnectSession(protocol::ErrorCode error,
                          const std::string& error_details,
                          const SourceLocation& error_location) override;

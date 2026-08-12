@@ -588,6 +588,79 @@ bool mojo::StructTraits<remoting::mojom::SourceLocationDataView,
   return true;
 }
 
+// static
+bool mojo::StructTraits<
+    remoting::mojom::PortRangeDataView,
+    ::remoting::PortRange>::Read(remoting::mojom::PortRangeDataView data_view,
+                                 ::remoting::PortRange* out_range) {
+  auto port_range =
+      ::remoting::PortRange::Create(data_view.min_port(), data_view.max_port());
+  if (!port_range) {
+    return false;
+  }
+  *out_range = *std::move(port_range);
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::SessionPoliciesDataView,
+                        ::remoting::SessionPolicies>::
+    Read(remoting::mojom::SessionPoliciesDataView data_view,
+         ::remoting::SessionPolicies* out_policies) {
+  if (auto clipboard_size = data_view.clipboard_size_bytes();
+      clipboard_size.has_value()) {
+    // This check is needed because the Windows host is still 32-bit.
+    if (!base::IsValueInRangeForNumericType<size_t>(*clipboard_size)) {
+      return false;
+    }
+    out_policies->clipboard_size_bytes =
+        base::checked_cast<size_t>(*clipboard_size);
+  } else {
+    out_policies->clipboard_size_bytes = std::nullopt;
+  }
+  out_policies->allow_stun_connections = data_view.allow_stun_connections();
+  out_policies->allow_relayed_connections =
+      data_view.allow_relayed_connections();
+  if (!data_view.ReadHostUdpPortRange(&out_policies->host_udp_port_range)) {
+    return false;
+  }
+  out_policies->allow_file_transfer = data_view.allow_file_transfer();
+  out_policies->allow_uri_forwarding = data_view.allow_uri_forwarding();
+  if (!data_view.ReadMaximumSessionDuration(
+          &out_policies->maximum_session_duration)) {
+    return false;
+  }
+  out_policies->curtain_required = data_view.curtain_required();
+  out_policies->host_username_match_required =
+      data_view.host_username_match_required();
+  out_policies->allow_remote_input = data_view.allow_remote_input();
+  out_policies->allow_webauthn_forwarding =
+      data_view.allow_webauthn_forwarding();
+  out_policies->allow_gnubby_forwarding = data_view.allow_gnubby_forwarding();
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::SessionOptionsDataView,
+                        ::remoting::SessionOptions>::
+    Read(remoting::mojom::SessionOptionsDataView data_view,
+         ::remoting::SessionOptions* out_options) {
+  out_options->detect_updated_region = data_view.detect_updated_region();
+  out_options->capture_video_on_dedicated_thread =
+      data_view.capture_video_on_dedicated_thread();
+#if BUILDFLAG(IS_MAC)
+  out_options->enable_sck_capturer = data_view.enable_sck_capturer();
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
+  out_options->allow_dxgi_capturer = data_view.allow_dxgi_capturer();
+#endif  // BUILDFLAG(IS_WIN)
+  out_options->disable_udp = data_view.disable_udp();
+  out_options->vp9_encoder_speed = data_view.vp9_encoder_speed();
+  out_options->av1_active_map = data_view.av1_active_map();
+  out_options->av1_encoder_speed = data_view.av1_encoder_speed();
+  return true;
+}
+
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 // static

@@ -22,9 +22,8 @@ std::optional<SessionPolicies> SessionPoliciesFromDict(
   std::optional<int> max_session_duration_mins =
       dict.FindInt(policy::key::kRemoteAccessHostMaximumSessionDurationMinutes);
   // The default policy dict sets RemoteAccessHostMaximumSessionDurationMinutes
-  // to 0, so we need to treat 0 as an unset value.
-  if (max_session_duration_mins.has_value() &&
-      *max_session_duration_mins != 0) {
+  // to 0, so we need to treat non-positive values as unset values.
+  if (max_session_duration_mins.has_value() && *max_session_duration_mins > 0) {
     maximum_session_duration = base::Minutes(*max_session_duration_mins);
   }
 #endif
@@ -33,10 +32,12 @@ std::optional<SessionPolicies> SessionPoliciesFromDict(
   const std::string* udp_port_range_string =
       dict.FindString(policy::key::kRemoteAccessHostUdpPortRange);
   if (udp_port_range_string) {
-    if (!PortRange::Parse(*udp_port_range_string, &host_udp_port_range)) {
+    auto parsed_port_range = PortRange::Parse(*udp_port_range_string);
+    if (!parsed_port_range) {
       LOG(WARNING) << "Invalid port range: " << *udp_port_range_string;
       return std::nullopt;
     }
+    host_udp_port_range = *std::move(parsed_port_range);
   }
 
   std::optional<bool> allow_firewall_traversal =
@@ -77,10 +78,6 @@ std::optional<SessionPolicies> SessionPoliciesFromDict(
   session_policies.host_username_match_required =
       dict.FindBool(policy::key::kRemoteAccessHostMatchUsername);
 #endif
-  if (auto result = session_policies.Validate(); !result.has_value()) {
-    LOG(WARNING) << "Invalid session policies: " << result.error();
-    return std::nullopt;
-  }
   return session_policies;
 }
 

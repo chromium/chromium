@@ -30,7 +30,7 @@ TEST(NetworkSettings, CreateFromSessionPolicies_ExplicitNoRestrictions) {
 }
 
 TEST(NetworkSettings, CreateFromSessionPolicies_RestrictedPortRange) {
-  PortRange port_range{.min_port = 100, .max_port = 200};
+  auto port_range = *PortRange::Create(100, 200);
   SessionPolicies session_policies;
   session_policies.host_udp_port_range = port_range;
   NetworkSettings settings(session_policies);
@@ -70,8 +70,8 @@ TEST(NetworkSettings,
   NetworkSettings settings(session_policies);
 
   EXPECT_EQ(settings.flags, NetworkSettings::NAT_TRAVERSAL_DISABLED);
-  EXPECT_EQ(settings.port_range.min_port, NetworkSettings::kDefaultMinPort);
-  EXPECT_EQ(settings.port_range.max_port, NetworkSettings::kDefaultMaxPort);
+  EXPECT_EQ(settings.port_range.min_port(), NetworkSettings::kDefaultMinPort);
+  EXPECT_EQ(settings.port_range.max_port(), NetworkSettings::kDefaultMaxPort);
 }
 
 }  // namespace remoting::protocol

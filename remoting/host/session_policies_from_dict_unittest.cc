@@ -23,10 +23,7 @@ const SessionPolicies GetFullSessionPolicies() {
   session_policies.clipboard_size_bytes = 1024;
   session_policies.allow_stun_connections = true;
   session_policies.allow_relayed_connections = false;
-  session_policies.host_udp_port_range = {
-      .min_port = 123,
-      .max_port = 456,
-  };
+  session_policies.host_udp_port_range = *PortRange::Create(123, 456);
 #if !BUILDFLAG(IS_CHROMEOS)
   session_policies.allow_file_transfer = true;
   session_policies.allow_uri_forwarding = false;
@@ -78,7 +75,6 @@ TEST(SessionPoliciesFromDict, EmptyDict_CreatesEmptyPolicies) {
   std::optional<SessionPolicies> policies =
       SessionPoliciesFromDict(base::DictValue());
   ASSERT_TRUE(policies.has_value());
-  EXPECT_TRUE(policies->Validate().has_value());
   EXPECT_EQ(*policies, SessionPolicies());
 }
 
@@ -86,7 +82,6 @@ TEST(SessionPoliciesFromDict, FullDict_CreatesFullPolicies) {
   std::optional<SessionPolicies> policies =
       SessionPoliciesFromDict(GetFullSessionPolicyDict());
   ASSERT_TRUE(policies.has_value());
-  EXPECT_TRUE(policies->Validate().has_value());
   EXPECT_EQ(*policies, GetFullSessionPolicies());
 }
 
@@ -96,7 +91,6 @@ TEST(SessionPoliciesFromDict, FullDict_ExpectNoValueForAllowRemoteInput) {
   std::optional<SessionPolicies> policies =
       SessionPoliciesFromDict(GetFullSessionPolicyDict());
   ASSERT_TRUE(policies.has_value());
-  EXPECT_TRUE(policies->Validate().has_value());
   EXPECT_FALSE(policies->allow_remote_input.has_value());
 }
 
@@ -108,11 +102,10 @@ TEST(SessionPoliciesFromDict, PartialDict_CreatesPartialPolicies) {
   std::optional<SessionPolicies> policies =
       SessionPoliciesFromDict(policy_dict);
   ASSERT_TRUE(policies.has_value());
-  EXPECT_TRUE(policies->Validate().has_value());
 
   SessionPolicies expected_policies = GetFullSessionPolicies();
   expected_policies.clipboard_size_bytes.reset();
-  expected_policies.host_udp_port_range.reset();
+  expected_policies.host_udp_port_range = PortRange();
   EXPECT_EQ(*policies, expected_policies);
 }
 
@@ -127,7 +120,6 @@ TEST(SessionPoliciesFromDict,
   std::optional<SessionPolicies> policies =
       SessionPoliciesFromDict(policy_dict);
   ASSERT_TRUE(policies.has_value());
-  EXPECT_TRUE(policies->Validate().has_value());
 
   SessionPolicies expected_policies = GetFullSessionPolicies();
   expected_policies.allow_stun_connections = false;
@@ -136,22 +128,26 @@ TEST(SessionPoliciesFromDict,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST(SessionPoliciesFromDict, InvalidMaxSessionDuration_ReturnsNullopt) {
-  EXPECT_FALSE(SessionPoliciesFromDict(GetPolicyDictWithMaxDurationMins(-1))
-                   .has_value());
-  EXPECT_FALSE(SessionPoliciesFromDict(GetPolicyDictWithMaxDurationMins(10))
-                   .has_value());
-}
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST(SessionPoliciesFromDict, ZeroMaxSessionDuration_FieldIsNullopt) {
+TEST(SessionPoliciesFromDict, NonPositiveMaxSessionDuration_FieldIsNullopt) {
   SessionPolicies expected_policies = GetFullSessionPolicies();
   expected_policies.maximum_session_duration.reset();
-  std::optional<SessionPolicies> policies =
+  std::optional<SessionPolicies> policies_negative =
+      SessionPoliciesFromDict(GetPolicyDictWithMaxDurationMins(-1));
+  ASSERT_TRUE(policies_negative.has_value());
+  EXPECT_EQ(*policies_negative, expected_policies);
+
+  std::optional<SessionPolicies> policies_zero =
       SessionPoliciesFromDict(GetPolicyDictWithMaxDurationMins(0));
+  ASSERT_TRUE(policies_zero.has_value());
+  EXPECT_EQ(*policies_zero, expected_policies);
+}
+
+TEST(SessionPoliciesFromDict, PositiveMaxSessionDuration_FieldIsPopulated) {
+  SessionPolicies expected_policies = GetFullSessionPolicies();
+  expected_policies.maximum_session_duration = base::Minutes(10);
+  std::optional<SessionPolicies> policies =
+      SessionPoliciesFromDict(GetPolicyDictWithMaxDurationMins(10));
   ASSERT_TRUE(policies.has_value());
-  EXPECT_TRUE(policies->Validate().has_value());
   EXPECT_EQ(*policies, expected_policies);
 }
 #endif
@@ -168,7 +164,6 @@ TEST(SessionPoliciesFromDict, NegativeClipboardSize_FieldIsNullopt) {
   std::optional<SessionPolicies> policies =
       SessionPoliciesFromDict(GetPolicyDictWithClipboardSize(-1));
   ASSERT_TRUE(policies.has_value());
-  EXPECT_TRUE(policies->Validate().has_value());
   EXPECT_EQ(*policies, expected_policies);
 }
 
@@ -178,7 +173,6 @@ TEST(SessionPoliciesFromDict, ZeroClipboardSize_FieldIsZero) {
   std::optional<SessionPolicies> policies =
       SessionPoliciesFromDict(GetPolicyDictWithClipboardSize(0));
   ASSERT_TRUE(policies.has_value());
-  EXPECT_TRUE(policies->Validate().has_value());
   EXPECT_EQ(*policies, expected_policies);
 }
 

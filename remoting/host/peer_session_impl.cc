@@ -110,6 +110,7 @@ constexpr char kRtcLogTransferDataChannelPrefix[] = "rtc-log-transfer-";
 
 constexpr base::TimeDelta kDefaultBoostCaptureInterval = base::Milliseconds(5);
 constexpr base::TimeDelta kDefaultBoostDuration = base::Milliseconds(50);
+constexpr base::TimeDelta kMinMaximumSessionDuration = base::Minutes(30);
 
 std::string_view PixelTypeToString(
     remoting::protocol::VideoLayout::PixelType pixel_type) {
@@ -177,17 +178,11 @@ void PeerSessionImpl::Start(
   desktop_environment_options_ = desktop_environment_options;
   extensions_.assign(extensions.begin(), extensions.end());
   effective_policies_ = session_policies;
-  if (auto result = effective_policies_.Validate(); !result.has_value()) {
-    LOG(ERROR) << "Disconnecting session due to invalid session policies: "
-               << result.error();
-    DisconnectSession(ErrorCode::HOST_CONFIGURATION_ERROR,
-                      result.error().ToString(), FROM_HERE);
-    return;
-  }
 
   base::TimeDelta max_duration =
       effective_policies_.maximum_session_duration.value_or(base::TimeDelta());
   if (max_duration.is_positive()) {
+    max_duration = std::max(max_duration, kMinMaximumSessionDuration);
     max_duration_timer_.Start(
         FROM_HERE, max_duration,
         base::BindOnce(&PeerSessionImpl::DisconnectSession,

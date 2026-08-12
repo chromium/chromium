@@ -4,6 +4,8 @@
 
 module remoting.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 [EnableIf=is_win|is_linux]
 import "services/network/public/mojom/ip_endpoint.mojom";
 
@@ -42,7 +44,7 @@ enum ProtocolErrorCode {
 };
 
 // This struct mirrors remoting::SourceLocation.
-// |function_name| and |file_name| are human-readable diagnostic strings and
+// `function_name` and `file_name` are human-readable diagnostic strings and
 // must not be parsed programmatically to execute logic.
 struct SourceLocation {
   // Function name where the error occurred, if available.
@@ -69,3 +71,127 @@ struct TransportRoute {
   network.mojom.IPEndPoint remote_address;
   network.mojom.IPEndPoint local_address;
 };
+
+// LINT.IfChange(PortRange)
+// This struct mirrors remoting::PortRange.
+// Both `min_port` and `max_port` are inclusive.
+// A valid PortRange must satisfy `0 < min_port <= max_port`, or
+// `min_port = max_port = 0` (null port range). Invalid combinations fail Mojo
+// deserialization.
+struct PortRange {
+  // Minimum port number (inclusive). A value of 0 means unrestricted when
+  // combined with max_port == 0.
+  uint16 min_port;
+
+  // Maximum port number (inclusive). A value of 0 means unrestricted when
+  // combined with min_port == 0.
+  uint16 max_port;
+};
+// LINT.ThenChange(//remoting/base/port_range.h:PortRange)
+
+// LINT.IfChange(SessionPolicies)
+// Policies to be applied to the CRD host.
+// This struct mirrors remoting::SessionPolicies.
+struct SessionPolicies {
+  // The maximum size, in bytes, that can be transferred between client and
+  // host via clipboard synchronization. A null value means to use the default
+  // value, which is no restrictions (unlimited size). Setting it to 0
+  // disables clipboard sync.
+  uint64? clipboard_size_bytes;
+
+  // Allow connections over STUN. A null value means to use the default value,
+  // which is true (allowed).
+  bool? allow_stun_connections;
+
+  // Allow connections over a relay server. A null value means to use the
+  // default value, which is true (allowed).
+  bool? allow_relayed_connections;
+
+  // Restrict the UDP port range used by the remote access host.
+  // A null port range (`min_port == 0 && max_port == 0`) means to use the
+  // default value, which is no restrictions.
+  PortRange host_udp_port_range;
+
+  // Allow transferring files between the host and the client.
+  // A null value means to use the default value, which is true (allowed).
+  bool? allow_file_transfer;
+
+  // Allow opening a host-side URI on the client browser.
+  // A null value means to use the default value, which is true (allowed).
+  bool? allow_uri_forwarding;
+
+  // Maximum session duration allowed for remote access connections.
+  // A null value means to use the default value, which is no restrictions
+  // (unlimited duration). Values outside the range of supported session
+  // durations will be clamped to match it.
+  mojo_base.mojom.TimeDelta? maximum_session_duration;
+
+  // Enable curtaining of remote access hosts.
+  // A null value means to use the default value, which is false (not required).
+  bool? curtain_required;
+
+  // Require that the name of the local user and the remote access host owner
+  // match. For example, if the host owner's email address is foo@gmail.com,
+  // then the local OS user must be foo.
+  // A null value means to use the default value, which is false (not required).
+  bool? host_username_match_required;
+
+  // Allow the client to remotely control the host. When disabled, the host
+  // will be in a view-only session.
+  // A null value means to use the default value, which is true (allowed).
+  bool? allow_remote_input;
+
+  // Allow the client to service WebAuthn requests generated on the host
+  // machine.
+  // A null value means to use the default value, which is true (allowed).
+  bool? allow_webauthn_forwarding;
+
+  // Allow the client to service security key (gnubby) requests generated on
+  // the host machine.
+  // A null value means to use the default value, which is true (allowed).
+  bool? allow_gnubby_forwarding;
+};
+// LINT.ThenChange(//remoting/base/session_policies.h:SessionPolicies)
+
+// LINT.IfChange(SessionOptions)
+// Session based host options sending from client.
+// This struct mirrors remoting::SessionOptions.
+struct SessionOptions {
+  // Whether to detect updated regions when capturing the screen.
+  // A null value means the option is unset and uses the default value (false).
+  bool? detect_updated_region;
+
+  // Whether video capture should run on a dedicated thread.
+  // A null value means the option is unset and uses the default value (false).
+  bool? capture_video_on_dedicated_thread;
+
+  // Whether to enable ScreenCaptureKit capturer on macOS.
+  // A null value means the option is unset and uses the default value (false).
+  [EnableIf=is_mac]
+  bool? enable_sck_capturer;
+
+  // Whether to allow DXGI capturer on Windows.
+  // A null value means the option is unset and uses the default value (false).
+  [EnableIf=is_win]
+  bool? allow_dxgi_capturer;
+
+  // Whether to disable UDP connections.
+  // A null value means the option is unset and uses the default value (false).
+  bool? disable_udp;
+
+  // Encoder speed for VP9 video codec.
+  // A null value means the option is unset and uses the default value
+  // (codec default speed). Values outside the range of supported VP9 encoder
+  // speeds will be clamped to match it.
+  int32? vp9_encoder_speed;
+
+  // Whether active map is enabled for AV1 video codec.
+  // A null value means the option is unset and uses the default value (false).
+  bool? av1_active_map;
+
+  // Encoder speed for AV1 video codec.
+  // A null value means the option is unset and uses the default value
+  // (codec default speed).
+  int32? av1_encoder_speed;
+};
+// LINT.ThenChange(//remoting/base/session_options.h:SessionOptions)

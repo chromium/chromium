@@ -79,7 +79,8 @@ void IpcPeerSession::Start(
 
   remote_->Start(std::move(event_handler_remote), std::string(client_jid),
                  std::move(control_remote), std::move(events_receiver),
-                 desktop_environment_options);
+                 desktop_environment_options, session_policies,
+                 session_options);
 }
 
 void IpcPeerSession::DisconnectSession(protocol::ErrorCode error,

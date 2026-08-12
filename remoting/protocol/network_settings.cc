@@ -21,8 +21,7 @@ NetworkSettings::NetworkSettings(const SessionPolicies& policies) {
       // For legacy reasons we have to restrict the port range to a set of
       // default values when nat traversal is disabled, even if the port range
       // was not set in policy.
-      port_range.min_port = kDefaultMinPort;
-      port_range.max_port = kDefaultMaxPort;
+      port_range = *PortRange::Create(kDefaultMinPort, kDefaultMaxPort);
     }
   }
   if (policies.allow_stun_connections.value_or(true)) {

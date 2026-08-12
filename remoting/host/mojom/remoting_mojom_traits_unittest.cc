@@ -14,6 +14,9 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "remoting/base/buildflags.h"
 #include "remoting/base/errors.h"
+#include "remoting/base/port_range.h"
+#include "remoting/base/session_options.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/base/source_location.h"
 #include "remoting/host/mojom/common.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -798,5 +801,100 @@ TEST(RemotingMojomTraitsTest, IpcFifoBufferReader) {
 }
 
 #endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
+
+TEST(RemotingMojomTraitsTest, PortRangeValidAndInvalid) {
+  auto valid_input = *PortRange::Create(1000, 2000);
+  PortRange valid_output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PortRange>(
+      valid_input, valid_output));
+  EXPECT_EQ(valid_input, valid_output);
+  EXPECT_FALSE(valid_output.is_null());
+  EXPECT_EQ(valid_output.min_port(), 1000u);
+  EXPECT_EQ(valid_output.max_port(), 2000u);
+
+  PortRange null_input;
+  PortRange null_output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PortRange>(
+      null_input, null_output));
+  EXPECT_EQ(null_input, null_output);
+  EXPECT_TRUE(null_output.is_null());
+
+  // Direct deserialization of invalid mojom struct should fail.
+  auto invalid_mojom = mojom::PortRange::New(2000, 1000);
+  PortRange invalid_output;
+  EXPECT_FALSE(mojom::PortRange::Deserialize(
+      mojom::PortRange::Serialize(&invalid_mojom), &invalid_output));
+
+  auto invalid_min_zero_mojom = mojom::PortRange::New(0, 80);
+  EXPECT_FALSE(mojom::PortRange::Deserialize(
+      mojom::PortRange::Serialize(&invalid_min_zero_mojom), &invalid_output));
+
+  auto invalid_max_zero_mojom = mojom::PortRange::New(80, 0);
+  EXPECT_FALSE(mojom::PortRange::Deserialize(
+      mojom::PortRange::Serialize(&invalid_max_zero_mojom), &invalid_output));
+}
+
+TEST(RemotingMojomTraitsTest, SessionPoliciesRoundTripAndValidation) {
+  SessionPolicies input;
+  input.clipboard_size_bytes = 102400;
+  input.allow_stun_connections = false;
+  input.allow_relayed_connections = true;
+  input.host_udp_port_range = *PortRange::Create(12400, 12409);
+  input.allow_file_transfer = false;
+  input.allow_uri_forwarding = true;
+  input.maximum_session_duration = base::Minutes(60);
+  input.curtain_required = true;
+  input.host_username_match_required = false;
+  input.allow_remote_input = true;
+  input.allow_webauthn_forwarding = false;
+  input.allow_gnubby_forwarding = true;
+
+  SessionPolicies output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionPolicies>(
+      input, output));
+  EXPECT_EQ(input, output);
+
+  // Test default/empty policies.
+  SessionPolicies empty_input;
+  SessionPolicies empty_output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionPolicies>(
+      empty_input, empty_output));
+  EXPECT_EQ(empty_input, empty_output);
+
+  // Test large (64-bit) clipboard size.
+  SessionPolicies large_clipboard_input;
+  large_clipboard_input.clipboard_size_bytes = 5ULL * 1024 * 1024 * 1024;
+  SessionPolicies large_clipboard_output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionPolicies>(
+      large_clipboard_input, large_clipboard_output));
+  EXPECT_EQ(large_clipboard_input, large_clipboard_output);
+}
+
+TEST(RemotingMojomTraitsTest, SessionOptionsRoundTrip) {
+  SessionOptions input;
+  input.detect_updated_region = true;
+  input.capture_video_on_dedicated_thread = false;
+#if BUILDFLAG(IS_MAC)
+  input.enable_sck_capturer = true;
+#endif
+#if BUILDFLAG(IS_WIN)
+  input.allow_dxgi_capturer = false;
+#endif
+  input.disable_udp = true;
+  input.vp9_encoder_speed = 8;
+  input.av1_active_map = false;
+  input.av1_encoder_speed = 6;
+
+  SessionOptions output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionOptions>(
+      input, output));
+  EXPECT_EQ(input, output);
+
+  SessionOptions empty_input;
+  SessionOptions empty_output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionOptions>(
+      empty_input, empty_output));
+  EXPECT_EQ(empty_input, empty_output);
+}
 
 }  // namespace remoting

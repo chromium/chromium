@@ -862,15 +862,14 @@ TEST_F(It2MeHostTest, UnauthorizedHelperIsRejected) {
 }
 
 TEST_F(It2MeHostTest, HostUdpPortRangePolicyValidRange) {
-  PortRange port_range_actual;
-  ASSERT_TRUE(PortRange::Parse(kPortRange, &port_range_actual));
-  ASSERT_TRUE(port_range_actual.is_valid());
+  auto port_range_actual = PortRange::Parse(kPortRange);
+  ASSERT_TRUE(port_range_actual.has_value());
   SetPolicies(
       {{policy::key::kRemoteAccessHostUdpPortRange, base::Value(kPortRange)}});
   StartHost();
   PortRange port_range = get_local_session_policies().host_udp_port_range;
-  ASSERT_EQ(port_range_actual.min_port, port_range.min_port);
-  ASSERT_EQ(port_range_actual.max_port, port_range.max_port);
+  ASSERT_EQ(port_range_actual->min_port(), port_range.min_port());
+  ASSERT_EQ(port_range_actual->max_port(), port_range.max_port());
 }
 
 TEST_F(It2MeHostTest, HostUdpPortRangePolicyNoRange) {
