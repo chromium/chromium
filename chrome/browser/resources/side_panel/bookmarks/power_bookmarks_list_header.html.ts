@@ -9,56 +9,41 @@ import type {PowerBookmarksListHeaderElement} from './power_bookmarks_list_heade
 export function getHtml(this: PowerBookmarksListHeaderElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="header-container">
-  <div id="navigation-container" class="${this.getTitleContainerClass_()}">
-    <div id="root-header" class="${this.getRootHeaderClass_()}">
-      <h1 class="title-span active">All Bookmarks</h1>
-    </div>
-
-    <sp-heading id="folder-header" class="${this.getFolderHeaderClass_()}"
-        back-button-title="$i18n{tooltipBack}"
-        back-button-aria-label="${this.getBackButtonLabel_()}"
-        @back-button-click="${this.onBackButtonClick_}"
-        ?hide-back-button="${this.shouldHideBackButton_()}"
-        ?disable-back-button="${this.disableBackButton_()}">
-      <h1 slot="heading" id="title-container"
-          class="${this.getTitleContainerClass_()}">
-        <span id="title-a"
-            class="${this.getTitleClass_('a')}">${this.titleA_}</span>
-        <span id="title-b"
-            class="${this.getTitleClass_('b')}">${this.titleB_}</span>
-      </h1>
-    </sp-heading>
+<sp-heading id="heading"
+    back-button-title="$i18n{tooltipBack}"
+    back-button-aria-label="${this.getBackButtonLabel_()}"
+    @back-button-click="${this.onBackButtonClick_}"
+    ?hide-back-button="${this.shouldHideBackButton_()}"
+    ?disable-back-button="${this.disableBackButton_()}">
+  <h1 slot="heading">
+    ${this.getActiveFolderLabel_()}
+  </h1>
+  <div aria-hidden="true" slot="metadata">
+    ${this.activeSortType_.label}
   </div>
-
-  <div id="actions-container">
-    <div aria-hidden="true" class="metadata">
-      ${this.activeSortType_.label}
-    </div>
-    <cr-icon-button class="sort-menu-button"
-        iron-icon="${this.webuiRoundedIconsEnabled_
-            ? 'sp:filter-list'
-            : 'sp:filter-list-old'}"
-        title="$i18n{tooltipOrganize}"
-        aria-label="$i18n{sortMenuA11yLabel}"
-        aria-description="${this.activeSortType_.label}"
-        @click="${this.onShowSortMenuClick_}">
-    </cr-icon-button>
-    <cr-icon-button id="viewButton"
-        iron-icon="${this.getViewButtonIcon_()}"
-        title="${this.getViewButtonTooltip_()}"
-        aria-label="${this.getViewButtonA11yLabel_()}"
-        @click="${this.onViewToggleClick_}">
-    </cr-icon-button>
-    <cr-icon-button id="editButton" class="icon-edit"
-        ?disabled="${this.disableEdit}"
-        title="$i18n{tooltipEdit}"
-        aria-label="$i18n{editBookmarkListA11yLabel}"
-        ?aria-pressed="${this.editing}"
-        @click="${this.onBulkEditClick_}">
-    </cr-icon-button>
-  </div>
-</div>
+  <cr-icon-button slot="buttons" class="sort-menu-button"
+      iron-icon="${this.webuiRoundedIconsEnabled_
+          ? 'sp:filter-list'
+          : 'sp:filter-list-old'}"
+      title="$i18n{tooltipOrganize}"
+      aria-label="$i18n{sortMenuA11yLabel}"
+      aria-description="${this.activeSortType_.label}"
+      @click="${this.onShowSortMenuClick_}">
+  </cr-icon-button>
+  <cr-icon-button id="viewButton" slot="buttons"
+      iron-icon="${this.getViewButtonIcon_()}"
+      title="${this.getViewButtonTooltip_()}"
+      aria-label="${this.getViewButtonA11yLabel_()}"
+      @click="${this.onViewToggleClick_}">
+  </cr-icon-button>
+  <cr-icon-button id="editButton" slot="buttons" class="icon-edit"
+      ?disabled="${this.disableEdit}"
+      title="$i18n{tooltipEdit}"
+      aria-label="$i18n{editBookmarkListA11yLabel}"
+      ?aria-pressed="${this.editing}"
+      @click="${this.onBulkEditClick_}">
+  </cr-icon-button>
+</sp-heading>
 
 <cr-action-menu id="sortMenu" auto-close-on-focusout>
   ${this.sortTypes_.map((item, index) => html`

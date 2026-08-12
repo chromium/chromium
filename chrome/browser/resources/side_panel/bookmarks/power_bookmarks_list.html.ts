@@ -26,8 +26,26 @@ export function getHtml(this: PowerBookmarksListElement) {
         @view-toggled="${this.onViewToggled_}">
     </power-bookmarks-list-header>
 
+    ${!this.sectionVisibility_.bookmarksList ? html`
+      <div ?hidden="${!this.sectionVisibility_.newFolderButton}">
+        <power-bookmarks-add-folder-button
+            ?disabled="${this.editing}"
+            ?compact="${this.compact_}"
+            @click="${this.onAddNewFolderClick_}">
+        </power-bookmarks-add-folder-button>
+      </div>
+    ` : ''}
+
+    <sp-empty-state id="folderEmptyState"
+        ?hidden="${!this.sectionVisibility_.folderEmptyState}"
+        image-path="./images/bookmarks_empty.svg"
+        dark-image-path="./images/bookmarks_empty_dark.svg"
+        heading="$i18n{emptyTitleFolder}"
+        body="$i18n{emptyBodyFolder}">
+    </sp-empty-state>
 
     <div id="bookmarks" class="bookmarks"
+        ?hidden="${!this.sectionVisibility_.bookmarksList}"
         role="${this.getBookmarksListRole_()}"
         aria-multiselectable="${this.editing}" scrollable>
       <power-bookmarks-add-folder-button
@@ -36,112 +54,43 @@ export function getHtml(this: PowerBookmarksListElement) {
           ?compact="${this.compact_}"
           @click="${this.onAddNewFolderClick_}">
       </power-bookmarks-add-folder-button>
-      <div id="list-container">
-        <div id="list-a" class="${this.getListClass_('a')}">
-          <sp-empty-state id="folderEmptyStateA"
-              ?hidden="${!this.isFolderEmptyStateVisible_('a')}"
-              image-path="./images/bookmarks_empty.svg"
-              dark-image-path="./images/bookmarks_empty_dark.svg"
-              heading="$i18n{emptyTitleFolder}"
-              body="$i18n{emptyBodyFolder}">
-          </sp-empty-state>
-          <cr-lazy-list id="listA"
-              .items="${this.displayListA_}"
-              .scrollTarget="${this.scrollTarget_}"
-              role="tree"
-              .template="${(item: unknown, index: number) => html`
-                <power-bookmark-row
-                    id="bookmark-${(item as DisplayItem).bookmark.id}"
-                    ?hidden="${!this.isListActiveOrTransitioning_('a')}"
-                    .bookmark="${(item as DisplayItem).bookmark}"
-                    .depth="${(item as DisplayItem).depth}"
-                    .compact="${this.compact_}"
-                    .searchQuery="${this.searchQuery}"
-                    .updatedElementIds="${this.updatedElementIds_}"
-                    trailing-icon-tooltip="$i18n{tooltipMore}"
-                    .hasCheckbox="${this.editing}"
-                    .activeSortIndex="${this.activeSortIndex}"
-                    .selectedBookmarks=
-                        "${this.getSelectedBookmarksList_()}"
-                    .renamingId="${this.renamingId}"
-                    @row-clicked="${this.onRowClicked_}"
-                    @context-menu="${this.onShowContextMenu_}"
-                    @trailing-icon-clicked="${this.onTrailingIconClicked_}"
-                    @checkbox-change="${this.onCheckboxChange_}"
-                    @input-change="${this.onInputChange_}"
-                    @list-item-size-changed="${this.onListItemSizeChanged_}"
-                    @power-bookmark-toggle="${this.onPowerBookmarkToggle_}"
-                    @power-bookmark-row-focus-parent=
-                        "${this.onPowerBookmarkRowFocusParent_}"
-                    tabindex="${this.tabIndex}"
-                    .imageUrls="${this.imageUrls_}"
-                    .shoppingCollectionFolderId=
-                        "${this.shoppingCollectionFolderId_}"
-                    .contextMenuBookmark="${this.contextMenuBookmark}"
-                    draggable="${this.canDrag_}"
-                    .canDrag="${this.canDrag_}"
-                    .hasActiveDrag="${this.hasActiveDrag_}"
-                    .activeFolderPath="${this.activeFolderPath}"
-                    .hasFolders="${this.hasFolders_}"
-                    .rowHeading="${this.getRowHeading_(index, 'a')}"
-                    .toggleExpand="${this.expandedFolderIds_.has(
-                        (item as DisplayItem).bookmark.id)}">
-                </power-bookmark-row>`}">
-          </cr-lazy-list>
-        </div>
-        <div id="list-b" class="${this.getListClass_('b')}">
-          <sp-empty-state id="folderEmptyStateB"
-              ?hidden="${!this.isFolderEmptyStateVisible_('b')}"
-              image-path="./images/bookmarks_empty.svg"
-              dark-image-path="./images/bookmarks_empty_dark.svg"
-              heading="$i18n{emptyTitleFolder}"
-              body="$i18n{emptyBodyFolder}">
-          </sp-empty-state>
-          <cr-lazy-list id="listB"
-              .items="${this.displayListB_}"
-              .scrollTarget="${this.scrollTarget_}"
-              role="tree"
-              .template="${(item: unknown, index: number) => html`
-                <power-bookmark-row
-                    id="bookmark-${(item as DisplayItem).bookmark.id}"
-                    ?hidden="${!this.isListActiveOrTransitioning_('b')}"
-                    .bookmark="${(item as DisplayItem).bookmark}"
-                    .depth="${(item as DisplayItem).depth}"
-                    .compact="${this.compact_}"
-                    .searchQuery="${this.searchQuery}"
-                    .updatedElementIds="${this.updatedElementIds_}"
-                    trailing-icon-tooltip="$i18n{tooltipMore}"
-                    .hasCheckbox="${this.editing}"
-                    .activeSortIndex="${this.activeSortIndex}"
-                    .selectedBookmarks=
-                        "${this.getSelectedBookmarksList_()}"
-                    .renamingId="${this.renamingId}"
-                    @row-clicked="${this.onRowClicked_}"
-                    @context-menu="${this.onShowContextMenu_}"
-                    @trailing-icon-clicked="${this.onTrailingIconClicked_}"
-                    @checkbox-change="${this.onCheckboxChange_}"
-                    @input-change="${this.onInputChange_}"
-                    @list-item-size-changed="${this.onListItemSizeChanged_}"
-                    @power-bookmark-toggle="${this.onPowerBookmarkToggle_}"
-                    @power-bookmark-row-focus-parent=
-                        "${this.onPowerBookmarkRowFocusParent_}"
-                    tabindex="${this.tabIndex}"
-                    .imageUrls="${this.imageUrls_}"
-                    .shoppingCollectionFolderId=
-                        "${this.shoppingCollectionFolderId_}"
-                    .contextMenuBookmark="${this.contextMenuBookmark}"
-                    draggable="${this.canDrag_}"
-                    .canDrag="${this.canDrag_}"
-                    .hasActiveDrag="${this.hasActiveDrag_}"
-                    .activeFolderPath="${this.activeFolderPath}"
-                    .hasFolders="${this.hasFolders_}"
-                    .rowHeading="${this.getRowHeading_(index, 'b')}"
-                    .toggleExpand="${this.expandedFolderIds_.has(
-                        (item as DisplayItem).bookmark.id)}">
-                </power-bookmark-row>`}">
-          </cr-lazy-list>
-        </div>
-      </div>
+      <cr-lazy-list id="list"
+          .items="${this.displayList_}" .scrollTarget="${this.scrollTarget_}"
+          role="tree"
+          .template="${(item: DisplayItem, index: number) => html`
+            <power-bookmark-row id="bookmark-${item.bookmark.id}"
+                .bookmark="${item.bookmark}" .depth="${item.depth}"
+                .compact="${this.compact_}"
+                .searchQuery="${this.searchQuery}"
+                .updatedElementIds="${this.updatedElementIds_}"
+                trailing-icon-tooltip="$i18n{tooltipMore}"
+                .hasCheckbox="${this.editing}"
+                .activeSortIndex="${this.activeSortIndex}"
+                .selectedBookmarks=
+                    "${this.getSelectedBookmarksList_()}"
+                .renamingId="${this.renamingId}"
+                @row-clicked="${this.onRowClicked_}"
+                @context-menu="${this.onShowContextMenu_}"
+                @trailing-icon-clicked="${this.onTrailingIconClicked_}"
+                @checkbox-change="${this.onCheckboxChange_}"
+                @input-change="${this.onInputChange_}"
+                @list-item-size-changed="${this.onListItemSizeChanged_}"
+                @power-bookmark-toggle="${this.onPowerBookmarkToggle_}"
+                @power-bookmark-row-focus-parent="${this.onPowerBookmarkRowFocusParent_}"
+                tabindex="${this.tabIndex}"
+                .imageUrls="${this.imageUrls_}"
+                .shoppingCollectionFolderId="${this.shoppingCollectionFolderId_}"
+                .contextMenuBookmark="${this.contextMenuBookmark}"
+                draggable="${this.canDrag_}"
+                .canDrag="${this.canDrag_}"
+                .hasActiveDrag="${this.hasActiveDrag_}"
+                .activeFolderPath="${this.activeFolderPath}"
+                .hasFolders="${this.hasFolders_}"
+                .rowHeading="${this.getRowHeading_(index)}"
+                .toggleExpand="${this.expandedFolderIds_.has(
+                    item.bookmark.id)}">
+            </power-bookmark-row>`}">
+      </cr-lazy-list>
     </div>
   </div>
 </div>

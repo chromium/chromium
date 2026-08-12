@@ -132,9 +132,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
   ];
 
   function getBookmarkRow(id: string) {
-    const listEl = delegate.list;
-    const rows = delegate.shadowRoot.querySelectorAll(
-        `#${listEl.id} power-bookmark-row`);
+    const rows = delegate.shadowRoot.querySelectorAll('power-bookmark-row');
     for (const row of rows) {
       if (row instanceof PowerBookmarkRowElement && row.bookmark.id === id) {
         return row;

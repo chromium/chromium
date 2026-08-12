@@ -93,14 +93,12 @@ export function getBookmarks(app: PowerBookmarksAppElement):
 
 export function getBookmarksInList(
     app: PowerBookmarksAppElement, listIndex: number): BookmarksTreeNode[] {
-  const listEl = app.$.bookmarksList.list;
-  const listItems = listEl.items;
+  const listItems = app.$.bookmarksList.$.list.items;
   const items = listItems.map(item => item.bookmark);
-  const elements = app.$.bookmarksList.shadowRoot.querySelectorAll(
-      `#${listEl.id} power-bookmark-row`);
+  const elements =
+      app.$.bookmarksList.shadowRoot.querySelectorAll('power-bookmark-row');
   const firstSecondaryIndex = Array.from(elements).findIndex(
-      el => (el as PowerBookmarkRowElement).rowHeading ===
-          loadTimeData.getString('secondaryFilterHeading'));
+      el => el.rowHeading === loadTimeData.getString('secondaryFilterHeading'));
   if (listIndex === 0) {
     return firstSecondaryIndex > -1 ? items.slice(0, firstSecondaryIndex) :
                                       items;
@@ -117,9 +115,8 @@ export function getBookmarkWithId(
 export function getPowerBookmarksRowElement(
     element: PowerBookmarksAppElement, id: string): PowerBookmarkRowElement|
     null {
-  const listEl = element.$.bookmarksList.list;
   return element.$.bookmarksList.shadowRoot
-      .querySelector<PowerBookmarkRowElement>(`#${listEl.id} #bookmark-${id}`);
+      .querySelector<PowerBookmarkRowElement>(`#bookmark-${id}`);
 }
 
 export function getPowerBookmarksRowItemElement(
