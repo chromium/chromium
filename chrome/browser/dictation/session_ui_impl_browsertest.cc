@@ -168,6 +168,37 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, UpdateAudioLevel) {
 }
 
 IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       ToastIsActivatableAfterCreation) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+    // Ensure that showing the bubble did not steal focus from the page.
+    CheckView(DictationBubbleUi::kViewElementIdForTesting,
+              [](views::View* view) {
+                views::Widget* widget = view->GetWidget();
+                return widget && !widget->IsActive();
+              }),
+    // Ensure that the bubble can be activated. This is needed on Windows,
+    // otherwise we'd discard mouse activation messages from the OS and the
+    // buttons wouldn't be clickable. See https://crbug.com/542199776
+    CheckView(DictationBubbleUi::kViewElementIdForTesting,
+              [](views::View* view) {
+                views::Widget* widget = view->GetWidget();
+                return widget && widget->widget_delegate() &&
+                       widget->widget_delegate()->CanActivate();
+              })
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        EndSessionTearsDownUI) {
   // clang-format off
   RunTestSequence(
