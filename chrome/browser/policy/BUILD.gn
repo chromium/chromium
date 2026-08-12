@@ -716,8 +716,9 @@ source_set("browser_tests") {
     ]
   }
 
-  if (!is_android && !is_chromeos) {
+  if (enable_extensions_core && !is_chromeos) {
     sources += [ "cloud/extension_install_policy_service_browsertest.cc" ]
+    deps += [ "//extensions/strings" ]
   }
 
   if (is_chromeos) {
@@ -852,13 +853,18 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [
-      "cloud/extension_install_policy_invalidator_unittest.cc",
-      "cloud/extension_install_policy_service_unittest.cc",
       "developer_tools_policy_checker_factory_unittest.cc",
       "developer_tools_policy_checker_unittest.cc",
       "policy_path_parser_unittest.cc",
     ]
     deps += [ ":path_parser" ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [
+      "cloud/extension_install_policy_invalidator_unittest.cc",
+      "cloud/extension_install_policy_service_unittest.cc",
+    ]
   }
 
   if (!is_android && !is_chromeos) {
@@ -1141,7 +1147,7 @@ source_set("policy") {
     public_deps += [ "//printing/backend" ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     public += [
       "value_provider/extension_install_policies_value_provider.h",
       "value_provider/extension_policies_value_provider.h",

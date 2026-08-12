@@ -61,6 +61,7 @@ class ChromeBrowserCloudManagementControllerAndroid
   bool ReadyToCreatePolicyManager() override;
   bool ReadyToInit() override;
   std::unique_ptr<ClientDataDelegate> CreateClientDataDelegate() override;
+  bool CanStartExtensionInstallPolicyInvalidator() const override;
   void DeferInitialization(base::OnceClosure callback) override;
   std::unique_ptr<client_certificates::CertificateProvisioningService>
   CreateCertificateProvisioningService() override;

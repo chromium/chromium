@@ -96,7 +96,7 @@ ConfigurationPolicyProvider* TestHarness::CreateProvider(
   store_ = store.get();
   store_->NotifyStoreLoaded();
   std::unique_ptr<MockCloudPolicyStore> extension_install_store;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extension_install_store = std::make_unique<MockCloudPolicyStore>(
       dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
   extension_install_store_ = extension_install_store.get();
@@ -107,7 +107,7 @@ ConfigurationPolicyProvider* TestHarness::CreateProvider(
       std::move(extension_install_store), task_runner,
       network::TestNetworkConnectionTracker::CreateGetter());
   Mock::VerifyAndClearExpectations(store_.get());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   Mock::VerifyAndClearExpectations(extension_install_store_.get());
 #endif
   return provider;
@@ -194,7 +194,7 @@ class CloudPolicyManagerTest : public testing::Test {
     store_ = store.get();
     EXPECT_CALL(*store_, Load());
     std::unique_ptr<MockCloudPolicyStore> extension_install_store;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     extension_install_store = std::make_unique<MockCloudPolicyStore>(
         dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
     extension_install_store_ = extension_install_store.get();
@@ -206,7 +206,7 @@ class CloudPolicyManagerTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner());
     manager_->Init(&schema_registry_);
     Mock::VerifyAndClearExpectations(store_.get());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     Mock::VerifyAndClearExpectations(extension_install_store_.get());
 #endif
     manager_->AddObserver(&observer_);

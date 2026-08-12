@@ -27,6 +27,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
@@ -46,12 +47,14 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -62,18 +65,18 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/policy/cloud/extension_install_policy_service.h"
+#include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
+#include "extensions/browser/pref_names.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_android.h"
 #else
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.h"
-#include "chrome/browser/policy/cloud/extension_install_policy_service.h"
-#include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "components/policy/core/common/features.h"
-#include "components/prefs/pref_service.h"
-#include "extensions/browser/pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
@@ -103,10 +106,12 @@ const char kUnenrollmentSuccessMetrics[] =
 const char kDmTokenDeletionMetrics[] =
     "Enterprise.MachineLevelUserCloudPolicyEnrollment.DMTokenDeletion";
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 constexpr char kExtensionId1[] = "extension1";
 constexpr char kExtensionVersion1[] = "1.0.0.0";
+#endif
 
+#if !BUILDFLAG(IS_ANDROID)
 typedef ChromeBrowserCloudManagementBrowserTestDelegateDesktop
     ChromeBrowserCloudManagementBrowserTestDelegateType;
 #else
@@ -975,7 +980,9 @@ INSTANTIATE_TEST_SUITE_P(
         /*dm_token=*/::testing::Values(kDMToken),
         /*storage_enabled=*/::testing::Values(true),
         /*is_policy_fetch_with_sha256_enabled=*/::testing::Bool()));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 class MachineLevelUserCloudPolicyExtensionInstallPolicyTest
     : public MachineLevelUserCloudPolicyPolicyFetchTest {
  public:
@@ -1026,7 +1033,7 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyExtensionInstallPolicyTest,
   ExtensionInstallPolicyServiceImpl* extension_install_policy_service =
       static_cast<ExtensionInstallPolicyServiceImpl*>(
           ExtensionInstallPolicyServiceFactory::GetForBrowserContext(
-              browser()->GetProfile()));
+              chrome_test_utils::GetProfile(this)));
   ASSERT_TRUE(extension_install_policy_service);
   std::set<ExtensionIdAndVersion> extensions = {
       ExtensionIdAndVersion(kExtensionId1, kExtensionVersion1)};
@@ -1038,11 +1045,11 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyExtensionInstallPolicyTest,
   // Configure new policies on the server and refresh policies on the client.
   {
     em::CloudPolicySettings settings;
-    em::BooleanPolicyProto* allow_dinosaur_easter_egg =
-        settings.mutable_allowdinosaureasteregg();
-    allow_dinosaur_easter_egg->mutable_policy_options()->set_mode(
+    em::BooleanPolicyProto* metrics_reporting_enabled =
+        settings.mutable_metricsreportingenabled();
+    metrics_reporting_enabled->mutable_policy_options()->set_mode(
         em::PolicyOptions::MANDATORY);
-    allow_dinosaur_easter_egg->set_value(false);
+    metrics_reporting_enabled->set_value(false);
     test_server_->policy_storage()->SetPolicyPayload(
         dm_protocol::kChromeMachineLevelUserCloudPolicyType,
         settings.SerializeAsString());
@@ -1075,7 +1082,7 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyExtensionInstallPolicyTest,
 
   // Verify new policy.
   EXPECT_EQ(manager->store()->policy_map().size(), 1u);
-  EXPECT_EQ(base::Value(false), *(policy_map.Get(key::kAllowDinosaurEasterEgg)
+  EXPECT_EQ(base::Value(false), *(policy_map.Get(key::kMetricsReportingEnabled)
                                       ->value(base::Value::Type::BOOLEAN)));
 
   EXPECT_EQ(extension_install_policy_map.size(), 1u);
@@ -1144,7 +1151,7 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyExtensionInstallPolicyTest,
   ExtensionInstallPolicyServiceImpl* extension_install_policy_service =
       static_cast<ExtensionInstallPolicyServiceImpl*>(
           ExtensionInstallPolicyServiceFactory::GetForBrowserContext(
-              browser()->GetProfile()));
+              chrome_test_utils::GetProfile(this)));
   ASSERT_TRUE(extension_install_policy_service);
   std::set<ExtensionIdAndVersion> extensions = {
       ExtensionIdAndVersion(kExtensionId1, kExtensionVersion1)};
@@ -1156,11 +1163,11 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyExtensionInstallPolicyTest,
   // Configure new policies on the server and refresh policies on the client.
   {
     em::CloudPolicySettings settings;
-    em::BooleanPolicyProto* allow_dinosaur_easter_egg =
-        settings.mutable_allowdinosaureasteregg();
-    allow_dinosaur_easter_egg->mutable_policy_options()->set_mode(
+    em::BooleanPolicyProto* metrics_reporting_enabled =
+        settings.mutable_metricsreportingenabled();
+    metrics_reporting_enabled->mutable_policy_options()->set_mode(
         em::PolicyOptions::MANDATORY);
-    allow_dinosaur_easter_egg->set_value(false);
+    metrics_reporting_enabled->set_value(false);
     test_server_->policy_storage()->SetPolicyPayload(
         dm_protocol::kChromeMachineLevelUserCloudPolicyType,
         settings.SerializeAsString());
@@ -1186,7 +1193,7 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyExtensionInstallPolicyTest,
 
   // Verify new policy.
   EXPECT_EQ(manager->store()->policy_map().size(), 1u);
-  EXPECT_EQ(base::Value(false), *(policy_map.Get(key::kAllowDinosaurEasterEgg)
+  EXPECT_EQ(base::Value(false), *(policy_map.Get(key::kMetricsReportingEnabled)
                                       ->value(base::Value::Type::BOOLEAN)));
 
   // The extension install policy map should be empty due to the invalid policy.
@@ -1227,7 +1234,9 @@ INSTANTIATE_TEST_SUITE_P(
         /*dm_token=*/::testing::Values(kDMToken),
         /*storage_enabled=*/::testing::Values(true),
         /*is_policy_fetch_with_sha256_enabled=*/::testing::Bool()));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
+#if !BUILDFLAG(IS_ANDROID)
 class MachineLevelUserCloudPolicyRobotAuthTest : public PlatformBrowserTest {
  public:
   MachineLevelUserCloudPolicyRobotAuthTest() : observer_(&delegate_) {

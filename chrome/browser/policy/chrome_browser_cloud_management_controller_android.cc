@@ -250,6 +250,11 @@ ChromeBrowserCloudManagementControllerAndroid::CreateClientDataDelegate() {
   return std::make_unique<ClientDataDelegateAndroid>();
 }
 
+bool ChromeBrowserCloudManagementControllerAndroid::
+    CanStartExtensionInstallPolicyInvalidator() const {
+  return false;
+}
+
 void ChromeBrowserCloudManagementControllerAndroid::DeferInitialization(
     base::OnceClosure callback) {
   DCHECK(callback);

@@ -37,5 +37,7 @@ schema:
 supported_on:
 - chrome.*:142-
 - chrome_os:142-
+future_on:
+- android
 type: main
 tags: []

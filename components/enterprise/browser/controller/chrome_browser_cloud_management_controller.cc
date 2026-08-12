@@ -160,7 +160,7 @@ ChromeBrowserCloudManagementController::CreatePolicyManager(
 
   std::unique_ptr<MachineLevelUserCloudPolicyStore> extension_install_store =
       nullptr;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // This is not supported before M146. A feature flag check is not possible
   // here because finch is not yet initialized.
   if (IsExtensionInstallPolicySupportedOnThisVersion()) {
@@ -173,7 +173,7 @@ ChromeBrowserCloudManagementController::CreatePolicyManager(
                  // always finished.
                  base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
   }
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   return std::make_unique<MachineLevelUserCloudPolicyManager>(
       std::move(policy_store), std::move(extension_install_store), nullptr,
@@ -243,13 +243,13 @@ void ChromeBrowserCloudManagementController::Init(
     return;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (policy_manager->extension_install_store() &&
       !base::FeatureList::IsEnabled(
           features::kEnableExtensionInstallPolicyFetching)) {
     policy_manager->extension_install_store()->Clear();
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // If there exists an enrollment token, then there are three states:
   //   1/ There also exists a valid DM token.  This machine is already

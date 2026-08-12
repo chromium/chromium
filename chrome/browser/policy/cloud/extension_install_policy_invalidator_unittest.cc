@@ -22,6 +22,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/invalidation/test_support/fake_invalidation_listener.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -212,10 +213,13 @@ void ExtensionInstallPolicyInvalidatorTestBase::StorePolicy(
   extension_install_store_.invalidation_version_ = invalidation_version;
   extension_install_store_.set_policy_data_for_testing(std::move(data));
   base::DictValue policies;
+  // MaxInvalidationFetchDelay policy is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
   policies.Set(
       key::kMaxInvalidationFetchDelay,
       static_cast<int>(ExtensionInstallPolicyInvalidator::kMaxFetchDelayMin
                            .InMilliseconds()));
+#endif  // !BUILDFLAG(IS_ANDROID)
   extension_install_store_.policy_map_.LoadFrom(
       policies, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
       POLICY_SOURCE_CLOUD);
@@ -283,12 +287,18 @@ void ExtensionInstallPolicyInvalidatorTestBase::FastForwardBy(
 
 void ExtensionInstallPolicyInvalidatorTestBase::
     FastForwardByInvalidationDelay() {
+  // MaxInvalidationFetchDelay policy is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
   const auto* delay_policy_value =
       extension_install_store_.policy_map().GetValue(
           key::kMaxInvalidationFetchDelay, base::Value::Type::INTEGER);
   const base::TimeDelta max_delay =
       delay_policy_value ? base::Milliseconds(delay_policy_value->GetInt())
                          : ExtensionInstallPolicyInvalidator::kMaxFetchDelayMax;
+#else
+  const base::TimeDelta max_delay =
+      ExtensionInstallPolicyInvalidator::kMaxFetchDelayDefault;
+#endif  // !BUILDFLAG(IS_ANDROID)
   FastForwardBy(max_delay);
 }
 

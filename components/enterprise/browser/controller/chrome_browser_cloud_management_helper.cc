@@ -127,7 +127,7 @@ void MachineLevelUserCloudPolicyFetcher::SetupRegistrationAndFetchPolicy(
       dm_token.value(), client_id, std::vector<std::string>());
   policy_manager_->store()->SetupRegistration(dm_token, client_id);
   if (policy_manager_->extension_install_store()) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     policy_manager_->extension_install_store()->SetupRegistration(dm_token,
                                                                   client_id);
 #else

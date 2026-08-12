@@ -50,7 +50,7 @@ class MachineLevelUserCloudPolicyManagerTest : public ::testing::Test {
     store_ = store.get();
     std::unique_ptr<MockMachineLevelUserCloudPolicyStore>
         extension_install_store;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     extension_install_store =
         std::make_unique<MockMachineLevelUserCloudPolicyStore>();
 #endif
@@ -72,24 +72,24 @@ class MachineLevelUserCloudPolicyManagerTest : public ::testing::Test {
 
 TEST_F(MachineLevelUserCloudPolicyManagerTest, InitManager) {
   EXPECT_CALL(*store_, LoadImmediately());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_CALL(*extension_install_store_, LoadImmediately());
 #endif
   manager_->Init(&schema_registry_);
   ::testing::Mock::VerifyAndClearExpectations(store_);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   ::testing::Mock::VerifyAndClearExpectations(extension_install_store_);
 #endif
 }
 
 TEST_F(MachineLevelUserCloudPolicyManagerTest, DisconnectAndRemovePolicy) {
   EXPECT_CALL(*store_, Clear());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_CALL(*extension_install_store_, Clear());
 #endif
   manager_->DisconnectAndRemovePolicy();
   ::testing::Mock::VerifyAndClearExpectations(store_);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   ::testing::Mock::VerifyAndClearExpectations(extension_install_store_);
 #endif
 }

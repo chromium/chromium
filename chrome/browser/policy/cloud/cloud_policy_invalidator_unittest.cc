@@ -212,6 +212,7 @@ void CloudPolicyInvalidatorTestBase::StorePolicy(int64_t invalidation_version,
   store_.invalidation_version_ = invalidation_version;
   store_.set_policy_data_for_testing(std::move(data));
   base::DictValue policies;
+  // MaxInvalidationFetchDelay policy is not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
   policies.Set(key::kMaxInvalidationFetchDelay,
                static_cast<int>(
@@ -279,6 +280,7 @@ void CloudPolicyInvalidatorTestBase::FastForwardBy(base::TimeDelta delta) {
 }
 
 void CloudPolicyInvalidatorTestBase::FastForwardByInvalidationDelay() {
+  // MaxInvalidationFetchDelay policy is not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
   const auto* delay_policy_value = store_.policy_map().GetValue(
       key::kMaxInvalidationFetchDelay, base::Value::Type::INTEGER);

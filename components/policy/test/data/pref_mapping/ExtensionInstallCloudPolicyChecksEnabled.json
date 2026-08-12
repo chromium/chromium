@@ -4,7 +4,8 @@
       "win",
       "linux",
       "mac",
-      "chromeos"
+      "chromeos",
+      "desktop_android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "extensions.install.cloud_policy_checks_enabled",
@@ -20,7 +21,8 @@
       "win",
       "linux",
       "mac",
-      "chromeos"
+      "chromeos",
+      "desktop_android"
     ],
     "policy_pref_mapping_tests": [
       {
