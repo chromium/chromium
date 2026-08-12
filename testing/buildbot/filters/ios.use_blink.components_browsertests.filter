@@ -39,13 +39,14 @@
 # TODO(crbug.com/503810632): These tests have been failing since
 # https://crrev.com/c/7539316, https://crrev.com/c/7763951,
 # https://crrev.com/c/7671607, https://crrev.com/c/7863615,
-# https://crrev.com/c/7893748, https://crrev.com/c/8132523, and
-# https://crrev.com/c/8161746 on the bot.
+# https://crrev.com/c/7893748, https://crrev.com/c/8132523,
+# https://crrev.com/c/8161746, and https://crrev.com/c/8194052 on the bot.
 -SurfaceEmbedBrowserTest.Crash
 -SurfaceEmbedBrowserTest.CrashEarly
 -SurfaceEmbedBrowserTest.CrashThenReattach
 -SurfaceEmbedBrowserTest.CrashThenReload
 -SurfaceEmbedBrowserTest.CrossProcessNavigationPixelTest
+-SurfaceEmbedBrowserTest.DisplayLockThrottlingViaContentVisibility
 -SurfaceEmbedBrowserTest.DisplayNonePropagates
 -SurfaceEmbedBrowserTest.EmbedMultipleTagsCreatesMultiplePlugins
 -SurfaceEmbedBrowserTest.EmbedPixelTest
@@ -56,6 +57,7 @@
 -SurfaceEmbedBrowserTest.FocusByTabKey
 -SurfaceEmbedBrowserTest.FocusPreservedAfterNavigation
 -SurfaceEmbedBrowserTest.HtmlPopupOnSurfaceEmbeddedPage
+-SurfaceEmbedBrowserTest.MultilevelDisplayLockThrottlingViaContentVisibility
 -SurfaceEmbedBrowserTest.ResizeEmbedPixelTest
 -SurfaceEmbedBrowserTest.VisibilityHiddenPropagates
 -SurfaceEmbedBrowserTest.VisualPropertiesSync
