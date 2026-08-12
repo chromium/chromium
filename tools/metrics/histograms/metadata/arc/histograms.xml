@@ -326,22 +326,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Arc.Anr.{AnrPeriod}" units="ANRs" expires_after="2026-03-01">
+<histogram name="Arc.Anr.{AnrPeriod}" units="ANRs" expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     ANR rate separated by {AnrPeriod} as ANR count happened in this period.
+
+    Warning: this histogram was expired from 2026-03-01 to 2026-08-11; data may
+    be missing.
   </summary>
   <token key="AnrPeriod" variants="AnrPeriods"/>
 </histogram>
 
 <histogram name="Arc.Anr.{AnrPeriod}.{ArcBootType}" units="ANRs"
-    expires_after="2026-03-01">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     ANR rate separated by {AnrPeriod} and {ArcBootType} as ANR count happened in
     this period.
+
+    Warning: this histogram was expired from 2026-03-01 to 2026-08-11; data may
+    be missing.
   </summary>
   <token key="AnrPeriod" variants="AnrPeriods"/>
   <token key="ArcBootType" variants="ArcBootTypes"/>
@@ -440,7 +446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppCount.HasInstalledOrUnknownApp" enum="Boolean"
-    expires_after="2026-09-13">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
@@ -556,7 +562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppRequestedInSession" units="count"
-    expires_after="2026-03-01">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>hidehiko@chromium.org</owner>
   <owner>arc-performance@google.com</owner>
@@ -568,6 +574,9 @@ chromium-metrics-reviews@google.com.
     value at the end of the user session is not reliable enough. Instead, the
     number of requests are tracked and stored in the PrefService to survive
     chrome restart, and the value is emitted in the next user session.
+
+    Warning: this histogram was expired from 2026-03-01 to 2026-08-11; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -913,7 +922,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.CpuRestrictionDisabled{ArcThrottleObservers}" units="ms"
-    expires_after="2026-03-01">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -921,6 +930,9 @@ chromium-metrics-reviews@google.com.
     observer. The duration begins when a new throttle observer becomes active,
     and measures until it becomes inactive or another throttle observer becomes
     effective. {ArcThrottleObservers}
+
+    Warning: this histogram was expired from 2026-03-01 to 2026-08-11; data may
+    be missing.
   </summary>
   <token key="ArcThrottleObservers">
     <variant name=".ArcAppLaunchRequested"
@@ -939,14 +951,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.CpuRestrictionVmResult" enum="ArcCpuRestrictionVmResult"
-    expires_after="2026-03-01">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     Records the result of setting ARC CPU restrictions in ARCVM.
 
-    Warning: this histogram was expired after 2024-09-15 and brought back
-    2025-01-06; data may be missing.
+    Warning: this histogram was expired from 2024-09-15 to 2025-01-06 and also
+    from 2026-03-01 to 2026-08-11; data may be missing.
   </summary>
 </histogram>
 
@@ -1148,7 +1160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.FirstAppLaunchDelay.TimeDelta" units="ms"
-    expires_after="2026-05-03">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -1158,11 +1170,14 @@ chromium-metrics-reviews@google.com.
     Arc.FirstAppLaunchDelay.TimeDeltaUntilAppLaunch, this metric is recorded
     only up to once a user session. Zero when the container has already been up
     and running when the user launches the ARC app.
+
+    Warning: this histogram was expired from 2026-05-03 to 2026-08-11; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.FirstAppLaunchDelay.TimeDeltaUntilAppLaunch" units="ms"
-    expires_after="2026-03-01">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -1172,21 +1187,21 @@ chromium-metrics-reviews@google.com.
     multiple times per a user session, for example when users starts multiple
     ARC apps while ARC is booting.
 
-    Warning: this histogram was expired after 2024-11-17 and brought back
-    2025-01-06; data may be missing.
+    Warning: this histogram was expired from 2024-11-17 to 2025-01-06 and also
+    from 2026-03-01 to 2026-08-11; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.FirstAppLaunchRequest.TimeDelta" units="ms"
-    expires_after="2026-03-01">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     Elapsed time from the when UI is shown after login to when the user
     activates first ARC app.
 
-    Warning: this histogram was expired after 2024-03-01 and brought back
-    2025-01-06; data may be missing.
+    Warning: this histogram was expired from 2024-03-01 to 2025-01-06 and also
+    from 2026-03-01 to 2026-08-11; data may be missing.
   </summary>
 </histogram>
 
@@ -1470,7 +1485,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.LoadAverageX100PerProcessor15MinutesAfterArcStart.{ArcBootType}"
-    units="0.01 jobs/processor" expires_after="2026-03-01">
+    units="0.01 jobs/processor" expires_after="2027-04-01">
   <owner>hashimoto@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
@@ -1478,15 +1493,15 @@ chromium-metrics-reviews@google.com.
     The 15-minute load average multiplied by 100 and divided by the number of
     logical processors online. Recorded 15 minutes after ARC start.
 
-    Warning: this histogram was expired after 2024-11-03 and brought back
-    2025-01-06; data may be missing.
+    Warning: this histogram was expired from 2024-11-03 to 2025-01-06 and also
+    from 2026-03-01 to 2026-08-11; data may be missing.
   </summary>
   <token key="ArcBootType" variants="ArcBootTypes"/>
 </histogram>
 
 <histogram
     name="Arc.LoadAverageX100PerProcessor1MinuteAfterArcStart.{ArcBootType}"
-    units="0.01 jobs/processor" expires_after="2026-03-01">
+    units="0.01 jobs/processor" expires_after="2027-04-01">
   <owner>hashimoto@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
@@ -1494,15 +1509,15 @@ chromium-metrics-reviews@google.com.
     The 1-minute load average multiplied by 100 and divided by the number of
     logical processors online. Recorded 1 minute after ARC start.
 
-    Warning: this histogram was expired after 2024-11-01 and brought back
-    2025-01-06; data may be missing.
+    Warning: this histogram was expired from 2024-11-01 to 2025-01-06 and also
+    from 2026-03-01 to 2026-08-11; data may be missing.
   </summary>
   <token key="ArcBootType" variants="ArcBootTypes"/>
 </histogram>
 
 <histogram
     name="Arc.LoadAverageX100PerProcessor5MinutesAfterArcStart.{ArcBootType}"
-    units="0.01 jobs/processor" expires_after="2026-03-01">
+    units="0.01 jobs/processor" expires_after="2027-04-01">
   <owner>hashimoto@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
@@ -1510,8 +1525,8 @@ chromium-metrics-reviews@google.com.
     The 5-minute load average multiplied by 100 and divided by the number of
     logical processors online. Recorded 5 minutes after ARC start.
 
-    Warning: this histogram was expired after 2024-11-01 and brought back
-    2025-01-06; data may be missing.
+    Warning: this histogram was expired from 2024-11-01 to 2025-01-06 and also
+    from 2026-03-01 to 2026-08-11; data may be missing.
   </summary>
   <token key="ArcBootType" variants="ArcBootTypes"/>
 </histogram>
@@ -1783,15 +1798,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayStoreLaunch.TimeDelta" units="ms"
-    expires_after="2026-03-01">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     Elapsed time from the when the user launches the Play Store app and to when
     the Play Store window is shown to the user.
 
-    Warning: this histogram was expired after 2024-03-01 and brought back
-    2025-01-06; data may be missing.
+    Warning: this histogram was expired from 2024-03-01 to 2025-01-06 and also
+    from 2026-03-01 to 2026-08-11; data may be missing.
   </summary>
 </histogram>
 
@@ -1857,15 +1872,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayStoreShown.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2026-03-01">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     Elapsed time from the when the user agrees ToS to when the Play Store window
     is shown to the user. {ArcUserTypes}
 
-    Warning: this histogram was expired after 2024-03-01 and brought back
-    2025-01-06; data may be missing.
+    Warning: this histogram was expired from 2024-03-01 to 2025-01-06 and also
+    from 2026-03-01 to 2026-08-11; data may be missing.
   </summary>
   <token key="ArcUserTypes" variants="ArcUserTypes">
     <variant name=""/>
@@ -2086,13 +2101,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.CommitDeviation2{ArcPerformanceAppCategories}"
-    units="microseconds" expires_after="2026-05-03">
+    units="microseconds" expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     Standard deviation for commit time delta from ideal time. Only collected if
     the user has app syncing enabled and doesn't have a custom passphrase set.
     This metric is reported for all clients. {ArcPerformanceAppCategories}.
+
+    Warning: this histogram was expired from 2026-05-03 to 2026-08-11; data may
+    be missing.
   </summary>
   <token key="ArcPerformanceAppCategories"
       variants="ArcPerformanceAppCategories">
@@ -2101,7 +2119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.FPS2{ArcPerformanceAppCategories}"
-    units="fps" expires_after="2026-11-29">
+    units="fps" expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -2126,12 +2144,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.FrameTime" units="ms"
-    expires_after="2026-03-01">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     95 percent of the frames in the first 5 minutes after app launch took
     shorter time (in ms) than this value.
+
+    Warning: this histogram was expired from 2026-03-01 to 2026-08-11; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2147,13 +2168,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.JanksPercentage2{ArcPerformanceAppCategories}"
-    units="%" expires_after="2026-03-01">
+    units="%" expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     Percentage of the number of present frames during the tracing period which
     contain UI janks. A jank is defined as a displayed frame with duration
     longer than the normal display rate by 190%. {ArcPerformanceAppCategories}
+
+    Warning: this histogram was expired from 2026-03-01 to 2026-08-11; data may
+    be missing.
   </summary>
   <token key="ArcPerformanceAppCategories"
       variants="ArcPerformanceAppCategories">
@@ -2163,7 +2187,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.JanksPerMinute2{ArcPerformanceAppCategories}"
-    units="count" expires_after="2026-10-11">
+    units="count" expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -2179,7 +2203,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.PerceivedFPS2{ArcPerformanceAppCategories}"
-    units="fps" expires_after="2026-11-29">
+    units="fps" expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -2195,13 +2219,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.PresentDeviation2{ArcPerformanceAppCategories}"
-    units="microseconds" expires_after="2026-03-01">
+    units="microseconds" expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     Standard deviation for present time delta from ideal time. Only collected if
     the user has app syncing enabled and doesn't have a custom passphrase set.
     This metric is reported for all clients. {ArcPerformanceAppCategories}
+
+    Warning: this histogram was expired from 2026-03-01 to 2026-08-11; data may
+    be missing.
   </summary>
   <token key="ArcPerformanceAppCategories"
       variants="ArcPerformanceAppCategories">
@@ -2211,13 +2238,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.RenderQuality2{ArcPerformanceAppCategories}"
-    units="%" expires_after="2026-03-01">
+    units="%" expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     Render quality with maximum 100%. Only collected if the user has app syncing
     enabled and doesn't have a custom passphrase set.
     {ArcPerformanceAppCategories}
+
+    Warning: this histogram was expired from 2026-03-01 to 2026-08-11; data may
+    be missing.
   </summary>
   <token key="ArcPerformanceAppCategories"
       variants="ArcPerformanceAppCategories">
@@ -2397,12 +2427,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.UiAvailable.InSessionProvisioning.TimeDelta{ArcUserTypes}"
-    units="ms" expires_after="2026-07-05">
+    units="ms" expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     Elapsed time from the when ARC++ is opted in from the user's session to when
     the ARC is available for the user. {ArcUserTypes}
+
+    Warning: this histogram was expired from 2026-07-05 to 2026-08-11; data may
+    be missing.
   </summary>
   <token key="ArcUserTypes" variants="ArcUserTypes">
     <variant name=""/>
@@ -2822,13 +2855,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Duration{WaylandEventType}" units="ms"
-    expires_after="2026-07-05">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     The duration of the Wayland client event processing time in ARC. This metric
     is recorded when the processing end time is late or the duration exceeded
     the expected timing threshold for a {WaylandEventType}.
+
+    Warning: this histogram was expired from 2026-07-05 to 2026-08-11; data may
+    be missing.
   </summary>
   <token key="WaylandEventType" variants="WaylandEventType">
     <variant name=""/>
@@ -2836,13 +2872,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Event" enum="WaylandTimingEvent"
-    expires_after="2026-03-01">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     Wayland client event message type in ARC. This metric is recorded when the
     message processing end time is late or the duration exceeded the expected
     timing threshold.
+
+    Warning: this histogram was expired from 2026-03-01 to 2026-08-11; data may
+    be missing.
   </summary>
 </histogram>
 
