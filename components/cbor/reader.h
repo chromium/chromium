@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "components/cbor/cbor_buildflags.h"
@@ -64,6 +65,8 @@
 //    7049, and treats them as errors. (Security)
 
 namespace cbor {
+
+CBOR_EXPORT BASE_DECLARE_FEATURE(kUseRustCborParser);
 
 // TODO(crbug.com/535682335): Remove `#if BUILDFLAG(USE_CBOR_RUST)` macros and
 // unconditionally use rust types once Cronet supports Crubit dependencies.
@@ -141,7 +144,7 @@ class CBOR_EXPORT Reader {
     bool allow_floating_point = false;
 
     // Uses the rust parser instead of the C++ parser.
-    bool use_rust = false;
+    bool use_rust;
   };
 
   Reader(const Reader&) = delete;

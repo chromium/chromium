@@ -42,6 +42,8 @@
 
 namespace cbor {
 
+BASE_FEATURE(kUseRustCborParser, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(USE_CBOR_RUST)
 #define ASSERT_DECODER_ERROR_EQ(cpp_err, rust_err)                   \
   static_assert(std::to_underlying(Reader::DecoderError::cpp_err) == \
@@ -129,7 +131,8 @@ Value ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key) {
 
 }  // namespace
 
-Reader::Config::Config() = default;
+Reader::Config::Config()
+    : use_rust(base::FeatureList::IsEnabled(kUseRustCborParser)) {}
 Reader::Config::~Config() = default;
 
 Reader::Reader(base::span<const uint8_t> data)
