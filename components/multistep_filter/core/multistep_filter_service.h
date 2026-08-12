@@ -21,6 +21,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
+#include "components/multistep_filter/core/data_models/suggestions_consent_state.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/prefs/retention_state_snapshot.h"
 #include "components/sync/service/sync_service.h"
@@ -55,12 +56,6 @@ class FilterSuggestionGenerator;
 class MultistepFilterService : public KeyedService,
                                public history::HistoryServiceObserver {
  public:
-  // Enterprise policy value for suggestions settings disabled.
-  // This matches `contextual_cueing::ChromeSuggestionsSettingsValue::kDisabled`
-  // defined in chrome-level header `chrome/browser/contextual_cueing/prefs.h`.
-  // We define it as a class constant here because this component cannot import
-  // chrome-level headers.
-  static constexpr int kChromeSuggestionsSettingsDisabled = 1;
 
   struct Params {
     std::unique_ptr<AnnotationIndexClient> annotation_index_client;
@@ -84,19 +79,14 @@ class MultistepFilterService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // Checks if the user has provided consent (signed in, URL-keyed data
-  // collection enabled, and history sync enabled), and logs the eligibility
-  // check.
-  virtual bool HasUserProvidedConsent(int64_t navigation_id,
-                                      std::string_view host);
+  // Returns the current account status/capabilities for the user.
+  virtual AccountState GetAccountState() const;
 
-  // Returns true if the user has enabled smart suggestions via settings
-  // and it is not disabled by enterprise policy.
-  virtual bool IsSmartSuggestionsEnabled() const;
+  // Returns the current consent state for the user.
+  virtual ConsentState GetConsentState() const;
 
-  // Returns true if the user's account capabilities allow using model execution
-  // features.
-  virtual bool CanUseModelExecutionFeatures() const;
+  // Returns the current settings state for the user.
+  virtual SettingsState GetSettingsState() const;
 
   // Records a suggestion impression in Profile retention preferences.
   virtual void RecordSuggestionImpression();
@@ -138,6 +128,10 @@ class MultistepFilterService : public KeyedService,
 
   // Returns true if history sync is enabled.
   bool IsHistorySyncEnabled() const;
+
+  // Returns true if the user's account capabilities allow using model execution
+  // features.
+  bool CanUseModelExecutionFeatures() const;
 
   // Client used to interact with the `SiteAutomationIndexServer` on the server
   // side.

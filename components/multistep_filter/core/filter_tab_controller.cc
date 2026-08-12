@@ -55,7 +55,7 @@ void LogSuggestionPreserved(MultistepFilterLogRouter* log_router,
   MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
                        LogEventType::kSuggestionPreserved,
                        metadata.url.GetHost())
-      << LogDetail{"reason", std::string(reason)};
+      << LogDetail{"reason", reason};
 }
 
 void LogUrlEligibilityCheck(MultistepFilterLogRouter* log_router,
@@ -71,9 +71,42 @@ void LogUrlEligibilityCheck(MultistepFilterLogRouter* log_router,
     MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
                          LogEventType::kUrlEligibilityCheck,
                          metadata.url.GetHost())
-        << LogDetail{"eligible", eligible}
-        << LogDetail{"reason", std::string(reason)};
+        << LogDetail{"eligible", eligible} << LogDetail{"reason", reason};
   }
+}
+
+void LogUrlEligibilityCheck(MultistepFilterLogRouter* log_router,
+                            const FilterNavigationMetadata& metadata,
+                            const AccountState& account) {
+  MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                       LogEventType::kUrlEligibilityCheck,
+                       metadata.url.GetHost())
+      << LogDetail{"eligible", account.IsEligible()}
+      << LogDetail{"signed_in", account.is_signed_in}
+      << LogDetail{"can_use_model_execution_features",
+                   account.can_use_model_execution_features};
+}
+
+void LogUrlEligibilityCheck(MultistepFilterLogRouter* log_router,
+                            const FilterNavigationMetadata& metadata,
+                            const ConsentState& consent) {
+  MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                       LogEventType::kUrlEligibilityCheck,
+                       metadata.url.GetHost())
+      << LogDetail{"eligible", consent.IsFullyConsented()}
+      << LogDetail{"url_keyed_data_collection_enabled", consent.is_msbb_enabled}
+      << LogDetail{"history_sync_enabled", consent.is_history_sync_enabled};
+}
+
+void LogUrlEligibilityCheck(MultistepFilterLogRouter* log_router,
+                            const FilterNavigationMetadata& metadata,
+                            const SettingsState& settings) {
+  MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                       LogEventType::kUrlEligibilityCheck,
+                       metadata.url.GetHost())
+      << LogDetail{"eligible", settings.IsSmartSuggestionsEnabled()}
+      << LogDetail{"opt_in_state", std::to_underlying(settings.opt_in_state)}
+      << LogDetail{"policy_state", std::to_underlying(settings.policy_state)};
 }
 
 void LogAnnotationExtractionStarted(MultistepFilterLogRouter* log_router,
@@ -89,7 +122,7 @@ void LogSuggestionSuppressed(MultistepFilterLogRouter* log_router,
   MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
                        LogEventType::kSuggestionSuppressed,
                        metadata.url.GetHost())
-      << LogDetail{"reason", std::string(reason)};
+      << LogDetail{"reason", reason};
 }
 
 void LogSuggestionGenerationStarted(MultistepFilterLogRouter* log_router,
@@ -240,22 +273,21 @@ void FilterTabController::OnNavigationFinished(
     return;
   }
 
-  if (!service_->CanUseModelExecutionFeatures()) {
-    LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,
-                           "model_execution_features_disabled");
+  AccountState account = service_->GetAccountState();
+  if (!account.IsEligible()) {
+    LogUrlEligibilityCheck(log_router_, metadata, account);
     return;
   }
 
-  if (!service_->IsSmartSuggestionsEnabled()) {
-    LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,
-                           "smart_suggestions_disabled");
+  SettingsState settings = service_->GetSettingsState();
+  if (!settings.IsSmartSuggestionsEnabled()) {
+    LogUrlEligibilityCheck(log_router_, metadata, settings);
     return;
   }
 
-  if (!service_->HasUserProvidedConsent(metadata.navigation_id,
-                                        metadata.url.GetHost())) {
-    LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,
-                           "no_user_consent");
+  ConsentState consent = service_->GetConsentState();
+  if (!consent.IsFullyConsented()) {
+    LogUrlEligibilityCheck(log_router_, metadata, consent);
     return;
   }
 

@@ -76,17 +76,8 @@ class MockMultistepFilterService : public MultistepFilterService {
           params.consent_helper = nullptr;
           params.log_router = nullptr;
           return params;
-        }()) {
-    ON_CALL(*this, HasUserProvidedConsent).WillByDefault(Return(true));
-    ON_CALL(*this, CanUseModelExecutionFeatures).WillByDefault(Return(true));
-  }
+        }()) {}
   ~MockMultistepFilterService() override = default;
-
-  MOCK_METHOD(bool,
-              HasUserProvidedConsent,
-              (int64_t navigation_id, std::string_view host),
-              (override));
-  MOCK_METHOD(bool, CanUseModelExecutionFeatures, (), (const, override));
 };
 
 class NavigationTimeCapturer : public content::WebContentsObserver {

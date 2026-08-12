@@ -41,19 +41,6 @@ namespace multistep_filter {
 
 namespace {
 
-void LogUrlEligibilityCheck(MultistepFilterLogRouter* log_router,
-                            int64_t navigation_id,
-                            std::string_view host,
-                            bool signed_in,
-                            bool url_keyed_data_collection_enabled,
-                            bool history_sync_enabled) {
-  MULTISTEP_FILTER_LOG(log_router, navigation_id,
-                       LogEventType::kUrlEligibilityCheck, host)
-      << LogDetail{"signed_in", signed_in}
-      << LogDetail{"url_keyed_data_collection_enabled",
-                   url_keyed_data_collection_enabled}
-      << LogDetail{"history_sync_enabled", history_sync_enabled};
-}
 
 
 void LogAnnotationsExpired(MultistepFilterLogRouter* log_router,
@@ -125,40 +112,37 @@ void MultistepFilterService::DeleteAnnotationsForTask(
                      std::string(host)));
 }
 
-bool MultistepFilterService::HasUserProvidedConsent(int64_t navigation_id,
-                                                    std::string_view host) {
-  const bool signed_in = IsUserSignedIn();
-  const bool url_keyed_data_collection_enabled =
-      IsUrlKeyedDataCollectionEnabled();
-  const bool history_sync_enabled = IsHistorySyncEnabled();
-  const bool consent_enabled =
-      signed_in && url_keyed_data_collection_enabled && history_sync_enabled;
-
-  LogUrlEligibilityCheck(log_router_, navigation_id, host, signed_in,
-                         url_keyed_data_collection_enabled,
-                         history_sync_enabled);
-  return consent_enabled;
+AccountState MultistepFilterService::GetAccountState() const {
+  AccountState state;
+  state.is_signed_in = IsUserSignedIn();
+  state.can_use_model_execution_features = CanUseModelExecutionFeatures();
+  return state;
 }
 
-bool MultistepFilterService::IsSmartSuggestionsEnabled() const {
-  // TODO(b/522733094): Clean this up once proper eligibility integration is
-  // complete.
-  int opt_in_state = pref_service_->GetInteger(
+ConsentState MultistepFilterService::GetConsentState() const {
+  ConsentState state;
+  state.is_msbb_enabled = IsUrlKeyedDataCollectionEnabled();
+  state.is_history_sync_enabled = IsHistorySyncEnabled();
+  return state;
+}
+
+SettingsState MultistepFilterService::GetSettingsState() const {
+  const optimization_guide::prefs::FeatureOptInState opt_in_state = static_cast<
+      optimization_guide::prefs::FeatureOptInState>(pref_service_->GetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::UserVisibleFeatureKey::kContextualCueing));
-  if (opt_in_state ==
-      std::to_underlying(
-          optimization_guide::prefs::FeatureOptInState::kDisabled)) {
-    return false;
-  }
+          optimization_guide::UserVisibleFeatureKey::kContextualCueing)));
 
-  if (pref_service_->GetInteger(
-          optimization_guide::prefs::kChromeSuggestionsSettings) ==
-      kChromeSuggestionsSettingsDisabled) {
-    return false;
-  }
+  const SuggestionsPolicyState policy_state =
+      (pref_service_->GetInteger(
+           optimization_guide::prefs::kChromeSuggestionsSettings) ==
+       std::to_underlying(SuggestionsPolicyState::kDisabled))
+          ? SuggestionsPolicyState::kDisabled
+          : SuggestionsPolicyState::kEnabled;
 
-  return true;
+  return SettingsState{
+      .opt_in_state = opt_in_state,
+      .policy_state = policy_state,
+  };
 }
 
 bool MultistepFilterService::CanUseModelExecutionFeatures() const {

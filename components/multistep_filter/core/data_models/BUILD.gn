@@ -10,10 +10,12 @@ source_set("data_models") {
     "filter_suggestion_candidate.cc",
     "filter_suggestion_candidate.h",
     "suggestion_user_decision.h",
+    "suggestions_consent_state.h",
     "url_filter_suggestion.cc",
     "url_filter_suggestion.h",
   ]
   public_deps = [
+    "//components/optimization_guide/core",
     "//services/metrics/public/cpp:metrics_cpp",
     "//url",
   ]
