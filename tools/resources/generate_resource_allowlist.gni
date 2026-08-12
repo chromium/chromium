@@ -2,36 +2,38 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
+
 # Generates the final .pak file allowlist that can be used by repack()'s
 # repack_allowlist parameter. Used resources are tracked by the toolchain when
 # enable_resource_allowlist_generation = true and are stored in the unstripped
 # binary's debug info. This action extracts the allowlist from the binary.
 #
 # Variables
-#   input: Path to the unstripped .so file.
+#   inputs: List of files to scan for used resource IDs.
 #   output: Path to write the output allowlist to.
 #
 # Example
 #   generate_resource_allowlist("pak_allowlist") {
 #     deps = [ ":my_shared_lib" ]
-#     input = "$root_out_dir/lib.unstripped/libmy_shared_lib$shlib_extension"
+#     inputs = [ "$root_out_dir/lib.unstripped/libmy_shared_lib$shlib_extension" ]
 #     output = "$target_gen_dir/pak_allowlist.txt"
 #   }
 template("generate_resource_allowlist") {
-  action(target_name) {
+  action_with_pydeps(target_name) {
     forward_variables_from(invoker,
-                           [
-                             "deps",
-                             "inputs",
-                           ])
+                           TESTONLY_AND_VISIBILITY + [
+                                 "deps",
+                                 "inputs",
+                               ])
 
     script = "//tools/resources/generate_resource_allowlist.py"
-
-    inputs += [ "//tools/resources/ar.py" ]
-
     outputs = [ invoker.output ]
 
+    depfile = "$target_gen_dir/$target_name.d"
     args = [
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
       "-o",
       rebase_path(invoker.output, root_build_dir),
     ]

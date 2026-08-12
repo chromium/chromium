@@ -2724,6 +2724,7 @@ _GENERIC_PYDEPS_FILES = [
     'tools/perf/process_perf_results.pydeps',
     'tools/pgo/generate_profile.pydeps',
     'tools/pgo/generate_profile_webview.pydeps',
+    'tools/resources/generate_resource_allowlist.pydeps',
 ]
 
 _ALL_PYDEPS_FILES = _ANDROID_SPECIFIC_PYDEPS_FILES + _GENERIC_PYDEPS_FILES
