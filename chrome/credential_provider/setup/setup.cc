@@ -62,8 +62,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
                       HINSTANCE /*hPrevInstance*/,
                       wchar_t* lpCmdLine,
                       int /*nCmdShow*/) {
-  credential_provider::EnableSecureDllLoading();
-
   HRESULT hr = S_OK;
 
   // Initialize base.  Command line will be set from GetCommandLineW().

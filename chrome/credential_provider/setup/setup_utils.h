@@ -84,9 +84,6 @@ class StandaloneInstallerConfigurator {
   base::DictValue installer_data_dictionary_;
 };
 
-// Restricts DLL loads to either full paths or %SYSTEM32%.
-bool EnableSecureDllLoading();
-
 }  // namespace credential_provider
 
 #endif  // CHROME_CREDENTIAL_PROVIDER_SETUP_SETUP_UTILS_H_
