@@ -59,6 +59,11 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
       editing: {type: Boolean},
       sortTypes_: {type: Array},
       webuiRoundedIconsEnabled_: {type: Boolean},
+      titleA_: {type: String},
+      titleB_: {type: String},
+      activeTitle_: {type: String},
+      transitioningTitle_: {type: String},
+      transitionDirection_: {type: String},
     };
   }
 
@@ -68,6 +73,13 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
   accessor compact: boolean = false;
   accessor disableEdit: boolean = false;
   accessor editing: boolean = false;
+  protected accessor titleA_: string = '';
+  protected accessor titleB_: string = '';
+  protected accessor activeTitle_: 'a'|'b' = 'a';
+  protected accessor transitioningTitle_: 'a'|'b'|'' = '';
+  protected accessor transitionDirection_: 'forward'|'backward'|'' = '';
+  protected rootTransitioning_: boolean = false;
+  private titleTransitionTimer_: number|null = null;
   protected accessor activeSortType_: SortOption;
   protected accessor activeSortIndex_: number =
       loadTimeData.getInteger('sortOrder');
@@ -111,6 +123,14 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     recordSortType(this.sortTypes_[this.activeSortIndex_]!.sortOrder);
+    this.titleA_ = getFolderLabel(this.activeFolder);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.titleTransitionTimer_) {
+      clearTimeout(this.titleTransitionTimer_);
+    }
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -120,6 +140,17 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('activeSortIndex_')) {
       this.onActiveSortIndexChanged_();
+    }
+
+    if (changedProperties.has('activeFolder')) {
+      if (this.transitioningTitle_ === '') {
+        const label = getFolderLabel(this.activeFolder);
+        if (this.activeTitle_ === 'a') {
+          this.titleA_ = label;
+        } else {
+          this.titleB_ = label;
+        }
+      }
     }
   }
 
@@ -212,6 +243,88 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
       index: this.activeSortIndex_,
       sortOrder: this.sortTypes_[this.activeSortIndex_]!.sortOrder,
     });
+  }
+
+  protected getTitleContainerClass_(): string {
+    return this.transitionDirection_ ?
+        `direction-${this.transitionDirection_}` :
+        '';
+  }
+
+  protected getTitleClass_(titleId: 'a'|'b'): string {
+    const classes: string[] = ['title-span'];
+    if (this.activeTitle_ === titleId) {
+      classes.push('active');
+    }
+    if (this.transitioningTitle_ === titleId ||
+        (this.transitioningTitle_ !== '' && this.activeTitle_ !== titleId)) {
+      classes.push('transitioning');
+    }
+    return classes.join(' ');
+  }
+
+  protected getRootHeaderClass_(): string {
+    const classes: string[] = ['header-item'];
+    if (!this.activeFolder) {
+      classes.push('active');
+    }
+    if (this.rootTransitioning_) {
+      classes.push('transitioning');
+    }
+    return classes.join(' ');
+  }
+
+  protected getFolderHeaderClass_(): string {
+    const classes: string[] = ['header-item'];
+    if (this.activeFolder) {
+      classes.push('active');
+    }
+    if (this.rootTransitioning_) {
+      classes.push('transitioning');
+    }
+    return classes.join(' ');
+  }
+
+  /**
+   * Animates the folder label inside the header by switching between
+   * double-buffered title spans (titleA_ and titleB_).
+   */
+  async transitionFolderLabel(
+      newFolder: BookmarksTreeNode|undefined, forward: boolean) {
+    const newLabel = getFolderLabel(newFolder);
+    const currentActive = this.activeTitle_;
+    const targetTitle = currentActive === 'a' ? 'b' : 'a';
+
+    // Populate the inactive title buffer with the new folder name.
+    if (targetTitle === 'a') {
+      this.titleA_ = newLabel;
+    } else {
+      this.titleB_ = newLabel;
+    }
+
+    // If navigating to/from the root ("All Bookmarks"), we transition between
+    // the root header and the folder header containers.
+    const toOrFromRoot = !this.activeFolder || !newFolder;
+    if (toOrFromRoot) {
+      this.rootTransitioning_ = true;
+    }
+
+    // Set transition directions and trigger re-render.
+    this.transitionDirection_ = forward ? 'forward' : 'backward';
+    this.transitioningTitle_ = targetTitle;
+    this.activeTitle_ = targetTitle;
+
+    await this.updateComplete;
+
+    // Set a timer to clear transition classes once the 200ms animation ends.
+    if (this.titleTransitionTimer_) {
+      clearTimeout(this.titleTransitionTimer_);
+    }
+    this.titleTransitionTimer_ = setTimeout(() => {
+      this.transitioningTitle_ = '';
+      this.transitionDirection_ = '';
+      this.rootTransitioning_ = false;
+    }, 200);
   }
 }
 

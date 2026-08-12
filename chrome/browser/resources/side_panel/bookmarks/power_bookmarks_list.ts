@@ -16,7 +16,6 @@ import '//resources/cr_elements/icons.html.js';
 import './power_bookmarks_add_folder_button.js';
 import './power_bookmarks_list_header.js';
 
-import type {SpEmptyStateElement} from '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import type {BrowserProxy as PriceTrackingBrowserProxy} from '//resources/cr_components/commerce/price_tracking.mojom-webui.js';
 import {browserProxyFactory as priceTrackingBrowserProxyFactory} from '//resources/cr_components/commerce/price_tracking.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -37,9 +36,14 @@ import type {PowerBookmarksDragDelegate} from './power_bookmarks_drag_manager.js
 import {PowerBookmarksDragManager} from './power_bookmarks_drag_manager.js';
 import {getCss} from './power_bookmarks_list.css.js';
 import {getHtml} from './power_bookmarks_list.html.js';
+import type {PowerBookmarksListHeaderElement} from './power_bookmarks_list_header.js';
 import type {Label} from './power_bookmarks_service.js';
 import {editingDisabledByPolicy, PowerBookmarksService} from './power_bookmarks_service.js';
 import {getFolderLabel} from './power_bookmarks_utils.js';
+
+// Height of the sp-empty-state folder empty state inside list buffers.
+// Matches the CSS height defined in power_bookmarks_list.css.
+const FOLDER_EMPTY_STATE_HEIGHT: number = 300;
 
 export interface DisplayItem {
   bookmark: BookmarksTreeNode;
@@ -55,10 +59,10 @@ import {SearchAction, recordFolderAdded, recordSearchCTR, recordViewType, record
 export interface PowerBookmarksListElement {
   $: {
     bookmarks: HTMLElement,
-    folderEmptyState: SpEmptyStateElement,
     heading: HTMLElement,
     scroller: HTMLElement,
-    list: CrLazyListElement<DisplayItem>,
+    listA: CrLazyListElement<DisplayItem>,
+    listB: CrLazyListElement<DisplayItem>,
   };
 }
 
@@ -84,10 +88,48 @@ export class PowerBookmarksListElement extends CrLitElement implements
     return getHtml.bind(this)();
   }
 
+  get list(): CrLazyListElement<DisplayItem> {
+    return this.activeList_ === 'a' ? this.$.listA : this.$.listB;
+  }
+
+  get folderEmptyState(): HTMLElement {
+    const id =
+        this.activeList_ === 'a' ? 'folderEmptyStateA' : 'folderEmptyStateB';
+    return this.shadowRoot.getElementById(id)!;
+  }
+
+  private get activeDisplayList_(): DisplayItem[] {
+    return this.activeList_ === 'a' ? this.displayListA_ : this.displayListB_;
+  }
+
+  private getDisplayList_(listId: string): DisplayItem[] {
+    return listId === 'a' ? this.displayListA_ : this.displayListB_;
+  }
+
+  private getOtherListId_(listId: string): string {
+    return listId === 'a' ? 'b' : 'a';
+  }
+
+  private get inactiveList_(): string {
+    return this.getOtherListId_(this.activeList_);
+  }
+
   static override get properties() {
     return {
-      displayList_: {
+      displayListA_: {
         type: Array,
+      },
+
+      displayListB_: {
+        type: Array,
+      },
+
+      activeList_: {
+        type: String,
+      },
+
+      transitioningList_: {
+        type: String,
       },
 
       compact_: {
@@ -163,8 +205,20 @@ export class PowerBookmarksListElement extends CrLitElement implements
         reflect: true,
       },
 
-      firstSecondaryIndex_: {
+      firstSecondaryIndexA_: {
         type: Number,
+      },
+
+      firstSecondaryIndexB_: {
+        type: Number,
+      },
+
+      activeFolderA_: {
+        type: Object,
+      },
+
+      activeFolderB_: {
+        type: Object,
       },
 
       scrollTarget_: {
@@ -199,7 +253,22 @@ export class PowerBookmarksListElement extends CrLitElement implements
   accessor searchQuery: string|undefined;
   protected accessor compact_: boolean =
       loadTimeData.getInteger('viewType') === 0;
-  protected accessor displayList_: DisplayItem[] = [];
+  // Double-buffering architecture for smooth sliding folder transitions:
+  // Rather than having static 'incoming' and 'outgoing' lists (which would
+  // require copying or moving DOM nodes, resetting scroll and focus
+  // states), the component uses two static list buffers ('a' and 'b').
+  // At any given time, one buffer is the active, visible list (pointed
+  // to by `activeList_`) and the other is the inactive, hidden list. When
+  // navigating to a new folder, the inactive list is populated
+  // off-screen (acting as the incoming list) and transitioned into view.
+  // Once the transition is complete, the buffers swap their
+  // active/inactive roles.
+  // `transitioningList_` holds the ID of the buffer currently animating
+  // into view, or an empty string if no transition is active.
+  protected accessor displayListA_: DisplayItem[] = [];
+  protected accessor displayListB_: DisplayItem[] = [];
+  protected accessor activeList_: string = 'a';
+  protected accessor transitioningList_: string = '';
   protected accessor imageUrls_: {[key: string]: string} = {};
   protected accessor selectedBookmarks: {[key: string]: boolean} = {};
   protected accessor hasLoadedData_: boolean = false;
@@ -210,7 +279,11 @@ export class PowerBookmarksListElement extends CrLitElement implements
   protected accessor scrollTarget_: HTMLElement = document.documentElement;
   protected accessor shoppingCollectionFolderId_: string = '';
   protected accessor updatedElementIds_: string[] = [];
-  protected accessor firstSecondaryIndex_: number = -1;
+  protected accessor firstSecondaryIndexA_: number = -1;
+  protected accessor firstSecondaryIndexB_: number = -1;
+  protected accessor activeFolderA_: BookmarksTreeNode|undefined = undefined;
+  protected accessor activeFolderB_: BookmarksTreeNode|undefined = undefined;
+  private boundOnAnimationEnd_ = this.onAnimationEnd_.bind(this);
 
   constructor() {
     super();
@@ -304,6 +377,13 @@ export class PowerBookmarksListElement extends CrLitElement implements
     if (changedPrivateProperties.has('canDrag_')) {
       this.onCanDragChange_();
     }
+
+    // Lit does not automatically notify parent components on property changes
+    // (unlike Polymer's `notify: true`), so we must fire this custom event
+    // manually when the property changes.
+    if (changedPrivateProperties.has('hasShownBookmarks')) {
+      this.fire('has-shown-bookmarks-changed', {value: this.hasShownBookmarks});
+    }
   }
 
   setImageUrl(bookmark: BookmarksTreeNode, url: string) {
@@ -326,13 +406,15 @@ export class PowerBookmarksListElement extends CrLitElement implements
   }
 
   private async scrollToBookmark_(bookmark: BookmarksTreeNode) {
+    const displayList = this.activeDisplayList_;
     const index =
-        this.displayList_.findIndex(item => item.bookmark.id === bookmark.id);
+        displayList.findIndex(item => item.bookmark.id === bookmark.id);
     if (index === -1) {
       return;
     }
 
-    const element = await this.$.list.ensureItemRendered(index);
+    const listEl = this.list;
+    const element = await listEl.ensureItemRendered(index);
     element.scrollIntoView({block: 'nearest'});
   }
 
@@ -349,7 +431,11 @@ export class PowerBookmarksListElement extends CrLitElement implements
             'bookmarkFolderCreated', getBookmarkName(bookmark)));
       }
       this.updateComplete.then(async () => {
-        await this.$.list.updateComplete;
+        const listId = this.activeList_ === 'a' ? 'A' : 'B';
+        const listEl =
+            this.shadowRoot.querySelector<CrLazyListElement<DisplayItem>>(
+                `#list${listId}`)!;
+        await listEl.updateComplete;
         this.scrollToBookmark_(bookmark);
       });
     }
@@ -471,13 +557,6 @@ export class PowerBookmarksListElement extends CrLitElement implements
     this.rebuildNavigationElementsTimerId_ = -1;
   }
 
-  private computeHasFolders_(): boolean {
-    if (!this.displayList_ || this.displayList_.length === 0) {
-      return false;
-    }
-    return this.displayList_.some(item => !item.bookmark.url);
-  }
-
   private computeCanDrag_(): boolean {
     return !this.editing && !this.renamingId && !this.hasSomeActiveFilter;
   }
@@ -491,7 +570,8 @@ export class PowerBookmarksListElement extends CrLitElement implements
   }
 
   private bookmarkIsShowing_(bookmark: BookmarksTreeNode): boolean {
-    return this.displayList_.some(item => item.bookmark.id === bookmark.id);
+    const displayList = this.activeDisplayList_;
+    return displayList.some(item => item.bookmark.id === bookmark.id);
   }
 
 
@@ -540,8 +620,9 @@ export class PowerBookmarksListElement extends CrLitElement implements
         });
   }
 
-  protected getActiveFolderLabel_(): string {
-    return getFolderLabel(this.getActiveFolder());
+  protected getActiveFolderLabel_(listId: string): string {
+    const folder = listId === 'a' ? this.activeFolderA_ : this.activeFolderB_;
+    return getFolderLabel(folder);
   }
 
   /**
@@ -564,10 +645,15 @@ export class PowerBookmarksListElement extends CrLitElement implements
     }
   }
 
-
+  // The length of the active folder path from the last update. Used to
+  // determine navigation direction (forward vs. backward) for animations.
+  private lastActiveFolderPathLength_: number = 0;
 
   /**
-   * Update the lists of bookmarks and folders displayed to the user.
+   * Updates the lists of bookmarks and folders displayed to the user.
+   * If folder navigation has occurred, it populates the inactive list buffer
+   * and initiates a transition animation. Otherwise, it updates the active
+   * list buffer directly.
    */
   private updateDisplayList_(noMetrics: boolean = false) {
     const activeFolder = this.getActiveFolder();
@@ -600,30 +686,155 @@ export class PowerBookmarksListElement extends CrLitElement implements
       }
     }
 
-    this.firstSecondaryIndex_ =
-        secondaryList.length > 0 ? firstSecondaryIndex : -1;
+    // Track navigation direction and whether we are entering a new folder.
+    const currentPathLength = this.activeFolderPath.length;
+    const pathLengthChanged =
+        currentPathLength !== this.lastActiveFolderPathLength_;
 
-    this.displayList_ = displayList;
-    this.hasShownBookmarks = this.computeHasShownBookmarks_();
-    this.hasFolders_ = this.computeHasFolders_();
-    this.updateListScrollOffset_();
+    // If an animation is already in progress, finalize it immediately to
+    // prevent overlaps.
+    const wasTransitioning = this.transitioningList_ !== '';
+    if (wasTransitioning) {
+      this.finalizeTransition_(this.transitioningList_, noMetrics, true);
+    }
 
-    // After the lists are updated and all children updates are complete,
-    // notify cr-lazy-list to resize.
-    this.updateComplete.then(async () => {
-      // Allow time for child Lit elements to render.
-      await new Promise(resolve => setTimeout(resolve, 0));
-      this.notifyBookmarksListResize_();
+    if (pathLengthChanged && this.hasLoadedData_) {
+      // Determine if this is forward (deeper folder) or backward (parent
+      // folder) navigation.
+      const forward = currentPathLength > this.lastActiveFolderPathLength_;
+      this.lastActiveFolderPathLength_ = currentPathLength;
 
-      // Make sure the keyboard navigation tree is rebuilt whenever the
-      // cr-lazy-list is updated.
-      this.rebuildNavigationElements_();
-
-      if (this.recordCountMetricsOnNextUpdate_ && this.hasLoadedData_ &&
-          !noMetrics) {
-        this.recordBookmarkCountMetrics_();
+      // Trigger the slide transition on the header.
+      const headingEl =
+          this.shadowRoot.querySelector<PowerBookmarksListHeaderElement>(
+              '#heading');
+      if (headingEl) {
+        headingEl.transitionFolderLabel(activeFolder, forward);
       }
-    });
+
+      // Alternate double-buffered lists: write new contents to the off-screen
+      // buffer.
+      const currentListId = this.activeList_;
+      const targetListId = this.inactiveList_;
+
+      // Lock the container height to the current height to prevent visual
+      // content jumps.
+      const containerEl =
+          this.shadowRoot.querySelector<HTMLElement>('#list-container')!;
+      if (containerEl && !wasTransitioning) {
+        const activeHeight = this.getFolderHeight_(currentListId);
+        containerEl.style.height = `${activeHeight}px`;
+      }
+
+      // Write data to the target buffer.
+      if (targetListId === 'a') {
+        this.displayListA_ = displayList;
+        this.firstSecondaryIndexA_ =
+            secondaryList.length > 0 ? firstSecondaryIndex : -1;
+        this.activeFolderA_ = activeFolder;
+      } else {
+        this.displayListB_ = displayList;
+        this.firstSecondaryIndexB_ =
+            secondaryList.length > 0 ? firstSecondaryIndex : -1;
+        this.activeFolderB_ = activeFolder;
+      }
+
+      this.transitioningList_ = targetListId;
+      this.hasShownBookmarks = !!displayList && displayList.length > 0;
+      this.hasFolders_ =
+          !!displayList && displayList.some(item => !item.bookmark.url);
+      this.updateListScrollOffset_();
+
+      // Wait for Lit to render the contents into the target list buffer.
+      this.updateComplete.then(() => {
+        const containerEl =
+            this.shadowRoot.querySelector<HTMLElement>('#list-container')!;
+        const currentListEl = this.shadowRoot.querySelector<HTMLElement>(
+            `#list-${currentListId}`)!;
+        const targetListEl = this.shadowRoot.querySelector<HTMLElement>(
+            `#list-${targetListId}`)!;
+
+        requestAnimationFrame(() => {
+          const currentHeight = containerEl.offsetHeight;
+          const targetHeight = this.getFolderHeight_(targetListId);
+
+          // Animate the container height to fit the new list size.
+          containerEl.style.height = `${currentHeight}px`;
+          void containerEl.offsetHeight;  // Force layout reflow.
+          containerEl.style.height = `${targetHeight}px`;
+
+          // Clear previous transition styles.
+          currentListEl.classList.remove(
+              'animation-fade-in', 'animation-fade-out',
+              'animation-slide-in-from-right', 'animation-slide-out-to-right',
+              'animation-slide-in-from-left');
+          targetListEl.classList.remove(
+              'animation-fade-in', 'animation-fade-out',
+              'animation-slide-in-from-right', 'animation-slide-out-to-right',
+              'animation-slide-in-from-left');
+
+          void targetListEl.offsetWidth;  // Force layout reflow.
+
+          // Apply transitions:
+          // - Forward: Outgoing list fades out, incoming list slides from
+          //   right.
+          // - Backward: Outgoing list fades out, incoming list slides from
+          //   left.
+          if (forward) {
+            containerEl.classList.remove('direction-backward');
+            containerEl.classList.add('direction-forward');
+            currentListEl.classList.add('animation-fade-out');
+            targetListEl.classList.add('animation-slide-in-from-right');
+          } else {
+            containerEl.classList.remove('direction-forward');
+            containerEl.classList.add('direction-backward');
+            currentListEl.classList.add('animation-fade-out');
+            targetListEl.classList.add('animation-slide-in-from-left');
+          }
+
+          targetListEl.addEventListener(
+              'animationend', this.boundOnAnimationEnd_);
+          currentListEl.addEventListener(
+              'animationend', this.boundOnAnimationEnd_);
+        });
+      });
+
+    } else {
+      this.lastActiveFolderPathLength_ = currentPathLength;
+      if (this.activeList_ === 'a') {
+        this.displayListA_ = displayList;
+        this.firstSecondaryIndexA_ =
+            secondaryList.length > 0 ? firstSecondaryIndex : -1;
+        this.activeFolderA_ = activeFolder;
+      } else {
+        this.displayListB_ = displayList;
+        this.firstSecondaryIndexB_ =
+            secondaryList.length > 0 ? firstSecondaryIndex : -1;
+        this.activeFolderB_ = activeFolder;
+      }
+
+      this.hasShownBookmarks = !!displayList && displayList.length > 0;
+      this.hasFolders_ =
+          !!displayList && displayList.some(item => !item.bookmark.url);
+      this.updateListScrollOffset_();
+
+      // After the lists are updated and all children updates are complete,
+      // notify cr-lazy-list to resize.
+      this.updateComplete.then(async () => {
+        // Allow time for child Lit elements to render.
+        await new Promise(resolve => setTimeout(resolve, 0));
+        this.notifyBookmarksListResize_();
+
+        // Make sure the keyboard navigation tree is rebuilt whenever the
+        // cr-lazy-list is updated.
+        this.rebuildNavigationElements_();
+
+        if (this.recordCountMetricsOnNextUpdate_ && this.hasLoadedData_ &&
+            !noMetrics) {
+          this.recordBookmarkCountMetrics_();
+        }
+      });
+    }
   }
 
   private onSearchChanged_() {
@@ -635,8 +846,109 @@ export class PowerBookmarksListElement extends CrLitElement implements
     // other scrolling UI elements take.
     this.updateComplete.then(() => {
       const bookmarksOffsetTop = this.$.bookmarks.offsetTop;
-      this.$.list.scrollOffset = this.$.list.offsetTop - bookmarksOffsetTop;
+      const listEl = this.list;
+      if (listEl) {
+        listEl.scrollOffset = listEl.offsetTop - bookmarksOffsetTop;
+      }
     });
+  }
+
+  protected getListClass_(listId: string): string {
+    const classes = ['list-wrapper'];
+    if (listId === this.activeList_) {
+      classes.push('active');
+    }
+    if (listId === this.transitioningList_) {
+      classes.push('transitioning');
+    }
+    return classes.join(' ');
+  }
+
+  protected isListActiveOrTransitioning_(listId: string): boolean {
+    return listId === this.activeList_ || listId === this.transitioningList_;
+  }
+
+  private getFolderHeight_(listId: string): number {
+    if (this.isFolderEmptyStateVisible_(listId)) {
+      return FOLDER_EMPTY_STATE_HEIGHT;
+    }
+    const displayList = this.getDisplayList_(listId);
+    const itemsCount = displayList ? displayList.length : 0;
+    const itemHeight = this.compact_ ? 36 : 68;
+    return itemsCount * itemHeight;
+  }
+
+  protected isFolderEmptyStateVisible_(listId: string): boolean {
+    if (!this.hasLoadedData_) {
+      return false;
+    }
+    const displayList = this.getDisplayList_(listId);
+    const activeFolder =
+        listId === 'a' ? this.activeFolderA_ : this.activeFolderB_;
+    const hasShownBookmarks = !!displayList && displayList.length > 0;
+    const hasActiveFolder = !!activeFolder;
+    const hasSomeActiveFilter = this.hasSomeActiveFilter;
+
+    return !hasShownBookmarks && !hasSomeActiveFilter && hasActiveFolder;
+  }
+
+  private finalizeTransition_(
+      targetListId: string, noMetrics: boolean = false,
+      isInterrupted: boolean = false) {
+    const containerEl =
+        this.shadowRoot.querySelector<HTMLElement>('#list-container')!;
+    if (containerEl && !isInterrupted) {
+      containerEl.style.height = '';
+    }
+
+    const currentListId = this.getOtherListId_(targetListId);
+    const currentListEl =
+        this.shadowRoot.querySelector<HTMLElement>(`#list-${currentListId}`);
+    const targetListEl =
+        this.shadowRoot.querySelector<HTMLElement>(`#list-${targetListId}`);
+
+    if (currentListEl) {
+      currentListEl.classList.remove(
+          'animation-fade-in', 'animation-fade-out',
+          'animation-slide-in-from-right', 'animation-slide-out-to-right');
+      currentListEl.removeEventListener(
+          'animationend', this.boundOnAnimationEnd_);
+    }
+    if (targetListEl) {
+      targetListEl.classList.remove(
+          'animation-fade-in', 'animation-fade-out',
+          'animation-slide-in-from-right', 'animation-slide-out-to-right');
+      targetListEl.removeEventListener(
+          'animationend', this.boundOnAnimationEnd_);
+    }
+
+    this.transitioningList_ = '';
+    this.activeList_ = targetListId;
+
+    this.updateListScrollOffset_();
+    this.notifyBookmarksListResize_();
+    this.rebuildNavigationElements_();
+
+    if (this.recordCountMetricsOnNextUpdate_ && !noMetrics) {
+      this.recordBookmarkCountMetrics_();
+    }
+  }
+
+  protected onAnimationEnd_(e: AnimationEvent) {
+    const targetListId = this.transitioningList_;
+    if (!targetListId) {
+      return;
+    }
+
+    const targetListEl =
+        this.shadowRoot.querySelector<HTMLElement>(`#list-${targetListId}`)!;
+    const currentListId = this.getOtherListId_(targetListId);
+    const currentListEl =
+        this.shadowRoot.querySelector<HTMLElement>(`#list-${currentListId}`)!;
+
+    if (e.target === targetListEl || e.target === currentListEl) {
+      this.finalizeTransition_(targetListId);
+    }
   }
 
   private onCanDragChange_() {
@@ -659,6 +971,14 @@ export class PowerBookmarksListElement extends CrLitElement implements
     }
     this.rebuildNavigationElementsTimerId_ = setTimeout(() => {
       this.rebuildNavigationElementsTimerId_ = -1;
+      // Wait until the transition animation completes and the target list
+      // buffer becomes active before rebuilding navigation elements.
+      // Rebuilding too early during the transition causes double-buffered lists
+      // to both be evaluated as visible in the DOM, producing incorrect metric
+      // counts.
+      if (this.transitioningList_ !== '') {
+        return;
+      }
       this.keyArrowNavigationService_.rebuildNavigationElements();
       this.fire('rebuild-navigation-elements');
       if (this.recordCountMetricsOnNextUpdate_ && this.hasLoadedData_) {
@@ -738,6 +1058,9 @@ export class PowerBookmarksListElement extends CrLitElement implements
       event: CustomEvent<{bookmark: BookmarksTreeNode, event: MouseEvent}>) {
     event.preventDefault();
     event.stopPropagation();
+    if (this.transitioningList_ !== '') {
+      return;
+    }
     if (!this.editing) {
       if (event.detail.bookmark.children) {
         this.recordCountMetricsOnNextUpdate_ = true;
@@ -746,8 +1069,10 @@ export class PowerBookmarksListElement extends CrLitElement implements
         this.dispatchActiveFolderPathChanged_();
         this.fire('clear-search');
         this.updateComplete.then(async () => {
-          if (this.displayList_.length > 0) {
-            const element = await this.$.list.ensureItemRendered(0);
+          const displayList = this.activeDisplayList_;
+          if (displayList.length > 0) {
+            const listEl = this.list;
+            const element = await listEl.ensureItemRendered(0);
             element.focus();
           }
         });
@@ -797,27 +1122,35 @@ export class PowerBookmarksListElement extends CrLitElement implements
     this.renamingId = '';
   }
 
-  protected getRowHeading_(index: number): string {
+  protected getRowHeading_(index: number, listId: 'a'|'b'): string {
     const showHeadings =
         this.sectionVisibility_ && this.sectionVisibility_.filterHeadings;
     if (!showHeadings) {
       return '';
     }
 
-    if (index === this.firstSecondaryIndex_) {
+    const firstSecondaryIndex = listId === 'a' ? this.firstSecondaryIndexA_ :
+                                                 this.firstSecondaryIndexB_;
+    if (index === firstSecondaryIndex) {
       return loadTimeData.getString('secondaryFilterHeading');
     }
 
     if (index === 0) {
       return loadTimeData.getStringF(
-          'primaryFilterHeading', this.getActiveFolderLabel_());
+          'primaryFilterHeading', this.getActiveFolderLabel_(listId));
     }
 
     return '';
   }
 
   protected notifyBookmarksListResize_() {
-    this.$.list.fillCurrentViewport();
+    const listId = this.activeList_ === 'a' ? 'A' : 'B';
+    const listEl =
+        this.shadowRoot.querySelector<CrLazyListElement<DisplayItem>>(
+            `#list${listId}`);
+    if (listEl) {
+      listEl.fillCurrentViewport();
+    }
   }
 
 
@@ -890,10 +1223,6 @@ export class PowerBookmarksListElement extends CrLitElement implements
     recordViewType(this.compact_);
     const viewType = this.compact_ ? ViewType.kCompact : ViewType.kExpanded;
     this.bookmarksApi_.setViewType(viewType);
-  }
-
-  private computeHasShownBookmarks_(): boolean {
-    return !!this.displayList_ && this.displayList_.length > 0;
   }
 
   private computeSectionVisibility_(): ListSectionVisibility {
