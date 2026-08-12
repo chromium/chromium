@@ -973,6 +973,31 @@ TEST_F(ClipPathPaintDefinitionTest,
   StartAndVerifyNonEligibleClipPathAnimation(target, 1000);
 }
 
+TEST_F(ClipPathPaintDefinitionTest, FallbackForRoundingFullyClipped) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: inset(0 100% 0 0 round 8px);
+            }
+            100% {
+                clip-path: inset(0 0 0 0 round 8px);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  StartAndVerifyNonEligibleClipPathAnimation(element, 1000);
+}
+
 /* ----------------------------------------- */
 /*     SPECIAL ANIMATION FALLBACK TESTS      */
 /* For animation fallback outside the usual  */
