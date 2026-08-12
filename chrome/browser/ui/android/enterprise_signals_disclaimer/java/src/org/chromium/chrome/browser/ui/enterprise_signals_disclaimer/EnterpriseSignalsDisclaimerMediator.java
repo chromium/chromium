@@ -13,6 +13,9 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.util.Objects;
 
@@ -27,11 +30,19 @@ import java.util.Objects;
  */
 @NullMarked
 class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
+    // TODO(b/537182192): Replace with a p-link.
+    static final String LEARN_MORE_LINK = "https://support.google.com/chrome/a/answer/16191236";
+
     private final PropertyModel mModel;
     private final ProfileDataCache mProfileDataCache;
     private final AccountInfo mPrimaryAccount;
+    private final EnterpriseSignalsDisclaimerCoordinator.Delegate mDelegate;
 
-    EnterpriseSignalsDisclaimerMediator(Context context, IdentityManager identityManager) {
+    EnterpriseSignalsDisclaimerMediator(
+            Context context,
+            IdentityManager identityManager,
+            EnterpriseSignalsDisclaimerCoordinator.Delegate delegate) {
+        mDelegate = delegate;
         mPrimaryAccount = Objects.requireNonNull(identityManager.getPrimaryAccountInfo());
 
         // Puts the badge in the bottom right corner of the profile picture.
@@ -59,8 +70,7 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
                                 context.getString(R.string.enterprise_signals_disclaimer_title))
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.DESCRIPTION,
-                                context.getString(
-                                        R.string.enterprise_signals_disclaimer_description))
+                                getDescriptionWithLink(context))
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.PROFILE_INFORMATION_TITLE,
                                 context.getString(
@@ -129,5 +139,13 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
 
     void destroy() {
         mProfileDataCache.removeObserver(this);
+    }
+
+    private CharSequence getDescriptionWithLink(Context context) {
+        final ChromeClickableSpan learnMoreSpan =
+                new ChromeClickableSpan(context, v -> mDelegate.showInfoPage(LEARN_MORE_LINK));
+        return SpanApplier.applySpans(
+                context.getString(R.string.enterprise_signals_disclaimer_description),
+                new SpanInfo("<LINK>", "</LINK>", learnMoreSpan));
     }
 }

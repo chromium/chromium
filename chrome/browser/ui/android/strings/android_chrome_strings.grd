@@ -7834,7 +7834,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Your work secured on Chrome
       </message>
       <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_DESCRIPTION" desc="Description of the enterprise signals disclaimer dialog.">
-        To secure your work on Chrome, your organization will be able to view or manage certain information when you’re signed-in to Chrome. Learn more
+        To secure your work on Chrome, your organization will be able to view or manage certain information when you’re signed-in to Chrome. <ph name="BEGIN_LINK">&lt;LINK&gt;</ph>Learn more<ph name="END_LINK">&lt;/LINK&gt;</ph>
       </message>
       <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_PROFILE_INFORMATION_TITLE" desc="Title of the profile information section in the enterprise signals disclaimer dialog.">
         Profile information

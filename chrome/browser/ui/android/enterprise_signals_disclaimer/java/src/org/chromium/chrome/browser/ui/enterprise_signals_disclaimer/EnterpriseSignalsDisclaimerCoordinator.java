@@ -14,11 +14,21 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * Coordinator for the enterprise signals disclaimer bottom sheet. The disclaimer is shown on
- * startup and on primary account change for managed enterprise users who have not acknoledged the
- * disclaimer previosuly.
+ * startup and on primary account change for managed enterprise users who have not acknowledged the
+ * disclaimer previously.
  */
 @NullMarked
 public class EnterpriseSignalsDisclaimerCoordinator {
+    /** Delegate for the enterprise signals disclaimer. */
+    public interface Delegate {
+        /**
+         * Opens the info page for the given URL.
+         *
+         * @param url The URL of the webpage to show.
+         */
+        void showInfoPage(String url);
+    }
+
     private final BottomSheetController mBottomSheetController;
     private final EnterpriseSignalsDisclaimerBottomSheetView mSheetContent;
     private final EnterpriseSignalsDisclaimerMediator mMediator;
@@ -33,18 +43,20 @@ public class EnterpriseSignalsDisclaimerCoordinator {
      * @param bottomSheetController The {@link BottomSheetController} for showing the bottom sheet.
      * @param signinManager The {@link SigninManager} for checking management status and fetching
      *     the profile picture.
+     * @param delegate The {@link Delegate} for embedder interactions.
      */
     public EnterpriseSignalsDisclaimerCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
-            SigninManager signinManager) {
+            SigninManager signinManager,
+            Delegate delegate) {
         mBottomSheetController = bottomSheetController;
         mSheetContent = new EnterpriseSignalsDisclaimerBottomSheetView(context);
 
         final IdentityManager identityManager = signinManager.getIdentityManager();
         assert identityManager.hasPrimaryAccount();
 
-        mMediator = new EnterpriseSignalsDisclaimerMediator(context, identityManager);
+        mMediator = new EnterpriseSignalsDisclaimerMediator(context, identityManager, delegate);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(),

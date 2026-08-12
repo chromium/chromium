@@ -42,7 +42,7 @@ found in the LICENSE file.
         android:gravity="center_horizontal"
         android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
-    <org.chromium.ui.widget.TextViewWithLeading
+    <org.chromium.ui.widget.TextViewWithClickableSpans
         android:id="@+id/disclaimer_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

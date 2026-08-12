@@ -1355,7 +1355,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                         new EnterpriseSignalsDisclaimerCoordinator(
                                                 mActivity,
                                                 assertNonNull(getBottomSheetController()),
-                                                signinManager);
+                                                signinManager,
+                                                url ->
+                                                        CustomTabActivity.showInfoPage(
+                                                                mActivity, url));
                                 mEnterpriseSignalsDisclaimerCoordinator.show();
                             }
                         });

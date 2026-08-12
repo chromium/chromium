@@ -18,7 +18,7 @@ class EnterpriseSignalsDisclaimerProperties {
             new WritableObjectPropertyKey<>("profile_picture");
     public static final WritableObjectPropertyKey<String> TITLE =
             new WritableObjectPropertyKey<>("title");
-    public static final WritableObjectPropertyKey<String> DESCRIPTION =
+    public static final WritableObjectPropertyKey<CharSequence> DESCRIPTION =
             new WritableObjectPropertyKey<>("description");
     public static final WritableObjectPropertyKey<String> PROFILE_INFORMATION_TITLE =
             new WritableObjectPropertyKey<>("profile_information_title");

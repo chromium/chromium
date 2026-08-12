@@ -185,7 +185,8 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                             new EnterpriseSignalsDisclaimerCoordinator(
                                     activity,
                                     createBottomSheetController(activity, mContainer),
-                                    mSigninManager);
+                                    mSigninManager,
+                                    (url) -> {});
                     mCoordinator.show();
                 });
         mRenderTestRule.render(mContainer, "enterprise_signals_disclaimer");

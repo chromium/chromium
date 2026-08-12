@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,6 +24,7 @@ import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
 import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 import org.chromium.ui.widget.TextViewWithLeading;
 
 /**
@@ -35,7 +37,7 @@ class EnterpriseSignalsDisclaimerBottomSheetView implements BottomSheetContent {
     private final ScrollView mScrollView;
     private final ImageView mDisclaimerLogo;
     private final TextView mTitleView;
-    private final TextViewWithLeading mDescriptionView;
+    private final TextViewWithClickableSpans mDescriptionView;
     private final TextView mProfileInformationTitle;
     private final TextViewWithLeading mProfileInformationDetails;
     private final TextView mDeviceInformationTitle;
@@ -68,6 +70,8 @@ class EnterpriseSignalsDisclaimerBottomSheetView implements BottomSheetContent {
                 controller, R.id.profile_info_card, /* isTop= */ true, /* isBottom= */ false);
         styleContainmentCard(
                 controller, R.id.device_info_card, /* isTop= */ false, /* isBottom= */ true);
+
+        mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /**
@@ -95,7 +99,7 @@ class EnterpriseSignalsDisclaimerBottomSheetView implements BottomSheetContent {
      *
      * @param description The description text.
      */
-    public void setDescription(String description) {
+    public void setDescription(CharSequence description) {
         mDescriptionView.setText(description);
     }
 
