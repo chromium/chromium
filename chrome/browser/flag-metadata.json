@@ -7108,13 +7108,13 @@
     "expiry_milestone": 160
   },
   {
-    "name": "new-tab-page-padding-update",
-    "owners": ["bmcclure@google.com", "bling-pandamonium@google.com"],
+    "name": "new-tab-page-redesign",
+    "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 160
   },
   {
-    "name": "new-tab-page-redesign",
-    "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
+    "name": "new-tab-page-ui-cleanup",
+    "owners": ["bmcclure@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 160
   },
   {

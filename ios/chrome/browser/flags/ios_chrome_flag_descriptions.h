@@ -1459,15 +1459,15 @@ inline constexpr char kNewTabPageFieldTrialDescription[] =
     "Enables new tab page features that are available on first run for new "
     "Chrome iOS users.";
 
-inline constexpr char kNewTabPagePaddingUpdateName[] =
-    "New Tab Page padding updates";
-inline constexpr char kNewTabPagePaddingUpdateDescription[] =
-    "Enables padding updates and fake omnibox styling on the New Tab Page. "
-    "Padding is dependent on the enabled feature parameter.";
-
 inline constexpr char kNewTabPageRedesignName[] = "New Tab Page Redesign";
 inline constexpr char kNewTabPageRedesignDescription[] =
     "Enables the redesigned New Tab Page on iOS (iPhone only).";
+
+inline constexpr char kNewTabPageUICleanupName[] = "New Tab Page UI cleanup";
+inline constexpr char kNewTabPageUICleanupDescription[] =
+    "Enables a UI refresh on the New Tab Page with updated padding, fakebox "
+    "styling, and color improvements. Different variations adjust the "
+    "spacing between modules.";
 
 inline constexpr char kNextOldDesignName[] = "NextOldDesign";
 inline constexpr char kNextOldDesignDescription[] =

@@ -16,7 +16,7 @@ extern const CGFloat kHintTextScale;
 // Bottom margin for the Return to Recent Tab tile.
 extern const CGFloat kReturnToRecentTabSectionBottomMargin;
 
-// Constants for the `kNewTabPagePaddingUpdate` feature arms.
+// Constants for the `kNewTabPageUICleanup` feature arms.
 // Tight Padding Arm.
 extern const CGFloat kLogoTopPaddingTight;
 extern const CGFloat kLogoToFakeboxPaddingTight;
@@ -58,7 +58,7 @@ CGFloat DoodleHeight(SearchEngineLogoState logo_state,
 // Legacy helper. Use `LogoTopPadding` instead. Returns the proper margin to the
 // top of the header for the doodle.
 // TODO(crbug.com/542594099): Remove legacy helpers once
-// `kNewTabPagePaddingUpdate` is launched.
+// `kNewTabPageUICleanup` is launched.
 CGFloat DoodleTopMargin(SearchEngineLogoState logo_state,
                         UITraitCollection* trait_collection);
 // Returns the height of the separator line below the omnibox.
@@ -66,7 +66,7 @@ CGFloat HeaderSeparatorHeight();
 // Legacy helper. Use `LogoToFakeboxPadding` instead. Returns the proper margin
 // to the bottom of the doodle for the search field.
 // TODO(crbug.com/542594099): Remove legacy helpers once
-// `kNewTabPagePaddingUpdate` is launched.
+// `kNewTabPageUICleanup` is launched.
 CGFloat SearchFieldTopMargin(SearchEngineLogoState logo_state);
 // Returns the height of the Fake Omnibox on Home when it is not scrolled.
 CGFloat FakeOmniboxHeight();
@@ -85,7 +85,7 @@ CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
 // between the fake omnibox and the content suggestions tiles.
 CGFloat HeaderBottomPadding(UITraitCollection* trait_collection);
 
-// Spacing helper methods for kNewTabPagePaddingUpdate experiment arms.
+// Spacing helper methods for kNewTabPageUICleanup experiment arms.
 // Returns padding above the Google logo/doodle based on the enabled arm and
 // size class.
 CGFloat LogoTopPadding(SearchEngineLogoState logo_state,

@@ -341,76 +341,76 @@ CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
     return kDoodleTopMarginRegularXRegular;
   }
   if (logo_state == SearchEngineLogoState::kDoodle) {
-    switch (GetNTPPaddingUpdateVariation()) {
-      case NTPPaddingUpdateVariation::kTightPadding:
+    switch (GetNewTabPageUICleanupVariation()) {
+      case NTPUICleanupVariation::kTightPadding:
         return FakeToolbarHeight() + kDoodleTopPaddingTight;
-      case NTPPaddingUpdateVariation::kMediumPadding:
+      case NTPUICleanupVariation::kMediumPadding:
         return FakeToolbarHeight() + kDoodleTopPaddingMedium;
-      case NTPPaddingUpdateVariation::kPreferredPadding:
+      case NTPUICleanupVariation::kPreferredPadding:
         return FakeToolbarHeight() + kDoodleTopPaddingPreferred;
-      case NTPPaddingUpdateVariation::kDisabled:
+      case NTPUICleanupVariation::kDisabled:
         return DoodleTopMargin(logo_state, trait_collection);
     }
   }
-  switch (GetNTPPaddingUpdateVariation()) {
-    case NTPPaddingUpdateVariation::kTightPadding:
+  switch (GetNewTabPageUICleanupVariation()) {
+    case NTPUICleanupVariation::kTightPadding:
       return FakeToolbarHeight() + kLogoTopPaddingTight;
-    case NTPPaddingUpdateVariation::kMediumPadding:
+    case NTPUICleanupVariation::kMediumPadding:
       return FakeToolbarHeight() + kLogoTopPaddingMedium;
-    case NTPPaddingUpdateVariation::kPreferredPadding:
+    case NTPUICleanupVariation::kPreferredPadding:
       return FakeToolbarHeight() + kLogoTopPaddingPreferred;
-    case NTPPaddingUpdateVariation::kDisabled:
+    case NTPUICleanupVariation::kDisabled:
       return DoodleTopMargin(logo_state, trait_collection);
   }
 }
 
 CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state) {
   if (logo_state == SearchEngineLogoState::kDoodle) {
-    switch (GetNTPPaddingUpdateVariation()) {
-      case NTPPaddingUpdateVariation::kTightPadding:
+    switch (GetNewTabPageUICleanupVariation()) {
+      case NTPUICleanupVariation::kTightPadding:
         return kDoodleToFakeboxPaddingTight;
-      case NTPPaddingUpdateVariation::kMediumPadding:
+      case NTPUICleanupVariation::kMediumPadding:
         return kDoodleToFakeboxPaddingMedium;
-      case NTPPaddingUpdateVariation::kPreferredPadding:
+      case NTPUICleanupVariation::kPreferredPadding:
         return kDoodleToFakeboxPaddingPreferred;
-      case NTPPaddingUpdateVariation::kDisabled:
+      case NTPUICleanupVariation::kDisabled:
         return SearchFieldTopMargin(logo_state);
     }
   }
-  switch (GetNTPPaddingUpdateVariation()) {
-    case NTPPaddingUpdateVariation::kTightPadding:
+  switch (GetNewTabPageUICleanupVariation()) {
+    case NTPUICleanupVariation::kTightPadding:
       return kLogoToFakeboxPaddingTight;
-    case NTPPaddingUpdateVariation::kMediumPadding:
+    case NTPUICleanupVariation::kMediumPadding:
       return kLogoToFakeboxPaddingMedium;
-    case NTPPaddingUpdateVariation::kPreferredPadding:
+    case NTPUICleanupVariation::kPreferredPadding:
       return kLogoToFakeboxPaddingPreferred;
-    case NTPPaddingUpdateVariation::kDisabled:
+    case NTPUICleanupVariation::kDisabled:
       return SearchFieldTopMargin(logo_state);
   }
 }
 
 CGFloat QuickActionsTopPadding() {
-  switch (GetNTPPaddingUpdateVariation()) {
-    case NTPPaddingUpdateVariation::kTightPadding:
+  switch (GetNewTabPageUICleanupVariation()) {
+    case NTPUICleanupVariation::kTightPadding:
       return kQuickActionsTopPaddingTight;
-    case NTPPaddingUpdateVariation::kMediumPadding:
+    case NTPUICleanupVariation::kMediumPadding:
       return kQuickActionsTopPaddingMedium;
-    case NTPPaddingUpdateVariation::kPreferredPadding:
+    case NTPUICleanupVariation::kPreferredPadding:
       return kQuickActionsTopPaddingPreferred;
-    case NTPPaddingUpdateVariation::kDisabled:
+    case NTPUICleanupVariation::kDisabled:
       return kQuickActionsTopPaddingControl;
   }
 }
 
 CGFloat MostVisitedTopPadding() {
-  switch (GetNTPPaddingUpdateVariation()) {
-    case NTPPaddingUpdateVariation::kTightPadding:
+  switch (GetNewTabPageUICleanupVariation()) {
+    case NTPUICleanupVariation::kTightPadding:
       return kMostVisitedTopPaddingTight;
-    case NTPPaddingUpdateVariation::kMediumPadding:
+    case NTPUICleanupVariation::kMediumPadding:
       return kMostVisitedTopPaddingMedium;
-    case NTPPaddingUpdateVariation::kPreferredPadding:
+    case NTPUICleanupVariation::kPreferredPadding:
       return kMostVisitedTopPaddingPreferred;
-    case NTPPaddingUpdateVariation::kDisabled:
+    case NTPUICleanupVariation::kDisabled:
       return kMostVisitedTopPaddingControl;
   }
 }
@@ -419,12 +419,12 @@ CGFloat ReducedModuleSpacing(UITraitCollection* trait_collection) {
   if (IsRegularXRegularSizeClass(trait_collection)) {
     return kReducedModuleSpacingRegularXRegular;
   }
-  switch (GetNTPPaddingUpdateVariation()) {
-    case NTPPaddingUpdateVariation::kTightPadding:
-    case NTPPaddingUpdateVariation::kMediumPadding:
-    case NTPPaddingUpdateVariation::kPreferredPadding:
+  switch (GetNewTabPageUICleanupVariation()) {
+    case NTPUICleanupVariation::kTightPadding:
+    case NTPUICleanupVariation::kMediumPadding:
+    case NTPUICleanupVariation::kPreferredPadding:
       return kReducedModuleSpacing;
-    case NTPPaddingUpdateVariation::kDisabled:
+    case NTPUICleanupVariation::kDisabled:
       return kReducedModuleSpacingControl;
   }
 }

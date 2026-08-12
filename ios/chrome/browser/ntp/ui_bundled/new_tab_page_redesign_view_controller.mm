@@ -702,7 +702,7 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
     CGFloat logoHeight =
         content_suggestions::DoodleHeight(_logoState, self.traitCollection);
     CGFloat logoTopMargin;
-    if (base::FeatureList::IsEnabled(kNewTabPagePaddingUpdate)) {
+    if (IsNewTabPageUICleanupEnabled()) {
       logoTopMargin =
           content_suggestions::LogoTopPadding(_logoState, self.traitCollection);
     } else {

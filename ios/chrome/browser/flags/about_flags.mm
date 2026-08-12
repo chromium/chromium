@@ -1333,17 +1333,17 @@ const FeatureEntry::FeatureVariation kCrossDeviceSigninVariations[] = {
      kCrossDeviceSigninDefaultUrl, nullptr},
 };
 
-const FeatureEntry::FeatureParam kNewTabPagePaddingUpdateTightPadding[] = {
-    {kNewTabPagePaddingUpdateArmParam, "1"}};
-const FeatureEntry::FeatureParam kNewTabPagePaddingUpdateMediumPadding[] = {
-    {kNewTabPagePaddingUpdateArmParam, "2"}};
-const FeatureEntry::FeatureParam kNewTabPagePaddingUpdatePreferredPadding[] = {
-    {kNewTabPagePaddingUpdateArmParam, "3"}};
+const FeatureEntry::FeatureParam kNewTabPageUICleanupTightPadding[] = {
+    {kNewTabPageUICleanupArmParam, "1"}};
+const FeatureEntry::FeatureParam kNewTabPageUICleanupMediumPadding[] = {
+    {kNewTabPageUICleanupArmParam, "2"}};
+const FeatureEntry::FeatureParam kNewTabPageUICleanupPreferredPadding[] = {
+    {kNewTabPageUICleanupArmParam, "3"}};
 
-const FeatureEntry::FeatureVariation kNewTabPagePaddingUpdateVariations[] = {
-    {" - Tight Padding", kNewTabPagePaddingUpdateTightPadding, nullptr},
-    {" - Medium Padding", kNewTabPagePaddingUpdateMediumPadding, nullptr},
-    {" - Preferred Padding", kNewTabPagePaddingUpdatePreferredPadding, nullptr},
+const FeatureEntry::FeatureVariation kNewTabPageUICleanupVariations[] = {
+    {" - Tight Padding", kNewTabPageUICleanupTightPadding, nullptr},
+    {" - Medium Padding", kNewTabPageUICleanupMediumPadding, nullptr},
+    {" - Preferred Padding", kNewTabPageUICleanupPreferredPadding, nullptr},
 };
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
@@ -2875,12 +2875,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"next-old-design", flag_descriptions::kNextOldDesignName,
      flag_descriptions::kNextOldDesignDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kNextOldDesign)},
-    {"new-tab-page-padding-update",
-     flag_descriptions::kNewTabPagePaddingUpdateName,
-     flag_descriptions::kNewTabPagePaddingUpdateDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kNewTabPagePaddingUpdate,
-                                    kNewTabPagePaddingUpdateVariations,
-                                    "NewTabPagePaddingUpdate")},
+    {"new-tab-page-ui-cleanup", flag_descriptions::kNewTabPageUICleanupName,
+     flag_descriptions::kNewTabPageUICleanupDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kNewTabPageUICleanup,
+                                    kNewTabPageUICleanupVariations,
+                                    "NewTabPageUICleanup")},
     {"web-frame-tree", flag_descriptions::kWebFrameTreeName,
      flag_descriptions::kWebFrameTreeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kWebFrameTree)},

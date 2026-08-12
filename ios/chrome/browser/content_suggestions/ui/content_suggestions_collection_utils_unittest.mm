@@ -280,7 +280,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, SameLogoAndDoodleHeight) {
   EXPECT_EQ(height_with_logo, height_with_doodle);
 }
 
-// Test padding helpers for kNewTabPagePaddingUpdate experiment arms.
+// Test padding helpers for kNewTabPageUICleanup experiment arms.
 TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
   // Control (Disabled).
   EXPECT_EQ(DoodleTopMargin(SearchEngineLogoState::kLogo,
@@ -303,7 +303,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kNewTabPagePaddingUpdate, {{kNewTabPagePaddingUpdateArmParam, "1"}});
+        kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "1"}});
     EXPECT_EQ(FakeToolbarHeight() + kLogoTopPaddingTight,
               LogoTopPadding(SearchEngineLogoState::kLogo,
                              IPhonePortraitTraitCollection()));
@@ -323,7 +323,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kNewTabPagePaddingUpdate, {{kNewTabPagePaddingUpdateArmParam, "2"}});
+        kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "2"}});
     EXPECT_EQ(FakeToolbarHeight() + kLogoTopPaddingMedium,
               LogoTopPadding(SearchEngineLogoState::kLogo,
                              IPhonePortraitTraitCollection()));
@@ -343,7 +343,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kNewTabPagePaddingUpdate, {{kNewTabPagePaddingUpdateArmParam, "3"}});
+        kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "3"}});
     EXPECT_EQ(FakeToolbarHeight() + kLogoTopPaddingPreferred,
               LogoTopPadding(SearchEngineLogoState::kLogo,
                              IPhonePortraitTraitCollection()));
@@ -363,7 +363,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kNewTabPagePaddingUpdate, {{kNewTabPagePaddingUpdateArmParam, "1"}});
+        kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, "1"}});
     EXPECT_EQ(162.0, LogoTopPadding(SearchEngineLogoState::kLogo,
                                     IPadTraitCollection()));
     EXPECT_EQ(162.0, LogoTopPadding(SearchEngineLogoState::kDoodle,
