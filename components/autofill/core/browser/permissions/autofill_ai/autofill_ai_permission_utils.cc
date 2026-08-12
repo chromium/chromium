@@ -801,6 +801,20 @@ bool GetAutofillAiOptInStatus(const PrefService* prefs,
                 .is_null();
   }
 
+  return GetObsoleteAutofillAiOptInStatus(prefs, identity_manager);
+}
+
+bool GetObsoleteAutofillAiOptInStatus(
+    const PrefService* prefs,
+    const signin::IdentityManager* identity_manager) {
+  if (!prefs) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(features::debug::kAutofillAiForceOptIn)) {
+    return true;
+  }
+
   const std::optional<GaiaIdHash> signed_in_hash =
       GetAccountGaiaIdHash(identity_manager);
   if (!signed_in_hash) {

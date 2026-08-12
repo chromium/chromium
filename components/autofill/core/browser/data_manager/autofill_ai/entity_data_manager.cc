@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
@@ -110,6 +111,21 @@ EntityDataManager::EntityDataManager(
           ? AutofillAiOptInStatus::kOptedIn
           : AutofillAiOptInStatus::kOptedOut);
 
+  // A user who is already opted-in to online model runs does not need to see
+  // the notice.
+  if (GetObsoleteAutofillAiOptInStatus(pref_service, identity_manager) &&
+      pref_service
+          ->GetTime(
+              prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
+          .is_null() &&
+      base::FeatureList::IsEnabled(features::kAutofillAiUsePrivateAi)) {
+    pref_service->SetTime(
+        prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp,
+        base::Time::Now());
+    pref_service->SetTime(
+        prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp,
+        base::Time::Now());
+  }
   autofill_metrics::LogAutofillAiSettingsAtStartup(*pref_service);
 }
 

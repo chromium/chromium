@@ -391,6 +391,65 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, OptInMetric) {
       BucketsAre(Bucket(kOptedOut, 1), Bucket(kOptedIn, 1)));
 }
 
+// Tests that existing opted-in users have their notice timestamps populated
+// upon profile startup when the Private AI feature is enabled.
+TEST_F(EntityDataManagerTest_InitiallyEmpty,
+       PrivateInferenceNoticeMarkedAsShownForPreExistingOptedInUsers) {
+  EXPECT_TRUE(
+      client()
+          .GetPrefs()
+          ->GetTime(prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp)
+          .is_null());
+  EXPECT_TRUE(
+      client()
+          .GetPrefs()
+          ->GetTime(
+              prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
+          .is_null());
+
+  // Opt in the user prior to enabling the Private AI feature.
+  client().SetUpPrefsAndIdentityForAutofillAi();
+  ASSERT_TRUE(GetObsoleteAutofillAiOptInStatus(client().GetPrefs(),
+                                               client().GetIdentityManager()));
+
+  // Enable the Private AI feature flag and simulate profile startup by
+  // recreating `EntityDataManager`.
+  base::test::ScopedFeatureList feature_list{features::kAutofillAiUsePrivateAi};
+  RecreateEntityDataManager_Discouraged();
+
+  EXPECT_FALSE(
+      client()
+          .GetPrefs()
+          ->GetTime(prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp)
+          .is_null());
+  EXPECT_FALSE(
+      client()
+          .GetPrefs()
+          ->GetTime(
+              prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
+          .is_null());
+}
+
+// Tests that notice timestamps are not marked if the user was not opted in
+// before the Private AI feature is enabled.
+TEST_F(EntityDataManagerTest_InitiallyEmpty,
+       PrivateInferenceNoticeNotMarkedWhenNotOptedIn) {
+  base::test::ScopedFeatureList feature_list{features::kAutofillAiUsePrivateAi};
+  RecreateEntityDataManager_Discouraged();
+
+  EXPECT_TRUE(
+      client()
+          .GetPrefs()
+          ->GetTime(prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp)
+          .is_null());
+  EXPECT_TRUE(
+      client()
+          .GetPrefs()
+          ->GetTime(
+              prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
+          .is_null());
+}
+
 // Tests that a change notification for AUTOFILL_VALUABLE from sync triggers a
 // reload of entities.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, OnAutofillValuableChangedBySync) {
