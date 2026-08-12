@@ -64,6 +64,7 @@ source_set("configs") {
     "//chrome/browser/ui/webui/accessibility",
     "//chrome/browser/ui/webui/actor_internals",
     "//chrome/browser/ui/webui/autofill_and_password_manager_internals",
+    "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/webui/chrome_urls",
     "//chrome/browser/ui/webui/commerce:commerce_internals_ui_config",
     "//chrome/browser/ui/webui/components",
