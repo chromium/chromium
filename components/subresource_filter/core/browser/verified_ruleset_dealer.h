@@ -188,7 +188,7 @@ class VerifiedRuleset::Handle {
   friend class AsyncDocumentSubresourceFilter;
 
   // Note: Raw pointer, |ruleset_| already holds a reference to |task_runner_|.
-  raw_ptr<base::SequencedTaskRunner, DanglingUntriaged> task_runner_;
+  raw_ptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<VerifiedRuleset, base::OnTaskRunnerDeleter> ruleset_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<Handle> weak_ptr_factory_{this};
