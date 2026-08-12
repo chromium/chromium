@@ -44,16 +44,26 @@ use std::{
 #[cfg(target_os = "android")]
 use std::mem;
 
-unsafe fn property_callback(payload: *mut String, _name: *const c_char, value: *const c_char, _serial: u32) {
+/// Invoked by `__system_property_read_callback` with the `payload` pointer that
+/// was handed to it as the opaque cookie.
+///
+/// # Safety
+///
+/// `payload` must point to a live, initialized `Option<String>` and `value` must
+/// be a valid nul-terminated string.
+///
+/// Must not unwind: it is called from C. Values that are not valid UTF-8 are
+/// reported as `None` rather than panicking.
+unsafe extern "C" fn property_callback(payload: *mut Option<String>, _name: *const c_char, value: *const c_char, _serial: u32) {
     let cvalue = CStr::from_ptr(value);
-    (*payload) = cvalue.to_str().unwrap().to_string();
+    (*payload) = cvalue.to_str().ok().map(|s| s.to_string());
 }
 
-type Callback = unsafe fn(*mut String, *const c_char, *const c_char, u32);
+type Callback = unsafe extern "C" fn(*mut Option<String>, *const c_char, *const c_char, u32);
 
 type SystemPropertyGetFn = unsafe extern "C" fn(*const c_char, *mut c_char) -> c_int;
 type SystemPropertyFindFn = unsafe extern "C" fn(*const c_char) -> *const c_void;
-type SystemPropertyReadCallbackFn = unsafe extern "C" fn(*const c_void, Callback, *mut String) -> *const c_void;
+type SystemPropertyReadCallbackFn = unsafe extern "C" fn(*const c_void, Callback, *mut Option<String>);
 
 #[derive(Debug)]
 /// An object that can retrieve android system properties.
@@ -179,13 +189,15 @@ impl AndroidSystemProperties {
                 return None;
             }
 
-            let mut result = String::new();
+            // `property_callback` writes the value into `result`. It is left as
+            // `None` if the property's value is not valid UTF-8.
+            let mut result = None;
 
             unsafe {
                 (read_callback_fn)(info, property_callback, &mut result);
             }
 
-            return Some(result);
+            return result;
         }
 
         // Fall back to the older approach.
@@ -199,6 +211,8 @@ impl AndroidSystemProperties {
 
             if len > 0 {
                 assert!(len as usize <= buffer.capacity());
+                // `__system_property_get` returned `len`, so it initialized that
+                // many bytes of the buffer (excluding the nul terminator).
                 unsafe { buffer.set_len(len as usize); }
                 String::from_utf8(buffer).ok()
             } else {

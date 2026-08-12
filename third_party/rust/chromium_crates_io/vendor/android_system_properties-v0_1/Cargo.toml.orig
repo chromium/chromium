@@ -1,10 +1,10 @@
 [package]
 name = "android_system_properties"
 description = "Minimal Android system properties wrapper"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["Nicolas Silva <nical@fastmail.com>"]
 edition = "2018"
-license = "MIT/Apache-2.0"
+license = "MIT OR Apache-2.0"
 repository = "https://github.com/nical/android_system_properties"
 homepage = "https://github.com/nical/android_system_properties"
 documentation = "https://docs.rs/android_system_properties"

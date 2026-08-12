@@ -23,7 +23,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "android_system_properties"
   cargo_pkg_description = "Minimal Android system properties wrapper"
   cargo_pkg_repository = "https://github.com/nical/android_system_properties"
-  cargo_pkg_version = "0.1.5"
+  cargo_pkg_version = "0.1.6"
 
   allow_unsafe = true
 
