@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
 #include "chrome/common/buildflags.h"
@@ -219,6 +220,7 @@ class TabView : public views::View,
       const TabView* tab_view);
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
+  TabStripOrientation orientation_ = TabStripOrientation::kHorizontal;
 
   std::vector<TabChildConfig> tab_children_configs_;
 

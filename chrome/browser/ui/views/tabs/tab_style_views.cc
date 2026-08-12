@@ -154,6 +154,10 @@ class HorizontalTabStyleViews : public TabStyleViews {
 
   BrowserFrameView* GetBrowserFrameView() const;
 
+  std::optional<SkPath> GetPinnedPath(TabStyle::PathType path_type,
+                                      float scale,
+                                      const TabPathFlags& flags) const;
+
   std::unique_ptr<TabStyleViewDelegate> delegate_;
 };
 
@@ -170,6 +174,11 @@ HorizontalTabStyleViews::HorizontalTabStyleViews(
 SkPath HorizontalTabStyleViews::GetPath(TabStyle::PathType path_type,
                                         float scale,
                                         const TabPathFlags& flags) const {
+  if (delegate_->IsPinned() && !delegate_->IsActive() &&
+      base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+    return GetPinnedPath(path_type, scale, flags).value_or(SkPath());
+  }
+
   const int stroke_thickness = GetStrokeThickness();
 
   // We'll do the entire path calculation in aligned pixels.
@@ -217,7 +226,8 @@ SkPath HorizontalTabStyleViews::GetPath(TabStyle::PathType path_type,
     float right = aligned_bounds.right() - extension_corner_radius;
     const int bottom = top + tab_height;
 
-    BrowserFrameView* const browser_frame_view = GetBrowserFrameView();
+    BrowserFrameView* const browser_frame_view =
+        delegate_->GetBrowserFrameView();
     const bool is_frame_condensed =
         browser_frame_view ? browser_frame_view->IsFrameCondensed() : false;
     // For maximized and full screen windows, extend the tab hit test to the top
@@ -513,10 +523,12 @@ gfx::Insets HorizontalTabStyleViews::GetContentsInsets() const {
     split_insets.set_right(total_separator_width / -2);
   }
 
-  return gfx::Insets::TLBR(
-             0, 0, GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap),
-             0) +
-         base_style_insets + split_insets;
+  gfx::Insets insets =
+      gfx::Insets::TLBR(
+          0, 0, GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap), 0) +
+      base_style_insets + split_insets;
+
+  return insets;
 }
 
 bool HorizontalTabStyleViews::IsApparentlyActive() const {
@@ -737,12 +749,23 @@ int HorizontalTabStyleViews::GetStrokeThickness() const {
     return delegate_->GetStrokeThickness();
   }
 
+  if (delegate_->IsPinned() &&
+      base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+    return 1;
+  }
+
   return 0;
 }
 
 bool HorizontalTabStyleViews::ShouldPaintTabBackgroundColor(
     TabStyle::TabSelectionState selection_state,
     bool has_custom_background) const {
+  if (delegate_->IsPinned() &&
+      base::FeatureList::IsEnabled(tabs::kTabStripUnification) &&
+      !delegate_->IsGlassFrame()) {
+    return true;
+  }
+
   // In the active and selected cases, always paint the tab background. The fill
   // image may be transparent.
   if (selection_state == TabStyle::TabSelectionState::kActive ||
@@ -750,8 +773,6 @@ bool HorizontalTabStyleViews::ShouldPaintTabBackgroundColor(
     return true;
   }
 
-  // In the inactive case, the fill image is guaranteed to be opaque, so it's
-  // not necessary to paint the background when there is one.
   if (has_custom_background) {
     return false;
   }
@@ -980,6 +1001,74 @@ gfx::RectF HorizontalTabStyleViews::ScaleAndAlignBounds(
   // around the separator may not be snapped to the pixel grid as a result.
   aligned_bounds.Inset(-gfx::ScaleInsets(layout_insets, scale));
   return aligned_bounds;
+}
+
+std::optional<SkPath> HorizontalTabStyleViews::GetPinnedPath(
+    TabStyle::PathType path_type,
+    float scale,
+    const TabPathFlags& flags) const {
+  CHECK(base::FeatureList::IsEnabled(tabs::kTabStripUnification));
+  CHECK(delegate()->IsPinned());
+
+  const int stroke_thickness = GetStrokeThickness();
+  gfx::RectF aligned_bounds = ScaleAndAlignBounds(
+      delegate()->GetView()->bounds(), scale, stroke_thickness);
+
+  float content_corner_radius =
+      GetTopCornerRadiusForWidth(delegate()->GetView()->width()) * scale;
+  float extension_corner_radius = tab_style()->GetBottomCornerRadius() * scale;
+
+  float top_left_corner_radius = content_corner_radius;
+  float top_right_corner_radius = content_corner_radius;
+  float bottom_left_corner_radius = content_corner_radius;
+  float bottom_right_corner_radius = content_corner_radius;
+  float tab_height = GetLayoutConstant(LayoutConstant::kTabHeight) * scale;
+
+  tab_height -= GetLayoutConstant(LayoutConstant::kTabStripPadding) * scale;
+  tab_height -=
+      GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap) * scale;
+
+  float left = aligned_bounds.x() + extension_corner_radius;
+  float top = aligned_bounds.y() +
+              GetLayoutConstant(LayoutConstant::kTabStripPadding) * scale;
+  float right = aligned_bounds.right() - extension_corner_radius;
+  float bottom = top + tab_height;
+
+  // Apply stroke adjustment if it's active tab or border
+  const float stroke_adjustment = stroke_thickness * scale;
+  if (path_type == TabStyle::PathType::kActiveTab ||
+      path_type == TabStyle::PathType::kBorder) {
+    left += 0.5f * stroke_adjustment;
+    right -= 0.5f * stroke_adjustment;
+    top += 0.5f * stroke_adjustment;
+    bottom -= 0.5f * stroke_adjustment;
+    top_left_corner_radius -= 0.5f * stroke_adjustment;
+    top_right_corner_radius -= 0.5f * stroke_adjustment;
+    bottom_left_corner_radius -= 0.5f * stroke_adjustment;
+    bottom_right_corner_radius -= 0.5f * stroke_adjustment;
+  }
+
+  const SkVector radii[4] = {
+      SkVector(top_left_corner_radius, top_left_corner_radius),
+      SkVector(top_right_corner_radius, top_right_corner_radius),
+      SkVector(bottom_right_corner_radius, bottom_right_corner_radius),
+      SkVector(bottom_left_corner_radius, bottom_left_corner_radius)};
+
+  SkPathBuilder path;
+  path.addRRect(SkRRect::MakeRectRadii(
+      SkRect::MakeLTRB(left, top, right, bottom), radii));
+
+  // Convert path to be relative to the tab origin.
+  gfx::PointF origin(delegate()->GetView()->origin());
+  origin.Scale(scale);
+  path.offset(-origin.x(), -origin.y());
+
+  // Possibly convert back to DIPs.
+  if (flags.render_units == TabStyle::RenderUnits::kDips && scale != 1.0f) {
+    path.transform(SkMatrix::Scale(1.0f / scale, 1.0f / scale));
+  }
+
+  return path.detach();
 }
 
 }  // namespace

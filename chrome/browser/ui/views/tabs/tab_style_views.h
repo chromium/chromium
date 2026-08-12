@@ -34,6 +34,7 @@ class BrowserFrameView;
 class BrowserWindowInterface;
 class GlowHoverController;
 class SkPath;
+struct TabPathFlags;
 
 namespace views {
 class View;
@@ -73,6 +74,7 @@ class TabStyleViewDelegate {
   virtual BrowserFrameView* GetBrowserFrameView() const = 0;
   virtual BrowserWindowInterface* GetBrowserWindowInterface() const = 0;
   virtual bool IsGlassFrame() const = 0;
+  virtual bool IsPinned() const = 0;
   virtual bool ShouldPaintTabBackgroundColor() const = 0;
   virtual int GetStrokeThickness() const = 0;
 

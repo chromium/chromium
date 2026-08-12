@@ -237,6 +237,8 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
     return tab_->controller()->IsGlassFrame();
   }
 
+  bool IsPinned() const override { return tab_->data().pinned; }
+
   bool ShouldPaintTabBackgroundColor() const override {
     return tab_->should_fill_background_tab_color();
   }
