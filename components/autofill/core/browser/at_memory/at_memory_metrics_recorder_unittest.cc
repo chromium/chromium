@@ -27,9 +27,17 @@ namespace autofill {
 
 namespace {
 
+using ::testing::ElementsAre;
+using ::testing::Property;
 using ::testing::Values;
 
 constexpr ukm::SourceId kTestSourceId = static_cast<ukm::SourceId>(123);
+
+testing::Matcher<const optimization_guide::proto::AtMemorySuggestion&>
+HasAction(optimization_guide::proto::AtMemorySuggestionAction action) {
+  return Property(&optimization_guide::proto::AtMemorySuggestion::action,
+                  action);
+}
 
 class AtMemoryMetricsRecorderTest : public testing::Test {
  public:
@@ -643,9 +651,10 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Root) {
   const optimization_guide::proto::AtMemoryQuality& quality =
       uploaded_logs[0]->at_memory().quality();
 
-  ASSERT_EQ(quality.suggestions_size(), 1);
-  EXPECT_EQ(quality.suggestions(0).action(),
-            optimization_guide::proto::AT_MEMORY_SUGGESTION_ACTION_ACCEPTED);
+  EXPECT_THAT(
+      quality.suggestions(),
+      ElementsAre(HasAction(
+          optimization_guide::proto::AT_MEMORY_SUGGESTION_ACTION_ACCEPTED)));
 }
 
 // Tests that the ModelQualityLogEntry is correctly filled with the action
@@ -681,11 +690,12 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Sub) {
   const optimization_guide::proto::AtMemoryQuality& quality =
       uploaded_logs[0]->at_memory().quality();
 
-  ASSERT_EQ(quality.suggestions_size(), 1);
   // The action should be set to the flyout menu attribute accepted action.
-  EXPECT_EQ(quality.suggestions(0).action(),
-            optimization_guide::proto::
-                AT_MEMORY_SUGGESTION_ACTION_FLYOUT_MENU_ATTRIBUTE_ACCEPTED);
+  EXPECT_THAT(
+      quality.suggestions(),
+      ElementsAre(HasAction(
+          optimization_guide::proto::
+              AT_MEMORY_SUGGESTION_ACTION_FLYOUT_MENU_ATTRIBUTE_ACCEPTED)));
 }
 
 // Tests that the ModelQualityLogEntry is correctly filled with the action
@@ -718,11 +728,11 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_PopupShown) {
   const optimization_guide::proto::AtMemoryQuality& quality =
       uploaded_logs[0]->at_memory().quality();
 
-  ASSERT_EQ(quality.suggestions_size(), 1);
   // The action should be set to the flyout menu attribute accepted action.
-  EXPECT_EQ(quality.suggestions(0).action(),
-            optimization_guide::proto::
-                AT_MEMORY_SUGGESTION_ACTION_FLYOUT_MENU_OPENED);
+  EXPECT_THAT(quality.suggestions(),
+              ElementsAre(HasAction(
+                  optimization_guide::proto::
+                      AT_MEMORY_SUGGESTION_ACTION_FLYOUT_MENU_OPENED)));
 }
 
 // Tests that `OnSuggestionAccepted` correctly logs the accepted suggestion
