@@ -238,6 +238,8 @@ crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] * [ RetryO
 crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Failure ]
 
+crbug.com/545512647 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ Failure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
