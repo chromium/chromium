@@ -51,7 +51,6 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -60,12 +59,15 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/search_engines/template_url_service_provider.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "components/constrained_window/modal_dialog_host_property.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/window.h"
 #include "ui/base/models/image_model.h"
@@ -516,6 +518,7 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
   }
 
   template_url_service_observation_.Reset();
+  template_url_service_ = nullptr;
 
   profile_ = new_profile;
   if (!profile_) {
@@ -530,8 +533,10 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
   DCHECK(!profile_->IsGuestSession() || profile_->IsOffTheRecord())
       << "Guest mode must use OffTheRecord profile";
 
-  template_url_service_observation_.Observe(
-      TemplateURLServiceFactory::GetForProfile(profile_));
+  template_url_service_ =
+      ash::TemplateURLServiceProvider::Get().Find(CHECK_DEREF(
+          ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile())));
+  template_url_service_observation_.Observe(template_url_service_);
 
   app_list::AppListSyncableService* syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
@@ -557,7 +562,7 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 void AppListClientImpl::SetUpSearchUI() {
   search_controller_ = app_list::CreateSearchController(
       &local_state_.get(), profile_, current_model_updater_, this,
-      GetNotifier());
+      GetNotifier(), template_url_service_);
 
   // Refresh the results used for the suggestion chips with empty query.
   // This fixes crbug.com/40642741.
@@ -596,14 +601,12 @@ void AppListClientImpl::OnSessionStateChanged() {
 void AppListClientImpl::OnTemplateURLServiceChanged() {
   DCHECK(current_model_updater_);
 
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile_);
   const TemplateURL* default_provider =
-      template_url_service->GetDefaultSearchProvider();
+      template_url_service_->GetDefaultSearchProvider();
   const bool is_google =
       default_provider &&
       default_provider->GetEngineType(
-          template_url_service->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
+          template_url_service_->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
 
   current_model_updater_->SetSearchEngineIsGoogle(is_google);
 }

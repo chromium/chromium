@@ -45,7 +45,6 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/screen_ai",
-  "+chrome/browser/search_engines",
   "+chrome/browser/signin",
   "+chrome/browser/sync",
   "+chrome/browser/trusted_vault",
@@ -81,6 +80,7 @@ include_rules = [
   "+ash/app_list/model",
   "+ash/resources",
   "+ash/strings",
+  "+chromeos/ash/components/search_engines",
   "+components/app_constants",
   "+components/app_icon_loader",
   "+components/constrained_window",
@@ -119,7 +119,13 @@ specific_include_rules = {
     "+chrome/grit",
   ],
 
+  # Tests still need to install TemplateURLService through the //chrome-side
+  # Profile-keyed factory because ChromeAutocompleteProviderClient (constructed
+  # inside OmniboxProvider) calls TemplateURLServiceFactory::GetForProfile()
+  # unconditionally. Production code reaches the service through the
+  # //chromeos/ash/components/search_engines interface.
   "app_list_client_impl_browsertest\\.cc": [
+    "+chrome/browser/search_engines",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
     "+ui/message_center/test/message_center_waiter.h",
   ],

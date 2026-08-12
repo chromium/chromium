@@ -36,7 +36,6 @@ include_rules = [
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles",
   "+chrome/browser/screen_ai",
-  "+chrome/browser/search_engines",
   "+chrome/browser/signin",
   "+chrome/browser/sync",
   "+chrome/browser/trusted_vault",
@@ -76,5 +75,13 @@ specific_include_rules = {
   ],
   "local_image_search_service_factory\\.cc": [
     "+chrome/browser/browser_process.h",
+  ],
+
+  # Tests still need to install TemplateURLService through the //chrome-side
+  # Profile-keyed factory because ChromeAutocompleteProviderClient (constructed
+  # inside OmniboxProvider) calls TemplateURLServiceFactory::GetForProfile()
+  # unconditionally.
+  ".*unittest\\.cc": [
+    "+chrome/browser/search_engines",
   ],
 }

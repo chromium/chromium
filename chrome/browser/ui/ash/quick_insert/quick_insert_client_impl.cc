@@ -47,14 +47,15 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_file_suggester.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_thumbnail_loader.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/search_engines/template_url_service_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -561,7 +562,8 @@ QuickInsertClientImpl::CreateOmniboxProvider(bool bookmarks,
                                              bool open_tabs) {
   return std::make_unique<app_list::OmniboxProvider>(
       profile_, GetEmptyAppListControllerDelegate(),
-      TemplateURLServiceFactory::GetForProfile(profile_),
+      ash::TemplateURLServiceProvider::Get().Find(CHECK_DEREF(
+          ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile()))),
       LauncherSearchProviderTypes(bookmarks, history, open_tabs));
 }
 

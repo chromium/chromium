@@ -87,7 +87,6 @@ static_library("search") {
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/release_notes",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/search_engines",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/ash/settings/search/mojom",

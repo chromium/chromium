@@ -16,6 +16,7 @@
 #include "ash/quick_insert/quick_insert_category.h"
 #include "ash/quick_insert/quick_insert_client.h"
 #include "ash/quick_insert/quick_insert_web_paste_target.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"

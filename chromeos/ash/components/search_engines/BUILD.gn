@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+# Abstract ChromeOS-side accessor for the per-Profile TemplateURLService.
+# The //chrome-side implementation lives in
+# //chrome/browser/ash/search_engines/.
+static_library("search_engines") {
+  public = [ "template_url_service_provider.h" ]
+
+  sources = [ "template_url_service_provider.cc" ]
+
+  deps = [
+    "//base",
+    "//components/account_id",
+  ]
+}

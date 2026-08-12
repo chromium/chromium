@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/favicon",
   "+chrome/browser/history",
   "+chrome/browser/profiles",
-  "+chrome/browser/search_engines",
   "+chrome/browser/ui/ash/thumbnail_loader",
   "+chrome/browser/ui/browser_window",
   "+chrome/browser/ui/browser.h",
@@ -31,10 +30,28 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/mako",
   "+chrome/common",
   "+chrome/test",
+  "+chromeos/ash/components/search_engines",
 ]
 
 specific_include_rules = {
   "quick_insert_accessibility_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
+  ],
+
+  # Tests construct the //chrome-side TemplateURLServiceProviderImpl directly so
+  # it registers as the process-wide TemplateURLServiceProvider::Get() singleton.
+  # Production code reaches that singleton through the
+  # //chromeos/ash/components/search_engines interface; the instance is owned by
+  # ChromeBrowserMainPartsAsh.
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/ash/browser_delegate/keyed_service_provider",
+  ],
+
+  # The unittest additionally installs TemplateURLService through the
+  # //chrome-side Profile-keyed factory because ChromeAutocompleteProviderClient
+  # (constructed inside OmniboxProvider) calls
+  # TemplateURLServiceFactory::GetForProfile() unconditionally.
+  ".*unittest\\.cc": [
+    "+chrome/browser/search_engines",
   ],
 }

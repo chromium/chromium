@@ -31,8 +31,8 @@ class OmniboxProvider : public SearchProvider,
  public:
   // `provider_types` is a bitmap containing AutocompleteProvider::Type values.
   // `template_url_service` is forwarded to each OmniboxResult so search-engine
-  // descriptions can be formatted without re-fetching the service from Profile.
-  // Must not be nullptr and must outlive this object.
+  // descriptions can be formatted. Must not be nullptr and must outlive this
+  // object.
   OmniboxProvider(Profile* profile,
                   AppListControllerDelegate* list_controller,
                   TemplateURLService* template_url_service,

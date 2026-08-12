@@ -254,6 +254,7 @@ class AppListClientImpl
   std::unique_ptr<app_list::SearchController> search_controller_;
   std::unique_ptr<AppSyncUIStateWatcher> app_sync_ui_state_watcher_;
 
+  raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};
 

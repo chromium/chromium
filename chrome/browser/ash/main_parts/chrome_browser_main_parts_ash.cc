@@ -65,6 +65,7 @@
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/identity_manager_provider_impl.h"
+#include "chrome/browser/ash/browser_delegate/keyed_service_provider/template_url_service_provider_impl.h"
 #include "chrome/browser/ash/camera/camera_general_survey_handler.h"
 #include "chrome/browser/ash/certs/system_token_cert_db_initializer.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
@@ -946,6 +947,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // List of instances providing KeyedService related services.
   app_service_registry_ = std::make_unique<apps::AppServiceRegistry>();
   identity_manager_provider_ = std::make_unique<IdentityManagerProviderImpl>();
+  template_url_service_provider_ =
+      std::make_unique<TemplateURLServiceProviderImpl>();
 
   token_handle_store_factory_ = std::make_unique<TokenHandleStoreFactory>(
       g_browser_process->local_state());
@@ -1856,6 +1859,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   bluetooth_log_controller_.reset();
 
+  template_url_service_provider_.reset();
   identity_manager_provider_.reset();
   app_service_registry_.reset();
   user_session_manager_.reset();

@@ -77,6 +77,7 @@ class FwupdDownloadClientImpl;
 class GnubbyNotification;
 class HatsBluetoothRevampTriggerImpl;
 class IdentityManagerProvider;
+class TemplateURLServiceProvider;
 class IdleActionWarningObserver;
 class KioskController;
 class LoginScreenExtensionsStorageCleaner;
@@ -219,6 +220,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<apps::AppServiceRegistry> app_service_registry_;
   std::unique_ptr<IdentityManagerProvider> identity_manager_provider_;
+  std::unique_ptr<TemplateURLServiceProvider> template_url_service_provider_;
 
   std::unique_ptr<arc::ArcServiceLauncher> arc_service_launcher_;
   std::unique_ptr<arc::ArcPlatformSupportImpl> arc_platform_support_;
