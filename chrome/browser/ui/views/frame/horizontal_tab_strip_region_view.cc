@@ -236,8 +236,9 @@ HorizontalTabStripRegionViewOld::HorizontalTabStripRegionViewOld(
         std::make_unique<NewTabButton>(
             base::BindRepeating(&TabStrip::NewTabButtonPressed,
                                 base::Unretained(tab_strip_)),
-            features::IsRoundedIconsEnabled() ? vector_icons::kAddWeight500Icon
-                                              : vector_icons::kAddOldIcon,
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kAddWeight500CustomIcon
+                : vector_icons::kAddOldIcon,
             Edge::kNone, Edge::kNone, browser);
 
     new_tab_button_ = AddChildView(std::move(tab_strip_control_button));

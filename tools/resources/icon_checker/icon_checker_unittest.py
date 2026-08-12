@@ -45,20 +45,14 @@ class IconCheckerTest(unittest.TestCase):
           ('components/vector_icons/menu_filled.icon', 'menu_filled', None),
           ('components/vector_icons/menu_flippable.icon', 'menu_flippable',
            None),
-          ('components/vector_icons/menu_weight500.icon', 'menu_weight500',
-           None),
           ('chrome/browser/resources/pdf/elements/icons.html', 'menu-custom',
            10),
           ('chrome/browser/resources/pdf/elements/icons.html', 'menu-filled',
            11),
           ('chrome/browser/resources/pdf/elements/icons.html', 'menu-flippable',
            12),
-          ('chrome/browser/resources/pdf/elements/icons.html', 'menu-weight100',
-           13),
           ('components/vector_icons/menu_filled_flippable.icon',
            'menu_filled_flippable', None),
-          ('components/vector_icons/add_to_drive_custom_weight700.icon',
-           'add_to_drive_custom_weight700', None),
       ]
 
       results = icon_checker.CheckIcons(input_api, output_api, affected_icons)

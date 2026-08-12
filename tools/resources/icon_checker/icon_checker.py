@@ -6,10 +6,8 @@ import json
 import os
 import re
 
-# Allowed primary suffix pattern for icon names: _custom, _filled, _flippable,
-# and optical font weights _weight100 through _weight900.
-_ALLOWED_PRIMARY_SUFFIX_PATTERN = re.compile(
-    r'(_custom|_filled|_flippable|_weight[1-9]00)$')
+# Allowed primary suffix pattern for icon names: _custom, _filled, _flippable.
+_ALLOWED_PRIMARY_SUFFIX_PATTERN = re.compile(r'(_custom|_filled|_flippable)$')
 
 
 def FetchValidIconNames():

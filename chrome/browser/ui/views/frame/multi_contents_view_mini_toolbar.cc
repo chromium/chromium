@@ -111,7 +111,7 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
   close_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&MultiContentsViewMiniToolbar::CloseCurrentView,
                           base::Unretained(this)),
-      features::IsRoundedIconsEnabled() ? kCloseWeight500Icon
+      features::IsRoundedIconsEnabled() ? kCloseWeight500CustomIcon
                                         : kCloseTabChromeRefreshOldIcon,
       features::IsRoundedIconsEnabled() ? 14 : 16,
       kColorMultiContentsViewMiniToolbarForeground));

@@ -86,7 +86,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "close_group_refresh_old.icon",
     "close_small.icon",
     "close_tab_chrome_refresh_old.icon",
-    "close_weight500.icon",
+    "close_weight500_custom.icon",
     "code.icon",
     "computer_custom.icon",
     "content_cut.icon",
