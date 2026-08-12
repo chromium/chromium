@@ -66,6 +66,7 @@ using TypedValueFilter =
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ByMove;
+using ::testing::DoubleEq;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Field;
@@ -447,8 +448,9 @@ TEST_F(AtMemoryQueryServiceTest, Query_FiltersLocalDataUsingFetchPlanKeywords) {
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
   EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  ASSERT_EQ(result.entries.size(), 1u);
-  EXPECT_EQ(result.entries[0].value, u"123 San Diego St Home San Diego");
+  EXPECT_THAT(result.entries,
+              ElementsAre(Field(&MemorySearchResult::value,
+                                u"123 San Diego St Home San Diego")));
 }
 
 // Tests that local Autofill results precede remote results in the final output.
@@ -483,11 +485,13 @@ TEST_F(AtMemoryQueryServiceTest, Query_LocalResultsPrecedeRemoteResults) {
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
   EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  ASSERT_EQ(result.entries.size(), 2u);
-  EXPECT_EQ(result.entries[0].value, u"Local Name");
-  EXPECT_EQ(result.entries[0].remote_response_index, std::nullopt);
-  EXPECT_EQ(result.entries[1].value, u"Remote Name");
-  EXPECT_EQ(result.entries[1].remote_response_index, 0);
+  EXPECT_THAT(
+      result.entries,
+      ElementsAre(AllOf(Field(&MemorySearchResult::value, u"Local Name"),
+                        Field(&MemorySearchResult::remote_response_index,
+                              std::nullopt)),
+                  AllOf(Field(&MemorySearchResult::value, u"Remote Name"),
+                        Field(&MemorySearchResult::remote_response_index, 0))));
 }
 
 // Tests that results with the most matching filter words are retained, ties for
@@ -791,13 +795,15 @@ TEST_F(AtMemoryQueryServiceTest,
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
-  ASSERT_EQ(result.entries.size(), 1u);
-  EXPECT_EQ(result.entries[0].value, u"John Doe");
-  EXPECT_DOUBLE_EQ(result.entries[0].confidence_score, 0.9);
-  EXPECT_TRUE(result.entries[0].is_local);
-  ASSERT_EQ(result.entries[0].sources.size(), 1u);
-  EXPECT_EQ(result.entries[0].sources[0].type,
-            MemoryEntrySourceType::kAutofill);
+  EXPECT_THAT(
+      result.entries,
+      ElementsAre(
+          AllOf(Field(&MemorySearchResult::value, u"John Doe"),
+                Field(&MemorySearchResult::confidence_score, DoubleEq(0.9)),
+                Field(&MemorySearchResult::is_local, true),
+                Field(&MemorySearchResult::sources,
+                      ElementsAre(Field(&MemoryEntrySource::type,
+                                        MemoryEntrySourceType::kAutofill))))));
 }
 
 // Tests that entries with different values or metadata lists are both retained.
@@ -820,26 +826,26 @@ TEST_F(AtMemoryQueryServiceTest,
 
   const MemorySearchResults& result = RunDeduplicationQueryWithLocalResults(
       {result1, result2, result3, result4});
-  ASSERT_EQ(result.entries.size(), 4u);
-  EXPECT_EQ(result.entries[0].value, u"John Doe");
-  ASSERT_EQ(result.entries[0].metadata_list.size(), 1u);
-  EXPECT_EQ(result.entries[0].metadata_list[0].value, u"San Diego");
-  EXPECT_EQ(result.entries[0].type, MemoryDataType::kNameFull);
-
-  EXPECT_EQ(result.entries[1].value, u"John Doe");
-  ASSERT_EQ(result.entries[1].metadata_list.size(), 1u);
-  EXPECT_EQ(result.entries[1].metadata_list[0].value, u"New York");
-  EXPECT_EQ(result.entries[1].type, MemoryDataType::kNameFull);
-
-  EXPECT_EQ(result.entries[2].value, u"Jane Doe");
-  ASSERT_EQ(result.entries[2].metadata_list.size(), 1u);
-  EXPECT_EQ(result.entries[2].metadata_list[0].value, u"San Diego");
-  EXPECT_EQ(result.entries[2].type, MemoryDataType::kNameFull);
-
-  EXPECT_EQ(result.entries[3].value, u"John Doe");
-  ASSERT_EQ(result.entries[3].metadata_list.size(), 1u);
-  EXPECT_EQ(result.entries[3].metadata_list[0].value, u"San Diego");
-  EXPECT_EQ(result.entries[3].type, MemoryDataType::kUnknown);
+  EXPECT_THAT(
+      result.entries,
+      ElementsAre(
+          AllOf(Field(&MemorySearchResult::value, u"John Doe"),
+                Field(&MemorySearchResult::type, MemoryDataType::kNameFull),
+                Field(&MemorySearchResult::metadata_list,
+                      ElementsAre(Field(&EntryMetadata::value, u"San Diego")))),
+          AllOf(Field(&MemorySearchResult::value, u"John Doe"),
+                Field(&MemorySearchResult::type, MemoryDataType::kNameFull),
+                Field(&MemorySearchResult::metadata_list,
+                      ElementsAre(Field(&EntryMetadata::value, u"New York")))),
+          AllOf(Field(&MemorySearchResult::value, u"Jane Doe"),
+                Field(&MemorySearchResult::type, MemoryDataType::kNameFull),
+                Field(&MemorySearchResult::metadata_list,
+                      ElementsAre(Field(&EntryMetadata::value, u"San Diego")))),
+          AllOf(
+              Field(&MemorySearchResult::value, u"John Doe"),
+              Field(&MemorySearchResult::type, MemoryDataType::kUnknown),
+              Field(&MemorySearchResult::metadata_list,
+                    ElementsAre(Field(&EntryMetadata::value, u"San Diego"))))));
 }
 
 // Tests that deduplication prefers explicitly saved local Autofill results.
