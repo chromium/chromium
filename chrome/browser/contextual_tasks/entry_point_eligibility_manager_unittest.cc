@@ -196,6 +196,7 @@ class EntryPointEligibilityManagerTest : public testing::Test {
         IdentityManagerFactory::GetForProfile(profile));
     mock_aim_service_ = mock.get();
 
+    ON_CALL(*mock, IsAimEligible()).WillByDefault(Return(true));
     ON_CALL(*mock, IsCobrowseEligible()).WillByDefault(Return(true));
 
     return mock;

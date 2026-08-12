@@ -2390,7 +2390,7 @@ TEST_F(ContextualTasksUiServiceTest, PrefetchOnEligibilityChange) {
         captured_callback = callback;
         return base::CallbackListSubscription();
       });
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillOnce(Return(false));
 
   auto mock_synchronizer =
@@ -2405,7 +2405,7 @@ TEST_F(ContextualTasksUiServiceTest, PrefetchOnEligibilityChange) {
           aim_eligibility_service_.get()),
       std::move(mock_synchronizer));
 
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_ptr, CopyCookiesToWebviewStoragePartition(testing::_))
       .Times(1);
@@ -2427,7 +2427,7 @@ TEST_F(ContextualTasksUiServiceTest, PrefetchOnStartupIfAlreadyEligible) {
 
   EXPECT_CALL(*aim_eligibility_service_, RegisterEligibilityChangedCallback(_))
       .WillOnce(Return(base::CallbackListSubscription()));
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillOnce(Return(true));
 
   auto mock_synchronizer =
@@ -2495,7 +2495,7 @@ TEST_F(ContextualTasksUiServiceTest,
 }
 
 TEST_F(ContextualTasksUiServiceTest,
-       HandleNavigation_WebUI_CobrowseNotEligible_Redirects) {
+       HandleNavigation_WebUI_AimNotEligible_Redirects) {
   base::test::ScopedFeatureList scoped_feature_list(
       contextual_tasks::kContextualTasks);
   GURL webui_url(chrome::kChromeUIContextualTasksURL);
@@ -2505,7 +2505,7 @@ TEST_F(ContextualTasksUiServiceTest,
   identity_test_env_->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
 
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(false));
 
   EXPECT_TRUE(real_service_->HandleNavigation(
@@ -2529,7 +2529,7 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_WebUI_TokensNotLoaded) {
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(true));
 
   identity_test_env_->MakePrimaryAccountAvailable(
@@ -2542,7 +2542,7 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_WebUI_TokensNotLoaded) {
 
 TEST_F(
     ContextualTasksUiServiceTest,
-    HandleNavigation_WebUI_CobrowseNotEligible_NoRedirect_WhenLensSessionUnderUnification) {
+    HandleNavigation_WebUI_AimNotEligible_NoRedirect_WhenLensSessionUnderUnification) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {contextual_tasks::kContextualTasks,
@@ -2555,7 +2555,7 @@ TEST_F(
   identity_test_env_->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
 
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(false));
 
   // Create and associate a Lens-initiated contextual search session.
@@ -2584,7 +2584,7 @@ TEST_F(
 
 TEST_F(
     ContextualTasksUiServiceTest,
-    HandleNavigation_WebUI_CobrowseNotEligible_NoRedirect_WhenPendingLensSessionUnderUnification) {
+    HandleNavigation_WebUI_AimNotEligible_NoRedirect_WhenPendingLensSessionUnderUnification) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {contextual_tasks::kContextualTasks,
@@ -2600,7 +2600,7 @@ TEST_F(
   identity_test_env_->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
 
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(false));
 
   // Create a Lens-initiated contextual search session.
@@ -2628,7 +2628,7 @@ TEST_F(
 
 TEST_F(
     ContextualTasksUiServiceTest,
-    HandleNavigation_WebUI_CobrowseNotEligible_Redirects_WhenNonLensSessionUnderUnification) {
+    HandleNavigation_WebUI_AimNotEligible_Redirects_WhenNonLensSessionUnderUnification) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {contextual_tasks::kContextualTasks,
@@ -2641,7 +2641,7 @@ TEST_F(
   identity_test_env_->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
 
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(false));
 
   // Create and associate a non-Lens initiated contextual search session (e.g.
@@ -2677,7 +2677,7 @@ TEST_F(ContextualTasksUiServiceTest,
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(true));
 
   EXPECT_TRUE(real_service_->HandleNavigation(
@@ -2715,7 +2715,7 @@ TEST_F(ContextualTasksUiServiceTest,
       template_url_service->Add(std::make_unique<TemplateURL>(data));
   template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
 
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(false));
 
   EXPECT_TRUE(real_service_->HandleNavigation(

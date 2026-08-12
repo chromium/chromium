@@ -219,7 +219,7 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
           GetCurrentTabSessionId().value());
 
   if (aim_eligibility_service_ &&
-      !aim_eligibility_service_->IsCobrowseEligible()) {
+      !aim_eligibility_service_->IsAimEligible()) {
     return false;
   }
 

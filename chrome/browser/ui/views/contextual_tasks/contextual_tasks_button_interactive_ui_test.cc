@@ -67,18 +67,17 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
 
   ~TestingAimEligibilityService() override = default;
 
-  bool IsAimEligible() const override { return true; }
-  bool IsCobrowseEligible() const override {
-    return is_cobrowse_eligible_ &&
+  bool IsAimEligible() const override {
+    return is_aim_eligible_ &&
            ChromeAimEligibilityService::IsAimAllowedByPolicy(
                &pref_service_.get());
   }
 
-  void SetIsCobrowseEligible(bool eligible) {
-    if (is_cobrowse_eligible_ == eligible) {
+  void SetIsAimEligible(bool eligible) {
+    if (is_aim_eligible_ == eligible) {
       return;
     }
-    is_cobrowse_eligible_ = eligible;
+    is_aim_eligible_ = eligible;
     OnEligibilityResponseChanged();
   }
 
@@ -87,7 +86,7 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
   }
 
  private:
-  bool is_cobrowse_eligible_ = true;
+  bool is_aim_eligible_ = true;
   const base::raw_ref<PrefService> pref_service_;
 };
 
@@ -115,7 +114,7 @@ class FakeContextualTasksEligibilityManager
 
   bool IsEligibleWithoutIdentity() const override {
     if (aim_eligibility_service_ &&
-        !aim_eligibility_service_->IsCobrowseEligible()) {
+        !aim_eligibility_service_->IsAimEligible()) {
       return false;
     }
     return true;
@@ -124,7 +123,7 @@ class FakeContextualTasksEligibilityManager
  protected:
   bool CalculateEligibility() const override {
     if (aim_eligibility_service_ &&
-        !aim_eligibility_service_->IsCobrowseEligible()) {
+        !aim_eligibility_service_->IsAimEligible()) {
       return false;
     }
     return mock_identity_eligible_;
@@ -270,11 +269,11 @@ class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
         GetForBrowserContext(browser()->GetProfile());
   }
 
-  auto SetIsCobrowseEligible(bool eligible) {
+  auto SetIsAimEligible(bool eligible) {
     return Do([&, eligible]() {
       auto* service = static_cast<TestingAimEligibilityService*>(
           AimEligibilityServiceFactory::GetForProfile(browser()->GetProfile()));
-      service->SetIsCobrowseEligible(eligible);
+      service->SetIsAimEligible(eligible);
       GetTestingService()->GetFakeEligibilityManager()->SetIsEligible(eligible);
     });
   }
@@ -433,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
-                       ButtonVisibilityIsTiedToAimCobrowseEligibility) {
+                       ButtonVisibilityIsTiedToAimEligibility) {
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
@@ -443,9 +442,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
-      SetIsCobrowseEligible(false),
+      SetIsAimEligible(false),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
-      SetIsCobrowseEligible(true),
+      SetIsAimEligible(true),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
 }
 

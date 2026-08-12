@@ -754,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(
     MockEligibilityServiceContextualTasksUiServiceInteractiveUiTest,
     RedirectToAimDefaultUrl) {
   EXPECT_CALL(*GetMockAimEligibilityService(browser()->GetProfile()),
-              IsCobrowseEligible())
+              IsAimEligible())
       .WillRepeatedly(testing::Return(false));
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
@@ -768,7 +768,7 @@ IN_PROC_BROWSER_TEST_F(
     MockEligibilityServiceContextualTasksUiServiceInteractiveUiTest,
     DoNotRedirectToAimDefaultUrl) {
   EXPECT_CALL(*GetMockAimEligibilityService(browser()->GetProfile()),
-              IsCobrowseEligible())
+              IsAimEligible())
       .WillRepeatedly(testing::Return(true));
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(

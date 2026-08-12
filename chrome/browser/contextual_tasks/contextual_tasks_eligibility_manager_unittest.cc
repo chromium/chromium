@@ -37,7 +37,7 @@ class ContextualTasksEligibilityManagerTest : public testing::Test {
     contextual_search::ContextualSearchService::RegisterProfilePrefs(
         prefs_.registry());
 
-    ON_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+    ON_CALL(*aim_eligibility_service_, IsAimEligible())
         .WillByDefault(Return(true));
     ON_CALL(*aim_eligibility_service_, RegisterEligibilityChangedCallback(_))
         .WillByDefault([&](base::RepeatingClosure callback) {
@@ -84,7 +84,7 @@ TEST_F(ContextualTasksEligibilityManagerTest,
   identity_test_env_->SetCookieAccounts(
       {{.email = account_info.email, .gaia_id = account_info.gaia}});
 
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillOnce(Return(false));
 
   CreateManager();
@@ -128,7 +128,7 @@ TEST_F(ContextualTasksEligibilityManagerTest, Transition_AimEligibility) {
       eligibility_future.GetRepeatingCallback());
 
   // Simulate AimEligibility changing to false.
-  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillOnce(Return(false));
   aim_eligibility_callbacks_.Notify();
 
