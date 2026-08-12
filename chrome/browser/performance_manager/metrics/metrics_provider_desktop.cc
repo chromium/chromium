@@ -11,7 +11,6 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -397,9 +396,7 @@ void MetricsProviderDesktop::ProvideCurrentSessionData(
 }
 
 MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
-    : local_state_(local_state),
-      disk_metrics_getter_(
-          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {
+    : local_state_(local_state) {
   DCHECK(!g_metrics_provider);
   g_metrics_provider = this;
 
@@ -599,28 +596,28 @@ void MetricsProviderDesktop::PostCpuFrequencyEstimation() {
 
 void MetricsProviderDesktop::RecordDiskMetrics() {
   if (!pending_disk_metrics_) {
-    // The measurements aren't ready yet, don't report anything.
+    // The measurements aren't ready yet, or the disk query failed.
     return;
   }
 
-  if (pending_disk_metrics_->total.is_zero()) {
+  base::SysInfo::DiskSpaceInfo disk_metrics = *pending_disk_metrics_;
+  pending_disk_metrics_.reset();
+
+  if (disk_metrics.total.is_zero()) {
     // Avoid division by 0.
     return;
   }
 
   base::UmaHistogramCustomCounts(
       "PerformanceManager.DiskStats.UserDataDirFreeSpaceMb",
-      pending_disk_metrics_->available.InMiB(), 0,
+      disk_metrics.available.InMiB(), 0,
       base::GiBU(10)
           .InMiB(),  // It's fine to bucket everything >10Gb as "large enough"
       100);
   // Also report as a percentage of capacity
   base::UmaHistogramPercentage(
       "PerformanceManager.DiskStats.UserDataDirFreeSpacePercent",
-      pending_disk_metrics_->available.InBytes() * 100 /
-          pending_disk_metrics_->total.InBytes());
-
-  pending_disk_metrics_ = std::nullopt;
+      disk_metrics.available.InBytes() * 100 / disk_metrics.total.InBytes());
 }
 
 void MetricsProviderDesktop::PostDiskMetricsTask() {
@@ -634,31 +631,15 @@ void MetricsProviderDesktop::PostDiskMetricsTask() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   const base::FilePath& user_data_dir = profile_manager->user_data_dir();
 
-  disk_metrics_getter_
-      .AsyncCall(&MetricsProviderDesktop::DiskMetricsThreadPoolGetter::
-                     ComputeDiskMetrics)
-      .WithArgs(user_data_dir)
-      .Then(base::BindOnce(&MetricsProviderDesktop::SavePendingDiskMetrics,
-                           base::Unretained(this)));
-}
-
-void MetricsProviderDesktop::SetDiskMetricsForTesting(
-    std::optional<base::SysInfo::DiskSpaceInfo> metrics) {
-  disk_metrics_for_testing_ = metrics;
-}
-
-std::optional<base::SysInfo::DiskSpaceInfo>
-MetricsProviderDesktop::DiskMetricsThreadPoolGetter::ComputeDiskMetrics(
-    const base::FilePath& user_data_dir) {
-  return base::SysInfo::AmountOfDiskSpace(user_data_dir);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&base::SysInfo::AmountOfDiskSpace, user_data_dir),
+      base::BindOnce(&MetricsProviderDesktop::SavePendingDiskMetrics,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void MetricsProviderDesktop::SavePendingDiskMetrics(
     std::optional<base::SysInfo::DiskSpaceInfo> metrics) {
-  if (disk_metrics_for_testing_) {
-    pending_disk_metrics_ = *disk_metrics_for_testing_;
-    return;
-  }
   pending_disk_metrics_ = metrics;
 }
 
