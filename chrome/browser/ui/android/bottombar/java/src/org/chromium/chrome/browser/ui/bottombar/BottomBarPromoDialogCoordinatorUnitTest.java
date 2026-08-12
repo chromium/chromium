@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -34,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -75,6 +78,7 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
     private Context mContext;
     private Activity mActivity;
     private SettableNonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private OneshotSupplierImpl<String> mCountrySupplier;
     private BottomBarPromoDialogCoordinator mCoordinator;
 
     @Before
@@ -83,21 +87,23 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCountrySupplier.set("us");
         TrackerFactory.setTrackerForTests(mTracker);
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
-        BottomBarActionEligibility.setCountrySupplier(() -> "us");
 
-        mCoordinator = new BottomBarPromoDialogCoordinator(mActivity, mModalDialogManagerSupplier);
+        mCoordinator =
+                new BottomBarPromoDialogCoordinator(
+                        mActivity, mModalDialogManagerSupplier, mCountrySupplier);
         mCoordinator.setListener(mListener);
     }
 
     @After
     public void tearDown() {
         TrackerFactory.setTrackerForTests(null);
-        BottomBarActionEligibility.setCountrySupplier(null);
     }
 
     @Test
@@ -240,8 +246,14 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShowPromoDialog_NoActionEligible() {
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCountrySupplier.set("fr");
+        mCoordinator =
+                new BottomBarPromoDialogCoordinator(
+                        mActivity, mModalDialogManagerSupplier, mCountrySupplier);
+        mCoordinator.setListener(mListener);
+
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
-        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
                 .thenReturn(true);
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_AIM_PROMO_DIALOG))
@@ -249,6 +261,21 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
 
         mCoordinator.maybeShowPromoDialog(mProfile);
 
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void testMaybeShowPromoDialog_CountryNull_ReturnsFalse() {
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCoordinator =
+                new BottomBarPromoDialogCoordinator(
+                        mActivity, mModalDialogManagerSupplier, mCountrySupplier);
+        mCoordinator.setListener(mListener);
+
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
+                .thenReturn(true);
+
+        assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
     }
 
@@ -313,5 +340,18 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
 
         // Check listener callback is invoked synchronously
         verify(mListener).onPromoDialogAccepted();
+    }
+
+    @Test
+    public void testMaybeShowPromoDialog_IncognitoProfile_UsesOriginalProfile() {
+        Profile incognitoProfile = org.mockito.Mockito.mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(incognitoProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mGlicEnablingJniMock.isEnabledForProfile(eq(mProfile))).thenReturn(true);
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
+                .thenReturn(true);
+
+        assertTrue(mCoordinator.maybeShowPromoDialog(incognitoProfile));
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), anyInt(), anyBoolean());
     }
 }

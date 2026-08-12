@@ -282,6 +282,7 @@ robolectric_library("junit") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/bottombar:config_java",
+    "//chrome/browser/ui/android/bottombar:java",
     "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:java",

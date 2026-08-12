@@ -36,9 +36,11 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -103,6 +105,7 @@ public class BottomBarCoordinatorUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createNullable();
+    private OneshotSupplierImpl<String> mCountrySupplier;
 
     private Activity mActivity;
     private FrameLayout mParent;
@@ -113,7 +116,6 @@ public class BottomBarCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        BottomBarActionEligibility.setCountrySupplier(() -> "us");
         TrackerFactory.setTrackerForTests(mTracker);
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         when(mActionRegistry.get(ActionId.NEW_TAB)).thenReturn(mActionSupplier);
@@ -132,7 +134,8 @@ public class BottomBarCoordinatorUnitTest {
         mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
         mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
         mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
-        mProfileSupplier.set(mProfile);
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCountrySupplier.set("us");
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         mCoordinator =
@@ -144,14 +147,15 @@ public class BottomBarCoordinatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         mProfileSupplier,
+                        mCountrySupplier,
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
                         mLayoutStateProvider);
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @After
     public void tearDown() {
-        BottomBarActionEligibility.setCountrySupplier(null);
         GlicKeyedServiceFactory.setForTesting(null);
     }
 
@@ -397,5 +401,477 @@ public class BottomBarCoordinatorUnitTest {
 
         assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void testExtraButton_WhenGlicEligible_ShowsGlicContentDescriptionAndTooltip() {
+        GlicEnabling.setEnabledForTesting(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        AtomicBoolean glicClicked = new AtomicBoolean(false);
+        AtomicBoolean aiModeClicked = new AtomicBoolean(false);
+
+        PropertyModel glicModel =
+                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask Gemini")
+                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask Gemini")
+                        .with(ActionProperties.ON_PRESS_CALLBACK, v -> glicClicked.set(true))
+                        .build();
+
+        PropertyModel aiModeModel =
+                new PropertyModel.Builder(ActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask AI Mode")
+                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask AI Mode")
+                        .with(ActionProperties.ON_PRESS_CALLBACK, v -> aiModeClicked.set(true))
+                        .build();
+
+        mGlicActionSupplier.set(glicModel);
+        mAiModeActionSupplier.set(aiModeModel);
+
+        mProfileSupplier.set(mProfile);
+
+        View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNotNull(extraButton);
+        assertEquals("Ask Gemini", extraButton.getContentDescription());
+        assertEquals("Ask Gemini", extraButton.getTooltipText());
+
+        extraButton.performClick();
+        assertTrue("GLIC click callback should be triggered", glicClicked.get());
+        assertFalse("AI Mode click callback should not be triggered", aiModeClicked.get());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
+    public void testExtraButton_WhenAiModeEligible_ShowsAiModeContentDescriptionAndTooltip() {
+        GlicEnabling.setEnabledForTesting(false);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+
+        AtomicBoolean glicClicked = new AtomicBoolean(false);
+        AtomicBoolean aiModeClicked = new AtomicBoolean(false);
+
+        PropertyModel glicModel =
+                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask Gemini")
+                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask Gemini")
+                        .with(ActionProperties.ON_PRESS_CALLBACK, v -> glicClicked.set(true))
+                        .build();
+
+        PropertyModel aiModeModel =
+                new PropertyModel.Builder(ActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask AI Mode")
+                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask AI Mode")
+                        .with(ActionProperties.ON_PRESS_CALLBACK, v -> aiModeClicked.set(true))
+                        .build();
+
+        mGlicActionSupplier.set(glicModel);
+        mAiModeActionSupplier.set(aiModeModel);
+
+        mProfileSupplier.set(mProfile);
+
+        View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNotNull(extraButton);
+        assertEquals("Ask AI Mode", extraButton.getContentDescription());
+        assertEquals("Ask AI Mode", extraButton.getTooltipText());
+
+        extraButton.performClick();
+        assertFalse("GLIC click callback should not be triggered", glicClicked.get());
+        assertTrue("AI Mode click callback should be triggered", aiModeClicked.get());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testExtraButton_WhenGlicPreferenceToggled_HidesAndShowsWithoutSwapping() {
+        GlicEnabling.setEnabledForTesting(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+
+        AtomicBoolean glicClicked = new AtomicBoolean(false);
+        AtomicBoolean aiModeClicked = new AtomicBoolean(false);
+
+        PropertyModel glicModel =
+                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask Gemini")
+                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask Gemini")
+                        .with(ActionProperties.ON_PRESS_CALLBACK, v -> glicClicked.set(true))
+                        .build();
+
+        PropertyModel aiModeModel =
+                new PropertyModel.Builder(ActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask AI Mode")
+                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask AI Mode")
+                        .with(ActionProperties.ON_PRESS_CALLBACK, v -> aiModeClicked.set(true))
+                        .build();
+
+        mGlicActionSupplier.set(glicModel);
+        mAiModeActionSupplier.set(aiModeModel);
+
+        mProfileSupplier.set(mProfile);
+
+        View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        View extraContainer = mCoordinator.getView().findViewById(R.id.extra_button_container);
+        assertNotNull(extraButton);
+        assertNotNull(extraContainer);
+        assertEquals(View.VISIBLE, extraContainer.getVisibility());
+        assertEquals("Ask Gemini", extraButton.getContentDescription());
+        assertEquals("Ask Gemini", extraButton.getTooltipText());
+
+        // Toggle GLIC button OFF via SharedPreferences.
+        BottomBarConfigUtils.setGlicButtonEnabled(/* enabled= */ false);
+
+        // Extra button should be GONE, NOT swapped to AI Mode.
+        assertEquals(View.GONE, extraContainer.getVisibility());
+
+        // Toggle GLIC button ON via SharedPreferences.
+        BottomBarConfigUtils.setGlicButtonEnabled(/* enabled= */ true);
+
+        // Extra button should be VISIBLE again with GLIC.
+        assertEquals(View.VISIBLE, extraContainer.getVisibility());
+        assertEquals("Ask Gemini", extraButton.getContentDescription());
+        assertEquals("Ask Gemini", extraButton.getTooltipText());
+
+        extraButton.performClick();
+        assertTrue("GLIC click callback should be triggered", glicClicked.get());
+        assertFalse("AI Mode click callback should not be triggered", aiModeClicked.get());
+    }
+
+    @Test
+    public void testExtraButton_ColdStart_NullProfile_ExtraButtonHidden() {
+        GlicEnabling.setEnabledForTesting(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        // Recreate coordinator with null profile initially.
+        mProfileSupplier.set(null);
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCountrySupplier.set("us");
+        mCoordinator.destroy();
+        mCoordinator =
+                new BottomBarCoordinator(
+                        mParent,
+                        mActionRegistry,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        mProfileSupplier,
+                        mCountrySupplier,
+                        mOmniboxFocusStateSupplier,
+                        mModalDialogManagerSupplier,
+                        mLayoutStateProvider);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        PropertyModel glicModel =
+                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask Gemini")
+                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask Gemini")
+                        .build();
+        mGlicActionSupplier.set(glicModel);
+
+        View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNull(extraButton);
+
+        // Profile becomes available.
+        mProfileSupplier.set(mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+        extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNotNull(extraButton);
+        assertEquals(View.VISIBLE, extraButton.getVisibility());
+        assertEquals("Ask Gemini", extraButton.getContentDescription());
+    }
+
+    @Test
+    public void testExtraButton_DeferredCountry_ShowsWhenCountryAvailable() {
+        GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        // Recreate coordinator with unfulfilled country initially.
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCoordinator.destroy();
+        mCoordinator =
+                new BottomBarCoordinator(
+                        mParent,
+                        mActionRegistry,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        mProfileSupplier,
+                        mCountrySupplier,
+                        mOmniboxFocusStateSupplier,
+                        mModalDialogManagerSupplier,
+                        mLayoutStateProvider);
+
+        PropertyModel glicModel =
+                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask Gemini")
+                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask Gemini")
+                        .build();
+        mGlicActionSupplier.set(glicModel);
+        mProfileSupplier.set(mProfile);
+
+        View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNull(extraButton);
+
+        // Country becomes available.
+        mCountrySupplier.set("us");
+        RobolectricUtil.runAllBackgroundAndUi();
+        extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNotNull(extraButton);
+        assertEquals(View.VISIBLE, extraButton.getVisibility());
+        assertEquals("Ask Gemini", extraButton.getContentDescription());
+    }
+
+    @Test
+    public void testCountrySupplier_DelayedSupply_BindsCandidate() {
+        GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        AtomicBoolean glicClicked = new AtomicBoolean(false);
+        AtomicBoolean glicLongClicked = new AtomicBoolean(false);
+        AtomicBoolean aiModeClicked = new AtomicBoolean(false);
+        AtomicBoolean aiModeLongClicked = new AtomicBoolean(false);
+
+        PropertyModel glicModel =
+                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask Gemini")
+                        .with(
+                                ActionProperties.TOOLTIP_TEXT_RESOLVER,
+                                context -> "Ask Gemini Tooltip")
+                        .with(ActionProperties.ON_PRESS_CALLBACK, (v) -> glicClicked.set(true))
+                        .with(
+                                ActionProperties.ON_LONG_PRESS_CALLBACK,
+                                (v) -> glicLongClicked.set(true))
+                        .build();
+
+        PropertyModel aiModeModel =
+                new PropertyModel.Builder(ActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask AI Mode")
+                        .with(
+                                ActionProperties.TOOLTIP_TEXT_RESOLVER,
+                                context -> "Ask AI Mode Tooltip")
+                        .with(ActionProperties.ON_PRESS_CALLBACK, (v) -> aiModeClicked.set(true))
+                        .with(
+                                ActionProperties.ON_LONG_PRESS_CALLBACK,
+                                (v) -> aiModeLongClicked.set(true))
+                        .build();
+
+        mGlicActionSupplier.set(glicModel);
+        mAiModeActionSupplier.set(aiModeModel);
+
+        // Recreate coordinator with unfulfilled country initially.
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCoordinator.destroy();
+        mCoordinator =
+                new BottomBarCoordinator(
+                        mParent,
+                        mActionRegistry,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        mProfileSupplier,
+                        mCountrySupplier,
+                        mOmniboxFocusStateSupplier,
+                        mModalDialogManagerSupplier,
+                        mLayoutStateProvider);
+
+        mProfileSupplier.set(mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNull(extraButton);
+
+        // Supply country to trigger candidate resolution.
+        mCountrySupplier.set("us");
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNotNull(extraButton);
+        assertEquals(View.VISIBLE, extraButton.getVisibility());
+        assertEquals("Ask Gemini", extraButton.getContentDescription());
+        assertEquals("Ask Gemini Tooltip", extraButton.getTooltipText());
+
+        extraButton.performClick();
+        assertTrue("GLIC click callback should be triggered", glicClicked.get());
+        assertFalse("AI Mode click callback should not be triggered", aiModeClicked.get());
+
+        extraButton.performLongClick();
+        assertTrue("GLIC long-click callback should be triggered", glicLongClicked.get());
+        assertFalse("AI Mode long-click callback should not be triggered", aiModeLongClicked.get());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM
+    })
+    public void testCountrySupplier_DelayedSupply_AuCountry_BindsAiMode() {
+        GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+
+        AtomicBoolean glicClicked = new AtomicBoolean(false);
+        AtomicBoolean glicLongClicked = new AtomicBoolean(false);
+        AtomicBoolean aiModeClicked = new AtomicBoolean(false);
+        AtomicBoolean aiModeLongClicked = new AtomicBoolean(false);
+
+        PropertyModel glicModel =
+                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask Gemini")
+                        .with(
+                                ActionProperties.TOOLTIP_TEXT_RESOLVER,
+                                context -> "Ask Gemini Tooltip")
+                        .with(ActionProperties.ON_PRESS_CALLBACK, (v) -> glicClicked.set(true))
+                        .with(
+                                ActionProperties.ON_LONG_PRESS_CALLBACK,
+                                (v) -> glicLongClicked.set(true))
+                        .build();
+
+        PropertyModel aiModeModel =
+                new PropertyModel.Builder(ActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask AI Mode")
+                        .with(
+                                ActionProperties.TOOLTIP_TEXT_RESOLVER,
+                                context -> "Ask AI Mode Tooltip")
+                        .with(ActionProperties.ON_PRESS_CALLBACK, (v) -> aiModeClicked.set(true))
+                        .with(
+                                ActionProperties.ON_LONG_PRESS_CALLBACK,
+                                (v) -> aiModeLongClicked.set(true))
+                        .build();
+
+        mGlicActionSupplier.set(glicModel);
+        mAiModeActionSupplier.set(aiModeModel);
+
+        // Recreate coordinator with unfulfilled country initially.
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCoordinator.destroy();
+        mCoordinator =
+                new BottomBarCoordinator(
+                        mParent,
+                        mActionRegistry,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        mProfileSupplier,
+                        mCountrySupplier,
+                        mOmniboxFocusStateSupplier,
+                        mModalDialogManagerSupplier,
+                        mLayoutStateProvider);
+
+        mProfileSupplier.set(mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNull(extraButton);
+
+        // Supply Australia ("au") -> Not in GLIC_ALLOWED, but in AIM_ALLOWED.
+        mCountrySupplier.set("au");
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNotNull(extraButton);
+        assertEquals(View.VISIBLE, extraButton.getVisibility());
+        assertEquals("Ask AI Mode", extraButton.getContentDescription());
+        assertEquals("Ask AI Mode Tooltip", extraButton.getTooltipText());
+
+        extraButton.performClick();
+        assertFalse("GLIC click callback should not be triggered", glicClicked.get());
+        assertTrue("AI Mode click callback should be triggered", aiModeClicked.get());
+
+        extraButton.performLongClick();
+        assertFalse("GLIC long-click callback should not be triggered", glicLongClicked.get());
+        assertTrue("AI Mode long-click callback should be triggered", aiModeLongClicked.get());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM
+    })
+    public void testCountrySupplier_DelayedSupply_FrCountry_ResolvesNone() {
+        GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+
+        PropertyModel glicModel =
+                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask Gemini")
+                        .with(
+                                ActionProperties.TOOLTIP_TEXT_RESOLVER,
+                                context -> "Ask Gemini Tooltip")
+                        .build();
+
+        PropertyModel aiModeModel =
+                new PropertyModel.Builder(ActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                                context -> "Ask AI Mode")
+                        .with(
+                                ActionProperties.TOOLTIP_TEXT_RESOLVER,
+                                context -> "Ask AI Mode Tooltip")
+                        .build();
+
+        mGlicActionSupplier.set(glicModel);
+        mAiModeActionSupplier.set(aiModeModel);
+
+        // Recreate coordinator with unfulfilled country initially.
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCoordinator.destroy();
+        mCoordinator =
+                new BottomBarCoordinator(
+                        mParent,
+                        mActionRegistry,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        mProfileSupplier,
+                        mCountrySupplier,
+                        mOmniboxFocusStateSupplier,
+                        mModalDialogManagerSupplier,
+                        mLayoutStateProvider);
+
+        mProfileSupplier.set(mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNull(extraButton);
+
+        // Supply France ("fr") -> Neither GLIC nor AIM allowed.
+        mCountrySupplier.set("fr");
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNull(extraButton);
+        View extraContainer = mCoordinator.getView().findViewById(R.id.extra_button_container);
+        assertNotNull(extraContainer);
+        assertEquals(View.GONE, extraContainer.getVisibility());
     }
 }

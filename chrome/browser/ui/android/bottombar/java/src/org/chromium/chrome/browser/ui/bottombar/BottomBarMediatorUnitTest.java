@@ -30,11 +30,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.NullMarked;
@@ -46,8 +47,6 @@ import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -102,6 +101,7 @@ public class BottomBarMediatorUnitTest {
     @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlObserverCaptor;
 
     private SettableNullableObservableSupplier<Profile> mProfileSupplier;
+    private OneshotSupplierImpl<String> mCountrySupplier;
 
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
@@ -119,6 +119,8 @@ public class BottomBarMediatorUnitTest {
         mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
         mProfileSupplier = ObservableSuppliers.createNullable();
         mProfileSupplier.set(mProfile);
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCountrySupplier.set("us");
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
         mModel = new PropertyModel(BottomBarProperties.ALL_KEYS);
@@ -583,6 +585,7 @@ public class BottomBarMediatorUnitTest {
                         mVisibilityDelegate,
                         /* shouldIncludeHomeButton= */ true,
                         mProfileSupplier,
+                        mCountrySupplier,
                         mOmniboxFocusStateSupplier,
                         mPromoDialogCoordinator,
                         mActionRegistry,
@@ -614,60 +617,187 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
-    public void testDseChangedDynamically() {
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
+    public void testDseChangedDynamically_WhenAiModeCandidate_TogglesVisibilityWithoutSwapping() {
+        // In "us" with GLIC disabled, candidate resolves to AI_MODE.
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+
         createMediator(/* shouldIncludeHomeButton= */ false);
+
+        // Verify initial state: AI_MODE is visible, GLIC is hidden.
+        verify(mButtonManager).setButtonVisibility(ActionId.AI_MODE, true);
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
 
         // Capture the registered TemplateUrlServiceObserver.
         verify(mTemplateUrlService).addObserver(mTemplateUrlObserverCaptor.capture());
         TemplateUrlServiceObserver observer = mTemplateUrlObserverCaptor.getValue();
         assertNotNull(observer);
 
-        // Trigger the DSE change observer and verify it updates GLIC/fallback visibility.
+        // 1. DSE changes to non-Google -> AI Mode hidden, GLIC never shown.
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         observer.onTemplateURLServiceChanged();
+        verify(mButtonManager).setButtonVisibility(ActionId.AI_MODE, false);
+        verify(mButtonManager, times(2)).setButtonVisibility(ActionId.GLIC, false);
+        verify(mButtonManager, never()).setButtonVisibility(ActionId.GLIC, true);
+
+        // 2. DSE changes back to Google -> AI Mode visible again.
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        observer.onTemplateURLServiceChanged();
+        verify(mButtonManager, times(2)).setButtonVisibility(ActionId.AI_MODE, true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testGlicAllowedChanged_WhenGlicCandidate_HidesGlicAndNeverSwapsToAiMode() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+
+        createMediator(/* shouldIncludeHomeButton= */ false);
+
+        // Verify initial state: GLIC is visible, AI_MODE is hidden.
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
+        verify(mButtonManager).setButtonVisibility(ActionId.AI_MODE, false);
+
+        verify(mGlicKeyedService)
+                .addAllowedChangedObserver(mAllowedChangedObserverCaptor.capture());
+        GlicKeyedService.AllowedChangedObserver observer = mAllowedChangedObserverCaptor.getValue();
+        assertNotNull(observer);
+
+        // User preference disabled or policy disallows -> GLIC hidden, never falls back to AI Mode.
+        BottomBarConfigUtils.setGlicButtonEnabled(false);
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+        verify(mButtonManager, never()).setButtonVisibility(ActionId.AI_MODE, true);
+
+        // Notify observer again when state changed.
+        observer.onAllowedStateChanged();
         verify(mButtonManager, times(2)).setButtonVisibility(ActionId.GLIC, false);
     }
 
     @Test
-    public void testHubVisibility_DisableOnGts() {
-        ChromeFeatureList.sAndroidBottomBarShowBottomBarOnGts.setForTesting(false);
-        when(mLayoutStateProvider.isLayoutVisible(LayoutType.HUB)).thenReturn(false);
-
-        createMediator(/* shouldIncludeHomeButton= */ false);
-        assertNotNull(mMediator);
-
-        verify(mLayoutStateProvider).addObserver(mMediator);
-
-        // Initially visible
-        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
-
-        // Show Hub
-        mMediator.onFinishedShowing(LayoutType.HUB);
-        assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
-
-        // Hide Hub
-        mMediator.onStartedHiding(LayoutType.HUB);
-        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
-    }
-
-    @Test
-    public void testHubVisibility_ShowOnGts() {
-        ChromeFeatureList.sAndroidBottomBarShowBottomBarOnGts.setForTesting(true);
-
-        createMediator(/* shouldIncludeHomeButton= */ false);
-
-        verify(mLayoutStateProvider, never()).addObserver(any());
-        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
-    }
-
-    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
     public void testOnSharedPreferenceChanged_TogglesGlicVisibility() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+
         createMediator(/* shouldIncludeHomeButton= */ false);
 
         assertNotNull(mMediator);
-        mMediator.onSharedPreferenceChanged(
-                ContextUtils.getAppSharedPreferences(),
-                ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED);
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
+
+        // Toggle GLIC button OFF via SharedPreferences.
+        BottomBarConfigUtils.setGlicButtonEnabled(false);
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+        verify(mButtonManager, never()).setButtonVisibility(ActionId.AI_MODE, true);
+
+        // Toggle GLIC button ON via SharedPreferences.
+        BottomBarConfigUtils.setGlicButtonEnabled(true);
+        verify(mButtonManager, times(2)).setButtonVisibility(ActionId.GLIC, true);
+    }
+
+    @Test
+    public void testColdStart_NullProfile_HidesExtraButton() {
+        mProfileSupplier.set(null);
+        createMediator(/* shouldIncludeHomeButton= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNotNull(mMediator);
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+        verify(mButtonManager).setButtonVisibility(ActionId.AI_MODE, false);
+        verify(mTemplateUrlService, never()).addObserver(any());
+        verify(mGlicKeyedService, never()).addAllowedChangedObserver(any());
+    }
+
+    @Test
+    public void testActionNone_NoObserversRegistered() {
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCountrySupplier.set("fr");
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+
+        createMediator(/* shouldIncludeHomeButton= */ false);
+
+        assertNotNull(mMediator);
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+        verify(mButtonManager).setButtonVisibility(ActionId.AI_MODE, false);
+        verify(mTemplateUrlService, never()).addObserver(any());
+        verify(mGlicKeyedService, never()).addAllowedChangedObserver(any());
+    }
+
+    @Test
+    public void testDeferredCandidateResolution_ProfileFirst_CountrySecond() {
+        mProfileSupplier.set(mProfile);
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+
+        createMediator(/* shouldIncludeHomeButton= */ false);
+
+        // While country is null, extra buttons should remain hidden and no dynamic observers
+        // attached.
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+        verify(mButtonManager).setButtonVisibility(ActionId.AI_MODE, false);
+        verify(mGlicKeyedService, never()).addAllowedChangedObserver(any());
+
+        // Country arrives.
+        mCountrySupplier.set("us");
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Candidate resolves to GLIC and becomes visible.
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
+        verify(mGlicKeyedService).addAllowedChangedObserver(any());
+    }
+
+    @Test
+    public void testDeferredCandidateResolution_CountryFirst_ProfileSecond() {
+        mProfileSupplier.set(null);
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        mCountrySupplier.set("us");
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+
+        createMediator(/* shouldIncludeHomeButton= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // While profile is null, extra buttons should remain hidden.
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+        verify(mButtonManager).setButtonVisibility(ActionId.AI_MODE, false);
+        verify(mGlicKeyedService, never()).addAllowedChangedObserver(any());
+
+        // Profile arrives.
+        mProfileSupplier.set(mProfile);
+
+        // Candidate resolves to GLIC and becomes visible.
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
+        verify(mGlicKeyedService).addAllowedChangedObserver(any());
+    }
+
+    @Test
+    public void testDeferredCandidateResolution_LateIndia_SoonCountry() {
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+
+        createMediator(/* shouldIncludeHomeButton= */ false);
+
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+        verify(mButtonManager).setButtonVisibility(ActionId.AI_MODE, false);
+
+        // Country arrives as "in" (Soon country).
+        mCountrySupplier.set("in");
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Both buttons remain hidden, no dynamic observers attached.
         verify(mButtonManager, times(2)).setButtonVisibility(ActionId.GLIC, false);
+        verify(mButtonManager, times(2)).setButtonVisibility(ActionId.AI_MODE, false);
+        verify(mGlicKeyedService, never()).addAllowedChangedObserver(any());
+        verify(mTemplateUrlService, never()).addObserver(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_glic_geofencing/true")
+    public void testDeferredCandidateResolution_BypassGeofencing_NullCountry() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        mCountrySupplier = new OneshotSupplierImpl<>();
+
+        createMediator(/* shouldIncludeHomeButton= */ false);
+
+        // Geofencing is bypassed -> candidate resolves to GLIC immediately despite null country.
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
+        verify(mGlicKeyedService).addAllowedChangedObserver(any());
     }
 
     private void createMediator(boolean shouldIncludeHomeButton) {
@@ -682,6 +812,7 @@ public class BottomBarMediatorUnitTest {
                         mVisibilityDelegate,
                         shouldIncludeHomeButton,
                         mProfileSupplier,
+                        mCountrySupplier,
                         mOmniboxFocusStateSupplier,
                         mPromoDialogCoordinator,
                         mActionRegistry,

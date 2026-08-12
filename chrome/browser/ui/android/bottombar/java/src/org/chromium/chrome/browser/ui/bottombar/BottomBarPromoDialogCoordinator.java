@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -37,6 +38,7 @@ public class BottomBarPromoDialogCoordinator
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
+    private final OneshotSupplier<String> mCountrySupplier;
 
     private @Nullable BottomBarPromoDialogListener mListener;
     private @Nullable PropertyModel mDialogModel;
@@ -49,12 +51,15 @@ public class BottomBarPromoDialogCoordinator
      * @param context The {@link Context} used to retrieve resources and inflate the layout.
      * @param modalDialogManagerSupplier The supplier of {@link ModalDialogManager} used to display
      *     the dialog.
+     * @param countrySupplier The supplier for the latest variations country code.
      */
     public BottomBarPromoDialogCoordinator(
             Context context,
-            NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            OneshotSupplier<String> countrySupplier) {
         mContext = context;
         mModalDialogManager = modalDialogManagerSupplier.get();
+        mCountrySupplier = countrySupplier;
     }
 
     @Override
@@ -82,9 +87,16 @@ public class BottomBarPromoDialogCoordinator
             return false;
         }
 
+        Profile originalProfile = profile.getOriginalProfile();
+        String country = mCountrySupplier.get();
+
+        if (!BottomBarActionEligibility.isCandidateResolutionReady(originalProfile, country)) {
+            return false;
+        }
+
         @ActionId
         int eligibleAction =
-                BottomBarActionEligibility.getEligibleExtraAction(profile.getOriginalProfile());
+                BottomBarActionEligibility.getCandidateExtraAction(originalProfile, country);
         if (eligibleAction != ActionId.GLIC && eligibleAction != ActionId.AI_MODE) {
             return false;
         }
@@ -94,7 +106,7 @@ public class BottomBarPromoDialogCoordinator
                         ? FeatureConstants.ANDROID_BOTTOM_BAR_AIM_PROMO_DIALOG
                         : FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG;
 
-        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        Tracker tracker = TrackerFactory.getTrackerForProfile(originalProfile);
         if (!tracker.shouldTriggerHelpUi(mFeatureName)) {
             mFeatureName = null;
             return false;
@@ -103,7 +115,8 @@ public class BottomBarPromoDialogCoordinator
 
         Context context = mContext;
         View dialogView =
-                LayoutInflater.from(context).inflate(R.layout.bottom_bar_promo_dialog_view, null);
+                LayoutInflater.from(context)
+                        .inflate(R.layout.bottom_bar_promo_dialog_view, /* root= */ null);
         int titleResId;
         int descriptionResId;
         int illustrationResId;

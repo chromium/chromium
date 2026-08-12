@@ -50,6 +50,8 @@ import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarActionEligibility;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
@@ -100,6 +102,7 @@ public class GlicSettingsUnitTest {
         LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsJniMock);
         LocalStatePrefs.setNativePrefsLoadedForTesting(true);
 
+        when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
         when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
         when(mGlicKeyedServiceFactoryJniMock.getForProfile(mProfileMock))
                 .thenReturn(mGlicKeyedServiceMock);
@@ -107,6 +110,7 @@ public class GlicSettingsUnitTest {
         when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
         when(mLocalStatePrefsJniMock.getPrefService()).thenReturn(mLocalPrefServiceMock);
         doNothing().when(mCustomTabLauncher).openUrlInCct(any(Context.class), anyString());
+        BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(ActionId.GLIC);
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
     }

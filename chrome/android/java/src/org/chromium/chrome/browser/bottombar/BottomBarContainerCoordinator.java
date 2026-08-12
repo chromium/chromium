@@ -86,6 +86,7 @@ public class BottomBarContainerCoordinator
      * @param themeColorProvider Theme color provider for the bottom bar.
      * @param homepageEnabledSupplier Supplier of whether the homepage is enabled.
      * @param profileSupplier Supplier of the current profile.
+     * @param countrySupplier Supplier of the latest variations country code.
      * @param omniboxFocusStateSupplier Supplier of the omnibox focus state.
      * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
      * @param appMenuCoordinatorSupplier Supplier of the {@link AppMenuCoordinator}.
@@ -98,6 +99,7 @@ public class BottomBarContainerCoordinator
             ThemeColorProvider themeColorProvider,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             NullableObservableSupplier<Profile> profileSupplier,
+            OneshotSupplier<String> countrySupplier,
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
@@ -119,6 +121,7 @@ public class BottomBarContainerCoordinator
                         homepageEnabledSupplier,
                         this,
                         profileSupplier,
+                        countrySupplier,
                         omniboxFocusStateSupplier,
                         modalDialogManagerSupplier,
                         layoutStateProvider);
