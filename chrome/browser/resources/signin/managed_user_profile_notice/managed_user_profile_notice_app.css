@@ -63,8 +63,12 @@
   width: 100vw;
 }
 
-#signals-disclaimer-action-container cr-button {
-  min-width: auto;
+#signals-disclaimer-action-container {
+  gap: 8px;
+
+  & cr-button {
+    min-width: auto;
+  }
 }
 
 .action-container cr-button {

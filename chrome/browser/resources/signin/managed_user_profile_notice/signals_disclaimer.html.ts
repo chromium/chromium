@@ -12,7 +12,7 @@ export function getHtml(this: SignalsDisclaimerElement) {
 <!--_html_template_start_-->
 <main class="${this.isModalDialog ? 'modal-dialog' : 'profile-picker'}">
   <div id="header-container">
-    <div id="avatar-container" class="tangible-sync-style">
+    <div id="avatar-container">
       <img id="avatar" alt="" src="${this.pictureUrl}">
       <div class="work-badge">
         <cr-icon class="icon" icon="cr:domain"></cr-icon>

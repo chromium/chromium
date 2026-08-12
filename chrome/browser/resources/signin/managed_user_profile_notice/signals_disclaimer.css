@@ -13,7 +13,6 @@
 
 :host {
   --cr-secondary-text-color: var(--google-grey-700);
-  --tangible-sync-style-avatar-size: 72px;
   color: var(--cr-primary-text-color);
 }
 
@@ -25,10 +24,10 @@ main {
 }
 
 #avatar-container {
-  height: var(--tangible-sync-style-avatar-size);
+  height: 72px;
   margin-inline: auto;
   position: relative;
-  width: var(--tangible-sync-style-avatar-size);
+  width: 72px;
   z-index: 1;
 }
 
@@ -39,9 +38,24 @@ main {
 }
 
 .work-badge {
+  align-items: center;
+  background-color: var(--signin-work-badge-background-color);
+  border: 1px solid var(--google-grey-300);
+  border-radius: 50%;
   bottom: 0;
-  box-sizing: border-box;
+  display: flex;
+  height: 22px;
+  justify-content: center;
   position: absolute;
+  right: 0;
+  width: 22px;
+  padding: 0;
+}
+
+.work-badge > cr-icon {
+  margin: 0;
+  width: 13px;
+  height: 13px;
 }
 
 #text-container {
@@ -124,7 +138,7 @@ main {
   color: var(--cr-secondary-text-color);
   font-size: 12px;
   line-height: 18px;
-  margin: 4px 0 0 0;
+  margin: 2px 0 0 0;
 }
 
 @media (prefers-color-scheme: dark) {
