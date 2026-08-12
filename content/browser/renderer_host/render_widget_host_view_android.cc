@@ -3254,6 +3254,9 @@ void RenderWidgetHostViewAndroid::OnDetachedFromWindow() {
   if (input_transfer_handler_) {
     input_transfer_handler_->OnDetachedFromWindow();
   }
+  if (touch_selection_controller_) {
+    touch_selection_controller_->HideAndDestroy();
+  }
 }
 
 void RenderWidgetHostViewAndroid::OnAttachCompositor() {

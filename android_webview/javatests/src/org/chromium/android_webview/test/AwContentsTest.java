@@ -13,7 +13,7 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PRO
 
 import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks2;
-import android.content.Context;
+import android.content.MutableContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -24,11 +24,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Pair;
-import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.webkit.JavascriptInterface;
@@ -56,6 +54,7 @@ import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwViewAndroidDelegate;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
+import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
@@ -155,30 +154,42 @@ public class AwContentsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testUpdateContextAndAdopt() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        AwTestContainerView awTestContainerView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        AwContents awContents = awTestContainerView.getAwContents();
+        MutableContextWrapper oldContext =
+                new MutableContextWrapper(mActivityTestRule.getActivity());
+        AwTestContainerView testContainer =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(
+                        mContentsClient,
+                        false,
+                        new TestDependencyFactory() {
+                            @Override
+                            public AwTestContainerView createAwTestContainerView(
+                                    AwTestRunnerActivity activity, boolean allowHw) {
+                                return new AwTestContainerView(oldContext, allowHw);
+                            }
+                        });
+        AwContents awContents = testContainer.getAwContents();
 
         mActivityTestRule.loadDataSync(
                 awContents,
                 mContentsClient.getOnPageFinishedHelper(),
-                CommonResources.ABOUT_HTML,
+                "<html><body><div style='font-size: 50pt;'>Select me</div></body></html>",
                 "text/html",
                 false);
 
+        TouchCommon.longPressView(testContainer);
+
+        AwTestContainerView newContainer = mActivityTestRule.reparentAwContents(testContainer);
+        oldContext.setBaseContext(null);
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup parent = (ViewGroup) awTestContainerView.getParent();
-                    parent.removeView(awTestContainerView);
-                    Context newContext =
-                            new ContextThemeWrapper(
-                                    mActivityTestRule.getActivity(), android.R.style.Theme_Holo);
-                    AwTestContainerView newContainerView =
-                            new AwTestContainerView(newContext, true);
-                    newContainerView.initialize(awContents);
-                    awContents.adopt(
-                            newContainerView, newContainerView.getInternalAccessDelegate());
+                    newContainer.measure(
+                            View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY),
+                            View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY));
+                    newContainer.layout(0, 0, 500, 500);
                 });
+
+        TouchCommon.longPressView(newContainer);
 
         mActivityTestRule.loadDataSync(
                 awContents,

@@ -264,6 +264,14 @@ void TouchSelectionController::HideAndDisallowShowingAutomatically() {
   show_touch_handles_ = false;
 }
 
+void TouchSelectionController::HideAndDestroy() {
+  HideHandles();
+  start_selection_handle_.reset();
+  end_selection_handle_.reset();
+  insertion_handle_.reset();
+  show_touch_handles_ = false;
+}
+
 void TouchSelectionController::SetTemporarilyHidden(bool hidden) {
   if (temporarily_hidden_ == hidden)
     return;
