@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/base_switches.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
@@ -26,6 +27,7 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/source_location.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/config_watcher.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/host_status_observer.h"
@@ -61,6 +63,14 @@ class DaemonProcess : public ConfigWatcher::Delegate,
                       public mojom::PeerSessionManager,
                       public mojom::ChromotingHostServices {
  public:
+  // List of command-line switch names to copy from the Daemon process to child
+  // worker processes (Network and PeerConnection processes).
+  static inline constexpr const char* const kCopiedSwitchNames[] = {
+      switches::kV,
+      switches::kVModule,
+      kEnablePeerConnectionProcessSwitch,
+  };
+
   using StoppedCallback = base::OnceCallback<void(int /*exit_code*/)>;
   using DesktopSessionMap =
       std::map<int, raw_ptr<DesktopSession, CtnExperimental>>;

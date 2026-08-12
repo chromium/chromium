@@ -91,8 +91,6 @@ constexpr wchar_t kLoggingRegistryKeyName[] = L"SOFTWARE\\Chromoting\\logging";
 constexpr wchar_t kLogToFileRegistryValue[] = L"LogToFile";
 constexpr wchar_t kLogToEventLogRegistryValue[] = L"LogToEventLog";
 
-const char* const kCopiedSwitchNames[] = {switches::kV, switches::kVModule};
-
 }  // namespace
 
 namespace remoting {

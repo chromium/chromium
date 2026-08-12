@@ -119,35 +119,38 @@ def ensure_permissions(abs_out_dir, user_home, force=False):
     remoting_core_path = os.path.join(abs_out_dir, "libremoting_core.so")
 
     def check_permissions():
-        try:
-            subprocess.run([
-                "sudo", "-u", "_crd_network", "test", "-x", remoting_host_path
-            ],
-                           check=True,
-                           capture_output=True)
-            subprocess.run([
-                "sudo", "-u", "_crd_network", "test", "-r", remoting_core_path
-            ],
-                           check=True,
-                           capture_output=True)
-            return True
-        except subprocess.CalledProcessError:
-            return False
+        for user in ["_crd_network", "_crd_peer_connection"]:
+            try:
+                subprocess.run([
+                    "sudo", "-u", user, "test", "-x", remoting_host_path
+                ],
+                               check=True,
+                               capture_output=True)
+                subprocess.run([
+                    "sudo", "-u", user, "test", "-r", remoting_core_path
+                ],
+                               check=True,
+                               capture_output=True)
+            except subprocess.CalledProcessError:
+                return False
+        return True
 
     print("Checking permissions...")
     if not force and check_permissions():
-        print("_crd_network has the right permissions.")
+        print(
+            "_crd_network and _crd_peer_connection have the right permissions.")
         return
 
     if force:
         print("Forcing permission update...")
     else:
         print(
-            "_crd_network does not have execute permissions. Setting ACLs...")
+            "_crd_network or _crd_peer_connection does not have execute "
+            "permissions. Setting ACLs...")
 
     run_command([
-        "setfacl", "-R", "-m", "u:_crd_network:rx", "-m", "g:Debian-gdm:rx",
-        abs_out_dir
+        "setfacl", "-R", "-m", "u:_crd_network:rx", "-m",
+        "u:_crd_peer_connection:rx", "-m", "g:Debian-gdm:rx", abs_out_dir
     ])
 
     # Accounts also need to be granted read and executable permissions to
@@ -161,8 +164,8 @@ def ensure_permissions(abs_out_dir, user_home, force=False):
 
         print(f"Setting ACLs on {parent_dir}...")
         run_command([
-            "setfacl", "-m", "u:_crd_network:rx", "-m", "g:Debian-gdm:rx",
-            parent_dir
+            "setfacl", "-m", "u:_crd_network:rx", "-m",
+            "u:_crd_peer_connection:rx", "-m", "g:Debian-gdm:rx", parent_dir
         ])
 
         if parent_dir == user_home_abs:
@@ -175,7 +178,10 @@ def ensure_permissions(abs_out_dir, user_home, force=False):
         print("ACLs updated but permissions still failing.", file=sys.stderr)
 
 
-def user_main(out_dir, keep_sessions=False, set_permissions=False):
+def user_main(out_dir,
+              keep_sessions=False,
+              set_permissions=False,
+              enable_peer_connection_process=False):
     try:
         run_command(["systemctl", "is-active", "--quiet", "gdm3"])
     except subprocess.CalledProcessError:
@@ -197,10 +203,16 @@ def user_main(out_dir, keep_sessions=False, set_permissions=False):
         cmd.append("--keep-sessions")
     if set_permissions:
         cmd.append("--set-permissions")
+    if enable_peer_connection_process:
+        cmd.append("--enable-peer-connection-process")
     run_command(cmd)
 
 
-def root_main(out_dir, user_home, keep_sessions=False, set_permissions=False):
+def root_main(out_dir,
+              user_home,
+              keep_sessions=False,
+              set_permissions=False,
+              enable_peer_connection_process=False):
     abs_out_dir = os.path.abspath(out_dir)
     host_config_path = "/etc/chrome-remote-desktop/host.json"
 
@@ -219,13 +231,16 @@ def root_main(out_dir, user_home, keep_sessions=False, set_permissions=False):
             print("No suitable user config found")
             sys.exit(1)
 
-    print("Adding _crd_network system user...")
+    print("Adding CRD system users...")
     run_command(["adduser", "--system", "_crd_network"])
+    run_command(["adduser", "--system", "_crd_peer_connection"])
 
     remoting_host_path = os.path.join(abs_out_dir, "remoting_me2me_host")
     remoting_core_path = os.path.join(abs_out_dir, "libremoting_core.so")
 
     daemon_command = [remoting_host_path, "--type=daemon"]
+    if enable_peer_connection_process:
+        daemon_command.append("--enable-peer-connection-process")
 
     # Initial state for monitoring
     host_state = get_file_trigger_state(remoting_host_path)
@@ -313,6 +328,11 @@ def main():
                         help="Build output directory (e.g., out/debug)")
 
     parser.add_argument(
+        "--enable-peer-connection-process",
+        action="store_true",
+        help="Enables launching the WebRTC stack in a dedicated Peer "
+        "Connection process.")
+    parser.add_argument(
         "--keep-sessions",
         action="store_true",
         help=
@@ -327,10 +347,11 @@ def main():
         "Forcibly run the setfacl command to set permissions, bypassing the "
         "permission check. Useful if you modified dependencies (e.g. WebRTC) "
         "that aren't checked by default.")
-    parser.add_argument("--terminate-sessions",
-                        action="store_true",
-                        help="Only terminate remote sessions and exit. "
-                        "Must be run with sudo.")
+    parser.add_argument(
+        "--terminate-sessions",
+        action="store_true",
+        help="Only terminate remote sessions and exit. "
+        "Must be run with sudo.")
 
     # These should be set by the script itself.
     parser.add_argument("--elevated",
@@ -362,13 +383,14 @@ def main():
             print("Error: --user-home is required in elevated mode.")
             sys.exit(1)
         root_main(args.out_dir, args.user_home, args.keep_sessions,
-                  args.set_permissions)
+                  args.set_permissions, args.enable_peer_connection_process)
     else:
         if os.geteuid() == 0:
             print("Error: Do not run this script directly with sudo. "
                   "It will re-invoke itself.")
             sys.exit(1)
-        user_main(args.out_dir, args.keep_sessions, args.set_permissions)
+        user_main(args.out_dir, args.keep_sessions, args.set_permissions,
+                  args.enable_peer_connection_process)
 
 
 if __name__ == "__main__":

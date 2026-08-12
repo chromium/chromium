@@ -147,6 +147,8 @@ void DaemonProcessLinux::LaunchNetworkProcess() {
 
   base::CommandLine command_line(this_exe);
   command_line.AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeNetwork);
+  command_line.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
+                                kCopiedSwitchNames);
 
   LinuxWorkerProcessLauncherDelegate::LaunchOptions options(command_line);
   options.new_session = true;
@@ -189,6 +191,8 @@ DaemonProcessLinux::CreatePeerConnectionProcessLauncherDelegate() {
   base::CommandLine command_line(this_exe);
   command_line.AppendSwitchASCII(kProcessTypeSwitchName,
                                  kProcessTypePeerConnection);
+  command_line.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
+                                kCopiedSwitchNames);
 
   LinuxWorkerProcessLauncherDelegate::LaunchOptions options(command_line);
   options.new_session = true;
