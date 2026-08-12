@@ -4280,10 +4280,8 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_mac_debug_gtests",
     targets = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
-        "gpu_fyi_and_optional_non_linux_gtests",
-        "gpu_fyi_mac_specific_gtests",
+        # Identical to the release gtests for now
+        "gpu_fyi_mac_release_gtests",
     ],
 )
 
@@ -4297,8 +4295,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_mac_release_gtests",
     targets = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
         "gpu_fyi_and_optional_non_linux_gtests",
         "gpu_fyi_mac_specific_gtests",
     ],
@@ -4360,6 +4356,7 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_win_debug_gtests",
     targets = [
+        # Identical to the release gtests for now.
         "gpu_fyi_win_release_gtests",
     ],
 )
@@ -4374,10 +4371,7 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_win_release_gtests",
     targets = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
         "gpu_default_and_optional_win_media_foundation_specific_gtests",
-        "gpu_default_and_optional_win_specific_gtests",
         "gpu_fyi_and_optional_non_linux_gtests",
         "gpu_fyi_and_optional_win_specific_gtests",
     ],
