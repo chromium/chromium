@@ -271,6 +271,7 @@ std::unique_ptr<Skill> EnterpriseSkillsProvider::ParseAndValidateSkill(
   new_skill->id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   new_skill->name = parsed_name;
   new_skill->description = parsed_desc;
+  new_skill->curated_by = "your organization";
   new_skill->icon = kDefaultEnterpriseSkillIcon;
   new_skill->prompt = prompt_content;
   new_skill->source = sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE;
