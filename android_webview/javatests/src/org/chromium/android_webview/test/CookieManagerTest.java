@@ -29,6 +29,8 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
+import org.chromium.android_webview.AwCookieManager.FixupResult;
+import org.chromium.android_webview.AwCookieManager.UrlValue;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.test.util.CookieUtils;
@@ -48,6 +50,7 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1577,6 +1580,153 @@ public class CookieManagerTest extends AwParameterizedTest {
                 "testCookie=value;path=file:///android_asset/first/");
         String cookie = mCookieManager.getCookie("file:///android_asset/second/second_url.html");
         assertThat(cookie, not(containsString("testCookie")));
+    }
+
+    private static void expectUnchangedByUrlFixup(String input) {
+        String output = AwCookieManager.fixupPossibleBareHostnameToUrl(input);
+        Assert.assertEquals(input, output);
+    }
+
+    private static void expectChangedByUrlFixup(String input, String expected) {
+        String output = AwCookieManager.fixupPossibleBareHostnameToUrl(input);
+        Assert.assertEquals(expected, output);
+    }
+
+    private static void checkUrlValueFixup(
+            String inputUrl, String inputValue, String expectedUrl, String expectedValue) {
+        UrlValue output = AwCookieManager.fixupPossibleBareHostnameToUrlValue(inputUrl, inputValue);
+        Assert.assertEquals(expectedUrl, output.mUrl);
+        Assert.assertEquals(expectedValue, output.mValue);
+    }
+
+    @Test
+    @MediumTest
+    @Feature("AndroidWebView")
+    public void testBareHostnameFixups() {
+        // Valid URLs
+        expectUnchangedByUrlFixup("http://example.com");
+        expectUnchangedByUrlFixup("http://example.com/");
+        expectUnchangedByUrlFixup("http://user:pass@example.com/foo?bar=baz#ham");
+        // Could be interpreted as having a scheme+host
+        expectUnchangedByUrlFixup("foo:bar.com");
+        // Could be interpreted as having a host+port
+        expectUnchangedByUrlFixup("example.com:80");
+        // Could be interpreted as having a userinfo+host
+        expectUnchangedByUrlFixup("user@example.com");
+        expectUnchangedByUrlFixup("user:pass@example.com");
+        // Could be interpreted as having a host+path
+        expectUnchangedByUrlFixup("example.com/foo");
+        // Could be interpreted as having a host+query
+        expectUnchangedByUrlFixup("example.com?foo");
+        // Could be interpreted as having a host+fragment
+        expectUnchangedByUrlFixup("example.com#foo");
+        // We don't expect bare hostnames to be IPv6 literals and they use URL delimiter characters
+        expectUnchangedByUrlFixup("[::1]");
+
+        // Valid hostname
+        expectChangedByUrlFixup("example.com", "http://example.com/");
+        expectChangedByUrlFixup("example", "http://example/");
+        expectChangedByUrlFixup("xn--n28h.com", "http://xn--n28h.com/");
+        // We accept IPv4 literals as they don't use URL delimiter characters
+        expectChangedByUrlFixup("10.0.0.1", "http://10.0.0.1/");
+        // Valid hostname with leading dot
+        expectChangedByUrlFixup(".example.com", "http://.example.com/");
+        expectChangedByUrlFixup(".example", "http://.example/");
+        expectChangedByUrlFixup(".xn--n28h.com", "http://.xn--n28h.com/");
+
+        // Value doesn't change when there's no leading dot
+        checkUrlValueFixup("www.example.com", "foo=bar", "http://www.example.com/", "foo=bar");
+        checkUrlValueFixup(
+                "www.example.com",
+                "foo=bar; Domain=example.com",
+                "http://www.example.com/",
+                "foo=bar; Domain=example.com");
+
+        // Leading dot adds domain attribute if absent
+        checkUrlValueFixup(
+                ".example.com", "foo=bar", "http://example.com/", "foo=bar; Domain=.example.com");
+        checkUrlValueFixup(
+                ".example.com",
+                "foo=bar; Max-Age=86400",
+                "http://example.com/",
+                "foo=bar; Max-Age=86400; Domain=.example.com");
+        checkUrlValueFixup(
+                ".example.com",
+                "foo=bar; Max-Age=86400;",
+                "http://example.com/",
+                "foo=bar; Max-Age=86400; Domain=.example.com");
+
+        // Leading dot doesn't touch domain attribute if already present
+        checkUrlValueFixup(
+                ".www.example.com",
+                "foo=bar; Domain=example.com",
+                "http://www.example.com/",
+                "foo=bar; Domain=example.com");
+    }
+
+    private void checkFixupOnGet(String input, @FixupResult int expectedUrlResult)
+            throws Throwable {
+        try (var ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.CookieFixup.Url", expectedUrlResult)) {
+            mCookieManager.getCookieWithUrlFixup(input);
+        } catch (URISyntaxException e) {
+        }
+    }
+
+    private void checkFixupOnSet(
+            String inputUrl,
+            String inputValue,
+            @FixupResult int expectedUrlResult,
+            @FixupResult int expectedValueResult)
+            throws Throwable {
+        try (var ignored =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.WebView.CookieFixup.Url", expectedUrlResult)
+                        .expectIntRecord("Android.WebView.CookieFixup.Value", expectedValueResult)
+                        .build()) {
+            mCookieManager.setCookieWithUrlFixup(inputUrl, inputValue);
+        } catch (URISyntaxException e) {
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature("AndroidWebView")
+    public void testUrlFixupHistograms() throws Throwable {
+        checkFixupOnGet("http://example.com", FixupResult.BOTH_UNCHANGED);
+        checkFixupOnGet("example.com", FixupResult.BOTH_CHANGED_SAME_RESULT);
+        checkFixupOnGet(".example.com", FixupResult.BOTH_CHANGED_SAME_RESULT);
+        checkFixupOnGet(
+                "custom://bar.com",
+                FixupResult.WEB_ADDRESS_PARSER_THREW_BARE_HOSTNAME_FIXUP_UNCHANGED);
+
+        // Some known bad examples from bugs that the new fixup should avoid:
+        checkFixupOnGet("http://[::1]example.com/", FixupResult.ONLY_WEB_ADDRESS_PARSER_CHANGED);
+        checkFixupOnGet(
+                "foo.com://bar.com",
+                FixupResult.WEB_ADDRESS_PARSER_THREW_BARE_HOSTNAME_FIXUP_UNCHANGED);
+
+        checkFixupOnSet(
+                "http://example.com",
+                "foo=bar",
+                FixupResult.BOTH_UNCHANGED,
+                FixupResult.BOTH_UNCHANGED);
+        checkFixupOnSet(
+                "example.com",
+                "foo=bar",
+                FixupResult.BOTH_CHANGED_SAME_RESULT,
+                FixupResult.BOTH_UNCHANGED);
+        checkFixupOnSet(
+                ".example.com",
+                "foo=bar",
+                FixupResult.BOTH_CHANGED_SAME_RESULT,
+                FixupResult.BOTH_CHANGED_SAME_RESULT);
+        checkFixupOnSet(
+                ".example.com",
+                "foo=bar; Domain=example.com",
+                FixupResult.BOTH_CHANGED_SAME_RESULT,
+                FixupResult.BOTH_UNCHANGED);
     }
 
     private boolean fileURLCanSetCookie(String valueSuffix, String settings) throws Throwable {

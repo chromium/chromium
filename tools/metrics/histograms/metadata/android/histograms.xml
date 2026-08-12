@@ -7524,6 +7524,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.CookieFixup.Url" enum="FixupResult"
+    expires_after="2027-01-05">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether the two different input fixup strategies being tested in
+    AwCookieManager changed the URL, and whether the change was the same. Logged
+    once for each call to the Java CookieManager.setCookie or
+    CookieManager.getCookie APIs.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.CookieFixup.Value" enum="FixupResult"
+    expires_after="2027-01-05">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether the two different input fixup strategies being tested in
+    AwCookieManager changed the value, and whether the change was the same.
+    Logged once for each call to the Java CookieManager.setCookie API.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.DevUi.AppLaunch" enum="Boolean"
     expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>

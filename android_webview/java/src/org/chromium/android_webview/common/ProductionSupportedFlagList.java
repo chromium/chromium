@@ -1456,6 +1456,9 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.PERSIST_BROKEN_ALTERNATIVE_SERVICES,
                 "Controls whether broken alternative services should be persisted to disk"
                         + " cache."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_COOKIE_MANAGER_SIMPLER_URL_FIXUPS,
+                "Enables a simpler URL fixup implementation for URLs passed to CookieManager."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

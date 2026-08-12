@@ -94,6 +94,10 @@ const base::FeatureParam<double> kWebViewCodeCacheSizeLimitMultiplier{
 BASE_FEATURE(kWebViewContentRestrictionSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a simpler URL fixup implementation for URLs passed to CookieManager.
+BASE_FEATURE(kWebViewCookieManagerSimplerUrlFixups,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables C++ UMA metrics filtering.
 BASE_FEATURE(kWebViewCppMetricsFiltering, base::FEATURE_DISABLED_BY_DEFAULT);
 

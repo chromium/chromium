@@ -1252,6 +1252,24 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="ERROR_NO_PADDING_WITH_NEW_INSETS"/>
 </enum>
 
+<!-- LINT.IfChange(FixupResult) -->
+
+<enum name="FixupResult">
+  <int value="0" label="Both fixups left the input unchanged"/>
+  <int value="1" label="Only the bare hostname fixup changed the input"/>
+  <int value="2" label="Both fixups changed the input with the same result"/>
+  <int value="3" label="Only WebAddressParser changed the input"/>
+  <int value="4" label="Both fixups changed the input, with different results"/>
+  <int value="5"
+      label="WebAddressParser threw an exception, the bare hostname fixup
+             left the input unchanged"/>
+  <int value="6"
+      label="WebAddressParser threw an exception, the bare hostname fixup
+             changed the input"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/java/src/org/chromium/android_webview/AwCookieManager.java:FixupResult) -->
+
 <enum name="GlicPromoBottomSheetDismissReason">
   <int value="0" label="Accept"/>
   <int value="1" label="Reject"/>
