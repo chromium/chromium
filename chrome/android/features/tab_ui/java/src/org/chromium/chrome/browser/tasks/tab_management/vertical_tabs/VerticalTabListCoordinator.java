@@ -712,6 +712,12 @@ public class VerticalTabListCoordinator {
                     }
 
                     @Override
+                    public void willCloseTabs(
+                            List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                        mTabHoverCardController.hideHoverCard();
+                    }
+
+                    @Override
                     public void tabClosureCommitted(Tab tab) {
                         mTabHoverCardController.hideHoverCard();
                     }
