@@ -30,7 +30,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -627,13 +626,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, SendPolicyNames) {
   VerifyPolicies(expected_policies);
 }
 
-// TODO(crbug.com/384989795): Fails on desktop android, see bug.
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-#define MAYBE_SendPolicyValues DISABLED_SendPolicyValues
-#else
-#define MAYBE_SendPolicyValues SendPolicyValues
-#endif
-IN_PROC_BROWSER_TEST_P(PolicyUITest, MAYBE_SendPolicyValues) {
+IN_PROC_BROWSER_TEST_P(PolicyUITest, SendPolicyValues) {
   // Verifies that policy values are sent to the UI and processed there
   // correctly by setting the values of four known and one unknown policy and
   // checking that the policy table contains the policy names, values and
