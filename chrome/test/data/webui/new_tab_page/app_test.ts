@@ -5,12 +5,12 @@
 import {ActionChipsApiProxyImpl, VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsRetrievalState, ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
-import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter, IconType, InputSource} from 'chrome://new-tab-page/new_tab_page.js';
+import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter, IconType, InputSource, QueryActionOverride, SearchboxOverride} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChipsPageRemote, CustomizeButtonsDocumentRemote, FuseboxAction, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, BackgroundManager, BrowserCommandProxy, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeButtonsProxy, CustomizeChromeSection, CustomizeDialogPage, GlifAnimationState, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, SidePanelOpenTrigger, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, CustomizeButtonsElement, NtpSearchboxElement, PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
-import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ContextUploadStatus, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
@@ -21,7 +21,7 @@ import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_comma
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -1351,39 +1351,75 @@ suite('NewTabPageAppTest', () => {
     test(
         'action chip click opens composebox and passes fuseboxAction',
         async () => {
+          let handleFuseboxActionCallCount = 0;
           let handleFuseboxActionArg: FuseboxAction|null = null;
           const originalHandleFuseboxAction =
               NtpComposeboxElement.prototype.handleFuseboxAction;
           NtpComposeboxElement.prototype.handleFuseboxAction = function(
               action: FuseboxAction) {
+            handleFuseboxActionCallCount++;
             handleFuseboxActionArg = action;
             return originalHandleFuseboxAction.call(this, action);
           };
+          const searchbox = $$(app, '#searchbox') as NtpSearchboxElement;
+          let setInputTextCallCount = 0;
+          searchbox.setInputText = () => setInputTextCallCount++;
 
+          // The explicitly supported kPaste + kComposebox route with every
+          // optional field populated.
           const action: FuseboxAction = {
-            preselectedTool: null,
-            preferredInventory: null,
-            preselectedModel: null,
-            queryActionOverride: null,
+            preselectedTool: ToolMode.kDeepSearch,
+            preferredInventory: SuggestInventory.kBrainstorm,
+            preselectedModel: ModelMode.kGeminiPro,
+            queryActionOverride: QueryActionOverride.kPaste,
             preselectedInputSource: InputSource.kInputSourceGallery,
-            searchboxOverride: null,
+            searchboxOverride: SearchboxOverride.kComposebox,
           };
 
           // Act.
           app['onActionChipClick_'](new CustomEvent('action-chip-click', {
             detail: {
-              suggestion: '',
-              files: [],
+              suggestion: 'paste suggestion',
+              files: [{
+                tabId: 1,
+                url: 'https://example.com/test',
+                title: 'Test Title',
+                delayUpload: true,
+                origin: TabUploadOrigin.ACTION_CHIP,
+              }],
               fuseboxAction: action,
             },
           }));
           await microtasksFinished();
 
-          // Assert.
+          // Assert: The composebox opened with query, files, tool, model and
+          // inventory, without submitting or navigating.
           const composebox =
               app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
           assertTrue(!!composebox);
+          assertEquals(1, handleFuseboxActionCallCount);
           assertDeepEquals(action, handleFuseboxActionArg);
+          assertEquals('paste suggestion', composebox.input);
+          const state = composebox.state;
+          assertTrue(!!state);
+          assertEquals(SuggestInventory.kBrainstorm, state.suggestInventory);
+          assertEquals(1, searchboxHandler.getCallCount('setActiveToolMode'));
+          assertEquals(
+              ToolMode.kDeepSearch,
+              searchboxHandler.getArgs('setActiveToolMode')[0][0]);
+          assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
+          assertEquals(
+              ModelMode.kGeminiPro,
+              searchboxHandler.getArgs('setActiveModelMode')[0]);
+          assertEquals(1, searchboxHandler.getCallCount('addTabContext'));
+          const [tabId, delayUpload] =
+              searchboxHandler.getArgs('addTabContext')[0];
+          assertEquals(1, tabId);
+          assertEquals(true, delayUpload);
+          assertEquals(1, handler.getCallCount('onContextualSearchIPHEngaged'));
+          assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
+          assertEquals(0, windowProxy.getCallCount('navigate'));
+          assertEquals(0, setInputTextCallCount);
 
           NtpComposeboxElement.prototype.handleFuseboxAction =
               originalHandleFuseboxAction;
@@ -2969,6 +3005,7 @@ suite('NewTabPageAppTest', () => {
         actionChipsEnabled: true,
         addTabUploadDelayOnActionChipClick: true,
         ntpNextDisablementEnabled: true,
+        searchboxShowComposebox: true,
       });
       const actionChipsCallbackRouter = new ActionChipsPageCallbackRouter();
       const actionChipshandler = installMock(
@@ -3280,6 +3317,168 @@ suite('NewTabPageAppTest', () => {
           assertEquals(
               ModelMode.kGeminiPro,
               searchboxHandler.getArgs('setActiveModelMode')[0]);
+        });
+
+    // Any click with a missing override field keeps the existing
+    // open-Composebox behavior instead of being treated as an explicit zero
+    // value or as an unsupported combination.
+    const missingOverrideCases:
+        Array<{caseName: string, fuseboxAction: FuseboxAction | undefined}> = [
+          {caseName: 'action missing', fuseboxAction: undefined},
+          {
+            caseName: 'query action override missing',
+            fuseboxAction: {
+              preselectedTool: null,
+              preferredInventory: null,
+              preselectedModel: null,
+              queryActionOverride: null,
+              preselectedInputSource: null,
+              searchboxOverride: SearchboxOverride.kComposebox,
+            },
+          },
+          {
+            caseName: 'searchbox override missing',
+            fuseboxAction: {
+              preselectedTool: null,
+              preferredInventory: null,
+              preselectedModel: null,
+              queryActionOverride: QueryActionOverride.kPaste,
+              preselectedInputSource: null,
+              searchboxOverride: null,
+            },
+          },
+        ];
+    missingOverrideCases.forEach(
+        ({caseName, fuseboxAction}) => test(
+            'Click with ' + caseName + ' keeps composebox behavior',
+            async () => {
+              const searchbox = $$(app, '#searchbox') as NtpSearchboxElement;
+              let setInputTextCallCount = 0;
+              searchbox.setInputText = () => setInputTextCallCount++;
+              let handleFuseboxActionCallCount = 0;
+              let handleFuseboxActionArg: FuseboxAction|null|undefined = null;
+              if (fuseboxAction) {
+                const originalHandleFuseboxAction =
+                    app['handleFuseboxAction_'].bind(app);
+                app['handleFuseboxAction_'] = (action?: FuseboxAction|null) => {
+                  handleFuseboxActionCallCount++;
+                  handleFuseboxActionArg = action;
+                  return originalHandleFuseboxAction(action);
+                };
+              }
+
+              // Act.
+              app['onActionChipClick_'](new CustomEvent('action-chip-click', {
+                detail: {
+                  suggestion: 'compat suggestion',
+                  files: [],
+                  fuseboxAction,
+                },
+              }));
+              await microtasksFinished();
+
+              // Assert: The composebox still opens and, whenever the action is
+              // present, the full action path runs once with the original
+              // action.
+              const composebox =
+                  app.shadowRoot.querySelector<NtpComposeboxElement>(
+                      '#composebox');
+              assertTrue(!!composebox);
+              assertEquals('compat suggestion', composebox.input);
+              assertEquals(
+                  1, handler.getCallCount('onContextualSearchIPHEngaged'));
+              if (fuseboxAction) {
+                assertEquals(1, handleFuseboxActionCallCount);
+                assertEquals(fuseboxAction, handleFuseboxActionArg);
+              }
+              assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
+              assertEquals(0, windowProxy.getCallCount('navigate'));
+              assertEquals(0, setInputTextCallCount);
+            }));
+
+    test('Explicit unsupported override combination is a no-op', async () => {
+      const searchbox = $$(app, '#searchbox') as NtpSearchboxElement;
+      let setInputTextCallCount = 0;
+      searchbox.setInputText = () => setInputTextCallCount++;
+      let handleFuseboxActionCallCount = 0;
+      const originalHandleFuseboxAction = app['handleFuseboxAction_'].bind(app);
+      app['handleFuseboxAction_'] = (action?: FuseboxAction|null) => {
+        handleFuseboxActionCallCount++;
+        return originalHandleFuseboxAction(action);
+      };
+
+      // Act: Both override fields are explicitly set to a combination outside
+      // the supported kPaste + kComposebox.
+      app['onActionChipClick_'](new CustomEvent('action-chip-click', {
+        detail: {
+          suggestion: 'unsupported suggestion',
+          files: [],
+          fuseboxAction: {
+            preselectedTool: null,
+            preferredInventory: null,
+            preselectedModel: null,
+            queryActionOverride: QueryActionOverride.kPaste,
+            preselectedInputSource: null,
+            searchboxOverride: SearchboxOverride.kUnspecified,
+          },
+        },
+      }));
+      await microtasksFinished();
+
+      // Assert: No surface opens and no side effects run.
+      assertFalse(!!app.shadowRoot.querySelector('#composebox'));
+      assertEquals(null, app['composeboxState_']);
+      assertEquals(0, handler.getCallCount('onContextualSearchIPHEngaged'));
+      assertEquals(0, handleFuseboxActionCallCount);
+      assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
+      assertEquals(0, windowProxy.getCallCount('navigate'));
+      assertEquals(0, setInputTextCallCount);
+    });
+
+    test(
+        'Action chip event while composebox is unavailable is a no-op',
+        async () => {
+          assertTrue(!!$$(app, 'ntp-action-chips'));
+          const searchbox = $$(app, '#searchbox') as NtpSearchboxElement;
+          let setInputTextCallCount = 0;
+          searchbox.setInputText = () => setInputTextCallCount++;
+          let handleFuseboxActionCallCount = 0;
+          const originalHandleFuseboxAction =
+              app['handleFuseboxAction_'].bind(app);
+          app['handleFuseboxAction_'] = (action?: FuseboxAction|null) => {
+            handleFuseboxActionCallCount++;
+            return originalHandleFuseboxAction(action);
+          };
+
+          // Act: Availability flips after the chips were rendered, then a
+          // stale click for the supported combination arrives.
+          app.composeboxEnabled = false;
+          await microtasksFinished();
+          assertFalse(!!$$(app, 'ntp-action-chips'));
+          app['onActionChipClick_'](new CustomEvent('action-chip-click', {
+            detail: {
+              suggestion: 'stale suggestion',
+              files: [],
+              fuseboxAction: {
+                preselectedTool: null,
+                preferredInventory: null,
+                preselectedModel: null,
+                queryActionOverride: QueryActionOverride.kPaste,
+                preselectedInputSource: null,
+                searchboxOverride: SearchboxOverride.kComposebox,
+              },
+            },
+          }));
+          await microtasksFinished();
+
+          // Assert: No surface opens and no side effects run.
+          assertFalse(!!app.shadowRoot.querySelector('#composebox'));
+          assertEquals(null, app['composeboxState_']);
+          assertEquals(0, handler.getCallCount('onContextualSearchIPHEngaged'));
+          assertEquals(0, handleFuseboxActionCallCount);
+          assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
+          assertEquals(0, windowProxy.getCallCount('navigate'));
+          assertEquals(0, setInputTextCallCount);
         });
   });
 
