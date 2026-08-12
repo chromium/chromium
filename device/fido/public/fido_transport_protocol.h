@@ -18,6 +18,7 @@ namespace device {
 // This enum is used for UMA histograms and the values should not be
 // reassigned. New transports added should be reflected in the
 // WebAuthenticationFidoTransport enum.
+// LINT.IfChange(FidoTransportProtocol)
 enum class FidoTransportProtocol : uint8_t {
   kUsbHumanInterfaceDevice = 0,
   kNearFieldCommunication = 1,
@@ -28,6 +29,7 @@ enum class FidoTransportProtocol : uint8_t {
   kSmartCard = 6,
   kMaxValue = kSmartCard,
 };
+// LINT.ThenChange(//content/browser/webauth/authenticator_impl_unittest.cc:VirtualAuthenticatorTransports)
 
 // String representation of above FidoTransportProtocol enum.
 inline constexpr std::string_view kUsbHumanInterfaceDevice = "usb";

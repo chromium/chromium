@@ -368,6 +368,9 @@ TypeConverter<std::optional<AuthenticatorTransport>, blink::String>::Convert(
   if (transport == "internal") {
     return AuthenticatorTransport::INTERNAL;
   }
+  if (transport == "smart-card") {
+    return AuthenticatorTransport::SMART_CARD;
+  }
   return std::nullopt;
 }
 
@@ -388,6 +391,9 @@ blink::String TypeConverter<blink::String, AuthenticatorTransport>::Convert(
   }
   if (transport == AuthenticatorTransport::INTERNAL) {
     return "internal";
+  }
+  if (transport == AuthenticatorTransport::SMART_CARD) {
+    return "smart-card";
   }
   NOTREACHED();
 }
@@ -582,9 +588,9 @@ TypeConverter<PublicKeyCredentialDescriptorPtr,
     }
   } else {
     mojo_descriptor->transports = {
-        AuthenticatorTransport::USB, AuthenticatorTransport::BLE,
-        AuthenticatorTransport::NFC, AuthenticatorTransport::HYBRID,
-        AuthenticatorTransport::INTERNAL};
+        AuthenticatorTransport::USB,      AuthenticatorTransport::BLE,
+        AuthenticatorTransport::NFC,      AuthenticatorTransport::HYBRID,
+        AuthenticatorTransport::INTERNAL, AuthenticatorTransport::SMART_CARD};
   }
   return mojo_descriptor;
 }

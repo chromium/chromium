@@ -306,6 +306,7 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
       // them if the testing API is enabled.
       transports.insert(device::FidoTransportProtocol::kBluetoothLowEnergy);
       transports.insert(device::FidoTransportProtocol::kNearFieldCommunication);
+      transports.insert(device::FidoTransportProtocol::kSmartCard);
     }
 
     // Ensure virtual platform authenticators can be instantiated even if they
@@ -712,6 +713,7 @@ base::flat_set<device::FidoTransportProtocol> GetTransportsAllowedByRP(
       device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
       device::FidoTransportProtocol::kBluetoothLowEnergy,
       device::FidoTransportProtocol::kHybrid,
+      device::FidoTransportProtocol::kSmartCard,
   };
 
   const auto& allowed_list = request.allow_list;

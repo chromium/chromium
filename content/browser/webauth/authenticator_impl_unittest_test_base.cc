@@ -409,6 +409,7 @@ void AuthenticatorImplTest::InjectVirtualAuthenticatorForAllTransports() {
            device::FidoTransportProtocol::kBluetoothLowEnergy,
            device::FidoTransportProtocol::kHybrid,
            device::FidoTransportProtocol::kInternal,
+           device::FidoTransportProtocol::kSmartCard,
        }) {
     device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device;
     device.transport = transport;

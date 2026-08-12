@@ -180,6 +180,7 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
           FidoTransportProtocol::kBluetoothLowEnergy,
           FidoTransportProtocol::kNearFieldCommunication,
           FidoTransportProtocol::kHybrid,
+          FidoTransportProtocol::kSmartCard,
       };
     case AuthenticatorAttachment::kAny:
       return {
@@ -188,6 +189,7 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
           FidoTransportProtocol::kUsbHumanInterfaceDevice,
           FidoTransportProtocol::kBluetoothLowEnergy,
           FidoTransportProtocol::kHybrid,
+          FidoTransportProtocol::kSmartCard,
       };
   }
 

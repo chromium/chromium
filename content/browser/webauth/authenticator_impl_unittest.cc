@@ -1638,7 +1638,8 @@ TEST_F(AuthenticatorContentBrowserClientTest,
                   device::FidoTransportProtocol::kNearFieldCommunication,
                   device::FidoTransportProtocol::kBluetoothLowEnergy,
                   device::FidoTransportProtocol::kHybrid,
-                  device::FidoTransportProtocol::kInternal));
+                  device::FidoTransportProtocol::kInternal,
+                  device::FidoTransportProtocol::kSmartCard));
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest,
@@ -1656,7 +1657,8 @@ TEST_F(AuthenticatorContentBrowserClientTest,
                   device::FidoTransportProtocol::kNearFieldCommunication,
                   device::FidoTransportProtocol::kBluetoothLowEnergy,
                   device::FidoTransportProtocol::kHybrid,
-                  device::FidoTransportProtocol::kInternal));
+                  device::FidoTransportProtocol::kInternal,
+                  device::FidoTransportProtocol::kSmartCard));
 }
 
 // Test that credentials can be created and used from an extension origin when
@@ -5731,5 +5733,83 @@ TEST_F(AuthenticatorImplTest, CmtgKeyEndToEnd) {
   EXPECT_NE(get_result2.response->extensions->cmtg_key->cmtg_key,
             initial_cmtg_key);
 }
+
+class AuthenticatorImplVirtualAuthenticatorTransportTest
+    : public AuthenticatorImplTest,
+      public ::testing::WithParamInterface<device::FidoTransportProtocol> {
+ protected:
+  void SetUp() override {
+    AuthenticatorImplTest::SetUp();
+    NavigateAndCommit(GURL(kTestOrigin1));
+    virtual_device_factory_ = nullptr;
+    content::AuthenticatorEnvironment::GetInstance()->Reset();
+  }
+};
+
+TEST_P(AuthenticatorImplVirtualAuthenticatorTransportTest,
+       MakeCredentialAndGetAssertion) {
+  device::FidoTransportProtocol transport = GetParam();
+
+  content::AuthenticatorEnvironment* authenticator_environment =
+      content::AuthenticatorEnvironment::GetInstance();
+  FrameTreeNode* frame_tree_node =
+      static_cast<content::RenderFrameHostImpl*>(main_rfh())->frame_tree_node();
+  authenticator_environment->EnableVirtualAuthenticatorFor(frame_tree_node,
+                                                           /*enable_ui=*/false);
+  VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
+      authenticator_environment->MaybeGetVirtualAuthenticatorManager(
+          frame_tree_node);
+
+  VirtualAuthenticator::Options virt_auth_options;
+  virt_auth_options.protocol = device::ProtocolVersion::kCtap2;
+  virt_auth_options.transport = transport;
+
+  if (transport == device::FidoTransportProtocol::kInternal) {
+    virt_auth_options.has_user_verification = true;
+    virt_auth_options.attachment = device::AuthenticatorAttachment::kPlatform;
+  }
+
+  VirtualAuthenticator* authenticator =
+      virtual_authenticator_manager->AddAuthenticatorAndReturnNonOwningPointer(
+          std::move(virt_auth_options));
+  ASSERT_TRUE(authenticator);
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+
+  if (transport == device::FidoTransportProtocol::kInternal) {
+    options->authenticator_selection = device::AuthenticatorSelectionCriteria(
+        device::AuthenticatorAttachment::kPlatform,
+        device::ResidentKeyRequirement::kDiscouraged,
+        device::UserVerificationRequirement::kPreferred);
+  }
+
+  MakeCredentialResult result = AuthenticatorMakeCredential(std::move(options));
+  ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_TRUE(std::ranges::contains(result.response->transports, transport));
+
+  const std::vector<uint8_t> credential_id = result.response->info->raw_id;
+
+  PublicKeyCredentialRequestOptionsPtr get_options =
+      GetTestPublicKeyCredentialRequestOptions();
+  get_options->allow_credentials[0].id = credential_id;
+  get_options->allow_credentials[0].transports = {transport};
+
+  GetAssertionResult get_result =
+      AuthenticatorGetAssertion(std::move(get_options));
+  EXPECT_EQ(get_result.status, AuthenticatorStatus::SUCCESS);
+}
+
+// LINT.IfChange(VirtualAuthenticatorTransports)
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AuthenticatorImplVirtualAuthenticatorTransportTest,
+    ::testing::Values(device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
+                      device::FidoTransportProtocol::kNearFieldCommunication,
+                      device::FidoTransportProtocol::kBluetoothLowEnergy,
+                      device::FidoTransportProtocol::kHybrid,
+                      device::FidoTransportProtocol::kInternal,
+                      device::FidoTransportProtocol::kSmartCard));
+// LINT.ThenChange(//device/fido/public/fido_transport_protocol.h:FidoTransportProtocol)
 
 }  // namespace content
