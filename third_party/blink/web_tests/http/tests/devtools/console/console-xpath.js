@@ -8,6 +8,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
+  var completeMessageReceived = false;
+  var waitForParameters = 2;
   TestRunner.addResult(`Tests $x for iterator and non-iterator types.\n`);
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
@@ -28,7 +30,6 @@ import * as Console from 'devtools/panels/console/console.js';
   await ConsoleTestRunner.evaluateInConsolePromise('$x(\'./a@href\', document.body)');      // incorrect selector, shouldn't crash
   TestRunner.evaluateInPage('console.log(\'complete\')');                      // node iterator
 
-  var completeMessageReceived = false;
   function messageSniffer(uiMessage) {
     if (uiMessage.element().deepTextContent().indexOf('complete') !== -1) {
       completeMessageReceived = true;
@@ -36,7 +37,6 @@ import * as Console from 'devtools/panels/console/console.js';
     }
   }
 
-  var waitForParameters = 2;
   function formattedParameter() {
     waitForParameters--;
     maybeCompleteTest();
