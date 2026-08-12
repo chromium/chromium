@@ -163,8 +163,8 @@ class ChromePasswordChangeService
   const raw_ptr<autofill::LogRouter> log_router_;
 
 #if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<PasswordChangeFromCheckupDelegate>
-      password_change_from_checkup_delegate_;
+  std::vector<std::unique_ptr<PasswordChangeFromCheckupDelegate>>
+      password_change_from_checkup_delegates_;
 #endif
 
   std::vector<GURL> override_urls_;
