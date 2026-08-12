@@ -24,8 +24,13 @@ export function getHtml(this: InstalledAppListItemElement) {
   <div id="id">ID: ${this.app.appId}</div>
   <div id="source">${this.sourceMetadata.description}</div>
 </div>
-<cr-button id="uninstall-btn" @click="${this.onUninstallClick}">
-  Uninstall
-</cr-button>
+<div id="actions">
+  <cr-button id="update-btn" @click="${this.onUpdateClick}">
+    Update
+  </cr-button>
+  <cr-button id="uninstall-btn" @click="${this.onUninstallClick}">
+    Uninstall
+  </cr-button>
+</div>
 `;
 }

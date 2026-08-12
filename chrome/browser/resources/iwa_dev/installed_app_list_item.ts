@@ -89,6 +89,10 @@ export class InstalledAppListItemElement extends CrLitElement {
     description: '',
   };
 
+  protected onUpdateClick() {
+    this.fire('request-update', {app: this.app});
+  }
+
   protected onUninstallClick() {
     this.fire('request-uninstall', {app: this.app});
   }

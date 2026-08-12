@@ -72,8 +72,17 @@ interface PageHandler {
   SelectAndInstallAppFromLocalWebBundle()
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
+  // Opens a file picker for the user to select a Web Bundle and
+  // updates the app.
+  SelectAndUpdateAppFromLocalWebBundle(string app_id)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
   // Uninstalls an IWA with a given ID.
   UninstallApp(string app_id) => (bool success);
+
+  // Triggers an update for an app installed through dev proxy.
+  UpdateDevProxyInstalledApp(string app_id)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 
 // Interface for the browser to push events to the WebUI page.

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/ui/webui/iwa_dev/iwa_dev.mojom.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -58,8 +59,14 @@ class IwaDevPageHandler : public iwa_dev::mojom::PageHandler,
       ParseUpdateManifestFromUrlCallback callback) override;
   void SelectAndInstallAppFromLocalWebBundle(
       SelectAndInstallAppFromLocalWebBundleCallback callback) override;
+  void SelectAndUpdateAppFromLocalWebBundle(
+      const std::string& app_id,
+      SelectAndUpdateAppFromLocalWebBundleCallback callback) override;
   void UninstallApp(const std::string& app_id,
                     UninstallAppCallback callback) override;
+  void UpdateDevProxyInstalledApp(
+      const std::string& app_id,
+      UpdateDevProxyInstalledAppCallback callback) override;
 
   // web_app::WebAppInstallManagerObserver:
   void OnWebAppInstalled(const webapps::AppId& app_id) override;
@@ -70,9 +77,26 @@ class IwaDevPageHandler : public iwa_dev::mojom::PageHandler,
  private:
   class LocalBundleSelectListener;
 
-  void OnLocalBundleSelected(
+  using SelectLocalBundleResult =
+      base::expected<base::FilePath, mojo_base::mojom::ErrorPtr>;
+
+  void SelectLocalWebBundle(
+      base::OnceCallback<void(SelectLocalBundleResult)> callback);
+
+  void OnLocalBundleSelectedForInstall(
       SelectAndInstallAppFromLocalWebBundleCallback callback,
-      std::optional<base::FilePath> path);
+      SelectLocalBundleResult path);
+  void OnLocalBundleSelectedForUpdate(
+      const std::string& app_id,
+      SelectAndUpdateAppFromLocalWebBundleCallback callback,
+      SelectLocalBundleResult path);
+
+  void ApplyDevModeUpdate(
+      const std::string& app_id,
+      base::optional_ref<const web_app::IwaSourceDevModeWithFileOp> location,
+      base::OnceCallback<
+          void(base::expected<std::monostate, mojo_base::mojom::ErrorPtr>)>
+          callback);
 
   const raw_ref<Profile> profile_;
   const raw_ref<web_app::WebAppProvider> provider_;

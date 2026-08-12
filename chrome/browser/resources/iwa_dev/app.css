@@ -10,7 +10,7 @@
 :host {
   color: var(--cr-primary-text-color);
   display: block;
-  max-width: var(--cr-centered-card-max-width);
+  max-width: 960px;
   margin: 40px auto;
   padding: 0 24px;
 }

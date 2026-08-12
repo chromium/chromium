@@ -21,6 +21,8 @@ import type {IwaDevInstallDialogElement} from './install_dialog.js';
 import type {BrowserProxy, IwaDevModeAppInfo, UpdateInfo, UpdateManifest} from './iwa_dev.mojom-webui.js';
 import {browserProxyFactory} from './iwa_dev.mojom-webui.js';
 
+export const MIN_UPDATE_DELAY_MS = 750;
+
 export interface IwaDevAppElement {
   $: {
     installButton: CrButtonElement,
@@ -59,6 +61,37 @@ export class IwaDevAppElement extends CrLitElement {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];
 
+  protected async onRequestUpdate_(e: CustomEvent<{app: IwaDevModeAppInfo}>) {
+    const app = e.detail.app;
+    let updatePromise: Promise<unknown>;
+
+    if (app.source.proxyOrigin) {
+      updatePromise =
+          this.browserProxy_.handler.updateDevProxyInstalledApp(app.appId);
+    } else if (app.source.bundlePath) {
+      updatePromise =
+          this.browserProxy_.handler.selectAndUpdateAppFromLocalWebBundle(
+              app.appId);
+    } else {
+      return;
+    }
+
+    return Promise
+        .all([
+          updatePromise,
+          new Promise(resolve => setTimeout(resolve, MIN_UPDATE_DELAY_MS)),
+        ])
+        .then(() => {
+          this.toastMessage_ = 'Update successful!';
+          this.$.toast.show();
+        })
+        .catch(err => {
+          const error = (err as {message?: string})?.message || String(err);
+          this.toastMessage_ = `Update failed: ${error}`;
+          this.$.toast.show();
+        });
+  }
+
   protected async onRequestUninstall_(
       e: CustomEvent<{app: IwaDevModeAppInfo}>) {
     await this.browserProxy_.handler.uninstallApp(e.detail.app.appId);
@@ -83,7 +116,7 @@ export class IwaDevAppElement extends CrLitElement {
     callback: (result: {success?: UpdateManifest, error?: string}) => void,
   }>) {
     this.browserProxy_.handler.parseUpdateManifestFromUrl(e.detail.url)
-        .then(success => e.detail.callback({success}))
+        .then((success: UpdateManifest) => e.detail.callback({success}))
         .catch(
             err => e.detail.callback(
                 {error: (err as {message?: string})?.message || String(err)}));

@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -159,8 +160,10 @@ iwa_dev::mojom::UpdateManifestPtr MapToMojomUpdateManifest(
 class IwaDevPageHandler::LocalBundleSelectListener
     : public content::FileSelectListener {
  public:
-  explicit LocalBundleSelectListener(
-      base::OnceCallback<void(std::optional<base::FilePath>)> callback)
+  using Callback = base::OnceCallback<void(
+      base::expected<base::FilePath, mojo_base::mojom::ErrorPtr>)>;
+
+  explicit LocalBundleSelectListener(Callback callback)
       : callback_(std::move(callback)) {}
 
   void Show(content::RenderFrameHost* render_frame_host) {
@@ -188,13 +191,14 @@ class IwaDevPageHandler::LocalBundleSelectListener
 
   void FileSelectionCanceled() override {
     CHECK(callback_);
-    std::move(callback_).Run(std::nullopt);
+    std::move(callback_).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "No file selected")));
   }
 
  private:
   ~LocalBundleSelectListener() override = default;
 
-  base::OnceCallback<void(std::optional<base::FilePath>)> callback_;
+  Callback callback_;
 };
 
 IwaDevPageHandler::IwaDevPageHandler(
@@ -317,23 +321,27 @@ void IwaDevPageHandler::ParseUpdateManifestFromUrl(
           .Then(std::move(fetcher_keep_alive)));
 }
 
-void IwaDevPageHandler::SelectAndInstallAppFromLocalWebBundle(
-    SelectAndInstallAppFromLocalWebBundleCallback callback) {
+void IwaDevPageHandler::SelectLocalWebBundle(
+    base::OnceCallback<void(SelectLocalBundleResult)> callback) {
   content::RenderFrameHost* render_frame_host =
       web_contents_->GetPrimaryMainFrame();
 
-  base::MakeRefCounted<LocalBundleSelectListener>(
-      base::BindOnce(&IwaDevPageHandler::OnLocalBundleSelected,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)))
+  base::MakeRefCounted<LocalBundleSelectListener>(std::move(callback))
       ->Show(render_frame_host);
 }
 
-void IwaDevPageHandler::OnLocalBundleSelected(
+void IwaDevPageHandler::SelectAndInstallAppFromLocalWebBundle(
+    SelectAndInstallAppFromLocalWebBundleCallback callback) {
+  SelectLocalWebBundle(
+      base::BindOnce(&IwaDevPageHandler::OnLocalBundleSelectedForInstall,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void IwaDevPageHandler::OnLocalBundleSelectedForInstall(
     SelectAndInstallAppFromLocalWebBundleCallback callback,
-    std::optional<base::FilePath> path) {
-  if (!path) {
-    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kInvalidArgument, "No file selected")));
+    SelectLocalBundleResult path) {
+  if (!path.has_value()) {
+    std::move(callback).Run(base::unexpected(std::move(path.error())));
     return;
   }
 
@@ -343,6 +351,78 @@ void IwaDevPageHandler::OnLocalBundleSelected(
           web_app::IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
           base::BindOnce(&MapToMojomEmptyResult<
                              web_app::InstallIsolatedWebAppCommandSuccess>)
+              .Then(std::move(callback)));
+}
+
+void IwaDevPageHandler::SelectAndUpdateAppFromLocalWebBundle(
+    const std::string& app_id,
+    SelectAndUpdateAppFromLocalWebBundleCallback callback) {
+  SelectLocalWebBundle(base::BindOnce(
+      &IwaDevPageHandler::OnLocalBundleSelectedForUpdate,
+      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
+}
+
+void IwaDevPageHandler::OnLocalBundleSelectedForUpdate(
+    const std::string& app_id,
+    SelectAndUpdateAppFromLocalWebBundleCallback callback,
+    SelectLocalBundleResult path) {
+  if (!path.has_value()) {
+    std::move(callback).Run(base::unexpected(std::move(path.error())));
+    return;
+  }
+
+  ApplyDevModeUpdate(app_id,
+                     web_app::IwaSourceDevModeWithFileOp(
+                         web_app::IwaSourceBundleDevModeWithFileOp(
+                             *path, web_app::IwaSourceBundleDevFileOp::kCopy)),
+                     std::move(callback));
+}
+
+void IwaDevPageHandler::UpdateDevProxyInstalledApp(
+    const std::string& app_id,
+    UpdateDevProxyInstalledAppCallback callback) {
+  ApplyDevModeUpdate(app_id, /*location=*/std::nullopt, std::move(callback));
+}
+
+void IwaDevPageHandler::ApplyDevModeUpdate(
+    const std::string& app_id,
+    base::optional_ref<const web_app::IwaSourceDevModeWithFileOp> location,
+    base::OnceCallback<void(
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>)> callback) {
+  const web_app::WebApp* iwa = provider_->registrar_unsafe().GetAppById(
+      app_id, web_app::WebAppFilter::IsDevModeIsolatedApp());
+  if (!iwa) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "App not found.")));
+    return;
+  }
+
+  ASSIGN_OR_RETURN(
+      web_app::IwaSourceDevMode source,
+      web_app::IwaSourceDevMode::FromStorageLocation(
+          profile_->GetPath(), iwa->isolation_data()->location()),
+      [&](const auto& err) {
+        std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+            mojo_base::mojom::Code::kUnknown, "Invalid storage location")));
+      });
+
+  auto url_info =
+      web_app::IsolatedWebAppUrlInfo::Create(iwa->manifest_id().value());
+  if (!url_info.has_value()) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument,
+        "Unable to create UrlInfo from start url.")));
+    return;
+  }
+
+  provider_->isolated_web_app_update_manager()
+      .DiscoverApplyAndPrioritizeLocalDevModeUpdate(
+          location.has_value()
+              ? *location
+              : web_app::IwaSourceDevModeWithFileOp(source.WithFileOp(
+                    web_app::IwaSourceBundleDevFileOp::kCopy)),
+          *url_info,
+          base::BindOnce(&MapToMojomEmptyResult<web_app::IwaVersion>)
               .Then(std::move(callback)));
 }
 

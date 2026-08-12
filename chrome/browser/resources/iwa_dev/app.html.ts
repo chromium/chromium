@@ -41,6 +41,7 @@ ${!this.devModeEnabled_ ? html`
           <installed-app-list-item
               .app="${item}"
               role="listitem"
+              @request-update="${this.onRequestUpdate_}"
               @request-uninstall="${this.onRequestUninstall_}">
           </installed-app-list-item>
         `)}

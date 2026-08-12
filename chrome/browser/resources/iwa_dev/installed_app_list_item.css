@@ -14,9 +14,17 @@
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-elevation-1);
   display: flex;
+  gap: 16px;
   justify-content: space-between;
   margin-bottom: 12px;
   padding: 16px 20px;
+}
+
+#actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 #details {
@@ -25,7 +33,6 @@
   flex-grow: 1;
   font-size: 0.85rem;
   gap: 4px;
-  margin-inline-end: 8px;
   overflow: hidden;
 }
 
@@ -77,7 +84,6 @@
   flex-shrink: 0;
   height: 48px;
   justify-content: center;
-  margin-inline-end: 16px;
   width: 48px;
 }
 
