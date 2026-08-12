@@ -691,12 +691,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         autofillOptionsPreference.setOnPreferenceClickListener(
                 preference -> {
                     onPreferenceSelected(preference);
-                    SettingsNavigationFactory.createSettingsNavigation()
-                            .startSettings(
-                                    getContext(),
-                                    AutofillOptionsFragment.class,
-                                    AutofillOptionsFragment.createRequiredArgs(
-                                            AutofillOptionsReferrer.SETTINGS));
+                    openAutofillOptions(getContext());
                     return true; // Means event is consumed.
                 });
         findPreference(PREF_AUTOFILL_PAYMENTS)
@@ -724,6 +719,15 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             mModalDialogManagerSupplier.asNonNull().get());
                     return true;
                 });
+    }
+
+    private static void openAutofillOptions(Context context) {
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        context,
+                        AutofillOptionsFragment.class,
+                        AutofillOptionsFragment.createRequiredArgs(
+                                AutofillOptionsReferrer.SETTINGS));
     }
 
     private void maybeStartPasswordsExportFlow() {
@@ -769,6 +773,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
             Activity activity = ActivityUtil.getActivityFromContext(context);
             assumeNonNull(activity);
             showDefaultBrowserSettings(activity);
+            return false;
+        } else if (key.equals(PREF_AUTOFILL_OPTIONS)) {
+            openAutofillOptions(context);
             return false;
         }
         // TODO(crbug.com/469676538): Handle the rest of preferences.
@@ -1041,6 +1048,21 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_OPTIONS));
                     } else {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AND_PASSWORDS));
+
+                        // TODO(crbug.com/440022435): Remove the PREF_AUTOFILL_OPTIONS index update
+                        // once Autofill AI is launched.
+                        String autofillOptionsEntryId = getUniqueId(PREF_AUTOFILL_OPTIONS);
+                        SettingsIndexData.Entry autofillOptionsEntry =
+                                indexData.getEntry(autofillOptionsEntryId);
+                        if (autofillOptionsEntry != null) {
+                            indexData.updateEntry(
+                                    autofillOptionsEntryId,
+                                    new SettingsIndexData.Entry.Builder(autofillOptionsEntry)
+                                            .setTitle(
+                                                    AutofillOptionsMediator.getFragmentTitle(
+                                                            context))
+                                            .build());
+                        }
                     }
                 }
             };

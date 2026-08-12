@@ -212,6 +212,40 @@ public class AutofillSettingsSearchTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testSearchAutofill_autofillAndPasswordsDisabled() {
+        searchSettings("autofill");
+
+        onViewWaiting( // Wait for debounce and Search results to appear.
+                        allOf(
+                                withId(android.R.id.title),
+                                withText(R.string.autofill_settings_title)))
+                .perform(click());
+
+        onView(withText(R.string.settings_autofill_service_provider)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testSearchAutofill_autofillAiAndAutofillAndPasswordsDisabled() {
+        searchSettings("autofill");
+
+        onViewWaiting( // Wait for debounce and Search results to appear.
+                        allOf(
+                                withId(android.R.id.title),
+                                withText(R.string.autofill_options_title)))
+                .perform(click());
+
+        onView(withText(R.string.autofill_third_party_filling_default))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testSearchAutofill_autofillAiDisabled() {
         searchSettings("autofill");
