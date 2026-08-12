@@ -1631,4 +1631,34 @@ TEST_F(ContextualTasksUiTest,
   observer.reset();
 }
 
+TEST_F(ContextualTasksUiTest, OnPageContextEligibilityChecked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kContextualTasks);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPage> page;
+  mojo::PendingReceiver<mojom::PageHandler> handler_receiver;
+  controller.CreatePageHandler(page.BindAndGetRemote(),
+                               std::move(handler_receiver));
+
+  base::RunLoop run_loop1;
+  EXPECT_CALL(page, ShowErrorPage()).WillOnce([&run_loop1]() {
+    run_loop1.Quit();
+  });
+  controller.OnPageContextEligibilityChecked(
+      /*is_page_context_eligible=*/false);
+  run_loop1.Run();
+
+  base::RunLoop run_loop2;
+  EXPECT_CALL(page, HideErrorPage()).WillOnce([&run_loop2]() {
+    run_loop2.Quit();
+  });
+  controller.OnPageContextEligibilityChecked(
+      /*is_page_context_eligible=*/true);
+  run_loop2.Run();
+}
+
 }  // namespace contextual_tasks

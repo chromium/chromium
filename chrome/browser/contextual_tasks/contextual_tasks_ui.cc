@@ -713,6 +713,9 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   bool is_dark_mode =
       ThemeServiceFactory::GetForProfile(profile)->BrowserUsesDarkColors() ||
       profile->IsOffTheRecord();
+#else
+  bool is_dark_mode = false;
+#endif
   dict.Set("darkMode", is_dark_mode);
   dict.Set("protectedErrorPageTopLine",
            l10n_util::GetStringUTF16(
@@ -720,12 +723,6 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set("protectedErrorPageBottomLine",
            l10n_util::GetStringUTF16(
                IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_SECOND_LINE));
-#else
-  bool is_dark_mode = false;
-  dict.Set("darkMode", is_dark_mode);
-  dict.Set("protectedErrorPageTopLine", "string");
-  dict.Set("protectedErrorPageBottomLine", "string");
-#endif
 
   dict.Set("userAgentSuffix",
            contextual_tasks::GetContextualTasksUserAgentSuffix());

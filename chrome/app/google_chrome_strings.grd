@@ -2299,6 +2299,16 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Lens Protected Page Error -->
+      <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_FIRST_LINE"
+          desc="Text shown on the side panel for the Lens feature when there is are no results being loaded due to the page being protected. The texts informs the user the panel can not be loaded.">
+        This page is protected
+      </message>
+      <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_SECOND_LINE"
+          desc="Text shown on the side panel for the Lens feature when there is are no results being loaded due to the page being protected. The text suggests the user try a different page since the current one can not be read.">
+        Protected pages can't be read. Try a different page.
+      </message>
+
       <if expr="not is_android">
         <!-- Lens Side Panel Error Page -->
         <message name="IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_FIRST_LINE"
@@ -2309,15 +2319,6 @@ Google Chrome is unable to recover your settings.
             desc="Text shown on the side panel for the Lens feature when there is a network or other server error. The texts informs the user the panel can not be loaded.">
           Couldn't load this panel, try again
         </message>
-        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_FIRST_LINE"
-            desc="Text shown on the side panel for the Lens feature when there is are no results being loaded due to the page being protected. The texts informs the user the panel can not be loaded.">
-          This page is protected
-        </message>
-        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_SECOND_LINE"
-            desc="Text shown on the side panel for the Lens feature when there is are no results being loaded due to the page being protected. The text suggests the user try a different page since the current one can not be read.">
-          Protected pages can't be read. Try a different page.
-        </message>
-
         <!-- Lens Permission Bubble Dialog-->
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CANCEL_BUTTON"
           desc="Text on the cancel button in the dialog for choosing not to allow the sending of the Lens screenshot to Google.">
