@@ -215,22 +215,19 @@ TEST_F(ExtensionUtilUnittest, FixupLongExtensionName) {
   EXPECT_EQ(fixup_extension_name, expected_fixup_extension_name);
 }
 
-// TODO(crbug.com/543216088): Re-enable this test.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_GetCWSWritingReviewUrl DISABLED_GetCWSWritingReviewUrl
-#else
-#define MAYBE_GetCWSWritingReviewUrl GetCWSWritingReviewUrl
-#endif
-TEST_F(ExtensionUtilUnittest, MAYBE_GetCWSWritingReviewUrl) {
-  const ExtensionId kValidId = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+using ExtensionUtilDeathTest = testing::Test;
+
+TEST_F(ExtensionUtilDeathTest, GetCWSWritingReviewUrl_InvalidId) {
   const ExtensionId kInvalidId = "invalid_id_format";
 
   for (const char* invalid_id : {kInvalidId.c_str(), "", "../../etc/passwd"}) {
-    EXPECT_DEATH_IF_SUPPORTED(
-        util::GetCWSWritingReviewUrl(invalid_id,
-                                     util::CWSReviewSource::kExtensionsMenu),
-        "");
+    EXPECT_CHECK_DEATH(util::GetCWSWritingReviewUrl(
+        invalid_id, util::CWSReviewSource::kExtensionsMenu));
   }
+}
+
+TEST_F(ExtensionUtilUnittest, GetCWSWritingReviewUrl) {
+  const ExtensionId kValidId = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
   EXPECT_EQ(
       util::GetCWSWritingReviewUrl(
