@@ -496,6 +496,7 @@ if (!is_android) {
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/startup/focus:browser_tests",
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/views/web_apps:launch_dialogs",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/window_metadata",
       "//chrome/browser/web_applications",

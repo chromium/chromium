@@ -79,3 +79,38 @@ source_set("browser_tests") {
     "//ui/views:test_support",
   ]
 }
+
+source_set("launch_dialogs") {
+  public = [
+    "file_handler_launch_dialog_view.h",
+    "launch_app_user_choice_dialog_view.h",
+    "protocol_handler_launch_dialog_view.h",
+  ]
+
+  sources = [
+    "file_handler_launch_dialog_view.cc",
+    "launch_app_user_choice_dialog_view.cc",
+    "protocol_handler_launch_dialog_view.cc",
+  ]
+
+  public_deps = [
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//components/webapps/common",
+    "//ui/views",
+  ]
+
+  deps = [
+    ":web_apps",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/custom_handlers",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+}

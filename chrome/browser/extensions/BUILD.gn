@@ -1791,6 +1791,9 @@ if (enable_extensions) {
       # Pull test-specific stubs for symbols needed by //c/b.
       "//chrome/test:test_support",
     ]
+    if (toolkit_views) {
+      deps += [ "//chrome/browser/ui/views/web_apps:launch_dialogs" ]
+    }
   }
 }  # if (enable_extensions)
 
@@ -2289,6 +2292,10 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     deps += [ "//ash/constants" ]
+  }
+
+  if (toolkit_views) {
+    deps += [ "//chrome/browser/ui/views/web_apps:launch_dialogs" ]
   }
 }
 
@@ -3190,6 +3197,10 @@ source_set("browser_tests") {
 
   if (enable_pdf) {
     deps += [ "//chrome/browser/pdf:pdf_extension_test_base" ]
+  }
+
+  if (toolkit_views) {
+    deps += [ "//chrome/browser/ui/views/web_apps:launch_dialogs" ]
   }
 }
 
