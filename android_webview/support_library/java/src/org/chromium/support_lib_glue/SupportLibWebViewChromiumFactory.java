@@ -149,7 +149,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WEBVIEW_NAVIGATE_V1,
                 Features.DOWNLOAD_FAVICONS_ENABLED,
                 Features.HTTP_CACHE_MANAGER,
-                Features.CROSS_ORIGIN_ISOLATED_ALLOW_LIST + Features.DEV_SUFFIX,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_NAVIGATION_VISIBLE,
                 Features.NAVIGATION_GET_RESPONSE_HEADERS + Features.DEV_SUFFIX,
                 Features.WEB_CONTENT + Features.DEV_SUFFIX,
@@ -172,7 +171,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
     private static final Map<String, String> sWebViewSupportedFeaturesWithCachedFlagConditions =
             Map.of(
                     Features.ENQUEUE_PRECONNECT,
-                    AwFeatures.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP);
+                    AwFeatures.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP,
+                    Features.CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
+                    AwFeatures.WEBVIEW_CROSS_ORIGIN_ALLOWLIST_API);
 
     // mAwInit.getLazyInitLock() guards access to fields that are lazily initialized.
     // This lock is shared across WebViewChromiumAwInit, WebViewChromiumFactoryProvider,

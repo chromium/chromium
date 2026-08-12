@@ -101,6 +101,11 @@ BASE_FEATURE(kWebViewCookieManagerSimplerUrlFixups,
 // Enables C++ UMA metrics filtering.
 BASE_FEATURE(kWebViewCppMetricsFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the Cross Origin Isolated Allowlist API. The allowlist enables
+// developers to opt out of origin isolation requirements for certain features
+// who require it.
+BASE_FEATURE(kWebViewCrossOriginAllowlistApi, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled (which is the default state) a navigation will download a
 // Favicon. When disabled (which can be done through Finch or Flag UI) a
 // navigation will not download a Favicon.

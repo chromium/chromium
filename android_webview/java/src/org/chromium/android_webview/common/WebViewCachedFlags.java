@@ -156,7 +156,8 @@ public class WebViewCachedFlags {
                             AwFeatures.WEBVIEW_USE_WVLES_FOR_LAYERED_STUDY, DefaultState.DISABLED),
                     Map.entry(
                             AwFeatures.WEBVIEW_COOKIE_MANAGER_SIMPLER_URL_FIXUPS,
-                            DefaultState.DISABLED));
+                            DefaultState.DISABLED),
+                    Map.entry(AwFeatures.WEBVIEW_CROSS_ORIGIN_ALLOWLIST_API, DefaultState.ENABLED));
 
     private static final Map<String, String> PARAM_DEFINITIONS = Map.of();
 
