@@ -501,13 +501,15 @@ public class TabMediaIndicatorTest {
         watcher.assertExpected();
 
         if (isPiPEnabled()) {
+            // Remove the mic recording so we can drop down to NONE and avoid flakiness with PiP.
+            DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "stop-mic");
+            waitForMediaState(mTab, MediaState.NONE);
+
             // Expect PICTURE_IN_PICTURE
             watcher =
                     HistogramWatcher.newSingleRecordWatcher(
                             "Tab.Android.MediaState", MediaState.PICTURE_IN_PICTURE);
             enterPictureInPicture();
-            // Remove the mic recording so we can drop down to PiP priority.
-            DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "stop-mic");
             waitForMediaState(mTab, MediaState.PICTURE_IN_PICTURE);
             watcher.assertExpected();
         }
