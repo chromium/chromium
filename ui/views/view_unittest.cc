@@ -6337,6 +6337,17 @@ TEST_F(ViewLayerTest, LayerBeneathRemovedOnDestruction) {
   delete view;
 }
 
+TEST_F(ViewLayerTest, RemoveLayerFromRegionsWhenNoViewLayer) {
+  View root;
+  auto layer = std::make_unique<ui::LayerTextured>();
+  View* view = root.AddChildView(std::make_unique<View>());
+
+  EXPECT_EQ(nullptr, view->layer());
+
+  // Removing layer from regions should not crash even if view has no layer.
+  view->RemoveLayerFromRegions(layer.get());
+}
+
 // View::OrphanLayers() captures a bare ui::Layer* `parent` local and loops
 // over GetLayersInOrder() calling parent->Remove(layer) on each iteration.
 // Layer::Remove() synchronously calls StopAnimatingProperty(BOUNDS), which
