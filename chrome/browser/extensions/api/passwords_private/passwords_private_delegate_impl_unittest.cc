@@ -822,28 +822,16 @@ TEST_F(
   EXPECT_EQ(u"new text", result);
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest, TestShouldActivateAccountStorage) {
+TEST_F(PasswordsPrivateDelegateImplTest, IsAccountStorageActive) {
   sync_service()->SetSignedIn(signin::ConsentLevel::kSignin);
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+
+  EXPECT_TRUE(delegate->IsAccountStorageActive());
+
   sync_service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
 
-  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
-  delegate->SetAccountStorageEnabled(true);
-
-  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPasswords));
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest, TestShouldDisableAccountStorage) {
-  sync_service()->SetSignedIn(signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPasswords));
-
-  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
-  delegate->SetAccountStorageEnabled(false);
-
-  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPasswords));
+  EXPECT_FALSE(delegate->IsAccountStorageActive());
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

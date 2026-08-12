@@ -78,8 +78,6 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   api::passwords_private::ExportProgressStatus GetExportProgressStatus()
       override;
   bool IsAccountStorageActive() override;
-  void SetAccountStorageEnabled(bool enabled) override;
-  bool ShouldShowAccountStorageSettingToggle() override;
   std::vector<api::passwords_private::PasswordUiEntry> GetInsecureCredentials()
       override;
   std::vector<api::passwords_private::PasswordUiEntryList>
@@ -120,7 +118,6 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
 
   void SetProfile(Profile* profile);
-  void SetShouldShowAccountStorageSettingToggle(bool enabled);
   void SetActionableError(password_manager::ActionableError error);
   void AddCompromisedCredential(int id);
   void SetSavedPasswordsPresenter(
@@ -215,10 +212,6 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // List of insecure credentials.
   std::vector<api::passwords_private::PasswordUiEntry> insecure_credentials_;
   raw_ptr<Profile> profile_ = nullptr;
-
-  bool is_account_storage_enabled_ = false;
-
-  bool should_show_account_storage_setting_toggle_ = false;
 
   password_manager::ActionableError actionable_error_ =
       password_manager::ActionableError::kNoError;

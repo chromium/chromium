@@ -87,14 +87,6 @@
       </pref-toggle-button>
     </template>
   </if>
-    <pref-toggle-button id="accountStorageToggle" class="hr"
-        hidden="[[!shouldShowAccountStorageSettingToggle_]]"
-        label="$i18n{accountStorageToggleLabel}"
-        sub-label="[[getAccountStorageSubLabel_(accountEmail)]]"
-        checked="[[isAccountStoreUser]]"
-        change-requires-validation
-        on-validate-and-change-pref="changeAccountStorageEnabled_">
-    </pref-toggle-button>
   <template is="dom-if"
       if="[[shouldShowMovePasswordsEntry_(isAccountStoreUser,
             passwordsOnDevice_, localPasswordCount_)]]"

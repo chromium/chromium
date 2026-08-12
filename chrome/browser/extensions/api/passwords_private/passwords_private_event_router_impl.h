@@ -44,7 +44,6 @@ class PasswordsPrivateEventRouterImpl : public PasswordsPrivateEventRouter {
       const std::string& file_path,
       const std::string& folder_name) override;
   void OnAccountStorageActiveStateChanged(bool active) override;
-  void OnShouldShowAccountStorageSettingToggleChanged(bool show) override;
   void OnInsecureCredentialsChanged(
       std::vector<api::passwords_private::PasswordUiEntry> insecure_credentials)
       override;

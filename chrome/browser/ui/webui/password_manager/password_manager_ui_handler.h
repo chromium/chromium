@@ -87,11 +87,6 @@ class PasswordManagerUIHandler
 
   void IsAccountStorageActive(IsAccountStorageActiveCallback callback) override;
 
-  void SetAccountStorageEnabled(bool enabled) override;
-
-  void ShouldShowAccountStorageSettingToggle(
-      ShouldShowAccountStorageSettingToggleCallback callback) override;
-
   void SwitchBiometricAuthBeforeFillingState(
       SwitchBiometricAuthBeforeFillingStateCallback callback) override;
 

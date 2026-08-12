@@ -135,14 +135,6 @@ export const UserUtilMixin = dedupingMixin(
           this.setPasswordManagerActionableErrorListener_ = null;
         }
 
-        enableAccountStorage() {
-          PasswordManagerImpl.getInstance().setAccountStorageEnabled(true);
-        }
-
-        disableAccountStorage() {
-          PasswordManagerImpl.getInstance().setAccountStorageEnabled(false);
-        }
-
         private computeIsSyncingPasswords_(): boolean {
           return !!(this.syncInfo_?.isSyncingPasswords);
         }
@@ -166,6 +158,4 @@ export interface UserUtilMixinInterface {
   actionableError: PasswordManagerActionableError;
   accountEmail: string;
   avatarImage: string;
-  enableAccountStorage(): void;
-  disableAccountStorage(): void;
 }

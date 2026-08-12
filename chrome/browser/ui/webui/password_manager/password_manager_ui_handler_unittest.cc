@@ -345,25 +345,6 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 }
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
-       SetAccountStorageEnabled_CallsDelegate) {
-  EXPECT_CALL(mock_delegate(), SetAccountStorageEnabled(true));
-
-  handler().SetAccountStorageEnabled(true);
-}
-
-TEST_F(PasswordManagerUIHandlerUnitTest,
-       ShouldShowAccountStorageSettingToggle_CallsDelegate) {
-  for (bool should_show : {true, false}) {
-    EXPECT_CALL(mock_delegate(), ShouldShowAccountStorageSettingToggle())
-        .WillOnce(Return(should_show));
-
-    base::test::TestFuture<bool> future;
-    handler().ShouldShowAccountStorageSettingToggle(future.GetCallback());
-    EXPECT_EQ(should_show, future.Get());
-  }
-}
-
-TEST_F(PasswordManagerUIHandlerUnitTest,
        GetPasswordManagerActionableError_ReturnsCorrectValue) {
   EXPECT_CALL(mock_delegate(), GetActionableError())
       .WillOnce(

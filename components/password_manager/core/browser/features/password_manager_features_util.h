@@ -76,10 +76,6 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-// Whether the user toggle for account storage is shown in settings.
-bool ShouldShowAccountStorageSettingToggle(
-    const syncer::SyncService* sync_service);
-
 // Password change HaTS product-specific data fields.
 //
 // Note: Counts and runtime should use bucketing.

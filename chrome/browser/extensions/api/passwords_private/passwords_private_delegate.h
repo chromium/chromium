@@ -238,12 +238,6 @@ class PasswordsPrivateDelegate
   // local/profile storage).
   virtual bool IsAccountStorageActive() = 0;
 
-  // Enables/disables use of the Google account storage for passwords
-  virtual void SetAccountStorageEnabled(bool enabled) = 0;
-
-  // Whether the account-storage in settings should be shown.
-  virtual bool ShouldShowAccountStorageSettingToggle() = 0;
-
   // Obtains information about insecure credentials. This includes the last
   // time a check was run, as well as all insecure credentials that are present
   // in the password store. Credential is considered insecure if it is

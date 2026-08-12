@@ -4,20 +4,15 @@
 
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 
-#include <optional>
-
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
 namespace password_manager::features_util {
 
-namespace {
-
-bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
+bool IsAccountStorageActive(const syncer::SyncService* sync_service) {
   if (!sync_service) {
     return false;
   }
@@ -68,15 +63,8 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
     return false;
   }
 
-  return true;
-}
-
-}  // namespace
-
-bool IsAccountStorageActive(const syncer::SyncService* sync_service) {
-  return IsUserEligibleForAccountStorage(sync_service) &&
-         sync_service->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kPasswords);
+  return sync_service->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPasswords);
 }
 
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
@@ -119,16 +107,5 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
       return UsageLevel::kSyncing;
   }
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-bool ShouldShowAccountStorageSettingToggle(
-    const syncer::SyncService* sync_service) {
-  // TODO(crbug.com/303613699): Merge IsUserEligibleForAccountStorage() and
-  // IsAccountStorageActive() after kReplaceSyncPromosWithSignInPromos is
-  // launched and cleaned-up.
-  return IsUserEligibleForAccountStorage(sync_service) &&
-         !syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager::features_util

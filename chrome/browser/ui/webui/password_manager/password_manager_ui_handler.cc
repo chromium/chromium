@@ -339,16 +339,6 @@ void PasswordManagerUIHandler::IsAccountStorageActive(
   std::move(callback).Run(result);
 }
 
-void PasswordManagerUIHandler::SetAccountStorageEnabled(bool enabled) {
-  passwords_private_delegate_->SetAccountStorageEnabled(enabled);
-}
-
-void PasswordManagerUIHandler::ShouldShowAccountStorageSettingToggle(
-    ShouldShowAccountStorageSettingToggleCallback callback) {
-  std::move(callback).Run(
-      passwords_private_delegate_->ShouldShowAccountStorageSettingToggle());
-}
-
 void PasswordManagerUIHandler::SwitchBiometricAuthBeforeFillingState(
     SwitchBiometricAuthBeforeFillingStateCallback callback) {
   passwords_private_delegate_->SwitchBiometricAuthBeforeFillingState(

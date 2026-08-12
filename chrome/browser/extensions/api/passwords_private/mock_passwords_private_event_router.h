@@ -46,10 +46,6 @@ class MockPasswordsPrivateEventRouter : public PasswordsPrivateEventRouter {
               (bool active),
               (override));
   MOCK_METHOD(void,
-              OnShouldShowAccountStorageSettingToggleChanged,
-              (bool show),
-              (override));
-  MOCK_METHOD(void,
               OnInsecureCredentialsChanged,
               (std::vector<api::passwords_private::PasswordUiEntry>
                    insecure_credentials),

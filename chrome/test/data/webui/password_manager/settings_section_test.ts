@@ -4,11 +4,11 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {BatchUploadPasswordsEntryPoint, OpenWindowProxyImpl, Page, PASSWORD_MANAGER_ACCOUNT_STORE_TOGGLE_ELEMENT_ID, PasswordManagerImpl, Router, SyncBrowserProxyImpl, TrustedVaultBannerState} from 'chrome://password-manager/password_manager.js';
+import {BatchUploadPasswordsEntryPoint, OpenWindowProxyImpl, Page, PasswordManagerImpl, Router, SyncBrowserProxyImpl, TrustedVaultBannerState} from 'chrome://password-manager/password_manager.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {$$, eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -456,82 +456,6 @@ suite('SettingsSectionTest', function() {
         assertFalse(isVisible(trustedVaultBanner));
       });
 
-  test('account storage toggle visibility - starts showing', async function() {
-    passwordManager.data.shouldShowAccountStorageSettingToggle = true;
-    const settings = document.createElement('settings-section');
-    document.body.appendChild(settings);
-    await passwordManager.whenCalled('shouldShowAccountStorageSettingToggle');
-
-    assertFalse(settings.$.accountStorageToggle.hidden);
-    assertTrue(
-        !!passwordManager.listeners.shouldShowAccountStorageToggleListener);
-
-    passwordManager.listeners.shouldShowAccountStorageToggleListener(false);
-
-    assertTrue(settings.$.accountStorageToggle.hidden);
-
-    passwordManager.listeners.shouldShowAccountStorageToggleListener(true);
-
-    assertFalse(settings.$.accountStorageToggle.hidden);
-  });
-
-  test('account storage toggle visibility - starts hidden', async function() {
-    passwordManager.data.shouldShowAccountStorageSettingToggle = false;
-    const settings = document.createElement('settings-section');
-    document.body.appendChild(settings);
-    await passwordManager.whenCalled('shouldShowAccountStorageSettingToggle');
-
-    assertTrue(settings.$.accountStorageToggle.hidden);
-    assertTrue(
-        !!passwordManager.listeners.shouldShowAccountStorageToggleListener);
-
-    passwordManager.listeners.shouldShowAccountStorageToggleListener(true);
-
-    assertFalse(settings.$.accountStorageToggle.hidden);
-
-    passwordManager.listeners.shouldShowAccountStorageToggleListener(false);
-
-    assertTrue(settings.$.accountStorageToggle.hidden);
-  });
-
-  test('account storage toggle state - starts enabled', async function() {
-    passwordManager.data.shouldShowAccountStorageSettingToggle = true;
-    passwordManager.data.isAccountStorageActive = true;
-    const settings = document.createElement('settings-section');
-    document.body.appendChild(settings);
-    await passwordManager.whenCalled('isAccountStorageActive');
-
-    assertTrue(settings.$.accountStorageToggle.hasAttribute('checked'));
-    assertTrue(!!passwordManager.listeners.accountStorageActiveStateListener);
-
-    passwordManager.listeners.accountStorageActiveStateListener(false);
-
-    assertFalse(settings.$.accountStorageToggle.hasAttribute('checked'));
-
-    passwordManager.listeners.accountStorageActiveStateListener(true);
-
-    assertTrue(settings.$.accountStorageToggle.hasAttribute('checked'));
-  });
-
-  test('account storage toggle state - starts disabled', async function() {
-    passwordManager.data.shouldShowAccountStorageSettingToggle = true;
-    passwordManager.data.isAccountStorageActive = false;
-    const settings = document.createElement('settings-section');
-    document.body.appendChild(settings);
-    await passwordManager.whenCalled('isAccountStorageActive');
-
-    assertFalse(settings.$.accountStorageToggle.hasAttribute('checked'));
-    assertTrue(!!passwordManager.listeners.accountStorageActiveStateListener);
-
-    passwordManager.listeners.accountStorageActiveStateListener(true);
-
-    assertTrue(settings.$.accountStorageToggle.hasAttribute('checked'));
-
-    passwordManager.listeners.accountStorageActiveStateListener(false);
-
-    assertFalse(settings.$.accountStorageToggle.hasAttribute('checked'));
-  });
-
   // <if expr="is_win or is_macosx">
   test('managePasskeysNotShownWithoutPasskeys', async function() {
     passkeysProxy.passkeysPresent = false;
@@ -851,28 +775,6 @@ suite('SettingsSectionTest', function() {
         assertEquals(
             BatchUploadPasswordsEntryPoint.PASSWORD_MANAGER, entryPoint);
       });
-
-  test('Account storage iph', async function() {
-    loadTimeData.overrideValues({canAddShortcut: false});
-    passwordManager.data.isAccountStorageActive = false;
-    syncProxy.accountInfo = {
-      email: 'testemail@gmail.com',
-    };
-    syncProxy.syncInfo = {
-      isSyncingPasswords: false,
-    };
-
-    const section = document.createElement('settings-section');
-    document.body.appendChild(section);
-    await flushTasks();
-
-    assertDeepEquals(
-        section.getSortedAnchorStatusesForTesting(),
-        [
-          [PASSWORD_MANAGER_ACCOUNT_STORE_TOGGLE_ELEMENT_ID, true],
-        ],
-    );
-  });
 
   test('Change Password Manager PIN is not available ', async function() {
     const section = document.createElement('settings-section');

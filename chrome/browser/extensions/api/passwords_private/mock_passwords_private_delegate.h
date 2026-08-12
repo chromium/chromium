@@ -107,8 +107,6 @@ class MockPasswordsPrivateDelegate
               (),
               (override));
   MOCK_METHOD(bool, IsAccountStorageActive, (), (override));
-  MOCK_METHOD(void, SetAccountStorageEnabled, (bool enabled), (override));
-  MOCK_METHOD(bool, ShouldShowAccountStorageSettingToggle, (), (override));
   MOCK_METHOD(std::vector<extensions::api::passwords_private::PasswordUiEntry>,
               GetInsecureCredentials,
               (),

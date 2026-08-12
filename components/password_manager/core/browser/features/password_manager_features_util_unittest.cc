@@ -4,9 +4,7 @@
 
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync/test/test_sync_user_settings.h"
@@ -90,30 +88,6 @@ TEST_F(PasswordManagerFeaturesUtilTest, IsAccountStorageActive_Syncing) {
 
   EXPECT_EQ(IsAccountStorageActive(&sync_service_), BUILDFLAG(IS_ANDROID));
 }
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordManagerFeaturesUtilTest,
-       ShouldShowAccountStorageSettingToggle_SyncToSigninOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          syncer::kReplaceSyncPromosWithSignInPromos,
-          syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
-
-  EXPECT_TRUE(ShouldShowAccountStorageSettingToggle(&sync_service_));
-}
-
-TEST_F(PasswordManagerFeaturesUtilTest,
-       ShouldShowAccountStorageSettingToggle_SyncToSigninOn) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
-
-  EXPECT_FALSE(ShouldShowAccountStorageSettingToggle(&sync_service_));
-}
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace password_manager::features_util

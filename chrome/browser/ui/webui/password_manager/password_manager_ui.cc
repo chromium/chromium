@@ -105,10 +105,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 #endif
 
   static const webui::LocalizedString kStrings[] = {
-      {"accountStorageToggleLabel",
-       IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_WITH_PASSKEYS_TOGGLE_LABEL},
-      {"accountStorageToggleSubLabel",
-       IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_TOGGLE_SUB_LABEL},
       {"addPassword", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_BUTTON},
       {"addPasswordFooter", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_FOOTNOTE},
       {"addPasswordStoreOptionAccount",
@@ -805,8 +801,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
                                       kOverflowMenuElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
                                       kSharePasswordElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
-                                      kAccountStoreToggleElementId);
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(PasswordManagerUI,
                                        kAddShortcutCustomEventId);
 
@@ -838,7 +832,6 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
                 PasswordManagerUI::kSettingsMenuItemElementId,
                 PasswordManagerUI::kAddShortcutElementId,
                 PasswordManagerUI::kSharePasswordElementId,
-                PasswordManagerUI::kAccountStoreToggleElementId,
                 PasswordManagerUI::kOverflowMenuElementId});
 }
 

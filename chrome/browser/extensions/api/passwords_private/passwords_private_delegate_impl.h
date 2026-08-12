@@ -178,9 +178,6 @@ class PasswordsPrivateDelegateImpl
   api::passwords_private::ExportProgressStatus GetExportProgressStatus()
       override;
   bool IsAccountStorageActive() override;
-  // TODO(crbug.com/40138722): Mimic the signature in PasswordFeatureManager.
-  void SetAccountStorageEnabled(bool enabled) override;
-  bool ShouldShowAccountStorageSettingToggle() override;
   std::vector<api::passwords_private::PasswordUiEntry> GetInsecureCredentials()
       override;
   std::vector<api::passwords_private::PasswordUiEntryList>

@@ -833,22 +833,6 @@ bool PasswordsPrivateDelegateImpl::IsAccountStorageActive() {
   return password_manager::features_util::IsAccountStorageActive(sync_service_);
 }
 
-void PasswordsPrivateDelegateImpl::SetAccountStorageEnabled(bool enabled) {
-  // TODO(crbug.com/470332074): Verify whether this should check for "enabled"
-  // instead of "active".
-  if (enabled ==
-      password_manager::features_util::IsAccountStorageActive(sync_service_)) {
-    return;
-  }
-  sync_service_->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPasswords, enabled);
-}
-
-bool PasswordsPrivateDelegateImpl::ShouldShowAccountStorageSettingToggle() {
-  return password_manager::features_util::ShouldShowAccountStorageSettingToggle(
-      sync_service_);
-}
-
 std::vector<api::passwords_private::PasswordUiEntry>
 PasswordsPrivateDelegateImpl::GetInsecureCredentials() {
   return password_check_delegate_.GetInsecureCredentials();
@@ -1234,8 +1218,6 @@ void PasswordsPrivateDelegateImpl::OnStateChanged(
     syncer::SyncService* sync_service) {
   if (event_router_) {
     event_router_->OnAccountStorageActiveStateChanged(IsAccountStorageActive());
-    event_router_->OnShouldShowAccountStorageSettingToggleChanged(
-        ShouldShowAccountStorageSettingToggle());
   }
 }
 

@@ -548,7 +548,7 @@ suite('PasswordsSectionTest', function() {
       });
 
   test('Should not show upload icon for account passwords', async function() {
-    passwordManager.setAccountStorageEnabled(true);
+    passwordManager.data.isAccountStorageActive = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
       credentials: [
@@ -569,7 +569,7 @@ suite('PasswordsSectionTest', function() {
   test(
       'Should not show upload icon with account storage disabled',
       async function() {
-        passwordManager.setAccountStorageEnabled(false);
+        passwordManager.data.isAccountStorageActive = false;
         passwordManager.data.groups = [createCredentialGroup({
           name: 'test.com',
           credentials: [
@@ -586,7 +586,7 @@ suite('PasswordsSectionTest', function() {
       });
 
   test('Should show upload icon', async function() {
-    passwordManager.setAccountStorageEnabled(true);
+    passwordManager.data.isAccountStorageActive = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
       credentials: [
@@ -603,7 +603,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('Clicking upload icon opens dialog', async function() {
-    passwordManager.setAccountStorageEnabled(true);
+    passwordManager.data.isAccountStorageActive = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
       credentials: [
@@ -639,7 +639,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('Upload icon tooltip and accessibility text', async function() {
-    passwordManager.setAccountStorageEnabled(true);
+    passwordManager.data.isAccountStorageActive = true;
     passwordManager.data.groups = [
       createCredentialGroup({
         name: 'bar.com',
@@ -669,7 +669,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('Dialog closes when account storage is disabled', async function() {
-    passwordManager.setAccountStorageEnabled(true);
+    passwordManager.data.isAccountStorageActive = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
       credentials: [
