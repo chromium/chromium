@@ -64,6 +64,7 @@ static_library("privacy") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/signin:identity_manager_provider",
     "//chromeos/ash/experiences/arc",
     "//components/google/core/common",
     "//components/sync/base:features",

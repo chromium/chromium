@@ -13,14 +13,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/people/os_sync_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
@@ -70,8 +71,11 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source,
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
+  // Some Profiles have no annotated AccountId (e.g. guest and sign-in/lock
+  // screen Profiles); treat those as having no IdentityManager.
+  const AccountId* account_id = AnnotatedAccountId::Get(profile);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      account_id ? IdentityManagerProvider::Get().Find(*account_id) : nullptr;
   html_source->AddLocalizedString(
       "osSyncFeatureLabel",
       (identity_manager &&
