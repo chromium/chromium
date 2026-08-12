@@ -11,8 +11,12 @@
 
 #include <oleacc.h>
 
+#include <string_view>
 #include <utility>
 
+#include "base/functional/function_ref.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/win/windows_version.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/ax_system_caret_win.h"
@@ -428,6 +432,219 @@ TEST_F(DesktopWindowTreeHostWinTest, IsInNativeMoveResizeLoopOnEnterSizeMove) {
 
   ::SendMessage(hwnd, WM_EXITSIZEMOVE, 0, 0);
   EXPECT_FALSE(host->IsInNativeMoveResizeLoop());
+}
+
+namespace {
+
+DWORD GetExpectedExclusionAffinity() {
+  return (base::win::GetVersion() >= base::win::Version::WIN10_20H1)
+             ? static_cast<DWORD>(WDA_EXCLUDEFROMCAPTURE)
+             : static_cast<DWORD>(WDA_MONITOR);
+}
+
+// Helper to initialize and show a widget with simulated local session for
+// consistent capture exclusion testing.
+HWND InitTestWidget(Widget& widget,
+                    Widget::InitParams params,
+                    bool exclude_capture = false) {
+  widget.Init(std::move(params));
+  auto* host = static_cast<DesktopWindowTreeHostWin*>(
+      widget.GetNativeWindow()->GetHost());
+  DesktopWindowTreeHostWinTestApi host_api(host);
+  host_api.SetRemoteSessionForTesting(false);
+  if (exclude_capture) {
+    widget.SetExcludeFromScreenCapture(true);
+  }
+  widget.Show();
+  return host_api.GetHWND();
+}
+
+// Helper to find the active Win32 #32768 popup menu window on the thread.
+HWND FindActivePopupMenuHWND() {
+  HWND found_menu_hwnd = nullptr;
+  ::EnumThreadWindows(
+      ::GetCurrentThreadId(),
+      [](HWND hwnd, LPARAM lParam) -> BOOL {
+        constexpr wchar_t kSystemMenuClassName[] = L"#32768";
+        wchar_t class_name[32];
+        const int len = ::GetClassName(hwnd, class_name, std::size(class_name));
+        if (len > 0 &&
+            std::wstring_view(class_name, static_cast<size_t>(len)) ==
+                kSystemMenuClassName) {
+          *reinterpret_cast<HWND*>(lParam) = hwnd;
+          return FALSE;
+        }
+        return TRUE;
+      },
+      reinterpret_cast<LPARAM>(&found_menu_hwnd));
+  return found_menu_hwnd;
+}
+
+// Helper to verify that a child window inherits capture exclusion from its
+// parent and dynamically tracks updates when parent exclusion is toggled.
+void VerifyExclusionPropagation(Widget* parent_widget, HWND child_hwnd) {
+  SCOPED_TRACE("VerifyExclusionPropagation");
+  DWORD affinity = WDA_NONE;
+  EXPECT_TRUE(::GetWindowDisplayAffinity(child_hwnd, &affinity));
+  EXPECT_EQ(GetExpectedExclusionAffinity(), affinity);
+
+  // Verify dynamic downward propagation: when parent's capture exclusion is
+  // disabled, the child should also be updated immediately.
+  parent_widget->SetExcludeFromScreenCapture(false);
+  EXPECT_TRUE(::GetWindowDisplayAffinity(child_hwnd, &affinity));
+  EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
+
+  // Toggling parent's capture exclusion back on should also propagate down.
+  parent_widget->SetExcludeFromScreenCapture(true);
+  EXPECT_TRUE(::GetWindowDisplayAffinity(child_hwnd, &affinity));
+  EXPECT_EQ(GetExpectedExclusionAffinity(), affinity);
+}
+
+// Helper to display a native popup menu modally, locate its Win32 #32768
+// window, execute a test callback, and dismiss the menu.
+void ShowTestPopupMenu(HWND hwnd, base::FunctionRef<void(HWND)> callback) {
+  struct Context {
+    base::FunctionRef<void(HWND)> callback;
+    bool callback_executed = false;
+  } context{callback};
+
+  // Use a thread-local pointer to bridge the C++ lambda into the Win32
+  // TIMERPROC callback for the duration of the synchronous modal loop.
+  static thread_local Context* g_context = nullptr;
+  g_context = &context;
+
+  ::BringWindowToTop(hwnd);
+  ::SetActiveWindow(hwnd);
+  ::SetForegroundWindow(hwnd);
+
+  // Use a thread timer (null HWND) to ensure timer messages are delivered
+  // directly during the modal TrackPopupMenu message loop.
+  UINT_PTR timer_id =
+      ::SetTimer(nullptr, 0, 10, [](HWND, UINT, UINT_PTR id, DWORD) {
+        if (g_context && !g_context->callback_executed) {
+          if (HWND menu_hwnd = FindActivePopupMenuHWND()) {
+            g_context->callback_executed = true;
+            ::KillTimer(nullptr, id);
+            // Execute the callback outside of EnumThreadWindows to
+            // avoid nested EnumThreadWindows calls on the same
+            // thread when modifying widget capture exclusion inside
+            // the callback.
+            g_context->callback(menu_hwnd);
+            ::EndMenu();
+          }
+        }
+      });
+
+  HMENU menu = ::CreatePopupMenu();
+  ::AppendMenu(menu, MF_STRING, 1, L"Test Item");
+  ::TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_NOANIMATION, 0, 0,
+                   0, hwnd, nullptr);
+  ::DestroyMenu(menu);
+  ::KillTimer(nullptr, timer_id);
+
+  EXPECT_TRUE(context.callback_executed);
+  g_context = nullptr;
+}
+
+}  // namespace
+
+TEST_F(DesktopWindowTreeHostWinTest, ExcludeActiveSystemMenuFromCapture) {
+  Widget widget;
+  HWND hwnd =
+      InitTestWidget(widget,
+                     CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW),
+                     /*exclude_capture=*/true);
+
+  ShowTestPopupMenu(hwnd, [&](HWND menu_hwnd) {
+    DWORD affinity = WDA_NONE;
+    EXPECT_TRUE(::GetWindowDisplayAffinity(menu_hwnd, &affinity));
+    EXPECT_EQ(GetExpectedExclusionAffinity(), affinity);
+  });
+  widget.CloseNow();
+}
+
+TEST_F(DesktopWindowTreeHostWinTest, ExcludeActiveSystemMenuFromCaptureUpdate) {
+  Widget widget;
+  HWND hwnd =
+      InitTestWidget(widget,
+                     CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW),
+                     /*exclude_capture=*/false);
+
+  ShowTestPopupMenu(hwnd, [&](HWND menu_hwnd) {
+    DWORD affinity = WDA_NONE;
+    EXPECT_TRUE(::GetWindowDisplayAffinity(menu_hwnd, &affinity));
+    EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
+
+    // Enable capture exclusion while menu is open.
+    widget.SetExcludeFromScreenCapture(true);
+    EXPECT_TRUE(::GetWindowDisplayAffinity(menu_hwnd, &affinity));
+    EXPECT_EQ(GetExpectedExclusionAffinity(), affinity);
+
+    // Disable capture exclusion while menu is open.
+    widget.SetExcludeFromScreenCapture(false);
+    EXPECT_TRUE(::GetWindowDisplayAffinity(menu_hwnd, &affinity));
+    EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
+  });
+  widget.CloseNow();
+}
+
+TEST_F(DesktopWindowTreeHostWinTest, ExcludeOwnedWindowsFromCapture) {
+  Widget parent_widget;
+  HWND parent_hwnd =
+      InitTestWidget(parent_widget,
+                     CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW),
+                     /*exclude_capture=*/true);
+
+  // Create an owned/child top-level widget (like a bubble or menu).
+  Widget child_widget;
+  Widget::InitParams child_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_MENU);
+  child_params.parent = parent_widget.GetNativeWindow();
+  HWND child_hwnd = InitTestWidget(child_widget, std::move(child_params));
+
+  // Verify that the child window's Win32 owner is indeed the parent window.
+  EXPECT_EQ(parent_hwnd, ::GetWindow(child_hwnd, GW_OWNER));
+
+  VerifyExclusionPropagation(&parent_widget, child_hwnd);
+
+  child_widget.CloseNow();
+  parent_widget.CloseNow();
+}
+
+TEST_F(DesktopWindowTreeHostWinTest, ExcludeContextWindowsFromCapture) {
+  Widget parent_widget;
+  HWND parent_hwnd =
+      InitTestWidget(parent_widget,
+                     CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW),
+                     /*exclude_capture=*/true);
+
+  // Create a descendant aura::Window inside the parent widget (simulating a
+  // view or child window such as the search bar / FindBarHost).
+  auto* descendant_window =
+      new aura::Window(nullptr, aura::client::WINDOW_TYPE_CONTROL);
+  descendant_window->Init(ui::LAYER_NOT_DRAWN);
+  parent_widget.GetNativeWindow()->AddChild(descendant_window);
+
+  // Create a tooltip widget using params.context = descendant_window, exactly
+  // as corewm::TooltipAura does.
+  Widget tooltip_widget;
+  Widget::InitParams tooltip_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_TOOLTIP);
+  tooltip_params.context = descendant_window;
+  tooltip_params.force_software_compositing = true;
+  HWND tooltip_hwnd = InitTestWidget(tooltip_widget, std::move(tooltip_params));
+
+  // Verify that the tooltip window's Win32 owner is resolved to parent window.
+  EXPECT_EQ(parent_hwnd, ::GetWindow(tooltip_hwnd, GW_OWNER));
+
+  VerifyExclusionPropagation(&parent_widget, tooltip_hwnd);
+
+  tooltip_widget.CloseNow();
+  parent_widget.CloseNow();
 }
 
 }  // namespace test

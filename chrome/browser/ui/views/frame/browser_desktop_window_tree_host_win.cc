@@ -454,6 +454,11 @@ bool BrowserDesktopWindowTreeHostWin::PreHandleMSG(UINT message,
       if (UsesNativeSystemMenu()) {
         GetSystemMenu()->UpdateStates();
       }
+      // Delegate to the base class so that capture exclusion propagation and
+      // other native menu handlers in the base class can process the message.
+      DesktopWindowTreeHostWin::PreHandleMSG(message, w_param, l_param, result);
+      // We always return true to indicate the message was handled,
+      // regardless of the base class result.
       return true;
     case WM_SYSCOMMAND:
       if ((w_param & 0xFFF0) == SC_KEYMENU && l_param == ' ') {
