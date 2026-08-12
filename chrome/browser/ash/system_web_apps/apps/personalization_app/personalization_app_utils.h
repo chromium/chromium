@@ -52,8 +52,8 @@ AccountId GetAccountId(Profile* profile);
 // profiles can, but kiosk and guest cannot.
 bool CanSeeWallpaperOrPersonalizationApp(Profile* profile);
 
-// Verifies if the current language settings are supported.
-bool IsSystemInSupportedLanguage();
+// Verifies if the language settings in `application_locale` are supported.
+bool IsSystemInSupportedLanguage(std::string_view application_locale);
 
 // Controls whether the profile can see and open SeaPen UI. Managed users have
 // age restrictions that underage users (<18) are not allowed to view and access
@@ -76,7 +76,8 @@ bool IsManagedSeaPenVcBackgroundEnabled(Profile* profile);
 
 // Controls whether users are eligible for SeaPen text input. The age
 // requirements are stricter than for SeaPen.
-bool IsEligibleForSeaPenTextInput(Profile* profile);
+bool IsEligibleForSeaPenTextInput(Profile* profile,
+                                  std::string_view application_locale);
 
 // Controls whether SeaPen Wallpaper Feedback is shown for managed profiles.
 bool IsManagedSeaPenWallpaperFeedbackEnabled(Profile* profile);

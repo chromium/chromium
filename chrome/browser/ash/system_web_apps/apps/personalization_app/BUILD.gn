@@ -277,6 +277,7 @@ source_set("unit_tests") {
     "//chromeos/strings:strings_grit",
     "//components/account_id",
     "//components/account_id:test_support",
+    "//components/application_locale_storage",
     "//components/keyed_service/core",
     "//components/manta",
     "//components/manta/proto",

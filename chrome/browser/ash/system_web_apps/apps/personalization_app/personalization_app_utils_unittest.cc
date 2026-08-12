@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -28,6 +29,7 @@
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
@@ -61,6 +63,12 @@ constexpr AccountId::Literal kTestAccountId =
 
 PrefService* local_state() {
   return TestingBrowserProcess::GetGlobal()->local_state();
+}
+
+ApplicationLocaleStorage* application_locale_storage() {
+  return TestingBrowserProcess::GetGlobal()
+      ->GetFeatures()
+      ->application_locale_storage();
 }
 
 class PersonalizationAppUtilsTest : public testing::Test {
@@ -331,7 +339,7 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_UnknownAge) {
 
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, std::nullopt);
 
-  ASSERT_FALSE(IsEligibleForSeaPenTextInput(regular_profile));
+  ASSERT_FALSE(IsEligibleForSeaPenTextInput(regular_profile, "en-US"));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_MinorUser) {
@@ -341,7 +349,7 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_MinorUser) {
 
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, false);
 
-  ASSERT_FALSE(IsEligibleForSeaPenTextInput(regular_profile));
+  ASSERT_FALSE(IsEligibleForSeaPenTextInput(regular_profile, "en-US"));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_AdultUser) {
@@ -351,7 +359,7 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_AdultUser) {
 
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, true);
 
-  ASSERT_TRUE(IsEligibleForSeaPenTextInput(regular_profile));
+  ASSERT_TRUE(IsEligibleForSeaPenTextInput(regular_profile, "en-US"));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInputEnglishUsers) {
@@ -362,10 +370,11 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInputEnglishUsers) {
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, true);
 
   // Set application locale.
-  g_browser_process->SetApplicationLocale("en-GB");
+  application_locale_storage()->Set("en-GB");
 
-  ASSERT_TRUE(IsSystemInSupportedLanguage());
-  ASSERT_TRUE(IsEligibleForSeaPenTextInput(regular_profile));
+  ASSERT_TRUE(IsSystemInSupportedLanguage(application_locale_storage()->Get()));
+  ASSERT_TRUE(IsEligibleForSeaPenTextInput(
+      regular_profile, application_locale_storage()->Get()));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
@@ -379,10 +388,12 @@ TEST_F(PersonalizationAppUtilsTest,
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, true);
 
   // Set application locale.
-  g_browser_process->SetApplicationLocale("de");
+  application_locale_storage()->Set("de");
 
-  ASSERT_FALSE(IsSystemInSupportedLanguage());
-  ASSERT_FALSE(IsEligibleForSeaPenTextInput(regular_profile));
+  ASSERT_FALSE(
+      IsSystemInSupportedLanguage(application_locale_storage()->Get()));
+  ASSERT_FALSE(IsEligibleForSeaPenTextInput(
+      regular_profile, application_locale_storage()->Get()));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
@@ -396,10 +407,11 @@ TEST_F(PersonalizationAppUtilsTest,
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, true);
 
   // Set application locale.
-  g_browser_process->SetApplicationLocale("de");
+  application_locale_storage()->Set("de");
 
-  ASSERT_TRUE(IsSystemInSupportedLanguage());
-  ASSERT_TRUE(IsEligibleForSeaPenTextInput(regular_profile));
+  ASSERT_TRUE(IsSystemInSupportedLanguage(application_locale_storage()->Get()));
+  ASSERT_TRUE(IsEligibleForSeaPenTextInput(
+      regular_profile, application_locale_storage()->Get()));
 }
 
 TEST_F(
@@ -414,10 +426,12 @@ TEST_F(
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, true);
 
   // Set application locale.
-  g_browser_process->SetApplicationLocale("no");
+  application_locale_storage()->Set("no");
 
-  ASSERT_FALSE(IsSystemInSupportedLanguage());
-  ASSERT_FALSE(IsEligibleForSeaPenTextInput(regular_profile));
+  ASSERT_FALSE(
+      IsSystemInSupportedLanguage(application_locale_storage()->Get()));
+  ASSERT_FALSE(IsEligibleForSeaPenTextInput(
+      regular_profile, application_locale_storage()->Get()));
 }
 
 }  // namespace

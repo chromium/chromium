@@ -134,13 +134,9 @@ bool CanSeeWallpaperOrPersonalizationApp(Profile* profile) {
   }
 }
 
-bool IsSystemInSupportedLanguage() {
-  if (!g_browser_process) {
-    LOG(WARNING) << __func__ << " no browser process";
-    return false;
-  }
+bool IsSystemInSupportedLanguage(std::string_view application_locale) {
   const std::string_view language =
-      language::ExtractBaseLanguage(g_browser_process->GetApplicationLocale());
+      language::ExtractBaseLanguage(application_locale);
   if (ash::features::IsSeaPenTextInputTranslationEnabled()) {
     return kSeaPenTextInputSupportedLanguages.contains(language);
   }
@@ -241,7 +237,8 @@ bool IsManagedSeaPenVcBackgroundFeedbackEnabled(Profile* profile) {
          static_cast<int>(ManagedSeaPenSettings::kAllowed);
 }
 
-bool IsEligibleForSeaPenTextInput(Profile* profile) {
+bool IsEligibleForSeaPenTextInput(Profile* profile,
+                                  std::string_view application_locale) {
   if (!profile) {
     LOG(ERROR) << __func__ << " no profile";
     return false;
@@ -251,7 +248,7 @@ bool IsEligibleForSeaPenTextInput(Profile* profile) {
     DVLOG(1) << __func__ << " SeaPenTextInput disabled";
     return false;
   }
-  if (!IsSystemInSupportedLanguage()) {
+  if (!IsSystemInSupportedLanguage(application_locale)) {
     // The feature only supports a limited number of languages.
     DVLOG(1) << __func__ << " system not in supported language";
     return false;

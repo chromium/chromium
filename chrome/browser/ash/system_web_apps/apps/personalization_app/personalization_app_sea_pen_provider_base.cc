@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers_metric_utils.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -95,7 +96,9 @@ bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPen() {
 }
 
 bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPenTextInput() {
-  return ::ash::personalization_app::IsEligibleForSeaPenTextInput(profile_);
+  // TODO(crbug.com/404133902): Avoid using g_browser_process.
+  return ::ash::personalization_app::IsEligibleForSeaPenTextInput(
+      profile_, g_browser_process->GetApplicationLocale());
 }
 
 bool PersonalizationAppSeaPenProviderBase::IsManagedSeaPenEnabled() {
