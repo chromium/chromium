@@ -410,8 +410,7 @@ suite('OmniboxEverywhereAppTest', () => {
   });
 
   test(
-      'voice search final result populates searchbox input and closes dialog',
-      async () => {
+      'voice search final result submits query and closes dialog', async () => {
         const searchbox =
             app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
         searchbox.dispatchEvent(new CustomEvent(
@@ -434,6 +433,122 @@ suite('OmniboxEverywhereAppTest', () => {
         assertTrue(!!searchbox);
         assertEquals(
             'test query from speech', searchbox.$.input.inputElement.value);
+
+        await testProxy.handler.whenCalled('submitQuery');
+        const args = testProxy.handler.getArgs('submitQuery')[0];
+        assertEquals('test query from speech', args[0]);
+        assertEquals(0, args[1]);  // mouse_button
+        assertFalse(args[2]);      // alt_key
+        assertFalse(args[3]);      // ctrl_key
+        assertFalse(args[4]);      // meta_key
+        assertFalse(args[5]);      // shift_key
+        assertTrue(args[6]);       // is_voice_search
+      });
+
+  test(
+      'voice search final result in composebox submits query and closes dialog',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: '', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+
+        composebox.dispatchEvent(new CustomEvent(
+            'open-voice-search', {bubbles: true, composed: true}));
+        await microtasksFinished();
+
+        const voiceSearch = app.shadowRoot.querySelector('#voiceSearch')!;
+        assertTrue(!!voiceSearch);
+
+        voiceSearch.dispatchEvent(new CustomEvent('voice-search-final-result', {
+          detail: 'composebox speech query',
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const dialog = app.shadowRoot.querySelector('#voiceSearchDialog');
+        assertFalse(!!dialog);
+
+        await testProxy.handler.whenCalled('submitQuery');
+        const args = testProxy.handler.getArgs('submitQuery')[0];
+        assertEquals('composebox speech query', args[0]);
+        assertTrue(args[6]);  // is_voice_search
+      });
+
+  test(
+      'stopping voice search fills input plate without submitting',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent(
+            'open-voice-search', {bubbles: true, composed: true}));
+        await microtasksFinished();
+
+        const voiceSearch = app.shadowRoot.querySelector('#voiceSearch')!;
+        assertTrue(!!voiceSearch);
+
+        voiceSearch.dispatchEvent(new CustomEvent('recording-stopped', {
+          detail: 'stopped speech query',
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const dialog = app.shadowRoot.querySelector('#voiceSearchDialog');
+        assertFalse(!!dialog);
+
+        assertEquals(
+            'stopped speech query', searchbox.$.input.inputElement.value);
+        assertEquals(0, testProxy.handler.getCallCount('submitQuery'));
+      });
+
+  test(
+      'stopping voice search in composebox fills input plate without ' +
+          'submitting',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: '', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+
+        composebox.dispatchEvent(new CustomEvent(
+            'open-voice-search', {bubbles: true, composed: true}));
+        await microtasksFinished();
+
+        const voiceSearch = app.shadowRoot.querySelector('#voiceSearch')!;
+        assertTrue(!!voiceSearch);
+
+        voiceSearch.dispatchEvent(new CustomEvent('recording-stopped', {
+          detail: 'composebox stopped speech query',
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const dialog = app.shadowRoot.querySelector('#voiceSearchDialog');
+        assertFalse(!!dialog);
+
+        assertEquals(
+            'composebox stopped speech query',
+            composebox.$.composeboxInput.inputElement.value);
+        assertEquals(0, testProxy.handler.getCallCount('submitQuery'));
       });
 
   test('voice search cancel closes dialog overlay', async () => {

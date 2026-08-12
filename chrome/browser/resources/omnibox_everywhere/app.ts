@@ -241,33 +241,56 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     }
   }
 
-  protected onVoiceSearchFinalResult_(e: CustomEvent<string>) {
+  private handleVoiceSearchResult_(query: string, submit: boolean) {
     this.onVoiceSearchOverlayClose_();
-    const query = e.detail;
-    if (query && query.trim().length > 0) {
-      if (this.isComposeboxMode_) {
-        const composebox =
-            this.shadowRoot?.querySelector<OmniboxEverywhereComposeboxElement>(
-                '#composebox');
-        if (composebox) {
-          composebox.setInputText(query);
+    const trimmedQuery = query?.trim();
+    if (!trimmedQuery) {
+      return;
+    }
+
+    if (this.isComposeboxMode_) {
+      const composebox =
+          this.shadowRoot?.querySelector<OmniboxEverywhereComposeboxElement>(
+              'omnibox-everywhere-composebox');
+      if (composebox) {
+        composebox.setInputText(trimmedQuery);
+        if (submit) {
+          composebox.getSearchboxHandler().submitQuery(
+              trimmedQuery, /*mouse_button=*/ 0, /*alt_key=*/ false,
+              /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false,
+              /*is_voice_search=*/ true);
+          composebox.submitCleanup();
+        } else {
           composebox.focusInput();
+          composebox.queryAutocomplete(/*clearMatches=*/ false);
         }
-      } else {
-        const searchbox =
-            this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(
-                '#searchbox');
-        if (searchbox) {
-          searchbox.setInputText(query);
+      }
+    } else {
+      const searchbox =
+          this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(
+              'omnibox-everywhere-omnibox');
+      if (searchbox) {
+        searchbox.setInputText(trimmedQuery);
+        if (submit) {
+          searchbox.pageHandler().submitQuery(
+              trimmedQuery, /*mouse_button=*/ 0, /*alt_key=*/ false,
+              /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false,
+              /*is_voice_search=*/ true);
+          searchbox.clearAutocompleteMatches();
+        } else {
           searchbox.focusInput();
-          searchbox.queryAutocomplete(query, false, false);
+          searchbox.queryAutocomplete(trimmedQuery, false, false);
         }
       }
     }
   }
 
+  protected onVoiceSearchFinalResult_(e: CustomEvent<string>) {
+    this.handleVoiceSearchResult_(e.detail, /*submit=*/ true);
+  }
+
   protected onVoiceSearchRecordingStopped_(e: CustomEvent<string>) {
-    this.onVoiceSearchFinalResult_(e);
+    this.handleVoiceSearchResult_(e.detail, /*submit=*/ false);
   }
 }
 
