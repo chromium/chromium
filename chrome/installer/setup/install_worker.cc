@@ -53,6 +53,7 @@
 #include "chrome/installer/setup/setup_constants.h"
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/setup/update_active_setup_version_work_item.h"
+#include "chrome/installer/setup/wof_compression.h"
 #include "chrome/installer/util/app_command.h"
 #include "chrome/installer/util/callback_work_item.h"
 #include "chrome/installer/util/conditional_work_item.h"
@@ -302,6 +303,12 @@ void AddChromeWorkItems(const InstallParams& install_params,
       temp_path,
       WorkItem::MoveTreeOptions{.check_for_duplicates = true,
                                 .lenient_deletion = true});
+
+  // Compress the locale packs now that they are in their final location.
+  // Copying a WOF compressed file expands it, and the move above falls back to
+  // a copy when the destination is on another volume or the move loses a race,
+  // so this cannot be done any earlier.
+  AddWofCompressionWorkItems(target_version_dir, install_list);
 
   // Copy installer in install directory.
   AddInstallerCopyTasks(install_params, install_list);

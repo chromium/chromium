@@ -95,6 +95,8 @@ if (is_win) {
       "update_active_setup_version_work_item.h",
       "user_hive_visitor.cc",
       "user_hive_visitor.h",
+      "wof_compression.cc",
+      "wof_compression.h",
     ]
 
     public_deps = [
@@ -163,6 +165,7 @@ if (is_win) {
       "unpack_archive_unittest.cc",
       "update_active_setup_version_work_item_unittest.cc",
       "user_hive_visitor_unittest.cc",
+      "wof_compression_unittest.cc",
     ]
 
     deps = [
