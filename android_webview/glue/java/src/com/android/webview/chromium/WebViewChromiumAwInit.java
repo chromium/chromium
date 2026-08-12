@@ -16,7 +16,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebViewDatabase;
 
 import androidx.annotation.GuardedBy;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.webview.chromium.WebViewChromium.ApiCall;
@@ -38,6 +37,7 @@ import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.StartupCallSite;
+import org.chromium.android_webview.StartupDiagnostics;
 import org.chromium.android_webview.StartupTasksRunner;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwFeatures;
@@ -89,99 +89,6 @@ public class WebViewChromiumAwInit {
 
     private static final String ASSET_PATH_WORKAROUND_HISTOGRAM_NAME =
             "Android.WebView.AssetPathWorkaroundUsed.StartChromiumLocked";
-
-    public static class WebViewStartUpDiagnostics {
-        private final Object mLock = new Object();
-
-        @GuardedBy("mLock")
-        private Long mTotalTimeUiThreadChromiumInitMillis;
-
-        @GuardedBy("mLock")
-        private Long mMaxTimePerTaskUiThreadChromiumInitMillis;
-
-        @GuardedBy("mLock")
-        private Throwable mSynchronousChromiumInitLocation;
-
-        @GuardedBy("mLock")
-        private Throwable mProviderInitOnMainLooperLocation;
-
-        @GuardedBy("mLock")
-        private Throwable mAsynchronousChromiumInitLocation;
-
-        public Long getTotalTimeUiThreadChromiumInitMillis() {
-            synchronized (mLock) {
-                return mTotalTimeUiThreadChromiumInitMillis;
-            }
-        }
-
-        public Long getMaxTimePerTaskUiThreadChromiumInitMillis() {
-            synchronized (mLock) {
-                return mMaxTimePerTaskUiThreadChromiumInitMillis;
-            }
-        }
-
-        public @Nullable Throwable getSynchronousChromiumInitLocationOrNull() {
-            synchronized (mLock) {
-                return mSynchronousChromiumInitLocation;
-            }
-        }
-
-        public @Nullable Throwable getProviderInitOnMainLooperLocationOrNull() {
-            synchronized (mLock) {
-                return mProviderInitOnMainLooperLocation;
-            }
-        }
-
-        public @Nullable Throwable getAsynchronousChromiumInitLocationOrNull() {
-            synchronized (mLock) {
-                return mAsynchronousChromiumInitLocation;
-            }
-        }
-
-        void setTotalTimeUiThreadChromiumInitMillis(Long time) {
-            synchronized (mLock) {
-                // The setter should only be called once.
-                assert (mTotalTimeUiThreadChromiumInitMillis == null);
-                mTotalTimeUiThreadChromiumInitMillis = time;
-            }
-        }
-
-        void setMaxTimePerTaskUiThreadChromiumInitMillis(Long time) {
-            synchronized (mLock) {
-                // The setter should only be called once.
-                assert (mMaxTimePerTaskUiThreadChromiumInitMillis == null);
-                mMaxTimePerTaskUiThreadChromiumInitMillis = time;
-            }
-        }
-
-        void setSynchronousChromiumInitLocation(Throwable t) {
-            synchronized (mLock) {
-                // The setter should only be called once.
-                assert (mSynchronousChromiumInitLocation == null);
-                mSynchronousChromiumInitLocation = t;
-            }
-        }
-
-        void setProviderInitOnMainLooperLocation(Throwable t) {
-            synchronized (mLock) {
-                // The setter should only be called once.
-                assert (mProviderInitOnMainLooperLocation == null);
-                mProviderInitOnMainLooperLocation = t;
-            }
-        }
-
-        void setAsynchronousChromiumInitLocation(Throwable t) {
-            synchronized (mLock) {
-                // The setter should only be called once.
-                assert (mAsynchronousChromiumInitLocation == null);
-                mAsynchronousChromiumInitLocation = t;
-            }
-        }
-    }
-
-    public interface WebViewStartUpCallback {
-        void onSuccess(WebViewStartUpDiagnostics result);
-    }
 
     @GuardedBy("mLazyInitLock")
     private CookieManagerAdapter mDefaultCookieManager;
@@ -237,8 +144,7 @@ public class WebViewChromiumAwInit {
     private final AtomicBoolean mGetDefaultCookieManagerCalled = new AtomicBoolean(false);
 
     private final WebViewChromiumFactoryProvider mFactory;
-    private final WebViewStartUpDiagnostics mWebViewStartUpDiagnostics =
-            new WebViewStartUpDiagnostics();
+    private final StartupDiagnostics mStartupDiagnostics = new StartupDiagnostics();
     private final WebViewChromiumRunQueue mWebViewStartUpCallbackRunQueue =
             new WebViewChromiumRunQueue();
 
@@ -291,7 +197,7 @@ public class WebViewChromiumAwInit {
     }
 
     void setProviderInitOnMainLooperLocation(Throwable t) {
-        mWebViewStartUpDiagnostics.setProviderInitOnMainLooperLocation(t);
+        mStartupDiagnostics.setProviderInitOnMainLooperLocation(t);
     }
 
     // Called once during the WebViewChromiumFactoryProvider initialization
@@ -611,10 +517,10 @@ public class WebViewChromiumAwInit {
             long longestUiBlockingTaskTimeMs,
             @StartupTasksRunner.StartupMode int startupMode) {
         long wallClockTimeMs = SystemClock.uptimeMillis() - startTimeMs;
-        // Record asyncStartup API metrics
-        mWebViewStartUpDiagnostics.setTotalTimeUiThreadChromiumInitMillis(totalTimeTakenMs);
-        mWebViewStartUpDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(
+        mStartupDiagnostics.setTotalTimeUiThreadChromiumInitMillis(totalTimeTakenMs);
+        mStartupDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(
                 longestUiBlockingTaskTimeMs);
+
         mWebViewStartUpCallbackRunQueue.notifyChromiumStarted();
 
         // Record histograms
@@ -653,7 +559,6 @@ public class WebViewChromiumAwInit {
         RecordHistogram.recordTimesHistogram(
                 "Android.WebView.Startup.ChromiumInitTime.WallClockTime" + startupModeString,
                 wallClockTimeMs);
-
         // Stop early trace event collection.
         // They have already been emitted if a trace session was started to capture startup.
         EarlyTraceEvent.reset();
@@ -803,7 +708,7 @@ public class WebViewChromiumAwInit {
                             ? StartupTasksRunner.StartupRequestMode.SYNC
                             : StartupTasksRunner.StartupRequestMode.ASYNC);
             if (runSynchronously) {
-                mWebViewStartUpDiagnostics.setSynchronousChromiumInitLocation(
+                mStartupDiagnostics.setSynchronousChromiumInitLocation(
                         new Throwable(
                                 "Location where Chromium init was started synchronously on the UI"
                                         + " thread"));
@@ -815,7 +720,7 @@ public class WebViewChromiumAwInit {
             }
             if (mInitState.compareAndSet(INIT_NOT_STARTED, INIT_POSTED)) {
                 if (callSite != StartupCallSite.ASYNC_WEBVIEW_STARTUP) {
-                    mWebViewStartUpDiagnostics.setAsynchronousChromiumInitLocation(
+                    mStartupDiagnostics.setAsynchronousChromiumInitLocation(
                             new Throwable(
                                     "Location where Chromium init was started asynchronously on a"
                                             + " non-UI thread"));
@@ -945,7 +850,7 @@ public class WebViewChromiumAwInit {
     // MUST NOT be called on the UI thread.
     // The callback can either be called synchronously or on the UI thread.
     public void startUpWebView(
-            @NonNull WebViewStartUpCallback callback,
+            StartupDiagnostics.Callback callback,
             boolean shouldRunUiThreadStartUpTasks,
             @Nullable Set<String> profilesToLoad) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -962,7 +867,7 @@ public class WebViewChromiumAwInit {
         }
 
         if (!shouldRunUiThreadStartUpTasks) {
-            callback.onSuccess(mWebViewStartUpDiagnostics);
+            callback.onSuccess(mStartupDiagnostics);
             return;
         }
 
@@ -977,7 +882,7 @@ public class WebViewChromiumAwInit {
                         mProfileStore.getOrCreateProfile(
                                 context, ProfileStore.CallSite.ASYNC_WEBVIEW_STARTUP);
                     }
-                    callback.onSuccess(mWebViewStartUpDiagnostics);
+                    callback.onSuccess(mStartupDiagnostics);
                 });
         postChromiumStartupIfNeeded(StartupCallSite.ASYNC_WEBVIEW_STARTUP);
     }

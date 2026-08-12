@@ -20,13 +20,13 @@ import com.android.webview.chromium.SharedStatics;
 import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebContent;
 import com.android.webview.chromium.WebViewChromiumAwInit;
-import com.android.webview.chromium.WebViewChromiumAwInit.WebViewStartUpDiagnostics;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
 import org.chromium.android_webview.AwProxyController;
 import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwTracingController;
 import org.chromium.android_webview.StartupCallSite;
+import org.chromium.android_webview.StartupDiagnostics;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.base.TraceEvent;
@@ -895,7 +895,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
 
             StartUpConfig startUpConfig = new StartUpConfig(config);
 
-            WebViewChromiumAwInit.WebViewStartUpCallback chromiumCallback =
+            StartupDiagnostics.Callback chromiumCallback =
                     result -> handleStartupResult(onSuccess, result);
 
             mAwInit.startUpWebView(
@@ -907,7 +907,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
 
     private static void handleStartupResult(
             Consumer<Consumer<BiConsumer<@StartUpResultField Integer, Object>>> callbackProvider,
-            WebViewStartUpDiagnostics result) {
+            StartupDiagnostics result) {
         // This is the "resultStream" consumer that we pass to the caller.
         // Its job is to receive the final result-handling BiConsumer.
         Consumer<BiConsumer<@StartUpResultField Integer, Object>> resultStream =
@@ -986,7 +986,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
             final WebViewStartUpCallbackBoundaryInterface webViewStartUpCallback =
                     BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                             WebViewStartUpCallbackBoundaryInterface.class, callbackInvoHandler);
-            WebViewChromiumAwInit.WebViewStartUpCallback callback =
+            StartupDiagnostics.Callback callback =
                     result -> {
                         SupportLibStartUpResult supportLibResult = new SupportLibStartUpResult();
                         supportLibResult.setTotalTimeInUiThreadMillis(
