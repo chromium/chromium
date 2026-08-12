@@ -30,8 +30,10 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
@@ -308,7 +310,22 @@ void UrlFetchRequestBase::StartAfterPrepare(
   url_loader_->SetOnResponseStartedCallback(base::BindOnce(
       &UrlFetchRequestBase::OnResponseStarted, weak_ptr_factory_.GetWeakPtr()));
 
+  url_loader_->SetOnRedirectCallback(base::BindRepeating(
+      &UrlFetchRequestBase::OnRedirect, weak_ptr_factory_.GetWeakPtr()));
+
   url_loader_->DownloadAsStream(sender_->url_loader_factory(), this);
+}
+
+void UrlFetchRequestBase::OnRedirect(
+    const GURL& url_before_redirect,
+    const net::RedirectInfo& redirect_info,
+    const network::mojom::URLResponseHead& response_head,
+    std::vector<std::string>* to_be_removed_headers) {
+  // Strip the Authorization header on cross-origin redirects to prevent
+  // sensitive access tokens from leaking to third-party destinations.
+  if (!url::IsSameOriginWith(url_before_redirect, redirect_info.new_url)) {
+    to_be_removed_headers->push_back(net::HttpRequestHeaders::kAuthorization);
+  }
 }
 
 void UrlFetchRequestBase::OnDownloadProgress(ProgressCallback progress_callback,
