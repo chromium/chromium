@@ -2591,8 +2591,6 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
         {"- Force hide ntp theme promo", kNtpThemePromoHideArm, nullptr},
 };
 
-const FeatureEntry::FeatureParam kAndroidVerticalTabs_ExpandOnHover[] = {
-    {"expand_on_hover", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_ExternalDrag[] = {
     {"external_drag", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_AutoResize[] = {
@@ -2600,7 +2598,6 @@ const FeatureEntry::FeatureParam kAndroidVerticalTabs_AutoResize[] = {
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_MultiSelect[] = {
     {"multi_select", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_All[] = {
-    {"expand_on_hover", "true"},
     {"external_drag", "true"},
     {"auto_resize", "true"},
     {"multi_select", "true"}};
@@ -2608,7 +2605,6 @@ const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {
     {"enable_by_default", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
-    {"with expand-on-hover", kAndroidVerticalTabs_ExpandOnHover, nullptr},
     {"with external-drag", kAndroidVerticalTabs_ExternalDrag, nullptr},
     {"with auto-resize", kAndroidVerticalTabs_AutoResize, nullptr},
     {"with multi-select", kAndroidVerticalTabs_MultiSelect, nullptr},
