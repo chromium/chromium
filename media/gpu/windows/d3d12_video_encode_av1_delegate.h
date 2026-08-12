@@ -8,8 +8,6 @@
 #include "third_party/microsoft_dxheaders/src/include/directx/d3d12video.h"
 // Windows SDK headers should be included after DirectX headers.
 
-#include <optional>
-
 #include "media/gpu/av1_builder.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 
@@ -131,13 +129,6 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   bool is_screen_ = false;
 
   AV1BitstreamBuilder::SequenceHeader sequence_header_;
-
-  // The HDR static metadata to be packed into metadata OBUs, refreshed from the
-  // input frame on every key frame. These are kept as members because the OBUs
-  // are packed later, from `ReadbackBitstream()`.
-  std::optional<Libgav1ObuMetadataHdrCll> hdr_cll_;
-  std::optional<Libgav1ObuMetadataHdrMdcv> hdr_mdcv_;
-
   D3D12VideoEncodeDecodedPictureBuffers<kAV1DPBMaxSize> dpb_;
   int picture_id_ = -1;
 

@@ -9,12 +9,10 @@
 #include <optional>
 
 #include "base/containers/fixed_flat_map.h"
-#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
 #include "media/gpu/windows/d3d12_video_helpers.h"
 #include "media/gpu/windows/format_utils.h"
@@ -26,9 +24,6 @@ namespace {
 
 constexpr uint32_t kDefaultOrderHintBitsMinus1 = 7;
 constexpr uint32_t kPrimaryRefNone = 7;
-
-// `MAX_LOOP_FILTER` in libaom, see AV1 spec 5.9.11.
-constexpr int kMaxLoopFilterLevel = 63;
 
 // Default value from
 // //third_party/webrtc/modules/video_coding/codecs/av1/libaom_av1_encoder.cc,
@@ -50,11 +45,8 @@ constexpr auto kVideoCodecProfileToD3D12Profile =
          {AV1PROFILE_PROFILE_PRO,
           D3D12_VIDEO_ENCODER_AV1_PROFILE_PROFESSIONAL}});
 
-// See AV1 spec 7.12 for details. The quantizer is bit depth dependent, so the
-// 8 and 10 bit lookups are kept separate, matching `ac_qlookup_QTX` and
-// `ac_qlookup_10_QTX` in
-// //third_party/libaom/source/libaom/av1/common/quant_common.c.
-constexpr std::array<int16_t, 256> kAcQuantizerLookup8Bit = {
+// See AV1 spec 7.12 for details.
+constexpr std::array<int16_t, 256> kAcQuantizerLookup = {
     4,    8,    9,    10,   11,   12,   13,   14,   15,   16,   17,   18,
     19,   20,   21,   22,   23,   24,   25,   26,   27,   28,   29,   30,
     31,   32,   33,   34,   35,   36,   37,   38,   39,   40,   41,   42,
@@ -79,80 +71,15 @@ constexpr std::array<int16_t, 256> kAcQuantizerLookup8Bit = {
     1725, 1759, 1793, 1828,
 };
 
-constexpr std::array<int16_t, 256> kAcQuantizerLookup10Bit = {
-    4,    9,    11,   13,   16,   18,   21,   24,   27,   30,   33,   37,
-    40,   44,   48,   51,   55,   59,   63,   67,   71,   75,   79,   83,
-    88,   92,   96,   100,  105,  109,  114,  118,  122,  127,  131,  136,
-    140,  145,  149,  154,  158,  163,  168,  172,  177,  181,  186,  190,
-    195,  199,  204,  208,  213,  217,  222,  226,  231,  235,  240,  244,
-    249,  253,  258,  262,  267,  271,  275,  280,  284,  289,  293,  297,
-    302,  306,  311,  315,  319,  324,  328,  332,  337,  341,  345,  349,
-    354,  358,  362,  367,  371,  375,  379,  384,  388,  392,  396,  401,
-    409,  417,  425,  433,  441,  449,  458,  466,  474,  482,  490,  498,
-    506,  514,  523,  531,  539,  547,  555,  563,  571,  579,  588,  596,
-    604,  616,  628,  640,  652,  664,  676,  688,  700,  713,  725,  737,
-    749,  761,  773,  785,  797,  809,  825,  841,  857,  873,  889,  905,
-    922,  938,  954,  970,  986,  1002, 1018, 1038, 1058, 1078, 1098, 1118,
-    1138, 1158, 1178, 1198, 1218, 1242, 1266, 1290, 1314, 1338, 1362, 1386,
-    1411, 1435, 1463, 1491, 1519, 1547, 1575, 1603, 1631, 1663, 1695, 1727,
-    1759, 1791, 1823, 1859, 1895, 1931, 1967, 2003, 2039, 2079, 2119, 2159,
-    2199, 2239, 2283, 2327, 2371, 2415, 2459, 2507, 2555, 2603, 2651, 2703,
-    2755, 2807, 2859, 2915, 2971, 3027, 3083, 3143, 3203, 3263, 3327, 3391,
-    3455, 3523, 3591, 3659, 3731, 3803, 3876, 3952, 4028, 4104, 4184, 4264,
-    4348, 4432, 4516, 4604, 4692, 4784, 4876, 4972, 5068, 5168, 5268, 5372,
-    5476, 5584, 5692, 5804, 5916, 6032, 6148, 6268, 6388, 6512, 6640, 6768,
-    6900, 7036, 7172, 7312,
-};
-
-// Estimate the loop filter level from the quantizer index, mirroring the
-// `LPF_PICK_FROM_Q` path of `av1_pick_filter_level()` in
-// //third_party/libaom/source/libaom/av1/encoder/picklpf.c. libaom fits the
-// searched level separately for each bit depth, over a quantizer taken from
-// the matching lookup:
-//   8 bit,  keyframes:    filt_guess = q * 0.06699 - 1.60817
-//   8 bit,  other frames: filt_guess = q * inter_frame_multiplier + 2.48225
-//   10 bit, all frames:   filt_guess = q * 0.01976 + 3.87252
-int EstimateLoopFilterLevel(uint8_t bit_depth,
-                            int base_q_idx,
-                            bool is_keyframe,
-                            int inter_frame_multiplier) {
-  int filter_level = 0;
-  switch (bit_depth) {
-    case 8: {
-      // In 18 bit fixed point: 0.06699 ≈ 17563/262144,
-      // -1.60817 ≈ -421574/262144, 2.48225 ≈ 650707/262144.
-      const int q = kAcQuantizerLookup8Bit[base_q_idx];
-      if (is_keyframe) {
-        filter_level = (q * 17563 - 421574 + (1 << 17)) >> 18;
-      } else {
-        filter_level = (q * inter_frame_multiplier + 650707 + (1 << 17)) >> 18;
-      }
-      break;
-    }
-    case 10: {
-      // In 20 bit fixed point: 0.01976 ≈ 20723/1048576,
-      // 3.87252 ≈ 4060632/1048576.
-      const int q = kAcQuantizerLookup10Bit[base_q_idx];
-      filter_level = (q * 20723 + 4060632 + (1 << 19)) >> 20;
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
-  return std::clamp(filter_level, 0, kMaxLoopFilterLevel);
-}
-
 AV1BitstreamBuilder::SequenceHeader FillAV1BuilderSequenceHeader(
     uint8_t num_temporal_layers,
     D3D12_VIDEO_ENCODER_AV1_PROFILE profile,
-    uint8_t bit_depth,
     const D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC& input_size,
     const D3D12_VIDEO_ENCODER_AV1_LEVEL_TIER_CONSTRAINTS& tier_level,
     const D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS& enabled_features) {
   AV1BitstreamBuilder::SequenceHeader sequence_header{};
 
   sequence_header.profile = profile;
-  sequence_header.bit_depth = bit_depth;
   sequence_header.operating_points_cnt_minus_1 = num_temporal_layers - 1;
   for (uint8_t i = 0; i <= sequence_header.operating_points_cnt_minus_1; i++) {
     sequence_header.level[i] = tier_level.Level;
@@ -620,94 +547,6 @@ GetAV1EncodingCapabilities(
   return encoding_caps;
 }
 
-// Convert the content light level metadata from `gfx::HDRMetadata` into the
-// metadata OBU representation. This is the inverse of `ToSkHdrCLLI()` in
-// //media/gpu/av1_decoder.cc.
-std::optional<Libgav1ObuMetadataHdrCll> ToHdrCll(
-    const gfx::HDRMetadata& hdr_metadata) {
-  if (!hdr_metadata.HasCLLI()) {
-    return std::nullopt;
-  }
-  const skhdr::ContentLightLevelInformation& clli = hdr_metadata.GetCLLI();
-  return Libgav1ObuMetadataHdrCll{
-      .max_cll = clli.getUint16MaxCLL(),
-      .max_fall = clli.getUint16MaxFALL(),
-  };
-}
-
-// Convert the mastering display colour volume metadata from `gfx::HDRMetadata`
-// into the metadata OBU representation. Note that the chroma/luma scales differ
-// from the H.265, so we cannot reuse H.265 impl.
-std::optional<Libgav1ObuMetadataHdrMdcv> ToHdrMdcv(
-    const gfx::HDRMetadata& hdr_metadata) {
-  if (!hdr_metadata.HasMDCV()) {
-    return std::nullopt;
-  }
-  // AV1 spec 6.7.4
-  constexpr float kChromaScale = 65536.0f;   // 2^16, for 0.16 fixed point.
-  constexpr float kLumaMaxScale = 256.0f;    // 2^8, for 24.8 fixed point.
-  constexpr float kLumaMinScale = 16384.0f;  // 2^14, for 18.14 fixed point.
-  const skhdr::MasteringDisplayColorVolume& mdcv = hdr_metadata.GetMDCV();
-  const SkColorSpacePrimaries& primaries = mdcv.fDisplayPrimaries;
-  auto to_chroma = [](float v) {
-    return base::ClampRound<uint16_t>(v * kChromaScale);
-  };
-  Libgav1ObuMetadataHdrMdcv hdr_mdcv{
-      .white_point_chromaticity_x = to_chroma(primaries.fWX),
-      .white_point_chromaticity_y = to_chroma(primaries.fWY),
-      .luminance_max = base::ClampRound<uint32_t>(
-          mdcv.fMaximumDisplayMasteringLuminance * kLumaMaxScale),
-      .luminance_min = base::ClampRound<uint32_t>(
-          mdcv.fMinimumDisplayMasteringLuminance * kLumaMinScale),
-  };
-  base::span chromaticity_x = hdr_mdcv.primary_chromaticity_x;
-  base::span chromaticity_y = hdr_mdcv.primary_chromaticity_y;
-  chromaticity_x[0] = to_chroma(primaries.fRX);
-  chromaticity_y[0] = to_chroma(primaries.fRY);
-  chromaticity_x[1] = to_chroma(primaries.fGX);
-  chromaticity_y[1] = to_chroma(primaries.fGY);
-  chromaticity_x[2] = to_chroma(primaries.fBX);
-  chromaticity_y[2] = to_chroma(primaries.fBY);
-  return hdr_mdcv;
-}
-
-// Fills the sequence header colour description from `input_color_space`.
-// Anything the conversion cannot represent is left unspecified rather than
-// written out as a reserved code point.
-void FillSequenceHeaderColorDescription(
-    const gfx::ColorSpace& input_color_space,
-    AV1BitstreamBuilder::SequenceHeader& sequence_header) {
-  const VideoColorSpace color_space =
-      VideoColorSpace::FromGfxColorSpace(input_color_space);
-
-  Libgav1ColorPrimary color_primaries = kLibgav1ColorPrimaryUnspecified;
-  if (color_space.primaries() != VideoColorSpace::PrimaryID::INVALID) {
-    color_primaries = static_cast<Libgav1ColorPrimary>(color_space.primaries());
-  }
-  Libgav1TransferCharacteristics transfer_characteristics =
-      kLibgav1TransferCharacteristicsUnspecified;
-  if (color_space.transfer() != VideoColorSpace::TransferID::INVALID) {
-    transfer_characteristics =
-        static_cast<Libgav1TransferCharacteristics>(color_space.transfer());
-  }
-
-  Libgav1MatrixCoefficients matrix_coefficients =
-      kLibgav1MatrixCoefficientsUnspecified;
-  if (color_space.matrix() != VideoColorSpace::MatrixID::INVALID &&
-      color_space.matrix() != VideoColorSpace::MatrixID::RGB) {
-    matrix_coefficients =
-        static_cast<Libgav1MatrixCoefficients>(color_space.matrix());
-  }
-
-  sequence_header.color_primaries = color_primaries;
-  sequence_header.transfer_characteristics = transfer_characteristics;
-  sequence_header.matrix_coefficients = matrix_coefficients;
-  sequence_header.color_description_present_flag =
-      color_primaries != kLibgav1ColorPrimaryUnspecified ||
-      transfer_characteristics != kLibgav1TransferCharacteristicsUnspecified ||
-      matrix_coefficients != kLibgav1MatrixCoefficientsUnspecified;
-}
-
 D3D12VideoEncodeAV1Delegate::PictureControlFlags GetAV1PictureControl(
     bool is_keyframe,
     const D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS enabled_features) {
@@ -975,9 +814,8 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
             "Failed to initialize DPB."};
   }
   sequence_header_ =
-      FillAV1BuilderSequenceHeader(GetNumTemporalLayers(), profile,
-                                   input_format_ == DXGI_FORMAT_P010 ? 10 : 8,
-                                   input_size_, tier_level, enabled_features_);
+      FillAV1BuilderSequenceHeader(GetNumTemporalLayers(), profile, input_size_,
+                                   tier_level, enabled_features_);
   picture_id_ = -1;
   current_rate_control_ = rate_control_;
 
@@ -1123,11 +961,6 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
   // Enable SCC tools will turn off CDEF, loop filter, etc on I-frame.
   if (!picture_ctrl_.allow_intrabc) {
     if (software_brc_) {
-      // TODO(crbug.com/537818862): these levels are 8 bit only. libaom's RTC
-      // rate controller hardcodes `AOM_BITS_8` and `AomAV1RateControlRtcConfig`
-      // has no bit depth field, so 10 bit streams are filtered too weakly here.
-      // Fixing this needs a libaom change to plumb the bit depth through, see
-      // also https://aomedia.issues.chromium.org/issues/544795255.
       const aom::AV1LoopfilterLevel lf = software_brc_->GetLoopfilterLevel();
       base::span(picture_params_.LoopFilter.LoopFilterLevel)[0] =
           base::span(lf.filter_level)[0];
@@ -1136,13 +969,24 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
       picture_params_.LoopFilter.LoopFilterLevelU = lf.filter_level_u;
       picture_params_.LoopFilter.LoopFilterLevelV = lf.filter_level_v;
     } else {
-      // libaom boosts the strength for anything above CIF, see the
-      // `inter_frame_multiplier` computation in picklpf.c.
-      const int inter_frame_multiplier =
+      // Calculate loop filter levels based on libaom's approach from
+      // //third_party/libaom/source/libaom/av1/encoder/picklpf.c.
+      // These values were determined by linear fitting the result of the
+      // searched level for 8 bit depth:
+      // Keyframes: filt_guess = q * 0.06699 - 1.60817
+      // Other frames: filt_guess = q * inter_frame_multiplier + 2.48225
+      int filter_level = 0;
+      const int q = kAcQuantizerLookup[base_q_idx];
+      int inter_frame_multiplier =
           input_size_.Width * input_size_.Height > 352 * 288 ? 12034 : 6017;
-      const int filter_level =
-          EstimateLoopFilterLevel(sequence_header_.bit_depth, base_q_idx,
-                                  request_keyframe, inter_frame_multiplier);
+      // Convert to fixed point: 0.06699 ≈ 17563/262144, -1.60817 ≈
+      // -421574/262144, 2.48225 ≈ 650707/26214.
+      if (request_keyframe) {
+        filter_level = (q * 17563 - 421574 + (1 << 17)) >> 18;
+      } else {
+        filter_level = (q * inter_frame_multiplier + 650707 + (1 << 17)) >> 18;
+      }
+      filter_level = std::clamp(filter_level, 0, 63);
       picture_params_.LoopFilter.LoopFilterLevel[0] = filter_level;
       picture_params_.LoopFilter.LoopFilterLevel[1] = filter_level;
       if (filter_level > 0) {
@@ -1204,21 +1048,25 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::EncodeImpl(
     return result;
   }
 
-  // The sequence header OBU is only emitted on key frames, so that is also
-  // where the colour description and the HDR metadata are refreshed.
+  // For now we only update sequence header for Rec.601 and Rec.709 on key
+  // frames.
   if (IsKeyFrame()) {
     sequence_header_.color_range =
         input_color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL
             ? kLibgav1ColorRangeFull
             : kLibgav1ColorRangeStudio;
-    FillSequenceHeaderColorDescription(input_color_space, sequence_header_);
-
-    if (sequence_header_.bit_depth == 10 && input_color_space.IsHDR()) {
-      hdr_cll_ = ToHdrCll(input_hdr_metadata);
-      hdr_mdcv_ = ToHdrMdcv(input_hdr_metadata);
-    } else {
-      hdr_cll_.reset();
-      hdr_mdcv_.reset();
+    if (IsRec601(input_color_space)) {
+      sequence_header_.color_primaries = kLibgav1ColorPrimaryBt601;
+      sequence_header_.transfer_characteristics =
+          kLibgav1TransferCharacteristicsBt601;
+      sequence_header_.matrix_coefficients = kLibgav1MatrixCoefficientsBt601;
+      sequence_header_.color_description_present_flag = true;
+    } else if (IsRec709(input_color_space)) {
+      sequence_header_.color_primaries = kLibgav1ColorPrimaryBt709;
+      sequence_header_.transfer_characteristics =
+          kLibgav1TransferCharacteristicsBt709;
+      sequence_header_.matrix_coefficients = kLibgav1MatrixCoefficientsBt709;
+      sequence_header_.color_description_present_flag = true;
     }
   }
 
@@ -1318,24 +1166,6 @@ size_t D3D12VideoEncodeAV1Delegate::PackAV1BitstreamHeader(
     CHECK_EQ(seq_obu.OutstandingBits() % 8, 0ull);
     pack_header.WriteValueInLeb128(seq_obu.OutstandingBits() / 8);
     pack_header.AppendBitstreamBuffer(std::move(seq_obu));
-
-    // Pack the HDR static metadata OBUs, see section 5.8 of the AV1
-    // specification. They must precede the frame OBU they apply to.
-    auto pack_metadata_obu = [&pack_header](AV1BitstreamBuilder metadata_obu) {
-      pack_header.WriteOBUHeader(/*type=*/libgav1::kObuMetadata,
-                                 /*has_size=*/true);
-      CHECK_EQ(metadata_obu.OutstandingBits() % 8, 0ull);
-      pack_header.WriteValueInLeb128(metadata_obu.OutstandingBits() / 8);
-      pack_header.AppendBitstreamBuffer(std::move(metadata_obu));
-    };
-    if (hdr_cll_.has_value()) {
-      pack_metadata_obu(
-          AV1BitstreamBuilder::BuildHDRCLLMetadataOBU(hdr_cll_.value()));
-    }
-    if (hdr_mdcv_.has_value()) {
-      pack_metadata_obu(
-          AV1BitstreamBuilder::BuildHDRMDCVMetadataOBU(hdr_mdcv_.value()));
-    }
   }
   // Pack Frame OBU, see section 5.9 of the AV1 specification.
   pack_header.WriteOBUHeader(/*type=*/libgav1::kObuFrame, /*has_size=*/true,
