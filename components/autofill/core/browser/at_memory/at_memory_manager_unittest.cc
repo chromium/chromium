@@ -2087,9 +2087,9 @@ TEST_F(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
 
   // Verify that the personal context notice card is prepended first, followed
   // by the search result entry.
-  ASSERT_EQ(2u, suggestions.size());
-  EXPECT_EQ(SuggestionType::kPersonalContextNotice, suggestions[0].type);
-  EXPECT_EQ(SuggestionType::kAtMemorySearchResult, suggestions[1].type);
+  EXPECT_THAT(suggestions,
+              SuggestionVectorIdsAre(SuggestionType::kPersonalContextNotice,
+                                     SuggestionType::kAtMemorySearchResult));
 }
 
 // Tests that during the fetching state (while search is in progress), the UI
@@ -2147,9 +2147,8 @@ TEST_F(AtMemoryManagerTest, FetchingState_Suggestions_NoticeAccepted) {
 
 // Tests that when Glic is enabled and search returns `kUnsupportedQuery`,
 // the unsupported query suggestion is returned.
-TEST_F(
-    AtMemoryManagerTest,
-    OnSearchSubmitted_UnsupportedQuery_GlicEnabled_UnsupportedQuerySuggestion) {
+TEST_F(AtMemoryManagerTest,
+       OnSearchSubmitted_UnsupportedQuery_GlicEnabled_FallbackSuggestion) {
   base::HistogramTester histogram_tester;
 
   autofill_client().set_is_glic_enabled(true);
@@ -2162,8 +2161,8 @@ TEST_F(
 
   manager().OnSearchSubmitted(u"query");
 
-  ASSERT_EQ(final_suggestions.size(), 1u);
-  EXPECT_EQ(final_suggestions[0].type, SuggestionType::kOpenGemini);
+  EXPECT_THAT(final_suggestions,
+              SuggestionVectorIdsAre(SuggestionType::kOpenGemini));
 
   // Verify that we still logged that some sort of suggestion was shown to the
   // user despite it not being an AtMemory suggestion.
@@ -2184,8 +2183,8 @@ TEST_F(AtMemoryManagerTest,
 
   manager().OnSearchSubmitted(u"query");
 
-  ASSERT_EQ(final_suggestions.size(), 1u);
-  EXPECT_EQ(final_suggestions[0].type, SuggestionType::kAtMemorySearchResult);
+  ASSERT_THAT(final_suggestions,
+              SuggestionVectorIdsAre(SuggestionType::kAtMemorySearchResult));
   EXPECT_EQ(final_suggestions[0].main_text.value,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_DATA));
 }
