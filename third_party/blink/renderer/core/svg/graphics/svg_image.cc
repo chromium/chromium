@@ -388,6 +388,9 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
   if (RuntimeEnabledFeatures::SvgImageNonUniformScalingFixEnabled()) {
     container_scale =
         gfx::Vector2dF(local_matrix.getScaleX(), local_matrix.getScaleY());
+    // We assume that `local_matrix` contains zoom, so we need to remove it
+    // from the computed scale factors.
+    container_scale.InvScale(draw_info.Zoom());
   }
   const gfx::Rect cull_rect(gfx::ToEnclosingRect(unzoomed_src_rect));
   std::optional<PaintRecord> record =
@@ -528,6 +531,9 @@ void SVGImage::DrawInternal(const DrawInfo& draw_info,
     container_scale =
         gfx::Vector2dF(src_to_dst.rc(0, 0) * residual_scale.width(),
                        src_to_dst.rc(1, 1) * residual_scale.height());
+    // `dst_rect` is in zoomed coordinates, so we need to remove zoom from the
+    // computed scale factors.
+    container_scale.InvScale(draw_info.Zoom());
   }
 
   const gfx::Rect cull_rect(gfx::ToEnclosingRect(unzoomed_src_rect));
