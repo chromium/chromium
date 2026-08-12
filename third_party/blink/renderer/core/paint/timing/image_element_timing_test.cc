@@ -182,4 +182,46 @@ TEST_P(ImageElementTimingTest, BackgroundImageRemoved) {
   EXPECT_EQ(ImagesNotifiedSize(), 0u);
 }
 
+TEST_P(ImageElementTimingTest, LateAddedElementTimingBeforePaint) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target" style='width: 100px; height: 100px;'/>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // This image should not be tracked because it hasn't finished loading yet.
+  EXPECT_EQ(ImagesNotifiedSize(), 0u);
+
+  // Add the elementtiming attribute dynamically after the image before the
+  // image has finished loading and is ready for to be rendered.
+  GetElementById("target")->setAttribute(html_names::kElementtimingAttr,
+                                         AtomicString("test"));
+  ImageResourceContent* image = SetImageContent("target", 100, 100);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(ImagesNotifiedContains(
+      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
+  EXPECT_EQ(ImagesNotifiedSize(), 1u);
+}
+
+TEST_P(ImageElementTimingTest, LateAddedElementTimingAfterPaint) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="to-be-removed">Text</div>
+    <img id="target" style='width: 100px; height: 100px;'/>
+  )HTML");
+  ImageResourceContent* image = SetImageContent("target", 100, 100);
+  UpdateAllLifecyclePhasesForTest();
+  // This image should not be tracked because the elementtiming attribute is not
+  // set.
+  EXPECT_FALSE(ImagesNotifiedContains(
+      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
+
+  // Add the elementtiming attribute dynamically after the image was already
+  // rendered.
+  GetElementById("target")->setAttribute(html_names::kElementtimingAttr,
+                                         AtomicString("test"));
+  // Remove the <div>. This causes a layout shift which should cause the image
+  // to repaint, but this should not trigger an elementtiming entry.
+  GetElementById("to-be-removed")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(ImagesNotifiedSize(), 0u);
+}
+
 }  // namespace blink
