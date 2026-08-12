@@ -54,6 +54,11 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
   base::CallbackListSubscription ensure_fgs_started_subscription_;
 };
 
+void CreateBackgroundTabForTask(
+    Profile* profile,
+    TaskId task_id,
+    ActorKeyedService::CreateActorTabCallback callback);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_ANDROID_ACTOR_KEYED_SERVICE_ANDROID_H_

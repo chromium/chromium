@@ -8,9 +8,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
@@ -170,5 +172,12 @@ public class ActorKeyedService {
 
         void notifyBackgroundSetupFailed(
                 long nativeActorKeyedServiceAndroid, String glicTriggerMessageId);
+    }
+
+    @CalledByNative
+    private void createBackgroundTabForTask(
+            Profile profile, @ActorTaskId int taskId, Callback<@Nullable Tab> callback) {
+        ActorForegroundServiceController.get()
+                .provisionBackgroundTabForTask(profile, taskId, callback);
     }
 }

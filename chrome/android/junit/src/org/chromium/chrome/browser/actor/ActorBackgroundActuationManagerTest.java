@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.actor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -23,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -246,5 +248,83 @@ public class ActorBackgroundActuationManagerTest {
         verify(mOffscreenRenderingManager).stopOffscreenRendering(tab2);
 
         TabStateExtractor.resetTabStatesForTesting();
+    }
+
+    @Test
+    public void testProvisionBackgroundTabForTask_Success() {
+        @SuppressWarnings("unchecked")
+        Callback<Tab> callback = mock(Callback.class);
+        mManager.provisionBackgroundTabForTask(mProfile, 123, callback);
+
+        // Verify offscreen rendering started
+        verify(mOffscreenRenderingManager).startOffscreenRendering(eq(mTab), anyInt(), anyInt());
+
+        // Capture and trigger page load success
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(mTab).addObserver(captor.capture());
+        TabObserver observer = captor.getValue();
+
+        observer.onPageLoadFinished(mTab, new GURL(TEST_URL));
+
+        // Verify callback invoked with tab
+        verify(callback).onResult(mTab);
+    }
+
+    @Test
+    public void testProvisionBackgroundTabForTask_ExistingSession() {
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(123);
+        when(mTab.getId()).thenReturn(100);
+        when(mTab.getProfile()).thenReturn(mProfile);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+
+        @SuppressWarnings("unchecked")
+        Callback<Tab> callback = mock(Callback.class);
+        mManager.provisionBackgroundTabForTask(mProfile, 123, callback);
+
+        verify(mOffscreenRenderingManager).startOffscreenRendering(eq(mTab), anyInt(), anyInt());
+
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(mTab, atLeastOnce()).addObserver(captor.capture());
+        TabObserver observer = captor.getValue();
+
+        observer.onPageLoadFinished(mTab, new GURL(TEST_URL));
+        verify(callback).onResult(mTab);
+    }
+
+    @Test
+    public void testProvisionBackgroundTabForTask_PageLoadFailed() {
+        @SuppressWarnings("unchecked")
+        Callback<Tab> callback = mock(Callback.class);
+        mManager.provisionBackgroundTabForTask(mProfile, 123, callback);
+
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(mTab, atLeastOnce()).addObserver(captor.capture());
+        TabObserver observer = captor.getValue();
+
+        observer.onPageLoadFailed(mTab, -1);
+
+        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        verify(mTab).destroy();
+        verify(callback).onResult(null);
+    }
+
+    @Test
+    public void testProvisionBackgroundTabForTask_Crash() {
+        @SuppressWarnings("unchecked")
+        Callback<Tab> callback = mock(Callback.class);
+        mManager.provisionBackgroundTabForTask(mProfile, 123, callback);
+
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(mTab, atLeastOnce()).addObserver(captor.capture());
+        TabObserver observer = captor.getValue();
+
+        observer.onCrash(mTab);
+
+        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        verify(mTab).destroy();
+        verify(callback).onResult(null);
     }
 }

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -164,6 +165,37 @@ void ActorKeyedServiceAndroid::EnsureForegroundServiceStarted(
   Java_ActorKeyedService_ensureForegroundServiceStarted(
       env, java_obj_,
       base::android::ConvertUTF8ToJavaString(env, glic_trigger_message_id));
+}
+
+void CreateBackgroundTabForTask(
+    Profile* profile,
+    TaskId task_id,
+    ActorKeyedService::CreateActorTabCallback callback) {
+  ActorKeyedService* service =
+      ActorKeyedServiceFactory::GetActorKeyedService(profile);
+  if (!service) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  ActorKeyedServiceAndroid* bridge = ActorKeyedServiceAndroid::Get(service);
+  JNIEnv* env = AttachCurrentThread();
+  auto j_callback = base::android::ToJniCallback(
+      env, base::BindOnce(
+               [](ActorKeyedService::CreateActorTabCallback callback,
+                  const base::android::JavaRef<jobject>& j_tab) {
+                 tabs::TabInterface* tab = nullptr;
+                 if (j_tab) {
+                   if (TabAndroid* tab_android = TabAndroid::GetNativeTab(
+                           AttachCurrentThread(), j_tab)) {
+                     tab = tab_android;
+                   }
+                 }
+                 std::move(callback).Run(tab);
+               },
+               std::move(callback)));
+  Java_ActorKeyedService_createBackgroundTabForTask(
+      env, bridge->GetJavaObject(), profile->GetJavaObject(), task_id.value(),
+      j_callback);
 }
 
 }  // namespace actor

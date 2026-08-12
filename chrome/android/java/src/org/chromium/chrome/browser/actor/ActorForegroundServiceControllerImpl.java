@@ -14,6 +14,7 @@ import android.os.IBinder;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
@@ -140,6 +142,14 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
             mBackgroundActuationManager.destroy();
             mBackgroundActuationManager = null;
         }
+    }
+
+    @Override
+    public void provisionBackgroundTabForTask(
+            Profile profile, int taskId, Callback<@Nullable Tab> callback) {
+        ThreadUtils.assertOnUiThread();
+        assert mBackgroundActuationManager != null;
+        mBackgroundActuationManager.provisionBackgroundTabForTask(profile, taskId, callback);
     }
 
     @Override

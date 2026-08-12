@@ -75,7 +75,7 @@ public class ActorTabStateHelper {
             BackgroundSession.BackgroundTabData tabData =
                     new BackgroundSession.BackgroundTabData(
                             originalTab, placeholderTab.getId(), originalIndex, windowId);
-            BackgroundSession session = getSessionForTask(sessions, taskId);
+            BackgroundSession session = BackgroundSession.getSessionForTask(sessions, taskId);
             if (session != null) {
                 session.addTabData(tabData);
             } else {
@@ -145,15 +145,5 @@ public class ActorTabStateHelper {
         Profile profile = model.getProfile();
         if (profile == null) return null;
         return ActorKeyedServiceFactory.getForProfile(profile.getOriginalProfile());
-    }
-
-    private static @Nullable BackgroundSession getSessionForTask(
-            List<BackgroundSession> sessions, int taskId) {
-        for (BackgroundSession session : sessions) {
-            if (session.getTaskId() != null && session.getTaskId() == taskId) {
-                return session;
-            }
-        }
-        return null;
     }
 }

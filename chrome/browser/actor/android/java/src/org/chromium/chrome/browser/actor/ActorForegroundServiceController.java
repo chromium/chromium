@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.actor;
 import android.app.Notification;
 import android.content.Intent;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.Set;
@@ -72,6 +75,18 @@ public interface ActorForegroundServiceController {
 
     /** Destroys the background actuation manager and cleans up its resources. */
     default void destroyBackgroundActuationManager() {}
+
+    /**
+     * Provisions an offscreen tab on demand for the specified task ID.
+     *
+     * @param profile The profile to use.
+     * @param taskId The task ID.
+     * @param callback Callback invoked with the prepared tab, or null if setup failed.
+     */
+    default void provisionBackgroundTabForTask(
+            Profile profile, int taskId, Callback<@Nullable Tab> callback) {
+        callback.onResult(null);
+    }
 
     /**
      * Creates an Intent that tells Chrome to bring an Activity for a particular Tab back to the

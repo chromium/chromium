@@ -23,6 +23,10 @@
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/application_status_listener.h"
+#include "chrome/browser/actor/android/actor_keyed_service_android.h"
+#endif
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
@@ -205,6 +209,8 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
 
   // Special case: if the initiator tab is the NTP, no need to create a new
   // tab, reuse it.
+  // TODO(crbug.com/537432406): Check for about:blank URL in addition to NTP to
+  // reuse empty tabs.
   if (initiator_tab && search::IsNTPURL(initiator_tab->GetContents()
                                             ->GetPrimaryMainFrame()
                                             ->GetLastCommittedURL())) {
@@ -230,6 +236,47 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
                              initiator_tab);
     return;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::android::ApplicationStatusListener::HasVisibleActivities()) {
+    CreateBackgroundTabForTask(
+        profile_, task_id,
+        base::BindOnce(
+            [](base::WeakPtr<ActorKeyedService> service, TaskId task_id,
+               CreateActorTabCallback callback, tabs::TabInterface* tab) {
+              if (!service) {
+                if (tab) {
+                  tab->Close();
+                }
+                std::move(callback).Run(nullptr);
+                return;
+              }
+              if (!tab) {
+                service->GetJournal().Log(
+                    GURL(), task_id, "CreateBackgroundTabForTask",
+                    JournalDetailsBuilder()
+                        .AddError("Background tab creation failed")
+                        .Build());
+              } else {
+                service->GetJournal().Log(
+                    GURL(), task_id, "CreateBackgroundTabForTask",
+                    JournalDetailsBuilder().Add("Success", true).Build());
+              }
+              ActorTask* task = service->GetTask(task_id);
+              if (!task) {
+                if (tab) {
+                  tab->Close();
+                }
+                std::move(callback).Run(nullptr);
+                return;
+              }
+              OnCreateActorTabComplete(*task, std::move(callback),
+                                       service->GetJournal(), tab);
+            },
+            weak_ptr_factory_.GetWeakPtr(), task_id, std::move(callback)));
+    return;
+  }
+#endif
 
   // If the initiating tab is still live, create the new tab in the same window.
   if (initiator_tab) {

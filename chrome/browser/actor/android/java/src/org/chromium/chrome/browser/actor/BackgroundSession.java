@@ -172,4 +172,15 @@ public class BackgroundSession {
     public @Nullable String getGlicTriggerMessageId() {
         return mGlicTriggerMessageId;
     }
+
+    /** Finds a session with matching task ID from a list of sessions. */
+    public static @Nullable BackgroundSession getSessionForTask(
+            List<BackgroundSession> sessions, int taskId) {
+        for (BackgroundSession session : sessions) {
+            if (session.getTaskId() != null && session.getTaskId() == taskId) {
+                return session;
+            }
+        }
+        return null;
+    }
 }
