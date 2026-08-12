@@ -73,6 +73,9 @@ bool NV12xScale(const VideoFrame& src_frame,
 bool NV12xToI420x(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
+void NV24ToI444(const VideoFrame& src_frame, VideoFrame& dst_frame);
+
+// Scaling not supported.
 bool NV12xToP010(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.

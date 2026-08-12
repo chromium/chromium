@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/base/video_frame_converter.h"
 
 #include "base/trace_event/trace_event.h"
@@ -60,13 +59,17 @@ EncoderStatus VideoFrameConverter::ConvertAndScale(const VideoFrame& src_frame,
 
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_I420A:
+    case PIXEL_FORMAT_I422:
+    case PIXEL_FORMAT_I422A:
     case PIXEL_FORMAT_I444:
     case PIXEL_FORMAT_I444A:
       return ConvertAndScaleI4xxx(&src_frame, dest_frame);
 
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
-      return ConvertAndScaleNV12x(&src_frame, dest_frame);
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_NV24:
+      return ConvertAndScaleNVxx(&src_frame, dest_frame);
 
     case PIXEL_FORMAT_P010LE:
     case PIXEL_FORMAT_P210LE:
@@ -124,6 +127,12 @@ VideoFrameConverter::WrapBiplanarFrameInTriplanarFrame(
       break;
     case PIXEL_FORMAT_NV12A:
       target_format = PIXEL_FORMAT_I420A;
+      break;
+    case PIXEL_FORMAT_NV16:
+      target_format = PIXEL_FORMAT_I422;
+      break;
+    case PIXEL_FORMAT_NV24:
+      target_format = PIXEL_FORMAT_I444;
       break;
     case PIXEL_FORMAT_P010LE:
       target_format = PIXEL_FORMAT_YUV420P10;
@@ -285,7 +294,11 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleI4xxx(
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A: {
       if (src_frame->visible_rect().size() ==
-          dest_frame.visible_rect().size()) {
+              dest_frame.visible_rect().size() &&
+          (src_frame->format() == PIXEL_FORMAT_I420 ||
+           src_frame->format() == PIXEL_FORMAT_I420A ||
+           src_frame->format() == PIXEL_FORMAT_I444 ||
+           src_frame->format() == PIXEL_FORMAT_I444A)) {
         auto convert_fn = src_frame->format() == PIXEL_FORMAT_I420 ||
                                   src_frame->format() == PIXEL_FORMAT_I420A
                               ? internals::I420xToNV12x
@@ -373,11 +386,36 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleI4xxx(
   }
 }
 
-EncoderStatus VideoFrameConverter::ConvertAndScaleNV12x(
+EncoderStatus VideoFrameConverter::ConvertAndScaleNVxx(
     const VideoFrame* src_frame,
     VideoFrame& dest_frame) {
+  DCHECK(src_frame->format() == PIXEL_FORMAT_NV12 ||
+         src_frame->format() == PIXEL_FORMAT_NV12A ||
+         src_frame->format() == PIXEL_FORMAT_NV16 ||
+         src_frame->format() == PIXEL_FORMAT_NV24);
+
   // Converting between YUV formats doesn't change the color space.
   dest_frame.set_color_space(src_frame->ColorSpace());
+
+  if (src_frame->format() == PIXEL_FORMAT_NV16 ||
+      src_frame->format() == PIXEL_FORMAT_NV24) {
+    if (src_frame->format() == PIXEL_FORMAT_NV24 &&
+        dest_frame.format() == PIXEL_FORMAT_I444 &&
+        src_frame->visible_rect().size() == dest_frame.visible_rect().size()) {
+      internals::NV24ToI444(*src_frame, dest_frame);
+      return OkStatus();
+    }
+
+    // De-interleave NV16/NV24 and reuse the 8-bit planar conversion path.
+    auto tmp_frame = WrapBiplanarFrameInTriplanarFrame(*src_frame);
+    if (!tmp_frame) {
+      return EncoderStatus::Codes::kScalingError;
+    }
+
+    internals::SplitUV(*src_frame, *tmp_frame);
+    tmp_frame->set_color_space(src_frame->ColorSpace());
+    return ConvertAndScaleI4xxx(tmp_frame.get(), dest_frame);
+  }
 
   switch (dest_frame.format()) {
     case PIXEL_FORMAT_I420:
@@ -446,7 +484,7 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleNV12x(
       if (!tmp_frame) {
         return EncoderStatus::Codes::kScalingError;
       }
-      auto status = ConvertAndScaleNV12x(src_frame, *tmp_frame);
+      auto status = ConvertAndScaleNVxx(src_frame, *tmp_frame);
       if (!status.is_ok()) {
         return status;
       }

@@ -257,9 +257,9 @@ CreateMockDemuxerStream(DemuxerStream::Type type, bool encrypted);
 //   YYYYRRRR
 //   BBBBGGGG
 //
-// Supports 8-bit xRGB, BGRx, NV12x, and I4xxx formats. If `xor_mask` is
-// provided the standard four colors will be XOR'd with the provided 00RRGGBB
-// value (alpha value must be zero).
+// Supports 8-bit xRGB, BGRx, NV12x, NV16, NV24, and I4xxx formats. If
+// `xor_mask` is provided the standard four colors will be XOR'd with the
+// provided 00RRGGBB value (alpha value must be zero).
 void FillFourColors(VideoFrame& dest_frame,
                     std::optional<uint32_t> xor_mask = std::nullopt);
 

@@ -391,9 +391,15 @@ void MergeUV(const VideoFrame& src_frame, VideoFrame& dest_frame) {
 
 void SplitUV(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   DCHECK(src_frame.format() == PIXEL_FORMAT_NV12 ||
-         src_frame.format() == PIXEL_FORMAT_NV12A);
+         src_frame.format() == PIXEL_FORMAT_NV12A ||
+         src_frame.format() == PIXEL_FORMAT_NV16 ||
+         src_frame.format() == PIXEL_FORMAT_NV24);
   DCHECK(dest_frame.format() == PIXEL_FORMAT_I420 ||
-         dest_frame.format() == PIXEL_FORMAT_I420A);
+         dest_frame.format() == PIXEL_FORMAT_I420A ||
+         dest_frame.format() == PIXEL_FORMAT_I422 ||
+         dest_frame.format() == PIXEL_FORMAT_I444);
+  DCHECK_EQ(VideoPixelFormatToChromaSampling(src_frame.format()),
+            VideoPixelFormatToChromaSampling(dest_frame.format()));
   DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
   libyuv::SplitUVPlane(src_frame.visible_data(VideoFrame::Plane::kUV),
                        src_frame.stride(VideoFrame::Plane::kUV),
@@ -471,6 +477,19 @@ bool NV12xToI420x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
                     dest_frame.visible_rect().width(),
                     dest_frame.visible_rect().height());
   return true;
+}
+
+void NV24ToI444(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+  DCHECK_EQ(src_frame.format(), PIXEL_FORMAT_NV24);
+  DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_I444);
+  DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
+  libyuv::CopyPlane(src_frame.visible_data(VideoFrame::Plane::kY),
+                    src_frame.stride(VideoFrame::Plane::kY),
+                    dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
+                    dest_frame.stride(VideoFrame::Plane::kY),
+                    dest_frame.visible_rect().width(),
+                    dest_frame.visible_rect().height());
+  SplitUV(src_frame, dest_frame);
 }
 
 bool NV12xToP010(const VideoFrame& src_frame, VideoFrame& dest_frame) {
