@@ -40,28 +40,37 @@ namespace {
 using UserDecision = AutofillClient::AddressPromptUserDecision;
 
 // When the profile is observed without explicit country information, Autofill
-// guesses it's country. Detecting a profile as a duplicate can fail if we guess
+// guesses its country. Detecting a profile as a duplicate can fail if we guess
 // incorrectly. This function checks if we have reason to believe that the
 // country of `profile` was guessed incorrectly. It does so by checking whether
-// any of the `existing_profiles` becomes mergeable after removing the country
+// any of `existing_profiles` becomes mergeable after removing the country
 // of `profile`.
-// Comparisons are done using `comparator`. Note that for two countries to be
+// Comparisons are done using `app_locale`. Note that for two countries to be
 // mergeable, they must share the same address model.
 bool ShouldCountryApproximationBeRemoved(
     const AutofillProfile& profile,
-    const std::vector<const AutofillProfile*>& existing_profiles,
-    const AutofillProfileComparator& comparator) {
-  auto IsMergeableWithExistingProfiles = [&](const AutofillProfile& profile) {
-    return std::ranges::any_of(existing_profiles, [&](auto* existing_profile) {
-      return comparator.AreMergeable(profile, *existing_profile);
-    });
-  };
-  if (IsMergeableWithExistingProfiles(profile)) {
+    base::span<const AutofillProfile* const> existing_profiles,
+    std::string_view app_locale) {
+  auto is_mergeable_with_existing_profiles =
+      [&existing_profiles, &app_locale](AutofillProfile& profile_to_check) {
+        return std::ranges::any_of(
+            existing_profiles, [&profile_to_check, &app_locale](
+                                   const AutofillProfile* existing_profile) {
+              return profile_to_check.MergeDataFrom(*existing_profile,
+                                                    app_locale) !=
+                     AutofillProfile::ProfileMergeResult::kMergeFailed;
+            });
+      };
+
+  AutofillProfile profile_with_country = profile;
+  if (is_mergeable_with_existing_profiles(profile_with_country)) {
     return false;
   }
-  AutofillProfile without_country = profile;
-  without_country.ClearFields({ADDRESS_HOME_COUNTRY});
-  return IsMergeableWithExistingProfiles(without_country);
+
+  AutofillProfile profile_without_country = profile;
+  profile_without_country.ClearFields({ADDRESS_HOME_COUNTRY});
+
+  return is_mergeable_with_existing_profiles(profile_without_country);
 }
 
 // Checks if `unedited_autofilled_profile_guids` set is populated in a way that
@@ -153,37 +162,36 @@ bool ProfileImportProcess::UserAccepted() const {
 }
 
 void ProfileImportProcess::DetermineProfileImportType() {
-  AutofillProfileComparator comparator(app_locale_);
-  // If there is reason to believe that the `observed_profile_`'s country was
-  // complemented incorrectly, remove the country.
+  // TODO(crbug.com/453945181): Currently `ShouldCountryApproximationBeRemoved`
+  // and `GetImportCandidates` double the work and should be optimised.
+
+  //  If there is reason to believe that the `observed_profile_`'s country was
+  //  complemented incorrectly, remove the country.
   if (import_metadata_.country_source !=
           ProfileCountrySource::kExplicitlyObserved &&
       ShouldCountryApproximationBeRemoved(observed_profile_,
                                           address_data_manager_->GetProfiles(),
-                                          comparator)) {
+                                          app_locale_)) {
     observed_profile_.ClearFields({ADDRESS_HOME_COUNTRY});
     import_metadata_.country_source = ProfileCountrySource::kNoCountry;
   }
 
-  // Existing profiles that are not mergeable with the `observed_profile_`
-  // cannot be altered by this import. If none remain, no update prompts can be
-  // shown and the import corresponds to a new profile.
-  std::vector<const AutofillProfile*> mergeable_profiles =
+  // `observed_profile_` might be mergeable with some existing profiles.
+  // Create import candidates by merging `observed_profile_` into existing
+  // proifles. Note that `mergeable_profiles`'s frecency ordering is retained.
+  std::vector<ImportCandidate> candidates = GetImportCandidates(
       address_data_manager_->GetProfiles(
-          AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
-  std::erase_if(mergeable_profiles, [&](const AutofillProfile* p) {
-    return !comparator.AreMergeable(*p, observed_profile_);
-  });
-  if (mergeable_profiles.empty()) {
+          AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc),
+      observed_profile());
+
+  // Existing profiles that are not mergeable with `observed_profile_`
+  // cannot be altered by this import. If no existing profiles are mergeable
+  // with `observed_profile_`, no update prompts can be shown and the import
+  // corresponds to a new profile.
+  if (candidates.empty()) {
     DetermineNewProfileImportType();
     return;
   }
-
-  // The `observed_profile_` is mergeable with some existing profiles. Create
-  // import candidates by merging `observed_profile_` into `mergeable_profiles`.
-  // Note that `mergeable_profiles`'s frecency ordering is retained.
-  std::vector<ImportCandidate> candidates =
-      GetImportCandidates(mergeable_profiles);
 
   // Attempt to show an update prompt (prioritized over migrations).
   // Assume the user autofilled the submitted form. In this case, Chrome
@@ -338,32 +346,36 @@ bool ProfileImportProcess::QualifiesForMigrateProfilePrompt(
 
 std::vector<ProfileImportProcess::ImportCandidate>
 ProfileImportProcess::GetImportCandidates(
-    base::span<const AutofillProfile*> mergeable_profiles) const {
+    base::span<const AutofillProfile* const> existing_profiles,
+    const AutofillProfile& observed_profile) const {
+  using ProfileMergeResult = AutofillProfile::ProfileMergeResult;
+  using Change = ImportCandidate::Change;
   std::vector<ImportCandidate> result;
-  result.reserve(mergeable_profiles.size());
-  for (const AutofillProfile* merge_candidate : mergeable_profiles) {
-    AutofillProfile merged_profile = *merge_candidate;
-    const AutofillProfile::ProfileMergeResult merge_result =
-        merged_profile.MergeDataFrom(observed_profile_, app_locale_);
-    CHECK_NE(merge_result, AutofillProfile::ProfileMergeResult::kMergeFailed);
-    const bool was_profile_altered =
-        merge_result ==
-        AutofillProfile::ProfileMergeResult::kMergeSucceededWithModification;
-    ImportCandidate::Change change_type = [&] {
-      if (!was_profile_altered) {
-        return ImportCandidate::Change::kNoChange;
-      } else if (AutofillProfileComparator::
-                     ProfilesHaveDifferentSettingsVisibleValues(
-                         *merge_candidate, merged_profile, app_locale_)) {
-        return ImportCandidate::Change::kSettingVisibleChange;
-      } else {
-        return ImportCandidate::Change::kNonSettingVisibleChange;
-      }
-    }();
-    result.push_back(
-        ImportCandidate{.change = change_type,
-                        .existing_profile = *merge_candidate,
-                        .merged_profile = std::move(merged_profile)});
+  result.reserve(existing_profiles.size());
+  for (const AutofillProfile* candidate : existing_profiles) {
+    AutofillProfile merged_profile = *candidate;
+    const ProfileMergeResult merge_result =
+        merged_profile.MergeDataFrom(observed_profile, app_locale_);
+    switch (merge_result) {
+      case ProfileMergeResult::kMergeSucceededWithModification:
+        result.push_back(ImportCandidate{
+            .change = AutofillProfileComparator::
+                              ProfilesHaveDifferentSettingsVisibleValues(
+                                  *candidate, merged_profile, app_locale_)
+                          ? Change::kSettingVisibleChange
+                          : Change::kNonSettingVisibleChange,
+            .existing_profile = *candidate,
+            .merged_profile = std::move(merged_profile)});
+        break;
+      case ProfileMergeResult::kMergeSucceededWithoutModification:
+        result.push_back(
+            ImportCandidate{.change = Change::kNoChange,
+                            .existing_profile = *candidate,
+                            .merged_profile = std::move(merged_profile)});
+        break;
+      case ProfileMergeResult::kMergeFailed:
+        break;
+    }
   }
   return result;
 }

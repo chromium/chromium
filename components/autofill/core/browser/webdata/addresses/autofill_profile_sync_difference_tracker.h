@@ -21,7 +21,6 @@ class ModelError;
 namespace autofill {
 
 class AutofillProfile;
-class AutofillProfileComparator;
 class AddressAutofillTable;
 
 // This is used to respond to ApplyIncrementalSyncChanges() and
@@ -67,13 +66,6 @@ class AutofillProfileSyncDifferenceTracker {
   // If the entry is found, |entry| will be return, otherwise std::nullopt is
   // returned.
   std::optional<AutofillProfile> ReadEntry(const std::string& storage_key);
-
-  // Tries to find a local entry that is mergeable with |remote| (according to
-  // |comparator|). If such an entry is found, it is returned. Otherwise,
-  // std::nullopt is returned.
-  std::optional<AutofillProfile> FindMergeableLocalEntry(
-      const AutofillProfile& remote,
-      const AutofillProfileComparator& comparator);
 
   // Informs the tracker that a local entry with |storage_key| should get
   // deleted.
@@ -138,12 +130,6 @@ class AutofillProfileInitialSyncDifferenceTracker
   [[nodiscard]] std::optional<syncer::ModelError>
   MergeSimilarEntriesForInitialSync(const std::string& app_locale);
 
- private:
-  // Returns a local entry that is mergeable with |remote| if it exists.
-  // Otherwise, returns std::nullopt.
-  std::optional<AutofillProfile> FindMergeableLocalEntry(
-      const AutofillProfile& remote,
-      const AutofillProfileComparator& comparator);
 };
 
 }  // namespace autofill

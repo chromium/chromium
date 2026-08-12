@@ -11,7 +11,6 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -183,11 +182,10 @@ AutofillProfile SupersetProfileOf(base::span<const AutofillProfile> profiles,
                                   std::string_view app_locale,
                                   AutofillProfile::RecordType type,
                                   AddressCountryCode country_code) {
-  AutofillProfileComparator comparator{app_locale};
   AutofillProfile new_profile{type, country_code};
   for (const AutofillProfile& profile : profiles) {
-    CHECK(comparator.AreMergeable(new_profile, profile));
-    new_profile.MergeDataFrom(profile, app_locale.data());
+    CHECK_NE(new_profile.MergeDataFrom(profile, app_locale),
+             AutofillProfile::ProfileMergeResult::kMergeFailed);
   }
   return new_profile;
 }

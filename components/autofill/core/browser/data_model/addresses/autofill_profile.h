@@ -274,8 +274,8 @@ class AutofillProfile : public FormGroup {
   // Merges the data from `profile` into `this` profile if they are mergeable.
   // Returns a `ProfileMergeResult` indicating whether the merge succeeded and
   // whether `this` was modified. If mergeable, modifies `this` in-place.
-  ProfileMergeResult MergeDataFrom(const AutofillProfile& profile,
-                                   std::string_view app_locale);
+  [[nodiscard]] ProfileMergeResult MergeDataFrom(const AutofillProfile& profile,
+                                                 std::string_view app_locale);
 
   // Creates a differentiating label for each of the `profiles`.
   // Labels consist of the minimal differentiating combination of:

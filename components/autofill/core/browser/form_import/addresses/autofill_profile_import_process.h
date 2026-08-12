@@ -324,13 +324,13 @@ class ProfileImportProcess {
   bool QualifiesForUpdateProfilePrompt(const ImportCandidate& candidate) const;
   bool QualifiesForMigrateProfilePrompt(const ImportCandidate& profile) const;
 
-  // Merges the `mergeable_profiles` with the `observed_profile_` and determines
-  // how the merged profile differs from the original one (see
+  // Merges `existing_profiles` with `observed_profile` and determines how
+  // the merged profile differs from the original one (see
   // `ImportCandidate::Change`). Constructs one `ImportCandidate` per
-  // `mergeable_profiles` and returns the result, preserving relative order.
-  // Assumes that mergeability has already been determined.
+  // mergeable profile and returns the result, preserving relative order.
   std::vector<ImportCandidate> GetImportCandidates(
-      base::span<const AutofillProfile*> mergeable_profiles) const;
+      base::span<const AutofillProfile* const> existing_profiles,
+      const AutofillProfile& observed_profile) const;
 
   // For new profile imports, sets the source of the `import_candidate_`
   // correctly, depending on the user's account storage eligiblity.

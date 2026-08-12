@@ -198,19 +198,20 @@ void DeduplicateProfiles(const std::string& app_locale,
       continue;
     }
     // If possible, merge `*profile_it` with another profile and remove it.
-    if (auto merge_candidate = std::find_if(
-            profile_it + 1, profiles_with_action.end(),
-            [&](const ProfileWithAction& other_profile) {
-              return other_profile.action != ProfileAction::kRemove &&
-                     comparator.AreMergeable(profile_it->profile,
-                                             other_profile.profile);
-            });
-        merge_candidate != profiles_with_action.end()) {
-      merge_candidate->profile.MergeDataFrom(profile_it->profile,
-                                             comparator.app_locale());
-      profile_it->action = ProfileAction::kRemove;
-      merge_candidate->action = ProfileAction::kUpdate;
-      ++removed_profiles_count;
+    for (ProfileWithAction& merge_candidate :
+         std::ranges::subrange(profile_it + 1, profiles_with_action.end())) {
+      if (merge_candidate.action == ProfileAction::kRemove) {
+        continue;
+      }
+      const AutofillProfile::ProfileMergeResult merge_result =
+          merge_candidate.profile.MergeDataFrom(profile_it->profile,
+                                                app_locale);
+      if (merge_result != AutofillProfile::ProfileMergeResult::kMergeFailed) {
+        profile_it->action = ProfileAction::kRemove;
+        merge_candidate.action = ProfileAction::kUpdate;
+        ++removed_profiles_count;
+        break;
+      }
     }
   }
 

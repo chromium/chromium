@@ -19,7 +19,6 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -171,7 +170,6 @@ class MultiStepImportMerger {
   // ultimately decide if the profile meets the minimum import requirements.
   std::string app_locale_;
   GeoIpCountryCode variation_country_code_;
-  AutofillProfileComparator comparator_;
 
   // Represents a submitted form, stored to be considered as a merge candidate
   // for other candidate profiles in future submits in a multi-step import
