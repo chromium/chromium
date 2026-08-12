@@ -230,6 +230,7 @@ public class TabSwitcherSearchRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @DisabledTest(message = "crbug.com/541985794")
     public void testRenderTypedSuggestions(boolean nightModeEnabled) throws IOException {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchStation searchStation =
@@ -308,6 +309,7 @@ public class TabSwitcherSearchRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @DisabledTest(message = "crbug.com/541938485")
     public void testRenderTypedTabGroupSuggestions_URLMatch(boolean nightModeEnabled)
             throws IOException {
         Tab firstTab = mInitialPage.loadedTabElement.value();
