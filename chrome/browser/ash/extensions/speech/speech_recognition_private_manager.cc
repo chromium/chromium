@@ -9,7 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_recognizer.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
-#include "chrome/common/extensions/api/speech_recognition_private.h"
+#include "chromeos/ash/experiences/extensions/api/speech_recognition_private.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"

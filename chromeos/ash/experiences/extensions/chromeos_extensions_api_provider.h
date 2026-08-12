@@ -1,0 +1,37 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_CHROMEOS_EXTENSIONS_API_PROVIDER_H_
+#define CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_CHROMEOS_EXTENSIONS_API_PROVIDER_H_
+
+#include "extensions/common/extensions_api_provider.h"
+
+namespace ash {
+
+class ChromeOSExtensionsAPIProvider : public extensions::ExtensionsAPIProvider {
+ public:
+  ChromeOSExtensionsAPIProvider();
+  ChromeOSExtensionsAPIProvider(const ChromeOSExtensionsAPIProvider&) = delete;
+  ChromeOSExtensionsAPIProvider& operator=(
+      const ChromeOSExtensionsAPIProvider&) = delete;
+  ~ChromeOSExtensionsAPIProvider() override;
+
+  // extensions::ExtensionsAPIProvider:
+  void AddAPIFeatures(extensions::FeatureProvider* provider) override;
+  void AddManifestFeatures(extensions::FeatureProvider* provider) override;
+  void AddPermissionFeatures(extensions::FeatureProvider* provider) override;
+  void AddBehaviorFeatures(extensions::FeatureProvider* provider) override;
+  void AddAPIJSONSources(
+      extensions::JSONFeatureProviderSource* json_source) override;
+  bool IsAPISchemaGenerated(const std::string& name) override;
+  std::string_view GetAPISchema(const std::string& name) override;
+  void RegisterPermissions(
+      extensions::PermissionsInfo* permissions_info) override;
+  void RegisterManifestHandlers(
+      extensions::ManifestHandlerRegistry* registry) override;
+};
+
+}  // namespace ash
+
+#endif  // CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_CHROMEOS_EXTENSIONS_API_PROVIDER_H_

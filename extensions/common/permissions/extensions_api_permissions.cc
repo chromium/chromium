@@ -140,8 +140,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning,
      &CreateAPIPermission<SocketPermission>},
-    {APIPermissionID::kSpeechRecognitionPrivate, "speechRecognitionPrivate",
-     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kStorage, "storage",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kSystemCpu, "system.cpu",
@@ -200,4 +198,3 @@ base::span<const Alias> GetPermissionAliases() {
 }
 
 } // namespace extensions::api_permissions
-

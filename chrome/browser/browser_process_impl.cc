@@ -181,6 +181,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/ash/extensions/chromeos_extensions_browser_api_provider.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
@@ -419,6 +420,8 @@ void BrowserProcessImpl::Init() {
       std::make_unique<
           controlled_frame::ControlledFrameExtensionsBrowserAPIProvider>());
 #if BUILDFLAG(IS_CHROMEOS)
+  extensions_browser_client_->AddAPIProvider(
+      std::make_unique<ash::ChromeOSExtensionsBrowserAPIProvider>());
   extensions_browser_client_->AddAPIProvider(
       std::make_unique<
           chromeos::ChromeOSTelemetryExtensionsBrowserAPIProvider>());

@@ -1,0 +1,25 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromeos/ash/experiences/extensions/api/api_sources.gni")
+import("//tools/json_schema_compiler/json_schema_api.gni")
+
+assert(is_chromeos)
+
+function_registration("api_registration") {
+  sources = chromeos_extensions_api_schema_sources
+  impl_dir = "//chrome/browser/ash/extensions/api"
+  configs = [ "//build/config:precompiled_headers" ]
+  bundle_name = "ChromeOS"
+  root_namespace = chromeos_extensions_api_root_namespace
+  schema_include_rules = chromeos_extensions_api_schema_include_rules
+
+  custom_impl_schemas = [ "speech_recognition_private" ]
+
+  inputs = [
+    "//chrome/browser/ash/extensions/speech/speech_recognition_private_api.h",
+  ]
+
+  deps = [ "//base" ]
+}

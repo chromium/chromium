@@ -28,6 +28,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_provider.h"
+#include "chromeos/ash/experiences/extensions/chromeos_extensions_api_provider.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -82,6 +83,8 @@ void EnsureExtensionsClientInitialized() {
         std::make_unique<controlled_frame::ControlledFrameAPIProvider>());
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
+    extensions_client->AddAPIProvider(
+        std::make_unique<ash::ChromeOSExtensionsAPIProvider>());
     extensions_client->AddAPIProvider(
         std::make_unique<chromeos::ChromeOSSystemExtensionsAPIProvider>());
 #endif

@@ -925,10 +925,6 @@
     "dependencies": ["permission:smartCardProviderPrivate"],
     "contexts": ["privileged_extension"]
   },
-  "speechRecognitionPrivate": {
-    "dependencies": ["permission:speechRecognitionPrivate"],
-    "contexts": ["privileged_extension"]
-  },
   "systemLog": {
     "dependencies": ["permission:systemLog"],
     "contexts": ["privileged_extension"]

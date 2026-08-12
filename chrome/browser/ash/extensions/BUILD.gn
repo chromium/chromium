@@ -104,6 +104,19 @@ static_library("extensions") {
   ]
 }
 
+static_library("browser_api_provider") {
+  sources = [
+    "chromeos_extensions_browser_api_provider.cc",
+    "chromeos_extensions_browser_api_provider.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/ash/extensions/api:api_registration",
+    "//extensions/browser",
+    "//extensions/buildflags",
+  ]
+}
+
 static_library("test_support") {
   testonly = true
 
