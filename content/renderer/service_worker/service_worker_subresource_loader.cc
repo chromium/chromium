@@ -32,6 +32,7 @@
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -873,12 +874,19 @@ void ServiceWorkerSubresourceLoader::StartResponse(
   // Synthetic and same-origin responses are same-origin to the requesting
   // client, so the timing allow check trivially passes. Filtered responses
   // wrap a cross-origin response for which the timing allow check must not
-  // be assumed to have passed.
-  response_head_->timing_allow_passed =
-      response_head_->response_type ==
+  // be assumed to have passed unless the Timing-Allow-Origin check passes.
+  if (response_head_->response_type ==
           network::mojom::FetchResponseType::kBasic ||
       response_head_->response_type ==
-          network::mojom::FetchResponseType::kDefault;
+          network::mojom::FetchResponseType::kDefault) {
+    response_head_->timing_allow_passed = true;
+  } else if (resource_request_.request_initiator &&
+             response_head_->parsed_headers &&
+             network::TimingAllowOriginCheck(
+                 response_head_->parsed_headers->timing_allow_origin,
+                 *resource_request_.request_initiator)) {
+    response_head_->timing_allow_passed = true;
+  }
 
   // Set the actual source type to `kFetchEvent` if nothing is set yet.
   auto* router_info = response_head_->service_worker_router_info.get();

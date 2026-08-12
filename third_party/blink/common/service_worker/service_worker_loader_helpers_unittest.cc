@@ -122,4 +122,17 @@ TEST(ServiceWorkerLoaderHelpersTest, SaveResponseInfo_BasicNotFiltered) {
             head->headers->GetNormalizedHeader("Server-Timing"));
 }
 
+TEST(ServiceWorkerLoaderHelpersTest, SaveResponseInfo_TimingAllowPassedReset) {
+  auto response = mojom::FetchAPIResponse::New();
+  response->status_code = 200;
+  response->status_text = "OK";
+  response->response_type = network::mojom::FetchResponseType::kOpaque;
+
+  auto head = network::mojom::URLResponseHead::New();
+  head->timing_allow_passed = true;
+  ServiceWorkerLoaderHelpers::SaveResponseInfo(*response, head.get());
+
+  EXPECT_FALSE(head->timing_allow_passed);
+}
+
 }  // namespace blink
