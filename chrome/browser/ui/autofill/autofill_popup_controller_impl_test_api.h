@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_TEST_API_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_TEST_API_H_
 
+#include "base/types/optional_util.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
@@ -28,6 +30,10 @@ class AutofillPopupControllerImplTestApi {
   }
 
   base::WeakPtr<AutofillPopupView> view() { return controller_->view_; }
+
+  AutofillPopupHideHelper* popup_hide_helper() {
+    return base::OptionalToPtr(controller_->popup_hide_helper_);
+  }
 
   // Determines whether to suppress minimum show thresholds. It should only be
   // set during tests that cannot mock time (e.g. the autofill interactive

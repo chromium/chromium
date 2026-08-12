@@ -669,6 +669,43 @@ TEST_F(AutofillPopupControllerImplTest,
   Mock::VerifyAndClearExpectations(client().popup_view());
 }
 
+// Tests that a main frame resize event with an unchanged size does not hide the
+// popup.
+TEST_F(AutofillPopupControllerImplTest,
+       PrimaryMainFrameResizeIgnoredWhenSizeUnchanged) {
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+
+  AutofillPopupHideHelper* hide_helper =
+      test_api(client().suggestion_controller(manager())).popup_hide_helper();
+  ASSERT_TRUE(hide_helper);
+  content::WebContentsObserver& observer = *hide_helper;
+
+  EXPECT_CALL(*client().popup_view(), Hide).Times(0);
+  observer.PrimaryMainFrameWasResized(/*width_changed=*/false);
+
+  Mock::VerifyAndClearExpectations(client().popup_view());
+}
+
+// Tests that a main frame resize event with a changed size hides the popup.
+TEST_F(AutofillPopupControllerImplTest,
+       PrimaryMainFrameResizeHidesPopupWhenSizeChanged) {
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+
+  AutofillPopupHideHelper* hide_helper =
+      test_api(client().suggestion_controller(manager())).popup_hide_helper();
+  ASSERT_TRUE(hide_helper);
+  content::WebContentsObserver& observer = *hide_helper;
+
+  const gfx::Size current_size = web_contents()->GetSize();
+  web_contents()->Resize(
+      gfx::Rect(current_size.width() + 10, current_size.height() + 10));
+
+  EXPECT_CALL(*client().popup_view(), Hide);
+  observer.PrimaryMainFrameWasResized(/*width_changed=*/true);
+
+  Mock::VerifyAndClearExpectations(client().popup_view());
+}
+
 // Tests that calling Show() when the popup view has focus but the focused
 // frame is null (e.g. because it was detached) does not cause a crash due to
 // a null pointer dereference.
@@ -731,11 +768,6 @@ TEST_F(AutofillPopupControllerImplTest, HideInMainFrameOnZoomChange) {
   // Triggered by OnZoomChanged().
   EXPECT_CALL(client().suggestion_controller(manager()),
               Hide(SuggestionHidingReason::kContentAreaMoved));
-  // Override the default ON_CALL behavior to do nothing to avoid destroying the
-  // hide helper. We want to test ZoomObserver events explicitly.
-  EXPECT_CALL(client().suggestion_controller(manager()),
-              Hide(SuggestionHidingReason::kWidgetChanged))
-      .WillOnce(Return());
   auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents());
   zoom_controller->SetZoomLevel(zoom_controller->GetZoomLevel() + 1.0);
   // Verify and clear before TearDown() closes the popup.

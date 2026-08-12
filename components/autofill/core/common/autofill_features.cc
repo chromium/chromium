@@ -799,6 +799,12 @@ BASE_FEATURE(kAutofillIgnoreCheckableElements,
              base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_ignore_checkable_elements)
 
+// Controls whether `AutofillPopupHideHelper` ignores frame resize events
+// when the `WebContents` size is unchanged.
+// TODO(crbug.com/545556982): Remove after confirming there is no regression.
+BASE_FEATURE(kAutofillIgnoreUnchangedFrameResizes,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, global rules are applied to rewrite empty string values like
 // "null" to an empty string. These rules are applied for all types during
 // address normalization.

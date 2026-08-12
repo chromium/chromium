@@ -28,7 +28,9 @@ AutofillPopupHideHelper::AutofillPopupHideHelper(
       hiding_params_(std::move(hiding_params)),
       hiding_callback_(std::move(hiding_callback)),
       pip_detection_callback_(std::move(pip_detection_callback)),
-      rfh_id_(rfh_id) {
+      rfh_id_(rfh_id),
+      last_web_contents_size_(web_contents ? web_contents->GetSize()
+                                           : gfx::Size()) {
 #if !BUILDFLAG(IS_ANDROID)
   // There may not always be a ZoomController, e.g., in tests.
   if (auto* zoom_controller =
@@ -59,6 +61,18 @@ void AutofillPopupHideHelper::PrimaryMainFrameWasResized(bool width_changed) {
     // Ignore virtual keyboard showing and hiding a strip of suggestions.
     return;
   }
+
+  // To prevent closing the popup when the content hasn't actually moved, ignore
+  // events where the WebContents size is unchanged.
+  const gfx::Size current_size =
+      web_contents() ? web_contents()->GetSize() : gfx::Size();
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillIgnoreUnchangedFrameResizes) &&
+      current_size == last_web_contents_size_) {
+    return;
+  }
+  last_web_contents_size_ = current_size;
+
   hiding_callback_.Run(SuggestionHidingReason::kWidgetChanged);
 }
 

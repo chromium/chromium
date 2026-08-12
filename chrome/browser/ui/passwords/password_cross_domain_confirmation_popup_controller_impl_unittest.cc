@@ -225,13 +225,14 @@ TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
 TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
        PopupIsHiddenOnNavigation) {
   base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("example.com"));
   Show();
   ASSERT_NE(last_created_view(), nullptr);
   EXPECT_CALL(*last_created_view(), Hide);
 
   // This hiding is handled by `autofill::AutofillPopupHideHelper` and this test
   // basically tests integration with it.
-  NavigateAndCommit(GURL("example.com"));
+  NavigateAndCommit(GURL("example2.com"));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ManualFallback.CrossDomainPasswordFilling."
       "ConfirmationBubbleResult",

@@ -10,6 +10,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/gfx/geometry/size.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/zoom/zoom_observer.h"
@@ -92,6 +93,8 @@ class AutofillPopupHideHelper : public content::WebContentsObserver,
   const PictureInPictureDetectionCallback pip_detection_callback_;
   // ID for the focused frame.
   content::GlobalRenderFrameHostId rfh_id_;
+  // Last known size of the WebContents.
+  gfx::Size last_web_contents_size_;
 
 #if !BUILDFLAG(IS_ANDROID)
   base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
