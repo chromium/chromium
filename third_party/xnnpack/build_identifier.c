@@ -27,10 +27,12 @@
 // - external/xnnpack+/src/enums/node-type.c
 // - external/xnnpack+/src/enums/operator-type.c
 // - external/xnnpack+/src/f16-avgpool/gen/f16-avgpool-9p-minmax-f16c.c
+// - external/xnnpack+/src/f16-dwconv/gen/f16-dwconv-25p32c-minmax-avx512fp16-acc2.c
 // - external/xnnpack+/src/f16-dwconv/gen/f16-dwconv-25p8c-minmax-fma3-acc2.c
 // - external/xnnpack+/src/f16-dwconv/gen/f16-dwconv-3p16c-minmax-fma3.c
 // - external/xnnpack+/src/f16-dwconv/gen/f16-dwconv-4p16c-minmax-fma3.c
 // - external/xnnpack+/src/f16-dwconv/gen/f16-dwconv-9p16c-minmax-fma3.c
+// - external/xnnpack+/src/f16-dwconv/gen/f16-dwconv-9p32c-minmax-avx512fp16.c
 // - external/xnnpack+/src/f16-f32-vcvt/gen/f16-f32-vcvt-avx-int16-u16.c
 // - external/xnnpack+/src/f16-f32-vcvt/gen/f16-f32-vcvt-avx512skx-u16.c
 // - external/xnnpack+/src/f16-f32-vcvt/gen/f16-f32-vcvt-f16c-u16.c
@@ -1100,10 +1102,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  229,  22,  26, 118, 112,  44,  31, 234,
-  178, 245, 209, 219, 172, 241, 252, 106,
-   80,  10, 214,  65,   7, 193, 123,  98,
-   14, 213,  16,  86, 134, 125,  20, 117
+  178,  81, 115, 199,  97, 204, 218, 183,
+  214, 155,  80,  72, 123,  42,  94, 195,
+  233,   0,  24, 105, 222, 184, 143,   0,
+    4,  48,  42, 222, 238, 140, 215,   2
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
