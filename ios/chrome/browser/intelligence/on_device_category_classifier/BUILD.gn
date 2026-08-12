@@ -35,6 +35,7 @@ source_set("on_device_category_classifier") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/passage_embeddings",
+    "//url",
   ]
 }
 
