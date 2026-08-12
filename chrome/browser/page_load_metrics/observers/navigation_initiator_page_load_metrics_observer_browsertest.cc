@@ -14,6 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/google/core/common/google_switches.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
@@ -71,6 +72,11 @@ class NavigationInitiatorPageLoadMetricsBrowserTest
 
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
+    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
@@ -208,6 +214,13 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
       "Navigation.InitiatorType.SRP",
       MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kLinkClick)),
       0);
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.LinkClick.All",
+                                      0 /* kNoInstantLoad */, 1);
+  histogram_tester.ExpectTotalCount("PreloadServingMetrics.LinkClick.SRP", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
@@ -239,6 +252,14 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
       "Navigation.InitiatorType.SRP",
       MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kLinkClick)),
       1);
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.LinkClick.All",
+                                      0 /* kNoInstantLoad */, 1);
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.LinkClick.SRP",
+                                      0 /* kNoInstantLoad */, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
@@ -277,6 +298,119 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
       "Navigation.InitiatorType.SRP",
       MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kLinkClick)),
       0);
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectTotalCount("PreloadServingMetrics.LinkClick.All", 0);
+  histogram_tester.ExpectTotalCount("PreloadServingMetrics.LinkClick.SRP", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
+                       LinkClickPrerender) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("www.example.com", "/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Metrics are collected for the initial navigation.
+  histogram_tester.ExpectTotalCount("Navigation.InitiatorType.All", 1);
+  histogram_tester.ExpectTotalCount("Navigation.InitiatorType.SRP", 0);
+
+  GURL prerender_url =
+      embedded_test_server()->GetURL("www.example.com", "/simple.html");
+  prerender_helper().AddPrerender(prerender_url);
+
+  // Before activation, no metrics should be recorded for the prerendered page.
+  // We should only see the initial navigation.
+  histogram_tester.ExpectTotalCount("Navigation.InitiatorType.All", 1);
+  histogram_tester.ExpectTotalCount("Navigation.InitiatorType.SRP", 0);
+
+  // Activate via link click.
+  content::TestActivationManager activation_manager(GetActiveWebContents(),
+                                                    prerender_url);
+  EXPECT_TRUE(
+      content::ExecJs(GetActiveWebContents(),
+                      content::JsReplace(R"(let a = document.createElement('a');
+                                            a.href = $1;
+                                            document.body.appendChild(a);
+                                            a.click();)",
+                                         prerender_url.spec())));
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
+
+  // After activation, the metric should be recorded. We expect 2 total
+  // navigations.
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kLinkClick)),
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.SRP",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kLinkClick)),
+      0);
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.LinkClick.All",
+                                      2 /* kPrerender */, 1);
+  histogram_tester.ExpectTotalCount("PreloadServingMetrics.LinkClick.SRP", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
+                       LinkClickPrerenderSRP) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("www.google.com", "/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Metrics are collected for the initial navigation.
+  histogram_tester.ExpectTotalCount("Navigation.InitiatorType.All", 1);
+  histogram_tester.ExpectTotalCount("Navigation.InitiatorType.SRP", 0);
+
+  GURL prerender_url =
+      embedded_test_server()->GetURL("www.google.com", "/search?q=test");
+  prerender_helper().AddPrerender(prerender_url);
+
+  // Before activation, no metrics should be recorded for the prerendered page.
+  // We should only see the initial navigation.
+  histogram_tester.ExpectTotalCount("Navigation.InitiatorType.All", 1);
+  histogram_tester.ExpectTotalCount("Navigation.InitiatorType.SRP", 0);
+
+  // Activate via link click.
+  content::TestActivationManager activation_manager(GetActiveWebContents(),
+                                                    prerender_url);
+  EXPECT_TRUE(
+      content::ExecJs(GetActiveWebContents(),
+                      content::JsReplace(R"(let a = document.createElement('a');
+                                            a.href = $1;
+                                            document.body.appendChild(a);
+                                            a.click();)",
+                                         prerender_url.spec())));
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
+
+  // After activation, the metric should be recorded. We expect 2 total
+  // navigations.
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kLinkClick)),
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.SRP",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kLinkClick)),
+      1);
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.LinkClick.All",
+                                      2 /* kPrerender */, 1);
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.LinkClick.SRP",
+                                      2 /* kPrerender */, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,

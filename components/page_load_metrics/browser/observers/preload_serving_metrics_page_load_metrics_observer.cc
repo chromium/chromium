@@ -8,6 +8,7 @@
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
+#include "ui/base/page_transition_types.h"
 
 PreloadServingMetricsPageLoadMetricsObserver::
     PreloadServingMetricsPageLoadMetricsObserver() = default;
@@ -51,6 +52,12 @@ void PreloadServingMetricsPageLoadMetricsObserver::
           *navigation_handle);
   if (user_data) {
     navigation_initiator_string_ = user_data->navigation_type_string();
+  } else if (navigation_handle->IsRendererInitiated() &&
+             navigation_handle->HasUserGesture() &&
+             ui::PageTransitionCoreTypeIs(
+                 navigation_handle->GetPageTransition(),
+                 ui::PAGE_TRANSITION_LINK)) {
+    navigation_initiator_string_ = "LinkClick";
   } else {
     navigation_initiator_string_ = "Other";
   }

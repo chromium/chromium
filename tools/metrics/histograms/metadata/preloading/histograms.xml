@@ -22,6 +22,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ChromeInitiatorLocation">
   <variant name="BookmarkBar" summary="Initiated from BookmarkBar"/>
+  <variant name="LinkClick" summary="Initiated by a link click"/>
   <variant name="NewTabPage" summary="Initiated from NewTabPage"/>
   <variant name="OmniboxDefaultSearchEngine"
       summary="Initiated from OmniboxDefaultSearchEngine"/>

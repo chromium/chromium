@@ -653,6 +653,24 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetchWithPrePrefetch) {
   histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
 }
 
+// Tests that PreloadServingMetrics.*.{All,SRP} are recorded depending on the
+// navigation initiator string.
+TEST(PreloadServingMetricsTest, RecordByNavigationInitiator) {
+  base::HistogramTester histogram_tester;
+
+  auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
+  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
+  log->prerender_initial_preload_serving_metrics = nullptr;
+
+  log->RecordPreloadServingMetricsByNavigationInitiator(
+      /*did_nav_use_bfcache=*/false, "TestInitiator", /*is_url_srp=*/true);
+
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.TestInitiator.All",
+                                      0 /* kNoInstantLoad */, 1);
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.TestInitiator.SRP",
+                                      0 /* kNoInstantLoad */, 1);
+}
+
 // Scenario:
 //
 // - Prefetch A is triggered.
