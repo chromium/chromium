@@ -380,7 +380,7 @@ suite('SyncStatusTests', function() {
         peoplePage.shadowRoot!.querySelector('settings-sync-account-control')!;
     await waitBeforeNextRender(accountControl);
     const turnOffButton =
-        accountControl.shadowRoot!.querySelector<HTMLElement>('#turn-off')!;
+        accountControl.shadowRoot.querySelector<HTMLElement>('#turn-off')!;
     turnOffButton.click();
     flush();
 

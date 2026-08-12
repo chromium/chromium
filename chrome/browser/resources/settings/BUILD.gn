@@ -497,6 +497,7 @@ build_webui("build") {
     "people_page/import_data_dialog.css",
     "people_page/manage_profile.css",
     "people_page/signout_dialog.css",
+    "people_page/sync_account_control.css",
     "performance_page/battery_page.css",
     "performance_page/memory_page.css",
     "performance_page/performance_page_index.css",

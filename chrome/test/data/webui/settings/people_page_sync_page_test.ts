@@ -551,7 +551,7 @@ suite('SyncSettings', function() {
 
     const cancelButton =
         syncPage.shadowRoot!.querySelector('settings-sync-account-control')!
-            .shadowRoot!.querySelector<HTMLElement>(
+            .shadowRoot.querySelector<HTMLElement>(
                 '#setup-buttons cr-button:not(.action-button)');
 
     assertTrue(!!cancelButton);
@@ -574,7 +574,7 @@ suite('SyncSettings', function() {
 
     const confirmButton =
         syncPage.shadowRoot!.querySelector('settings-sync-account-control')!
-            .shadowRoot!.querySelector<HTMLElement>(
+            .shadowRoot.querySelector<HTMLElement>(
                 '#setup-buttons .action-button');
 
     assertTrue(!!confirmButton);

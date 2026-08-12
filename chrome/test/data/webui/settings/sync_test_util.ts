@@ -6,6 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {StoredAccount, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /**
@@ -108,7 +109,9 @@ export function simulateSyncStatus(status: SyncStatus|undefined) {
   flush();
 }
 
-export function simulateStoredAccounts(accounts: StoredAccount[]|undefined) {
+export async function simulateStoredAccounts(
+    accounts: StoredAccount[]|undefined): Promise<void> {
   webUIListenerCallback('stored-accounts-updated', accounts);
   flush();
+  await microtasksFinished();
 }
