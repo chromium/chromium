@@ -409,6 +409,7 @@ BASE_DECLARE_FEATURE(kToolbarGlicButtonResizing);
 // Currently only used on MacOS as that's the only platform we can
 // be sure the user has an easy remedy. See crbug.com/493148224.
 BASE_DECLARE_FEATURE(kOSCryptAsyncAvailabilityInfoBar);
+BASE_DECLARE_FEATURE(kDeferLayoutDuringBrowserStartup);
 
 }  // namespace features
 

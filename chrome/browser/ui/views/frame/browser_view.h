@@ -1259,6 +1259,23 @@ class BrowserView : public BrowserWindow,
   // True if layout should be suppressed (used during teardown).
   bool suppress_layout_for_teardown_ = false;
 
+  // State machine for deferring layouts during browser startup.
+  enum class StartupLayoutState {
+    // Before the very first layout pass has completed. Layout is allowed so the
+    // window gets initial bounds.
+    kInitial,
+    // The first layout pass has completed, but the window is still invisible.
+    // Subsequent layout requests will be deferred to avoid redundant passes.
+    kDeferring,
+    // The window has been shown at least once. Layout deferral is disabled for
+    // the rest of the browser session to avoid active-use jank.
+    kDisabled,
+  };
+  StartupLayoutState startup_layout_state_ = StartupLayoutState::kInitial;
+
+  // Set to true if a layout request was skipped while the window was invisible.
+  bool layout_deferred_while_invisible_ = false;
+
   // True if (as of the last time it was checked) the frame type is native.
   bool using_native_frame_ = true;
 
