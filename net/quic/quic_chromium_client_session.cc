@@ -2343,13 +2343,9 @@ int QuicChromiumClientSession::HandleWriteError(
   // Post a task to migrate the session onto a new network.
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &QuicChromiumClientSession::MigrateSessionOnWriteError,
-          weak_factory_.GetWeakPtr(), error_code,
-          // UnsafeDanglingUntriaged triggered by test:
-          // QuicSessionPoolTest.MigrateSessionOnSyncWriteErrorPauseBeforeConnected
-          // TODO(crbug.com/40061562): Remove `UnsafeDanglingUntriaged`
-          base::UnsafeDanglingUntriaged(connection()->writer())));
+      base::BindOnce(&QuicChromiumClientSession::MigrateSessionOnWriteError,
+                     weak_factory_.GetWeakPtr(), error_code,
+                     packet_writer_generation_));
 
   ignore_read_error_ = true;
 
@@ -2361,11 +2357,11 @@ int QuicChromiumClientSession::HandleWriteError(
 
 void QuicChromiumClientSession::MigrateSessionOnWriteError(
     int error_code,
-    quic::QuicPacketWriter* writer) {
+    uint64_t writer_generation) {
   DCHECK(migrate_session_on_network_change_v2_);
-  // If |writer| is no longer actively in use, or a session migration has
+  // If the writer is no longer actively in use, or a session migration has
   // started from MigrateNetworkImmediately, abort this migration attempt.
-  if (writer != connection()->writer() ||
+  if (writer_generation != packet_writer_generation_ ||
       pending_migrate_network_immediately_) {
     return;
   }
@@ -4398,6 +4394,7 @@ bool QuicChromiumClientSession::MigrateToSocket(
   int rv = MigratePath(self_address, peer_address, writer_moved.release(),
                        /*owns_writer=*/true);
   RegisterQuicConnectionClosePayload();
+  ++packet_writer_generation_;
   if (!rv) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_NO_UNUSED_CONNECTION_ID,
                                     connection_id(),

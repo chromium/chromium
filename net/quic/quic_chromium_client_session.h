@@ -908,10 +908,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     return session_alias_key_;
   }
 
-  // Attempts to migrate session when |writer| encounters a write error.
-  // If |writer| is no longer actively used, abort migration.
-  void MigrateSessionOnWriteError(int error_code,
-                                  quic::QuicPacketWriter* writer);
+  // Attempts to migrate session when writer with `writer_generation` encounters
+  // a write error. If the writer is no longer actively used, abort migration.
+  void MigrateSessionOnWriteError(int error_code, uint64_t writer_generation);
   // Called when the Migrate() call from MigrateSessionOnWriteError completes.
   // Always called asynchronously.
   void FinishMigrateSessionOnWriteError(handles::NetworkHandle new_network,
@@ -1221,6 +1220,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   int most_recent_write_error_ = 0;
   base::TimeTicks most_recent_write_error_timestamp_;
+  // Generation counter for the packet writer on the connection, incremented
+  // whenever the connection writer changes during socket migration.
+  uint64_t packet_writer_generation_ = 0;
 
   std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_;
 
