@@ -40,6 +40,7 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/web_contents_tester.h"
@@ -163,7 +164,8 @@ class SaveUpdatePasswordMessageDelegateTest
   void RecordPasswordSaved();
   void SetPendingCredentials(std::u16string username,
                              std::u16string password,
-                             bool is_account_store = false);
+                             bool is_account_store = false,
+                             url::SchemeHostPort federation_origin = {});
   static PasswordForm CreatePasswordForm(std::u16string username,
                                          std::u16string password,
                                          bool is_account_store = false);
@@ -348,12 +350,14 @@ void SaveUpdatePasswordMessageDelegateTest::RecordPasswordSaved() {
 void SaveUpdatePasswordMessageDelegateTest::SetPendingCredentials(
     std::u16string username,
     std::u16string password,
-    bool is_account_store) {
+    bool is_account_store,
+    url::SchemeHostPort federation_origin) {
   pending_credentials_.username_value = std::move(username);
   pending_credentials_.password_value = std::move(password);
   pending_credentials_.in_store =
       is_account_store ? password_manager::PasswordForm::Store::kAccountStore
                        : password_manager::PasswordForm::Store::kProfileStore;
+  pending_credentials_.federation_origin = federation_origin;
 }
 
 // static
@@ -1320,9 +1324,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 }
 
 // Tests that the password is not saved and trusted vault key retrieval flow
-//  starts when trusted vault key is needed, but device lock is not, during
-//  update
-// password.
+// starts when trusted vault key is needed, but device lock is not, during
+// update password.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        UpdatePassword_TrustedVaultKeyNeeded_DeviceLockNotNeeded) {
   base::test::ScopedFeatureList feature_list;
@@ -1564,6 +1567,68 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       MessagePropertyValues_SavePassword_TrustedVaultError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+
+  account_store_->SetError(
+      password_manager::ActionableError::kTrustedVaultKeyNeeded);
+
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
+  EnqueueMessage(CreateFormManager(GURL(kDefaultUrl), empty_best_matches()),
+                 /*user_signed_in=*/true, /*update_password=*/false);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
+            GetMessageWrapper()->GetTitle());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PASSWORD_BUBBLES_SUBTITLE_TRUSTED_VAULT_ERROR),
+            GetMessageWrapper()->GetDescription());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTINUE),
+            GetMessageWrapper()->GetPrimaryButtonText());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       MessagePropertyValues_UpdatePassword_TrustedVaultError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+
+  account_store_->SetError(
+      password_manager::ActionableError::kTrustedVaultKeyNeeded);
+
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, IsPasswordUpdate).WillRepeatedly(Return(true));
+  EXPECT_CALL(*form_manager, IsUpdateAffectingPasswordsStoredInTheGoogleAccount)
+      .WillRepeatedly(Return(false));
+  const bool is_signed_in = true;
+  const bool is_update = true;
+  EnqueueMessage(std::move(form_manager), is_signed_in, is_update);
+
+  // For update, the title should remain "Update password" even when trusted
+  // vault key is needed.
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_PASSWORD),
+            GetMessageWrapper()->GetTitle());
+
+  // Even though the user is signed in, the update is local (not affecting
+  // account store), so we expect the signed-out (device-only) description.
+  EXPECT_EQ(GetExpectedUPMMessageDescription(is_update, /*is_signed_in=*/false,
+                                             kAccountEmail16),
+            GetMessageWrapper()->GetDescription());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UPDATE_BUTTON),
+            GetMessageWrapper()->GetPrimaryButtonText());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
 // Tests that the description is set correctly when signed-in user saves a
 // password.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
@@ -1771,4 +1836,64 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       static_cast<int>(
           password_manager::metrics_util::PasswordChangeRecoveryFlowState::
               kPrimaryPasswordUpdated));
+}
+
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       TrustedVaultError_FederatedCredential_ShowsSaveAccount) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true,
+                        url::SchemeHostPort(GURL("https://google.com")));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_ACCOUNT),
+            GetMessageWrapper()->GetTitle());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PASSWORD_BUBBLES_SUBTITLE_TRUSTED_VAULT_ERROR),
+            GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTINUE),
+            GetMessageWrapper()->GetPrimaryButtonText());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       TrustedVaultError_FeatureDisabled_FallbackToStandardUI) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+
+  account_store_->SetError(
+      password_manager::ActionableError::kTrustedVaultKeyNeeded);
+
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
+  const bool is_signed_in = true;
+  const bool is_update = false;
+  EnqueueMessage(CreateFormManager(GURL(kDefaultUrl), empty_best_matches()),
+                 /*user_signed_in=*/is_signed_in,
+                 /*update_password=*/is_update);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
+            GetMessageWrapper()->GetTitle());
+
+  EXPECT_EQ(GetExpectedUPMMessageDescription(is_update, is_signed_in,
+                                             kAccountEmail16),
+            GetMessageWrapper()->GetDescription());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON),
+            GetMessageWrapper()->GetPrimaryButtonText());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
 }

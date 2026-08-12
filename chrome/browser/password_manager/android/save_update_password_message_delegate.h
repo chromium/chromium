@@ -108,22 +108,30 @@ class SaveUpdatePasswordMessageDelegate
                     bool update_password);
   void HandleSaveMessageMenuItemClick(int item_id);
 
+  // Returns the message title depending on whether the password is being saved
+  // or updated.
+  std::u16string GetMessageTitle(bool update_password,
+                                 bool is_federated_credential);
+
   // Returns the message description depending on whether the password is being
-  // saved or updated.
+  // saved or updated and whether the trusted vault is locked.
   std::u16string GetMessageDescription(
       const password_manager::PasswordForm& pending_credentials,
-      bool update_password);
+      bool update_password,
+      bool is_saving_blocked_by_trusted_vault_error);
 
   // Gets account name or email that should be displayed in the description
   // messages. Returns a nullopt if account info should not be displayed.
   std::optional<std::string> GetAccountForMessageDescription(
       const std::optional<AccountInfo>& account_info);
 
-  // Returns string id for the message primary button. Takes into account
+  // Returns string for the message primary button. Takes into account
   // whether this is save or update password scenario and whether the update
   // message will be followed by a username confirmation dialog.
-  int GetPrimaryButtonTextId(bool update_password,
-                             bool use_followup_button_text);
+  std::u16string GetPrimaryButtonText(
+      bool update_password,
+      bool use_followup_button_text,
+      bool is_saving_blocked_by_trusted_vault_error);
 
   // Populates |usernames| with the list of usernames from best saved matches to
   // be presented to the user in a dropdown.

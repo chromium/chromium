@@ -33,6 +33,7 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -177,25 +178,22 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
   const password_manager::PasswordForm& pending_credentials =
       passwords_state_.form_manager()->GetPendingCredentials();
 
-  int title_message_id;
-  if (update_password) {
-    title_message_id = IDS_UPDATE_PASSWORD;
-  } else if (!pending_credentials.IsFederatedCredential()) {
-    title_message_id = IDS_SAVE_PASSWORD;
-  } else {
-    title_message_id = IDS_SAVE_ACCOUNT;
-  }
-  message_->SetTitle(l10n_util::GetStringUTF16(title_message_id));
+  message_->SetTitle(GetMessageTitle(
+      update_password, pending_credentials.IsFederatedCredential()));
 
-  std::u16string description =
-      GetMessageDescription(pending_credentials, update_password);
+  std::u16string description = GetMessageDescription(
+      pending_credentials, update_password,
+      password_manager_util::IsSavingBlockedByTrustedVaultError(
+          passwords_state_.client(), passwords_state_.form_manager()));
   message_->SetDescription(description);
 
   update_password_ = update_password;
 
   bool use_followup_button = HasMultipleCredentialsStored();
-  message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
-      GetPrimaryButtonTextId(update_password, use_followup_button)));
+  message_->SetPrimaryButtonText(GetPrimaryButtonText(
+      update_password, use_followup_button,
+      password_manager_util::IsSavingBlockedByTrustedVaultError(
+          passwords_state_.client(), passwords_state_.form_manager())));
 
   message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
       IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
@@ -249,9 +247,27 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveMessageMenuItemClick(
   }
 }
 
+std::u16string SaveUpdatePasswordMessageDelegate::GetMessageTitle(
+    bool update_password,
+    bool is_federated_credential) {
+  if (update_password) {
+    return l10n_util::GetStringUTF16(IDS_UPDATE_PASSWORD);
+  }
+  if (!is_federated_credential) {
+    return l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD);
+  }
+  return l10n_util::GetStringUTF16(IDS_SAVE_ACCOUNT);
+}
+
 std::u16string SaveUpdatePasswordMessageDelegate::GetMessageDescription(
     const password_manager::PasswordForm& pending_credentials,
-    bool update_password) {
+    bool update_password,
+    bool is_saving_blocked_by_trusted_vault_error) {
+  if (is_saving_blocked_by_trusted_vault_error) {
+    return l10n_util::GetStringUTF16(
+        IDS_PASSWORD_BUBBLES_SUBTITLE_TRUSTED_VAULT_ERROR);
+  }
+
   // If password is being updated in the account storage, the description should
   // contain for which account the update is made.
   if (IsUsingAccountStorage(pending_credentials.username_value)) {
@@ -279,16 +295,20 @@ SaveUpdatePasswordMessageDelegate::GetAccountForMessageDescription(
                          : account_info->GetFullName().value_or(""));
 }
 
-int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(
+std::u16string SaveUpdatePasswordMessageDelegate::GetPrimaryButtonText(
     bool update_password,
-    bool use_followup_button_text) {
+    bool use_followup_button_text,
+    bool is_saving_blocked_by_trusted_vault_error) {
+  if (is_saving_blocked_by_trusted_vault_error) {
+    return l10n_util::GetStringUTF16(IDS_CONTINUE);
+  }
   if (!update_password) {
-    return IDS_PASSWORD_MANAGER_SAVE_BUTTON;
+    return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON);
   }
   if (!use_followup_button_text) {
-    return IDS_PASSWORD_MANAGER_UPDATE_BUTTON;
+    return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UPDATE_BUTTON);
   }
-  return IDS_PASSWORD_MANAGER_CONTINUE_BUTTON;
+  return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CONTINUE_BUTTON);
 }
 
 unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
