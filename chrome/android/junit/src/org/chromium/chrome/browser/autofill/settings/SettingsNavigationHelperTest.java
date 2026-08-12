@@ -30,7 +30,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
@@ -45,7 +44,6 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 /** Test for {@link SettingsNavigationHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DoNotBatch(reason = "Uses static launcher.")
 public class SettingsNavigationHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -24,7 +24,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -38,7 +37,6 @@ import java.lang.ref.WeakReference;
 /** Tests for {@link MediaCapturePickerManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.UNIT_TESTS)
 public class MediaCapturePickerManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
