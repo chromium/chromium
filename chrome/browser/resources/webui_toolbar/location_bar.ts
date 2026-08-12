@@ -195,6 +195,9 @@ export class LocationBarElement extends CrLitElement implements
    * inner width of the window, subtracts the current width of the parent
    * element, which should be the toolbar itself, and then adds back the current
    * width of the location bar.
+   *
+   * Always returns a value of at least LOCATION_BAR_MIN_WIDTH, even if there's
+   * not that much width available.
    */
   private getAvailableWidth(): number {
     const shadowRoot = this.getRootNode() as ShadowRoot;
@@ -233,12 +236,20 @@ export class LocationBarElement extends CrLitElement implements
     this.style.width = `${width}px`;
   }
 
+  controlsToAddToOverflowMenu(): string[] {
+    return [];
+  }
+
   consumeNeedsLayout(): boolean {
     // The minimum and preferred sizes of this control do not change.
     return false;
   }
 
-  // Sets size to include all remaining unclaimed space on the toolbar.
+  // Sets the width to include all remaining unclaimed space on the toolbar.
+  // Will not set to less than minimum width.
+  //
+  // TODO(crbug.com/491791965): Should we shrink the location bar to even less
+  // than the minimum if there's less width than that available?
   setToAvailableWidth() {
     this.style.width = `${this.getAvailableWidth()}px`;
   }

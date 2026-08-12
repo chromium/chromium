@@ -18,6 +18,7 @@ export interface OverflowableButton {
   setToMinWidth(): void;
   expandUpToPreferredWidth(): void;
   setToPreferredWidth(): void;
+  controlsToAddToOverflowMenu(): string[];
   consumeNeedsLayout(): boolean;
 }
 
@@ -84,6 +85,13 @@ export const OverflowableButtonMixin =
         // `shouldBeShown()`.
         setToPreferredWidth() {
           this.toggleAttribute('overflow-display-none', false);
+        }
+
+        controlsToAddToOverflowMenu(): string[] {
+          return (this.shouldBeShown() &&
+                  this.hasAttribute('overflow-display-none')) ?
+              [this.id] :
+              [];
         }
 
         consumeNeedsLayout(): boolean {

@@ -50,6 +50,8 @@ build_webui("build") {
     "metrics_recorder.ts",
     "responsive_control.ts",
     "overflowable_button.ts",
+    "overflow_button.ts",
+    "overflow_button.html.ts",
     "performance_intervention_button.html.ts",
     "performance_intervention_button.ts",
     "pinned_toolbar_action.html.ts",

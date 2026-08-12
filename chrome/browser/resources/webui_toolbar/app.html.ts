@@ -75,6 +75,10 @@ ${this.isBackForwardButtonEnabled_ ? html`
         .state="${this.navigationControlsState_.avatarControlState}">
     </avatar-button>
   ` : ''}
+  ${this.webUIToolbarFullyEnabled_ ? html`
+    <overflow-button id="overflow" hidden>
+    </overflow-button>
+  ` : ''}
   ${this.isAppMenuButtonEnabled_ ? html`
     <app-menu-button id="app-menu"
         .state="${this.navigationControlsState_.appMenuControlState}">

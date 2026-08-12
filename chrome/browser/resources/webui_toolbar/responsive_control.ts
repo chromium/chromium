@@ -31,6 +31,13 @@ export interface ResponsiveControl {
   expandUpToPreferredWidth(): void;
 
   /**
+   * Returns string HTML element ids of controls that are hidden and therefore
+   * need to be added to the overflow menu. Returns an empty Array if there are
+   * no such controls managed by this ResponsiveControl.
+   */
+  controlsToAddToOverflowMenu(): string[];
+
+  /**
    * Returns true if the state of the control has changed in a way likely to
    * require a new layout of the toolbar, which generally means its min or
    * preferred size has changed. When this returns true, subsequent calls will

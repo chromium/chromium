@@ -13,6 +13,7 @@ import './pinned_toolbar_actions.js';
 import './extensions.js';
 import './app_menu_button.js';
 import './avatar_button.js';
+import './overflow_button.js';
 import '/shared/icon_table.js';
 import '/shared/icon_from_table.js';
 import './icons.js';
@@ -31,6 +32,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl, EventDispositionFlag, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE} from './browser_proxy.js';
 import type {BrowserProxy, IconUpdate, NavigationControlsState, NavigationControlsStateListenerHandle} from './browser_proxy.js';
+import type {OverflowButtonElement} from './overflow_button.js';
 import type {ResponsiveControl} from './responsive_control.js';
 import {setHasHelpBubble} from './toolbar_button.js';
 
@@ -308,6 +310,7 @@ export class ToolbarAppElement extends AppElementBase {
       isInitialized_: {type: Boolean},
       isInitializedSyncForTesting_: {type: Boolean},
       initialSyncBootSuccess_: {type: Boolean},
+      webUIToolbarFullyEnabled_: {type: Boolean},
     };
   }
 
@@ -349,7 +352,7 @@ export class ToolbarAppElement extends AppElementBase {
       hasInitialStateKey(ToolbarStateKey.FORWARD_BUTTON_ENABLED);
   private omniboxResizingPrioritizationEnabled_: boolean =
       loadTimeData.getBoolean('omniboxResizingPrioritizationEnabled');
-  private webUIToolbarFullyEnabled_: boolean =
+  protected accessor webUIToolbarFullyEnabled_: boolean =
       loadTimeData.getBoolean('webUIToolbarFullyEnabled');
   protected accessor navigationControlsState_: NavigationControlsState = {
     reloadControlState: {
@@ -617,6 +620,7 @@ export class ToolbarAppElement extends AppElementBase {
       '#battery-saver',
       '#performance-intervention',
       '#avatar',
+      '#overflow',
       '#app-menu',
     ];
     const promises =
@@ -804,6 +808,50 @@ export class ToolbarAppElement extends AppElementBase {
   }
 
   /**
+   * Resizes / shows / hides responsive controls based on available space in the
+   * toolbar. Returns true if all controls were successfully laid out; returns
+   * false if `failOnOverflow` is true and any control overflowed.
+   *
+   * If true is returned, all available space on the window should be taken up
+   * by the toolbar and its controls. If false is returned, the method has
+   * exited early, and the toolbar may not be taking up all available space in
+   * the window - the expectation is that this method will be called again,
+   * after making the overflow button visible, without `failOnOverflow` set.
+   */
+  private runLayoutPass(
+      responsiveControls: ResponsiveControl[], locationBar: LocationBarElement,
+      failOnOverflow: boolean): boolean {
+    // Set all responsive elements that should be shown to their minimum width.
+    for (const control of responsiveControls) {
+      // Controls that should not be shown are hidden by other means than
+      // setting `overflow-display-none`, so they can be ignored entirely.
+      if (control.shouldBeShown()) {
+        control.setToMinWidth();
+      }
+    }
+
+    // Try expanding each element to preferred width in order of priority.
+    for (const control of responsiveControls) {
+      if (!control.shouldBeShown()) {
+        continue;
+      }
+
+      control.expandUpToPreferredWidth();
+
+      if (failOnOverflow && control.controlsToAddToOverflowMenu().length > 0) {
+        return false;
+      }
+    }
+
+    // Assign all remaining space to the location bar.
+    if (locationBar.shouldBeShown()) {
+      locationBar.setToAvailableWidth();
+    }
+
+    return true;
+  }
+
+  /**
    * Returns a prioritized Array of responsive controls that can be resized or
    * hidden so the toolbar fits in the window. Earlier controls in the Array
    * have higher priority.
@@ -816,7 +864,7 @@ export class ToolbarAppElement extends AppElementBase {
    */
   getResponsiveControls(): Array<ResponsiveControl&HTMLElement> {
     const locationBar =
-        this.shadowRoot.querySelector<LocationBarElement>('#location-bar');
+        this.shadowRoot.querySelector<LocationBarElement>('#location-bar')!;
 
     const buttons = [
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
@@ -836,15 +884,11 @@ export class ToolbarAppElement extends AppElementBase {
    * toolbar.
    *
    * This should be called whenever:
-   * 1. The browser window/container size changes (monitored via
-   * `windowResizeListener_`).
-   * 2. Any control's visibility state or size changes (monitored via
-   * `resizeObserver_`).
-   *
-   * Note that for an overflowable button being pinned to be observable by
-   * `resizeObserver_`, unpinned buttons must not have `overflow-display-none`
-   * set, so that pinning them causes the toolbar to be resized, causing the
-   * `resizeObserver_` to invoke this method.
+   * 1. The browser window/container size changes. This is monitored via
+   * `windowResizeListener_`.
+   * 2. Any control's visibility state or size changes. This is monitored via
+   * `resizeObserver_`, and by ResponsiveControl.consumeNeedsLayout(), which is
+   * both set and read during state updates.
    *
    * TODO(crbug.com/491791965): Investigate performance of this method. It does
    * force a lot of layouts, which may well be a performance issue. There are
@@ -858,50 +902,20 @@ export class ToolbarAppElement extends AppElementBase {
     }
 
     const responsiveControls = this.getResponsiveControls();
-
-    // Set all responsive elements that should be shown to their minimum width.
-    for (const control of responsiveControls) {
-      // Elements that should not be shown are hidden by other means than
-      // setting `overflow-display-none`, so that if at some point they should
-      // be shown, showing them will increase the size of the main app element,
-      // which will force layoutResponsiveControls() to be called again.
-      if (control.shouldBeShown()) {
-        control.setToMinWidth();
-      }
-    }
-
-    // Width available to all elements combined, including non-responsive ones.
-    const availableWidth = window.innerWidth;
-
-    // If all elements at their minimum sizes are, combined, larger than the
-    // available size, exit early, using sizes that are too large.
-    //
-    // TODO(crbug.com/491791965): Should we shrink the location bar to even less
-    // than min size here?
-    if (this.clientWidth >= availableWidth) {
-      return;
-    }
-
-    // Try expanding each element to preferred width in order of priority.
-    // If expanding causes the container to overflow, the element is responsible
-    // for shrinking itself back.
-    for (const control of responsiveControls) {
-      if (!control.shouldBeShown()) {
-        continue;
-      }
-
-      control.expandUpToPreferredWidth();
-    }
-
-    // Assign all remaining space to the location bar to fill the entire
-    // toolbar.
-    //
-    // TODO(crbug.com/491791965): Cache this, making sure we update the value
-    // if we ever re-create the control (can that happen?).
     const locationBar =
-        this.shadowRoot.querySelector<LocationBarElement>('#location-bar');
-    if (locationBar && locationBar.shouldBeShown()) {
-      locationBar.setToAvailableWidth();
+        this.shadowRoot.querySelector<LocationBarElement>('#location-bar')!;
+    const overflowButton =
+        this.shadowRoot.querySelector<OverflowButtonElement>('#overflow')!;
+
+    // Hide the overflow button and attempt to lay out all buttons, failing on
+    // any overflow.
+    overflowButton.toggleAttribute('hidden', true);
+    if (!this.runLayoutPass(
+            responsiveControls, locationBar, /*failOnOverflow=*/ true)) {
+      // If any control overflowed, show overflow button and do another pass.
+      overflowButton.toggleAttribute('hidden', false);
+      this.runLayoutPass(
+          responsiveControls, locationBar, /*failOnOverflow=*/ false);
     }
   }
 
