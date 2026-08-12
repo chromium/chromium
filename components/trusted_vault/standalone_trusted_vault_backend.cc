@@ -265,11 +265,10 @@ void StandaloneTrustedVaultBackend::WriteDegradedRecoverabilityState(
     const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
         degraded_recoverability_state) {
   DCHECK(primary_account_.has_value());
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(primary_account_->gaia);
-  *per_user_vault->mutable_degraded_recoverability_state() =
-      degraded_recoverability_state;
-  storage_->WriteDataToDisk();
+  storage_->MutateUserVault(primary_account_->gaia, [&](UserVault& user_vault) {
+    *user_vault.mutable_degraded_recoverability_state() =
+        degraded_recoverability_state;
+  });
 }
 
 void StandaloneTrustedVaultBackend::OnDegradedRecoverabilityChanged() {
@@ -285,8 +284,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     FetchKeysCallback callback) {
   DCHECK(!callback.is_null());
 
-  const trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(account_info.gaia);
+  const UserVault* per_user_vault = storage_->FindUserVault(account_info.gaia);
 
   if (per_user_vault &&
       StandaloneTrustedVaultStorage::HasNonConstantKey(*per_user_vault) &&
@@ -348,28 +346,23 @@ void StandaloneTrustedVaultBackend::StoreKeys(
     const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
-  // Find or create user for |gaid_id|.
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(gaia_id);
-  if (!per_user_vault) {
-    per_user_vault = storage_->AddUserVault(gaia_id);
-  }
+  // `MutateUserVault` will create a user vault if it doesn't exist yet.
+  storage_->MutateUserVault(gaia_id, [&](UserVault& user_vault) {
+    // Having retrieved (or downloaded) new keys indicates that information
+    // about past registration attempts (and probably failures) may no longer be
+    // relevant.
+    user_vault.set_last_registration_returned_local_data_obsolete(false);
 
-  // Having retrieved (or downloaded) new keys indicates that information about
-  // past registration attempts (and probably failures) may no longer be
-  // relevant.
-  per_user_vault->set_last_registration_returned_local_data_obsolete(false);
+    // Replace all keys.
+    user_vault.set_last_vault_key_version(last_key_version);
+    user_vault.set_keys_marked_as_stale_by_consumer(false);
+    user_vault.clear_vault_key();
+    for (const std::vector<uint8_t>& key : keys) {
+      AssignBytesToProtoString(
+          key, user_vault.add_vault_key()->mutable_key_material());
+    }
+  });
 
-  // Replace all keys.
-  per_user_vault->set_last_vault_key_version(last_key_version);
-  per_user_vault->set_keys_marked_as_stale_by_consumer(false);
-  per_user_vault->clear_vault_key();
-  for (const std::vector<uint8_t>& key : keys) {
-    AssignBytesToProtoString(
-        key, per_user_vault->add_vault_key()->mutable_key_material());
-  }
-
-  storage_->WriteDataToDisk();
   MaybeRegisterLocalRecoveryFactors();
 }
 
@@ -414,10 +407,10 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     return;
   }
 
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(primary_account->gaia);
+  const UserVault* per_user_vault =
+      storage_->FindUserVault(primary_account_->gaia);
   if (!per_user_vault) {
-    per_user_vault = storage_->AddUserVault(primary_account->gaia);
+    per_user_vault = storage_->AddUserVault(primary_account_->gaia);
   }
 
   if (connection_) {
@@ -463,14 +456,15 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
   // jar.
   if (primary_account_.has_value() &&
       !gaia_ids_in_cookie_jar.contains(primary_account_->gaia)) {
-    trusted_vault_pb::LocalTrustedVaultPerUser* primary_account_data_ =
-        storage_->FindUserVault(primary_account_->gaia);
-    primary_account_data_->set_should_delete_keys_when_non_primary(true);
+    storage_->MutateUserVault(
+        primary_account_->gaia, [](UserVault& user_vault) {
+          user_vault.set_should_delete_keys_when_non_primary(true);
+        });
   }
 
   auto should_remove_user_data =
-      [&gaia_ids_in_cookie_jar, &primary_account = primary_account_](
-          const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_data) {
+      [&gaia_ids_in_cookie_jar,
+       &primary_account = primary_account_](const UserVault& per_user_data) {
         const GaiaId gaia_id(per_user_data.gaia_id());
         if (primary_account.has_value() && gaia_id == primary_account->gaia) {
           // Don't delete primary account data.
@@ -481,20 +475,19 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
       };
 
   storage_->RemoveUserVaults(should_remove_user_data);
-  storage_->WriteDataToDisk();
 }
 
 bool StandaloneTrustedVaultBackend::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(account_info.gaia);
+  const UserVault* per_user_vault = storage_->FindUserVault(account_info.gaia);
   if (!per_user_vault || per_user_vault->keys_marked_as_stale_by_consumer()) {
     // No keys available for |account_info| or they are already marked as stale.
     return false;
   }
 
-  per_user_vault->set_keys_marked_as_stale_by_consumer(true);
-  storage_->WriteDataToDisk();
+  storage_->MutateUserVault(account_info.gaia, [](UserVault& user_vault) {
+    user_vault.set_keys_marked_as_stale_by_consumer(true);
+  });
   return true;
 }
 
@@ -544,11 +537,9 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
     return;
   }
 
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(gaia_id);
-  DCHECK(per_user_vault);
+  const auto& per_user_vault = storage_->GetUserVault(gaia_id);
 
-  if (per_user_vault->vault_key().empty()) {
+  if (per_user_vault.vault_key().empty()) {
     // Can't add recovery method while there are no local keys.
     std::move(cb).Run();
     return;
@@ -577,8 +568,8 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
       connection_->RegisterAuthenticationFactor(
           *primary_account_,
           GetTrustedVaultKeysWithVersions(
-              StandaloneTrustedVaultStorage::GetAllVaultKeys(*per_user_vault),
-              per_user_vault->last_vault_key_version()),
+              StandaloneTrustedVaultStorage::GetAllVaultKeys(per_user_vault),
+              per_user_vault.last_vault_key_version()),
           *imported_public_key,
           UnspecifiedAuthenticationFactorType(method_type_hint),
           base::IgnoreArgs<TrustedVaultRegistrationStatus, int>(base::BindOnce(
@@ -588,15 +579,14 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
 
 void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(account_info.gaia);
-  if (!per_user_vault) {
+  if (!storage_->FindUserVault(account_info.gaia)) {
     return;
   }
 
-  *per_user_vault = trusted_vault_pb::LocalTrustedVaultPerUser();
-  per_user_vault->set_gaia_id(account_info.gaia.ToString());
-  storage_->WriteDataToDisk();
+  storage_->MutateUserVault(account_info.gaia, [&](UserVault& user_vault) {
+    user_vault = UserVault();
+    user_vault.set_gaia_id(account_info.gaia.ToString());
+  });
 
   // This codepath invoked as part of sync reset. While sync reset can cause
   // resetting primary account, this is not the case for Chrome OS and Butter
@@ -614,8 +604,7 @@ StandaloneTrustedVaultBackend::GetPrimaryAccountForTesting() const {
 trusted_vault_pb::LocalDeviceRegistrationInfo
 StandaloneTrustedVaultBackend::GetDeviceRegistrationInfoForTesting(
     const GaiaId& gaia_id) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(gaia_id);
+  const UserVault* per_user_vault = storage_->FindUserVault(gaia_id);
   if (!per_user_vault) {
     return trusted_vault_pb::LocalDeviceRegistrationInfo();
   }
@@ -630,8 +619,7 @@ StandaloneTrustedVaultBackend::GetLastAddedRecoveryMethodPublicKeyForTesting()
 
 int StandaloneTrustedVaultBackend::GetLastKeyVersionForTesting(
     const GaiaId& gaia_id) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(gaia_id);
+  const UserVault* per_user_vault = storage_->FindUserVault(gaia_id);
   if (!per_user_vault) {
     return -1;
   }
@@ -700,10 +688,7 @@ void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
   // If |primary_account_| was changed meanwhile, this callback must be
   // cancelled.
   DCHECK(primary_account_.has_value());
-
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(primary_account_->gaia);
-  DCHECK(per_user_vault);
+  DCHECK(storage_->FindUserVault(primary_account_->gaia));
 
   RecordTrustedVaultRecoveryFactorRegistrationOutcome(
       local_recovery_factor_type, security_domain_id_,
@@ -719,13 +704,15 @@ void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
         // e.g. previous response wasn't handled properly), but absence of
         // keys (non-constant or constant) still needs to be checked before that
         // - there might be StoreKeys() call during handling the request.
-        if (per_user_vault->vault_key_size() == 0) {
-          AssignBytesToProtoString(
-              GetConstantTrustedVaultKey(),
-              per_user_vault->add_vault_key()->mutable_key_material());
-          per_user_vault->set_last_vault_key_version(key_version);
-          storage_->WriteDataToDisk();
-        }
+        storage_->MutateUserVault(
+            primary_account_->gaia, [&](UserVault& user_vault) {
+              if (user_vault.vault_key_size() == 0) {
+                AssignBytesToProtoString(
+                    GetConstantTrustedVaultKey(),
+                    user_vault.add_vault_key()->mutable_key_material());
+                user_vault.set_last_vault_key_version(key_version);
+              }
+            });
       }
       break;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
@@ -831,8 +818,7 @@ void StandaloneTrustedVaultBackend::FulfillFetchKeys(
     const GaiaId& gaia_id,
     FetchKeysCallback callback,
     std::optional<TrustedVaultRecoverKeysOutcomeForUMA> status_for_uma) {
-  const trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(gaia_id);
+  const UserVault* per_user_vault = storage_->FindUserVault(gaia_id);
 
   if (status_for_uma.has_value()) {
     RecordTrustedVaultRecoverKeysOutcome(security_domain_id_, *status_for_uma);
@@ -854,15 +840,13 @@ void StandaloneTrustedVaultBackend::FulfillFetchKeys(
 void StandaloneTrustedVaultBackend::
     RemoveNonPrimaryAccountKeysIfMarkedForDeletion() {
   auto should_remove_user_data =
-      [&primary_account = primary_account_](
-          const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_data) {
+      [&primary_account = primary_account_](const UserVault& per_user_data) {
         return per_user_data.should_delete_keys_when_non_primary() &&
                (!primary_account.has_value() ||
                 primary_account->gaia != GaiaId(per_user_data.gaia_id()));
       };
 
   storage_->RemoveUserVaults(should_remove_user_data);
-  storage_->WriteDataToDisk();
 }
 
 void StandaloneTrustedVaultBackend::WaitForIdleForTesting(

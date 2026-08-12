@@ -14,12 +14,11 @@
 
 namespace trusted_vault {
 
+using UserVault = trusted_vault_pb::LocalTrustedVaultPerUser;
+
 enum class SecurityDomainId;
 
 // Storage helper for StandaloneTrustedVaultBackend handling file operations.
-// TODO(crbug.com/405381481): This interface currently exposes pointers to
-// internal data structures (|data_|). Consider rewriting it to avoid this, and
-// potentially also get rid of ReadDataFromDisk() and WriteDataToDisk().
 class StandaloneTrustedVaultStorage {
  public:
   // Interface for actual file access. Can be swapped with a fake for tests.
@@ -50,41 +49,49 @@ class StandaloneTrustedVaultStorage {
   // Restores state saved in storage, should be called before using the object.
   void ReadDataFromDisk();
 
-  // Writes data back to disk.
-  void WriteDataToDisk();
-
   // Adds a new per-user vault in for |gaia_id|.
   // There must be no existing per-user vault for |gaia_id|. The lifetime of
   // the returned pointer is bound to the lifetime of |this|, but it becomes
   // invalid when ReadDataFromDisk() is called.
   // This never returns null.
-  trusted_vault_pb::LocalTrustedVaultPerUser* AddUserVault(
-      const GaiaId& gaia_id);
+  const UserVault* AddUserVault(const GaiaId& gaia_id);
 
   // Finds the per-user vault for |gaia_id|. Returns null if not found. The
   // lifetime of the returned pointer is bound to the lifetime of |this|, but it
   // becomes invalid when ReadDataFromDisk() is called.
-  trusted_vault_pb::LocalTrustedVaultPerUser* FindUserVault(
-      const GaiaId& gaia_id);
+  const UserVault* FindUserVault(const GaiaId& gaia_id) const;
+
+  // Finds and returns a reference to the per-user vault for |gaia_id|.
+  // Triggers a CHECK failure if the vault does not exist. The lifetime of
+  // the returned reference is bound to the lifetime of |this|, but it becomes
+  // invalid when ReadDataFromDisk() is called.
+  const UserVault& GetUserVault(const GaiaId& gaia_id) const;
+
+  // Executes |mutator| on the per-user vault for |gaia_id|, creating the
+  // user vault if it does not exist, and commits changes to disk once upon
+  // completion. Returns a const reference to the mutated per-user vault.
+  const UserVault& MutateUserVault(const GaiaId& gaia_id,
+                                   base::FunctionRef<void(UserVault&)> mutator);
 
   // Removes the per-user vaults that match |predicate|.
-  void RemoveUserVaults(
-      base::FunctionRef<bool(const trusted_vault_pb::LocalTrustedVaultPerUser&)>
-          predicate);
+  void RemoveUserVaults(base::FunctionRef<bool(const UserVault&)> predicate);
 
   // Checks whether there is any non-constant key in |per_user_vault|.
   // This indicates that the corresponding security domain is not in the
   // pre-enrollment state, but contains usable key material.
-  static bool HasNonConstantKey(
-      const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault);
+  static bool HasNonConstantKey(const UserVault& per_user_vault);
 
   // Helper method to get all keys in |per_user_vault|.
   static std::vector<std::vector<uint8_t>> GetAllVaultKeys(
-      const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault);
+      const UserVault& per_user_vault);
 
  private:
   explicit StandaloneTrustedVaultStorage(
       std::unique_ptr<FileAccess> file_access);
+
+  UserVault* AddUserVaultImpl(const GaiaId& gaia_id);
+  UserVault* FindUserVaultImpl(const GaiaId& gaia_id);
+  const UserVault* FindUserVaultImpl(const GaiaId& gaia_id) const;
 
   std::unique_ptr<FileAccess> file_access_;
   trusted_vault_pb::LocalTrustedVault data_;

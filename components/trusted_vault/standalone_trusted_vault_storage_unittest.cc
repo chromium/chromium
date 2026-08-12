@@ -191,10 +191,8 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldReadAndFindUserKeys) {
   const std::vector<uint8_t> kKey4 = {3, 4};
 
   trusted_vault_pb::LocalTrustedVault initial_data;
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
-      initial_data.add_user();
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
-      initial_data.add_user();
+  UserVault* user_data1 = initial_data.add_user();
+  UserVault* user_data2 = initial_data.add_user();
   user_data1->set_gaia_id(kGaiaId1.ToString());
   user_data2->set_gaia_id(kGaiaId2.ToString());
   user_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
@@ -210,12 +208,10 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldReadAndFindUserKeys) {
       /*sample=*/TrustedVaultFileReadStatusForUMA::kSuccess,
       /*expected_bucket_count=*/1);
 
-  trusted_vault_pb::LocalTrustedVaultPerUser* stored_user_data1 =
-      storage()->FindUserVault(kGaiaId1);
+  const UserVault* stored_user_data1 = storage()->FindUserVault(kGaiaId1);
   EXPECT_THAT(stored_user_data1->vault_key(),
               ElementsAre(KeyMaterialEq(kKey1), KeyMaterialEq(kKey2)));
-  trusted_vault_pb::LocalTrustedVaultPerUser* stored_user_data2 =
-      storage()->FindUserVault(kGaiaId2);
+  const UserVault* stored_user_data2 = storage()->FindUserVault(kGaiaId2);
   EXPECT_THAT(stored_user_data2->vault_key(),
               ElementsAre(KeyMaterialEq(kKey3), KeyMaterialEq(kKey4)));
 }
@@ -228,18 +224,16 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldAddAndStoreUserKeys) {
   const std::vector<uint8_t> kKey3 = {2, 3, 4};
 
   base::HistogramTester histogram_tester;
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
-      storage()->AddUserVault(kGaiaId1);
-  user_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
-  user_data1->set_last_vault_key_version(7);
-  storage()->WriteDataToDisk();
+  storage()->MutateUserVault(kGaiaId1, [&](UserVault& user_data) {
+    user_data.add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
+    user_data.set_last_vault_key_version(7);
+  });
 
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
-      storage()->AddUserVault(kGaiaId2);
-  user_data2->add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
-  user_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
-  user_data2->set_last_vault_key_version(9);
-  storage()->WriteDataToDisk();
+  storage()->MutateUserVault(kGaiaId2, [&](UserVault& user_data) {
+    user_data.add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
+    user_data.add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
+    user_data.set_last_vault_key_version(9);
+  });
 
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.FileWriteSuccess." + security_domain_name_for_uma(),
@@ -266,10 +260,8 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldRemoveUser) {
   const std::vector<uint8_t> kKey4 = {3, 4};
 
   trusted_vault_pb::LocalTrustedVault initial_data;
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
-      initial_data.add_user();
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
-      initial_data.add_user();
+  UserVault* user_data1 = initial_data.add_user();
+  UserVault* user_data2 = initial_data.add_user();
   user_data1->set_gaia_id(kGaiaId1.ToString());
   user_data2->set_gaia_id(kGaiaId2.ToString());
   user_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
@@ -280,12 +272,9 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldRemoveUser) {
   ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
   storage()->ReadDataFromDisk();
 
-  storage()->RemoveUserVaults(
-      [&](const trusted_vault_pb::LocalTrustedVaultPerUser& user_data) -> bool {
-        return user_data.gaia_id() == kGaiaId2.ToString();
-      });
-
-  storage()->WriteDataToDisk();
+  storage()->RemoveUserVaults([&](const UserVault& user_data) -> bool {
+    return user_data.gaia_id() == kGaiaId2.ToString();
+  });
 
   // Read the file from disk.
   trusted_vault_pb::LocalTrustedVault proto =
@@ -304,10 +293,8 @@ TEST_F(StandaloneTrustedVaultStorageTest,
   const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
 
   trusted_vault_pb::LocalTrustedVault initial_data;
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
-      initial_data.add_user();
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
-      initial_data.add_user();
+  UserVault* user_data1 = initial_data.add_user();
+  UserVault* user_data2 = initial_data.add_user();
   user_data1->set_gaia_id(gaia_id_1);
   user_data2->set_gaia_id(gaia_id_2);
   // Mimic |user_data1| to be affected by crbug.com/1267391 and |user_data2| to
@@ -344,10 +331,8 @@ TEST_F(StandaloneTrustedVaultStorageTest,
   const char gaia_id_2[] = "user2";
 
   trusted_vault_pb::LocalTrustedVault initial_data;
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
-      initial_data.add_user();
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
-      initial_data.add_user();
+  UserVault* user_data1 = initial_data.add_user();
+  UserVault* user_data2 = initial_data.add_user();
   user_data1->set_gaia_id(gaia_id_1);
   user_data1->set_keys_marked_as_stale_by_consumer(true);
   user_data2->set_gaia_id(gaia_id_2);
@@ -374,8 +359,7 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion3) {
   trusted_vault_pb::LocalTrustedVault initial_data;
 
   // First user has `device_registered_version` set to 0.
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
-      initial_data.add_user();
+  UserVault* user_data1 = initial_data.add_user();
   user_data1->set_gaia_id(gaia_id_1);
   user_data1->mutable_local_device_registration_info()->set_device_registered(
       true);
@@ -386,8 +370,7 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion3) {
                                ->mutable_private_key_material());
 
   // Second user has `device_registered_version` set to 1.
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
-      initial_data.add_user();
+  UserVault* user_data2 = initial_data.add_user();
   user_data2->set_gaia_id(gaia_id_2);
   user_data2->mutable_local_device_registration_info()->set_device_registered(
       true);
@@ -424,8 +407,7 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion4) {
 
   // First user has `local_device_registration_info.
   // last_registration_returned_local_data_obsolete` unset.
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
-      initial_data.add_user();
+  UserVault* user_data1 = initial_data.add_user();
   user_data1->set_gaia_id(gaia_id_1);
   user_data1->mutable_local_device_registration_info()->set_device_registered(
       true);
@@ -435,8 +417,7 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion4) {
 
   // Second user has `local_device_registration_info.
   // last_registration_returned_local_data_obsolete` set to true.
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
-      initial_data.add_user();
+  UserVault* user_data2 = initial_data.add_user();
   user_data2->set_gaia_id(gaia_id_2);
   user_data2->mutable_local_device_registration_info()->set_device_registered(
       true);
@@ -487,6 +468,30 @@ TEST_F(StandaloneTrustedVaultStorageTest,
       "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
       /*sample=*/TrustedVaultFileReadStatusForUMA::kSHA256DigestMismatch,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(StandaloneTrustedVaultStorageTest, GetUserVault) {
+  const GaiaId kGaiaId("user1");
+  storage()->MutateUserVault(kGaiaId, [](UserVault&) {});
+
+  const UserVault& user_vault = storage()->GetUserVault(kGaiaId);
+  EXPECT_EQ(user_vault.gaia_id(), kGaiaId.ToString());
+}
+
+TEST_F(StandaloneTrustedVaultStorageTest, MutateUserVault) {
+  const GaiaId kGaiaId("user1");
+  const UserVault& mutated_vault = storage()->MutateUserVault(
+      kGaiaId,
+      [](UserVault& user_vault) { user_vault.set_last_vault_key_version(7); });
+
+  EXPECT_EQ(mutated_vault.last_vault_key_version(), 7);
+  EXPECT_EQ(storage()->GetUserVault(kGaiaId).last_vault_key_version(), 7);
+
+  // Verify that changes were committed to disk automatically.
+  trusted_vault_pb::LocalTrustedVault file_proto =
+      ReadLocalTrustedVaultFile(file_path());
+  ASSERT_EQ(file_proto.user_size(), 1);
+  EXPECT_EQ(file_proto.user(0).last_vault_key_version(), 7);
 }
 
 // This test checks that the `kEnableTrustedVaultSHA256` flag disables new

@@ -122,10 +122,8 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
     storage_ =
         StandaloneTrustedVaultStorage::CreateForTesting(std::move(file_access));
     storage_->ReadDataFromDisk();
-    if (storage_->FindUserVault(account_info.gaia) == nullptr) {
-      storage_->AddUserVault(account_info.gaia);
-      storage_->WriteDataToDisk();
-    }
+    // Create a user vault if none exists yet.
+    storage_->MutateUserVault(account_info.gaia, [](UserVault&) {});
 
     connection_ =
         std::make_unique<NiceMock<MockTrustedVaultThrottlingConnection>>();
@@ -158,16 +156,15 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
                  const std::vector<std::vector<uint8_t>>& vault_keys,
                  int last_vault_key_version) {
     CHECK(!vault_keys.empty());
-    trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-        storage_->FindUserVault(account_info.gaia);
-    CHECK(per_user_vault);
-    per_user_vault->set_last_vault_key_version(last_vault_key_version);
-    per_user_vault->set_keys_marked_as_stale_by_consumer(false);
-    per_user_vault->clear_vault_key();
-    for (const std::vector<uint8_t>& key : vault_keys) {
-      AssignBytesToProtoString(
-          key, per_user_vault->add_vault_key()->mutable_key_material());
-    }
+    storage_->MutateUserVault(account_info.gaia, [&](UserVault& user_vault) {
+      user_vault.set_last_vault_key_version(last_vault_key_version);
+      user_vault.set_keys_marked_as_stale_by_consumer(false);
+      user_vault.clear_vault_key();
+      for (const std::vector<uint8_t>& key : vault_keys) {
+        AssignBytesToProtoString(
+            key, user_vault.add_vault_key()->mutable_key_material());
+      }
+    });
   }
 
   std::unique_ptr<ICloudRecoveryKey> CreateICloudKey(
@@ -422,12 +419,10 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
     return registered_public_key;
   }
 
-  trusted_vault_pb::ICloudKeychainRegistrationInfo* GetICloudRegistrationInfo(
+  trusted_vault_pb::ICloudKeychainRegistrationInfo GetICloudRegistrationInfo(
       CoreAccountInfo account_info) {
-    trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-        storage_->FindUserVault(account_info.gaia);
-    CHECK(per_user_vault);
-    return per_user_vault->mutable_icloud_keychain_registration_info();
+    return storage_->GetUserVault(account_info.gaia)
+        .icloud_keychain_registration_info();
   }
 
  private:
@@ -700,7 +695,10 @@ TEST_F(ICloudKeychainRecoveryFactorTest, ShouldSucceedWithMultipleMembers) {
 
 TEST_F(ICloudKeychainRecoveryFactorTest,
        ShouldNotRegisterWhenAlreadyRegistered) {
-  GetICloudRegistrationInfo(account_info())->set_registered(true);
+  storage()->MutateUserVault(account_info().gaia, [](UserVault& user_vault) {
+    user_vault.mutable_icloud_keychain_registration_info()->set_registered(
+        true);
+  });
 
   base::MockCallback<LocalRecoveryFactor::RegisterCallback> register_callback;
   EXPECT_CALL(register_callback, Run).Times(0);
@@ -713,10 +711,9 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
 TEST_F(ICloudKeychainRecoveryFactorTest,
        ShouldNotRegisterWhenLocalDataObsolete) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage()->FindUserVault(account_info().gaia);
-  ASSERT_THAT(per_user_vault, NotNull());
-  per_user_vault->set_last_registration_returned_local_data_obsolete(true);
+  storage()->MutateUserVault(account_info().gaia, [](UserVault& user_vault) {
+    user_vault.set_last_registration_returned_local_data_obsolete(true);
+  });
 
   base::MockCallback<LocalRecoveryFactor::RegisterCallback> register_callback;
   EXPECT_CALL(register_callback, Run).Times(0);
@@ -821,10 +818,9 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
       TrustedVaultRegistrationStatus::kLocalDataObsolete,
       /*registration_key_version=*/0, registration_callback.Get());
 
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage()->FindUserVault(account_info().gaia);
-  ASSERT_THAT(per_user_vault, NotNull());
-  EXPECT_TRUE(per_user_vault->last_registration_returned_local_data_obsolete());
+  const UserVault& per_user_vault =
+      storage()->GetUserVault(account_info().gaia);
+  EXPECT_TRUE(per_user_vault.last_registration_returned_local_data_obsolete());
 }
 
 TEST_F(ICloudKeychainRecoveryFactorTest, RegistrationShouldSucceed) {
@@ -881,7 +877,10 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
 TEST_F(ICloudKeychainRecoveryFactorTest,
        MarkAsNotRegisteredShouldClearRegistrationData) {
-  GetICloudRegistrationInfo(account_info())->set_registered(true);
+  storage()->MutateUserVault(account_info().gaia, [](UserVault& user_vault) {
+    user_vault.mutable_icloud_keychain_registration_info()->set_registered(
+        true);
+  });
 
   EXPECT_TRUE(recovery_factor()->IsRegistered());
 
@@ -889,9 +888,7 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
   // Now the device should no longer be registered.
   EXPECT_FALSE(recovery_factor()->IsRegistered());
-  trusted_vault_pb::ICloudKeychainRegistrationInfo* registration_info =
-      GetICloudRegistrationInfo(account_info());
-  EXPECT_FALSE(registration_info->registered());
+  EXPECT_FALSE(GetICloudRegistrationInfo(account_info()).registered());
 }
 
 }  // namespace

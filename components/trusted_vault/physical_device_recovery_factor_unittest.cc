@@ -81,10 +81,7 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
     storage_ =
         StandaloneTrustedVaultStorage::CreateForTesting(std::move(file_access));
     storage_->ReadDataFromDisk();
-    if (storage_->FindUserVault(account_info.gaia) == nullptr) {
-      storage_->AddUserVault(account_info.gaia);
-      storage_->WriteDataToDisk();
-    }
+    storage_->MutateUserVault(account_info.gaia, [](UserVault&) {});
 
     connection_ =
         std::make_unique<NiceMock<MockTrustedVaultThrottlingConnection>>();
@@ -117,16 +114,15 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
                  const std::vector<std::vector<uint8_t>>& vault_keys,
                  int last_vault_key_version) {
     CHECK(!vault_keys.empty());
-    trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-        storage_->FindUserVault(account_info.gaia);
-    CHECK(per_user_vault);
-    per_user_vault->set_last_vault_key_version(last_vault_key_version);
-    per_user_vault->set_keys_marked_as_stale_by_consumer(false);
-    per_user_vault->clear_vault_key();
-    for (const std::vector<uint8_t>& key : vault_keys) {
-      AssignBytesToProtoString(
-          key, per_user_vault->add_vault_key()->mutable_key_material());
-    }
+    storage_->MutateUserVault(account_info.gaia, [&](UserVault& user_vault) {
+      user_vault.set_last_vault_key_version(last_vault_key_version);
+      user_vault.set_keys_marked_as_stale_by_consumer(false);
+      user_vault.clear_vault_key();
+      for (const std::vector<uint8_t>& key : vault_keys) {
+        AssignBytesToProtoString(
+            key, user_vault.add_vault_key()->mutable_key_material());
+      }
+    });
   }
 
   // Stores `vault_keys` in storage and mimics successful device registration,
@@ -175,16 +171,14 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
              /*key_version=*/last_vault_key_version);
 
     std::string device_private_key_material =
-        GetDeviceRegistrationInfo(account_info)->private_key_material();
+        GetDeviceRegistrationInfo(account_info).private_key_material();
     return ProtoStringToBytes(device_private_key_material);
   }
 
-  trusted_vault_pb::LocalDeviceRegistrationInfo* GetDeviceRegistrationInfo(
+  trusted_vault_pb::LocalDeviceRegistrationInfo GetDeviceRegistrationInfo(
       CoreAccountInfo account_info) {
-    trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-        storage_->FindUserVault(account_info.gaia);
-    CHECK(per_user_vault);
-    return per_user_vault->mutable_local_device_registration_info();
+    return storage_->GetUserVault(account_info.gaia)
+        .local_device_registration_info();
   }
 
  private:
@@ -237,14 +231,14 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldRegisterDevice) {
 
   // Now the device should be registered.
   EXPECT_TRUE(recovery_factor()->IsRegistered());
-  trusted_vault_pb::LocalDeviceRegistrationInfo* registration_info =
+  const trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
       GetDeviceRegistrationInfo(account_info());
-  EXPECT_TRUE(registration_info->device_registered());
-  EXPECT_TRUE(registration_info->has_private_key_material());
+  EXPECT_TRUE(registration_info.device_registered());
+  EXPECT_TRUE(registration_info.has_private_key_material());
 
   std::unique_ptr<SecureBoxKeyPair> key_pair =
       SecureBoxKeyPair::CreateByPrivateKeyImport(
-          base::as_byte_span(registration_info->private_key_material()));
+          base::as_byte_span(registration_info.private_key_material()));
   EXPECT_THAT(key_pair->public_key().ExportToBytes(),
               Eq(serialized_public_device_key));
 }
@@ -253,7 +247,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldNotRegisterIfAlreadyRegistered) {
   std::vector<uint8_t> private_device_key = StoreKeysAndMimicDeviceRegistration(
       account_info(), {kVaultKey}, kLastKeyVersion);
   EXPECT_THAT(
-      GetDeviceRegistrationInfo(account_info())->device_registered_version(),
+      GetDeviceRegistrationInfo(account_info()).device_registered_version(),
       Eq(1));
 
   // No registration attempt should be made, since device is already registered.
@@ -272,7 +266,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   std::vector<uint8_t> private_device_key = StoreKeysAndMimicDeviceRegistration(
       account_info(), {kVaultKey}, kLastKeyVersion);
   ASSERT_THAT(
-      GetDeviceRegistrationInfo(account_info())->device_registered_version(),
+      GetDeviceRegistrationInfo(account_info()).device_registered_version(),
       Eq(1));
 
   // Simulate restart.
@@ -385,9 +379,9 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 
   // Pretend that the local data obsolete flag changed while the network request
   // was in flight.
-  storage()
-      ->FindUserVault(account_info().gaia)
-      ->set_last_registration_returned_local_data_obsolete(true);
+  storage()->MutateUserVault(account_info().gaia, [](UserVault& user_vault) {
+    user_vault.set_last_registration_returned_local_data_obsolete(true);
+  });
 
   // Pretend that the registration succeeded.
   EXPECT_CALL(register_callback,
@@ -420,18 +414,18 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 
   // Now the device should no longer be registered.
   EXPECT_FALSE(recovery_factor()->IsRegistered());
-  trusted_vault_pb::LocalDeviceRegistrationInfo* registration_info =
+  const trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
       GetDeviceRegistrationInfo(account_info());
-  EXPECT_FALSE(registration_info->device_registered());
-  EXPECT_FALSE(registration_info->has_device_registered_version());
+  EXPECT_FALSE(registration_info.device_registered());
+  EXPECT_FALSE(registration_info.has_device_registered_version());
 }
 
 TEST_F(PhysicalDeviceRecoveryFactorTest,
        ShouldNotTryToRegisterDeviceIfPreviousAttemptFailed) {
   StoreKeys(account_info(), {kVaultKey}, kLastKeyVersion);
-  storage()
-      ->FindUserVault(account_info().gaia)
-      ->set_last_registration_returned_local_data_obsolete(true);
+  storage()->MutateUserVault(account_info().gaia, [](UserVault& user_vault) {
+    user_vault.set_last_registration_returned_local_data_obsolete(true);
+  });
 
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);

@@ -51,7 +51,7 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
   bool IsIdleForTesting() const override;
 
  private:
-  trusted_vault_pb::LocalTrustedVaultPerUser* GetPrimaryAccountVault();
+  const UserVault& GetPrimaryAccountVault();
 
   void OnICloudKeysRetrievedForRecovery(
       AttemptRecoveryCallback cb,
