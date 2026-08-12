@@ -7588,12 +7588,6 @@ inline constexpr char kEnableDisplayPerformanceModeDescription[] =
     "This option enables toggling different display features based on user "
     "setting and power state";
 
-inline constexpr char kDisableDnsProxyName[] =
-    "Disable DNS proxy service for ChromeOS";
-inline constexpr char kDisableDnsProxyDescription[] =
-    "Turns off DNS proxying and SecureDNS for ChromeOS (only). Does not impact "
-    "Chrome browser.";
-
 inline constexpr char kDisconnectWiFiOnEthernetConnectedName[] =
     "Disconnect WiFi on Ethernet";
 inline constexpr char kDisconnectWiFiOnEthernetConnectedDescription[] =

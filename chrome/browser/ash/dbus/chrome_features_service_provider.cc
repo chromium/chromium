@@ -443,11 +443,11 @@ void ChromeFeaturesServiceProvider::IsPeripheralDataAccessEnabled(
                peripheral_data_access_enabled);
 }
 
+// TODO(b/356234634): Remove method as the flag is removed to always returns true.
 void ChromeFeaturesServiceProvider::IsDnsProxyEnabled(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  SendResponse(method_call, std::move(response_sender),
-               !base::FeatureList::IsEnabled(features::kDisableDnsProxy));
+  SendResponse(method_call, std::move(response_sender), true);
 }
 
 void ChromeFeaturesServiceProvider::IsRootNsDnsProxyEnabled(

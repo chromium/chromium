@@ -537,9 +537,6 @@ BASE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpressDefaultOn,
 BASE_FEATURE(kDisableBruschettaInstallChecks,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disables the DNS proxy service for ChromeOS.
-BASE_FEATURE(kDisableDnsProxy, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Disconnect WiFi when the device get connected to Ethernet.
 BASE_FEATURE(kDisconnectWiFiOnEthernetConnected,
              base::FEATURE_DISABLED_BY_DEFAULT);
