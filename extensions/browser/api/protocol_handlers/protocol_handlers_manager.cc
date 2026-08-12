@@ -48,21 +48,6 @@ static void RegisterHandlersIfNeeded(
   }
 }
 
-static void UnregisterHandlersIfNeeded(
-    const ExtensionId& id,
-    const ProtocolHandlersInfo& info,
-    custom_handlers::ProtocolHandlerRegistry& registry) {
-  for (const auto& handler_info : info) {
-    custom_handlers::ProtocolHandler handler =
-        custom_handlers::ProtocolHandler::CreateExtensionProtocolHandler(
-            handler_info.protocol, handler_info.url, id);
-
-    DCHECK(handler.IsValid());
-
-    registry.RemoveHandler(handler);
-  }
-}
-
 }  // namespace
 
 ProtocolHandlersManager::ProtocolHandlersManager(
@@ -124,12 +109,6 @@ void ProtocolHandlersManager::OnExtensionUnloaded(
     content::BrowserContext*,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  const ProtocolHandlersInfo* info =
-      ProtocolHandlers::GetProtocolHandlers(*extension);
-  if (!info) {
-    return;
-  }
-
   // Use browser_context_ for the same reason as OnExtensionLoaded.
   auto* registry = ExtensionsBrowserClient::Get()->GetProtocolHandlerRegistry(
       browser_context_);
@@ -139,7 +118,13 @@ void ProtocolHandlersManager::OnExtensionUnloaded(
     return;
   }
 
-  UnregisterHandlersIfNeeded(extension->id(), *info, *registry);
+  // Remove every handler associated with this extension. This covers handlers
+  // declared in the manifest as well as handlers registered at runtime via
+  // navigator.registerProtocolHandler from a privileged extension page.
+  for (const auto& handler :
+       registry->GetExtensionProtocolHandlers(extension->id())) {
+    registry->RemoveHandler(handler);
+  }
 }
 
 void ProtocolHandlersManager::ProtocolHandlersSanityCheck() {

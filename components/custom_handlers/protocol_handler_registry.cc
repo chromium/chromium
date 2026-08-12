@@ -746,6 +746,15 @@ bool ProtocolHandlerRegistry::RegisterProtocolHandler(
   if (!handler.IsValid())
     return false;
 
+  // Reject extension-privileged handlers that are not associated with an
+  // extension. All addition paths funnel through here (including handlers
+  // loaded from prefs), so enforcing it once drops orphaned handlers persisted
+  // by builds that predate recording the extension id, whose elevated
+  // privileges would otherwise survive the registering extension's removal.
+  if (!handler.IsAllowedExtensionHandler()) {
+    return false;
+  }
+
   // OTR invariant: this registry only stores handlers usable in incognito.
   // All addition paths funnel through here (including those loaded from prefs
   // via the OverlayUserPrefStore), so enforcing the invariant once here lets

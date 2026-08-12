@@ -18,6 +18,8 @@ class ChromeProtocolHandlerRegistryTest : public testing::Test {
  protected:
   ChromeProtocolHandlerRegistryTest() = default;
 
+  // Extension handlers shouldn't use this method. See the comment in the
+  // definition of the ExtensionHandlerCanRegisterProtocol below.
   bool ProtocolHandlerCanRegisterProtocol(
       const std::string& protocol,
       const GURL& handler_url,
@@ -26,6 +28,18 @@ class ChromeProtocolHandlerRegistryTest : public testing::Test {
         ProtocolHandler::CreateProtocolHandler(protocol, handler_url,
                                                security_level));
     return registry_->IsHandledProtocol(protocol);
+  }
+
+  // Like above, but registers an extension handler (kExtensionFeatures plus the
+  // associated extension id). Extension handlers start unconfirmed, so success
+  // is checked via the handler list rather than IsHandledProtocol.
+  bool ExtensionHandlerCanRegisterProtocol(const std::string& protocol,
+                                           const GURL& handler_url,
+                                           const std::string& extension_id) {
+    registry_->OnAcceptRegisterProtocolHandler(
+        ProtocolHandler::CreateExtensionProtocolHandler(protocol, handler_url,
+                                                        extension_id));
+    return !registry_->GetHandlersFor(protocol).empty();
   }
 
   void SetUp() override {
@@ -64,8 +78,10 @@ TEST_F(ChromeProtocolHandlerRegistryTest, ExtensionHandler) {
       "news", chrome_extension_handler_url,
       blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins));
 
-  EXPECT_TRUE(ProtocolHandlerCanRegisterProtocol(
-      "news", chrome_extension_handler_url,
-      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  // A chrome-extension:// target URL is only allowed at the kExtensionFeatures
+  // level, which is reserved for extension handlers, so register one via the
+  // extension factory (which supplies the required extension id).
+  EXPECT_TRUE(ExtensionHandlerCanRegisterProtocol(
+      "news", chrome_extension_handler_url, "extension_id"));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

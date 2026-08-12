@@ -81,6 +81,12 @@ class ProtocolHandler {
   // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers.
   bool IsValid() const;
 
+  // Extra security check, separate from the HTML-spec validity of IsValid():
+  // a handler using extension-level privileges (kExtensionFeatures) must be
+  // associated with an extension, otherwise extension cleanup can never remove
+  // it. Returns true for handlers that do not use extension privileges.
+  bool IsAllowedExtensionHandler() const;
+
   // Returns true if this handler's url has the same origin as the given one.
   bool IsSameOrigin(const ProtocolHandler& handler) const;
 
