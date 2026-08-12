@@ -775,10 +775,11 @@ ExtensionTelemetryService::CreateReportWithCommonFieldsPopulated() {
     }
   }
 
-  // Only collect if `is_shutdown_` is false, since BrowserContextHelper can be
-  // destroyed already and cause a crash on ChromeOS.
-  // TODO(crbug.com/367327319): Investigate keyed service dependency order to
-  // guarantee BrowserContextHelper lifetime during shutdown.
+  // Only collect if `is_shutdown_` is false, since BrowserContextHelper and
+  // UserManager are ChromeOS platform-level singletons destroyed during
+  // PostMainMessageLoopRun prior to ProfileManager teardown. KeyedService
+  // dependency ordering between ProfileKeyedServiceFactory instances cannot
+  // prevent their destruction before service shutdown.
   if (base::FeatureList::IsEnabled(kExtensionTelemetryIncludePolicyData) &&
       !is_shutdown_) {
     // The highest level of ManagementAuthorityTrustworthiness of either
