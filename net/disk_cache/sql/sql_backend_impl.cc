@@ -1595,6 +1595,209 @@ void SqlBackendImpl::HandleReadEntryDataOperation(
               OnceClosureWithBoundArgs(std::move(handle)))));
 }
 
+int SqlBackendImpl::CopySharedCacheToBlobTableAndWrite(
+    const CacheEntryKey& key,
+    const scoped_refptr<EntryDbHandle>& db_handle,
+    int64_t offset,
+    scoped_refptr<net::IOBuffer> buffer,
+    int buf_len,
+    int64_t old_body_end,
+    bool truncate,
+    base::Time last_used,
+    bool sparse_write,
+    size_t header_size,
+    CompletionOnceCallback callback) {
+  const int64_t end_offset = base::CheckAdd(offset, buf_len).ValueOrDie();
+  const int64_t new_body_end =
+      truncate ? end_offset : std::max(end_offset, old_body_end);
+  auto sync_result_receiver =
+      base::MakeRefCounted<SyncResultReceiver<int>>(std::move(callback));
+  exclusive_operation_coordinator_.PostOrRunNormalOperation(
+      key,
+      base::BindOnce(
+          &SqlBackendImpl::HandleCopySharedCacheToBlobTableOperation,
+          weak_factory_.GetWeakPtr(), key, db_handle, offset, std::move(buffer),
+          buf_len, old_body_end, truncate, last_used, sparse_write, header_size,
+          PushInFlightEntryModification(
+              key, InFlightEntryModification(db_handle, new_body_end)),
+          WrapCallbackWithAbortError<int>(sync_result_receiver->GetCallback(),
+                                          net::ERR_ABORTED)));
+
+  auto sync_result = sync_result_receiver->FinishSyncCall();
+  return sync_result ? std::move(*sync_result) : net::ERR_IO_PENDING;
+}
+
+void SqlBackendImpl::HandleCopySharedCacheToBlobTableOperation(
+    const CacheEntryKey& key,
+    const scoped_refptr<EntryDbHandle>& db_handle,
+    int64_t offset,
+    scoped_refptr<net::IOBuffer> buffer,
+    int buf_len,
+    int64_t old_body_end,
+    bool truncate,
+    base::Time last_used,
+    bool sparse_write,
+    size_t header_size,
+    PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+    CompletionOnceCallback callback,
+    std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
+  CHECK(!db_handle->IsInitialState());
+  if (db_handle->GetError().has_value()) {
+    db_handle->SetSharedCacheBlobHandle(nullptr);
+    db_handle->SetSharedCacheHandle(nullptr);
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
+  auto copy_buffer = base::MakeRefCounted<net::IOBufferWithSize>(16 * 1024);
+  DoCopySharedCacheToBlobTableStep(
+      key, db_handle, offset, std::move(buffer), buf_len, old_body_end,
+      truncate, last_used, sparse_write, header_size, /*copy_offset=*/0,
+      copy_buffer, std::move(pop_in_flight_entry_modification),
+      std::move(callback), std::move(handle));
+}
+
+void SqlBackendImpl::DoCopySharedCacheToBlobTableStep(
+    const CacheEntryKey& key,
+    const scoped_refptr<EntryDbHandle>& db_handle,
+    int64_t offset,
+    scoped_refptr<net::IOBuffer> buffer,
+    int buf_len,
+    int64_t old_body_end,
+    bool truncate,
+    base::Time last_used,
+    bool sparse_write,
+    size_t header_size,
+    int64_t copy_offset,
+    scoped_refptr<net::IOBuffer> copy_buffer,
+    PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+    CompletionOnceCallback callback,
+    std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
+  CHECK_LE(copy_offset, old_body_end);
+  if (copy_offset == old_body_end) {
+    // Done copying!
+    auto shared_cache_resource_id = *db_handle->shared_cache_resource_id();
+    db_handle->set_shared_cache_resource_id(std::nullopt);
+    db_handle->SetSharedCacheBlobHandle(nullptr);
+    db_handle->SetSharedCacheHandle(nullptr);
+
+    auto* manager = GetSharedCacheManager();
+    CHECK(manager);
+    manager->DeleteResources({shared_cache_resource_id}, base::NullCallback());
+
+    // Execute the final WriteData.
+    HandleWriteEntryDataOperation(
+        key, db_handle, old_body_end,
+        EntryWriteBuffer(buffer.get(), buf_len, offset), truncate, last_used,
+        sparse_write, header_size,
+        WrapCallbackWithAbortError<SqlPersistentStore::ResIdOrError>(
+            MakeUpdateDbHandleCallback(db_handle)
+                .Then(MakeResIdOrErrorToIntCallback(buf_len))
+                .Then(std::move(callback)),
+            base::unexpected(SqlPersistentStore::Error::kAborted)),
+        std::move(pop_in_flight_entry_modification), std::move(handle));
+    return;
+  }
+
+  int bytes_to_read = std::min(static_cast<int64_t>(copy_buffer->size()),
+                               old_body_end - copy_offset);
+  CHECK(db_handle->shared_cache_resource_id());
+
+  scoped_refptr<net::IOBuffer> read_buffer = copy_buffer;
+  CHECK_GE(copy_buffer->size(), bytes_to_read);
+  if (copy_buffer->size() != bytes_to_read) {
+    read_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(copy_buffer,
+                                                               bytes_to_read);
+  }
+
+  HandleReadEntryDataOperation(
+      key, db_handle, copy_offset, copy_buffer, bytes_to_read, old_body_end,
+      sparse_write,
+      base::BindOnce(&SqlBackendImpl::OnReadFromSharedCacheForCopy,
+                     weak_factory_.GetWeakPtr(), key, db_handle, offset, buffer,
+                     buf_len, old_body_end, truncate, last_used, sparse_write,
+                     header_size, copy_offset, copy_buffer, bytes_to_read,
+                     std::move(pop_in_flight_entry_modification),
+                     std::move(callback), std::move(handle)),
+      /*handle=*/nullptr);
+}
+
+void SqlBackendImpl::OnReadFromSharedCacheForCopy(
+    const CacheEntryKey& key,
+    const scoped_refptr<EntryDbHandle>& db_handle,
+    int64_t offset,
+    scoped_refptr<net::IOBuffer> buffer,
+    int buf_len,
+    int64_t old_body_end,
+    bool truncate,
+    base::Time last_used,
+    bool sparse_write,
+    size_t header_size,
+    int64_t copy_offset,
+    scoped_refptr<net::IOBuffer> copy_buffer,
+    int bytes_to_read,
+    PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+    CompletionOnceCallback callback,
+    std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
+    SqlPersistentStore::ReadResultOrError result) {
+  if (!result.has_value() || result->read_bytes != bytes_to_read) {
+    db_handle->MarkAsErrorOccurred(
+        result.error_or(SqlPersistentStore::Error::kBodyEndMismatch));
+    db_handle->SetSharedCacheBlobHandle(nullptr);
+    db_handle->SetSharedCacheHandle(nullptr);
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
+  CHECK(db_handle->GetResId().has_value());
+  EntryWriteBuffer write_buffer(copy_buffer, bytes_to_read, copy_offset);
+  if (result->cache_buffer) {
+    write_buffer.buffers.push_back(result->cache_buffer);
+    write_buffer.size += result->cache_buffer->size();
+  }
+  int total_bytes_written = write_buffer.size;
+  store_->WriteEntryData(
+      key, *db_handle->GetResId(), old_body_end, std::move(write_buffer),
+      /*truncate=*/false, db_handle->doomed(), sparse_write, header_size,
+      base::BindOnce(&SqlBackendImpl::OnWriteToBlobTableForCopy,
+                     weak_factory_.GetWeakPtr(), key, db_handle, offset, buffer,
+                     buf_len, old_body_end, truncate, last_used, sparse_write,
+                     header_size, copy_offset, copy_buffer, total_bytes_written,
+                     std::move(pop_in_flight_entry_modification),
+                     std::move(callback), std::move(handle)));
+}
+
+void SqlBackendImpl::OnWriteToBlobTableForCopy(
+    const CacheEntryKey& key,
+    const scoped_refptr<EntryDbHandle>& db_handle,
+    int64_t offset,
+    scoped_refptr<net::IOBuffer> buffer,
+    int buf_len,
+    int64_t old_body_end,
+    bool truncate,
+    base::Time last_used,
+    bool sparse_write,
+    size_t header_size,
+    int64_t copy_offset,
+    scoped_refptr<net::IOBuffer> copy_buffer,
+    int bytes_written,
+    PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+    CompletionOnceCallback callback,
+    std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
+    SqlPersistentStore::ResIdOrError result) {
+  if (!result.has_value()) {
+    db_handle->MarkAsErrorOccurred(result.error());
+    db_handle->SetSharedCacheBlobHandle(nullptr);
+    db_handle->SetSharedCacheHandle(nullptr);
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
+  copy_offset += bytes_written;
+  DoCopySharedCacheToBlobTableStep(
+      key, db_handle, offset, buffer, buf_len, old_body_end, truncate,
+      last_used, sparse_write, header_size, copy_offset, copy_buffer,
+      std::move(pop_in_flight_entry_modification), std::move(callback),
+      std::move(handle));
+}
+
 RangeResult SqlBackendImpl::GetEntryAvailableRange(
     const CacheEntryKey& key,
     const scoped_refptr<EntryDbHandle>& db_handle,

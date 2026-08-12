@@ -33,6 +33,7 @@
 #include "net/disk_cache/sql/exclusive_operation_coordinator.h"
 #include "net/disk_cache/sql/sql_async_task_manager.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
+#include "net/disk_cache/sql/sql_shared_cache_manager.h"
 #include "net/disk_cache/sql/sql_write_buffer_memory_monitor.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -191,6 +192,22 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
                     bool sparse_reading,
                     SqlPersistentStore::ReadResultOrErrorCallback callback);
 
+  // Copies data from Shared Cache to the main database blob table and then
+  // executes the write operation for `buffer`. Scheduled as a normal operation
+  // via `ExclusiveOperationCoordinator`.
+  int CopySharedCacheToBlobTableAndWrite(
+      const CacheEntryKey& key,
+      const scoped_refptr<EntryDbHandle>& db_handle,
+      int64_t offset,
+      scoped_refptr<net::IOBuffer> buffer,
+      int buf_len,
+      int64_t old_body_end,
+      bool truncate,
+      base::Time last_used,
+      bool sparse_write,
+      size_t header_size,
+      CompletionOnceCallback callback);
+
   // Finds the available contiguous range of data for a given entry. The
   // operation is scheduled via the `ExclusiveOperationCoordinator` to ensure
   // proper serialization.
@@ -226,6 +243,10 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   SqlPersistentStore* GetSqlStoreForTest() { return store_.get(); }
 
   SqlAsyncTaskManager& async_task_manager() { return async_task_manager_; }
+
+  SqlSharedCacheManager* GetSharedCacheManager() const {
+    return store_ ? store_->GetSharedCacheManager() : nullptr;
+  }
 
   // Enables a strict corruption checking mode for testing purposes. When
   // enabled, any detected database corruption will cause an immediate crash
@@ -498,6 +519,76 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       bool sparse_reading,
       SqlPersistentStore::ReadResultOrErrorCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  void HandleCopySharedCacheToBlobTableOperation(
+      const CacheEntryKey& key,
+      const scoped_refptr<EntryDbHandle>& db_handle,
+      int64_t offset,
+      scoped_refptr<net::IOBuffer> buffer,
+      int buf_len,
+      int64_t old_body_end,
+      bool truncate,
+      base::Time last_used,
+      bool sparse_write,
+      size_t header_size,
+      PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+      CompletionOnceCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  void DoCopySharedCacheToBlobTableStep(
+      const CacheEntryKey& key,
+      const scoped_refptr<EntryDbHandle>& db_handle,
+      int64_t offset,
+      scoped_refptr<net::IOBuffer> buffer,
+      int buf_len,
+      int64_t old_body_end,
+      bool truncate,
+      base::Time last_used,
+      bool sparse_write,
+      size_t header_size,
+      int64_t copy_offset,
+      scoped_refptr<net::IOBuffer> copy_buffer,
+      PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+      CompletionOnceCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  void OnReadFromSharedCacheForCopy(
+      const CacheEntryKey& key,
+      const scoped_refptr<EntryDbHandle>& db_handle,
+      int64_t offset,
+      scoped_refptr<net::IOBuffer> buffer,
+      int buf_len,
+      int64_t old_body_end,
+      bool truncate,
+      base::Time last_used,
+      bool sparse_write,
+      size_t header_size,
+      int64_t copy_offset,
+      scoped_refptr<net::IOBuffer> copy_buffer,
+      int bytes_to_read,
+      PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+      CompletionOnceCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
+      SqlPersistentStore::ReadResultOrError result);
+
+  void OnWriteToBlobTableForCopy(
+      const CacheEntryKey& key,
+      const scoped_refptr<EntryDbHandle>& db_handle,
+      int64_t offset,
+      scoped_refptr<net::IOBuffer> buffer,
+      int buf_len,
+      int64_t old_body_end,
+      bool truncate,
+      base::Time last_used,
+      bool sparse_write,
+      size_t header_size,
+      int64_t copy_offset,
+      scoped_refptr<net::IOBuffer> copy_buffer,
+      int bytes_written,
+      PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+      CompletionOnceCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
+      SqlPersistentStore::ResIdOrError result);
 
   // Handles the backend logic for `GetEntryAvailableRange()`. This method is
   // scheduled as a normal operation via the `ExclusiveOperationCoordinator`
