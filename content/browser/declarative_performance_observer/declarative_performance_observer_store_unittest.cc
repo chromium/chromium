@@ -401,6 +401,151 @@ TEST_F(DeclarativePerformanceObserverStoreTest, ClearSelectiveData) {
   }
 }
 
+TEST_F(DeclarativePerformanceObserverStoreTest, EnforcesPolicyLimitLRU) {
+  auto store = CreateStoreInMemory();
+  store->SetMaxPoliciesForTesting(3);
+
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("https://example1.com/"));
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("https://example2.com/"));
+  const url::Origin kOrigin3 =
+      url::Origin::Create(GURL("https://example3.com/"));
+  const url::Origin kOrigin4 =
+      url::Origin::Create(GURL("https://example4.com/"));
+
+  // Add 3 policies (limit is 3).
+  // Origin 1 is oldest, Origin 3 is newest.
+  {
+    base::RunLoop run_loop;
+    store->SetEarlyFailurePolicy(kOrigin1, true, base::DoNothing());
+    store->SetEarlyFailurePolicy(kOrigin2, true, base::DoNothing());
+    store->SetEarlyFailurePolicy(kOrigin3, true, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin1));
+  EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin2));
+  EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin3));
+
+  // Accessing kOrigin1 should make it newest (LRU behavior).
+  // Under FIFO, kOrigin1 would still be the oldest.
+  // Under LRU, kOrigin2 becomes the oldest.
+  EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin1));
+
+  // Try to add 4th policy. Origin 2 (oldest under LRU) should be evicted.
+  // If it were FIFO, Origin 1 would be evicted.
+  {
+    base::RunLoop run_loop;
+    store->SetEarlyFailurePolicy(kOrigin4, true, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(store->HasEarlyFailurePolicy(
+      kOrigin1));  // Kept because accessed recently!
+  EXPECT_FALSE(store->HasEarlyFailurePolicy(kOrigin2));  // Evicted!
+  EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin3));
+  EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin4));
+}
+
+TEST_F(DeclarativePerformanceObserverStoreTest, EnforcesPolicyLimitPersisted) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("https://example1.com/"));
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("https://example2.com/"));
+  const url::Origin kOrigin3 =
+      url::Origin::Create(GURL("https://example3.com/"));
+  const url::Origin kOrigin4 =
+      url::Origin::Create(GURL("https://example4.com/"));
+
+  // 1. Create store, set limit to 3, add 3 policies.
+  {
+    base::RunLoop load_loop;
+    auto store = std::make_unique<DeclarativePerformanceObserverStore>(
+        /*is_in_memory=*/false, temp_dir.GetPath(), nullptr,
+        load_loop.QuitClosure());
+    load_loop.Run();
+    store->SetMaxPoliciesForTesting(3);
+
+    {
+      base::RunLoop run_loop;
+      store->SetEarlyFailurePolicy(kOrigin1, true, run_loop.QuitClosure());
+      run_loop.Run();
+    }
+    task_environment_.FastForwardBy(base::Seconds(1));
+    {
+      base::RunLoop run_loop;
+      store->SetEarlyFailurePolicy(kOrigin2, true, run_loop.QuitClosure());
+      run_loop.Run();
+    }
+    task_environment_.FastForwardBy(base::Seconds(1));
+    {
+      base::RunLoop run_loop;
+      store->SetEarlyFailurePolicy(kOrigin3, true, run_loop.QuitClosure());
+      run_loop.Run();
+    }
+
+    base::RunLoop close_loop;
+    store->Close(close_loop.QuitClosure());
+    close_loop.Run();
+  }
+
+  // 2. Re-open store, access Origin 1 to make it newest, then add Origin 4.
+  // Origin 2 (oldest) should be evicted.
+  {
+    base::RunLoop load_loop;
+    auto store = std::make_unique<DeclarativePerformanceObserverStore>(
+        /*is_in_memory=*/false, temp_dir.GetPath(), nullptr,
+        load_loop.QuitClosure());
+    load_loop.Run();
+    store->SetMaxPoliciesForTesting(3);
+
+    EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin1));
+    EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin2));
+    EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin3));
+
+    // Access kOrigin1 to make it newest.
+    EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin1));
+
+    // Add 4th.
+    base::RunLoop run_loop;
+    store->SetEarlyFailurePolicy(kOrigin4, true, run_loop.QuitClosure());
+    run_loop.Run();
+
+    EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin1));
+    EXPECT_FALSE(store->HasEarlyFailurePolicy(kOrigin2));  // Evicted
+    EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin3));
+    EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin4));
+
+    base::RunLoop close_loop;
+    store->Close(close_loop.QuitClosure());
+    close_loop.Run();
+  }
+
+  // 3. Re-open store again, verify Origin 2 is NOT loaded (deleted from DB).
+  {
+    base::RunLoop load_loop;
+    auto store = std::make_unique<DeclarativePerformanceObserverStore>(
+        /*is_in_memory=*/false, temp_dir.GetPath(), nullptr,
+        load_loop.QuitClosure());
+    load_loop.Run();
+    store->SetMaxPoliciesForTesting(3);
+
+    EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin1));
+    EXPECT_FALSE(
+        store->HasEarlyFailurePolicy(kOrigin2));  // Should not be in DB.
+    EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin3));
+    EXPECT_TRUE(store->HasEarlyFailurePolicy(kOrigin4));
+
+    base::RunLoop close_loop;
+    store->Close(close_loop.QuitClosure());
+    close_loop.Run();
+  }
+}
+
 TEST_F(DeclarativePerformanceObserverStoreTest,
        RejectsReportExceedingQuotaLimit) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com/"));
