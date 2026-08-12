@@ -90,8 +90,7 @@ export function getHtml(this: TopToolbarElement) {
         @click="${this.onCloseButtonClick_}"
         iron-icon="cr:close"
         title="$i18n{closeTooltip}"
-        aria-label="$i18n{closeTooltip}"
-        rounded-corner="${this.isExpandButtonEnabled ? 'false' : 'true'}">
+        aria-label="$i18n{closeTooltip}">
     </cr-icon-button>
   </div>
 </div>

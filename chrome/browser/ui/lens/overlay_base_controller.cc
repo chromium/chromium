@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/overlay_base_controller.h"
 
+#include "base/i18n/rtl.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -605,6 +607,10 @@ void OverlayBaseController::ShowModalUI() {
       prefs::kSidePanelHorizontalAlignment,
       base::BindRepeating(&OverlayBaseController::OnSidePanelAlignmentChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kSidePanelAlignmentOverrides,
+      base::BindRepeating(&OverlayBaseController::OnSidePanelAlignmentChanged,
+                          base::Unretained(this)));
 
   // This should be the last thing called in ShowUI, so if something goes wrong
   // in capturing the screenshot, the state gets cleaned up correctly.
@@ -905,8 +911,24 @@ void OverlayBaseController::SetOverlayRoundedCorner() {
     radius = layout_provider->GetCornerRadiusMetric(
         views::ShapeContextTokens::kContentSeparatorRadius);
   }
-  const bool right_aligned =
+  bool is_right_aligned =
       pref_service_->GetBoolean(prefs::kSidePanelHorizontalAlignment);
+  const base::DictValue& overrides =
+      pref_service_->GetDict(prefs::kSidePanelAlignmentOverrides);
+  auto* side_panel_ui = tab_ && tab_->GetBrowserWindowInterface()
+                            ? tab_->GetBrowserWindowInterface()
+                                  ->GetFeatures()
+                                  .side_panel_ui()
+                            : nullptr;
+  if (side_panel_ui) {
+    if (auto current_entry_id = side_panel_ui->GetCurrentEntryId()) {
+      if (auto override_val = overrides.FindBool(
+              SidePanelEntryIdToString(*current_entry_id))) {
+        is_right_aligned = *override_val;
+      }
+    }
+  }
+  const bool right_aligned = is_right_aligned != base::i18n::IsRTL();
   const gfx::RoundedCornersF radii =
       is_split ? MultiContentsView::kSplitViewContentRoundedCorners
                : gfx::RoundedCornersF{right_aligned ? 0 : radius,

@@ -548,6 +548,12 @@ suite('TopToolbarTest', () => {
       assertFalse(moreButton.hidden);
     });
 
+    test('close button does not have rounded-corner attribute', () => {
+      const closeButton = topToolbar.$.closeButton;
+      assertTrue(!!closeButton);
+      assertFalse(closeButton.hasAttribute('rounded-corner'));
+    });
+
     (isPhone ? test.skip : test)(
         'handles open in new tab click in menu', async () => {
           topToolbar.enableOpenInNewTabButton = true;

@@ -29,6 +29,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/companion/text_finder/text_highlighter.h"
@@ -9220,6 +9221,32 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
       prefs::kSidePanelHorizontalAlignment, false);
 
   // Expect overlay view's top left corner to be rounded.
+  rounded_corners = controller->GetOverlayViewForTesting()
+                        ->layer()
+                        ->GetTargetRoundedCornerRadius();
+  EXPECT_TRUE(rounded_corners.upper_right() == 0);
+  EXPECT_TRUE(rounded_corners.upper_left() > 0);
+
+  // Reset default horizontal alignment back to right.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, true);
+  rounded_corners = controller->GetOverlayViewForTesting()
+                        ->layer()
+                        ->GetTargetRoundedCornerRadius();
+  EXPECT_TRUE(rounded_corners.upper_right() > 0);
+  EXPECT_TRUE(rounded_corners.upper_left() == 0);
+
+  // Test per-entry alignment override to left-align the active side panel.
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_TRUE(side_panel_ui);
+  auto current_entry_id = side_panel_ui->GetCurrentEntryId();
+  ASSERT_TRUE(current_entry_id.has_value());
+  base::DictValue overrides;
+  overrides.Set(SidePanelEntryIdToString(*current_entry_id), false);
+  browser()->GetProfile()->GetPrefs()->SetDict(
+      prefs::kSidePanelAlignmentOverrides, std::move(overrides));
+
+  // Expect overlay view's top left corner to be rounded when override is left.
   rounded_corners = controller->GetOverlayViewForTesting()
                         ->layer()
                         ->GetTargetRoundedCornerRadius();
