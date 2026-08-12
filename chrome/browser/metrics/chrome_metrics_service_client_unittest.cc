@@ -478,46 +478,49 @@ TEST_F(ChromeMetricsServiceClientTest,
   ukm::UkmService* ukm_service = client->GetUkmService();
   ASSERT_TRUE(ukm_service);
 
-  ukm::UkmTestHelper ukm_test_helper(ukm_service);
+  {
+    ukm::UkmTestHelper ukm_test_helper(ukm_service);
 
-  // Create and register a testing profile with mock history and sync services.
-  TestingProfile::TestingFactories testing_factories;
-  testing_factories.emplace_back(HistoryServiceFactory::GetInstance(),
-                                 base::BindRepeating(&BuildTestHistoryService));
-  testing_factories.emplace_back(SyncServiceFactory::GetInstance(),
-                                 base::BindRepeating(&BuildTestSyncService));
-  TestingProfile* profile =
-      profile_manager_.CreateTestingProfile("p1", std::move(testing_factories));
+    // Create and register a testing profile with mock history and sync services.
+    TestingProfile::TestingFactories testing_factories;
+    testing_factories.emplace_back(HistoryServiceFactory::GetInstance(),
+                                   base::BindRepeating(&BuildTestHistoryService));
+    testing_factories.emplace_back(SyncServiceFactory::GetInstance(),
+                                   base::BindRepeating(&BuildTestSyncService));
+    TestingProfile* profile =
+        profile_manager_.CreateTestingProfile("p1", std::move(testing_factories));
 
-  // Enable advanced reporting for this profile.
-  // This will enable UKM recording and trigger initialization.
-  metrics::MetricsReportingChoiceService::SetAdvancedReportingEnabled(
-      profile->GetPrefs(), true);
-  EXPECT_TRUE(client->IsUkmAllowedForAllProfiles());
+    // Enable advanced reporting for this profile.
+    // This will enable UKM recording and trigger initialization.
+    metrics::MetricsReportingChoiceService::SetAdvancedReportingEnabled(
+        profile->GetPrefs(), true);
+    EXPECT_TRUE(client->IsUkmAllowedForAllProfiles());
 
-  // Manually enable recording/reporting since MetricsServicesManager is not
-  // running in this unit test.
-  ukm_service->EnableRecording();
-  ukm_service->EnableReporting();
+    // Manually enable recording/reporting since MetricsServicesManager is not
+    // running in this unit test.
+    ukm_service->EnableRecording();
+    ukm_service->EnableReporting();
 
-  // Setup: build and store a dummy log to verify purging logic.
-  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
-  ukm_test_helper.RecordSourceForTesting(source_id);
-  ukm_test_helper.BuildAndStoreLog();
-  ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
+    // Setup: build and store a dummy log to verify purging logic.
+    ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+    ukm_test_helper.RecordSourceForTesting(source_id);
+    ukm_test_helper.BuildAndStoreLog();
+    ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
 
-  uint64_t initial_client_id = ukm_service->client_id();
+    uint64_t initial_client_id = ukm_service->client_id();
 
-  // Simulate profile unloading (like during browser shutdown) by deleting the
-  // profile. UKM client ID should NOT change, and unsent logs should NOT be
-  // purged.
-  profile_manager_.DeleteTestingProfile("p1");
+    // Simulate profile unloading (like during browser shutdown) by deleting the
+    // profile. UKM client ID should NOT change, and unsent logs should NOT be
+    // purged.
+    profile_manager_.DeleteTestingProfile("p1");
+    EXPECT_FALSE(client->IsUkmAllowedForAllProfiles());
+    EXPECT_EQ(initial_client_id, ukm_service->client_id());
+    EXPECT_TRUE(ukm_test_helper.HasUnsentLogs());
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedStubInstallAttributes stub_install_attributes;
 #endif
-  EXPECT_FALSE(client->IsUkmAllowedForAllProfiles());
-  EXPECT_EQ(initial_client_id, ukm_service->client_id());
-  EXPECT_TRUE(ukm_test_helper.HasUnsentLogs());
 
   client.reset();
 
@@ -543,47 +546,50 @@ TEST_F(ChromeMetricsServiceClientTest,
   ukm::UkmService* ukm_service = client->GetUkmService();
   ASSERT_TRUE(ukm_service);
 
-  ukm::UkmTestHelper ukm_test_helper(ukm_service);
+  {
+    ukm::UkmTestHelper ukm_test_helper(ukm_service);
 
-  // Create and register a testing profile with mock history and sync services.
-  TestingProfile::TestingFactories testing_factories;
-  testing_factories.emplace_back(HistoryServiceFactory::GetInstance(),
-                                 base::BindRepeating(&BuildTestHistoryService));
-  testing_factories.emplace_back(SyncServiceFactory::GetInstance(),
-                                 base::BindRepeating(&BuildTestSyncService));
-  TestingProfile* profile =
-      profile_manager_.CreateTestingProfile("p1", std::move(testing_factories));
+    // Create and register a testing profile with mock history and sync services.
+    TestingProfile::TestingFactories testing_factories;
+    testing_factories.emplace_back(HistoryServiceFactory::GetInstance(),
+                                   base::BindRepeating(&BuildTestHistoryService));
+    testing_factories.emplace_back(SyncServiceFactory::GetInstance(),
+                                   base::BindRepeating(&BuildTestSyncService));
+    TestingProfile* profile =
+        profile_manager_.CreateTestingProfile("p1", std::move(testing_factories));
 
-  // Enable advanced reporting for this profile.
-  // This will enable UKM recording and trigger initialization.
-  metrics::MetricsReportingChoiceService::SetAdvancedReportingEnabled(
-      profile->GetPrefs(), true);
-  EXPECT_TRUE(client->IsUkmAllowedForAllProfiles());
+    // Enable advanced reporting for this profile.
+    // This will enable UKM recording and trigger initialization.
+    metrics::MetricsReportingChoiceService::SetAdvancedReportingEnabled(
+        profile->GetPrefs(), true);
+    EXPECT_TRUE(client->IsUkmAllowedForAllProfiles());
 
-  // Manually enable recording/reporting since MetricsServicesManager is not
-  // running in this unit test.
-  ukm_service->EnableRecording();
-  ukm_service->EnableReporting();
+    // Manually enable recording/reporting since MetricsServicesManager is not
+    // running in this unit test.
+    ukm_service->EnableRecording();
+    ukm_service->EnableReporting();
 
-  // Setup: build and store a dummy log to verify purging logic.
-  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
-  ukm_test_helper.RecordSourceForTesting(source_id);
-  ukm_test_helper.BuildAndStoreLog();
-  ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
+    // Setup: build and store a dummy log to verify purging logic.
+    ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+    ukm_test_helper.RecordSourceForTesting(source_id);
+    ukm_test_helper.BuildAndStoreLog();
+    ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
 
-  uint64_t initial_client_id = ukm_service->client_id();
+    uint64_t initial_client_id = ukm_service->client_id();
 
-  // Simulate user revoking consent (setting pref to false).
-  // This will trigger state change with reset_client_state = true.
-  // UKM client ID SHOULD change, and unsent logs SHOULD be purged.
-  metrics::MetricsReportingChoiceService::SetAdvancedReportingEnabled(
-      profile->GetPrefs(), false);
-  EXPECT_FALSE(client->IsUkmAllowedForAllProfiles());
-  EXPECT_NE(initial_client_id, ukm_service->client_id());
-  EXPECT_FALSE(ukm_test_helper.HasUnsentLogs());
+    // Simulate user revoking consent (setting pref to false).
+    // This will trigger state change with reset_client_state = true.
+    // UKM client ID SHOULD change, and unsent logs SHOULD be purged.
+    metrics::MetricsReportingChoiceService::SetAdvancedReportingEnabled(
+        profile->GetPrefs(), false);
+    EXPECT_FALSE(client->IsUkmAllowedForAllProfiles());
+    EXPECT_NE(initial_client_id, ukm_service->client_id());
+    EXPECT_FALSE(ukm_test_helper.HasUnsentLogs());
 
-  // Clean up profile before shutting down the tracker.
-  profile_manager_.DeleteTestingProfile("p1");
+    // Clean up profile before shutting down the tracker.
+    profile_manager_.DeleteTestingProfile("p1");
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedStubInstallAttributes stub_install_attributes;
 #endif
