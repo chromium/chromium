@@ -109,6 +109,9 @@ android_resources("java_resources") {
 java_strings_grd("java_strings_grd") {
   defines = chrome_grit_defines
   grd_file = "android/java/strings/android_restore_tabs_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "android/java/strings/translations/android_restore_tabs_strings_{{source_name_part}}.xtb" ])
 }
 
 robolectric_library("junit") {

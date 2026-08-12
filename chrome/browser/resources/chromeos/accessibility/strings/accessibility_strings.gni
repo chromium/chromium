@@ -22,6 +22,18 @@ template("accessibility_strings") {
   grit(target_name) {
     source = "//chrome/browser/resources/chromeos/accessibility/strings/accessibility_strings.grd"
     defines = chrome_grit_defines
+    inputs = [
+      "//chrome/browser/resources/chromeos/accessibility/strings/chromevox_strings.grdp",
+      "//chrome/browser/resources/chromeos/accessibility/strings/dictation_strings.grdp",
+      "//chrome/browser/resources/chromeos/accessibility/strings/enhanced_network_tts_strings.grdp",
+      "//chrome/browser/resources/chromeos/accessibility/strings/facegaze_strings.grdp",
+      "//chrome/browser/resources/chromeos/accessibility/strings/select_to_speak_strings.grdp",
+      "//chrome/browser/resources/chromeos/accessibility/strings/switch_access_strings.grdp",
+    ]
+    inputs += process_file_template(
+            xtb_locales,
+            "//chrome/browser/resources/chromeos/accessibility/strings/accessibility_strings_{{source_name_part}}.xtb")
+
     outputs =
         process_file_template(accessibility_locales,
                               "_locales/{{source_name_part}}/messages.json.gz")

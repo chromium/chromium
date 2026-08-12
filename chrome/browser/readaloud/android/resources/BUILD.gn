@@ -8,4 +8,7 @@ import("//tools/grit/grit_rule.gni")
 java_strings_grd("ui_strings_grd") {
   defines = chrome_grit_defines
   grd_file = "android_readaloud_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "translations/android_readaloud_strings_{{source_name_part}}.xtb" ])
 }

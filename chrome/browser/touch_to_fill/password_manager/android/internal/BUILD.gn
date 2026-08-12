@@ -84,4 +84,7 @@ android_resources("java_resources") {
 java_strings_grd("java_strings_grd") {
   defines = chrome_grit_defines
   grd_file = "java/strings/android_touch_to_fill_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "java/strings/translations/android_touch_to_fill_strings_{{source_name_part}}.xtb" ])
 }
