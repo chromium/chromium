@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <string>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/file_version_info.h"
@@ -274,10 +275,24 @@ HRESULT DoUninstall(const base::FilePath& installer_path,
 }
 
 HRESULT RelaunchUninstaller(const base::FilePath& installer_path) {
+#if defined(COMPONENT_BUILD)
+  // In component builds, dependent DLLs are not copied to the temporary
+  // directory, so the executable cannot launch.
+  return E_FAIL;
+#else
+  // This function only runs elevated, so stage and relaunch the copy of the
+  // installer from the system temp directory rather than the per-user one.
+  base::FilePath system_temp;
+  if (!base::PathService::Get(base::DIR_SYSTEM_TEMP, &system_temp)) {
+    LOGFN(ERROR) << "PathService::Get(DIR_SYSTEM_TEMP) failed";
+    return E_FAIL;
+  }
+
   base::FilePath temp_path;
-  if (!base::CreateNewTempDirectory(FILE_PATH_LITERAL("gcp"), &temp_path)) {
+  if (!base::CreateTemporaryDirInDir(system_temp, FILE_PATH_LITERAL("gcp"),
+                                     &temp_path)) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
-    LOGFN(ERROR) << "CreateNewTempDirectory hr=" << putHR(hr);
+    LOGFN(ERROR) << "CreateTemporaryDirInDir hr=" << putHR(hr);
     return hr;
   }
 
@@ -317,6 +332,7 @@ HRESULT RelaunchUninstaller(const base::FilePath& installer_path) {
   base::Process process(base::LaunchProcess(cmdline, options));
 
   return process.IsValid() ? S_OK : E_FAIL;
+#endif  // defined(COMPONENT_BUILD)
 }
 
 int EnableStatsCollection(const base::CommandLine& cmdline) {
