@@ -47,6 +47,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.settings.SelectLanguageFragment;
 import org.chromium.components.browser_ui.settings.SearchViewProvider;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -158,6 +159,29 @@ public class MultiColumnTitleUpdaterTest {
         return supplier;
     }
 
+    /**
+     * Creates a MultiColumnTitleUpdater with null savedInstanceState and no breadcrumb path. Exists
+     * to keep tests concise.
+     */
+    private MultiColumnTitleUpdater createMultiColumnTitleUpdater() {
+        return createMultiColumnTitleUpdater(
+                /* savedInstanceState= */ null, /* initialBreadcrumbPath= */ null);
+    }
+
+    /** Creates a MultiColumnTitleUpdater. Exists to keep tests concise. */
+    private MultiColumnTitleUpdater createMultiColumnTitleUpdater(
+            @Nullable Bundle savedInstanceState,
+            @Nullable List<SettingsIndexData.Entry> initialBreadcrumbPath) {
+        return new MultiColumnTitleUpdater(
+                savedInstanceState,
+                mMultiColumnSettings,
+                mActivity,
+                mContainer,
+                /* mainTitleSetter= */ (t) -> {},
+                /* titleTapCallback= */ mTitleTapCallback,
+                initialBreadcrumbPath);
+    }
+
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     public void testSingleTitle_noBackButton() {
@@ -166,15 +190,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater =
-                new MultiColumnTitleUpdater(
-                        /* savedInstanceState= */ null,
-                        mMultiColumnSettings,
-                        mActivity,
-                        mContainer,
-                        /* mainTitleSetter= */ (t) -> {},
-                        /* titleTapCallback= */ mTitleTapCallback,
-                        /* initialBreadcrumbPath= */ null);
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
 
         updater.onTitleUpdated();
 
@@ -193,15 +209,7 @@ public class MultiColumnTitleUpdaterTest {
         titles.add(new MultiColumnSettings.Title("uuid2", createTitleSupplier("Theme"), 1, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater =
-                new MultiColumnTitleUpdater(
-                        /* savedInstanceState= */ null,
-                        mMultiColumnSettings,
-                        mActivity,
-                        mContainer,
-                        /* mainTitleSetter= */ (t) -> {},
-                        /* titleTapCallback= */ mTitleTapCallback,
-                        /* initialBreadcrumbPath= */ null);
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
 
         updater.onTitleUpdated();
 
@@ -234,15 +242,7 @@ public class MultiColumnTitleUpdaterTest {
         titles.add(new MultiColumnSettings.Title("uuid2", createTitleSupplier("Theme"), 1, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater =
-                new MultiColumnTitleUpdater(
-                        /* savedInstanceState= */ null,
-                        mMultiColumnSettings,
-                        mActivity,
-                        mContainer,
-                        /* mainTitleSetter= */ (t) -> {},
-                        /* titleTapCallback= */ mTitleTapCallback,
-                        /* initialBreadcrumbPath= */ null);
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
 
         updater.onTitleUpdated();
 
@@ -278,15 +278,7 @@ public class MultiColumnTitleUpdaterTest {
                         "uuid2", createTitleSupplier("Search results"), 1, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater =
-                new MultiColumnTitleUpdater(
-                        /* savedInstanceState= */ null,
-                        mMultiColumnSettings,
-                        mActivity,
-                        mContainer,
-                        /* mainTitleSetter= */ (t) -> {},
-                        /* titleTapCallback= */ mTitleTapCallback,
-                        /* initialBreadcrumbPath= */ null);
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
 
         updater.setFirstVisibleTitleIndex(1);
         updater.onTitleUpdated();
@@ -311,15 +303,7 @@ public class MultiColumnTitleUpdaterTest {
         titles.add(new MultiColumnSettings.Title("uuid3", createTitleSupplier("Theme"), 2, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater =
-                new MultiColumnTitleUpdater(
-                        /* savedInstanceState= */ null,
-                        mMultiColumnSettings,
-                        mActivity,
-                        mContainer,
-                        /* mainTitleSetter= */ (t) -> {},
-                        /* titleTapCallback= */ mTitleTapCallback,
-                        /* initialBreadcrumbPath= */ null);
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
 
         updater.setFirstVisibleTitleIndex(1);
         updater.onTitleUpdated();
@@ -400,15 +384,7 @@ public class MultiColumnTitleUpdaterTest {
                         "uuid1", createTitleSupplier("Select language"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater =
-                new MultiColumnTitleUpdater(
-                        /* savedInstanceState= */ null,
-                        mMultiColumnSettings,
-                        mActivity,
-                        mContainer,
-                        /* mainTitleSetter= */ (t) -> {},
-                        /* titleTapCallback= */ mTitleTapCallback,
-                        /* initialBreadcrumbPath= */ null);
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
 
         updater.onTitleUpdated();
 
@@ -434,15 +410,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater =
-                new MultiColumnTitleUpdater(
-                        /* savedInstanceState= */ null,
-                        mMultiColumnSettings,
-                        mActivity,
-                        mContainer,
-                        /* mainTitleSetter= */ (t) -> {},
-                        /* titleTapCallback= */ mTitleTapCallback,
-                        /* initialBreadcrumbPath= */ null);
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
 
         updater.onTitleUpdated();
 
@@ -456,6 +424,7 @@ public class MultiColumnTitleUpdaterTest {
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     public void testMaybeUpdateStartMargin_accountsForBackButtonOffset() {
         FrameLayout detailView = new FrameLayout(mActivity);
+        detailView.layout(0, 0, 1000, 100);
         View recyclerView = new View(mActivity);
         recyclerView.setId(R.id.recycler_view);
         recyclerView.layout(0, 0, 1000, 100);
@@ -475,15 +444,7 @@ public class MultiColumnTitleUpdaterTest {
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
         mMultiColumnSettings.setFakeTitles(titles);
 
-        MultiColumnTitleUpdater updater =
-                new MultiColumnTitleUpdater(
-                        /* savedInstanceState= */ null,
-                        mMultiColumnSettings,
-                        mActivity,
-                        mContainer,
-                        /* mainTitleSetter= */ (t) -> {},
-                        /* titleTapCallback= */ mTitleTapCallback,
-                        /* initialBreadcrumbPath= */ null);
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
         updater.onTitleUpdated();
 
         var paramsWithoutBack = (RelativeLayout.LayoutParams) titleScrollView.getLayoutParams();
@@ -505,5 +466,41 @@ public class MultiColumnTitleUpdaterTest {
         // Verify that the title scroll view start margin is shifted left by expectedOffset when the
         // back button is shown.
         assertEquals(marginWithoutBack - expectedOffset, marginWithBack);
+    }
+
+    /** Regression test for incorrect title layout after display rotation. crbug.com/541103334 */
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    public void testMaybeUpdateStartMargin_usesDetailViewWidthWhenRecyclerViewNotLaidOut() {
+        FrameLayout detailView = new FrameLayout(mActivity);
+        detailView.layout(0, 0, 1000, 100);
+        // Add a recycler view that has width = 0 (not laid out yet).
+        View recyclerView = new View(mActivity);
+        recyclerView.setId(R.id.recycler_view);
+        detailView.addView(recyclerView);
+        mMultiColumnSettings.setDetailView(detailView);
+
+        RelativeLayout rootLayout = new RelativeLayout(mActivity);
+        HorizontalScrollView titleScrollView = new HorizontalScrollView(mActivity);
+        RelativeLayout.LayoutParams scrollParams =
+                new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rootLayout.addView(titleScrollView, scrollParams);
+        titleScrollView.addView(mContainer);
+
+        List<MultiColumnSettings.Title> titles = new ArrayList<>();
+        titles.add(
+                new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        updater.onTitleUpdated();
+
+        var params = (RelativeLayout.LayoutParams) titleScrollView.getLayoutParams();
+        int marginStart = params.getMarginStart();
+
+        // Verify that start margin was updated based on detailView's width (1000px) even though
+        // recyclerView's width is 0.
+        assertTrue(marginStart > 0);
     }
 }

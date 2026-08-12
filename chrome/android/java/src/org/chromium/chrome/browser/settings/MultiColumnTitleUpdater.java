@@ -341,6 +341,8 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         // Do not show the back button if the previous title is hidden (e.g. Search results).
         if (mHasBackButton) {
             // Set up a back button to go to the section for the previous title.
+            // TODO(crbug.com/545663479): Move this back button out of the containing scrollView,
+            // as we always want to show it, even if we have to scroll the title text.
             var prevTitle = titles.get(prevIndex);
             var backButton = new ChromeImageButton(mContext);
             backButton.setImageResource(R.drawable.ic_arrow_back_24dp);
@@ -536,10 +538,9 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     private void maybeUpdateStartMargin() {
         View detailView = mMultiColumnSettings.getDetailView();
         if (detailView == null) return;
-        View recyclerView = detailView.findViewById(R.id.recycler_view);
-        if (recyclerView == null) return;
-
-        int widthPx = recyclerView.getWidth();
+        // Check detailView width because recyclerView might not have completed layout during
+        // fragment transitions (e.g. screen rotation).
+        int widthPx = detailView.getWidth();
         if (widthPx == 0) return;
 
         int maxDetailWidthPx = getDimenPx(R.dimen.settings_min_multi_column_screen_width);
