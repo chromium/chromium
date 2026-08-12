@@ -189,8 +189,10 @@ class SingleClientParameterizedBookmarksSyncTestBase
  public:
   SingleClientParameterizedBookmarksSyncTestBase() : SyncTest(SINGLE_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      feature_overrides_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
+      feature_overrides_.InitWithFeatures(
+          {syncer::kReplaceSyncPromosWithSignInPromos,
+           switches::kSyncEnableBookmarksInTransportMode},
+          {});
     } else {
       // Skip sync-to-signin migration for sync-the-feature tests. This is to
       // avoid the sync state changing between the PRE_ tests.

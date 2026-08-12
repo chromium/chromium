@@ -191,10 +191,12 @@ class MigrationTest : public SyncTest,
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitWithFeatures(
           {syncer::kReplaceSyncPromosWithSignInPromos,
-           syncer::kSpellcheckSeparateLocalAndAccountDictionaries,
-           switches::kSyncEnableBookmarksInTransportMode,
+           switches::kEnablePreferencesAccountStorage,
            syncer::kSeparateLocalAndAccountSearchEngines,
-           syncer::kSeparateLocalAndAccountThemes},
+           syncer::kSpellcheckSeparateLocalAndAccountDictionaries,
+           syncer::kSeparateLocalAndAccountThemes,
+           switches::kSyncEnableBookmarksInTransportMode,
+           syncer::kReadingListEnableSyncTransportModeUponSignIn},
           {});
     }
   }

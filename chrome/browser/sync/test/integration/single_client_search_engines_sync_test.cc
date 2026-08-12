@@ -94,6 +94,8 @@ class SingleClientSearchEnginesSyncTest
 #endif
     if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+      enabled_features.push_back(syncer::kSeparateLocalAndAccountSearchEngines);
+      enabled_features.push_back(switches::kEnablePreferencesAccountStorage);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }

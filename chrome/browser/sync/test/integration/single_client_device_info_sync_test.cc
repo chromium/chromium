@@ -21,6 +21,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -196,6 +197,9 @@ class SingleClientDeviceInfoSyncTest
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.emplace_back(syncer::kReplaceSyncPromosWithSignInPromos,
                                     base::FieldTrialParams{});
+      enabled_features.emplace_back(
+          switches::kSyncEnableBookmarksInTransportMode,
+          base::FieldTrialParams{});
     } else {
       // Skip sync-to-signin migration for sync-the-feature tests. This is to
       // avoid the sync state changing between the PRE_ tests.

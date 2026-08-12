@@ -20,6 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -76,8 +77,13 @@ class SyncAuthTestBase : public SyncTest {
   explicit SyncAuthTestBase(SetupSyncMode setup_sync_mode)
       : SyncTest(SINGLE_CLIENT) {
     if (setup_sync_mode == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
+      scoped_feature_list_.InitWithFeatures(
+          {syncer::kReplaceSyncPromosWithSignInPromos,
+           switches::kSyncEnableBookmarksInTransportMode,
+           switches::kEnablePreferencesAccountStorage,
+           syncer::kSeparateLocalAndAccountSearchEngines,
+           syncer::kReadingListEnableSyncTransportModeUponSignIn},
+          {});
     }
   }
 

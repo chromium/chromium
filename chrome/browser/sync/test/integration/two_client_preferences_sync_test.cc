@@ -15,6 +15,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync_preferences/common_syncable_prefs_database.h"
 #include "content/public/test/browser_test.h"
@@ -38,8 +40,11 @@ class TwoClientPreferencesSyncTest
  public:
   TwoClientPreferencesSyncTest() : SyncTest(TWO_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
+      scoped_feature_list_.InitWithFeatures(
+          {syncer::kReplaceSyncPromosWithSignInPromos,
+           switches::kEnablePreferencesAccountStorage,
+           syncer::kSeparateLocalAndAccountSearchEngines},
+          {});
     }
   }
 

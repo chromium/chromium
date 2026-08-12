@@ -15,11 +15,13 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/browsing_history_driver.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -79,6 +81,7 @@ class TwoClientHistorySyncTest
     std::vector<base::test::FeatureRef> enabled_features;
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+      enabled_features.push_back(switches::kSyncEnableBookmarksInTransportMode);
     }
     // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
