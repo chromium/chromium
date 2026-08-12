@@ -134,7 +134,7 @@ class ContextualSearchSessionHandle {
 
   // Returns the ContextualSearchMetricsRecorder reference held by this handle
   // or nullptr if the session is not valid.
-  ContextualSearchMetricsRecorder* GetMetricsRecorder() const;
+  virtual ContextualSearchMetricsRecorder* GetMetricsRecorder() const;
 
   // Notifies the session handle that the session has started.
   virtual void NotifySessionStarted();

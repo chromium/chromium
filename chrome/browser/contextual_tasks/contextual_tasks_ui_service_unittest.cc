@@ -31,13 +31,16 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
@@ -2961,6 +2964,167 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsLink_HandledAsThreadLink) {
       /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
       blink::mojom::WindowFeatures()));
   run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       OnNavigationToAiPageIntercepted_OmniboxSearch_WithAttachedTab) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kWebUIOmniboxAskGAboutThisPage);
+
+  GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  // Create mock session handle.
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+
+  // Create a real metrics recorder with kOmnibox source.
+  contextual_search::ContextualSearchMetricsRecorder metrics_recorder(
+      contextual_search::ContextualSearchSource::kOmnibox);
+  ON_CALL(*mock_session, GetMetricsRecorder)
+      .WillByDefault(Return(&metrics_recorder));
+
+  // Mock submitted files to contain a tab.
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id =
+      sessions::SessionTabHelper::IdForTab(web_contents.get());
+  std::vector<contextual_search::FileInfo> submitted_files = {file_info};
+  ON_CALL(*mock_session, GetSubmittedContextFileInfos)
+      .WillByDefault(Return(submitted_files));
+
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents.get());
+  helper->SetTaskSession(std::nullopt, std::move(mock_session),
+                         /*input_state_model=*/nullptr);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+
+  base::WeakPtrFactory weak_factory(&tab);
+  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
+                                                 weak_factory.GetWeakPtr(), false);
+
+  // Verify that the entry point was set to
+  // DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH.
+  EXPECT_EQ(
+      real_service_->GetInitialEntryPointForTask(task.GetTaskId()),
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH);
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       OnNavigationToAiPageIntercepted_OmniboxSearch_NoAttachedTab) {
+  GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  // Create mock session handle.
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+
+  // Create a real metrics recorder with kOmnibox source.
+  contextual_search::ContextualSearchMetricsRecorder metrics_recorder(
+      contextual_search::ContextualSearchSource::kOmnibox);
+  ON_CALL(*mock_session, GetMetricsRecorder)
+      .WillByDefault(Return(&metrics_recorder));
+
+  // Mock submitted files to be empty (no tab).
+  std::vector<contextual_search::FileInfo> submitted_files = {};
+  ON_CALL(*mock_session, GetSubmittedContextFileInfos)
+      .WillByDefault(Return(submitted_files));
+
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents.get());
+  helper->SetTaskSession(std::nullopt, std::move(mock_session),
+                         /*input_state_model=*/nullptr);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+
+  base::WeakPtrFactory weak_factory(&tab);
+  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
+                                                 weak_factory.GetWeakPtr(), false);
+
+  // Verify that the entry point remains UNKNOWN.
+  EXPECT_EQ(real_service_->GetInitialEntryPointForTask(task.GetTaskId()),
+            omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       OnNavigationToAiPageIntercepted_OmniboxSearch_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      omnibox::kWebUIOmniboxAskGAboutThisPage);
+
+  GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  // Create mock session handle.
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+
+  // Create a real metrics recorder with kOmnibox source.
+  contextual_search::ContextualSearchMetricsRecorder metrics_recorder(
+      contextual_search::ContextualSearchSource::kOmnibox);
+  ON_CALL(*mock_session, GetMetricsRecorder)
+      .WillByDefault(Return(&metrics_recorder));
+
+  // Mock submitted files to contain a tab.
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id =
+      sessions::SessionTabHelper::IdForTab(web_contents.get());
+  std::vector<contextual_search::FileInfo> submitted_files = {file_info};
+  ON_CALL(*mock_session, GetSubmittedContextFileInfos)
+      .WillByDefault(Return(submitted_files));
+
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents.get());
+  helper->SetTaskSession(std::nullopt, std::move(mock_session),
+                         /*input_state_model=*/nullptr);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+
+  base::WeakPtrFactory weak_factory(&tab);
+  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
+                                                 weak_factory.GetWeakPtr(), false);
+
+  // Verify that the entry point remains UNKNOWN because the feature is
+  // disabled.
+  EXPECT_EQ(real_service_->GetInitialEntryPointForTask(task.GetTaskId()),
+            omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 }
 
 }  // namespace contextual_tasks

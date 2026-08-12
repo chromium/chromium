@@ -835,8 +835,12 @@ void ChromeAutocompleteProviderClient::OpenCoBrowsePanel() {
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         session_handle = tab_helper->TakeSessionHandle();
 
+    contextual_tasks::StartTaskUiOptions options;
+    options.entry_point =
+        omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION;
+
     ui_service->StartTaskUiInSidePanel(bwi, tab, creation_url,
-                                       std::move(session_handle));
+                                       std::move(session_handle), options);
   }
 #endif
 }

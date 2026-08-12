@@ -54,6 +54,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
@@ -63,6 +64,7 @@
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/logger.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -355,6 +357,38 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
 
   // Create a task for the URL that was just intercepted.
   ContextualTask task = contextual_tasks_service_->CreateTaskFromUrl(url);
+
+  // Configure AskG specific entry point if enabled.
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAskGAboutThisPage)) {
+    bool has_attached_tab = false;
+    if (session_handle) {
+      auto submitted_files = session_handle->GetSubmittedContextFileInfos();
+      for (const auto& file : submitted_files) {
+        if (file.tab_session_id.has_value()) {
+          has_attached_tab = true;
+          break;
+        }
+      }
+      if (!has_attached_tab) {
+        auto uploaded_files = session_handle->GetUploadedContextFileInfos();
+        for (const auto& file : uploaded_files) {
+          if (file.tab_session_id.has_value()) {
+            has_attached_tab = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (has_attached_tab &&
+        (source == contextual_search::ContextualSearchSource::kOmnibox ||
+         source ==
+             contextual_search::ContextualSearchSource::kOmniboxEverywhere)) {
+      SetInitialEntryPointForTask(
+          task.GetTaskId(), omnibox::ChromeAimEntryPoint::
+                                DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH);
+    }
+  }
 
   // Map the task ID to the intercepted url. This is done so the UI knows which
   // URL to load initially in the embedded frame.

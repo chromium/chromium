@@ -84,6 +84,15 @@ enum ChromeAimEntryPoint {
   // AIM entered from the app bar button on Chrome iOS.
   IOS_CHROME_APP_BAR_ENTRY_POINT = 192;
 
+  // AIM is entered from the omnibox action chip (Ask G) to enter cobrowsing.
+  DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION = 193;
+
+  // AIM is entered from the omnibox composebox search with an attached tab.
+  DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH = 194;
+
+  // AIM is entered from a contextual search suggestion in the omnibox.
+  DESKTOP_CHROME_COBROWSE_OMNIBOX_CONTEXTUAL_SUGGESTION = 195;
+
   // AIM is entered from the NTP Action Chips in Chrome.
   DESKTOP_CHROME_NTP_ACTION_CHIPS_ENTRY_POINT = 198;
 }

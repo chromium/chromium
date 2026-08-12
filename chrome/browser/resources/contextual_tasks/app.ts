@@ -289,6 +289,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       },
       onboardingTooltipShowing_: {type: Boolean},
       guestWidth_: {type: Number},
+      entryPoint_: {type: String},
     };
   }
 
@@ -352,6 +353,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // Indicates if in tab mode. Most start in a tab.
   protected accessor isShownInTab_: boolean =
       loadTimeData.getBoolean('isShownInTab');
+  protected accessor entryPoint_: string = loadTimeData.getString('entryPoint');
   protected accessor darkMode_: boolean = loadTimeData.getBoolean('darkMode');
   protected accessor isErrorDialogVisible_: boolean = false;
   private pendingUrl_: string = '';
