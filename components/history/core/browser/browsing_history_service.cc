@@ -118,7 +118,8 @@ BrowsingHistoryService::HistoryEntry::HistoryEntry(
     int visit_count,
     int typed_count,
     bool is_actor_visit,
-    std::optional<std::string> app_id)
+    std::optional<std::string> app_id,
+    history::VisitID visit_id)
     : entry_type(entry_type),
       url(url),
       title(title),
@@ -133,6 +134,9 @@ BrowsingHistoryService::HistoryEntry::HistoryEntry(
       is_actor_visit(is_actor_visit),
       app_id(app_id) {
   all_timestamps[url].insert(time);
+  if (visit_id != history::kInvalidVisitID) {
+    all_visit_ids.push_back(visit_id);
+  }
 }
 
 BrowsingHistoryService::HistoryEntry::HistoryEntry()
@@ -652,6 +656,9 @@ void BrowsingHistoryService::MergeDuplicateResults(
       matching_entry->all_timestamps[entry.url].insert(
           entry.all_timestamps[entry.url].begin(),
           entry.all_timestamps[entry.url].end());
+      matching_entry->all_visit_ids.insert(matching_entry->all_visit_ids.end(),
+                                           entry.all_visit_ids.begin(),
+                                           entry.all_visit_ids.end());
 
       if (matching_entry->entry_type != entry.entry_type) {
         matching_entry->entry_type = HistoryEntry::COMBINED_ENTRY;
@@ -748,6 +755,9 @@ BrowsingHistoryService::GroupSimilarVisits(QueryHistoryState* state) {
         matching_entry->all_timestamps[url].insert(timestamps.begin(),
                                                    timestamps.end());
       }
+      matching_entry->all_visit_ids.insert(matching_entry->all_visit_ids.end(),
+                                           entry.all_visit_ids.begin(),
+                                           entry.all_visit_ids.end());
 
       if (matching_entry->entry_type != entry.entry_type) {
         matching_entry->entry_type = HistoryEntry::COMBINED_ENTRY;
@@ -783,7 +793,7 @@ void BrowsingHistoryService::QueryComplete(
         HistoryEntry::LOCAL_ENTRY, page.url(), page.title(), page.visit_time(),
         std::string(), !state->search_text.empty(), page.snippet().text(),
         page.blocked_visit(), GURL(), page.visit_count(), page.typed_count(),
-        page.has_actor_source(), page.app_id());
+        page.has_actor_source(), page.app_id(), page.visit_id());
   }
 
   state->local_status =
@@ -974,7 +984,8 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
           std::u16string(),
           /*blocked_visit=*/false, visit.favicon_url, 0, 0,
           /*is_actor_visit=*/false,
-          /*app_id=*/std::nullopt);
+          /*app_id=*/std::nullopt,
+          /*visit_id=*/history::kInvalidVisitID);
     }
     state->remote_status = query_history_result->has_more_results
                                ? MORE_RESULTS

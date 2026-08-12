@@ -325,5 +325,41 @@
   <message name="IDS_HISTORY_GEMINI_KEY_BROWSING_ACTIONS_TITLE" desc="Tooltip text for the expand button on history items for Gemini actor visits." translateable="false">
     Gemini key browsing actions
   </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_PASSWORD_FILLED" desc="Label for password filled critical action in history item." translateable="false">
+    Password filled
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_PASSWORD_TOOLTIP" desc="Tooltip for password filled critical action in history item." translateable="false">
+    Saved passwords
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_FILLED" desc="Label for form filled critical action in history item." translateable="false">
+    Contact info filled
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_TOOLTIP" desc="Tooltip for form filled critical action in history item." translateable="false">
+    Contact info
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_DOWNLOAD" desc="Label for download critical action in history item." translateable="false">
+    File downloaded
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_DOWNLOAD_TOOLTIP" desc="Tooltip for download critical action in history item." translateable="false">
+    Downloads
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_SETTING_CHANGE" desc="Label for setting change critical action in history item." translateable="false">
+    Site settings modified
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_SETTING_TOOLTIP" desc="Tooltip for setting change critical action in history item." translateable="false">
+    Site settings
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FEDERATED_LOGIN" desc="Label for federated login critical action in history item." translateable="false">
+    Signed in with account
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FEDERATED_LOGIN_TOOLTIP" desc="Tooltip for federated login critical action in history item." translateable="false">
+    Account sign-in
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_CREDENTIALS_OTP" desc="Label for credentials OTP verification code critical action in history item." translateable="false">
+    Verification code filled
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_CREDENTIALS_OTP_TOOLTIP" desc="Tooltip for credentials OTP verification code critical action in history item." translateable="false">
+    Verification codes
+  </message>
 
 </grit-part>

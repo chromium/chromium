@@ -131,6 +131,24 @@ struct HistoryEntry {
 
   // Optional debug info about a visit.
   DebugInfo? debug;
+
+  // List of critical actions associated with this visit.
+  array<CriticalAction> critical_actions;
+};
+
+// Represents a critical action performed on a visit.
+struct CriticalAction {
+  // Unique identifier for the action.
+  string id;
+
+  // Localized user-facing action label.
+  string label;
+
+  // Tooltip describing the action category.
+  string tooltip;
+
+  // Destination management URL for the action.
+  string linkout_url;
 };
 
 

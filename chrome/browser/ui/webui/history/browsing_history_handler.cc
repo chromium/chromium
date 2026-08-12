@@ -24,6 +24,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/critical_actions/critical_action_factory.h"
+#include "chrome/browser/critical_actions/critical_action_ui_utils.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_utils.h"
@@ -50,6 +52,9 @@
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/critical_actions/core/browser/critical_action_service.h"
+#include "components/critical_actions/core/browser/critical_action_types.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/favicon/core/fallback_url_util.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
@@ -75,6 +80,7 @@
 #include "components/sync_device_info/device_info_tracker.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
@@ -348,7 +354,22 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
     result_mojom->debug = std::move(debug_mojom);
   }
 
+  // Initialize critical_actions array.
+  result_mojom->critical_actions =
+      std::vector<history::mojom::CriticalActionPtr>();
+
   return result_mojom;
+}
+
+history::mojom::CriticalActionPtr CriticalActionToMojom(
+    const critical_actions::CriticalActionEntry& action) {
+  auto action_mojom = history::mojom::CriticalAction::New();
+  action_mojom->id = action.critical_action_id;
+  action_mojom->linkout_url =
+      critical_actions::GetCriticalActionLinkoutUrl(action);
+  action_mojom->label = action.GetLabel();
+  action_mojom->tooltip = action.GetTooltip();
+  return action_mojom;
 }
 
 }  // namespace
@@ -552,8 +573,7 @@ void BrowsingHistoryHandler::TurnOnHistorySync() {
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
   if (browser) {
     signin_ui_util::SignInAndEnableHistorySync(
-        browser, profile_,
-        signin_metrics::AccessPoint::kRecentTabs);
+        browser, profile_, signin_metrics::AccessPoint::kRecentTabs);
   }
 #else
   // This is not expected to be called on ChromeOS as the screen that uses this
@@ -712,6 +732,40 @@ void BrowsingHistoryHandler::OnQueryComplete(
     base::OnceClosure continuation_closure) {
   query_history_continuation_ = std::move(continuation_closure);
   CHECK(profile_);
+
+  if (base::FeatureList::IsEnabled(
+          critical_actions::features::kCriticalActionHistory)) {
+    std::vector<int64_t> actor_visit_ids;
+    for (const auto& entry : results) {
+      if (entry.is_actor_visit) {
+        actor_visit_ids.insert(actor_visit_ids.end(),
+                               entry.all_visit_ids.begin(),
+                               entry.all_visit_ids.end());
+      }
+    }
+
+    if (!actor_visit_ids.empty()) {
+      critical_actions::CriticalActionService* critical_action_service =
+          critical_actions::CriticalActionFactory::GetForProfile(profile_);
+      if (critical_action_service) {
+        critical_actions::CriticalActionQueryOptions options;
+        options.visit_ids = std::move(actor_visit_ids);
+        critical_action_service->GetCriticalActions(
+            options, base::BindOnce(&BrowsingHistoryHandler::HandleQueryResults,
+                                    weak_factory_.GetWeakPtr(), results,
+                                    query_results_info));
+        return;
+      }
+    }
+  }
+
+  HandleQueryResults(results, query_results_info, {});
+}
+
+void BrowsingHistoryHandler::HandleQueryResults(
+    const std::vector<BrowsingHistoryService::HistoryEntry>& results,
+    const BrowsingHistoryService::QueryResultsInfo& query_results_info,
+    std::vector<critical_actions::CriticalActionEntry> critical_actions) {
   BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile_);
 
@@ -720,10 +774,34 @@ void BrowsingHistoryHandler::OnQueryComplete(
           ->GetDeviceInfoTracker();
 
   DCHECK(tracker);
+
+  absl::flat_hash_map<history::VisitID,
+                      std::vector<history::mojom::CriticalActionPtr>>
+      actions_by_visit_id;
+  for (const auto& action : critical_actions) {
+    if (action.visit_id != history::kInvalidVisitID) {
+      actions_by_visit_id[action.visit_id].push_back(
+          CriticalActionToMojom(action));
+    }
+  }
+
   std::vector<history::mojom::HistoryEntryPtr> results_mojom;
   for (const BrowsingHistoryService::HistoryEntry& entry : results) {
-    results_mojom.push_back(
-        HistoryEntryToMojom(entry, bookmark_model, *profile_, tracker, clock_));
+    history::mojom::HistoryEntryPtr entry_mojom =
+        HistoryEntryToMojom(entry, bookmark_model, *profile_, tracker, clock_);
+
+    if (entry.is_actor_visit) {
+      for (history::VisitID visit_id : entry.all_visit_ids) {
+        auto it = actions_by_visit_id.find(visit_id);
+        if (it != actions_by_visit_id.end()) {
+          for (auto& action : it->second) {
+            entry_mojom->critical_actions.push_back(std::move(action));
+          }
+        }
+      }
+    }
+
+    results_mojom.push_back(std::move(entry_mojom));
   }
 
   auto results_info = history::mojom::HistoryQuery::New();
@@ -736,8 +814,9 @@ void BrowsingHistoryHandler::OnQueryComplete(
   final_results->info = std::move(results_info);
   final_results->value = std::move(results_mojom);
 
-  std::move(query_history_callback_).Run(std::move(final_results));
-  return;
+  if (query_history_callback_) {
+    std::move(query_history_callback_).Run(std::move(final_results));
+  }
 }
 
 void BrowsingHistoryHandler::OnRemoveVisitsComplete() {

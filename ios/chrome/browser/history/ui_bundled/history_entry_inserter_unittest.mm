@@ -27,7 +27,8 @@ HistoryEntryItem* TestHistoryEntryItem(base::Time timestamp,
       BrowsingHistoryService::HistoryEntry::LOCAL_ENTRY,
       GURL(("http://" + name).c_str()), base::UTF8ToUTF16(name.c_str()),
       timestamp, std::string(), false, std::u16string(), false, GURL(), 0, 0,
-      /*is_actor_visit=*/false, history::kNoAppIdFilter);
+      /*is_actor_visit=*/false, history::kNoAppIdFilter,
+      /*visit_id=*/history::kInvalidVisitID);
   HistoryEntryItem* item =
       [[HistoryEntryItem alloc] initWithType:kItemTypeEnumZero
                        accessibilityDelegate:nil];

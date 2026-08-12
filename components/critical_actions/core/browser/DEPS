@@ -1,7 +1,9 @@
 include_rules = [
   "+components/history/core/browser",
   "+components/keyed_service/core",
+  "+components/strings/grit/components_strings.h",
   "+sql",
+  "+ui/base/l10n",
 ]
 
 specific_include_rules = {

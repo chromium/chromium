@@ -20,7 +20,9 @@ static_library("browser") {
     "//base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
+    "//components/strings:components_strings",
     "//sql",
+    "//ui/base",
     "//url",
   ]
 }
@@ -31,6 +33,7 @@ source_set("unit_tests") {
     "critical_action_backend_unittest.cc",
     "critical_action_database_unittest.cc",
     "critical_action_service_unittest.cc",
+    "critical_action_types_unittest.cc",
   ]
 
   deps = [
@@ -38,9 +41,11 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/history/core/browser",
+    "//components/strings:components_strings",
     "//sql:test_support",
     "//testing/gtest",
     "//third_party/sqlite",
+    "//ui/base",
     "//url",
   ]
 }

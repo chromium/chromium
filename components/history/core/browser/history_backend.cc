@@ -2814,6 +2814,7 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
       continue;  // Don't report invalid URLs in case of corruption.
     }
 
+    url_result.set_visit_id(visit.visit_id);
     url_result.set_visit_time(visit.visit_time);
     url_result.set_app_id(visit.app_id);
 
@@ -2869,6 +2870,7 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
 
     for (const auto& visit : visits) {
       URLResult url_result(text_match);
+      url_result.set_visit_id(visit.visit_id);
       url_result.set_visit_time(visit.visit_time);
       url_result.set_app_id(visit.app_id);
 

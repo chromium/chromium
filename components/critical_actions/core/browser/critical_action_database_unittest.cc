@@ -228,6 +228,8 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
   entry1.action_type = ActionType::kFormFill;
   entry1.conversation_id = conv_id_1;
   entry1.actor_task_id = task_id_1;
+  entry1.visit_id = 101;
+  entry1.url = GURL("https://example.com/page1");
   ASSERT_TRUE(database.AddCriticalAction(entry1));
 
   const std::string action_id_2 =
@@ -238,6 +240,8 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
   entry2.action_type = ActionType::kDownload;
   entry2.conversation_id = conv_id_2;
   entry2.actor_task_id = task_id_1;
+  entry2.visit_id = 102;
+  entry2.url = GURL("https://example.org/page2");
   ASSERT_TRUE(database.AddCriticalAction(entry2));
 
   const std::string action_id_3 =
@@ -248,6 +252,8 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
   entry3.action_type = ActionType::kSettingChange;
   entry3.conversation_id = conv_id_1;
   entry3.actor_task_id = task_id_2;
+  entry3.visit_id = 103;
+  entry3.url = GURL("https://example.com/page3");
   ASSERT_TRUE(database.AddCriticalAction(entry3));
 
   // Test 1: Query all, verify order (timestamp DESC: entry3 -> entry2 ->
@@ -264,7 +270,7 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
   // Test 2: Filter by begin_time.
   {
     CriticalActionQueryOptions options;
-    options.begin_time = base_time - base::Minutes(150);  // -2.5 hours
+    options.begin_time = base_time - base::Hours(2);
     auto results = database.GetCriticalActions(options);
     ASSERT_EQ(results.size(), 2u);
     EXPECT_EQ(results[0].critical_action_id, action_id_3);
@@ -274,7 +280,7 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
   // Test 3: Filter by end_time.
   {
     CriticalActionQueryOptions options;
-    options.end_time = base_time - base::Minutes(150);  // -2.5 hours
+    options.end_time = base_time - base::Hours(2);
     auto results = database.GetCriticalActions(options);
     ASSERT_EQ(results.size(), 1u);
     EXPECT_EQ(results[0].critical_action_id, action_id_1);
@@ -318,6 +324,16 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
     ASSERT_EQ(results.size(), 2u);
     EXPECT_EQ(results[0].critical_action_id, action_id_3);
     EXPECT_EQ(results[1].critical_action_id, action_id_2);
+  }
+
+  // Test 8: Filter by visit_ids.
+  {
+    CriticalActionQueryOptions options;
+    options.visit_ids = {101, 103};
+    auto results = database.GetCriticalActions(options);
+    ASSERT_EQ(results.size(), 2u);
+    EXPECT_EQ(results[0].critical_action_id, action_id_3);
+    EXPECT_EQ(results[1].critical_action_id, action_id_1);
   }
 
   database.Close();

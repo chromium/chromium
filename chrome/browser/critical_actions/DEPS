@@ -1,7 +1,12 @@
 include_rules = [
   "+chrome/browser/history",
   "+chrome/browser/profiles",
+  "+chrome/browser/ui/passwords/ui_utils.h",
+  "+chrome/common/webui_url_constants.h",
   "+components/critical_actions/core/browser",
+  "+net/base/registry_controlled_domains",
+  "+net/base/url_util.h",
+  "+url",
 ]
 
 specific_include_rules = {

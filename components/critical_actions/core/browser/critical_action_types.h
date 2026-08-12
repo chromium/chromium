@@ -48,6 +48,12 @@ struct CriticalActionEntry {
   CriticalActionEntry& operator=(CriticalActionEntry&&) noexcept;
   ~CriticalActionEntry();
 
+  // Returns the user-facing localized label for the critical action.
+  std::string GetLabel() const;
+
+  // Returns the user-facing localized tooltip / description for the action.
+  std::string GetTooltip() const;
+
   std::string critical_action_id;  // Client-generated UUID
   base::Time timestamp;
   int64_t visit_id = 0;         // References History visit
@@ -77,6 +83,8 @@ struct CriticalActionQueryOptions {
 
   // If set, only records with these action types are returned.
   std::vector<ActionType> action_types;
+  // If set, only records with these visit IDs are returned.
+  std::vector<int64_t> visit_ids;
   // If set, only records with this conversation_id are returned.
   std::optional<std::string> conversation_id;
   // If set, only records with this actor_task_id are returned.

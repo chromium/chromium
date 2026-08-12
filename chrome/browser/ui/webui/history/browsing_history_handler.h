@@ -34,6 +34,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace critical_actions {
+struct CriticalActionEntry;
+}  // namespace critical_actions
+
 // The handler for Javascript messages related to the "history" view.
 class BrowsingHistoryHandler : public history::mojom::PageHandler,
                                public ProfileBasedBrowsingHistoryDriver,
@@ -149,6 +153,12 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
 
   // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+
+  void HandleQueryResults(
+      const std::vector<history::BrowsingHistoryService::HistoryEntry>& results,
+      const history::BrowsingHistoryService::QueryResultsInfo&
+          query_results_info,
+      std::vector<critical_actions::CriticalActionEntry> critical_actions);
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;

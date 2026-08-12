@@ -25,16 +25,21 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/critical_actions/core/browser/critical_action_service.h"
+#include "components/critical_actions/core/browser/critical_action_types.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/browser/features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/data_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
@@ -42,6 +47,7 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
 #include "url/gurl.h"
 
@@ -176,7 +182,8 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
                 GURL(("http://test.com")), u"Test",
                 base::Time::Now() - base::Minutes(5), std::string(), false,
                 std::u16string(), false, GURL(), 0, 0,
-                /*is_actor_visit=*/false, history::kNoAppIdFilter);
+                /*is_actor_visit=*/false, history::kNoAppIdFilter,
+                /*visit_id=*/history::kInvalidVisitID);
             results.push_back(entry);
           }
 
@@ -564,6 +571,174 @@ INSTANTIATE_TEST_SUITE_P(,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "SignedIn" : "SignedOut";
                          });
+
+TEST_F(BrowsingHistoryHandlerTest, CriticalActionsPopulatedForActorVisits) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      critical_actions::features::kCriticalActionHistory);
+
+  critical_actions::CriticalActionService* critical_action_service =
+      critical_actions::CriticalActionFactory::GetForProfile(profile());
+  ASSERT_NE(critical_action_service, nullptr);
+
+  base::Time visit_time = base::Time::Now();
+
+  // Add a sample critical action with a visit_id.
+  critical_actions::CriticalActionEntry action_entry;
+  action_entry.critical_action_id = "test-action-id-1";
+  action_entry.timestamp = visit_time;
+  action_entry.visit_id = 42;
+  action_entry.action_type = critical_actions::ActionType::kCredentialAccess;
+  action_entry.url = GURL("http://actor-example.com");
+  critical_action_service->AddCriticalAction(action_entry);
+  task_environment()->RunUntilIdle();
+
+  // Create an actor history entry with matching visit_id.
+  BrowsingHistoryService::HistoryEntry actor_entry(
+      BrowsingHistoryService::HistoryEntry::LOCAL_ENTRY,
+      GURL("http://actor-example.com"), u"Actor Visit", visit_time,
+      std::string(), false, std::u16string(), false, GURL(), 1, 0,
+      /*is_actor_visit=*/true, history::kNoAppIdFilter, /*visit_id=*/42);
+
+  QueryOptions options;
+  MockHistoryServiceCall(u"actor-example", options, {actor_entry});
+
+  mojom::QueryResultPtr results = RunQueryHistory("actor-example");
+  ASSERT_TRUE(results);
+  ASSERT_EQ(results->value.size(), 1u);
+  EXPECT_TRUE(results->value[0]->is_actor_visit);
+  ASSERT_EQ(results->value[0]->critical_actions.size(), 1u);
+  EXPECT_EQ(results->value[0]->critical_actions[0]->id, "test-action-id-1");
+  EXPECT_EQ(
+      results->value[0]->critical_actions[0]->label,
+      l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_PASSWORD_FILLED));
+  EXPECT_EQ(
+      results->value[0]->critical_actions[0]->tooltip,
+      l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_PASSWORD_TOOLTIP));
+  EXPECT_EQ(results->value[0]->critical_actions[0]->linkout_url,
+            "chrome://password-manager/passwords/actor-example.com");
+}
+
+TEST_F(BrowsingHistoryHandlerTest,
+       CriticalActionsDistinguishesSeparateVisitsSameUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      critical_actions::features::kCriticalActionHistory);
+
+  critical_actions::CriticalActionService* critical_action_service =
+      critical_actions::CriticalActionFactory::GetForProfile(profile());
+  ASSERT_NE(critical_action_service, nullptr);
+
+  base::Time visit_time1 = base::Time::Now() - base::Minutes(20);
+  base::Time visit_time2 = base::Time::Now();
+
+  // Action for visit 1.
+  critical_actions::CriticalActionEntry action1;
+  action1.critical_action_id = "action-visit-1";
+  action1.timestamp = visit_time1 + base::Seconds(5);
+  action1.visit_id = 1001;
+  action1.action_type = critical_actions::ActionType::kCredentialAccess;
+  action1.url = GURL("http://actor-example.com");
+  critical_action_service->AddCriticalAction(action1);
+
+  // Action for visit 2.
+  critical_actions::CriticalActionEntry action2;
+  action2.critical_action_id = "action-visit-2";
+  action2.timestamp = visit_time2 + base::Seconds(5);
+  action2.visit_id = 1002;
+  action2.action_type = critical_actions::ActionType::kDownload;
+  action2.url = GURL("http://actor-example.com");
+  critical_action_service->AddCriticalAction(action2);
+  task_environment()->RunUntilIdle();
+
+  BrowsingHistoryService::HistoryEntry entry2(
+      BrowsingHistoryService::HistoryEntry::LOCAL_ENTRY,
+      GURL("http://actor-example.com"), u"Visit 2", visit_time2, std::string(),
+      false, std::u16string(), false, GURL(), 1, 0,
+      /*is_actor_visit=*/true, history::kNoAppIdFilter,
+      /*visit_id=*/1002);
+
+  BrowsingHistoryService::HistoryEntry entry1(
+      BrowsingHistoryService::HistoryEntry::LOCAL_ENTRY,
+      GURL("http://actor-example.com"), u"Visit 1", visit_time1, std::string(),
+      false, std::u16string(), false, GURL(), 1, 0,
+      /*is_actor_visit=*/true, history::kNoAppIdFilter,
+      /*visit_id=*/1001);
+
+  QueryOptions options;
+  MockHistoryServiceCall(u"actor-example", options, {entry2, entry1});
+
+  mojom::QueryResultPtr results = RunQueryHistory("actor-example");
+  ASSERT_TRUE(results);
+  ASSERT_EQ(results->value.size(), 2u);
+
+  // Entry 2 (visit 1002) has action "download".
+  ASSERT_EQ(results->value[0]->critical_actions.size(), 1u);
+  EXPECT_EQ(results->value[0]->critical_actions[0]->id, "action-visit-2");
+  EXPECT_EQ(results->value[0]->critical_actions[0]->label,
+            l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_DOWNLOAD));
+
+  // Entry 1 (visit 1001) has action "password".
+  ASSERT_EQ(results->value[1]->critical_actions.size(), 1u);
+  EXPECT_EQ(results->value[1]->critical_actions[0]->id, "action-visit-1");
+  EXPECT_EQ(
+      results->value[1]->critical_actions[0]->label,
+      l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_PASSWORD_FILLED));
+}
+
+TEST_F(BrowsingHistoryHandlerTest,
+       CriticalActionsAttachedToAggregatedActorVisits) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {critical_actions::features::kCriticalActionHistory,
+       history::kBrowsingHistoryActorIntegrationM3},
+      {});
+
+  critical_actions::CriticalActionService* critical_action_service =
+      critical_actions::CriticalActionFactory::GetForProfile(profile());
+  ASSERT_NE(critical_action_service, nullptr);
+
+  base::Time visit_time1 = base::Time::Now() - base::Minutes(20);
+  base::Time visit_time2 = base::Time::Now();
+
+  // Action for visit 1.
+  critical_actions::CriticalActionEntry action1;
+  action1.critical_action_id = "action-visit-1";
+  action1.timestamp = visit_time1 + base::Seconds(5);
+  action1.visit_id = 1001;
+  action1.action_type = critical_actions::ActionType::kCredentialAccess;
+  action1.url = GURL("http://actor-example.com");
+  critical_action_service->AddCriticalAction(action1);
+
+  // Action for visit 2.
+  critical_actions::CriticalActionEntry action2;
+  action2.critical_action_id = "action-visit-2";
+  action2.timestamp = visit_time2 + base::Seconds(5);
+  action2.visit_id = 1002;
+  action2.action_type = critical_actions::ActionType::kDownload;
+  action2.url = GURL("http://actor-example.com");
+  critical_action_service->AddCriticalAction(action2);
+  task_environment()->RunUntilIdle();
+
+  // Single aggregated entry representing both visits on the same day.
+  BrowsingHistoryService::HistoryEntry entry(
+      BrowsingHistoryService::HistoryEntry::LOCAL_ENTRY,
+      GURL("http://actor-example.com"), u"Visit", visit_time2, std::string(),
+      false, std::u16string(), false, GURL(), 2, 0,
+      /*is_actor_visit=*/true, history::kNoAppIdFilter,
+      /*visit_id=*/1002);
+  entry.all_visit_ids.push_back(1001);
+
+  QueryOptions options;
+  MockHistoryServiceCall(u"actor-example", options, {entry});
+
+  mojom::QueryResultPtr results = RunQueryHistory("actor-example");
+  ASSERT_TRUE(results);
+  ASSERT_EQ(results->value.size(), 1u);
+  ASSERT_EQ(results->value[0]->critical_actions.size(), 2u);
+  EXPECT_EQ(results->value[0]->critical_actions[0]->id, "action-visit-2");
+  EXPECT_EQ(results->value[0]->critical_actions[1]->id, "action-visit-1");
+}
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

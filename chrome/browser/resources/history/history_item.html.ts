@@ -102,7 +102,7 @@ export function getHtml(this: HistoryItemElement) {
                           data-index="${index}"
                           focus-row-control focus-type="critical-action"
                           tabindex="0"
-                          aria-label="${action.ariaLabel || action.label}"
+                          aria-label="${action.label}"
                           @click="${this.onCriticalActionClick_}"
                           @keydown="${this.onCriticalActionKeydown_}">
                         <span class="critical-action-label">${action.label}</span>

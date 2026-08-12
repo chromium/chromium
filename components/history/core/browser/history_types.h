@@ -58,11 +58,6 @@ enum VisitSource {
   SOURCE_OS_MIGRATION_IMPORTED = 7,
 };
 
-// Corresponds to the "id" column of the "visits" SQL table.
-using VisitID = int64_t;
-// `kInvalidVisitID` is 0 because SQL AUTOINCREMENT's very first row has
-// "id" == 1. Therefore any 0 VisitID is a sentinel null-like value.
-inline constexpr VisitID kInvalidVisitID = 0;
 // Corresponds to the "id" column of the "visited_links" SQL table.
 using VisitedLinkID = int64_t;
 // `kInvalidVisitedLinkID` is 0 because SQL AUTOINCREMENT's very first row has

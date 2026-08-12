@@ -6,6 +6,8 @@ source_set("critical_actions") {
   sources = [
     "critical_action_factory.cc",
     "critical_action_factory.h",
+    "critical_action_ui_utils.cc",
+    "critical_action_ui_utils.h",
   ]
 
   public_deps = [ "//chrome/browser/profiles:profile" ]
@@ -13,24 +15,34 @@ source_set("critical_actions") {
   deps = [
     "//base",
     "//chrome/browser/history",
+    "//chrome/browser/ui/passwords",
+    "//chrome/common",
     "//components/critical_actions/core/browser",
     "//components/keyed_service/core",
     "//content/public/browser",
+    "//net",
+    "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "critical_action_factory_unittest.cc" ]
+  sources = [
+    "critical_action_factory_unittest.cc",
+    "critical_action_ui_utils_unittest.cc",
+  ]
 
   deps = [
     ":critical_actions",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ui/passwords",
+    "//chrome/common",
     "//chrome/test:test_support",
     "//components/critical_actions/core/browser",
     "//components/keyed_service/core",
     "//content/test:test_support",
+    "//net",
     "//testing/gtest",
   ]
 }

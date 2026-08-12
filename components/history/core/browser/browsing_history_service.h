@@ -72,7 +72,8 @@ class BrowsingHistoryService : public HistoryServiceObserver,
                  int visit_count,
                  int typed_count,
                  bool is_actor_visit,
-                 std::optional<std::string> app_id);
+                 std::optional<std::string> app_id,
+                 history::VisitID visit_id);
     HistoryEntry();
     HistoryEntry(const HistoryEntry& other);
     virtual ~HistoryEntry();
@@ -123,6 +124,10 @@ class BrowsingHistoryService : public HistoryServiceObserver,
     // ID of the app this entry was generated for. Set to a non-null value
     // on Android only.
     std::optional<std::string> app_id;
+
+    // All visit IDs in the local database represented by this entry (including
+    // synced visits).
+    std::vector<history::VisitID> all_visit_ids;
   };
 
   // Contains information about a completed history query.

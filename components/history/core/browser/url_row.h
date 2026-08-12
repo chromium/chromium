@@ -20,7 +20,13 @@
 
 namespace history {
 
-typedef int64_t URLID;
+using URLID = int64_t;
+
+// Corresponds to the "id" column of the "visits" SQL table.
+using VisitID = int64_t;
+// `kInvalidVisitID` is 0 because SQL AUTOINCREMENT's very first row has
+// "id" == 1. Therefore any 0 VisitID is a sentinel null-like value.
+inline constexpr VisitID kInvalidVisitID = 0;
 
 // Holds all information globally associated with one URL (one row in the
 // URL table).
@@ -65,39 +71,23 @@ class URLRow {
   // number of entries in the visit table for this URL, but won't always. It's
   // really designed for autocomplete ranking, so some "useless" transitions
   // from the visit table aren't counted in this tally.
-  int visit_count() const {
-    return visit_count_;
-  }
-  void set_visit_count(int visit_count) {
-    visit_count_ = visit_count;
-  }
+  int visit_count() const { return visit_count_; }
+  void set_visit_count(int visit_count) { visit_count_ = visit_count; }
 
   // Number of times the URL was typed in the Omnibox. This "should" match
   // the number of TYPED transitions in the visit table. It's used primarily
   // for faster autocomplete ranking. If you need to know the actual number of
   // TYPED transitions, you should query the visit table since there could be
   // something out of sync.
-  int typed_count() const {
-    return typed_count_;
-  }
-  void set_typed_count(int typed_count) {
-    typed_count_ = typed_count;
-  }
+  int typed_count() const { return typed_count_; }
+  void set_typed_count(int typed_count) { typed_count_ = typed_count; }
 
-  base::Time last_visit() const {
-    return last_visit_;
-  }
-  void set_last_visit(base::Time last_visit) {
-    last_visit_ = last_visit;
-  }
+  base::Time last_visit() const { return last_visit_; }
+  void set_last_visit(base::Time last_visit) { last_visit_ = last_visit; }
 
   // If this is set, we won't autocomplete this URL.
-  bool hidden() const {
-    return hidden_;
-  }
-  void set_hidden(bool hidden) {
-    hidden_ = hidden;
-  }
+  bool hidden() const { return hidden_; }
+  void set_hidden(bool hidden) { hidden_ = hidden; }
 
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
@@ -148,7 +138,7 @@ class URLRow {
 
   // We support the implicit copy constructor and operator=.
 };
-typedef std::vector<URLRow> URLRows;
+using URLRows = std::vector<URLRow>;
 
 // Annotations -----------------------------------------------------------------
 
@@ -290,6 +280,9 @@ class URLResult : public URLRow {
 
   URLResult& operator=(const URLResult&);
 
+  VisitID visit_id() const { return visit_id_; }
+  void set_visit_id(VisitID visit_id) { visit_id_ = visit_id; }
+
   base::Time visit_time() const { return visit_time_; }
   void set_visit_time(base::Time visit_time) { visit_time_ = visit_time; }
 
@@ -304,9 +297,7 @@ class URLResult : public URLRow {
   const query_parser::Snippet& snippet() const { return snippet_; }
 
   bool blocked_visit() const { return blocked_visit_; }
-  void set_blocked_visit(bool blocked_visit) {
-    blocked_visit_ = blocked_visit;
-  }
+  void set_blocked_visit(bool blocked_visit) { blocked_visit_ = blocked_visit; }
 
   bool has_actor_source() const { return actor_source_; }
   void set_actor_source(bool actor_source) { actor_source_ = actor_source; }
@@ -325,6 +316,9 @@ class URLResult : public URLRow {
 
  private:
   friend class HistoryBackend;
+
+  // ID of the visit this result corresponds to.
+  VisitID visit_id_ = kInvalidVisitID;
 
   // The time that this result corresponds to.
   base::Time visit_time_;
