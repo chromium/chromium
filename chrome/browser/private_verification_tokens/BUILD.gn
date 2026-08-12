@@ -28,6 +28,7 @@ static_library("private_verification_tokens") {
     "//components/private_verification_tokens/common:private_verification_tokens_store",
     "//content/public/browser",
     "//net",
+    "//url",
   ]
 }
 
@@ -40,8 +41,10 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
+    "//components/content_settings/core/common",
     "//components/private_verification_tokens/common:private_verification_tokens_database",
     "//components/private_verification_tokens/common:private_verification_tokens_issuer_config",
+    "//url",
   ]
 }
 

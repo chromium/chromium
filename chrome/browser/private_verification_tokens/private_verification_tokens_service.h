@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -71,6 +73,19 @@ class PrivateVerificationTokensService : public KeyedService {
           tokens,
       base::OnceClosure callback);
 
+  // Gets a token for the specified redeemer_origin. Returns a pair of
+  // (token_id, base64_encoded_token) if available. Does not delete or remove
+  // the token from storage.
+  std::optional<std::pair<int64_t, std::string>> GetTokenForRedemption(
+      const url::Origin& redeemer_origin);
+
+  // Deletes the token with `token_id` from the cache and marks it as redeemed
+  // in the database.
+  void DeleteToken(int64_t token_id, base::OnceClosure callback);
+
+  // Returns true if the redeemer origin is registered in the config.
+  bool IsRegisteredRedeemer(const url::Origin& redeemer_origin) const;
+
   base::WeakPtr<PrivateVerificationTokensService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -98,6 +113,10 @@ class PrivateVerificationTokensService : public KeyedService {
   scoped_refptr<
       const private_verification_tokens::PrivateVerificationTokensIssuerConfig>
       issuer_config_;
+
+  // Maps redeemer origins to their corresponding issuer origin. Computed
+  // whenever `issuer_config_` is updated.
+  base::flat_map<url::Origin, url::Origin> redeemer_to_issuer_;
 
   raw_ptr<HostContentSettingsMap> host_content_settings_map_ = nullptr;
   bool is_shutting_down_ = false;

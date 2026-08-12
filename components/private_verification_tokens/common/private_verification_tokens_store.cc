@@ -102,10 +102,14 @@ void PrivateVerificationTokensStore::DeleteTokens(
 
 void PrivateVerificationTokensStore::OnTokensDeleted(base::OnceClosure callback,
                                                      bool success) {
+  auto cache_tokens_cb =
+      base::BindOnce(&PrivateVerificationTokensStore::CacheTokens,
+                     weak_ptr_factory_.GetWeakPtr());
+  if (callback) {
+    cache_tokens_cb = std::move(cache_tokens_cb).Then(std::move(callback));
+  }
   database_.AsyncCall(&PrivateVerificationTokensDatabase::GetTokensFromEach)
-      .Then(base::BindOnce(&PrivateVerificationTokensStore::CacheTokens,
-                           weak_ptr_factory_.GetWeakPtr())
-                .Then(std::move(callback)));
+      .Then(std::move(cache_tokens_cb));
 }
 
 void PrivateVerificationTokensStore::StoreTokens(
@@ -122,13 +126,46 @@ void PrivateVerificationTokensStore::OnTokensStored(base::OnceClosure callback,
                                                     bool success) {
   // If the database operation failed, don't bother refreshing the cache.
   if (!success) {
-    std::move(callback).Run();
+    if (callback) {
+      std::move(callback).Run();
+    }
     return;
   }
+  auto cache_tokens_cb =
+      base::BindOnce(&PrivateVerificationTokensStore::CacheTokens,
+                     weak_ptr_factory_.GetWeakPtr());
+  if (callback) {
+    cache_tokens_cb = std::move(cache_tokens_cb).Then(std::move(callback));
+  }
   database_.AsyncCall(&PrivateVerificationTokensDatabase::GetTokensFromEach)
-      .Then(base::BindOnce(&PrivateVerificationTokensStore::CacheTokens,
-                           weak_ptr_factory_.GetWeakPtr())
-                .Then(std::move(callback)));
+      .Then(std::move(cache_tokens_cb));
+}
+
+void PrivateVerificationTokensStore::DeleteToken(int64_t token_id,
+                                                 base::OnceClosure callback) {
+  database_.AsyncCall(&PrivateVerificationTokensDatabase::SetRedeemed)
+      .WithArgs(token_id)
+      .Then(base::BindOnce(&PrivateVerificationTokensStore::OnTokenDeleted,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
+}
+
+void PrivateVerificationTokensStore::OnTokenDeleted(base::OnceClosure callback,
+                                                    bool success) {
+  if (!success) {
+    if (callback) {
+      std::move(callback).Run();
+    }
+    return;
+  }
+  auto cache_tokens_cb =
+      base::BindOnce(&PrivateVerificationTokensStore::CacheTokens,
+                     weak_ptr_factory_.GetWeakPtr());
+  if (callback) {
+    cache_tokens_cb = std::move(cache_tokens_cb).Then(std::move(callback));
+  }
+  database_.AsyncCall(&PrivateVerificationTokensDatabase::GetTokensFromEach)
+      .Then(std::move(cache_tokens_cb));
 }
 
 PrivateVerificationTokensStore::~PrivateVerificationTokensStore() = default;

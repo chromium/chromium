@@ -8,13 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -130,6 +133,90 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
         observation(&waiter);
     observation.Observe(target_service);
     EXPECT_TRUE(init_future.Wait());
+  }
+
+  void SetTestIssuerConfig(PrivateVerificationTokensService* target_service) {
+    const url::Origin issuer_a = url::Origin::Create(GURL("https://a.com"));
+    const url::Origin redeemer_a =
+        url::Origin::Create(GURL("https://r1.a.com"));
+    const url::Origin issuer_b = url::Origin::Create(GURL("https://b.org"));
+    const url::Origin redeemer_b =
+        url::Origin::Create(GURL("https://r2.b.org"));
+    const url::Origin issuer_c = url::Origin::Create(GURL("https://c.net"));
+    const url::Origin issuer_d = url::Origin::Create(GURL("https://d.com"));
+    const std::vector<uint8_t> serialized_public_key = {3, 6, 8, 12, 14};
+    const std::string encoded_public_key =
+        base::Base64Encode(serialized_public_key);
+    const std::vector<uint8_t> serialized_public_key_proof = {1, 2, 4, 8};
+    const std::string encoded_public_key_proof =
+        base::Base64Encode(serialized_public_key_proof);
+    const std::string expiration_str = "12";
+    const std::string json_str = base::StringPrintf(
+        R"({
+      "issuers": [
+        {
+          "issuerRequestUrl": "%s",
+          "version": 1,
+          "publicKey": "%s",
+          "publicKeyProof": "%s",
+          "batchSize": 2,
+          "expiration": "%s",
+          "redeemers": [
+            "%s"
+          ],
+          "deploymentId": "1"
+        },
+        {
+          "issuerRequestUrl": "%s",
+          "version": 1,
+          "publicKey": "%s",
+          "publicKeyProof": "%s",
+          "batchSize": 2,
+          "expiration": "%s",
+          "redeemers": [
+            "%s"
+          ],
+          "deploymentId": "1"
+        },
+        {
+          "issuerRequestUrl": "%s",
+          "version": 1,
+          "publicKey": "%s",
+          "publicKeyProof": "%s",
+          "batchSize": 2,
+          "expiration": "%s",
+          "redeemers": [
+            "%s"
+          ],
+          "deploymentId": "1"
+        },
+        {
+          "issuerRequestUrl": "%s",
+          "version": 1,
+          "publicKey": "%s",
+          "publicKeyProof": "%s",
+          "batchSize": 2,
+          "expiration": "%s",
+          "redeemers": [
+            "%s"
+          ],
+          "deploymentId": "1"
+        }
+      ]
+    })",
+        issuer_a.Serialize(), encoded_public_key, encoded_public_key_proof,
+        expiration_str, redeemer_a.Serialize(), issuer_b.Serialize(),
+        encoded_public_key, encoded_public_key_proof, expiration_str,
+        redeemer_b.Serialize(), issuer_c.Serialize(), encoded_public_key,
+        encoded_public_key_proof, expiration_str, issuer_c.Serialize(),
+        issuer_d.Serialize(), encoded_public_key, encoded_public_key_proof,
+        expiration_str, issuer_d.Serialize());
+
+    auto config =
+        private_verification_tokens::PrivateVerificationTokensIssuerConfig::
+            Create(base::test::ParseJsonDict(json_str));
+    ASSERT_TRUE(config);
+    target_service->SetIssuerConfig(config);
   }
 
  private:
@@ -516,6 +603,167 @@ TEST_F(PrivateVerificationTokensServiceTest,
       PrivateVerificationTokensServiceFactory::GetForProfile(&new_profile);
   ASSERT_TRUE(new_service);
   EXPECT_EQ(new_service->issuer_config(), config);
+}
+
+TEST_F(PrivateVerificationTokensServiceTest, GetTokenForRedemption_Success) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  const url::Origin redeemer_a = url::Origin::Create(GURL("https://r1.a.com"));
+  auto token = service()->GetTokenForRedemption(redeemer_a);
+  ASSERT_TRUE(token.has_value());
+  EXPECT_EQ(token->second, base::Base64Encode(std::vector<uint8_t>{1, 2, 3}));
+
+  // Calling again should still return the token because GetTokenForRedemption
+  // does not delete or consume it.
+  auto token_second = service()->GetTokenForRedemption(redeemer_a);
+  ASSERT_TRUE(token_second.has_value());
+  EXPECT_EQ(token_second->first, token->first);
+  EXPECT_EQ(token_second->second, token->second);
+
+  // Verify tokens are still in the database.
+  base::test::TestFuture<std::vector<url::Origin>> future;
+  service()->GetTokenIssuers(future.GetCallback());
+  auto issuers = future.Take();
+  EXPECT_THAT(issuers, testing::UnorderedElementsAre(
+                           url::Origin::Create(GURL("https://a.com")),
+                           url::Origin::Create(GURL("https://b.org"))));
+
+  // Explicitly deleting the token removes it from cache and database.
+  base::test::TestFuture<void> delete_future;
+  service()->DeleteToken(token->first, delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Wait());
+
+  base::test::TestFuture<std::vector<url::Origin>> future2;
+  service()->GetTokenIssuers(future2.GetCallback());
+  auto issuers2 = future2.Take();
+  EXPECT_THAT(issuers2,
+              testing::ElementsAre(url::Origin::Create(GURL("https://b.org"))));
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       GetTokenForRedemption_UnregisteredRedeemer_ReturnsNullopt) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  auto token = service()->GetTokenForRedemption(
+      url::Origin::Create(GURL("https://unregistered.com")));
+  EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       GetTokenForRedemption_NoTokensInStore_ReturnsNullopt) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  // c.net is a registered issuer & redeemer in config, but has no tokens
+  // stored.
+  auto token = service()->GetTokenForRedemption(
+      url::Origin::Create(GURL("https://c.net")));
+  EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       GetTokenForRedemption_AntiAbuseBlockedForIssuer_ReturnsNullopt) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  const url::Origin issuer_a = url::Origin::Create(GURL("https://a.com"));
+  const url::Origin redeemer_a = url::Origin::Create(GURL("https://r1.a.com"));
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(issuer_a.GetURL(), issuer_a.GetURL(),
+                                      ContentSettingsType::ANTI_ABUSE,
+                                      CONTENT_SETTING_BLOCK);
+
+  auto token = service()->GetTokenForRedemption(redeemer_a);
+  EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       GetTokenForRedemption_AntiAbuseBlockedForRedeemer_ReturnsNullopt) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  const url::Origin redeemer_a = url::Origin::Create(GURL("https://r1.a.com"));
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(redeemer_a.GetURL(), redeemer_a.GetURL(),
+                                      ContentSettingsType::ANTI_ABUSE,
+                                      CONTENT_SETTING_BLOCK);
+
+  auto token = service()->GetTokenForRedemption(redeemer_a);
+  EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       GetTokenForRedemption_NoConfig_ReturnsNullopt) {
+  WaitForInitialization(service());
+
+  auto token = service()->GetTokenForRedemption(
+      url::Origin::Create(GURL("https://r1.a.com")));
+  EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       GetTokenForRedemption_WhenShuttingDown_ReturnsNullopt) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  service()->Shutdown();
+
+  auto token = service()->GetTokenForRedemption(
+      url::Origin::Create(GURL("https://r1.a.com")));
+  EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       DeleteToken_PendingBeforeInitialization_Success) {
+  EXPECT_FALSE(service()->is_initialized());
+
+  base::test::TestFuture<void> delete_future;
+  service()->DeleteToken(1, delete_future.GetCallback());
+  EXPECT_FALSE(delete_future.IsReady());
+
+  WaitForInitialization(service());
+  EXPECT_TRUE(delete_future.Wait());
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       DeleteToken_WhenShuttingDown_DoesNothing) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  service()->Shutdown();
+  base::test::TestFuture<void> future;
+  service()->DeleteToken(1, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       IsRegisteredRedeemer_RegisteredRedeemer_ReturnsTrue) {
+  SetTestIssuerConfig(service());
+
+  EXPECT_TRUE(service()->IsRegisteredRedeemer(
+      url::Origin::Create(GURL("https://r1.a.com"))));
+  EXPECT_TRUE(service()->IsRegisteredRedeemer(
+      url::Origin::Create(GURL("https://r2.b.org"))));
+  EXPECT_TRUE(service()->IsRegisteredRedeemer(
+      url::Origin::Create(GURL("https://c.net"))));
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       IsRegisteredRedeemer_UnregisteredRedeemer_ReturnsFalse) {
+  SetTestIssuerConfig(service());
+
+  EXPECT_FALSE(service()->IsRegisteredRedeemer(
+      url::Origin::Create(GURL("https://unknown.com"))));
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       IsRegisteredRedeemer_NoConfig_ReturnsFalse) {
+  EXPECT_FALSE(service()->IsRegisteredRedeemer(
+      url::Origin::Create(GURL("https://r1.a.com"))));
 }
 
 }  // namespace

@@ -9,12 +9,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
@@ -219,10 +222,81 @@ void PrivateVerificationTokensService::DeleteTokensByFilter(
                                delete_end, std::move(callback))));
 }
 
+std::optional<std::pair<int64_t, std::string>>
+PrivateVerificationTokensService::GetTokenForRedemption(
+    const url::Origin& redeemer_origin) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_shutting_down_ || !is_initialized() || !issuer_config_) {
+    return std::nullopt;
+  }
+
+  if (!IsAntiAbuseEnabled(redeemer_origin)) {
+    return std::nullopt;
+  }
+
+  auto it_issuer = redeemer_to_issuer_.find(redeemer_origin);
+  if (it_issuer == redeemer_to_issuer_.end()) {
+    return std::nullopt;
+  }
+
+  const url::Origin& matching_issuer = it_issuer->second;
+  if (!IsAntiAbuseEnabled(matching_issuer)) {
+    return std::nullopt;
+  }
+
+  CHECK(store_);
+  const auto& tokens = store_->tokens();
+  auto it = tokens.find(matching_issuer);
+  if (it == tokens.end()) {
+    return std::nullopt;
+  }
+
+  std::string base64_token = base::Base64Encode(it->second.token.token());
+  return std::make_pair(it->second.id, std::move(base64_token));
+}
+
+void PrivateVerificationTokensService::DeleteToken(int64_t token_id,
+                                                   base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_shutting_down_ || !store_) {
+    if (callback) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback));
+    }
+    return;
+  }
+  if (!is_initialized()) {
+    pending_operations_.push_back(base::BindOnce(
+        &PrivateVerificationTokensService::DeleteToken,
+        weak_ptr_factory_.GetWeakPtr(), token_id, std::move(callback)));
+    return;
+  }
+  store_->DeleteToken(token_id, std::move(callback));
+}
+
+bool PrivateVerificationTokensService::IsRegisteredRedeemer(
+    const url::Origin& redeemer_origin) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!issuer_config_) {
+    return false;
+  }
+  return redeemer_to_issuer_.contains(redeemer_origin);
+}
+
 void PrivateVerificationTokensService::SetIssuerConfig(
     scoped_refptr<const private_verification_tokens::
                       PrivateVerificationTokensIssuerConfig> issuer_config) {
   issuer_config_ = std::move(issuer_config);
+  std::vector<std::pair<url::Origin, url::Origin>> redeemer_to_issuer;
+  if (issuer_config_) {
+    for (const auto& [issuer, config] : issuer_config_->config()) {
+      for (const auto& redeemer : config.redeemers) {
+        redeemer_to_issuer.emplace_back(redeemer, issuer);
+      }
+    }
+  }
+  redeemer_to_issuer_ =
+      base::flat_map<url::Origin, url::Origin>(std::move(redeemer_to_issuer));
 }
 
 void PrivateVerificationTokensService::OnStoreInitialized() {
