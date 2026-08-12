@@ -38,6 +38,7 @@ import org.chromium.android_webview.AwTracingController;
 import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.R;
+import org.chromium.android_webview.StartupCallSite;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwResource;
@@ -258,311 +259,13 @@ public class WebViewChromiumAwInit {
     // lives in the ui/ layer. See ui/base/ui_base_paths.h
     private static final int DIR_RESOURCE_PAKS_ANDROID = 3003;
 
-    // This enum must be kept in sync with WebViewStartup.CallSite in chrome_track_event.proto and
-    // WebViewStartupCallSite in enums.xml.
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    // LINT.IfChange(CallSite)
-    @IntDef({
-        CallSite.GET_AW_TRACING_CONTROLLER,
-        CallSite.GET_AW_PROXY_CONTROLLER,
-        CallSite.GET_DEFAULT_GEOLOCATION_PERMISSIONS,
-        CallSite.GET_DEFAULT_SERVICE_WORKER_CONTROLLER,
-        CallSite.GET_WEB_ICON_DATABASE,
-        CallSite.GET_DEFAULT_WEB_STORAGE,
-        CallSite.GET_DEFAULT_WEBVIEW_DATABASE,
-        CallSite.GET_TRACING_CONTROLLER,
-        CallSite.ASYNC_WEBVIEW_STARTUP,
-        CallSite.WEBVIEW_INSTANCE_OVERLAY_HORIZONTAL_SCROLLBAR,
-        CallSite.WEBVIEW_INSTANCE_OVERLAY_VERTICAL_SCROLLBAR,
-        CallSite.WEBVIEW_INSTANCE_GET_CERTIFICATE,
-        CallSite.WEBVIEW_INSTANCE_GET_HTTP_AUTH_USERNAME_PASSWORD,
-        CallSite.WEBVIEW_INSTANCE_SAVE_STATE,
-        CallSite.WEBVIEW_INSTANCE_RESTORE_STATE,
-        CallSite.WEBVIEW_INSTANCE_LOAD_URL,
-        CallSite.WEBVIEW_INSTANCE_POST_URL,
-        CallSite.WEBVIEW_INSTANCE_LOAD_DATA,
-        CallSite.WEBVIEW_INSTANCE_LOAD_DATA_WITH_BASE_URL,
-        CallSite.WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT,
-        CallSite.WEBVIEW_INSTANCE_CAN_GO_BACK,
-        CallSite.WEBVIEW_INSTANCE_CAN_GO_FORWARD,
-        CallSite.WEBVIEW_INSTANCE_CAN_GO_BACK_OR_FORWARD,
-        CallSite.WEBVIEW_INSTANCE_IS_PAUSED,
-        CallSite.WEBVIEW_INSTANCE_COPY_BACK_FORWARD_LIST,
-        CallSite.WEBVIEW_INSTANCE_SHOW_FIND_DIALOG,
-        CallSite.WEBVIEW_INSTANCE_SET_WEBVIEW_CLIENT,
-        CallSite.WEBVIEW_INSTANCE_SET_WEBCHROME_CLIENT,
-        CallSite.WEBVIEW_INSTANCE_CREATE_WEBMESSAGE_CHANNEL,
-        CallSite.WEBVIEW_INSTANCE_GET_ZOOM_CONTROLS,
-        CallSite.WEBVIEW_INSTANCE_ZOOM_IN,
-        CallSite.WEBVIEW_INSTANCE_ZOOM_OUT,
-        CallSite.WEBVIEW_INSTANCE_ZOOM_BY,
-        CallSite.WEBVIEW_INSTANCE_SET_RENDERER_PRIORITY_POLICY,
-        CallSite.WEBVIEW_INSTANCE_GET_RENDERER_REQUESTED_PRIORITY,
-        CallSite.WEBVIEW_INSTANCE_GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE,
-        CallSite.WEBVIEW_INSTANCE_SET_TEXT_CLASSIFIER,
-        CallSite.WEBVIEW_INSTANCE_GET_TEXT_CLASSIFIER,
-        CallSite.WEBVIEW_INSTANCE_AUTOFILL,
-        CallSite.WEBVIEW_INSTANCE_ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE,
-        CallSite.WEBVIEW_INSTANCE_ON_PROVIDE_CONTENT_CAPTURE_STRUCTURE,
-        CallSite.WEBVIEW_INSTANCE_SHOULD_DELAY_CHILD_PRESSED_STATE,
-        CallSite.WEBVIEW_INSTANCE_GET_ACCESSIBILITY_NODE_PROVIDER,
-        CallSite.WEBVIEW_INSTANCE_ON_PROVIDE_VIRTUAL_STRUCTURE,
-        CallSite.WEBVIEW_INSTANCE_PERFORM_ACCESSIBILITY_ACTION,
-        CallSite.WEBVIEW_INSTANCE_ON_DRAW,
-        CallSite.WEBVIEW_INSTANCE_SET_LAYOUT_PARAMS,
-        CallSite.WEBVIEW_INSTANCE_ON_DRAG_EVENT,
-        CallSite.WEBVIEW_INSTANCE_ON_CREATE_INPUT_CONNECTION,
-        CallSite.WEBVIEW_INSTANCE_ON_KEY_MULTIPLE,
-        CallSite.WEBVIEW_INSTANCE_ON_KEY_DOWN,
-        CallSite.WEBVIEW_INSTANCE_ON_KEY_UP,
-        CallSite.WEBVIEW_INSTANCE_ON_ATTACHED_TO_WINDOW,
-        CallSite.WEBVIEW_INSTANCE_DISPATCH_KEY_EVENT,
-        CallSite.WEBVIEW_INSTANCE_ON_TOUCH_EVENT,
-        CallSite.WEBVIEW_INSTANCE_ON_HOVER_EVENT,
-        CallSite.WEBVIEW_INSTANCE_ON_GENERIC_MOTION_EVENT,
-        CallSite.WEBVIEW_INSTANCE_REQUEST_FOCUS,
-        CallSite.WEBVIEW_INSTANCE_ON_MEASURE,
-        CallSite.WEBVIEW_INSTANCE_REQUEST_CHILD_RECTANGLE_ON_SCREEN,
-        CallSite.WEBVIEW_INSTANCE_SET_BACKGROUND_COLOR,
-        CallSite.WEBVIEW_INSTANCE_ON_START_TEMPORARY_DETACH,
-        CallSite.WEBVIEW_INSTANCE_ON_FINISH_TEMPORARY_DETACH,
-        CallSite.WEBVIEW_INSTANCE_ON_CHECK_IS_TEXT_EDITOR,
-        CallSite.WEBVIEW_INSTANCE_ON_APPLY_WINDOW_INSETS,
-        CallSite.WEBVIEW_INSTANCE_ON_RESOLVE_POINTER_ICON,
-        CallSite.WEBVIEW_INSTANCE_COMPUTE_HORIZONTAL_SCROLL_RANGE,
-        CallSite.WEBVIEW_INSTANCE_COMPUTE_HORIZONTAL_SCROLL_OFFSET,
-        CallSite.WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_RANGE,
-        CallSite.WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_OFFSET,
-        CallSite.WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_EXTENT,
-        CallSite.WEBVIEW_INSTANCE_COMPUTE_SCROLL,
-        CallSite.WEBVIEW_INSTANCE_CREATE_PRINT_DOCUMENT_ADAPTER,
-        CallSite.WEBVIEW_INSTANCE_EXTRACT_SMART_CLIP_DATA,
-        CallSite.WEBVIEW_INSTANCE_SET_SMART_CLIP_RESULT_HANDLER,
-        CallSite.WEBVIEW_INSTANCE_GET_RENDER_PROCESS,
-        CallSite.WEBVIEW_INSTANCE_GET_WEBVIEW_RENDERER_CLIENT_ADAPTER,
-        CallSite.WEBVIEW_INSTANCE_PAGE_UP,
-        CallSite.WEBVIEW_INSTANCE_PAGE_DOWN,
-        CallSite.WEBVIEW_INSTANCE_LOAD_URL_ADDITIONAL_HEADERS,
-        CallSite.WEBVIEW_INSTANCE_INIT,
-        CallSite.WEBVIEW_INSTANCE_CAPTURE_PICTURE,
-        CallSite.WEBVIEW_INSTANCE_GET_SCALE,
-        CallSite.WEBVIEW_INSTANCE_SET_INITIAL_SCALE,
-        CallSite.WEBVIEW_INSTANCE_GET_HIT_TEST_RESULT,
-        CallSite.WEBVIEW_INSTANCE_GET_URL,
-        CallSite.WEBVIEW_INSTANCE_GET_ORIGINAL_URL,
-        CallSite.WEBVIEW_INSTANCE_GET_TITLE,
-        CallSite.WEBVIEW_INSTANCE_GET_FAVICON,
-        CallSite.STATIC_FIND_ADDRESS,
-        CallSite.STATIC_GET_DEFAULT_USER_AGENT,
-        CallSite.STATIC_SET_WEB_CONTENTS_DEBUGGING_ENABLED,
-        CallSite.STATIC_CLEAR_CLIENT_CERT_PREFERENCES,
-        CallSite.STATIC_FREE_MEMORY_FOR_TESTS,
-        CallSite.STATIC_ENABLE_SLOW_WHOLE_DOCUMENT_DRAW,
-        CallSite.STATIC_PARSE_FILE_CHOOSER_RESULT,
-        CallSite.STATIC_INIT_SAFE_BROWSING,
-        CallSite.STATIC_SET_SAFE_BROWSING_ALLOWLIST,
-        CallSite.STATIC_GET_SAFE_BROWSING_PRIVACY_POLICY_URL,
-        CallSite.STATIC_IS_MULTI_PROCESS_ENABLED,
-        CallSite.STATIC_GET_VARIATIONS_HEADER,
-        CallSite.GET_DEFAULT_COOKIE_MANAGER,
-        CallSite.GET_PROFILE_STORE,
-        CallSite.WEBVIEW_INSTANCE_GET_SETTINGS,
-        CallSite.WEBVIEW_INSTANCE_GET_AW_CONTENTS,
-        CallSite.PROFILE_STORE_GET_PROFILE,
-        CallSite.PROFILE_STORE_GET_OR_CREATE_PROFILE,
-        CallSite.PROFILE_STORE_GET_ALL_PROFILE_NAMES,
-        CallSite.PROFILE_STORE_DELETE_PROFILE,
-        CallSite.PROFILE_PRECONNECT,
-        CallSite.PROFILE_GET_COOKIE_MANAGER,
-        CallSite.PROFILE_GET_WEB_STORAGE,
-        CallSite.PROFILE_GET_GEOLOCATION_PERMISSIONS,
-        CallSite.PROFILE_GET_SERVICE_WORKER_CONTROLLER,
-        CallSite.PROFILE_PREFETCH_URL,
-        CallSite.PROFILE_PREFETCH_URL_ASYNC,
-        CallSite.PROFILE_CANCEL_PREFETCH,
-        CallSite.PROFILE_SET_MAX_PRERENDERS,
-        CallSite.PROFILE_CLEAR_MAX_PRERENDERS,
-        CallSite.PROFILE_GET_MAX_PRERENDERS,
-        CallSite.PROFILE_SET_MAX_PREFETCHES,
-        CallSite.PROFILE_CLEAR_MAX_PREFETCHES,
-        CallSite.PROFILE_GET_MAX_PREFETCHES,
-        CallSite.PROFILE_SET_PREFETCH_TTL_SECONDS,
-        CallSite.PROFILE_CLEAR_PREFETCH_TTL,
-        CallSite.PROFILE_GET_PREFETCH_TTL_SECONDS,
-        CallSite.PROFILE_SET_SPECULATIVE_LOADING_CONFIG,
-        CallSite.PROFILE_GET_BROWSER_CONTEXT,
-        CallSite.PROFILE_WARM_UP_RENDERER_PROCESS,
-        CallSite.PROFILE_SET_ORIGIN_MATCHED_HEADER,
-        CallSite.PROFILE_ADD_ORIGIN_MATCHED_HEADER,
-        CallSite.PROFILE_HAS_ORIGIN_MATCHED_HEADER,
-        CallSite.PROFILE_FIND_ORIGIN_MATCHED_HEADERS,
-        CallSite.PROFILE_CLEAR_ORIGIN_MATCHED_HEADER,
-        CallSite.PROFILE_CLEAR_ALL_ORIGIN_MATCHED_HEADERS,
-        CallSite.PROFILE_ADD_QUIC_HINTS,
-        CallSite.PROFILE_GET_HTTP_CACHE_MANAGER,
-        CallSite.PROFILE_SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
-        CallSite.PROFILE_GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
-        CallSite.COUNT,
-    })
-    public @interface CallSite {
-        int GET_AW_TRACING_CONTROLLER = 0;
-        int GET_AW_PROXY_CONTROLLER = 1;
-        // Value 2 was used as a catch all for all WebView instance methods.
-        // Value 3 was used as a catch all for all static methods.
-        // Both values 2 and 3 are deprecated and should no longer be used.
-        int GET_DEFAULT_GEOLOCATION_PERMISSIONS = 4;
-        int GET_DEFAULT_SERVICE_WORKER_CONTROLLER = 5;
-        int GET_WEB_ICON_DATABASE = 6;
-        int GET_DEFAULT_WEB_STORAGE = 7;
-        int GET_DEFAULT_WEBVIEW_DATABASE = 8;
-        int GET_TRACING_CONTROLLER = 9;
-        int ASYNC_WEBVIEW_STARTUP = 10;
-        int WEBVIEW_INSTANCE_OVERLAY_HORIZONTAL_SCROLLBAR = 11;
-        int WEBVIEW_INSTANCE_OVERLAY_VERTICAL_SCROLLBAR = 12;
-        int WEBVIEW_INSTANCE_GET_CERTIFICATE = 13;
-        int WEBVIEW_INSTANCE_GET_HTTP_AUTH_USERNAME_PASSWORD = 14;
-        int WEBVIEW_INSTANCE_SAVE_STATE = 15;
-        int WEBVIEW_INSTANCE_RESTORE_STATE = 16;
-        int WEBVIEW_INSTANCE_LOAD_URL = 17;
-        int WEBVIEW_INSTANCE_POST_URL = 18;
-        int WEBVIEW_INSTANCE_LOAD_DATA = 19;
-        int WEBVIEW_INSTANCE_LOAD_DATA_WITH_BASE_URL = 20;
-        int WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT = 21;
-        int WEBVIEW_INSTANCE_CAN_GO_BACK = 22;
-        int WEBVIEW_INSTANCE_CAN_GO_FORWARD = 23;
-        int WEBVIEW_INSTANCE_CAN_GO_BACK_OR_FORWARD = 24;
-        int WEBVIEW_INSTANCE_IS_PAUSED = 25;
-        int WEBVIEW_INSTANCE_COPY_BACK_FORWARD_LIST = 26;
-        int WEBVIEW_INSTANCE_SHOW_FIND_DIALOG = 27;
-        int WEBVIEW_INSTANCE_SET_WEBVIEW_CLIENT = 28;
-        int WEBVIEW_INSTANCE_SET_WEBCHROME_CLIENT = 29;
-        int WEBVIEW_INSTANCE_CREATE_WEBMESSAGE_CHANNEL = 30;
-        int WEBVIEW_INSTANCE_GET_ZOOM_CONTROLS = 31;
-        int WEBVIEW_INSTANCE_ZOOM_IN = 32;
-        int WEBVIEW_INSTANCE_ZOOM_OUT = 33;
-        int WEBVIEW_INSTANCE_ZOOM_BY = 34;
-        int WEBVIEW_INSTANCE_SET_RENDERER_PRIORITY_POLICY = 35;
-        int WEBVIEW_INSTANCE_GET_RENDERER_REQUESTED_PRIORITY = 36;
-        int WEBVIEW_INSTANCE_GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE = 37;
-        int WEBVIEW_INSTANCE_SET_TEXT_CLASSIFIER = 38;
-        int WEBVIEW_INSTANCE_GET_TEXT_CLASSIFIER = 39;
-        int WEBVIEW_INSTANCE_AUTOFILL = 40;
-        int WEBVIEW_INSTANCE_ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE = 41;
-        int WEBVIEW_INSTANCE_ON_PROVIDE_CONTENT_CAPTURE_STRUCTURE = 42;
-        int WEBVIEW_INSTANCE_SHOULD_DELAY_CHILD_PRESSED_STATE = 43;
-        int WEBVIEW_INSTANCE_GET_ACCESSIBILITY_NODE_PROVIDER = 44;
-        int WEBVIEW_INSTANCE_ON_PROVIDE_VIRTUAL_STRUCTURE = 45;
-        int WEBVIEW_INSTANCE_PERFORM_ACCESSIBILITY_ACTION = 46;
-        int WEBVIEW_INSTANCE_ON_DRAW = 47;
-        int WEBVIEW_INSTANCE_SET_LAYOUT_PARAMS = 48;
-        int WEBVIEW_INSTANCE_ON_DRAG_EVENT = 49;
-        int WEBVIEW_INSTANCE_ON_CREATE_INPUT_CONNECTION = 50;
-        int WEBVIEW_INSTANCE_ON_KEY_MULTIPLE = 51;
-        int WEBVIEW_INSTANCE_ON_KEY_DOWN = 52;
-        int WEBVIEW_INSTANCE_ON_KEY_UP = 53;
-        int WEBVIEW_INSTANCE_ON_ATTACHED_TO_WINDOW = 54;
-        int WEBVIEW_INSTANCE_DISPATCH_KEY_EVENT = 55;
-        int WEBVIEW_INSTANCE_ON_TOUCH_EVENT = 56;
-        int WEBVIEW_INSTANCE_ON_HOVER_EVENT = 57;
-        int WEBVIEW_INSTANCE_ON_GENERIC_MOTION_EVENT = 58;
-        int WEBVIEW_INSTANCE_REQUEST_FOCUS = 59;
-        int WEBVIEW_INSTANCE_ON_MEASURE = 60;
-        int WEBVIEW_INSTANCE_REQUEST_CHILD_RECTANGLE_ON_SCREEN = 61;
-        int WEBVIEW_INSTANCE_SET_BACKGROUND_COLOR = 62;
-        int WEBVIEW_INSTANCE_ON_START_TEMPORARY_DETACH = 63;
-        int WEBVIEW_INSTANCE_ON_FINISH_TEMPORARY_DETACH = 64;
-        int WEBVIEW_INSTANCE_ON_CHECK_IS_TEXT_EDITOR = 65;
-        int WEBVIEW_INSTANCE_ON_APPLY_WINDOW_INSETS = 66;
-        int WEBVIEW_INSTANCE_ON_RESOLVE_POINTER_ICON = 67;
-        int WEBVIEW_INSTANCE_COMPUTE_HORIZONTAL_SCROLL_RANGE = 68;
-        int WEBVIEW_INSTANCE_COMPUTE_HORIZONTAL_SCROLL_OFFSET = 69;
-        int WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_RANGE = 70;
-        int WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_OFFSET = 71;
-        int WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_EXTENT = 72;
-        int WEBVIEW_INSTANCE_COMPUTE_SCROLL = 73;
-        int WEBVIEW_INSTANCE_CREATE_PRINT_DOCUMENT_ADAPTER = 74;
-        int WEBVIEW_INSTANCE_EXTRACT_SMART_CLIP_DATA = 75;
-        int WEBVIEW_INSTANCE_SET_SMART_CLIP_RESULT_HANDLER = 76;
-        int WEBVIEW_INSTANCE_GET_RENDER_PROCESS = 77;
-        int WEBVIEW_INSTANCE_GET_WEBVIEW_RENDERER_CLIENT_ADAPTER = 78;
-        int WEBVIEW_INSTANCE_PAGE_UP = 79;
-        int WEBVIEW_INSTANCE_PAGE_DOWN = 80;
-        int WEBVIEW_INSTANCE_LOAD_URL_ADDITIONAL_HEADERS = 81;
-        int WEBVIEW_INSTANCE_INIT = 82;
-        int WEBVIEW_INSTANCE_CAPTURE_PICTURE = 83;
-        int WEBVIEW_INSTANCE_GET_SCALE = 84;
-        int WEBVIEW_INSTANCE_SET_INITIAL_SCALE = 85;
-        int WEBVIEW_INSTANCE_GET_HIT_TEST_RESULT = 86;
-        int WEBVIEW_INSTANCE_GET_URL = 87;
-        int WEBVIEW_INSTANCE_GET_ORIGINAL_URL = 88;
-        int WEBVIEW_INSTANCE_GET_TITLE = 89;
-        int WEBVIEW_INSTANCE_GET_FAVICON = 90;
-        int STATIC_FIND_ADDRESS = 91;
-        int STATIC_GET_DEFAULT_USER_AGENT = 92;
-        int STATIC_SET_WEB_CONTENTS_DEBUGGING_ENABLED = 93;
-        int STATIC_CLEAR_CLIENT_CERT_PREFERENCES = 94;
-        int STATIC_FREE_MEMORY_FOR_TESTS = 95;
-        int STATIC_ENABLE_SLOW_WHOLE_DOCUMENT_DRAW = 96;
-        int STATIC_PARSE_FILE_CHOOSER_RESULT = 97;
-        int STATIC_INIT_SAFE_BROWSING = 98;
-        int STATIC_SET_SAFE_BROWSING_ALLOWLIST = 99;
-        int STATIC_GET_SAFE_BROWSING_PRIVACY_POLICY_URL = 100;
-        int STATIC_IS_MULTI_PROCESS_ENABLED = 101;
-        int STATIC_GET_VARIATIONS_HEADER = 102;
-        // Values 103 and 104 were used for traffic stats, which no longer start up Chromium.
-        // Values 105 and 106 were used for {get,set}RendererLibraryPrefetchMode.
-        int GET_DEFAULT_COOKIE_MANAGER = 107;
-        int GET_PROFILE_STORE = 108;
-        int WEBVIEW_INSTANCE_GET_SETTINGS = 109;
-        int WEBVIEW_INSTANCE_GET_AW_CONTENTS = 110;
-        int PROFILE_STORE_GET_PROFILE = 111;
-        int PROFILE_STORE_GET_OR_CREATE_PROFILE = 112;
-        int PROFILE_STORE_GET_ALL_PROFILE_NAMES = 113;
-        int PROFILE_STORE_DELETE_PROFILE = 114;
-        int PROFILE_PRECONNECT = 115;
-        int PROFILE_GET_COOKIE_MANAGER = 116;
-        int PROFILE_GET_WEB_STORAGE = 117;
-        int PROFILE_GET_GEOLOCATION_PERMISSIONS = 118;
-        int PROFILE_GET_SERVICE_WORKER_CONTROLLER = 119;
-        int PROFILE_PREFETCH_URL = 120;
-        int PROFILE_PREFETCH_URL_ASYNC = 121;
-        int PROFILE_CANCEL_PREFETCH = 122;
-        int PROFILE_SET_MAX_PRERENDERS = 123;
-        int PROFILE_CLEAR_MAX_PRERENDERS = 124;
-        int PROFILE_GET_MAX_PRERENDERS = 125;
-        int PROFILE_SET_MAX_PREFETCHES = 126;
-        int PROFILE_CLEAR_MAX_PREFETCHES = 127;
-        int PROFILE_GET_MAX_PREFETCHES = 128;
-        int PROFILE_SET_PREFETCH_TTL_SECONDS = 129;
-        int PROFILE_CLEAR_PREFETCH_TTL = 130;
-        int PROFILE_GET_PREFETCH_TTL_SECONDS = 131;
-        int PROFILE_SET_SPECULATIVE_LOADING_CONFIG = 132;
-        int PROFILE_GET_BROWSER_CONTEXT = 133;
-        int PROFILE_WARM_UP_RENDERER_PROCESS = 134;
-        int PROFILE_SET_ORIGIN_MATCHED_HEADER = 135;
-        int PROFILE_ADD_ORIGIN_MATCHED_HEADER = 136;
-        int PROFILE_HAS_ORIGIN_MATCHED_HEADER = 137;
-        int PROFILE_FIND_ORIGIN_MATCHED_HEADERS = 138;
-        int PROFILE_CLEAR_ORIGIN_MATCHED_HEADER = 139;
-        int PROFILE_CLEAR_ALL_ORIGIN_MATCHED_HEADERS = 140;
-        int PROFILE_ADD_QUIC_HINTS = 141;
-        int PROFILE_GET_HTTP_CACHE_MANAGER = 142;
-        int PROFILE_SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 143;
-        int PROFILE_GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 144;
-        // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
-        int COUNT = 145;
-    };
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)
-
     WebViewChromiumAwInit(WebViewChromiumFactoryProvider factory) {
         mFactory = factory;
         // Do not make calls into 'factory' in this ctor - this ctor is called from the
         // WebViewChromiumFactoryProvider ctor, so 'factory' is not properly initialized yet.
     }
 
-    private void startChromium(@CallSite int callSite, boolean triggeredFromUIThread) {
+    private void startChromium(@StartupCallSite int callSite, boolean triggeredFromUIThread) {
         assert ThreadUtils.runningOnUiThread();
 
         if (mInitState.get() == INIT_FINISHED) {
@@ -862,8 +565,8 @@ public class WebViewChromiumAwInit {
     }
 
     private void recordStartupMetrics(
-            @CallSite int startCallSite,
-            @CallSite int finishCallSite,
+            @StartupCallSite int startCallSite,
+            @StartupCallSite int finishCallSite,
             long startTimeMs,
             long totalTimeTakenMs,
             long longestUiBlockingTaskTimeMs,
@@ -903,7 +606,9 @@ public class WebViewChromiumAwInit {
                 startupMode,
                 StartupTasksRunner.StartupMode.COUNT);
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.Startup.CreationTime.InitReason2", startCallSite, CallSite.COUNT);
+                "Android.WebView.Startup.CreationTime.InitReason2",
+                startCallSite,
+                StartupCallSite.COUNT);
         RecordHistogram.recordTimesHistogram(
                 "Android.WebView.Startup.ChromiumInitTime.WallClockTime", wallClockTimeMs);
         RecordHistogram.recordTimesHistogram(
@@ -985,7 +690,7 @@ public class WebViewChromiumAwInit {
      *
      * <p>Postcondition: Chromium startup is finished when this method returns.
      */
-    void triggerAndWaitForChromiumStarted(@CallSite int callSite) {
+    void triggerAndWaitForChromiumStarted(@StartupCallSite int callSite) {
         if (triggerChromiumStartupAndReturnTrueIfStartupIsFinished(callSite, false)) {
             return;
         }
@@ -1023,7 +728,7 @@ public class WebViewChromiumAwInit {
      *
      * <p>Postcondition: Chromium startup will be finished in the near future.
      */
-    void postChromiumStartupIfNeeded(@CallSite int callSite) {
+    void postChromiumStartupIfNeeded(@StartupCallSite int callSite) {
         triggerChromiumStartupAndReturnTrueIfStartupIsFinished(callSite, true);
     }
 
@@ -1043,7 +748,7 @@ public class WebViewChromiumAwInit {
      *     {@link WebViewStartUpCallback}.
      */
     private boolean triggerChromiumStartupAndReturnTrueIfStartupIsFinished(
-            @CallSite int callSite, boolean alwaysPost) {
+            @StartupCallSite int callSite, boolean alwaysPost) {
         if (mInitState.get() == INIT_FINISHED) { // Early-out for the common case.
             return true;
         }
@@ -1067,7 +772,7 @@ public class WebViewChromiumAwInit {
                 return true;
             }
             if (mInitState.compareAndSet(INIT_NOT_STARTED, INIT_POSTED)) {
-                if (callSite != CallSite.ASYNC_WEBVIEW_STARTUP) {
+                if (callSite != StartupCallSite.ASYNC_WEBVIEW_STARTUP) {
                     mWebViewStartUpDiagnostics.setAsynchronousChromiumInitLocation(
                             new Throwable(
                                     "Location where Chromium init was started asynchronously on a"
@@ -1120,12 +825,12 @@ public class WebViewChromiumAwInit {
     }
 
     public AwTracingController getAwTracingController() {
-        triggerAndWaitForChromiumStarted(CallSite.GET_AW_TRACING_CONTROLLER);
+        triggerAndWaitForChromiumStarted(StartupCallSite.GET_AW_TRACING_CONTROLLER);
         return mChromiumStartedGlobals.mAwTracingController;
     }
 
     public AwProxyController getAwProxyController() {
-        triggerAndWaitForChromiumStarted(CallSite.GET_AW_PROXY_CONTROLLER);
+        triggerAndWaitForChromiumStarted(StartupCallSite.GET_AW_PROXY_CONTROLLER);
         return mChromiumStartedGlobals.mAwProxyController;
     }
 
@@ -1136,7 +841,7 @@ public class WebViewChromiumAwInit {
             mShouldInitializeDefaultProfile = false;
         }
         if (ProfileStore.requiresStartup()) {
-            triggerAndWaitForChromiumStarted(CallSite.GET_PROFILE_STORE);
+            triggerAndWaitForChromiumStarted(StartupCallSite.GET_PROFILE_STORE);
         }
         return mProfileStore;
     }
@@ -1148,7 +853,7 @@ public class WebViewChromiumAwInit {
         }
         if (WebViewCachedFlags.get()
                 .isCachedFeatureEnabled(AwFeatures.WEBVIEW_BYPASS_PROVISIONAL_COOKIE_MANAGER)) {
-            return getDefaultProfile(CallSite.GET_DEFAULT_COOKIE_MANAGER).getCookieManager();
+            return getDefaultProfile(StartupCallSite.GET_DEFAULT_COOKIE_MANAGER).getCookieManager();
         } else {
             synchronized (mLazyInitLock) {
                 if (mDefaultCookieManager == null) {
@@ -1161,7 +866,7 @@ public class WebViewChromiumAwInit {
     }
 
     public WebIconDatabase getWebIconDatabase() {
-        triggerAndWaitForChromiumStarted(CallSite.GET_WEB_ICON_DATABASE);
+        triggerAndWaitForChromiumStarted(StartupCallSite.GET_WEB_ICON_DATABASE);
         WebViewChromium.recordWebViewApiCall(
                 ApiCall.WEB_ICON_DATABASE_GET_INSTANCE,
                 ApiCallUserAction.WEB_ICON_DATABASE_GET_INSTANCE);
@@ -1174,7 +879,7 @@ public class WebViewChromiumAwInit {
     }
 
     public WebViewDatabase getDefaultWebViewDatabase(final Context context) {
-        triggerAndWaitForChromiumStarted(CallSite.GET_DEFAULT_WEBVIEW_DATABASE);
+        triggerAndWaitForChromiumStarted(StartupCallSite.GET_DEFAULT_WEBVIEW_DATABASE);
         synchronized (mLazyInitLock) {
             if (mDefaultWebViewDatabase == null) {
                 mDefaultWebViewDatabase =
@@ -1232,7 +937,7 @@ public class WebViewChromiumAwInit {
                     }
                     callback.onSuccess(mWebViewStartUpDiagnostics);
                 });
-        postChromiumStartupIfNeeded(CallSite.ASYNC_WEBVIEW_STARTUP);
+        postChromiumStartupIfNeeded(StartupCallSite.ASYNC_WEBVIEW_STARTUP);
     }
 
     // These are objects that need to be created on the UI thread and after chromium has started.
@@ -1247,7 +952,7 @@ public class WebViewChromiumAwInit {
         }
     }
 
-    public Profile getDefaultProfile(@CallSite int callSite) {
+    public Profile getDefaultProfile(@StartupCallSite int callSite) {
         return mDefaultProfileHolder.getDefaultProfile(callSite);
     }
 
@@ -1276,7 +981,7 @@ public class WebViewChromiumAwInit {
          * which may not include the default profile. This method acts as a safeguard, ensuring the
          * default profile is ready the first time a thread-safe framework API is called.
          */
-        private void ensureInitializationIsDone(@CallSite int callSite) {
+        private void ensureInitializationIsDone(@StartupCallSite int callSite) {
             triggerAndWaitForChromiumStarted(callSite);
             if (mDefaultProfile != null) {
                 return;
@@ -1295,7 +1000,7 @@ public class WebViewChromiumAwInit {
             }
         }
 
-        public Profile getDefaultProfile(@CallSite int callSite) {
+        public Profile getDefaultProfile(@StartupCallSite int callSite) {
             ensureInitializationIsDone(callSite);
             return mDefaultProfile;
         }
@@ -1313,8 +1018,8 @@ public class WebViewChromiumAwInit {
         private long mTotalTimeTakenMs;
         private long mStartupTimeMs;
         private boolean mStartupStarted;
-        private @CallSite int mStartCallSite = CallSite.COUNT;
-        private @CallSite int mFinishCallSite = CallSite.COUNT;
+        private @StartupCallSite int mStartCallSite = StartupCallSite.COUNT;
+        private @StartupCallSite int mFinishCallSite = StartupCallSite.COUNT;
         private boolean mFirstTaskFromSynchronousCall;
         private int mRunState = StartupTasksRunner.UNSET;
 
@@ -1358,7 +1063,7 @@ public class WebViewChromiumAwInit {
             mNumTasks = mPreBrowserProcessStartTasksSize + postBrowserProcessStartTasks.size();
         }
 
-        void run(@CallSite int callSite, boolean triggeredFromUIThread) {
+        void run(@StartupCallSite int callSite, boolean triggeredFromUIThread) {
             assert ThreadUtils.runningOnUiThread();
 
             if (!mStartupStarted) {

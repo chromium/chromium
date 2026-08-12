@@ -536,6 +536,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/ScrollAccessibilityHelper.java",
       "java/src/org/chromium/android_webview/ShouldInterceptRequestMediator.java",
       "java/src/org/chromium/android_webview/SslUtil.java",
+      "java/src/org/chromium/android_webview/StartupCallSite.java",
       "java/src/org/chromium/android_webview/SystemStateUtil.java",
       "java/src/org/chromium/android_webview/ViewPositionObserver.java",
       "java/src/org/chromium/android_webview/WebAddressParser.java",

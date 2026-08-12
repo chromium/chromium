@@ -2380,7 +2380,7 @@ message WebViewStartup {
     // Remember to update WebViewStartupCallSite in enums.xml when adding new
     // values here.
   }
-  // LINT.ThenChange(//android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumAwInit.java:CallSite)
+  // LINT.ThenChange(//android_webview/java/src/org/chromium/android_webview/StartupCallSite.java:StartupCallSite,//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)
 
   // LINT.IfChange(WebViewChromiumStartupMode)
   enum StartupMode {

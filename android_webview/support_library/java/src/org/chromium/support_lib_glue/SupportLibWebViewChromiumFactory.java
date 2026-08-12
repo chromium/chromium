@@ -20,13 +20,13 @@ import com.android.webview.chromium.SharedStatics;
 import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebContent;
 import com.android.webview.chromium.WebViewChromiumAwInit;
-import com.android.webview.chromium.WebViewChromiumAwInit.CallSite;
 import com.android.webview.chromium.WebViewChromiumAwInit.WebViewStartUpDiagnostics;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
 import org.chromium.android_webview.AwProxyController;
 import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwTracingController;
+import org.chromium.android_webview.StartupCallSite;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.base.TraceEvent;
@@ -797,7 +797,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_SERVICE_WORKER_CONTROLLER")) {
             recordApiCall(ApiCall.GET_SERVICE_WORKER_CONTROLLER);
             AwServiceWorkerController serviceWorkerController =
-                    mAwInit.getDefaultProfile(CallSite.GET_DEFAULT_SERVICE_WORKER_CONTROLLER)
+                    mAwInit.getDefaultProfile(StartupCallSite.GET_DEFAULT_SERVICE_WORKER_CONTROLLER)
                             .getBrowserContext()
                             .getServiceWorkerController();
             synchronized (mAwInit.getLazyInitLock()) {

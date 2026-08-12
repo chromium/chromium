@@ -3021,7 +3021,7 @@ chromium-metrics-reviews@google.com.
   <int value="144" label="profileGetCrossOriginIsolatedAllowList"/>
 </enum>
 
-<!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup) -->
+<!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup,//android_webview/java/src/org/chromium/android_webview/StartupCallSite.java:StartupCallSite) -->
 
 <enum name="WebViewUrlScheme">
   <int value="0" label="Empty URL"/>

@@ -45,7 +45,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 
 import com.android.webview.chromium.SharedStatics.ApiCall;
-import com.android.webview.chromium.WebViewChromiumAwInit.CallSite;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserContextStore;
@@ -58,6 +57,7 @@ import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.ManifestMetadataUtil;
+import org.chromium.android_webview.StartupCallSite;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
@@ -902,7 +902,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         try (DualTraceEvent event =
                 DualTraceEvent.scoped("WebView.APICall.Framework.GET_GEOLOCATION_PERMISSIONS")) {
             SharedStatics.recordStaticApiCall(ApiCall.GET_GEOLOCATION_PERMISSIONS);
-            return mAwInit.getDefaultProfile(CallSite.GET_DEFAULT_GEOLOCATION_PERMISSIONS)
+            return mAwInit.getDefaultProfile(StartupCallSite.GET_DEFAULT_GEOLOCATION_PERMISSIONS)
                     .getGeolocationPermissions();
         }
     }
@@ -914,7 +914,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public ServiceWorkerController getServiceWorkerController() {
-        return mAwInit.getDefaultProfile(CallSite.GET_DEFAULT_SERVICE_WORKER_CONTROLLER)
+        return mAwInit.getDefaultProfile(StartupCallSite.GET_DEFAULT_SERVICE_WORKER_CONTROLLER)
                 .getServiceWorkerController();
     }
 
@@ -930,7 +930,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public WebStorage getWebStorage() {
-        return mAwInit.getDefaultProfile(CallSite.GET_DEFAULT_WEB_STORAGE).getWebStorage();
+        return mAwInit.getDefaultProfile(StartupCallSite.GET_DEFAULT_WEB_STORAGE).getWebStorage();
     }
 
     @Override
@@ -948,8 +948,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public TracingController getTracingController() {
-        mAwInit.triggerAndWaitForChromiumStarted(
-                WebViewChromiumAwInit.CallSite.GET_TRACING_CONTROLLER);
+        mAwInit.triggerAndWaitForChromiumStarted(StartupCallSite.GET_TRACING_CONTROLLER);
         synchronized (mAwInit.getLazyInitLock()) {
             if (mTracingController == null) {
                 mTracingController =
