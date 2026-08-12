@@ -97,7 +97,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "Automata construction and matching using regular expressions."
   cargo_pkg_repository = "https://github.com/rust-lang/regex"
-  cargo_pkg_version = "0.4.16"
+  cargo_pkg_version = "0.4.18"
 
   allow_unsafe = true
 

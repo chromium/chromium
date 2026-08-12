@@ -1919,7 +1919,10 @@ impl Clone for Regex {
         let pool = {
             let strat = Arc::clone(&imp.strat);
             let create: CachePoolFn = Box::new(move || strat.create_cache());
-            Pool::new(create)
+            Pool::with_capacity(
+                self.imp.info.config().get_pool_capacity(),
+                create,
+            )
         };
         Regex { imp, pool }
     }
@@ -2483,6 +2486,7 @@ pub struct Config {
     backtrack: Option<bool>,
     byte_classes: Option<bool>,
     line_terminator: Option<u8>,
+    pool_capacity: Option<usize>,
 }
 
 impl Config {
@@ -3039,6 +3043,17 @@ impl Config {
         Config { line_terminator: Some(byte), ..self }
     }
 
+    /// Sets the capacity used to manage a pool of [`Cache`] values in the
+    /// higher level convenience APIs.
+    ///
+    /// When not configured explicitly, a reasonable default is selected. It
+    /// is rarely expected that a number large than the number of logical CPUs
+    /// makes sense as a value. A smaller number could result in slowdowns if
+    /// many regex queries are run under contention.
+    pub fn pool_capacity(self, capacity: usize) -> Config {
+        Config { pool_capacity: Some(capacity), ..self }
+    }
+
     /// Toggle whether the hybrid NFA/DFA (also known as the "lazy DFA") should
     /// be available for use by the meta regex engine.
     ///
@@ -3210,6 +3225,35 @@ impl Config {
         self.line_terminator.unwrap_or(b'\n')
     }
 
+    /// Returns the configured pool capacity, as set by
+    /// [`Config::pool_capacity`].
+    ///
+    /// If it was not explicitly set, then a default value is returned.
+    pub fn get_pool_capacity(&self) -> usize {
+        // The default is an empirically chosen value that balances memory
+        // usage with runtime performance. In practice, with `std` enabled,
+        // we choose a value that matches the total number of CPUs.
+        const DEFAULT_POOL_CAPACITY: usize = 8;
+
+        self.pool_capacity.unwrap_or_else(|| {
+            #[cfg(feature = "std")]
+            {
+                use crate::util::lazy::Lazy;
+
+                static AVAILABLE_PARALLELISM: Lazy<usize> = Lazy::new(|| {
+                    std::thread::available_parallelism()
+                        .map(|n| n.get())
+                        .unwrap_or(DEFAULT_POOL_CAPACITY)
+                });
+                *Lazy::get(&AVAILABLE_PARALLELISM)
+            }
+            #[cfg(not(feature = "std"))]
+            {
+                DEFAULT_POOL_CAPACITY
+            }
+        })
+    }
+
     /// Returns whether the hybrid NFA/DFA regex engine may be used, as set by
     /// [`Config::hybrid`].
     ///
@@ -3317,6 +3361,7 @@ impl Config {
             backtrack: o.backtrack.or(self.backtrack),
             byte_classes: o.byte_classes.or(self.byte_classes),
             line_terminator: o.line_terminator.or(self.line_terminator),
+            pool_capacity: o.pool_capacity.or(self.pool_capacity),
         }
     }
 }
@@ -3641,7 +3686,7 @@ impl Builder {
         let pool = {
             let strat = Arc::clone(&strat);
             let create: CachePoolFn = Box::new(move || strat.create_cache());
-            Pool::new(create)
+            Pool::with_capacity(self.config.get_pool_capacity(), create)
         };
         Ok(Regex { imp: Arc::new(RegexI { strat, info }), pool })
     }

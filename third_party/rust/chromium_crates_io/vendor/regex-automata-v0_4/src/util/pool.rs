@@ -159,6 +159,56 @@ impl<T, F> Pool<T, F> {
     pub fn new(create: F) -> Pool<T, F> {
         Pool(alloc::boxed::Box::new(inner::Pool::new(create)))
     }
+
+    /// Create a new pool. The given closure is used to create values in
+    /// the pool when necessary.
+    ///
+    /// When the `std` feature is enabled, a `Pool` is thread-aware and spreads
+    /// its memory out across multiple cache lines. The number of cache lines
+    /// is determined by the `capacity` parameter passed here. By default, a
+    /// fixed reasonable number is used. A smaller number means less memory is
+    /// used, but a higher number means there may be less contention on this
+    /// pool in highly threaded environments doing a lot of searches using the
+    /// same `Regex` value.
+    ///
+    /// When `std` is not enabled, then the capacity parameter is ignored
+    /// because the underlying pool implementation is not thread-aware.
+    ///
+    /// The capacity must be at least 1. If it's less than 1, then it is
+    /// forced to be 1.
+    pub fn with_capacity(capacity: usize, create: F) -> Pool<T, F> {
+        Pool(alloc::boxed::Box::new(inner::Pool::with_capacity(
+            capacity, create,
+        )))
+    }
+
+    /// Create a new pool. The given closure is used to create values in
+    /// the pool when necessary.
+    ///
+    /// This is a convenience routine for calling `Pool::with_capacity` with
+    /// a number equivalent to the available parallelism for this environment.
+    ///
+    /// If `std` is not enabled or if the query for available parallelism
+    /// failed, then this is equivalent to calling `Pool::new`.
+    pub fn with_available_parallelism_capacity(create: F) -> Pool<T, F> {
+        #[cfg(feature = "std")]
+        {
+            use crate::util::lazy::Lazy;
+
+            static AVAILABLE_PARALLELISM: Lazy<Option<usize>> =
+                Lazy::new(|| {
+                    std::thread::available_parallelism().map(|n| n.get()).ok()
+                });
+            let &Some(n) = Lazy::get(&AVAILABLE_PARALLELISM) else {
+                return Pool::new(create);
+            };
+            Pool::with_capacity(n, create)
+        }
+        #[cfg(not(feature = "std"))]
+        {
+            Pool::new(create)
+        }
+    }
 }
 
 impl<T: Send, F: Fn() -> T> Pool<T, F> {
@@ -455,6 +505,18 @@ mod inner {
         /// Create a new pool. The given closure is used to create values in
         /// the pool when necessary.
         pub(super) fn new(create: F) -> Pool<T, F> {
+            Pool::with_capacity(MAX_POOL_STACKS, create)
+        }
+
+        /// Create a new pool. The given closure is used to create values in
+        /// the pool when necessary.
+        ///
+        /// The given capacity is used to determine how many cache lines to
+        /// maintain. Each cache line contains a stack of cached entries.
+        ///
+        /// The capacity must be at least 1. If it's less than 1, then it is
+        /// forced to be 1.
+        pub(super) fn with_capacity(capacity: usize, create: F) -> Pool<T, F> {
             // FIXME: Now that we require 1.65+, Mutex::new is available as
             // const... So we can almost mark this function as const. But of
             // course, we're creating a Vec of stacks below (we didn't when I
@@ -493,7 +555,7 @@ mod inner {
             // Back to square one. I maybe we just don't make a pool's
             // constructor const and live with it. It's probably not a huge
             // deal.
-            let mut stacks = Vec::with_capacity(MAX_POOL_STACKS);
+            let mut stacks = Vec::with_capacity(capacity.max(1));
             for _ in 0..stacks.capacity() {
                 stacks.push(CacheLine(Mutex::new(vec![])));
             }
@@ -846,6 +908,14 @@ mod inner {
         /// the pool when necessary.
         pub(super) const fn new(create: F) -> Pool<T, F> {
             Pool { stack: Mutex::new(vec![]), create }
+        }
+
+        /// This is a no-op since this pool implementation isn't thread-aware.
+        pub(super) const fn with_capacity(
+            _capacity: usize,
+            create: F,
+        ) -> Pool<T, F> {
+            Pool::new(create)
         }
     }
 
