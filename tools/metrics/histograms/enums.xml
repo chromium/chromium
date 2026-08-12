@@ -16605,6 +16605,8 @@ from previous Chrome versions.
   <int value="638977069" label="ModalMemorySaver:enabled"/>
   <int value="639765450" label="AccessCodeCastTabSwitchingUI:enabled"/>
   <int value="640005692" label="AndroidDesktopBookmarkPopup:enabled"/>
+  <int value="640057561"
+      label="ComposeboxDriveContextMenuOptionSigninPromo:enabled"/>
   <int value="640174751" label="AndroidMultipleDisplay:enabled"/>
   <int value="640256251" label="RemotePageMetadata:enabled"/>
   <int value="642037198" label="SoleIntegration:disabled"/>
@@ -20708,6 +20710,8 @@ from previous Chrome versions.
   <int value="1911558169" label="AppToAppLinkCapturingWorkspaceApps:enabled"/>
   <int value="1911617153" label="SegmentationSurveyPage:enabled"/>
   <int value="1911623289" label="OmniboxFocusTriggersSRPZeroSuggest:disabled"/>
+  <int value="1912325919"
+      label="ComposeboxDriveContextMenuOptionSigninPromo:disabled"/>
   <int value="1912338480" label="TabGroupDeferRemoteNavigations:enabled"/>
   <int value="1913263516" label="OculusVR:enabled"/>
   <int value="1913298816" label="OverlayScrollbar:enabled"/>

@@ -6685,6 +6685,12 @@ inline constexpr char kComposeboxDriveContextMenuOptionDisclaimerName[] =
 inline constexpr char kComposeboxDriveContextMenuOptionDisclaimerDescription[] =
     "Enables the disclaimer flow for the Google Drive option in the Composebox "
     "context menu.";
+inline constexpr char kComposeboxDriveContextMenuOptionSigninPromoName[] =
+    "Composebox Drive Context Menu Option Sign-in Promo";
+inline constexpr char
+    kComposeboxDriveContextMenuOptionSigninPromoDescription[] =
+        "Enables the sign-in promo for the Google Drive option in the "
+        "Composebox context menu.";
 
 inline constexpr char kEnableHeadlessLiveCaptionName[] =
     "Headless Live Captions";

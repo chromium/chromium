@@ -7234,6 +7234,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxDriveContextMenuOptionDisclaimer)},
 
+    {"composebox-drive-context-menu-option-signin-promo",
+     flag_descriptions::kComposeboxDriveContextMenuOptionSigninPromoName,
+     flag_descriptions::kComposeboxDriveContextMenuOptionSigninPromoDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kComposeboxDriveContextMenuOptionSigninPromo)},
+
     {"composebox-uses-chrome-compose-client",
      flag_descriptions::kNtpComposeboxUsesChromeComposeClientName,
      flag_descriptions::kNtpComposeboxUsesChromeComposeClientDescription,

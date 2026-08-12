@@ -190,6 +190,9 @@ extern const base::FeatureParam<int> kComposeboxDriveConsentProductId;
 extern const base::FeatureParam<std::string>
     kComposeboxDriveConsentEntrypointId;
 
+// Whether to enable the signin promo for the Google Drive context menu option.
+BASE_DECLARE_FEATURE(kComposeboxDriveContextMenuOptionSigninPromo);
+
 // Whether to force the Google Drive disclaimer to be accepted.
 BASE_DECLARE_FEATURE(kForceDriveDisclaimerAccepted);
 

@@ -416,6 +416,9 @@ const base::FeatureParam<int> kComposeboxDriveConsentProductId{
 const base::FeatureParam<std::string> kComposeboxDriveConsentEntrypointId{
     &kComposeboxDriveContextMenuOptionDisclaimer, "entrypoint_id", "aim-drive"};
 
+// Whether to enable the signin promo for the Google Drive context menu option.
+BASE_FEATURE(kComposeboxDriveContextMenuOptionSigninPromo, DISABLED);
+
 // Whether to force the Google Drive disclaimer to be accepted. This flag is
 // only used for testing purposes since dasher accounts are not allowed to
 // consent via pContext.
