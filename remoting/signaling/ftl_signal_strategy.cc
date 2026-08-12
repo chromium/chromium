@@ -475,7 +475,14 @@ void FtlSignalStrategy::Core::OnMessageReceived(
   std::optional<SignalStrategy::Message> parsed_message;
   SignalingFormat incoming_format = SignalingFormat::XML;
 
-  if (message.xmpp().has_iq_stanza()) {
+  // TODO: crbug.com/504910955 - Skip protobuf parsing for session-initiate
+  // messages for now and fall back to serialized XML parsing.
+  bool is_session_initiate =
+      message.xmpp().has_iq_stanza() &&
+      message.xmpp().iq_stanza().has_jingle() &&
+      message.xmpp().iq_stanza().jingle().has_session_initiate();
+
+  if (message.xmpp().has_iq_stanza() && !is_session_initiate) {
     JingleMessage jingle_message;
     std::string error;
     if (JingleMessageFromProto(message.xmpp().iq_stanza(), &jingle_message,

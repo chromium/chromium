@@ -1338,7 +1338,22 @@ TEST_F(FtlSignalStrategyTest,
   signal_strategy_->SendMessage(std::move(info_message));
 }
 
-TEST_F(FtlSignalStrategyTest, Negotiation_HostSide_ReceiveBoth) {
+// TODO: crbug.com/504910955 - Set to 1 to re-enable host-side protobuf
+// session-initiate parsing tests.
+#define ENABLE_HOST_SIDE_PROTOBUF_SESSION_INITIATE 0
+
+#if ENABLE_HOST_SIDE_PROTOBUF_SESSION_INITIATE
+#define MAYBE_Negotiation_HostSide_ReceiveBoth Negotiation_HostSide_ReceiveBoth
+#define MAYBE_Negotiation_HostSide_ReceiveProtoOnly \
+  Negotiation_HostSide_ReceiveProtoOnly
+#else
+#define MAYBE_Negotiation_HostSide_ReceiveBoth \
+  DISABLED_Negotiation_HostSide_ReceiveBoth
+#define MAYBE_Negotiation_HostSide_ReceiveProtoOnly \
+  DISABLED_Negotiation_HostSide_ReceiveProtoOnly
+#endif
+
+TEST_F(FtlSignalStrategyTest, MAYBE_Negotiation_HostSide_ReceiveBoth) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
@@ -1399,6 +1414,68 @@ TEST_F(FtlSignalStrategyTest, Negotiation_HostSide_ReceiveBoth) {
   signal_strategy_->SendMessage(std::move(accept_message));
 }
 
+TEST_F(FtlSignalStrategyTest,
+       Negotiation_HostSide_ReceiveBoth_RespondsWithXml) {
+  ExpectGetOAuthTokenSucceedsWithFakeCreds();
+  registration_manager_->ExpectSignInGaiaSucceeds();
+  signal_strategy_->Connect();
+  messaging_client_->AcceptReceivingMessages();
+
+  // 1. Host receives session-initiate with BOTH (dual payload).
+  ftl::ChromotingMessage init_msg;
+  // Populate Proto
+  auto* iq = init_msg.mutable_xmpp()->mutable_iq_stanza();
+  iq->set_id("req_initiate");
+  iq->mutable_sender()->set_local_part(kFakeRemoteUsername);
+  iq->mutable_sender()->set_resource_part(kFakeRemoteRegistrationId);
+  iq->mutable_receiver()->set_local_part(kFakeLocalUsername);
+  iq->mutable_receiver()->set_resource_part(kFakeLocalRegistrationId);
+  auto* jingle = iq->mutable_jingle();
+  jingle->set_session_id("sid123");
+  jingle->mutable_session_initiate();
+  // Populate XML
+  std::string xml_init =
+      CreateValidSessionInitiateXml("req_initiate", "sid123");
+  init_msg.mutable_xmpp()->set_stanza(xml_init);
+
+  EXPECT_CALL(*this, OnSignalingMessage(_, _)).WillOnce(Return(true));
+
+  ftl::Id remote_user_id;
+  remote_user_id.set_type(ftl::IdType_Type_EMAIL);
+  remote_user_id.set_id(kFakeRemoteUsername);
+  messaging_client_->OnMessage(remote_user_id, kFakeRemoteRegistrationId,
+                               init_msg);
+
+  // 2. Host sends reply. Verify it is XML-ONLY.
+  JingleMessageReply reply;
+  reply.to = SignalingAddress(kFakeRemoteFtlId);
+  reply.message_id = "req_initiate";
+  reply.reply_type = JingleMessageReply::REPLY_RESULT;
+
+  EXPECT_CALL(*messaging_client_,
+              SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId),
+                          SignalingMessageMatchesXmlOnly(kFakeRemoteFtlId,
+                                                         kFakeLocalFtlId),
+                          _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(HttpStatus::OK()));
+
+  signal_strategy_->SendReply(std::move(reply));
+
+  // 3. Host sends session-accept. Verify it is XML-ONLY.
+  JingleMessage accept_message(SignalingAddress(kFakeRemoteFtlId),
+                               SessionAccept(), "sid123");
+  accept_message.message_id = "req_accept";
+
+  EXPECT_CALL(*messaging_client_,
+              SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId),
+                          SignalingMessageMatchesXmlOnly(kFakeRemoteFtlId,
+                                                         kFakeLocalFtlId),
+                          _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(HttpStatus::OK()));
+
+  signal_strategy_->SendMessage(std::move(accept_message));
+}
+
 TEST_F(FtlSignalStrategyTest, Negotiation_HostSide_ReceiveXmlOnly) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
@@ -1449,7 +1526,7 @@ TEST_F(FtlSignalStrategyTest, Negotiation_HostSide_ReceiveXmlOnly) {
   signal_strategy_->SendMessage(std::move(accept_message));
 }
 
-TEST_F(FtlSignalStrategyTest, Negotiation_HostSide_ReceiveProtoOnly) {
+TEST_F(FtlSignalStrategyTest, MAYBE_Negotiation_HostSide_ReceiveProtoOnly) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
