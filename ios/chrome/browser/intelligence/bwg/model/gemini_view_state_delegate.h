@@ -46,6 +46,9 @@
 // Called when the Gemini UI did appear.
 - (void)geminiUIDidAppear;
 
+// Called when the user taps the New Chat button in Gemini UI.
+- (void)didTapNewChatButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_VIEW_STATE_DELEGATE_H_

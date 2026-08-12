@@ -90,3 +90,13 @@ TEST_F(GeminiContainerViewControllerTest,
 
   EXPECT_TRUE(delegate_.keyboardDidShowCalled);
 }
+
+// Tests that dismissKeyboard ends editing on the view.
+TEST_F(GeminiContainerViewControllerTest, TestDismissKeyboard) {
+  [internal_text_field_ becomeFirstResponder];
+  EXPECT_TRUE([internal_text_field_ isFirstResponder]);
+
+  [container_view_controller_ dismissKeyboard];
+
+  EXPECT_FALSE([internal_text_field_ isFirstResponder]);
+}

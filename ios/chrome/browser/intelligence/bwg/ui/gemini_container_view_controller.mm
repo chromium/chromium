@@ -54,6 +54,16 @@
   }
 }
 
+#pragma mark - GeminiContainerConsumer
+
+- (void)setZeroState:(BOOL)zeroState {
+  // Hide/unhide UI elements based on the state requested by the mediator.
+}
+
+- (void)dismissKeyboard {
+  [self.view endEditing:YES];
+}
+
 #pragma mark - Private
 
 // Called right before the keyboard is shown.
