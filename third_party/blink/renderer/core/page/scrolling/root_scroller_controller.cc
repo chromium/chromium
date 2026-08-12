@@ -286,12 +286,9 @@ bool RootScrollerController::IsValidImplicit(const Element& element) const {
   if (!IsValidRootScroller(element))
     return false;
 
-  const ComputedStyle* style = element.GetLayoutObject()->Style();
-  if (!style)
-    return false;
-
   // Do not implicitly promote things that are partially or fully invisible.
-  if (style->HasOpacity() || !style->VisibleToHitTesting()) {
+  const ComputedStyle& style = element.GetLayoutObject()->StyleRef();
+  if (style.HasOpacity() || !style.VisibleToHitTesting()) {
     return false;
   }
 
