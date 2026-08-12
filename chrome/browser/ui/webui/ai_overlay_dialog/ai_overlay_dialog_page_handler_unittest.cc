@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/test/test_future.h"
+#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -42,6 +43,7 @@ class AiOverlayDialogPageHandlerTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+    controller_ = std::make_unique<AiOverlayDialogController>(browser());
     mojo::PendingRemote<ai_overlay_dialog::mojom::Page> page_remote;
     page_receiver_.Bind(page_remote.InitWithNewPipeAndPassReceiver());
 
@@ -52,6 +54,7 @@ class AiOverlayDialogPageHandlerTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     handler_.reset();
+    controller_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -64,6 +67,7 @@ class AiOverlayDialogPageHandlerTest : public BrowserWithTestWindowTest {
   MockPage mock_page_;
   mojo::Receiver<ai_overlay_dialog::mojom::Page> page_receiver_{&mock_page_};
   mojo::Remote<ai_overlay_dialog::mojom::PageHandler> handler_remote_;
+  std::unique_ptr<AiOverlayDialogController> controller_;
   std::unique_ptr<AiOverlayDialogPageHandler> handler_;
 };
 

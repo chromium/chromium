@@ -313,19 +313,26 @@ void AiOverlayDialogPageHandler::SetRememberedNote(
     std::move(callback).Run(false);
     return;
   }
-  if (note->value.empty()) {
-    remembered_notes_.erase(note->key);
-  } else {
-    remembered_notes_[note->key] = note->value;
+  auto* controller = AiOverlayDialogController::From(browser_);
+  if (!controller) {
+    std::move(callback).Run(false);
+    return;
   }
+  controller->SetRememberedNote(note->key, note->value);
   std::move(callback).Run(true);
 }
 
 void AiOverlayDialogPageHandler::GetRememberedNotes(
     GetRememberedNotesCallback callback) {
+  auto* controller = AiOverlayDialogController::From(browser_);
+  if (!controller) {
+    std::move(callback).Run({});
+    return;
+  }
+
   std::vector<ai_overlay_dialog::mojom::RememberedNotePtr> result;
-  result.reserve(remembered_notes_.size());
-  for (const auto& [key, value] : remembered_notes_) {
+  result.reserve(controller->remembered_notes().size());
+  for (const auto& [key, value] : controller->remembered_notes()) {
     auto note = ai_overlay_dialog::mojom::RememberedNote::New();
     note->key = key;
     note->value = value;

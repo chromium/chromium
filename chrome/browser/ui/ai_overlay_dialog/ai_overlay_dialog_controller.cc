@@ -191,6 +191,15 @@ void AiOverlayDialogController::SetUsePersona(bool use_persona) {
   }
 }
 
+void AiOverlayDialogController::SetRememberedNote(const std::string& key,
+                                                  const std::string& value) {
+  if (value.empty()) {
+    remembered_notes_.erase(key);
+  } else {
+    remembered_notes_[key] = value;
+  }
+}
+
 void AiOverlayDialogController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

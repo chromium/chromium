@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/class_property.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -76,6 +77,12 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
   bool use_persona() const { return use_persona_; }
   void SetUsePersona(bool use_persona);
 
+  const absl::flat_hash_map<std::string, std::string>& remembered_notes()
+      const {
+    return remembered_notes_;
+  }
+  void SetRememberedNote(const std::string& key, const std::string& value);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -92,6 +99,8 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
   bool input_captions_visible_ = true;
   bool output_captions_visible_ = true;
   bool use_persona_ = false;
+
+  absl::flat_hash_map<std::string, std::string> remembered_notes_;
 
   base::ObserverList<Observer> observers_;
 };
