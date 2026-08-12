@@ -43,11 +43,13 @@ enum State {
 class Conversation {
   connected: boolean = false;
   pageContext: any = null;
-  constructor(_config: any, _callbacks: {
-    sendToUI: (msg: any) => void,
-    onStateChange: (state: any, oldState: any) => void,
-    onResponse: (audioData: any) => void,
-  }, _tools?: any, _router?: any, _context?: any) {}
+  constructor(
+      _config: any, _callbacks: {
+        sendToUI: (msg: any) => void,
+        onStateChange: (state: any, oldState: any) => void,
+        onResponse: (audioData: any) => void,
+      },
+      _tools?: any, _router?: any, _context?: any, _pageHandler?: any) {}
   sendAudio(..._args: any[]): void {}
   sendText(..._args: any[]): void {}
   markMockAudioEndTime(..._args: any[]): void {}
@@ -418,7 +420,8 @@ export class AppElement extends CrLitElement {
           onStateChange: (state) => this.onConversationStateChanged(state),
           onResponse: (audioData) => this.onAudioOutput(audioData),
         },
-        this.toolsRemote, this.pageCallbackRouter, this.initialPageContext);
+        this.toolsRemote, this.pageCallbackRouter, this.initialPageContext,
+        this.pageHandler);
 
     if (this.unregisterPageContextListeners) {
       this.unregisterPageContextListeners();
