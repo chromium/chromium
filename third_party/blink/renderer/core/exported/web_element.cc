@@ -761,8 +761,8 @@ class VisibilityObserver final : public GarbageCollected<VisibilityObserver> {
             &VisibilityObserver::VisibilityTimerFired) {
     IntersectionObserver::Params params = {
         .root = nullptr,
-        // Require 100% of the element to be intersecting the viewport.
-        .thresholds = {1.0f},
+        // Require at least 90% of the element to intersect the viewport.
+        .thresholds = {0.90f},
         // Add a delay of 100ms between observer notifications.
         .delay = base::Milliseconds(100),
         // Enable visibility tracking; otherwise `isVisible()` in entries will
