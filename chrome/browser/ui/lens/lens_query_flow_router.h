@@ -12,12 +12,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 
 namespace lens {
+class LensOverlayQueryController;
 
 using CreateSearchUrlRequestInfo = contextual_search::
     ContextualSearchContextController::CreateSearchUrlRequestInfo;

@@ -44,6 +44,7 @@ using GetIsContextualSearchboxCallback =
 using LensSearchPageContextEligibilityCallback = base::OnceCallback<void(bool)>;
 
 namespace lens {
+class LensOverlayQueryController;
 
 class LensSearchboxController;
 

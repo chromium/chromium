@@ -8,9 +8,6 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/browser/ui/lens/lens_keyed_service.h"
-#include "chrome/browser/ui/lens/lens_keyed_service_factory.h"
-#include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
@@ -96,42 +93,6 @@ bool IsAimM3Enabled(Profile* profile) {
   }
 
   return base::FeatureList::IsEnabled(lens::features::kLensSearchAimM3);
-}
-
-bool ShouldShowLensOverlayEduActionChip(Profile* profile) {
-  if (!lens::features::IsLensOverlayEduActionChipEnabled()) {
-    return false;
-  }
-
-  LensKeyedService* service = LensKeyedServiceFactory::GetForProfile(
-      profile, /*create_if_necessary=*/true);
-  if (service == nullptr) {
-    return false;
-  }
-
-  if (service->GetActionChipShownCount() >
-      lens::features::GetLensOverlayEduActionChipMaxShownCount()) {
-    return false;
-  }
-
-  base::TimeDelta time_delta =
-      base::Time::Now() - service->GetActionChipLastShownTime();
-  // This function may be called multiple times for a single show. Check that
-  // the debounce interval has passed before considering the current call a
-  // second show attempt.
-  if (time_delta >=
-          lens::features::GetLensOverlayEduActionChipShowDebounceInterval() &&
-      time_delta < lens::features::GetLensOverlayEduActionChipShowInterval()) {
-    return false;
-  }
-  return true;
-}
-
-void RecordLensOverlayEduActionChipShown(Profile* profile) {
-  LensKeyedService* service = LensKeyedServiceFactory::GetForProfile(
-      profile, /*create_if_necessary=*/true);
-  service->IncrementActionChipShownCount();
-  service->ResetActionChipLastShownTime();
 }
 
 bool DidUserGrantLensOverlayNeededPermissions(Profile* profile) {
