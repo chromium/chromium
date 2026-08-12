@@ -236,6 +236,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param iphDescriptionText If set, it will be used as the help text for the IPH bubble.
      * @param customIconUrl The url used to fetch the custom icon to be displayed in the autofill
      *     suggestion chip.
+     * @param originalIndex The index of the suggestion in the list provided by the C++
+     *     AutofillKeyboardAccessoryController.
      * @return an AutofillSuggestion containing the above information.
      */
     @CalledByNative
@@ -251,7 +253,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             GURL customIconUrl,
             boolean applyDeactivatedStyle,
             boolean isLoading,
-            @Nullable Payload payload) {
+            @Nullable Payload payload,
+            int originalIndex) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
@@ -266,6 +269,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
                 .setIsLoading(isLoading)
                 .setPayload(payload)
+                .setOriginalIndex(originalIndex)
                 .build();
     }
 

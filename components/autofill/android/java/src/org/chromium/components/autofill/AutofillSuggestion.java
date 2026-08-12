@@ -35,6 +35,7 @@ public class AutofillSuggestion {
     private final @Nullable Payload mPayload;
     private final List<AutofillSuggestion> mChildren;
     private final boolean mIsAcceptable;
+    private final int mOriginalIndex;
 
     public sealed interface Payload
             permits AutofillAiPayload, AutofillProfilePayload, PaymentsPayload {}
@@ -60,6 +61,8 @@ public class AutofillSuggestion {
      * @param payload Additional data passed with the suggestion.
      * @param children The list of children suggestions.
      * @param isAcceptable Whether the suggestion is acceptable.
+     * @param originalIndex The index of the suggestion in the list provided by the C++
+     *     AutofillKeyboardAccessoryController.
      */
     @VisibleForTesting
     public AutofillSuggestion(
@@ -78,7 +81,8 @@ public class AutofillSuggestion {
             @Nullable GURL customIconUrl,
             @Nullable Payload payload,
             List<AutofillSuggestion> children,
-            boolean isAcceptable) {
+            boolean isAcceptable,
+            int originalIndex) {
         mLabel = label;
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
@@ -95,6 +99,7 @@ public class AutofillSuggestion {
         mPayload = payload;
         mChildren = children;
         mIsAcceptable = isAcceptable;
+        mOriginalIndex = originalIndex;
     }
 
     public @Nullable String getLabel() {
@@ -192,6 +197,10 @@ public class AutofillSuggestion {
         return mIsAcceptable;
     }
 
+    public int getOriginalIndex() {
+        return mOriginalIndex;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -214,7 +223,8 @@ public class AutofillSuggestion {
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
                 && Objects.equals(this.mPayload, other.mPayload)
                 && Objects.equals(this.mChildren, other.mChildren)
-                && this.mIsAcceptable == other.mIsAcceptable;
+                && this.mIsAcceptable == other.mIsAcceptable
+                && this.mOriginalIndex == other.mOriginalIndex;
     }
 
     @Override
@@ -234,7 +244,8 @@ public class AutofillSuggestion {
                 this.mCustomIconUrl,
                 this.mPayload,
                 this.mChildren,
-                this.mIsAcceptable);
+                this.mIsAcceptable,
+                this.mOriginalIndex);
     }
 
     /** Builder for the {@link AutofillSuggestion}. */
@@ -255,6 +266,7 @@ public class AutofillSuggestion {
         private @Nullable Payload mPayload;
         private List<AutofillSuggestion> mChildren = Collections.emptyList();
         private boolean mIsAcceptable;
+        private int mOriginalIndex;
 
         public Builder setIconId(int iconId) {
             this.mIconId = iconId;
@@ -336,6 +348,11 @@ public class AutofillSuggestion {
             return this;
         }
 
+        public Builder setOriginalIndex(int originalIndex) {
+            this.mOriginalIndex = originalIndex;
+            return this;
+        }
+
         public AutofillSuggestion build() {
             assert mSuggestionType == SuggestionType.SEPARATOR
                             || mSuggestionType == SuggestionType.PERSONAL_CONTEXT_NOTICE
@@ -362,7 +379,8 @@ public class AutofillSuggestion {
                     mCustomIconUrl,
                     mPayload,
                     mChildren,
-                    mIsAcceptable);
+                    mIsAcceptable,
+                    mOriginalIndex);
         }
     }
 }

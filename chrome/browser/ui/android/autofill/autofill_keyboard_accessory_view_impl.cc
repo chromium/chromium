@@ -14,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -37,6 +39,93 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
+
+namespace {
+
+bool IsSuggestionTypeEligibleForKeyboardAccessory(SuggestionType type) {
+  switch (type) {
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kTitle:
+    case SuggestionType::kSeparator:
+    case SuggestionType::kUndo:
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAutofillAiPrivateInferenceNotice:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageAutofillAi:
+    case SuggestionType::kManageAutofillAiIdentityDocs:
+    case SuggestionType::kManageAutofillAiTravel:
+    case SuggestionType::kManageAutofillAiShopping:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManageLoyaltyCard:
+    case SuggestionType::kManageEnhancedAutofill:
+    case SuggestionType::kAutofillAiOtherOrders:
+    case SuggestionType::kAutofillAiOtherShipments:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kLoadingThrobber:
+    case SuggestionType::kBnplFootnote:
+    case SuggestionType::kPersonalContextNotice:
+    case SuggestionType::kAutocompleteAtMemoryButton:
+    case SuggestionType::kOpenGemini:
+    case SuggestionType::kAtMemorySearchResult:
+    case SuggestionType::kAtMemoryInactivityNudge:
+    case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kAtMemoryGenericError:
+    case SuggestionType::kAtMemoryAiDisclosure:
+    case SuggestionType::kAtMemorySourceAttribution:
+    case SuggestionType::kAtMemoryFetching:
+    case SuggestionType::kRemoveAutofillAi:
+      return false;
+
+    case SuggestionType::kAutocompleteEntry:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kIbanEntry:
+    case SuggestionType::kLoyaltyCardEntry:
+    case SuggestionType::kAddressFieldByFieldFilling:
+    case SuggestionType::kAddressEntryOnTyping:
+    case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kComposeSavedStateNotification:
+    case SuggestionType::kComposeDisable:
+    case SuggestionType::kComposeGoToSettings:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kBackupPasswordEntry:
+    case SuggestionType::kTroubleSigningInEntry:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kFreeformFooter:
+    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kBnplEntry:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
+    case SuggestionType::kMerchantPromoCodeEntry:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kIdentityCredential:
+    case SuggestionType::kAllLoyaltyCardsEntry:
+    case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
+    case SuggestionType::kOneTimePasswordEntry:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kFetchingAmbientData:
+    case SuggestionType::kMaximizeCreditCardBenefitsEntry:
+      return true;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 AutofillKeyboardAccessoryViewImpl::AutofillKeyboardAccessoryViewImpl(
     base::WeakPtr<AutofillKeyboardAccessoryController> controller)
@@ -86,6 +175,9 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
   java_suggestions.reserve(line_count);
   for (int i = 0; i < line_count; ++i) {
     const Suggestion& suggestion = controller_->GetSuggestionAt(i);
+    if (!IsSuggestionTypeEligibleForKeyboardAccessory(suggestion.type)) {
+      continue;
+    }
     int android_icon_id = 0;
     if (suggestion.icon != Suggestion::Icon::kNoIcon) {
       android_icon_id = ResourceMapper::MapToJavaDrawableId(
@@ -140,7 +232,7 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
             custom_icon_url
                 ? url::GURLAndroid::FromNativeGURL(env, **custom_icon_url)
                 : url::GURLAndroid::EmptyGURL(env),
-            !suggestion.IsSelectable(), *suggestion.is_loading, payload));
+            !suggestion.IsSelectable(), *suggestion.is_loading, payload, i));
   }
   gfx::RectF bounds = controller_->element_bounds();
   Java_AutofillKeyboardAccessoryViewBridge_show(

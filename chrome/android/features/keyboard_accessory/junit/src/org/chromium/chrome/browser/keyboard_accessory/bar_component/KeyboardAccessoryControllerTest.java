@@ -475,6 +475,25 @@ public class KeyboardAccessoryControllerTest {
         assertThat(barItems.get(1).getViewState(), is(ActionBarItem.ViewState.DEACTIVATED));
     }
 
+    @Test
+    public void testSuggestionSelectionUsesOriginalIndex() {
+        AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Password Suggestion")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
+                        .setOriginalIndex(5)
+                        .build();
+
+        mCoordinator.setSuggestions(List.of(suggestion), mMockAutofillDelegate);
+
+        List<ActionBarItem> barItems = flattenItemGroups();
+        barItems.get(0).getAction().getCallback().onResult(barItems.get(0).getAction());
+
+        // Verify that suggestionAccepted was called with originalIndex 5 instead of loop index 0.
+        verify(mMockAutofillDelegate).suggestionAccepted(5, false);
+    }
+
     private void verifyLongPressOnPersonalContextSuggestionOpensSettings(
             @EntityTypeName int entityTypeName) {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
