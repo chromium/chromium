@@ -51,6 +51,7 @@
 #include "chrome/browser/safe_browsing/v5_search_hashes_cache_factory.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -105,7 +106,6 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "components/security_interstitials/core/urls.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -288,21 +288,20 @@ bool ClickAndWaitForDetach(Browser* browser, const std::string& node_id) {
 
 void ExpectSecurityIndicatorDowngrade(content::WebContents* tab,
                                       net::CertStatus cert_status) {
-  SecurityStateTabHelper* helper = SecurityStateTabHelper::FromWebContents(tab);
-  ASSERT_TRUE(helper);
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::DANGEROUS,
+            chrome_security_state::GetSecurityLevel(tab));
   EXPECT_NE(security_state::MALICIOUS_CONTENT_STATUS_NONE,
-            helper->GetVisibleSecurityState()->malicious_content_status);
+            chrome_security_state::GetVisibleSecurityState(tab)
+                ->malicious_content_status);
   // TODO(felt): Restore this check when https://crbug.com/40085203 is fixed.
   // EXPECT_EQ(cert_status, helper->GetSecurityInfo().cert_status);
 }
 
 void ExpectNoSecurityIndicatorDowngrade(content::WebContents* tab) {
-  SecurityStateTabHelper* helper = SecurityStateTabHelper::FromWebContents(tab);
-  ASSERT_TRUE(helper);
-  EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::NONE, chrome_security_state::GetSecurityLevel(tab));
   EXPECT_EQ(security_state::MALICIOUS_CONTENT_STATUS_NONE,
-            helper->GetVisibleSecurityState()->malicious_content_status);
+            chrome_security_state::GetVisibleSecurityState(tab)
+                ->malicious_content_status);
 }
 
 class TestThreatDetailsFactory : public ThreatDetailsFactory {
@@ -1514,8 +1513,8 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
 
   // WebContentsObserver:
   void DidChangeVisibleSecurityState() override {
-    auto* helper = SecurityStateTabHelper::FromWebContents(web_contents());
-    latest_security_level_ = helper->GetSecurityLevel();
+    latest_security_level_ =
+        chrome_security_state::GetSecurityLevel(web_contents());
   }
 
  private:
@@ -2407,7 +2406,8 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
 };
 
 #if BUILDFLAG(IS_WIN)
-// Flaky on Windows CI bots (e.g. win11-arm64-rel-tests). See https://crbug.com/523387896.
+// Flaky on Windows CI bots (e.g. win11-arm64-rel-tests). See
+// https://crbug.com/523387896.
 #define MAYBE_NoInteraction_WarningNotShown \
   DISABLED_NoInteraction_WarningNotShown
 #else

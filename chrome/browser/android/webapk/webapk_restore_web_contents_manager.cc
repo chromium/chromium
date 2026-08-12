@@ -5,7 +5,6 @@
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -26,8 +25,6 @@ void WebApkRestoreWebContentsManager::EnsureWebContentsCreated(
 
     // Create WebContents dependencies.
     webapps::InstallableManager::CreateForWebContents(
-        shared_web_contents_.get());
-    ChromeSecurityStateTabHelper::CreateForWebContents(
         shared_web_contents_.get());
   }
 }

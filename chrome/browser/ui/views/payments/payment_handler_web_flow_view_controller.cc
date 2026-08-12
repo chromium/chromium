@@ -15,7 +15,6 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -190,14 +189,14 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   // Make the web view show up in the task manager.
   task_manager::WebContentsTags::CreateForTabContents(web_contents());
 
-  // Install permission helpers so that permission prompts, one-time
-  // permissions, and security state checks function within the Payment
-  // Handler window.
+  // Install permission helpers so that permission prompts and one-time
+  // permissions function within the Payment Handler window. Security state
+  // is computed on demand by chrome_security_state (see
+  // chrome/browser/ssl/chrome_security_state_util.h) and needs no helper.
   //
   // TODO(crbug.com/539998580): Restrict non-camera permission requests in
   // Payment Handler windows via Permissions-Policy enforcement.
   if (base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccessUx)) {
-    ChromeSecurityStateTabHelper::CreateForWebContents(web_contents());
     OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
   } else if (base::FeatureList::IsEnabled(

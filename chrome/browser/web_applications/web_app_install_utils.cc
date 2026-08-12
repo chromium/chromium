@@ -30,7 +30,6 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_applications/jobs/finalize_install_or_update_job.h"
 #include "chrome/browser/web_applications/model/display_override.h"
@@ -90,8 +89,9 @@ void AddSquareIconsFromMap(std::vector<SkBitmap>* square_icons,
                            const IconsMap& icons_map) {
   for (const auto& url_icon : icons_map) {
     for (const SkBitmap& icon : url_icon.second) {
-      if (!icon.empty() && icon.width() == icon.height())
+      if (!icon.empty() && icon.width() == icon.height()) {
         square_icons->push_back(icon);
+      }
     }
   }
 }
@@ -378,8 +378,9 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
         &square_icons_monochrome, manifest_icons_monochrome, *icons_map);
     // Fall back to using all icons from |icons_map| if none match
     // manifest_icons.
-    if (square_icons_any.empty())
+    if (square_icons_any.empty()) {
       AddSquareIconsFromMap(&square_icons_any, *icons_map);
+    }
   }
   AddSquareIconsFromBitmaps(&square_icons_any, web_app_info->icon_bitmaps.any);
 
@@ -467,8 +468,9 @@ void RecordDownloadedIconsHttpResultsCodeClass(
     std::string_view histogram_name,
     IconsDownloadedResult result,
     const DownloadedIconsHttpResults& icons_http_results) {
-  if (result != IconsDownloadedResult::kCompleted)
+  if (result != IconsDownloadedResult::kCompleted) {
     return;
+  }
 
   for (const auto& url_and_http_status_code : icons_http_results) {
     int http_status_code = url_and_http_status_code.second;
@@ -484,8 +486,9 @@ void RecordDownloadedIconsHttpResultsCodeClass(
 void RecordDownloadedIconHttpStatusCodes(
     std::string_view histogram_name,
     const DownloadedIconsHttpResults& icons_http_results) {
-  if (icons_http_results.empty())
+  if (icons_http_results.empty()) {
     return;
+  }
 
   // Do not use UMA_HISTOGRAM_... macros here, as it caches the Histogram
   // instance and thus only works if |histogram_name| is constant.
@@ -498,13 +501,15 @@ void RecordDownloadedIconHttpStatusCodes(
   // code only once.
   std::vector<int> http_status_codes;
   http_status_codes.reserve(icons_http_results.size());
-  for (const auto& url_and_http_status_code : icons_http_results)
+  for (const auto& url_and_http_status_code : icons_http_results) {
     http_status_codes.push_back(url_and_http_status_code.second);
+  }
 
   base::flat_set<int> unique_http_status_codes{std::move(http_status_codes)};
 
-  for (int http_status_code : unique_http_status_codes)
+  for (int http_status_code : unique_http_status_codes) {
     counter->Add(net::HttpUtil::MapStatusCodeForHistogram(http_status_code));
+  }
 }
 
 WebAppManagement::Type ConvertExternalInstallSourceToSource(
@@ -627,7 +632,6 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
 
 void CreateWebAppInstallTabHelpers(content::WebContents* web_contents) {
   webapps::InstallableManager::CreateForWebContents(web_contents);
-  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
   webapps::PreRedirectionURLObserver::CreateForWebContents(web_contents);
 }
@@ -691,8 +695,9 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetProtocolHandlers(web_app_info.protocol_handlers);
   web_app.SetScopeExtensions(web_app_info.scope_extensions);
 
-  if (base::FeatureList::IsEnabled(features::kWebLockScreenApi))
+  if (base::FeatureList::IsEnabled(features::kWebLockScreenApi)) {
     web_app.SetLockScreenStartUrl(web_app_info.lock_screen_start_url);
+  }
 
   web_app.SetNoteTakingNewNoteUrl(web_app_info.note_taking_new_note_url);
 
@@ -737,23 +742,27 @@ void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
 
 void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
                                     WebAppInstallInfo& web_app_info) {
-  if (install_params.user_display_mode.has_value())
+  if (install_params.user_display_mode.has_value()) {
     web_app_info.user_display_mode = install_params.user_display_mode;
+  }
 
   // If `additional_search_terms` was a manifest property, it would be
   // sanitized while parsing the manifest. Since it's not, we sanitize it
   // here.
   for (const std::string& search_term :
        install_params.additional_search_terms) {
-    if (!search_term.empty())
+    if (!search_term.empty()) {
       web_app_info.additional_search_terms.push_back(search_term);
+    }
   }
 
-  if (install_params.launch_query_params)
+  if (install_params.launch_query_params) {
     web_app_info.launch_query_params = install_params.launch_query_params;
+  }
 
-  if (install_params.install_url.is_valid())
+  if (install_params.install_url.is_valid()) {
     web_app_info.install_url = install_params.install_url;
+  }
 }
 
 void ApplyParamsToFinalizeOptions(const WebAppInstallParams& install_params,

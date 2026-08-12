@@ -256,7 +256,7 @@ void SuspiciousSiteControllerAndroid::ShowDialog() {
   if (sb_service && sb_service->ui_manager()) {
     // Add the suspicious site URL to AllowlistUrlSet with pending=true.
     // AllowlistUrlSet stores the threat type for WebContents, enabling
-    // ChromeSecurityStateTabHelper to return
+    // the chrome_security_state computation to return
     // MALICIOUS_CONTENT_STATUS_WARNABLE_SUSPICIOUS_SITE so the red warning icon
     // remains active in the Omnibox and Page Info even if the dialog is closed.
     sb_service->ui_manager()->AddToAllowlistUrlSet(

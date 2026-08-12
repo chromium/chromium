@@ -21,6 +21,7 @@
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/core/actor_switches.h"
@@ -42,7 +43,6 @@
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -62,8 +62,6 @@ namespace autofill {
 namespace {
 
 constexpr base::TimeDelta kSubscriptionTimeout = base::Minutes(1);
-
-
 
 using ::one_time_tokens::OneTimeTokenRetrievalError;
 
@@ -275,8 +273,8 @@ class ActorOneTimeTokenFillingServiceImplTest
   base::HistogramTester histogram_tester_;
 };
 
-// Tests that `RetrieveOtp` returns the mock OTP immediately from the command line
-// switch when the switch is set.
+// Tests that `RetrieveOtp` returns the mock OTP immediately from the command
+// line switch when the switch is set.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MockOtpSwitchSet) {
   const std::string kMockOtp = "987654";
   base::test::ScopedCommandLine scoped_command_line;
@@ -610,15 +608,16 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_AutofillManagerNull) {
   // AutofillClient injected by the test base.
   TestingProfile other_profile;
   std::unique_ptr<content::WebContents> other_web_contents =
-      content::WebContentsTester::CreateTestWebContents(&other_profile, nullptr);
+      content::WebContentsTester::CreateTestWebContents(&other_profile,
+                                                        nullptr);
 
   tabs::MockTabInterface other_tab;
   EXPECT_CALL(other_tab, GetContents())
       .WillRepeatedly(testing::Return(other_web_contents.get()));
 
   base::test::TestFuture<bool> future;
-  service().FillOtp(other_tab.GetHandle(), {test::MakeFieldGlobalId()}, "123456",
-                    future.GetCallback());
+  service().FillOtp(other_tab.GetHandle(), {test::MakeFieldGlobalId()},
+                    "123456", future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester_.ExpectBucketCount(
@@ -780,7 +779,6 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   NavigateAndCommit(GURL("https://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("https://example.com"));
-  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
 
   content::NavigationEntry* entry =
       tab().GetContents()->GetController().GetVisibleEntry();
@@ -807,7 +805,6 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   NavigateAndCommit(GURL("https://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("https://example.com"));
-  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
 
   content::NavigationEntry* entry =
       tab().GetContents()->GetController().GetVisibleEntry();
@@ -834,7 +831,6 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   NavigateAndCommit(GURL("https://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("https://example.com"));
-  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
 
   content::NavigationEntry* entry =
       tab().GetContents()->GetController().GetVisibleEntry();
@@ -862,7 +858,6 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   NavigateAndCommit(GURL("http://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("http://example.com"));
-  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
 
   FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
   FieldGlobalId field_id = form.fields()[0].global_id();
@@ -876,7 +871,6 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   NavigateAndCommit(GURL("https://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("https://example.com"));
-  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
 
   content::NavigationEntry* entry =
       tab().GetContents()->GetController().GetVisibleEntry();
@@ -903,7 +897,6 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   NavigateAndCommit(GURL("https://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("https://example.com"));
-  SecurityStateTabHelper::CreateForWebContents(tab().GetContents());
 
   content::NavigationEntry* entry =
       tab().GetContents()->GetController().GetVisibleEntry();

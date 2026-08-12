@@ -8,13 +8,14 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/security_state/content/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
@@ -62,8 +63,8 @@ namespace SecurityStyle {
 
 void Check(content::WebContents* tab,
            security_state::SecurityLevel expected_security_level) {
-  SecurityStateTabHelper* helper = SecurityStateTabHelper::FromWebContents(tab);
-  EXPECT_EQ(expected_security_level, helper->GetSecurityLevel());
+  EXPECT_EQ(expected_security_level,
+            chrome_security_state::GetSecurityLevel(tab));
 }
 
 }  // namespace SecurityStyle
@@ -152,8 +153,9 @@ bool SystemUsesChromiumEVMetadata() {
 }
 
 bool SystemSupportsOCSPStapling() {
-  if (UsingBuiltinCertVerifier())
+  if (UsingBuiltinCertVerifier()) {
     return true;
+  }
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
@@ -162,8 +164,9 @@ bool SystemSupportsOCSPStapling() {
 }
 
 bool CertVerifierSupportsCRLSetBlocking() {
-  if (UsingBuiltinCertVerifier())
+  if (UsingBuiltinCertVerifier()) {
     return true;
+  }
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else

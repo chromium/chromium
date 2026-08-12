@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -47,7 +48,6 @@
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/common/content_features.h"
@@ -393,17 +393,17 @@ IN_PROC_BROWSER_TEST_F(SecurityIndicatorTest, CheckIndicatorText) {
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
-  SecurityStateTabHelper* helper = SecurityStateTabHelper::FromWebContents(tab);
-  ASSERT_TRUE(helper);
   LocationBarView* location_bar_view = GetLocationBarView();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kMockSecureURL));
-  EXPECT_EQ(security_state::SECURE, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::SECURE,
+            chrome_security_state::GetSecurityLevel(tab));
   EXPECT_FALSE(location_bar_view->location_icon_view()->ShouldShowLabel());
   EXPECT_TRUE(location_bar_view->location_icon_view()->GetText().empty());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kMockNonsecureURL));
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::WARNING,
+            chrome_security_state::GetSecurityLevel(tab));
   EXPECT_TRUE(location_bar_view->location_icon_view()->ShouldShowLabel());
   EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(
       location_bar_view->location_icon_view()->GetText(), "not secure"));
@@ -509,8 +509,6 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   // Geolocation icon should be off.
   EXPECT_FALSE(geolocation_icon.GetVisible());
 }
-
-
 
 class LocationBarViewPageActionHideWhileEditingTests
     : public InProcessBrowserTest {

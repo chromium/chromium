@@ -11,7 +11,6 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 #include "chrome/test/base/testing_profile.h"
@@ -99,12 +98,6 @@ class DocumentPipDialogManagerDelegateTest : public ChromeViewsTestBase {
     opener_web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     ASSERT_TRUE(opener_web_contents_);
-
-    // DocumentPipFrameView reads the opener's SecurityStateTabHelper to render
-    // the origin chip security icon and CHECK()s the invariant, so attach it
-    // here as TabHelpers would in production.
-    ChromeSecurityStateTabHelper::CreateForWebContents(
-        opener_web_contents_.get());
 
     // Realize the opener WebContents in a top-level widget, as it would be
     // hosted in a browser window in production.

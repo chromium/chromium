@@ -9,14 +9,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_widget_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/fullscreen_types.h"
@@ -190,13 +188,6 @@ class DocumentPipHostTest : public ChromeViewsTestBase {
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     ASSERT_TRUE(opener_web_contents_);
 
-    // In production the opener always has a SecurityStateTabHelper attached (by
-    // TabHelpers). DocumentPipFrameView reads it to render the origin chip's
-    // security icon and CHECK()s the invariant, so attach it here to satisfy
-    // that invariant and exercise the populated security-state path.
-    ChromeSecurityStateTabHelper::CreateForWebContents(
-        opener_web_contents_.get());
-
     // Host the opener WebContents inside a test top-level widget so that
     // `opener->GetTopLevelNativeWindow()` returns a real native window -
     // DesktopNativeWidgetAura uses it as `params.parent` when the PiP widget
@@ -290,12 +281,10 @@ TEST_F(DocumentPipHostTest, WidgetIsCreated) {
 }
 
 // Regression test for crbug.com/519833771: opening the PiP window builds the
-// DocumentPipFrameView, which reads the opener's SecurityStateTabHelper to
-// render the origin chip security icon. With the helper attached (the
-// production invariant), this populated path must complete without crashing.
+// DocumentPipFrameView, which computes the opener's security state to render
+// the origin chip security icon. This populated path must complete without
+// crashing.
 TEST_F(DocumentPipHostTest, OpenPipWindow_PopulatesSecurityStateWithoutCrash) {
-  ASSERT_TRUE(SecurityStateTabHelper::FromWebContents(opener()));
-
   DocumentPipHost* host = CreateHostAndOpenPipWindow();
   ASSERT_TRUE(host);
 

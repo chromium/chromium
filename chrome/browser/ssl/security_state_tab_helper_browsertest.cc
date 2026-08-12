@@ -34,7 +34,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -159,8 +159,8 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
       delete;
 
   void DidChangeVisibleSecurityState() override {
-    auto* helper = SecurityStateTabHelper::FromWebContents(web_contents());
-    latest_security_level_ = helper->GetSecurityLevel();
+    latest_security_level_ =
+        chrome_security_state::GetSecurityLevel(web_contents());
     run_loop_.Quit();
   }
 
@@ -186,12 +186,10 @@ void CheckSecurityInfoForSecure(
     bool expect_cert_error) {
   ASSERT_TRUE(contents);
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      helper->GetVisibleSecurityState();
-  EXPECT_EQ(expect_security_level, helper->GetSecurityLevel());
+      chrome_security_state::GetVisibleSecurityState(contents);
+  EXPECT_EQ(expect_security_level,
+            chrome_security_state::GetSecurityLevel(contents));
   EXPECT_EQ(expect_sha1_in_chain,
             security_state::IsSHA1InChain(*visible_security_state));
   EXPECT_EQ(expect_displayed_mixed_content,
@@ -210,12 +208,10 @@ void CheckSecurityInfoForSecure(
 void CheckSecurityInfoForNonCommitted(content::WebContents* contents) {
   ASSERT_TRUE(contents);
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      helper->GetVisibleSecurityState();
-  EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
+      chrome_security_state::GetVisibleSecurityState(contents);
+  EXPECT_EQ(security_state::NONE,
+            chrome_security_state::GetSecurityLevel(contents));
   EXPECT_FALSE(security_state::IsSHA1InChain(*visible_security_state));
   EXPECT_FALSE(visible_security_state->displayed_mixed_content);
   EXPECT_FALSE(visible_security_state->ran_mixed_content);
@@ -308,10 +304,6 @@ class SecurityStateTabHelperTest : public CertVerifierBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(contents);
 
-    SecurityStateTabHelper* helper =
-        SecurityStateTabHelper::FromWebContents(contents);
-    ASSERT_TRUE(helper);
-
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         GetURLWithNonLocalHostname(
@@ -333,7 +325,7 @@ class SecurityStateTabHelperTest : public CertVerifierBrowserTest {
 
     EXPECT_EQ(use_secure_inner_origin ? security_state::NONE
                                       : security_state::WARNING,
-              helper->GetSecurityLevel());
+              chrome_security_state::GetSecurityLevel(contents));
   }
 
   net::EmbeddedTestServer https_server_;
@@ -396,12 +388,10 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, HttpPage) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(contents);
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      helper->GetVisibleSecurityState();
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+      chrome_security_state::GetVisibleSecurityState(contents);
+  EXPECT_EQ(security_state::WARNING,
+            chrome_security_state::GetSecurityLevel(contents));
   EXPECT_FALSE(security_state::IsSHA1InChain(*visible_security_state));
   EXPECT_FALSE(visible_security_state->displayed_mixed_content);
   EXPECT_FALSE(visible_security_state->ran_mixed_content);
@@ -433,12 +423,10 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, DevToolsPage) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(contents);
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      helper->GetVisibleSecurityState();
-  EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
+      chrome_security_state::GetVisibleSecurityState(contents);
+  EXPECT_EQ(security_state::NONE,
+            chrome_security_state::GetSecurityLevel(contents));
   EXPECT_TRUE(visible_security_state->is_devtools);
 }
 
@@ -641,14 +629,12 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
   entry->GetSSL().content_status |=
       content::SSLStatus::RAN_CONTENT_WITH_CERT_ERRORS;
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  ASSERT_TRUE(helper);
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      helper->GetVisibleSecurityState();
+      chrome_security_state::GetVisibleSecurityState(web_contents);
 
   EXPECT_FALSE(net::IsCertStatusError(visible_security_state->cert_status));
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::DANGEROUS,
+            chrome_security_state::GetSecurityLevel(web_contents));
   EXPECT_TRUE(visible_security_state->ran_content_with_cert_errors);
   EXPECT_FALSE(visible_security_state->displayed_content_with_cert_errors);
 }
@@ -670,14 +656,12 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
   entry->GetSSL().content_status |=
       content::SSLStatus::DISPLAYED_CONTENT_WITH_CERT_ERRORS;
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  ASSERT_TRUE(helper);
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      helper->GetVisibleSecurityState();
+      chrome_security_state::GetVisibleSecurityState(web_contents);
 
   EXPECT_FALSE(net::IsCertStatusError(visible_security_state->cert_status));
-  EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::NONE,
+            chrome_security_state::GetSecurityLevel(web_contents));
   EXPECT_FALSE(visible_security_state->ran_content_with_cert_errors);
   EXPECT_TRUE(visible_security_state->displayed_content_with_cert_errors);
 }
@@ -701,14 +685,12 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
   entry->GetSSL().content_status |=
       content::SSLStatus::DISPLAYED_CONTENT_WITH_CERT_ERRORS;
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  ASSERT_TRUE(helper);
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      helper->GetVisibleSecurityState();
+      chrome_security_state::GetVisibleSecurityState(web_contents);
 
   EXPECT_FALSE(net::IsCertStatusError(visible_security_state->cert_status));
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::DANGEROUS,
+            chrome_security_state::GetSecurityLevel(web_contents));
   EXPECT_TRUE(visible_security_state->ran_content_with_cert_errors);
   EXPECT_TRUE(visible_security_state->displayed_content_with_cert_errors);
 }
@@ -834,14 +816,11 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, SecurityLevelForHttpPage) {
 
   SecurityStyleTestObserver observer(contents);
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
   GURL http_url =
       GetURLWithNonLocalHostname(embedded_test_server(), "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::WARNING,
+            chrome_security_state::GetSecurityLevel(contents));
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
@@ -858,13 +837,10 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
 
   SecurityStyleTestObserver observer(contents);
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("data:text/html,<html></html>")));
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::WARNING,
+            chrome_security_state::GetSecurityLevel(contents));
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
@@ -886,10 +862,6 @@ IN_PROC_BROWSER_TEST_F(
 
   SecurityStyleTestObserver observer(contents);
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("/ssl/google.html")));
   // Update security state of the current page to match
@@ -909,9 +881,10 @@ IN_PROC_BROWSER_TEST_F(
   observer.WaitForDidChangeVisibleSecurityState();
 
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      helper->GetVisibleSecurityState();
+      chrome_security_state::GetVisibleSecurityState(contents);
 
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::DANGEROUS,
+            chrome_security_state::GetSecurityLevel(contents));
   EXPECT_EQ(
       security_state::MALICIOUS_CONTENT_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE,
       visible_security_state->malicious_content_status);
@@ -920,8 +893,10 @@ IN_PROC_BROWSER_TEST_F(
   // change to MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING.
   service->OnGaiaPasswordChanged(/*username=*/"", false);
   base::RunLoop().RunUntilIdle();
-  visible_security_state = helper->GetVisibleSecurityState();
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
+  visible_security_state =
+      chrome_security_state::GetVisibleSecurityState(contents);
+  EXPECT_EQ(security_state::DANGEROUS,
+            chrome_security_state::GetSecurityLevel(contents));
   EXPECT_EQ(security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING,
             visible_security_state->malicious_content_status);
 }
@@ -940,9 +915,6 @@ IN_PROC_BROWSER_TEST_F(
 
   SecurityStyleTestObserver observer(contents);
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("/ssl/google.html")));
   // Update security state of the current page to match
@@ -960,8 +932,9 @@ IN_PROC_BROWSER_TEST_F(
   observer.WaitForDidChangeVisibleSecurityState();
 
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      helper->GetVisibleSecurityState();
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
+      chrome_security_state::GetVisibleSecurityState(contents);
+  EXPECT_EQ(security_state::DANGEROUS,
+            chrome_security_state::GetSecurityLevel(contents));
   EXPECT_EQ(security_state::MALICIOUS_CONTENT_STATUS_ENTERPRISE_PASSWORD_REUSE,
             visible_security_state->malicious_content_status);
 
@@ -1158,7 +1131,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, AddedTab) {
       content::WebContents::Create(
           content::WebContents::CreateParams(tab->GetBrowserContext()));
   content::NavigationController& controller = new_contents->GetController();
-  ChromeSecurityStateTabHelper::CreateForWebContents(new_contents.get());
   CheckSecurityInfoForNonCommitted(new_contents.get());
   controller.LoadURL(https_server_.GetURL("/title1.html"), content::Referrer(),
                      ui::PAGE_TRANSITION_TYPED, std::string());
@@ -1318,9 +1290,6 @@ IN_PROC_BROWSER_TEST_F(DidChangeVisibleSecurityStateTest,
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
 
   // Disable HTTPS upgrades on nonexistent.test for this test to work.
   ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
@@ -1340,7 +1309,8 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
   ASSERT_TRUE(entry);
   ASSERT_EQ(content::PAGE_TYPE_ERROR, entry->GetPageType());
 
-  EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::NONE,
+            chrome_security_state::GetSecurityLevel(contents));
 }
 
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,

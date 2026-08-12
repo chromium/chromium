@@ -7,7 +7,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
@@ -610,8 +609,6 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest,
       static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
   content::WebContents* payment_handler_contents =
       web_flow_controller->web_contents();
-  EXPECT_EQ(nullptr, ChromeSecurityStateTabHelper::FromWebContents(
-                         payment_handler_contents));
   EXPECT_EQ(nullptr, OneTimePermissionsTrackerHelper::FromWebContents(
                          payment_handler_contents));
   EXPECT_EQ(nullptr, permissions::PermissionRequestManager::FromWebContents(
@@ -662,16 +659,11 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
                          payment_handler_contents));
 
   // kPaymentHandlerCameraAccessUx flag also initializes
-  // ChromeSecurityStateTabHelper and PermissionRequestManager for permission
-  // prompting and indicators.
+  // PermissionRequestManager for permission prompting and indicators.
   if (GetParam() == features::kPaymentHandlerCameraAccessUx) {
-    EXPECT_NE(nullptr, ChromeSecurityStateTabHelper::FromWebContents(
-                           payment_handler_contents));
     EXPECT_NE(nullptr, permissions::PermissionRequestManager::FromWebContents(
                            payment_handler_contents));
   } else {
-    EXPECT_EQ(nullptr, ChromeSecurityStateTabHelper::FromWebContents(
-                           payment_handler_contents));
     EXPECT_EQ(nullptr, permissions::PermissionRequestManager::FromWebContents(
                            payment_handler_contents));
   }

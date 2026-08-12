@@ -201,6 +201,7 @@ source_set("test_support") {
   ]
 
   public_deps = [
+    ":ssl",
     "//base",
     "//components/security_state/core",
     "//content/public/browser",

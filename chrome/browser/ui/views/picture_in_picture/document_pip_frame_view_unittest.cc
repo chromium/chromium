@@ -15,7 +15,6 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -108,9 +107,6 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
     opener_web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     ASSERT_TRUE(opener_web_contents_);
-    // The thin origin chip reads the opener's security state.
-    ChromeSecurityStateTabHelper::CreateForWebContents(
-        opener_web_contents_.get());
 
     opener_host_widget_ =
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -327,8 +323,6 @@ TEST_F(DocumentPipFrameViewTest, CloseButtonAlwaysPresent) {
   opener_web_contents_.reset();
   opener_web_contents_ =
       content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-  ChromeSecurityStateTabHelper::CreateForWebContents(
-      opener_web_contents_.get());
   auto* web_view =
       static_cast<views::WebView*>(opener_host_widget_->GetContentsView());
   web_view->SetWebContents(opener_web_contents_.get());

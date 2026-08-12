@@ -25,6 +25,7 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ssl/generated_https_first_mode_pref.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
@@ -50,7 +51,6 @@
 #include "components/security_interstitials/core/features.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "components/security_interstitials/core/metrics_helper.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
@@ -2580,14 +2580,14 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   GURL https_url = https_server()->GetURL("foo.com", "/close-socket");
 
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
   if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
 
-    EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+    EXPECT_EQ(security_state::WARNING,
+              chrome_security_state::GetSecurityLevel(contents));
 
     // Proceed through the interstitial to navigate to the HTTP site.
     ProceedThroughHttpsFirstModeInterstitial(contents);
@@ -2597,7 +2597,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // (as no connection was made).
   // TODO(crbug.com/40248833): Uncomment once upgrades are tracked
   // per-navigation.
-  // EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
+  // EXPECT_EQ(security_state::NONE,
+  // chrome_security_state::GetSecurityLevel(contents));
 }
 
 // Tests that the security level is WARNING when the HTTPS-Only Mode
@@ -2610,21 +2611,22 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
 
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
   if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
     EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
 
-    EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+    EXPECT_EQ(security_state::WARNING,
+              chrome_security_state::GetSecurityLevel(contents));
 
     // Proceed through the interstitial to navigate to the HTTP page.
     ProceedThroughHttpsFirstModeInterstitial(contents);
   }
 
   // The security level should still be WARNING.
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::WARNING,
+            chrome_security_state::GetSecurityLevel(contents));
 }
 
 // Regression test for crbug.com/40780767.
@@ -2682,8 +2684,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // version of the site but with the DANGEROUS security level.
   ProceedThroughHttpsFirstModeInterstitial(contents);
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
-  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::DANGEROUS,
+            chrome_security_state::GetSecurityLevel(contents));
 
   // Verify that navigation event metrics were correctly recorded. They should
   // only have been recorded for the initial navigation that resulted in the
@@ -3118,8 +3120,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // Simulate clicking the browser "back" button.
   EXPECT_TRUE(content::HistoryGoBack(contents));
   EXPECT_EQ(good_https_url, contents->GetLastCommittedURL());
-  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
-  EXPECT_EQ(security_state::SECURE, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::SECURE,
+            chrome_security_state::GetSecurityLevel(contents));
 
   // Simulate clicking the browser "forward" button. The HistoryGoForward()
   // call returns `false` because it is an error page.
@@ -3669,10 +3671,10 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
     return;
   }
   GURL final_url = http_server()->GetURL("baz.com", "/simple.html");
-  GURL hop_url = http_server()->GetURL(
-      "bar.com", "/server-redirect?" + final_url.spec());
-  GURL initial_url = http_server()->GetURL(
-      "foo.com", "/server-redirect?" + hop_url.spec());
+  GURL hop_url =
+      http_server()->GetURL("bar.com", "/server-redirect?" + final_url.spec());
+  GURL initial_url =
+      http_server()->GetURL("foo.com", "/server-redirect?" + hop_url.spec());
   auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
   OmniboxClient* omnibox_client = BrowserWindow::FromBrowser(GetBrowser())
                                       ->GetLocationBar()

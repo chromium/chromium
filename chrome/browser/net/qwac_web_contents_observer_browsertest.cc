@@ -12,9 +12,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -176,16 +176,11 @@ class QwacWebContentsObserverTestBase : public PlatformBrowserTest {
   }
 
   scoped_refptr<net::X509Certificate> VisibleSecurityStateTwoQwac() {
-    SecurityStateTabHelper* helper =
-        SecurityStateTabHelper::FromWebContents(web_contents());
-    if (!helper) {
-      ADD_FAILURE() << "Failed to load SecurityStateTabHelper";
-      return nullptr;
-    }
     std::unique_ptr<security_state::VisibleSecurityState>
-        visible_security_state = helper->GetVisibleSecurityState();
+        visible_security_state =
+            chrome_security_state::GetVisibleSecurityState(web_contents());
     if (!visible_security_state) {
-      ADD_FAILURE() << "SecurityStateTabHelper has no VisibleSecurityState";
+      ADD_FAILURE() << "No VisibleSecurityState";
       return nullptr;
     }
     return visible_security_state->two_qwac;

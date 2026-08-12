@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/android/device_dialog/serial_chooser_dialog_android.h"
 #include "chrome/browser/ui/serial/mock_serial_chooser_controller.h"
 #include "chrome/browser/ui/serial/serial_chooser_controller.h"
@@ -79,7 +78,6 @@ void SerialChooserDialogAndroidTest::SetUp() {
       content::WebContents::FromRenderFrameHost(main_rfh());
   window_ = ui::WindowAndroid::CreateForTesting();
   window_.get()->get()->AddChild(web_contents->GetNativeView());
-  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
 }
 
 void SerialChooserDialogAndroidTest::CreateDialog() {

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
+#include <memory>
+
 #include "chrome/browser/ssl/chrome_security_state_model_delegate.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/security_state/content/android/security_state_client.h"
-#include "components/security_state/content/security_state_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 
@@ -27,24 +28,13 @@ IN_PROC_BROWSER_TEST_F(ChromeSecurityStateClientTest,
   content::WebContents* contents = GetActiveWebContents();
   ASSERT_TRUE(contents);
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
   auto* security_state_client = security_state::GetSecurityStateClient();
   ASSERT_TRUE(security_state_client);
-  {
-    base::RunLoop run_loop;
-    helper->set_get_security_level_callback_for_tests_(run_loop.QuitClosure());
-    EXPECT_EQ(helper->GetSecurityLevel(),
-              security_state_client->MaybeCreateSecurityStateModelDelegate()
-                  ->GetSecurityLevel(contents));
-    EXPECT_EQ(helper->GetMaliciousContentStatus(),
-              security_state_client->MaybeCreateSecurityStateModelDelegate()
-                  ->GetMaliciousContentStatus(contents));
-
-    // The test won't finish until SecurityStateTabHelper::GetSecurityLevel()
-    // is called.
-    run_loop.Run();
-  }
+  std::unique_ptr<SecurityStateModelDelegate> delegate =
+      security_state_client->MaybeCreateSecurityStateModelDelegate();
+  ASSERT_TRUE(delegate);
+  EXPECT_EQ(chrome_security_state::GetSecurityLevel(contents),
+            delegate->GetSecurityLevel(contents));
+  EXPECT_EQ(chrome_security_state::GetMaliciousContentStatus(contents),
+            delegate->GetMaliciousContentStatus(contents));
 }
