@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_session_pool_async_dns_job.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -111,11 +112,16 @@ void QuicSessionPool::AsyncDnsJob::SetRequestExpectations(
   if (!base::FeatureList::IsEnabled(features::kAsyncQuicSession)) {
     return;
   }
+  if (session_creation_notified_) {
+    return;
+  }
   // Promise the session creation signal only while it can still fire. That
-  // is before the host resolution signal fired, or while the connector's
-  // attempt has not finished creating its session.
+  // is before the host resolution signal fired, while the connector's
+  // attempt has not finished creating its session, or while a failed
+  // session creation result is being held for later delivery.
   if (!host_resolution_notified_ ||
-      (connector_ && connector_->AwaitingSessionCreation())) {
+      (connector_ && connector_->AwaitingSessionCreation()) ||
+      held_session_creation_result_.has_value()) {
     request->ExpectQuicSessionCreation();
   }
 }
@@ -141,54 +147,55 @@ void QuicSessionPool::AsyncDnsJob::PopulateNetErrorDetails(
 
 void QuicSessionPool::AsyncDnsJob::OnServiceEndpointsUpdated() {
   usable_endpoints_.reset();
-  // TODO(crbug.com/531975349): Try advancing the connector on updates once
-  // it supports fallback and racing. A single in-flight attempt cannot use
-  // new results, so ignore updates for now.
-  if (attempt_started_) {
-    return;
-  }
-
   if (!service_endpoint_request_->EndpointsCryptoReady()) {
     return;
   }
 
   std::optional<int> rv = ProcessServiceEndpointResults();
   if (!rv.has_value()) {
-    // Nothing usable yet. Wait for the next update or the final result.
+    // Nothing to attempt yet. Wait for the next update or the final result.
     return;
   }
-  NotifyAndCompleteJob(*rv);
+  MaybeNotifyHostResolutionAndComplete(*rv);
 }
 
 void QuicSessionPool::AsyncDnsJob::OnServiceEndpointRequestFinished(int rv) {
   CHECK(!resolution_finished_);
-  resolution_finished_ = true;
   usable_endpoints_.reset();
-  // TODO(crbug.com/531975349): Try advancing the connector on the final
-  // results once it supports fallback and racing. For now the in-flight
-  // attempt decides the job outcome, and a late resolver error cannot
-  // change it.
-  if (attempt_started_) {
-    return;
-  }
 
   rv = DoResolveHostComplete(rv);
-  NotifyAndCompleteJob(rv);
+  MaybeNotifyHostResolutionAndComplete(rv);
 }
 
-void QuicSessionPool::AsyncDnsJob::CompleteJob(int rv) {
-  if (!callback_.is_null()) {
-    std::move(callback_).Run(rv);
+void QuicSessionPool::AsyncDnsJob::MaybeNotifyHostResolutionAndComplete(
+    int rv) {
+  if (!host_resolution_notified_) {
+    auto weak_this = weak_factory_.GetWeakPtr();
+    NotifyRequestsOfHostResolution(rv);
+    if (!weak_this) {
+      return;
+    }
   }
-}
-
-void QuicSessionPool::AsyncDnsJob::NotifyAndCompleteJob(int rv) {
-  auto weak_this = weak_factory_.GetWeakPtr();
-  NotifyRequestsOfHostResolution(rv);
-  if (weak_this && rv != ERR_IO_PENDING) {
+  if (rv != ERR_IO_PENDING) {
     // This destroys the job and its resolver request. The resolver supports
     // request destruction inside this delegate callback.
     CompleteJob(rv);
+  }
+}
+
+void QuicSessionPool::AsyncDnsJob::CompleteJob(int rv) {
+  if (!session_creation_notified_ &&
+      held_session_creation_result_.has_value()) {
+    // The job is completing, so no later attempt can replace this result.
+    // Deliver the held failure now.
+    auto weak_this = weak_factory_.GetWeakPtr();
+    NotifyRequestsOfSessionCreation(*held_session_creation_result_);
+    if (!weak_this) {
+      return;
+    }
+  }
+  if (!callback_.is_null()) {
+    std::move(callback_).Run(rv);
   }
 }
 
@@ -286,7 +293,33 @@ bool QuicSessionPool::AsyncDnsJob::MaybePoolToExistingSession() {
   return false;
 }
 
+bool QuicSessionPool::AsyncDnsJob::ClaimCandidate(const Candidate& candidate) {
+  if (std::ranges::contains(claimed_candidates_, candidate)) {
+    return false;
+  }
+  claimed_candidates_.push_back(candidate);
+  return true;
+}
+
 void QuicSessionPool::AsyncDnsJob::OnSessionCreationDecided(int rv) {
+  if (session_creation_notified_) {
+    return;
+  }
+  if (rv != OK && rv != ERR_IO_PENDING) {
+    // A failure signal makes the waiting requests give up on QUIC, but this
+    // job may still try another candidate. Hold the result until the job's
+    // outcome is known.
+    held_session_creation_result_ = rv;
+    return;
+  }
+  NotifyRequestsOfSessionCreation(rv);
+}
+
+void QuicSessionPool::AsyncDnsJob::NotifyRequestsOfSessionCreation(int rv) {
+  CHECK(!session_creation_notified_);
+  session_creation_notified_ = true;
+  held_session_creation_result_.reset();
+
   // A notified request may reenter the pool and add or remove requests on
   // this job. Iterate over a snapshot of WeakPtrs, and skip requests that were
   // removed or destroyed. Requests added mid-notification are not promised
@@ -314,6 +347,11 @@ void QuicSessionPool::AsyncDnsJob::OnSessionCreationDecided(int rv) {
 
 void QuicSessionPool::AsyncDnsJob::OnConnectorComplete(int rv) {
   CHECK_NE(rv, ERR_IO_PENDING);
+  if (rv != OK && !resolution_finished_) {
+    // The connector ran out of candidates but DNS is still running. More
+    // candidates may arrive, so keep the job going.
+    return;
+  }
   CompleteJob(rv);
 }
 
@@ -333,7 +371,10 @@ int QuicSessionPool::AsyncDnsJob::DoResolveHost() {
 int QuicSessionPool::AsyncDnsJob::DoResolveHostComplete(int rv) {
   resolution_finished_ = true;
   MaybeSetDnsResolutionEndTime();
-  if (rv != OK) {
+
+  // A resolver error fails the job only while no attempt has run. Once the
+  // connector exists the attempts decide the outcome.
+  if (rv != OK && !connector_) {
     return rv;
   }
 
@@ -343,6 +384,13 @@ int QuicSessionPool::AsyncDnsJob::DoResolveHostComplete(int rv) {
 
 std::optional<int>
 QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
+  // Nothing to do while an attempt is running. The connector reads the new
+  // results when it advances, and re-checks IP pooling before its next
+  // attempt.
+  if (connector_ && connector_->has_attempt()) {
+    return ERR_IO_PENDING;
+  }
+
   // If another request pooled to an existing session and activated the key
   // while we were waiting for async DNS resolution, this job will be
   // redundant. The active session is already in the pool.
@@ -357,6 +405,11 @@ QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
   }
 
   if (GetUsableEndpoints().empty()) {
+    // Nothing is visible to attempt. If an attempt already failed and DNS
+    // has finished, no more candidates can arrive, so report that failure.
+    if (resolution_finished_ && connector_) {
+      return connector_->last_attempt_error();
+    }
     return std::nullopt;
   }
 
@@ -368,14 +421,17 @@ QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
     connector_ = std::make_unique<EndpointConnector>(this);
   }
 
-  std::optional<int> result = connector_->OnEndpointsUpdated();
-  // The current results contain a usable endpoint, so the connector either
-  // settles synchronously or starts an attempt.
-  CHECK(result.has_value());
-  if (result == ERR_IO_PENDING) {
-    attempt_started_ = true;
+  std::optional<int> result = connector_->TryAdvance();
+  if (result.has_value()) {
+    return result;
   }
-  return result;
+
+  // Every visible candidate was already attempted. Fail only when DNS has
+  // finished. Until then more candidates may arrive.
+  if (!resolution_finished_) {
+    return std::nullopt;
+  }
+  return connector_->last_attempt_error();
 }
 
 void QuicSessionPool::AsyncDnsJob::MaybeSetDnsResolutionEndTime() {
