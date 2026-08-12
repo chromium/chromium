@@ -37,6 +37,7 @@ import org.chromium.services.service_manager.InterfaceFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -103,7 +104,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         mAppContext = appContext;
         mFontsContract = fontsContract;
         mFullFontNameToQuery = fullFontNameToQuery;
-        mExpectedFonts = new HashSet<>(mFullFontNameToQuery.keySet());
+        mExpectedFonts = Collections.synchronizedSet(new HashSet<>(mFullFontNameToQuery.keySet()));
     }
 
     /**
