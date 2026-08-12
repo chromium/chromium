@@ -9,6 +9,17 @@
 
 namespace signin {
 
+std::optional<SyncDataQuartile> SyncDataQuartileFromValue(int value) {
+  if (value < 0 || value > static_cast<int>(SyncDataQuartile::kMaxValue)) {
+    return std::nullopt;
+  }
+  return static_cast<SyncDataQuartile>(value);
+}
+
+int SyncDataQuartileToValue(SyncDataQuartile quartile) {
+  return static_cast<int>(quartile);
+}
+
 // static
 void AccountPreviewDataService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {

@@ -16,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/core/browser/account_preview_data_fetcher.h"
+#include "components/signin/core/browser/account_preview_heuristic.h"
 #include "components/signin/core/browser/account_preview_metrics_recorder.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -30,6 +31,8 @@ namespace signin {
 namespace {
 constexpr char kPreferredAccountDictGaiaIdKey[] = "gaia_id";
 constexpr char kPreferredAccountDictDataTypesKey[] = "data_types";
+constexpr char kPreferredAccountDictDataTypeKey[] = "data_type";
+constexpr char kPreferredAccountDictQuartileKey[] = "quartile";
 constexpr char kPreferredAccountDictOtherDeviceFormFactorKey[] =
     "other_device_form_factor";
 
@@ -77,20 +80,6 @@ void RecordSuccessfulFetchingMetrics(
   }
 }
 
-AccountPreviewDataService::AccountPreviewPreference
-ComputeAccountPreviewPreference(const GaiaId& gaia_id,
-                                const AccountPreviewData& data) {
-  // TODO(crbug.com/530144650): Align with the heuristic used by
-  // `AccountPreviewDataServiceImpl::ComputePreferredAccount()`.
-  AccountPreviewDataService::AccountPreviewPreference preference;
-  preference.gaia_id = gaia_id;
-  for (const auto& [data_type, count] : data.counts) {
-    if (count > 0) {
-      preference.preferred_data_types.push_back(data_type);
-    }
-  }
-  return preference;
-}
 
 }  // namespace
 
@@ -542,11 +531,23 @@ AccountPreviewDataServiceImpl::ReadPreferredAccountFromPrefs() const {
       dict.FindList(kPreferredAccountDictDataTypesKey);
   if (data_types_list) {
     for (const base::Value& val : *data_types_list) {
-      if (val.is_int()) {
-        syncer::DataType data_type =
-            syncer::GetDataTypeFromStableIdentifier(val.GetInt());
-        if (syncer::IsRealDataType(data_type)) {
-          preference.preferred_data_types.push_back(data_type);
+      if (val.is_dict()) {
+        const base::DictValue& info_dict = val.GetDict();
+        const std::optional<int> dt_int =
+            info_dict.FindInt(kPreferredAccountDictDataTypeKey);
+        const std::optional<int> q_int =
+            info_dict.FindInt(kPreferredAccountDictQuartileKey);
+        if (dt_int.has_value() && q_int.has_value()) {
+          syncer::DataType data_type =
+              syncer::GetDataTypeFromStableIdentifier(*dt_int);
+          std::optional<SyncDataQuartile> quartile =
+              SyncDataQuartileFromValue(*q_int);
+          if (syncer::IsRealDataType(data_type) && quartile.has_value()) {
+            preference.preferred_data_types.push_back({
+                .data_type = data_type,
+                .quartile = *quartile,
+            });
+          }
         }
       }
     }
@@ -573,8 +574,13 @@ void AccountPreviewDataServiceImpl::WritePreferredAccountToPrefs(
   base::DictValue dict;
   dict.Set(kPreferredAccountDictGaiaIdKey, preference->gaia_id.ToString());
   base::ListValue data_types_list;
-  for (syncer::DataType data_type : preference->preferred_data_types) {
-    data_types_list.Append(syncer::DataTypeToStableIdentifier(data_type));
+  for (const PreferredDataTypeInfo& info : preference->preferred_data_types) {
+    base::DictValue info_dict;
+    info_dict.Set(kPreferredAccountDictDataTypeKey,
+                  syncer::DataTypeToStableIdentifier(info.data_type));
+    info_dict.Set(kPreferredAccountDictQuartileKey,
+                  SyncDataQuartileToValue(info.quartile));
+    data_types_list.Append(std::move(info_dict));
   }
   dict.Set(kPreferredAccountDictDataTypesKey, std::move(data_types_list));
   dict.Set(kPreferredAccountDictOtherDeviceFormFactorKey,

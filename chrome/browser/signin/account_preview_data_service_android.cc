@@ -4,12 +4,14 @@
 
 #include "chrome/browser/signin/account_preview_data_service_android.h"
 
+#include <algorithm>
 #include <optional>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/to_vector.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/sync/base/data_type.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -37,9 +39,13 @@ inline ScopedJavaLocalRef<jobject> ToJniType(
     JNIEnv* env,
     const signin::AccountPreviewDataService::AccountPreviewPreference&
         preference) {
+  // TODO(crbug.com/530144650): Add `signin::SyncDataQuartile` support.
+  std::vector<syncer::DataType> data_types =
+      base::ToVector(preference.preferred_data_types,
+                     &signin::PreferredDataTypeInfo::data_type);
+
   return signin::Java_AccountPreviewPreference_Constructor(
-      env, preference.gaia_id, preference.preferred_data_types,
-      preference.other_device_form_factor);
+      env, preference.gaia_id, data_types, preference.other_device_form_factor);
 }
 
 }  // namespace jni_zero

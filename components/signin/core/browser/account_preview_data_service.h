@@ -20,13 +20,42 @@ class PrefRegistrySimple;
 
 namespace signin {
 
+// Represents the quartile tier classification of sync data count relative to
+// thresholds.
+// These values are persisted to logs/prefs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class SyncDataQuartile {
+  kZero = 0,
+  kBelowQ1 = 1,     // 0 < count < Q1
+  kQ1ToMedian = 2,  // Q1 <= count < Median
+  kMedianToQ3 = 3,  // Median <= count < Q3
+  kAboveQ3 = 4,     // count >= Q3
+
+  kMaxValue = kAboveQ3,
+};
+
+// Functions used to persist/retrieve SyncDataQuartile from/to prefs.
+std::optional<SyncDataQuartile> SyncDataQuartileFromValue(int value);
+int SyncDataQuartileToValue(SyncDataQuartile quartile);
+
+struct PreferredDataTypeInfo {
+  syncer::DataType data_type = syncer::UNSPECIFIED;
+  SyncDataQuartile quartile = SyncDataQuartile::kZero;
+
+  bool is_above_or_at_median() const {
+    return quartile >= SyncDataQuartile::kMedianToQ3;
+  }
+
+  bool operator==(const PreferredDataTypeInfo&) const = default;
+};
+
 // A keyed service that provides preview data and usage metrics for the
 // signed-in accounts in the profile.
 class AccountPreviewDataService : public KeyedService {
  public:
   struct AccountPreviewPreference {
     GaiaId gaia_id;
-    std::vector<syncer::DataType> preferred_data_types;
+    std::vector<PreferredDataTypeInfo> preferred_data_types;
     sync_pb::SyncEnums_DeviceFormFactor other_device_form_factor =
         sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED;
 

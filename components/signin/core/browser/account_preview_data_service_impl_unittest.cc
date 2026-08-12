@@ -923,10 +923,25 @@ TEST_F(AccountPreviewDataServiceTest, ReadPreviewPreferenceFromPrefsDataTypes) {
   base::DictValue dict;
   dict.Set("gaia_id", "test_gaia_id");
   base::ListValue data_types_list;
-  data_types_list.Append(syncer::DataTypeToStableIdentifier(syncer::BOOKMARKS));
-  data_types_list.Append(-1);    // Negative invalid value.
-  data_types_list.Append(9999);  // Unknown/invalid stable identifier.
-  data_types_list.Append(syncer::DataTypeToStableIdentifier(syncer::PASSWORDS));
+
+  base::DictValue bookmarks_dict;
+  bookmarks_dict.Set("data_type",
+                     syncer::DataTypeToStableIdentifier(syncer::BOOKMARKS));
+  bookmarks_dict.Set("quartile",
+                     static_cast<int>(SyncDataQuartile::kMedianToQ3));
+  data_types_list.Append(std::move(bookmarks_dict));
+
+  base::DictValue invalid_dict;
+  invalid_dict.Set("data_type", -1);
+  invalid_dict.Set("quartile", 1);
+  data_types_list.Append(std::move(invalid_dict));
+
+  base::DictValue passwords_dict;
+  passwords_dict.Set("data_type",
+                     syncer::DataTypeToStableIdentifier(syncer::PASSWORDS));
+  passwords_dict.Set("quartile", static_cast<int>(SyncDataQuartile::kAboveQ3));
+  data_types_list.Append(std::move(passwords_dict));
+
   dict.Set("data_types", std::move(data_types_list));
 
   prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
@@ -936,9 +951,14 @@ TEST_F(AccountPreviewDataServiceTest, ReadPreviewPreferenceFromPrefsDataTypes) {
       testing::Optional(testing::AllOf(
           testing::Field(&AccountPreviewPreference::gaia_id,
                          GaiaId("test_gaia_id")),
-          testing::Field(
-              &AccountPreviewPreference::preferred_data_types,
-              testing::ElementsAre(syncer::BOOKMARKS, syncer::PASSWORDS)))));
+          testing::Field(&AccountPreviewPreference::preferred_data_types,
+                         testing::ElementsAre(
+                             PreferredDataTypeInfo{
+                                 .data_type = syncer::BOOKMARKS,
+                                 .quartile = SyncDataQuartile::kMedianToQ3},
+                             PreferredDataTypeInfo{
+                                 .data_type = syncer::PASSWORDS,
+                                 .quartile = SyncDataQuartile::kAboveQ3})))));
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
