@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.PopupWindow;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -269,6 +270,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         .addOnDismissListener(this::onContextPopupDismissed)
                         .setOutsideTouchable(true)
                         .setFocusable(true)
+                        .setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED)
                         .setAnimateFromAnchor(true)
                         .setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION)
                         .setViewportRectProvider(mViewportRectProvider)

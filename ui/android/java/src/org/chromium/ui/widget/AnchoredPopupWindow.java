@@ -285,6 +285,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         private @StyleRes int mAnimationStyleId;
         private boolean mAnimateFromAnchor;
         private boolean mFocusable;
+        private @Nullable Integer mInputMethodMode;
         private boolean mTouchable;
         private boolean mIsTouchableSet;
         private float mElevation;
@@ -501,6 +502,15 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         }
 
         /**
+         * @param mode The input method mode for the popup. See {@link
+         *     PopupWindow#setInputMethodMode(int)}.
+         */
+        public Builder setInputMethodMode(int mode) {
+            mInputMethodMode = mode;
+            return this;
+        }
+
+        /**
          * @param touchable True if the popup is touchable, false otherwise.
          */
         public Builder setTouchable(boolean touchable) {
@@ -594,6 +604,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         }
         setAnimateFromAnchor(builder.mAnimateFromAnchor);
         setFocusable(builder.mFocusable);
+        if (builder.mInputMethodMode != null) {
+            mPopupWindow.setInputMethodMode(builder.mInputMethodMode);
+        }
         if (builder.mIsTouchableSet) {
             mPopupWindow.setTouchable(builder.mTouchable);
         }

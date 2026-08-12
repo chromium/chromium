@@ -324,6 +324,20 @@ public final class AnchoredPopupWindowTest {
         verify(mPopupWindow).update(anyInt(), anyInt(), eq(800), anyInt());
     }
 
+    @Test
+    public void testSetInputMethodMode_builder() {
+        new AnchoredPopupWindow.Builder(
+                        mActivity,
+                        mView,
+                        mDrawable,
+                        () -> mContentView,
+                        new RectProvider(new Rect(0, 0, 100, 100)))
+                .setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED)
+                .build();
+
+        verify(mPopupWindow).setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+    }
+
     private AnchoredPopupWindow createAnchorPopupWindow() {
         return createAnchorPopupWindow(/* allowNonTouchableSize= */ false);
     }
