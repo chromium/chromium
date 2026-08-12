@@ -2499,6 +2499,10 @@ public class AwContents implements SmartClipProvider {
             throw headerException;
         }
 
+        // Drain any pending prefetch requests from the queue.
+        // TODO (crbug.com/363939616) Clean this up once prefetch infra supports bg thread.
+        mBrowserContext.getPrefetchManager().executeQueuedPrefetchRequests();
+
         // TODO(crbug.com/408974593): Consider adding a fixupUrl option.
         // TODO(crbug.com/408974593): Allow developers to set the PageTransition type.
         LoadUrlParams loadUrlParams =
