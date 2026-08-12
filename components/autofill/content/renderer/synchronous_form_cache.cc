@@ -43,24 +43,17 @@ std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
     form_util::ButtonTitlesCache* button_titles_cache) const {
-  if (!cache_.empty()) {
-    const base::optional_ref<const FormData>* cache_entry =
-        base::FindOrNull(cache_, form_util::GetFormRendererId(form_element));
-    if (cache_entry) {
-      // The cache contained an entry for `form_element`. The value of the entry
-      // may be a null reference if the previous extraction failed. In this
-      // case, we do not try to extract the form again, because we would fail
-      // again. CopyAsOptional() reproduces the null reference in this case.
-      return cache_entry->CopyAsOptional();
-    }
-    // This codepath should not be reached, as it would mean that we populated
-    // the cache with wrong forms before passing it around methods. We do not
-    // crash the renderer because this wouldn't break anything since we can
-    // always re-extract.
-    base::debug::DumpWithoutCrashing(FROM_HERE);
-  }
-  return form_util::ExtractFormData(document, form_element, field_data_manager,
-                                    timer_state, button_titles_cache);
+  const base::optional_ref<const FormData>* cache_entry =
+      base::FindOrNull(cache_, form_util::GetFormRendererId(form_element));
+
+  // If `cache_entry` is non-null, the value of the `cache_entry` may be a null
+  // reference, in case the previous extraction failed. In this case, the form
+  // is not extracted again, because it would fail again.
+  // TODO(crbug.com/40947729): Try caching forms that were not found.
+  return cache_entry ? cache_entry->CopyAsOptional()
+                     : form_util::ExtractFormData(
+                           document, form_element, field_data_manager,
+                           timer_state, button_titles_cache);
 }
 
 void SynchronousFormCache::Insert(FormRendererId form_id,
