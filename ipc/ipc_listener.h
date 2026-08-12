@@ -26,6 +26,8 @@ class COMPONENT_EXPORT(IPC) Listener {
   // This method is not called when a channel is closed normally.
   virtual void OnChannelError() {}
 
+  // Called when a message's deserialization failed.
+  virtual void OnBadMessageReceived() {}
 
   // Called when an associated interface request is received on a Channel and
   // the Channel has no registered handler for it.

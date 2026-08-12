@@ -121,6 +121,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   friend std::ostream& operator<<(std::ostream& os, LifecycleState state);
 
   // IPC::Listener
+  void OnBadMessageReceived() override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
