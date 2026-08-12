@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_activation_tracker.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/common/url_constants.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -37,6 +38,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/origin.h"
@@ -215,6 +217,19 @@ void ShowTabSentFailure(content::WebContents* web_contents,
         NotificationHandler::Type::SHARING, notification,
         /*metadata=*/nullptr);
   }
+}
+
+void OpenManageDevicesPage(Profile* profile, int event_flags) {
+  CHECK(profile);
+  NavigateParams params(profile, GURL(chrome::kGoogleAccountDeviceActivityURL),
+                        ui::PAGE_TRANSITION_LINK);
+  // NEW_FOREGROUND_TAB is passed as the default to avoid navigating away from
+  // the current page, which the user possibly wants to share.
+  // DispositionFromEventFlags() ensures that any modifier keys are respected
+  // (e.g. to open a new window instead).
+  params.disposition = ui::DispositionFromEventFlags(
+      event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  Navigate(&params);
 }
 
 }  // namespace send_tab_to_self

@@ -348,6 +348,22 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, IsCommandIdEnabled) {
   EXPECT_FALSE(
       delegate.IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SHARING_SUBMENU));
 }
+
+// Tests that ExecuteCommand does not crash when called for the "Manage Devices"
+// command with a null or destroyed web contents.
+TEST_F(SendTabToSelfContextMenuDelegateTest,
+       ExecuteCommandManageDevicesWithDestroyedWebContentsDoesNotCrash) {
+  auto web_contents2 =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  SendTabToSelfContextMenuDelegate delegate(web_contents2.get(),
+                                            ShareEntryPoint::kContentMenu);
+  // Destroy web contents before executing command.
+  web_contents2.reset();
+
+  delegate.ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES,
+                          0);
+}
+
 }  // namespace
 
 }  // namespace send_tab_to_self

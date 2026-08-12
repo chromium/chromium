@@ -63,6 +63,10 @@ void ShowTabSentFailure(content::WebContents* web_contents,
                         SendTabToSelfResult result,
                         const GURL& url = GURL());
 
+// Opens the "Manage account devices" page in a new foreground tab for
+// `profile` (respecting any modifier keys in `event_flags`).
+void OpenManageDevicesPage(Profile* profile, int event_flags);
+
 }  // namespace send_tab_to_self
 
 #endif  // CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_UTIL_H_

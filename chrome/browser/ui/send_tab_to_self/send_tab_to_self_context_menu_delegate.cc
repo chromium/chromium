@@ -16,11 +16,8 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/navigator/browser_navigator.h"
-#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/features.h"
@@ -30,7 +27,6 @@
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition_utils.h"
 
 namespace send_tab_to_self {
 
@@ -201,13 +197,9 @@ void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
   }
 
   if (command_id == IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES) {
-    NavigateParams params(
+    OpenManageDevicesPage(
         Profile::FromBrowserContext(primary_web_contents_->GetBrowserContext()),
-        GURL(chrome::kGoogleAccountDeviceActivityURL),
-        ui::PAGE_TRANSITION_LINK);
-    params.disposition = ui::DispositionFromEventFlags(
-        event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
-    Navigate(&params);
+        event_flags);
     return;
   }
 

@@ -19,8 +19,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/navigator/browser_navigator.h"
-#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -30,7 +28,6 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_promo_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/common/url_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/send_tab_to_self/features.h"
@@ -45,9 +42,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
-#include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -263,17 +257,7 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
 
 void SendTabToSelfBubbleController::OnManageDevicesClicked(
     const ui::Event& event) {
-  NavigateParams params(GetProfile(),
-                        GURL(chrome::kGoogleAccountDeviceActivityURL),
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-  // NEW_FOREGROUND_TAB is passed as the default below to avoid exiting the
-  // current page, which the user possibly wants to share (maybe they just
-  // clicked "Manage devices" by mistake). Still, DispositionFromEventFlags()
-  // ensures that any modifier keys are respected, e.g. to open a new window
-  // instead.
-  params.disposition = ui::DispositionFromEventFlags(
-      event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  Navigate(&params);
+  OpenManageDevicesPage(GetProfile(), event.flags());
 }
 
 void SendTabToSelfBubbleController::PrimaryPageChanged(content::Page& page) {
