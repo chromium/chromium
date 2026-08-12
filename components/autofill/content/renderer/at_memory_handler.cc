@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -52,8 +53,13 @@ using ::blink::WebFormControlElement;
 using ::blink::WebFormElement;
 using ::blink::WebKeyboardEvent;
 using ::blink::WebLocalFrame;
+using ::blink::WebNode;
 using ::blink::WebRange;
 using ::blink::WebString;
+
+// If more time than this happens between two keystrokes, they're not considered
+// as belonging to the same coherent input (e.g., trigger string).
+constexpr base::TimeDelta kCoherentKeyDownThreshold = base::Milliseconds(500);
 
 // Returns true if `event` may produce a character.
 bool IsPrintable(const WebKeyboardEvent& event) {
@@ -71,6 +77,29 @@ bool IsPrintable(const WebKeyboardEvent& event) {
   return true;
 }
 
+bool IsModifierKey(const WebKeyboardEvent& event) {
+  switch (event.windows_key_code) {
+    case ui::VKEY_SHIFT:
+    case ui::VKEY_LSHIFT:
+    case ui::VKEY_RSHIFT:
+    case ui::VKEY_CONTROL:
+    case ui::VKEY_LCONTROL:
+    case ui::VKEY_RCONTROL:
+    case ui::VKEY_MENU:
+    case ui::VKEY_LMENU:
+    case ui::VKEY_RMENU:
+    case ui::VKEY_ALTGR:
+    case ui::VKEY_LWIN:  // VKEY_LWIN is an alias Mac's VKEY_COMMAND.
+    case ui::VKEY_RWIN:
+    case ui::VKEY_CAPITAL:
+    case ui::VKEY_NUMLOCK:
+    case ui::VKEY_SCROLL:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 AtMemoryHandler::AtMemoryHandler(AutofillAgent* agent)
@@ -81,7 +110,8 @@ AtMemoryHandler::~AtMemoryHandler() = default;
 std::optional<AtMemoryHandler::CaretInfo> AtMemoryHandler::GetCaretInfo(
     const WebElement& element) const {
   if (!element || !element.Focused() || !element.ContainsFrameSelection() ||
-      element.DynamicTo<WebFormElement>()) {
+      element.DynamicTo<WebFormElement>() ||
+      !form_util::IsAccessible(element)) {
     return std::nullopt;
   }
 
@@ -111,8 +141,6 @@ std::optional<AtMemoryHandler::CaretInfo> AtMemoryHandler::GetCaretInfo(
   return std::nullopt;
 }
 
-// AtMemory should be triggered if the field is not a password field, no text is
-// selected and the cursor is located behind the trigger string.
 bool AtMemoryHandler::ShouldTriggerAtMemorySearch(
     const WebElement& element) const {
   if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
@@ -145,27 +173,6 @@ bool AtMemoryHandler::ShouldTriggerAtMemorySearch(
                    .Equals(trigger);
       }
       break;
-  }
-  return false;
-}
-
-bool AtMemoryHandler::OnTextFieldValueChanged(
-    const WebFormControlElement& element,
-    const SynchronousFormCache& form_cache) {
-  if (ShouldTriggerAtMemorySearch(element)) {
-    agent_->ShowSuggestions(
-        element, AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        form_cache, std::nullopt);
-    return true;
-  }
-  return false;
-}
-
-bool AtMemoryHandler::ContentEditableDidChange(const WebElement& element) {
-  if (ShouldTriggerAtMemorySearch(element)) {
-    agent_->ShowSuggestionsForContentEditable(
-        element, AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
-    return true;
   }
   return false;
 }
@@ -234,7 +241,120 @@ bool AtMemoryHandler::DidReceiveKeyDownForAtMemoryShortcut(
 void AtMemoryHandler::DidReceiveKeyDownForAtMemoryTriggerString(
     const WebElement& element,
     const WebKeyboardEvent& event) {
-  // TODO(crbug.com/538494080): Implement this.
+  if (IsModifierKey(event)) {
+    return;
+  }
+
+  if (!IsPrintable(event) ||
+      (event.GetModifiers() & blink::WebInputEvent::kIsAutoRepeat)) {
+    trigger_state_ = {};
+    return;
+  }
+
+  const std::string& trigger = GetTriggerString();
+  if (trigger.empty()) {
+    trigger_state_ = {};
+    return;
+  }
+
+  const std::optional<CaretInfo> info = GetCaretInfo(element);
+  if (!info) {
+    trigger_state_ = {};
+    return;
+  }
+
+  const FieldRendererId element_id = form_util::GetFieldRendererId(element);
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  auto is_plausible_offset = [](size_t last_offset, size_t current_offset) {
+    // Characters are not guaranteed to occur in the field.
+    // For example, non-numeric characters are suppressed in <input
+    // type=number>.
+    return last_offset == current_offset ||
+           (last_offset + 1 == current_offset &&
+            last_offset < std::string::npos);
+  };
+
+  if (trigger_state_.last_element_id != element_id ||
+      !is_plausible_offset(trigger_state_.last_offset, info->offset) ||
+      now - trigger_state_.last_time > kCoherentKeyDownThreshold) {
+    trigger_state_ = {};
+  }
+
+  base::WriteUnicodeCharacter(event.text[0], &trigger_state_.seen_trigger);
+
+  // Truncate the seen trigger so that it is a prefix of the expected trigger.
+  while (!trigger_state_.seen_trigger.empty() &&
+         !trigger.starts_with(trigger_state_.seen_trigger)) {
+    trigger_state_.seen_trigger.erase(0, 1);
+  }
+  DCHECK(trigger.starts_with(trigger_state_.seen_trigger));
+
+  if (trigger_state_.seen_trigger.empty()) {
+    trigger_state_ = {};
+    return;
+  }
+
+  trigger_state_ = {.seen_trigger = trigger_state_.seen_trigger,
+                    .last_time = now,
+                    .last_element_id = element_id,
+                    .last_offset = info->offset};
+  if (trigger != trigger_state_.seen_trigger) {
+    // The trigger string isn't complete yet.
+    return;
+  }
+
+  // The trigger string is complete. We trigger AtMemory suggestions.
+  trigger_state_ = {};
+
+  // The character produced by this keydown event, if there is any, has not been
+  // appended to the field yet. The character is added synchronously after this
+  // event.
+  //
+  // We call AutofillAgent::ShowSuggestions() and
+  // AutofillAgent::ShowSuggestionsForContentEditable() asynchronously to give
+  // Blink time to add the character to the field. This is important because
+  // AutofillAgent calls MaybeUpdateAskForValuesToFill(), which takes a hash of
+  // the field value.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<AtMemoryHandler> self,
+             const FieldRendererId element_id) {
+            if (!self) {
+              return;
+            }
+            WebElement element =
+                WebNode::FromDomNodeId(*element_id).DynamicTo<WebElement>();
+            std::optional<CaretInfo> info = self->GetCaretInfo(element);
+            if (!info) {
+              return;
+            }
+            switch (info->field_type) {
+              case FieldType::kTextTypeFormControl:
+                self->agent_->ShowSuggestions(
+                    element.DynamicTo<WebFormControlElement>(),
+                    AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+                    SynchronousFormCache(), std::nullopt);
+                break;
+              case FieldType::kContentEditable:
+                self->agent_->ShowSuggestionsForContentEditable(
+                    element,
+                    AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
+                break;
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), element_id));
+}
+
+void AtMemoryHandler::FocusedElementChanged(
+    const WebElement& new_focused_element) {
+  trigger_state_ = {};
+}
+
+void AtMemoryHandler::DidReceiveLeftMouseDownOrGestureTapInNode(
+    const blink::WebNode& node) {
+  trigger_state_ = {};
 }
 
 void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement& element,
@@ -351,8 +471,6 @@ void AtMemoryHandler::MaybeRecordAtAt(
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
     form_util::ButtonTitlesCache* button_titles_cache) {
-  constexpr base::TimeDelta kAtAtThreshold = base::Milliseconds(500);
-
   // This function is intended only for WebFormControlElements and for
   // contenteditables that aren't WebFormElement. See
   // form_util::GetFieldRendererId().
@@ -372,7 +490,7 @@ void AtMemoryHandler::MaybeRecordAtAt(
 
   const base::TimeTicks now = base::TimeTicks::Now();
   if (last_at_key_press_.time.is_null() ||
-      now - last_at_key_press_.time > kAtAtThreshold ||
+      now - last_at_key_press_.time > kCoherentKeyDownThreshold ||
       last_at_key_press_.field != form_util::GetFieldRendererId(element)) {
     last_at_key_press_ = {now, form_util::GetFieldRendererId(element)};
     return;

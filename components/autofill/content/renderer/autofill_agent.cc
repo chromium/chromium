@@ -656,6 +656,7 @@ CallTimerState AutofillAgent::GetCallTimerState(
 
 void AutofillAgent::FocusedElementChanged(
     const WebElement& new_focused_element) {
+  at_memory_handler_.FocusedElementChanged(new_focused_element);
   inactivity_timer_.Stop();
   ObserveCaret(new_focused_element);
 
@@ -896,10 +897,6 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
   // showing up.
   ClearPreviewedForm();
 
-  if (at_memory_handler_.ContentEditableDidChange(element)) {
-    return;
-  }
-
   if (std::optional<FormData> form =
           form_util::FindFormForContentEditable(element)) {
     CHECK_EQ(form->fields().size(), 1u);
@@ -921,10 +918,6 @@ void AutofillAgent::OnTextFieldValueChanged(
   // the preview in that case should be cleared since new suggestions will be
   // showing up.
   ClearPreviewedForm();
-
-  if (at_memory_handler_.OnTextFieldValueChanged(element, form_cache)) {
-    return;
-  }
 
   const auto input_element = element.DynamicTo<WebInputElement>();
   if (password_autofill_agent_ && input_element &&
@@ -1577,7 +1570,6 @@ bool AutofillAgent::ShouldThrottleAskForValuesToFill(FieldRendererId field) {
   return false;
 }
 
-
 void AutofillAgent::ShowSuggestions(
     const WebFormControlElement& element,
     AutofillSuggestionTriggerSource trigger_source,
@@ -2110,6 +2102,7 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
 void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
     const WebNode& node) {
   DCHECK(node);
+  at_memory_handler_.DidReceiveLeftMouseDownOrGestureTapInNode(node);
   WebElement contenteditable;
   const bool is_focused =
       node.Focused() || ((contenteditable = node.RootEditableElement()) &&

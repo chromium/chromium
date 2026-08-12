@@ -7,9 +7,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/aliases.h"
@@ -22,8 +25,8 @@ class FieldDataManager;
 
 namespace blink {
 class WebElement;
-class WebFormControlElement;
 class WebKeyboardEvent;
+class WebNode;
 struct RendererPreferences;
 }  // namespace blink
 
@@ -35,15 +38,23 @@ class UkmRecorder;
 namespace autofill {
 
 class AutofillAgent;
-class SynchronousFormCache;
 
-// Handles AtMemory-related interactions on the renderer side.
+// Handles AtMemory-related interactions on the renderer side. It has two main
+// jobs:
 //
-// AtMemory needs to maintain special state because AtMemory
+// Firstly, it observes two possible AtMemory triggers: the trigger string and
+// the keyboard shortcut. Both are handled in DidReceiveKeyDown().
+//
+// Secondly, it maintains state between the triggering of suggestions and
+// filling operations. Unlike classical Autofill, AtMemory needs such state
+// because it
 // - inserts text into specific locations in a field, rather than overwriting
 //   the entire value, and
 // - has high unmasking latency, so the focus or caret may have moved by the
 //   time AtMemory fills an actual value into a field.
+//
+// Owned by AutofillAgent. AutofillAgent passes the relevant events to
+// AtMemoryHandler.
 class AtMemoryHandler {
  public:
   struct AskForValuesToFillInfo {
@@ -57,19 +68,17 @@ class AtMemoryHandler {
   AtMemoryHandler& operator=(const AtMemoryHandler&) = delete;
   ~AtMemoryHandler();
 
-  // Handles value changes in contenteditable elements. Returns true if AtMemory
-  // handled the event (i.e. triggered suggestions).
-  bool ContentEditableDidChange(const blink::WebElement& element);
-
-  // Handles value changes in text fields. Returns true if AtMemory handled the
-  // event (i.e. triggered suggestions).
-  bool OnTextFieldValueChanged(const blink::WebFormControlElement& element,
-                               const SynchronousFormCache& form_cache);
-
-  // Handles key down events for AtMemory (e.g. keyboard shortcuts). Returns
-  // true if the event was handled (i.e. default action should be prevented).
+  // May trigger the AtMemory suggestion if the keydown event completes
+  // AtMemory's trigger string or the keyboard shortcut.
+  // Returns true in the latter case to indicate that the browser must not
+  // default-handle the shortcut (in particular: not bubble up the keyboard
+  // shortcut to the browser process).
   bool DidReceiveKeyDown(const blink::WebElement& element,
                          const blink::WebKeyboardEvent& event);
+
+  void FocusedElementChanged(const blink::WebElement& new_focused_element);
+
+  void DidReceiveLeftMouseDownOrGestureTapInNode(const blink::WebNode& node);
 
   // Tries to fill `value` into `element` at the location where AtMemory was
   // last triggered on `element`.
@@ -102,11 +111,14 @@ class AtMemoryHandler {
 
   const std::string& GetTriggerString() const;
 
+  // AtMemory should be triggered if the field is not a password field, no text
+  // is selected and the cursor is located behind the trigger string.
   bool ShouldTriggerAtMemorySearch(const blink::WebElement& element) const;
 
   bool DidReceiveKeyDownForAtMemoryShortcut(
       const blink::WebElement& element,
       const blink::WebKeyboardEvent& event);
+
   void DidReceiveKeyDownForAtMemoryTriggerString(
       const blink::WebElement& element,
       const blink::WebKeyboardEvent& event);
@@ -130,12 +142,31 @@ class AtMemoryHandler {
   base::circular_deque<AskForValuesToFillInfo>
       last_at_memory_ask_for_values_to_fills_;
 
-  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
+  // State for observing coherent trigger string input.
+  struct {
+    // The longest suffix of coherent user input that is a prefix of the trigger
+    // string. These characters do not necessarily occur in the field value.
+    std::string seen_trigger;
+    // The time of the last keydown event. Only events that happen in a certain
+    // timespan are considered coherent.
+    base::TimeTicks last_time;
+    // The target of the last keydown event.
+    FieldRendererId last_element_id{};
+    // The caret offset before (!) the character occurs.
+    // Note that the character might not appear at all, e.g., in
+    // <input type=number>.
+    size_t last_offset = std::string::npos;
+  } trigger_state_;
 
+  // State for the "@@" UKM metric.
   struct {
     base::TimeTicks time;
     FieldRendererId field;
   } last_at_key_press_;
+
+  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
+
+  base::WeakPtrFactory<AtMemoryHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
