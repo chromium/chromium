@@ -3306,6 +3306,53 @@ TEST_P(MultipleRulesetsTest_Unpacked, ReinstallPreservesGlobalRuleAllocation) {
             global_rules_tracker.GetUnallocatedRuleCount());
 }
 
+// Regression test for crbug.com/40807910. Stale dynamic rules left on disk from
+// a prior installation should be cleaned up when the extension is loaded, so
+// that new dynamic rules reusing the same IDs can be added.
+TEST_P(SingleRulesetTest, StaleDynamicRulesCleanedUpOnLoad) {
+  RulesetManagerObserver ruleset_waiter(manager());
+
+  AddRule(CreateGenericRule());
+  LoadAndExpectSuccess();
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  // Simulate stale dynamic rules left on disk from a previous installation.
+  FileBackedRulesetSource dynamic_source =
+      FileBackedRulesetSource::CreateDynamic(browser_context(),
+                                             extension()->id());
+  base::CreateDirectory(dynamic_source.json_path().DirName());
+  const std::string stale_rules =
+      R"([{"id":1,"priority":1,"action":{"type":"block"},)"
+      R"("condition":{"urlFilter":"stale"}}])";
+  ASSERT_TRUE(base::WriteFile(dynamic_source.json_path(), stale_rules));
+
+  // No stored dynamic ruleset checksum in prefs means no established dynamic
+  // ruleset, so loading the extension should delete the stale files.
+  int dynamic_checksum = 0;
+  ASSERT_FALSE(
+      PrefsHelper(*ExtensionPrefs::Get(browser_context()))
+          .GetDynamicRulesetChecksum(extension()->id(), dynamic_checksum));
+
+  // Reloading the extension (disable then enable) triggers the cleanup in
+  // OnExtensionLoaded().
+  registrar()->DisableExtension(extension()->id(),
+                                {disable_reason::DISABLE_USER_ACTION});
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
+  registrar()->EnableExtension(extension()->id());
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  // Adding a dynamic rule reusing the stale ID should succeed.
+  TestRule dynamic_rule = CreateGenericRule();
+  dynamic_rule.id = 1;
+  dynamic_rule.condition->url_filter = std::string("new_filter");
+  ASSERT_NO_FATAL_FAILURE(
+      RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
+                             {dynamic_rule}, RulesetScope::kDynamic));
+
+  VerifyPublicRulesetIDs(*extension(),
+                         {kDefaultRulesetID, dnr_api::DYNAMIC_RULESET_ID});
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SingleRulesetTest,
                          ::testing::Values(ExtensionLoadType::PACKED,

@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -101,6 +102,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -1987,6 +1989,46 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     UninstallExtension(extension_id);
     WaitForExtensionsWithRulesetsCount(0);
     test_extension_enabled(false);
+  }
+}
+
+// Regression test for crbug.com/40807910: uninstalling an extension that has a
+// dynamic ruleset should delete its dynamic rules directory from disk.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
+                       DynamicRulesDirectoryDeletedOnUninstall) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+
+  // Load an extension and add a dynamic rule so its dynamic rules directory is
+  // written to disk.
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({}));
+  const ExtensionId extension_id = last_loaded_extension_id();
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("dynamic.example");
+  ASSERT_NO_FATAL_FAILURE(AddDynamicRules(extension_id, {rule}));
+
+  const base::FilePath dynamic_rules_dir =
+      FileBackedRulesetSource::CreateDynamic(profile(), extension_id)
+          .json_path()
+          .DirName();
+  {
+    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+    ASSERT_TRUE(base::DirectoryExists(dynamic_rules_dir));
+  }
+
+  UninstallExtension(extension_id);
+  WaitForExtensionsWithRulesetsCount(0);
+
+  // The directory is deleted asynchronously on the extension file task runner;
+  // flush it before checking that the directory is gone.
+  {
+    base::RunLoop run_loop;
+    GetExtensionFileTaskRunner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                                   run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  {
+    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+    EXPECT_FALSE(base::DirectoryExists(dynamic_rules_dir));
   }
 }
 

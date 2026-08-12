@@ -619,12 +619,20 @@ void RulesMonitorService::OnExtensionLoaded(
   }
 
   // Dynamic ruleset
+  RulesetInfo dynamic_ruleset(
+      FileBackedRulesetSource::CreateDynamic(browser_context, extension->id()));
   if (helper.GetDynamicRulesetChecksum(extension->id(),
                                        expected_ruleset_checksum)) {
-    RulesetInfo dynamic_ruleset(FileBackedRulesetSource::CreateDynamic(
-        browser_context, extension->id()));
     dynamic_ruleset.set_expected_checksum(expected_ruleset_checksum);
     load_data.rulesets.push_back(std::move(dynamic_ruleset));
+  } else {
+    // No stored dynamic ruleset checksum in prefs means no established dynamic
+    // ruleset (fresh install, or reinstall after uninstall). Delete any stale
+    // on-disk rules a prior uninstall's async deletion may have left behind.
+    // See https://crbug.com/40807910.
+    GetExtensionFileTaskRunner()->PostTask(
+        FROM_HERE, base::GetDeletePathRecursivelyCallback(
+                       dynamic_ruleset.source().json_path().DirName()));
   }
 
   if (load_data.rulesets.empty()) {
