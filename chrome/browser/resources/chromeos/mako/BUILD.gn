@@ -2,11 +2,50 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Resources used by chrome-untrusted://mako
+import("//build/config/chrome_build.gni")
+import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
+
 grit("resources") {
   source = "//chrome/browser/resources/chromeos/mako/resources.grd"
-
+  if (is_chrome_branded) {
+    _bundle_translations_locales = xtb_locales - [
+                                     "as",
+                                     "en-GB",
+                                     "es-419",
+                                     "fr-CA",
+                                     "or",
+                                     "pt-BR",
+                                     "pt-PT",
+                                     "sr-Latn",
+                                     "zh-CN",
+                                     "zh-HK",
+                                     "zh-TW",
+                                   ] +
+                                   [
+                                     "en",
+                                     "en_gb",
+                                     "es_419",
+                                     "fr_ca",
+                                     "pt_br",
+                                     "pt_pt",
+                                     "tk",
+                                     "zh_cn",
+                                     "zh_hk",
+                                     "zh_tw",
+                                   ]
+    inputs = [
+               "resources/orca/lobster.html",
+               "resources/orca/orca.html",
+               "resources/orca/privacy.html",
+               "resources/orca/lobster_js.js",
+               "resources/orca/web_js.js",
+             ] + process_file_template(
+                 _bundle_translations_locales,
+                 [ "resources/orca/translations/translations__{{source_name_part}}.js" ])
+  } else {
+    inputs = [ "mako" ]
+  }
   outputs = [
     "grit/orca_resources.h",
     "grit/orca_resources_map.h",
