@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
+#include "ui/platform_window/common/platform_window_defaults.h"
 
 namespace ui {
 
@@ -233,9 +234,24 @@ void BeginFrameSourceWayland::OnBeginFrameAck(bool has_damage) {
   } else if (!has_damage) {
     // No damage means no buffer commit, so no frame callback will arrive.
     // Request a bare frame callback from the compositor to maintain pacing.
-    DVLOG(2) << "OnBeginFrameAck: no damage, requesting empty frame callback";
-    frame_manager_->RequestFrameCallback();
-    StartFrameCallbackTimer();
+    if (!ui::UseTestConfigForPlatformWindows()) {
+      DVLOG(2) << "OnBeginFrameAck: no damage, requesting empty frame callback";
+      frame_manager_->RequestFrameCallback();
+      StartFrameCallbackTimer();
+    } else {
+      // In test environments (e.g. running under Weston), older compositors do
+      // not complete bare frame callbacks without damage, causing stalls. In
+      // test mode, schedule the next frame at vsync interval instead.
+      // TODO(https://crbug.com/544919883): Uprev weston to a later version so
+      // this workaround is not needed.
+      DVLOG(2)
+          << "OnBeginFrameAck: no damage (test mode), scheduling next frame "
+             "at vsync interval";
+      frame_callback_timeout_timer_.Start(
+          FROM_HERE, GetEffectiveInterval(),
+          base::BindOnce(&BeginFrameSourceWayland::OnFrameCallbackTimeout,
+                         weak_factory_.GetWeakPtr()));
+    }
   } else {
     DVLOG(2) << "OnBeginFrameAck: has damage, waiting for frame callback";
     StartFrameCallbackTimer();

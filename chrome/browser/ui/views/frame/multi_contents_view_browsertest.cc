@@ -547,8 +547,18 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewWebContentsReLayoutBrowserTest,
   ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
   RunScheduledLayouts();
 
-  EXPECT_TRUE(base::test::RunUntil(
-      [this, split_tab]() { return GetResizeCount(split_tab) >= 1; }));
+  int expected_entering_resize = 1;
+#if BUILDFLAG(IS_OZONE)
+  // On Wayland, the 2nd resize is for xdg_toplevel.set_fullscreen, so 2 is
+  // required to enter fullscreen.
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    expected_entering_resize = 2;
+  }
+#endif
+  EXPECT_TRUE(
+      base::test::RunUntil([this, split_tab, expected_entering_resize]() {
+        return GetResizeCount(split_tab) >= expected_entering_resize;
+      }));
 
   // Exit fullscreen in the split tab.
   split_tab->GetDelegate()->ExitFullscreenModeForTab(split_tab);
