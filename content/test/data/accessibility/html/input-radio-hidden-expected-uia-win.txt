@@ -1,0 +1,34 @@
+Document
+++Group IsControlElement=false
+++++RadioButton SelectionItem.IsSelected=false
+++++Text Name='Radio1'
+++++Text Name='<newline>'
+++++Text Name='Radio2'
+++++Text Name='<newline>'
+++++RadioButton SelectionItem.IsSelected=false
+++++Text Name='Radio3'
+++Group IsControlElement=false
+++++RadioButton SelectionItem.IsSelected=false
+++++Text Name='Radio1'
+++++Text Name='<newline>'
+++++Text Name='Radio2'
+++++Text Name='<newline>'
+++++RadioButton SelectionItem.IsSelected=false
+++++Text Name='Radio3'
+++Group IsControlElement=false
+++++RadioButton SelectionItem.IsSelected=false
+++++Text Name='Radio1'
+++++Text Name='<newline>'
+++++Text Name='Radio2'
+++++Text Name='<newline>'
+++++RadioButton SelectionItem.IsSelected=false
+++++Text Name='Radio3'
+++Group IsControlElement=false
+++++RadioButton SelectionItem.IsSelected=false
+++++Text Name='Radio1'
+++++Text Name='<newline>'
+++++RadioButton IsEnabled=false SelectionItem.IsSelected=false
+++++Text Name='Radio2'
+++++Text Name='<newline>'
+++++RadioButton SelectionItem.IsSelected=false
+++++Text Name='Radio3'

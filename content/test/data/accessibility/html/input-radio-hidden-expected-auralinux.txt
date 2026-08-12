@@ -1,0 +1,34 @@
+[document web]
+++[form]
+++++[radio button] checkable checkable:true posinset:1 setsize:2
+++++[static] name='Radio1'
+++++[static] name='<newline>'
+++++[static] name='Radio2'
+++++[static] name='<newline>'
+++++[radio button] checkable checkable:true posinset:2 setsize:2
+++++[static] name='Radio3'
+++[form]
+++++[radio button] checkable checkable:true posinset:1 setsize:2
+++++[static] name='Radio1'
+++++[static] name='<newline>'
+++++[static] name='Radio2'
+++++[static] name='<newline>'
+++++[radio button] checkable checkable:true posinset:2 setsize:2
+++++[static] name='Radio3'
+++[form]
+++++[radio button] checkable checkable:true posinset:1 setsize:2
+++++[static] name='Radio1'
+++++[static] name='<newline>'
+++++[static] name='Radio2'
+++++[static] name='<newline>'
+++++[radio button] checkable checkable:true posinset:2 setsize:2
+++++[static] name='Radio3'
+++[form]
+++++[radio button] checkable checkable:true posinset:1 setsize:3
+++++[static] name='Radio1'
+++++[static] name='<newline>'
+++++[radio button] checkable checkable:true posinset:2 setsize:3
+++++[static] name='Radio2'
+++++[static] name='<newline>'
+++++[radio button] checkable checkable:true posinset:3 setsize:3
+++++[static] name='Radio3'

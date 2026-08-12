@@ -1,0 +1,57 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++form
+++++++++radioButton inputType='radio' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++staticText name='Radio1'
+++++++++++inlineTextBox name='Radio1'
+++++++++lineBreak name='<newline>'
+++++++++++inlineTextBox name='<newline>'
+++++++++radioButton ignored invisible inputType='radio' checkedState=false radioGroupIds=radioButton,radioButton
+++++++++staticText name='Radio2'
+++++++++++inlineTextBox name='Radio2'
+++++++++lineBreak name='<newline>'
+++++++++++inlineTextBox name='<newline>'
+++++++++radioButton inputType='radio' setSize=2 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++staticText name='Radio3'
+++++++++++inlineTextBox name='Radio3'
+++++++form
+++++++++radioButton inputType='radio' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++staticText name='Radio1'
+++++++++++inlineTextBox name='Radio1'
+++++++++lineBreak name='<newline>'
+++++++++++inlineTextBox name='<newline>'
+++++++++staticText name='Radio2'
+++++++++++inlineTextBox name='Radio2'
+++++++++lineBreak name='<newline>'
+++++++++++inlineTextBox name='<newline>'
+++++++++radioButton inputType='radio' setSize=2 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++staticText name='Radio3'
+++++++++++inlineTextBox name='Radio3'
+++++++form
+++++++++radioButton inputType='radio' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++staticText name='Radio1'
+++++++++++inlineTextBox name='Radio1'
+++++++++lineBreak name='<newline>'
+++++++++++inlineTextBox name='<newline>'
+++++++++staticText name='Radio2'
+++++++++++inlineTextBox name='Radio2'
+++++++++lineBreak name='<newline>'
+++++++++++inlineTextBox name='<newline>'
+++++++++radioButton inputType='radio' setSize=2 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++staticText name='Radio3'
+++++++++++inlineTextBox name='Radio3'
+++++++form
+++++++++radioButton inputType='radio' setSize=3 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++staticText name='Radio1'
+++++++++++inlineTextBox name='Radio1'
+++++++++lineBreak name='<newline>'
+++++++++++inlineTextBox name='<newline>'
+++++++++radioButton inputType='radio' restriction=disabled setSize=3 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++staticText name='Radio2'
+++++++++++inlineTextBox name='Radio2'
+++++++++lineBreak name='<newline>'
+++++++++++inlineTextBox name='<newline>'
+++++++++radioButton inputType='radio' setSize=3 posInSet=3 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++staticText name='Radio3'
+++++++++++inlineTextBox name='Radio3'

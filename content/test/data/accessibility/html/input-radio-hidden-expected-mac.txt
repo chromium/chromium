@@ -1,0 +1,26 @@
+AXWebArea
+++AXGroup
+++++AXRadioButton AXValue=0
+++++AXStaticText AXValue='Radio1'
+++++AXStaticText AXValue='Radio2'
+++++AXRadioButton AXValue=0
+++++AXStaticText AXValue='Radio3'
+++AXGroup
+++++AXRadioButton AXValue=0
+++++AXStaticText AXValue='Radio1'
+++++AXStaticText AXValue='Radio2'
+++++AXRadioButton AXValue=0
+++++AXStaticText AXValue='Radio3'
+++AXGroup
+++++AXRadioButton AXValue=0
+++++AXStaticText AXValue='Radio1'
+++++AXStaticText AXValue='Radio2'
+++++AXRadioButton AXValue=0
+++++AXStaticText AXValue='Radio3'
+++AXGroup
+++++AXRadioButton AXValue=0
+++++AXStaticText AXValue='Radio1'
+++++AXRadioButton AXValue=0
+++++AXStaticText AXValue='Radio2'
+++++AXRadioButton AXValue=0
+++++AXStaticText AXValue='Radio3'

@@ -1,0 +1,36 @@
+<!--
+@BLINK-ALLOW:inputType=*
+@BLINK-ALLOW:radioGroupIds=*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@MAC-ALLOW:AXARIASetSize
+@MAC-ALLOW:AXARIAPosInSet
+@WIN-ALLOW:setsize*
+@WIN-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:posinset*
+-->
+<html>
+  <body>
+    <form>
+      <input type="radio" name="foo" value="r1">Radio1<br>
+      <input aria-hidden="true" type="radio" name="foo" value="r2">Radio2<br>
+      <input type="radio" name="foo" value="r3">Radio3
+    </form>
+    <form>
+      <input type="radio" name="foo" value="r1">Radio1<br>
+      <input inert type="radio" name="foo" value="r2">Radio2<br>
+      <input type="radio" name="foo" value="r3">Radio3
+    </form>
+    <form>
+      <input type="radio" name="foo" value="r1">Radio1<br>
+      <input style="display:none" type="radio" name="foo" value="r2">Radio2<br>
+      <input type="radio" name="foo" value="r3">Radio3
+    </form>
+    <form>
+      <input type="radio" name="foo" value="r1">Radio1<br>
+      <input disabled type="radio" name="foo" value="r2">Radio2<br>
+      <input type="radio" name="foo" value="r3">Radio3
+    </form>
+  </body>
+</html>

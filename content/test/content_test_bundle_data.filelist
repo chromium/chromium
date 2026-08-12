@@ -4917,6 +4917,12 @@ data/accessibility/html/input-radio-expected-fuchsia.txt
 data/accessibility/html/input-radio-expected-mac.txt
 data/accessibility/html/input-radio-expected-uia-win.txt
 data/accessibility/html/input-radio-expected-win.txt
+data/accessibility/html/input-radio-hidden-expected-auralinux.txt
+data/accessibility/html/input-radio-hidden-expected-blink.txt
+data/accessibility/html/input-radio-hidden-expected-mac.txt
+data/accessibility/html/input-radio-hidden-expected-uia-win.txt
+data/accessibility/html/input-radio-hidden-expected-win.txt
+data/accessibility/html/input-radio-hidden.html
 data/accessibility/html/input-radio-in-menu-expected-android-assist-data.txt
 data/accessibility/html/input-radio-in-menu-expected-android-external.txt
 data/accessibility/html/input-radio-in-menu-expected-android.txt
