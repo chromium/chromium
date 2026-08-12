@@ -312,12 +312,10 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                             + ", available immediately ? "
                             + availableImmediately);
         }
-        boolean onlyOmniboxPosition = !UrlUtilities.isNtpUrl(tab.getUrl());
+        boolean nonNtp = !UrlUtilities.isNtpUrl(tab.getUrl());
         SharedPreferencesManager sharedPrefManager = ChromeSharedPreferences.getInstance();
-        if (onlyOmniboxPosition) {
-            if (sharedPrefManager.readBoolean(
-                    ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX,
-                    /* defaultValue= */ true)) {
+        if (nonNtp) {
+            if (hasImportedNonNtpSettings(sharedPrefManager)) {
                 return;
             }
         } else if (sharedPrefManager.readBoolean(
@@ -326,61 +324,72 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             return;
         }
 
-        // Record a single action for checking for remote settings, regardless of whether we're in
-        // an omnibox-only case.
-        recordAction(/* onlyOmniboxPosition= */ false, "CheckForRemoteSettings");
+        // Record a single action for checking for remote settings, regardless of whether we're
+        // handling NTP settings.
+        recordAction(/* nonNtp= */ false, "CheckForRemoteSettings");
         if (status == ServiceStatus.AVAILABLE) {
             if (availableImmediately) {
                 // If there was no delay, apply the settings immediately (skipping the user straight
                 // to the undo prompt).
                 applyAndNotifySettingImport(
-                        profile,
-                        getPrefsFromRemoteDevice(profile, tracker),
-                        /* onlyOmniboxPosition= */ onlyOmniboxPosition);
+                        profile, getPrefsFromRemoteDevice(profile, tracker), /* nonNtp= */ nonNtp);
             } else {
                 // If there was a delay, ask the user whether they want to apply the settings.
-                askToApplyNtpSettingImportIfNeeded(
-                        profile,
-                        getPrefsFromRemoteDevice(profile, tracker),
-                        /* onlyOmniboxPosition= */ onlyOmniboxPosition);
+                askToApplySettingImportIfNeeded(
+                        profile, getPrefsFromRemoteDevice(profile, tracker), /* nonNtp= */ nonNtp);
             }
         } else {
             // If the status was not AVAILABLE, the user does not have their "Settings" sync toggle
             // on in their account settings.
             // Either way, because the CrossDevicePrefTracker became "ready", we are now done.
             markCrossDeviceSettingImportComplete(
-                    onlyOmniboxPosition, CrossDeviceSettingImportOutcome.SYNC_NOT_CONFIGURED);
+                    nonNtp, CrossDeviceSettingImportOutcome.SYNC_NOT_CONFIGURED);
         }
+    }
+
+    private static boolean hasImportedNonNtpSettings(SharedPreferencesManager sharedPrefManager) {
+        if (sharedPrefManager.contains(
+                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_NON_NTP_SETTINGS)) {
+            return sharedPrefManager.readBoolean(
+                    ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_NON_NTP_SETTINGS,
+                    /* defaultValue= */ true);
+        }
+        boolean oldValue =
+                sharedPrefManager.readBoolean(
+                        ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX,
+                        /* defaultValue= */ false);
+        sharedPrefManager.writeBoolean(
+                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_NON_NTP_SETTINGS, oldValue);
+        return oldValue;
     }
 
     /**
      * Marks (possibly only some of the) cross-device setting imports as complete.
      *
-     * @param onlyOmniboxPosition Whether only the omnibox position setting is in scope.
+     * @param nonNtp Whether only settings that affect non-NTP pages are in scope.
      */
     private static void markCrossDeviceSettingImportComplete(
-            boolean onlyOmniboxPosition, @CrossDeviceSettingImportOutcome int reason) {
+            boolean nonNtp, @CrossDeviceSettingImportOutcome int reason) {
         recordOutcome(reason);
         SharedPreferencesManager sharedPrefManager = ChromeSharedPreferences.getInstance();
 
         sharedPrefManager.writeBoolean(
-                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX, true);
-        if (!onlyOmniboxPosition) {
+                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_NON_NTP_SETTINGS, true);
+        if (!nonNtp) {
             sharedPrefManager.writeBoolean(
                     ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS, true);
         }
     }
 
     /**
-     * Shows {@param snackbar} now if there no dialogs, or waits until the last dialog is dismissed
-     * and then shows it.
+     * Shows {@param snackbar} now if there are no dialogs, or waits until the last dialog is
+     * dismissed and then shows it.
      *
      * @param snackbar The {@link Snackbar} to show.
-     * @param onlyOmniboxPosition Whether this snackbar only encompasses the bottom omnibox position
-     *     pref.
+     * @param nonNtp Whether this snackbar only encompasses settings that affect non-NTP pages.
      */
     @VisibleForTesting
-    public void showSnackbarAfterDialogs(Snackbar snackbar, boolean onlyOmniboxPosition) {
+    public void showSnackbarAfterDialogs(Snackbar snackbar, boolean nonNtp) {
         ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
         if (modalDialogManager == null) return;
 
@@ -394,41 +403,39 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                         public void onLastDialogDismissed() {
                             snackbarManager.showSnackbar(snackbar);
                             markCrossDeviceSettingImportComplete(
-                                    onlyOmniboxPosition,
-                                    CrossDeviceSettingImportOutcome.SNACKBAR_SHOWN);
+                                    nonNtp, CrossDeviceSettingImportOutcome.SNACKBAR_SHOWN);
                         }
                     });
         } else {
             snackbarManager.showSnackbar(snackbar);
             markCrossDeviceSettingImportComplete(
-                    onlyOmniboxPosition, CrossDeviceSettingImportOutcome.SNACKBAR_SHOWN);
+                    nonNtp, CrossDeviceSettingImportOutcome.SNACKBAR_SHOWN);
         }
     }
 
     /**
-     * Shows a snackbar asking the user if they want to import NTP settings from another device.
+     * Shows a snackbar asking the user if they want to import settings from another device.
      *
      * @param profile The {@link Profile}.
      * @param preferencesToApply The preferences that will be applied.
-     * @param onlyOmniboxPosition Whether only the omnibox position should be considered. If true,
-     *     we only check the omnibox position to determine whether to show the snackbar, and when we
-     *     apply the new settings, only the omnibox position is applied. If false, all NTP settings
-     *     AND the omnibox position are considered (both for determining whether to show the
-     *     snackbar and applying the changes).
+     * @param nonNtp Whether only settings that apply to non-NTP pages should be considered. If
+     *     true, we only check non-NTP settings to determine whether to show the snackbar, and when
+     *     we apply the new settings, only non-NTP settings are applied. If false, all settings are
+     *     considered (both for determining whether to show the snackbar and applying the changes).
      */
     @VisibleForTesting
-    void askToApplyNtpSettingImportIfNeeded(
-            Profile profile, Map<String, Object> preferencesToApply, boolean onlyOmniboxPosition) {
-        if (shouldShowSnackbar(profile, preferencesToApply, onlyOmniboxPosition)) {
+    void askToApplySettingImportIfNeeded(
+            Profile profile, Map<String, Object> preferencesToApply, boolean nonNtp) {
+        if (shouldShowSnackbar(profile, preferencesToApply, nonNtp)) {
             Snackbar offerApplySnackbar =
                     Snackbar.make(
                             mContext.getString(R.string.synced_set_up_snackbar_ask_to_apply),
                             new SnackbarManager.SnackbarController() {
                                 @Override
                                 public void onAction(@Nullable Object actionData) {
-                                    recordAction(onlyOmniboxPosition, "Apply");
+                                    recordAction(nonNtp, "Apply");
                                     applyAndNotifySettingImport(
-                                            profile, preferencesToApply, onlyOmniboxPosition);
+                                            profile, preferencesToApply, nonNtp);
                                 }
                             },
                             TYPE_ACTION,
@@ -436,10 +443,10 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             offerApplySnackbar.setAction(
                     /* actionText= */ mContext.getString(R.string.apply),
                     /* actionData= */ Map.of());
-            showSnackbarAfterDialogs(offerApplySnackbar, onlyOmniboxPosition);
+            showSnackbarAfterDialogs(offerApplySnackbar, nonNtp);
         } else {
             markCrossDeviceSettingImportComplete(
-                    onlyOmniboxPosition, CrossDeviceSettingImportOutcome.NO_SETTINGS_TO_IMPORT);
+                    nonNtp, CrossDeviceSettingImportOutcome.NO_SETTINGS_TO_IMPORT);
         }
     }
 
@@ -449,12 +456,12 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      *
      * @param profile The {@link Profile}.
      * @param preferencesToApply The preferences that will be applied.
-     * @param onlyOmniboxPosition Whether only the omnibox position should be considered (see
-     *     askToApplyNtpSettingImportIfNeeded documentation above).
+     * @param nonNtp Whether only settings that affect non-NTP pages should be considered (see
+     *     askToApplySettingImportIfNeeded documentation above).
      */
     private void applyAndNotifySettingImport(
-            Profile profile, Map<String, Object> preferencesToApply, boolean onlyOmniboxPosition) {
-        if (shouldShowSnackbar(profile, preferencesToApply, onlyOmniboxPosition)) {
+            Profile profile, Map<String, Object> preferencesToApply, boolean nonNtp) {
+        if (shouldShowSnackbar(profile, preferencesToApply, nonNtp)) {
             Map<String, Object> currentPreferences = getCurrentSettings(profile);
             Snackbar offerUndoSnackbar =
                     Snackbar.make(
@@ -463,15 +470,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                             new SnackbarManager.SnackbarController() {
                                 @Override
                                 public void onAction(@Nullable Object actionData) {
-                                    if (onlyOmniboxPosition) {
+                                    if (nonNtp) {
                                         applyLocalStateSettings(currentPreferences);
                                     } else {
                                         applySettings(profile, currentPreferences);
                                     }
 
-                                    recordAction(onlyOmniboxPosition, "Undo");
-                                    askToRedoSettingImport(
-                                            profile, preferencesToApply, onlyOmniboxPosition);
+                                    recordAction(nonNtp, "Undo");
+                                    askToRedoSettingImport(profile, preferencesToApply, nonNtp);
                                 }
                             },
                             Snackbar.TYPE_ACTION,
@@ -479,41 +485,40 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             offerUndoSnackbar.setAction(
                     /* actionText= */ mContext.getString(R.string.undo),
                     /* actionData= */ Map.of());
-            showSnackbarAfterDialogs(offerUndoSnackbar, onlyOmniboxPosition);
+            showSnackbarAfterDialogs(offerUndoSnackbar, nonNtp);
             applySettings(profile, preferencesToApply);
         } else {
             markCrossDeviceSettingImportComplete(
-                    onlyOmniboxPosition, CrossDeviceSettingImportOutcome.NO_SETTINGS_TO_IMPORT);
+                    nonNtp, CrossDeviceSettingImportOutcome.NO_SETTINGS_TO_IMPORT);
         }
     }
 
     /**
-     * Shows a snackbar asking the user if they want to redo their NTP setting import (this is
-     * offered after the user hits undo).
+     * Shows a snackbar asking the user if they want to redo their setting import (this is offered
+     * after the user hits undo).
      *
      * @param profile The {@link Profile}.
      * @param preferencesToApply The preferences that will be applied during the redo.
-     * @param onlyOmniboxPosition Whether only the omnibox position should be considered (see
-     *     askToApplyNtpSettingImportIfNeeded documentation above).
+     * @param nonNtp Whether only settings that affect non-NTP pages should be considered (see
+     *     askToApplySettingImportIfNeeded documentation above).
      */
     private void askToRedoSettingImport(
-            Profile profile, Map<String, Object> preferencesToApply, boolean onlyOmniboxPosition) {
+            Profile profile, Map<String, Object> preferencesToApply, boolean nonNtp) {
         Snackbar offerRedoSnackbar =
                 Snackbar.make(
                         mContext.getString(R.string.synced_set_up_snackbar_removed_confirmation),
                         new SnackbarManager.SnackbarController() {
                             @Override
                             public void onAction(@Nullable Object actionData) {
-                                recordAction(onlyOmniboxPosition, "Redo");
-                                applyAndNotifySettingImport(
-                                        profile, preferencesToApply, onlyOmniboxPosition);
+                                recordAction(nonNtp, "Redo");
+                                applyAndNotifySettingImport(profile, preferencesToApply, nonNtp);
                             }
                         },
                         TYPE_ACTION,
                         UMA_CROSS_DEVICE_SETTING_REDO);
         offerRedoSnackbar.setAction(
                 /* actionText= */ mContext.getString(R.string.redo), /* actionData= */ Map.of());
-        showSnackbarAfterDialogs(offerRedoSnackbar, onlyOmniboxPosition);
+        showSnackbarAfterDialogs(offerRedoSnackbar, nonNtp);
     }
 
     /** Returns the user's current settings. */
@@ -564,28 +569,29 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             if (importedSettingHasPreferenceChange(preferences, userPrefs, key)) return true;
         }
 
-        return importedSettingsHaveOmniboxChange(preferences);
+        return importedSettingsAffectNonNtp(preferences);
     }
 
     /**
      * @param profile The {@link Profile}.
      * @param preferences The preferences to compare with local.
-     * @param onlyOmniboxPosition Whether only the omnibox position should be considered (see
-     *     askToApplyNtpSettingImportIfNeeded documentation above).
+     * @param nonNtp Whether only settings that affect non-NTP pages should be considered (see
+     *     askToApplySettingImportIfNeeded documentation above).
      * @return Whether the undo/redo snackbar should be shown.
      */
     private boolean shouldShowSnackbar(
-            Profile profile, Map<String, Object> preferences, boolean onlyOmniboxPosition) {
-        return onlyOmniboxPosition
-                ? importedSettingsHaveOmniboxChange(preferences)
+            Profile profile, Map<String, Object> preferences, boolean nonNtp) {
+        return nonNtp
+                ? importedSettingsAffectNonNtp(preferences)
                 : importedSettingsHavePreferenceChange(profile, preferences);
     }
 
     /**
      * @param preferences The preferences to check.
-     * @return whether the user's current omnibox position is different from {@param preferences}.
+     * @return whether the user's settings differ from {@param preferences} in a way that affects
+     *     non-NTP pages.
      */
-    private boolean importedSettingsHaveOmniboxChange(Map<String, Object> preferences) {
+    private boolean importedSettingsAffectNonNtp(Map<String, Object> preferences) {
         PrefService localPrefs = LocalStatePrefs.get();
         if (localPrefs == null) {
             return false;
@@ -598,7 +604,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
                 Log.i(
                         TAG,
-                        "importedSettingsHaveOmniboxChange, bottomOmniboxBoolean = "
+                        "importedSettingsAffectNonNtp, bottomOmniboxBoolean = "
                                 + bottomOmniboxBoolean
                                 + ", localPrefs.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION) = "
                                 + localPrefs.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION));
@@ -607,7 +613,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     != localPrefs.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION);
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
-            Log.i(TAG, "importedSettingsHaveOmniboxChange, returning false at bottom of function");
+            Log.i(TAG, "importedSettingsAffectNonNtp, returning false at bottom of function");
         }
         return false;
     }
@@ -723,11 +729,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         return res;
     }
 
-    /** Logs UMA with suffix {@param suffix} (omnibox-specific if {@param onlyOmniboxPosition}) */
-    private void recordAction(boolean onlyOmniboxPosition, String suffix) {
+    /**
+     * Logs UMA with suffix {@param suffix} (if {@param nonNtp}, adds a suffix specifying that we
+     * are only working with preferences that affect non-NTP pages).
+     */
+    private void recordAction(boolean nonNtp, String suffix) {
         StringBuilder action = new StringBuilder("Android.CrossDeviceSettingImport");
-        if (onlyOmniboxPosition) {
-            action.append(".OmniboxPosition");
+        if (nonNtp) {
+            action.append(".NonNtp");
         }
         action.append('.');
         action.append(suffix);
