@@ -4,9 +4,10 @@
 
 #include "chrome/browser/gesturenav/android/tab_on_back_gesture_handler.h"
 
+#include <iomanip>
+
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/strings/stringprintf.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -30,29 +31,6 @@ void AssertHasWindowAndCompositor(content::WebContents* web_contents) {
   auto* window = web_contents->GetNativeView()->GetWindowAndroid();
   CHECK(window);
   CHECK(window->GetCompositor());
-}
-
-const char* EdgeToString(ui::BackGestureEventSwipeEdge edge) {
-  return edge == ui::BackGestureEventSwipeEdge::LEFT ? "left" : "right";
-}
-
-// Reports an `OnBackProgressed()` call that does not belong to the gesture we
-// started. `DumpWithoutCrashing()` throttles itself per call site (default
-// once per day per browser process), so progress events at frame rate will
-// not flood diagnostic reports.
-void ReportUnexpectedProgress(float progress,
-                              ui::BackGestureEventSwipeEdge edge,
-                              bool forward,
-                              bool is_in_progress,
-                              ui::BackGestureEventSwipeEdge started_edge) {
-  SCOPED_CRASH_KEY_STRING64("OnBackProgressed", "progress",
-                            base::StringPrintf("%.6f", progress));
-  SCOPED_CRASH_KEY_STRING32("OnBackProgressed", "started edge",
-                            EdgeToString(started_edge));
-  SCOPED_CRASH_KEY_STRING32("OnBackProgressed", "edge", EdgeToString(edge));
-  SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "forward", forward);
-  SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "is in progress", is_in_progress);
-  base::debug::DumpWithoutCrashing();
 }
 
 }  // namespace
@@ -81,38 +59,25 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
   started_edge_ = static_cast<ui::BackGestureEventSwipeEdge>(edge);
 
   web_contents->GetBackForwardTransitionAnimationManager()->OnGestureStarted(
-      back_gesture, started_edge_,
+      back_gesture, static_cast<ui::BackGestureEventSwipeEdge>(edge),
       forward ? NavDirection::kForward : NavDirection::kBackward);
 }
 
-bool TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
+void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
                                                float progress,
                                                int edge,
                                                bool forward,
                                                bool is_gesture_mode) {
   SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "gesture mode", is_gesture_mode);
-  auto swipe_edge = static_cast<ui::BackGestureEventSwipeEdge>(edge);
-  if (!is_in_progress_ || started_edge_ != swipe_edge) {
-    // This event does not belong to the gesture we started, so give the gesture
-    // back to the caller without mutating or cancelling an active gesture
-    // belonging to a different owner or edge.
-    //
-    // This used to cancel and then restart the gesture from `edge` and
-    // `forward` instead (crrev.com/c/5921004 for crbug.com/370105609,
-    // crrev.com/c/5941357 for crbug.com/373617224). Restarting from here is not
-    // safe: `forward` follows the swipe edge, and whoever sent this event never
-    // checked it against session history, so the restart can ask
-    // `BackForwardTransitionAnimationManager` to navigate in a direction that
-    // has no destination entry. That is crbug.com/530682179.
-    //
-    // Simply dropping the event is not enough either: `OnBackCancelled()` and
-    // `OnBackInvoked()` no-op while `is_in_progress_` is false, and the callers
-    // stop doing their own back handling once they have a handler, so the
-    // user's gesture would be silently swallowed. Report `false` instead;
-    // the caller drops its reference to us and handles the gesture itself.
-    ReportUnexpectedProgress(progress, swipe_edge, forward, is_in_progress_,
-                             started_edge_);
-    return false;
+  if (!is_in_progress_ ||
+      started_edge_ != static_cast<ui::BackGestureEventSwipeEdge>(edge)) {
+    if (is_in_progress_) {
+      OnBackCancelled(env, is_gesture_mode);
+    }
+
+    CHECK(!is_in_progress_);
+    OnBackStarted(env, progress, edge, forward, is_gesture_mode);
+    return;
   }
 
   content::WebContents* web_contents = tab_android_->web_contents();
@@ -124,7 +89,6 @@ bool TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
   ui::BackGestureEvent back_gesture(progress);
   web_contents->GetBackForwardTransitionAnimationManager()->OnGestureProgressed(
       back_gesture);
-  return true;
 }
 
 void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env,
