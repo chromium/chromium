@@ -90,7 +90,7 @@ class VariationsService
     // Called when the VariationsService detects that there will be significant
     // experiment changes on a restart. This notification can then be used to
     // update UI (i.e. badging an icon).
-    virtual void OnExperimentChangesDetected(Severity severity) = 0;
+    virtual void OnExperimentChangesDetected(Severity severity) {}
 
     // Called when a new seed has been successfully fetched from the
     // variations server.
