@@ -775,6 +775,80 @@ TEST_F(ServiceWorkerContextTest, StartWorkerForScopeFailsWhenProcessGone) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort, failure_status);
 }
 
+// When the context no longer tracks a worker as live by the time its start
+// resolves, StartWorkerForScope must resolve as a failure rather than
+// delivering a "started" callback for that worker. Regression test for
+// crbug.com/536945271 (crbug.com/541049180 confirmed this flow occurs in
+// production).
+TEST_F(ServiceWorkerContextTest, StartWorkerForScopeFailsWhenWorkerNotLive) {
+  GURL scope("https://www.example.com/");
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope));
+  GURL script_url("https://www.example.com/service_worker.js");
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = scope;
+
+  int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
+  bool registered = false;
+  context()->RegisterServiceWorker(
+      script_url, key, options, CreateFetchClientSettingsObject(),
+      MakeRegisteredCallback(&registered, &registration_id),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return registered; }));
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      context()->GetLiveRegistration(registration_id);
+  ASSERT_TRUE(registration);
+  scoped_refptr<ServiceWorkerVersion> version = registration->active_version();
+  ASSERT_TRUE(version);
+
+  // Stop the worker first: while it is running the start resolves on the next
+  // task pumped, delivering success before ScheduleDeleteAndStartOver() below
+  // takes effect.
+  StopServiceWorker(version.get());
+
+  // Holds that start in flight. The tracking can only be broken between the
+  // start request and its resolution: breaking it any earlier also fails the
+  // registration lookup, which resolves the start before it reaches the worker.
+  auto* client = helper_->AddNewPendingInstanceClient<
+      DelayedFakeEmbeddedWorkerInstanceClient>(helper_.get());
+
+  bool success_called = false;
+  bool failure_called = false;
+  blink::ServiceWorkerStatusCode failure_status =
+      blink::ServiceWorkerStatusCode::kOk;
+  context_wrapper()->StartWorkerForScope(
+      scope, key,
+      base::BindLambdaForTesting(
+          [&](int64_t, ChildProcessId, int, const blink::ServiceWorkerToken&) {
+            success_called = true;
+          }),
+      base::BindLambdaForTesting([&](StatusCodeResponse response) {
+        failure_called = true;
+        failure_status = response.status_code;
+      }));
+  client->RunUntilStartWorker();
+
+  // Make the context stop tracking `version` as a live worker, while the
+  // version itself still reports kStarting.
+  context()->ScheduleDeleteAndStartOver();
+  content::RunAllTasksUntilIdle();
+  ASSERT_FALSE(context_wrapper()->IsLiveServiceWorkerWithToken(
+      version->version_id(), version->worker_host()->token()));
+  ASSERT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
+
+  // Let the no-longer-tracked worker finish starting.
+  client->UnblockStartWorker();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return success_called || failure_called; }));
+
+  // The regression check - the failure callback should be called in this case.
+  EXPECT_FALSE(success_called);
+  EXPECT_TRUE(failure_called);
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort, failure_status);
+}
+
 // Test registration when the service worker rejects the install event. The
 // registration callback should indicate success, but there should be no waiting
 // or active worker in the registration.

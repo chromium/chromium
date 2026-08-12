@@ -140,13 +140,19 @@ void DidStartWorker(
     return;
   }
   EmbeddedWorkerInstance* instance = version->embedded_worker();
-  if (!RenderProcessHost::FromID(instance->process_id())) {
-    // No live RenderProcessHost backs the process id this worker reports, even
-    // though the start resolved successfully. There is no usable process to run
-    // the worker, so reporting success would be wrong. Resolve the start as a
-    // failure instead. This is the proper fix for crbug.com/536945271:
-    // the service worker layer must not deliver a start "success" with a
-    // process that is already gone.
+  const blink::ServiceWorkerToken& token = version->worker_host()->token();
+  base::WeakPtr<ServiceWorkerContextCore> context = version->context();
+  if (!RenderProcessHost::FromID(instance->process_id()) || !context ||
+      !context->wrapper()->IsLiveServiceWorkerWithToken(version->version_id(),
+                                                        token)) {
+    // No live RenderProcessHost backs the process id this worker reports, or
+    // the context no longer tracks the version as a live worker with this
+    // token (proven to happen in production, see crbug.com/541049180), even
+    // though the start resolved successfully. There is no usable worker for
+    // callers, so reporting success would be wrong. Resolve the start as a
+    // failure instead. This is the proper fix for crbug.com/536945271: the
+    // service worker layer must not deliver a start "success" for a worker
+    // that is already unusable.
     std::move(failure_callback)
         .Run(StatusCodeResponse{
             .status_code = blink::ServiceWorkerStatusCode::kErrorAbort});
@@ -154,7 +160,7 @@ void DidStartWorker(
   }
   std::move(info_callback)
       .Run(version->version_id(), instance->process_id(), instance->thread_id(),
-           version->worker_host()->token());
+           token);
 }
 
 void FoundRegistrationForStartWorker(
