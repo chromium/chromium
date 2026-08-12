@@ -1310,6 +1310,30 @@ public class AppMenuTest {
     }
 
     @Test
+    @MediumTest
+    public void testAppMenu_keyboardVisible_afterMenuDismissed() throws Exception {
+        // Show and dismiss menu first so mAppMenu is initialized and mAdapter is nullified on
+        // dismiss.
+        showMenuAndAssert(mAppMenuHandler);
+        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.getAppMenu().dismiss());
+        mMenuObserver.menuHiddenCallback.waitForCallback(0);
+
+        doReturn(true).when(mKeyboardDelegate).isKeyboardShowing(any());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuCoordinator.showAppMenuForKeyboardEvent());
+
+        verify(mKeyboardDelegate, timeout(500))
+                .addKeyboardVisibilityListener(mKeyboardListenerCaptor.capture());
+
+        verify(mKeyboardDelegate).hideKeyboard(any());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mKeyboardListenerCaptor.getValue().keyboardVisibilityChanged(false);
+                });
+
+        waitForMenuToShow(1, mAppMenuHandler);
+    }
+
+    @Test
     @SmallTest
     @Feature({"Browser", "Main", "RenderTest"})
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
