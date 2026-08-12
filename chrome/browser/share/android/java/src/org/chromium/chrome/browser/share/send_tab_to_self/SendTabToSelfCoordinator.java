@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,7 +25,6 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -43,19 +41,18 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchM
 import org.chromium.chrome.browser.ui.signin.account_picker.PostSigninOperationResult;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -63,76 +60,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class SendTabToSelfCoordinator
         implements BottomSheetSigninAndHistorySyncCoordinator.Delegate {
-    /**
-     * Waits for Sync to download the list of target devices after sign-in. Aborts if the user
-     * dismisses the sign-in bottom sheet ("account picker") before success.
-     */
-    // TODO(crbug.com/519101926): Consider moving TargetDeviceListWaiter to a shared C++
-    // component (components/send_tab_to_self) and accessing it via JNI to reduce duplication.
-    private static class TargetDeviceListWaiter extends EmptyBottomSheetObserver
-            implements SyncService.SyncStateChangedListener {
-        private final BottomSheetController mBottomSheetController;
-        private final String mUrl;
-        private final Callback<@PostSigninOperationResult Integer> mOnComplete;
-        private final Profile mProfile;
 
-        /**
-         * Note there's no need for a notion for a failure callback because in that case the account
-         * picker bottom sheet was closed and there's nothing left to do (simply don't show any
-         * other bottom sheet).
-         */
-        public TargetDeviceListWaiter(
-                BottomSheetController bottomSheetController,
-                String url,
-                Callback<@PostSigninOperationResult Integer> onComplete,
-                Profile profile) {
-            mBottomSheetController = bottomSheetController;
-            mUrl = url;
-            mOnComplete = onComplete;
-            mProfile = profile;
-
-            assumeNonNull(SyncServiceFactory.getForProfile(mProfile))
-                    .addSyncStateChangedListener(this);
-            mBottomSheetController.addObserver(this);
-            notifyAndDestroyIfDone();
-        }
-
-        private void destroy() {
-            assumeNonNull(SyncServiceFactory.getForProfile(mProfile))
-                    .removeSyncStateChangedListener(this);
-            mBottomSheetController.removeObserver(this);
-        }
-
-        @Override
-        public void syncStateChanged() {
-            notifyAndDestroyIfDone();
-        }
-
-        @Override
-        public void onSheetClosed(int reason) {
-            // The account picker doesn't dismiss itself, so this must mean the user did.
-            destroy();
-        }
-
-        private void notifyAndDestroyIfDone() {
-            @EntryPointDisplayReason
-            Integer displayReason =
-                    SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
-            // The model is starting up, keep waiting.
-            if (displayReason == null) return;
-
-            switch (displayReason) {
-                case EntryPointDisplayReason.OFFER_SIGN_IN:
-                    return;
-                case EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE:
-                case EntryPointDisplayReason.OFFER_FEATURE:
-                    break;
-            }
-
-            destroy();
-            mOnComplete.onResult(PostSigninOperationResult.SUCCESS);
-        }
-    }
 
     /**
      * Performs sign-in for the promo shown to signed-out users. TODO(crbug.com/448227402): Remove
@@ -192,6 +120,7 @@ public class SendTabToSelfCoordinator
     private @Nullable EnhancedTargetDevicePickerView mView;
 
     private final @ShareEntryPoint int mEntryPoint;
+    private long mNativeTargetDeviceListWaiterPtr;
 
     public SendTabToSelfCoordinator(
             Context context,
@@ -225,19 +154,22 @@ public class SendTabToSelfCoordinator
     }
 
     public void show() {
+        if (mActivity.isFinishing() || mActivity.isDestroyed()) {
+            return;
+        }
+
         @EntryPointDisplayReason
         Integer displayReason =
                 SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
         // Do not show the UI if the model is not ready or the URL is unsupported.
         if (displayReason == null) return;
 
-        int deviceCount = 0;
-        if (displayReason == EntryPointDisplayReason.OFFER_FEATURE) {
-            List<TargetDeviceInfo> targetDevices =
-                    SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile);
-            deviceCount = targetDevices.size();
-        }
-        SendTabToSelfAndroidBridge.recordTargetDeviceCount(mEntryPoint, displayReason, deviceCount);
+        List<TargetDeviceInfo> targetDevices =
+                displayReason == EntryPointDisplayReason.OFFER_FEATURE
+                        ? SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile)
+                        : Collections.emptyList();
+        SendTabToSelfAndroidBridge.recordTargetDeviceCount(
+                mEntryPoint, displayReason, targetDevices.size());
 
         SendTabToSelfMetricsRecorder.recordCrossDeviceTabJourney();
         SendTabToSelfMetricsRecorder.recordEntryPointInvoked(mEntryPoint);
@@ -247,8 +179,6 @@ public class SendTabToSelfCoordinator
                         new NoTargetDeviceBottomSheetContent(mContext, mProfile), true);
                 return;
             case EntryPointDisplayReason.OFFER_FEATURE:
-                List<TargetDeviceInfo> targetDevices =
-                        SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile);
                 if (ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET)) {
                     showEnhancedTargetDevicePicker(targetDevices);
@@ -349,7 +279,7 @@ public class SendTabToSelfCoordinator
             @Nullable DelegateContext delegateContext,
             Callback<@PostSigninOperationResult Integer> onComplete) {
         assert SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled();
-        new TargetDeviceListWaiter(mBottomSheetController, mUrl, onComplete, mProfile);
+        waitForTargetDeviceList(onComplete);
     }
 
     /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
@@ -363,18 +293,40 @@ public class SendTabToSelfCoordinator
             mSigninCoordinator.destroy();
             mSigninCoordinator = null;
         }
+        destroyTargetDeviceListWaiter();
     }
 
     private void onSignInComplete() {
         assert !SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled();
-        new TargetDeviceListWaiter(
-                mBottomSheetController, mUrl, (result) -> onTargetDeviceListReady(), mProfile);
+        waitForTargetDeviceList(
+                result -> {
+                    if (mActivity.isFinishing() || mActivity.isDestroyed()) {
+                        return;
+                    }
+                    mBottomSheetController.hideContent(
+                            mBottomSheetController.getCurrentSheetContent(), /* animate= */ true);
+                    show();
+                });
     }
 
-    private void onTargetDeviceListReady() {
-        mBottomSheetController.hideContent(
-                mBottomSheetController.getCurrentSheetContent(), /* animate= */ true);
-        show();
+    private void waitForTargetDeviceList(Callback<@PostSigninOperationResult Integer> onComplete) {
+        destroyTargetDeviceListWaiter();
+        mNativeTargetDeviceListWaiterPtr =
+                SendTabToSelfAndroidBridge.addTargetDeviceListWaiter(
+                        mProfile,
+                        mUrl,
+                        () -> {
+                            destroyTargetDeviceListWaiter();
+                            onComplete.onResult(PostSigninOperationResult.SUCCESS);
+                        });
+    }
+
+    private void destroyTargetDeviceListWaiter() {
+        if (mNativeTargetDeviceListWaiterPtr != 0) {
+            SendTabToSelfAndroidBridge.removeTargetDeviceListWaiter(
+                    mNativeTargetDeviceListWaiterPtr);
+            mNativeTargetDeviceListWaiterPtr = 0;
+        }
     }
 
     private void showEnhancedTargetDevicePicker(List<TargetDeviceInfo> targetDevices) {

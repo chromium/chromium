@@ -200,6 +200,28 @@ public class SendTabToSelfAndroidBridgeTest {
         verify(mNativeMock).getEntryPointDisplayReason(eq(mProfile), eq(URL));
     }
 
+    // Tests that adding a target device list waiter invokes the native JNI method and returns the native pointer.
+    @Test
+    @SmallTest
+    public void testAddTargetDeviceListWaiter() {
+        Runnable runnable = mock(Runnable.class);
+        when(mNativeMock.addTargetDeviceListWaiter(eq(mProfile), eq(URL), eq(runnable)))
+                .thenReturn(12345L);
+        long waiterPtr =
+                SendTabToSelfAndroidBridge.addTargetDeviceListWaiter(mProfile, URL, runnable);
+        verify(mNativeMock).addTargetDeviceListWaiter(eq(mProfile), eq(URL), eq(runnable));
+        Assert.assertEquals(12345L, waiterPtr);
+    }
+
+    // Tests that removing a target device list waiter invokes the native JNI method with the expected pointer.
+    @Test
+    @SmallTest
+    public void testRemoveTargetDeviceListWaiter() {
+        long waiterPtr = 12345L;
+        SendTabToSelfAndroidBridge.removeTargetDeviceListWaiter(waiterPtr);
+        verify(mNativeMock).removeTargetDeviceListWaiter(eq(waiterPtr));
+    }
+
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)

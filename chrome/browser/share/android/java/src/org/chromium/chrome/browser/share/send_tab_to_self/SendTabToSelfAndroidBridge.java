@@ -284,6 +284,18 @@ public class SendTabToSelfAndroidBridge {
         return SendTabToSelfAndroidBridgeJni.get().getEntryPointDisplayReason(profile, url);
     }
 
+    public static long addTargetDeviceListWaiter(
+            Profile profile, String url, Runnable onTargetDeviceListReady) {
+        ThreadUtils.assertOnUiThread();
+        return SendTabToSelfAndroidBridgeJni.get()
+                .addTargetDeviceListWaiter(profile, url, onTargetDeviceListReady);
+    }
+
+    public static void removeTargetDeviceListWaiter(long waiterPtr) {
+        ThreadUtils.assertOnUiThread();
+        SendTabToSelfAndroidBridgeJni.get().removeTargetDeviceListWaiter(waiterPtr);
+    }
+
     /**
      * Records the target device count when the Send Tab to Self UI is invoked.
      *
@@ -517,7 +529,8 @@ public class SendTabToSelfAndroidBridge {
 
         @Nullable
         @EntryPointDisplayReason
-        Integer getEntryPointDisplayReason(@JniType("Profile*") Profile profile, String url);
+        Integer getEntryPointDisplayReason(
+                @JniType("Profile*") Profile profile, String url);
 
         void recordTargetDeviceCount(
                 @ShareEntryPoint int entryPoint,
@@ -533,5 +546,12 @@ public class SendTabToSelfAndroidBridge {
                 @JniType("Profile*") Profile profile, SendTabToSelfModelObserver observer);
 
         void removeModelObserver(long observerPtr);
+
+        long addTargetDeviceListWaiter(
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") String url,
+                @JniType("base::OnceClosure") Runnable onTargetDeviceListReady);
+
+        void removeTargetDeviceListWaiter(long waiterPtr);
     }
 }

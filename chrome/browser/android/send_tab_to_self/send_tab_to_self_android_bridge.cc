@@ -23,12 +23,14 @@
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/send_tab_to_self/target_device_list_waiter.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -357,6 +359,33 @@ static void JNI_SendTabToSelfAndroidBridge_RemoveModelObserver(
     JNIEnv* env,
     int64_t observer_ptr) {
   delete reinterpret_cast<SendTabToSelfModelObserverBridge*>(observer_ptr);
+}
+
+static int64_t JNI_SendTabToSelfAndroidBridge_AddTargetDeviceListWaiter(
+    JNIEnv* env,
+    Profile* profile,
+    const std::string& url,
+    base::OnceClosure on_target_device_list_ready) {
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile);
+
+  // TargetDeviceListWaiter executes `on_target_device_list_ready`
+  // asynchronously, ensuring Java receives the native pointer before the
+  // callback runs.
+  auto waiter = std::make_unique<TargetDeviceListWaiter>(
+      sync_service, service, GURL(url), std::move(on_target_device_list_ready));
+
+  // Transfer ownership to Java, which will call RemoveTargetDeviceListWaiter
+  // when the callback fires or the bottom sheet is closed.
+  return reinterpret_cast<int64_t>(waiter.release());
+}
+
+static void JNI_SendTabToSelfAndroidBridge_RemoveTargetDeviceListWaiter(
+    JNIEnv* env,
+    int64_t waiter_ptr) {
+  delete reinterpret_cast<TargetDeviceListWaiter*>(waiter_ptr);
 }
 
 }  // namespace send_tab_to_self
