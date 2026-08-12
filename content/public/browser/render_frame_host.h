@@ -225,6 +225,18 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Returns the route id for this frame.
   virtual int GetRoutingID() const = 0;
 
+  // Returns the ID of the NavigationHandle that created the document that this
+  // RenderFrameHost represents, if there was such a navigation. The value is
+  // assigned after receiving the DidCommitNavigation IPC. It is not updated
+  // after same-document navigations (which may have their own navigation
+  // IDs).
+  //
+  // Returns 0 if this RenderFrameHost is for an initial empty document of a
+  // frame, and thus was not created for a navigation. This may later change to
+  // a non-zero value if the RenderFrameHost is reused for a navigation to a
+  // non-initial document.
+  virtual int64_t GetNavigationId() const = 0;
+
   // Returns the frame token for this frame.
   virtual const blink::LocalFrameToken& GetFrameToken() const = 0;
 

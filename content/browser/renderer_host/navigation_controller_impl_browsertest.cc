@@ -24201,7 +24201,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   int first_link_click_nav_id =
       nav_manager.GetNavigationHandle()->GetNavigationId();
   EXPECT_NE(first_link_click_nav_id,
-            root->current_frame_host()->navigation_id());
+            root->current_frame_host()->GetNavigationId());
 
   // 2. Click the link again, and assert that the first link click navigation is
   // kept and eventually commits, and the second link click gets ignored.
@@ -24218,7 +24218,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
     EXPECT_TRUE(nav_manager.was_committed());
     EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
     EXPECT_EQ(first_link_click_nav_id,
-              root->current_frame_host()->navigation_id());
+              root->current_frame_host()->GetNavigationId());
 
     // Ensure that there's no ongoing navigation, which means the second link
     // click got ignored.
@@ -24231,7 +24231,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
     EXPECT_NE(first_link_click_nav_id,
-              root->current_frame_host()->navigation_id());
+              root->current_frame_host()->GetNavigationId());
   }
 }
 
@@ -24252,7 +24252,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   int first_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
-  EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(first_nav_id, root->current_frame_host()->GetNavigationId());
 
   // 2. Start the second navigation to `url2`.
   shell()->LoadURL(url2);
@@ -24265,7 +24265,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
     // committed.
     EXPECT_TRUE(nav_manager.was_committed());
     EXPECT_EQ(url2, root->current_frame_host()->GetLastCommittedURL());
-    EXPECT_EQ(first_nav_id, root->current_frame_host()->navigation_id());
+    EXPECT_EQ(first_nav_id, root->current_frame_host()->GetNavigationId());
 
     // Ensure that there's no ongoing navigation, which means the second
     // navigation got ignored.
@@ -24277,7 +24277,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
     // The second navigation will replace the first one, and eventually commit.
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(url2, root->current_frame_host()->GetLastCommittedURL());
-    EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+    EXPECT_NE(first_nav_id, root->current_frame_host()->GetNavigationId());
   }
 }
 
@@ -24301,7 +24301,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   int first_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
-  EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(first_nav_id, root->current_frame_host()->GetNavigationId());
 
   // 2. Start the second navigation to the exact same data: URL.
   shell()->LoadURL(data_url);
@@ -24321,7 +24321,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
 
   // The committed navigation ID should be different from the first one,
   // confirming the second navigation is the one that actually committed.
-  EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(first_nav_id, root->current_frame_host()->GetNavigationId());
 }
 
 // Tests that a browser-initiated navigation that's a duplicate of an ongoing
@@ -24342,7 +24342,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   int first_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
-  EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(first_nav_id, root->current_frame_host()->GetNavigationId());
 
   // 2. Modify cookies via document.cookie.
   EXPECT_TRUE(ExecJs(contents(), "document.cookie='foo=bar';"));
@@ -24362,7 +24362,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   // and eventually commit.
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(url2, root->current_frame_host()->GetLastCommittedURL());
-  EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(first_nav_id, root->current_frame_host()->GetNavigationId());
 }
 
 // Tests that a browser-initiated navigation that's a duplicate of an ongoing
@@ -24385,7 +24385,7 @@ IN_PROC_BROWSER_TEST_P(
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   int first_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
-  EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(first_nav_id, root->current_frame_host()->GetNavigationId());
 
   // 2. Modify HTTP-only cookie via fetch.
   EXPECT_TRUE(ExecJs(contents(), "fetch('/set-cookie?foo=bar;HttpOnly');"));
@@ -24409,7 +24409,7 @@ IN_PROC_BROWSER_TEST_P(
   // and eventually commit.
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(url2, root->current_frame_host()->GetLastCommittedURL());
-  EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(first_nav_id, root->current_frame_host()->GetNavigationId());
 }
 
 // Tests that a browser-initiated navigation that's a duplicate of an ongoing
@@ -24430,7 +24430,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   int first_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
-  EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(first_nav_id, root->current_frame_host()->GetNavigationId());
 
   // 2. Do a cookie update for `url1`. This should not affect the cross-site
   // navigation to `url2`.
@@ -24450,7 +24450,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
     // committed.
     EXPECT_TRUE(nav_manager.was_committed());
     EXPECT_EQ(url2, root->current_frame_host()->GetLastCommittedURL());
-    EXPECT_EQ(first_nav_id, root->current_frame_host()->navigation_id());
+    EXPECT_EQ(first_nav_id, root->current_frame_host()->GetNavigationId());
 
     // Ensure that there's no ongoing navigation, which means the second
     // navigation got ignored.
@@ -24462,7 +24462,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
     // The second navigation will replace the first one, and eventually commit.
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(url2, root->current_frame_host()->GetLastCommittedURL());
-    EXPECT_NE(first_nav_id, root->current_frame_host()->navigation_id());
+    EXPECT_NE(first_nav_id, root->current_frame_host()->GetNavigationId());
   }
 }
 
@@ -24485,7 +24485,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   int link_click_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
-  EXPECT_NE(link_click_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(link_click_nav_id, root->current_frame_host()->GetNavigationId());
 
   // 2. Navigate again but via script instead of link click, and assert that the
   // link click navigation is overridden by the second navigation.
@@ -24527,7 +24527,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   int link_click_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
-  EXPECT_NE(link_click_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(link_click_nav_id, root->current_frame_host()->GetNavigationId());
 
   // Modify cookie to trigger cookie modification count change.
   EXPECT_TRUE(ExecJs(contents(), "document.cookie = 'foo=bar';"));
@@ -24574,7 +24574,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   int link_click_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
-  EXPECT_NE(link_click_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(link_click_nav_id, root->current_frame_host()->GetNavigationId());
 
   // Modify cookie via CookieStore to trigger cookie modification count change.
   EXPECT_TRUE(ExecJs(contents(), "cookieStore.set('foo', 'bar');"));
@@ -24621,7 +24621,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   int link_click_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
-  EXPECT_NE(link_click_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(link_click_nav_id, root->current_frame_host()->GetNavigationId());
 
   // Perform a fetch to /set-cookie?foo=bar. This modifies the cookie via
   // response headers, so it should NOT affect the document's cookie
@@ -24641,12 +24641,12 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   if (ignore_duplicate_nav()) {
     EXPECT_TRUE(nav_manager.was_committed());
     EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
-    EXPECT_EQ(link_click_nav_id, root->current_frame_host()->navigation_id());
+    EXPECT_EQ(link_click_nav_id, root->current_frame_host()->GetNavigationId());
   } else {
     EXPECT_FALSE(nav_manager.was_committed());
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
-    EXPECT_NE(link_click_nav_id, root->current_frame_host()->navigation_id());
+    EXPECT_NE(link_click_nav_id, root->current_frame_host()->GetNavigationId());
   }
 }
 
@@ -24676,7 +24676,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   int link_click_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
-  EXPECT_NE(link_click_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(link_click_nav_id, root->current_frame_host()->GetNavigationId());
 
   // Modify cookies in the second tab's document. This should not affect the
   // main document's cookie modification count.
@@ -24694,12 +24694,12 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   if (ignore_duplicate_nav()) {
     EXPECT_TRUE(nav_manager.was_committed());
     EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
-    EXPECT_EQ(link_click_nav_id, root->current_frame_host()->navigation_id());
+    EXPECT_EQ(link_click_nav_id, root->current_frame_host()->GetNavigationId());
   } else {
     EXPECT_FALSE(nav_manager.was_committed());
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
-    EXPECT_NE(link_click_nav_id, root->current_frame_host()->navigation_id());
+    EXPECT_NE(link_click_nav_id, root->current_frame_host()->GetNavigationId());
   }
 }
 
@@ -24723,7 +24723,7 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   int link_click_nav_id = nav_manager.GetNavigationHandle()->GetNavigationId();
-  EXPECT_NE(link_click_nav_id, root->current_frame_host()->navigation_id());
+  EXPECT_NE(link_click_nav_id, root->current_frame_host()->GetNavigationId());
 
   // Perform a fetch to set an HttpOnly cookie.
   GURL fetch_url =
@@ -24740,11 +24740,11 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
 
   if (ignore_duplicate_nav()) {
     EXPECT_TRUE(nav_manager.was_committed());
-    EXPECT_EQ(link_click_nav_id, root->current_frame_host()->navigation_id());
+    EXPECT_EQ(link_click_nav_id, root->current_frame_host()->GetNavigationId());
   } else {
     EXPECT_FALSE(nav_manager.was_committed());
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-    EXPECT_NE(link_click_nav_id, root->current_frame_host()->navigation_id());
+    EXPECT_NE(link_click_nav_id, root->current_frame_host()->GetNavigationId());
   }
 }
 
@@ -24850,7 +24850,7 @@ IN_PROC_BROWSER_TEST_P(RestrictDuplicateNavsToOriginsBrowserTest,
   int first_link_click_nav_id =
       nav_manager.GetNavigationHandle()->GetNavigationId();
   EXPECT_NE(first_link_click_nav_id,
-            root->current_frame_host()->navigation_id());
+            root->current_frame_host()->GetNavigationId());
 
   // Click the link again, and assert that the first link click navigation is
   // kept and eventually commits, and the second link click gets ignored.
@@ -24871,7 +24871,7 @@ IN_PROC_BROWSER_TEST_P(RestrictDuplicateNavsToOriginsBrowserTest,
     EXPECT_TRUE(nav_manager.was_committed());
     EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
     EXPECT_EQ(first_link_click_nav_id,
-              root->current_frame_host()->navigation_id());
+              root->current_frame_host()->GetNavigationId());
 
     // Ensure that there's no ongoing navigation, which means the second link
     // click got ignored.
@@ -24884,7 +24884,7 @@ IN_PROC_BROWSER_TEST_P(RestrictDuplicateNavsToOriginsBrowserTest,
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
     EXPECT_NE(first_link_click_nav_id,
-              root->current_frame_host()->navigation_id());
+              root->current_frame_host()->GetNavigationId());
   }
   if (ignore_duplicate_navs() && restrict_duplicate_navs_to_origins()) {
     // Record whether the navigation URL matches the target origin if the origin

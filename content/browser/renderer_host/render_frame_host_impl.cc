@@ -3089,6 +3089,10 @@ int RenderFrameHostImpl::GetRoutingID() const {
   return routing_id_;
 }
 
+int64_t RenderFrameHostImpl::GetNavigationId() const {
+  return navigation_id_;
+}
+
 const blink::LocalFrameToken& RenderFrameHostImpl::GetFrameToken() const {
   return frame_token_;
 }

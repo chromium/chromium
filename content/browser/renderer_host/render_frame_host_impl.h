@@ -476,6 +476,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost
   const blink::StorageKey& GetStorageKey() const override;
   int GetRoutingID() const override;
+  int64_t GetNavigationId() const override;
   const blink::LocalFrameToken& GetFrameToken() const override;
   const perfetto::Track& GetTracingTrack() const override;
   const base::UnguessableToken& GetReportingSource() override;
@@ -947,17 +948,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Set the URL of the document represented by this RenderFrameHost. Called
   // when the navigation commits. See also `GetLastCommittedURL`.
   void SetLastCommittedUrl(const GURL& url);
-
-  // RenderFrameHost represents a document in a frame. It is either:
-  // 1. The initial empty document,
-  // 2. A document created by a navigation.
-  //
-  // In case of (2), this returns the ID of the navigation who created this
-  // document.
-  //
-  // Note 1: This is updated after receiving DidCommitNavigation IPC.
-  // Note 2: Same-document navigation are not updating this field.
-  int64_t navigation_id() const { return navigation_id_; }
 
   // The most recent non-net-error URL to commit in this frame.  In almost all
   // cases, use GetLastCommittedURL instead.
