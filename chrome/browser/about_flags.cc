@@ -11356,11 +11356,6 @@ const FeatureEntry kFeatureEntries[] = {
          payments::facilitated::kDisableFacilitatedPaymentsMerchantAllowlist)},
 #endif  // BUILDFLAF(IS_ANDROID)
 
-    {"drop-input-events-while-paint-holding",
-     flag_descriptions::kDropInputEventsWhilePaintHoldingName,
-     flag_descriptions::kDropInputEventsWhilePaintHoldingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kDropInputEventsWhilePaintHolding)},
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     {"default-browser-changed-os-notification",
      flag_descriptions::kDefaultBrowserChangedOsNotificationName,

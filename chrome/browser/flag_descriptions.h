@@ -560,13 +560,6 @@ inline constexpr char kDisableU18FeedbackDesktopName[] =
 inline constexpr char kDisableU18FeedbackDesktopDescription[] =
     "Disables the feedback for U18 users on desktop platforms.";
 
-inline constexpr char kDropInputEventsWhilePaintHoldingName[] =
-    "Drop input events while paint-holding is active";
-inline constexpr char kDropInputEventsWhilePaintHoldingDescription[] =
-    "Drop input events at the browser process until the process receives the "
-    "first signal that the renderer has sent a frame to GPU.  This prevents "
-    "accidental interaction with a page the user has not seen yet.";
-
 inline constexpr char kFieldClassificationModelCachingName[] =
     "Enable caching field classification predictions";
 inline constexpr char kFieldClassificationModelCachingDescription[] =

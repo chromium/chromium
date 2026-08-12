@@ -1658,10 +1658,7 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
   // when a touch sequence is handled on Browser, as it will try to compare a
   // lingering transferred event's touch id and touch id of acked event that the
   // Browser is now handling.
-  if (input_transfer_handler_ &&
-      (!base::FeatureList::IsEnabled(
-           blink::features::kDropInputEventsWhilePaintHolding) ||
-       host()->input_router()->IsActive())) {
+  if (input_transfer_handler_ && host()->input_router()->IsActive()) {
     bool is_ignoring_input_events =
         host()->delegate()->ShouldIgnoreInputEvents();
     if (input_transfer_handler_->OnTouchEvent(event,

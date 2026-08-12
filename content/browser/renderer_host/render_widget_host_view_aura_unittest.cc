@@ -5781,10 +5781,6 @@ TEST_F(RenderWidgetHostViewAuraTest, GestureTapFromStylusHasPointerType) {
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, TouchpadResendsFilteredGSB) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kDropInputEventsWhilePaintHolding);
-
   view_->event_handler()->set_mouse_wheel_wheel_phase_handler_timeout(
       TestTimeouts::action_max_timeout());
 

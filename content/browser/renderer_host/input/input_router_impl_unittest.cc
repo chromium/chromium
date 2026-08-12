@@ -2237,13 +2237,8 @@ class InputRouterImplPaintHoldingStateTest : public InputRouterImplTestBase {
 
   // testing::Test
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kDropInputEventsWhilePaintHolding);
     SetUpWithInputRouterActiveState(false);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

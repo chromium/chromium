@@ -349,13 +349,10 @@ class PrerenderBrowserTest : public ContentBrowserTest,
         std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
             &PrerenderBrowserTest::web_contents, base::Unretained(this)));
 
-    // Input suppression during paintholding interferes with the input event
-    // dispatches to top frames.  Disabling kDropInputEventsWhilePaintHolding
-    // because the tests here are not about top frame paintholding.
     feature_list_.InitWithFeatures(
         {::features::kSuppressesPrerenderingOnSlowNetwork,
          blink::features::kFetchLaterAPI},
-        {blink::features::kDropInputEventsWhilePaintHolding});
+        {});
   }
   ~PrerenderBrowserTest() override = default;
 
@@ -547,8 +544,21 @@ class PrerenderBrowserTest : public ContentBrowserTest,
                              JsReplace(script, service_worker_url)));
   }
 
+  [[nodiscard]] bool NavigateToURL(Shell* window, const GURL& url) {
+    bool result = content::NavigateToURL(window, url);
+    SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+    return result;
+  }
+
+  [[nodiscard]] bool NavigateToURL(WebContents* web_contents, const GURL& url) {
+    bool result = content::NavigateToURL(web_contents, url);
+    SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+    return result;
+  }
+
   void NavigatePrimaryPage(const GURL& url) {
     prerender_helper_->NavigatePrimaryPage(url);
+    SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
   }
 
   void NavigatePrimaryPageFromAddressBar(const GURL& url) {
@@ -16295,7 +16305,8 @@ class PrerenderSessionHistoryBrowserTest
     if (from_browser) {
       ASSERT_TRUE(NavigateToURL(web_contents, url));
     } else {
-      ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, url));
+      ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, url));
+      SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
     }
   }
 

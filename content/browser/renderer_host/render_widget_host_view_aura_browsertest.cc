@@ -786,27 +786,9 @@ class InputEventWaiter : public RenderWidgetHost::InputEventObserver {
       observation_{this};
 };
 
-class RenderWidgetHostViewAuraEventBrowserTest
-    : public RenderWidgetHostViewAuraBrowserTest {
- public:
-  RenderWidgetHostViewAuraEventBrowserTest() {
-    // Disable this feature because paint won't happen in the test.
-    scoped_feature_list.InitAndDisableFeature(
-        blink::features::kDropInputEventsWhilePaintHolding);
-  }
-  RenderWidgetHostViewAuraEventBrowserTest(
-      const RenderWidgetHostViewAuraEventBrowserTest&) = delete;
-  RenderWidgetHostViewAuraEventBrowserTest& operator=(
-      const RenderWidgetHostViewAuraEventBrowserTest&) = delete;
-  ~RenderWidgetHostViewAuraEventBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list;
-};
-
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraEventBrowserTest,
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
                        TrackPointResetsFlingState) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Load a page that draws new frames infinitely.
@@ -814,6 +796,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraEventBrowserTest,
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
   auto* root = web_contents->GetNativeView()->GetRootWindow();
 
   ui::test::EventGenerator generator(root, web_contents->GetNativeView());
