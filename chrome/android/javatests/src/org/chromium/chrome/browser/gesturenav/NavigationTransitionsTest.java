@@ -67,6 +67,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.OverscrollActivationStatus;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -961,5 +962,122 @@ public class NavigationTransitionsTest {
         Assert.assertNotNull(
                 "The favicon bitmap in the fallback ux of a native page should not be null.",
                 mBitmap);
+    }
+
+    private NavigationHandler navigationHandler() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        new GestureNavigationTestUtils(mActivityTestRule::getActivity)
+                                .getNavigationHandler());
+    }
+
+    /**
+     * When native reports that it is no longer driving the gesture, the driver has to take it back
+     * and navigate itself. Dropping the events instead loses the navigation entirely, because
+     * onBackCancelled()/onBackInvoked() no-op once native is not in progress. See
+     * crbug.com/530682179.
+     */
+    @Test
+    @MediumTest
+    public void testGestureHandedBackByNativeStillNavigates() {
+        Assume.assumeTrue(mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
+        String first = mTestServer.getURL("/chrome/test/data/android/blue.html");
+        String second = mTestServer.getURL("/chrome/test/data/android/green.html");
+        mActivityTestRule.loadUrl(first);
+        mActivityTestRule.loadUrl(second);
+        NavigationHandler handler = navigationHandler();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    handler.onDown();
+                    handler.triggerUi(
+                            BackGestureEventSwipeEdge.LEFT,
+                            NavigationHandler.TriggerUiCallSource.ON_SCROLL);
+                    handler.pull(10.f, 0.f);
+                    TabOnBackGestureHandler nativeHandler =
+                            handler.getTabOnBackGestureHandlerForTesting();
+                    Assert.assertNotNull(
+                            "A page with history should start a transition", nativeHandler);
+
+                    // End the native gesture behind the driver's back. The native handler
+                    // is a per-tab singleton shared with ToolbarManager.OnBackPressHandler,
+                    // so the driver cannot assume it still owns the native state.
+                    nativeHandler.onBackCancelled(false);
+
+                    // The next progress event has to hand the gesture back.
+                    handler.pull(10.f, 0.f);
+                    Assert.assertNull(
+                            "Native no longer drives the gesture, so the driver must own it"
+                                    + " again",
+                            handler.getTabOnBackGestureHandlerForTesting());
+
+                    handler.release(OverscrollActivationStatus.FORCE_ACTIVATION);
+                });
+
+        // The navigation must still happen: it is the driver's job now.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "The handed back gesture did not navigate",
+                                getCurrentUrl(),
+                                Matchers.is(first)));
+    }
+
+    /**
+     * When native reports that it is no longer driving the gesture due to an edge mismatch (e.g.
+     * another owner restarted the shared handler from the opposite edge), the driver must take it
+     * back and navigate itself.
+     */
+    @Test
+    @MediumTest
+    public void testGestureHandedBackOnEdgeMismatchStillNavigates() {
+        Assume.assumeTrue(mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
+        String first = mTestServer.getURL("/chrome/test/data/android/blue.html");
+        String second = mTestServer.getURL("/chrome/test/data/android/green.html");
+        mActivityTestRule.loadUrl(first);
+        mActivityTestRule.loadUrl(second);
+        NavigationHandler handler = navigationHandler();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    handler.onDown();
+                    handler.triggerUi(
+                            BackGestureEventSwipeEdge.LEFT,
+                            NavigationHandler.TriggerUiCallSource.ON_SCROLL);
+                    handler.pull(10.f, 0.f);
+                    TabOnBackGestureHandler nativeHandler =
+                            handler.getTabOnBackGestureHandlerForTesting();
+                    Assert.assertNotNull(
+                            "A page with history should start a transition", nativeHandler);
+
+                    // Simulate another caller restarting the shared singleton from the opposite
+                    // edge. Use a backward gesture so that the restart has a destination
+                    // entry: starting a gesture without one is the very contract violation
+                    // this CL stops committing, and the animation manager CHECKs it once
+                    // crrev.com/c/8166180 restores the CHECKs.
+                    nativeHandler.onBackStarted(0.f, BackGestureEventSwipeEdge.RIGHT, false, false);
+
+                    // The next progress event from the original LEFT edge has an edge mismatch and
+                    // must be handed back to the driver.
+                    handler.pull(10.f, 0.f);
+                    Assert.assertNull(
+                            "Native no longer drives the LEFT gesture, so the driver must own it"
+                                    + " again",
+                            handler.getTabOnBackGestureHandlerForTesting());
+
+                    // End the other owner's live gesture so that the release below navigates
+                    // on a clean animation-manager state.
+                    nativeHandler.onBackCancelled(false);
+
+                    handler.release(OverscrollActivationStatus.FORCE_ACTIVATION);
+                });
+
+        // The navigation must still happen: it is the driver's job now.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "The handed back gesture on edge mismatch did not navigate",
+                                getCurrentUrl(),
+                                Matchers.is(first)));
     }
 }

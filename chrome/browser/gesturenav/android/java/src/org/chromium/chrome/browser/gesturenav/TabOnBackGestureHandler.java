@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.gesturenav;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
@@ -46,13 +47,30 @@ public class TabOnBackGestureHandler implements UserData {
                 .onBackStarted(mNativePtr, progress, edge, forward, isGestureMode);
     }
 
-    public void onBackProgressed(
+    /**
+     * Returns whether this handler is still driving the caller's gesture. When it returns false the
+     * caller owns the gesture again: it must drop its reference to this handler and do its own back
+     * handling, otherwise the navigation is lost. The handler is not necessarily idle then: on an
+     * edge mismatch it may still be driving a newer gesture for another owner.
+     */
+    public boolean onBackProgressed(
             float progress,
             @BackGestureEventSwipeEdge int edge,
             boolean forward,
             boolean isGestureMode) {
-        TabOnBackGestureHandlerJni.get()
-                .onBackProgressed(mNativePtr, progress, edge, forward, isGestureMode);
+        boolean active =
+                TabOnBackGestureHandlerJni.get()
+                        .onBackProgressed(mNativePtr, progress, edge, forward, isGestureMode);
+        if (!active) {
+            JavaExceptionReporter.reportException(
+                    new Throwable(
+                            "Unexpected onBackProgressed from edge "
+                                    + edge
+                                    + " (forward="
+                                    + forward
+                                    + ")"));
+        }
+        return active;
     }
 
     public void onBackCancelled(boolean isGestureMode) {
@@ -84,7 +102,7 @@ public class TabOnBackGestureHandler implements UserData {
                 boolean forward,
                 boolean isGestureMode);
 
-        void onBackProgressed(
+        boolean onBackProgressed(
                 long nativeTabOnBackGestureHandler,
                 float progress,
                 int edge,

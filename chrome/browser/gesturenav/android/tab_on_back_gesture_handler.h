@@ -35,7 +35,12 @@ class TabOnBackGestureHandler {
                      /* ui::BackGestureEventSwipeEdge */ int edge,
                      bool forward,
                      bool is_gesture_mode);
-  void OnBackProgressed(JNIEnv* env,
+  // Returns whether this handler is still driving the caller's gesture. When
+  // it returns false the caller owns the gesture again: it must drop its
+  // reference to this handler and do its own back handling, otherwise the
+  // navigation is lost. The handler is not necessarily idle then: on an edge
+  // mismatch it may still be driving a newer gesture for another owner.
+  bool OnBackProgressed(JNIEnv* env,
                         float progress,
                         /* ui::BackGestureEventSwipeEdge */ int edge,
                         bool forward,
