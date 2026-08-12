@@ -166,9 +166,9 @@ env->ReleaseByteArrayElements(j_array, bytes, JNI_ABORT);
 
 ```cpp
 ScopedJavaLocalRef<JArray<int8_t>> array = ...;
-JArrayView<int8_t> array_view = array.CreateView(env);
+JArrayViewCritical<int8_t> array_view = array.CreateViewCritical(env);
 std::string_view sv = array_view.as_string_view();
 ```
 
-*(Note: `JArrayView` automatically releases the elements when it goes out of
-scope.)*
+*(Note: `JArrayViewCritical` automatically releases the elements when it goes
+out of scope.)*

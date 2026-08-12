@@ -42,6 +42,9 @@ concept IsConvertibleJObject =
     std::is_convertible_v<U, T> || std::same_as<U, jobject>;
 
 template <typename T>
+concept IsPrimitiveType = std::is_arithmetic_v<T>;
+
+template <typename T>
 struct _JArrayElementType;
 
 template <>
@@ -192,9 +195,12 @@ template <typename T>
 concept IsJavaRef =
     std::is_base_of_v<jni_zero::JavaRef<jobject>, std::remove_cvref_t<T>>;
 
-// Forward declaration of the JArrayView class.
+// Forward declaration of the JArrayView and JArrayViewCritical classes.
 template <typename T>
 class JArrayView;
+
+template <typename T>
+class JArrayViewCritical;
 
 namespace internal {
 
@@ -367,10 +373,16 @@ class JNI_ZERO_TRIVIAL_ABI JavaRef : public JavaRef<jobject> {
   // The [[clang::lifetimebound]] is required because the lifetime of the
   // JArrayView cannot safely outlast the lifetime of |this|.
   auto CreateView(JNIEnv* env) const [[clang::lifetimebound]]
-    requires std::is_convertible_v<T, jarray>
+    requires std::is_same_v<T, jobjectArray>
   {
+    return JArrayView<jobject>(env, this->obj());
+  }
+
+  auto CreateViewCritical(JNIEnv* env) const [[clang::lifetimebound]] requires(
+      std::is_convertible_v<T, jarray>&& internal::IsPrimitiveType<
+          typename internal::_JArrayElementType<T>::type>) {
     using ElementType = typename internal::_JArrayElementType<T>::type;
-    return JArrayView<ElementType>(
+    return JArrayViewCritical<ElementType>(
         env, static_cast<JArray<ElementType>>(this->obj()));
   }
 };

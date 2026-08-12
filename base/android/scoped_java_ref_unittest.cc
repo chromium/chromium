@@ -299,6 +299,14 @@ TEST_F(JArrayViewTest, ZeroLengthArray) {
   EXPECT_EQ(array.GetLength(env), 0);
   jni_zero::JArrayView<JInteger> array_view = array.CreateView(env);
   EXPECT_EQ(array_view.begin(), array_view.end());
+
+  std::vector<int32_t> primitive_members;
+  ScopedJavaLocalRef<JArray<int32_t>> primitive_array =
+      jni_zero::NewArray(env, primitive_members);
+  EXPECT_EQ(primitive_array.GetLength(env), 0);
+  jni_zero::JArrayViewCritical<int32_t> primitive_view =
+      primitive_array.CreateViewCritical(env);
+  EXPECT_EQ(primitive_view.begin(), primitive_view.end());
 }
 
 TEST_F(JArrayViewTest, GetLength) {
@@ -306,7 +314,7 @@ TEST_F(JArrayViewTest, GetLength) {
   EXPECT_EQ(object_array_.GetLength(env), array_len_);
   EXPECT_EQ(object_array_.CreateView(env).length(), array_len_);
   EXPECT_EQ(primitive_array_.GetLength(env), array_len_);
-  EXPECT_EQ(primitive_array_.CreateView(env).length(), array_len_);
+  EXPECT_EQ(primitive_array_.CreateViewCritical(env).length(), array_len_);
 }
 
 TEST_F(JArrayViewTest, GetOneElement) {
@@ -315,7 +323,9 @@ TEST_F(JArrayViewTest, GetOneElement) {
   EXPECT_SAME_OBJECT(object_array_.Get(env, i), object_array_members_[i]);
   EXPECT_SAME_OBJECT(object_array_.CreateView(env).Get(i),
                      object_array_members_[i]);
-  EXPECT_EQ(primitive_array_.CreateView(env).Get(i),
+  EXPECT_EQ(primitive_array_.CreateViewCritical(env).Get(i),
+            primitive_array_members_[i]);
+  EXPECT_EQ(primitive_array_.CreateViewCritical(env)[i],
             primitive_array_members_[i]);
 }
 
@@ -397,7 +407,7 @@ TEST_F(JArrayViewTest, RangeBasedFor) {
   EXPECT_EQ(i, array_len_);
 
   i = 0;
-  for (int32_t element : primitive_array_.CreateView(env)) {
+  for (int32_t element : primitive_array_.CreateViewCritical(env)) {
     EXPECT_EQ(element, primitive_array_members_[i++]);
   }
   EXPECT_EQ(i, array_len_);

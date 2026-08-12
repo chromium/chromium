@@ -78,7 +78,7 @@ void WebPaymentsWebDataServiceAndroid::AddPaymentWebAppManifest(
             WebPaymentsWebDataServiceJni::getFingerprintsFromSection(env,
                                                                      jsection));
     for (auto jfingerprint : jsection_fingerprints.CreateView(env)) {
-      auto jfingerprint_view = jfingerprint.CreateView(env);
+      auto jfingerprint_view = jfingerprint.CreateViewCritical(env);
       section.fingerprints.emplace_back(jfingerprint_view.begin(),
                                         jfingerprint_view.end());
     }

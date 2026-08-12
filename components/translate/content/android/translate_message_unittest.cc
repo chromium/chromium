@@ -285,7 +285,8 @@ class TranslateMessageTest : public ::testing::Test {
             Truly([env, expected_items](
                       const base::android::ScopedJavaLocalRef<jbooleanArray>&
                           actual) {
-              jni_zero::JArrayView<bool> actual_view = actual.CreateView(env);
+              jni_zero::JArrayViewCritical<bool> actual_view =
+                  actual.CreateViewCritical(env);
               return std::ranges::equal(expected_items, actual_view,
                                         std::equal_to<>(),
                                         &SecondaryMenuItem::has_checkmark);

@@ -327,7 +327,7 @@ static void JNI_CronetUrlRequestContext_AddPkp(
                   "net::SHA256HashValue is not trivially copyable");
     static_assert(sizeof(net::SHA256HashValue) * CHAR_BIT == 256,
                   "net::SHA256HashValue contains overhead");
-    auto bytes_array_view = bytes_array.CreateView(env);
+    auto bytes_array_view = bytes_array.CreateViewCritical(env);
     if (bytes_array_view.length() != sizeof(net::SHA256HashValue)) {
       LOG(ERROR) << "Unable to add public key hash value.";
       continue;

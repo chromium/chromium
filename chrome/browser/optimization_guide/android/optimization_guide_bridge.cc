@@ -258,17 +258,20 @@ void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
     int32_t request_context,
     const JavaRef<jobject>& java_callback,
     const JavaRef<JArray<int8_t>>& request_context_metadata_serialized) {
-  jni_zero::JArrayView<int8_t> serialized_view =
-      request_context_metadata_serialized.CreateView(env);
-  proto::RequestContextMetadata request_context_metadata_deserialized;
-  request_context_metadata_deserialized.ParseFromArray(
-      reinterpret_cast<const uint8_t*>(serialized_view.data()),
-      serialized_view.size());
   std::optional<optimization_guide::proto::RequestContextMetadata>
+      request_context_metadata;
+  {
+    jni_zero::JArrayViewCritical<int8_t> serialized_view =
+        request_context_metadata_serialized.CreateViewCritical(env);
+    if (!serialized_view.empty()) {
+      proto::RequestContextMetadata request_context_metadata_deserialized;
+      request_context_metadata_deserialized.ParseFromArray(
+          reinterpret_cast<const uint8_t*>(serialized_view.data()),
+          serialized_view.size());
       request_context_metadata =
-          serialized_view.empty()
-              ? std::nullopt
-              : std::make_optional(request_context_metadata_deserialized);
+          std::move(request_context_metadata_deserialized);
+    }
+  }
 
   optimization_guide_keyed_service_->CanApplyOptimizationOnDemand(
       urls, JavaIntArrayToOptTypesSet(env, optimization_types),
