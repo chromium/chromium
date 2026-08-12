@@ -114,7 +114,11 @@ public interface TabModelObserver {
      * @param tab The tab to close.
      * @param didCloseAlone indicates whether tab will close by itself VS as part of multiple/all
      *     tab closures.
+     * @deprecated Use {@link #willCloseTabs(List, boolean, boolean)} instead. During the migration
+     *     phase, continue implementing this method but also implement {@link #willCloseTabs(List,
+     *     boolean, boolean)}.
      */
+    @Deprecated
     default void willCloseTab(Tab tab, boolean didCloseAlone) {}
 
     /**
@@ -123,16 +127,32 @@ public interface TabModelObserver {
      *
      * @param allowUndo If undo is allowed on the tab closure.
      * @param tabs being closed.
+     * @deprecated Use {@link #willCloseTabs(List, boolean, boolean)} instead. During the migration
+     *     phase, continue implementing this method but also implement {@link #willCloseTabs(List,
+     *     boolean, boolean)}.
      */
+    @Deprecated
     default void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {}
 
     /**
      * Called when an "all tabs" closure will happen. If multiple tabs are closed, {@link
-     * #willCloseMultipleTabs(boolean, List)} is invoked
+     * #willCloseMultipleTabs(boolean, List)} is invoked.
+     *
+     * @deprecated Use {@link #willCloseTabs(List, boolean, boolean)} instead. During the migration
+     *     phase, continue implementing this method but also implement {@link #willCloseTabs(List,
+     *     boolean, boolean)}.
      */
+    @Deprecated
     default void willCloseAllTabs(boolean incognito) {}
 
-    /** Called when tabs are being closed, and none will be left in the {@link TabModel}. */
+    /**
+     * Called when tabs are being closed, and none will be left in the {@link TabModel}.
+     *
+     * @deprecated Use {@link #willCloseTabs(List, boolean, boolean)} instead. During the migration
+     *     phase, continue implementing this method but also implement {@link #willCloseTabs(List,
+     *     boolean, boolean)}.
+     */
+    @Deprecated
     default void allTabsAreClosing() {}
 
     /**
