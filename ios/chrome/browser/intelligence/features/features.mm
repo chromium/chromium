@@ -472,12 +472,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kActorTools,
                    base::Seconds(1));
 
-BASE_FEATURE_PARAM(int, kActorPageStabilityMutationCap, &kActorTools, 250);
+BASE_FEATURE_PARAM(int, kActorPageStabilityMutationCap, &kActorTools, 10);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kActorPageStabilityWindowDuration,
                    &kActorTools,
-                   base::Milliseconds(4000));
+                   base::Milliseconds(1000));
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kActorPageStabilityLcpDelay,
