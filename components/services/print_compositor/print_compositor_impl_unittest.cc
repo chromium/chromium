@@ -10,39 +10,15 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
-#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/enterprise/buildflags/buildflags.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "cc/test/pixel_test_utils.h"  // nogncheck
-#include "components/enterprise/watermarking/mojom/watermark.mojom.h"  // nogncheck
-#include "components/enterprise/watermarking/watermark.h"  // nogncheck
-#include "components/enterprise/watermarking/watermark_test_utils.h"  // nogncheck
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/docs/SkMultiPictureDocument.h"
-#endif
-
 namespace printing {
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-
-namespace {
-
-constexpr SkSize kWatermarkSize{200, 200};
-constexpr char kWatermarkText[] = "example-watermark";
-
-}  // namespace
-
-#endif
 
 struct TestRequestData {
   uint64_t frame_guid;
@@ -102,34 +78,6 @@ class MockCompletionPrintCompositorImpl : public PrintCompositorImpl {
   }
 };
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-class MockPrintCompositorImplEnterpriseWatermark : public PrintCompositorImpl {
- public:
-  MockPrintCompositorImplEnterpriseWatermark()
-      : PrintCompositorImpl(mojo::NullReceiver(),
-                            /*initialize_environment=*/false,
-                            /*io_task_runner=*/nullptr) {
-    SetWatermarkBlock(enterprise_watermark::MakeTestWatermarkBlock(
-        kWatermarkText, kWatermarkSize));
-  }
-
-  ~MockPrintCompositorImplEnterpriseWatermark() override = default;
-
-  void DrawPage(SkDocument* doc, const SkDocumentPage& page) override {
-    bitmap_.allocN32Pixels(kWatermarkSize.fWidth, kWatermarkSize.fHeight);
-    SkCanvas canvas(bitmap_);
-    canvas.clear(SK_ColorBLACK);
-    DrawEnterpriseWatermark(&canvas, kWatermarkSize,
-                            watermark_block_for_testing());
-  }
-
-  const SkBitmap& bitmap() const { return bitmap_; }
-
- private:
-  SkBitmap bitmap_;
-};
-#endif  //  BUILDFLAG(ENTERPRISE_WATERMARK)
-
 class PrintCompositorImplTest : public testing::Test {
  public:
   PrintCompositorImplTest()
@@ -184,36 +132,6 @@ class PrintCompositorImplTest : public testing::Test {
   mojom::PrintCompositor::Status status_ =
       mojom::PrintCompositor::Status::kSuccess;
 };
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-class PrintCompositorImplEnterpriseWatermarkTest : public testing::Test {
- public:
-  PrintCompositorImplEnterpriseWatermarkTest() {
-    // Create reference bitmap.
-    reference_watermark_.allocN32Pixels(kWatermarkSize.fWidth,
-                                        kWatermarkSize.fHeight);
-    SkCanvas canvas(reference_watermark_);
-    canvas.clear(SK_ColorBLACK);
-    const auto watermark_block = enterprise_watermark::MakeTestWatermarkBlock(
-        kWatermarkText, kWatermarkSize);
-    DrawEnterpriseWatermark(&canvas, kWatermarkSize, watermark_block);
-  }
-
-  const SkBitmap& reference_watermark() const { return reference_watermark_; }
-
- protected:
-  SkBitmap reference_watermark_;
-};
-
-TEST_F(PrintCompositorImplEnterpriseWatermarkTest, EnterpriseWatermarkSet) {
-  MockPrintCompositorImplEnterpriseWatermark compositor;
-  compositor.DrawPage(nullptr, {});
-
-  ASSERT_TRUE(cc::MatchesBitmap(compositor.bitmap(), reference_watermark(),
-                                cc::ExactPixelComparator()));
-}
-
-#endif  //  BUILDFLAG(ENTERPRISE_WATERMARK)
 
 class PrintCompositorImplCrashKeyTest : public PrintCompositorImplTest {
  public:

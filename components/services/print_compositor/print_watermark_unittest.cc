@@ -1,0 +1,79 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/services/print_compositor/print_watermark.h"
+
+#include "base/task/single_thread_task_runner.h"
+#include "cc/test/pixel_test_utils.h"
+#include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/watermarking/mojom/watermark.mojom.h"
+#include "components/enterprise/watermarking/watermark.h"
+#include "components/enterprise/watermarking/watermark_test_utils.h"
+#include "components/services/print_compositor/print_compositor_impl.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/docs/SkMultiPictureDocument.h"
+
+namespace printing {
+namespace {
+
+constexpr SkSize kWatermarkSize{200, 200};
+constexpr char kWatermarkText[] = "example-watermark";
+
+class MockPrintCompositorImplEnterpriseWatermark : public PrintCompositorImpl {
+ public:
+  MockPrintCompositorImplEnterpriseWatermark()
+      : PrintCompositorImpl(mojo::NullReceiver(),
+                            /*initialize_environment=*/false,
+                            /*io_task_runner=*/nullptr) {
+    SetWatermarkBlock(enterprise_watermark::MakeTestWatermarkBlock(
+        kWatermarkText, kWatermarkSize));
+  }
+
+  ~MockPrintCompositorImplEnterpriseWatermark() override = default;
+
+  void DrawPage(SkDocument* doc, const SkDocumentPage& page) override {
+    bitmap_.allocN32Pixels(kWatermarkSize.fWidth, kWatermarkSize.fHeight);
+    SkCanvas canvas(bitmap_);
+    canvas.clear(SK_ColorBLACK);
+    watermark_for_testing().Draw(&canvas, kWatermarkSize);
+  }
+
+  const SkBitmap& bitmap() const { return bitmap_; }
+
+ private:
+  SkBitmap bitmap_;
+};
+
+class PrintCompositorImplEnterpriseWatermarkTest : public testing::Test {
+ public:
+  PrintCompositorImplEnterpriseWatermarkTest() {
+    // Create reference bitmap.
+    reference_watermark_.allocN32Pixels(kWatermarkSize.fWidth,
+                                        kWatermarkSize.fHeight);
+    SkCanvas canvas(reference_watermark_);
+    canvas.clear(SK_ColorBLACK);
+    PrintWatermark watermark;
+    watermark.SetBlock(enterprise_watermark::MakeTestWatermarkBlock(
+        kWatermarkText, kWatermarkSize));
+    watermark.Draw(&canvas, kWatermarkSize);
+  }
+
+  const SkBitmap& reference_watermark() const { return reference_watermark_; }
+
+ protected:
+  SkBitmap reference_watermark_;
+};
+
+TEST_F(PrintCompositorImplEnterpriseWatermarkTest, EnterpriseWatermarkSet) {
+  MockPrintCompositorImplEnterpriseWatermark compositor;
+  compositor.DrawPage(nullptr, {});
+
+  ASSERT_TRUE(cc::MatchesBitmap(compositor.bitmap(), reference_watermark(),
+                                cc::ExactPixelComparator()));
+}
+
+}  // namespace
+}  // namespace printing

@@ -30,7 +30,7 @@
 #include "ui/accessibility/ax_tree_update.h"
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "components/enterprise/watermarking/mojom/watermark.mojom-forward.h"  // nogncheck
+#include "components/services/print_compositor/print_watermark.h"
 #endif
 
 class SkDocument;
@@ -132,9 +132,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       FinishDocumentCompositionCallback callback);
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-  // Accessor for watermark block for tests
-  const watermark::mojom::WatermarkBlockPtr& watermark_block_for_testing()
-      const;
+  const PrintWatermark& watermark_for_testing() const { return watermark_; }
 #endif
 
  private:
@@ -292,20 +290,9 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   std::string title_;
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-  // The watermark block. The special value `nullptr` indicates that there is no
-  // watermark.
-  watermark::mojom::WatermarkBlockPtr watermark_block_;
+  PrintWatermark watermark_;
 #endif
 };
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-// Draw the watermark specified by `watermark_block` using the provided canvas
-// and its size. Exposed for testing.
-void DrawEnterpriseWatermark(
-    SkCanvas* canvas,
-    SkSize size,
-    const watermark::mojom::WatermarkBlockPtr& watermark_block);
-#endif
 
 }  // namespace printing
 

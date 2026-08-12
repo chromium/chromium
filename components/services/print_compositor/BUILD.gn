@@ -36,6 +36,11 @@ static_library("print_compositor") {
   ]
 
   if (enterprise_watermark) {
+    sources += [
+      "print_watermark.cc",
+      "print_watermark.h",
+    ]
+
     deps += [ "//components/enterprise/watermarking" ]
 
     public_deps += [ "//components/enterprise/watermarking/mojom" ]
@@ -58,6 +63,8 @@ if (enable_printing) {
     ]
 
     if (enterprise_watermark) {
+      sources += [ "print_watermark_unittest.cc" ]
+
       deps += [
         "//cc:test_support",
         "//components/enterprise/watermarking",
