@@ -10,7 +10,7 @@
   "anti_goals": [],
   "edge_cases": [],
   "build_targets": [
-    "//agents/skills/magi-mode/tests/testdata:test_target"
+    "//agents/skills/multi-agent-engineering-workflow/tests/testdata:test_target"
   ],
   "context_resolved": true,
   "approach_confirmed": true,
@@ -23,6 +23,6 @@
     "use_reclient": true,
     "is_debug_build": true,
     "output_directory": "out/Default",
-    "temp_directory": "agents/skills/magi-mode/.temp"
+    "temp_directory": "agents/skills/multi-agent-engineering-workflow/.temp"
   }
 }

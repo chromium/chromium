@@ -1,7 +1,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Presubmit script for magi-mode.
+"""Presubmit script for multi-agent-engineering-workflow.
 
 This script enforces structural integrity and formatting for the MAGI protocol
 markdown documentation and persona cheat sheets.
@@ -20,7 +20,7 @@ import re
 EXEMPT_TOKENS_RE = re.compile(
     r'(src/[a-zA-Z0-9_/\.\-]+)|'
     r'(https?://[^\s()<>\[\]]+[^\s()<>\[\].:;?])|'
-    r'\[[^\]]+\]\((?!(?:https?://|src/))([^)#\s]+\.md)[^)]*\)')
+    r'\[[^\]]+\]\((?!(?:https?://|src/))([^)#\s]+\.(?:md|yaml))[^)]*\)')
 
 # Maximum size for a markdown file to prevent DoS via OOM.
 MAX_MD_FILE_SIZE = 1 * 1024 * 1024  # 1MB
@@ -601,8 +601,7 @@ def CheckJsonFiles(input_api, output_api):
                                 f'File {f.LocalPath()} '
                                 'environment.output_directory must be '
                                 f'a string, got '
-                                f'{type(output_directory).__name__}'
-                            ))
+                                f'{type(output_directory).__name__}'))
 
                     temp_directory = environment.get('temp_directory')
                     if 'temp_directory' not in environment:
@@ -616,8 +615,7 @@ def CheckJsonFiles(input_api, output_api):
                                 f'File {f.LocalPath()} '
                                 'environment.temp_directory must be '
                                 f'a string, got '
-                                f'{type(temp_directory).__name__}'
-                            ))
+                                f'{type(temp_directory).__name__}'))
 
         elif filename.startswith('constraints'):
             if next_p and next_p not in [
@@ -687,8 +685,7 @@ def CheckTestJsonFiles(input_api, output_api):
                 results.append(
                     output_api.PresubmitError(
                         f"File {f.LocalPath()} case at index {idx} "
-                        "must be an object."
-                    ))
+                        "must be an object."))
                 continue
 
             required_case_keys = ["name", "expected_outputs"]
@@ -723,8 +720,7 @@ def CheckTestJsonFiles(input_api, output_api):
                             f"key 'override_inputs' contains invalid "
                             f"property: {key}. "
                             f"Allowed properties are: "
-                            f"{', '.join(allowed_overrides)}"
-                        ))
+                            f"{', '.join(allowed_overrides)}"))
 
     return results
 

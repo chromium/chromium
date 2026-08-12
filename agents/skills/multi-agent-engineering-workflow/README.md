@@ -61,7 +61,8 @@ To trigger the MAGI workflow, describe your task—especially if it is complex,
 multi-platform, or security-sensitive—and request the skill. For example:
 
 > "I have a complex IPC issue in the Windows service that's causing deadlocks.
-> Please invoke the magi-mode skill to investigate and fix it."
+> Please invoke the multi-agent-engineering-workflow skill to investigate and
+> fix it."
 
 The Orchestrator will handle the rest, keeping you informed at every major
 milestone.

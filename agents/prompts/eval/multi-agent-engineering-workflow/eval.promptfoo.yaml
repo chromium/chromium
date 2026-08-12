@@ -1,7 +1,7 @@
 description: >-
-  Verify magi-mode skill triggers correctly as an orchestrator, investigates
-  and defines project specifications, and routes to appropriate multi-agent
-  sub-skills.
+  Verify multi-agent-engineering-workflow skill triggers as an orchestrator,
+  investigates and defines project specifications, and routes to appropriate
+  multi-agent sub-skills.
 owner: joedow@chromium.org
 prompts:
   - "{{query}}"
@@ -11,23 +11,24 @@ providers:
       timeoutSeconds: 300
       extensions: []
       skills:
-        - magi-mode
+        - multi-agent-engineering-workflow
 
 tests:
   - description: >-
-      Trigger: Query requesting MAGI mode orchestration for code refactoring and review
+      Trigger: Query requesting workflow orchestration for code refactoring
+      and review
     vars:
       query: >-
-        Run MAGI mode on this project to refactor and review the codebase.
+        Run the multi-agent engineering workflow to refactor the code.
     assert:
       - type: contains
         value: "project.magi.json"
       - type: icontains
         value: "ROUTING.md"
 
-  - description: "Functional: Verify environment grounding and harness detection"
+  - description: "Functional: Verify environment discovery and harness check"
     vars:
-      query: "How does MAGI mode handle environment discovery and tool usage?"
+      query: "How does the engineering workflow handle environment discovery?"
     assert:
       - type: contains
         value: "project.magi.json#environment"
@@ -36,7 +37,7 @@ tests:
 
   - description: "Quality: Verify workflow orchestration stage transitions"
     vars:
-      query: "Explain the orchestration stages and paths in MAGI mode."
+      query: "Explain the orchestration paths in the engineering workflow."
     assert:
       - type: icontains
         value: "FAST_PATH"

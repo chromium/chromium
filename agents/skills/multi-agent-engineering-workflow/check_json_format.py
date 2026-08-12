@@ -5,8 +5,8 @@
 """JSON formatting linter and fixer for MAGI protocol files.
 
 This script enforces 2-space indentation and a single trailing newline for
-JSON files within the magi-mode directory, while respecting specific
-overrides (e.g., legacy 4-space files).
+JSON files within the multi-agent-engineering-workflow directory, while
+respecting specific overrides (e.g., legacy 4-space files).
 """
 
 import argparse
@@ -15,7 +15,7 @@ import os
 import sys
 
 # Files that should use 4-space indentation instead of the 2-space default.
-# Relative to the magi-mode directory.
+# Relative to the multi-agent-engineering-workflow directory.
 INDENT_OVERRIDES = {
     'tests/magi_stage_refine_tests.json': 4,
 }
@@ -121,7 +121,8 @@ def main():
 
     files_to_process = args.files
     if not files_to_process:
-        # Default to all JSON files in the magi-mode directory (excluding .temp)
+        # Default to all JSON files in the multi-agent-engineering-workflow
+        # directory (excluding .temp).
         for root, dirs, files in os.walk(magi_dir):
             if '.temp' in dirs:
                 dirs.remove('.temp')

@@ -91,7 +91,8 @@ JSON files:
 
 1. **Read the Test JSON**: Locate the test case you want to run.
 2. **Setup**: Create an isolated directory under the configured `temp_directory`
-   (e.g. `agents/skills/magi-mode/.temp/`) and copy `testdata` into it.
+   (e.g. `agents/skills/multi-agent-engineering-workflow/.temp/`) and copy
+   `testdata` into it.
 3. **Extract Prompt and Inputs**: Construct a clear prompt for a subagent,
    explaining the role (e.g., Supervisor) and providing the `base_inputs` and
    `override_inputs` from the test case. Instruct the agent to work in the

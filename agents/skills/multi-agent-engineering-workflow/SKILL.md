@@ -1,11 +1,11 @@
 ---
-name: magi-mode
+name: multi-agent-engineering-workflow
 description: >-
   Enforce engineering rigor and verification loop for
   coding tasks using multi-agent debate and TDD.
 ---
 
-# MAGI Protocol (Modular Automated Guided Iteration)
+# Multi-Agent Engineering Workflow (MAGI Protocol)
 
 This skill acts as the high-level Orchestrator for the MAGI protocol, a
 consensus-driven multi-agent framework designed to resolve complex software
@@ -106,7 +106,8 @@ ______________________________________________________________________
 ## Workspace Management & Isolation
 
 - **Interim File Isolation:** Place all draft files (`*.magi`, `*.magi.*`) in
-  the configured `temp_directory` (e.g. `agents/skills/magi-mode/.temp/`).
+  the configured `temp_directory` (e.g.
+  `agents/skills/multi-agent-engineering-workflow/.temp/`).
 - **Cleanup:** The release skill MUST delete the temporary directory at the end
   of a successful run.
 - **VCS & Staging Workflows:** Upgrades to MAGI configuration files (via
@@ -130,9 +131,24 @@ ______________________________________________________________________
   understand how the Orchestrator adapts to centralized (Jetski) or
   decentralized (MAS CLI) environments.
 
+## Roadmap & Architecture TODOs
+
+- **TODO(MAGI Protocol Terminology):** While this skill is named
+  `multi-agent-engineering-workflow`, the underlying state specifications
+  (`project.magi.json`, `review_state.magi.json`, `tdd_state.magi.json`,
+  `TAG=magi`) currently retain legacy "MAGI" naming for backwards compatibility.
+  Planned refactor: transition state files and schema identifiers to a
+  generalized `project.workflow.json` protocol.
+- **TODO(Expanded Engineering Phases):**
+  - Integrate upstream design phases (e.g., generating design documents, class
+    diagrams, and sequence diagrams).
+  - Integrate downstream verification phases (e.g., automated code-coverage
+    gating via `experimental-code-coverage-config-validator` and fuzzing via
+    `fuzzing`).
+
 ## Evaluation & Testing
 
 When modifying this skill's workflow, routing, or schemas, ensure that the
 corresponding Promptfoo evaluation test suite is updated and passing:
 
-- [eval.promptfoo.yaml](../../prompts/eval/magi-mode/eval.promptfoo.yaml)
+- [eval.promptfoo.yaml](../../prompts/eval/multi-agent-engineering-workflow/eval.promptfoo.yaml)

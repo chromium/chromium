@@ -31,7 +31,7 @@ def main() -> int:
         str(AGENTS_DIR / 'testing' / 'cipd'),
         # Currently has a lot of issues that will need to be burned down.
         # TODO(b/528058003): Remove this and fix resulting issues.
-        str(AGENTS_DIR / 'skills' / 'magi-mode'),
+        str(AGENTS_DIR / 'skills' / 'multi-agent-engineering-workflow'),
         # WIP, paused, and currently unclear whether work will continue.
         str(AGENTS_DIR / 'infra' / 'review_rag_indexer'),
     ]
