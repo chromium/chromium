@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.firstrun.safety_promo.SafetyPromoCarouselView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <ScrollView
+      android:id="@+id/safety_promo_carousel_scroll_view"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_above="@+id/safety_promo_button_container"
+      android:fillViewport="true"
+      android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+      <ImageView
+          android:id="@+id/fre_icon"
+          android:layout_width="@dimen/safety_fre_logo_size"
+          android:layout_height="@dimen/safety_fre_logo_size"
+          android:layout_gravity="center"
+          android:layout_marginTop="@dimen/safety_fre_carousel_icon_margin_top"
+          android:layout_marginBottom="@dimen/fre_spacing"
+          android:scaleType="fitCenter"
+          android:adjustViewBounds="true"
+          android:src="@drawable/fre_product_logo"
+          android:importantForAccessibility="no" />
+
+      <TextView
+          android:id="@+id/safety_promo_carousel_title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center"
+          android:layout_marginBottom="@dimen/safety_fre_carousel_title_margin_bottom"
+          android:layout_marginHorizontal="@dimen/fre_spacing"
+          android:textAppearance="@style/TextAppearance.HeadlineLargeThick.Primary" />
+
+      <TextView
+          android:id="@+id/safety_promo_carousel_subtitle"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center"
+          android:layout_marginBottom="@dimen/fre_spacing"
+          android:layout_marginHorizontal="@dimen/fre_spacing"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/safety_promo_carousel_recycler_view"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:scrollbars="none" />
+    </LinearLayout>
+  </ScrollView>
+
+  <LinearLayout
+      android:id="@+id/safety_promo_button_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:layout_alignParentBottom="true"
+      android:layout_marginBottom="@dimen/fre_spacing"
+      android:paddingHorizontal="@dimen/fre_spacing">
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/fre_continue_button"
+        style="@style/FilledButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/safety_fre_carousel_button_margin_bottom"
+        android:text="@string/safety_fre_promo_start_browsing_button" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/fre_show_me_how_button"
+        style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/safety_fre_promo_show_me_how_button" />
+  </LinearLayout>
+</org.chromium.chrome.browser.firstrun.safety_promo.SafetyPromoCarouselView>
