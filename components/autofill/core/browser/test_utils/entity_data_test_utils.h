@@ -162,7 +162,7 @@ struct FlightReservationOptionsT {
   const char16_t* name = u"John Doe";
   const char16_t* departure_airport = u"MUC";
   const char16_t* arrival_airport = u"BEY";
-  std::optional<base::Time> departure_time = std::nullopt;
+  std::optional<base::Time> departure_time = kJune2017;
   base::TimeDelta departure_time_zone_offset = base::TimeDelta();
   std::string_view guid = "00000000-0000-4000-8000-500000000000";
   std::string_view nickname = "FlightReservation";
