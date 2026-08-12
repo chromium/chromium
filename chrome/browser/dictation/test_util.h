@@ -142,6 +142,10 @@ class MockSessionControllerDelegate : public SessionControllerDelegate {
   MockSessionControllerDelegate();
   ~MockSessionControllerDelegate() override;
 
+  MOCK_METHOD(content::BrowserContext*,
+              GetBrowserContext,
+              (),
+              (const, override));
   MOCK_METHOD(std::unique_ptr<StreamProvider>,
               CreateStreamProvider,
               (SessionController & controller),

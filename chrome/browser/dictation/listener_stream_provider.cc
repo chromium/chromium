@@ -65,7 +65,7 @@ ListenerStreamProvider::ListenerStreamProvider(
     : delegate_(delegate), browser_context_(browser_context) {}
 
 ListenerStreamProvider::~ListenerStreamProvider() {
-  VT_LOG() << "Stream(" << stream_id_ << ") destroyed";
+  VT_LOG(browser_context_) << "Stream(" << stream_id_ << ") destroyed";
   if (stream_id_) {
     GetMultiplexer().UnregisterStreamProvider(stream_id_);
   }
@@ -82,7 +82,7 @@ void ListenerStreamProvider::BindToTargetAndConnect(
   stream_id_ = multiplexer.GenerateStreamId();
   multiplexer.RegisterStreamProvider(stream_id_, this);
 
-  VT_LOG() << "Stream(" << stream_id_ << ")::" << __func__;
+  VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__;
 
   context_fetcher_ = std::make_unique<DictationContextFetcher>();
   if (kSendContextAsync.Get()) {
@@ -104,7 +104,7 @@ void ListenerStreamProvider::StartStream(
   extensions::api::dictation_private::StartStreamDetails details;
   details.stream_id = stream_id_.value();
 
-  VT_LOG() << "Stream(" << stream_id_ << ")::" << __func__;
+  VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__;
 
   if (result.has_value()) {
     details.context = ConvertToApiContext(std::move(*result));
@@ -152,7 +152,7 @@ void ListenerStreamProvider::OnAsyncContextCaptured(DictationContext result) {
 }
 
 void ListenerStreamProvider::Stop() {
-  VT_LOG() << "Stream(" << stream_id_ << ")::" << __func__;
+  VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__;
   context_fetcher_.reset();
 
   if (!stream_id_) {
@@ -181,8 +181,8 @@ void ListenerStreamProvider::Stop() {
 
 void ListenerStreamProvider::OnTranscriptionUpdated(const std::string& data,
                                                     bool is_final) {
-  VT_LOG() << "Stream(" << stream_id_ << ")::" << __func__ << " data: " << data
-           << ", is_final: " << is_final;
+  VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__
+                           << " data: " << data << ", is_final: " << is_final;
   latest_transcription_ = data;
   is_final_for_testing_ = is_final;
 
@@ -197,8 +197,8 @@ void ListenerStreamProvider::OnTranscriptionUpdated(const std::string& data,
 }
 
 void ListenerStreamProvider::OnStreamStateChanged(StreamState state) {
-  VT_LOG() << "Stream(" << stream_id_ << ")::" << __func__ << " " << state_
-           << " --> " << state;
+  VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__
+                           << " " << state_ << " --> " << state;
   // TODO(crbug.com/502587072): Assert state transitions are correct.
   StreamState old_state = state_;
   state_ = state;

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function testFlags(streamId, flags) {
-  // These stream IDs must match the values in the
-  // DictationPrivateApiStartStreamFlagsTest parameterized test instantiation.
-  const STREAM_ID_EXPECTING_EVAL_MODE = 1001;
-  const STREAM_ID_EXPECTING_WEB_SPEECH_API_BACKEND = 1002;
+// These stream IDs must match the values in the
+// DictationPrivateApiStartStreamFlagsTest parameterized test instantiation.
+const STREAM_ID_EXPECTING_EVAL_MODE = 1001;
+const STREAM_ID_EXPECTING_WEB_SPEECH_API_BACKEND = 1002;
 
+function testFlags(streamId, flags) {
   chrome.test.assertTrue(flags !== undefined);
   if (streamId === STREAM_ID_EXPECTING_EVAL_MODE) {
     chrome.test.assertEq(true, flags.evalMode);
@@ -25,6 +25,17 @@ if (chrome.dictationPrivate === undefined) {
   console.error('chrome.dictationPrivate is undefined');
   chrome.test.sendMessage('failed');
 } else {
+  let browserLogReceived = false;
+  chrome.dictationPrivate.onBrowserLog.addListener((logDetailsList) => {
+    chrome.test.assertTrue(Array.isArray(logDetailsList));
+    chrome.test.assertTrue(logDetailsList.length > 0);
+    for (const logDetails of logDetailsList) {
+      chrome.test.assertTrue(typeof logDetails.message === 'string');
+      chrome.test.assertTrue(typeof logDetails.timestamp === 'number');
+    }
+    browserLogReceived = true;
+  });
+
   chrome.dictationPrivate.onStartStream.addListener(async (details) => {
     const {streamId, context, flags} = details;
     const {annotatedPageContent, innerText, editableContent} = context;
@@ -72,6 +83,10 @@ if (chrome.dictationPrivate === undefined) {
       return;
     }
 
+    if (streamId !== STREAM_ID_EXPECTING_EVAL_MODE &&
+        streamId !== STREAM_ID_EXPECTING_WEB_SPEECH_API_BACKEND) {
+      chrome.test.assertTrue(browserLogReceived);
+    }
     chrome.test.succeed();
   });
 

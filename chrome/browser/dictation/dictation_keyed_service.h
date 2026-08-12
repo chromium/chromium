@@ -12,6 +12,7 @@
 #include "chrome/browser/dictation/connector_component_extension.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
 #include "chrome/browser/dictation/local_hotkey_manager.h"
+#include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/onboarding_manager.h"
 #include "chrome/browser/dictation/session_controller.h"
@@ -51,6 +52,7 @@ class DictationKeyedService : public KeyedService,
   void Shutdown() override;
 
   // SessionControllerDelegate:
+  content::BrowserContext* GetBrowserContext() const override;
   std::unique_ptr<StreamProvider> CreateStreamProvider(
       SessionController& controller) const override;
   std::unique_ptr<SessionUi> CreateUi(
@@ -108,6 +110,9 @@ class DictationKeyedService : public KeyedService,
     return local_hotkey_manager_.get();
   }
 
+  DictationLogBuffer& log_buffer() { return log_buffer_; }
+  const DictationLogBuffer& log_buffer() const { return log_buffer_; }
+
  private:
   // Starts a new session from the given target. It's the caller's
   // responsibility to ensure this never called while an existing session in
@@ -134,6 +139,8 @@ class DictationKeyedService : public KeyedService,
   DictationMultiplexer multiplexer_;
 
   OnboardingManager onboarding_manager_;
+
+  DictationLogBuffer log_buffer_;
 
   std::unique_ptr<LocalHotkeyManager> local_hotkey_manager_;
 

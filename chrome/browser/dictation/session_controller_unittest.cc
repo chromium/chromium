@@ -36,9 +36,20 @@ class DictationSessionControllerTest : public ChromeRenderViewHostTestHarness {
  public:
   DictationSessionControllerTest() {
     scoped_feature_list_.InitAndEnableFeature(kDictation);
-    controller_ = std::make_unique<SessionController>(mock_delegate_);
   }
   ~DictationSessionControllerTest() override = default;
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    ON_CALL(mock_delegate_, GetBrowserContext())
+        .WillByDefault(Return(profile()));
+    controller_ = std::make_unique<SessionController>(mock_delegate_);
+  }
+
+  void TearDown() override {
+    controller_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
 
   content::GlobalDOMNodeId MockTargetInMainFrame(int dom_node_id) {
     return content::GlobalDOMNodeId{main_rfh()->GetWeakDocumentPtr(),

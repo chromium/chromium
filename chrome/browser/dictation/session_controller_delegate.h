@@ -9,6 +9,10 @@
 
 #include "base/callback_list.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace dictation {
 
 class SessionController;
@@ -22,6 +26,7 @@ class SessionControllerDelegate {
  public:
   virtual ~SessionControllerDelegate() = default;
 
+  virtual content::BrowserContext* GetBrowserContext() const = 0;
   virtual std::unique_ptr<StreamProvider> CreateStreamProvider(
       SessionController& controller) const = 0;
   virtual std::unique_ptr<SessionUi> CreateUi(

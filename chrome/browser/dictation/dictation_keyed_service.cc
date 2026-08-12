@@ -93,7 +93,8 @@ DictationKeyedService::SessionState::~SessionState() = default;
 DictationKeyedService::DictationKeyedService(Profile* profile)
     : profile_(profile),
       connector_extension_(profile),
-      onboarding_manager_(*this, *profile->GetPrefs()) {
+      onboarding_manager_(*this, *profile->GetPrefs()),
+      log_buffer_(profile) {
   CHECK(base::FeatureList::IsEnabled(kDictation));
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -117,6 +118,10 @@ void DictationKeyedService::Shutdown() {
   // Ensure accelerators are unregistered safely before UI objects are
   // destroyed.
   local_hotkey_manager_.reset();
+}
+
+content::BrowserContext* DictationKeyedService::GetBrowserContext() const {
+  return profile_;
 }
 
 std::unique_ptr<StreamProvider> DictationKeyedService::CreateStreamProvider(
@@ -194,7 +199,7 @@ void DictationKeyedService::TriggerSession(
   }
 
   if (!session_) {
-    VT_LOG() << "Starting new session";
+    VT_LOG(profile_) << "Starting new session";
     StartSession(*tab, target_details, entry_point);
   } else {
     // Always stop existing stream before starting a new one.
@@ -206,12 +211,12 @@ void DictationKeyedService::TriggerSession(
     bool tab_changed = (tab != old_tab);
 
     if (tab_changed) {
-      VT_LOG() << "Moving session to new tab: " << tab;
+      VT_LOG(profile_) << "Moving session to new tab: " << tab;
       session_->tab_ = tab->GetWeakPtr();
       session_->controller_.ResetUi();
     }
 
-    VT_LOG() << "Starting in existing session";
+    VT_LOG(profile_) << "Starting in existing session";
     DictationStreamStartTrigger trigger;
     switch (entry_point) {
       case DictationSessionEntryPoint::kContextMenu:

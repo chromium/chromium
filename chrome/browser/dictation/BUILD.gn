@@ -49,6 +49,7 @@ source_set("impl") {
     "listener_stream_provider.cc",
     "listener_stream_provider.h",
     "local_hotkey_manager.cc",
+    "logging.cc",
     "metrics.cc",
     "onboarding_manager.cc",
     "session_controller.cc",
@@ -121,6 +122,7 @@ source_set("unit_tests") {
   sources = [
     "dictation_keyed_service_unittest.cc",
     "local_hotkey_manager_unittest.cc",
+    "logging_unittest.cc",
     "session_controller_unittest.cc",
     "target_unittest.cc",
   ]
@@ -133,6 +135,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/tabs:test_support",
     "//content/test:test_support",
+    "//extensions/browser:test_support",
   ]
 }
 

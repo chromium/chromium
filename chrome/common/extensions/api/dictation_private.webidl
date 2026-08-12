@@ -92,6 +92,21 @@ dictionary SetStreamStateDetails {
   required StreamState state;
 };
 
+dictionary LogMessageDetails {
+  // Timestamp of the log message (milliseconds since epoch).
+  required double timestamp;
+  // The log message text.
+  required DOMString message;
+};
+
+callback OnBrowserLogListener = undefined (sequence<LogMessageDetails> details);
+
+interface OnBrowserLogEvent : ExtensionEvent {
+  static undefined addListener(OnBrowserLogListener listener);
+  static undefined removeListener(OnBrowserLogListener listener);
+  static boolean hasListener(OnBrowserLogListener listener);
+};
+
 // The dictationPrivate API is a private API used by the dictation extension.
 interface DictationPrivate {
   // Sends the transcription to the browser.
@@ -115,6 +130,9 @@ interface DictationPrivate {
   // Fired to provide updated context for an active stream. Only sent if
   // context wasn't provided as part of the StartStream event.
   static attribute OnContextUpdateEvent onContextUpdate;
+
+  // Fired when browser log messages are emitted.
+  static attribute OnBrowserLogEvent onBrowserLog;
 };
 
 partial interface Browser {
