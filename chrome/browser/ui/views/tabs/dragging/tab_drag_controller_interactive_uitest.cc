@@ -5387,6 +5387,42 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithFocusMode,
   EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(3));
 }
 
+// In a focused tab group, dragging a tab to the right past the furthest tab in
+// the group should not cause the tab to drop outside the focused group.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithFocusMode,
+                       DragTabInFocusedGroupToRightDoesNotLeaveGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  TabStripModel* model = browser()->tab_strip_model();
+  TabGroupModel* group_model = model->group_model();
+
+  AddTabsAndResetBrowser(browser(), 2);
+  tab_groups::TabGroupId group = model->AddToNewGroup({0, 1, 2});
+  EnsureFocusToTabStrip(tab_strip);
+  model->SetFocusedGroup(group);
+  StopAnimating(tab_strip);
+
+  ASSERT_EQ(3, model->count());
+  ASSERT_EQ(3u, group_model->GetTabGroup(group)->ListTabs().length());
+  EXPECT_EQ(group, model->GetFocusedGroup());
+
+  // Drag tab 0 to the right past the furthest tab in the tab group (tab 2).
+  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
+  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(2), gfx::Vector2d(50, 0)));
+  ASSERT_TRUE(ReleaseInput());
+  StopAnimating(tab_strip);
+
+  // All tabs should still remain in the focused group, and tab 0 moved to
+  // index 2.
+  EXPECT_EQ("1 2 0", IDString(model));
+  EXPECT_EQ(group, model->GetFocusedGroup());
+  EXPECT_EQ(3u, group_model->GetTabGroup(group)->ListTabs().length());
+  EXPECT_EQ(group, model->GetTabGroupForTab(0));
+  EXPECT_EQ(group, model->GetTabGroupForTab(1));
+  EXPECT_EQ(group, model->GetTabGroupForTab(2));
+}
+
 // Creates two browsers, focuses a group in the second browser, then drags a
 // group from the first browser into the second browser. The second browser
 // should lose its focused state.
