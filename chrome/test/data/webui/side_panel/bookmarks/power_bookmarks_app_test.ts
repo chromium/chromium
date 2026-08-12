@@ -8,6 +8,7 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
 import {SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
+import {BOOKMARK_ROW_LOAD_EVENT} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import type {PowerBookmarksAddFolderButtonElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_add_folder_button.js';
 import type {PowerBookmarksAppElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
 import type {PowerBookmarksListHeaderElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list_header.js';
@@ -289,8 +290,8 @@ suite('General', () => {
               .getElementsForTesting()
               .map((el: HTMLElement) => el.id));
 
-      const navigationElementsRebuilt = eventToPromise(
-          'rebuild-navigation-elements', powerBookmarksApp.$.bookmarksList);
+      const rowLoaded = eventToPromise(
+          BOOKMARK_ROW_LOAD_EVENT, powerBookmarksApp.$.bookmarksList);
       const movedBookmark = FOLDERS[1]!.children![2]!.children![0]!;
       assertTrue(!!movedBookmark);
       bookmarksApi.callbackRouterRemote.onBookmarkNodeMoved(
@@ -300,7 +301,9 @@ suite('General', () => {
           /*parentId=*/ FOLDERS[1]!.id,  // Moving to other bookmarks.
           /*index=*/ 0,
       );
-      await navigationElementsRebuilt;
+      await rowLoaded;
+      powerBookmarksApp.$.bookmarksList
+          .flushNavigationElementsDebouncerForTesting();
 
       assertArrayEquals(
           [
