@@ -25,6 +25,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/animation.h"
@@ -127,6 +128,8 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
 using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::Mock;
 using ::testing::Pointee;
 using ::testing::Pointer;
@@ -14951,6 +14954,160 @@ TEST_P(LayerTreeHostImplEventMetricPreservationTest, PreserveMetrics) {
                   Property(&EventMetrics::caused_frame_update,
                            GetParam().should_metrics_cause_frame_update)))));
   }
+}
+
+namespace {
+
+// Dispatches `scroll_state` as a gesture scroll update inside an event metrics
+// scope, the way `InputHandlerProxy` does, and returns the observations
+// recorded on the update's metrics.
+std::vector<ScrollUpdateEventMetrics::AppliedScrollObservation>
+ScrollUpdateAndGetObservations(LayerTreeHostImpl* host_impl,
+                               ScrollState scroll_state,
+                               ui::ScrollInputType input_type) {
+  const base::TimeTicks update_input_timestamp = base::TimeTicks::Now();
+  std::unique_ptr<ScrollUpdateEventMetrics> metrics =
+      ScrollUpdateEventMetrics::CreateForTesting(
+          ui::EventType::kGestureScrollUpdate, input_type,
+          /*is_inertial=*/false,
+          ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+          /*delta=*/scroll_state.delta_y(),
+          /*timestamp=*/update_input_timestamp,
+          /*arrived_in_browser_main_timestamp=*/update_input_timestamp,
+          base::DefaultTickClock::GetInstance(),
+          /*trace_id=*/std::nullopt,
+          /*scroll_begin_generated_timestamp=*/
+          update_input_timestamp - base::Milliseconds(2),
+          /*scroll_begin_arrival_timestamp=*/
+          update_input_timestamp - base::Milliseconds(1));
+  {
+    auto monitor = host_impl->GetScopedEventMetricsMonitor(
+        base::BindOnce([](std::unique_ptr<EventMetrics> metrics,
+                          bool handled) { return metrics; },
+                       std::move(metrics)));
+    host_impl->GetInputHandler().ScrollUpdate(std::move(scroll_state));
+  }
+
+  // Observations are attached when the monitor ends, so read them back from the
+  // saved metrics the monitor handed to the manager.
+  EventMetrics::List saved_events =
+      host_impl->TakeSavedEventsMetricsForTesting();
+  CHECK_EQ(saved_events.size(), 1u);
+  return saved_events[0]->AsScrollUpdate()->applied_scroll_observations();
+}
+
+}  // namespace
+
+// An update that moves content records an observation naming the scroller that
+// moved.
+TEST_P(LayerTreeHostImplTest,
+       ScrollPerformanceTimingRecordsAppliedScrollWhenEnabled) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.enable_scroll_performance_timing = true;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(1000, 1000));
+  LayerImpl* child_scroller = AddScrollableLayer(
+      OuterViewportScrollLayer(), gfx::Size(100, 100), gfx::Size(1000, 1000));
+  DrawFrame();
+
+  GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(50, 50), gfx::Vector2dF(0, 10),
+                 ui::ScrollInputType::kTouchscreen)
+          .get(),
+      ui::ScrollInputType::kTouchscreen);
+
+  EXPECT_THAT(
+      ScrollUpdateAndGetObservations(
+          host_impl_.get(),
+          UpdateState(gfx::Point(50, 50), gfx::Vector2dF(0, 10),
+                      ui::ScrollInputType::kTouchscreen),
+          ui::ScrollInputType::kTouchscreen),
+      ElementsAre(
+          Field(&ScrollUpdateEventMetrics::AppliedScrollObservation::element_id,
+                child_scroller->element_id())));
+
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+}
+
+// An update that moves no content because the scroller is already at its extent
+// records nothing.
+TEST_P(LayerTreeHostImplTest,
+       ScrollPerformanceTimingRecordsNothingWithoutAppliedScroll) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.enable_scroll_performance_timing = true;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(1000, 1000));
+  DrawFrame();
+
+  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2dF(0, -10),
+                                           ui::ScrollInputType::kTouchscreen)
+                                    .get(),
+                                ui::ScrollInputType::kTouchscreen);
+  ASSERT_TRUE(host_impl_->CurrentlyScrollingNode());
+
+  EXPECT_THAT(ScrollUpdateAndGetObservations(
+                  host_impl_.get(),
+                  UpdateState(gfx::Point(), gfx::Vector2dF(0, -10),
+                              ui::ScrollInputType::kTouchscreen),
+                  ui::ScrollInputType::kTouchscreen),
+              IsEmpty());
+  EXPECT_POINTF_EQ(gfx::PointF(0, 0),
+                   CurrentScrollOffset(OuterViewportScrollLayer()));
+
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+}
+
+// With the setting disabled, an update that moves content records nothing.
+TEST_P(LayerTreeHostImplTest,
+       ScrollPerformanceTimingRecordsNothingWhenDisabled) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.enable_scroll_performance_timing = false;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(1000, 1000));
+  DrawFrame();
+
+  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2dF(0, 10),
+                                           ui::ScrollInputType::kTouchscreen)
+                                    .get(),
+                                ui::ScrollInputType::kTouchscreen);
+
+  EXPECT_THAT(ScrollUpdateAndGetObservations(
+                  host_impl_.get(),
+                  UpdateState(gfx::Point(), gfx::Vector2dF(0, 10),
+                              ui::ScrollInputType::kTouchscreen),
+                  ui::ScrollInputType::kTouchscreen),
+              IsEmpty());
+  EXPECT_POINTF_EQ(gfx::PointF(0, 10),
+                   CurrentScrollOffset(OuterViewportScrollLayer()));
+
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+}
+
+// An animated scroll applies its movement on later animation ticks, so the
+// update that creates the animation records nothing.
+TEST_P(LayerTreeHostImplTest,
+       ScrollPerformanceTimingRecordsNothingForAnimatedScroll) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.enable_scroll_performance_timing = true;
+  ASSERT_TRUE(settings.enable_smooth_scroll);
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(1000, 1000));
+  DrawFrame();
+
+  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2dF(0, 10),
+                                           ui::ScrollInputType::kWheel)
+                                    .get(),
+                                ui::ScrollInputType::kWheel);
+
+  EXPECT_THAT(ScrollUpdateAndGetObservations(
+                  host_impl_.get(),
+                  AnimatedUpdateState(gfx::Point(), gfx::Vector2dF(0, 10)),
+                  ui::ScrollInputType::kWheel),
+              IsEmpty());
+  EXPECT_POINTF_EQ(gfx::PointF(0, 0),
+                   CurrentScrollOffset(OuterViewportScrollLayer()));
+
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
 
 class ConcurrentImplOnlyScrollAnimationsTest : public LayerTreeHostImplTest {

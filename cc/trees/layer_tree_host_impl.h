@@ -863,6 +863,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   FrameSorter* frame_sorter_for_testing() { return &frame_sorter_; }
 
+  EventMetrics::List TakeSavedEventsMetricsForTesting() {
+    return events_metrics_manager_.TakeSavedEventsMetrics();
+  }
+
   // Returns true if the client is currently compositing synchronously.
   bool IsInSynchronousComposite() const;
 

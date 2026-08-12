@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/paint/element_id.h"
 
 namespace cc {
 
@@ -65,6 +66,11 @@ class CC_EXPORT EventsMetricsManager {
   // be saved when it goes out of scope.
   void SaveActiveEventMetrics();
 
+  // Records that `element_id`'s scroller moved, to be attached to the innermost
+  // active monitor's `ScrollUpdateEventMetrics`. Does nothing if no monitor is
+  // active.
+  void RecordAppliedScrollObservation(ElementId element_id);
+
   // Empties the list of saved EventMetrics objects, returning them to the
   // caller.
   EventMetrics::List TakeSavedEventsMetrics();
@@ -86,7 +92,11 @@ class CC_EXPORT EventsMetricsManager {
 
   // Called when the most nested scoped monitor is destroyed. If the monitored
   // metrics need to be saved it will be passed in as `metrics`.
-  void OnScopedMonitorEnded(std::unique_ptr<EventMetrics> metrics);
+  // `applied_scroll_observation_element_ids` holds the scrollers observed to
+  // have moved during that monitor's scope, oldest first.
+  void OnScopedMonitorEnded(
+      std::unique_ptr<EventMetrics> metrics,
+      const std::vector<ElementId>& applied_scroll_observation_element_ids);
 
   // Stack of active, potentially nested, scoped monitors.
   std::vector<raw_ptr<ScopedMonitorImpl, VectorExperimental>>

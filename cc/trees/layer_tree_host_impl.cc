@@ -4825,6 +4825,13 @@ void LayerTreeHostImpl::WillScrollContent(ElementId element_id) {
 void LayerTreeHostImpl::DidScrollContent(ElementId element_id,
                                          bool animated,
                                          const gfx::Vector2dF& scroll_delta) {
+  // An animated scroll has not moved content yet; the movement lands on later
+  // animation ticks that do not reach here.
+  if (settings_.enable_scroll_performance_timing && !animated && element_id &&
+      !scroll_delta.IsZero()) {
+    events_metrics_manager_.RecordAppliedScrollObservation(element_id);
+  }
+
   scroll_accumulated_this_frame_ += scroll_delta;
   frame_max_scroll_delta_ =
       std::max(std::abs(scroll_delta.x()), std::abs(scroll_delta.y()));

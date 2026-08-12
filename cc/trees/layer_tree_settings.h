@@ -242,6 +242,10 @@ class CC_EXPORT LayerTreeSettings {
 
   // Whether the unbounded element API is enabled.
   bool enable_unbounded_element = false;
+
+  // Whether to collect the compositor-side scroll metadata reported by the
+  // Performance Scroll Timing API.
+  bool enable_scroll_performance_timing = false;
 };
 
 }  // namespace cc

@@ -45,8 +45,13 @@ class EventsMetricsManager::ScopedMonitorImpl
         metrics->set_caused_frame_update(false);
       }
     }
-    manager_->OnScopedMonitorEnded(std::move(metrics));
+    manager_->OnScopedMonitorEnded(std::move(metrics),
+                                   applied_scroll_observation_element_ids_);
     manager_ = nullptr;
+  }
+
+  void RecordAppliedScrollObservation(ElementId element_id) {
+    applied_scroll_observation_element_ids_.push_back(element_id);
   }
 
   // Overridden from EventsMetricsManager::ScopedMonitor.
@@ -56,6 +61,7 @@ class EventsMetricsManager::ScopedMonitorImpl
   raw_ptr<EventsMetricsManager> manager_;
   DoneCallback done_callback_;
   bool save_metrics_ = false;
+  std::vector<ElementId> applied_scroll_observation_element_ids_;
 };
 
 EventsMetricsManager::ScopedMonitor::ScopedMonitor() = default;
@@ -88,6 +94,13 @@ void EventsMetricsManager::SaveActiveEventMetrics() {
   }
 }
 
+void EventsMetricsManager::RecordAppliedScrollObservation(
+    ElementId element_id) {
+  if (!active_scoped_monitors_.empty()) {
+    active_scoped_monitors_.back()->RecordAppliedScrollObservation(element_id);
+  }
+}
+
 EventMetrics::List EventsMetricsManager::TakeSavedEventsMetrics() {
   EventMetrics::List result;
   result.swap(saved_events_);
@@ -115,7 +128,8 @@ void EventsMetricsManager::DropSavedEventMetricsForNoFrameUpdate() {
 }
 
 void EventsMetricsManager::OnScopedMonitorEnded(
-    std::unique_ptr<EventMetrics> metrics) {
+    std::unique_ptr<EventMetrics> metrics,
+    const std::vector<ElementId>& applied_scroll_observation_element_ids) {
   DCHECK_GT(active_scoped_monitors_.size(), 0u);
   active_scoped_monitors_.pop_back();
 
@@ -126,6 +140,9 @@ void EventsMetricsManager::OnScopedMonitorEnded(
             EventMetrics::EventType::kInertialGestureScrollUpdate) {
       auto* scroll_update = metrics->AsScrollUpdate();
       scroll_update->set_did_scroll(did_scroll_);
+      for (ElementId element_id : applied_scroll_observation_element_ids) {
+        scroll_update->AddAppliedScrollObservation(element_id);
+      }
     }
     saved_events_.push_back(std::move(metrics));
   }
