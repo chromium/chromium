@@ -52,6 +52,11 @@ class SettingsWindowFinderWin {
   // Stops observing size/location changes.
   virtual void StopObservingLocationChanges();
 
+  // Run with true when the user starts dragging or resizing the observed
+  // window, and with false when they let go. Only meaningful while observing.
+  using WindowMoveSizeCallback = base::RepeatingCallback<void(bool)>;
+  virtual void SetMoveSizeCallback(WindowMoveSizeCallback on_move_size);
+
  protected:
   virtual HWND FindSettingsTopLevelWindow() const;
 
@@ -78,6 +83,7 @@ class SettingsWindowFinderWin {
   WindowFoundCallback on_found_;
   base::OnceClosure on_timeout_;
   WindowResizedCallback on_resized_;
+  WindowMoveSizeCallback on_move_size_;
   HWND observed_hwnd_ = nullptr;
   base::OneShotTimer timeout_timer_;
   HWINEVENTHOOK winevent_hook_ = nullptr;

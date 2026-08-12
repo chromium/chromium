@@ -30,7 +30,6 @@ constexpr int kMinAnchorHeightPx = 160;
 constexpr int kHorizontalInsetDip = 61;
 constexpr int kPreferredHeightDip = 220;
 constexpr int kMinHeightDip = 180;
-
 }  // namespace
 
 bool IsAnchorLargeEnoughForDocking(const gfx::Rect& anchor_rect) {
@@ -103,9 +102,18 @@ gfx::Point ComputeArrowStartPointFromAnchor(const gfx::Rect& anchor_rect) {
                     anchor_rect.y() + anchor_rect.height() / 2);
 }
 
-gfx::Point ComputeArrowEndPoint(const gfx::Rect& target_rect) {
-  return gfx::Point(target_rect.right(),
-                    target_rect.y() + target_rect.height() / 2);
+gfx::Point ComputeArrowEndPoint(HWND settings_hwnd,
+                                const gfx::Rect& target_rect) {
+  // Distance from the window's top down to the row the guidance indicates.
+  constexpr int kTopPaddingDip = 164;
+  const int top_padding_px =
+      display::win::GetScreenWin()
+          ->DIPToScreenSize(settings_hwnd, gfx::Size(0, kTopPaddingDip))
+          .height();
+
+  return gfx::Point(
+      target_rect.right(),
+      target_rect.y() + std::min(top_padding_px, target_rect.height()));
 }
 
 bool IsDpiCompatibleForDocking(HWND chrome_hwnd,

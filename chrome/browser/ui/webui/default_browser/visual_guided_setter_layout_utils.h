@@ -28,9 +28,13 @@ gfx::Rect ComputeDockedSettingsRectFromAnchor(HWND chrome_hwnd,
 // screen coordinates) relative to the WebUI anchor rect.
 gfx::Point ComputeArrowStartPointFromAnchor(const gfx::Rect& anchor_rect);
 
-// Computes the ending point of the guidance arrow (in physical pixels,
-// screen coordinates) relative to the Settings window rect.
-gfx::Point ComputeArrowEndPoint(const gfx::Rect& target_rect);
+// Computes the ending point of the guidance arrow (in physical pixels, screen
+// coordinates) relative to the Settings window rect.
+//
+// `settings_hwnd` supplies the scale factor for the layout padding, and bounds
+// the result to the window so a resize cannot leave the arrow pointing past it.
+gfx::Point ComputeArrowEndPoint(HWND settings_hwnd,
+                                const gfx::Rect& target_rect);
 
 // Returns true if the target docking rect is on a monitor with the same DPI
 // scaling as the Chrome window.

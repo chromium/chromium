@@ -157,6 +157,9 @@ chromium-metrics-reviews@google.com.
   <int value="5"
       label="Settings launch failed (e.g. set-as-default unsupported by the
              install mode)"/>
+  <int value="6" label="User navigated the guide tab away before completion"/>
+  <int value="7"
+      label="User moved or resized the Settings window (degraded to floating)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/default_browser/visual_guided_setter_controller_win.h:DefaultBrowserVisualGuideOutcome) -->

@@ -66,7 +66,13 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
     // install mode does not support set-as-default (canary) or registration
     // failed.
     kSettingsLaunchFailed = 5,
-    kMaxValue = kSettingsLaunchFailed,
+    // The user navigated the guide tab away from the guide page before
+    // completing the flow.
+    kNavigatedAway = 6,
+    // The user moved or resized the Settings window, taking over its
+    // placement. The flow stops docking and leaves the window floating.
+    kUserRepositioned = 7,
+    kMaxValue = kUserRepositioned,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:DefaultBrowserVisualGuideOutcome)
 
@@ -132,6 +138,11 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   // Outcome::kSettingsLaunchFailed instead of waiting for the finder timeout.
   void OnLaunchSettingsResult(bool succeeded);
 
+ protected:
+  // Returns the rect to dock the Settings window to, in physical screen
+  // pixels. Virtual for testing.
+  virtual gfx::Rect ComputeDockedSettingsRect() const;
+
  private:
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
@@ -171,6 +182,14 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
 
   // Halts the controller, kills timers, and releases OS resources.
   void TearDownInternal();
+
+  // Returns the z-order target for the Settings window, consuming a pending
+  // topmost re-assert. Call once per applied layout.
+  HWND GetSettingsWindowInsertAfter() const;
+
+  // Called when the user starts or finishes dragging or resizing the Settings
+  // window.
+  void OnSettingsWindowMoveSize(bool in_progress);
 
   ErrorCallback error_callback_;
   std::optional<bool> last_reported_error_;

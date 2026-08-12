@@ -68,6 +68,11 @@ class TestSettingsWindowFinderWin : public SettingsWindowFinderWin {
     ++stop_observing_called_count_;
     observed_hwnd_ = nullptr;
     on_resized_.Reset();
+    on_move_size_.Reset();
+  }
+
+  void SetMoveSizeCallback(WindowMoveSizeCallback on_move_size) override {
+    on_move_size_ = std::move(on_move_size);
   }
 
   void TriggerFound(HWND hwnd) {
@@ -88,6 +93,13 @@ class TestSettingsWindowFinderWin : public SettingsWindowFinderWin {
     }
   }
 
+  // Simulates the user grabbing (true) or releasing (false) the window.
+  void TriggerMoveSize(bool in_progress) {
+    if (on_move_size_) {
+      on_move_size_.Run(in_progress);
+    }
+  }
+
   int start_called_count() const { return start_called_count_; }
   int stop_called_count() const { return stop_called_count_; }
   int start_observing_called_count() const {
@@ -102,6 +114,7 @@ class TestSettingsWindowFinderWin : public SettingsWindowFinderWin {
   WindowFoundCallback on_found_;
   base::OnceClosure on_timeout_;
   WindowResizedCallback on_resized_;
+  WindowMoveSizeCallback on_move_size_;
   HWND observed_hwnd_ = nullptr;
   base::TimeDelta timeout_;
   int start_called_count_ = 0;
@@ -145,6 +158,8 @@ class TestVisualGuidedSetterControllerWin
   }
 
   TestSettingsWindowFinderWin* test_finder() const { return test_finder_; }
+
+  static constexpr gfx::Rect kTestDockedRect{1200, 300, 600, 220};
 
   // VisualGuidedSetterControllerWin:
   bool IsSettingsWindowAlive() const override {
@@ -205,6 +220,10 @@ class TestVisualGuidedSetterControllerWin
   void clear_overlay_counts() {
     show_overlay_count_ = 0;
     hide_overlay_count_ = 0;
+  }
+
+  gfx::Rect ComputeDockedSettingsRect() const override {
+    return kTestDockedRect;
   }
 
  private:
@@ -554,6 +573,79 @@ TEST_F(VisualGuidedSetterControllerWinTest, SettingsWindowClosedRecordsError) {
   histograms.ExpectUniqueSample(
       "DefaultBrowser.VisualGuide.Outcome",
       TestVisualGuidedSetterControllerWin::Outcome::kSettingsWindowClosed, 1);
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, UserMoveDegradesToFloating) {
+  base::HistogramTester histograms;
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  // Until the user intervenes, the window is placed where the stage says.
+  ASSERT_GT(controller_->applied_rects().size(), 0u);
+  EXPECT_EQ(controller_->applied_rects().back(),
+            TestVisualGuidedSetterControllerWin::kTestDockedRect);
+
+  controller_->clear_applied_rects();
+  controller_->clear_overlay_counts();
+  controller_->test_finder()->TriggerMoveSize(/*in_progress=*/true);
+
+  EXPECT_GT(controller_->hide_overlay_count(), 0);
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kUserRepositioned, 1);
+
+  // The flow stays alive so the user can still finish in the Settings window,
+  // but it imposes no further geometry on it.
+  EXPECT_TRUE(controller_->is_running());
+  controller_->test_finder()->TriggerResized();
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  EXPECT_EQ(controller_->applied_rects().size(), 0u);
+
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, UserMoveDegradesOnlyOnce) {
+  base::HistogramTester histograms;
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  controller_->test_finder()->TriggerMoveSize(/*in_progress=*/true);
+  controller_->test_finder()->TriggerMoveSize(/*in_progress=*/false);
+  controller_->test_finder()->TriggerMoveSize(/*in_progress=*/true);
+
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kUserRepositioned, 1);
+
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, RestartDocksAfterAUserMove) {
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  controller_->test_finder()->TriggerMoveSize(/*in_progress=*/true);
+  controller_->Stop();
+
+  controller_->clear_applied_rects();
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  ASSERT_GT(controller_->applied_rects().size(), 0u);
+  EXPECT_EQ(controller_->applied_rects().back(),
+            TestVisualGuidedSetterControllerWin::kTestDockedRect);
+
+  controller_->Stop();
 }
 
 TEST_F(VisualGuidedSetterControllerWinTest, ContinuousDockingDisabled) {

@@ -32,6 +32,11 @@ namespace {
 constexpr DWORD kObservedWindowEvents[] = {
     // The window moved or was resized: re-dock to it.
     EVENT_OBJECT_LOCATIONCHANGE,
+    // The user grabbed the title bar or a border. These bracket the run of
+    // location changes the drag produces, and distinguish it from the window
+    // moving itself.
+    EVENT_SYSTEM_MOVESIZESTART,
+    EVENT_SYSTEM_MOVESIZEEND,
     // The window went away. Closing a UWP window such as Settings often
     // cloaks or hides its frame rather than destroying it.
     EVENT_OBJECT_DESTROY,
@@ -180,6 +185,12 @@ void SettingsWindowFinderWin::StartObservingLocationChanges(
   UpdateGlobalInstance();
 }
 
+void SettingsWindowFinderWin::SetMoveSizeCallback(
+    WindowMoveSizeCallback on_move_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  on_move_size_ = std::move(on_move_size);
+}
+
 void SettingsWindowFinderWin::StopObservingLocationChanges() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -187,6 +198,7 @@ void SettingsWindowFinderWin::StopObservingLocationChanges() {
 
   observed_hwnd_ = nullptr;
   on_resized_.Reset();
+  on_move_size_.Reset();
 
   UpdateGlobalInstance();
 }
@@ -304,6 +316,17 @@ void SettingsWindowFinderWin::HandleWinEvent(DWORD event,
                                              LONG idObject) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!hwnd || idObject != OBJID_WINDOW) {
+    return;
+  }
+
+  if (hwnd == observed_hwnd_ && (event == EVENT_SYSTEM_MOVESIZESTART ||
+                                 event == EVENT_SYSTEM_MOVESIZEEND)) {
+    if (on_move_size_) {
+      // Run a copy: as with on_resized_, the callback may reentrantly stop the
+      // observation while the invocation is still on the stack.
+      WindowMoveSizeCallback callback = on_move_size_;
+      callback.Run(event == EVENT_SYSTEM_MOVESIZESTART);
+    }
     return;
   }
 

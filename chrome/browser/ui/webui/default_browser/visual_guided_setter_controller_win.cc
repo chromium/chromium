@@ -337,12 +337,22 @@ void VisualGuidedSetterControllerWin::ResumeLayoutObservation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_continuous_docking_enabled_) {
     StartRuntimeTimers();
-  } else if (settings_window_finder_) {
+  }
+
+  if (settings_window_finder_) {
+    // Observed in both modes. Continuous docking re-imposes the docked rect on
+    // every tick, so it needs to know the user has taken the window over at
+    // least as much as the event-driven mode does; a redundant re-dock from a
+    // location change costs nothing, since an unchanged rect is applied with
+    // SWP_NOMOVE | SWP_NOSIZE.
     settings_window_finder_->StartObservingLocationChanges(
         settings_hwnd_,
         base::BindRepeating(
             &VisualGuidedSetterControllerWin::UpdateDockedLayout,
             weak_ptr_factory_.GetWeakPtr()));
+    settings_window_finder_->SetMoveSizeCallback(base::BindRepeating(
+        &VisualGuidedSetterControllerWin::OnSettingsWindowMoveSize,
+        weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -375,7 +385,7 @@ void VisualGuidedSetterControllerWin::OnWebContentsHidden() {
 
 void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_running_) {
+  if (!is_running_ || is_degraded_) {
     return;
   }
   if (!web_contents() ||
@@ -410,6 +420,22 @@ void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
     return;
   }
 
+  const gfx::Rect settings_target = ComputeDockedSettingsRect();
+
+  bool dpi_compatible =
+      IsDpiCompatibleForDocking(chrome_hwnd_, settings_target);
+  if (!dpi_compatible) {
+    EnterDegradedFloating(Outcome::kDpiMismatch);
+    return;
+  }
+
+  NotifyErrorState(false);
+
+  ApplySettingsRectAndZOrder(settings_target, GetSettingsWindowInsertAfter());
+  UpdateOverlay();
+}
+
+gfx::Rect VisualGuidedSetterControllerWin::ComputeDockedSettingsRect() const {
   const gfx::Rect work_area =
       display::win::GetScreenWin()
           ->GetScreenWinDisplayWithDisplayId(
@@ -426,31 +452,27 @@ void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
                                       ->GetBoundsInScreen()
                                       .OffsetFromOrigin());
   }
-  const gfx::Rect settings_target =
-      visual_guided_setter::ComputeDockedSettingsRectFromAnchor(
-          chrome_hwnd_, anchor_rect_screen_dip, work_area, settings_hwnd_);
+  return visual_guided_setter::ComputeDockedSettingsRectFromAnchor(
+      chrome_hwnd_, anchor_rect_screen_dip, work_area, settings_hwnd_);
+}
 
-  bool dpi_compatible =
-      IsDpiCompatibleForDocking(chrome_hwnd_, settings_target);
-  if (!dpi_compatible) {
-    EnterDegradedFloating(Outcome::kDpiMismatch);
-    return;
-  }
-
-  if (is_degraded_) {
-    outcome_ = std::nullopt;
-    is_degraded_ = false;
-  }
-  NotifyErrorState(false);
-
+HWND VisualGuidedSetterControllerWin::GetSettingsWindowInsertAfter() const {
   HWND insert_after = HWND_TOPMOST;
   if (topmost_policy_ == TopmostPolicy::kRequiresFocus &&
       !IsChromeWindowActive()) {
     insert_after = HWND_NOTOPMOST;
   }
+  return insert_after;
+}
 
-  ApplySettingsRectAndZOrder(settings_target, insert_after);
-  UpdateOverlay();
+void VisualGuidedSetterControllerWin::OnSettingsWindowMoveSize(
+    bool in_progress) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!in_progress || is_degraded_ || !is_running_) {
+    return;
+  }
+  // The user has taken the window over, so stop docking it.
+  EnterDegradedFloating(Outcome::kUserRepositioned);
 }
 
 bool VisualGuidedSetterControllerWin::IsSettingsWindowAlive() const {
@@ -534,6 +556,7 @@ void VisualGuidedSetterControllerWin::EnterDegradedFloating(Outcome reason) {
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
   }
   is_degraded_ = true;
+  base::UmaHistogramEnumeration("DefaultBrowser.VisualGuide.Outcome", reason);
   NotifyErrorState(true);
 }
 
@@ -602,7 +625,8 @@ void VisualGuidedSetterControllerWin::UpdateOverlay() {
 
   ShowOverlayArrow(visual_guided_setter::ComputeArrowStartPointFromAnchor(
                        *anchor_rect_screen),
-                   visual_guided_setter::ComputeArrowEndPoint(*settings_rect));
+                   visual_guided_setter::ComputeArrowEndPoint(settings_hwnd_,
+                                                              *settings_rect));
 }
 
 std::optional<gfx::Rect>
@@ -704,7 +728,7 @@ void VisualGuidedSetterControllerWin::TearDownInternal() {
   settings_hwnd_ = nullptr;
   settings_pid_ = 0;
 
-  if (is_running_) {
+  if (is_running_ && !is_degraded_) {
     base::UmaHistogramEnumeration(
         "DefaultBrowser.VisualGuide.Outcome",
         outcome_.value_or(Outcome::kSettingsWindowClosed));
