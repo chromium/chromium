@@ -2864,7 +2864,7 @@
   },
   {
     "name": "drive-fs-mirroring",
-    "owners": [ "wenbojie@chromium.org", "fdegros@chromium.org", "simmonsjosh@google.com"],
+    "owners": ["wenbojie@chromium.org", "simmonsjosh@google.com"],
     "expiry_milestone": 150
   },
   {
