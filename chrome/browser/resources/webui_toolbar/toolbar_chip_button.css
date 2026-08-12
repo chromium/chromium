@@ -10,9 +10,10 @@
 
 :host {
   color: var(--toolbar-chip-fg-color, var(--color-toolbar-button-icon));
+  display: inline-flex;
+  align-items: center;
   flex-shrink: 0;
   font-family: var(--toolbar-chip-font-family);
-  vertical-align: middle;
   width: auto;
   min-width: max-content;
 

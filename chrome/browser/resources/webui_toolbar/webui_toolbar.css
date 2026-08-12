@@ -7,7 +7,11 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
- body {
+html,
+body {
+  /* Ensure the WebUI viewport matches the full height of the parent WebView
+   * container, allowing inner flex elements to center vertically. */
+  height: 100%;
   margin: 0;
   overflow: hidden;
 }

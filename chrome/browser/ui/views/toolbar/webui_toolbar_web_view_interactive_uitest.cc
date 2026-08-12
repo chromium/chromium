@@ -2,24 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
-#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -30,6 +33,8 @@
 #include "components/data_sharing/public/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension.h"
+#include "extensions/test/test_extension_dir.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -65,16 +70,30 @@ std::string GetPinnedButtonJS(
 class WebUIToolbarWebViewInteractiveTest : public InteractiveBrowserTest {
  public:
   WebUIToolbarWebViewInteractiveTest() {
+    // Disable kExtensionsPinnedByDefault to prevent test extensions from being
+    // pinned automatically upon installation. This avoids a DCHECK crash when
+    // the test subsequently tries to pin them manually.
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
-         features::kWebUILocationBar,
+         features::kWebUILocationBar, features::kWebUIBackForwardButton,
+         features::kWebUIAppMenuButton, features::kWebUIPinnedToolbarActions,
+         features::kWebUIExtensionsContainer,
          features::kSkipIPCChannelPausingForNonGuests,
          features::kWebUIInProcessResourceLoadingV2},
-        {});
+        /*disabled_features=*/{features::kExtensionsPinnedByDefault});
   }
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+  }
+
+  auto CheckElementIsCentered(ui::ElementIdentifier webview_id,
+                              const DeepQuery& query) {
+    return CheckJsResultAt(
+        webview_id, query,
+        "el => Math.abs(el.getBoundingClientRect().top - (window.innerHeight "
+        "- el.getBoundingClientRect().bottom)) <= 1",
+        true);
   }
 
  private:
@@ -102,10 +121,84 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
       WaitForShow(PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier));
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest, FocusReloadButton) {
+// Verifies the vertical layout alignment of the WebUI toolbar when maximized.
+// In maximized/fullscreen mode:
+// 1. The WebUIToolbarWebView should remain centered and limited to the content
+// height.
+// 2. All WebUI elements (Back, Reload, Location Bar, Pinned actions, App Menu)
+//    should be vertically centered relative to the WebUI viewport.
+// 3. The container itself is centered in the toolbar (y = (parent_height -
+// height) / 2 in C++).
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       MaximizedLayoutAlignment) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarWebViewId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInstrumentedWebViewId);
 
+  // Make a test extension
+  extensions::TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(R"({
+    "name": "Test Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {}
+  })");
+  extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Pin the extension to make it visible in the toolbar.
+  ToolbarActionsModel::Get(browser()->GetProfile())
+      ->SetActionVisibility(extension->id(), true);
+
+  PinnedToolbarActionsModel::Get(browser()->GetProfile())
+      ->UpdatePinnedState(kActionPrint, true);
+  WaitForInitialWebUIToolbar(browser());
+
+  RunTestSequence(
+      WaitForShow(kWebUIToolbarElementIdentifier),
+      WithView(kWebUIToolbarElementIdentifier,
+               [](WebUIToolbarWebView* parent) {
+                 parent->GetWebViewForTesting()->SetProperty(
+                     views::kElementIdentifierKey, kInstrumentedWebViewId);
+                 parent->GetWidget()->Maximize();
+               }),
+      // Wait for the window to actually maximize.
+      PollUntil(
+          [this]() {
+            return browser()->GetWindow() &&
+                   browser()->GetWindow()->IsMaximized();
+          },
+          "Wait for window to maximize"),
+      // Verify C++ side centering.
+      CheckView(kWebUIToolbarElementIdentifier,
+                [](WebUIToolbarWebView* view) {
+                  return view->bounds().y() ==
+                         (view->parent()->height() - view->bounds().height()) /
+                             2;
+                }),
+      InstrumentNonTabWebView(kWebUIToolbarWebViewId, kInstrumentedWebViewId,
+                              /*wait_for_ready=*/true),
+      // Verify WebUI elements are vertically centered in the viewport.
+      CheckElementIsCentered(kWebUIToolbarWebViewId,
+                             DeepQuery{"toolbar-app", "#reload"}),
+      CheckElementIsCentered(kWebUIToolbarWebViewId,
+                             DeepQuery{"toolbar-app", "#back"}),
+      CheckElementIsCentered(kWebUIToolbarWebViewId,
+                             DeepQuery{"toolbar-app", "#location-bar"}),
+      CheckElementIsCentered(kWebUIToolbarWebViewId,
+                             DeepQuery{"toolbar-app", "#app-menu"}),
+      CheckElementIsCentered(
+          kWebUIToolbarWebViewId,
+          DeepQuery{"toolbar-app", "#extensions", "webui-toolbar-extension"}),
+      CheckElementIsCentered(kWebUIToolbarWebViewId,
+                             DeepQuery{"toolbar-app", "#pinnedToolbarActions",
+                                       "pinned-toolbar-action"}));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest, FocusReloadButton) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarWebViewId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInstrumentedWebViewId);
   WaitForInitialWebUIToolbar(browser());
   RunTestSequence(
       WaitForShow(kWebUIToolbarElementIdentifier),

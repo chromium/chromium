@@ -10,6 +10,8 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  /* Vertically center action buttons and dividers. */
+  align-items: center;
   display: flex;
   /* Matches native views::AnimatingLayoutManager default FAST_OUT_SLOW_IN_3
    * configuration for pinned toolbar actions. */

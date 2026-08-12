@@ -35,6 +35,12 @@ cr-icon-button {
 
 cr-button {
   cursor: default;
+  /* Zero out font-size and line-height because cr-button wraps slotted content
+   * in an inline span. This collapses the font baseline offset, ensuring the
+   * icon is vertically centered. This is safe as toolbar buttons using
+   * cr-button are strictly icon-only and have no text. */
+  font-size: 0;
+  line-height: 0;
   margin: 0;
   padding: 0;
   min-width: var(--toolbar-button-height);

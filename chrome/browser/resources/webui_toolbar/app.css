@@ -8,6 +8,8 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  align-items: center;
   display: flex;
   gap: var(--toolbar-icon-default-margin);
+  height: 100%;
 }

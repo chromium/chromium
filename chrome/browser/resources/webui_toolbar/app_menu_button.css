@@ -9,7 +9,8 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  display: inline-block;
+  /* Use flex layout to avoid default inline-block baseline alignment issues. */
+  display: flex;
   flex-shrink: 0;
 }
 
