@@ -26,10 +26,13 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.InitializeFeatureList;
 import org.chromium.chrome.modules.on_demand.OnDemandModule;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Application class for Chrome that knows how to deal with isolated splits. This class will perform
@@ -60,6 +63,8 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     private final String mChromeApplicationClassName;
     private @Nullable Resources mResources;
+
+    private final CountDownLatch mWarmUpClassLoaderLatch = new CountDownLatch(1);
 
     public SplitChromeApplication() {
         this(sImplClassName);
@@ -163,8 +168,71 @@ public class SplitChromeApplication extends SplitCompatApplication {
         }
     }
 
+    private void loadNativeLibraryAndInitFeatureList() {
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION)) {
+            return;
+        }
+
+        LibraryLoader.getInstance().ensureInitialized();
+
+        if (BuildConfig.IS_FOR_TEST) {
+            // For test builds, we should initialize the feature list early to apply the
+            // fieldtrial_testing_config.json.
+            ContextUtils.sDoFeatureListInitHookForTesting =
+                    InitializeFeatureList::initializeFeatureList;
+        } else if (!BuildConfig.IS_CHROME_BRANDED || !VariationsSeedFetcher.shouldFetchSeed()) {
+            // For non-Chrome branded builds, we should initialize the feature list early to
+            // apply the fieldtrial_testing_config.json. Otherwise, we should initialize the
+            // feature list early in non-first run when we are not fetching the first run
+            // variations seed.
+            long startTimeMs = SystemClock.uptimeMillis();
+            InitializeFeatureList.initializeFeatureList();
+            long endTimeMs = SystemClock.uptimeMillis();
+            RecordHistogram.recordTimesHistogram(
+                    "Startup.Android.InitializeFeatureListTime", endTimeMs - startTimeMs);
+        }
+    }
+
+    private void warmUpClassLoader(Context chromeContext) {
+        // A new thread is started here because we do not want to delay returning the chrome
+        // Context, since that slows down startup. This thread must be a HandlerThread because
+        // AsyncInitializationActivity (a base class of ChromeTabbedActivity) creates a Handler,
+        // so needs to have a Looper prepared.
+        HandlerThread thread = new HandlerThread("ActivityPreload");
+        thread.start();
+        new Handler(thread.getLooper())
+                .post(
+                        () -> {
+                            try {
+                                mWarmUpClassLoaderLatch.await();
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                            try {
+                                // Create a throwaway instance of ChromeTabbedActivity. This will
+                                // warm up the chrome ClassLoader, and perform loading of classes
+                                // used early in startup in the background.
+                                Class<?> chromePreloadClass =
+                                        chromeContext
+                                                .getClassLoader()
+                                                .loadClass(sChromePreloadName);
+                                if (!ChromeFeatureList.sTweakApplicationPreloadSkipNewInstance
+                                        .isEnabled()) {
+                                    var _ = chromePreloadClass.newInstance();
+                                }
+                            } catch (ReflectiveOperationException e) {
+                                throw new RuntimeException(e);
+                            }
+                            thread.quit();
+                        });
+    }
+
     @Override
     protected void performBrowserProcessPreloading(Context context) {
+        if (ChromeFeatureList.sTweakApplicationPreloadLoadNativeFirst.isEnabled()) {
+            loadNativeLibraryAndInitFeatureList();
+        }
+
         // The chrome split has a large amount of code, which can slow down startup. Loading
         // this in the background allows us to do this in parallel with startup tasks which do
         // not depend on code in the chrome split.
@@ -177,32 +245,13 @@ public class SplitChromeApplication extends SplitCompatApplication {
                 new SplitPreloader.PreloadHooks() {
                     @Override
                     public void runImmediatelyInBackgroundThread(Context chromeContext) {
-                        // A new thread is started here because we do not want to delay returning
-                        // the chrome Context, since that slows down startup. This thread must be
-                        // a HandlerThread because AsyncInitializationActivity (a base class of
-                        // ChromeTabbedActivity) creates a Handler, so needs to have a Looper
-                        // prepared.
-                        HandlerThread thread = new HandlerThread("ActivityPreload");
-                        thread.start();
-                        new Handler(thread.getLooper())
-                                .post(
-                                        () -> {
-                                            try {
-                                                // Create a throwaway instance of
-                                                // ChromeTabbedActivity. This will warm up
-                                                // the chrome ClassLoader, and perform loading of
-                                                // classes used early in startup in the
-                                                // background.
-                                                var _ =
-                                                        chromeContext
-                                                                .getClassLoader()
-                                                                .loadClass(sChromePreloadName)
-                                                                .newInstance();
-                                            } catch (ReflectiveOperationException e) {
-                                                throw new RuntimeException(e);
-                                            }
-                                            thread.quit();
-                                        });
+                        if (ChromeFeatureList.sTweakApplicationPreloadSkipWarmUp.isEnabled()) {
+                            return;
+                        }
+                        warmUpClassLoader(chromeContext);
+                        if (!ChromeFeatureList.sTweakApplicationPreloadMoveWarmUp.isEnabled()) {
+                            mWarmUpClassLoaderLatch.countDown();
+                        }
                     }
 
                     @Override
@@ -231,25 +280,12 @@ public class SplitChromeApplication extends SplitCompatApplication {
                     }
                 });
 
-        if (!CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION)) {
-            LibraryLoader.getInstance().ensureInitialized();
+        if (!ChromeFeatureList.sTweakApplicationPreloadLoadNativeFirst.isEnabled()) {
+            loadNativeLibraryAndInitFeatureList();
+        }
 
-            if (BuildConfig.IS_FOR_TEST) {
-                // For test builds, we should initialize the feature list early to apply the
-                // fieldtrial_testing_config.json.
-                ContextUtils.sDoFeatureListInitHookForTesting =
-                        InitializeFeatureList::initializeFeatureList;
-            } else if (!BuildConfig.IS_CHROME_BRANDED || !VariationsSeedFetcher.shouldFetchSeed()) {
-                // For non-Chrome branded builds, we should initialize the feature list early to
-                // apply the fieldtrial_testing_config.json. Otherwise, we should initialize the
-                // feature list early in non-first run when we are not fetching the first run
-                // variations seed.
-                long startTimeMs = SystemClock.uptimeMillis();
-                InitializeFeatureList.initializeFeatureList();
-                long endTimeMs = SystemClock.uptimeMillis();
-                RecordHistogram.recordTimesHistogram(
-                        "Startup.Android.InitializeFeatureListTime", endTimeMs - startTimeMs);
-            }
+        if (ChromeFeatureList.sTweakApplicationPreloadMoveWarmUp.isEnabled()) {
+            mWarmUpClassLoaderLatch.countDown();
         }
     }
 

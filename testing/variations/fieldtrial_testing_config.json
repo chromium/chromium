@@ -24907,6 +24907,68 @@
             ]
         }
     ],
+    "TweakApplicationPreload": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_MoveWarmUp",
+                    "enable_features": [
+                        "TweakApplicationPreloadMoveWarmUp"
+                    ],
+                    "disable_features": [
+                        "TweakApplicationPreloadLoadNativeFirst",
+                        "TweakApplicationPreloadSkipNewInstance",
+                        "TweakApplicationPreloadSkipWarmUp"
+                    ]
+                },
+                {
+                    "name": "Enabled_LoadNativeFirst",
+                    "enable_features": [
+                        "TweakApplicationPreloadLoadNativeFirst"
+                    ],
+                    "disable_features": [
+                        "TweakApplicationPreloadMoveWarmUp",
+                        "TweakApplicationPreloadSkipNewInstance",
+                        "TweakApplicationPreloadSkipWarmUp"
+                    ]
+                },
+                {
+                    "name": "Enabled_SkipNewInstance",
+                    "enable_features": [
+                        "TweakApplicationPreloadSkipNewInstance"
+                    ],
+                    "disable_features": [
+                        "TweakApplicationPreloadLoadNativeFirst",
+                        "TweakApplicationPreloadMoveWarmUp",
+                        "TweakApplicationPreloadSkipWarmUp"
+                    ]
+                },
+                {
+                    "name": "Enabled_SkipWarmUp",
+                    "enable_features": [
+                        "TweakApplicationPreloadSkipWarmUp"
+                    ],
+                    "disable_features": [
+                        "TweakApplicationPreloadLoadNativeFirst",
+                        "TweakApplicationPreloadMoveWarmUp",
+                        "TweakApplicationPreloadSkipNewInstance"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "TweakApplicationPreloadLoadNativeFirst",
+                        "TweakApplicationPreloadMoveWarmUp",
+                        "TweakApplicationPreloadSkipNewInstance",
+                        "TweakApplicationPreloadSkipWarmUp"
+                    ]
+                }
+            ]
+        }
+    ],
     "UMA-Pseudo-Metrics-Effect-Injection-25-Percent": [
         {
             "platforms": [
