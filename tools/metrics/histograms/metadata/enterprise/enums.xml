@@ -2634,6 +2634,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="User and device managed by cloud and unaffiliated"/>
 </enum>
 
+<!-- LINT.IfChange(EnterprisePublishedSkillsError) -->
+
+<enum name="EnterprisePublishedSkillsError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Exceeds Maximum Limit"/>
+  <int value="2" label="Invalid JSON Type"/>
+  <int value="3" label="Missing URL or Hash"/>
+  <int value="4" label="Invalid or Non-HTTP(S) URL"/>
+  <int value="5" label="Duplicate URL"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:EnterprisePublishedSkillsError) -->
+
 <enum name="EnterpriseReportingEventType">
   <int value="0" label="Unknown event"/>
   <int value="1" label="Password reuse event"/>
@@ -2679,6 +2692,19 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/enterprise/signin/signals_disclaimer_metrics.h:EnterpriseSignalsDisclaimerProfilePickerResult) -->
+
+<!-- LINT.IfChange(EnterpriseSkillValidationResult) -->
+
+<enum name="EnterpriseSkillValidationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Hash Mismatch"/>
+  <int value="2" label="Invalid Format (parse error)"/>
+  <int value="3" label="Invalid Name"/>
+  <int value="4" label="Invalid Description"/>
+  <int value="5" label="Invalid Prompt"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/skills/internal/enterprise_skills_provider.h:EnterpriseSkillValidationResult) -->
 
 <!-- LINT.IfChange(EnterpriseSkyVaultMigrationDialogAction) -->
 

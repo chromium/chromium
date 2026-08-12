@@ -6,6 +6,7 @@
 
 #include "base/check_is_test.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
@@ -106,19 +107,22 @@ const Skill* SkillsServiceImpl::AddSkill(const std::string& source_skill_id,
   auto skill = std::make_unique<Skill>(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), name, icon, prompt);
   skill->source_skill_id = source_skill_id;
-  // TODO(crbug.com/523255901): Add explicit UMA metrics for saving enterprise
-  // and enterprise-derived skills.
   // If the skill has a source skill id, it is a derived skill.
   if (!source_skill_id.empty()) {
     const Skill* source_skill = GetSkillById(source_skill_id);
+    const bool is_enterprise_derived =
+        source_skill &&
+        (source_skill->source ==
+             sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE ||
+         source_skill->source ==
+             sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_ENTERPRISE);
     skill->source =
-        (source_skill &&
-         (source_skill->source ==
-              sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE ||
-          source_skill->source ==
-              sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_ENTERPRISE))
+        is_enterprise_derived
             ? sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_ENTERPRISE
             : sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
+    base::UmaHistogramEnumeration(
+        "Skills.Save.DerivedSource", skill->source,
+        static_cast<sync_pb::SkillSource>(sync_pb::SkillSource_ARRAYSIZE));
   }
   return AddSkillImpl(std::move(skill), UpdateSource::kLocal);
 }

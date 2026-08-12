@@ -196,6 +196,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Skills.Save.DerivedSource" enum="SkillsDerivedSource"
+    expires_after="2027-02-01">
+  <owner>esalma@google.com</owner>
+  <owner>austinzzr@google.com</owner>
+  <owner>cbe-productivity-eng@google.com</owner>
+  <summary>
+    Records the source of a derived skill when it is successfully saved. Emitted
+    in SkillsServiceImpl::SetAndSaveSkill when the skill is derived from an
+    Enterprise or First Party skill.
+  </summary>
+</histogram>
+
 <histogram name="Skills.Save.Result" enum="SkillsSaveResult"
     expires_after="2027-02-01">
   <owner>michelleabreo@google.com</owner>

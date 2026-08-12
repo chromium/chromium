@@ -120,6 +120,23 @@ enum class SkillsManagementError {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsManagementError)
 
+// LINT.IfChange(EnterprisePublishedSkillsError)
+enum class EnterprisePublishedSkillsError {
+  kUnknown = 0,
+  // The policy defined more skills than the maximum allowed limit
+  kExceedsLimit = 1,
+  // An entry in the list was not a JSON dictionary
+  kInvalidType = 2,
+  // The skill was missing a required 'url' or 'hash' field
+  kMissingUrlOrHash = 3,
+  // The URL was malformed or not using an HTTP/HTTPS scheme
+  kInvalidUrl = 4,
+  // The URL was already declared by a previous entry in the list
+  kDuplicateUrl = 5,
+  kMaxValue = kDuplicateUrl,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterprisePublishedSkillsError)
+
 // LINT.IfChange(SkillsDialogEntryPoint)
 enum class SkillsDialogEntryPoint {
   kUnknown = 0,
@@ -197,6 +214,9 @@ void RecordSkillsManagementError(SkillsManagementError error);
 
 // Appends openStartTime query parameter to the GURL with current time.
 GURL AppendOpenStartTime(const GURL& url);
+
+// Records validation errors when parsing the EnterprisePublishedSkills policy.
+void RecordEnterprisePublishedSkillsError(EnterprisePublishedSkillsError error);
 
 }  // namespace skills
 

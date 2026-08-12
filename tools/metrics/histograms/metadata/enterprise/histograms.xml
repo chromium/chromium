@@ -4251,6 +4251,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Skills.Count" units="skills"
+    expires_after="2027-02-01">
+  <owner>esalma@google.com</owner>
+  <owner>austinzzr@google.com</owner>
+  <owner>cbe-productivity-eng@google.com</owner>
+  <summary>
+    Records the number of valid enterprise skills provided by the
+    EnterprisePublishedSkills policy after they have been successfully parsed.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Skills.FetchLatency" units="ms"
+    expires_after="2027-02-01">
+  <owner>esalma@google.com</owner>
+  <owner>austinzzr@google.com</owner>
+  <owner>cbe-productivity-eng@google.com</owner>
+  <summary>
+    The time it takes to fetch an enterprise skill definition from its URL.
+    Recorded when the network request completes, regardless of success.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Skills.FetchResult" enum="BooleanSuccess"
+    expires_after="2027-02-01">
+  <owner>esalma@google.com</owner>
+  <owner>austinzzr@google.com</owner>
+  <owner>cbe-productivity-eng@google.com</owner>
+  <summary>
+    Records whether the enterprise skill was successfully fetched from its URL
+    on request completion.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Skills.PolicyError"
+    enum="EnterprisePublishedSkillsError" expires_after="2027-02-01">
+  <owner>esalma@google.com</owner>
+  <owner>austinzzr@google.com</owner>
+  <owner>cbe-productivity-eng@google.com</owner>
+  <summary>
+    Records validation errors and invalid skills encountered when parsing the
+    EnterprisePublishedSkills policy. Recorded by the policy handler during
+    policy validation.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Skills.ValidationResult"
+    enum="EnterpriseSkillValidationResult" expires_after="2027-02-01">
+  <owner>esalma@google.com</owner>
+  <owner>austinzzr@google.com</owner>
+  <owner>cbe-productivity-eng@google.com</owner>
+  <summary>
+    Records the outcome of parsing and validating an enterprise skill file
+    fetched from its URL.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.SkyVault.LocalStorage.Enabled"
     enum="BooleanEnabled" expires_after="2026-12-16">
   <owner>aidazolic@google.com</owner>

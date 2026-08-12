@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -21,6 +22,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,6 +108,7 @@ TEST_F(EnterprisePublishedSkillsPolicyHandlerTest, UnderLimit) {
 }
 
 TEST_F(EnterprisePublishedSkillsPolicyHandlerTest, OverLimit) {
+  base::HistogramTester histogram_tester;
   base::ListValue list;
   for (size_t i = 0;
        i < EnterprisePublishedSkillsPolicyHandler::kMaxSkillsLimit + 5; ++i) {
@@ -136,9 +139,13 @@ TEST_F(EnterprisePublishedSkillsPolicyHandlerTest, OverLimit) {
   ASSERT_TRUE(value->is_list());
   EXPECT_EQ(EnterprisePublishedSkillsPolicyHandler::kMaxSkillsLimit,
             value->GetList().size());
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.Skills.PolicyError",
+      EnterprisePublishedSkillsError::kExceedsLimit, 1);
 }
 
 TEST_F(EnterprisePublishedSkillsPolicyHandlerTest, DuplicateUrls) {
+  base::HistogramTester histogram_tester;
   base::ListValue list;
   for (int i = 0; i < 5; ++i) {
     base::DictValue dict;
@@ -159,9 +166,13 @@ TEST_F(EnterprisePublishedSkillsPolicyHandlerTest, DuplicateUrls) {
   ASSERT_TRUE(value->is_list());
   // The policy handler now filters duplicates before applying to preferences.
   EXPECT_EQ(1u, value->GetList().size());
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.Skills.PolicyError",
+      EnterprisePublishedSkillsError::kDuplicateUrl, 4);
 }
 
 TEST_F(EnterprisePublishedSkillsPolicyHandlerTest, InvalidUrl) {
+  base::HistogramTester histogram_tester;
   base::ListValue list;
   base::DictValue dict1;
   dict1.Set("url", "not a url");
@@ -192,6 +203,9 @@ TEST_F(EnterprisePublishedSkillsPolicyHandlerTest, InvalidUrl) {
   ASSERT_TRUE(value->is_list());
   // The policy handler now filters invalid URLs before applying to preferences.
   EXPECT_EQ(1u, value->GetList().size());
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.Skills.PolicyError",
+      EnterprisePublishedSkillsError::kInvalidUrl, 1);
 }
 
 TEST_F(EnterprisePublishedSkillsPolicyHandlerTest, MissingUrlIgnored) {

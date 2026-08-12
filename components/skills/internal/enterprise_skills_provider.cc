@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -47,6 +48,9 @@ constexpr std::string_view kEnterpriseSkillImages[] = {
     "https://www.gstatic.com/chrome/skills/images/enterprise_folder.png",
     "https://www.gstatic.com/chrome/skills/images/enterprise_luggage.png",
 };
+void RecordValidationResult(EnterpriseSkillValidationResult result) {
+  base::UmaHistogramEnumeration("Enterprise.Skills.ValidationResult", result);
+}
 
 bool IsFieldValid(std::string_view field, size_t max_length) {
   return !field.empty() && field.length() <= max_length;
@@ -84,8 +88,6 @@ EnterpriseSkillValidationResult ValidateSkillMetadata(
 bool IsHashValid(std::string_view actual_hash_hex,
                  std::string_view expected_hash) {
   if (!base::EqualsCaseInsensitiveASCII(actual_hash_hex, expected_hash)) {
-    // TODO(b/533517209): Record Enterprise.Skills.ValidationResult
-    // (kHashMismatch).
     LOG_POLICY(ERROR, POLICY_PROCESSING)
         << "Enterprise skill hash mismatch. "
         << "Expected: " << expected_hash << ", Actual: " << actual_hash_hex;
@@ -225,7 +227,8 @@ void EnterpriseSkillsProvider::FetchSkillsFromUrls() {
         url_loader_factory_.get(),
         base::BindOnce(&EnterpriseSkillsProvider::OnURLLoadComplete,
                        weak_ptr_factory_.GetWeakPtr(), loader_ptr,
-                       expected_hash, barrier_closure_.callback()),
+                       expected_hash, base::TimeTicks::Now(),
+                       barrier_closure_.callback()),
         kMaxSkillDownloadSize);
 
     url_loaders_.emplace_back(std::move(url_loader));
@@ -240,14 +243,14 @@ std::unique_ptr<Skill> EnterpriseSkillsProvider::ParseAndValidateSkill(
       base::HexEncode(crypto::hash::Sha256(response_body));
 
   if (!IsHashValid(actual_hash_hex, expected_hash)) {
+    RecordValidationResult(EnterpriseSkillValidationResult::kHashMismatch);
     return nullptr;
   }
 
   ffi::SkillParseResult parsed =
       ffi::parse_skill_yaml_frontmatter(std::string(response_body));
   if (!parsed.success) {
-    // TODO(b/533517209): Record Enterprise.Skills.ValidationResult
-    // (kInvalidFormat).
+    RecordValidationResult(EnterpriseSkillValidationResult::kInvalidFormat);
     LOG_POLICY(ERROR, POLICY_PROCESSING)
         << "Enterprise skill validation failed for hash: " << expected_hash;
     return nullptr;
@@ -259,10 +262,8 @@ std::unique_ptr<Skill> EnterpriseSkillsProvider::ParseAndValidateSkill(
 
   EnterpriseSkillValidationResult validation_status = ValidateSkillMetadata(
       expected_hash, parsed_name, parsed_desc, prompt_content);
-
+  RecordValidationResult(validation_status);
   if (validation_status != EnterpriseSkillValidationResult::kSuccess) {
-    // TODO(b/533517209): Record Enterprise.Skills.ValidationResult (using
-    // validation_status).
     return nullptr;
   }
 
@@ -273,18 +274,22 @@ std::unique_ptr<Skill> EnterpriseSkillsProvider::ParseAndValidateSkill(
   new_skill->icon = kDefaultEnterpriseSkillIcon;
   new_skill->prompt = prompt_content;
   new_skill->source = sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE;
-
-  // TODO(b/533517209): Record Enterprise.Skills.ValidationResult (kSuccess).
   return new_skill;
 }
 
 void EnterpriseSkillsProvider::OnURLLoadComplete(
     network::SimpleURLLoader* source,
     const std::string& expected_hash,
+    base::TimeTicks start_time,
     base::RepeatingClosure barrier_closure,
     std::optional<std::string> response_body) {
-  // TODO(b/533517209): Record Enterprise.Skills.FetchResult and
-  // Enterprise.Skills.FetchDelta.
+  base::UmaHistogramBoolean("Enterprise.Skills.FetchResult",
+                            response_body.has_value());
+  // Use UmaHistogramTimes which is tailored for requests bounded by
+  // kSkillFetchTimeout (5 seconds).
+  base::UmaHistogramTimes("Enterprise.Skills.FetchLatency",
+                          base::TimeTicks::Now() - start_time);
+
   if (response_body) {
     auto new_skill = ParseAndValidateSkill(expected_hash, *response_body);
     if (new_skill) {
@@ -304,7 +309,6 @@ void EnterpriseSkillsProvider::OnURLLoadComplete(
 }
 
 void EnterpriseSkillsProvider::OnAllFetchesComplete() {
-  // TODO(b/533517209): Record Enterprise.Skills.Count.
   const size_t hosted_image_count = std::size(kEnterpriseSkillImages);
   for (size_t skill_index = 0; skill_index < pending_skills_.size();
        ++skill_index) {
@@ -312,6 +316,8 @@ void EnterpriseSkillsProvider::OnAllFetchesComplete() {
         GURL(kEnterpriseSkillImages[skill_index % hosted_image_count]);
   }
 
+  base::UmaHistogramCounts100("Enterprise.Skills.Count",
+                              pending_skills_.size());
   skills_ = std::move(pending_skills_);
   pending_skills_.clear();
   NotifyObservers();

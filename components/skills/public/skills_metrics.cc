@@ -193,4 +193,9 @@ GURL AppendOpenStartTime(const GURL& url) {
   return url.ReplaceComponents(replacements);
 }
 
+void RecordEnterprisePublishedSkillsError(
+    EnterprisePublishedSkillsError error) {
+  base::UmaHistogramEnumeration("Enterprise.Skills.PolicyError", error);
+}
+
 }  // namespace skills

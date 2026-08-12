@@ -13,6 +13,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "url/gurl.h"
@@ -83,6 +84,8 @@ EnterprisePublishedSkillsPolicyHandler::ValidateAndFilterSkillsList(
   base::ListValue valid_list_out;
 
   if (errors && skills_list.size() > kMaxSkillsLimit) {
+    RecordEnterprisePublishedSkillsError(
+        EnterprisePublishedSkillsError::kExceedsLimit);
     errors->AddError(policy_name(),
                      IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
                      {base::NumberToString(kMaxSkillsLimit)},
@@ -96,18 +99,28 @@ EnterprisePublishedSkillsPolicyHandler::ValidateAndFilterSkillsList(
     }
 
     if (!skill_entry.is_dict()) {
+      if (errors) {
+        RecordEnterprisePublishedSkillsError(
+            EnterprisePublishedSkillsError::kInvalidType);
+      }
       continue;
     }
 
     const std::string* url = skill_entry.GetDict().FindString("url");
     const std::string* hash = skill_entry.GetDict().FindString("hash");
     if (!url || !hash) {
+      if (errors) {
+        RecordEnterprisePublishedSkillsError(
+            EnterprisePublishedSkillsError::kMissingUrlOrHash);
+      }
       continue;
     }
 
     GURL gurl(*url);
     if (!gurl.is_valid() || !gurl.SchemeIsHTTPOrHTTPS()) {
       if (errors) {
+        RecordEnterprisePublishedSkillsError(
+            EnterprisePublishedSkillsError::kInvalidUrl);
         errors->AddError(policy_name(), IDS_POLICY_INVALID_URL_ERROR,
                          policy::PolicyErrorPath{},
                          policy::PolicyMap::MessageType::kWarning);
@@ -116,6 +129,10 @@ EnterprisePublishedSkillsPolicyHandler::ValidateAndFilterSkillsList(
     }
 
     if (valid_urls.contains(*url)) {
+      if (errors) {
+        RecordEnterprisePublishedSkillsError(
+            EnterprisePublishedSkillsError::kDuplicateUrl);
+      }
       continue;
     }
     valid_urls.insert(*url);

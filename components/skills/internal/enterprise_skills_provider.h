@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_provider.h"
@@ -29,10 +30,7 @@ class SimpleURLLoader;
 
 namespace skills {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// TODO(b/533517209): Wire this up to Enterprise.Skills.ValidationResult in
-// histograms/enums.xml.
+// LINT.IfChange(EnterpriseSkillValidationResult)
 enum class EnterpriseSkillValidationResult {
   kSuccess = 0,
   kHashMismatch = 1,
@@ -42,6 +40,7 @@ enum class EnterpriseSkillValidationResult {
   kInvalidPrompt = 5,
   kMaxValue = kInvalidPrompt,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSkillValidationResult)
 
 class EnterpriseSkillsProvider : public SkillsProvider {
  public:
@@ -74,6 +73,7 @@ class EnterpriseSkillsProvider : public SkillsProvider {
 
   void OnURLLoadComplete(network::SimpleURLLoader* source,
                          const std::string& expected_hash,
+                         base::TimeTicks start_time,
                          base::RepeatingClosure barrier_closure,
                          std::optional<std::string> response_body);
 

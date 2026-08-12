@@ -24,7 +24,7 @@ enum SkillSource {
   SKILL_SOURCE_DERIVED_FROM_ENTERPRISE = 5;
 }
 // clang-format off
-// LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource, //chrome/browser/glic/host/glic.mojom:SkillSource)
+// LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource, //chrome/browser/glic/host/glic.mojom:SkillSource, //tools/metrics/histograms/metadata/skills/enums.xml:SkillsDerivedSource)
 // clang-format on
 
 // LINT.IfChange(SkillSpecifics)

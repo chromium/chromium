@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -377,6 +378,7 @@ TEST_F(SkillsServiceImplTest, GetSkillById_FirstPartySkill) {
 }
 
 TEST_F(SkillsServiceImplTest, AddSkill) {
+  base::HistogramTester histogram_tester;
   InitService();
 
   const Skill* added_skill = service().AddSkill(
@@ -394,11 +396,16 @@ TEST_F(SkillsServiceImplTest, AddSkill) {
   EXPECT_TRUE(base::Uuid::ParseLowercase(added_skill->id).is_valid());
   EXPECT_FALSE(added_skill->creation_time.is_null());
   EXPECT_EQ(added_skill->creation_time, added_skill->last_update_time);
+  histogram_tester.ExpectUniqueSample(
+      "Skills.Save.DerivedSource",
+      sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY,
+      /*expected_bucket_count=*/1);
 }
 
 // Verifies that saving/adding an enterprise skill creates a new user skill
 // with `SKILL_SOURCE_DERIVED_FROM_ENTERPRISE` source.
 TEST_F(SkillsServiceImplTest, AddSkill_DerivedFromEnterprise) {
+  base::HistogramTester histogram_tester;
   InitService();
 
   auto provider = std::make_unique<FakeSkillsProvider>();
@@ -425,6 +432,10 @@ TEST_F(SkillsServiceImplTest, AddSkill_DerivedFromEnterprise) {
             added_skill->source);
   EXPECT_EQ(1u, service().GetSkills().size());
   EXPECT_EQ(1u, service().GetProvidedSkills().size());
+  histogram_tester.ExpectUniqueSample(
+      "Skills.Save.DerivedSource",
+      sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_ENTERPRISE,
+      /*expected_bucket_count=*/1);
 }
 
 // Verifies that saving/adding an already enterprise-derived skill preserves
