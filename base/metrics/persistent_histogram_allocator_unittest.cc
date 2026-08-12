@@ -10,6 +10,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/bucket_ranges.h"
@@ -146,6 +147,93 @@ TEST_F(PersistentHistogramAllocatorTest, CreateAndIterate) {
 
   recovered = histogram_iter.GetNext();
   EXPECT_FALSE(recovered);
+}
+
+// Tests that persistent histograms can be recovered from a file mapped strictly
+// as OS READ_ONLY memory, similar to what `FileMetricsProvider` does on
+// startup.
+TEST_F(PersistentHistogramAllocatorTest, FileReadonlyRecovery) {
+  constexpr char kHistogramName[] = "ReadOnlyTestHistogram";
+  constexpr char kLinearHistogramName[] = "ReadOnlyTestLinearHistogram";
+  constexpr char kBooleanHistogramName[] = "ReadOnlyTestBooleanHistogram";
+  constexpr char kCustomHistogramName[] = "ReadOnlyTestCustomHistogram";
+  constexpr char kSparseHistogramName[] = "ReadOnlyTestSparseHistogram";
+
+  // 1. Create a persistent standard histogram testing all flags.
+  HistogramBase* histogram = Histogram::FactoryGet(kHistogramName, 1, 1000, 10,
+                                                   HistogramBase::kAllFlags);
+  ASSERT_TRUE(histogram);
+  histogram->Add(50);
+
+  // 2. Create a persistent linear histogram testing all flags.
+  HistogramBase* linear_histogram = LinearHistogram::FactoryGet(
+      kLinearHistogramName, 1, 1000, 10, HistogramBase::kAllFlags);
+  ASSERT_TRUE(linear_histogram);
+  linear_histogram->Add(50);
+
+  // 3. Create a persistent boolean histogram testing all flags.
+  HistogramBase* boolean_histogram = BooleanHistogram::FactoryGet(
+      kBooleanHistogramName, HistogramBase::kAllFlags);
+  ASSERT_TRUE(boolean_histogram);
+  boolean_histogram->Add(1);
+
+  // 4. Create a persistent custom histogram testing all flags.
+  const std::vector<int> custom_ranges = {1, 5, 10, 50, 100};
+  HistogramBase* custom_histogram = CustomHistogram::FactoryGet(
+      kCustomHistogramName, custom_ranges, HistogramBase::kAllFlags);
+  ASSERT_TRUE(custom_histogram);
+  custom_histogram->Add(5);
+
+  // 5. Create a persistent sparse histogram testing all flags.
+  HistogramBase* sparse_histogram = SparseHistogram::FactoryGet(
+      kSparseHistogramName, HistogramBase::kAllFlags);
+  ASSERT_TRUE(sparse_histogram);
+  sparse_histogram->Add(50);
+
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const FilePath file_path =
+      temp_dir.GetPath().AppendASCII("persistent_memory.pma");
+
+  // Write allocator memory to a temporary file.
+  ASSERT_TRUE(WriteFile(file_path, std::string_view(allocator_memory_.get(),
+                                                    kAllocatorMemorySize)));
+
+  // Map the file strictly as READ_ONLY.
+  auto mmfile = std::make_unique<MemoryMappedFile>();
+  ASSERT_TRUE(
+      mmfile->Initialize(File(file_path, File::FLAG_OPEN | File::FLAG_READ),
+                         MemoryMappedFile::READ_ONLY));
+  EXPECT_TRUE(mmfile->IsValid());
+
+  auto readonly_file_allocator =
+      std::make_unique<FilePersistentMemoryAllocator>(
+          std::move(mmfile), 0, 0, "", PersistentMemoryAllocator::kReadOnly);
+  EXPECT_TRUE(readonly_file_allocator->IsReadonly());
+
+  PersistentHistogramAllocator recovery_readonly(
+      std::move(readonly_file_allocator));
+  PersistentHistogramAllocator::Iterator it(&recovery_readonly);
+
+  const char* const kExpectedNames[] = {
+      kHistogramName, kLinearHistogramName, kBooleanHistogramName,
+      kCustomHistogramName, kSparseHistogramName};
+
+  // Verify recovery of all histograms from read-only PMA.
+  std::unique_ptr<base::HistogramBase> recovered;
+  for (const char* expected_name : kExpectedNames) {
+    recovered = it.GetNext();
+    ASSERT_TRUE(recovered);
+    EXPECT_EQ(expected_name, recovered->histogram_name());
+    EXPECT_TRUE(recovered->HasFlags(HistogramBase::kAllFlags));
+    EXPECT_EQ(1, recovered->SnapshotSamples()->TotalCount());
+  }
+
+  EXPECT_FALSE(it.GetNext());
+
+  // Verify that attempting to write/add a sample to a read-only histogram
+  // is intercepted by OS page protection and crashes the process with SIGSEGV.
+  EXPECT_DEATH_IF_SUPPORTED(recovered->Add(100), "");
 }
 
 TEST_F(PersistentHistogramAllocatorTest, ConstructPaths) {

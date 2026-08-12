@@ -68,6 +68,21 @@ class BASE_EXPORT HistogramBase {
 
   static const Sample32 kSampleType_MAX;  // INT_MAX
 
+  // Flags that control histogram behavior and metadata.
+  //
+  // CRITICAL INVARIANT FOR FLAGS AND DESERIALIZATION:
+  // Histograms can be loaded from persistent memory allocators (PMA) mapped
+  // as OS-level READ_ONLY memory (e.g., `FileMetricsProvider` reading leftover
+  // .pma files during startup).
+  //
+  // Therefore, setting or clearing flags (via `SetFlags` / `ClearFlags`), as
+  // well as any operations executed during flag deserialization in
+  // `PersistentHistogramAllocator::CreateHistogram()`, MUST BE STRICTLY
+  // READ-ONLY with zero side-effect writes to backing persistent memory
+  // storage. Any write operation on a read-only PMA page will cause a SIGSEGV.
+  //
+  // Note: When adding a new flag to `Flags`, add it above `kAllFlags` and OR it
+  // into `kAllFlags`.
   enum Flags : uint16_t {
     kNoFlags = 0x0,
 
@@ -102,6 +117,11 @@ class BASE_EXPORT HistogramBase {
     // Indicates that the histogram should be collected by PUMA, and its type is
     // PUMA for Regional Capabilities.
     kPumaRcTargetedHistogramFlag = 0x80,
+
+    // A combination of all flags used in tests.
+    kAllFlags = kUmaTargetedHistogramFlag | kUmaStabilityHistogramFlag |
+                kIPCSerializationSourceFlag | kCallbackExists | kIsPersistent |
+                kPumaRcTargetedHistogramFlag,
   };
 
   // Histogram data inconsistency types.
@@ -148,6 +168,10 @@ class BASE_EXPORT HistogramBase {
 
   // Operations with Flags enum.
   int32_t flags() const { return flags_.load(std::memory_order_relaxed); }
+
+  // Sets flags for this histogram instance.
+  // Must not attempt to mutate backing persistent memory, as the instance
+  // may be backed by a read-only memory segment.
   void SetFlags(int32_t flags);
   void ClearFlags(int32_t flags);
   bool HasFlags(int32_t flags) const;
