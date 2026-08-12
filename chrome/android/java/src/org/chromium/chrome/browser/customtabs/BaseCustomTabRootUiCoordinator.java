@@ -650,20 +650,28 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected boolean shouldAllowThemingInNightMode() {
-        return mActivityType == ActivityType.TRUSTED_WEB_ACTIVITY
-                || mActivityType == ActivityType.WEB_APK;
+        return isWebAppActivity();
     }
 
     @Override
     protected boolean shouldAllowBrightThemeColors() {
-        return mActivityType == ActivityType.TRUSTED_WEB_ACTIVITY
-                || mActivityType == ActivityType.WEB_APK;
+        return isWebAppActivity();
     }
 
     @Override
     protected boolean shouldAllowThemingOnTablets() {
+        return isWebAppActivity();
+    }
+
+    /**
+     * Returns whether this coordinator serves an installed web app surface. Homescreen webapp
+     * shortcuts ({@link ActivityType#WEBAPP}) are the same product surface as WebAPKs; only the
+     * install mechanism differs, so they must follow the page theme the same way.
+     */
+    private boolean isWebAppActivity() {
         return mActivityType == ActivityType.TRUSTED_WEB_ACTIVITY
-                || mActivityType == ActivityType.WEB_APK;
+                || mActivityType == ActivityType.WEB_APK
+                || mActivityType == ActivityType.WEBAPP;
     }
 
     @Override

@@ -1016,6 +1016,17 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             // apps color the navigation bar from the manifest theme color. This runs post-native
             // because the color depends on a feature flag.
             updateNavigationBarColor();
+            // In edge-to-edge the navigation buttons render over page content; follow dynamic
+            // page theme-color changes and edge-to-edge transitions so the buttons stay
+            // readable, e.g. dark buttons over a page that switches its theme color to white.
+            getBrowserServicesThemeColorProvider()
+                    .addThemeColorObserver((color, shouldAnimate) -> updateNavigationBarColor());
+            if (getEdgeToEdgeManager() != null) {
+                getEdgeToEdgeManager()
+                        .getEdgeToEdgeStateProvider()
+                        .getSupplier()
+                        .addSyncObserver(drawingEdgeToEdge -> updateNavigationBarColor());
+            }
         }
 
         super.finishNativeInitialization();
@@ -1026,16 +1037,33 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
      * manifest theme color and the current edge-to-edge state.
      */
     protected void updateNavigationBarColor() {
+        // Webapp/WebAPK activities draw edge-to-edge through window-level tokens on the
+        // EdgeToEdgeStateProvider rather than through the tab's EdgeToEdgeController.
+        boolean windowDrawsEdgeToEdge =
+                getEdgeToEdgeManager() != null
+                        && Boolean.TRUE.equals(
+                                getEdgeToEdgeManager()
+                                        .getEdgeToEdgeStateProvider()
+                                        .getSupplier()
+                                        .get());
         boolean drawEdgeToEdge =
-                mEdgeToEdgeControllerSupplier.get() != null
-                        && mEdgeToEdgeControllerSupplier.get().isDrawingToEdge()
-                        && mEdgeToEdgeControllerSupplier.get().isPageOptedIntoEdgeToEdge();
+                windowDrawsEdgeToEdge
+                        || (mEdgeToEdgeControllerSupplier.get() != null
+                                && mEdgeToEdgeControllerSupplier.get().isDrawingToEdge()
+                                && mEdgeToEdgeControllerSupplier.get().isPageOptedIntoEdgeToEdge());
         var systemBarColorHelper =
                 getEdgeToEdgeManager() != null
                         ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
                         : null;
+        Integer edgeToEdgeContentColor =
+                drawEdgeToEdge ? getBrowserServicesThemeColorProvider().getThemeColor() : null;
         CustomTabNavigationBarController.update(
-                getWindow(), getIntentDataProvider(), this, drawEdgeToEdge, systemBarColorHelper);
+                getWindow(),
+                getIntentDataProvider(),
+                this,
+                drawEdgeToEdge,
+                systemBarColorHelper,
+                edgeToEdgeContentColor);
     }
 
     @Override

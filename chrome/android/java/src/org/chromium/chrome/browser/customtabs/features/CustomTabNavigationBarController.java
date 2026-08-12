@@ -45,9 +45,43 @@ public class CustomTabNavigationBarController {
             Context context,
             boolean isEdgeToEdge,
             @Nullable EdgeToEdgeSystemBarColorHelper systemBarColorHelper) {
-        // When drawing edge to edge, always use transparent color for the navigation bar.
+        update(
+                window,
+                intentDataProvider,
+                context,
+                isEdgeToEdge,
+                systemBarColorHelper,
+                /* edgeToEdgeContentColor= */ null);
+    }
+
+    /**
+     * Sets the navigation bar color and navigation divider color according to intent extras, or
+     * transparent when drawing edge-to-edge.
+     *
+     * @param edgeToEdgeContentColor The color of the page content rendered behind the transparent
+     *     navigation bar when drawing edge-to-edge, e.g. the page theme color. Used to keep the
+     *     navigation button appearance readable over the content; light buttons are used when null.
+     */
+    public static void update(
+            Window window,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            Context context,
+            boolean isEdgeToEdge,
+            @Nullable EdgeToEdgeSystemBarColorHelper systemBarColorHelper,
+            @Nullable Integer edgeToEdgeContentColor) {
+        // When drawing edge to edge, always use transparent color for the navigation bar. The
+        // buttons render over page content, so their appearance follows the content color.
         if (isEdgeToEdge) {
-            updateBarColor(window, Color.TRANSPARENT, false, false, systemBarColorHelper);
+            boolean needsDarkButtons =
+                    edgeToEdgeContentColor != null
+                            && !ColorUtils.shouldUseLightForegroundOnBackground(
+                                    edgeToEdgeContentColor);
+            updateBarColor(
+                    window,
+                    Color.TRANSPARENT,
+                    /* supportsDarkButtons= */ true,
+                    needsDarkButtons,
+                    systemBarColorHelper);
             return;
         }
 

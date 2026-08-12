@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -12,7 +14,9 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.view.View;
 import android.view.Window;
+import android.view.WindowInsetsController;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -156,5 +160,47 @@ public class CustomTabNavigationBarControllerTest {
                 /* isEdgeToEdge= */ true,
                 mSystemBarColorHelper);
         verify(mSystemBarColorHelper).setNavigationBarColor(Color.TRANSPARENT);
+    }
+
+    @Test
+    public void edgeToEdgeLightContentUsesDarkButtons() {
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ true,
+                mSystemBarColorHelper,
+                /* edgeToEdgeContentColor= */ Color.WHITE);
+
+        verify(mSystemBarColorHelper).setNavigationBarColor(Color.TRANSPARENT);
+        assertTrue(
+                "Buttons over a white page must be dark to stay visible.",
+                hasLightNavigationBarAppearance());
+    }
+
+    @Test
+    public void edgeToEdgeDarkContentKeepsLightButtons() {
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ true,
+                mSystemBarColorHelper,
+                /* edgeToEdgeContentColor= */ Color.BLACK);
+
+        verify(mSystemBarColorHelper).setNavigationBarColor(Color.TRANSPARENT);
+        assertFalse(
+                "Buttons over a black page must stay light.", hasLightNavigationBarAppearance());
+    }
+
+    private boolean hasLightNavigationBarAppearance() {
+        View root = mWindow.getDecorView().getRootView();
+        WindowInsetsController controller = root.getWindowInsetsController();
+        if (controller != null) {
+            return (controller.getSystemBarsAppearance()
+                            & WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS)
+                    != 0;
+        }
+        return (root.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR) != 0;
     }
 }

@@ -212,57 +212,75 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         mProfileSupplier = ObservableSuppliers.createMonotonic();
         mSnackbarManagerSupplier.set(mSnackbarManager);
 
-        mBaseCustomTabRootUiCoordinator =
-                new BaseCustomTabRootUiCoordinator(
-                        mActivity,
-                        mShareDelegateSupplier,
-                        mActivityTabProvider,
-                        mCustomTabProvider,
-                        mProfileSupplier,
-                        mBookmarkModelSupplier,
-                        mTabBookmarkerSupplier,
-                        ObservableSuppliers.createNonNull(mTabModelSelector),
-                        mBrowserControlsManager,
-                        mWindowAndroid,
-                        mActivityResultTracker,
-                        mChromeAndroidTask,
-                        mActivityLifecycleDispatcher,
-                        mLayoutManagerSupplier,
-                        mMenuOrKeyboardActionController,
-                        mActivityThemeColorSupplier,
-                        mModalDialogManagerSupplier,
-                        mAppMenuBlocker,
-                        mSupportsAppMenuSupplier,
-                        mTabCreatorManagerSupplier,
-                        mFullscreenManager,
-                        mCompositorViewHolderSupplier,
-                        mTabContentManagerSupplier,
-                        mSnackbarManagerSupplier,
-                        mEdgeToEdgeControllerSupplier,
-                        ActivityType.CUSTOM_TAB,
-                        mIsInOverviewModeSupplier,
-                        mAppMenuDelegate,
-                        mStatusBarColorProvider,
-                        mEphemeralTabCoordinatorSupplier,
-                        mIntentRequestTracker,
-                        mCustomTabToolbarCoordinator,
-                        mIntentDataProvider,
-                        mBackPressManager,
-                        mTabController,
-                        mMinimizeDelegateSupplier,
-                        CallbackUtils.emptyRunnable(),
-                        mEdgeToEdgeManager,
-                        mDesktopWindowStateManager,
-                        mBrowserServicesColorProviderSupplier,
-                        null) {
-
-                    @Nullable
-                    @Override
-                    public GoogleBottomBarCoordinator getGoogleBottomBarCoordinator() {
-                        return mGoogleBottomBarCoordinator;
-                    }
-                };
+        mBaseCustomTabRootUiCoordinator = createCoordinator(ActivityType.CUSTOM_TAB);
         mBaseCustomTabRootUiCoordinator.onPreInflationStartup();
+    }
+
+    private BaseCustomTabRootUiCoordinator createCoordinator(@ActivityType int activityType) {
+        return new BaseCustomTabRootUiCoordinator(
+                mActivity,
+                mShareDelegateSupplier,
+                mActivityTabProvider,
+                mCustomTabProvider,
+                mProfileSupplier,
+                mBookmarkModelSupplier,
+                mTabBookmarkerSupplier,
+                ObservableSuppliers.createNonNull(mTabModelSelector),
+                mBrowserControlsManager,
+                mWindowAndroid,
+                mActivityResultTracker,
+                mChromeAndroidTask,
+                mActivityLifecycleDispatcher,
+                mLayoutManagerSupplier,
+                mMenuOrKeyboardActionController,
+                mActivityThemeColorSupplier,
+                mModalDialogManagerSupplier,
+                mAppMenuBlocker,
+                mSupportsAppMenuSupplier,
+                mTabCreatorManagerSupplier,
+                mFullscreenManager,
+                mCompositorViewHolderSupplier,
+                mTabContentManagerSupplier,
+                mSnackbarManagerSupplier,
+                mEdgeToEdgeControllerSupplier,
+                activityType,
+                mIsInOverviewModeSupplier,
+                mAppMenuDelegate,
+                mStatusBarColorProvider,
+                mEphemeralTabCoordinatorSupplier,
+                mIntentRequestTracker,
+                mCustomTabToolbarCoordinator,
+                mIntentDataProvider,
+                mBackPressManager,
+                mTabController,
+                mMinimizeDelegateSupplier,
+                CallbackUtils.emptyRunnable(),
+                mEdgeToEdgeManager,
+                mDesktopWindowStateManager,
+                mBrowserServicesColorProviderSupplier,
+                null) {
+
+            @Nullable
+            @Override
+            public GoogleBottomBarCoordinator getGoogleBottomBarCoordinator() {
+                return mGoogleBottomBarCoordinator;
+            }
+        };
+    }
+
+    @Test
+    public void testInstalledWebAppSurfacesAllowPageTheming() {
+        // A homescreen webapp shortcut is the same product surface as a WebAPK; a bright
+        // page theme-color (e.g. #ffffff) must reach the status bar so icon appearance
+        // can follow it.
+        BaseCustomTabRootUiCoordinator webapp = createCoordinator(ActivityType.WEBAPP);
+        assertTrue(webapp.shouldAllowBrightThemeColors());
+        assertTrue(webapp.shouldAllowThemingInNightMode());
+        assertTrue(webapp.shouldAllowThemingOnTablets());
+
+        assertFalse(mBaseCustomTabRootUiCoordinator.shouldAllowBrightThemeColors());
+        assertFalse(mBaseCustomTabRootUiCoordinator.shouldAllowThemingInNightMode());
+        assertFalse(mBaseCustomTabRootUiCoordinator.shouldAllowThemingOnTablets());
     }
 
     @After
