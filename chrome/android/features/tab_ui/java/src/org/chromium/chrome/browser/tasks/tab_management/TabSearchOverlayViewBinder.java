@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -16,6 +17,7 @@ import org.chromium.chrome.R;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.StyleUtils;
 
 /** ViewBinder and ViewHolder for the Tab Search Overlay component. */
 @NullMarked
@@ -59,6 +61,7 @@ public class TabSearchOverlayViewBinder {
         } else if (TabSearchOverlayProperties.VISIBLE == propertyKey) {
             boolean visible = model.get(TabSearchOverlayProperties.VISIBLE);
             if (visible) {
+                updateCloseButton(view, model.get(TabSearchOverlayProperties.IS_INCOGNITO));
                 runShowAnimation(view);
             } else {
                 if (view.panelContainer.getVisibility() == View.VISIBLE) {
@@ -72,7 +75,7 @@ public class TabSearchOverlayViewBinder {
             }
         } else if (TabSearchOverlayProperties.IS_INCOGNITO == propertyKey) {
             boolean isIncognito = model.get(TabSearchOverlayProperties.IS_INCOGNITO);
-            updateCloseButtonColor(view, isIncognito);
+            updateCloseButton(view, isIncognito);
         }
     }
 
@@ -129,10 +132,37 @@ public class TabSearchOverlayViewBinder {
                 .start();
     }
 
-    private static void updateCloseButtonColor(ViewHolder view, boolean isIncognito) {
+    private static void updateCloseButton(ViewHolder view, boolean isIncognito) {
         var context = view.panel.getContext();
         ImageButton closeButton = view.panel.findViewById(R.id.tab_search_close_button);
 
+        boolean useDesktopDensity = StyleUtils.shouldApplyDesktopDensity();
+
+        // Configure close button layout size based on density
+        int size =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                useDesktopDensity
+                                        ? R.dimen.tab_search_close_button_size_desktop
+                                        : R.dimen.tab_search_close_button_size);
+        ViewGroup.LayoutParams layoutParams = closeButton.getLayoutParams();
+        if (layoutParams.width != size || layoutParams.height != size) {
+            layoutParams.width = size;
+            layoutParams.height = size;
+            closeButton.setLayoutParams(layoutParams);
+        }
+
+        // Set density-appropriate close button icon and background drawables.
+        closeButton.setImageResource(
+                useDesktopDensity
+                        ? R.drawable.ic_tab_close_tabstrip_20dp
+                        : R.drawable.ic_tab_close_tabstrip_24dp);
+        closeButton.setBackgroundResource(
+                useDesktopDensity
+                        ? R.drawable.tab_close_button_bg_20dp
+                        : R.drawable.tab_close_button_bg_24dp);
+
+        // Apply profile-sensitive color tints.
         int iconTintRes =
                 isIncognito
                         ? R.color.default_icon_color_light

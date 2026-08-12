@@ -47,6 +47,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -820,5 +821,56 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mCoordinator.getWindowFocusListenerForTesting().onWindowFocusChanged(false);
 
         verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
+    }
+
+    @Test
+    public void testCloseButtonSizing_NonDesktopDensity() {
+        ImageButton closeButton = mPanelContainer.findViewById(R.id.tab_search_close_button);
+        assertNotNull(closeButton);
+
+        int expectedSize =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_search_close_button_size);
+        assertEquals(expectedSize, closeButton.getLayoutParams().width);
+        assertEquals(expectedSize, closeButton.getLayoutParams().height);
+    }
+
+    @Test
+    public void testCloseButtonSizing_DesktopDensity() {
+        DeviceInfo.setIsDesktopForTesting(true);
+
+        // Re-create the coordinator under desktop density condition
+        mCoordinator.destroy();
+        clearInvocations(mSearchUiCoordinator);
+        mCoordinator =
+                new TabSearchOverlayCoordinator(
+                        mActivity,
+                        mParentContainer,
+                        mWindowAndroid,
+                        mProfileSupplier,
+                        mSnackbarManager,
+                        ObservableSuppliers.createNonNull(mModalDialogManager),
+                        mActivityLifecycleDispatcher,
+                        mTabModelSelectorSupplier,
+                        /* edgeToEdgeSystemBarColorHelper= */ null,
+                        mBackPressManager,
+                        ObservableSuppliers.createNonNull(mCompositorViewHolder),
+                        mTabGroupUiActionHandlerSupplier,
+                        mDesktopWindowStateManager);
+        mCoordinator.setSearchUiCoordinatorForTesting(mSearchUiCoordinator);
+        mCoordinator.ensureInitialized();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        View panelContainer = mParentContainer.findViewById(R.id.tab_search_overlay_container);
+        ImageButton closeButton = panelContainer.findViewById(R.id.tab_search_close_button);
+        assertNotNull(closeButton);
+
+        int expectedSize =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_search_close_button_size_desktop);
+        assertEquals(expectedSize, closeButton.getLayoutParams().width);
+        assertEquals(expectedSize, closeButton.getLayoutParams().height);
     }
 }
