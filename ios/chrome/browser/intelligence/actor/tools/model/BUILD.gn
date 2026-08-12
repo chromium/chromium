@@ -183,13 +183,23 @@ source_set("attempt_form_filling_tool") {
     "attempt_form_filling_tool.mm",
   ]
 
+  public_deps = [
+    ":web_actor_tool_interface",
+    "//components/autofill/core/browser/actor",
+    "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
+  ]
+
   deps = [
+    ":action_target",
     ":actor_tool_interface",
+    ":java_script_features",
     "//base",
+    "//components/autofill/ios/browser:util",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
   ]
 }
 
@@ -396,6 +406,8 @@ source_set("java_script_features") {
   sources = [
     "action_target_java_script_feature.h",
     "action_target_java_script_feature.mm",
+    "attempt_form_filling_tool_java_script_feature.h",
+    "attempt_form_filling_tool_java_script_feature.mm",
     "click_tool_java_script_feature.h",
     "click_tool_java_script_feature.mm",
     "page_stability_java_script_feature.h",
@@ -419,7 +431,9 @@ source_set("java_script_features") {
     ":type_tool_ts",
     "//base",
     "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/form_util:autofill_form_features",
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
@@ -496,6 +510,7 @@ source_set("unit_tests") {
     "action_target_unittest.mm",
     "actor_tool_factory_unittest.mm",
     "actor_tool_request_unittest.mm",
+    "attempt_form_filling_tool_unittest.mm",
     "attempt_login_tool_unittest.mm",
     "click_tool_java_script_feature_unittest.mm",
     "click_tool_js_unittest.mm",
@@ -529,6 +544,7 @@ source_set("unit_tests") {
     ":actor_tool_factory",
     ":actor_tool_interface",
     ":actor_tool_java_script_feature_test_base",
+    ":attempt_form_filling_tool",
     ":attempt_login_tool",
     ":click_tool",
     ":click_tool_ts",
@@ -554,6 +570,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:autofill_form_features",
     "//components/autofill/ios/form_util:autofill_form_features_ts_bundling",
     "//components/autofill/ios/form_util:child_frame_registrar",
+    "//components/autofill/ios/form_util:renderer_id_test",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/password_manager/core/browser/actor_login:actor_login_service_impl",
     "//components/password_manager/core/browser/actor_login:common",

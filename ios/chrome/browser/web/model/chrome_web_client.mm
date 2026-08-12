@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/attempt_form_filling_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/click_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool_java_script_feature.h"
@@ -444,6 +445,8 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
 
   if (base::FeatureList::IsEnabled(kActorTools)) {
     features.push_back(actor::ActionTargetJavaScriptFeature::GetInstance());
+    features.push_back(
+        actor::AttemptFormFillingToolJavaScriptFeature::GetInstance());
     features.push_back(actor::ClickToolJavaScriptFeature::GetInstance());
     features.push_back(actor::ScrollToolJavaScriptFeature::GetInstance());
     features.push_back(actor::SelectToolJavaScriptFeature::GetInstance());

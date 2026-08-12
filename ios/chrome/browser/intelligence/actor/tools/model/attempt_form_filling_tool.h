@@ -5,25 +5,52 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ATTEMPT_FORM_FILLING_TOOL_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ATTEMPT_FORM_FILLING_TOOL_H_
 
+#import <map>
 #import <memory>
+#import <string>
+#import <utility>
+#import <vector>
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/types/expected.h"
+#import "components/autofill/core/browser/actor/actor_form_filling_service.h"
+#import "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/web_actor_tool.h"
 
 namespace web {
+class WebFrame;
 class WebState;
 }  // namespace web
 
 namespace actor {
 
+class ActionTarget;
 class ToolDelegate;
 
+// A struct representing the request to attempt form filling.
+struct FormFillingRequest {
+  FormFillingRequest();
+  ~FormFillingRequest();
+  FormFillingRequest(const FormFillingRequest&);
+  FormFillingRequest& operator=(const FormFillingRequest&);
+  FormFillingRequest(FormFillingRequest&&);
+  FormFillingRequest& operator=(FormFillingRequest&&);
+
+  using RequestedData = autofill::ActorFormFillingRequestedData;
+
+  RequestedData requested_data{};
+  std::string section_label;
+  std::vector<ActionTarget> trigger_fields;
+};
+
 // Tool to attempt form filling on iOS.
-class AttemptFormFillingTool : public ActorTool {
+class AttemptFormFillingTool : public WebActorTool {
  public:
+  // Creates an instance of AttemptFormFillingTool. Returns nullptr if the
+  // action cannot be converted to a valid set of FormFillingRequests.
   static std::unique_ptr<AttemptFormFillingTool> Create(
       base::WeakPtr<web::WebState> web_state,
       const optimization_guide::proto::AttemptFormFillingAction& action,
@@ -38,14 +65,58 @@ class AttemptFormFillingTool : public ActorTool {
   ToolType GetToolType() const override;
 
  private:
-  AttemptFormFillingTool(
-      base::WeakPtr<web::WebState> web_state,
-      const optimization_guide::proto::AttemptFormFillingAction& action,
-      ToolDelegate* tool_delegate);
+  AttemptFormFillingTool(base::WeakPtr<web::WebState> web_state,
+                         std::vector<FormFillingRequest> requests,
+                         ToolDelegate* tool_delegate);
 
-  optimization_guide::proto::AttemptFormFillingAction action_;
+  // Callback invoked when the target frame resolution for a request completes.
+  void OnTargetFrameResolved(
+      size_t request_idx,
+      size_t field_idx,
+      base::RepeatingClosure barrier_closure,
+      base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
+                     ToolExecutionResult> result);
+
+  // Retrieve autofill renderer IDs for all targets.
+  void PopulateAutofillRendererIds();
+
+  // Callback invoked when the autofill renderer IDs for a frame are retrieved.
+  void OnRequestRendererIdsResolved(
+      base::WeakPtr<web::WebFrame> web_frame,
+      base::RepeatingClosure barrier_closure,
+      base::expected<std::vector<uint32_t>, ToolExecutionResult> result);
+
+  // Callback invoked when all autofill renderer IDs are retrieved.
+  void OnAllAutofillRendererIdsRetrieved();
+
+  // Helper method to handle execution failure. Runs the execution callback
+  // with the error result and invalidates all pending callbacks.
+  void FailWithResult(ToolExecutionResult result);
+
+  // The tab this tool is executing on.
   base::WeakPtr<web::WebState> web_state_;
-  raw_ptr<ToolDelegate> tool_delegate_;
+
+  // The list of requests containing requested data type and raw ActionTarget
+  // trigger fields.
+  std::vector<FormFillingRequest> tool_requests_;
+
+  // Delegate handling UI interactions.
+  raw_ptr<ToolDelegate> tool_delegate_ = nullptr;
+
+  // The list of requests to be sent to `ActorFormFillingService` to retrieve
+  // suggestions.
+  std::vector<autofill::ActorFormFillingService::FillRequest> service_requests_;
+
+  // Maps resolved WebFrame's stable ID to the request and field indices
+  // belonging to it. Reduces IPC calls to retrieve autofill field IDs for each
+  // trigger field in the request.
+  std::map<std::string, std::vector<std::pair<size_t, size_t>>>
+      frame_to_indices_map_;
+
+  // The callback to run when tool execution completes or fails.
+  ToolExecutionCallback execute_callback_;
+
+  base::WeakPtrFactory<AttemptFormFillingTool> weak_ptr_factory_{this};
 };
 
 }  // namespace actor
