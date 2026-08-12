@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "actuation_worklog_debug_view_controller.h",
+    "actuation_worklog_debug_view_controller.mm",
     "ai_prototyping_actor_tool_chip_view_controller.h",
     "ai_prototyping_actor_tool_chip_view_controller.mm",
     "ai_prototyping_actor_view_controller.h",

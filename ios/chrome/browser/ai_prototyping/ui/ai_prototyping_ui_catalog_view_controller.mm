@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_ui_catalog_view_controller.h"
 
+#import "ios/chrome/browser/ai_prototyping/ui/actuation_worklog_debug_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actor_tool_chip_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_mutator.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_worklog_compact_view_controller.h"
@@ -60,7 +61,14 @@ NSString* const kUICatalogCellIdentifier = @"UICatalogCell";
   compactWorklogItem.viewControllerClass =
       [AIPrototypingWorklogCompactViewController class];
 
-  _items = @[ chipsItem, worklogItem, compactWorklogItem ];
+  AIPrototypingUICatalogItem* actuationSandboxItem =
+      [[AIPrototypingUICatalogItem alloc] init];
+  actuationSandboxItem.title = @"Actuation Worklog Sandbox";
+  actuationSandboxItem.viewControllerClass =
+      [ActuationWorklogDebugViewController class];
+
+  _items =
+      @[ chipsItem, worklogItem, compactWorklogItem, actuationSandboxItem ];
 }
 
 #pragma mark - UITableViewDataSource
