@@ -146,6 +146,140 @@ TEST_F(OcclusionQueryTest, Occlusion) {
   GLTestHelper::CheckGLError("no errors", __LINE__);
 }
 
+// Test that deleting an FBO while a query result on that FBO is pending does
+// not crash the driver when retrieving query results.
+TEST_F(OcclusionQueryTest, DeleteFBOWithPendingQuery) {
+  if (!GLTestHelper::HasExtension("GL_EXT_occlusion_query_boolean")) {
+    return;
+  }
+
+  static const char* v_shader_str =
+      "attribute vec4 a_position;\n"
+      "void main()\n"
+      "{\n"
+      "   gl_Position = a_position;\n"
+      "}\n";
+  static const char* f_shader_str =
+      "precision mediump float;\n"
+      "void main()\n"
+      "{\n"
+      "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
+      "}\n";
+
+  GLuint program = GLTestHelper::LoadProgram(v_shader_str, f_shader_str);
+  GLint position_loc = glGetAttribLocation(program, "a_position");
+
+  GLuint texture = 0;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 64, 64, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               nullptr);
+
+  GLuint fbo = 0;
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         texture, 0);
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+  glViewport(0, 0, 64, 64);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  GLuint query = 0;
+  glGenQueriesEXT(1, &query);
+  glBeginQueryEXT(GL_ANY_SAMPLES_PASSED_EXT, query);
+
+  glUseProgram(program);
+  GLTestHelper::SetupUnitQuad(position_loc);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+
+  glEndQueryEXT(GL_ANY_SAMPLES_PASSED_EXT);
+
+  // Delete the FBO on which the query was executed while result is still
+  // pending.
+  glDeleteFramebuffers(1, &fbo);
+
+  // FORCE the driver to commit deletion/unbind and start a new render pass on
+  // default framebuffer
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+
+  // Retrieve query result - flushes pending jobs referencing the deleted FBO.
+  GLuint result = 0;
+  glGetQueryObjectuivEXT(query, GL_QUERY_RESULT_EXT, &result);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  EXPECT_TRUE(result);
+
+  glDeleteQueriesEXT(1, &query);
+  glDeleteTextures(1, &texture);
+}
+
+// Test that unbinding an FBO while a query result on that FBO is pending does
+// not crash the driver when retrieving query results.
+TEST_F(OcclusionQueryTest, UnbindFBOWithPendingQuery) {
+  if (!GLTestHelper::HasExtension("GL_EXT_occlusion_query_boolean")) {
+    return;
+  }
+
+  static const char* v_shader_str =
+      "attribute vec4 a_position;\n"
+      "void main()\n"
+      "{\n"
+      "   gl_Position = a_position;\n"
+      "}\n";
+  static const char* f_shader_str =
+      "precision mediump float;\n"
+      "void main()\n"
+      "{\n"
+      "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
+      "}\n";
+
+  GLuint program = GLTestHelper::LoadProgram(v_shader_str, f_shader_str);
+  GLint position_loc = glGetAttribLocation(program, "a_position");
+
+  GLuint texture = 0;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 64, 64, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               nullptr);
+
+  GLuint fbo = 0;
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         texture, 0);
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+  glViewport(0, 0, 64, 64);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  GLuint query = 0;
+  glGenQueriesEXT(1, &query);
+  glBeginQueryEXT(GL_ANY_SAMPLES_PASSED_EXT, query);
+
+  glUseProgram(program);
+  GLTestHelper::SetupUnitQuad(position_loc);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+
+  glEndQueryEXT(GL_ANY_SAMPLES_PASSED_EXT);
+
+  // Unbind user FBO by switching back to default framebuffer (0)
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  // FORCE the driver to commit the unbind and end the previous render pass.
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+
+  // Retrieve query result
+  GLuint result = 0;
+  glGetQueryObjectuivEXT(query, GL_QUERY_RESULT_EXT, &result);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  EXPECT_TRUE(result);
+
+  glDeleteQueriesEXT(1, &query);
+  glDeleteFramebuffers(1, &fbo);
+  glDeleteTextures(1, &texture);
+}
+
 }  // namespace gpu
-
-

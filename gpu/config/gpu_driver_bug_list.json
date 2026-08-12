@@ -3823,7 +3823,9 @@
     },
     {
       "id": 487,
-      "cr_bugs": [499602793],
+      "cr_bugs": [
+        499602793
+      ],
       "description": "Reattach texture to FBO after layer count increase on PowerVR GPUs.",
       "os": {
         "type": "android"
@@ -3831,6 +3833,15 @@
       "gl_vendor": "Imagination.*",
       "features": [
         "reattach_texture_to_fbo_after_layer_increase"
+      ]
+    },
+    {
+      "id": 488,
+      "cr_bugs": [534468209],
+      "description": "Flush pending GPU jobs/queries before unbinding or deleting a user framebuffer object on ARM Mali Valhall/Avalon GPUs to avoid driver crash.",
+      "gl_vendor": "ARM.*",
+      "features": [
+        "flush_queries_before_deleting_or_unbinding_fbo"
       ]
     }
   ]

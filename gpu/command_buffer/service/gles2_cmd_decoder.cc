@@ -774,6 +774,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void DeleteBuffersHelper(GLsizei n, const volatile GLuint* client_ids);
   bool GenFramebuffersHelper(GLsizei n, const GLuint* client_ids);
   void DeleteFramebuffersHelper(GLsizei n, const volatile GLuint* client_ids);
+  void FlushQueriesBeforeDeletingOrUnbindingFboWorkaround();
   bool GenRenderbuffersHelper(GLsizei n, const GLuint* client_ids);
   void DeleteRenderbuffersHelper(GLsizei n, const volatile GLuint* client_ids);
   bool GenQueriesEXTHelper(GLsizei n, const GLuint* client_ids);
@@ -3949,9 +3950,24 @@ void GLES2DecoderImpl::DeleteBuffersHelper(GLsizei n,
   }
 }
 
+void GLES2DecoderImpl::FlushQueriesBeforeDeletingOrUnbindingFboWorkaround() {
+  if (workarounds().flush_queries_before_deleting_or_unbinding_fbo &&
+      HasPendingQueries()) {
+    GLsync sync = api()->glFenceSyncFn(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    if (sync) {
+      api()->glClientWaitSyncFn(sync, GL_SYNC_FLUSH_COMMANDS_BIT, 0);
+      api()->glDeleteSyncFn(sync);
+    } else {
+      api()->glFinishFn();
+    }
+  }
+}
+
 void GLES2DecoderImpl::DeleteFramebuffersHelper(
     GLsizei n,
     const volatile GLuint* client_ids) {
+  // Flush queries that may be dependent on the FBO.
+  FlushQueriesBeforeDeletingOrUnbindingFboWorkaround();
   for (GLsizei ii = 0; ii < n; ++ii) {
     GLuint client_id = UNSAFE_TODO(client_ids[ii]);
     Framebuffer* framebuffer = GetFramebuffer(client_id);
@@ -5459,6 +5475,7 @@ void GLES2DecoderImpl::DoBindFramebuffer(GLenum target, GLuint client_id) {
     service_id = GetBackbufferServiceId();
   }
 
+  FlushQueriesBeforeDeletingOrUnbindingFboWorkaround();
   BindFramebuffer(target, service_id);
   OnFboChanged();
 }
