@@ -1524,8 +1524,9 @@ void Request::ShowModalDialog(DialogType dialog_type,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(create_registry_async, weak_ptr_factory_.GetWeakPtr(),
                      idp_config_url),
-      base::BindOnce(&Request::OnIntentResolved,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&Request::OnNativeAppResult,
+                     weak_ptr_factory_.GetWeakPtr(), dialog_type,
+                     idp_config_url));
   did_show_ui_ = true;
   // This may be null on Android, as the method cannot return the WebContents of
   // the CCT that will be created.
@@ -2191,6 +2192,43 @@ void Request::OnIntentResolved(const std::string& token) {
   blink::mojom::ResolveTokenParamsPtr params =
       blink::mojom::ResolveTokenParams::NewToken(base::Value(token));
   OnResolve(config_url_, std::nullopt, std::move(params));
+}
+
+void Request::OnNativeAppResult(
+    DialogType dialog_type,
+    const GURL& idp_config_url,
+    IdentityRequestDialogController::NativeAppResult result) {
+  if (!request_token_callback_) {
+    return;
+  }
+  if (result.type ==
+      IdentityRequestDialogController::NativeAppResult::Type::kToken) {
+    if (dialog_type != DialogType::kContinueOnPopup) {
+      CompleteRequestWithError(FederatedRequestResult::kError,
+                               TokenStatus::kLoginPopupClosedWithoutSignin,
+                               /*should_delay_callback=*/false);
+      return;
+    }
+    OnIntentResolved(result.token);
+  } else if (result.type == IdentityRequestDialogController::NativeAppResult::
+                                Type::kLoginFinished) {
+    if (dialog_type != DialogType::kLoginToIdpPopup) {
+      CompleteRequestWithError(FederatedRequestResult::kError,
+                               TokenStatus::kContinuationPopupClosedByUser,
+                               /*should_delay_callback=*/false);
+      return;
+    }
+    OnNativeAppLoginFinished(idp_config_url);
+  }
+}
+
+void Request::OnNativeAppLoginFinished(const GURL& idp_config_url) {
+  GetDialogController()->CloseModalDialog();
+  permission_delegate()->RemoveIdpSigninStatusObserver(this);
+  permission_delegate()->SetIdpSigninStatus(
+      url::Origin::Create(idp_config_url), /*is_signed_in=*/true, std::nullopt);
+  idps_user_tried_to_signin_to_.insert(idp_config_url);
+  FetchEndpointsForIdps({idp_config_url});
 }
 
 FederatedApiPermissionStatus Request::GetApiPermissionStatus() {

@@ -77,6 +77,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   void OnMoreDetails(JNIEnv* env);
   void OnAccountsDisplayed(JNIEnv* env);
   void OnNativeAppResult(JNIEnv* env, const std::string& token);
+  void OnNativeAppLoginFinished(JNIEnv* env);
 
  private:
   // Returns either true if the java counterpart of this bridge is initialized

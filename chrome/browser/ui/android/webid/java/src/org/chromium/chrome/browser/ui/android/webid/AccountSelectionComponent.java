@@ -64,6 +64,9 @@ public interface AccountSelectionComponent {
 
         /** Called when the native app returns a token result. */
         void onNativeAppResult(String token);
+
+        /** Called when the native app completes login. */
+        void onNativeAppLoginFinished();
     }
 
     /**

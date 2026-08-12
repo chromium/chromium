@@ -47,6 +47,8 @@ class AccountSelectionView {
     virtual void OnAccountsDisplayed() = 0;
     // Informs the controller that a native app returned a token result.
     virtual void OnNativeAppResult(const std::string& token) = 0;
+    // Informs the controller that a native app completed login.
+    virtual void OnNativeAppLoginFinished() = 0;
     // The web page view containing the focused field.
     virtual gfx::NativeView GetNativeView() = 0;
     // The WebContents for the page.

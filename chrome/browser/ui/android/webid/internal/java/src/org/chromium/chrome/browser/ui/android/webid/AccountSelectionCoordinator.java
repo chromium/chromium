@@ -451,6 +451,8 @@ public class AccountSelectionCoordinator
         boolean launched = mWindowAndroid.showIntent(intent, new NativeAppIntentCallback(), null);
         if (launched) {
             mMediator.onModalDialogOpened();
+        } else {
+            launchCct(url);
         }
     }
 
@@ -463,10 +465,14 @@ public class AccountSelectionCoordinator
             if (data != null) {
                 token = data.getStringExtra("token");
             }
-            if (token == null || resultCode != Activity.RESULT_OK) {
-                mDelegate.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+            if (resultCode == Activity.RESULT_OK) {
+                if (token != null) {
+                    mDelegate.onNativeAppResult(token);
+                } else {
+                    mDelegate.onNativeAppLoginFinished();
+                }
             } else {
-                mDelegate.onNativeAppResult(token);
+                mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
             }
             mMediator.onModalDialogClosed();
         }

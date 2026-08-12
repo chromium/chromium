@@ -391,6 +391,7 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   void OnMoreDetails() override {}
   void OnAccountsDisplayed() override {}
   void OnNativeAppResult(const std::string& token) override {}
+  void OnNativeAppLoginFinished() override {}
   gfx::NativeView GetNativeView() override { return gfx::NativeView(); }
 
   content::WebContents* GetWebContents() override { return web_contents_; }

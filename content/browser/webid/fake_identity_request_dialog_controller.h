@@ -85,11 +85,12 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
 
   void ShowUrl(LinkType link_type, const GURL& url) override;
 
-  WebContents* ShowModalDialog(const GURL& url,
-                               blink::mojom::RpMode rp_mode,
-                               DismissCallback dismiss_callback,
-                               ShownModalAsyncCallback on_shown_async,
-                               TokenCallback token_callback) override;
+  WebContents* ShowModalDialog(
+      const GURL& url,
+      blink::mojom::RpMode rp_mode,
+      DismissCallback dismiss_callback,
+      ShownModalAsyncCallback on_shown_async,
+      NativeAppResultCallback native_result_callback) override;
 
   void CloseModalDialog() override;
 

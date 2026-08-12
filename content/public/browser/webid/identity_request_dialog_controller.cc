@@ -166,7 +166,7 @@ WebContents* IdentityRequestDialogController::ShowModalDialog(
     blink::mojom::RpMode rp_mode,
     DismissCallback dismiss_callback,
     ShownModalAsyncCallback on_shown_async,
-    TokenCallback token_callback) {
+    NativeAppResultCallback native_result_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
   }

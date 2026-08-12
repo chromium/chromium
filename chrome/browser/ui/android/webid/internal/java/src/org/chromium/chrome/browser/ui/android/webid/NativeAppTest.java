@@ -64,11 +64,12 @@ import java.lang.ref.WeakReference;
     ContentFeatures.FED_CM_NATIVE_ID_PS,
     ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE
 })
-public class NativeAppContinueOnTest {
+public class NativeAppTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final String IDP_PACKAGE = "com.idp.app";
     private static final GURL CONTINUE_URL = new GURL("https://idp.com/continue");
+    private static final GURL LOGIN_URL = new GURL("https://idp.com/login");
     private static final Origin IDP_ORIGIN = Origin.create(CONTINUE_URL.getSpec());
 
     @Mock private Tab mTab;
@@ -135,14 +136,43 @@ public class NativeAppContinueOnTest {
     }
 
     private void registerFakeApp(String packageName, String mimeType) {
+        registerFakeApp(packageName, mimeType, CONTINUE_URL);
+    }
+
+    private void registerFakeApp(String packageName, String mimeType, GURL url) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setDataAndType(Uri.parse(CONTINUE_URL.getSpec()), mimeType);
+        intent.setDataAndType(Uri.parse(url.getSpec()), mimeType);
         ResolveInfo resolveInfo = new ResolveInfo();
         resolveInfo.activityInfo = new ActivityInfo();
         resolveInfo.activityInfo.packageName = packageName;
         resolveInfo.activityInfo.name = packageName + ".LoginActivity";
         mShadowPackageManager.addResolveInfoForIntent(intent, resolveInfo);
+    }
+
+    /**
+     * Tests that when a native app intent completes with RESULT_OK without a "token" extra in the
+     * result intent data (indicating a login URL flow instead of continuation token flow),
+     * onNativeAppLoginFinished() is triggered on the delegate.
+     */
+    @Test
+    public void testNativeFlowLoginUrlWithoutTokenTriggersLoginFinished() {
+        registerFakeApp(IDP_PACKAGE, "application/web-identity+json", LOGIN_URL);
+
+        doAnswer(
+                        invocation -> {
+                            IntentCallback callback = invocation.getArgument(1);
+                            callback.onIntentCompleted(Activity.RESULT_OK, new Intent());
+                            return true;
+                        })
+                .when(mWindowAndroid)
+                .showIntent(any(Intent.class), any(IntentCallback.class), any());
+
+        mCoordinator.showModalDialog(LOGIN_URL);
+
+        verify(mMockDelegate, never()).onNativeAppResult(any(String.class));
+        verify(mMockDelegate).onNativeAppLoginFinished();
+        verify(mMockDelegate, never()).onDismissed(any(Integer.class));
     }
 
     @Test
@@ -175,25 +205,6 @@ public class NativeAppContinueOnTest {
         verify(mMockDelegate).onNativeAppResult("success_token");
         verify(mMockDelegate, never()).onDismissed(any(Integer.class));
         assertNull(mShadowActivity.getNextStartedActivity());
-    }
-
-    @Test
-    public void testNativeFlowWithoutTokenTreatsAsDismissed() {
-        registerFakeApp(IDP_PACKAGE, "application/web-identity+json");
-
-        doAnswer(
-                        invocation -> {
-                            IntentCallback callback = invocation.getArgument(1);
-                            callback.onIntentCompleted(Activity.RESULT_OK, new Intent());
-                            return true;
-                        })
-                .when(mWindowAndroid)
-                .showIntent(any(Intent.class), any(IntentCallback.class), any());
-
-        mCoordinator.showModalDialog(CONTINUE_URL);
-
-        verify(mMockDelegate, never()).onNativeAppResult(any(String.class));
-        verify(mMockDelegate).onDismissed(any(Integer.class));
     }
 
     @Test

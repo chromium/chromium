@@ -6654,10 +6654,48 @@ TEST_F(RequestTest, ContinuationPopupNativeAppToken) {
   // invoking the token_callback with our token.
   std::unique_ptr<WebContents> modal(CreateTestWebContents());
   EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<
+                4>([&modal](
+                       IdentityRequestDialogController::NativeAppResultCallback
+                           native_result_callback) {
+        std::move(native_result_callback)
+            .Run(IdentityRequestDialogController::NativeAppResult{
+                IdentityRequestDialogController::NativeAppResult::Type::kToken,
+                "a-native-token"});
+        return modal.get();
+      }));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kSuccess, FederatedRequestResult::kSuccess,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/kProviderUrlFull};
+
+  RunTest(parameters, expectations, config);
+  ExpectStatusMetrics(TokenStatus::kSuccessUsingIdentityProviderResolve);
+}
+
+// Test the login popup being completed by a native app login response.
+TEST_F(RequestTest, LoginPopupNativeAppLoginFinished) {
+  RequestParameters parameters = kDefaultRequestParameters;
+
+  MockConfiguration config = kConfigurationValid;
+  config.accounts_dialog_action = AccountsDialogAction::kAddAccount;
+
+  auto dialog_controller = std::make_unique<TestDialogController>(config);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
       .WillOnce(::testing::WithArg<4>(
-          [&modal](
-              IdentityRequestDialogController::TokenCallback token_callback) {
-            std::move(token_callback).Run("a-native-token");
+          [&modal](IdentityRequestDialogController::NativeAppResultCallback
+                       native_result_callback) {
+            std::move(native_result_callback)
+                .Run(IdentityRequestDialogController::NativeAppResult{
+                    IdentityRequestDialogController::NativeAppResult::Type::
+                        kLoginFinished,
+                    ""});
             return modal.get();
           }));
 
@@ -6667,7 +6705,79 @@ TEST_F(RequestTest, ContinuationPopupNativeAppToken) {
       /*selected_idp_config_url=*/kProviderUrlFull};
 
   RunTest(parameters, expectations, config);
-  ExpectStatusMetrics(TokenStatus::kSuccessUsingIdentityProviderResolve);
+  ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
+}
+
+// Test the login popup incorrectly returning a native app continuation token.
+TEST_F(RequestTest, LoginPopupNativeAppToken) {
+  RequestParameters parameters = kDefaultRequestParameters;
+
+  MockConfiguration config = kConfigurationValid;
+  config.accounts_dialog_action = AccountsDialogAction::kAddAccount;
+
+  auto dialog_controller = std::make_unique<TestDialogController>(config);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<
+                4>([&modal](
+                       IdentityRequestDialogController::NativeAppResultCallback
+                           native_result_callback) {
+        std::move(native_result_callback)
+            .Run(IdentityRequestDialogController::NativeAppResult{
+                IdentityRequestDialogController::NativeAppResult::Type::kToken,
+                "unexpected-token"});
+        return modal.get();
+      }));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kError,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  RunTest(parameters, expectations, config);
+  ExpectStatusMetrics(TokenStatus::kLoginPopupClosedWithoutSignin);
+}
+
+// Test the continuation popup incorrectly returning a native app login finished
+// result.
+TEST_F(RequestTest, ContinuationPopupNativeAppLoginFinished) {
+  RequestParameters parameters = kDefaultRequestParameters;
+
+  MockConfiguration config = kConfigurationValid;
+  config.token = "a-native-token";
+
+  GURL continue_on = GURL(kProviderUrlFull).Resolve("/more-permissions.php");
+  config.continue_on = std::move(continue_on);
+
+  auto dialog_controller = std::make_unique<TestDialogController>(config);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<4>(
+          [&modal](IdentityRequestDialogController::NativeAppResultCallback
+                       native_result_callback) {
+            std::move(native_result_callback)
+                .Run(IdentityRequestDialogController::NativeAppResult{
+                    IdentityRequestDialogController::NativeAppResult::Type::
+                        kLoginFinished,
+                    ""});
+            return modal.get();
+          }));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kError,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  RunTest(parameters, expectations, config);
+  ExpectStatusMetrics(TokenStatus::kContinuationPopupClosedByUser);
 }
 
 // Test successful AuthZ request that request the opening of pop-up

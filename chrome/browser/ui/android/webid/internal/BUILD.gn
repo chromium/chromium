@@ -112,7 +112,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionViewTest.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionWidgetModeControllerTest.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionWidgetModeViewTest.java",
-    "java/src/org/chromium/chrome/browser/ui/android/webid/NativeAppContinueOnTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/NativeAppTest.java",
   ]
 
   deps = [

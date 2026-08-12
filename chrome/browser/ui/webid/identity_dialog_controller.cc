@@ -438,8 +438,24 @@ void IdentityDialogController::OnAccountsDisplayed() {
 }
 
 void IdentityDialogController::OnNativeAppResult(const std::string& token) {
-  if (on_token_) {
-    std::move(on_token_).Run(token);
+  on_dismiss_.Reset();
+  if (on_native_result_) {
+    std::move(on_native_result_)
+        .Run(content::IdentityRequestDialogController::NativeAppResult{
+            content::IdentityRequestDialogController::NativeAppResult::Type::
+                kToken,
+            token});
+  }
+}
+
+void IdentityDialogController::OnNativeAppLoginFinished() {
+  on_dismiss_.Reset();
+  if (on_native_result_) {
+    std::move(on_native_result_)
+        .Run(content::IdentityRequestDialogController::NativeAppResult{
+            content::IdentityRequestDialogController::NativeAppResult::Type::
+                kLoginFinished,
+            ""});
   }
 }
 
@@ -486,6 +502,7 @@ void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
   }
 
   on_account_selection_.Reset();
+  on_native_result_.Reset();
   std::move(on_dismiss_).Run(dismiss_reason);
 
   // Do not access member variables from this point onwards because
@@ -523,9 +540,9 @@ content::WebContents* IdentityDialogController::ShowModalDialog(
     DismissCallback dismiss_callback,
     content::IdentityRequestDialogController::ShownModalAsyncCallback
         on_shown_async,
-    TokenCallback token_callback) {
+    NativeAppResultCallback native_result_callback) {
   on_dismiss_ = std::move(dismiss_callback);
-  on_token_ = std::move(token_callback);
+  on_native_result_ = std::move(native_result_callback);
   rp_mode_ = rp_mode;
   if (!TrySetAccountView()) {
     NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);

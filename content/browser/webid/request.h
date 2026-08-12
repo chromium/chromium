@@ -173,6 +173,12 @@ class CONTENT_EXPORT Request
 
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmDialogType)
 
+  void OnNativeAppResult(
+      DialogType dialog_type,
+      const GURL& idp_config_url,
+      IdentityRequestDialogController::NativeAppResult result);
+  void OnNativeAppLoginFinished(const GURL& idp_config_url);
+
   DialogType GetDialogType() const { return dialog_type_; }
 
   enum IdentitySelectionType { kExplicit, kAutoPassive, kAutoActive };
