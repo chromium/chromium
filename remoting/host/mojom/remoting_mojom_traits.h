@@ -40,6 +40,7 @@
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
+#include "remoting/host/mojom/peer_session.mojom-shared.h"
 #include "remoting/host/mojom/remoting_host.mojom-shared.h"
 #include "remoting/host/mojom/webrtc_types.mojom-shared.h"
 #include "remoting/proto/audio.pb.h"
@@ -50,9 +51,12 @@
 #include "remoting/protocol/audio_sample_info.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "remoting/protocol/transport.h"
+#include "remoting/signaling/jingle_data_structures.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
+#include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
+#include "third_party/webrtc/rtc_base/socket_address.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
 
@@ -1784,6 +1788,212 @@ class StructTraits<remoting::mojom::AudioSampleInfoDataView,
 
   static bool Read(remoting::mojom::AudioSampleInfoDataView data_view,
                    ::remoting::protocol::AudioSampleInfo* out_info);
+};
+
+template <>
+class StructTraits<remoting::mojom::WebrtcSocketAddressDataView,
+                   ::webrtc::SocketAddress> {
+ public:
+  static const std::string& hostname(const ::webrtc::SocketAddress& address) {
+    return address.hostname();
+  }
+
+  static uint16_t port(const ::webrtc::SocketAddress& address) {
+    return address.port();
+  }
+
+  static bool Read(remoting::mojom::WebrtcSocketAddressDataView data_view,
+                   ::webrtc::SocketAddress* out_address);
+};
+
+template <>
+struct EnumTraits<remoting::mojom::WebrtcIceCandidateType,
+                  ::webrtc::IceCandidateType> {
+  static remoting::mojom::WebrtcIceCandidateType ToMojom(
+      ::webrtc::IceCandidateType type) {
+    switch (type) {
+      case ::webrtc::IceCandidateType::kHost:
+        return remoting::mojom::WebrtcIceCandidateType::kHost;
+      case ::webrtc::IceCandidateType::kSrflx:
+        return remoting::mojom::WebrtcIceCandidateType::kSrflx;
+      case ::webrtc::IceCandidateType::kPrflx:
+        return remoting::mojom::WebrtcIceCandidateType::kPrflx;
+      case ::webrtc::IceCandidateType::kRelay:
+        return remoting::mojom::WebrtcIceCandidateType::kRelay;
+    }
+    NOTREACHED();
+  }
+
+  static std::optional<::webrtc::IceCandidateType> FromMojom(
+      remoting::mojom::WebrtcIceCandidateType input) {
+    switch (input) {
+      case remoting::mojom::WebrtcIceCandidateType::kHost:
+        return ::webrtc::IceCandidateType::kHost;
+      case remoting::mojom::WebrtcIceCandidateType::kSrflx:
+        return ::webrtc::IceCandidateType::kSrflx;
+      case remoting::mojom::WebrtcIceCandidateType::kPrflx:
+        return ::webrtc::IceCandidateType::kPrflx;
+      case remoting::mojom::WebrtcIceCandidateType::kRelay:
+        return ::webrtc::IceCandidateType::kRelay;
+    }
+    return std::nullopt;
+  }
+};
+
+template <>
+class StructTraits<remoting::mojom::WebrtcCandidateDataView,
+                   ::webrtc::Candidate> {
+ public:
+  static const std::string& foundation(const ::webrtc::Candidate& candidate) {
+    return candidate.foundation();
+  }
+
+  static int32_t component(const ::webrtc::Candidate& candidate) {
+    return candidate.component();
+  }
+
+  static const std::string& protocol(const ::webrtc::Candidate& candidate) {
+    return candidate.protocol();
+  }
+
+  static uint32_t priority(const ::webrtc::Candidate& candidate) {
+    return candidate.priority();
+  }
+
+  static const ::webrtc::SocketAddress& address(
+      const ::webrtc::Candidate& candidate) {
+    return candidate.address();
+  }
+
+  static ::webrtc::IceCandidateType type(const ::webrtc::Candidate& candidate) {
+    return candidate.type();
+  }
+
+  static const std::string& tcptype(const ::webrtc::Candidate& candidate) {
+    return candidate.tcptype();
+  }
+
+  static const ::webrtc::SocketAddress& related_address(
+      const ::webrtc::Candidate& candidate) {
+    return candidate.related_address();
+  }
+
+  static const std::string& username(const ::webrtc::Candidate& candidate) {
+    return candidate.username();
+  }
+
+  static const std::string& password(const ::webrtc::Candidate& candidate) {
+    return candidate.password();
+  }
+
+  static uint32_t generation(const ::webrtc::Candidate& candidate) {
+    return candidate.generation();
+  }
+
+  static uint16_t network_id(const ::webrtc::Candidate& candidate) {
+    return candidate.network_id();
+  }
+
+  static uint16_t network_cost(const ::webrtc::Candidate& candidate) {
+    return candidate.network_cost();
+  }
+
+  static bool Read(remoting::mojom::WebrtcCandidateDataView data_view,
+                   ::webrtc::Candidate* out_candidate);
+};
+
+template <>
+struct EnumTraits<remoting::mojom::SdpType,
+                  ::remoting::SessionDescription::Type> {
+  static remoting::mojom::SdpType ToMojom(
+      ::remoting::SessionDescription::Type type) {
+    switch (type) {
+      case ::remoting::SessionDescription::Type::kUnspecified:
+        return remoting::mojom::SdpType::kUnspecified;
+      case ::remoting::SessionDescription::Type::kOffer:
+        return remoting::mojom::SdpType::kOffer;
+      case ::remoting::SessionDescription::Type::kAnswer:
+        return remoting::mojom::SdpType::kAnswer;
+    }
+    NOTREACHED();
+  }
+
+  static std::optional<::remoting::SessionDescription::Type> FromMojom(
+      remoting::mojom::SdpType input) {
+    switch (input) {
+      case remoting::mojom::SdpType::kUnspecified:
+        return ::remoting::SessionDescription::Type::kUnspecified;
+      case remoting::mojom::SdpType::kOffer:
+        return ::remoting::SessionDescription::Type::kOffer;
+      case remoting::mojom::SdpType::kAnswer:
+        return ::remoting::SessionDescription::Type::kAnswer;
+    }
+    return std::nullopt;
+  }
+};
+
+template <>
+class StructTraits<remoting::mojom::SessionDescriptionDataView,
+                   ::remoting::SessionDescription> {
+ public:
+  static ::remoting::SessionDescription::Type type(
+      const ::remoting::SessionDescription& description) {
+    return description.type;
+  }
+
+  static const std::string& sdp(
+      const ::remoting::SessionDescription& description) {
+    return description.sdp;
+  }
+
+  static const std::vector<uint8_t>& signature(
+      const ::remoting::SessionDescription& description) {
+    return description.signature;
+  }
+
+  static bool Read(remoting::mojom::SessionDescriptionDataView data_view,
+                   ::remoting::SessionDescription* out_description);
+};
+
+template <>
+class StructTraits<remoting::mojom::NamedCandidateDataView,
+                   ::remoting::IceTransportInfo::NamedCandidate> {
+ public:
+  static const std::string& sdp_mid(
+      const ::remoting::IceTransportInfo::NamedCandidate& candidate) {
+    return candidate.name;
+  }
+
+  static std::optional<int32_t> sdp_m_line_index(
+      const ::remoting::IceTransportInfo::NamedCandidate& candidate) {
+    return candidate.sdp_m_line_index;
+  }
+
+  static const ::webrtc::Candidate& candidate(
+      const ::remoting::IceTransportInfo::NamedCandidate& candidate) {
+    return candidate.candidate;
+  }
+
+  static bool Read(remoting::mojom::NamedCandidateDataView data_view,
+                   ::remoting::IceTransportInfo::NamedCandidate* out_candidate);
+};
+
+template <>
+class StructTraits<remoting::mojom::JingleTransportInfoDataView,
+                   ::remoting::JingleTransportInfo> {
+ public:
+  static const std::vector<::remoting::IceTransportInfo::NamedCandidate>&
+  candidates(const ::remoting::JingleTransportInfo& transport_info) {
+    return transport_info.candidates;
+  }
+
+  static const std::optional<::remoting::SessionDescription>&
+  session_description(const ::remoting::JingleTransportInfo& transport_info) {
+    return transport_info.session_description;
+  }
+
+  static bool Read(remoting::mojom::JingleTransportInfoDataView data_view,
+                   ::remoting::JingleTransportInfo* out_transport_info);
 };
 
 #endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)

@@ -86,3 +86,40 @@ struct MouseCursor {
   array<uint8> image_data;
   DesktopVector hotspot;
 };
+
+// Strongly-typed representation of webrtc::SocketAddress.
+// Maps to C++ type: `::webrtc::SocketAddress`
+// (defined in third_party/webrtc/rtc_base/socket_address.h).
+struct WebrtcSocketAddress {
+  // Holds either an IP address (IPv4/IPv6) or a hostname.
+  string hostname;
+  uint16 port;
+};
+
+// Maps to C++ enum: `::webrtc::IceCandidateType`
+// (defined in third_party/webrtc/api/candidate.h).
+enum WebrtcIceCandidateType {
+  kHost,
+  kSrflx,
+  kPrflx,
+  kRelay,
+};
+
+// Strongly-typed representation of webrtc::Candidate.
+// Maps to C++ type: `::webrtc::Candidate`
+// (defined in third_party/webrtc/api/candidate.h).
+struct WebrtcCandidate {
+  string foundation;
+  int32 component;
+  string protocol;
+  uint32 priority;
+  WebrtcSocketAddress address;
+  WebrtcIceCandidateType type;
+  string tcptype;
+  WebrtcSocketAddress related_address;
+  string username;
+  string password;
+  uint32 generation;
+  uint16 network_id;
+  uint16 network_cost;
+};

@@ -211,6 +211,34 @@ mojom("mojom") {
         move_only = true
         nullable_is_same_type = true
       },
+      {
+        mojom = "remoting.mojom.WebrtcSocketAddress"
+        cpp = "::webrtc::SocketAddress"
+      },
+      {
+        mojom = "remoting.mojom.WebrtcIceCandidateType"
+        cpp = "::webrtc::IceCandidateType"
+      },
+      {
+        mojom = "remoting.mojom.WebrtcCandidate"
+        cpp = "::webrtc::Candidate"
+      },
+      {
+        mojom = "remoting.mojom.SdpType"
+        cpp = "::remoting::SessionDescription::Type"
+      },
+      {
+        mojom = "remoting.mojom.SessionDescription"
+        cpp = "::remoting::SessionDescription"
+      },
+      {
+        mojom = "remoting.mojom.NamedCandidate"
+        cpp = "::remoting::IceTransportInfo::NamedCandidate"
+      },
+      {
+        mojom = "remoting.mojom.JingleTransportInfo"
+        cpp = "::remoting::JingleTransportInfo"
+      },
     ]
 
     if (is_win) {
@@ -239,6 +267,7 @@ mojom("mojom") {
         "//remoting/protocol",
         "//remoting/protocol:errors",
         "//remoting/protocol:transport",
+        "//remoting/signaling",
         "//services/network/public/cpp:ip_address_mojom_support",
         "//third_party/webrtc_overrides:webrtc_component",
       ]

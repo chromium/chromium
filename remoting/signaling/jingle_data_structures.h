@@ -47,6 +47,7 @@ struct JabberId {
   std::string resource_part;
 };
 
+// LINT.IfChange(SessionDescription)
 // Represents a WebRTC session description (SDP).
 // See https://www.w3.org/TR/webrtc/#rtcsessiondescription-class
 struct SessionDescription {
@@ -71,6 +72,7 @@ struct SessionDescription {
   // Raw HMAC bytes of the SDP description, for validation.
   std::vector<uint8_t> signature;
 };
+// LINT.ThenChange(//remoting/host/mojom/peer_session.mojom:SessionDescription)
 
 // Represents the authentication payload used in session-initiate,
 // session-accept, and session-info messages.
@@ -127,6 +129,7 @@ struct IceTransportInfo {
   IceTransportInfo();
   ~IceTransportInfo();
 
+  // LINT.IfChange(NamedCandidate)
   // Represents an ICE candidate with an optional name and SDP m-line index.
   // TODO: joedow - Replace this with webrtc::IceCandidate.
   struct NamedCandidate {
@@ -144,10 +147,12 @@ struct IceTransportInfo {
     webrtc::Candidate candidate;
     std::optional<int> sdp_m_line_index;
   };
+  // LINT.ThenChange(//remoting/host/mojom/peer_session.mojom:NamedCandidate)
 
   std::list<NamedCandidate> candidates;
 };
 
+// LINT.IfChange(JingleTransportInfo)
 // Represents transport information for a Jingle session.
 struct JingleTransportInfo {
   JingleTransportInfo();
@@ -161,6 +166,7 @@ struct JingleTransportInfo {
 
   std::optional<SessionDescription> session_description;
 };
+// LINT.ThenChange(//remoting/host/mojom/peer_session.mojom:JingleTransportInfo)
 
 // Represents host attributes sent as an attachment.
 struct HostAttributesAttachment {

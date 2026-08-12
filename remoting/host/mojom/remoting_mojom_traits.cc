@@ -7,6 +7,8 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "remoting/base/buildflags.h"
 #include "remoting/base/source_location.h"
 
@@ -705,6 +707,144 @@ bool mojo::StructTraits<remoting::mojom::AudioSampleInfoDataView,
          ::remoting::protocol::AudioSampleInfo* out_info) {
   out_info->sampling_rate = data_view.sampling_rate();
   out_info->channels = data_view.channels();
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::WebrtcSocketAddressDataView,
+                        ::webrtc::SocketAddress>::
+    Read(remoting::mojom::WebrtcSocketAddressDataView data_view,
+         ::webrtc::SocketAddress* out_address) {
+  std::string_view hostname_view;
+  if (!data_view.ReadHostname(&hostname_view)) {
+    return false;
+  }
+
+  ::webrtc::SocketAddress temp;
+  temp.SetIP(hostname_view);
+  temp.SetPort(data_view.port());
+
+  *out_address = std::move(temp);
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::WebrtcCandidateDataView,
+                        ::webrtc::Candidate>::
+    Read(remoting::mojom::WebrtcCandidateDataView data_view,
+         ::webrtc::Candidate* out_candidate) {
+  ::webrtc::Candidate temp;
+
+  std::string_view foundation_view;
+  if (!data_view.ReadFoundation(&foundation_view)) {
+    return false;
+  }
+  temp.set_foundation(foundation_view);
+
+  temp.set_component(data_view.component());
+
+  std::string_view protocol_view;
+  if (!data_view.ReadProtocol(&protocol_view)) {
+    return false;
+  }
+  temp.set_protocol(protocol_view);
+
+  temp.set_priority(data_view.priority());
+
+  ::webrtc::SocketAddress address;
+  if (!data_view.ReadAddress(&address)) {
+    return false;
+  }
+  temp.set_address(address);
+
+  ::webrtc::IceCandidateType candidate_type;
+  if (!data_view.ReadType(&candidate_type)) {
+    return false;
+  }
+  temp.set_type(candidate_type);
+
+  std::string_view tcptype_view;
+  if (!data_view.ReadTcptype(&tcptype_view)) {
+    return false;
+  }
+  temp.set_tcptype(tcptype_view);
+
+  ::webrtc::SocketAddress related_address;
+  if (!data_view.ReadRelatedAddress(&related_address)) {
+    return false;
+  }
+  temp.set_related_address(related_address);
+
+  std::string_view username_view;
+  if (!data_view.ReadUsername(&username_view)) {
+    return false;
+  }
+  temp.set_username(username_view);
+
+  std::string_view password_view;
+  if (!data_view.ReadPassword(&password_view)) {
+    return false;
+  }
+  temp.set_password(password_view);
+
+  temp.set_generation(data_view.generation());
+  temp.set_network_id(data_view.network_id());
+  temp.set_network_cost(data_view.network_cost());
+
+  *out_candidate = std::move(temp);
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::SessionDescriptionDataView,
+                        ::remoting::SessionDescription>::
+    Read(remoting::mojom::SessionDescriptionDataView data_view,
+         ::remoting::SessionDescription* out_description) {
+  ::remoting::SessionDescription temp;
+
+  if (!data_view.ReadType(&temp.type) || !data_view.ReadSdp(&temp.sdp) ||
+      !data_view.ReadSignature(&temp.signature)) {
+    return false;
+  }
+
+  *out_description = std::move(temp);
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::NamedCandidateDataView,
+                        ::remoting::IceTransportInfo::NamedCandidate>::
+    Read(remoting::mojom::NamedCandidateDataView data_view,
+         ::remoting::IceTransportInfo::NamedCandidate* out_candidate) {
+  ::remoting::IceTransportInfo::NamedCandidate temp;
+
+  if (!data_view.ReadSdpMid(&temp.name)) {
+    return false;
+  }
+
+  temp.sdp_m_line_index = data_view.sdp_m_line_index();
+
+  if (!data_view.ReadCandidate(&temp.candidate)) {
+    return false;
+  }
+
+  *out_candidate = std::move(temp);
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::JingleTransportInfoDataView,
+                        ::remoting::JingleTransportInfo>::
+    Read(remoting::mojom::JingleTransportInfoDataView data_view,
+         ::remoting::JingleTransportInfo* out_transport_info) {
+  ::remoting::JingleTransportInfo temp;
+
+  if (!data_view.ReadCandidates(&temp.candidates) ||
+      !data_view.ReadSessionDescription(&temp.session_description)) {
+    return false;
+  }
+
+  *out_transport_info = std::move(temp);
   return true;
 }
 

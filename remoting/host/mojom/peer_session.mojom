@@ -7,6 +7,61 @@ module remoting.mojom;
 import "remoting/host/mojom/chromoting_host_services.mojom";
 import "remoting/host/mojom/common.mojom";
 import "remoting/host/mojom/desktop_session.mojom";
+import "remoting/host/mojom/webrtc_types.mojom";
+
+// LINT.IfChange(SessionDescription)
+// WebRTC Session Description (SDP) type.
+// Maps to C++ enum: `::remoting::SessionDescription::Type`
+// (defined in remoting/signaling/jingle_data_structures.h).
+enum SdpType {
+  kUnspecified,
+  kOffer,
+  kAnswer,
+};
+
+// Represents a WebRTC Session Description Protocol (SDP) payload. The protocol
+// is defined in RFC 4566.
+// Maps to C++ type: `::remoting::SessionDescription`
+// (defined in remoting/signaling/jingle_data_structures.h).
+struct SessionDescription {
+  SdpType type;
+  string sdp;
+  array<uint8> signature;
+};
+// LINT.ThenChange(//remoting/signaling/jingle_data_structures.h:SessionDescription)
+
+// LINT.IfChange(NamedCandidate)
+// Represents an individual ICE (Interactive Connectivity Establishment,
+// RFC 8445) candidate with its associated media stream identifier (`sdp_mid`).
+// An ICE candidate defines a potential network transport address (IP, port, and
+// protocol) for peer-to-peer communication.
+// Maps to C++ type: `::remoting::IceTransportInfo::NamedCandidate`
+// (defined in remoting/signaling/jingle_data_structures.h).
+struct NamedCandidate {
+  string sdp_mid;
+  // The zero-based index of the Media Descriptions ("m=") in the SDP associated
+  // with this candidate, if available; null if only sdp_mid is provided by the
+  // signaling peer.
+  int32? sdp_m_line_index;
+  WebrtcCandidate candidate;
+};
+// LINT.ThenChange(//remoting/signaling/jingle_data_structures.h:NamedCandidate)
+
+// LINT.IfChange(JingleTransportInfo)
+// Represents structured Jingle transport parameters. Used in Trickle ICE
+// (RFC 8838): initial message carries `session_description` and initial
+// candidates; subsequent messages asynchronously stream newly discovered
+// candidates with `session_description` set to null.
+// Maps to C++ type: `::remoting::JingleTransportInfo`
+// (defined in remoting/signaling/jingle_data_structures.h).
+struct JingleTransportInfo {
+  array<NamedCandidate> candidates;
+  // The WebRTC Session Description (SDP) payload if this transport-info
+  // stanza conveys an offer/answer session description; null if this message
+  // conveys only incremental ICE candidates.
+  SessionDescription? session_description;
+};
+// LINT.ThenChange(//remoting/signaling/jingle_data_structures.h:JingleTransportInfo)
 
 // Interface implemented in the high-privilege daemon process (`DaemonProcess`).
 // Used by the Network process to spawn or bootstrap a Peer Connection session.
