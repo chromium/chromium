@@ -120,6 +120,9 @@ void OmniboxEverywhereBackgroundModeManager::ShowStatusIcon() {
       StatusTray::OMNIBOX_EVERYWHERE_ICON, icon_image, tooltip);
   if (status_icon_) {
     status_icon_->AddObserver(this);
+#if BUILDFLAG(IS_MAC)
+    status_icon_->SetOpenMenuWithSecondaryClick(true);
+#endif
     UpdateStatusIconContextMenu();
   }
 }
