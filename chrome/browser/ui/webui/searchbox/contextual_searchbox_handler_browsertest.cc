@@ -12,16 +12,21 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
+#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -228,4 +233,84 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
   base::test::TestFuture<bool> get_future2;
   handler_->GetSmartTabSharingActive(get_future2.GetCallback());
   EXPECT_TRUE(get_future2.Get());
+}
+
+class WebuiOmniboxHandlerBrowserTest
+    : public ContextualSearchboxHandlerBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    ContextualSearchboxHandlerBrowserTest::SetUpOnMainThread();
+
+    test_web_ui_.set_web_contents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+
+    omnibox_controller_ = std::make_unique<OmniboxController>(
+        std::make_unique<TestOmniboxClient>());
+    omnibox_controller_->SetEditModelForTesting(
+        std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
+            omnibox_controller_.get()));
+
+    omnibox_handler_ = std::make_unique<WebuiOmniboxHandler>(
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        omnibox_page_.BindAndGetRemote(),
+        /*metrics_reporter=*/nullptr, omnibox_controller_.get(), &test_web_ui_,
+        base::BindLambdaForTesting([&]() { return session_handle_.get(); }));
+  }
+
+  void TearDownOnMainThread() override {
+    omnibox_handler_.reset();
+    omnibox_controller_.reset();
+    ContextualSearchboxHandlerBrowserTest::TearDownOnMainThread();
+  }
+
+  content::TestWebUI test_web_ui_;
+  testing::NiceMock<MockSearchboxPage> omnibox_page_;
+  std::unique_ptr<OmniboxController> omnibox_controller_;
+  std::unique_ptr<WebuiOmniboxHandler> omnibox_handler_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebuiOmniboxHandlerBrowserTest,
+                       AddTabContextRejectsTabFromDifferentProfile) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  tabs::TabInterface* incognito_tab =
+      incognito_browser->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(incognito_tab);
+  ASSERT_NE(incognito_tab->GetProfile(), browser()->GetProfile());
+
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  omnibox_handler_->AddTabContext(incognito_tab->GetHandle().raw_value(),
+                                  /*delay_upload=*/false,
+                                  searchbox::mojom::TabAttachmentSource::kOther,
+                                  future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            contextual_search::ContextUploadErrorType::kBrowserProcessingError);
+}
+
+IN_PROC_BROWSER_TEST_F(WebuiOmniboxHandlerBrowserTest,
+                       AddTabContextRejectsWhenContentSharingDisabled) {
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  omnibox_handler_->AddTabContext(tab->GetHandle().raw_value(),
+                                  /*delay_upload=*/false,
+                                  searchbox::mojom::TabAttachmentSource::kOther,
+                                  future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            contextual_search::ContextUploadErrorType::kBrowserProcessingError);
 }

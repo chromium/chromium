@@ -214,11 +214,17 @@ void WebuiOmniboxHandler::AddTabContext(
     bool delay_upload,
     searchbox::mojom::TabAttachmentSource source,
     AddTabContextCallback callback) {
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs())) {
+    std::move(callback).Run(base::unexpected(
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
+    return;
+  }
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_.get());
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
   tabs::TabInterface* const tab = handle.Get();
-  if (!tab) {
+  if (!tab || tab->GetProfile() != profile_) {
     std::move(callback).Run(base::unexpected(
         contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
