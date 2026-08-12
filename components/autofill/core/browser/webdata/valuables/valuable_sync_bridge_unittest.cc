@@ -5,12 +5,8 @@
 #include "components/autofill/core/browser/webdata/valuables/valuable_sync_bridge.h"
 
 #include <memory>
-#include <string_view>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,17 +15,14 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
-#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
-#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_test_utils.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/data_batch.h"
@@ -48,7 +41,6 @@ using syncer::test::AddUnknownFieldToProto;
 using syncer::test::HasUnknownField;
 using testing::_;
 using testing::ElementsAre;
-using testing::IsEmpty;
 using testing::Return;
 using testing::ReturnRef;
 using testing::UnorderedElementsAre;
@@ -103,15 +95,6 @@ EntityInstance GetServerVehicleEntityInstance(
   options.use_date = {};
   options.record_type = EntityInstance::RecordType::kServerWallet;
   return test::GetVehicleEntityInstance(options);
-}
-
-EntityInstance GetServerFlightEntityInstance(
-    test::FlightReservationOptions options = {}) {
-  options.nickname = "";
-  options.date_modified = {};
-  options.use_date = {};
-  options.record_type = EntityInstance::RecordType::kServerWallet;
-  return test::GetFlightReservationEntityInstance(options);
 }
 
 }  // namespace
@@ -482,9 +465,7 @@ TEST_F(ValuableSyncBridgeTest,
   // 1. Setup an initial server entity and simulate local usage, which updates
   // the metadata.
   LoyaltyCard server_card = TestLoyaltyCard(kId1);
-  TestAutofillClock test_clock;
-  test_clock.SetNow(base::Time::Now());
-  server_card.RecordLoyaltyCardUsed(base::Time::Now());
+  server_card.RecordLoyaltyCardUsed(test::kJune2017);
   AddLoyaltyCards({server_card});
 
   const ValuableMetadata local_metadata =
@@ -616,9 +597,7 @@ TEST_F(ValuableSyncBridgeTest,
   // the metadata.
   EntityInstance server_vehicle = GetServerVehicleEntityInstance(
       {.model = u"Model T", .guid = "00000000-0000-4000-8000-300000000000"});
-  TestAutofillClock test_clock;
-  test_clock.SetNow(base::Time::Now());
-  server_vehicle.RecordEntityUsed(base::Time::Now());
+  server_vehicle.RecordEntityUsed(test::kJune2017);
   AddEntities({server_vehicle});
 
   const EntityInstance::EntityMetadata local_metadata =
@@ -642,8 +621,9 @@ TEST_F(ValuableSyncBridgeTest,
   EXPECT_EQ(entities_in_db[0].metadata(), local_metadata);
 }
 
-// Tests that `GetAllDataForDebugging()` returns all vehicle registrations.
-TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForVehicleRegistrations) {
+// Tests that `GetAllDataForDebugging()` returns all server stored entities.
+TEST_F(ValuableSyncBridgeTest,
+       GetAllDataForDebuggingReturnsOnlyServerEntities) {
   EntityInstance local_vehicle = GetLocalVehicleEntityInstance(
       {.guid = "00000000-0000-4000-8000-300000000000"});
   EntityInstance server_vehicle = GetServerVehicleEntityInstance(
@@ -655,21 +635,8 @@ TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForVehicleRegistrations) {
   EXPECT_THAT(entities, ElementsAre(server_vehicle));
 }
 
-// Tests that `GetAllDataForDebugging()` returns all flight reservations.
-TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForFlightReservations) {
-  const EntityInstance flight1 = GetServerFlightEntityInstance(
-      {.guid = "00000000-0000-4000-8000-300000000000"});
-  const EntityInstance flight2 = GetServerFlightEntityInstance(
-      {.guid = "00000000-0000-5000-3000-200000000000"});
-  AddEntities({flight1, flight2});
-
-  std::vector<EntityInstance> entities =
-      ExtractEntitiesFromDataBatch(bridge().GetAllDataForDebugging());
-  EXPECT_THAT(entities, ElementsAre(flight1, flight2));
-}
-
-// Tests that `SetEntities()` correctly adds vehicle entities to the table.
-TEST_F(ValuableSyncBridgeTest, SetEntities_AddsVehicles) {
+// Tests that `SetEntities()` correctly adds entities to the table.
+TEST_F(ValuableSyncBridgeTest, SetEntities) {
   const EntityInstance vehicle1 = GetServerVehicleEntityInstance(
       {.guid = "00000000-0000-4000-8000-300000000000"});
   const EntityInstance vehicle2 = GetServerVehicleEntityInstance(
@@ -684,25 +651,9 @@ TEST_F(ValuableSyncBridgeTest, SetEntities_AddsVehicles) {
               UnorderedElementsAre(vehicle1, vehicle2));
 }
 
-// Tests that `SetEntities()` correctly adds flight reservations to the table.
-TEST_F(ValuableSyncBridgeTest, SetEntities_AddsFlights) {
-  const EntityInstance flight1 = GetServerFlightEntityInstance(
-      {.guid = "00000000-0000-4000-8000-300000000000"});
-  const EntityInstance flight2 = GetServerFlightEntityInstance(
-      {.guid = "00000000-0000-5000-3000-200000000000"});
-
-  EXPECT_CALL(backend(), CommitChanges);
-  EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
-  EXPECT_TRUE(SyncEntityInstances({flight1, flight2}));
-
-  EXPECT_THAT(GetAllEntityInstancesFromTable(),
-              UnorderedElementsAre(flight1, flight2));
-}
-
-// Tests that `SetEntities()` clears any existing entities before adding new
-// ones.
-TEST_F(ValuableSyncBridgeTest, SetEntities_ClearsExistingEntities) {
+// Tests that `SetEntities()` clears any existing server entities before adding
+// new ones.
+TEST_F(ValuableSyncBridgeTest, SetEntities_ClearsExistingServerEntities) {
   const EntityInstance local_vehicle = GetLocalVehicleEntityInstance(
       {.guid = "00000000-0000-4000-8000-300000000000"});
   const EntityInstance wallet_vehicle = GetServerVehicleEntityInstance(
@@ -724,8 +675,8 @@ TEST_F(ValuableSyncBridgeTest, SetEntities_ClearsExistingEntities) {
               UnorderedElementsAre(local_vehicle, new_wallet_vehicle));
 }
 
-// Tests that `SetEntities()` clears any existing entities when the server syncs
-// an empty list.
+// Tests that `SetEntities()` clears any existing server entities
+// when the server syncs an empty list.
 TEST_F(ValuableSyncBridgeTest,
        SetEntities_ClearsExistingEntitiesWhenServerEmpty) {
   const EntityInstance local_vehicle = GetLocalVehicleEntityInstance(
@@ -788,7 +739,7 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
 // change.
 TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_RemoveLocal) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
-  const EntityInstance vehicle = test::GetVehicleEntityInstance();
+  const EntityInstance vehicle = GetLocalVehicleEntityInstance();
   bridge().EntityInstanceChanged(EntityInstanceChange(
       EntityInstanceChange::REMOVE, vehicle.guid(), vehicle));
 }
@@ -892,9 +843,7 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
        ApplyIncrementalSyncChanges_LoyaltyCard_PreservesLocalMetadata) {
   // 1. Setup an entity and simulate local usage, which updates the metadata.
   LoyaltyCard local_card = TestLoyaltyCard(kId1);
-  TestAutofillClock test_clock;
-  test_clock.SetNow(base::Time::Now());
-  local_card.RecordLoyaltyCardUsed(base::Time::Now());
+  local_card.RecordLoyaltyCardUsed(test::kJune2017);
   AddLoyaltyCards({local_card});
 
   const ValuableMetadata local_metadata =
@@ -1029,9 +978,7 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
   // 1. Setup an entity and simulate local usage, which updates the metadata.
   EntityInstance local_vehicle = GetServerVehicleEntityInstance(
       {.model = u"Model T", .guid = "00000000-0000-4000-8000-300000000000"});
-  TestAutofillClock test_clock;
-  test_clock.SetNow(base::Time::Now());
-  local_vehicle.RecordEntityUsed(base::Time::Now());
+  local_vehicle.RecordEntityUsed(test::kJune2017);
   AddEntities({local_vehicle});
 
   const EntityInstance::EntityMetadata local_metadata =
