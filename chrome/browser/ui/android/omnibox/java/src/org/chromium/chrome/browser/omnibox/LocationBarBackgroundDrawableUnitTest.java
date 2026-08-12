@@ -73,9 +73,9 @@ public class LocationBarBackgroundDrawableUnitTest {
         mDrawable.draw(mCanvas);
         verify(mGradientDrawable).draw(mCanvas);
         inOrder.verify(mCanvas).save();
-        inOrder.verify(mCanvas).clipPath(mDrawable.getPathForTesting());
+        inOrder.verify(mCanvas).clipPath(mDrawable.getOuterPathForTesting());
         inOrder.verify(mCanvas)
-                .drawPath(mDrawable.getPathForTesting(), mDrawable.getPaintForTesting());
+                .drawPath(mDrawable.getHairlinePathForTesting(), mDrawable.getPaintForTesting());
         inOrder.verify(mCanvas)
                 .drawPath(mDrawable.getBlurPathForTesting(), mDrawable.getBlurPaintForTesting());
     }
@@ -91,7 +91,9 @@ public class LocationBarBackgroundDrawableUnitTest {
         mDrawable.draw(mCanvas);
         verify(mGradientDrawable).draw(mCanvas);
         verify(mCanvas)
-                .drawPath(mDrawable.getPathForTesting(), mDrawable.getStandbyPaintForTesting());
+                .drawPath(
+                        mDrawable.getHairlinePathForTesting(),
+                        mDrawable.getStandbyPaintForTesting());
         verify(mCanvas, never())
                 .drawPath(mDrawable.getBlurPathForTesting(), mDrawable.getBlurPaintForTesting());
     }
@@ -104,7 +106,7 @@ public class LocationBarBackgroundDrawableUnitTest {
         mDrawable.draw(mCanvas);
         verify(mGradientDrawable).draw(mCanvas);
         verify(mCanvas, never())
-                .drawPath(mDrawable.getPathForTesting(), mDrawable.getPaintForTesting());
+                .drawPath(mDrawable.getHairlinePathForTesting(), mDrawable.getPaintForTesting());
     }
 
     @Test

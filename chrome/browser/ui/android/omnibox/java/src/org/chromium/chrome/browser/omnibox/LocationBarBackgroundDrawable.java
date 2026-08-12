@@ -83,6 +83,7 @@ public class LocationBarBackgroundDrawable extends Drawable {
     private final Paint mRainbowBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mRainbowBorderBlurPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mStandbyBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Path mOuterPath = new Path();
     private final Path mHairlinePath = new Path();
     private final Path mRainbowBlurPath = new Path();
     private final Rect mInsets = new Rect();
@@ -196,12 +197,24 @@ public class LocationBarBackgroundDrawable extends Drawable {
         computeEffectiveBounds();
 
         RectF boundsAsFloatRect = new RectF(mEffectiveBounds);
-        // Rebuild path.
-        mHairlinePath.reset();
-        mHairlinePath.addRoundRect(
+        // Outer-most path based on effective bounds.
+        mOuterPath.reset();
+        mOuterPath.addRoundRect(
                 boundsAsFloatRect, mCornerRadiusPx, mCornerRadiusPx, Path.Direction.CW);
 
-        boundsAsFloatRect.inset(mStrokePx, mStrokePx);
+        // Center the hairline stroke inside effective bounds by insetting by half the stroke width
+        // (mStrokePx / 2). This ensures the outer half of the stroke stays within bounds.
+        float halfStroke = mStrokePx / 2f;
+        boundsAsFloatRect.inset(halfStroke, halfStroke);
+        mHairlinePath.reset();
+        mHairlinePath.addRoundRect(
+                boundsAsFloatRect,
+                mCornerRadiusPx - halfStroke,
+                mCornerRadiusPx - halfStroke,
+                Path.Direction.CW);
+
+        // Rainbow blur path, insetting by another half stroke to reach full stroke width.
+        boundsAsFloatRect.inset(halfStroke, halfStroke);
         mRainbowBlurPath.reset();
         mRainbowBlurPath.addRoundRect(
                 boundsAsFloatRect,
@@ -228,7 +241,7 @@ public class LocationBarBackgroundDrawable extends Drawable {
                 canvas.save();
                 // Clip anything outside the border path to avoid the blur path from drawing outside
                 // the border, which it would otherwise do.
-                canvas.clipPath(mHairlinePath);
+                canvas.clipPath(mOuterPath);
                 canvas.drawPath(mHairlinePath, mRainbowBorderPaint);
                 canvas.drawPath(mRainbowBlurPath, mRainbowBorderBlurPaint);
                 canvas.restore();
@@ -346,7 +359,11 @@ public class LocationBarBackgroundDrawable extends Drawable {
         return mRainbowBlurPath;
     }
 
-    Path getPathForTesting() {
+    Path getOuterPathForTesting() {
+        return mOuterPath;
+    }
+
+    Path getHairlinePathForTesting() {
         return mHairlinePath;
     }
 
