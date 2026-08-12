@@ -142,6 +142,98 @@ IN_PROC_BROWSER_TEST_F(PageContentImageExtractorBrowserTest, GetImageBytes) {
       1);
 }
 
+// Test `GetImageBytes` works on .webp image.
+IN_PROC_BROWSER_TEST_F(PageContentImageExtractorBrowserTest,
+                       GetImageBytes_Webp) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/simple.html")));
+
+  // 1x1 WebP image in Base64 encoding.
+  const std::string kImageBase64 =
+      "UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA=";
+  const std::string kImageSrc = "data:image/webp;base64," + kImageBase64;
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      base::StringPrintf("const img = document.createElement('img');"
+                         "img.src = '%s';"
+                         "img.alt = 'test_image_bytes';"
+                         "document.body.appendChild(img);",
+                         kImageSrc.c_str())));
+
+  ASSERT_TRUE(
+      content::EvalJs(web_contents(),
+                      "new Promise(resolve => {"
+                      "  const img = "
+                      "document.querySelector('img[alt=\"test_image_bytes\"]');"
+                      "  if (img.complete) { resolve(true); }"
+                      "  else { img.onload = () => resolve(true); }"
+                      "})")
+          .ExtractBool());
+
+  // Wait for rendering to sync.
+  {
+    base::test::TestFuture<bool> future;
+    web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetRenderWidgetHost()
+        ->InsertVisualStateCallback(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // Get the AI page content to extract the DOM node ID of the image.
+  base::test::TestFuture<AIPageContentResultOrError> content_future;
+  GetAIPageContent(web_contents(),
+                   ActionableAIPageContentOptions(
+                       /*on_critical_path =*/true),
+                   content_future.GetCallback());
+
+  auto result = content_future.Take();
+  ASSERT_TRUE(result.has_value());
+
+  const proto::ContentNode* image_node = FindFirstNodeWithAttributeType(
+      result->proto.root_node(), proto::CONTENT_ATTRIBUTE_IMAGE);
+  ASSERT_TRUE(image_node);
+  int32_t dom_node_id =
+      image_node->content_attributes().common_ancestor_dom_node_id();
+  ASSERT_NE(dom_node_id, 0);
+
+  // Get the document identifier for the main frame.
+  std::optional<std::string> document_identifier =
+      DocumentIdentifierUserData::GetDocumentIdentifier(
+          web_contents()->GetPrimaryMainFrame()->GetGlobalFrameToken());
+  ASSERT_TRUE(document_identifier.has_value());
+
+  base::HistogramTester histogram_tester;
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
+
+  base::test::TestFuture<blink::mojom::AIPageContentImageBytesResultPtr>
+      image_future;
+  GetImageBytes(web_contents(), *document_identifier, dom_node_id,
+                image_future.GetCallback());
+
+  auto image_bytes_result = image_future.Take();
+  ASSERT_TRUE(image_bytes_result);
+  std::optional<std::vector<uint8_t>> expected_bytes =
+      base::Base64Decode(kImageBase64);
+  ASSERT_TRUE(expected_bytes.has_value());
+  EXPECT_EQ(image_bytes_result->image_bytes.size(), expected_bytes->size());
+  EXPECT_EQ(base::span<const uint8_t>(image_bytes_result->image_bytes),
+            base::span<const uint8_t>(*expected_bytes));
+  ASSERT_TRUE(image_bytes_result->image_info);
+  EXPECT_EQ(image_bytes_result->image_info->mime_type, "image/webp");
+  EXPECT_EQ(image_bytes_result->image_info->image_caption, "test_image_bytes");
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.AIPageContent.GetImageBytes.Timeout", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.AIPageContent.GetImageBytes.Size",
+      image_bytes_result->image_bytes.size(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.AIPageContent.GetImageBytes.Latency",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
+      1);
+}
+
 IN_PROC_BROWSER_TEST_F(PageContentImageExtractorBrowserTest,
                        GetImageBytes_FromIframe) {
   ASSERT_TRUE(content::NavigateToURL(
