@@ -28,13 +28,13 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/settings/about_handler.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
@@ -537,7 +537,7 @@ bool AboutSection::ShouldShowAUToggle(user_manager::User* active_user) {
     return false;
   }
 
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
+  auto* identity_manager = IdentityManagerProvider::Get().Find(account_id);
   if (!identity_manager) {
     return false;
   }
