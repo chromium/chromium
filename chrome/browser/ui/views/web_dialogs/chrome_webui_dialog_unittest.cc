@@ -16,6 +16,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -282,6 +284,57 @@ TEST_F(ChromeWebUIDialogTest, ShowCloseButton) {
   ASSERT_TRUE(widget);
 
   EXPECT_TRUE(widget->widget_delegate()->ShouldShowCloseButton());
+}
+
+TEST_F(ChromeWebUIDialogTest, AddNewContentsInvokesCallback) {
+  const GURL kTargetUrl("https://example.test/policy");
+
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+
+  GURL observed_url;
+  WindowOpenDisposition observed_disposition = WindowOpenDisposition::UNKNOWN;
+  spec.add_new_contents_callback = base::BindLambdaForTesting(
+      [&](content::WebContents* source,
+          std::unique_ptr<content::WebContents> new_contents,
+          const GURL& target_url, WindowOpenDisposition disposition,
+          const blink::mojom::WindowFeatures& window_features,
+          bool user_gesture) -> content::WebContents* {
+        observed_url = target_url;
+        observed_disposition = disposition;
+        return nullptr;
+      });
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
+
+  blink::mojom::WindowFeatures window_features;
+  delegate->AddNewContents(/*source=*/nullptr, /*new_contents=*/nullptr,
+                           kTargetUrl,
+                           WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                           window_features, /*user_gesture=*/true,
+                           /*was_blocked=*/nullptr);
+
+  EXPECT_EQ(observed_url, kTargetUrl);
+  EXPECT_EQ(observed_disposition, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+}
+
+TEST_F(ChromeWebUIDialogTest, AddNewContentsWithoutCallbackDropsRequest) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
+
+  blink::mojom::WindowFeatures window_features;
+  EXPECT_EQ(delegate->AddNewContents(
+                /*source=*/nullptr, /*new_contents=*/nullptr,
+                GURL("https://example.test/"),
+                WindowOpenDisposition::NEW_FOREGROUND_TAB, window_features,
+                /*user_gesture=*/true, /*was_blocked=*/nullptr),
+            nullptr);
 }
 
 TEST_F(ChromeWebUIDialogTest, EscShouldCancelDialogOverride) {

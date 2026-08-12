@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -32,6 +33,16 @@ class TabInterface;
 }  // namespace tabs
 
 namespace webui_dialog {
+
+// Opens a new WebContents on behalf of the hosted WebUI. Returns the contents
+// the navigation continued in, or nullptr to drop the request.
+using AddNewContentsCallback = base::RepeatingCallback<content::WebContents*(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture)>;
 
 // Defines the configuration for a TopChrome WebUI Dialog.
 struct WebDialogSpec {
@@ -71,6 +82,10 @@ struct WebDialogSpec {
 
   // Optional parent tab for displaying as a tab-modal (kChild) dialog.
   base::WeakPtr<tabs::TabInterface> parent_tab;
+
+  // Unset drops the WebUI's new-window requests, silently breaking any link in
+  // the page that targets a new tab or window.
+  AddNewContentsCallback add_new_contents_callback;
 
   // A bitmask of buttons (from ui::mojom::DialogButton) that are present in
   // this dialog. Defaults to kNone since WebUI dialogs usually render their
@@ -126,6 +141,14 @@ class ChromeWebUIDialog : public views::DialogDelegate,
                              const gfx::Size& new_size) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
@@ -143,8 +166,8 @@ class ChromeWebUIDialog : public views::DialogDelegate,
   // The WebView that hosts the WebUI content.
   raw_ptr<views::WebView> web_view_ = nullptr;
 
-  // Keeps renderer-declined keys to the focus manager so browser
-  // accelerators keep working from inside the dialog.
+  // Keeps renderer-declined keys to the focus manager so browser accelerators
+  // keep working from inside the dialog.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>

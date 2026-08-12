@@ -228,6 +228,23 @@ bool ChromeWebUIDialog::HandleKeyboardEvent(
       event, widget->GetFocusManager());
 }
 
+content::WebContents* ChromeWebUIDialog::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
+  if (!spec_.add_new_contents_callback) {
+    return nullptr;
+  }
+
+  return spec_.add_new_contents_callback.Run(source, std::move(new_contents),
+                                             target_url, disposition,
+                                             window_features, user_gesture);
+}
+
 void ChromeWebUIDialog::OnViewAddedToWidget(views::View* observed_view) {
   if (observed_view != web_view_) {
     return;
