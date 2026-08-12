@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -212,7 +213,7 @@ TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRectUniform) {
         gfx::Rect(0, 0, kSize, kSize), recorder.finishRecordingAsPicture(),
         RasterEffectOutset::kNone);
 
-    SCOPED_TRACE(String::Format("r=%f", r));
+    SCOPED_TRACE(Format("r={:f}", r));
     CheckOpaqueRectPixels(item, bitmap);
   }
 }
@@ -236,7 +237,7 @@ TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRectNonUniform) {
         gfx::Rect(0, 0, kSize, kSize), recorder.finishRecordingAsPicture(),
         RasterEffectOutset::kNone);
 
-    SCOPED_TRACE(String::Format("r=%f", r));
+    SCOPED_TRACE(Format("r={:f}", r));
     CheckOpaqueRectPixels(item, bitmap);
   }
 }

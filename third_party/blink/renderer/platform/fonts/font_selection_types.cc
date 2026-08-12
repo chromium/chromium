@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
@@ -52,7 +53,7 @@ unsigned FontSelectionCapabilitiesHashTraits::GetHash(
 }
 
 String FontSelectionValue::ToString() const {
-  return String::Format("%f", (float)*this);
+  return Format("{:f}", static_cast<float>(*this));
 }
 
 String FontSelectionRequest::ToString() const {

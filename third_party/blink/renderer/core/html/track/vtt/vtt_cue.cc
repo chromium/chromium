@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -156,9 +157,8 @@ VTTCue::~VTTCue() = default;
 
 #ifndef NDEBUG
 String VTTCue::ToString() const {
-  return String::Format("%p id=%s interval=%f-->%f cue=%s)", this,
-                        id().Utf8().c_str(), startTime(), endTime(),
-                        text().Utf8().c_str());
+  return Format("{:p} id={} interval={:f}-->{:f} cue={})", this, id(),
+                startTime(), endTime(), text());
 }
 #endif
 

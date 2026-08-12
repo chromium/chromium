@@ -33,6 +33,7 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8-exception.h"
 
@@ -159,7 +160,7 @@ class PLATFORM_EXPORT ExceptionMessages {
   template <typename NumType>
   static String FormatFiniteNumber(NumType number) {
     if (number > 1e20 || number < -1e20)
-      return String::Format("%e", 1.0 * number);
+      return Format("{:e}", 1.0 * number);
     return String::Number(number);
   }
 
@@ -170,7 +171,7 @@ class PLATFORM_EXPORT ExceptionMessages {
     if (std::isinf(number))
       return number > 0 ? "Infinity" : "-Infinity";
     if (number > 1e20 || number < -1e20)
-      return String::Format("%e", number);
+      return Format("{:e}", number);
     return String::Number(number);
   }
 

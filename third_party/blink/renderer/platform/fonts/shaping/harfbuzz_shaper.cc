@@ -156,7 +156,7 @@ void CheckShapeResultRange(const ShapeResult* result,
   log.Append("Font='");
   const FontDescription& font_description = font->GetFontDescription();
   log.Append(font_description.Family().ToString());
-  log.AppendFormat("', %f", font_description.ComputedSize());
+  FormatTo(log, "', {:f}", font_description.ComputedSize());
 
   // Log the primary font with its family name in the font file.
   const SimpleFontData* font_data = font->PrimaryFont();

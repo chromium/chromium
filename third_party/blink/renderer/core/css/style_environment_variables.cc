@@ -6,6 +6,8 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
+
 namespace blink {
 
 namespace {
@@ -274,7 +276,7 @@ void StyleEnvironmentVariables::DetachFromParent() {
 }
 
 String StyleEnvironmentVariables::FormatFloatPx(float value) {
-  return String::Format("%gpx", value);
+  return Format("{:g}px", value);
 }
 
 String StyleEnvironmentVariables::FormatPx(int value) {
