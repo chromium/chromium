@@ -260,11 +260,17 @@ class ModelContext::ToolFunctionFinishedCallback
     if (success_) {
       std::optional<String> result;
       if (value.IsObject()) {
+        v8::TryCatch try_catch(script_state->GetIsolate());
         v8::Local<v8::String> json_string;
         if (v8::JSON::Stringify(script_state->GetContext(), value.V8Value())
                 .ToLocal(&json_string)) {
           result = ToBlinkString<String>(script_state->GetIsolate(),
                                          json_string, kDoNotExternalize);
+        } else {
+          CHECK(try_catch.HasCaught());
+          HandleFailure(script_state, ScriptValue(script_state->GetIsolate(),
+                                                  try_catch.Exception()));
+          return;
         }
       }
 
@@ -280,25 +286,7 @@ class ModelContext::ToolFunctionFinishedCallback
       }
       model_context_->OnToolExecuted(invocation_id_, *result);
     } else {
-      v8::Isolate* isolate = script_state->GetIsolate();
-      v8::Local<v8::Message> message =
-          v8::Exception::CreateMessage(isolate, value.V8Value());
-      String message_text = ToCoreStringWithNullCheck(isolate, message->Get());
-      if (message_text.empty()) {
-        message_text = "Unknown error";
-      }
-      SourceLocation* location = CaptureSourceLocation(
-          isolate, message, model_context_->GetExecutionContext());
-
-      model_context_->GetExecutionContext()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kJavaScript,
-              mojom::blink::ConsoleMessageLevel::kError,
-              "WebMCP tool execution failed: " + message_text, location));
-
-      model_context_->OnToolExecuted(
-          invocation_id_,
-          base::unexpected(std::make_pair(value, script_state)));
+      HandleFailure(script_state, value);
     }
   }
 
@@ -308,6 +296,27 @@ class ModelContext::ToolFunctionFinishedCallback
   }
 
  private:
+  void HandleFailure(ScriptState* script_state, ScriptValue value) {
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::Local<v8::Message> message =
+        v8::Exception::CreateMessage(isolate, value.V8Value());
+    String message_text = ToCoreStringWithNullCheck(isolate, message->Get());
+    if (message_text.empty()) {
+      message_text = "Unknown error";
+    }
+    SourceLocation* location = CaptureSourceLocation(
+        isolate, message, model_context_->GetExecutionContext());
+
+    model_context_->GetExecutionContext()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kError,
+            "WebMCP tool execution failed: " + message_text, location));
+
+    model_context_->OnToolExecuted(
+        invocation_id_, base::unexpected(std::make_pair(value, script_state)));
+  }
+
   Member<ModelContext> model_context_;
   const base::UnguessableToken invocation_id_;
   const bool success_;
