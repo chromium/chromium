@@ -2484,7 +2484,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   std::unique_ptr<GPUTracer> gpu_tracer_;
   std::unique_ptr<GPUStateTracer> gpu_state_tracer_;
-  raw_ptr<const unsigned char> gpu_decoder_category_;
   int gpu_trace_level_;
   bool gpu_trace_commands_;
   bool gpu_debug_commands_;
@@ -3069,8 +3068,6 @@ GLES2DecoderImpl::GLES2DecoderImpl(
       viewport_max_height_(0),
       num_stencil_bits_(0),
       texture_state_(group_->feature_info()->workarounds()),
-      gpu_decoder_category_(TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-          TRACE_DISABLED_BY_DEFAULT("gpu.decoder"))),
       gpu_trace_level_(2),
       gpu_trace_commands_(false),
       gpu_debug_commands_(false),
@@ -4510,7 +4507,9 @@ Logger* GLES2DecoderImpl::GetLogger() {
 
 void GLES2DecoderImpl::BeginDecoding() {
   gpu_tracer_->BeginDecoding();
-  gpu_trace_commands_ = gpu_tracer_->IsTracing() && *gpu_decoder_category_;
+  gpu_trace_commands_ =
+      gpu_tracer_->IsTracing() &&
+      TRACE_EVENT_CATEGORY_ENABLED(TRACE_DISABLED_BY_DEFAULT("gpu.decoder"));
   gpu_debug_commands_ = log_commands() || debug() || gpu_trace_commands_;
   query_manager_->ProcessFrameBeginUpdates();
   query_manager_->BeginProcessingCommands();

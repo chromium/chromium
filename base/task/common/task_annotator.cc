@@ -268,9 +268,7 @@ void TaskAnnotator::EmitTaskLocation(perfetto::EventContext& ctx,
 // into EventContext if toplevel.flow category is enabled.
 void TaskAnnotator::MaybeEmitIncomingTaskFlow(perfetto::EventContext& ctx,
                                               const PendingTask& task) const {
-  static const uint8_t* flow_enabled =
-      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("toplevel.flow");
-  if (!*flow_enabled) {
+  if (!TRACE_EVENT_CATEGORY_ENABLED("toplevel.flow")) {
     return;
   }
 
@@ -328,10 +326,8 @@ void TaskAnnotator::MaybeEmitDelayAndPolicy(perfetto::EventContext& ctx,
 
 void TaskAnnotator::MaybeEmitIPCHash(perfetto::EventContext& ctx,
                                      const PendingTask& task) const {
-  static const uint8_t* toplevel_ipc_enabled =
-      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-          TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"));
-  if (!*toplevel_ipc_enabled) {
+  if (!TRACE_EVENT_CATEGORY_ENABLED(
+          TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"))) {
     return;
   }
 

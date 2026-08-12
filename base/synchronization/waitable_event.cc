@@ -24,9 +24,8 @@ WaitableEvent::~WaitableEvent() {
   if (!only_used_while_idle_) {
     // Check the tracing state to avoid an unnecessary syscall on destruction
     // (which can be performance sensitive, crbug.com/40275035).
-    static const uint8_t* flow_enabled =
-        TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("wakeup.flow,toplevel.flow");
-    if (*flow_enabled && IsSignaled()) {
+    if (TRACE_EVENT_CATEGORY_ENABLED("wakeup.flow,toplevel.flow") &&
+        IsSignaled()) {
       TRACE_EVENT_INSTANT("wakeup.flow,toplevel.flow",
                           "~WaitableEvent while Signaled",
                           perfetto::TerminatingFlow::FromPointer(this));

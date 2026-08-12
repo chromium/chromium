@@ -591,9 +591,7 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordEndOfPhase(
 
 void ThreadController::RunLevelTracker::TimeKeeper::MaybeEmitIncomingWakeupFlow(
     perfetto::EventContext& ctx) {
-  static const uint8_t* flow_enabled =
-      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("wakeup.flow");
-  if (!*flow_enabled) {
+  if (!TRACE_EVENT_CATEGORY_ENABLED("wakeup.flow")) {
     return;
   }
 

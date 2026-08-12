@@ -446,11 +446,7 @@ void SequenceManagerImpl::SetNextWakeUp(LazyNow* lazy_now,
 void SequenceManagerImpl::MaybeEmitTaskDetails(
     perfetto::EventContext& ctx,
     const SequencedTaskSource::SelectedTask& selected_task) const {
-  // Other parameters are included only when "scheduler" category is enabled.
-  const uint8_t* scheduler_category_enabled =
-      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("scheduler");
-
-  if (!*scheduler_category_enabled) {
+  if (!TRACE_EVENT_CATEGORY_ENABLED("scheduler")) {
     return;
   }
   auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();

@@ -59,21 +59,6 @@ bool IsInputLatencyBeginComponent(ui::LatencyComponentType type) {
 constexpr const char kTraceCategoriesForAsyncEvents[] =
     "benchmark,latencyInfo,rail,input.scrolling";
 
-struct LatencyInfoEnabledInitializer {
-  LatencyInfoEnabledInitializer() :
-      latency_info_enabled(TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-          kTraceCategoriesForAsyncEvents)) {
-  }
-
-  raw_ptr<const unsigned char> latency_info_enabled;
-};
-
-const LatencyInfoEnabledInitializer& GetLatencyInfoEnabledInitializer() {
-  // Trivially destructible, so no NoDestructor.
-  static const LatencyInfoEnabledInitializer initializer;
-  return initializer;
-}
-
 perfetto::NamedTrack CreateInputLatencyParentTrack() {
   return perfetto::NamedTrack("InputLatency", 0, perfetto::Track::Global(0));
 }
@@ -178,9 +163,6 @@ void LatencyInfo::AddLatencyNumberWithTimestampImpl(
     LatencyComponentType component,
     base::TimeTicks time,
     const char* trace_name_str) {
-  const unsigned char* latency_info_enabled =
-      GetLatencyInfoEnabledInitializer().latency_info_enabled;
-
   if (IsInputLatencyBeginComponent(component)) {
     // Should only ever add begin component once.
     CHECK(!began_);
@@ -188,7 +170,7 @@ void LatencyInfo::AddLatencyNumberWithTimestampImpl(
     // We should have a trace ID assigned by now.
     DCHECK(trace_id_ != -1);
 
-    if (*latency_info_enabled) {
+    if (TRACE_EVENT_CATEGORY_ENABLED(kTraceCategoriesForAsyncEvents)) {
       // The timestamp for ASYNC_BEGIN trace event is used for drawing the
       // beginning of the trace event in trace viewer. For better visualization,
       // for an input event, we want to draw the beginning as when the event is
@@ -225,7 +207,7 @@ void LatencyInfo::Terminate() {
   CHECK(!terminated_);
   terminated_ = true;
 
-  if (*GetLatencyInfoEnabledInitializer().latency_info_enabled) {
+  if (TRACE_EVENT_CATEGORY_ENABLED(kTraceCategoriesForAsyncEvents)) {
     base::TimeTicks gpu_swap_end_timestamp;
     if (!this->FindLatency(INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT,
                            &gpu_swap_end_timestamp)) {

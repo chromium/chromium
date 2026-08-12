@@ -167,11 +167,7 @@ void GPUTrace::Process() {
 }
 
 GPUTracer::GPUTracer(DecoderContext* decoder, bool context_is_gl)
-    : gpu_trace_srv_category_(TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-          TRACE_DISABLED_BY_DEFAULT("gpu.service"))),
-      gpu_trace_dev_category_(TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-          TRACE_DISABLED_BY_DEFAULT("gpu.device"))),
-      decoder_(decoder) {
+    : decoder_(decoder) {
   DCHECK(decoder_);
   gl::GLContext* gl_context = decoder_->GetGLContext();
   if (context_is_gl && gl_context) {
@@ -394,6 +390,16 @@ void GPUTracer::ClearOngoingTraces(bool have_context) {
     finished_traces_.front()->Destroy(have_context);
     finished_traces_.pop_front();
   }
+}
+
+bool GPUTracer::is_gpu_service_tracing_enabled() {
+  return TRACE_EVENT_CATEGORY_ENABLED(TRACE_DISABLED_BY_DEFAULT("gpu.service"));
+}
+
+bool GPUTracer::is_gpu_device_tracing_enabled() {
+  return TRACE_EVENT_CATEGORY_ENABLED(
+             TRACE_DISABLED_BY_DEFAULT("gpu.device")) &&
+         can_trace_dev_;
 }
 
 }  // namespace gles2

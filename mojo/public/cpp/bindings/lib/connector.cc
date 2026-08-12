@@ -554,10 +554,7 @@ bool Connector::DispatchMessage(ScopedMessageHandle handle) {
         ctx.event()->set_chrome_mojo_event_info()->set_mojo_interface_tag(
             interface_name_);
 
-        static const uint8_t* flow_enabled =
-            TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-                "toplevel.flow,mojom.flow");
-        if (!*flow_enabled) {
+        if (!TRACE_EVENT_CATEGORY_ENABLED("toplevel.flow,mojom.flow")) {
           return;
         }
 

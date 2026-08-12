@@ -879,7 +879,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   bool lose_context_when_out_of_memory_ = false;
 
   std::unique_ptr<gles2::GPUTracer> gpu_tracer_;
-  raw_ptr<const unsigned char> gpu_decoder_category_;
   static constexpr int gpu_trace_level_ = 2;
   bool gpu_trace_commands_ = false;
   bool gpu_debug_commands_ = false;
@@ -1017,8 +1016,6 @@ RasterDecoderImpl::RasterDecoderImpl(
       validators_(new Validators),
       shared_image_representation_factory_(shared_image_manager,
                                            std::move(memory_tracker)),
-      gpu_decoder_category_(TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-          TRACE_DISABLED_BY_DEFAULT("gpu.decoder"))),
       font_manager_(base::MakeRefCounted<ServiceFontManager>(
           this,
           gpu_preferences_.disable_oopr_debug_crash_dump)),
@@ -1428,7 +1425,9 @@ void RasterDecoderImpl::SetIgnoreCachedStateForTest(bool ignore) {
 
 void RasterDecoderImpl::BeginDecoding() {
   gpu_tracer_->BeginDecoding();
-  gpu_trace_commands_ = gpu_tracer_->IsTracing() && *gpu_decoder_category_;
+  gpu_trace_commands_ =
+      gpu_tracer_->IsTracing() &&
+      TRACE_EVENT_CATEGORY_ENABLED(TRACE_DISABLED_BY_DEFAULT("gpu.decoder"));
   gpu_debug_commands_ = log_commands() || debug() || gpu_trace_commands_;
   query_manager_->BeginProcessingCommands();
 }

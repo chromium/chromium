@@ -55,22 +55,22 @@ class MockOutputter : public Outputter {
 class GPUTracerTester : public GPUTracer {
  public:
   explicit GPUTracerTester(GLES2Decoder* decoder)
-      : GPUTracer(decoder), tracing_enabled_(0) {
+      : GPUTracer(decoder), tracing_enabled_(false) {
     gpu_timing_client_->SetCpuTimeForTesting(base::BindRepeating(&FakeCpuTime));
-
-    // Force tracing to be dependent on our mock variable here.
-    gpu_trace_srv_category_ = &tracing_enabled_;
-    gpu_trace_dev_category_ = &tracing_enabled_;
   }
 
   ~GPUTracerTester() override = default;
 
-  void SetTracingEnabled(bool enabled) {
-    tracing_enabled_ = enabled ? 1 : 0;
+  void SetTracingEnabled(bool enabled) { tracing_enabled_ = enabled; }
+
+  bool is_gpu_service_tracing_enabled() override { return tracing_enabled_; }
+
+  bool is_gpu_device_tracing_enabled() override {
+    return tracing_enabled_ && can_trace_dev_;
   }
 
  private:
-  unsigned char tracing_enabled_;
+  bool tracing_enabled_;
 };
 
 class BaseGpuTest : public GpuServiceTest {

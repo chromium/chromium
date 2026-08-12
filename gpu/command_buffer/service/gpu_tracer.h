@@ -93,16 +93,10 @@ class GPU_GLES2_EXPORT GPUTracer {
   const std::string& CurrentName(GpuTracerSource source) const;
 
  protected:
-  bool is_gpu_service_tracing_enabled() {
-    return *gpu_trace_srv_category_ != 0;
-  }
-  bool is_gpu_device_tracing_enabled() {
-    return *gpu_trace_dev_category_ != 0 && can_trace_dev_;
-  }
+  virtual bool is_gpu_service_tracing_enabled();
+  virtual bool is_gpu_device_tracing_enabled();
 
   scoped_refptr<gl::GPUTimingClient> gpu_timing_client_;
-  raw_ptr<const unsigned char> gpu_trace_srv_category_;
-  raw_ptr<const unsigned char> gpu_trace_dev_category_;
   // Disable gpu.device tracing if context is corrupted or not GL.
   bool can_trace_dev_;
 

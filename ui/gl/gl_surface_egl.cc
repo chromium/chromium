@@ -51,16 +51,6 @@ constexpr const char kSwapEventTraceCategories[] = "gpu";
 
 constexpr size_t kMaxTimestampsSupportable = 9;
 
-struct TraceSwapEventsInitializer {
-  TraceSwapEventsInitializer()
-      : value(*TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-            kSwapEventTraceCategories)) {}
-  const raw_ref<const unsigned char> value;
-};
-
-static base::LazyInstance<TraceSwapEventsInitializer>::Leaky
-    g_trace_swap_enabled = LAZY_INSTANCE_INITIALIZER;
-
 class EGLSyncControlVSyncProvider : public SyncControlVSyncProvider {
  public:
   EGLSyncControlVSyncProvider(EGLSurface surface, GLDisplayEGL* display)
@@ -619,8 +609,10 @@ void NativeViewGLSurfaceEGL::UpdateSwapEvents(EGLuint64KHR newFrameId,
   // If we weren't able to get a valid frame id before the swap, we can't get
   // its timestamps now.
   const SwapInfo& old_swap_info = swap_info_queue_.front();
-  if (old_swap_info.frame_id_is_valid && *g_trace_swap_enabled.Get().value)
+  if (old_swap_info.frame_id_is_valid &&
+      TRACE_EVENT_CATEGORY_ENABLED(kSwapEventTraceCategories)) {
     TraceSwapEvents(old_swap_info.frame_id);
+  }
 
   swap_info_queue_.pop();
 }
