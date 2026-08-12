@@ -144,9 +144,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest,
   EXPECT_EQ(false, EvalJs(shell(),
                           "document.featurePolicy.features().includes('"
                           "run-ad-auction')"));
-  EXPECT_EQ(false, EvalJs(shell(),
-                          "document.featurePolicy.features().includes('"
-                          "private-aggregation')"));
   EXPECT_TRUE(ExecJs(root(), kAddFencedFrameScript));
   EXPECT_EQ(0U, root()->child_count());
 }

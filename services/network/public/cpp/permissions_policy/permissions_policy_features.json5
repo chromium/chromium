@@ -483,12 +483,6 @@
       feature_default: "EnableForAll",
     },
     {
-      name: "PrivateAggregation",
-      permissions_policy_name: "private-aggregation",
-      feature_default: "EnableForAll",
-      depends_on: ["SharedStorageAPI", "Fledge"],
-    },
-    {
       name: "PrivateStateTokenIssuance",
       permissions_policy_name: "private-state-token-issuance",
       feature_default: "EnableForAll",

@@ -6836,7 +6836,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="106" label="ComputePressure"/>
   <int value="107" label="SmartCard"/>
   <int value="108" label="Deprecated_SharedStorageSelectUrl"/>
-  <int value="109" label="PrivateAggregation"/>
+  <int value="109" label="Deprecated: PrivateAggregation"/>
   <int value="110" label="PrivateStateTokenIssuance"/>
   <int value="111" label="ClientHintUAFormFactors"/>
   <int value="112" label="ClientHintPrefersReducedTransparency"/>

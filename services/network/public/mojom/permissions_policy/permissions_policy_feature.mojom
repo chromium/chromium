@@ -216,9 +216,8 @@ enum PermissionsPolicyFeature {
   // the use of sharedStorage.selectURL().
   kDeprecated_SharedStorageSelectUrl = 108,
 
-  // "private-aggregation" permissions policy that controls the use of
-  // privateAggregation within the shared storage worklet.
-  kPrivateAggregation = 109,
+  // [Deprecated]
+  // kPrivateAggregation = 109,
 
   // Private State Tokens API issuance operation
   kPrivateStateTokenIssuance = 110,

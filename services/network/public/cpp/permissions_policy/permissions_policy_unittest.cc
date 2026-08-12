@@ -112,8 +112,6 @@ class PermissionsPolicyTest : public testing::Test {
              {network::mojom::PermissionsPolicyFeature::
                   kDeprecated_SharedStorageSelectUrl,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
-             {network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
-              network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kLocalNetwork,
@@ -2959,8 +2957,6 @@ TEST_F(PermissionsPolicyTest, CreateFlexibleForFencedFrame) {
   EXPECT_FALSE(
       policy->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::
                                    kDeprecated_SharedStorageSelectUrl));
-  EXPECT_TRUE(policy->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kPrivateAggregation));
 }
 
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicy) {
