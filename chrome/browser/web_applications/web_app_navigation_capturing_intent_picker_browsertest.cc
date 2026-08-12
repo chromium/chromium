@@ -8,6 +8,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/browser.h"
@@ -156,8 +157,16 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
 
 // Test that the intent picker shows up for chrome://password-manager, since it
 // is installable.
+// TODO(crbug.com/545478765): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DoShowIconAndBubbleOnChromePasswordManagerPage \
+  DISABLED_DoShowIconAndBubbleOnChromePasswordManagerPage
+#else
+#define MAYBE_DoShowIconAndBubbleOnChromePasswordManagerPage \
+  DoShowIconAndBubbleOnChromePasswordManagerPage
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
-                       DoShowIconAndBubbleOnChromePasswordManagerPage) {
+                       MAYBE_DoShowIconAndBubbleOnChromePasswordManagerPage) {
   GURL password_manager_url("chrome://password-manager");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), password_manager_url, WindowOpenDisposition::CURRENT_TAB,
