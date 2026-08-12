@@ -8,6 +8,7 @@
 #include <sstream>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -190,12 +191,11 @@ ImageAnimationController::TakeAdvancedAnimationClients() {
 
 scoped_refptr<AnimatedImageFrameIndexMap>
 ImageAnimationController::GatherFrameIndexes() const {
-  std::vector<std::pair<PaintImage::Id, size_t>> entries;
-  for (auto& entry : animation_state_map_) {
-    entries.emplace_back(entry.first, entry.second.pending_index());
-  }
-  return MakeRefCounted<AnimatedImageFrameIndexMap>(base::sorted_unique,
-                                                    entries);
+  return MakeRefCounted<AnimatedImageFrameIndexMap>(
+      base::sorted_unique,
+      base::ToVector(animation_state_map_, [](const auto& entry) {
+        return std::make_pair(entry.first, entry.second.pending_index());
+      }));
 }
 
 void ImageAnimationController::WillBeginImplFrame(

@@ -57,8 +57,9 @@ ImageHeaderMetadata::ImageHeaderMetadata::~ImageHeaderMetadata() = default;
 AnimatedImageFrameIndexMap::AnimatedImageFrameIndexMap() = default;
 AnimatedImageFrameIndexMap::AnimatedImageFrameIndexMap(
     base::sorted_unique_t sorted_unique,
-    const std::vector<std::pair<int, size_t>>& entries)
-    : base::flat_map<int, size_t>(sorted_unique, entries) {}
+    container_type entries)
+    : base::flat_map<PaintImage::Id, size_t>(sorted_unique,
+                                             std::move(entries)) {}
 AnimatedImageFrameIndexMap::~AnimatedImageFrameIndexMap() = default;
 
 PaintImage::PaintImage() = default;

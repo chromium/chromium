@@ -522,9 +522,8 @@ class CC_PAINT_EXPORT AnimatedImageFrameIndexMap
       public base::flat_map<PaintImage::Id, size_t> {
  public:
   AnimatedImageFrameIndexMap();
-  AnimatedImageFrameIndexMap(
-      base::sorted_unique_t sorted_unique,
-      const std::vector<std::pair<PaintImage::Id, size_t>>& entries);
+  AnimatedImageFrameIndexMap(base::sorted_unique_t sorted_unique,
+                             container_type entries);
 
  private:
   friend class base::RefCountedThreadSafe<AnimatedImageFrameIndexMap>;
