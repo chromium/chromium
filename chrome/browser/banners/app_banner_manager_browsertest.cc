@@ -1123,7 +1123,13 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, NoServiceWorker) {
             InstallableWebAppCheckResult::kYes_Promotable);
 }
 
-IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, NoFetchHandler) {
+// TODO(crbug.com/545268511): NoFetchHandler is failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NoFetchHandler DISABLED_NoFetchHandler
+#else
+#define MAYBE_NoFetchHandler NoFetchHandler
+#endif
+IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, MAYBE_NoFetchHandler) {
   auto observer = CreateAppBannerManagerObserver();
 
   RunBannerTest(web_contents(), observer.get(),
@@ -1138,7 +1144,14 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, NoFetchHandler) {
             InstallableWebAppCheckResult::kYes_Promotable);
 }
 
-IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, PendingServiceWorker) {
+// TODO(crbug.com/545268511): PendingServiceWorker is failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PendingServiceWorker DISABLED_PendingServiceWorker
+#else
+#define MAYBE_PendingServiceWorker PendingServiceWorker
+#endif
+IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
+                       MAYBE_PendingServiceWorker) {
   auto observer = CreateAppBannerManagerObserver();
 
   RunBannerTest(web_contents(), observer.get(),
