@@ -141,8 +141,6 @@ source_set("impl") {
     "instantmessaging/send_message_express.cc",
     "instantmessaging/stream_parser.cc",
     "instantmessaging/token_fetcher.cc",
-    "mdns/nearby_connections_mdns_manager.cc",
-    "mdns/nearby_connections_mdns_manager.h",
     "metrics/attachment_metric_logger.cc",
     "metrics/discovery_metric_logger.cc",
     "metrics/metric_common.cc",
@@ -184,11 +182,6 @@ source_set("impl") {
     ":nearby_sharing",
     "//chrome/browser:browser_public_dependencies",
   ]
-
-  # //chrome/browser/ash/nearby includes
-  # chrome/browser/nearby_sharing/mdns/nearby_connections_mdns_manager.h
-  # from :impl.
-  allow_circular_includes_from = [ "//chrome/browser/ash/nearby" ]
 
   deps = [
     "//ash/constants",
@@ -314,7 +307,6 @@ source_set("unit_tests") {
       "instantmessaging/receive_messages_express_unittest.cc",
       "instantmessaging/send_message_express_unittest.cc",
       "instantmessaging/stream_parser_unittest.cc",
-      "mdns/nearby_connections_mdns_manager_unittest.cc",
       "nearby_confirmation_manager_unittest.cc",
       "nearby_notification_manager_unittest.cc",
       "nearby_per_session_discovery_manager_unittest.cc",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/mdns/nearby_connections_mdns_manager.h"
+#include "chrome/browser/ash/nearby/mdns/nearby_connections_mdns_manager.h"
 
 #include <string>
 
