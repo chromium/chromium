@@ -37,8 +37,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"          // nogncheck
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"  // nogncheck
-#include "chrome/browser/background/background_contents_service.h"
-#include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
@@ -162,10 +160,6 @@
 #include "content/public/common/profiling.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/webplugininfo.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/browser/process_map.h"
-#include "extensions/buildflags/buildflags.h"
-#include "extensions/common/manifest_handlers/background_info.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
@@ -206,7 +200,6 @@ using content::RenderWidgetHostView;
 using content::SiteInstance;
 using content::WebContents;
 using custom_handlers::ProtocolHandler;
-using extensions::Extension;
 using input::NativeWebKeyboardEvent;
 using ui::WebDialogDelegate;
 using web_modal::WebContentsModalDialogManager;
@@ -971,109 +964,6 @@ void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
           CoreTabHelper::FromWebContents(selected_contents)->GetStatusText());
     }
   }
-}
-
-bool Browser::ShouldCreateBackgroundContents(
-    content::SiteInstance* source_site_instance,
-    const GURL& opener_url,
-    const std::string& frame_name) {
-  extensions::ExtensionSystem* extension_system =
-      extensions::ExtensionSystem::Get(profile_);
-
-  if (!opener_url.is_valid() || frame_name.empty() ||
-      !extension_system->is_ready()) {
-    return false;
-  }
-
-  // Only hosted apps have web extents, so this ensures that only hosted apps
-  // can create BackgroundContents. We don't have to check for background
-  // permission as that is checked in RenderMessageFilter when the CreateWindow
-  // message is processed.
-  const Extension* extension = extensions::ExtensionRegistry::Get(profile_)
-                                   ->enabled_extensions()
-                                   .GetHostedAppByURL(opener_url);
-  if (!extension) {
-    return false;
-  }
-
-  // No BackgroundContents allowed if BackgroundContentsService doesn't exist.
-  BackgroundContentsService* service =
-      BackgroundContentsServiceFactory::GetForProfile(profile_);
-  if (!service) {
-    return false;
-  }
-
-  // Ensure that we're trying to open this from the extension's process.
-  extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile_);
-  if (!source_site_instance->HasProcess() ||
-      !process_map->Contains(extension->id(),
-                             source_site_instance->GetProcess()->GetID())) {
-    return false;
-  }
-
-  return true;
-}
-
-BackgroundContents* Browser::CreateBackgroundContents(
-    content::SiteInstance* source_site_instance,
-    content::RenderFrameHost* opener,
-    const GURL& opener_url,
-    bool is_new_browsing_instance,
-    const std::string& frame_name,
-    const GURL& target_url,
-    const content::StoragePartitionConfig& partition_config,
-    content::SessionStorageNamespace* session_storage_namespace) {
-  BackgroundContentsService* service =
-      BackgroundContentsServiceFactory::GetForProfile(profile_);
-  const Extension* extension = extensions::ExtensionRegistry::Get(profile_)
-                                   ->enabled_extensions()
-                                   .GetHostedAppByURL(opener_url);
-  bool allow_js_access = extensions::BackgroundInfo::AllowJSAccess(extension);
-  // Only allow a single background contents per app.
-  BackgroundContents* existing =
-      service->GetAppBackgroundContents(extension->id());
-  if (existing) {
-    // For non-scriptable background contents, ignore the request altogether,
-    // Note that ShouldCreateBackgroundContents() returning true will also
-    // suppress creation of the normal WebContents.
-    if (!allow_js_access) {
-      return nullptr;
-    }
-    // For scriptable background pages, if one already exists, close it (even
-    // if it was specified in the manifest).
-    service->DeleteBackgroundContents(existing);
-  }
-
-  // Passed all the checks, so this should be created as a BackgroundContents.
-  if (allow_js_access) {
-    return service->CreateBackgroundContents(
-        source_site_instance, opener, is_new_browsing_instance, frame_name,
-        extension->id(), partition_config, session_storage_namespace);
-  }
-
-  // If script access is not allowed, create the the background contents in a
-  // new SiteInstance, so that a separate process is used. We must not use any
-  // of the passed-in routing IDs, as they are objects in the opener's
-  // process.
-  BackgroundContents* contents = service->CreateBackgroundContents(
-      content::SiteInstance::Create(source_site_instance->GetBrowserContext()),
-      nullptr, is_new_browsing_instance, frame_name, extension->id(),
-      partition_config, session_storage_namespace);
-
-  // When a separate process is used, the original renderer cannot access the
-  // new window later, thus we need to navigate the window now.
-  content::NavigationController::LoadURLParams params(target_url);
-  params.is_renderer_initiated = true;
-  if (opener) {
-    params.initiator_origin = opener->GetLastCommittedOrigin();
-    params.initiator_process_id = opener->GetProcess()->GetID();
-  } else {
-    params.initiator_origin = url::Origin::Create(opener_url);
-  }
-  params.source_site_instance = source_site_instance;
-  contents->web_contents()->GetController().LoadURLWithParams(params);
-
-  return contents;
 }
 
 FindBarController* Browser::CreateOrGetFindBarController() {

@@ -11,6 +11,8 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/background/background_contents.h"
+#include "chrome/browser/background/background_contents_service.h"
+#include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -73,22 +75,26 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/base_window.h"
+#include "url/origin.h"
 
 #if defined(USE_AURA)
 #include "chrome/browser/ui/overscroll_pref_manager.h"
@@ -129,6 +135,112 @@ const extensions::Extension* GetExtensionForOrigin(
 #else
   return nullptr;
 #endif
+}
+
+bool ShouldCreateBackgroundContents(Profile* profile,
+                                    content::SiteInstance* source_site_instance,
+                                    const GURL& opener_url,
+                                    const std::string& frame_name) {
+  extensions::ExtensionSystem* extension_system =
+      extensions::ExtensionSystem::Get(profile);
+
+  if (!opener_url.is_valid() || frame_name.empty() ||
+      !extension_system->is_ready()) {
+    return false;
+  }
+
+  // Only hosted apps have web extents, so this ensures that only hosted apps
+  // can create BackgroundContents. We don't have to check for background
+  // permission as that is checked in RenderMessageFilter when the CreateWindow
+  // message is processed.
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)
+          ->enabled_extensions()
+          .GetHostedAppByURL(opener_url);
+  if (!extension) {
+    return false;
+  }
+
+  // No BackgroundContents allowed if BackgroundContentsService doesn't exist.
+  BackgroundContentsService* service =
+      BackgroundContentsServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return false;
+  }
+
+  // Ensure that we're trying to open this from the extension's process.
+  extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile);
+  if (!source_site_instance->HasProcess() ||
+      !process_map->Contains(extension->id(),
+                             source_site_instance->GetProcess()->GetID())) {
+    return false;
+  }
+
+  return true;
+}
+
+BackgroundContents* CreateBackgroundContents(
+    Profile* profile,
+    content::SiteInstance* source_site_instance,
+    content::RenderFrameHost* opener,
+    const GURL& opener_url,
+    bool is_new_browsing_instance,
+    const std::string& frame_name,
+    const GURL& target_url,
+    const content::StoragePartitionConfig& partition_config,
+    content::SessionStorageNamespace* session_storage_namespace) {
+  BackgroundContentsService* service =
+      BackgroundContentsServiceFactory::GetForProfile(profile);
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)
+          ->enabled_extensions()
+          .GetHostedAppByURL(opener_url);
+  bool allow_js_access = extensions::BackgroundInfo::AllowJSAccess(extension);
+  // Only allow a single background contents per app.
+  BackgroundContents* existing =
+      service->GetAppBackgroundContents(extension->id());
+  if (existing) {
+    // For non-scriptable background contents, ignore the request altogether,
+    // Note that ShouldCreateBackgroundContents() returning true will also
+    // suppress creation of the normal WebContents.
+    if (!allow_js_access) {
+      return nullptr;
+    }
+    // For scriptable background pages, if one already exists, close it (even
+    // if it was specified in the manifest).
+    service->DeleteBackgroundContents(existing);
+  }
+
+  // Passed all the checks, so this should be created as a BackgroundContents.
+  if (allow_js_access) {
+    return service->CreateBackgroundContents(
+        source_site_instance, opener, is_new_browsing_instance, frame_name,
+        extension->id(), partition_config, session_storage_namespace);
+  }
+
+  // If script access is not allowed, create the the background contents in a
+  // new SiteInstance, so that a separate process is used. We must not use any
+  // of the passed-in routing IDs, as they are objects in the opener's
+  // process.
+  BackgroundContents* contents = service->CreateBackgroundContents(
+      content::SiteInstance::Create(source_site_instance->GetBrowserContext()),
+      nullptr, is_new_browsing_instance, frame_name, extension->id(),
+      partition_config, session_storage_namespace);
+
+  // When a separate process is used, the original renderer cannot access the
+  // new window later, thus we need to navigate the window now.
+  content::NavigationController::LoadURLParams params(target_url);
+  params.is_renderer_initiated = true;
+  if (opener) {
+    params.initiator_origin = opener->GetLastCommittedOrigin();
+    params.initiator_process_id = opener->GetProcess()->GetID();
+  } else {
+    params.initiator_origin = url::Origin::Create(opener_url);
+  }
+  params.source_site_instance = source_site_instance;
+  contents->web_contents()->GetController().LoadURLWithParams(params);
+
+  return contents;
 }
 
 }  // namespace
@@ -891,11 +1003,11 @@ bool BrowserWebContentsDelegate::IsWebContentsCreationOverridden(
     return true;
   }
 
-  return (
-      window_container_type ==
-          content::mojom::WindowContainerType::BACKGROUND &&
-      browser_->GetBrowserForMigrationOnly()->ShouldCreateBackgroundContents(
-          source_site_instance, opener_url, frame_name));
+  return (window_container_type ==
+              content::mojom::WindowContainerType::BACKGROUND &&
+          ShouldCreateBackgroundContents(browser_->GetProfile(),
+                                         source_site_instance, opener_url,
+                                         frame_name));
 }
 
 content::WebContents* BrowserWebContentsDelegate::CreateCustomWebContents(
@@ -926,10 +1038,10 @@ content::WebContents* BrowserWebContentsDelegate::CreateCustomWebContents(
     return nullptr;
   }
 
-  BackgroundContents* background_contents =
-      browser_->GetBrowserForMigrationOnly()->CreateBackgroundContents(
-          source_site_instance, opener, opener_url, is_new_browsing_instance,
-          frame_name, target_url, partition_config, session_storage_namespace);
+  BackgroundContents* background_contents = CreateBackgroundContents(
+      browser_->GetProfile(), source_site_instance, opener, opener_url,
+      is_new_browsing_instance, frame_name, target_url, partition_config,
+      session_storage_namespace);
   if (background_contents) {
     return background_contents->web_contents();
   }

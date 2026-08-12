@@ -58,7 +58,6 @@
 #error This file should only be included on desktop.
 #endif
 
-class BackgroundContents;
 class BrowserInitState;
 class BrowserWindow;
 struct BrowserWindowCreateParams;
@@ -79,7 +78,6 @@ enum class ProtocolHandlerSecurityLevel;
 
 namespace content {
 class NavigationHandle;
-class SessionStorageNamespace;
 }  // namespace content
 
 namespace web_app {
@@ -281,27 +279,6 @@ class Browser : public TabStripModelObserver,
 
   // Shared code between Reload() and ReloadBypassingCache().
   void ReloadInternal(WindowOpenDisposition disposition, bool bypass_cache);
-
-  // Returns true if a BackgroundContents should be created in response to a
-  // WebContents::CreateNewWindow() call.
-  bool ShouldCreateBackgroundContents(
-      content::SiteInstance* source_site_instance,
-      const GURL& opener_url,
-      const std::string& frame_name);
-
-  // Creates a BackgroundContents. This should only be called when
-  // ShouldCreateBackgroundContents() is true.
-  BackgroundContents* CreateBackgroundContents(
-      content::SiteInstance* source_site_instance,
-      content::RenderFrameHost* opener,
-      const GURL& opener_url,
-      bool is_new_browsing_instance,
-      const std::string& frame_name,
-      const GURL& target_url,
-      const content::StoragePartitionConfig& partition_config,
-      content::SessionStorageNamespace* session_storage_namespace);
-
-
 
   // Create `FindBarController` if it does not exist.
   // TODO(crbug.com/423956131): Convert to `GetFindBarController` which returns
