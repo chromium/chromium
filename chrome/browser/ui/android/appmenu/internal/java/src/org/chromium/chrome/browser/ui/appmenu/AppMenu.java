@@ -253,7 +253,7 @@ class AppMenu implements OnKeyListener {
     private final int[] mTempLocation;
     private final AppMenuVisibilityDelegate mVisibilityDelegate;
     private final boolean mDisableVerticalScrollbar;
-    private final boolean mPositionBelowAnchor;
+    private boolean mPositionBelowAnchor;
 
     private @Nullable Context mContext;
     private @Nullable ListView mListView;
@@ -487,6 +487,8 @@ class AppMenu implements OnKeyListener {
                         Math.abs(mTempLocation[1] - visibleDisplayFrame.top),
                         Math.abs(mTempLocation[1] - visibleDisplayFrame.bottom));
 
+        mPositionBelowAnchor = DeviceInfo.isDesktop();
+
         mMenuSpec =
                 new MenuSpec(
                         visibleDisplayFrame,
@@ -495,6 +497,19 @@ class AppMenu implements OnKeyListener {
                         headerHeight,
                         anchorView,
                         anchorViewOffset);
+
+        if (mPositionBelowAnchor) {
+            int spaceBelow =
+                    visibleDisplayFrame.height()
+                            - anchorViewOffset
+                            - anchorView.getHeight()
+                            - footerHeight
+                            - headerHeight
+                            - padding.bottom;
+            if (spaceBelow <= 0) {
+                mPositionBelowAnchor = false;
+            }
+        }
 
         int popupHeight = calculateMenuHeight();
         popup.setHeight(popupHeight);
