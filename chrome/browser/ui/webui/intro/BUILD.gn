@@ -10,6 +10,7 @@ mojom("mojo_bindings") {
     "intro.mojom",
     "sign_in_celebration.mojom",
     "sign_in_promo.mojom",
+    "welcome.mojom",
   ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
@@ -24,6 +25,7 @@ if (is_win || is_mac || is_linux) {
       "policy_store_observer.cc",
       "sign_in_celebration_handler.cc",
       "sign_in_promo_handler.cc",
+      "welcome_handler.cc",
     ]
     public = [
       "finish_or_continue_handler.h",
@@ -32,6 +34,7 @@ if (is_win || is_mac || is_linux) {
       "policy_store_observer.h",
       "sign_in_celebration_handler.h",
       "sign_in_promo_handler.h",
+      "welcome_handler.h",
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
@@ -71,6 +74,7 @@ if (is_win || is_mac || is_linux) {
       "policy_store_observer_unittest.cc",
       "sign_in_celebration_handler_unittest.cc",
       "sign_in_promo_handler_unittest.cc",
+      "welcome_handler_unittest.cc",
     ]
     deps = [
       ":intro",

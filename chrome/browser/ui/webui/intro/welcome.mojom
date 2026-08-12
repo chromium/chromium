@@ -1,0 +1,19 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module intro.mojom;
+
+// Used by the WebUI page to bootstrap communication.
+interface WelcomePageHandlerFactory {
+  // Creates a PageHandler for the Welcome page.
+  CreateWelcomePageHandler(pending_receiver<WelcomePageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI.
+interface WelcomePageHandler {
+  // Called when the user clicks the continue button. Optional parameters are
+  // used because a user may be ineligible for them (e.g. due to the policy
+  // restrictions).
+  Continue(bool? is_uma_opt_in, bool? is_default_browser);
+};

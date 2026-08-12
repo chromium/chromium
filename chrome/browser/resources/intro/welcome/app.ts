@@ -12,6 +12,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import {browserProxyFactory as welcomeMojoProxyFactory} from '../welcome.mojom-webui.js';
+import type {BrowserProxy as WelcomeBrowserProxy} from '../welcome.mojom-webui.js';
 
 export interface WelcomeAppElement {
   $: {
@@ -41,19 +43,14 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
   }
 
   private accessor anyButtonClicked_: boolean = false;
+  private browserProxy_: WelcomeBrowserProxy =
+      welcomeMojoProxyFactory.getInstance();
 
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-  }
 
   protected shouldDisableButtons_(): boolean {
     return this.anyButtonClicked_;
@@ -61,6 +58,8 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
 
   protected onAcceptButtonClick_() {
     this.anyButtonClicked_ = true;
+    // TODO(crbug.com/542895787): Pass in UMA and default browser state.
+    this.browserProxy_.handler.continue(null, null);
   }
 }
 

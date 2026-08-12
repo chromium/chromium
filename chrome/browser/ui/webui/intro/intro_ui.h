@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
 #include "chrome/browser/ui/webui/intro/sign_in_celebration_handler.h"
 #include "chrome/browser/ui/webui/intro/sign_in_promo.mojom.h"
+#include "chrome/browser/ui/webui/intro/welcome.mojom.h"
+#include "chrome/browser/ui/webui/intro/welcome_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/webui_config.h"
@@ -77,7 +79,8 @@ class IntroUI : public ui::MojoWebUIController,
                 public intro::mojom::SignInCelebrationPageHandlerFactory,
                 public intro::mojom::IntroPageHandlerFactory,
                 public intro::mojom::SignInPromoPageHandlerFactory,
-                public intro::mojom::FinishOrContinuePageHandlerFactory {
+                public intro::mojom::FinishOrContinuePageHandlerFactory,
+                public intro::mojom::WelcomePageHandlerFactory {
  public:
   explicit IntroUI(content::WebUI* web_ui);
 
@@ -96,6 +99,7 @@ class IntroUI : public ui::MojoWebUIController,
 
   void SetFinishOrContinueCallback(
       base::OnceCallback<void(FinishOrContinueChoice)> callback);
+  void SetWelcomeCallback(base::OnceClosure callback);
 
   void BindInterface(
       mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandlerFactory>
@@ -108,6 +112,8 @@ class IntroUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<intro::mojom::FinishOrContinuePageHandlerFactory>
           receiver);
+  void BindInterface(
+      mojo::PendingReceiver<intro::mojom::WelcomePageHandlerFactory> receiver);
 
   // Called by the browser to toggle animations in the WebUI.
   void ToggleAnimations(bool active);
@@ -132,6 +138,11 @@ class IntroUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<intro::mojom::FinishOrContinuePageHandler> receiver)
       override;
 
+  // intro::mojom::WelcomePageHandlerFactory:
+  void CreateWelcomePageHandler(
+      mojo::PendingReceiver<intro::mojom::WelcomePageHandler> receiver)
+      override;
+
  private:
   void HandleSigninChoice(IntroChoice choice);
   void HandleDefaultBrowserChoice(DefaultBrowserChoice choice);
@@ -144,6 +155,7 @@ class IntroUI : public ui::MojoWebUIController,
           receiver);
 
   void OnFinishOrContinueChoice(FinishOrContinueChoice choice);
+  void OnWelcomeContinue();
 
   IntroSigninChoiceCallback signin_choice_callback_;
   DefaultBrowserCallback default_browser_callback_;
@@ -160,8 +172,10 @@ class IntroUI : public ui::MojoWebUIController,
   std::unique_ptr<SignInPromoHandler> sign_in_promo_handler_;
 
   std::unique_ptr<FinishOrContinueHandler> finish_or_continue_handler_;
+  std::unique_ptr<WelcomeHandler> welcome_handler_;
 
   base::OnceCallback<void(FinishOrContinueChoice)> finish_or_continue_callback_;
+  base::OnceClosure welcome_callback_;
 
   mojo::Receiver<intro::mojom::SignInCelebrationPageHandlerFactory>
       sign_in_celebration_factory_receiver_{this};
@@ -175,6 +189,8 @@ class IntroUI : public ui::MojoWebUIController,
 
   mojo::Receiver<intro::mojom::FinishOrContinuePageHandlerFactory>
       finish_or_continue_factory_receiver_{this};
+  mojo::Receiver<intro::mojom::WelcomePageHandlerFactory>
+      welcome_factory_receiver_{this};
 
   base::WeakPtrFactory<IntroUI> weak_ptr_factory_{this};
 

@@ -398,4 +398,29 @@ void IntroUI::OnFinishOrContinueChoice(FinishOrContinueChoice choice) {
   }
 }
 
+void IntroUI::SetWelcomeCallback(base::OnceClosure callback) {
+  CHECK(callback);
+  welcome_callback_ = std::move(callback);
+}
+
+void IntroUI::BindInterface(
+    mojo::PendingReceiver<intro::mojom::WelcomePageHandlerFactory> receiver) {
+  welcome_factory_receiver_.reset();
+  welcome_factory_receiver_.Bind(std::move(receiver));
+}
+
+void IntroUI::CreateWelcomePageHandler(
+    mojo::PendingReceiver<intro::mojom::WelcomePageHandler> receiver) {
+  CHECK(receiver);
+  welcome_handler_ = std::make_unique<WelcomeHandler>(
+      base::BindOnce(&IntroUI::OnWelcomeContinue,
+                     weak_ptr_factory_.GetWeakPtr()),
+      std::move(receiver));
+}
+
+void IntroUI::OnWelcomeContinue() {
+  CHECK(welcome_callback_);
+  std::move(welcome_callback_).Run();
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(IntroUI)
