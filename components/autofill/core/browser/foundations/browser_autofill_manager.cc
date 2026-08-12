@@ -2577,7 +2577,9 @@ void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
   }
 
   for (const raw_ref<FormStructure>& form : forms) {
-    if (model_cache->Contains(form->form_signature())) {
+    if (model_cache->Contains(form->form_signature()) &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillAiAlwaysTriggerServerModel)) {
       if (MayPerformAutofillAiAction(
               client(),
               AutofillAiAction::kUseCachedServerClassificationModelResults)) {
