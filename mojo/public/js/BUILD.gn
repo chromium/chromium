@@ -214,6 +214,19 @@ js_library("bindings_uncompiled") {
 
 grit("resources") {
   source = "mojo_bindings_resources.grd"
+  inputs = [ "$root_gen_dir/mojo/public/js/bindings.js" ]
+  if (!is_android) {
+    inputs += [ "$root_gen_dir/mojo/public/js/mojo_bindings.js" ]
+  }
+  if (is_chromeos) {
+    inputs += [
+      "$root_gen_dir/mojo/public/js/mojo_bindings_lite.js",
+      "$root_gen_dir/mojo/public/mojom/base/big_buffer.mojom-lite.js",
+      "$root_gen_dir/mojo/public/mojom/base/string16.mojom-lite.js",
+      "$root_gen_dir/mojo/public/mojom/base/text_direction.mojom-lite.js",
+      "$root_gen_dir/mojo/public/mojom/base/time.mojom-lite.js",
+    ]
+  }
 
   outputs = [
     "grit/mojo_bindings_resources.h",
