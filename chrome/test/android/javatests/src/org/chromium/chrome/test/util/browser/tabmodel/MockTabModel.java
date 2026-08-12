@@ -294,4 +294,25 @@ public class MockTabModel extends EmptyTabModel {
     public void setTabRemoverForTesting(TabRemover tabRemover) {
         mTabRemover = tabRemover;
     }
+
+    @Override
+    public int findFirstNonPinnedTabIndex() {
+        for (int i = 0; i < mTabs.size(); i++) {
+            if (!mTabs.get(i).getIsPinned()) {
+                return i;
+            }
+        }
+        return mTabs.size();
+    }
+
+    @Override
+    public int getPinnedTabsCount() {
+        int count = 0;
+        for (Tab tab : mTabs) {
+            if (tab.getIsPinned()) {
+                count++;
+            }
+        }
+        return count;
+    }
 }
