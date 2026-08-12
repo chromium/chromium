@@ -308,7 +308,7 @@ void LayoutBoxModelObject::StyleDidChange(
         bool old_body_background_transfers =
             old_style && body_object->BackgroundTransfersToView(old_style);
         if (new_body_background_transfers != old_body_background_transfers &&
-            body_object->Style() && body_object->StyleRef().HasBackground()) {
+            body_object->StyleRef().HasBackground()) {
           body_object->SetBackgroundNeedsFullPaintInvalidation();
         }
       }
