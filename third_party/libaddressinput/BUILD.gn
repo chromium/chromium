@@ -24,7 +24,9 @@ config("internal_config") {
 
 grit_strings("strings") {
   source = "chromium/address_input_strings.grd"
-
+  inputs = [ "chromium/address_input_strings.grdp" ] + process_file_template(
+               xtb_locales,
+               [ "chromium/resources/address_input_strings_{{source_name_part}}.xtb" ])
   outputs = [
     "messages.h",
     "en_messages.cc",
