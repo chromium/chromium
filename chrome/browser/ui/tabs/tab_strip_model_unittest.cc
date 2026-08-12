@@ -7896,3 +7896,15 @@ TEST_F(TabStripModelTest, TabGroupCallbackOnTabMoved) {
   tabstrip()->MoveWebContentsAt(0, 1, false);
   EXPECT_TRUE(was_notified);
 }
+
+TEST_F(TabStripModelTest, CloseWebContents) {
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count=*/3,
+                                  /*pinned_count=*/0,
+                                  /*selected_tabs=*/{0});
+  content::WebContents* contents_to_close = tabstrip()->GetWebContentsAt(1);
+  EXPECT_EQ(3, tabstrip()->count());
+  tabstrip()->CloseWebContents(contents_to_close, TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(2, tabstrip()->count());
+  EXPECT_EQ(TabStripModel::kNoTab,
+            tabstrip()->GetIndexOfWebContents(contents_to_close));
+}

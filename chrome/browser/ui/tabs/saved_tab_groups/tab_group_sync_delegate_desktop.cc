@@ -66,10 +66,9 @@ void RemoveTabFromGroup(TabStripModel& tab_strip_model,
   // group contiguity.
   tab_strip_model.RemoveFromGroup({tab_strip_model.GetIndexOfTab(&local_tab)});
 
-  // Find the tab again and close it.
-  tab_strip_model.CloseWebContentsAt(
-      tab_strip_model.GetIndexOfTab(&local_tab),
-      TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  // Close the tab.
+  tab_strip_model.CloseWebContents(local_tab.GetContents(),
+                                   TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 TabStripModel* GetTabStripModelForLocalGroup(const LocalTabGroupID& group_id) {

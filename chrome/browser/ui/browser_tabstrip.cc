@@ -138,7 +138,7 @@ void CloseWebContents(Browser* browser,
     close_types |= TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB;
   }
 
-  browser->tab_strip_model()->CloseWebContentsAt(index, close_types);
+  browser->tab_strip_model()->CloseWebContents(contents, close_types);
 }
 
 void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {

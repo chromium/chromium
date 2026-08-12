@@ -535,9 +535,9 @@ void BrowserTabStripModelDelegate::CloseTab(
           }
         }
 
-        model->CloseWebContentsAt(
-            tab_index, TabCloseTypes::CLOSE_USER_GESTURE |
-                           TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+        model->CloseWebContents(web_contents.get(),
+                                TabCloseTypes::CLOSE_USER_GESTURE |
+                                    TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 
         // Try to show reading list IPH if needed.
         if (model->count() >= 7) {

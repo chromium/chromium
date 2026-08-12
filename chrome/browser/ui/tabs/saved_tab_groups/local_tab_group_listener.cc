@@ -413,11 +413,8 @@ void LocalTabGroupListener::RemoveTabFromSync(tabs::TabInterface* local_tab,
   browser->tab_strip_model()->RemoveFromGroup({index});
 
   if (should_close_tab) {
-    // Removing the tab from the group may have moved the tab to maintain group
-    // contiguity. Find the tab again and close it.
-    index = browser->tab_strip_model()->GetIndexOfTab(local_tab);
-    browser->tab_strip_model()->CloseWebContentsAt(
-        index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+    browser->tab_strip_model()->CloseWebContents(
+        local_tab->GetContents(), TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   }
 }
 

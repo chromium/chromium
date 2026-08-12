@@ -317,14 +317,15 @@ class TabStripModel {
       bool pinned,
       std::optional<tab_groups::TabGroupId> group_id = std::nullopt);
 
+  // Closes the specified WebContents. This causes the WebContents to be
+  // destroyed, but it may not happen immediately.
+  // |close_types| is a bitmask of CloseTypes. Prefer this over
+  // CloseWebContentsAt() when a WebContents* is already available.
+  void CloseWebContents(content::WebContents* contents, uint32_t close_types);
+
   // Closes the WebContents at the specified index. This causes the
   // WebContents to be destroyed, but it may not happen immediately.
   // |close_types| is a bitmask of CloseTypes.
-  // TODO(crbug.com/540843679): Currently many call sites of CloseWebContentsAt
-  // convert a tab/webcontents to an index, which gets converted back to a
-  // webcontents within this function. Provide a CloseWebContents function that
-  // directly closes a web contents so that we don't have to convert back and
-  // forth.
   void CloseWebContentsAt(int index, uint32_t close_types);
 
   // Discards the WebContents at |index| and replaces it with |new_contents|.

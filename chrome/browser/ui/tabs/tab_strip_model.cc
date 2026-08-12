@@ -1361,11 +1361,18 @@ void TabStripModel::CloseAllTabsInGroupImpl(
   CloseTabs(closing_tabs, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
-void TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {
+void TabStripModel::CloseWebContents(content::WebContents* contents,
+                                     uint32_t close_types) {
   ReentrancyCheck::ValidateNotReentrant(&reentrancy_guard_);
 
+  CHECK(contents);
+  CHECK_NE(GetIndexOfWebContents(contents), kNoTab);
+  CloseTabs({contents}, close_types);
+}
+
+void TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {
   CHECK(ContainsIndex(index));
-  CloseTabs({GetWebContentsAt(index)}, close_types);
+  CloseWebContents(GetWebContentsAt(index), close_types);
 }
 
 bool TabStripModel::TabsNeedLoadingUI() const {

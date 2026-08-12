@@ -348,9 +348,7 @@ void TabModel::Close() {
   auto* window_interface = GetBrowserWindowInterface();
   auto* tab_strip = window_interface->GetTabStripModel();
   CHECK(tab_strip);
-  const int tab_idx = tab_strip->GetIndexOfTab(this);
-  CHECK(tab_idx != TabStripModel::kNoTab);
-  tab_strip->CloseWebContentsAt(tab_idx, TabCloseTypes::CLOSE_NONE);
+  tab_strip->CloseWebContents(contents_.get(), TabCloseTypes::CLOSE_NONE);
 }
 
 void TabModel::DidEnterForeground(base::PassKey<TabStripModel>) {
