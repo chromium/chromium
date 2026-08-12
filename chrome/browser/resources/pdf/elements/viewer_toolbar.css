@@ -196,25 +196,15 @@ cr-progress,
 }
 
 <if expr="enable_pdf_ink2">
-.annotate-button {
-  margin-inline-end: 4px;
-}
-
 .annotate-button.active {
   background-color: var(--active-button-bg);
   border-radius: 50%;
 }
-</if>
 
-<if expr="enable_pdf_ink2">
 #annotate-controls {
   align-items: center;
   display: flex;
   margin-inline-start: 6px;
-}
-
-#annotate-controls .annotate-button {
-  margin-inline: 0;
 }
 
 #annotate-controls .annotate-button.active {
@@ -224,7 +214,6 @@ cr-progress,
 #annotate-controls .vertical-separator {
   margin-inline: 6px;
 }
-
 </if>
 
 <if expr="enable_pdf_save_to_drive">
