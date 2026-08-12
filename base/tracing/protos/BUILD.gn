@@ -56,6 +56,9 @@ protozero_descriptor_diff("chrome_track_event_extension") {
 
 grit("chrome_track_event_resources") {
   source = "resources.grd"
+  inputs = [
+    "$root_gen_dir/base/tracing/protos/chrome_track_event_extension.descriptor",
+  ]
   outputs = [
     "grit/tracing_proto_resources.h",
     "tracing_proto_resources.pak",
