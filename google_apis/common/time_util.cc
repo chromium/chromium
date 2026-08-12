@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/i18n/time_formatting.h"
+#include "base/i18n/timezone.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -147,8 +148,9 @@ std::string FormatTimeAsString(const base::Time& time) {
 
 std::string FormatTimeAsStringLocaltime(const base::Time& time) {
   return time.is_null() ? std::string(kNullTimeString)
-                        : base::UnlocalizedTimeFormatWithPattern(
-                              time, "yyyy-MM-dd'T'HH:mm:ss.SSS");
+                        : base::TimeFormatAsIso8601WithTimeZone(
+                              time, base::i18n::TimeZone::Default(),
+                              /*include_offset_suffix=*/false);
 }
 
 }  // namespace util

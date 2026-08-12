@@ -4,7 +4,7 @@
 
 #include "google_apis/common/time_util.h"
 
-#include "base/i18n/time_formatting.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -12,7 +12,12 @@ namespace google_apis::util {
 namespace {
 
 std::string FormatTime(const base::Time& time) {
-  return base::UnlocalizedTimeFormatWithPattern(time, "yyMMddHHmmssSSS");
+  base::Time::Exploded exploded;
+  time.LocalExplode(&exploded);
+  return base::StringPrintf("%02d%02d%02d%02d%02d%02d%03d", exploded.year % 100,
+                            exploded.month, exploded.day_of_month,
+                            exploded.hour, exploded.minute, exploded.second,
+                            exploded.millisecond);
 }
 
 }  // namespace
