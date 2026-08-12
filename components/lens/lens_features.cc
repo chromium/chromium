@@ -69,7 +69,7 @@ BASE_FEATURE(kLensOverlayOmniboxEntryPoint, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayUploadChunking, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensBypassCompressionForC2pa, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensBypassCompressionForC2pa, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayRecontextualizeOnQuery,
              base::FEATURE_DISABLED_BY_DEFAULT);
