@@ -98,6 +98,23 @@ TypedValue CreateDateTypedValue(int year, int month, int day) {
   return typed_value;
 }
 
+TypedValue CreateDateTimeTypedValue(int year,
+                                    int month,
+                                    int day,
+                                    int hours = 0,
+                                    int minutes = 0,
+                                    int seconds = 0) {
+  TypedValue typed_value;
+  auto* dt = typed_value.mutable_date_time();
+  dt->set_year(year);
+  dt->set_month(month);
+  dt->set_day(day);
+  dt->set_hours(hours);
+  dt->set_minutes(minutes);
+  dt->set_seconds(seconds);
+  return typed_value;
+}
+
 class FakeMemoryDataProvider : public AutofillDataProvider {
  public:
   FakeMemoryDataProvider() : AutofillDataProvider(nullptr, nullptr) {}
@@ -2090,6 +2107,201 @@ TEST_F(
 
   EXPECT_THAT(future.Get(), SuccessfulSearchResults(
                                 SearchResultWithValue(u"PASSPORT_MATCH")));
+}
+
+// Tests that typed filters support relational operators (LESS_THAN,
+// GREATER_THAN, etc.)
+TEST_F(AtMemoryQueryServiceTest,
+       Query_FiltersLocalDataUsingFetchSpecifications_FilterOperators) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAtMemoryTypedFetchPlan);
+
+  AtMemoryQueryResponse response = CreateQueryResponse();
+  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
+  auto* spec = plan->add_fetch_specifications();
+  spec->set_data_type(personal_context::proto::
+                          MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER);
+  auto* filter = spec->add_filters();
+  filter->mutable_typed_value_filter()
+      ->mutable_typed_value()
+      ->mutable_date()
+      ->set_year(2026);
+  filter->mutable_typed_value_filter()
+      ->mutable_typed_value()
+      ->mutable_date()
+      ->set_month(10);
+  filter->mutable_typed_value_filter()->set_filter_operator(
+      AutofillFetchSpecification::TypedValueFilter::
+          FILTER_OPERATOR_LESS_THAN_OR_EQUAL);
+
+  StubFetchContextResponse(std::move(response));
+
+  MemorySearchResult oct_flight(MemoryDataType::kFlightReservationFlightNumber,
+                                u"Flight Number", u"FLIGHT_OCT");
+  EntryMetadata oct_meta(MemoryDataType::kFlightReservationDepartureDate,
+                         u"Departure Date", u"2026-10-15");
+  oct_meta.typed_value = CreateDateTypedValue(2026, 10, 15);
+  oct_flight.metadata_list.push_back(std::move(oct_meta));
+
+  MemorySearchResult nov_flight(MemoryDataType::kFlightReservationFlightNumber,
+                                u"Flight Number", u"FLIGHT_NOV");
+  EntryMetadata nov_meta(MemoryDataType::kFlightReservationDepartureDate,
+                         u"Departure Date", u"2026-11-01");
+  nov_meta.typed_value = CreateDateTypedValue(2026, 11, 1);
+  nov_flight.metadata_list.push_back(std::move(nov_meta));
+
+  auto service = CreateQueryProviderWithResults({oct_flight, nov_flight});
+
+  TestFuture<MemorySearchResults> future;
+  service->Query(u"flight", GURL("https://example.com"), u"Title",
+                 future.GetRepeatingCallback());
+
+  EXPECT_THAT(future.Get(),
+              SuccessfulSearchResults(SearchResultWithValue(u"FLIGHT_OCT")));
+}
+
+// Tests cross-type matching between Date and DateTime typed values.
+TEST_F(
+    AtMemoryQueryServiceTest,
+    Query_FiltersLocalDataUsingFetchSpecifications_DateAndDateTimeCrossMatching) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAtMemoryTypedFetchPlan);
+
+  AtMemoryQueryResponse response = CreateQueryResponse();
+  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
+  auto* spec = plan->add_fetch_specifications();
+  spec->set_data_type(personal_context::proto::
+                          MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER);
+  auto* filter = spec->add_filters();
+  filter->mutable_typed_value_filter()
+      ->mutable_typed_value()
+      ->mutable_date()
+      ->set_year(2026);
+  filter->mutable_typed_value_filter()
+      ->mutable_typed_value()
+      ->mutable_date()
+      ->set_month(10);
+  filter->mutable_typed_value_filter()->set_filter_operator(
+      AutofillFetchSpecification::TypedValueFilter::
+          FILTER_OPERATOR_LESS_THAN_OR_EQUAL);
+
+  StubFetchContextResponse(std::move(response));
+
+  MemorySearchResult datetime_flight(
+      MemoryDataType::kFlightReservationFlightNumber, u"Flight Number",
+      u"FLIGHT_DATETIME_MATCH");
+  EntryMetadata dt_meta(MemoryDataType::kFlightReservationDepartureDate,
+                        u"Departure Date", u"2026-10-15T14:30:00");
+  dt_meta.typed_value = CreateDateTimeTypedValue(2026, 10, 15, 14, 30, 0);
+  datetime_flight.metadata_list.push_back(std::move(dt_meta));
+
+  MemorySearchResult nov_flight(MemoryDataType::kFlightReservationFlightNumber,
+                                u"Flight Number", u"FLIGHT_NOV");
+  EntryMetadata nov_meta(MemoryDataType::kFlightReservationDepartureDate,
+                         u"Departure Date", u"2026-11-01T09:00:00");
+  nov_meta.typed_value = CreateDateTimeTypedValue(2026, 11, 1, 9, 0, 0);
+  nov_flight.metadata_list.push_back(std::move(nov_meta));
+
+  auto service = CreateQueryProviderWithResults({datetime_flight, nov_flight});
+
+  TestFuture<MemorySearchResults> future;
+  service->Query(u"flight", GURL("https://example.com"), u"Title",
+                 future.GetRepeatingCallback());
+
+  EXPECT_THAT(
+      future.Get(),
+      SuccessfulSearchResults(SearchResultWithValue(u"FLIGHT_DATETIME_MATCH")));
+}
+
+// Tests that unset time fields in a DateTime filter act as wildcards, whereas
+// explicitly setting time fields to 0 filters strictly for midnight (00:00:00).
+TEST_F(
+    AtMemoryQueryServiceTest,
+    Query_FiltersLocalDataUsingFetchSpecifications_DateTimeTimeWildcardVsZero) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAtMemoryTypedFetchPlan);
+
+  MemorySearchResult midnight_flight(
+      MemoryDataType::kFlightReservationFlightNumber, u"Flight Number",
+      u"FLIGHT_MIDNIGHT");
+  EntryMetadata midnight_meta(MemoryDataType::kFlightReservationDepartureDate,
+                              u"Departure Date", u"2026-10-15T00:00:00");
+  midnight_meta.typed_value = CreateDateTimeTypedValue(2026, 10, 15, 0, 0, 0);
+  midnight_flight.metadata_list.push_back(std::move(midnight_meta));
+
+  MemorySearchResult afternoon_flight(
+      MemoryDataType::kFlightReservationFlightNumber, u"Flight Number",
+      u"FLIGHT_AFTERNOON");
+  EntryMetadata afternoon_meta(MemoryDataType::kFlightReservationDepartureDate,
+                               u"Departure Date", u"2026-10-15T14:30:00");
+  afternoon_meta.typed_value =
+      CreateDateTimeTypedValue(2026, 10, 15, 14, 30, 0);
+  afternoon_flight.metadata_list.push_back(std::move(afternoon_meta));
+
+  // Case 1: Filter with UNSET time fields (acting as wildcards).
+  // Both midnight_flight and afternoon_flight should match.
+  {
+    AtMemoryQueryResponse response = CreateQueryResponse();
+    AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
+    auto* spec = plan->add_fetch_specifications();
+    spec->set_data_type(personal_context::proto::
+                            MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER);
+    auto* filter = spec->add_filters();
+    auto* dt = filter->mutable_typed_value_filter()
+                   ->mutable_typed_value()
+                   ->mutable_date_time();
+    dt->set_year(2026);
+    dt->set_month(10);
+    dt->set_day(15);
+    filter->mutable_typed_value_filter()->set_filter_operator(
+        AutofillFetchSpecification::TypedValueFilter::FILTER_OPERATOR_EQUAL);
+
+    StubFetchContextResponse(std::move(response));
+
+    auto service =
+        CreateQueryProviderWithResults({midnight_flight, afternoon_flight});
+
+    TestFuture<MemorySearchResults> future;
+    service->Query(u"flight", GURL("https://example.com"), u"Title",
+                   future.GetRepeatingCallback());
+
+    EXPECT_THAT(future.Get(), SuccessfulSearchResults(
+                                  SearchResultWithValue(u"FLIGHT_MIDNIGHT"),
+                                  SearchResultWithValue(u"FLIGHT_AFTERNOON")));
+  }
+
+  // Case 2: Filter with EXPLICITLY SET time fields set to 0 (hours = 0, minutes
+  // = 0). Only midnight_flight should match; afternoon_flight must be rejected.
+  {
+    AtMemoryQueryResponse response = CreateQueryResponse();
+    AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
+    auto* spec = plan->add_fetch_specifications();
+    spec->set_data_type(personal_context::proto::
+                            MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER);
+    auto* filter = spec->add_filters();
+    auto* dt = filter->mutable_typed_value_filter()
+                   ->mutable_typed_value()
+                   ->mutable_date_time();
+    dt->set_year(2026);
+    dt->set_month(10);
+    dt->set_day(15);
+    dt->set_hours(0);
+    dt->set_minutes(0);
+    filter->mutable_typed_value_filter()->set_filter_operator(
+        AutofillFetchSpecification::TypedValueFilter::FILTER_OPERATOR_EQUAL);
+
+    StubFetchContextResponse(std::move(response));
+
+    auto service =
+        CreateQueryProviderWithResults({midnight_flight, afternoon_flight});
+
+    TestFuture<MemorySearchResults> future;
+    service->Query(u"flight", GURL("https://example.com"), u"Title",
+                   future.GetRepeatingCallback());
+
+    EXPECT_THAT(future.Get(), SuccessfulSearchResults(
+                                  SearchResultWithValue(u"FLIGHT_MIDNIGHT")));
+  }
 }
 
 // Tests that filters only match against fields whose data types are in the

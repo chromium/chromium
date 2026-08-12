@@ -51,6 +51,8 @@ namespace {
 
 using ::personal_context::proto::AtMemoryQueryResponse;
 using ::personal_context::proto::AutofillFetchSpecification;
+using ::personal_context::proto::Date;
+using ::personal_context::proto::DateTime;
 using ::personal_context::proto::TypedValue;
 using TypedValueFilter =
     ::personal_context::proto::AutofillFetchSpecification::TypedValueFilter;
@@ -562,36 +564,102 @@ bool MatchesStringFilter(
   }
 }
 
-// Returns true if `entry_typed_val` contains a country code matching
-// `filter_country_code` case-insensitively.
+// Compares `entry` against `filter` based on the fields set in `filter`.
+// Returns:
+//  - `kLess` if `entry` is before `filter`
+//  - `kEqual` if `entry` matches `filter` bounds
+//  - `kGreater` if `entry` is after `filter`
+enum class ComparisonResult { kLess, kEqual, kGreater };
+[[nodiscard]] ComparisonResult CompareDateTimes(const DateTime& entry,
+                                                const DateTime& filter) {
+  using enum ComparisonResult;
+  struct ComparisonData {
+    using HasAttrFn = bool (DateTime::*)() const;
+    using GetAttrFn = int (DateTime::*)() const;
+    const HasAttrFn has_attr;
+    const GetAttrFn get_attr;
+    const bool treat_zero_as_wildcard;
+  };
+  auto filter_matches_entry = [&](const ComparisonData& comparison) {
+    const bool has_filter_value = std::invoke(comparison.has_attr, filter);
+    const int filter_value = std::invoke(comparison.get_attr, filter);
+    if (!has_filter_value ||
+        (filter_value == 0 && comparison.treat_zero_as_wildcard)) {
+      return kEqual;
+    }
+
+    // We treat entry dates as if they happened 0:00h.
+    const int entry_value = std::invoke(comparison.get_attr, entry);
+    if (filter_value == entry_value) {
+      return kEqual;
+    }
+    return entry_value < filter_value ? kLess : kGreater;
+  };
+
+  // All attributes to compare in desending order of priority.
+  static constexpr auto kComparisons =
+      std::to_array<ComparisonData>({{.has_attr = &DateTime::has_year,
+                                      .get_attr = &DateTime::year,
+                                      .treat_zero_as_wildcard = true},
+                                     {.has_attr = &DateTime::has_month,
+                                      .get_attr = &DateTime::month,
+                                      .treat_zero_as_wildcard = true},
+                                     {.has_attr = &DateTime::has_day,
+                                      .get_attr = &DateTime::day,
+                                      .treat_zero_as_wildcard = true},
+                                     {.has_attr = &DateTime::has_hours,
+                                      .get_attr = &DateTime::hours,
+                                      .treat_zero_as_wildcard = false},
+                                     {.has_attr = &DateTime::has_minutes,
+                                      .get_attr = &DateTime::minutes,
+                                      .treat_zero_as_wildcard = false},
+                                     {.has_attr = &DateTime::has_seconds,
+                                      .get_attr = &DateTime::seconds,
+                                      .treat_zero_as_wildcard = false}});
+  for (const ComparisonData& comparison : kComparisons) {
+    if (ComparisonResult result = filter_matches_entry(comparison);
+        result != kEqual) {
+      return result;
+    }
+  }
+  return kEqual;
+}
+
+// Compares `entry_typed_val` against `filter_typed_val`. Converts `Date` to
+// `DateTime` at 0:00h when comparing cross-type values.
+std::optional<ComparisonResult> ExtractAndCompareDateTimes(
+    const TypedValue& entry_typed_val,
+    const TypedValue& filter_typed_val) {
+  auto extract_datetime =
+      [](const TypedValue& typed_val) -> std::optional<DateTime> {
+    if (typed_val.has_date_time()) {
+      return typed_val.date_time();
+    }
+    if (typed_val.has_date()) {
+      DateTime dt;
+      dt.set_year(typed_val.date().year());
+      dt.set_month(typed_val.date().month());
+      dt.set_day(typed_val.date().day());
+      return dt;
+    }
+    return std::nullopt;
+  };
+
+  std::optional<DateTime> entry_dt = extract_datetime(entry_typed_val);
+  std::optional<DateTime> filter_dt = extract_datetime(filter_typed_val);
+
+  if (!entry_dt || !filter_dt) {
+    return std::nullopt;
+  }
+
+  return CompareDateTimes(*entry_dt, *filter_dt);
+}
+
 bool MatchesCountryCodeEqual(const TypedValue& entry_typed_val,
                              std::string_view filter_country_code) {
   return entry_typed_val.has_country_code() &&
          base::EqualsCaseInsensitiveASCII(entry_typed_val.country_code(),
                                           filter_country_code);
-}
-
-// Returns true if `entry_typed_val` contains a date matching `filter_date`.
-// Non-zero fields in `filter_date` (year, month, day) must match; zero fields
-// act as wildcards.
-bool MatchesDateEqual(const TypedValue& entry_typed_val,
-                      const personal_context::proto::Date& filter_date) {
-  if (!entry_typed_val.has_date()) {
-    return false;
-  }
-
-  using ::personal_context::proto::Date;
-  const Date& entry_date = entry_typed_val.date();
-  if (filter_date.year() != 0 && entry_date.year() != filter_date.year()) {
-    return false;
-  }
-  if (filter_date.month() != 0 && entry_date.month() != filter_date.month()) {
-    return false;
-  }
-  if (filter_date.day() != 0 && entry_date.day() != filter_date.day()) {
-    return false;
-  }
-  return true;
 }
 
 // Returns true if `entry_typed_val` equals `filter_typed_val`.
@@ -602,8 +670,9 @@ bool MatchesTypedEqual(const TypedValue& entry_typed_val,
       return MatchesCountryCodeEqual(entry_typed_val,
                                      filter_typed_val.country_code());
     case TypedValue::kDate:
-      return MatchesDateEqual(entry_typed_val, filter_typed_val.date());
     case TypedValue::kDateTime:
+      return ExtractAndCompareDateTimes(entry_typed_val, filter_typed_val) ==
+             ComparisonResult::kEqual;
     case TypedValue::kStringList:
     case TypedValue::VALUE_NOT_SET:
       return false;
@@ -618,15 +687,25 @@ bool MatchesTypedFilter(const TypedValue& entry_typed_val,
     return true;
   }
 
+  using enum ComparisonResult;
   switch (filter.filter_operator()) {
     case TypedValueFilter::FILTER_OPERATOR_EQUAL:
     case TypedValueFilter::FILTER_OPERATOR_UNSPECIFIED:
       return MatchesTypedEqual(entry_typed_val, filter.typed_value());
     case TypedValueFilter::FILTER_OPERATOR_NOT_EQUAL:
+      return !MatchesTypedEqual(entry_typed_val, filter.typed_value());
     case TypedValueFilter::FILTER_OPERATOR_LESS_THAN:
+      return ExtractAndCompareDateTimes(entry_typed_val, filter.typed_value())
+                 .value_or(kEqual) == kLess;
     case TypedValueFilter::FILTER_OPERATOR_LESS_THAN_OR_EQUAL:
+      return ExtractAndCompareDateTimes(entry_typed_val, filter.typed_value())
+                 .value_or(kGreater) != kGreater;
     case TypedValueFilter::FILTER_OPERATOR_GREATER_THAN:
+      return ExtractAndCompareDateTimes(entry_typed_val, filter.typed_value())
+                 .value_or(kEqual) == kGreater;
     case TypedValueFilter::FILTER_OPERATOR_GREATER_THAN_OR_EQUAL:
+      return ExtractAndCompareDateTimes(entry_typed_val, filter.typed_value())
+                 .value_or(kLess) != kLess;
     default:
       break;
   }
