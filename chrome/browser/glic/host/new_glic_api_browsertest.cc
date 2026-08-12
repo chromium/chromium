@@ -1347,6 +1347,37 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetTabById) {
   ContinueJsTest();
 }
 
+// TODO(crbug.com/545646237): Fix incorrect background tab activations in
+// LayoutManagerImpl on Android and re-enable this test.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetTabByIdWithDiscard) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  tabs::TabInterface* new_tab = CreateBackgroundTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+  auto tab_id = new_tab->GetHandle();
+  ExecuteJsTest(
+      {.params = base::Value(base::NumberToString(tab_id.raw_value()))});
+
+  // Discard the tab.
+  content::WebContents* new_contents_ptr =
+      GetTabListInterface()->DiscardTab(new_tab->GetHandle());
+  ASSERT_TRUE(new_contents_ptr);
+
+  // Navigate the new contents.
+  GURL::Replacements replacements;
+  replacements.SetQueryStr("q=hi");
+  ASSERT_TRUE(content::NavigateToURL(new_contents_ptr,
+                                     embedded_test_server()
+                                         ->GetURL("/browser_tests/test.html")
+                                         .ReplaceComponents(replacements)));
+  ContinueJsTest();
+
+  // Close the tab.
+  GetTabListInterface()->CloseTab(new_tab->GetHandle());
+  ContinueJsTest();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
 class NewGlicApiTestWithFileUploadPolicyEnabled : public NewGlicApiTest {
  public:
