@@ -11730,6 +11730,7 @@ void RenderFrameHostImpl::BeginNavigation(
     }
   }
 
+  // TODO(crbug.com/40066983): Consider converting these into renderer kills.
   GetProcess()->FilterURL(true, &begin_params->searchable_form_url);
   if (!VerifyClientSideRedirectUrl(*this,
                                    &begin_params->client_side_redirect_url)) {

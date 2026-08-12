@@ -60,15 +60,19 @@ bool VerifyBeginNavigationCommonParams(
     blink::mojom::CommonNavigationParams* common_params,
     std::optional<blink::LocalFrameToken>& initiator_frame_token);
 
-// Verifies that `client_side_redirect_url` in BeginNavigationParams is valid
-// and can be accessed by `current_rfh`'s process.
+// Verifies that `client_side_redirect_url` in BeginNavigationParams can be
+// accessed by `current_rfh`'s process.
 //
-// FilterURL is run on `client_side_redirect_url` as a side effect.
-// Returns true if `client_side_redirect_url` is valid and its origin is hosted
-// by `current_rfh`'s process.
+// FilterURL is run on `client_side_redirect_url` as a side effect (rewriting
+// any unrequestable or invalid URLs to about:blank#blocked).
+//
+// Returns true if `client_side_redirect_url` is empty, was filtered (and
+// rewritten to about:blank#blocked), or its origin is hosted by `current_rfh`'s
+// process.
 //
 // Terminates `current_rfh`'s process and returns false if
-// `client_side_redirect_url` is invalid.
+// `client_side_redirect_url` attempts to claim an origin not hosted by the
+// process.
 //
 // This function has to be called on the UI thread.
 bool VerifyClientSideRedirectUrl(const RenderFrameHostImpl& current_rfh,
