@@ -60,6 +60,10 @@ class SublevelManagerTest : public ViewsTestBase,
     test::WidgetVisibleWaiter(widget.get()).Wait();
   }
 
+  bool IsTrackingChildWidget(SublevelManager* manager, Widget* child) {
+    return manager->IsTrackingChildWidget(child);
+  }
+
   static std::string PrintTestName(
       const ::testing::TestParamInfo<SublevelManagerTest::ParamType>& info) {
     std::string test_name;
@@ -358,6 +362,21 @@ TEST_P(SublevelManagerTest, EnsureOwnerTreeSublevelStability) {
                                                      children[0].get()));
   EXPECT_TRUE(test::WidgetTest::IsWindowStackedAbove(children[2].get(),
                                                      children[1].get()));
+}
+
+TEST_P(SublevelManagerTest, DestroyingChildIsUntracked) {
+  std::unique_ptr<Widget> root =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  std::unique_ptr<Widget> child =
+      CreateChildWidget(root.get(), ui::ZOrderLevel::kNormal, 0,
+                        std::get<Widget::InitParams::Activatable>(GetParam()));
+  Widget* child_ptr = child.get();
+
+  ASSERT_TRUE(IsTrackingChildWidget(root->GetSublevelManager(), child_ptr));
+
+  child.reset();
+
+  EXPECT_FALSE(IsTrackingChildWidget(root->GetSublevelManager(), child_ptr));
 }
 
 // TODO(crbug.com/40227915): We should also test NativeWidgetType::kDesktop,

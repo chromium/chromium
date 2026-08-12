@@ -2956,10 +2956,10 @@ void Widget::HandleWidgetDestroying() {
   CHECK(!native_widget_destroyed_);
   CHECK(!widget_destroying_handled_);
   widget_destroying_handled_ = true;
-  ClearFocusManagerFromWidget();
   if (parent_) {
     parent_->OnChildRemoved(this);
   }
+  ClearFocusManagerFromWidget();
   observers_.Notify(&WidgetObserver::OnWidgetDestroying, this);
   if (non_client_view_) {
     non_client_view_->WindowClosing();
