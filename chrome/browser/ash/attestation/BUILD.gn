@@ -113,16 +113,20 @@ source_set("unit_tests") {
     "enrollment_id_upload_manager_unittest.cc",
     "machine_certificate_uploader_impl_unittest.cc",
     "platform_verification_flow_unittest.cc",
+    "soft_bind_attestation_flow_impl_unittest.cc",
     "tpm_challenge_key_result_unittest.cc",
     "tpm_challenge_key_subtle_unittest.cc",
     "tpm_challenge_key_unittest.cc",
   ]
 
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
   deps = [
     ":attestation",
     ":attestation_proto",
     ":test_support",
-    ":test_with_shadow_variables",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash/login/users:test_support",
@@ -146,40 +150,12 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/test:test_support",
-    "//services/network:test_support",
-  ]
-}
-
-config("allow_shadow_variables") {
-  cflags = [ "-Wno-shadow" ]
-}
-
-# TODO(b/247823913): Merge this target back into the unit_tests target above
-# when third_party/securemessage code stops generating -Wshadow warnings. Also
-# remove the allow_shadow_variables config then.
-source_set("test_with_shadow_variables") {
-  testonly = true
-
-  configs += [ ":allow_shadow_variables" ]
-
-  sources = [ "soft_bind_attestation_flow_impl_unittest.cc" ]
-
-  deps = [
-    ":attestation",
-    "//base",
-    "//chrome/browser/ash/settings:test_support",
-    "//chromeos/ash/components/attestation:test_support",
-    "//chromeos/ash/components/settings",
-    "//content/test:test_support",
     "//crypto:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
     "//third_party/securemessage",
     "//third_party/securemessage:securemessage_cpp_protobuf",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 proto_library("attestation_proto") {
