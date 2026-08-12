@@ -11751,6 +11751,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.EphemeralToolbarButton.Shown">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the ephemeral contextual tasks toolbar button becomes visible
+    in the browser toolbar.
+  </description>
+</action>
+
 <action name="ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
@@ -11822,18 +11831,6 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
-<action name="ContextualTasks.ToolbarButton.UserAction{ActionType}">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-contextual-tasks-eng@google.com</owner>
-  <description>
-    The user interacted with the contextual tasks toolbar button. {ActionType}
-  </description>
-  <token key="ActionType">
-    <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
-    <variant name=".OpenSidePanel" summary="The user opened the side panel."/>
-  </token>
-</action>
-
 <action
     name="ContextualTasks.ToolbarCloseTabButton.UserAction.CloseTabAndExpandSidePanel">
   <owner>yuhengh@chromium.org</owner>
@@ -11870,6 +11867,29 @@ should be able to be added at any place in this file.
         summary="The user clicked on a tab from the sources menu."/>
     <variant name=".UnpinSidePanel"
         summary="The user unpinned the side panel."/>
+  </token>
+</action>
+
+<action name="ContextualTasks.{EntrypointType}.UserAction{ActionType}">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user clicks {EntrypointType} in the Chrome toolbar to
+    toggle the Contextual Tasks side panel. {ActionType}
+  </description>
+  <token key="ActionType">
+    <variant name=".CloseSidePanel"
+        summary="Recorded when this click closes the side panel."/>
+    <variant name=".OpenSidePanel"
+        summary="Recorded when this click opens the side panel."/>
+  </token>
+  <token key="EntrypointType">
+    <variant name="EphemeralToolbarButton"
+        summary="the ephemeral contextual tasks toolbar button"/>
+    <variant name="PermanentToolbarButton"
+        summary="the permanently pinned contextual tasks toolbar button"/>
+    <variant name="ToolbarButton"
+        summary="the contextual tasks toolbar button"/>
   </token>
 </action>
 
