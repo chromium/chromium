@@ -2141,65 +2141,6 @@ TEST_F(BrowserAccessibilityAndroidTest, TestIsLeafIgnoredWithChildren) {
   EXPECT_TRUE(node->IsLeaf());
 }
 
-TEST_F(BrowserAccessibilityAndroidTest, TestIsSelectionContextBoundary) {
-  ui::AXNodeData root;
-  root.id = 1;
-  root.role = ax::mojom::Role::kRootWebArea;
-
-  ui::AXNodeData text_field;
-  text_field.id = 2;
-  text_field.role = ax::mojom::Role::kTextField;
-
-  ui::AXNodeData collapsed_select;
-  collapsed_select.id = 3;
-  collapsed_select.role = ax::mojom::Role::kComboBoxSelect;
-  collapsed_select.AddState(ax::mojom::State::kCollapsed);
-
-  ui::AXNodeData expanded_select;
-  expanded_select.id = 4;
-  expanded_select.role = ax::mojom::Role::kComboBoxSelect;
-
-  ui::AXNodeData video;
-  video.id = 5;
-  video.role = ax::mojom::Role::kVideo;
-
-  ui::AXNodeData audio;
-  audio.id = 6;
-  audio.role = ax::mojom::Role::kAudio;
-
-  ui::AXNodeData paragraph;
-  paragraph.id = 7;
-  paragraph.role = ax::mojom::Role::kParagraph;
-
-  root.child_ids = {2, 3, 4, 5, 6, 7};
-
-  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManagerAndroid::Create(
-          MakeAXTreeUpdateForTesting(root, text_field, collapsed_select,
-                                     expanded_select, video, audio, paragraph),
-          node_id_delegate_, test_browser_accessibility_delegate_.get()));
-
-  auto* text_field_node =
-      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(2));
-  auto* collapsed_select_node =
-      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(3));
-  auto* expanded_select_node =
-      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(4));
-  auto* video_node =
-      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(5));
-  auto* audio_node =
-      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(6));
-  auto* paragraph_node =
-      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(7));
-
-  EXPECT_TRUE(text_field_node->IsSelectionContextBoundary());
-  EXPECT_TRUE(collapsed_select_node->IsSelectionContextBoundary());
-  EXPECT_FALSE(expanded_select_node->IsSelectionContextBoundary());
-  EXPECT_TRUE(video_node->IsSelectionContextBoundary());
-  EXPECT_TRUE(audio_node->IsSelectionContextBoundary());
-  EXPECT_FALSE(paragraph_node->IsSelectionContextBoundary());
-}
-
 TEST_F(BrowserAccessibilityAndroidTest, TestIsNodeLikelyKnownFilter) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(

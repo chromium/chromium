@@ -15,6 +15,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -541,28 +542,45 @@ ScopedJavaLocalRef<jobject> ToJavaStringRangesMap(
       ranges_count);
 }
 
-// Climbs up the platform parent hierarchy of |node| and returns the enclosing
-// selection context boundary container (e.g. the atomic textbox or media player
-// widget), or nullptr if the node belongs to the main document scope.
-BrowserAccessibilityAndroid* GetSelectionContext(
-    BrowserAccessibilityAndroid* node) {
+// If `node` is or is under an editable, returns the highest editable parent,
+// otherwise returns null.
+ui::AXNode* GetRootEditable(ui::AXNode* node) {
   while (node) {
-    if (node->IsSelectionContextBoundary()) {
+    if (node->data().IsTextField()) {
       return node;
     }
-    node = static_cast<BrowserAccessibilityAndroid*>(node->PlatformGetParent());
+    node = node->parent();
   }
-  return nullptr;
+  return node;
 }
 
-// Returns true if the selection range from |start_position| to |end_position|
-// is valid. Selection is not valid if it crosses document boundaries (different
-// tree ids) or if its endpoints belong to different selection contexts (e.g.
-// spanning across different editables, or crossing into/out of form controls).
-// These restrictions are based on the behavior in Blink's `SelectionAdjuster`
-// class.
+// Returns whether `position` complies with Blink's selection expectations:
+// 1. In Blink (`WebAXObject::SetSelection`), selection offsets are
+//    interpreted as text character offsets only when anchored to a text
+//    object or an atomic text field; otherwise, offsets are interpreted as
+//    child indices. Therefore, text positions must only be anchored to text
+//    nodes or text fields.
+// 2. `ConvertAndroidSelectionPositionToChrome` complies with this by
+//    resolving text offsets on text-selectable nodes to their leaf text
+//    descendants or text field anchors via `AsDomSelectionPosition()`, and
+//    converting any text positions on non-text/non-textfield containers
+//    (such as empty paragraphs or headings) to tree positions.
+bool IsSelectionPositionValid(
+    const ui::BrowserAccessibility::AXPosition& position) {
+  if (position->IsTextPosition()) {
+    if (!position->GetAnchor()->data().IsTextField() &&
+        !position->GetAnchor()->IsText()) {
+      DUMP_WILL_BE_NOTREACHED();
+      return false;
+    }
+  }
+  return true;
+}
+
+// These restrictions are primarily validated in `blink::AXSelection::IsValid()`
+// for atomic text fields and in `blink::AssertUserSelection` in general, and
+// are based on the behavior in `blink::SelectionAdjuster` class.
 bool IsSelectionValid(
-    BrowserAccessibilityManagerAndroid* root_manager,
     const ui::BrowserAccessibility::AXPosition& start_position,
     const ui::BrowserAccessibility::AXPosition& end_position) {
   CHECK(!start_position->IsNullPosition());
@@ -576,13 +594,12 @@ bool IsSelectionValid(
     return true;
   }
 
-  // Ensure that both endpoints belong to the exact same selection context
-  // (e.g., both are in the main document, or both are inside the same text
-  // input or widget).
-  return GetSelectionContext(static_cast<BrowserAccessibilityAndroid*>(
-             root_manager->GetFromAXNode(start_position->GetAnchor()))) ==
-         GetSelectionContext(static_cast<BrowserAccessibilityAndroid*>(
-             root_manager->GetFromAXNode(end_position->GetAnchor())));
+  ui::AXNode* start_root_editable =
+      GetRootEditable(start_position->GetAnchor());
+  ui::AXNode* end_root_editable = GetRootEditable(end_position->GetAnchor());
+
+  // TODO(crbug.com/443078007): Add checking for matching tree scopes.
+  return start_root_editable == end_root_editable;
 }
 
 std::optional<ExtendedSelectionOffsetType> AsExtendedSelectionOffsetType(
@@ -2286,6 +2303,17 @@ bool WebContentsAccessibilityAndroid::SetExtendedSelection(
     return false;
   }
 
+  // Text offsets are not supported for nodes that are not text selectable.
+  if (start_offset_enum == ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT &&
+      !start_node->IsTextSelectable()) {
+    return false;
+  }
+
+  if (end_offset_enum == ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT &&
+      !end_node->IsTextSelectable()) {
+    return false;
+  }
+
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
   if (!root_manager) {
@@ -2305,7 +2333,12 @@ bool WebContentsAccessibilityAndroid::SetExtendedSelection(
     return false;
   }
 
-  if (!IsSelectionValid(root_manager, start_position, end_position)) {
+  if (!IsSelectionPositionValid(start_position) ||
+      !IsSelectionPositionValid(end_position)) {
+    return false;
+  }
+
+  if (!IsSelectionValid(start_position, end_position)) {
     return false;
   }
 

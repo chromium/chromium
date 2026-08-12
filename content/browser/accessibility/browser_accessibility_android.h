@@ -78,11 +78,12 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool IsSubscript() const;
   bool IsSuperscript() const;
   bool IsTableHeader() const;
-  bool IsTextSelectable() const;
 
-  // Returns true if this node acts as a selection boundary that blocks
-  // selections from crossing into or out of its sub-hierarchy.
-  bool IsSelectionContextBoundary() const;
+  // This property tells Android if the node can be selected using text offsets.
+  // In Blink, WebAXObject::SetSelection() treats offsets as text offsets only
+  // when the target node is a text object (IsTextObject()) or an atomic text
+  // field (IsAtomicTextField()), otherwise it treats them as child indices.
+  bool IsTextSelectable() const;
   bool IsVisibleToUser() const;
   bool ShouldUsePaneTitle() const;
 

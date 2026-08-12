@@ -1111,7 +1111,19 @@ BrowserAccessibilityManagerAndroid::ConvertAndroidSelectionPositionToChrome(
     int32_t offset,
     ExtendedSelectionOffsetType offset_type) {
   if (offset_type == ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT) {
-    return node->CreatePositionForSelectionAt(offset);
+    ui::BrowserAccessibility::AXPosition position =
+        node->CreatePositionForSelectionAt(offset);
+    // If the node is an empty text-selectable container (e.g., an empty
+    // paragraph or heading treated as an Android TextView) with no text
+    // descendants, `CreatePositionForSelectionAt` returns a text position
+    // anchored at the container itself. Blink expects text positions only on
+    // text nodes or text fields, so convert it to a tree position.
+    if (position->IsTextPosition() &&
+        !position->GetAnchor()->data().IsTextField() &&
+        !position->GetAnchor()->IsText()) {
+      return position->AsTreePosition();
+    }
+    return position;
   }
 
   // When node 'c' is a child of node 'p' in the Android accessibility tree,

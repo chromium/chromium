@@ -510,67 +510,8 @@ bool BrowserAccessibilityAndroid::IsTableHeader() const {
   return ui::IsTableHeader(GetRole());
 }
 
-// Returns true if this node acts as a selection boundary that blocks selections
-// from crossing into or out of its sub-hierarchy.
-//
-// RATIONALE:
-// In standard Chromium editing and DOM selection adjustments (implemented by
-// Blink's `SelectionAdjuster` and range checks):
-// 1. Text Fields (Editable Regions / Root Editables): A selection is allowed to
-//    start and end inside the same editable text field, but cannot span from
-//    one editable field to another, or cross the boundaries of an editable
-//    field.
-// 2. Collapsed or Media Widgets: DOM selections (SelectionInDomTree) cannot
-//    cross user-agent shadow root boundaries (e.g. from outside into a
-//    collapsed dropdown option element or a video/audio player). These
-//    collapsed controls and media widgets act as selection boundaries. Thus, we
-//    identify them as boundaries to block selection requests crossing their
-//    edges, while layouted non-collapsed controls (like visible listboxes)
-//    remain valid.
-//
-// TODO(crbug.com/443078007): Consider generalizing this function by exposing a
-// User-Agent shadow root indicator (e.g.
-// ax::mojom::BoolAttribute::kInUserAgentShadowDom) during tree serialization
-// from Blink (blink_ax_tree_source.cc). It will allow the selection validation
-// logic to fully match the Blink implementation without having to enumerate
-// component roles (like kVideo, kAudio, etc.) or states here.
-bool BrowserAccessibilityAndroid::IsSelectionContextBoundary() const {
-  ax::mojom::Role role = GetRole();
-  // Text field containers.
-  if (IsTextField()) {
-    return true;
-  }
-  // Collapsed input/selection controls (e.g. collapsed comboboxes).
-  if (ui::IsControl(role) && HasState(ax::mojom::State::kCollapsed)) {
-    return true;
-  }
-  // Media control widgets (video/audio elements).
-  if (role == ax::mojom::Role::kVideo || role == ax::mojom::Role::kAudio) {
-    return true;
-  }
-  return false;
-}
-
 bool BrowserAccessibilityAndroid::IsTextSelectable() const {
-  // This property tells Android if the node has selectable text, see:
-  // https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo#isTextSelectable%28%29
-  if (IsText() || IsAndroidTextView() || IsTextField()) {
-    return true;
-  }
-  // Apart from text and editable nodes, if a node has text, but does not have
-  // any text selectable children, mark it as text selectable since otherwise
-  // its text cannot be selectable.
-  if (GetTextContentUTF16().empty()) {
-    return false;
-  }
-  for (const auto& child : PlatformChildren()) {
-    if (static_cast<const BrowserAccessibilityAndroid*>(&child)
-            ->IsTextSelectable()) {
-      return false;
-    }
-  }
-
-  return true;
+  return (IsText() || IsAndroidTextView() || IsTextField());
 }
 
 bool BrowserAccessibilityAndroid::IsVisibleToUser() const {

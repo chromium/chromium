@@ -3259,8 +3259,6 @@ public class WebContentsAccessibilityTest {
                 """
                 <p id="paragraph1">Paragraph1</p>
                 <p id="paragraph2">Paragraph2</p>
-                <img id="image" src="pipe.jpg" alt="pipe" />
-                <button id="button">Button</button>
                 <p id="paragraph3">Paragraph3</p>
                 """);
 
@@ -3268,11 +3266,7 @@ public class WebContentsAccessibilityTest {
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
         int paragraph1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph1");
         int paragraph2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph2");
-        int imageVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "image");
-        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button");
         int paragraph3Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph3");
-
-        int imageIndex = 2;
 
         // Select all.
         setAndAssertExtendedSelection(
@@ -3291,31 +3285,6 @@ public class WebContentsAccessibilityTest {
                 paragraph1Vvid,
                 10,
                 OFFSET_TYPE_TEXT);
-
-        // Image, using child offset.
-        setAndAssertExtendedSelection(
-                rootVvid,
-                rootVvid,
-                imageIndex,
-                OFFSET_TYPE_CHILD,
-                rootVvid,
-                imageIndex + 1,
-                OFFSET_TYPE_CHILD,
-                rootVvid,
-                imageIndex,
-                OFFSET_TYPE_CHILD,
-                buttonVvid,
-                0,
-                OFFSET_TYPE_TEXT);
-
-        // Image, using text offset. Text offset 0 points to the beginning of the non-text nodes.
-        setAndAssertExtendedSelection(
-                rootVvid, imageVvid, 0, OFFSET_TYPE_TEXT, buttonVvid, 0, OFFSET_TYPE_TEXT);
-
-        // Button, although it is a non-text node, selecting by text offset as it
-        // is a leaf.
-        setAndAssertExtendedSelection(
-                rootVvid, buttonVvid, 1, OFFSET_TYPE_TEXT, buttonVvid, 3, OFFSET_TYPE_TEXT);
 
         // Invalid id, root.
         Assert.assertEquals(
@@ -3340,6 +3309,259 @@ public class WebContentsAccessibilityTest {
                 false,
                 selectTextOnUiThreadAndWaitForSelectionEvent(
                         rootVvid, paragraph1Vvid, 0, OFFSET_TYPE_TEXT, -1, 1, OFFSET_TYPE_TEXT));
+    }
+
+    /** Test extended selection on empty text selectable node. */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_emptyParagraph() throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="empty_p" tabindex="0"></p>
+                <p id="paragraph">Hello</p>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int emptyPVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "empty_p");
+        int paragraphVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph");
+
+        AccessibilityNodeInfoCompat emptyPNode = createAccessibilityNodeInfo(emptyPVvid);
+        Assert.assertTrue(emptyPNode.isTextSelectable());
+
+        boolean result =
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        emptyPVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        paragraphVvid,
+                        2,
+                        OFFSET_TYPE_TEXT);
+        Assert.assertTrue(result);
+    }
+
+    /** Test extended selection on non-text-selectable nodes. */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_nonTextSelectableNodes() throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="paragraph">Paragraph</p>
+                <img id="image" src="pipe.jpg" alt="pipe" />
+                <button id="button1">Button</button>
+                <button id="button2" aria-label="Button">Button!</button>
+                <input id="button3" type="button" value="Click">
+                <input id="color" type="color" value="#00ff00">
+                <select id="collapsed_select">
+                  <option>Apple</option>
+                </select>
+                <select id="list_select" size="5">
+                  <option id="option1">Apple</option>
+                  <option>Orange</option>
+                  <option>Banana</option>
+                </select>
+                <video id="video" aria-label="Video"></video>
+                """);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int paragraphVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph");
+        int imageVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "image");
+        int button1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button1");
+        int button2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button2");
+        int button3Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button3");
+        int colorVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "color");
+        int collapsedSelectVvid =
+                waitForNodeMatching(sViewIdResourceNameMatcher, "collapsed_select");
+        int listSelectVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "list_select");
+        int option1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "option1");
+        int videoVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "video");
+
+        // A) Text selection inside non-text-selectable nodes with text offsets is not possible.
+        // Image.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid, imageVvid, 0, OFFSET_TYPE_TEXT, imageVvid, 1, OFFSET_TYPE_TEXT));
+
+        // Buttons.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        button1Vvid,
+                        1,
+                        OFFSET_TYPE_TEXT,
+                        button1Vvid,
+                        3,
+                        OFFSET_TYPE_TEXT));
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        button2Vvid,
+                        1,
+                        OFFSET_TYPE_TEXT,
+                        button2Vvid,
+                        3,
+                        OFFSET_TYPE_TEXT));
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        button3Vvid,
+                        1,
+                        OFFSET_TYPE_TEXT,
+                        button3Vvid,
+                        3,
+                        OFFSET_TYPE_TEXT));
+
+        // Color input.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid, colorVvid, 0, OFFSET_TYPE_TEXT, colorVvid, 3, OFFSET_TYPE_TEXT));
+
+        // Collapsed select and list select.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        collapsedSelectVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        collapsedSelectVvid,
+                        1,
+                        OFFSET_TYPE_TEXT));
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        listSelectVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        listSelectVvid,
+                        1,
+                        OFFSET_TYPE_TEXT));
+
+        // Listbox options.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        option1Vvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        option1Vvid,
+                        3,
+                        OFFSET_TYPE_TEXT));
+
+        // Video.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid, videoVvid, 0, OFFSET_TYPE_TEXT, videoVvid, 3, OFFSET_TYPE_TEXT));
+
+        // B) Selection from the beginning of paragraph1 to the middle of non-text-selectable nodes
+        // with text offsets is not possible.
+        // Image.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        paragraphVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        imageVvid,
+                        1,
+                        OFFSET_TYPE_TEXT));
+
+        // Buttons.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        paragraphVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        button1Vvid,
+                        2,
+                        OFFSET_TYPE_TEXT));
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        paragraphVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        button2Vvid,
+                        2,
+                        OFFSET_TYPE_TEXT));
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        paragraphVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        button3Vvid,
+                        2,
+                        OFFSET_TYPE_TEXT));
+
+        // Color input.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        paragraphVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        colorVvid,
+                        3,
+                        OFFSET_TYPE_TEXT));
+
+        // Collapsed select and list select.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        paragraphVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        collapsedSelectVvid,
+                        1,
+                        OFFSET_TYPE_TEXT));
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        paragraphVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        listSelectVvid,
+                        1,
+                        OFFSET_TYPE_TEXT));
+
+        // Listbox options.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        paragraphVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        option1Vvid,
+                        2,
+                        OFFSET_TYPE_TEXT));
+
+        // Video.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid,
+                        paragraphVvid,
+                        0,
+                        OFFSET_TYPE_TEXT,
+                        videoVvid,
+                        3,
+                        OFFSET_TYPE_TEXT));
+
+        // C) Verify that all direct non-text-selectable child nodes can be selected individually
+        // using child offsets.
+        int totalRootChildren = 9;
+        for (int i = 1; i < totalRootChildren; i++) {
+            Assert.assertTrue(
+                    mActivityTestRule.setSelectionOnUiThread(
+                            rootVvid,
+                            rootVvid,
+                            i,
+                            OFFSET_TYPE_CHILD,
+                            rootVvid,
+                            i + 1,
+                            OFFSET_TYPE_CHILD));
+        }
     }
 
     /** Test extended selection on editable node. */
@@ -3639,25 +3861,6 @@ public class WebContentsAccessibilityTest {
                 rootVvid, paragraphVvid, 4, OFFSET_TYPE_TEXT, paragraphVvid, 14, OFFSET_TYPE_TEXT);
     }
 
-    /** Test extended selection on a button with aria label. */
-    @Test
-    @SmallTest
-    public void testPerformAction_setExtendedSelection_buttonWithAriaLabel() throws Throwable {
-        setupTestWithHTML(
-                """
-                <button id="button" aria-label="Button">Button!</button>
-                """);
-
-        // Find node.
-        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button");
-
-        AccessibilityNodeInfoCompat buttonNode = createAccessibilityNodeInfo(buttonVvid);
-
-        // TODO(crbug.com/500206508): This should be true. Fix the issue and add the rest
-        // of the test to select and verify the button text using text offsets.
-        Assert.assertFalse(buttonNode.isTextSelectable());
-    }
-
     /** Test extended selection at the beginning and end of an anchor (e.g. image). */
     @Test
     @SmallTest
@@ -3685,94 +3888,6 @@ public class WebContentsAccessibilityTest {
                 rootVvid,
                 imageIndex + 1,
                 OFFSET_TYPE_CHILD);
-    }
-
-    /**
-     * Test extended selection action behavior when crossing form control/widget boundaries and when
-     * staying within the main document context.
-     */
-    @Test
-    @LargeTest
-    public void testPerformAction_setExtendedSelection_widgetBoundaries() throws Throwable {
-        setupTestWithHTML(
-                """
-                <p>Paragraph1</p>
-                <select id="select">
-                  <option>Apple</option>
-                </select>
-                <p>Paragraph2</p>
-                """);
-
-        // Find nodes.
-        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
-        int paragraph1Vvid = waitForNodeMatching(sTextMatcher, "Paragraph1");
-        int selectVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "select");
-        int optionVvid = waitForNodeMatching(sTextMatcher, "Apple");
-        int paragraph2Vvid = waitForNodeMatching(sTextMatcher, "Paragraph2");
-
-        // Selecting from outside the dropdown to inside the dropdown (crossing widget boundary into
-        // collapsed select MenuListOption) should fail.
-        Assert.assertFalse(
-                mActivityTestRule.setSelectionOnUiThread(
-                        rootVvid,
-                        paragraph1Vvid,
-                        0,
-                        OFFSET_TYPE_TEXT,
-                        optionVvid,
-                        5,
-                        OFFSET_TYPE_TEXT));
-
-        // It should also fail when using child offsets.
-        Assert.assertFalse(
-                mActivityTestRule.setSelectionOnUiThread(
-                        rootVvid,
-                        paragraph1Vvid,
-                        0,
-                        OFFSET_TYPE_TEXT,
-                        selectVvid,
-                        1,
-                        OFFSET_TYPE_CHILD));
-
-        // Selecting from before the dropdown to after the dropdown (staying in the light DOM main
-        // document) should succeed.
-        setAndAssertExtendedSelection(
-                rootVvid, paragraph1Vvid, 0, OFFSET_TYPE_TEXT, paragraph2Vvid, 0, OFFSET_TYPE_TEXT);
-    }
-
-    /** Test extended selection action behavior when crossing video boundaries. */
-    @Test
-    @LargeTest
-    public void testPerformAction_setExtendedSelection_videoBoundaries() throws Throwable {
-        setupTestWithHTML(
-                """
-                <p id="heading">Header</p>
-                <video id="video" aria-label="Video"></video>
-                """);
-
-        // Find nodes.
-        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
-        int headingVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "heading");
-        int videoVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "video");
-
-        // Selection inside video text should succeed.
-        mActivityTestRule.setSelectionOnUiThread(
-                rootVvid, videoVvid, 0, OFFSET_TYPE_TEXT, videoVvid, 3, OFFSET_TYPE_TEXT);
-
-        // Selection from outside the video to after it should succeed.
-        mActivityTestRule.setSelectionOnUiThread(
-                rootVvid, headingVvid, 0, OFFSET_TYPE_TEXT, rootVvid, 2, OFFSET_TYPE_CHILD);
-
-        // Select from outside the video to inside it should fail because selecting into the video
-        // element crosses widget/UA shadow DOM boundaries and is blocked in IsSelectionValid.
-        Assert.assertFalse(
-                mActivityTestRule.setSelectionOnUiThread(
-                        rootVvid,
-                        headingVvid,
-                        0,
-                        OFFSET_TYPE_TEXT,
-                        videoVvid,
-                        3,
-                        OFFSET_TYPE_TEXT));
     }
 
     /** Test extended selection when inline text boxes. */
