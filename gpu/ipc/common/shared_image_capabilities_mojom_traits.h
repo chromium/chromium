@@ -31,11 +31,6 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
   }
 #endif
 
-  static bool supports_luminance_shared_images(
-      const gpu::SharedImageCapabilities& input) {
-    return input.supports_luminance_shared_images;
-  }
-
   static bool supports_r16_shared_images(
       const gpu::SharedImageCapabilities& input) {
     return input.supports_r16_shared_images;

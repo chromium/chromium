@@ -844,8 +844,6 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal;
   const bool is_skia_graphite =
       gr_context_type_ == GrContextType::kGraphiteDawn;
-  shared_image_caps.supports_luminance_shared_images =
-      !is_angle_metal && !is_skia_graphite;
   shared_image_caps.supports_r16_shared_images =
       is_angle_metal || is_skia_graphite;
   shared_image_caps.disable_webgpu_shared_images =

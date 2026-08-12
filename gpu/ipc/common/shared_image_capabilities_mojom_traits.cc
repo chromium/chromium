@@ -18,8 +18,6 @@ bool StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
       data.supports_scanout_shared_images_for_software_video_frames();
 #endif
 
-  out->supports_luminance_shared_images =
-      data.supports_luminance_shared_images();
   out->supports_r16_shared_images = data.supports_r16_shared_images();
   out->supports_ycbcr_nv12_sampling = data.supports_ycbcr_nv12_sampling();
   out->supports_ycbcr_p010_sampling = data.supports_ycbcr_p010_sampling();

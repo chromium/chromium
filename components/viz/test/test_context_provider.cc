@@ -232,12 +232,6 @@ TestContextProvider::TestContextProvider(
 
   shared_image_interface_ =
       base::MakeRefCounted<gpu::TestSharedImageInterface>();
-
-  // By default, luminance textures are supported in GLES2.
-  gpu::SharedImageCapabilities shared_image_caps;
-  shared_image_caps.supports_luminance_shared_images = true;
-
-  shared_image_interface_->SetCapabilities(shared_image_caps);
 }
 
 TestContextProvider::~TestContextProvider() {

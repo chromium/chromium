@@ -26,7 +26,6 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT SharedImageCapabilities {
   bool supports_scanout_shared_images_for_software_video_frames = false;
 #endif
 
-  bool supports_luminance_shared_images = false;
   bool supports_r16_shared_images = false;
   bool supports_ycbcr_nv12_sampling = false;
   bool supports_ycbcr_p010_sampling = false;
