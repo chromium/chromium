@@ -56,7 +56,6 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'recordToolSelectionAction',
       'setActiveModelMode',
       'setActiveToolMode',
-      'setInputMethod',
       'setPage',
       'setPopupSelection',
       'setSmartComposeStats',
@@ -130,10 +129,6 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     this.methodCalled('setSmartComposeStats', {smartComposeStats});
   }
 
-  setInputMethod(inputMethod: InputMethod) {
-    this.methodCalled('setInputMethod', {inputMethod});
-  }
-
   onNavigationLikely(
       line: number, url: Url, navigationPredictor: NavigationPredictor) {
     this.methodCalled('onNavigationLikely', {line, url, navigationPredictor});
@@ -146,7 +141,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   queryAutocomplete(
       queryId: number, input: String16, preventInlineAutocomplete: boolean,
       cursorPosition: number, suggestInventory: SuggestInventory,
-      isOnFocus: boolean, keyword: string) {
+      isOnFocus: boolean, keyword: string, inputMethod: InputMethod) {
     this.methodCalled('queryAutocomplete', {
       queryId,
       input,
@@ -155,6 +150,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       suggestInventory,
       isOnFocus,
       keyword,
+      inputMethod,
     });
   }
 

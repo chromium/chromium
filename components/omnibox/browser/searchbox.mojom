@@ -384,7 +384,8 @@ interface PageHandler {
                     uint32 cursor_position,
                     SuggestInventory suggest_inventory,
                     bool is_on_focus,
-                    string keyword);
+                    string keyword,
+                    InputMethod input_method);
 
   // Cancels the current autocomplete query. Clears the result set if
   // |clear_result| is true.
@@ -405,9 +406,6 @@ interface PageHandler {
   // Sets the Smart Compose stats to be passed during the next navigation.
   SetSmartComposeStats(SmartComposeStats smart_compose_stats);
 
-  // Sets the WebUI-specific input method. Used to for querying autocomplete
-  // and gets reset in the browser every time autocomplete is queried.
-  SetInputMethod(InputMethod input_method);
 
   // Sets the native OmniboxEditModel popup selection.
   // TODO(crbug.com/483117840): This drives some omnibox state affecting

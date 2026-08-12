@@ -12,7 +12,7 @@ import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/c
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DriveDisclaimerStatus, DriveUploadError, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, DriveUploadError, InputMethod, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -512,8 +512,16 @@ suite('ComposeboxMixinTest', () => {
     element.queryAutocomplete(/*clearMatches=*/ false);
 
     const args = await searchboxHandler.whenCalled('queryAutocomplete');
-    assertDeepEquals(
-        args, [0, 'hello', false, 3, SuggestInventory.kDefault, false, '']);
+    assertDeepEquals(args, [
+      0,
+      'hello',
+      false,
+      3,
+      SuggestInventory.kDefault,
+      false,
+      '',
+      InputMethod.kKeyboard,
+    ]);
   });
 
   test(
@@ -546,6 +554,7 @@ suite('ComposeboxMixinTest', () => {
           SuggestInventory.kDefault,
           false,
           '',
+          InputMethod.kKeyboard,
         ]);
       });
 
