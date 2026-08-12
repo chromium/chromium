@@ -27,27 +27,35 @@ CORPORA_BUCKET_BASE_URL_BY_TYPE = {
 }
 
 import argparse
-import coverage_consts
 import logging
 from multiprocessing import cpu_count, Pool
 import os
 import re
+import shutil
 import subprocess
 import sys
+import zipfile
+
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_SRC_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, '..', '..'))
+_GSUTIL_PY = os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', 'gsutil.py')
 
 
 def _gsutil(cmd, cwd):
-  subprocess.run(cmd, cwd=cwd)
+  full_cmd = [sys.executable, _GSUTIL_PY] + cmd
+  subprocess.run(full_cmd, cwd=cwd, check=True)
 
 
 def _get_fuzzilli_corpora(arch):
-  output = subprocess.check_output(
-      ['gsutil', 'ls',
-       CORPORA_BUCKET_BASE_URL_BY_TYPE[FUZZILLI_CORPORA_TYPE]]).decode('utf-8')
+  cmd = [
+      sys.executable, _GSUTIL_PY, 'ls',
+      CORPORA_BUCKET_BASE_URL_BY_TYPE[FUZZILLI_CORPORA_TYPE]
+  ]
+  output = subprocess.check_output(cmd).decode('utf-8')
   regex = {
-      'x64': 'autozilli-[0-9]+\.tgz',
-      'x86': 'autozilli-x86-[0-9]+\.tgz',
-      'arm64': 'autozilli-arm64-[0-9]+\.tgz',
+      'x64': r'autozilli-[0-9]+\.tgz',
+      'x86': r'autozilli-x86-[0-9]+\.tgz',
+      'arm64': r'autozilli-arm64-[0-9]+\.tgz',
   }[arch]
   return re.findall(regex, output)
 
@@ -66,8 +74,8 @@ def _download_corpus(args):
     corpus_dir = target
     corpus_url = os.path.join(url, target, 'latest.zip')
 
-  subprocess.run(['mkdir', corpus_dir], cwd=download_dir)
-  cmd = ['gsutil', 'cp', corpus_url, corpus_dir]
+  os.makedirs(os.path.join(download_dir, corpus_dir), exist_ok=True)
+  cmd = ['cp', corpus_url, corpus_dir]
   _gsutil(cmd, download_dir)
 
 
@@ -75,14 +83,15 @@ def _unzip_corpus(args):
   target = args[0]
   download_dir = args[1]
   target_folder = os.path.join(download_dir, target)
-  subprocess.run(['unzip', 'latest.zip'], cwd=target_folder)
-  subprocess.run(['rm', 'latest.zip'], cwd=target_folder)
-  try:
-    # Unzipping the corpora often also contains a "regressions" folder, which
-    # is a subset of the total corpus, so can be ignored/removed
-    subprocess.run(['rm', '-rf', 'regressions'], cwd=target_folder)
-  except:
-    pass
+  zip_path = os.path.join(target_folder, 'latest.zip')
+  with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+    zip_ref.extractall(target_folder)
+  os.remove(zip_path)
+
+  # Unzipping the corpora often also contains a "regressions" folder, which
+  # is a subset of the total corpus, so can be ignored/removed
+  regressions_dir = os.path.join(target_folder, 'regressions')
+  shutil.rmtree(regressions_dir, ignore_errors=True)
 
 
 def _unzip_fuzzilli_corpus(args):
@@ -90,8 +99,9 @@ def _unzip_fuzzilli_corpus(args):
   download_dir = args[1]
   base, _ = os.path.splitext(corpus)
   corpus_dir = os.path.join(download_dir, base)
-  subprocess.run(['tar', 'xzvf', corpus], cwd=corpus_dir)
-  subprocess.run(['rm', corpus], cwd=corpus_dir)
+  archive_path = os.path.join(corpus_dir, corpus)
+  shutil.unpack_archive(archive_path, corpus_dir)
+  os.remove(archive_path)
 
 
 def _ParseCommandArguments():
@@ -126,28 +136,22 @@ def _ParseCommandArguments():
 
 def Main():
   args = _ParseCommandArguments()
-  exit
 
-  if not args.download_dir:
-    logging.error("No download_dir given")
-    exit
   if not os.path.isdir(args.download_dir):
     logging.error("%s does not exist or is not a directory" % args.download_dir)
-    exit
-  if not args.build_dir:
-    logging.error("No build_dir given")
-    exit
+    return 1
   if not os.path.isdir(args.build_dir):
     logging.error("%s does not exist or is not a directory" % args.build_dir)
-    exit
+    return 1
 
   if args.corpora_type == FUZZILLI_CORPORA_TYPE:
     corpora_to_download = _get_fuzzilli_corpora(args.arch)
   else:
-    corpora_to_download = []
+    corpora_to_download = set()
     for target in os.listdir(args.build_dir):
-      if target.endswith('_fuzzer'):
-        corpora_to_download.append(target)
+      if target.endswith(('_fuzzer', '_fuzzer.exe')):
+        target_name = target.removesuffix('.exe')
+        corpora_to_download.add(target_name)
 
   print("Corpora to download: " + str(corpora_to_download))
 
