@@ -140,7 +140,9 @@ class AuthenticationService : public KeyedService,
 
   // Shows the MDM Error dialog for `identity` if it has an associated MDM
   // error. Returns true if `identity` had an associated error, false otherwise.
-  bool ShowMDMErrorDialogForIdentity(id<SystemIdentity> identity);
+  bool ShowMDMErrorDialogForIdentity(
+      id<SystemIdentity> identity,
+      base::OnceCallback<void(bool)> callback = base::NullCallback());
 
   // Returns a weak pointer of this.
   base::WeakPtr<AuthenticationService> GetWeakPtr();

@@ -525,9 +525,16 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
   [_trustedVaultReauthenticationCoordinator start];
 }
 
-- (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity {
+- (void)openMDMErrorDialogWithSystemIdentity:(id<SystemIdentity>)identity
+                                  completion:(ProceduralBlock)completion {
   [self stopChildrenCoordinators];
-  _authenticationService->ShowMDMErrorDialogForIdentity(identity);
+  base::OnceCallback<void(bool)> callback = completion
+                                                ? base::BindOnce(^void(bool) {
+                                                    completion();
+                                                  })
+                                                : base::NullCallback();
+  _authenticationService->ShowMDMErrorDialogForIdentity(identity,
+                                                        std::move(callback));
 }
 
 - (void)openBookmarksLimitExceededHelp {

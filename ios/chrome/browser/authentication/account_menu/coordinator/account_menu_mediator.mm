@@ -392,16 +392,26 @@
       } else {
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_ErrorButton_MDM"));
+        self.userInteractionsBlocked = YES;
+        __weak __typeof(self) weakSelf = self;
         [self.syncErrorSettingsCommandHandler
-            openMDMErrodDialogWithSystemIdentity:_primaryIdentityBeforeSignin];
+            openMDMErrorDialogWithSystemIdentity:_primaryIdentityBeforeSignin
+                                      completion:^{
+                                        [weakSelf accountMenuIsUsable];
+                                      }];
       }
       break;
     }
     case syncer::SyncService::UserActionableError::kDeviceManagementError: {
       base::RecordAction(
           base::UserMetricsAction("Signin_AccountMenu_ErrorButton_MDM"));
+      self.userInteractionsBlocked = YES;
+      __weak __typeof(self) weakSelf = self;
       [self.syncErrorSettingsCommandHandler
-          openMDMErrodDialogWithSystemIdentity:_primaryIdentityBeforeSignin];
+          openMDMErrorDialogWithSystemIdentity:_primaryIdentityBeforeSignin
+                                    completion:^{
+                                      [weakSelf accountMenuIsUsable];
+                                    }];
       break;
     }
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:

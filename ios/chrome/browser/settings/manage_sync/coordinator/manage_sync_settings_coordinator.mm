@@ -692,8 +692,18 @@ enum class ActionAfterReauth {
   [_trustedVaultReauthenticationCoordinator start];
 }
 
-- (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity {
-  self.authService->ShowMDMErrorDialogForIdentity(identity);
+- (void)openMDMErrorDialogWithSystemIdentity:(id<SystemIdentity>)identity
+                                  completion:(ProceduralBlock)completion {
+  [self.viewController preventUserInteraction];
+  __weak __typeof(self) weakSelf = self;
+  base::OnceCallback<void(bool)> callback = base::BindOnce(^void(bool) {
+    [weakSelf.viewController allowUserInteraction];
+    if (completion) {
+      completion();
+    }
+  });
+  self.authService->ShowMDMErrorDialogForIdentity(identity,
+                                                  std::move(callback));
 }
 
 - (void)openBookmarksLimitExceededHelp {

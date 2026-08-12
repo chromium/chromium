@@ -578,8 +578,12 @@ bool AuthenticationService::HasCachedMDMErrorForIdentity(
 }
 
 bool AuthenticationService::ShowMDMErrorDialogForIdentity(
-    id<SystemIdentity> identity) {
+    id<SystemIdentity> identity,
+    base::OnceCallback<void(bool)> callback) {
   if (!identity) {
+    if (callback) {
+      std::move(callback).Run(false);
+    }
     return false;
   }
 
@@ -592,8 +596,13 @@ bool AuthenticationService::ShowMDMErrorDialogForIdentity(
         GoogleServiceAuthError::State::DEVICE_MANAGEMENT_ERROR) {
       GetApplicationContext()
           ->GetSystemIdentityManager()
-          ->DisplayMDMNotification(identity, error, base::DoNothing());
+          ->DisplayMDMNotification(
+              identity, error,
+              callback.is_null() ? base::DoNothing() : std::move(callback));
       return true;
+    }
+    if (callback) {
+      std::move(callback).Run(false);
     }
     return false;
   }
@@ -601,10 +610,14 @@ bool AuthenticationService::ShowMDMErrorDialogForIdentity(
   id<RefreshAccessTokenError> cached_error = GetCachedMDMError(identity);
   if (cached_error) {
     GetApplicationContext()->GetSystemIdentityManager()->HandleMDMNotification(
-        identity, ActiveIdentities(), cached_error, base::DoNothing());
+        identity, ActiveIdentities(), cached_error,
+        callback.is_null() ? base::DoNothing() : std::move(callback));
     return true;
   }
 
+  if (callback) {
+    std::move(callback).Run(false);
+  }
   return false;
 }
 
