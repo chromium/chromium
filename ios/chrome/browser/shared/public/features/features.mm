@@ -8,10 +8,10 @@
 #import <string>
 #import <vector>
 
+#import "base/containers/fixed_flat_set.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
-#import "components/country_codes/country_codes.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync/base/features.h"
 #import "components/sync_preferences/features.h"
@@ -580,6 +580,37 @@ BASE_FEATURE(kIOSMiniMapUniversalLink, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSMiniMapUniversalLinkCounterfactual,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
+
+// Country codes where Mini Map Universal Links are excluded.
+constexpr auto kExcludedCountryCodes =
+    base::MakeFixedFlatSet<std::string_view>({
+        "at", "be", "bg", "cy", "cz", "de", "dk", "ee", "es", "fi", "fr",
+        "gr", "hr", "hu", "ie", "is", "it", "li", "lt", "lu", "lv", "mt",
+        "ng", "nl", "no", "pl", "pt", "ro", "se", "si", "sk", "tr",
+    });
+
+// Checks whether the user is located in an excluded country.
+bool IsInExcludedCountry() {
+  ApplicationContext* application_context = GetApplicationContext();
+  variations::VariationsService* variations_service = nullptr;
+  if (application_context) {
+    variations_service = application_context->GetVariationsService();
+  }
+  std::string country_code =
+      base::ToLowerASCII(variations::GetCurrentCountryCode(variations_service));
+  return kExcludedCountryCodes.contains(country_code);
+}
+
+}  // namespace
+
+bool IsMiniMapUniversalLinkEnabled() {
+  if (IsInExcludedCountry()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink);
+}
 
 BASE_FEATURE(kIOSMiniMapLinkifiedAddress, base::FEATURE_DISABLED_BY_DEFAULT);
 

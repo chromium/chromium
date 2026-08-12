@@ -8,7 +8,6 @@ source_set("features") {
     "features.mm",
   ]
   deps = [
-    "//components/country_codes",
     "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/public",
     "//components/sync/base:features",

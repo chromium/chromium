@@ -304,7 +304,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:[self detectAddressItem]
       toSectionWithIdentifier:SectionIdentifierSettings];
 
-  if (base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink)) {
+  if (IsMiniMapUniversalLinkEnabled()) {
     [model addItem:[self miniMapShowNativeViewItem]
         toSectionWithIdentifier:SectionIdentifierSettings];
   }

@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -113,6 +115,37 @@ TEST_F(MiniMapServiceTest, TestMiniMapIsMapsInstalled) {
       postNotificationName:UIApplicationDidBecomeActiveNotification
                     object:nil];
   EXPECT_FALSE(mini_map_service_->IsGoogleMapsInstalled());
+}
+
+class MiniMapUniversalLinkTest : public PlatformTest {
+ protected:
+  web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  IOSChromeScopedTestingVariationsService scoped_variations_service_;
+};
+
+// Tests for IsMiniMapUniversalLinkEnabled behavior.
+TEST_F(MiniMapUniversalLinkTest, TestMiniMapUniversalLinkEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSMiniMapUniversalLink);
+  scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
+  EXPECT_TRUE(IsMiniMapUniversalLinkEnabled());
+}
+
+TEST_F(MiniMapUniversalLinkTest,
+       TestMiniMapUniversalLinkDisabledWhenFlagIsOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kIOSMiniMapUniversalLink);
+  scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
+  EXPECT_FALSE(IsMiniMapUniversalLinkEnabled());
+}
+
+TEST_F(MiniMapUniversalLinkTest,
+       TestMiniMapUniversalLinkDisabledWhenCountryExcluded) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSMiniMapUniversalLink);
+  scoped_variations_service_.Get()->OverrideStoredPermanentCountry("fr");
+  EXPECT_FALSE(IsMiniMapUniversalLinkEnabled());
 }
 
 using MiniMapServiceCounterfactualTest = PlatformTest;

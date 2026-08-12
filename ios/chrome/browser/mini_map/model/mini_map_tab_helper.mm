@@ -123,7 +123,7 @@ void MiniMapTabHelper::WebStateDestroyed() {
 bool MiniMapTabHelper::ShouldInterceptRequest(
     NSURL* url,
     ui::PageTransition page_transition) {
-  if (!base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink) &&
+  if (!IsMiniMapUniversalLinkEnabled() &&
       !base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual)) {
     return false;
   }

@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/chrome/test/providers/mini_map/test_mini_map.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -83,6 +85,7 @@ class MiniMapTabHelperTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
+    scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
     feature_list_.InitAndEnableFeature(kIOSMiniMapUniversalLink);
 
     factory_ = [[MiniMapTabHelperTestMiniMapControllerFactory alloc] init];
@@ -182,6 +185,8 @@ class MiniMapTabHelperTest : public PlatformTest {
 
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  IOSChromeScopedTestingVariationsService scoped_variations_service_;
   MiniMapTabHelperTestMiniMapControllerFactory* factory_;
   std::unique_ptr<TestProfileIOS> profile_;
   id application_;
@@ -429,9 +434,9 @@ TEST_F(MiniMapTabHelperTest, TestReentrancy) {
 
 // Test that the counterfactual flag causes the URL to be modified and opened.
 TEST_F(MiniMapTabHelperTest, TestCounterfactualLogging) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kIOSMiniMapUniversalLinkCounterfactual);
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({kIOSMiniMapUniversalLinkCounterfactual},
+                                 {kIOSMiniMapUniversalLink});
 
   NSString* const kGoogleMapsLink =
       @"https://www.google.com/maps/foo?valid=true";
@@ -468,9 +473,9 @@ TEST_F(MiniMapTabHelperTest, TestCounterfactualLogging) {
 // Test that the counterfactual flag causes the URL to be modified and opened
 // even when the transition type includes qualifiers (e.g. redirect).
 TEST_F(MiniMapTabHelperTest, TestCounterfactualLoggingWithRedirect) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kIOSMiniMapUniversalLinkCounterfactual);
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({kIOSMiniMapUniversalLinkCounterfactual},
+                                 {kIOSMiniMapUniversalLink});
 
   NSString* const kGoogleMapsLink =
       @"https://www.google.com/maps/foo?valid=true";
@@ -498,8 +503,8 @@ TEST_F(MiniMapTabHelperTest, TestCounterfactualLoggingWithRedirect) {
 // Test that when both the experiment feature and counterfactual are disabled,
 // the request is not intercepted at all.
 TEST_F(MiniMapTabHelperTest, TestExperimentDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{kIOSMiniMapUniversalLink,
                              kIOSMiniMapUniversalLinkCounterfactual});

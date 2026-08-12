@@ -529,6 +529,10 @@ BASE_DECLARE_FEATURE(kIOSMiniMapUniversalLink);
 // experiment.
 BASE_DECLARE_FEATURE(kIOSMiniMapUniversalLinkCounterfactual);
 
+// Returns true if kIOSMiniMapUniversalLink is enabled and the current country
+// is not in the excluded list.
+bool IsMiniMapUniversalLinkEnabled();
+
 // Feature flag to open linkified address in Maps native preview.
 BASE_DECLARE_FEATURE(kIOSMiniMapLinkifiedAddress);
 

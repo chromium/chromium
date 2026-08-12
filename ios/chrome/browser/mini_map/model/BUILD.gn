@@ -51,6 +51,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/chrome/test/providers/mini_map",
     "//ios/web/public/test",
     "//third_party/ocmock",
