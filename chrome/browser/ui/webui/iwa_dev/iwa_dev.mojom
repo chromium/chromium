@@ -83,6 +83,10 @@ interface PageHandler {
   // Triggers an update for an app installed through dev proxy.
   UpdateDevProxyInstalledApp(string app_id)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Triggers an update for a manifest-installed dev mode app.
+  UpdateManifestInstalledApp(string app_id)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 
 // Interface for the browser to push events to the WebUI page.

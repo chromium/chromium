@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
@@ -155,6 +156,22 @@ iwa_dev::mojom::UpdateManifestPtr MapToMojomUpdateManifest(
   return update_manifest_ptr;
 }
 
+bool UpdateFound(web_app::IwaUpdateCheckAndPrepareSuccess status) {
+  switch (status) {
+    case web_app::IwaUpdateCheckAndPrepareSuccess::
+        kUpdateFoundAndSavedInDatabase:
+    case web_app::IwaUpdateCheckAndPrepareSuccess::
+        kPinnedVersionUpdateFoundAndSavedInDatabase:
+    case web_app::IwaUpdateCheckAndPrepareSuccess::
+        kDowngradeVersionFoundAndSavedInDatabase:
+    case web_app::IwaUpdateCheckAndPrepareSuccess::kUpdateAlreadyPending:
+      return true;
+    case web_app::IwaUpdateCheckAndPrepareSuccess::kNoUpdateFound:
+    case web_app::IwaUpdateCheckAndPrepareSuccess::kUpdateFound:
+      return false;
+  }
+}
+
 }  // namespace
 
 class IwaDevPageHandler::LocalBundleSelectListener
@@ -212,6 +229,7 @@ IwaDevPageHandler::IwaDevPageHandler(
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
   install_observation_.Observe(&provider_->install_manager());
+  update_observation_.Observe(&provider_->isolated_web_app_update_manager());
 }
 
 IwaDevPageHandler::~IwaDevPageHandler() = default;
@@ -384,18 +402,125 @@ void IwaDevPageHandler::UpdateDevProxyInstalledApp(
   ApplyDevModeUpdate(app_id, /*location=*/std::nullopt, std::move(callback));
 }
 
+void IwaDevPageHandler::UpdateManifestInstalledApp(
+    const std::string& app_id,
+    UpdateManifestInstalledAppCallback callback) {
+  if (manifest_update_requests_.contains(app_id)) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument,
+        "Please wait for the pending update request to resolve first.")));
+    return;
+  }
+
+  ASSIGN_OR_RETURN(
+      const web_app::WebApp* iwa, GetInstalledAppById(app_id),
+      [&](mojo_base::mojom::ErrorPtr error) {
+        std::move(callback).Run(base::unexpected(std::move(error)));
+      });
+
+  const web_app::IsolationData& isolation_data = *iwa->isolation_data();
+  if (!isolation_data.update_manifest_url()) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument,
+        "Only dev-mode apps with update_manifest_url set can be updated via "
+        "this routine.")));
+    return;
+  }
+
+  manifest_update_requests_.emplace(app_id, std::move(callback));
+
+  provider_->isolated_web_app_update_manager().DiscoverAndPrepareUpdate(
+      *web_app::IsolatedWebAppUrlInfo::Create(iwa->scope()),
+      *isolation_data.update_manifest_url(),
+      /*update_channel=*/
+      isolation_data.update_channel().value_or(
+          web_app::UpdateChannel::default_channel()),
+      /*allow_downgrades=*/false,
+      /*pinned_version=*/std::nullopt,
+      /*dev_mode=*/true);
+}
+
+void IwaDevPageHandler::OnUpdateDiscoverAndPrepareTaskCompleted(
+    const webapps::AppId& app_id,
+    web_app::IwaUpdateCheckAndPrepareResult result) {
+  ASSIGN_OR_RETURN(
+      web_app::IwaUpdateCheckAndPrepareSuccess status, result,
+      [&](web_app::IwaUpdateCheckAndPrepareError error) {
+        auto callback = TakeManifestUpdateRequest(app_id);
+        if (callback) {
+          std::move(*callback).Run(
+              base::unexpected(mojo_base::mojom::Error::New(
+                  mojo_base::mojom::Code::kInvalidArgument,
+                  web_app::IsolatedWebAppUpdateCheckAndPrepareTask::
+                      ErrorToString(error))));
+        }
+      });
+
+  if (UpdateFound(status)) {
+    return;
+  }
+
+  auto callback = TakeManifestUpdateRequest(app_id);
+  if (callback) {
+    std::move(*callback).Run(base::unexpected(
+        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                     "App is already on the latest version.")));
+  }
+}
+
+void IwaDevPageHandler::OnUpdateApplyTaskCompleted(
+    const webapps::AppId& app_id,
+    web_app::IsolatedWebAppApplyUpdateCommandResult status) {
+  auto callback = TakeManifestUpdateRequest(app_id);
+  if (!callback) {
+    return;
+  }
+
+  RETURN_IF_ERROR(
+      GetInstalledAppById(app_id), [&](mojo_base::mojom::ErrorPtr error) {
+        std::move(*callback).Run(base::unexpected(std::move(error)));
+      });
+
+  if (status.has_value()) {
+    std::move(*callback).Run(std::monostate());
+  } else {
+    std::move(*callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, status.error().message)));
+  }
+}
+
+std::optional<IwaDevPageHandler::UpdateManifestInstalledAppCallback>
+IwaDevPageHandler::TakeManifestUpdateRequest(const webapps::AppId& app_id) {
+  auto itr = manifest_update_requests_.find(app_id);
+  if (itr == manifest_update_requests_.end()) {
+    return std::nullopt;
+  }
+  auto callback = std::move(itr->second);
+  manifest_update_requests_.erase(itr);
+  return callback;
+}
+
+base::expected<const web_app::WebApp*, mojo_base::mojom::ErrorPtr>
+IwaDevPageHandler::GetInstalledAppById(const std::string& app_id) {
+  const web_app::WebApp* iwa = provider_->registrar_unsafe().GetAppById(
+      app_id, web_app::WebAppFilter::IsDevModeIsolatedApp());
+  if (!iwa) {
+    return base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "App not found."));
+  }
+  return iwa;
+}
+
 void IwaDevPageHandler::ApplyDevModeUpdate(
     const std::string& app_id,
     base::optional_ref<const web_app::IwaSourceDevModeWithFileOp> location,
     base::OnceCallback<void(
         base::expected<std::monostate, mojo_base::mojom::ErrorPtr>)> callback) {
-  const web_app::WebApp* iwa = provider_->registrar_unsafe().GetAppById(
-      app_id, web_app::WebAppFilter::IsDevModeIsolatedApp());
-  if (!iwa) {
-    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kInvalidArgument, "App not found.")));
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      const web_app::WebApp* iwa, GetInstalledAppById(app_id),
+      [&](mojo_base::mojom::ErrorPtr error) {
+        std::move(callback).Run(base::unexpected(std::move(error)));
+      });
 
   ASSIGN_OR_RETURN(
       web_app::IwaSourceDevMode source,

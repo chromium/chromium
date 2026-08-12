@@ -96,6 +96,21 @@ suite('<iwa-dev-app>', () => {
     };
   }
 
+  function createManifestInstalledAppInfo(): IwaDevModeAppInfo {
+    return {
+      appId: 'test-manifest-app-id',
+      webBundleId: 'test-bundle-id',
+      name: 'Test Manifest App',
+      installedVersion: '1.0.0',
+      source: {
+        updateInfo: {
+          updateManifestUrl: 'https://example.com/manifest.json',
+          updateChannel: 'default',
+        },
+      } as unknown as IwaDevModeAppInfo['source'],
+    };
+  }
+
   function getListItems(): NodeListOf<InstalledAppListItemElement> {
     return app.shadowRoot.querySelectorAll<InstalledAppListItemElement>(
         'installed-app-list-item');
@@ -379,6 +394,59 @@ suite('<iwa-dev-app>', () => {
         assertTrue(app.$.toast.open);
         assertEquals(
             'Update failed: Network error', app.$.toast.textContent?.trim());
+      });
+
+  test(
+      'calls updateManifestInstalledApp on update click for ' +
+          'manifest app (success)',
+      async () => {
+        const appInfo = createManifestInstalledAppInfo();
+        handler.setResultFor(
+            'getInstalledAppsInfo', Promise.resolve({apps: [appInfo]}));
+        handler.setResultFor('updateManifestInstalledApp', Promise.resolve());
+        createApp(/*devModeEnabled=*/ true);
+
+        await handler.whenCalled('getInstalledAppsInfo');
+        await microtasksFinished();
+
+        assertEquals(1, getListItems().length);
+
+        clickUpdateButton();
+
+        const appId = await handler.whenCalled('updateManifestInstalledApp');
+        assertEquals('test-manifest-app-id', appId);
+
+        await waitForUpdateCompletion();
+        assertTrue(app.$.toast.open);
+        assertEquals('Update successful!', app.$.toast.textContent?.trim());
+      });
+
+  test(
+      'calls updateManifestInstalledApp on update click for ' +
+          'manifest app (error)',
+      async () => {
+        const appInfo = createManifestInstalledAppInfo();
+        handler.setResultFor(
+            'getInstalledAppsInfo', Promise.resolve({apps: [appInfo]}));
+        handler.setResultFor('updateManifestInstalledApp', Promise.reject({
+          message: 'App is already on the latest version.',
+        }));
+        createApp(/*devModeEnabled=*/ true);
+
+        await handler.whenCalled('getInstalledAppsInfo');
+        await microtasksFinished();
+
+        assertEquals(1, getListItems().length);
+
+        clickUpdateButton();
+
+        await handler.whenCalled('updateManifestInstalledApp');
+        await waitForUpdateCompletion();
+
+        assertTrue(app.$.toast.open);
+        assertEquals(
+            'Update failed: App is already on the latest version.',
+            app.$.toast.textContent?.trim());
       });
 
   test('opens install dialog on install button click', async () => {

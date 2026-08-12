@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Empty} from '//resources/mojo/mojo/public/mojom/base/empty.mojom-webui.js';
@@ -72,8 +73,11 @@ export class IwaDevAppElement extends CrLitElement {
       updatePromise =
           this.browserProxy_.handler.selectAndUpdateAppFromLocalWebBundle(
               app.appId);
+    } else if (app.source.updateInfo) {
+      updatePromise =
+          this.browserProxy_.handler.updateManifestInstalledApp(app.appId);
     } else {
-      return;
+      assertNotReached();
     }
 
     return Promise
