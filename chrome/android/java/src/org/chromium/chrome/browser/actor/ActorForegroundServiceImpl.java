@@ -250,6 +250,7 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
                         notificationId,
                         notification,
                         ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+        Log.d(TAG, "Successfully promoted to foreground");
     }
 
     @VisibleForTesting
