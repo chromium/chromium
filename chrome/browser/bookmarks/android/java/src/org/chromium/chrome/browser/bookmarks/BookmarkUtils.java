@@ -962,4 +962,22 @@ public class BookmarkUtils {
         sReadingListSupportedForTesting = supported;
         ResettersForTesting.register(() -> sReadingListSupportedForTesting = null);
     }
+
+    /** Returns the number of non-folder bookmarks in the given list of bookmark IDs. */
+    public static int getNonFolderBookmarkCount(BookmarkModel bookmarkModel, List<BookmarkId> ids) {
+        int count = 0;
+        for (BookmarkId id : ids) {
+            BookmarkItem item = bookmarkModel.getBookmarkById(id);
+            if (item != null && !item.isFolder()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /** Returns the number of non-folder bookmarks that are direct children of the given folder. */
+    public static int getChildNonFolderBookmarkCountForFolder(
+            BookmarkModel bookmarkModel, BookmarkId folderId) {
+        return getNonFolderBookmarkCount(bookmarkModel, bookmarkModel.getChildIds(folderId));
+    }
 }

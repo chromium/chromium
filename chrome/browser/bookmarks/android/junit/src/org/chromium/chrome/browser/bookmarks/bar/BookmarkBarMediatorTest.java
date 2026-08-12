@@ -919,12 +919,12 @@ public class BookmarkBarMediatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
-    public void testContextMenu_OpenAll() {
+    public void testContextMenu_OpenBookmarksInNewTabs() {
         BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
         BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
         List<BookmarkId> ids = List.of(id1, id2);
 
-        mMediator.openAll(ids);
+        mMediator.openBookmarksInNewTabs(ids);
 
         verify(mBookmarkOpener)
                 .openBookmarksInNewTabs(
@@ -934,12 +934,12 @@ public class BookmarkBarMediatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
-    public void testContextMenu_OpenAllInNewWindow() {
+    public void testContextMenu_OpenBookmarksInNewWindow() {
         BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
         BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
         List<BookmarkId> ids = List.of(id1, id2);
 
-        mMediator.openAllInNewWindow(ids);
+        mMediator.openBookmarksInNewWindow(ids);
 
         verify(mBookmarkOpener).openBookmarksInNewWindow(eq(ids), eq(false));
     }
@@ -947,12 +947,12 @@ public class BookmarkBarMediatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
-    public void testContextMenu_OpenAllInIncognitoWindow() {
+    public void testContextMenu_OpenBookmarksInIncognitoWindow() {
         BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
         BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
         List<BookmarkId> ids = List.of(id1, id2);
 
-        mMediator.openAllInIncognitoWindow(ids);
+        mMediator.openBookmarksInIncognitoWindow(ids);
 
         verify(mBookmarkOpener).openBookmarksInNewWindow(eq(ids), eq(true));
     }
@@ -960,15 +960,63 @@ public class BookmarkBarMediatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
-    public void testContextMenu_OpenAllInNewTabGroup_PropagatesTitle() {
+    public void testContextMenu_OpenBookmarksInNewTabGroup() {
         BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
         BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
         List<BookmarkId> ids = List.of(id1, id2);
         String title = "Test Group Title";
 
-        mMediator.openAllInNewTabGroup(ids, title);
+        mMediator.openBookmarksInNewTabGroup(ids, title);
 
         verify(mBookmarkOpener).openBookmarksInNewTabGroup(eq(ids), eq(false), eq(title));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
+    public void testContextMenu_OpenFolderInNewTabs() {
+        BookmarkId folderId = new BookmarkId(1, BookmarkType.NORMAL);
+
+        mMediator.openFolderInNewTabs(folderId);
+
+        verify(mBookmarkOpener)
+                .openFolderBookmarksInNewTabs(
+                        eq(folderId), eq(false), eq(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
+    public void testContextMenu_OpenFolderInNewWindow() {
+        BookmarkId folderId = new BookmarkId(1, BookmarkType.NORMAL);
+
+        mMediator.openFolderInNewWindow(folderId);
+
+        verify(mBookmarkOpener).openFolderBookmarksInNewWindow(eq(folderId), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
+    public void testContextMenu_OpenFolderInIncognitoWindow() {
+        BookmarkId folderId = new BookmarkId(1, BookmarkType.NORMAL);
+
+        mMediator.openFolderInIncognitoWindow(folderId);
+
+        verify(mBookmarkOpener).openFolderBookmarksInNewWindow(eq(folderId), eq(true));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
+    public void testContextMenu_OpenFolderInNewTabGroup() {
+        BookmarkId folderId = new BookmarkId(1, BookmarkType.NORMAL);
+        String title = "Test Group Title";
+
+        mMediator.openFolderInNewTabGroup(folderId, title);
+
+        verify(mBookmarkOpener)
+                .openFolderBookmarksInNewTabGroup(eq(folderId), eq(false), eq(title));
     }
 
     @Test

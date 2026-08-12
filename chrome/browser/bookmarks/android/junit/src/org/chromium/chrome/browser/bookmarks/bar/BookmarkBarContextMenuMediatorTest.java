@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks.bar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -47,6 +46,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.List;
 
 /** Unit tests for the {@link BookmarkBarContextMenuMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -553,7 +554,7 @@ public class BookmarkBarContextMenuMediatorTest {
                         BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         clickPlural(list, R.plurals.contextmenu_open_all_plural, 1);
-        verify(mContextMenuDelegate).openAll(anyList());
+        verify(mContextMenuDelegate).openFolderInNewTabs(eq(folderId));
         verify(mDismissRunnable).run();
     }
 
@@ -573,7 +574,7 @@ public class BookmarkBarContextMenuMediatorTest {
                         BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         clickPlural(list, R.plurals.contextmenu_open_all_in_new_window_plural, 1);
-        verify(mContextMenuDelegate).openAllInNewWindow(anyList());
+        verify(mContextMenuDelegate).openFolderInNewWindow(eq(folderId));
         verify(mDismissRunnable).run();
     }
 
@@ -593,7 +594,7 @@ public class BookmarkBarContextMenuMediatorTest {
                         BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         clickPlural(list, R.plurals.contextmenu_open_all_in_incognito_window_plural, 1);
-        verify(mContextMenuDelegate).openAllInIncognitoWindow(anyList());
+        verify(mContextMenuDelegate).openFolderInIncognitoWindow(eq(folderId));
         verify(mDismissRunnable).run();
     }
 
@@ -613,7 +614,7 @@ public class BookmarkBarContextMenuMediatorTest {
                         BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         clickPlural(list, R.plurals.contextmenu_open_all_in_new_tab_group_plural, 1);
-        verify(mContextMenuDelegate).openAllInNewTabGroup(anyList(), eq("My Special Folder"));
+        verify(mContextMenuDelegate).openFolderInNewTabGroup(eq(folderId), eq("My Special Folder"));
         verify(mDismissRunnable).run();
     }
 
@@ -758,6 +759,63 @@ public class BookmarkBarContextMenuMediatorTest {
 
         click(list, R.string.contextmenu_always_show_bookmarks_bar);
         verify(mContextMenuDelegate).toggleBookmarksBar();
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testEmptySpaceClickOpenAll() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
+
+        clickPlural(list, R.plurals.contextmenu_open_all_plural, 1);
+        verify(mContextMenuDelegate).openBookmarksInNewTabs(eq(List.of(bookmarkId)));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testEmptySpaceClickOpenAllInNewWindow() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
+
+        clickPlural(list, R.plurals.contextmenu_open_all_in_new_window_plural, 1);
+        verify(mContextMenuDelegate).openBookmarksInNewWindow(eq(List.of(bookmarkId)));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testEmptySpaceClickOpenAllInIncognitoWindow() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
+
+        clickPlural(list, R.plurals.contextmenu_open_all_in_incognito_window_plural, 1);
+        verify(mContextMenuDelegate).openBookmarksInIncognitoWindow(eq(List.of(bookmarkId)));
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testEmptySpaceClickOpenAllInNewTabGroup() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
+
+        clickPlural(list, R.plurals.contextmenu_open_all_in_new_tab_group_plural, 1);
+        verify(mContextMenuDelegate)
+                .openBookmarksInNewTabGroup(eq(List.of(bookmarkId)), eq("Bookmarks bar"));
         verify(mDismissRunnable).run();
     }
 

@@ -35,6 +35,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -78,35 +79,47 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         return true;
     }
 
+    private boolean isBackgroundLaunchType(@Nullable @TabLaunchType Integer launchType) {
+        if (launchType == null) return false;
+        return launchType == TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND
+                || launchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP;
+    }
+
     @Override
     public boolean openBookmarksInNewTabs(
             List<BookmarkId> bookmarkIds,
             boolean incognito,
             @Nullable @TabLaunchType Integer tabLaunchType,
             @Nullable Bundle extras) {
-        if (bookmarkIds.size() == 0) return false;
+        if (bookmarkIds.isEmpty()) return false;
 
         BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
-        BookmarkItem firstItem = null;
-        ArrayList<String> additionalUrls = new ArrayList<>();
-        List<BookmarkItem> items = new ArrayList<>();
+        List<BookmarkItem> bookmarksToOpen = new ArrayList<>();
         for (BookmarkId id : bookmarkIds) {
             BookmarkItem item = bookmarkModel.getBookmarkById(id);
-            if (item == null) continue;
+            if (item == null || item.isFolder()) continue;
             maybeMarkReadingListItemAsRead(item);
-
-            if (firstItem == null) {
-                firstItem = item;
-            } else {
-                additionalUrls.add(item.getUrl().getSpec());
-            }
-
-            // Collected for metrics to avoid additional JNI calls.
-            items.add(item);
+            bookmarksToOpen.add(item);
         }
-        // On the off chance no BookmarkItems were actually collected, bail early.
-        if (firstItem == null) return false;
-        recordMetricsForOpenBookmarksInNewTabs(items);
+        if (bookmarksToOpen.isEmpty()) return false;
+        recordMetricsForOpenBookmarksInNewTabs(bookmarksToOpen);
+
+        BookmarkItem firstItem;
+        if (isBackgroundLaunchType(tabLaunchType)) {
+            // All tabs are background: reverse entire list [A, B, C] -> [C, B, A] so background
+            // insertions produce [A, B, C].
+            Collections.reverse(bookmarksToOpen);
+            firstItem = bookmarksToOpen.remove(0);
+        } else {
+            // First tab is active foreground: pop head A, reverse remaining background tabs [C, B]
+            // so background insertions produce [A, B, C] with A active.
+            firstItem = bookmarksToOpen.remove(0);
+            Collections.reverse(bookmarksToOpen);
+        }
+        ArrayList<String> additionalUrls = new ArrayList<>();
+        for (BookmarkItem item : bookmarksToOpen) {
+            additionalUrls.add(item.getUrl().getSpec());
+        }
 
         Intent intent =
                 createBasicOpenIntent(firstItem, incognito, /* opensNewTabByDefault= */ true);
@@ -121,6 +134,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         if (extras != null) {
             intent.putExtras(extras);
         }
+
         launchIntent(intent);
 
         return true;
@@ -145,24 +159,24 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         if (bookmarkIds.isEmpty()) return false;
 
         BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
-        BookmarkItem firstItem = null;
-        ArrayList<String> additionalUrls = new ArrayList<>();
-        List<BookmarkItem> items = new ArrayList<>();
+        List<BookmarkItem> bookmarksToOpen = new ArrayList<>();
         for (BookmarkId id : bookmarkIds) {
             BookmarkItem item = bookmarkModel.getBookmarkById(id);
-            if (item == null) continue;
+            if (item == null || item.isFolder()) continue;
             maybeMarkReadingListItemAsRead(item);
-
-            if (firstItem == null) {
-                firstItem = item;
-            } else {
-                additionalUrls.add(item.getUrl().getSpec());
-            }
-
-            items.add(item);
+            bookmarksToOpen.add(item);
         }
-        if (firstItem == null) return false;
-        recordMetricsForOpenBookmarksInNewTabs(items);
+        if (bookmarksToOpen.isEmpty()) return false;
+        recordMetricsForOpenBookmarksInNewTabs(bookmarksToOpen);
+
+        // For [A, B, C], base tab A opens at index 0; reverse [C, B] ensures background
+        // insertions produce [A, B, C].
+        BookmarkItem firstItem = bookmarksToOpen.remove(0);
+        Collections.reverse(bookmarksToOpen);
+        ArrayList<String> additionalUrls = new ArrayList<>();
+        for (BookmarkItem item : bookmarksToOpen) {
+            additionalUrls.add(item.getUrl().getSpec());
+        }
 
         Intent intent =
                 createBasicOpenIntent(firstItem, incognito, /* opensNewTabByDefault= */ true);
@@ -185,6 +199,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         }
 
         if (extras != null) intent.putExtras(extras);
+
         IntentHandler.startActivityForTrustedIntent(mContext, intent);
 
         return true;
@@ -226,16 +241,27 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         return openBookmarksInNewTabs(bookmarksToOpen, incognito, tabLaunchType, extras);
     }
 
+    @Override
+    public boolean openFolderBookmarksInNewWindow(BookmarkId folderId, boolean incognito) {
+        List<BookmarkId> bookmarksToOpen = extractBookmarkChildrenFromFolder(folderId);
+        if (bookmarksToOpen.isEmpty()) return false;
+        return openBookmarksInNewWindow(bookmarksToOpen, incognito);
+    }
+
+    @Override
+    public boolean openFolderBookmarksInNewTabGroup(
+            BookmarkId folderId, boolean incognito, @Nullable String title) {
+        List<BookmarkId> bookmarksToOpen = extractBookmarkChildrenFromFolder(folderId);
+        if (bookmarksToOpen.isEmpty()) return false;
+        return openBookmarksInNewTabGroup(bookmarksToOpen, incognito, title);
+    }
+
     @VisibleForTesting
     List<BookmarkId> extractBookmarkChildrenFromFolder(BookmarkId folderId) {
         BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
         List<BookmarkId> children = bookmarkModel.getChildIds(folderId);
         List<BookmarkId> bookmarksToOpen = new ArrayList<>();
-        // Iterate backwards because Android's TabModel inserts batch-created background tabs
-        // adjacent to the active tab, pushing previously inserted tabs to the right. Reversing
-        // our extraction order neutralizes this quirk and reconstructs the intended forward order.
-        for (int i = children.size() - 1; i >= 0; i--) {
-            BookmarkId childId = children.get(i);
+        for (BookmarkId childId : children) {
             BookmarkItem child = bookmarkModel.getBookmarkById(childId);
             if (child != null && !child.isFolder()) {
                 bookmarksToOpen.add(childId);

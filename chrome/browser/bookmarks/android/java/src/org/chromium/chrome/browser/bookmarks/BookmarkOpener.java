@@ -105,4 +105,26 @@ public interface BookmarkOpener {
      */
     boolean openFolderBookmarksInNewTabs(
             BookmarkId folderId, boolean incognito, @Nullable @TabLaunchType Integer tabLaunchType);
+
+    /**
+     * Open the given folder's children in a new window. Non-bookmark items like folders are
+     * ignored.
+     *
+     * @param folderId The folder id to open.
+     * @param incognito Whether the bookmarks should be opened in incognito mode.
+     * @return Whether the folder's bookmarks were successfully opened.
+     */
+    boolean openFolderBookmarksInNewWindow(BookmarkId folderId, boolean incognito);
+
+    /**
+     * Open the given folder's children in new tabs in a new tab group with an optional title.
+     * Non-bookmark items like folders are ignored.
+     *
+     * @param folderId The folder id to open.
+     * @param incognito Whether the bookmarks should be opened in incognito mode.
+     * @param title The title of the tab group, can be null.
+     * @return Whether the folder's bookmarks were successfully opened.
+     */
+    boolean openFolderBookmarksInNewTabGroup(
+            BookmarkId folderId, boolean incognito, @Nullable String title);
 }

@@ -583,7 +583,7 @@ class BookmarkBarMediator
     }
 
     @Override
-    public void openAll(List<BookmarkId> ids) {
+    public void openBookmarksInNewTabs(List<BookmarkId> ids) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (Profile profile, BookmarkModel _) ->
                         mBookmarkOpener.openBookmarksInNewTabs(
@@ -593,23 +593,60 @@ class BookmarkBarMediator
     }
 
     @Override
-    public void openAllInNewWindow(List<BookmarkId> ids) {
+    public void openBookmarksInNewWindow(List<BookmarkId> ids) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (_, _) -> mBookmarkOpener.openBookmarksInNewWindow(ids, /* incognito= */ false));
     }
 
     @Override
-    public void openAllInIncognitoWindow(List<BookmarkId> ids) {
+    public void openBookmarksInIncognitoWindow(List<BookmarkId> ids) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (_, _) -> mBookmarkOpener.openBookmarksInNewWindow(ids, /* incognito= */ true));
     }
 
     @Override
-    public void openAllInNewTabGroup(List<BookmarkId> ids, @Nullable String title) {
+    public void openBookmarksInNewTabGroup(List<BookmarkId> ids, @Nullable String title) {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (Profile profile, BookmarkModel _) ->
                         mBookmarkOpener.openBookmarksInNewTabGroup(
                                 ids, profile.isOffTheRecord(), title));
+    }
+
+    @Override
+    public void openFolderInNewTabs(BookmarkId folderId) {
+        runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                (profile, model) -> {
+                    mBookmarkOpener.openFolderBookmarksInNewTabs(
+                            folderId,
+                            profile.isOffTheRecord(),
+                            TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
+                });
+    }
+
+    @Override
+    public void openFolderInNewWindow(BookmarkId folderId) {
+        runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                (profile, model) -> {
+                    mBookmarkOpener.openFolderBookmarksInNewWindow(
+                            folderId, /* incognito= */ false);
+                });
+    }
+
+    @Override
+    public void openFolderInIncognitoWindow(BookmarkId folderId) {
+        runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                (profile, model) -> {
+                    mBookmarkOpener.openFolderBookmarksInNewWindow(folderId, /* incognito= */ true);
+                });
+    }
+
+    @Override
+    public void openFolderInNewTabGroup(BookmarkId folderId, @Nullable String title) {
+        runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                (profile, model) -> {
+                    mBookmarkOpener.openFolderBookmarksInNewTabGroup(
+                            folderId, profile.isOffTheRecord(), title);
+                });
     }
 
     @Override

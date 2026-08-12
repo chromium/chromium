@@ -260,6 +260,110 @@ public class BookmarkOpenerImplUnitTest {
         assertTrue(
                 startedIntent.getBooleanExtra(
                         IntentHandler.EXTRA_DISABLE_INITIALIZE_RENDERER, false));
+
+        // Folder has [A, B, C]. Background launch -> reversed [C, B, A].
+        assertEquals(mBookmarkItem3.getUrl().getSpec(), startedIntent.getDataString());
+        List<String> additionalUrls =
+                startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
+        assertNotNull(additionalUrls);
+        assertEquals(2, additionalUrls.size());
+        assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(0));
+        assertEquals(mBookmarkItem1.getUrl().getSpec(), additionalUrls.get(1));
+    }
+
+    @Test
+    public void testOpenBookmarksInNewTabs_MultipleBookmarksOrdering() {
+        assertTrue(
+                mOpener.openBookmarksInNewTabs(
+                        Arrays.asList(mBookmarkId1, mBookmarkId2, mBookmarkId3),
+                        /* incognito= */ false));
+
+        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        // Foreground launch: base tab is A (active), background tabs reversed [C, B].
+        assertEquals(mBookmarkItem1.getUrl().getSpec(), startedIntent.getDataString());
+        List<String> additionalUrls =
+                startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
+        assertNotNull(additionalUrls);
+        assertEquals(2, additionalUrls.size());
+        assertEquals(mBookmarkItem3.getUrl().getSpec(), additionalUrls.get(0));
+        assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(1));
+    }
+
+    @Test
+    public void testOpenBookmarksInNewTabs_BackgroundLaunchType_MultipleBookmarksOrdering() {
+        assertTrue(
+                mOpener.openBookmarksInNewTabs(
+                        Arrays.asList(mBookmarkId1, mBookmarkId2, mBookmarkId3),
+                        /* incognito= */ false,
+                        TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+
+        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        // Background launch: entire list reversed [A, B, C] -> [C, B, A].
+        assertEquals(mBookmarkItem3.getUrl().getSpec(), startedIntent.getDataString());
+        List<String> additionalUrls =
+                startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
+        assertNotNull(additionalUrls);
+        assertEquals(2, additionalUrls.size());
+        assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(0));
+        assertEquals(mBookmarkItem1.getUrl().getSpec(), additionalUrls.get(1));
+    }
+
+    @Test
+    public void testOpenFolderBookmarksInNewTabGroup_Ordering() {
+        assertTrue(
+                mOpener.openFolderBookmarksInNewTabGroup(
+                        mFolderId, /* incognito= */ false, "Test Group"));
+
+        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        // Tab group uses FROM_LONGPRESS_BACKGROUND_IN_GROUP (background) -> reversed [C, B, A].
+        assertEquals(mBookmarkItem3.getUrl().getSpec(), startedIntent.getDataString());
+        List<String> additionalUrls =
+                startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
+        assertNotNull(additionalUrls);
+        assertEquals(2, additionalUrls.size());
+        assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(0));
+        assertEquals(mBookmarkItem1.getUrl().getSpec(), additionalUrls.get(1));
+        assertTrue(
+                startedIntent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false));
+        assertEquals(
+                "Test Group", startedIntent.getStringExtra(IntentHandler.EXTRA_TAB_GROUP_TITLE));
+    }
+
+    @Test
+    public void testOpenBookmarksInNewWindow_MultipleBookmarksOrdering() {
+        assertTrue(
+                mOpener.openBookmarksInNewWindow(
+                        Arrays.asList(mBookmarkId1, mBookmarkId2, mBookmarkId3),
+                        /* incognito= */ false));
+
+        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertEquals(mBookmarkItem1.getUrl().getSpec(), startedIntent.getDataString());
+        List<String> additionalUrls =
+                startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
+        assertNotNull(additionalUrls);
+        assertEquals(2, additionalUrls.size());
+        assertEquals(mBookmarkItem3.getUrl().getSpec(), additionalUrls.get(0));
+        assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(1));
+    }
+
+    @Test
+    public void testOpenFolderBookmarksInNewWindow() {
+        assertTrue(mOpener.openFolderBookmarksInNewWindow(mFolderId, /* incognito= */ false));
+
+        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertEquals(mBookmarkItem1.getUrl().getSpec(), startedIntent.getDataString());
+        List<String> additionalUrls =
+                startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
+        assertNotNull(additionalUrls);
+        assertEquals(2, additionalUrls.size());
+        assertEquals(mBookmarkItem3.getUrl().getSpec(), additionalUrls.get(0));
+        assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(1));
     }
 
     @Test
@@ -267,10 +371,10 @@ public class BookmarkOpenerImplUnitTest {
         List<BookmarkId> children = mOpener.extractBookmarkChildrenFromFolder(mFolderId);
         // Original order: mBookmarkId1, mBookmarkId2, mNestedFolderId, mBookmarkId3
         // Non-folders: mBookmarkId1, mBookmarkId2, mBookmarkId3
-        // Result should be reversed order
+        // Result should be in forward order
         assertEquals(3, children.size());
-        assertEquals(mBookmarkId3, children.get(0));
+        assertEquals(mBookmarkId1, children.get(0));
         assertEquals(mBookmarkId2, children.get(1));
-        assertEquals(mBookmarkId1, children.get(2));
+        assertEquals(mBookmarkId3, children.get(2));
     }
 }
