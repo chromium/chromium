@@ -2310,6 +2310,18 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  # Always download Linux x64 package regardless of host OS for RBE workers.
+  'src/third_party/cpython3/linux-amd64': {
+      'packages': [
+        {
+          'package': 'infra/3pp/tools/cpython3/linux-amd64',
+          'version': Var('cpython3_version'),
+        },
+      ],
+      'condition': 'non_git_source',
+      'dep_type': 'cipd',
+  },
+
   # Host platform package. ${platform} folder is not used as in .gn the variable
   # is not initialized yet by the time Python is required.
   'src/third_party/cpython3/host': {
