@@ -12,6 +12,9 @@ namespace ios::provider::test {
 // Sets the device identifier for testing.
 void SetDeviceIdentifier(std::string identifier);
 
+// Resets the device identifier for testing to its default value.
+void ResetDeviceIdentifier();
+
 }  // namespace ios::provider::test
 
 #endif  // IOS_CHROME_TEST_PROVIDERS_SIGNIN_TEST_DEVICE_IDENTIFIER_H_

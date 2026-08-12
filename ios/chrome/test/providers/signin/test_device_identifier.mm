@@ -13,8 +13,10 @@ namespace ios::provider {
 
 namespace {
 
+constexpr char kDefaultTestDeviceIdentifier[] = "test-device-identifier";
+
 std::string& GetTestDeviceIdentifierStorage() {
-  static base::NoDestructor<std::string> storage("test-device-identifier");
+  static base::NoDestructor<std::string> storage(kDefaultTestDeviceIdentifier);
   return *storage;
 }
 
@@ -24,6 +26,10 @@ namespace test {
 
 void SetDeviceIdentifier(std::string identifier) {
   GetTestDeviceIdentifierStorage() = std::move(identifier);
+}
+
+void ResetDeviceIdentifier() {
+  GetTestDeviceIdentifierStorage() = kDefaultTestDeviceIdentifier;
 }
 
 }  // namespace test

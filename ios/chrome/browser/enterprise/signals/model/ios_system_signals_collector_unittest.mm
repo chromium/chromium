@@ -37,6 +37,7 @@ class IOSSystemSignalsCollectorTest : public PlatformTest {
   }
 
   void TearDown() override {
+    ios::provider::test::ResetDeviceIdentifier();
     [mock_auth_module_ stopMocking];
     PlatformTest::TearDown();
   }
