@@ -28,6 +28,22 @@ enum class LeakDetectionError {
   kMaxValue = kQuotaLimit,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Needs to stay in sync with PasswordLeakDetectionUrlType in enums.xml.
+//
+// LINT.IfChange(PasswordLeakDetectionUrlType)
+enum class LeakDetectionUrlType {
+  kHttps = 0,
+  kLocalhost = 1,
+  kHttp = 2,
+  kPrivateOrIntranetIp = 3,
+  kAndroidApp = 4,
+  kOther = 5,
+  kMaxValue = kOther,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:PasswordLeakDetectionUrlType)
+
 using IsLeaked = base::StrongAlias<class IsLeakedTag, bool>;
 
 }  // namespace password_manager

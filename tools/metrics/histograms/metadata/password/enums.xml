@@ -1103,6 +1103,19 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Quota limit"/>
 </enum>
 
+<!-- LINT.IfChange(PasswordLeakDetectionUrlType) -->
+
+<enum name="PasswordLeakDetectionUrlType">
+  <int value="0" label="HTTPS"/>
+  <int value="1" label="Localhost"/>
+  <int value="2" label="HTTP"/>
+  <int value="3" label="Private or Intranet IP"/>
+  <int value="4" label="Android App"/>
+  <int value="5" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/leak_detection/leak_detection_types.h:LeakDetectionUrlType) -->
+
 <enum name="PasswordLeakLookupResponseResult">
   <int value="0" label="Success"/>
   <int value="1" label="Network/server error"/>

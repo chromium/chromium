@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/barrier_callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
@@ -31,7 +32,11 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "net/base/ip_address.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace password_manager {
 namespace {
@@ -71,6 +76,27 @@ LeakedPasswordDetails MergeResponses(
   CHECK(details.has_value());
   details->credentials.change_password_url = std::move(url);
   return std::move(*details);
+}
+
+LeakDetectionUrlType GetLeakDetectionUrlType(const GURL& url) {
+  if (net::IsLocalhost(url)) {
+    return LeakDetectionUrlType::kLocalhost;
+  }
+  if (url.SchemeIs(url::kAndroidScheme)) {
+    return LeakDetectionUrlType::kAndroidApp;
+  }
+  net::IPAddress ip_address;
+  if (ip_address.AssignFromIPLiteral(url.HostNoBracketsPiece()) &&
+      !ip_address.IsPubliclyRoutable()) {
+    return LeakDetectionUrlType::kPrivateOrIntranetIp;
+  }
+  if (url.SchemeIs(url::kHttpsScheme)) {
+    return LeakDetectionUrlType::kHttps;
+  }
+  if (url.SchemeIs(url::kHttpScheme)) {
+    return LeakDetectionUrlType::kHttp;
+  }
+  return LeakDetectionUrlType::kOther;
 }
 
 }  // namespace
@@ -134,6 +160,10 @@ void LeakDetectionDelegate::OnLeakDetectionDone(
   if (!is_leaked) {
     return;
   }
+
+  base::UmaHistogramEnumeration(
+      "PasswordManager.LeakDetection.LeakedCredentialsUrlType",
+      GetLeakDetectionUrlType(credentials.url));
 
   auto notify_callback =
       base::BindOnce(&LeakDetectionDelegate::NotifyUserCredentialsWereLeaked,

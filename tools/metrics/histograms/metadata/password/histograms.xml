@@ -2168,6 +2168,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.LeakDetection.LeakedCredentialsUrlType"
+    enum="PasswordLeakDetectionUrlType" expires_after="2027-02-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the URL type/scheme (HTTPS, localhost, HTTP, private/intranet IP,
+    Android app, or other) of a leaked credential when a leak is detected.
+    Recorded in LeakDetectionDelegate when a single leak check finishes with a
+    positive leak result.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.LeakDetection.LookupSingleLeakResponseResult"
     enum="PasswordLeakLookupResponseResult" expires_after="2027-01-17">
   <owner>vsemeniuk@google.com</owner>

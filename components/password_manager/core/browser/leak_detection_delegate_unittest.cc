@@ -402,6 +402,8 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithFalseResult) {
   std::move(callback).Run(IsLeaked(false));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.LeakDetection.NotifyIsLeakedTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.LeakDetection.LeakedCredentialsUrlType", 0);
 }
 
 TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
@@ -432,6 +434,9 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
   WaitForPasswordStore();
   histogram_tester.ExpectTotalCount(
       "PasswordManager.LeakDetection.NotifyIsLeakedTime", 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LeakDetection.LeakedCredentialsUrlType",
+      LeakDetectionUrlType::kHttp, 1);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -908,6 +913,122 @@ TEST_F(LeakDetectionDelegateTest,
 
   std::move(callback).Run(IsLeaked(true));
   WaitForPasswordStore();
+}
+
+TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneRecordsUrlTypeHttps) {
+  base::HistogramTester histogram_tester;
+
+  PasswordForm form = CreateTestForm();
+  form.url = GURL("https://example.com/login");
+
+  EXPECT_CALL(client(), GetProfilePasswordStore())
+      .WillRepeatedly(Return(profile_store()));
+  ExpectPasswords({});
+  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  LeakDetectionCheck::LeakDetectionCallback callback;
+  EXPECT_CALL(*check_instance,
+              Start(LeakDetectionInitiator::kSignInCheck, form, _))
+      .WillOnce(MoveArg<2>(&callback));
+
+  EXPECT_CALL(factory(), TryCreateLeakCheck)
+      .WillOnce(Return(ByMove(std::move(check_instance))));
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
+
+  EXPECT_CALL(client(), NotifyUserCredentialsWereLeaked);
+  std::move(callback).Run(IsLeaked(true));
+  WaitForPasswordStore();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LeakDetection.LeakedCredentialsUrlType",
+      LeakDetectionUrlType::kHttps, 1);
+}
+
+TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneRecordsUrlTypeLocalhost) {
+  base::HistogramTester histogram_tester;
+
+  PasswordForm form = CreateTestForm();
+  form.url = GURL("http://localhost:8080/login");
+
+  EXPECT_CALL(client(), GetProfilePasswordStore())
+      .WillRepeatedly(Return(profile_store()));
+  ExpectPasswords({});
+  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  LeakDetectionCheck::LeakDetectionCallback callback;
+  EXPECT_CALL(*check_instance,
+              Start(LeakDetectionInitiator::kSignInCheck, form, _))
+      .WillOnce(MoveArg<2>(&callback));
+
+  EXPECT_CALL(factory(), TryCreateLeakCheck)
+      .WillOnce(Return(ByMove(std::move(check_instance))));
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
+
+  EXPECT_CALL(client(), NotifyUserCredentialsWereLeaked);
+  std::move(callback).Run(IsLeaked(true));
+  WaitForPasswordStore();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LeakDetection.LeakedCredentialsUrlType",
+      LeakDetectionUrlType::kLocalhost, 1);
+}
+
+TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneRecordsUrlTypePrivateIp) {
+  base::HistogramTester histogram_tester;
+
+  PasswordForm form = CreateTestForm();
+  form.url = GURL("http://192.168.1.1/login");
+
+  EXPECT_CALL(client(), GetProfilePasswordStore())
+      .WillRepeatedly(Return(profile_store()));
+  ExpectPasswords({});
+  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  LeakDetectionCheck::LeakDetectionCallback callback;
+  EXPECT_CALL(*check_instance,
+              Start(LeakDetectionInitiator::kSignInCheck, form, _))
+      .WillOnce(MoveArg<2>(&callback));
+
+  EXPECT_CALL(factory(), TryCreateLeakCheck)
+      .WillOnce(Return(ByMove(std::move(check_instance))));
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
+
+  EXPECT_CALL(client(), NotifyUserCredentialsWereLeaked);
+  std::move(callback).Run(IsLeaked(true));
+  WaitForPasswordStore();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LeakDetection.LeakedCredentialsUrlType",
+      LeakDetectionUrlType::kPrivateOrIntranetIp, 1);
+}
+
+TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneRecordsUrlTypeAndroidApp) {
+  base::HistogramTester histogram_tester;
+
+  PasswordForm form = CreateTestForm();
+  form.url = GURL("android://hash@com.example.app/");
+
+  EXPECT_CALL(client(), GetProfilePasswordStore())
+      .WillRepeatedly(Return(profile_store()));
+  ExpectPasswords({});
+  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  LeakDetectionCheck::LeakDetectionCallback callback;
+  EXPECT_CALL(*check_instance,
+              Start(LeakDetectionInitiator::kSignInCheck, form, _))
+      .WillOnce(MoveArg<2>(&callback));
+
+  EXPECT_CALL(factory(), TryCreateLeakCheck)
+      .WillOnce(Return(ByMove(std::move(check_instance))));
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
+
+  EXPECT_CALL(client(), NotifyUserCredentialsWereLeaked);
+  std::move(callback).Run(IsLeaked(true));
+  WaitForPasswordStore();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LeakDetection.LeakedCredentialsUrlType",
+      LeakDetectionUrlType::kAndroidApp, 1);
 }
 
 }  // namespace password_manager
