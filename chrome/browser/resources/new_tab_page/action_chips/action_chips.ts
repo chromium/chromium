@@ -131,6 +131,14 @@ export class ActionChipsElement extends CrLitElement {
         return 'icon-type-favicon';
       case IconType.kSearchLoopWithSparkle:
         return 'icon-type-search-spark';
+      case IconType.kLightbulb:
+        return 'icon-type-lightbulb';
+      case IconType.kAttachFile:
+        return 'icon-type-attach-file';
+      case IconType.kSchool:
+        return 'icon-type-school';
+      case IconType.kInkPen:
+        return 'icon-type-ink-pen';
       default:
         return '';
     }

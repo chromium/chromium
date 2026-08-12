@@ -81,6 +81,22 @@
   -webkit-mask-image: url(chrome://new-tab-page/icons/search_spark.svg);
 }
 
+.icon-type-lightbulb {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/lightbulb.svg);
+}
+
+.icon-type-attach-file {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/attach_file.svg);
+}
+
+.icon-type-school {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/school.svg);
+}
+
+.icon-type-ink-pen {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/ink_pen.svg);
+}
+
 .action-chip {
   align-items: center;
   background-color: var(--chip-background-color);

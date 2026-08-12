@@ -368,7 +368,7 @@ ActionChipPtr CreateBrainstormChip() {
   ActionChipPtr chip = ActionChip::New();
   chip->suggestion = std::string();
   chip->suggest_template_info = SuggestTemplateInfo::New();
-  chip->suggest_template_info->type_icon = IconType::kDraftSpark;
+  chip->suggest_template_info->type_icon = IconType::kLightbulb;
   chip->suggest_template_info->primary_text =
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->primary_text->text =
@@ -394,7 +394,7 @@ ActionChipPtr CreateLearnChip() {
   ActionChipPtr chip = ActionChip::New();
   chip->suggestion = std::string();
   chip->suggest_template_info = SuggestTemplateInfo::New();
-  chip->suggest_template_info->type_icon = IconType::kDraftSpark;
+  chip->suggest_template_info->type_icon = IconType::kSchool;
   chip->suggest_template_info->primary_text =
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->primary_text->text =
@@ -420,7 +420,7 @@ ActionChipPtr CreateWriteChip() {
   ActionChipPtr chip = ActionChip::New();
   chip->suggestion = std::string();
   chip->suggest_template_info = SuggestTemplateInfo::New();
-  chip->suggest_template_info->type_icon = IconType::kDraftSpark;
+  chip->suggest_template_info->type_icon = IconType::kInkPen;
   chip->suggest_template_info->primary_text =
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->primary_text->text =
@@ -446,7 +446,7 @@ ActionChipPtr CreateAddImageChip() {
   ActionChipPtr chip = ActionChip::New();
   chip->suggestion = "";
   chip->suggest_template_info = SuggestTemplateInfo::New();
-  chip->suggest_template_info->type_icon = IconType::kDraftSpark;
+  chip->suggest_template_info->type_icon = IconType::kAttachFile;
   chip->suggest_template_info->primary_text =
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->primary_text->text = "Add Image";
