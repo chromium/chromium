@@ -38,6 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -257,26 +258,21 @@ std::string_view GetDisplayInfoDialogJsString() {
 
 // We remove the hover property to prevent the test from being flaky.
 std::string_view GetRemoveHoverPropertyJsString() {
-  if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh) &&
-      base::FeatureList::IsEnabled(
-          switches::kFirstRunDesktopChoiceScreenRefresh)) {
-    return "(() => {"
-           "  const app = "
-           "      document.querySelector('search-engine-choice-app-refresh');"
-           "  const radioButtons = "
-           "      app.shadowRoot.querySelectorAll('cr-radio-button');"
-           "  radioButtons.forEach(button => "
-           "      button.classList.remove('hoverable'));"
-           "  return true;"
-           "})();";
-  }
-
-  return "(() => {"
-         "  const app = document.querySelector('search-engine-choice-app');"
+  return "(async () => {"
+         "  const app = "
+         "      document.querySelector('search-engine-choice-app-refresh') || "
+         "      document.querySelector('search-engine-choice-app');"
+         "  if (!app) return false;"
+         "  if (app.updateComplete) {"
+         "    await app.updateComplete;"
+         "  }"
          "  const radioButtons = "
          "      app.shadowRoot.querySelectorAll('cr-radio-button');"
          "  radioButtons.forEach(button => "
          "      button.classList.remove('hoverable'));"
+         "  if (app.updateComplete) {"
+         "    await app.updateComplete;"
+         "  }"
          "  return true;"
          "})();";
 }
@@ -340,6 +336,7 @@ class SearchEngineChoiceUIPixelTest
         pixel_test_mixin_(&mixin_host_,
                           GetParam().use_dark_theme,
                           GetParam().use_right_to_left_language) {
+    set_should_verify_dialog_bounds(false);
     if (GetParam().use_refreshed_ui.has_value()) {
       scoped_feature_list_.InitWithFeatureStates(
           {{switches::kFirstRunDesktopRefresh, *GetParam().use_refreshed_ui},
@@ -421,8 +418,18 @@ class SearchEngineChoiceUIPixelTest
         *browser(), gfx::Size(dialog_width, dialog_height), zoom_factor);
     widget_waiter.WaitIfNeededAndGet();
 
+    observer.Wait();
+
     content::WebContents* web_contents = observer.web_contents();
     CHECK(web_contents);
+
+    if (zoom_factor != 1.0) {
+      content::HostZoomMap* zoom_map =
+          content::HostZoomMap::GetForWebContents(web_contents);
+      zoom_map->SetTemporaryZoomLevel(
+          web_contents->GetPrimaryMainFrame()->GetGlobalId(),
+          blink::ZoomFactorToZoomLevel(zoom_factor));
+    }
 
     EXPECT_EQ(true,
               content::EvalJs(web_contents, GetRemoveHoverPropertyJsString()));
@@ -446,9 +453,10 @@ class SearchEngineChoiceUIPixelTest
       base::RunLoop run_loop;
       WaitForBackgroundDisplayed(web_contents, run_loop.QuitClosure());
       run_loop.Run();
+    } else {
+      content::RenderFrameSubmissionObserver frame_observer(web_contents);
+      frame_observer.WaitForAnyFrameSubmission();
     }
-
-    observer.Wait();
   }
 
  private:
@@ -459,13 +467,6 @@ class SearchEngineChoiceUIPixelTest
 };
 
 IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest, InvokeUi_default) {
-#if BUILDFLAG(IS_WIN)
-  if (GetParam().test_suffix == "NarrowSize" &&
-      base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping NarrowSize test on Windows with InitialWebUI "
-                    "enabled. See crbug.com/477426026.";
-  }
-#endif
   ShowAndVerifyUi();
 }
 
