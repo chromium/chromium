@@ -421,6 +421,9 @@ extern std::string GetContextualTasksHelpUrl();
 // Returns the help URL for the overflow menu help center article.
 extern std::string GetContextualTasksOverflowMenuHelpUrl();
 
+// Returns the help URL for the tab help center article.
+extern std::string GetContextualTasksTabHelpUrl();
+
 // Returns whether smart compose is enabled for Contextual Tasks.
 extern bool GetEnableContextualTasksSmartCompose();
 

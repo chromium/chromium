@@ -93,3 +93,7 @@ cr-tooltip::part(tooltip) {
   justify-content: flex-end;
   padding-top: 12px;
 }
+
+a {
+  color: var(--cr-link-color);
+}

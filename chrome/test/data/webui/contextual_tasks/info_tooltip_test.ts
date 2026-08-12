@@ -6,19 +6,27 @@ import 'chrome://contextual-tasks/info_tooltip.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {ContextualTasksInfoTooltipElement} from 'chrome://contextual-tasks/info_tooltip.js';
+import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 suite('InfoTooltipTest', () => {
   let tooltipElement: ContextualTasksInfoTooltipElement;
   let container: HTMLDivElement;
   let target: HTMLDivElement;
+  let testProxy: TestContextualTasksBrowserProxy;
 
   setup(async () => {
     loadTimeData.resetForTesting({
       tabFaviconChipsToCoinsEnabled: false,
     });
+
+    testProxy = new TestContextualTasksBrowserProxy('about:blank');
+    BrowserProxyImpl.setInstance(testProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -141,5 +149,25 @@ suite('InfoTooltipTest', () => {
     await microtasksFinished();
 
     assertTrue(eventFired);
+  });
+
+  test('renders link and calls browser proxy on click', async () => {
+    tooltipElement.bodyText = 'Body content';
+    tooltipElement.linkUrl = 'https://example.com/';
+    tooltipElement.linkText = 'Learn More';
+    tooltipElement.target = target;
+    tooltipElement.show();
+    await microtasksFinished();
+
+    const link = tooltipElement.shadowRoot.querySelector('a')!;
+    assertEquals('Learn More', link.textContent.trim());
+    assertEquals('https://example.com/', link.getAttribute('href'));
+
+    link.click();
+    await microtasksFinished();
+
+    const [url, disposition] = await testProxy.handler.whenCalled('openUrl');
+    assertEquals('https://example.com/', url);
+    assertEquals(WindowOpenDisposition.NEW_FOREGROUND_TAB, disposition);
   });
 });

@@ -472,6 +472,7 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
       {"continueThread", IDS_CONTEXTUAL_TASKS_CONTINUE_THREAD_MESSAGE},
       {"feedback", IDS_LENS_SEND_FEEDBACK},
       {"help", IDS_CONTEXTUAL_TASKS_MENU_HELP},
+      {"learnMore", IDS_LEARN_MORE},
       {"moreOptionsTooltip",
        IDS_CONTEXTUAL_TASKS_SIDE_PANEL_MORE_OPTIONS_TOOL_TIP},
       {"myActivity", IDS_CONTEXTUAL_TASKS_MENU_MY_ACTIVITY},
@@ -488,6 +489,8 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
       {"onboardingBody", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_DESCRIPTION},
       {"onboardingLink", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_LEARN_MORE},
       {"onboardingAcceptButton",
+       IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON},
+      {"lensSearchTooltipAcceptButton",
        IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON},
       {"lensSearchTooltipTitle", IDS_LENS_COBROWSE_IPH_HEADER},
       {"lensSearchTooltipBody", IDS_LENS_COBROWSE_IPH_DESCRIPTION},
@@ -563,6 +566,8 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
 
   dict.Set("onboardingLinkUrl",
            contextual_tasks::GetContextualTasksOnboardingTooltipHelpUrl());
+  dict.Set("askGHelpUrl",
+           contextual_tasks::GetContextualTasksTabHelpUrl());
   dict.Set("composeboxImageFileTypes",
            contextual_tasks::kContextualTasksNextboxImageFileTypes.Get());
   dict.Set("composeboxAttachmentFileTypes",
