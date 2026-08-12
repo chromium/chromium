@@ -83,6 +83,10 @@
   // Not used.
 }
 
+- (void)didDismissButtonStackViewController {
+  // Not used.
+}
+
 #pragma mark - ConfirmationAlertPrimaryAction
 
 - (void)confirmationAlertPrimaryAction {

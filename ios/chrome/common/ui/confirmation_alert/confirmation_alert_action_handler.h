@@ -20,6 +20,9 @@
 // The "Tertiary Action" was touched.
 - (void)confirmationAlertTertiaryAction;
 
+// The `ConfirmationAlertViewController` was dismissed.
+- (void)confirmationAlertDismissed;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_CONFIRMATION_ALERT_CONFIRMATION_ALERT_ACTION_HANDLER_H_

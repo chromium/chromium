@@ -5,8 +5,10 @@
 #ifndef IOS_CHROME_COMMON_UI_BUTTON_STACK_BUTTON_STACK_ACTION_DELEGATE_H_
 #define IOS_CHROME_COMMON_UI_BUTTON_STACK_BUTTON_STACK_ACTION_DELEGATE_H_
 
+#import <Foundation/Foundation.h>
+
 // Delegate for handling actions from a ButtonStackViewController.
-@protocol ButtonStackActionDelegate
+@protocol ButtonStackActionDelegate <NSObject>
 
 // Called when the primary action button is tapped.
 - (void)didTapPrimaryActionButton;
@@ -16,6 +18,9 @@
 
 // Called when the tertiary action button is tapped.
 - (void)didTapTertiaryActionButton;
+
+// Called when the `ButtonStackViewController` is dismissed.
+- (void)didDismissButtonStackViewController;
 
 @end
 

@@ -34,3 +34,14 @@ source_set("constants") {
   ]
   frameworks = [ "Foundation.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "confirmation_alert_view_controller_unittest.mm" ]
+  deps = [
+    ":confirmation_alert",
+    "//ios/chrome/common/ui/button_stack",
+    "//testing/gtest",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

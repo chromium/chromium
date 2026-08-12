@@ -64,4 +64,8 @@
   // Not used.
 }
 
+- (void)didDismissButtonStackViewController {
+  // Not used.
+}
+
 @end

@@ -445,6 +445,10 @@ const CGFloat kInsetAdjustment = 20;
   // Not used.
 }
 
+- (void)didDismissButtonStackViewController {
+  // Not used.
+}
+
 // Generates the configuration required by `ButtonStackViewController` for the
 // promo screen's primary & secondary actions.
 + (ButtonStackConfiguration*)buttonsConfigurationForPromo {

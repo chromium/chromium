@@ -261,6 +261,13 @@ const CGFloat kFaviconBadgeSideLength = 24;
   }
 }
 
+- (void)didDismissButtonStackViewController {
+  if ([self.actionHandler
+          respondsToSelector:@selector(confirmationAlertDismissed)]) {
+    [self.actionHandler confirmationAlertDismissed];
+  }
+}
+
 #pragma mark - Private
 
 - (void)setImage:(UIImage*)image {

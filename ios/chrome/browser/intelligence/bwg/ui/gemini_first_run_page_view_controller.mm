@@ -208,6 +208,10 @@ const CGFloat kInsetAdjustment = 20;
   // Not used.
 }
 
+- (void)didDismissButtonStackViewController {
+  // Not used.
+}
+
 #pragma mark - GeminiFirstRunStepDelegate
 
 - (void)stepContentHeightDidChange:(UIViewController<GeminiFirstRunStep>*)step {

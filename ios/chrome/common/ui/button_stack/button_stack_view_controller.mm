@@ -138,6 +138,13 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   [self updateGradientVisibility];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  if (self.isBeingDismissed) {
+    [self.actionDelegate didDismissButtonStackViewController];
+  }
+}
+
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 

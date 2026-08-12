@@ -19,6 +19,7 @@
 @property(nonatomic, assign) BOOL primaryActionTapped;
 @property(nonatomic, assign) BOOL secondaryActionTapped;
 @property(nonatomic, assign) BOOL tertiaryActionTapped;
+@property(nonatomic, assign) BOOL dismissed;
 @end
 
 @implementation ButtonStackActionTestDelegate
@@ -30,6 +31,20 @@
 }
 - (void)didTapTertiaryActionButton {
   self.tertiaryActionTapped = YES;
+}
+- (void)didDismissButtonStackViewController {
+  self.dismissed = YES;
+}
+@end
+
+// Subclass to override isBeingDismissed in unit tests.
+@interface TestButtonStackViewController : ButtonStackViewController
+@property(nonatomic, assign) BOOL isBeingDismissedOverride;
+@end
+
+@implementation TestButtonStackViewController
+- (BOOL)isBeingDismissed {
+  return self.isBeingDismissedOverride || [super isBeingDismissed];
 }
 @end
 
@@ -43,7 +58,7 @@ class ButtonStackViewControllerTest : public PlatformTest {
     configuration_.secondaryActionString = @"Secondary";
     configuration_.tertiaryActionString = @"Tertiary";
 
-    view_controller_ = [[ButtonStackViewController alloc]
+    view_controller_ = [[TestButtonStackViewController alloc]
         initWithConfiguration:configuration_];
     delegate_ = [[ButtonStackActionTestDelegate alloc] init];
     view_controller_.actionDelegate = delegate_;
@@ -53,7 +68,7 @@ class ButtonStackViewControllerTest : public PlatformTest {
   }
 
   ButtonStackConfiguration* configuration_;
-  ButtonStackViewController* view_controller_;
+  TestButtonStackViewController* view_controller_;
   ButtonStackActionTestDelegate* delegate_;
 };
 
@@ -79,6 +94,14 @@ TEST_F(ButtonStackViewControllerTest, TestTertiaryAction) {
   [view_controller_.tertiaryActionButton
       sendActionsForControlEvents:UIControlEventTouchUpInside];
   EXPECT_TRUE(delegate_.tertiaryActionTapped);
+}
+
+// Tests that dismissing the ButtonStackViewController calls the delegate.
+TEST_F(ButtonStackViewControllerTest, TestDismissalAction) {
+  EXPECT_FALSE(delegate_.dismissed);
+  view_controller_.isBeingDismissedOverride = YES;
+  [view_controller_ viewDidDisappear:NO];
+  EXPECT_TRUE(delegate_.dismissed);
 }
 
 // Tests the loading state.
