@@ -243,6 +243,8 @@ GlicNavigationThrottle::WillStartRequest() {
       }
       GlicInvokeOptions options(
           std::move(target), glic::mojom::InvocationSource::kNavigationCapture);
+      options.fre_completion_wait_mode = FreCompletionWaitMode::kNever;
+      options.supersede_if_in_progress = true;
       glic_service->Invoke(std::move(options));
     }
   }
