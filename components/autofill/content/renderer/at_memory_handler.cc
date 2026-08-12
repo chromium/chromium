@@ -60,6 +60,10 @@ bool IsPrintable(const WebKeyboardEvent& event) {
   if (base::IsAsciiControl(event.text[0]) || event.text[1] != 0) {
     return false;
   }
+  if constexpr (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) {
+    // On Linux and Windows, Alt+X is not printable.
+    return !(event.GetModifiers() & blink::WebInputEvent::kAltKey);
+  }
   if constexpr (BUILDFLAG(IS_MAC)) {
     // On Mac, Meta+X is not printable but leads to `event.text[0] != 'X'`.
     return !(event.GetModifiers() & blink::WebInputEvent::kMetaKey);
