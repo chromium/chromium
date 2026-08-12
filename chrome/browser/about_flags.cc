@@ -4846,11 +4846,17 @@ const FeatureEntry::FeatureParam kDictationShowPartialsParam[] = {
     {"show_partials", "true"}};
 const FeatureEntry::FeatureParam kDictationWebSpeechApiBackendParam[] = {
     {"web_speech_api_backend", "true"}};
+const FeatureEntry::FeatureParam
+    kDictationWebSpeechApiBackendWithPartialsParam[] = {
+        {"web_speech_api_backend", "true"},
+        {"show_partials", "true"}};
 const FeatureEntry::FeatureVariation kDictationVariations[] = {
     {"with evaluation mode", kDictationEvalModeParam, nullptr},
     {"with shown partials", kDictationShowPartialsParam, nullptr},
     {"with Web Speech API backend", kDictationWebSpeechApiBackendParam,
-     nullptr}};
+     nullptr},
+    {"with Web Speech API backend and partials",
+     kDictationWebSpeechApiBackendWithPartialsParam, nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
