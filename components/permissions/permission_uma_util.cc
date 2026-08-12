@@ -868,7 +868,7 @@ void PermissionUmaUtil::RecordActivityIndicator(
 }
 
 void PermissionUmaUtil::RecordDismissalType(
-    const std::vector<base::SafeRef<permissions::PermissionRequest>>& requests,
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
     PermissionPromptDisposition ui_disposition,
     DismissalType dismissalType) {
   RequestTypeForUma type = PermissionUtil::GetUmaValueForRequests(requests);

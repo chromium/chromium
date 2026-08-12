@@ -6,7 +6,6 @@
 
 #include <variant>
 
-#include "base/memory/safe_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
@@ -158,7 +157,7 @@ void PermissionBlockedMessageDelegate::InitializeLoudUI() {
   message_->SetTitle(
       l10n_util::GetStringUTF16(IDS_NOTIFICATION_TITLE_MESSAGE_UI));
 
-  const std::vector<base::SafeRef<permissions::PermissionRequest>>& requests =
+  const std::vector<std::unique_ptr<permissions::PermissionRequest>>& requests =
       delegate_->permission_prompt()->Requests();
 
   std::u16string requesting_origin_string_formatted =
@@ -319,7 +318,7 @@ void PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick() {
   if (!delegate_->permission_prompt()) {
     return;
   }
-  const std::vector<base::SafeRef<permissions::PermissionRequest>>& requests =
+  const std::vector<std::unique_ptr<permissions::PermissionRequest>>& requests =
       delegate_->permission_prompt()->Requests();
   if (requests.empty()) {
     return;

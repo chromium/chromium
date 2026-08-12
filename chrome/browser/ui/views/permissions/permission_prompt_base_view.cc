@@ -224,11 +224,10 @@ std::u16string PermissionPromptBaseView::GetAllowAlwaysText(
 }
 
 std::u16string PermissionPromptBaseView::GetAllowAlwaysText(
-    const std::vector<base::SafeRef<permissions::PermissionRequest>>&
-        visible_requests) {
+    const std::vector<permissions::PermissionRequest*>& visible_requests) {
   CHECK_GT(visible_requests.size(), 0u);
   return GetAllowAlwaysTextInternal(visible_requests.size(),
-                                    &*visible_requests[0]);
+                                    visible_requests[0]);
 }
 
 std::u16string PermissionPromptBaseView::GetBlockText(
@@ -240,10 +239,9 @@ std::u16string PermissionPromptBaseView::GetBlockText(
 }
 
 std::u16string PermissionPromptBaseView::GetBlockText(
-    const std::vector<base::SafeRef<permissions::PermissionRequest>>&
-        visible_requests) {
+    const std::vector<permissions::PermissionRequest*>& visible_requests) {
   CHECK_GT(visible_requests.size(), 0u);
-  return GetBlockTextInternal(visible_requests.size(), &*visible_requests[0]);
+  return GetBlockTextInternal(visible_requests.size(), visible_requests[0]);
 }
 
 void PermissionPromptBaseView::StartTrackingPictureInPictureOcclusion() {

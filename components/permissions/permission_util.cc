@@ -118,6 +118,15 @@ RequestTypeForUma PermissionUtil::GetUmaValueForRequest(
                                    request.GetGeolocationPromptType());
 }
 
+RequestTypeForUma PermissionUtil::GetUmaValueForRequests(
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests) {
+  CHECK(!requests.empty());
+  if (requests.size() == 1) {
+    return GetUmaValueForRequest(*requests[0]);
+  }
+  return GetUmaValueForMultipleRequests(requests[0]->request_type());
+}
+
 RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
     RequestType request_type,
     std::optional<GeolocationPromptType> geolocation_prompt_type) {

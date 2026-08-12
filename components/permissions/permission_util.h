@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/safe_ref.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -52,17 +51,8 @@ class PermissionUtil {
   static std::string GetPermissionString(ContentSettingsType);
 
   // Returns the request type uma value for the given permissions.
-  template <typename T>
-    requires std::is_same_v<std::unique_ptr<PermissionRequest>, T> ||
-             std::is_same_v<base::SafeRef<PermissionRequest>, T>
   static RequestTypeForUma GetUmaValueForRequests(
-      const std::vector<T>& requests) {
-    CHECK(!requests.empty());
-    if (requests.size() == 1) {
-      return GetUmaValueForRequest(*requests[0]);
-    }
-    return GetUmaValueForMultipleRequests(requests[0]->request_type());
-  }
+      const std::vector<std::unique_ptr<PermissionRequest>>& requests);
 
   // Returns the request type uma value for the given request.
   static RequestTypeForUma GetUmaValueForRequest(

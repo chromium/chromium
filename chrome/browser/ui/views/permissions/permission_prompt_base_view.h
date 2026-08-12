@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
@@ -76,16 +75,14 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
           visible_requests);
 
   static std::u16string GetAllowAlwaysText(
-      const std::vector<base::SafeRef<permissions::PermissionRequest>>&
-          visible_requests);
+      const std::vector<permissions::PermissionRequest*>& visible_requests);
 
   static std::u16string GetBlockText(
       const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
           visible_requests);
 
   static std::u16string GetBlockText(
-      const std::vector<base::SafeRef<permissions::PermissionRequest>>&
-          visible_requests);
+      const std::vector<permissions::PermissionRequest*>& visible_requests);
 
   // Starts observing our widget for occlusion by a picture-in-picture window.
   // Subclasses must manually call this if they override `AddedToWidget()`
