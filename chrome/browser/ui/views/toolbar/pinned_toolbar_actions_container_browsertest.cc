@@ -691,7 +691,8 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerTest, StatusIndicatorTest) {
 
 // TODO(crbug.com/544873874): Disabled on ChromeOS for reland. Re-enabled with
 // fix in follow-up CL.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/545510450): Disabled on Win10 Tests x64.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_MetricsRecordedForPinnableActions \
   DISABLED_MetricsRecordedForPinnableActions
 #else
