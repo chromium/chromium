@@ -1300,20 +1300,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BottomControlsStacker.NumberOfVisibleLayers"
-    units="layers" expires_after="2026-01-27">
+    units="layers" expires_after="2027-10-01">
   <owner>pnoland@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records the number of visible bottom controls layers. Recorded when a
     navigation finishes in the main frame of the active tab.
+
+    Note: There is a recording gap between: 2026.01-2026.08.
   </summary>
 </histogram>
 
 <histogram
     name="Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight"
-    units="%" expires_after="2027-02-07">
+    units="%" expires_after="2027-10-01">
   <owner>pnoland@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records the percentage of the window's total height used by the bottom
     controls stack at full height. This is the maximum % the window is obscured
@@ -1324,9 +1328,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight"
-    units="%" expires_after="2027-02-07">
+    units="%" expires_after="2027-10-01">
   <owner>pnoland@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records the percentage of the window's total height used by the bottom
     controls stack at its minimum height. This is the minimum % the window is
@@ -1371,9 +1376,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BrowserControls.OutstandingChangedOnFinish"
-    enum="BooleanChanged" expires_after="2027-03-25">
+    enum="BooleanChanged" expires_after="2027-10-01">
   <owner>skym@chromium.org</owner>
   <owner>pnoland@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records if the outstanding navigations set changed when a navigation is
     finished. This means the navigation id was not previously tracked, either
@@ -1384,22 +1390,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BrowserControls.OutstandingChangedOnStart"
-    enum="BooleanChanged" expires_after="2026-07-05">
+    enum="BooleanChanged" expires_after="2027-10-01">
   <owner>skym@chromium.org</owner>
   <owner>pnoland@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records if the outstanding navigations set changed when a navigation is
     started. This means the navigation id was previously tracked and then the
     same id was claimed to be started again. If things are working correctly,
     this metric should always be true. No existing violations of this are
     currently known.
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
 <histogram name="Android.BrowserControls.OutstandingNavigationsOnFinish"
-    units="navigations" expires_after="2027-03-24">
+    units="navigations" expires_after="2027-10-01">
   <owner>skym@chromium.org</owner>
   <owner>pnoland@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records the number of outstanding navigations that are blocking the browser
     controls from being scrollable. Recorded when a navigation completes.
@@ -1675,26 +1685,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ChromeStartupDelegate.FailureReason"
-    enum="ChromeStartupDelegateFailureType" expires_after="2026-02-10">
-  <owner>gangwu@chromium.org</owner>
+    enum="ChromeStartupDelegateFailureType" expires_after="2027-10-01">
   <owner>twellington@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records the failure reason for ChromeStartupDelegate requests. Recorded at
     most once on application startup.
 
     (Expired in 2022-12-25. Revived in 2025-01-07.)
+
+    Note: There is a recording gap between: 2026.02-2026.08.
   </summary>
 </histogram>
 
 <histogram name="Android.ChromeStartupDelegate.Result"
-    enum="ChromeStartupDelegateResult" expires_after="2026-02-10">
-  <owner>gangwu@chromium.org</owner>
+    enum="ChromeStartupDelegateResult" expires_after="2027-10-01">
   <owner>twellington@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records the result for ChromeStartupDelegate. Recorded on application
     startup.
 
     (Expired in 2022-10-16. Revived in 2025-01-07.)
+
+    Note: There is a recording gap between: 2026.02-2026.08.
   </summary>
 </histogram>
 
@@ -3263,8 +3277,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.LibraryLoader.Prefetch.Duration" units="ms"
     expires_after="2026-12-22">
   <owner>ziadyoussef@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <owner>woa-performance@google.com</owner>
   <summary>
     The time for prefetching the native library code to memory. Recorded once
     per process start when prefetching is used.
@@ -3274,8 +3288,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.LibraryLoader.Prefetch.ForkDuration"
     units="microseconds" expires_after="2026-12-22">
   <owner>ashleynewson@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <owner>woa-performance@google.com</owner>
   <summary>
     Time taken to perform the fork() call in the library prefetcher when using
     the PrefetchWithFork strategy. This measures the duration of the clone
@@ -3295,8 +3309,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.LibraryLoader.Prefetch.Madvise" enum="Boolean"
     expires_after="2026-12-22">
   <owner>ashleynewson@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <owner>woa-performance@google.com</owner>
   <summary>
     True iff madvise MADV_WILLNEED is supported (and will be used to prefetch
     the native library). Does not state whether madvise was successful for the
@@ -3311,8 +3325,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.LibraryLoader.Prefetch.Status" enum="PrefetchStatus"
     expires_after="2026-12-22">
   <owner>ziadyoussef@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <owner>woa-performance@google.com</owner>
   <summary>
     Reports the result of prefetching native code into memory. Recorded once per
     process start when prefetching is used.
@@ -4003,7 +4017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.ActionInSuggest.IntentResult"
-    enum="ActionInSuggestIntentResult" expires_after="2027-01-03">
+    enum="ActionInSuggestIntentResult" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4061,7 +4075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.InvalidMatch" enum="MatchResult"
-    expires_after="2027-01-03">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4075,17 +4089,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.JumpStartState" enum="OmniboxJumpStartState"
-    expires_after="2026-07-01">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records the JumpStart feature eligibility and user preference state during
     cold start. Logged once per cold start.
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
 <histogram name="Android.Omnibox.OmniboxAction.Used" enum="BooleanUsage"
-    expires_after="2026-07-01">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4102,11 +4118,13 @@ chromium-metrics-reviews@google.com.
     The histogram is recorded once per Omnibox interaction, where at least one
     Omnibox Action was shown to the user at the time the user completed
     interaction with the Omnibox.
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
 <histogram name="Android.Omnibox.OmniboxAction.Valid" enum="BooleanValid"
-    expires_after="2026-07-01">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4125,11 +4143,13 @@ chromium-metrics-reviews@google.com.
 
     The histogram captures one value for every Omnibox Action displayed in the
     Suggestions list when the user completes the interaction with the Omnibox.
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
 <histogram name="Android.Omnibox.RefineActionUsage" enum="RefineActionUsage"
-    expires_after="2027-01-03">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -4146,8 +4166,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SearchActivity.ActivityPresent"
-    enum="BooleanPresent" expires_after="2026-07-01">
+    enum="BooleanPresent" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records whether intent is updating an already present activity. For the most
     part the expected value here is 'false', indicating that the intent was
@@ -4156,12 +4177,15 @@ chromium-metrics-reviews@google.com.
     would need to be emitted while SearchActivity is in foreground.
 
     Recorded once per intent.
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
 <histogram name="Android.Omnibox.SearchActivity.IntentOrigin"
-    enum="SearchActivityIntentOrigin" expires_after="2027-01-03">
+    enum="SearchActivityIntentOrigin" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Record the origin of an intent (i.e. from where the SearchActivity was
     called). Recorded once per intent.
@@ -4169,18 +4193,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SearchActivity.LaunchedWithQuery"
-    enum="Boolean" expires_after="2026-07-01">
+    enum="Boolean" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records whether intent used to launch / update SearchActivity carried an
     (optional) User Query. Recorded once per intent.
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
 <histogram
     name="Android.Omnibox.SearchActivity.NavigationTargetType{IntentOrigin}"
-    enum="UrlTargetType" expires_after="2027-02-07">
+    enum="UrlTargetType" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records the intended navigation search target type for every navigation
     initiated from the SearchActivity.
@@ -4193,27 +4221,34 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SearchActivity.ReferrerValid"
-    enum="BooleanValid" expires_after="2026-07-01">
+    enum="BooleanValid" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records whether Intent Referrer field was valid for Searches initiated from
     SearchActivity. Recorded only when IntentOrigin is &quot;Custom Tab&quot;.
     Recorded once per SearchActivity session.
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
 <histogram name="Android.Omnibox.SearchActivity.RequestedSearchType"
-    enum="SearchActivitySearchType" expires_after="2026-07-01">
+    enum="SearchActivitySearchType" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Record the Search type requested from an Intent. Recorded once per intent.
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
 <histogram
     name="Android.Omnibox.SearchActivity.SessionTerminationReason{IntentOrigin}"
-    enum="SearchActivityTerminationReason" expires_after="2027-02-07">
+    enum="SearchActivityTerminationReason" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records the reason SearchActivity was closed.
 
@@ -4224,7 +4259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SetGeolocationHeadersTime" units="ms"
-    expires_after="2027-01-17">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4237,8 +4272,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.FocusToImeAnimationStart"
-    units="ms" expires_after="2025-09-01">
+    units="ms" expires_after="2027-10-01">
   <owner>pnoland@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records the wall time elapsed between focusing the omnibox and invocation of
@@ -4250,11 +4286,13 @@ chromium-metrics-reviews@google.com.
     insets (which excludes, e.g. most devices with a hardware keyboard
     attached). This metric is recorded even if the animation is cancelled due to
     timeout, but is not recorded if the onPrepare method is never called.
+
+    Note: There is a recording gap between: 2025.09-2026.08.
   </summary>
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime2" units="ms"
-    expires_after="2027-01-03">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -4279,10 +4317,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime3" units="ms"
-    expires_after="2027-01-03">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
-  <owner>gangwu@chromium.org</owner>
   <summary>
     Replacement for Android.Omnibox.SuggestionList.LayoutTime2 that uses wall
     time instead of thread time. Records wall time spent positioning suggestion
@@ -4302,7 +4339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.MeasureTime2" units="ms"
-    expires_after="2027-01-03">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -4330,10 +4367,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.MeasureTime3" units="ms"
-    expires_after="2027-01-03">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
-  <owner>gangwu@chromium.org</owner>
   <summary>
     Replacement for Android.Omnibox.SuggestionList.MeasureTime2 that uses wall
     time instead of thread time. Records wall time spent on measuring all
@@ -4354,10 +4390,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.RequestToUiModel.First"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
-  <owner>gangwu@chromium.org</owner>
   <summary>
     Records time elapsed between requesting the suggestions and converting the
     first (synchronous) set of received suggestions to the UI model.
@@ -4371,10 +4406,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.RequestToUiModel.Last"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
-  <owner>gangwu@chromium.org</owner>
   <summary>
     Records time elapsed between requesting the suggestions and converting the
     final (asynchronous) set of received suggestions to the UI model.
@@ -4481,7 +4515,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionsDropdown.InflationTime3" units="ms"
-    expires_after="2027-01-03">
+    expires_after="2027-10-01">
   <owner>peterkang@google.com</owner>
   <owner>ender@google.com</owner>
   <summary>
@@ -4547,7 +4581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionsListScrolled.{PageClass}"
-    enum="Boolean" expires_after="2027-02-07">
+    enum="Boolean" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -4567,10 +4601,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionView.CreatedType"
-    enum="OmniboxSuggestionUiType" expires_after="2027-01-24">
+    enum="OmniboxSuggestionUiType" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
-  <owner>gangwu@chromium.org</owner>
-  <owner>rongtan@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records the type of suggestion that was reused with the help of
     RecyclerView.
@@ -4590,7 +4623,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionView.CreateTime2" units="ms"
-    expires_after="2027-01-03">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -4613,10 +4646,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionView.CreateTime3" units="ms"
-    expires_after="2026-07-01">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
-  <owner>gangwu@chromium.org</owner>
   <summary>
     Replacement for Android.Omnibox.SuggestionList.CreateTime2 that uses wall
     time instead of thread time. Records wall time spent on creating a single
@@ -4632,14 +4664,15 @@ chromium-metrics-reviews@google.com.
     This histogram is related to Android.Omnibox.SuggestionView.CreateTime2,
     Android.Omnibox.SuggestionList.LayoutTime3, and
     Android.Omnibox.SuggestionList.MeasureTime3
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionView.ReusedType"
-    enum="OmniboxSuggestionUiType" expires_after="2027-01-24">
+    enum="OmniboxSuggestionUiType" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
-  <owner>gangwu@chromium.org</owner>
-  <owner>rongtan@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records the type of suggestion that was reused with the help of
     RecyclerView.
@@ -4659,9 +4692,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionView.SessionViewsCreated"
-    units="count" expires_after="2026-07-01">
+    units="count" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
-  <owner>rongtan@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records number of views created from the moment the Omnibox was focused,
     until the interaction was completed, whether the user navigated somewhere or
@@ -4681,13 +4714,15 @@ chromium-metrics-reviews@google.com.
 
     This histogram is related to Android.Omnibox.SuggestionView.CreatedType,
     Android.Omnibox.SuggestionView.SessionViewsReused.
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionView.SessionViewsReused" units="%"
-    expires_after="2026-07-01">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
-  <owner>rongtan@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Captures the efficiency of the view re-use from the moment the Omnibox was
     focused, until the interaction was completed, whether the user navigated
@@ -4708,11 +4743,13 @@ chromium-metrics-reviews@google.com.
 
     This histogram is related to
     Android.Omnibox.SuggestionView.SessionViewsCreated.
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
 <histogram name="Android.Omnibox.UsedSuggestionFromCache" enum="Boolean"
-    expires_after="2027-01-03">
+    expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4736,7 +4773,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.Omnibox.{AndroidSearchPrefetch}.GeoLocationHeaderTime.{AndroidNavigationOrSuggestionPrefetch}"
-    units="ms" expires_after="2026-07-01">
+    units="ms" expires_after="2027-10-01">
   <owner>ender@google.com</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
@@ -4749,6 +4786,8 @@ chromium-metrics-reviews@google.com.
     request.
 
     {AndroidNavigationOrSuggestionPrefetch}
+
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
   <token key="AndroidSearchPrefetch" variants="AndroidSearchPrefetch"/>
   <token key="AndroidNavigationOrSuggestionPrefetch"
@@ -5492,9 +5531,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RequestDesktopSite.UseDesktopUserAgent" enum="Boolean"
-    expires_after="2027-01-17">
-  <owner>gangwu@chromium.org</owner>
+    expires_after="2027-10-01">
   <owner>fgorski@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records if Chrome uses the desktop site user agent to request websites. This
     is recorded when each tab loads a new url or reloads a url (browser
@@ -5503,9 +5542,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RequestDesktopSite.UserSwitchToDesktop" enum="Boolean"
-    expires_after="2027-01-03">
-  <owner>gangwu@chromium.org</owner>
+    expires_after="2027-10-01">
   <owner>fgorski@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records if a user switched to request desktop site from the app menu. This
     is recorded when a user manually switches sites between the desktop/mobile.
@@ -6612,9 +6651,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ToolbarPosition.PositionAtStartup"
-    enum="ToolbarPosition" expires_after="2027-02-07">
+    enum="ToolbarPosition" expires_after="2027-10-01">
   <owner>pnoland@chromium.org</owner>
-  <owner>gangwu@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records the user-preferred position for the toolbar at the time
     ToolbarPositionController is initialized. Initialization occurs once per
@@ -6628,9 +6667,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ToolbarPosition.PositionPrefChanged"
-    enum="ToolbarPosition" expires_after="2027-02-07">
+    enum="ToolbarPosition" expires_after="2027-10-01">
   <owner>pnoland@chromium.org</owner>
-  <owner>gangwu@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records user-initiated positions change for the toolbar, indicating the
     newly preferred position. Recorded when the value of the toolbar position
@@ -6993,8 +7032,8 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: used in server pipeline to monitor WebView API usage -->
 
   <owner>ntfschr@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <owner>woa-performance@google.com</owner>
   <summary>
     Records calls to static WebView APIs through the platform (framework) APIs.
     This may include AndroidX API calls on OS versions where the AndroidX
@@ -7017,8 +7056,8 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: used in server pipeline to monitor WebView API usage -->
 
   <owner>ntfschr@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <owner>woa-performance@google.com</owner>
   <summary>
     Records calls to WebView APIs made by the system through the platform
     (framework) APIs. This is logged each time an API is called.

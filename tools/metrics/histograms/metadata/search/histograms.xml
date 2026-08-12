@@ -739,7 +739,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     users when the panel is closed after being opened. Implemented for Android.
     (Expired in 2023-04-16. Revived in 2024-11-03.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -764,7 +764,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     render. Recorded when the panel is closed for all users. Implemented for
     Android. (Expired in 2023-04-16. Revived in 2024-11-03.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -778,7 +778,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     url loader calls the completion callback. Recorded value is the absolute
     value of the received net::Error value.
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -792,7 +792,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     triggers the feature and the server responds. Implemented for Android.
     (Expired in M94. Revived in M120.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -806,7 +806,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     feature. Implemented for Android. (Expired in 2023-02-12. Revived in
     2024-11-03.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -820,7 +820,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     longpress). Recorded when the qualifying server response is received.
     Implemented for Android.(Expired in 2024-07-21. Revived in 2024-09-16.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -838,7 +838,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     Recorded when a gesture that would normally trigger TTS suppresses the
     bottom sheet from showing. Android only.
 
-    Note: There is a recording gap between M106 and 2026-08-10.
+    Note: There is a recording gap between: M106-2026.08.
   </summary>
 </histogram>
 
@@ -851,7 +851,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     tap gesture, for all users. Recorded when the UX is hidden. Implemented for
     Android. (Expired in M77. Revived in M120.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -866,7 +866,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     preference is changed. Implemented for Android. (Expired after 2019-01-30.
     Revived in M120.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -882,7 +882,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     Unified Consent for Contextual Search. Implemented for Android. (Expired
     after 2019-01-30. Revived in M120.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -898,7 +898,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     Search. Implemented for Android. (Expired after 2019-01-30. Revived in
     M120.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -950,7 +950,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     is toggled. Implemented for Android. (Expired in 2023-10-15. Revived in
     2024-11-03.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -963,7 +963,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     thanks' or 'Turn on' button on the Contextual Search Promo Card is chosen.
     Implemented for Android. (Expired in 2023-05-07. Revived in 2024-11-03.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -977,7 +977,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     promo card. Implemented for Android. (Expired in 2023-06-26. Revived in
     2024-11-03.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -990,7 +990,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     when the quick action is set. Implemented for Android. (Expired in
     2023-10-22. Revived in 2024-11-03.)
 
-    Note: There is a recording gap between 2026-06-21 and 2026-08-10.
+    Note: There is a recording gap between: 2026.06-2026.08.
   </summary>
 </histogram>
 
@@ -1025,7 +1025,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     Implemented for Android. (Expired in M81. Revived in M120.)
     {ContextualSearchQuickActionCategory}
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
   <token key="ContextualSearchQuickActionCategory"
       variants="ContextualSearchQuickActionCategory">
@@ -1044,7 +1044,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     for Android. (Expired in M81. Revived in M120.)
     {ContextualSearchQuickActionCategory}
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
   <token key="ContextualSearchQuickActionCategory"
       variants="ContextualSearchQuickActionCategory">
@@ -1644,7 +1644,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     the carousel is shown, or the carousel content is updated. Implemented for
     Android.
 
-    Note: There is a recording gap between 2026-05-10 and 2026-08-10.
+    Note: There is a recording gap between: 2026.05-2026.08.
   </summary>
 </histogram>
 
@@ -1657,7 +1657,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     the presentation UI is dismissed while the carousel is shown. Implemented
     for Android.
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -1671,7 +1671,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     the presentation UI is dismissed while the carousel is shown. Implemented
     for Android.
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -1688,7 +1688,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     Recorded when the presentation UI is dismissed. Implemented for Android.
     (Expired in 2022-08-07. Revived in 2024-11-03.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -1701,7 +1701,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     session when the user chose any Related Searches. Written when the
     suggestions UI is closed. Implemented for Android.
 
-    Note: There is a recording gap between 2026-01-04 and 2026-08-10.
+    Note: There is a recording gap between: 2026.01-2026.08.
   </summary>
 </histogram>
 
@@ -1729,7 +1729,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     by the user. Written when a Related Searches suggestion chip is clicked.
     Implemented for Android. (Expired in 2023-10-22. Revived in 2024-11-03.)
 
-    Note: There is a recording gap between 2026-05-10 and 2026-08-10.
+    Note: There is a recording gap between: 2026.05-2026.08.
   </summary>
 </histogram>
 
@@ -1745,7 +1745,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     Searches suggestion in the UI is selected. Implemented for Android. (Expired
     in 2023-02-12. Revived in 2024-11-03.)
 
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2025.11-2026.08.
   </summary>
 </histogram>
 

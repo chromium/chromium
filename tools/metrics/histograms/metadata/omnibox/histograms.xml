@@ -1318,9 +1318,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
     {ClipboardSuggestionType}
 
-    Note: recording gap between 2022/09 and 2023/08.
-
-    Note: There is a recording gap between 2026-01-04 and 2026-08-10.
+    Note: There is a recording gap between: 2022.09-2023.08, 2026.01-2026.08.
   </summary>
 </histogram>
 
@@ -1403,9 +1401,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
     {ClipboardSuggestionType}
 
-    Note: recording gap between 2022/10 and 2023/08.
-
-    Note: There is a recording gap between 2025-11-01 and 2026-08-10.
+    Note: There is a recording gap between: 2022.10-2023.08, 2025.11-2026.08.
   </summary>
 </histogram>
 
@@ -4105,7 +4101,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Measures the amount of time it takes to call UrlBar.scrollToTLD(). Logged
     once per call.
 
-    Note: There is a recording gap between 2026-03-09 and 2026-08-10.
+    Note: There is a recording gap between: 2026.03-2026.08.
   </summary>
 </histogram>
 
@@ -4121,7 +4117,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
     Recorded each time Ctrl+Enter is used to complete an interaction.
 
-    Note: There is a recording gap between 2026-07-01 and 2026-08-10.
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
@@ -4135,7 +4131,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
     Recorded each time user accepts Omnibox text via Keyboard.
 
-    Note: There is a recording gap between 2026-07-01 and 2026-08-10.
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
@@ -4984,7 +4980,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Recorded every time the user initiates deletion of a suggest tile, even if
     the operation is later canceled.
 
-    Note: There is a recording gap between 2026-07-01 and 2026-08-10.
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
@@ -5000,7 +4996,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     results with tile removal. Not recorded if the user chooses to cancel the
     action.
 
-    Note: There is a recording gap between 2026-07-01 and 2026-08-10.
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
@@ -5031,7 +5027,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Recorded every time the user selects the tile to initiate navigation, even
     if the navigation could not be completed (eg. target site did not load).
 
-    Note: possible recording gap between 2023/06 and 2023/08.
+    Note: There is a recording gap between: 2023.06-2023.08.
   </summary>
 </histogram>
 
@@ -5045,9 +5041,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Recorded every time the current context is eligible to receive
     MostVisitedTiles, even if there were no tiles of any kind to show.
 
-    Note: possible recording gap between 2023/06 and 2023/08.
-
-    Note: There is a recording gap between 2026-07-01 and 2026-08-10.
+    Note: There is a recording gap between: 2023.06-2023.08, 2026.07-2026.08.
   </summary>
   <token key="SuggestTileType">
     <variant name="Search"/>
@@ -5085,7 +5079,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     This histogram only records metrics on machines with high-resolution clocks.
     (Expired in 2024-04-28. Revived in 2025-01-06.)
 
-    Note: There is a recording gap between 2026-02-10 and 2026-08-10.
+    Note: There is a recording gap between: 2026.02-2026.08.
   </summary>
 </histogram>
 
@@ -5257,7 +5251,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Recorded for all TemplateURLs every time a Search URL is created, regardless
     of whether extensions are used, or a specific extension type is populated.
 
-    Note: There is a recording gap between 2026-07-01 and 2026-08-10.
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
@@ -5286,7 +5280,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Recorded once for every TemplateUrl expansion if the Template URL references
     the {google:RLZ} parameter.
 
-    Note: There is a recording gap between 2026-07-01 and 2026-08-10.
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
@@ -5323,7 +5317,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Values reported by this histogram should be zero for mobile devices,
     possibly also for Desktop and ChromeOS (unconfirmed).
 
-    Note: There is a recording gap between 2026-07-01 and 2026-08-10.
+    Note: There is a recording gap between: 2026.07-2026.08.
   </summary>
 </histogram>
 
