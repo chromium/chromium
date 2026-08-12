@@ -9,6 +9,7 @@
 #import "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_item.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -94,4 +95,35 @@ TEST_F(AtMemoryUIUtilTest, TestGetAtMemoryGranularFillTitleForUnknownType) {
   MemorySearchResult empty_unknown_entry(MemoryDataType::kUnknown,
                                          kEmptyTypeName, kEmptyUnknownValue);
   EXPECT_NSEQ(GetAtMemoryGranularFillTitle(empty_unknown_entry), kEmptyTitle);
+}
+
+// Tests that `AtMemoryGranularFillItemsForSearchResult` converts entry value
+// and metadata into `AtMemoryGranularFillItem` instances.
+TEST_F(AtMemoryUIUtilTest, TestAtMemoryGranularFillItemsForSearchResult) {
+  MemorySearchResult entry(MemoryDataType::kPassportNumber,
+                           kPassportNumberTypeName, kPassportNumberValue);
+  entry.metadata_list.emplace_back(MemoryDataType::kPassportExpirationDate,
+                                   kPassportExpirationDateTypeName,
+                                   kPassportExpirationDateValue);
+  entry.metadata_list.emplace_back(MemoryDataType::kPassportName,
+                                   kPassportNameTypeName, kPassportNameValue);
+
+  NSArray<AtMemoryGranularFillItem*>* items =
+      AtMemoryGranularFillItemsForSearchResult(entry);
+  ASSERT_EQ(items.count, 3u);
+
+  EXPECT_NSEQ(items[0].attributeName,
+              base::SysUTF16ToNSString(kPassportNumberTypeName));
+  EXPECT_NSEQ(items[0].attributeValue,
+              base::SysUTF16ToNSString(kPassportNumberValue));
+
+  EXPECT_NSEQ(items[1].attributeName,
+              base::SysUTF16ToNSString(kPassportExpirationDateTypeName));
+  EXPECT_NSEQ(items[1].attributeValue,
+              base::SysUTF16ToNSString(kPassportExpirationDateValue));
+
+  EXPECT_NSEQ(items[2].attributeName,
+              base::SysUTF16ToNSString(kPassportNameTypeName));
+  EXPECT_NSEQ(items[2].attributeValue,
+              base::SysUTF16ToNSString(kPassportNameValue));
 }

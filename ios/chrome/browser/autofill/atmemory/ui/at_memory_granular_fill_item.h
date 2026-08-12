@@ -7,9 +7,23 @@
 
 #import <Foundation/Foundation.h>
 
-// Item representing an attribute field for AtMemory granular fill.
-// TODO(crbug.com/522340351): Implement attributes and values for this item.
+// Item representing an attribute field with label and value for AtMemory
+// granular fill.
 @interface AtMemoryGranularFillItem : NSObject
+
+// The name of the attribute.
+@property(nonatomic, copy, readonly) NSString* attributeName;
+
+// The value of the attribute.
+@property(nonatomic, copy, readonly) NSString* attributeValue;
+
+// Initializes an AtMemoryGranularFillItem with `attributeName` and
+// `attributeValue`.
+- (instancetype)initWithAttributeName:(NSString*)attributeName
+                       attributeValue:(NSString*)attributeValue
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

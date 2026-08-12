@@ -7,12 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
+@class AtMemoryGranularFillItem;
+
 namespace autofill {
 struct MemorySearchResult;
 }
 
 // Returns the granular fill title for `result`.
 NSString* GetAtMemoryGranularFillTitle(
+    const autofill::MemorySearchResult& result);
+
+// Returns an array of AtMemoryGranularFillItem objects created from `result`.
+NSArray<AtMemoryGranularFillItem*>* AtMemoryGranularFillItemsForSearchResult(
     const autofill::MemorySearchResult& result);
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_UTILS_ATMEMORY_UI_UTIL_H_

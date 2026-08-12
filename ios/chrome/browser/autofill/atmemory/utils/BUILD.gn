@@ -7,7 +7,10 @@ source_set("utils") {
     "atmemory_ui_util.h",
     "atmemory_ui_util.mm",
   ]
-  deps = [ "//components/autofill/core/browser" ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/atmemory/ui",
+  ]
 }
 
 source_set("unit_tests") {
@@ -15,9 +18,9 @@ source_set("unit_tests") {
   sources = [ "atmemory_ui_util_unittest.mm" ]
   deps = [
     ":utils",
-    "//base",
     "//components/autofill/core/browser",
     "//components/strings",
+    "//ios/chrome/browser/autofill/atmemory/ui",
     "//testing/gtest",
     "//ui/base",
   ]
