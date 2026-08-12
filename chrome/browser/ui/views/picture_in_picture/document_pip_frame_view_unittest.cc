@@ -1069,3 +1069,43 @@ TEST_F(DocumentPipFrameViewTest, IsOverlayViewVisible_TracksOverlayVisibility) {
   overlay->SetVisible(false);
   EXPECT_FALSE(IsOverlayViewVisible(frame_view));
 }
+
+// A visible auto-PiP overlay keeps the top bar rendered active even when the
+// widget deactivates, so the Allow/Block prompt stays legible (matching
+// PictureInPictureBrowserFrameView, which folds IsOverlayViewVisible() into the
+// render-active computation). Hiding the overlay lets deactivation take effect.
+TEST_F(DocumentPipFrameViewTest, AutoPipOverlayVisibleKeepsTopBarActive) {
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  AutoPipSettingOverlayView* overlay = InjectAutoPipOverlay(frame_view);
+  ASSERT_TRUE(overlay);
+  ASSERT_TRUE(IsOverlayViewVisible(frame_view));
+
+  // Deactivating while the overlay is visible must not drop the active render
+  // state (without the overlay this would go inactive, per
+  // WidgetActivationTogglesRenderState).
+  frame_view->OnWidgetActivationChanged(frame_view->GetWidget(),
+                                        /*active=*/false);
+  EXPECT_TRUE(GetRenderActive(frame_view));
+
+  // Once the overlay is hidden, the same deactivation drops the active state.
+  overlay->SetVisible(false);
+  frame_view->OnWidgetActivationChanged(frame_view->GetWidget(),
+                                        /*active=*/false);
+  EXPECT_FALSE(GetRenderActive(frame_view));
+}
+
+// OnWidgetDestroying nulls the overlay raw_ptr during teardown (the overlay is
+// owned by the view tree, which is torn down after this hook), so no dangling
+// pointer survives into ~DocumentPipFrameView.
+TEST_F(DocumentPipFrameViewTest, OnWidgetDestroyingClearsAutoPipOverlay) {
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  ASSERT_TRUE(InjectAutoPipOverlay(frame_view));
+  ASSERT_TRUE(GetAutoPipOverlay(frame_view));
+
+  frame_view->OnWidgetDestroying(frame_view->GetWidget());
+
+  EXPECT_FALSE(GetAutoPipOverlay(frame_view));
+  EXPECT_FALSE(IsOverlayViewVisible(frame_view));
+}
