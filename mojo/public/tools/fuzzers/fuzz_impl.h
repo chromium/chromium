@@ -31,6 +31,9 @@ class FuzzImpl : public fuzz::mojom::FuzzInterface,
                         fuzz::mojom::FuzzStructPtr b,
                         FuzzArgsSyncRespCallback callback) override;
 
+  void FuzzNullableValueArrays(
+      fuzz::mojom::FuzzNullableValueArrayStructPtr s) override;
+
   void FuzzAssociated(
       mojo::PendingAssociatedReceiver<fuzz::mojom::FuzzDummyInterface> receiver)
       override;

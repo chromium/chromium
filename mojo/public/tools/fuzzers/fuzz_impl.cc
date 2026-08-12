@@ -39,6 +39,9 @@ void FuzzImpl::FuzzArgsSyncResp(fuzz::mojom::FuzzStructPtr a,
   std::move(callback).Run();
 }
 
+void FuzzImpl::FuzzNullableValueArrays(
+    fuzz::mojom::FuzzNullableValueArrayStructPtr s) {}
+
 void FuzzImpl::FuzzAssociated(
     mojo::PendingAssociatedReceiver<fuzz::mojom::FuzzDummyInterface> receiver) {
   associated_receivers_.Add(this, std::move(receiver));

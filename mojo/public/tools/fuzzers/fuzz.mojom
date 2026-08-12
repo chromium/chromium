@@ -65,6 +65,13 @@ struct FuzzStruct {
   array<map<FuzzEnum, map<int8, array<FuzzStruct?>?>>>? fuzz_complex;
 };
 
+struct FuzzNullableValueArrayStruct {
+  array<uint32?> fuzz_nullable_uint32_array;
+  array<int8?> fuzz_nullable_int8_array;
+  array<bool?> fuzz_nullable_bool_array;
+  array<FuzzEnum?> fuzz_nullable_enum_array;
+};
+
 interface FuzzDummyInterface {
   Ping();
 };
@@ -80,6 +87,8 @@ interface FuzzInterface {
   FuzzArgsResp(FuzzStruct a, FuzzStruct? b) => ();
   [Sync]
   FuzzArgsSyncResp(FuzzStruct a, FuzzStruct? b) => ();
+
+  FuzzNullableValueArrays(FuzzNullableValueArrayStruct s);
 
   FuzzAssociated(pending_associated_receiver<FuzzDummyInterface> receiver);
 };
