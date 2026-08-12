@@ -72,8 +72,7 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
 
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
   int x = 0;
-  const int container_height = size_bounds.height().value_or(
-      GetLayoutConstant(LayoutConstant::kTabHeight));
+  const int container_height = TabStyle::Get()->GetStandardHeight();
 
   const int pinned_preferred_width =
       pinned_tabs_scroll_view->GetPreferredSize(size_bounds).width();

@@ -110,7 +110,7 @@ gfx::Size PinnedTabContainerView::GetMinimumSize() const {
       min_width =
           std::max(0, min_width - static_cast<int>(count - 1) * tab_overlap);
     }
-    return gfx::Size(min_width, GetLayoutConstant(LayoutConstant::kTabHeight));
+    return gfx::Size(min_width, TabStyle::Get()->GetStandardHeight());
   }
 
   // The minimum size should be enough to show a row and a half, if needed.
@@ -333,8 +333,7 @@ views::ProposedLayout PinnedTabContainerView::CalculateHorizontalLayout(
 
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
   int x = 0;
-  const int container_height = size_bounds.height().value_or(
-      GetLayoutConstant(LayoutConstant::kTabHeight));
+  const int container_height = TabStyle::Get()->GetStandardHeight();
   size_t visible_count = 0;
 
   for (auto* child : children) {

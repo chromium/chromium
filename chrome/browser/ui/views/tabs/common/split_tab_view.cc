@@ -132,7 +132,7 @@ gfx::Size SplitTabView::GetMinimumSize() const {
     }
     const int tab_overlap = TabStyle::Get()->GetTabOverlap();
     return gfx::Size(std::max(0, min_width - tab_overlap),
-                     GetLayoutConstant(LayoutConstant::kTabHeight));
+                     TabStyle::Get()->GetStandardHeight());
   }
   return views::View::GetMinimumSize();
 }
@@ -249,8 +249,7 @@ views::ProposedLayout SplitTabView::CalculateHorizontalLayout(
     return layouts;
   }
 
-  const int height = size_bounds.height().value_or(
-      GetLayoutConstant(LayoutConstant::kTabHeight));
+  const int height = TabStyle::Get()->GetStandardHeight();
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
 
   // Layout children horizontally side-by-side in order.

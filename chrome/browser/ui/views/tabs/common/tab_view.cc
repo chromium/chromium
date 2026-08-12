@@ -750,12 +750,13 @@ gfx::Size TabView::GetMinimumSize() const {
       collection_node_->orientation() == TabStripOrientation::kHorizontal) {
     if (pinned_) {
       return gfx::Size(tab_styling()->tab_style()->GetPinnedWidth(split_),
-                       GetLayoutConstant(LayoutConstant::kTabHeight));
+                       tab_styling()->tab_style()->GetStandardHeight());
     }
     const int min_width =
         active_ ? tab_styling()->tab_style()->GetMinimumActiveWidth(split_)
                 : tab_styling()->tab_style()->GetMinimumInactiveWidth();
-    return gfx::Size(min_width, GetLayoutConstant(LayoutConstant::kTabHeight));
+    return gfx::Size(min_width,
+                     tab_styling()->tab_style()->GetStandardHeight());
   }
   return views::View::GetMinimumSize();
 }
@@ -898,7 +899,7 @@ views::ProposedLayout TabView::CalculateProposedLayout(
   const int height =
       (collection_node_ &&
        collection_node_->orientation() == TabStripOrientation::kHorizontal)
-          ? GetLayoutConstant(LayoutConstant::kTabHeight)
+          ? tab_styling()->tab_style()->GetStandardHeight()
           : GetLayoutConstant(pinned_ ? LayoutConstant::kVerticalTabPinnedHeight
                                       : LayoutConstant::kVerticalTabHeight);
   views::ProposedLayout layouts;

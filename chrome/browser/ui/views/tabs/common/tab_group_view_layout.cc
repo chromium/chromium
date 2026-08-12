@@ -187,8 +187,7 @@ views::ProposedLayout TabGroupViewLayout::CalculateHorizontalLayout(
 
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
   const int header_overlap = TabGroupStyle::GetTabGroupOverlapAdjustment();
-  const int container_height = size_bounds.height().value_or(
-      GetLayoutConstant(LayoutConstant::kTabHeight));
+  const int container_height = TabStyle::Get()->GetStandardHeight();
 
   // Place the group header.
   int header_width = 0;
@@ -302,7 +301,7 @@ gfx::Size TabGroupViewLayout::CalculateHorizontalMinimumSize(
     min_width =
         std::max(0, min_width - static_cast<int>(count - 1) * tab_overlap);
   }
-  return gfx::Size(min_width, GetLayoutConstant(LayoutConstant::kTabHeight));
+  return gfx::Size(min_width, TabStyle::Get()->GetStandardHeight());
 }
 
 gfx::Size TabGroupViewLayout::CalculateVerticalMinimumSize(

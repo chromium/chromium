@@ -76,8 +76,7 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
     return layouts;
   }
 
-  const int container_height = size_bounds.height().value_or(
-      GetLayoutConstant(LayoutConstant::kTabHeight));
+  const int container_height = TabStyle::Get()->GetStandardHeight();
 
   TabStripCollectionLayoutInfo collection = CollectVisibleChildLayoutInfo(
       children, container_height,
@@ -252,7 +251,7 @@ gfx::Size UnpinnedTabContainerViewLayout::CalculateHorizontalMinimumSize(
         GetChildOverlap(visible_children[i], visible_children[i + 1]);
   }
   min_width = std::max(0, min_width - overlap_total);
-  return gfx::Size(min_width, GetLayoutConstant(LayoutConstant::kTabHeight));
+  return gfx::Size(min_width, TabStyle::Get()->GetStandardHeight());
 }
 
 gfx::Size UnpinnedTabContainerViewLayout::CalculateVerticalMinimumSize(
