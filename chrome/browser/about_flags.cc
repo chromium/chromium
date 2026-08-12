@@ -1039,11 +1039,14 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxFullPopupVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kWebUiOmniboxAskGAboutThisPageCoBrowse[] = {
-    {"Omnibox_AskGCoBrowse", "true"}};
+    {"Omnibox_AskGCoBrowse", "true"},
+    {"Omnibox_AskGBlockZeroStateSuggestions", "false"}};
 const FeatureEntry::FeatureParam kWebUiOmniboxAskGAboutThisPageCoBrowseWithVisualSelection[] = {
-    {"Omnibox_AskGCoBrowseWithVisualSelection", "true"}};
+    {"Omnibox_AskGCoBrowseWithVisualSelection", "true"},
+    {"Omnibox_AskGBlockZeroStateSuggestions", "false"}};
 const FeatureEntry::FeatureParam kWebUiOmniboxAskGAboutThisPageComposeBox[] = {
-    {"Omnibox_AskGComposeBox", "true"}};
+    {"Omnibox_AskGComposeBox", "true"},
+    {"Omnibox_AskGBlockZeroStateSuggestions", "true"}};
 
 const FeatureEntry::FeatureVariation kWebUiOmniboxAskGAboutThisPageVariations[] = {
     {"Open Co-Browse side panel", kWebUiOmniboxAskGAboutThisPageCoBrowse, nullptr},
