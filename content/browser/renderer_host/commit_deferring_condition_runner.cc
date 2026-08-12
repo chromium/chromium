@@ -125,12 +125,13 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
     case CommitDeferringCondition::NavigationType::kOther:
       // For other navigations, conditions should run before navigation commit,
       // which can be either a normal commit or an error page commit.
-      CHECK(navigation_request.state() ==
-                    NavigationRequest::WILL_PROCESS_RESPONSE ||
-                navigation_request.state() ==
-                    NavigationRequest::WILL_FAIL_REQUEST ||
-                navigation_request.state() == NavigationRequest::CANCELING,
-            base::NotFatalUntil::M152);
+      // TODO(crbug.com/545094684): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(navigation_request.state() ==
+                 NavigationRequest::WILL_PROCESS_RESPONSE ||
+             navigation_request.state() ==
+                 NavigationRequest::WILL_FAIL_REQUEST ||
+             navigation_request.state() == NavigationRequest::CANCELING);
       break;
   }
 
