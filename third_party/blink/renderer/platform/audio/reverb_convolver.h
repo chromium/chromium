@@ -35,9 +35,7 @@
 #include "third_party/blink/renderer/platform/audio/fft_convolver.h"
 #include "third_party/blink/renderer/platform/audio/reverb_accumulation_buffer.h"
 #include "third_party/blink/renderer/platform/audio/reverb_convolver_stage.h"
-#include "third_party/blink/renderer/platform/audio/reverb_input_buffer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -49,54 +47,31 @@ class PLATFORM_EXPORT ReverbConvolver final {
   USING_FAST_MALLOC(ReverbConvolver);
 
  public:
-  // maxFFTSize can be adjusted (from say 2048 to 32768) depending on how much
-  // precision is necessary.  For certain tweaky de-convolving applications the
-  // phase errors add up quickly and lead to non-sensical results with larger
-  // FFT sizes and single-precision floats.  In these cases 2048 is a good
-  // size.  If not doing multi-threaded convolution, then should not go > 8192.
+  // maxFFTSize can be adjusted (e.g. 2048 to 8192) depending on performance and
+  // precision trade-offs. Larger FFT sizes amortize transform costs over longer
+  // intervals but increase phase error with single-precision floats and cause
+  // heavier CPU load spikes per FFT slice.
   ReverbConvolver(AudioChannel* impulse_response,
                   unsigned render_slice_size,
                   unsigned max_fft_size,
                   size_t convolver_render_phase,
-                  bool use_background_threads,
                   float scale);
   ReverbConvolver(const ReverbConvolver&) = delete;
   ReverbConvolver& operator=(const ReverbConvolver&) = delete;
-  ~ReverbConvolver();
+  ~ReverbConvolver() = default;
 
   void Process(const AudioChannel* source_channel,
                AudioChannel* destination_channel,
                uint32_t frames_to_process);
   void Reset();
 
-  ReverbInputBuffer* InputBuffer() { return &input_buffer_; }
-
   size_t LatencyFrames() const;
 
  private:
-  void ProcessInBackground();
-
   Vector<std::unique_ptr<ReverbConvolverStage>> stages_;
-  Vector<std::unique_ptr<ReverbConvolverStage>> background_stages_;
-  size_t impulse_response_length_;
+  const size_t impulse_response_length_;
 
   ReverbAccumulationBuffer accumulation_buffer_;
-
-  // One or more background threads read from this input buffer which is fed
-  // from the realtime thread.
-  ReverbInputBuffer input_buffer_;
-
-  // First stage will be of size m_minFFTSize.  Each next stage will be twice as
-  // big until we hit m_maxFFTSize.
-  unsigned min_fft_size_;
-  unsigned max_fft_size_;
-
-  // But don't exceed this size in the real-time thread (if we're doing
-  // background processing).
-  unsigned max_realtime_fft_size_;
-
-  // Background thread and synchronization
-  std::unique_ptr<NonMainThread> background_thread_;
 };
 
 }  // namespace blink

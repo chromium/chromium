@@ -32,11 +32,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/compiler_specific.h"
-#include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/platform/audio/direct_convolver.h"
+#include "third_party/blink/renderer/platform/audio/fft_convolver.h"
 #include "third_party/blink/renderer/platform/audio/reverb_accumulation_buffer.h"
-#include "third_party/blink/renderer/platform/audio/reverb_convolver.h"
-#include "third_party/blink/renderer/platform/audio/reverb_input_buffer.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 namespace blink {
@@ -54,7 +52,6 @@ ReverbConvolverStage::ReverbConvolverStage(
     bool direct_mode)
     : accumulation_buffer_(accumulation_buffer),
       accumulation_read_index_(0),
-      input_read_index_(0),
       direct_mode_(direct_mode) {
   DCHECK(accumulation_buffer);
 
@@ -111,6 +108,10 @@ ReverbConvolverStage::ReverbConvolverStage(
   // same time...
   size_t max_pre_delay_length = std::min(half_size, total_delay);
   pre_delay_length_ = total_delay > 0 ? render_phase % max_pre_delay_length : 0;
+  if (render_slice_size > 0) {
+    pre_delay_length_ =
+        (pre_delay_length_ / render_slice_size) * render_slice_size;
+  }
   if (pre_delay_length_ > total_delay) {
     pre_delay_length_ = 0;
   }
@@ -124,12 +125,6 @@ ReverbConvolverStage::ReverbConvolverStage(
   delay_buffer_size = delay_buffer_size < render_slice_size ? render_slice_size
                                                             : delay_buffer_size;
   pre_delay_buffer_.Allocate(delay_buffer_size);
-}
-
-void ReverbConvolverStage::ProcessInBackground(ReverbConvolver* convolver,
-                                               uint32_t frames_to_process) {
-  Process(convolver->InputBuffer()->DirectReadFrom(&input_read_index_,
-                                                   frames_to_process));
 }
 
 void ReverbConvolverStage::Process(base::span<const float> source) {
@@ -218,7 +213,7 @@ void ReverbConvolverStage::Reset() {
   }
   pre_delay_buffer_.Zero();
   accumulation_read_index_ = 0;
-  input_read_index_ = 0;
+  pre_read_write_index_ = 0;
   frames_processed_ = 0;
 }
 

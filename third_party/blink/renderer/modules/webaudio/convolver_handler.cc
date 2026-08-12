@@ -27,12 +27,10 @@ namespace {
 
 // Note about empirical tuning:
 // The maximum FFT size affects reverb performance and accuracy.
-// If the reverb is single-threaded and processes entirely in the real-time
-// audio thread, it's important not to make this too high.  In this case 8192 is
-// a good value.  But, the Reverb object is multi-threaded, so we want this as
-// high as possible without losing too much accuracy.  Very large FFTs will have
-// worse phase errors. Given these constraints 32768 is a good compromise.
-constexpr unsigned kMaxFftSize = 32768;
+// In single-threaded partitioned convolution, 8192 is a good compromise between
+// amortizing FFT computation and minimizing phase errors and real-time load
+// spikes with larger FFT sizes.
+constexpr unsigned kMaxFftSize = 8192;
 
 constexpr unsigned kDefaultNumberOfInputChannels = 2;
 constexpr unsigned kDefaultNumberOfOutputChannels = 1;
@@ -181,7 +179,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   // Create the reverb with the given impulse response.
   std::unique_ptr<Reverb> reverb = std::make_unique<Reverb>(
       buffer_bus.get(), GetDeferredTaskHandler().RenderQuantumFrames(),
-      kMaxFftSize, Context() && Context()->HasRealtimeConstraint(), normalize_);
+      kMaxFftSize, normalize_);
 
   {
     // The context must be locked since changing the buffer can

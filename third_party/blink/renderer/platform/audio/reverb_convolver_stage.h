@@ -40,7 +40,6 @@
 namespace blink {
 
 class ReverbAccumulationBuffer;
-class ReverbConvolver;
 class FFTConvolver;
 class DirectConvolver;
 
@@ -72,13 +71,7 @@ class ReverbConvolverStage final {
   // buffer size (stage_offset).
   void Process(base::span<const float> source);
 
-  void ProcessInBackground(ReverbConvolver* convolver,
-                           uint32_t frames_to_process);
-
   void Reset();
-
-  // Useful for background processing
-  size_t InputReadIndex() const { return input_read_index_; }
 
  private:
   std::unique_ptr<FFTFrame> fft_kernel_;
@@ -88,7 +81,6 @@ class ReverbConvolverStage final {
 
   raw_ptr<ReverbAccumulationBuffer> accumulation_buffer_;
   uint32_t accumulation_read_index_;
-  size_t input_read_index_;
 
   size_t pre_delay_length_;
   size_t post_delay_length_;
