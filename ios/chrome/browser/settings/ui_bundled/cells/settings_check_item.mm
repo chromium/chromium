@@ -38,7 +38,7 @@ constexpr NSInteger kTrailingSymbolImagePointSize = 22;
   TableViewCellContentConfiguration* configuration =
       [[TableViewCellContentConfiguration alloc] init];
   configuration.title = self.text;
-  configuration.titleNumberOfLines = 1;
+  configuration.titleNumberOfLines = 2;
   configuration.subtitle = self.detailText;
   configuration.textDisabled = !self.enabled;
 

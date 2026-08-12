@@ -28,9 +28,10 @@ constexpr CGFloat kNewIPHBadgeFontSize = 10.0;
 // kDotSize represents the size of the dot (i.e. its height and width).
 constexpr CGFloat kDotSize = 10.f;
 
-// By default, the maximum number of lines to be displayed for the text and
-// detail text should be 1.
-const NSInteger kDefaultNumberOfLines = 1;
+// By default, the maximum number of lines to be displayed for the title is 2,
+// subtitle 1.
+const NSInteger kDefaultNumberOfLinesTitle = 2;
+const NSInteger kDefaultNumberOfLinesSubtitle = 1;
 
 }  // namespace
 
@@ -41,8 +42,8 @@ const NSInteger kDefaultNumberOfLines = 1;
   if (self) {
     self.cellClass = [LegacyTableViewCell class];
     self.badgeType = BadgeType::kNone;
-    _textNumberOfLines = kDefaultNumberOfLines;
-    _detailTextNumberOfLines = kDefaultNumberOfLines;
+    _textNumberOfLines = kDefaultNumberOfLinesTitle;
+    _detailTextNumberOfLines = kDefaultNumberOfLinesSubtitle;
     _textLineBreakMode = NSLineBreakByTruncatingTail;
     _detailTextLineBreakMode = NSLineBreakByTruncatingTail;
   }

@@ -21,7 +21,7 @@
   if (self) {
     self.cellClass = [LegacyTableViewCell class];
     _enabled = YES;
-    _titleNumberOfLines = 1;
+    _titleNumberOfLines = 2;
   }
   return self;
 }

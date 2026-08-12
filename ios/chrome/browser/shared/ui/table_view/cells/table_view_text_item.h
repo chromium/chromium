@@ -33,7 +33,7 @@
 // Sets the `checked` property in the cell.
 @property(nonatomic, assign) BOOL checked;
 
-// Sets the number of line for the cell title. Default is 1.
+// Sets the number of line for the cell title. Default is 2.
 @property(nonatomic, assign) NSInteger titleNumberOfLines;
 
 @end

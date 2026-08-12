@@ -34,7 +34,7 @@
       [[TableViewCellContentConfiguration alloc] init];
   configuration.title = self.text;
   configuration.titleColor = self.textColor;
-  configuration.titleNumberOfLines = 1;
+  configuration.titleNumberOfLines = 2;
   configuration.subtitle = self.detailText;
   configuration.subtitleColor = self.detailTextColor;
   configuration.subtitleNumberOfLines = self.allowMultilineDetailText ? 0 : 1;
