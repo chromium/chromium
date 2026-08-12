@@ -455,6 +455,9 @@ TEST_F(ProcessSingletonTest, LockFileRetrySuccess) {
 
   // Verify that the retry loop was actually entered and the sleep hook ran.
   EXPECT_TRUE(sleep_callback_ran);
+
+  histogram_tester().ExpectUniqueSample(
+      "Chrome.ProcessSingleton.CreateLockFileWithTimeout.Result", true, 1);
 }
 
 // Verifies that if the lock file remains busy indefinitely, ProcessSingleton
@@ -494,4 +497,7 @@ TEST_F(ProcessSingletonTest, LockFileTimeoutFailure) {
 
   // 5. Verify that 5 seconds of VIRTUAL time elapsed.
   EXPECT_GE(base::TimeTicks::Now() - start, base::Seconds(5));
+
+  histogram_tester().ExpectUniqueSample(
+      "Chrome.ProcessSingleton.CreateLockFileWithTimeout.Result", false, 1);
 }
