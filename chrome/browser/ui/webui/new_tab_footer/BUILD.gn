@@ -53,6 +53,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/views/side_panel/customize_chrome",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/customize_buttons",
     "//chrome/browser/ui/webui/new_tab_page_third_party",

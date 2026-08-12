@@ -2,15 +2,37 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_win || is_mac || is_linux || is_chromeos)
+import("//ui/webui/webui_features.gni")
+
+assert(enable_webui_ntp)
 
 source_set("customize_chrome") {
   sources = [ "side_panel_controller.h" ]
 
   public_deps = [
-    "//base",
-    "//chrome/browser/ui/webui/side_panel/customize_chrome/",
+    "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome",
+  ]
+}
+
+# Platform independent base class.
+source_set("customize_chrome_base") {
+  sources = [
+    "side_panel_controller_base.cc",
+    "side_panel_controller_base.h",
   ]
 
-  deps = [ "//chrome/browser/ui/side_panel" ]
+  public_deps = [ ":customize_chrome" ]
+
+  deps = [
+    # Does not actually depend on //ui/views for is_android.
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+  ]
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/search/background",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
+    ]
+  }
 }

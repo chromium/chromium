@@ -101,6 +101,7 @@ if (!is_android) {
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/select_file_policy",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/side_panel/customize_chrome",
       "//chrome/browser/ui/webui:theme_handler",
       "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui:webui_util",
@@ -154,6 +155,7 @@ if (!is_android) {
     deps = [
       ":impl",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/customize_chrome",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar:browser_tests",
       "//chrome/test:test_support",
