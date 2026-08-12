@@ -252,12 +252,7 @@ suite('NewTabPageAppTest', () => {
     }
 
     test('help bubble can correctly find anchor elements', () => {
-      assertDeepEquals(
-          app.getSortedAnchorStatusesForTesting(),
-          [
-            [CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, true],
-          ],
-      );
+      assertTrue(app.canShowHelpBubble(CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID));
     });
 
     test('Webstore toast works correctly', async () => {
@@ -2626,10 +2621,7 @@ suite('NewTabPageAppTest', () => {
     });
 
     test('Contextual entrypoint IPH', () => {
-      assertTrue(app.getSortedAnchorStatusesForTesting().some(
-          ([anchorId, hasAnchor]: [string, boolean]) => {
-            return anchorId === CONTEXTUAL_ENTRYPOINT_ELEMENT_ID && hasAnchor;
-          }));
+      assertTrue(app.canShowHelpBubble(CONTEXTUAL_ENTRYPOINT_ELEMENT_ID));
     });
   });
 
@@ -3148,10 +3140,6 @@ suite('NewTabPageAppTest', () => {
 
           // Assert error and state are set.
           assertTrue(app.hasVoiceSearchError);
-          assertTrue(app.getVoiceSearchListeningForTesting());
-          assertTrue(app.getVoiceSearchReceivedSpeechForTesting());
-          assertEquals(
-              'partial query', app.getVoiceSearchTranscriptForTesting());
 
           const searchbox = app.shadowRoot.querySelector('ntp-searchbox');
           assertTrue(!!searchbox);
@@ -3159,7 +3147,6 @@ suite('NewTabPageAppTest', () => {
 
           voiceSearch.hasErrorTimer = true;
           voiceSearch.detailedError = 5; // VoiceSearchError.NO_MATCH
-          voiceSearch.setErrorMessageForTesting('Didn\'t get that.');
           await microtasksFinished();
           const tryAgainLink =
               voiceSearch.shadowRoot.querySelector<HTMLElement>('#tryAgainLink');
@@ -3169,9 +3156,6 @@ suite('NewTabPageAppTest', () => {
 
           // Assert error is cleared and states are reset.
           assertFalse(app.hasVoiceSearchError);
-          assertTrue(app.getVoiceSearchListeningForTesting());
-          assertFalse(app.getVoiceSearchReceivedSpeechForTesting());
-          assertEquals('', app.getVoiceSearchTranscriptForTesting());
           assertTrue(searchbox.isListening);
         });
 

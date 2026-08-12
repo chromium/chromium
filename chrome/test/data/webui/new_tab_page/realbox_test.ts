@@ -1139,7 +1139,11 @@ suite('NewTabPageRealboxNextTest', () => {
       testProxy.callbackRouterRemote.onInputStateChanged(newInputState);
       await testProxy.callbackRouterRemote.$.flushForTesting();
       await microtasksFinished();
-      const inputState = realbox.getInputStateForTesting();
+      const contextualEntrypoint =
+          realbox.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
+              '#context')!;
+      assertTrue(!!contextualEntrypoint);
+      const inputState = contextualEntrypoint.inputState;
       assertTrue(!!inputState);
       assertEquals(ToolMode.kDeepSearch, inputState.allowedTools[0]);
       assertEquals(ModelMode.kUnspecified, inputState.activeModel);

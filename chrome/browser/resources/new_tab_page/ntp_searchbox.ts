@@ -875,14 +875,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   }
 
   protected computePlaceholderText_(placeholderText: string): string {
-    if (placeholderText) {
-      return placeholderText;
-    }
-    return this.i18n('searchBoxHint');
-  }
-
-  getInputStateForTesting(): InputState|null {
-    return this.inputState_;
+    return placeholderText || '';
   }
 }
 

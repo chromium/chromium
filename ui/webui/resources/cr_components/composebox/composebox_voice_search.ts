@@ -839,24 +839,9 @@ export class ComposeboxVoiceSearchElement extends
         VoiceSearchAction.MAX_VALUE + 1);
     this.errorMessage_ = '';
     this.error_ = null;
+    this.detailedError = null;
     this.start();
     this.fire('voice-search-restart');
-  }
-
-  getErrorForTesting(): VoiceSearchError|null {
-    return this.error_;
-  }
-
-  getErrorMessageForTesting(): string {
-    return this.errorMessage_;
-  }
-
-  setErrorMessageForTesting(errorMessage: string) {
-    this.errorMessage_ = errorMessage;
-  }
-
-  voiceModeEndCleanupForTesting() {
-    this.voiceModeEndCleanup_();
   }
 }
 
