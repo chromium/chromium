@@ -57,7 +57,7 @@ using ::blink::WebString;
 
 // Returns true if `event` may produce a character.
 bool IsPrintable(const WebKeyboardEvent& event) {
-  if (base::IsAsciiControl(event.text[0])) {
+  if (base::IsAsciiControl(event.text[0]) || event.text[1] != 0) {
     return false;
   }
   if constexpr (BUILDFLAG(IS_MAC)) {
