@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -272,4 +273,25 @@ std::vector<StatusBubble*> BrowserUiController::GetStatusBubbles() {
   }
 
   return window_->GetStatusBubbles();
+}
+
+void BrowserUiController::UpdateWindowForLoadingStateChanged(
+    content::WebContents* source,
+    bool should_show_loading_ui) {
+  window_->UpdateLoadingAnimations(/*is_visible=*/!window_->IsMinimized());
+  window_->UpdateTitleBar();
+
+  content::WebContents* selected_contents =
+      tab_strip_model_->GetActiveWebContents();
+  if (source == selected_contents) {
+    bool is_loading = source->IsLoading() && should_show_loading_ui;
+    chrome::BrowserCommandController::From(&*browser_)
+        ->LoadingStateChanged(is_loading, false);
+
+    std::vector<StatusBubble*> status_bubbles = window_->GetStatusBubbles();
+    if (!status_bubbles.empty()) {
+      status_bubbles.front()->SetStatus(
+          CoreTabHelper::FromWebContents(selected_contents)->GetStatusText());
+    }
+  }
 }

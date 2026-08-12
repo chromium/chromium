@@ -273,10 +273,6 @@ class Browser : public TabStripModelObserver,
                          bool was_active,
                          DetachType type);
 
-  // Updates the loading state for the window and tabstrip.
-  void UpdateWindowForLoadingStateChanged(content::WebContents* source,
-                                          bool should_show_loading_ui);
-
   // Shared code between Reload() and ReloadBypassingCache().
   void ReloadInternal(WindowOpenDisposition disposition, bool bypass_cache);
 

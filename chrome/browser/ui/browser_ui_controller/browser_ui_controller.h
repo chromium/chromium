@@ -89,6 +89,10 @@ class BrowserUiController {
   // listed first.
   std::vector<StatusBubble*> GetStatusBubbles();
 
+  // Updates the loading state for the window and tabstrip.
+  void UpdateWindowForLoadingStateChanged(content::WebContents* source,
+                                          bool should_show_loading_ui);
+
   void set_update_ui_immediately_for_testing(bool immediate = true) {
     update_ui_immediately_for_testing_ = immediate;
   }

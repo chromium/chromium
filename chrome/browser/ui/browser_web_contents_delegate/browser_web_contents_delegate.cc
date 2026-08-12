@@ -748,7 +748,7 @@ void BrowserWebContentsDelegate::LoadingStateChanged(
     bool should_show_loading_ui) {
   browser_ui_controller_->ScheduleUIUpdate(source,
                                            content::INVALIDATE_TYPE_LOAD);
-  browser_->GetBrowserForMigrationOnly()->UpdateWindowForLoadingStateChanged(
+  browser_ui_controller_->UpdateWindowForLoadingStateChanged(
       source, should_show_loading_ui);
 }
 

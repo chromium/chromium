@@ -680,7 +680,8 @@ void Browser::OnTabInsertedAt(WebContents* contents, int index) {
   // won't start if the page is loading. Note that we don't want to
   // ScheduleUIUpdate() because the tab may not have been inserted in the UI
   // yet if this function is called before TabStripModel::TabInsertedAt().
-  UpdateWindowForLoadingStateChanged(contents, true);
+  BrowserUiController::From(this)->UpdateWindowForLoadingStateChanged(contents,
+                                                                      true);
 }
 
 void Browser::OnTabClosing(tabs::TabInterface* tab,
@@ -943,26 +944,6 @@ void Browser::TabDetachedAtImpl(content::WebContents* contents,
 
   if (HasFindBarController() && was_active) {
     CreateOrGetFindBarController()->ChangeWebContents(nullptr);
-  }
-}
-
-void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
-                                                 bool should_show_loading_ui) {
-  window_->UpdateLoadingAnimations(/* is_visible=*/!window_->IsMinimized());
-  window_->UpdateTitleBar();
-
-  WebContents* selected_contents = tab_strip_model_->GetActiveWebContents();
-  if (source == selected_contents) {
-    bool is_loading = source->IsLoading() && should_show_loading_ui;
-    chrome::BrowserCommandController::From(this)->LoadingStateChanged(
-        is_loading, false);
-
-    std::vector<StatusBubble*> status_bubbles =
-        BrowserUiController::From(this)->GetStatusBubbles();
-    if (status_bubbles.size() > 0) {
-      status_bubbles.front()->SetStatus(
-          CoreTabHelper::FromWebContents(selected_contents)->GetStatusText());
-    }
   }
 }
 
