@@ -1662,7 +1662,7 @@
           "--platform",
           "iPhone 14",
           "--version",
-          "18.2",
+          "18.5",
           "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -1675,7 +1675,7 @@
         },
         "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "module_scheme": "gtest",
-        "name": "optimization_guide_gpu_unittests iPhone 14 18.2",
+        "name": "optimization_guide_gpu_unittests iPhone 14 18.5",
         "swarming": {
           "cipd_packages": [
             {
@@ -1691,8 +1691,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
+              "name": "runtime_ios_18_5",
+              "path": "Runtime-ios-18.5"
             },
             {
               "name": "xcode_ios_17f42",
@@ -1703,14 +1703,14 @@
         },
         "test": "optimization_guide_gpu_unittests",
         "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
-        "variant_id": "iPhone 14 18.2"
+        "variant_id": "iPhone 14 18.5"
       },
       {
         "args": [
           "--platform",
           "iPhone 14",
           "--version",
-          "18.2",
+          "18.5",
           "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -1723,7 +1723,7 @@
         },
         "module_name": "//components/optimization_guide/internal:optimization_guide_unittests",
         "module_scheme": "gtest",
-        "name": "optimization_guide_unittests iPhone 14 18.2",
+        "name": "optimization_guide_unittests iPhone 14 18.5",
         "swarming": {
           "cipd_packages": [
             {
@@ -1739,8 +1739,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
+              "name": "runtime_ios_18_5",
+              "path": "Runtime-ios-18.5"
             },
             {
               "name": "xcode_ios_17f42",
@@ -1751,7 +1751,7 @@
         },
         "test": "optimization_guide_unittests",
         "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_unittests/",
-        "variant_id": "iPhone 14 18.2"
+        "variant_id": "iPhone 14 18.5"
       }
     ]
   },

@@ -86,16 +86,16 @@
       'nvidia_geforce_gtx_1660',
     ],
   },
-  'SIM_IPHONE_14_18_2': {
-    'identifier': 'iPhone 14 18.2',
+  'SIM_IPHONE_14_18_5': {
+    'identifier': 'iPhone 14 18.5',
     'args': [
       '--platform',
       'iPhone 14',
       '--version',
-      '18.2',
+      '18.5',
     ],
     'mixins': [
-      'ios_runtime_cache_18_2',
+      'ios_runtime_cache_18_5',
       'use-ios-simulator-cache',
     ],
   },

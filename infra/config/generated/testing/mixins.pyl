@@ -443,12 +443,12 @@
       },
     },
   },
-  'ios_runtime_cache_18_2': {
+  'ios_runtime_cache_18_5': {
     'swarming': {
       'named_caches': [
         {
-          'name': 'runtime_ios_18_2',
-          'path': 'Runtime-ios-18.2',
+          'name': 'runtime_ios_18_5',
+          'path': 'Runtime-ios-18.5',
         },
       ],
     },
