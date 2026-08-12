@@ -22,10 +22,10 @@ namespace dictation {
 class DictationKeyedServiceTest : public testing::Test {
  public:
   DictationKeyedServiceTest()
-      : scoped_feature_list_(CreateEnablingFeatureList()),
-        service_(std::make_unique<MockDictationKeyedService>(&profile_)) {
+      : scoped_feature_list_(CreateEnablingFeatureList()) {
     profile_.GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
                                     true);
+    service_ = std::make_unique<MockDictationKeyedService>(&profile_);
   }
   ~DictationKeyedServiceTest() override = default;
 
@@ -45,14 +45,14 @@ TEST_F(DictationKeyedServiceTest, EndSessionDoesNotCrash) {
 
 TEST_F(DictationKeyedServiceTest, StartSessionWithNullTarget) {
   ASSERT_EQ(service_->session_controller(), nullptr);
-  service_->StartSession(tab_, EmptyTarget(),
-                         DictationSessionEntryPoint::kContextMenu);
+  service_->StartSessionForTesting(tab_, EmptyTarget(),
+                                   DictationSessionEntryPoint::kContextMenu);
   EXPECT_NE(service_->session_controller(), nullptr);
 }
 
 TEST_F(DictationKeyedServiceTest, EndSessionRemovesController) {
-  service_->StartSession(tab_, EmptyTarget(),
-                         DictationSessionEntryPoint::kContextMenu);
+  service_->StartSessionForTesting(tab_, EmptyTarget(),
+                                   DictationSessionEntryPoint::kContextMenu);
   ASSERT_NE(service_->session_controller(), nullptr);
   service_->EndSession();
   EXPECT_EQ(service_->session_controller(), nullptr);
@@ -66,8 +66,8 @@ TEST_F(DictationKeyedServiceTest,
   histogram_tester.ExpectUniqueSample(kIsEnabledOnProfileInitHistogramName,
                                       true, 1);
 
-  service->StartSession(tab_, EmptyTarget(),
-                        DictationSessionEntryPoint::kContextMenu);
+  service->StartSessionForTesting(tab_, EmptyTarget(),
+                                  DictationSessionEntryPoint::kContextMenu);
   histogram_tester.ExpectUniqueSample(kSessionStartSourceHistogramName,
                                       DictationSessionEntryPoint::kContextMenu,
                                       1);
@@ -80,8 +80,8 @@ TEST_F(DictationKeyedServiceTest, RecordsMetricsForStartButton) {
   base::HistogramTester histogram_tester;
 
   auto service = std::make_unique<MockDictationKeyedService>(&profile_);
-  service->StartSession(tab_, EmptyTarget(),
-                        DictationSessionEntryPoint::kContextMenu);
+  service->StartSessionForTesting(tab_, EmptyTarget(),
+                                  DictationSessionEntryPoint::kContextMenu);
   histogram_tester.ExpectBucketCount(kStreamStartTriggerHistogramName,
                                      DictationStreamStartTrigger::kSessionStart,
                                      1);
@@ -109,8 +109,8 @@ TEST_F(DictationKeyedServiceTest, RecordsMetricsForStartButton) {
 }
 
 TEST_F(DictationKeyedServiceTest, UpdateAudioLevelPropagatesToController) {
-  service_->StartSession(tab_, EmptyTargetId(),
-                         DictationSessionEntryPoint::kContextMenu);
+  service_->StartSessionForTesting(tab_, EmptyTargetId(),
+                                   DictationSessionEntryPoint::kContextMenu);
   auto* controller = service_->session_controller();
   ASSERT_NE(controller, nullptr);
 
@@ -119,6 +119,22 @@ TEST_F(DictationKeyedServiceTest, UpdateAudioLevelPropagatesToController) {
 
   EXPECT_CALL(*mock_ui, UpdateAudioLevel(0.5f));
   service_->UpdateAudioLevel(0.5f);
+}
+
+TEST_F(DictationKeyedServiceTest, HotkeyIgnoredIfNoActiveBrowser) {
+  ASSERT_EQ(service_->session_controller(), nullptr);
+  service_->ToggleHotkeyHandler();
+  EXPECT_EQ(service_->session_controller(), nullptr);
+}
+
+TEST_F(DictationKeyedServiceTest, HotkeyManagerLifecycle) {
+  EXPECT_NE(service_->local_hotkey_manager_for_testing(), nullptr);
+
+  profile_.GetPrefs()->SetInteger(prefs::kVoiceTypingSettings, 2);
+  EXPECT_EQ(service_->local_hotkey_manager_for_testing(), nullptr);
+
+  profile_.GetPrefs()->SetInteger(prefs::kVoiceTypingSettings, 0);
+  EXPECT_NE(service_->local_hotkey_manager_for_testing(), nullptr);
 }
 
 }  // namespace dictation

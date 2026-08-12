@@ -88,6 +88,10 @@ source_set("impl") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "dictation_browser_test_base.cc",
+    "dictation_browser_test_base.h",
+    "dictation_interactive_browser_test_base.cc",
+    "dictation_interactive_browser_test_base.h",
     "test_util.cc",
     "test_util.h",
   ]
@@ -136,11 +140,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
-    "dictation_browser_test_base.cc",
-    "dictation_browser_test_base.h",
     "dictation_context_browsertest.cc",
-    "dictation_interactive_browser_test_base.cc",
-    "dictation_interactive_browser_test_base.h",
     "dictation_keyed_service_browsertest.cc",
     "dictation_onboarding_browsertest.cc",
     "metrics_browsertest.cc",
@@ -152,6 +152,25 @@ source_set("browser_tests") {
     ":test_support",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/policy:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
+    "//chrome/browser/ui/views/dictation",
+    "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "session_ui_impl_interactive_uitest.cc" ]
+  deps = [
+    ":impl",
+    ":test_support",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toasts",

@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_DICTATION_DICTATION_KEYED_SERVICE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/connector_component_extension.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
+#include "chrome/browser/dictation/local_hotkey_manager.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/onboarding_manager.h"
 #include "chrome/browser/dictation/session_controller.h"
@@ -19,7 +19,6 @@
 #include "chrome/browser/dictation/target.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/global_dom_node_id.h"
 
 class Profile;
 
@@ -58,21 +57,29 @@ class DictationKeyedService : public KeyedService,
       SessionController& controller) const override;
   void EndSession() override;
 
-  // Starts a new session from the given target. It's the caller's
-  // responsibility to ensure this never called while an existing session in
-  // progress.
-  //
-  // The new session will immediately start up a stream using the given
-  // target_details.
-  //
+  // Called when onboarding is completed. Starts a new session from the given
+  // target. It's the caller's responsibility to ensure this is never called
+  // while an existing session is in progress.
+  void DidCompleteOnboarding(tabs::TabInterface& tab,
+                             const TargetDetails& target_details,
+                             DictationSessionEntryPoint entry_point);
+
+  // Called when the Dictation Connector component extension finishes
+  // installing.
+  void DidInstallConnector();
+
   // If `target_details` has a null DOMNodeId, the focused element in the
   // specified Document is used.
+  //
   // TODO(b/531049588): Update tests to always provide a valid target, remove
   // the "focused element" semantic, and CHECK that the provided target is
   // always non-null.
-  void StartSession(tabs::TabInterface& tab,
-                    const TargetDetails& target_details,
-                    DictationSessionEntryPoint entry_point);
+  //
+  // TODO(amyasinghal): Update tests to call ContextMenuHandler or
+  // ToggleHotkeyHandler and remove StartSessionForTesting.
+  void StartSessionForTesting(tabs::TabInterface& tab,
+                              const TargetDetails& target_details,
+                              DictationSessionEntryPoint entry_point);
 
   bool ShouldShowContextMenuItem() const;
 
@@ -80,7 +87,7 @@ class DictationKeyedService : public KeyedService,
   void ContextMenuHandler(const TargetDetails& target_details);
 
   // Handles the dictation hotkey press.
-  virtual void OnDictationHotkeyPressed();
+  virtual void ToggleHotkeyHandler();
 
   // Returns null when no session is in progress.
   SessionController* session_controller() {
@@ -95,12 +102,28 @@ class DictationKeyedService : public KeyedService,
   // Updates audio level in the current session.
   void UpdateAudioLevel(float audio_level);
 
- private:
-  void OnPrefChanged();
-
-  // Returns true if dictation feature is enabled by all flags and policies and
-  // the system is fully initialized and ready to use.
   bool IsEnabledAndReady() const;
+
+  LocalHotkeyManager* local_hotkey_manager_for_testing() {
+    return local_hotkey_manager_.get();
+  }
+
+ private:
+  // Starts a new session from the given target. It's the caller's
+  // responsibility to ensure this never called while an existing session in
+  // progress.
+  void StartSession(tabs::TabInterface& tab,
+                    const TargetDetails& target_details,
+                    DictationSessionEntryPoint entry_point);
+
+  void OnPrefChanged();
+  void UpdateHotkeyManager();
+
+  // Handles triggering a session, either starting a new one
+  // or updating an existing session to start a new stream, possibly in a new
+  // tab.
+  void TriggerSession(const TargetDetails& target_details,
+                      DictationSessionEntryPoint entry_point);
 
   raw_ptr<Profile> profile_;
 
@@ -111,6 +134,8 @@ class DictationKeyedService : public KeyedService,
   DictationMultiplexer multiplexer_;
 
   OnboardingManager onboarding_manager_;
+
+  std::unique_ptr<LocalHotkeyManager> local_hotkey_manager_;
 
   struct SessionState {
     SessionState(SessionControllerDelegate& delegate, tabs::TabInterface& tab);

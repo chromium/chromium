@@ -36,7 +36,7 @@ bool LocalHotkeyManager::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   DictationKeyedService* service = DictationKeyedService::Get(profile_);
   CHECK(service);
-  service->OnDictationHotkeyPressed();
+  service->ToggleHotkeyHandler();
   return true;
 }
 

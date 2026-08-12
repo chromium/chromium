@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/component_updater/dictation_connector_component_installer.h"
+#include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,6 +66,7 @@ void ConnectorComponentExtension::InstallConnectorExtension(
   if (component_loader->Exists(
           extension_misc::kDictationConnectorExtensionId)) {
     install_pending_ = false;
+    DictationKeyedService::Get(profile_)->DidInstallConnector();
     return;
   }
 
@@ -93,6 +95,7 @@ void ConnectorComponentExtension::OnManifestLoaded(
       component_loader->Add(std::move(manifest.value()), directory);
   DCHECK_EQ(actual_id, extension_misc::kDictationConnectorExtensionId);
   install_pending_ = false;
+  DictationKeyedService::Get(profile_)->DidInstallConnector();
 }
 
 }  // namespace dictation
