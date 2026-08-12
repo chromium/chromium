@@ -1413,6 +1413,57 @@ inline LayoutStateScenePassKey PassKey() {
   }];
 }
 
+- (void)showIdentityDocsWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
+  CHECK(!self.isSigninInProgress);
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showIdentityDocsWithReferrer:referrer];
+    return;
+  }
+
+  _settingsNavigationController = [SettingsNavigationController
+      identityDocsControllerForBrowser:_regularBrowser.get()
+                              referrer:referrer
+                              delegate:self];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
+}
+
+- (void)showTravelWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
+  CHECK(!self.isSigninInProgress);
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showTravelWithReferrer:referrer];
+    return;
+  }
+
+  _settingsNavigationController = [SettingsNavigationController
+      travelControllerForBrowser:_regularBrowser.get()
+                        referrer:referrer
+                        delegate:self];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
+}
+
+- (void)showShoppingWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
+  CHECK(!self.isSigninInProgress);
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showShoppingWithReferrer:referrer];
+    return;
+  }
+
+  _settingsNavigationController = [SettingsNavigationController
+      shoppingControllerForBrowser:_regularBrowser.get()
+                          referrer:referrer
+                          delegate:self];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
+}
+
 - (void)showAutofillSettings {
   __weak SceneCoordinator* weakSelf = self;
   [self dismissModalDialogsWithCompletion:^{

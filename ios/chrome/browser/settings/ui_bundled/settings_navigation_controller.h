@@ -155,6 +155,37 @@ extern NSString* const kSettingsDoneButtonId;
                                         (id<SettingsNavigationControllerDelegate>)
                                             delegate;
 
+// Creates a new view controller presenting the Identity Docs settings.
+// `browser` is the browser where settings are being displayed and should not be
+// nil. `delegate` may be nil.
++ (instancetype)
+    identityDocsControllerForBrowser:(Browser*)browser
+                            referrer:(autofill::autofill_metrics::
+                                          AutofillSettingsReferrer)referrer
+                            delegate:(id<SettingsNavigationControllerDelegate>)
+                                         delegate;
+
+// Creates a new view controller presenting the Travel settings. `browser`
+// is the browser where settings are being displayed and should not be nil.
+// `delegate` may be nil.
++ (instancetype)
+    travelControllerForBrowser:(Browser*)browser
+                      referrer:
+                          (autofill::autofill_metrics::AutofillSettingsReferrer)
+                              referrer
+                      delegate:
+                          (id<SettingsNavigationControllerDelegate>)delegate;
+
+// Creates a new view controller presenting the Shopping settings. `browser` is
+// the browser where settings are being displayed and should not be nil.
+// `delegate` may be nil.
++ (instancetype)
+    shoppingControllerForBrowser:(Browser*)browser
+                        referrer:(autofill::autofill_metrics::
+                                      AutofillSettingsReferrer)referrer
+                        delegate:
+                            (id<SettingsNavigationControllerDelegate>)delegate;
+
 // Creates a new PasswordManagerViewController in search mode and the chrome
 // around it. `browser` is the browser where settings are being displayed and
 // should not be nil. `delegate` may be nil.

@@ -83,6 +83,18 @@ enum class PushNotificationClientId;
 - (void)showAutofillAndPasswordsSettingsWithReferrer:
     (autofill::autofill_metrics::AutofillSettingsReferrer)referrer;
 
+// Shows the Identity Docs settings page.
+- (void)showIdentityDocsWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer;
+
+// Shows the Travel Info settings page.
+- (void)showTravelWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer;
+
+// Shows the Shopping settings page.
+- (void)showShoppingWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer;
+
 // Shows password manager on main page with a purpose to run the credential
 // exchange import flow. `UUID` is a token received from the OS during app
 // launch needed to receive credentials from an OS library.

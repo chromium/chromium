@@ -22,6 +22,9 @@
 #import "ios/chrome/browser/metrics/model/activity_reporter.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_settings_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/identity_docs_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/shopping_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_coordinator.h"
 #import "ios/chrome/browser/settings/google_services/coordinator/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/settings/google_services/ui/google_services_settings_view_controller.h"
 #import "ios/chrome/browser/settings/manage_accounts/coordinator/manage_accounts_coordinator.h"
@@ -95,6 +98,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     ContentSettingsCoordinatorDelegate,
     GeminiSettingsCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
+    IdentityDocsCoordinatorDelegate,
     ManageAccountsCoordinatorDelegate,
     ManageSyncSettingsCoordinatorDelegate,
     NotificationsCoordinatorDelegate,
@@ -103,7 +107,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     PrivacyCoordinatorDelegate,
     PrivacySafeBrowsingCoordinatorDelegate,
     SafetyCheckCoordinatorDelegate,
+    ShoppingCoordinatorDelegate,
     SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
+    TravelInfoCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
 
@@ -184,6 +190,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   BOOL _dismissalUserActionReported;
   // Autofill and Passwords coordinator.
   AutofillAndPasswordsCoordinator* _autofillAndPasswordsCoordinator;
+  // Coordinator for the Identity Docs settings page.
+  IdentityDocsCoordinator* _identityDocsCoordinator;
+  // Coordinator for the Shopping settings page.
+  ShoppingCoordinator* _shoppingCoordinator;
+  // Coordinator for the Travel Info settings page.
+  TravelInfoCoordinator* _travelInfoCoordinator;
   // Autofill settings coordinator.
   AutofillSettingsCoordinator* _autofillSettingsCoordinator;
   ActivityReporter* _activityReporter;
@@ -398,6 +410,55 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                              browser:browser
                             delegate:delegate];
   [navigationController showAutofillAndPasswordsWithReferrer:referrer];
+
+  return navigationController;
+}
+
++ (instancetype)
+    identityDocsControllerForBrowser:(Browser*)browser
+                            referrer:(autofill::autofill_metrics::
+                                          AutofillSettingsReferrer)referrer
+                            delegate:(id<SettingsNavigationControllerDelegate>)
+                                         delegate {
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  [navigationController showIdentityDocsWithReferrer:referrer];
+
+  return navigationController;
+}
+
++ (instancetype)
+    travelControllerForBrowser:(Browser*)browser
+                      referrer:
+                          (autofill::autofill_metrics::AutofillSettingsReferrer)
+                              referrer
+                      delegate:
+                          (id<SettingsNavigationControllerDelegate>)delegate {
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  [navigationController showTravelWithReferrer:referrer];
+
+  return navigationController;
+}
+
++ (instancetype)
+    shoppingControllerForBrowser:(Browser*)browser
+                        referrer:(autofill::autofill_metrics::
+                                      AutofillSettingsReferrer)referrer
+                        delegate:
+                            (id<SettingsNavigationControllerDelegate>)delegate {
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  [navigationController showShoppingWithReferrer:referrer];
 
   return navigationController;
 }
@@ -767,6 +828,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopNotificationsCoordinator];
   [self stopGeminiSettingsCoordinator];
   [self stopAutofillSettingsCoordinator];
+  [self stopIdentityDocsCoordinator];
+  [self stopShoppingCoordinator];
+  [self stopTravelInfoCoordinator];
 
   // Reset the delegate to prevent any queued transitions from attempting to
   // close the settings.
@@ -1012,6 +1076,24 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   _autofillAndPasswordsCoordinator = nil;
 }
 
+- (void)stopIdentityDocsCoordinator {
+  [_identityDocsCoordinator stop];
+  _identityDocsCoordinator.delegate = nil;
+  _identityDocsCoordinator = nil;
+}
+
+- (void)stopShoppingCoordinator {
+  [_shoppingCoordinator stop];
+  _shoppingCoordinator.delegate = nil;
+  _shoppingCoordinator = nil;
+}
+
+- (void)stopTravelInfoCoordinator {
+  [_travelInfoCoordinator stop];
+  _travelInfoCoordinator.delegate = nil;
+  _travelInfoCoordinator = nil;
+}
+
 // Stops the underlying inactive tabs settings coordinator if it exists.
 - (void)stopInactiveTabSettingsCoordinator {
   [self.inactiveTabsSettingsCoordinator stop];
@@ -1105,6 +1187,27 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     (AutofillAndPasswordsCoordinator*)coordinator {
   DCHECK_EQ(_autofillAndPasswordsCoordinator, coordinator);
   [self stopAutofillAndPasswordsCoordinator];
+}
+
+#pragma mark - IdentityDocsCoordinatorDelegate
+
+- (void)identityDocsCoordinatorDidRemove:(IdentityDocsCoordinator*)coordinator {
+  DCHECK_EQ(_identityDocsCoordinator, coordinator);
+  [self stopIdentityDocsCoordinator];
+}
+
+#pragma mark - ShoppingCoordinatorDelegate
+
+- (void)shoppingCoordinatorDidRemove:(ShoppingCoordinator*)coordinator {
+  DCHECK_EQ(_shoppingCoordinator, coordinator);
+  [self stopShoppingCoordinator];
+}
+
+#pragma mark - TravelInfoCoordinatorDelegate
+
+- (void)travelInfoCoordinatorDidRemove:(TravelInfoCoordinator*)coordinator {
+  DCHECK_EQ(_travelInfoCoordinator, coordinator);
+  [self stopTravelInfoCoordinator];
 }
 
 #pragma mark - PasswordManagerReauthenticationDelegate
@@ -1338,6 +1441,39 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)showAutofillAndPasswordsSettingsWithReferrer:
     (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
   [self showAutofillAndPasswordsWithReferrer:referrer];
+}
+
+- (void)showIdentityDocsWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
+  // TODO(crbug.com/529830970): Record metric using `referrer`.
+  [self stopIdentityDocsCoordinator];
+  _identityDocsCoordinator = [[IdentityDocsCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  _identityDocsCoordinator.delegate = self;
+  [_identityDocsCoordinator start];
+}
+
+- (void)showShoppingWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
+  // TODO(crbug.com/529830970): Record metric using `referrer`.
+  [self stopShoppingCoordinator];
+  _shoppingCoordinator = [[ShoppingCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  _shoppingCoordinator.delegate = self;
+  [_shoppingCoordinator start];
+}
+
+- (void)showTravelWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
+  // TODO(crbug.com/529830970): Record metric using `referrer`.
+  [self stopTravelInfoCoordinator];
+  _travelInfoCoordinator = [[TravelInfoCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  _travelInfoCoordinator.delegate = self;
+  [_travelInfoCoordinator start];
 }
 
 - (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID

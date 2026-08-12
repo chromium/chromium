@@ -23,6 +23,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/trace_event/trace_event.h"
 #import "build/config/ios/swift_buildflags.h"
+#import "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
@@ -2814,6 +2815,24 @@
     case AutofillSettingsPage::kCreditCards:
       [HandlerForProtocol(self.dispatcher, SettingsCommands)
           showCreditCardSettings];
+      break;
+    case AutofillSettingsPage::kIdentityDocs:
+      [HandlerForProtocol(self.dispatcher, SettingsCommands)
+          showIdentityDocsWithReferrer:autofill::autofill_metrics::
+                                           AutofillSettingsReferrer::
+                                               kFillingFlowDropdown];
+      break;
+    case AutofillSettingsPage::kShopping:
+      [HandlerForProtocol(self.dispatcher, SettingsCommands)
+          showShoppingWithReferrer:autofill::autofill_metrics::
+                                       AutofillSettingsReferrer::
+                                           kFillingFlowDropdown];
+      break;
+    case AutofillSettingsPage::kTravel:
+      [HandlerForProtocol(self.dispatcher, SettingsCommands)
+          showTravelWithReferrer:autofill::autofill_metrics::
+                                     AutofillSettingsReferrer::
+                                         kFillingFlowDropdown];
       break;
   }
 }

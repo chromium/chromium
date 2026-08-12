@@ -7,13 +7,24 @@
 
 #import <Foundation/Foundation.h>
 
+namespace autofill {
+enum class EntityTypeName;
+}  // namespace autofill
+
 // Pages in the Settings UI that can be navigated to from Autofill surfaces.
 enum class AutofillSettingsPage {
   kPasswordManager,
   kPasswordSettings,
   kCreditCards,
   kAddresses,
+  kIdentityDocs,
+  kShopping,
+  kTravel,
 };
+
+// Returns the `AutofillSettingsPage` corresponding to `entity_type_name`.
+AutofillSettingsPage AutofillSettingsPageForEntityTypeName(
+    autofill::EntityTypeName entity_type_name);
 
 // Delegate protocol for handling navigation to settings pages.
 @protocol AutofillSettingsNavigator <NSObject>
