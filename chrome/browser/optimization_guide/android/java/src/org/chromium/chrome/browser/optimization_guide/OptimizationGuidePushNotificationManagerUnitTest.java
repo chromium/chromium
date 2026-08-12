@@ -79,6 +79,10 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+
+        for (OptimizationType type : OptimizationType.values()) {
+            OptimizationGuidePushNotificationManager.clearCacheForOptimizationType(type);
+        }
     }
 
     @Test
