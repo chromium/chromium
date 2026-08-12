@@ -1424,6 +1424,21 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testUnpinTabsWhileClosing) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
   ExecuteJsTest();
 }
+
+// TODO(b/545187457): Figure out if this test really needs detached mode.
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsWithTwoTabs) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  ExecuteJsTest();
+
+  // Step 2: Open a second tab in foreground.
+  tabs::TabInterface* second_tab = CreateAndActivateTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+  ContinueJsTest();
+
+  // Step 3: Close the second tab.
+  GetTabListInterface()->CloseTab(second_tab->GetHandle());
+  ContinueJsTest();
+}
 #endif
 
 class NewGlicApiTestWithContextualCueing : public NewGlicApiTest {
