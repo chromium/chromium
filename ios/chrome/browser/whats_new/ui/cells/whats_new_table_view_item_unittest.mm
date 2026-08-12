@@ -54,7 +54,7 @@ TEST_F(WhatsNewTableViewItemTest, ItemProperties) {
   EXPECT_EQ(detailFont, whats_new_cell.detailTextLabel.font);
   EXPECT_EQ(YES,
             whats_new_cell.detailTextLabel.adjustsFontForContentSizeCategory);
-  EXPECT_EQ(3, whats_new_cell.detailTextLabel.numberOfLines);
+  EXPECT_EQ(4, whats_new_cell.detailTextLabel.numberOfLines);
 
   // Check that the main background is set properly.
   UIImageView* main_background_image_view =
@@ -116,7 +116,7 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
   EXPECT_EQ(detailFont, whats_new_cell.detailTextLabel.font);
   EXPECT_EQ(YES,
             whats_new_cell.detailTextLabel.adjustsFontForContentSizeCategory);
-  EXPECT_EQ(3, whats_new_cell.detailTextLabel.numberOfLines);
+  EXPECT_EQ(4, whats_new_cell.detailTextLabel.numberOfLines);
 
   // Check that the main background is set properly.
   UIImageView* main_background_image_view =

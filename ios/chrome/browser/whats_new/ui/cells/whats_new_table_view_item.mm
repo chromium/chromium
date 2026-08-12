@@ -137,7 +137,7 @@ const CGFloat trailingMargin = -24.0;
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
     _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _detailTextLabel.backgroundColor = UIColor.clearColor;
-    _detailTextLabel.numberOfLines = 3;
+    _detailTextLabel.numberOfLines = 4;
 
     // Stack View containing two UILabels.
     _textStackView = [[UIStackView alloc]
