@@ -622,6 +622,12 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     }
 
     private computeInputKeywordModelFromMatch_(): InputKeywordModel|null {
+      // If there are no results, the input should not be kicked out of keyword
+      // mode.
+      if (!this.selectedMatch &&
+          this.inputKeywordModel?.type === KeywordType.kInKeyword) {
+        return this.inputKeywordModel;
+      }
       if (!this.selectedMatch?.keywordModel) {
         return null;
       }
