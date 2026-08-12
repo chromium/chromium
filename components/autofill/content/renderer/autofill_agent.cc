@@ -89,20 +89,20 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-using blink::WebAutofillClient;
-using blink::WebAutofillState;
-using blink::WebDocument;
-using blink::WebDOMEvent;
-using blink::WebElement;
-using blink::WebFormControlElement;
-using blink::WebFormElement;
-using blink::WebFormRelatedChangeType;
-using blink::WebFrame;
-using blink::WebInputElement;
-using blink::WebKeyboardEvent;
-using blink::WebLocalFrame;
-using blink::WebNode;
-using blink::WebString;
+using ::blink::WebAutofillClient;
+using ::blink::WebAutofillState;
+using ::blink::WebDocument;
+using ::blink::WebDOMEvent;
+using ::blink::WebElement;
+using ::blink::WebFormControlElement;
+using ::blink::WebFormElement;
+using ::blink::WebFormRelatedChangeType;
+using ::blink::WebFrame;
+using ::blink::WebInputElement;
+using ::blink::WebKeyboardEvent;
+using ::blink::WebLocalFrame;
+using ::blink::WebNode;
+using ::blink::WebString;
 
 namespace autofill {
 
