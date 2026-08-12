@@ -42,6 +42,10 @@ class ClocklessAudioSinkThread : public base::DelegateSimpleThread::Delegate {
     thread_->Start();
   }
 
+  ~ClocklessAudioSinkThread() override {
+    callback_ = nullptr;
+  }
+
   // Generate a signal to stop calling Render().
   base::TimeDelta Stop() {
     stop_event_->Signal();
@@ -77,7 +81,8 @@ class ClocklessAudioSinkThread : public base::DelegateSimpleThread::Delegate {
     }
   }
 
-  raw_ptr<AudioRendererSink::RenderCallback, DanglingUntriaged> callback_;
+  // Pointed-to RenderCallback is guaranteed to outlive the execution thread.
+  raw_ptr<AudioRendererSink::RenderCallback> callback_;
   std::unique_ptr<AudioBus> audio_bus_;
   std::unique_ptr<base::WaitableEvent> stop_event_;
   std::unique_ptr<base::DelegateSimpleThread> thread_;
@@ -111,8 +116,11 @@ void ClocklessAudioSink::Start() {
 }
 
 void ClocklessAudioSink::Stop() {
-  if (initialized_)
+  if (initialized_) {
     Pause();
+    thread_.reset();
+    initialized_ = false;
+  }
 }
 
 void ClocklessAudioSink::Flush() {}

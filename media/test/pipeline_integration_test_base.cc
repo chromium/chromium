@@ -274,7 +274,7 @@ PipelineIntegrationTestBase::PipelineIntegrationTestBase() {
 }
 
 PipelineIntegrationTestBase::~PipelineIntegrationTestBase() {
-  if (pipeline_->IsRunning()) {
+  if (pipeline_ && pipeline_->IsRunning()) {
     Stop();
   }
 

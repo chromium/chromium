@@ -164,11 +164,11 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   // TODO(crbug.com/40610469): ASAN causes Run() timeouts to be reached.
   const base::test::ScopedDisableRunLoopTimeout disable_run_timeout_;
 #endif
+  scoped_refptr<NullAudioSink> audio_sink_;
+  scoped_refptr<ClocklessAudioSink> clockless_audio_sink_;
   std::unique_ptr<Demuxer> demuxer_;
   std::unique_ptr<DataSource> data_source_;
   std::unique_ptr<PipelineImpl> pipeline_;
-  scoped_refptr<NullAudioSink> audio_sink_;
-  scoped_refptr<ClocklessAudioSink> clockless_audio_sink_;
   std::unique_ptr<NullVideoSink> video_sink_;
   bool ended_ = false;
   PipelineStatus pipeline_status_ = PIPELINE_OK;

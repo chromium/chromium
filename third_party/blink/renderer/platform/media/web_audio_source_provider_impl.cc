@@ -122,8 +122,8 @@ WebAudioSourceProviderImpl::WebAudioSourceProviderImpl(
     scoped_refptr<media::SwitchableAudioRendererSink> sink,
     media::MediaLog* media_log,
     base::OnceClosure on_set_client_callback /* = base::OnceClosure()*/)
-    : sink_(std::move(sink)),
-      tee_filter_(std::make_unique<TeeFilter>()),
+    : tee_filter_(std::make_unique<TeeFilter>()),
+      sink_(std::move(sink)),
       media_log_(media_log),
       on_set_client_callback_(std::move(on_set_client_callback)) {}
 

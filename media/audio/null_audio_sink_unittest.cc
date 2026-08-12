@@ -70,6 +70,7 @@ TEST_F(NullAudioSinkTest, PlayAfterStop) {
   sink->Stop();
 
   // Now resume playback.
+  sink->Initialize(params, this);
   sink->Start();
   sink->Play();
 

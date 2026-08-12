@@ -27,6 +27,7 @@ NullAudioSink::NullAudioSink(
 
 NullAudioSink::~NullAudioSink() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  callback_ = nullptr;
 }
 
 void NullAudioSink::Initialize(const AudioParameters& params,
@@ -51,8 +52,11 @@ void NullAudioSink::Stop() {
   started_ = false;
   playing_ = false;
   // Stop may be called at any time, so we have to check before stopping.
-  if (fake_worker_)
+  if (fake_worker_) {
     fake_worker_->Stop();
+  }
+  callback_ = nullptr;
+  initialized_ = false;
 }
 
 void NullAudioSink::Play() {

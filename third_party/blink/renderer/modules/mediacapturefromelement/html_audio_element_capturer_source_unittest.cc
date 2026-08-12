@@ -49,11 +49,11 @@ static const int kAudioTrackSamplesPerBuffer =
 class HTMLAudioElementCapturerSourceTest : public testing::Test {
  public:
   HTMLAudioElementCapturerSourceTest()
-      : fake_callback_(0.1, kAudioTrackSampleRate),
-        audio_source_(base::MakeRefCounted<WebAudioSourceProviderImpl>(
+      : audio_source_(base::MakeRefCounted<WebAudioSourceProviderImpl>(
             base::MakeRefCounted<media::NullAudioSink>(
                 scheduler::GetSingleThreadTaskRunnerForTesting()),
-            &media_log_)) {}
+            &media_log_)),
+        fake_callback_(0.1, kAudioTrackSampleRate) {}
 
   void SetUp() final {
     SetUpAudioTrack();
@@ -63,6 +63,10 @@ class HTMLAudioElementCapturerSourceTest : public testing::Test {
   void TearDown() override {
     media_stream_component_ = nullptr;
     media_stream_source_ = nullptr;
+    if (audio_source_) {
+      audio_source_->Stop();
+    }
+    audio_source_.reset();
     blink::WebHeap::CollectAllGarbageForTesting();
   }
 
@@ -106,8 +110,8 @@ class HTMLAudioElementCapturerSourceTest : public testing::Test {
   Persistent<MediaStreamComponent> media_stream_component_;
 
   media::NullMediaLog media_log_;
-  media::FakeAudioRenderCallback fake_callback_;
   scoped_refptr<blink::WebAudioSourceProviderImpl> audio_source_;
+  media::FakeAudioRenderCallback fake_callback_;
 };
 
 // Constructs and destructs all objects. This is a non trivial sequence.

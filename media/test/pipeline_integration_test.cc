@@ -578,6 +578,7 @@ class MSEChangeTypeTest
     EXPECT_TRUE(demuxer_->GetTimelineOffset().is_null());
     source.Shutdown();
     Stop();
+    pipeline_.reset();
   }
 };
 

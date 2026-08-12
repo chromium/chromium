@@ -115,15 +115,15 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
   // When set via setClient() it overrides |sink_| for consuming audio.
   raw_ptr<WebAudioSourceProviderClient> client_ = nullptr;
 
+  // An inner class acting as a T filter where actual data can be tapped.
+  class TeeFilter;
+  const std::unique_ptr<TeeFilter> tee_filter_;
+
   // Where audio ends up unless overridden by |client_|.
   base::Lock sink_lock_;
   scoped_refptr<media::SwitchableAudioRendererSink> sink_
       GUARDED_BY(sink_lock_);
   std::unique_ptr<media::AudioBus> bus_wrapper_;
-
-  // An inner class acting as a T filter where actual data can be tapped.
-  class TeeFilter;
-  const std::unique_ptr<TeeFilter> tee_filter_;
 
   // This dangling raw_ptr occurred in:
   // blink_unittests: WebMediaPlayerImplTest.MediaPositionState_Playing
