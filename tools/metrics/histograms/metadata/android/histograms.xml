@@ -5761,7 +5761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Scrim.MissingParent.Client" enum="ScrimClient"
-    expires_after="2026-08-16">
+    expires_after="2027-08-11">
   <owner>skym@chromium.org</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
@@ -5773,7 +5773,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Scrim.ShowRequest.Client" enum="ScrimClient"
-    expires_after="2026-08-16">
+    expires_after="2027-08-11">
   <owner>skym@chromium.org</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
