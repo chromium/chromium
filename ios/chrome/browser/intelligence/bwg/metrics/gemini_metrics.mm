@@ -484,6 +484,33 @@ void RecordGeminiTabPickerDismissed() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiTabPickerDismissed"));
 }
 
+void RecordGeminiTabPickerErrorAttachmentLimit() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiTabPickerErrorAttachmentLimit"));
+}
+
+void RecordGeminiTabPickerErrorCannotReloadTab() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiTabPickerErrorCannotReloadTab"));
+}
+
+void RecordGeminiTabPickerErrorCannotAttachTab() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiTabPickerErrorCannotAttachTab"));
+}
+
+void RecordGeminiTabDetached() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiTabDetached"));
+}
+
+void RecordGeminiActiveTabAttached() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiActiveTabAttached"));
+}
+
+void RecordGeminiActiveTabDetached() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiActiveTabDetached"));
+}
+
 void RecordResponseLatency(base::TimeDelta latency,
                            bool had_page_context,
                            bool had_generated_image,

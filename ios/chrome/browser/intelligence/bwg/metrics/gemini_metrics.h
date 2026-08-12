@@ -565,6 +565,30 @@ void RecordGeminiTabPickerOpened();
 // Records that the Tab Picker was dismissed.
 void RecordGeminiTabPickerDismissed();
 
+// Records that the tab attachment limit error snackbar was shown in the Tab
+// Picker.
+void RecordGeminiTabPickerErrorAttachmentLimit();
+
+// Records that the cannot reload tab error snackbar was shown in the Tab
+// Picker.
+void RecordGeminiTabPickerErrorCannotReloadTab();
+
+// Records that the cannot attach tab error snackbar was shown in the Tab
+// Picker.
+void RecordGeminiTabPickerErrorCannotAttachTab();
+
+// Records that a shared (non-active) tab was detached from a Floaty chip in the
+// Gemini session.
+void RecordGeminiTabDetached();
+
+// Records that the active tab was attached from a Floaty chip in the Gemini
+// session.
+void RecordGeminiActiveTabAttached();
+
+// Records that the active tab was detached from a Floaty chip in the Gemini
+// session.
+void RecordGeminiActiveTabDetached();
+
 // Records the latency from prompt submission to response received, including
 // metadata about the prompt & response.
 void RecordResponseLatency(base::TimeDelta latency,

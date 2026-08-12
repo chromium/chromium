@@ -84,20 +84,20 @@ constexpr NSUInteger kMaxTabAttachmentCount = 10;
 #pragma mark - TabPickerSnackbarPresenter
 
 - (void)showSnackbarForTabAttachmentLimit:(NSUInteger)attachmentLimit {
-  // TODO(crbug.com/522850674): Update once snackbar copy is finalized.
+  RecordGeminiTabPickerErrorAttachmentLimit();
   [self showSnackbarWithTitle:l10n_util::GetPluralNSStringF(
                                   IDS_IOS_COMPOSEBOX_MAXIMUM_TABS_REACHED,
                                   attachmentLimit)];
 }
 
 - (void)showCannotReloadTabError {
-  // TODO(crbug.com/522850674): Update once snackbar copy is finalized.
+  RecordGeminiTabPickerErrorCannotReloadTab();
   [self showSnackbarWithTitle:l10n_util::GetNSString(
                                   IDS_IOS_COMPOSEBOX_CANNOT_RELOAD_TAB_ERROR)];
 }
 
 - (void)showCannotAttachTabError {
-  // TODO(crbug.com/522850674): Update once snackbar copy is finalized.
+  RecordGeminiTabPickerErrorCannotAttachTab();
   [self showSnackbarWithTitle:l10n_util::GetNSString(
                                   IDS_IOS_COMPOSEBOX_UNABLE_TO_ADD_ATTACHMENT)];
 }

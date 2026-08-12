@@ -6,8 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/test/metrics/user_action_tester.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
+#import "ios/chrome/browser/tab_picker/public/tab_picker_snackbar_presenter.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -53,4 +55,23 @@ TEST_F(GeminiTabPickerHandlerTest, TestOpenTabPicker) {
   [handler_ openTabPickerFromViewController:mockViewController];
 
   EXPECT_OCMOCK_VERIFY(mock_tab_picker_handler_);
+}
+
+// Tests that showing error snackbars records the corresponding user actions.
+TEST_F(GeminiTabPickerHandlerTest, TestErrorSnackbarUserActions) {
+  base::UserActionTester user_action_tester;
+  id<TabPickerSnackbarPresenter> presenter =
+      (id<TabPickerSnackbarPresenter>)handler_;
+
+  [presenter showSnackbarForTabAttachmentLimit:10];
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileGeminiTabPickerErrorAttachmentLimit"));
+
+  [presenter showCannotReloadTabError];
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileGeminiTabPickerErrorCannotReloadTab"));
+
+  [presenter showCannotAttachTabError];
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileGeminiTabPickerErrorCannotAttachTab"));
 }
