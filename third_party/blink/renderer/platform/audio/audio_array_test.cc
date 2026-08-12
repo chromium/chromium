@@ -63,6 +63,16 @@ TEST(AudioBusTest, HandleOOM) {
   EXPECT_EQ(bus, nullptr);
 }
 
+TEST(AudioBusTest, TryCreateTooManyChannels) {
+  scoped_refptr<AudioBus> bus = AudioBus::TryCreate(33, 128);
+  EXPECT_EQ(bus, nullptr);
+}
+
+TEST(AudioBusDeathTest, CreateTooManyChannels) {
+  EXPECT_CHECK_DEATH(AudioBus::Create(33, 128, /*allocate=*/true));
+  EXPECT_CHECK_DEATH(AudioBus::Create(33, 128, /*allocate=*/false));
+}
+
 TEST(AudioBusTest, TryCreateBySampleRateConvertingInvalidSampleRate) {
   scoped_refptr<AudioBus> bus = AudioBus::Create(1, 100);
 

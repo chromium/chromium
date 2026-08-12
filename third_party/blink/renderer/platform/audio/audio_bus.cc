@@ -56,9 +56,7 @@ constexpr unsigned kMaxBusChannels = 32;
 scoped_refptr<AudioBus> AudioBus::Create(unsigned number_of_channels,
                                          uint32_t length,
                                          bool allocate) {
-  if (number_of_channels > kMaxBusChannels) {
-    return nullptr;
-  }
+  CHECK_LE(number_of_channels, kMaxBusChannels);
 
   if (allocate) {
     scoped_refptr<AudioBus> bus = TryCreate(number_of_channels, length);
