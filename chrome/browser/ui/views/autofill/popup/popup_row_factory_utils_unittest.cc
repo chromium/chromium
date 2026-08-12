@@ -319,4 +319,19 @@ TEST_F(PopupRowFactoryUtilsTest, AtMemorySourceAttributionStyle) {
                                           ui::kColorSysOnSurfaceSubtle));
 }
 
+TEST_F(PopupRowFactoryUtilsTest, RemoveAutofillAiRowView) {
+  Suggestion suggestion(u"Remove this info", SuggestionType::kRemoveAutofillAi);
+  suggestion.icon = Suggestion::Icon::kClose;
+  ShowSuggestion(suggestion);
+
+  views::Label* label =
+      FindLabelWithText(&row_view().GetContentView(), u"Remove this info");
+  ASSERT_THAT(label, NotNull());
+  EXPECT_EQ(label->GetHorizontalAlignment(), gfx::ALIGN_TO_HEAD);
+
+  ASSERT_FALSE(row_view().GetContentView().children().empty());
+  EXPECT_TRUE(views::IsViewClass<views::ImageView>(
+      row_view().GetContentView().children().front()));
+}
+
 }  // namespace autofill

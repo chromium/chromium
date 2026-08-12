@@ -345,6 +345,8 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
             .set_top_bottom(
                 kAutofillMultilineSuggestionAdditionalVerticalMargin,
                 kAutofillMultilineSuggestionAdditionalVerticalMargin));
+  } else if (suggestion.type == SuggestionType::kRemoveAutofillAi) {
+    main_text_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   }
 
   view->AddChildView(std::move(main_text_label));
