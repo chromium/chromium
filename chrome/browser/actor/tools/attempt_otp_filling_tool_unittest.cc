@@ -820,6 +820,12 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kGmailOtpConfirmationDeclinedByUser, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpConfirmationDialogInteractionHistogram,
+      GmailOtpConfirmationDialogInteraction::kShowDialog, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpConfirmationDialogInteractionHistogram,
+      GmailOtpConfirmationDialogInteraction::kPermissionDenied, 1);
 }
 
 TEST_F(AttemptOtpFillingToolTest,
@@ -957,6 +963,12 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Approved) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpConfirmationDialogInteractionHistogram,
+      GmailOtpConfirmationDialogInteraction::kShowDialog, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpConfirmationDialogInteractionHistogram,
+      GmailOtpConfirmationDialogInteraction::kPermissionGranted, 1);
 }
 
 TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
@@ -989,6 +1001,12 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kGmailOtpConfirmationDeclinedByUser, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpConfirmationDialogInteractionHistogram,
+      GmailOtpConfirmationDialogInteraction::kShowDialog, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpConfirmationDialogInteractionHistogram,
+      GmailOtpConfirmationDialogInteraction::kPermissionDenied, 1);
 }
 
 TEST_F(AttemptOtpFillingToolTest,
@@ -1018,6 +1036,12 @@ TEST_F(AttemptOtpFillingToolTest,
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpConfirmationDialogInteractionHistogram,
+      GmailOtpConfirmationDialogInteraction::kShowDialog, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpConfirmationDialogInteractionHistogram,
+      GmailOtpConfirmationDialogInteraction::kErrorResponse, 1);
 }
 
 TEST_F(AttemptOtpFillingToolTest, Invoke_FrameLostDuringVerification) {
@@ -1104,6 +1128,12 @@ TEST_F(AttemptOtpFillingToolTest,
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpConfirmationDialogInteractionHistogram,
+      GmailOtpConfirmationDialogInteraction::kShowDialog, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpConfirmationDialogInteractionHistogram,
+      GmailOtpConfirmationDialogInteraction::kErrorResponse, 1);
 }
 
 }  // namespace actor

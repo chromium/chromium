@@ -20,6 +20,12 @@ void RecordGmailOtpOptInCardInteraction(
                                 interaction);
 }
 
+void RecordGmailOtpConfirmationDialogInteraction(
+    GmailOtpConfirmationDialogInteraction interaction) {
+  base::UmaHistogramEnumeration(kGmailOtpConfirmationDialogInteractionHistogram,
+                                interaction);
+}
+
 void RecordActorLoginFlowVerification(VerifyIsActorLoginFlowEvent event) {
   base::UmaHistogramEnumeration(kActorOtpVerifyIsActorLoginFlowHistogram,
                                 event);

@@ -486,6 +486,8 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
         JournalDetailsBuilder()
             .Add("status", "Requesting to show the confirmation dialog")
             .Build());
+    RecordGmailOtpConfirmationDialogInteraction(
+        GmailOtpConfirmationDialogInteraction::kShowDialog);
     std::string otp_code = retrieved_otp;
     tool_delegate().RequestToShowGmailOtpConfirmationDialog(
         otp_code,
@@ -578,6 +580,8 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
                         .Build());
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid);
+    RecordGmailOtpConfirmationDialogInteraction(
+        GmailOtpConfirmationDialogInteraction::kErrorResponse);
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kOtpUnableToFill,
                    /*requires_page_stabilization=*/false,
@@ -592,6 +596,8 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
                         .Build());
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid);
+    RecordGmailOtpConfirmationDialogInteraction(
+        GmailOtpConfirmationDialogInteraction::kErrorResponse);
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kOtpUnableToFill,
                    /*requires_page_stabilization=*/false,
@@ -608,6 +614,8 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
             .Build());
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid);
+    RecordGmailOtpConfirmationDialogInteraction(
+        GmailOtpConfirmationDialogInteraction::kErrorResponse);
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kOtpUnableToFill,
                    /*requires_page_stabilization=*/false,
@@ -623,12 +631,17 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
   if (!permission_granted) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kGmailOtpConfirmationDeclinedByUser);
+    RecordGmailOtpConfirmationDialogInteraction(
+        GmailOtpConfirmationDialogInteraction::kPermissionDenied);
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling,
                    /*requires_page_stabilization=*/false,
                    "User declined Gmail OTP confirmation."));
     return;
   }
+
+  RecordGmailOtpConfirmationDialogInteraction(
+      GmailOtpConfirmationDialogInteraction::kPermissionGranted);
 
   mojom::ActionResultPtr validation_result = GetResultFromFormFillingStatus(
       tool_delegate()

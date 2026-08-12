@@ -88,6 +88,17 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_tool_request.h:AttemptOtpFillingPredictedOtpType) -->
 
+<!-- LINT.IfChange(GmailOtpConfirmationDialogInteraction) -->
+
+<enum name="GmailOtpConfirmationDialogInteraction">
+  <int value="0" label="ShowDialog"/>
+  <int value="1" label="ErrorResponse"/>
+  <int value="2" label="PermissionDenied"/>
+  <int value="3" label="PermissionGranted"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:GmailOtpConfirmationDialogInteraction) -->
+
 <!-- LINT.IfChange(GmailOtpOptInCardInteraction) -->
 
 <enum name="GmailOtpOptInCardInteraction">

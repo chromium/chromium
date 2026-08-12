@@ -9,6 +9,20 @@ found in the LICENSE file.
 <histograms>
 
 <histogram
+    name="OneTimeTokens.Actor.AttemptOtpFilling.GmailOtpConfirmationDialogInteraction"
+    enum="GmailOtpConfirmationDialogInteraction" expires_after="2027-06-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>trangm@google.com</owner>
+  <summary>
+    Records user interactions with the Gmail OTP confirmation dialog during the
+    AttemptOtpFilling tool execution, such as whether permission was granted,
+    denied, or if an error occurred. Recorded once when the dialog is requested
+    to be shown, when there's an error, the user approves or declines the
+    confirmation dialog.
+  </summary>
+</histogram>
+
+<histogram
     name="OneTimeTokens.Actor.AttemptOtpFilling.GmailOtpOptInCardInteraction"
     enum="GmailOtpOptInCardInteraction" expires_after="2027-06-30">
   <owner>ioanap@chromium.org</owner>
