@@ -15,7 +15,9 @@
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
+#include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/indigo_private.h"
 #include "components/page_content_annotations/core/tracked_element_feature.h"
@@ -32,8 +34,10 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace indigo {
 
@@ -223,6 +227,14 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
     return;
   }
 
+  if (auto* controller = GetIndigoPageActionController()) {
+    if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(
+            controller->tab().GetBrowserWindowInterface())) {
+      browser_view->GetViewAccessibility().AnnouncePolitely(
+          l10n_util::GetStringUTF16(IDS_INDIGO_GENERATION_STARTED));
+    }
+  }
+
   // Cache a copy of the primary replacement's original image bytes to use for
   // regeneration.
   if (replacement_data->original_image) {
@@ -297,6 +309,12 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
 
   if (auto* controller = GetIndigoPageActionController()) {
     controller->ShowToolbar();
+
+    if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(
+            controller->tab().GetBrowserWindowInterface())) {
+      browser_view->GetViewAccessibility().AnnouncePolitely(
+          l10n_util::GetStringUTF16(IDS_INDIGO_GENERATION_COMPLETED));
+    }
   }
 }
 

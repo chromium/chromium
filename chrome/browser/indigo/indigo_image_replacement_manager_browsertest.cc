@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "build/build_config.h"
 #include "chrome/browser/indigo/fake_api.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/indigo/indigo.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -50,7 +52,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/ax_event_counter.h"
+#include "ui/views/widget/root_view.h"
 
 namespace indigo {
 
@@ -514,6 +522,58 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   EXPECT_TRUE(
       WaitUntilReplacementImageSrcMatches(subframe.get(), success_url.spec()));
 }
+
+// TODO (b/544830353): Find out a way to test the announcements on macOS.
+// On Mac, AnnounceTextAs takes a separate native path via AXPlatformNodeMac and
+// NSAccessibility notifications, so the AXEventCounter-based path is non-Mac
+// only.
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(
+    IndigoImageReplacementManagerBrowserTest,
+    AnnouncesAccessibilityEventsOnGenerationStartAndComplete) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kLiveRegionChanged));
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  // Verify accessibility announcement event for generation started.
+  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kLiveRegionChanged));
+
+  // Trigger completion of image generation.
+  fake_api_.WaitForGenerateRequest();
+  GURL success_url(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+"
+      "M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url);
+
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+  EXPECT_TRUE(
+      WaitUntilReplacementImageSrcMatches(subframe.get(), success_url.spec()));
+
+  // Verify accessibility announcement event for generation completed.
+  EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kLiveRegionChanged));
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
                        HandlesFailureFromGenerateRequest) {
