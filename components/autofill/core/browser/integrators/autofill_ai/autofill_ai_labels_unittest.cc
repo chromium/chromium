@@ -201,9 +201,9 @@ TEST_F(AutofillAiLabelsTest, ObfuscateSensitiveTypes) {
       {&passport_1, &passport_2}, /*attribute_type_names_to_ignore=*/{},
       /*only_disambiguating_types=*/false, /*obfuscate_sensitive_types=*/true);
 
-  ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(labels[0], base::StrCat({kDots, kDots, kDots, kDots, u"7890"}));
-  EXPECT_EQ(labels[1], base::StrCat({kDots, kDots, kDots, kDots, u"4321"}));
+  EXPECT_THAT(labels,
+              ElementsAre(base::StrCat({kDots, kDots, kDots, kDots, u"7890"}),
+                          base::StrCat({kDots, kDots, kDots, kDots, u"4321"})));
 }
 
 struct DisambiguationTestCase {
