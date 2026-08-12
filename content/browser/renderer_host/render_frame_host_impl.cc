@@ -7652,7 +7652,6 @@ void RenderFrameHostImpl::ContentsPreferredSizeChanged(
   delegate_->UpdateWindowPreferredSize(this, pref_size);
 }
 
-
 void RenderFrameHostImpl::FocusPage() {
   render_view_host_->OnFocus();
 }
@@ -8003,8 +8002,10 @@ void RenderFrameHostImpl::DownloadURL(
         })");
   std::unique_ptr<download::DownloadUrlParameters> parameters =
       CreateDownloadUrlParameters(blink_parameters->url, traffic_annotation);
-  parameters->set_content_initiated(!blink_parameters->is_context_menu_save);
-  // Ensure that user gesture claims match the current activation state.
+  // Downloads arriving through this IPC handler always originate from web
+  // content, so treat them as content-initiated regardless of what the
+  // renderer reports in `is_context_menu_save`.
+  parameters->set_content_initiated(true);
   parameters->set_has_user_gesture(blink_parameters->has_user_gesture &&
                                    HasTransientUserActivation());
   parameters->set_suggested_name(
@@ -16665,7 +16666,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
             fenced_frame_properties->nested_urn_config_pairs()
                 ->GetValueIgnoringVisibility());
       }
-
     }
 
     // Continue observing the events for the committed navigation.
