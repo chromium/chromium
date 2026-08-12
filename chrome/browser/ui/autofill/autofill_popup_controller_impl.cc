@@ -102,6 +102,44 @@ bool ShouldEnforcePaintChecks(AutofillSuggestionTriggerSource trigger_source) {
   }
 }
 
+std::optional<AutofillPopupView::SearchBarConfig> GetSearchBarConfig(
+    AutofillSuggestionTriggerSource trigger_source,
+    const std::u16string& search_bar_initial_value = {}) {
+  switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
+    case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
+    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+      return AutofillPopupView::SearchBarConfig{
+          .placeholder = l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER),
+          .initial_value = search_bar_initial_value,
+          .no_results_message = u""};
+    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+      return AutofillPopupView::SearchBarConfig{
+          .placeholder = l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER),
+          .initial_value = {},
+          .no_results_message = l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_NOT_FOUND)};
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
+    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+    case AutofillSuggestionTriggerSource::kPasswordManager:
+    case AutofillSuggestionTriggerSource::kiOS:
+    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
+    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+    case AutofillSuggestionTriggerSource::kGlic:
+    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
+    case AutofillSuggestionTriggerSource::kUnspecified:
+      return std::nullopt;
+  }
+}
+
 struct SuggestionFiltrationResult {
   void AddSuggestion(
       const Suggestion& suggestion,
@@ -256,7 +294,8 @@ void AutofillPopupControllerImpl::Show(
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
     AutoselectFirstSuggestion autoselect_first_suggestion,
-    AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) {
+    AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss,
+    std::u16string search_bar_initial_value) {
   ui_session_id_ = ui_session_id;
   ignore_focus_loss_ = ignore_focus_loss;
   trigger_source_ = trigger_source;
@@ -375,12 +414,14 @@ void AutofillPopupControllerImpl::Show(
                       {TabbedPaneTabType::kPayLater,
                        l10n_util::GetStringUTF16(IDS_AUTOFILL_PAY_LATER)}})
             : std::nullopt;
-    view_ = has_parent
-                ? parent_controller_->get()->CreateSubPopupView(GetWeakPtr())
-                : AutofillPopupView::Create(GetWeakPtr(),
-                                            GetSearchBarConfig(trigger_source),
-                                            std::move(tabbed_pane_config),
-                                            GetSubPopupConfig(trigger_source));
+    view_ =
+        has_parent
+            ? parent_controller_->get()->CreateSubPopupView(GetWeakPtr())
+            : AutofillPopupView::Create(
+                  GetWeakPtr(),
+                  GetSearchBarConfig(trigger_source, search_bar_initial_value),
+                  std::move(tabbed_pane_config),
+                  GetSubPopupConfig(trigger_source));
 
     // It is possible to fail to create the popup, in this case
     // treat the popup as hiding right away.
@@ -608,43 +649,6 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged(
   if (view_) {
     view_->OnSuggestionsChanged(prefer_prev_arrow_side);
   }
-}
-
-std::optional<AutofillPopupView::SearchBarConfig>
-AutofillPopupControllerImpl::GetSearchBarConfig(
-    AutofillSuggestionTriggerSource trigger_source) const {
-  switch (trigger_source) {
-    case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
-    case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
-    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
-      return AutofillPopupView::SearchBarConfig{
-          .placeholder = l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER),
-          .no_results_message = u""};
-    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
-      return AutofillPopupView::SearchBarConfig{
-          .placeholder = l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER),
-          .no_results_message = l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_NOT_FOUND)};
-    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
-    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
-    case AutofillSuggestionTriggerSource::kContentEditableClicked:
-    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
-    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
-    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
-    case AutofillSuggestionTriggerSource::kPasswordManager:
-    case AutofillSuggestionTriggerSource::kiOS:
-    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
-    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
-    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
-    case AutofillSuggestionTriggerSource::kGlic:
-    case AutofillSuggestionTriggerSource::kUnspecified:
-    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
-      return std::nullopt;
-  }
-  NOTREACHED();
 }
 
 void AutofillPopupControllerImpl::UpdateFilteredSuggestions() {
@@ -994,7 +998,8 @@ AutofillPopupControllerImpl::OpenSubPopup(
   sub_popup_controller_ = controller->weak_ptr_factory_.GetWeakPtr();
   controller->Show(ui_session_id_, std::move(suggestions), trigger_source_,
                    autoselect_first_suggestion,
-                   AutofillSuggestionsIgnoreFocusLoss(false));
+                   AutofillSuggestionsIgnoreFocusLoss(false),
+                   /*search_bar_initial_value=*/{});
   return sub_popup_controller_;
 }
 

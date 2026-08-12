@@ -102,7 +102,8 @@ class AtMemorySuggestionControllerTest
         std::move(suggestions),
         AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
         AutoselectFirstSuggestion(false),
-        AutofillSuggestionsIgnoreFocusLoss(false));
+        AutofillSuggestionsIgnoreFocusLoss(false),
+        /*search_bar_initial_value=*/{});
   }
 };
 
@@ -262,7 +263,8 @@ TEST_F(AtMemorySuggestionControllerTest, DelegateRouting) {
       AutofillSuggestionController::GenerateSuggestionUiSessionId(),
       suggestions, AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
       AutoselectFirstSuggestion(false),
-      AutofillSuggestionsIgnoreFocusLoss(false));
+      AutofillSuggestionsIgnoreFocusLoss(false),
+      /*search_bar_initial_value=*/{});
 
   // OnQuerySubmitted routes to OnSearchSubmitted.
   EXPECT_CALL(mock_delegate, OnSearchSubmitted(std::u16string(u"query")));

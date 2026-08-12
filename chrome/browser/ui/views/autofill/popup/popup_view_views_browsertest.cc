@@ -491,6 +491,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, SearchBarViewProvided) {
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,
       AutofillPopupView::SearchBarConfig{.placeholder = u"Search",
+                                         .initial_value = {},
                                          .no_results_message = u""});
 }
 
@@ -500,6 +501,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,
       AutofillPopupView::SearchBarConfig{.placeholder = u"Search",
+                                         .initial_value = {},
                                          .no_results_message = u""});
 }
 
@@ -510,9 +512,10 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
       {SuggestionType::kSeparator, SuggestionType::kManageAddress});
   ON_CALL(controller(), HasFilteredOutSuggestions).WillByDefault(Return(true));
   ShowAndVerifyUi(
-      /*popup_has_parent=*/false,
-      AutofillPopupView::SearchBarConfig{
-          .placeholder = u"Search", .no_results_message = u"No suggestions"});
+      /*popup_has_parent=*/false, AutofillPopupView::SearchBarConfig{
+                                      .placeholder = u"Search",
+                                      .initial_value = {},
+                                      .no_results_message = u"No suggestions"});
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_BnplFootnote) {
@@ -555,6 +558,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AtMemoryFetching) {
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,
       AutofillPopupView::SearchBarConfig{.placeholder = u"Find and fill",
+                                         .initial_value = {},
                                          .no_results_message = u""});
 }
 

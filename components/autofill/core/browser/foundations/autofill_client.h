@@ -277,7 +277,8 @@ class AutofillClient {
                   int32_t form_control_ax_id,
                   PopupAnchorType anchor_type,
                   bool show_tabbed_popup = false,
-                  bool prefer_prev_arrow_side_on_suggestions_update = false);
+                  bool prefer_prev_arrow_side_on_suggestions_update = false,
+                  std::u16string search_bar_initial_value = {});
     PopupOpenArgs(const PopupOpenArgs&);
     PopupOpenArgs(PopupOpenArgs&&);
     PopupOpenArgs& operator=(const PopupOpenArgs&);
@@ -302,6 +303,8 @@ class AutofillClient {
     // are updated. This avoids unnecessary jumping when the popup is updated,
     // unless the popup would otherwise go out of bounds.
     bool prefer_prev_arrow_side_on_suggestions_update = false;
+    // Initial value for the search bar.
+    std::u16string search_bar_initial_value;
   };
 
   // Details about the UI that was shown to the user in an entity import bubble.

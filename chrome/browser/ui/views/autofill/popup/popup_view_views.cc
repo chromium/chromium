@@ -1289,7 +1289,8 @@ void PopupViewViews::InitViews() {
         controller_ &&
         controller_->GetMainFillingProduct() == FillingProduct::kAtMemory;
     search_bar_ = AddChildView(std::make_unique<PopupSearchBarView>(
-        search_bar_config_->placeholder, *this,
+        search_bar_config_->placeholder, search_bar_config_->initial_value,
+        *this,
         /*show_indicator=*/is_at_memory,
         /*show_search_icon_sparkle=*/is_at_memory,
         /*debounce_delay=*/

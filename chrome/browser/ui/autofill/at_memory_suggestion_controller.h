@@ -64,7 +64,8 @@ class AtMemorySuggestionController : public AutofillSuggestionController {
             std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
             AutoselectFirstSuggestion autoselect_first_suggestion,
-            AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) override;
+            AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss,
+            std::u16string search_bar_initial_value) override;
   std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;

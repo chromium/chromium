@@ -690,7 +690,8 @@ TEST_F(AutofillPopupControllerImplTest,
       {Suggestion(u"Search Query", SuggestionType::kAddressEntry)},
       AutofillSuggestionTriggerSource::kFormControlElementClicked,
       AutoselectFirstSuggestion(false),
-      AutofillSuggestionsIgnoreFocusLoss(false));
+      AutofillSuggestionsIgnoreFocusLoss(false),
+      /*search_bar_initial_value=*/{});
 }
 
 TEST_F(AutofillPopupControllerImplTest,

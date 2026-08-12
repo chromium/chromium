@@ -31,6 +31,7 @@ class AutofillPopupView {
  public:
   struct SearchBarConfig {
     std::u16string placeholder;
+    std::u16string initial_value;
     std::u16string no_results_message;
   };
 

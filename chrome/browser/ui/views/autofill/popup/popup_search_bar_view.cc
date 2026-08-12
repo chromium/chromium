@@ -40,11 +40,15 @@ class SearchBarTextfield : public views::Textfield {
   METADATA_HEADER(SearchBarTextfield, views::Textfield)
  public:
   SearchBarTextfield(const std::u16string& placeholder,
+                     const std::u16string& initial_value,
                      views::TextfieldController* controller) {
     SetPlaceholderText(placeholder);
+    if (!initial_value.empty()) {
+      SetText(initial_value);
+    }
+    SetAccessibleName(placeholder);
     SetController(controller);
     SetBorder(nullptr);
-    SetAccessibleName(placeholder);
     SetProperty(views::kElementIdentifierKey, PopupSearchBarView::kInputField);
     SetProperty(views::kFlexBehaviorKey,
                 views::FlexSpecification(views::FlexSpecification(
@@ -71,7 +75,8 @@ class SearchBarClearButton : public views::ImageButton {
   METADATA_HEADER(SearchBarClearButton, views::ImageButton)
  public:
   SearchBarClearButton(PressedCallback callback,
-                       PopupSearchBarView* search_bar_view)
+                       PopupSearchBarView* search_bar_view,
+                       bool visible)
       : views::ImageButton(std::move(callback)),
         search_bar_view_(*search_bar_view) {
     views::ConfigureVectorImageButton(this);
@@ -86,7 +91,7 @@ class SearchBarClearButton : public views::ImageButton {
         IDS_AUTOFILL_POPUP_SEARCH_BAR_CLEAR_SEARCH_BUTTON_A11Y_NAME));
     SetFocusBehavior(FocusBehavior::ALWAYS);
     views::InstallCircleHighlightPathGenerator(this);
-    SetVisible(false);
+    SetVisible(visible);
   }
 
   ~SearchBarClearButton() override = default;
@@ -115,6 +120,7 @@ END_METADATA
 }  // namespace
 
 PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
+                                       const std::u16string& initial_value,
                                        Delegate& delegate,
                                        bool show_indicator,
                                        bool show_search_icon_sparkle,
@@ -148,8 +154,8 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
   throbber_ = AddChildView(std::make_unique<views::Throbber>(icon_size));
   SetLoading(false);
 
-  input_ =
-      AddChildView(std::make_unique<SearchBarTextfield>(placeholder, this));
+  input_ = AddChildView(
+      std::make_unique<SearchBarTextfield>(placeholder, initial_value, this));
 
   input_changed_subscription_ =
       input_->AddTextChangedCallback(base::BindRepeating(
@@ -161,7 +167,8 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
   clear_ = AddChildView(std::make_unique<SearchBarClearButton>(
       base::BindRepeating(&PopupSearchBarView::OnClearPressed,
                           base::Unretained(this)),
-      this));
+      this,
+      /*visible=*/!initial_value.empty()));
 
   if (show_indicator) {
     indicator_ = AddChildView(views::Builder<views::Label>()
@@ -169,7 +176,7 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
                                   .SetAutoColorReadabilityEnabled(false)
                                   .Build());
     indicator_->SetEnabledColor(ui::kColorTextfieldForegroundPlaceholder);
-    indicator_->SetVisible(true);
+    indicator_->SetVisible(initial_value.empty());
   }
 }
 

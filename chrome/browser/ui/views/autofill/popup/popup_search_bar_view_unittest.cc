@@ -71,8 +71,9 @@ class PopupSearchBarViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(PopupSearchBarViewTest, SetsFocusOnTextfield) {
-  PopupSearchBarView* view = widget().SetContentsView(
-      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"", delegate()));
   widget().Show();
   view->Focus();
 
@@ -82,8 +83,9 @@ TEST_F(PopupSearchBarViewTest, SetsFocusOnTextfield) {
 }
 
 TEST_F(PopupSearchBarViewTest, OnFocusLostCalled) {
-  PopupSearchBarView* view = widget().SetContentsView(
-      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"", delegate()));
   widget().Show();
   view->Focus();
   ASSERT_NE(widget().GetFocusManager()->GetFocusedView(), nullptr);
@@ -93,7 +95,8 @@ TEST_F(PopupSearchBarViewTest, OnFocusLostCalled) {
 }
 
 TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledAfterDelay) {
-  auto view = std::make_unique<PopupSearchBarView>(u"placeholder", delegate());
+  auto view = std::make_unique<PopupSearchBarView>(
+      u"placeholder", /*initial_value=*/u"", delegate());
 
   MockFunction<void()> check;
   {
@@ -114,7 +117,8 @@ TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledAfterDelay) {
 // delegate on the current tick without advancing mock time.
 TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledImmediatelyWithZeroDelay) {
   auto view = std::make_unique<PopupSearchBarView>(
-      u"placeholder", delegate(), /*show_indicator=*/false,
+      u"placeholder", /*initial_value=*/u"", delegate(),
+      /*show_indicator=*/false,
       /*show_search_icon_sparkle=*/false, /*debounce_delay=*/base::TimeDelta());
 
   EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"input text")));
@@ -123,7 +127,8 @@ TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledImmediatelyWithZeroDelay) {
 }
 
 TEST_F(PopupSearchBarViewTest, OnInputChangedCallbackIsThrottled) {
-  auto view = std::make_unique<PopupSearchBarView>(u"placeholder", delegate());
+  auto view = std::make_unique<PopupSearchBarView>(
+      u"placeholder", /*initial_value=*/u"", delegate());
 
   MockFunction<void()> check;
   {
@@ -145,8 +150,9 @@ TEST_F(PopupSearchBarViewTest, OnInputChangedCallbackIsThrottled) {
 // fixed.
 #if !BUILDFLAG(IS_WIN)
 TEST_F(PopupSearchBarViewTest, KeyPressedFromTextfieldPassedToDelegateFirst) {
-  PopupSearchBarView* view = widget().SetContentsView(
-      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"", delegate()));
   widget().Show();
   view->Focus();
 
@@ -168,8 +174,9 @@ TEST_F(PopupSearchBarViewTest, KeyPressedFromTextfieldPassedToDelegateFirst) {
 #endif  // !BUILDFLAG(IS_WIN)
 
 TEST_F(PopupSearchBarViewTest, ClearButton) {
-  PopupSearchBarView* view = widget().SetContentsView(
-      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"", delegate()));
   widget().Show();
   view->Focus();
 
@@ -195,8 +202,9 @@ TEST_F(PopupSearchBarViewTest, ClearButton) {
 }
 
 TEST_F(PopupSearchBarViewTest, ClearButtonVisibility) {
-  PopupSearchBarView* view = widget().SetContentsView(
-      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"", delegate()));
   widget().Show();
 
   EXPECT_FALSE(view->IsClearButtonVisibleForTesting());
@@ -211,7 +219,8 @@ TEST_F(PopupSearchBarViewTest, ClearButtonVisibility) {
 TEST_F(PopupSearchBarViewTest, IndicatorVisibility_Enabled) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", delegate(), /*show_indicator=*/true));
+          u"placeholder", /*initial_value=*/u"", delegate(),
+          /*show_indicator=*/true));
   widget().Show();
 
   EXPECT_TRUE(view->IsIndicatorVisibleForTesting());
@@ -226,7 +235,8 @@ TEST_F(PopupSearchBarViewTest, IndicatorVisibility_Enabled) {
 TEST_F(PopupSearchBarViewTest, IndicatorVisibility_Disabled) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", delegate(), /*show_indicator=*/false));
+          u"placeholder", /*initial_value=*/u"", delegate(),
+          /*show_indicator=*/false));
   widget().Show();
 
   EXPECT_FALSE(view->IsIndicatorVisibleForTesting());
@@ -238,9 +248,22 @@ TEST_F(PopupSearchBarViewTest, IndicatorVisibility_Disabled) {
   EXPECT_FALSE(view->IsIndicatorVisibleForTesting());
 }
 
+TEST_F(PopupSearchBarViewTest, InitialText) {
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", u"initial query", delegate(),
+          /*show_indicator=*/false,
+          /*show_search_icon_sparkle=*/false,
+          /*debounce_delay=*/PopupSearchBarView::kInputChangeCallbackDelay));
+  widget().Show();
+
+  EXPECT_EQ(view->GetText(), u"initial query");
+}
+
 TEST_F(PopupSearchBarViewTest, SetLoading) {
-  PopupSearchBarView* view = widget().SetContentsView(
-      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"", delegate()));
   widget().Show();
 
   view->SetLoading(true);
@@ -256,8 +279,9 @@ TEST_F(PopupSearchBarViewTest, SetLoading) {
 // debounced input changed timer, preventing any trailing incremental queries
 // from executing after a full search is submitted.
 TEST_F(PopupSearchBarViewTest, PressingEnterStopsInputChangedTimer) {
-  PopupSearchBarView* view = widget().SetContentsView(
-      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"", delegate()));
   widget().Show();
   view->Focus();
 
@@ -286,8 +310,9 @@ TEST_F(PopupSearchBarViewTest, PressingEnterStopsInputChangedTimer) {
 // Tests that pressing TAB cycles focus between the textfield and clear button
 // when the clear button is visible.
 TEST_F(PopupSearchBarViewTest, TabKeyCyclesToClearButtonWhenVisible) {
-  PopupSearchBarView* view = widget().SetContentsView(
-      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"", delegate()));
   widget().Show();
   view->Focus();
 
@@ -317,8 +342,9 @@ TEST_F(PopupSearchBarViewTest, TabKeyCyclesToClearButtonWhenVisible) {
 // Tests that pressing Shift+TAB cycles focus between the textfield and clear
 // button when the clear button is visible.
 TEST_F(PopupSearchBarViewTest, ShiftTabKeyCyclesToClearButtonWhenVisible) {
-  PopupSearchBarView* view = widget().SetContentsView(
-      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"", delegate()));
   widget().Show();
   view->Focus();
 
@@ -343,8 +369,9 @@ TEST_F(PopupSearchBarViewTest, ShiftTabKeyCyclesToClearButtonWhenVisible) {
 // Tests that pressing TAB keeps focus on the textfield when the clear button is
 // hidden.
 TEST_F(PopupSearchBarViewTest, TabKeyStaysOnTextfieldWhenClearButtonHidden) {
-  PopupSearchBarView* view = widget().SetContentsView(
-      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"", delegate()));
   widget().Show();
   view->Focus();
 
@@ -362,8 +389,9 @@ TEST_F(PopupSearchBarViewTest, TabKeyStaysOnTextfieldWhenClearButtonHidden) {
 // Tests that delegate handling of the TAB key takes priority over search bar
 // focus cycling.
 TEST_F(PopupSearchBarViewTest, TabKeyHandledByDelegateFirst) {
-  PopupSearchBarView* view = widget().SetContentsView(
-      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"", delegate()));
   widget().Show();
   view->Focus();
 

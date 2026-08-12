@@ -187,7 +187,8 @@ class AutofillSuggestionControllerTestBase
     client().suggestion_controller(manager).Show(
         AutofillSuggestionController::GenerateSuggestionUiSessionId(),
         std::move(suggestions), trigger_source,
-        AutoselectFirstSuggestion(false), ignore_focus_loss);
+        AutoselectFirstSuggestion(false), ignore_focus_loss,
+        /*search_bar_initial_value=*/{});
   }
 
   input::NativeWebKeyboardEvent CreateKeyPressEvent(int windows_key_code) {

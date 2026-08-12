@@ -54,7 +54,8 @@ AutofillClient::PopupOpenArgs::PopupOpenArgs(
     int32_t form_control_ax_id,
     PopupAnchorType anchor_type,
     bool show_tabbed_popup,
-    bool prefer_prev_arrow_side_on_suggestions_update)
+    bool prefer_prev_arrow_side_on_suggestions_update,
+    std::u16string search_bar_initial_value)
     : frame_token(std::move(frame_token)),
       element_bounds(element_bounds),
       text_direction(text_direction),
@@ -64,7 +65,8 @@ AutofillClient::PopupOpenArgs::PopupOpenArgs(
       anchor_type(anchor_type),
       show_tabbed_popup(show_tabbed_popup),
       prefer_prev_arrow_side_on_suggestions_update(
-          prefer_prev_arrow_side_on_suggestions_update) {}
+          prefer_prev_arrow_side_on_suggestions_update),
+      search_bar_initial_value(std::move(search_bar_initial_value)) {}
 AutofillClient::PopupOpenArgs::PopupOpenArgs(
     const AutofillClient::PopupOpenArgs&) = default;
 AutofillClient::PopupOpenArgs::PopupOpenArgs(AutofillClient::PopupOpenArgs&&) =
