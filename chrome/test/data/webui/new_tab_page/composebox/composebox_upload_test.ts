@@ -789,18 +789,17 @@ suite(`NewTabPageComposeboxUploadPasteTest`, () => {
         loadTimeData.getString('composeFileTypesAllowedError'),
         testProxy.element.$.errorScrim.errorMessage);
 
+    // Check that the paste event was prevented.
+    assertTrue(pasteEvent.defaultPrevented);
+
     // Check that no files were added.
     assertEquals(
         0,
         testProxy.searchboxHandler.getCallCount(
             testSupport.ADD_FILE_CONTEXT_FN));
-
-    // Check that the paste event was prevented.
-    assertTrue(pasteEvent.defaultPrevented);
   });
 
-  test(
-      'pasting only text does not call addFiles or prevent default',
+    test('pasting only text does not call addFiles or prevent default',
       async () => {
         // Arrange.
         testSupport.createComposeboxElement(testProxy);

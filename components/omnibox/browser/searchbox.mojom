@@ -151,6 +151,23 @@ struct FileAttachment {
   url.mojom.Url? thumbnail_url;
 };
 
+// The source/origin of a tab attachment. Used to track how a tab was
+// added to the composebox.
+enum TabAttachmentSource {
+  // Unknown or unspecified source.
+  kOther = 0,
+  // Added via the WebUI context menu.
+  kContextMenu = 1,
+  // Added via the "Current Tab" chip.
+  kCurrentTabChip = 2,
+  // Added via a searchbox action chip.
+  kActionChip = 3,
+  // Automatically added because it was the active tab when the session started.
+  kAutoActive = 4,
+  // Automatically added through cobrowse entrypoints.
+  kAutoAdded = 5,
+};
+
 // Represents a tab attachment chosen browser-side and communicated to WebUI.
 struct TabAttachment {
   // The unique identifier of the tab.
@@ -159,6 +176,8 @@ struct TabAttachment {
   string title;
   // The URL of the tab.
   url.mojom.Url url;
+  // The source/origin of the tab attachment.
+  TabAttachmentSource source;
 };
 
 // Represents a single attachment to the search context, either a file or a tab.
@@ -477,7 +496,7 @@ interface PageHandler {
   // Attach a tab to the query context. If the tab cannot be attached, the
   // result will contain an error, otherwise it will contain the token
   // identifying the tab context.
-  AddTabContext(int32 tab_id, bool delay_upload)
+  AddTabContext(int32 tab_id, bool delay_upload, TabAttachmentSource source)
       => result<mojo_base.mojom.UnguessableToken, composebox_query.mojom.ContextUploadErrorType>;
 
   // Notify handler of context deletion. This removes the context data (e.g.

@@ -1029,9 +1029,14 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
   std::move(callback).Run(base::ok(context_token));
 }
 
-void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
-                                               bool delay_upload,
-                                               AddTabContextCallback callback) {
+void ContextualSearchboxHandler::AddTabContext(
+    int32_t tab_id,
+    bool delay_upload,
+    searchbox::mojom::TabAttachmentSource source,
+    AddTabContextCallback callback) {
+  // `source` is currently only used by subclasses (like WebuiOmniboxHandler)
+  // that override this method to store the origin in pending context for
+  // session restoration.
   if (!IsContextualSearchTabSharingEligible()) {
     std::move(callback).Run(base::unexpected(
         contextual_search::ContextUploadErrorType::kBrowserProcessingError));

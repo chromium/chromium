@@ -10,6 +10,7 @@ import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchb
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -156,7 +157,8 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
     url: Url,
   }>) {
     this.searchboxBrowserProxy_.handler.addTabContext(
-        e.detail.id, /*delayUpload=*/ false);
+        e.detail.id, /*delayUpload=*/ false,
+        TabAttachmentSource.kCurrentTabChip);
   }
 
   protected computeShowCurrentTabChip_() {

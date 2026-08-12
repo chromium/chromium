@@ -888,7 +888,10 @@ void ContextualTasksComposeboxHandler::FileSelectionCanceled() {
 void ContextualTasksComposeboxHandler::AddTabContext(
     int32_t tab_id,
     bool delay_upload,
+    searchbox::mojom::TabAttachmentSource source,
     AddTabContextCallback callback) {
+  // `source` is ignored here as contextual tasks composebox does not need to
+  // preserve tab origin across sessions in the same way as WebuiOmniboxHandler.
   if (!IsContextualSearchTabSharingEligible()) {
     std::move(callback).Run(base::unexpected(
         contextual_search::ContextUploadErrorType::kBrowserProcessingError));

@@ -826,6 +826,7 @@ void OmniboxEditModel::PopulateActiveTabContext() {
   tab_attachment->tab_id = tab_handle_val;
   tab_attachment->title = base::UTF16ToUTF8(web_contents->GetTitle());
   tab_attachment->url = web_contents->GetLastCommittedURL();
+  tab_attachment->source = searchbox::mojom::TabAttachmentSource::kAutoAdded;
   context->file_infos.push_back(
       searchbox::mojom::SearchContextAttachment::NewTabAttachment(
           std::move(tab_attachment)));

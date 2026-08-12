@@ -799,6 +799,8 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
     tab_attachment->tab_id = tab_info->tab_id;
     tab_attachment->title = base::UTF16ToUTF8(tab_info->title);
     tab_attachment->url = tab_info->url;
+    tab_attachment->source =
+        searchbox::mojom::TabAttachmentSource::kContextMenu;
     context->file_infos.push_back(
         searchbox::mojom::SearchContextAttachment::NewTabAttachment(
             std::move(tab_attachment)));

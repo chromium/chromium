@@ -15,7 +15,7 @@ import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_components/composebox/composebox_lens_search.js';
 
-import {ComposeboxFile, getLoadTimeBoolean, mapUploadErrorToProcessFilesError, ProcessFilesError, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
+import {ComposeboxFile, getLoadTimeBoolean, mapMojoSourceToOrigin, mapUploadErrorToProcessFilesError, ProcessFilesError} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -165,10 +165,11 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
         changedPrivateProperties.has('files') ||
         changedPrivateProperties.has('inputState') ||
         changedPrivateProperties.has('isContentSharingEnabled_') ||
-        changedPrivateProperties.has('isLensSearchEligible_')) {
+        changedPrivateProperties.has('isLensSearchEligible_') ||
+        changedPrivateProperties.has('askGComposeboxLensChipEnabled_')) {
       this.isLensSearchChipShown_ = this.askGComposeboxLensChipEnabled_ &&
           this.isContentSharingEnabled_ && this.isLensSearchEligible_ &&
-          !this.hasContent();
+          !this.hasContent(/* ignoreSuggestedTab= */ true);
     }
   }
 
@@ -308,7 +309,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       title: tabAttachment.title,
       url: tabAttachment.url,
       delayUpload: false,
-      origin: TabUploadOrigin.OTHER,
+      origin: mapMojoSourceToOrigin(tabAttachment.source),
     } as TabUpload);
   }
 }

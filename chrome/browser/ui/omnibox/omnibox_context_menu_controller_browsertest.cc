@@ -1148,7 +1148,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
     ASSERT_TRUE(handler);
 
     // Stage the tab directly via C++ handler.
-    handler->AddTabContext(tab_id, /*delay_upload=*/false, base::DoNothing());
+    handler->AddTabContext(tab_id, /*delay_upload=*/false,
+                           searchbox::mojom::TabAttachmentSource::kContextMenu,
+                           base::DoNothing());
 
     // Verify the tab is staged for upload in C++ tracking.
     EXPECT_EQ(1u, handler->selected_tabs.size());
@@ -1289,7 +1291,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   }
 
   // Click on tab 3, making its checkmark appear.
-  handler->AddTabContext(tab3_id, /*delay_upload=*/false, base::DoNothing());
+  handler->AddTabContext(tab3_id, /*delay_upload=*/false,
+                         searchbox::mojom::TabAttachmentSource::kContextMenu,
+                         base::DoNothing());
 
   // Now, Tab 3 should be sorted second since tab 2
   // is also checked (selected) but more recent than tab 3. Tab 1 is most
@@ -1310,7 +1314,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   }
 
   // Stage (check/select) Tab 2 for upload as well.
-  handler->AddTabContext(tab2_id, /*delay_upload=*/false, base::DoNothing());
+  handler->AddTabContext(tab2_id, /*delay_upload=*/false,
+                         searchbox::mojom::TabAttachmentSource::kContextMenu,
+                         base::DoNothing());
 
   // Now, both Tab 2 and Tab 3 are checked.
   // Tab 2 is more recent than Tab 3, so order should be: Tab 2, Tab 3, Tab 1.
@@ -1654,11 +1660,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerContextManagementBrowserTest,
             l10n_util::GetStringUTF16(IDS_COMPOSE_ADD_TABS));
 
   // 1 tab selected/checked. Title should be "Sharing 1 tab".
-  handler->AddTabContext(tab1_id, /*delay_upload=*/false, base::DoNothing());
+  handler->AddTabContext(tab1_id, /*delay_upload=*/false,
+                         searchbox::mojom::TabAttachmentSource::kContextMenu,
+                         base::DoNothing());
   EXPECT_EQ(get_submenu_label(), u"Sharing 1 tab");
 
   // 2 tabs selected/checked. Title should be "Sharing 2 tabs".
-  handler->AddTabContext(tab2_id, /*delay_upload=*/false, base::DoNothing());
+  handler->AddTabContext(tab2_id, /*delay_upload=*/false,
+                         searchbox::mojom::TabAttachmentSource::kContextMenu,
+                         base::DoNothing());
   EXPECT_EQ(get_submenu_label(), u"Sharing 2 tabs");
 }
 

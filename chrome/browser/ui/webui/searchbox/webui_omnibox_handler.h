@@ -57,6 +57,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   void OpenLensSearch() override;
   void AddTabContext(int32_t tab_id,
                      bool delay_upload,
+                     searchbox::mojom::TabAttachmentSource source,
                      AddTabContextCallback) override;
 
   void StepSelection(OmniboxPopupSelection::Direction direction,
