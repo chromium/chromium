@@ -523,6 +523,7 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set(
       "voiceSearchCoherenceComposeboxesEnabled",
       SearchboxHandler::GetVoiceSearchCoherenceCobrowsingComposeboxEnabled());
+  dict.Set("composeboxSmartTabSharingSupported", !BUILDFLAG(IS_ANDROID));
 #endif  // BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 
   int stsDefaultOnHeaderId = IDS_STS_IPH_DEFAULT_ON_HEADER;

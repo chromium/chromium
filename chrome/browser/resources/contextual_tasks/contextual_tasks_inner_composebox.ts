@@ -168,6 +168,8 @@ export class
   private eventTracker_: EventTracker = new EventTracker();
   private resizeObservers_: ResizeObserver[] = [];
   private automaticActiveTab_: ComposeboxFile|null = null;
+  private readonly smartTabSharingSupported_: boolean =
+      loadTimeData.getBoolean('composeboxSmartTabSharingSupported');
 
   // Synchronous immediate guard used to deduplicate processing
   // autochips being added, not fully processed chips.
@@ -236,7 +238,7 @@ export class
     if (this.hasUpdated) {
       this.syncResizeObservers_();
     }
-    if (this.smartTabSharingVisible) {
+    if (this.smartTabSharingSupported_ && this.smartTabSharingVisible) {
       const {active} = await this.pageHandler_.getSmartTabSharingActive();
       this.smartTabSharingActive = active;
       if (active) {
@@ -255,7 +257,8 @@ export class
     super.willUpdate(changedProperties);
     // The mixin also sets `smartTabSharingActive` directly (browser callback,
     // visible-change fetch), so clear on any transition here.
-    if (changedProperties.has('smartTabSharingActive')) {
+    if (this.smartTabSharingSupported_ &&
+        changedProperties.has('smartTabSharingActive')) {
       this.clearContextForSmartTabSharingActive_();
     }
     if (changedProperties.has('inputPlaceholderOverride') ||
@@ -348,6 +351,9 @@ export class
   }
 
   override onSmartTabSharingActiveChanged(e: CustomEvent<{active: boolean}>) {
+    if (!this.smartTabSharingSupported_) {
+      return;
+    }
     super.onSmartTabSharingActiveChanged(e);
     this.clearContextForSmartTabSharingActive_();
   }
@@ -374,7 +380,7 @@ export class
 
   private async updateAutoSuggestedTabContext_(
       tab: TabInfo|null, invocationSource: string|null) {
-    if (this.smartTabSharingActive) {
+    if (this.smartTabSharingSupported_ && this.smartTabSharingActive) {
       if (this.automaticActiveTab_) {
         this.deleteFile(this.automaticActiveTab_.uuid);
         this.automaticActiveTab_ = null;
