@@ -46,8 +46,6 @@ import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.metrics.TrackExitReasons;
-import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
-import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
@@ -202,11 +200,6 @@ public class WebViewChromiumAwInit {
     private volatile ChromiumStartedGlobals mChromiumStartedGlobals;
 
     private final DefaultProfileHolder mDefaultProfileHolder = new DefaultProfileHolder();
-
-    private final Object mSeedLoaderLock = new Object();
-
-    @GuardedBy("mSeedLoaderLock")
-    private VariationsSeedLoader mSeedLoader;
 
     // This is only accessed during WebViewChromiumFactoryProvider.initialize() which is guarded by
     // the WebViewFactory lock in the framework, and on the UI thread during startChromium
@@ -805,12 +798,10 @@ public class WebViewChromiumAwInit {
                                 mFactory.getWebViewDelegate());
         AwBrowserProcess.configureChildProcessLauncher(isNativeWebViewZygoteEnabled);
 
-        // finishVariationsInitLocked() must precede native initialization so
+        // finishVariationsInit() must precede native initialization so
         // the seed is available when AwFeatureListCreator::SetUpFieldTrials()
         // runs.
-        if (!FastVariationsSeedSafeModeAction.hasRun()) {
-            finishVariationsInitLocked();
-        }
+        AwBrowserProcess.finishVariationsInit();
     }
 
     private void addBrowserProcessStartTasksToQueue(
@@ -1192,30 +1183,6 @@ public class WebViewChromiumAwInit {
                                 HttpAuthDatabase.newInstance(context, HTTP_AUTH_DATABASE_FILE));
             }
             return mDefaultWebViewDatabase;
-        }
-    }
-
-    // See comments in VariationsSeedLoader.java on when it's safe to call this.
-    void startVariationsInit() {
-        synchronized (mSeedLoaderLock) {
-            if (mSeedLoader == null) {
-                mSeedLoader = new VariationsSeedLoader();
-                mSeedLoader.startVariationsInit();
-            }
-        }
-    }
-
-    private void finishVariationsInitLocked() {
-        try (DualTraceEvent e =
-                DualTraceEvent.scoped("WebViewChromiumAwInit.finishVariationsInitLocked")) {
-            synchronized (mSeedLoaderLock) {
-                if (mSeedLoader == null) {
-                    Log.e(TAG, "finishVariationsInitLocked() called before startVariationsInit()");
-                    startVariationsInit();
-                }
-                mSeedLoader.finishVariationsInit();
-                mSeedLoader = null; // Allow this to be GC'd after its background thread finishes.
-            }
         }
     }
 

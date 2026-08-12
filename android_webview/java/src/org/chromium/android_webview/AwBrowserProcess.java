@@ -20,6 +20,7 @@ import android.os.StrictMode;
 import android.os.SystemClock;
 import android.os.storage.StorageManager;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -51,6 +52,8 @@ import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.supervised_user.AwSupervisedUserSafeModeAction;
 import org.chromium.android_webview.supervised_user.AwSupervisedUserUrlClassifier;
+import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
+import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -107,6 +110,41 @@ public final class AwBrowserProcess {
     private static @ApkType int sApkType;
     private static @Nullable String sProcessDataDirSuffix;
     private static boolean sDataDirBasePathOverridden;
+
+    private static final Object sSeedLoaderLock = new Object();
+
+    @GuardedBy("sSeedLoaderLock")
+    private static @Nullable VariationsSeedLoader sSeedLoader;
+
+    // See comments in VariationsSeedLoader.java on when it's safe to call this.
+    public static void startVariationsInit() {
+        if (FastVariationsSeedSafeModeAction.hasRun()) {
+            return;
+        }
+        synchronized (sSeedLoaderLock) {
+            if (sSeedLoader == null) {
+                sSeedLoader = new VariationsSeedLoader();
+                sSeedLoader.startVariationsInit();
+            }
+        }
+    }
+
+    public static void finishVariationsInit() {
+        if (FastVariationsSeedSafeModeAction.hasRun()) {
+            return;
+        }
+        try (DualTraceEvent e =
+                DualTraceEvent.scoped("AwBrowserProcess.finishVariationsInit")) {
+            synchronized (sSeedLoaderLock) {
+                if (sSeedLoader == null) {
+                    Log.e(TAG, "finishVariationsInit() called before startVariationsInit()");
+                    startVariationsInit();
+                }
+                sSeedLoader.finishVariationsInit();
+                sSeedLoader = null; // Allow this to be GC'd after its background thread finishes.
+            }
+        }
+    }
 
     /**
      * Loads the native library, and performs basic static construction of objects needed to run

@@ -684,9 +684,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             // This must happen after pref value has been read and SafeMode setup has completed.
             setupStartupTaskExperiments(androidXConfig);
 
-            if (!FastVariationsSeedSafeModeAction.hasRun()) {
-                mAwInit.startVariationsInit();
-            }
+            AwBrowserProcess.startVariationsInit();
 
             if (WebViewCachedFlags.get()
                             .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)
