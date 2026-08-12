@@ -396,13 +396,13 @@ void AccountsFetcher::OnAccountsResponseReceived(
         }
       }
       if (fetcher_it != native_idp_fetchers_.end()) {
-        GURL accounts_endpoint = idp_info->endpoints.accounts;
-        fetcher_it->second->FetchAccounts(
-            accounts_endpoint,
-            base::BindOnce(&AccountsFetcher::OnNativeAccountsFetched,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
-                           old_idp_signin_status, status,
-                           accounts_fetched_time));
+        NativeIdpFetcher::RequestParams params;
+        params.url = idp_info->endpoints.accounts;
+        fetcher_it->second->Fetch(
+            params, base::BindOnce(&AccountsFetcher::OnNativeAccountsFetched,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   std::move(idp_info), old_idp_signin_status,
+                                   status, accounts_fetched_time));
         return;
       }
     }

@@ -19,24 +19,40 @@ AndroidNativeIdpFetcher::AndroidNativeIdpFetcher(const url::Origin& idp_origin)
 
 AndroidNativeIdpFetcher::~AndroidNativeIdpFetcher() = default;
 
-void AndroidNativeIdpFetcher::FetchAccounts(const GURL& accounts_url,
-                                            FetchCallback callback) {
-  // TODO(crbug.com/465181345): Support concurrent requests if necessary.
+void AndroidNativeIdpFetcher::Fetch(
+    const content::NativeIdpFetcher::RequestParams& params,
+    FetchCallback callback) {
   if (pending_callback_) {
     std::move(callback).Run(base::unexpected(FetchError::kFetchFailed));
     return;
   }
   pending_callback_ = std::move(callback);
 
-  std::string request = accounts_url.spec();
+  StartRequest(params);
+}
 
-  resolver_->Resolve(idp_origin_,
-                     base::BindOnce(&AndroidNativeIdpFetcher::OnOriginResolved,
-                                    weak_ptr_factory_.GetWeakPtr(), request));
+void AndroidNativeIdpFetcher::StartRequest(
+    content::NativeIdpFetcher::RequestParams params) {
+  if (idp_service_) {
+    DispatchFetchRequest(params);
+    return;
+  }
+
+  resolver_->Resolve(
+      idp_origin_,
+      base::BindOnce(&AndroidNativeIdpFetcher::OnOriginResolved,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(params)));
+}
+
+void AndroidNativeIdpFetcher::DispatchFetchRequest(
+    const content::NativeIdpFetcher::RequestParams& params) {
+  idp_service_->Fetch(params.url.spec(), params.body, params.headers,
+                      base::BindOnce(&AndroidNativeIdpFetcher::OnFetched,
+                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AndroidNativeIdpFetcher::OnOriginResolved(
-    const std::string& request,
+    content::NativeIdpFetcher::RequestParams params,
     const content::webid::VerifiedOriginResolver::Result& result) {
   if (!result.has_value()) {
     if (pending_callback_) {
@@ -50,11 +66,12 @@ void AndroidNativeIdpFetcher::OnOriginResolved(
   idp_service_->Connect(
       result.value().first, result.value().second,
       base::BindOnce(&AndroidNativeIdpFetcher::OnConnected,
-                     weak_ptr_factory_.GetWeakPtr(), request));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(params)));
 }
 
-void AndroidNativeIdpFetcher::OnConnected(const std::string& request,
-                                          bool connected) {
+void AndroidNativeIdpFetcher::OnConnected(
+    content::NativeIdpFetcher::RequestParams params,
+    bool connected) {
   if (!connected) {
     idp_service_.reset();
     if (pending_callback_) {
@@ -64,20 +81,17 @@ void AndroidNativeIdpFetcher::OnConnected(const std::string& request,
     return;
   }
 
-  idp_service_->Fetch(request,
-                      base::BindOnce(&AndroidNativeIdpFetcher::OnFetched,
-                                     weak_ptr_factory_.GetWeakPtr()));
+  DispatchFetchRequest(params);
 }
 
 void AndroidNativeIdpFetcher::OnFetched(
     const std::optional<std::string>& response) {
-  idp_service_.reset();
-
   if (!pending_callback_) {
     return;
   }
 
   if (!response.has_value()) {
+    idp_service_.reset();
     std::move(pending_callback_)
         .Run(base::unexpected(FetchError::kFetchFailed));
     return;

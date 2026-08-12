@@ -31,13 +31,18 @@ class AndroidNativeIdpFetcher : public content::NativeIdpFetcher {
   AndroidNativeIdpFetcher& operator=(const AndroidNativeIdpFetcher&) = delete;
 
   // content::NativeIdpFetcher:
-  void FetchAccounts(const GURL& accounts_url, FetchCallback callback) override;
+  void Fetch(const content::NativeIdpFetcher::RequestParams& params,
+             FetchCallback callback) override;
 
  private:
+  void StartRequest(content::NativeIdpFetcher::RequestParams params);
+  void DispatchFetchRequest(
+      const content::NativeIdpFetcher::RequestParams& params);
   void OnOriginResolved(
-      const std::string& request,
+      content::NativeIdpFetcher::RequestParams params,
       const content::webid::VerifiedOriginResolver::Result& result);
-  void OnConnected(const std::string& request, bool connected);
+  void OnConnected(content::NativeIdpFetcher::RequestParams params,
+                   bool connected);
   void OnFetched(const std::optional<std::string>& response);
 
   url::Origin idp_origin_;

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 
 namespace content::webid {
@@ -45,7 +46,9 @@ class IdentityProviderService {
 
   // Fetches data asynchronously. `callback` is called when the data is fetched.
   void Fetch(
-      const std::string& request,
+      const std::string& url,
+      const std::optional<std::string>& body,
+      const base::flat_map<std::string, std::string>& headers,
       base::OnceCallback<void(const std::optional<std::string>&)> callback);
 
   // Connects to the service asynchronously. `callback` is called when the

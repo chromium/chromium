@@ -275,8 +275,9 @@ class MockNativeIdpFetcher : public NativeIdpFetcher {
   ~MockNativeIdpFetcher() override = default;
 
   MOCK_METHOD(void,
-              FetchAccounts,
-              (const GURL& accounts_url, FetchCallback callback),
+              Fetch,
+              (const NativeIdpFetcher::RequestParams& params,
+               FetchCallback callback),
               (override));
 };
 
@@ -304,7 +305,10 @@ TEST_F(AccountsFetcherTest, NativeIdpAccountsFallback) {
   const GURL kTokenEndpoint("https://idp.example/token.json");
 
   auto mock_native_fetcher = std::make_unique<NiceMock<MockNativeIdpFetcher>>();
-  EXPECT_CALL(*mock_native_fetcher, FetchAccounts(kAccountsEndpoint, _))
+  EXPECT_CALL(*mock_native_fetcher,
+              Fetch(testing::Field(&NativeIdpFetcher::RequestParams::url,
+                                   kAccountsEndpoint),
+                    _))
       .WillOnce(WithArg<1>([](NativeIdpFetcher::FetchCallback callback) {
         std::move(callback).Run(base::ok(
             "{\"accounts\":[{\"id\":\"123\",\"email\":\"native@example.com\","
@@ -395,7 +399,10 @@ TEST_F(AccountsFetcherTest, NativeIdpAccountsFallbackFetchError) {
   const GURL kTokenEndpoint("https://idp.example/token.json");
 
   auto mock_native_fetcher = std::make_unique<NiceMock<MockNativeIdpFetcher>>();
-  EXPECT_CALL(*mock_native_fetcher, FetchAccounts(kAccountsEndpoint, _))
+  EXPECT_CALL(*mock_native_fetcher,
+              Fetch(testing::Field(&NativeIdpFetcher::RequestParams::url,
+                                   kAccountsEndpoint),
+                    _))
       .WillOnce(WithArg<1>([](NativeIdpFetcher::FetchCallback callback) {
         std::move(callback).Run(
             base::unexpected(NativeIdpFetcher::FetchError::kFetchFailed));

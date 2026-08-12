@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(IdentityProviderServiceTest, FetchData) {
   ASSERT_TRUE(connected.Get());
 
   base::test::TestFuture<const std::optional<std::string>&> response;
-  idp_service->Fetch("test request", response.GetCallback());
+  idp_service->Fetch("test request", std::nullopt, {}, response.GetCallback());
   ASSERT_TRUE(response.Get().has_value());
   ASSERT_EQ("test requestHello world!", response.Get().value());
 
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(IdentityProviderServiceTest, ResolveAndConnect) {
   ASSERT_TRUE(connected.Get());
 
   base::test::TestFuture<const std::optional<std::string>&> response;
-  idp_service->Fetch("test request", response.GetCallback());
+  idp_service->Fetch("test request", std::nullopt, {}, response.GetCallback());
   ASSERT_TRUE(response.Get().has_value());
   ASSERT_EQ("test requestHello world!", response.Get().value());
 

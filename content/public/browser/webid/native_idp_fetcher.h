@@ -5,8 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_WEBID_NATIVE_IDP_FETCHER_H_
 #define CONTENT_PUBLIC_BROWSER_WEBID_NATIVE_IDP_FETCHER_H_
 
+#include <optional>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
@@ -19,6 +21,19 @@ namespace content {
 // Services) rather than over HTTP.
 class CONTENT_EXPORT NativeIdpFetcher {
  public:
+  struct CONTENT_EXPORT RequestParams {
+    RequestParams();
+    ~RequestParams();
+    RequestParams(const RequestParams&);
+    RequestParams& operator=(const RequestParams&);
+    RequestParams(RequestParams&&);
+    RequestParams& operator=(RequestParams&&);
+
+    GURL url;
+    std::optional<std::string> body;
+    base::flat_map<std::string, std::string> headers;
+  };
+
   virtual ~NativeIdpFetcher() = default;
 
   // The error types that the fetcher may return when fetching.
@@ -32,17 +47,17 @@ class CONTENT_EXPORT NativeIdpFetcher {
     kFetchFailed,
   };
 
-  // The string returned encodes a JSON payload. For FetchAccounts, this is
-  // expected to be the same JSON format as the HTTP accounts endpoint response.
+  // The string returned encodes a JSON payload. This is expected to be the same
+  // JSON format as the corresponding HTTP endpoint response.
   using FetchResult = base::expected<std::string, FetchError>;
   using FetchCallback = base::OnceCallback<void(FetchResult)>;
 
-  // Fetches accounts from the native IdP asynchronously.
-  // Invokes `callback` with either the string response or an error. The
-  // implementation should be equivalent to fetching `accounts_url` but doesn't
-  // necessarily actually fetch the URL.
-  virtual void FetchAccounts(const GURL& accounts_url,
-                             FetchCallback callback) = 0;
+  // Fetches data from the native IdP asynchronously.
+  // Invokes `callback` with either a JSON string response or an error. The JSON
+  // payload is expected to match the corresponding HTTP endpoint response
+  // format. `params` contains target endpoint URL and optional body and headers
+  // passed to the IDP.
+  virtual void Fetch(const RequestParams& params, FetchCallback callback) = 0;
 };
 
 }  // namespace content
