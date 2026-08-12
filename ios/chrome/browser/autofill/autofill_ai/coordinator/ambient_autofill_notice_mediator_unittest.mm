@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_mediator.h"
 
+#import <string_view>
+
 #import "base/memory/raw_ptr.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -16,6 +19,14 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+namespace {
+
+// The UMA histogram to log Ambient Autofill notice interactions.
+constexpr std::string_view kNoticeInteractionsHistogram =
+    "PersonalContext.AmbientAutofill.NoticeInteractions";
+
+}  // namespace
 
 class AmbientAutofillNoticeMediatorTest : public PlatformTest {
  protected:
@@ -50,6 +61,7 @@ class AmbientAutofillNoticeMediatorTest : public PlatformTest {
 // the bottom sheet.
 TEST_F(AmbientAutofillNoticeMediatorTest,
        AcknowledgeNoticeRefocusesAndDismisses) {
+  base::HistogramTester histogram_tester;
   autofill::FormActivityParams params;
   params.frame_id = "frame123";
 
@@ -64,10 +76,14 @@ TEST_F(AmbientAutofillNoticeMediatorTest,
   [mediator didAcknowledgeNotice];
 
   EXPECT_OCMOCK_VERIFY(mock_autofill_commands_);
+  histogram_tester.ExpectTotalCount(kNoticeInteractionsHistogram, 2);
+  histogram_tester.ExpectBucketCount(kNoticeInteractionsHistogram, 0, 1);
+  histogram_tester.ExpectBucketCount(kNoticeInteractionsHistogram, 1, 1);
 }
 
 // Tests that tapping the settings option dismisses the notice bottom sheet.
 TEST_F(AmbientAutofillNoticeMediatorTest, TapSettingsDismisses) {
+  base::HistogramTester histogram_tester;
   autofill::FormActivityParams params;
 
   AmbientAutofillNoticeMediator* mediator =
@@ -81,11 +97,15 @@ TEST_F(AmbientAutofillNoticeMediatorTest, TapSettingsDismisses) {
   [mediator didTapSettings];
 
   EXPECT_OCMOCK_VERIFY(mock_autofill_commands_);
+  histogram_tester.ExpectTotalCount(kNoticeInteractionsHistogram, 2);
+  histogram_tester.ExpectBucketCount(kNoticeInteractionsHistogram, 0, 1);
+  histogram_tester.ExpectBucketCount(kNoticeInteractionsHistogram, 3, 1);
 }
 
 // Tests that swiping down to dismiss the notice sheet manual action dismisses
 // it.
 TEST_F(AmbientAutofillNoticeMediatorTest, SwipeDownDismisses) {
+  base::HistogramTester histogram_tester;
   autofill::FormActivityParams params;
 
   AmbientAutofillNoticeMediator* mediator =
@@ -99,11 +119,15 @@ TEST_F(AmbientAutofillNoticeMediatorTest, SwipeDownDismisses) {
   [mediator didDismissNotice];
 
   EXPECT_OCMOCK_VERIFY(mock_autofill_commands_);
+  histogram_tester.ExpectTotalCount(kNoticeInteractionsHistogram, 2);
+  histogram_tester.ExpectBucketCount(kNoticeInteractionsHistogram, 0, 1);
+  histogram_tester.ExpectBucketCount(kNoticeInteractionsHistogram, 2, 1);
 }
 
 // Tests that markNoticeShown successfully calls
 // MarkPersonalContextAmbientAutofillNoticeAsAcknowledged on the client.
 TEST_F(AmbientAutofillNoticeMediatorTest, MarkNoticeShownUpdatesClient) {
+  base::HistogramTester histogram_tester;
   autofill::FormActivityParams params;
 
   AmbientAutofillNoticeMediator* mediator =
@@ -119,4 +143,6 @@ TEST_F(AmbientAutofillNoticeMediatorTest, MarkNoticeShownUpdatesClient) {
 
   EXPECT_TRUE(autofill_client_->GetPersonalContextFirstRunService()
                   ->is_ambient_autofill_notice_acknowledged());
+  histogram_tester.ExpectTotalCount(kNoticeInteractionsHistogram, 1);
+  histogram_tester.ExpectBucketCount(kNoticeInteractionsHistogram, 0, 1);
 }

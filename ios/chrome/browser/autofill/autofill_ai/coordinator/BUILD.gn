@@ -47,6 +47,7 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base",
+    "//base/test:test_support",
     "//components/autofill/ios/browser:test_support",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/shared/model/profile/test",
