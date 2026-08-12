@@ -1198,7 +1198,15 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         int topControlsMinHeight = mBrowserControls.getTopControlsMinHeight();
         int topControlsHairlineHeight = mBrowserControls.getTopControlsHairlineHeight();
         int contentOffset = mBrowserControls.getContentOffset();
-        return (includeMinHeightBoundary || contentOffset > topControlsMinHeight)
+        // Fully hidden controls rest exactly at the zero min-height boundary with
+        // browser-applied offsets, e.g. an installed web app whose toolbar never shows.
+        // The capture still contains the hairline row, so without the adjustment it
+        // stays visible at the top of the screen.
+        boolean controlsOffScreen =
+                BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControls);
+        return (includeMinHeightBoundary
+                        || controlsOffScreen
+                        || contentOffset > topControlsMinHeight)
                 && BrowserControlsUtils.shouldContentOffsetHideTopControlsHairline(
                         contentOffset, topControlsMinHeight, topControlsHairlineHeight);
     }

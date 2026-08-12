@@ -40,6 +40,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
@@ -296,6 +297,54 @@ public class TopToolbarCoordinatorUnitTest {
         assertEquals(0, isVerticalTabActiveSupplier.getObserverCount());
         assertEquals(0, isGlicPinnedSupplier.getObserverCount());
         assertEquals(0, incognitoStateProvider.getObserverCountForTesting());
+    }
+
+    @Test
+    public void testHiddenControlsKeepHairlineCaptureOffscreen() {
+        // Reproduces the installed web app cold launch: browser controls are fully
+        // hidden with browser-applied offsets, the browser visibility delegate stays
+        // at BOTH, and the resting content offset sits exactly at the zero min-height
+        // boundary. The capture is toolbar + hairline tall, so parking the layer at
+        // -toolbarHeight leaves the hairline row visible at the top of the screen.
+        mCoordinator.setOverlayCoordinatorForTesting(mOverlayCoordinator);
+        when(mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate())
+                .thenReturn(mBrowserStateBrowserControlsVisibilityDelegate);
+        assertEquals(
+                BrowserControlsState.BOTH,
+                (int) mBrowserStateBrowserControlsVisibilityDelegate.get());
+        when(mBrowserControlsVisibilityManager.getTopControlsMinHeight()).thenReturn(0);
+        when(mBrowserControlsVisibilityManager.getTopControlsHairlineHeight()).thenReturn(3);
+        when(mBrowserControlsVisibilityManager.getContentOffset()).thenReturn(0);
+        when(mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio()).thenReturn(1f);
+        when(mControlContainer.getToolbarHeight()).thenReturn(147);
+        when(mControlContainer.getToolbarHairlineHeight()).thenReturn(3);
+        when(mControlContainer.getToolbarCaptureHeight()).thenReturn(150);
+        when(mControlContainer.getControlContainerHeightExcludingTabStrip()).thenReturn(150);
+
+        mCoordinator.onBrowserControlsOffsetUpdate(-147, /* reachRestingPosition= */ true);
+
+        verify(mOverlayCoordinator).setYOffset(-150);
+    }
+
+    @Test
+    public void testVisibleControlsAtMinHeightBoundaryKeepYOffset() {
+        // Fully visible controls resting at the zero min-height boundary must not be
+        // shifted; the hairline is on-screen by design (crbug.com/512898018).
+        mCoordinator.setOverlayCoordinatorForTesting(mOverlayCoordinator);
+        when(mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate())
+                .thenReturn(mBrowserStateBrowserControlsVisibilityDelegate);
+        when(mBrowserControlsVisibilityManager.getTopControlsMinHeight()).thenReturn(0);
+        when(mBrowserControlsVisibilityManager.getTopControlsHairlineHeight()).thenReturn(3);
+        when(mBrowserControlsVisibilityManager.getContentOffset()).thenReturn(0);
+        when(mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio()).thenReturn(0f);
+        when(mControlContainer.getToolbarHeight()).thenReturn(147);
+        when(mControlContainer.getToolbarHairlineHeight()).thenReturn(3);
+        when(mControlContainer.getToolbarCaptureHeight()).thenReturn(150);
+        when(mControlContainer.getControlContainerHeightExcludingTabStrip()).thenReturn(150);
+
+        mCoordinator.onBrowserControlsOffsetUpdate(0, /* reachRestingPosition= */ true);
+
+        verify(mOverlayCoordinator).setYOffset(0);
     }
 
     @Test
