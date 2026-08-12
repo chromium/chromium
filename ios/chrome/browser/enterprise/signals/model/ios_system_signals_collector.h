@@ -12,12 +12,9 @@
 #import "components/device_signals/core/browser/base_signals_collector.h"
 #import "components/device_signals/core/browser/signals_types.h"
 
-class IOSDeviceIdentifierDelegate;
-
 class IOSSystemSignalsCollector : public device_signals::BaseSignalsCollector {
  public:
-  explicit IOSSystemSignalsCollector(
-      std::unique_ptr<IOSDeviceIdentifierDelegate> delegate);
+  IOSSystemSignalsCollector();
   ~IOSSystemSignalsCollector() override;
 
   IOSSystemSignalsCollector(const IOSSystemSignalsCollector&) = delete;
@@ -36,7 +33,6 @@ class IOSSystemSignalsCollector : public device_signals::BaseSignalsCollector {
       base::OnceClosure done_closure,
       base::SysInfo::HardwareInfo hardware_info);
 
-  std::unique_ptr<IOSDeviceIdentifierDelegate> delegate_;
 
   base::WeakPtrFactory<IOSSystemSignalsCollector> weak_factory_{this};
 };

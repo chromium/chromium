@@ -7,14 +7,14 @@
 #import <memory>
 #import <unordered_set>
 
-#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
 #import "components/device_signals/core/browser/signals_types.h"
 #import "components/device_signals/core/browser/user_permission_service.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/enterprise/signals/model/ios_device_identifier_delegate.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/test/providers/signin/test_device_identifier.h"
+#import "ios/public/provider/chrome/browser/signin/device_identifier_api.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -24,22 +24,12 @@ namespace {
 
 constexpr char kFakeVendorId[] = "fake-vendor-id";
 
-class MockIOSDeviceIdentifier : public IOSDeviceIdentifierDelegate {
- public:
-  MOCK_METHOD(std::string, GetVendorId, (), (override));
-};
-
 class IOSSystemSignalsCollectorTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    auto mock_delegate = std::make_unique<MockIOSDeviceIdentifier>();
-    mock_delegate_ptr_ = mock_delegate.get();
-    // Default behavior for vendor ID.
-    ON_CALL(*mock_delegate_ptr_, GetVendorId())
-        .WillByDefault(testing::Return(kFakeVendorId));
-    collector_ =
-        std::make_unique<IOSSystemSignalsCollector>(std::move(mock_delegate));
+    ios::provider::test::SetDeviceIdentifier(kFakeVendorId);
+    collector_ = std::make_unique<IOSSystemSignalsCollector>();
 
     mock_auth_module_ = OCMClassMock([ReauthenticationModule class]);
 
@@ -53,9 +43,7 @@ class IOSSystemSignalsCollectorTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<IOSSystemSignalsCollector> collector_;
-  // The delegate is owned by the collector, therefore `mock_delegate_ptr_` must
-  // be cleaned up before collector_ is destroyed to avoid a dangling pointer.
-  raw_ptr<MockIOSDeviceIdentifier> mock_delegate_ptr_;
+
   id mock_auth_module_;
 };
 

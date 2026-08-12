@@ -4,7 +4,6 @@
 
 source_set("model") {
   sources = [
-    "ios_device_identifier_delegate.h",
     "ios_signals_aggregator_factory.h",
     "ios_signals_aggregator_factory.mm",
     "ios_system_signals_collector.h",
@@ -27,6 +26,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/common/ui/reauthentication",
+    "//ios/public/provider/chrome/browser/signin:device_identifier_api",
   ]
 
   frameworks = [ "LocalAuthentication.framework" ]
@@ -61,6 +61,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/test/providers/signin:device_identifier",
+    "//ios/public/provider/chrome/browser/signin:device_identifier_api",
     "//services/network:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
