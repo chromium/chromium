@@ -5356,6 +5356,38 @@ TEST_F(TabStripModelTest, MultipleSelection) {
   tabstrip()->CloseAllTabs();
 }
 
+TEST_F(TabStripModelTest, RemoveAnchorTabReassignsToActiveTab) {
+  std::unique_ptr<WebContents> contents0 = CreateWebContentsWithID(0);
+  std::unique_ptr<WebContents> contents1 = CreateWebContentsWithID(1);
+  std::unique_ptr<WebContents> contents2 = CreateWebContentsWithID(2);
+  std::unique_ptr<WebContents> contents3 = CreateWebContentsWithID(3);
+
+  tabstrip()->AppendWebContents(std::move(contents0), true);
+  tabstrip()->AppendWebContents(std::move(contents1), false);
+  tabstrip()->AppendWebContents(std::move(contents2), false);
+  tabstrip()->AppendWebContents(std::move(contents3), false);
+
+  // Activate Tab 3 (index 3).
+  tabstrip()->ActivateTabAt(3);
+
+  // Extend selection to Tab 0 (index 0).
+  tabstrip()->ExtendSelectionTo(0);
+
+  EXPECT_EQ(0, tabstrip()->active_index());
+  EXPECT_EQ(
+      3, tabstrip()->GetIndexOfTab(tabstrip()->selection_model().anchor_tab()));
+  EXPECT_NE(tabstrip()->selection_model().active_tab(),
+            tabstrip()->selection_model().anchor_tab());
+
+  // Close Tab 3 (the anchor tab) while Tab 0 remains active.
+  tabstrip()->CloseWebContentsAt(3, TabCloseTypes::CLOSE_NONE);
+
+  EXPECT_NE(nullptr, tabstrip()->selection_model().anchor_tab());
+  EXPECT_EQ(tabstrip()->selection_model().active_tab(),
+            tabstrip()->selection_model().anchor_tab());
+  EXPECT_TRUE(tabstrip()->selection_model().Valid());
+}
+
 // Verifies that if we change the selection from a multi selection to a single
 // selection, but not in a way that changes the selected_index that
 // TabSelectionChanged is invoked.

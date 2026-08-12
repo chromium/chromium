@@ -95,7 +95,7 @@ void TabStripModelSelectionState::RemoveTabFromSelection(TabInterface* tab) {
   }
 
   if (tab == anchor_tab_) {
-    anchor_tab_ = nullptr;
+    anchor_tab_ = active_tab_;
   }
 
   selected_tabs_.erase(tab);
