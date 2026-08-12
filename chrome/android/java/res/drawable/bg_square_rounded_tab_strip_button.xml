@@ -11,7 +11,7 @@ found in the LICENSE file.
   <size
       android:width="32dp"
       android:height="32dp" />
-  <!-- Apply 8dp rounded corner radius for a rounded square look -->
-  <corners android:radius="8dp" />
+  <!-- Apply 10dp rounded corner radius for a rounded square look -->
+  <corners android:radius="10dp" />
   <solid android:color="@android:color/white" />
 </shape>

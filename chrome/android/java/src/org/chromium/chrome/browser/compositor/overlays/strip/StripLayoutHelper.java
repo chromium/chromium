@@ -197,6 +197,7 @@ public class StripLayoutHelper
 
     // Visibility Constants
     private static final float BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
+    private static final float TAB_SEARCH_BUTTON_Y_OFFSET_DP = 2.f;
 
     // Desired spacing between new tab button and tabs when tab strip is not full.
     private static final float DESIRED_PADDING_BETWEEN_NEW_TAB_BUTTON_AND_TABS = 2.f;
@@ -963,7 +964,7 @@ public class StripLayoutHelper
         button.setBackgroundTint(context.getColorStateList(bgTintRes));
 
         button.setTint(ChromeColors.getPrimaryIconTint(context, incognito).getDefaultColor());
-        button.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);
+        button.setDrawY(TAB_SEARCH_BUTTON_Y_OFFSET_DP);
         button.setAccessibilityDescription(
                 res.getString(R.string.accessibility_search_loupe_tooltip_text));
         button.setVisible(ChromeFeatureList.sTabSearchForDesktop.isEnabled());
