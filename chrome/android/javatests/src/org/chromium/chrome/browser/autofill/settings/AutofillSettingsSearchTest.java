@@ -210,6 +210,23 @@ public class AutofillSettingsSearchTest {
                 .check(matches(isDisplayed()));
     }
 
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testSearchAutofill_autofillAiDisabled() {
+        searchSettings("autofill");
+
+        onViewWaiting( // Wait for debounce and Search results to appear.
+                        allOf(
+                                withId(android.R.id.title),
+                                withText(R.string.autofill_options_title)))
+                .perform(click());
+
+        assertAutofillAndPasswordsOpened();
+        onView(allOf(hasDescendant(withText(R.string.autofill_options_title)), isHighlighted()))
+                .check(matches(isDisplayed()));
+    }
+
     private void searchSettings(String query) {
         mSettingsActivityTestRule.startSettingsActivity();
 

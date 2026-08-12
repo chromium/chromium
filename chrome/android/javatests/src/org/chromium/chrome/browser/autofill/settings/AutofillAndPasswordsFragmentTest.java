@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -432,7 +431,7 @@ public class AutofillAndPasswordsFragmentTest {
                                     mProfileMock);
                 });
 
-        verify(mSearchIndexDataMock, only())
+        verify(mSearchIndexDataMock)
                 .removeEntry(
                         AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 AutofillAndPasswordsFragment.PREF_SIGNIN_PROMO));
@@ -520,11 +519,24 @@ public class AutofillAndPasswordsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    @EnableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
+    })
     public void testClickAutofillSettingsLaunchesAutofillOptions() {
         mSettingsTestRule.startSettingsActivity();
 
         testItemClick(R.string.autofill_settings_title, AutofillOptionsFragment.class);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testClickAutofillServicesLaunchesAutofillOptions_autofillAiDisabled() {
+        mSettingsTestRule.startSettingsActivity();
+
+        testItemClick(R.string.autofill_options_title, AutofillOptionsFragment.class);
     }
 
     @Test

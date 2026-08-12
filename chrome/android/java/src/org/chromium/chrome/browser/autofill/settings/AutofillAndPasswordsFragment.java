@@ -25,6 +25,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsMediator;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
@@ -238,19 +239,20 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
                     return SettingsNavigationHelper.showAutofillShoppingSettings(getActivity());
                 });
 
-        findPreference(PREF_AUTOFILL_SETTINGS)
-                .setOnPreferenceClickListener(
-                        preference -> {
-                            SettingsNavigationFactory.createSettingsNavigation()
-                                    .startSettings(
-                                            getContext(),
-                                            AutofillOptionsFragment.class,
-                                            AutofillOptionsFragment.createRequiredArgs(
-                                                    AutofillOptionsReferrer
-                                                            .AUTOFILL_AND_PASSWORDS_FRAGMENT),
-                                            /* addToBackStack= */ true);
-                            return true;
-                        });
+        Preference autofillSettingsPref = findPreference(PREF_AUTOFILL_SETTINGS);
+        autofillSettingsPref.setTitle(AutofillOptionsMediator.getFragmentTitle(getContext()));
+        autofillSettingsPref.setOnPreferenceClickListener(
+                preference -> {
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(
+                                    getContext(),
+                                    AutofillOptionsFragment.class,
+                                    AutofillOptionsFragment.createRequiredArgs(
+                                            AutofillOptionsReferrer
+                                                    .AUTOFILL_AND_PASSWORDS_FRAGMENT),
+                                    /* addToBackStack= */ true);
+                    return true;
+                });
     }
 
     @Initializer
@@ -400,6 +402,21 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_SHOPPING));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_PERSONAL_CONTEXT));
                     } else {
+                        // TODO(crbug.com/440022435): Remove the PREF_AUTOFILL_SETTINGS index update
+                        // once Autofill AI is launched.
+                        String autofillSettingsEntryId = getUniqueId(PREF_AUTOFILL_SETTINGS);
+                        SettingsIndexData.Entry autofillSettingsEntry =
+                                indexData.getEntry(autofillSettingsEntryId);
+                        if (autofillSettingsEntry != null) {
+                            indexData.updateEntry(
+                                    autofillSettingsEntryId,
+                                    new SettingsIndexData.Entry.Builder(autofillSettingsEntry)
+                                            .setTitle(
+                                                    AutofillOptionsMediator.getFragmentTitle(
+                                                            context))
+                                            .build());
+                        }
+
                         if (!shouldShowAutofillAiSettings()) {
                             indexData.removeEntry(getUniqueId(PREF_AUTOFILL_IDENTITY_DOCS));
                             indexData.removeEntry(getUniqueId(PREF_AUTOFILL_TRAVEL));
