@@ -37,6 +37,15 @@ const CGFloat kHeaderInnerPadding = 10;
 // The logo point size.
 const CGFloat kSymbolsPointSize = 24.0;
 
+// Shadow opacity for the glass effect container.
+const CGFloat kGlassShadowOpacity = 0.07;
+
+// Shadow radius for the glass effect container.
+const CGFloat kGlassShadowRadius = 3;
+
+// Vertical shadow offset for the glass effect container.
+const CGFloat kGlassShadowOffsetY = 1;
+
 // Creates a button configuration for a header button.
 UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   UIButtonConfiguration* config;
@@ -58,6 +67,14 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
 
   return config;
+}
+
+// Applies the shadow for the header elements.
+void ApplyHeaderElementShadow(UIView* targetView) {
+  targetView.layer.shadowColor = [UIColor blackColor].CGColor;
+  targetView.layer.shadowOpacity = kGlassShadowOpacity;
+  targetView.layer.shadowOffset = CGSizeMake(0, kGlassShadowOffsetY);
+  targetView.layer.shadowRadius = kGlassShadowRadius;
 }
 
 }  // namespace
@@ -186,6 +203,8 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   _closeButton.accessibilityIdentifier =
       kAssistantAIMCloseButtonAccessibilityIdentifier;
 
+  // Shadow for button.
+  ApplyHeaderElementShadow(_closeButton);
   [self addSubview:_closeButton];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -212,6 +231,7 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   _backButton.translatesAutoresizingMaskIntoConstraints = NO;
   _backButton.hidden = YES;
 
+  ApplyHeaderElementShadow(_backButton);
   [self addSubview:_backButton];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -373,6 +393,7 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
 - (void)setUpHeaderActionsView {
   UIStackView* stackView = [self createHeaderActionsStackView];
 
+  _headerActionsView = [[UIView alloc] init];
   if (@available(iOS 26, *)) {
     UIGlassEffect* glassEffect =
         [UIGlassEffect effectWithStyle:UIGlassEffectStyleRegular];
@@ -382,16 +403,21 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
         [[UIVisualEffectView alloc] initWithEffect:glassEffect];
 
     [glassContainer.contentView addSubview:stackView];
-    _headerActionsView = glassContainer;
+    glassContainer.contentView.layer.cornerRadius = kButtonSize / 2;
+    glassContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    glassContainer.layer.cornerRadius = kButtonSize / 2;
+    glassContainer.clipsToBounds = YES;
+    [_headerActionsView addSubview:glassContainer];
+    AddSameConstraints(glassContainer, _headerActionsView);
   } else {
     // TODO(crbug.com/493128413): Implement iOS 18 specs once defined.
-    _headerActionsView = [[UIView alloc] init];
     [_headerActionsView addSubview:stackView];
   }
 
-  _headerActionsView.translatesAutoresizingMaskIntoConstraints = NO;
   _headerActionsView.layer.cornerRadius = kButtonSize / 2;
-  _headerActionsView.clipsToBounds = YES;
+  _headerActionsView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  ApplyHeaderElementShadow(_headerActionsView);
 
   [self addSubview:_headerActionsView];
 
