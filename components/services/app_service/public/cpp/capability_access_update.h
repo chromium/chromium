@@ -70,8 +70,10 @@ class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
   bool IsAccessingAnyCapability() const;
 
  private:
+  // Pointed-to CapabilityAccess instances are ephemeral and guaranteed to
+  // outlive this update wrapper during notification dispatch.
   raw_ptr<const CapabilityAccess> state_ = nullptr;
-  raw_ptr<const CapabilityAccess, DanglingUntriaged> delta_ = nullptr;
+  raw_ptr<const CapabilityAccess> delta_ = nullptr;
 
   const raw_ref<const ::AccountId> account_id_;
 };

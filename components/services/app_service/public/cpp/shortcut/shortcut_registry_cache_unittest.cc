@@ -42,6 +42,7 @@ class ShortcutRegistryCacheTest : public testing::Test,
   void OnShortcutUpdated(const ShortcutUpdate& update) override {
     on_shortcut_updated_called_ = true;
     EXPECT_EQ(update, *expected_update_);
+    expected_update_.reset();
 
     // Verified the data in shortcut registry cache is already updated.
     ASSERT_TRUE(cache().HasShortcut(update.ShortcutId()));
