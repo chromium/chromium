@@ -7,7 +7,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -18,14 +17,16 @@
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/drag_controller.h"
 
+class ExtensionContextMenuController;
+class ToolbarActionViewModel;
+
 namespace content {
 class WebContents;
 }
 
 // The View to display an action button in the browser's toolbar using the
 // underlying `ToolbarActionViewModel`.
-class ToolbarActionView : public views::MenuButton,
-                          public ExtensionContextMenuController::Observer {
+class ToolbarActionView : public views::MenuButton {
   METADATA_HEADER(ToolbarActionView, views::MenuButton)
 
  public:
@@ -128,9 +129,8 @@ class ToolbarActionView : public views::MenuButton,
   void AddedToWidget() override;
   void RemovedFromWidget() override;
 
-  // ExtensionContextMenuController::Observer:
-  void OnContextMenuShown() override;
-  void OnContextMenuClosed() override;
+  void OnContextMenuShown();
+  void OnContextMenuClosed();
 
   // Like GetReferenceButtonForPopup but with a more precise return type.
   views::Button* GetReferenceButtonForPopupInternal();
@@ -153,6 +153,8 @@ class ToolbarActionView : public views::MenuButton,
 
   // This controller is responsible for showing the context menu for an
   // extension.
+  class ContextMenuObserver;
+  std::unique_ptr<ContextMenuObserver> context_menu_observer_;
   std::unique_ptr<ExtensionContextMenuController> context_menu_controller_;
 
   // The subscription to model updates.

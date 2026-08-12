@@ -177,6 +177,9 @@ source_set("internal") {
     } else {
       deps += [ "//chrome/browser/download/bubble" ]
     }
+    if (toolkit_views) {
+      deps += [ "//chrome/browser/ui/views/extensions:extensions_views_utils" ]
+    }
 
     if (use_aura) {
       deps += [ "//chrome/browser/ui:overscroll_pref_manager" ]

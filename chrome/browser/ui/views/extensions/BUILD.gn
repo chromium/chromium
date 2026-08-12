@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "extensions_toolbar_unittest.h",
   ]
   deps = [
+    ":extensions_views_utils",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/extensions:test_support",
@@ -258,5 +259,41 @@ source_set("interactive_ui_tests") {
     "//ui/base/interaction:test_support",
     "//ui/views",
     "//ui/views:test_support",
+  ]
+}
+
+source_set("extensions_views_utils") {
+  sources = [
+    "browser_action_drag_data.cc",
+    "browser_action_drag_data.h",
+    "chooser_dialog_view.cc",
+    "chooser_dialog_view.h",
+    "expandable_container_view.cc",
+    "expandable_container_view.h",
+    "extension_context_menu_controller.cc",
+    "extension_context_menu_controller.h",
+    "extension_keybinding_registry_views.cc",
+    "extension_keybinding_registry_views.h",
+    "extension_permissions_view.cc",
+    "extension_permissions_view.h",
+  ]
+  public_deps = [
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//components/permissions",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views:device_chooser_content_view",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/constrained_window",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/color",
+    "//ui/events",
   ]
 }

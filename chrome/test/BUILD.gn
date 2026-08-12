@@ -3699,6 +3699,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/autofill/payments:bnpl_tos_view_desktop",
         "//chrome/browser/ui/views/autofill/payments:dialog_view_ids",
         "//chrome/browser/ui/views/autofill/payments:payments_view_util",
+        "//chrome/browser/ui/views/extensions:extensions_views_utils",
         "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
         "//chrome/browser/ui/views/search_engines",
         "//chrome/browser/ui/views/web_apps",

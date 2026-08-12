@@ -47,6 +47,22 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/mouse_constants.h"
 
+class ToolbarActionView::ContextMenuObserver
+    : public ExtensionContextMenuController::Observer {
+ public:
+  explicit ContextMenuObserver(ToolbarActionView* owner) : owner_(owner) {}
+  ContextMenuObserver(const ContextMenuObserver&) = delete;
+  ContextMenuObserver& operator=(const ContextMenuObserver&) = delete;
+  ~ContextMenuObserver() override = default;
+
+  // ExtensionContextMenuController::Observer:
+  void OnContextMenuShown() override { owner_->OnContextMenuShown(); }
+  void OnContextMenuClosed() override { owner_->OnContextMenuClosed(); }
+
+ private:
+  const raw_ptr<ToolbarActionView> owner_;
+};
+
 using views::LabelButtonBorder;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,8 +93,9 @@ ToolbarActionView::ToolbarActionView(ToolbarActionViewModel* view_model,
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);
 
+  context_menu_observer_ = std::make_unique<ContextMenuObserver>(this);
   context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
-      view_model, this,
+      view_model, context_menu_observer_.get(),
       extensions::ExtensionContextMenuModel::ContextMenuSource::kToolbarAction);
   set_context_menu_controller(context_menu_controller_.get());
 

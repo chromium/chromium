@@ -35,6 +35,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/extensions:extensions_views_utils",
     "//components/constrained_window",
     "//components/signin/public/base",
     "//components/supervised_user/core/browser",

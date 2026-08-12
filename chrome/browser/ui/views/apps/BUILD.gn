@@ -72,6 +72,7 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:accelerator_table",
+    "//chrome/browser/ui/views/extensions:extensions_views_utils",
     "//components/favicon/content",
     "//components/zoom",
     "//extensions/browser",
@@ -80,13 +81,6 @@ source_set("impl") {
     "//ui/views",
     "//ui/views/controls/webview",
   ]
-
-  # chrome_native_app_window_views.cc includes
-  # views/extensions/extension_keybinding_registry_views.h, still compiled in
-  # //chrome/browser/ui:ui. Reach it via browser_public_dependencies; the
-  # reverse edge is the allow_circular_includes_from entry on
-  # //chrome/browser/ui:ui.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (use_aura) {
     sources += [
