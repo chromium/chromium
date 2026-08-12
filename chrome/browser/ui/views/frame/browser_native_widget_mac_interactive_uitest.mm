@@ -190,8 +190,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
   auto [glass_view, tint_view] = GetGlassViews(content_view);
   ASSERT_NE(glass_view, nil);
 
-  // Note: EXPECT_LT could fail if window height is smaller than top chrome
-  // height, as glass frame height is capped at content view height.
+  const auto top_element_info = browser_view->GetFrameElementInfo();
+  int expected_height = top_element_info.top_area_height() +
+                        top_element_info.toolbar_preferred_height +
+                        GetGlassCornerPadding();
+
+  EXPECT_EQ(NSHeight(glass_view.frame), expected_height);
   EXPECT_LT(NSHeight(glass_view.frame), NSHeight(content_view.bounds));
   EXPECT_EQ(NSMaxY(glass_view.frame), NSMaxY(content_view.bounds));
   EXPECT_EQ(NSWidth(glass_view.frame), NSWidth(content_view.bounds));

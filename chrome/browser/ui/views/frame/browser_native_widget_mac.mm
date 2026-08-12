@@ -282,11 +282,13 @@ std::optional<int> BrowserNativeWidgetMac::GetGlassFrameHeight() const {
       browser_view_->browser_widget()->GetFrameView()) {
     height = browser_view_->browser_widget()->GetFrameView()->GetTopInset(true);
   }
-  // The glass frame area covers the tab strip plus a slight overlap into the
-  // toolbar so the corner radii meet at the tangent point without visual
-  // overlap.
+  // The glass frame area covers the tab strip and toolbar plus a slight
+  // overlap into the web contents so the corner radii meet at the tangent point
+  // without visual overlap. It expands past the tabstrip to include the toolbar
+  // to prevent glass frame artifacts when one of the dimensions is too small.
   const auto top_element_info = browser_view_->GetFrameElementInfo();
   height += top_element_info.top_area_height();
+  height += top_element_info.toolbar_preferred_height;
   height += GetGlassCornerPadding();
   return height;
 }

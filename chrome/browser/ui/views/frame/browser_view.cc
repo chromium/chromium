@@ -1228,6 +1228,9 @@ ClientFrameElementInfo BrowserView::GetFrameElementInfo() const {
     info.toolbar_minimum_height =
         web_app_frame_toolbar_->GetMinimumSize().height();
   }
+  if (toolbar_ && IsToolbarVisible()) {
+    info.toolbar_preferred_height = toolbar_->GetPreferredSize().height();
+  }
   return info;
 }
 
