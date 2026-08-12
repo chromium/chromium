@@ -1096,4 +1096,31 @@ chrome.test.runTests([
     mockPlugin.clearMessages();
     chrome.test.succeed();
   },
+
+  async function testSaveAnnotationToClipboard() {
+    const manager = await setUpTextMode();
+    const annotation = {
+      ...getTestAnnotation(1),
+      text: 'Clipboard Text',
+    };
+
+    const whenSaveCopy = eventToPromise<
+        CustomEvent<{annotation: TextAnnotation, isCut: boolean}>>(
+        'saved-annotation-to-clipboard-for-testing', manager);
+    manager.saveAnnotationToClipboard(annotation, /*isCut=*/ false);
+    const saveCopyEvent = await whenSaveCopy;
+    chrome.test.assertEq(
+        'Clipboard Text', saveCopyEvent.detail.annotation.text);
+    chrome.test.assertFalse(saveCopyEvent.detail.isCut);
+
+    const whenSaveCut = eventToPromise<
+        CustomEvent<{annotation: TextAnnotation, isCut: boolean}>>(
+        'saved-annotation-to-clipboard-for-testing', manager);
+    manager.saveAnnotationToClipboard(annotation, /*isCut=*/ true);
+    const saveCutEvent = await whenSaveCut;
+    chrome.test.assertEq('Clipboard Text', saveCutEvent.detail.annotation.text);
+    chrome.test.assertTrue(saveCutEvent.detail.isCut);
+
+    chrome.test.succeed();
+  },
 ]);

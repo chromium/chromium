@@ -4,12 +4,18 @@
 
 import {hexToColor, Ink2Manager, pageToScreenCoordinates, PdfViewerPrivateProxyImpl, TEXT_COLORS, TextAlignment, TextAnnotationSource, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {InkTextBoxElement, TextAnnotation, TextAnnotationMessageData, TextBoxRect, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {isMac} from 'chrome://resources/js/platform.js';
+import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPdfViewerPrivateProxy} from './test_pdf_viewer_private_proxy.js';
 import {assertDeepEquals, MockDocumentDimensions, setUpInkTestContext} from './test_util.js';
 import type {MockPdfPluginElement} from './test_util.js';
+
+export function getCtrlModifier(): ModifiersParam {
+  return isMac ? ['meta'] : ['ctrl'];
+}
 
 export async function setupTextBoxTest(
     windowWidth: number = 500, windowHeight: number = 500,

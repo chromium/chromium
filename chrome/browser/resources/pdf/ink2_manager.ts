@@ -24,7 +24,6 @@ export const DEFAULT_TEXTBOX_WIDTH: number = 222;
 // This value is held constant regardless of zoom due to the rendering issue.
 export const MIN_TEXTBOX_SIZE_PX = 24;
 
-
 export function stylesEqual(style1: TextStyles, style2: TextStyles): boolean {
   return style1.bold === style2.bold && style1.italic === style2.italic;
 }
@@ -53,6 +52,8 @@ export class Ink2Manager extends EventTarget {
   // user is editing. Null if the user is not editing an annotation or is
   // creating a new annotation using |attributes_|.
   private existingAnnotationAttributes_: TextAttributes|null = null;
+  private clipboardAnnotation_: TextAnnotation|null = null;
+  private isCutAnnotation_: boolean = false;
   private pluginController_: PluginController = PluginController.getInstance();
   private textResolver_: PromiseResolver<void>|null = null;
   private viewport_: Viewport|null = null;
@@ -85,10 +86,10 @@ export class Ink2Manager extends EventTarget {
     this.stack_.resetForTesting();
   }
 
-  // Initialize a text annotation at `location` in screen coordinates.
+  // Initialize a new empty text annotation at `location` in screen coordinates.
   // No-op if there is no PDF page at `location`.
-  // If `location` is not provided, creates the annotation at the center of
-  // the visible portion of the most visible page.
+  // If `location` is not provided, creates the annotation at the center of the
+  // visible portion of the most visible page.
   // Returns true if an annotation was initialized, and false otherwise.
   initializeTextAnnotation(location?: Point): boolean {
     assert(this.isTextInitializationComplete());
@@ -185,6 +186,19 @@ export class Ink2Manager extends EventTarget {
     // since these may change with the annotation.
     this.fireAttributesChanged_();
     return true;
+  }
+
+  saveAnnotationToClipboard(
+      annotation: TextAnnotation, isCut: boolean = false) {
+    this.clipboardAnnotation_ = structuredClone(annotation);
+    this.isCutAnnotation_ = isCut;
+    this.dispatchEvent(
+        new CustomEvent('saved-annotation-to-clipboard-for-testing', {
+          detail: {
+            annotation: this.clipboardAnnotation_,
+            isCut: this.isCutAnnotation_,
+          },
+        }));
   }
 
   // Reactivate an existing text annotation for editing.
@@ -503,7 +517,6 @@ export class Ink2Manager extends EventTarget {
   saved() {
     this.stack_.setSaved();
   }
-
 
   static getInstance(): Ink2Manager {
     return instance || (instance = new Ink2Manager());

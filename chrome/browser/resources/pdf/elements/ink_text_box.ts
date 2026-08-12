@@ -14,10 +14,10 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {TextAnnotation, TextAttributes, TextBoxRect} from '../constants.js';
 import {TextTypeface} from '../constants.js';
 import {Ink2Manager, MIN_TEXTBOX_SIZE_PX, stylesEqual} from '../ink2_manager.js';
-import {convertRotatedCoordinates} from '../ink_text_annotation_utils.js';
+import {convertRotatedCoordinates, screenToPageCoordinates} from '../ink_text_annotation_utils.js';
 import {record, UserAction} from '../metrics.js';
 import {PdfViewerPrivateProxyImpl} from '../pdf_viewer_private_proxy.js';
-import {colorsEqual, colorToHex, hasCtrlModifier} from '../pdf_viewer_utils.js';
+import {colorsEqual, colorToHex, hasCtrlModifier, hasCtrlModifierOnly} from '../pdf_viewer_utils.js';
 import type {Viewport, ViewportRect} from '../viewport.js';
 
 import {getCss} from './ink_text_box.css.js';
@@ -240,6 +240,55 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.textValue_ = this.$.textbox.value;
     this.textBoxEdited_();
     this.updateMinimumSize_();
+  }
+
+  // Populates a `TextAnnotation` with the current state that can
+  // be passed to Ink2Manager.
+  private createClipboardAnnotation_(): TextAnnotation|null {
+    if (!this.viewport || !this.attributes_) {
+      return null;
+    }
+    const pageRect = screenToPageCoordinates(
+        this.pageIndex_, {
+          height: this.height_,
+          locationX: this.locationX_,
+          locationY: this.locationY_,
+          width: this.width_,
+        },
+        this.viewport);
+    return {
+      id: this.id_,
+      mojoTextInfo: new ArrayBuffer(0),
+      pageIndex: this.pageIndex_,
+      pdfZoom: this.zoom_,
+      text: this.textValue_,
+      textAttributes: structuredClone(this.attributes_),
+      textBoxRect: pageRect,
+      textOrientation: this.textOrientation_,
+      viewportOrientation: this.viewportRotations_,
+    };
+  }
+
+  private copyAnnotation_() {
+    const annotation = this.createClipboardAnnotation_();
+    if (!annotation) {
+      return;
+    }
+    Ink2Manager.getInstance().saveAnnotationToClipboard(
+        annotation, /*isCut=*/ false);
+  }
+
+  private cutAnnotation_() {
+    const annotation = this.createClipboardAnnotation_();
+    if (!annotation) {
+      return;
+    }
+    Ink2Manager.getInstance().saveAnnotationToClipboard(
+        annotation, /*isCut=*/ true);
+    this.textValue_ = '';
+    this.$.textbox.value = '';
+    this.textBoxEdited_();
+    this.commitTextAnnotation();
   }
 
   private textBoxEdited_() {
@@ -506,11 +555,31 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   }
 
   private onKeyDown_(e: KeyboardEvent) {
+    if (this.state_ === TextBoxState.INACTIVE) {
+      return;
+    }
+
     const target = e.composedPath()[0];
+
     // Ignore keyboard events on the textbox itself, other than 'Escape', which
     // is separately handled by the global keyhandler above.
     if (!(target instanceof HTMLElement) || target === this.$.textbox) {
       return;
+    }
+
+    // Handle copy and cut.
+    if (hasCtrlModifierOnly(e)) {
+      const key = e.key.toLowerCase();
+      if (key === 'c' || key === 'x') {
+        e.preventDefault();
+        e.stopPropagation();
+        if (key === 'c') {
+          this.copyAnnotation_();
+        } else {
+          this.cutAnnotation_();
+        }
+        return;
+      }
     }
 
     // Backspace/Delete key not in the textbox deletes the annotation.
