@@ -227,6 +227,11 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     public void cleanupWebContents(WebContents webContents) {
         webContents.setOverscrollRefreshHandler(null);
         detachSwipeRefreshLayoutIfNecessary();
+        // Null out mNavigationCoordinator before setEnabled(false) so that reset()
+        // does not reach NavigationHandler: by this point TabImpl.initWebContents()
+        // has already swapped TabAndroid's WebContents, so a forwarded cancel would
+        // reach the new WebContents' animation manager, which never received
+        // OnGestureStarted(). See crbug.com/530682179.
         mNavigationCoordinator = null;
         mBottomOverscrollHandler = null;
         setEnabled(false);
