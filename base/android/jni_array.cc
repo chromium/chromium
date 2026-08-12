@@ -4,6 +4,7 @@
 
 #include "base/android/jni_array.h"
 
+#include <array>
 #include <cstdint>
 
 #include "base/android/jni_android.h"
@@ -49,8 +50,16 @@ ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(JNIEnv* env,
 ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(
     JNIEnv* env,
     const std::vector<bool>& bools) {
+  const size_t size = bools.size();
+  if (size <= 1024) {
+    std::array<bool, 1024> actual_bools;
+    for (size_t i = 0; i < size; ++i) {
+      actual_bools[i] = bools[i];
+    }
+    return ToJavaBooleanArray(env, base::span(actual_bools).first(size));
+  }
   // Make an actual array of types equivalent to `bool`.
-  auto actual_bools = HeapArray<bool>::Uninit(bools.size());
+  auto actual_bools = HeapArray<bool>::Uninit(size);
   std::ranges::copy(bools, actual_bools.begin());
   return ToJavaBooleanArray(env, actual_bools);
 }
@@ -375,11 +384,15 @@ void JavaByteArrayToString(JNIEnv* env,
                            const JavaRef<jbyteArray>& byte_array,
                            std::string* out) {
   DCHECK(out);
-  DCHECK(byte_array);
-
-  std::vector<uint8_t> byte_vector;
-  JavaByteArrayToByteVector(env, byte_array, &byte_vector);
-  out->assign(byte_vector.begin(), byte_vector.end());
+  CHECK(byte_array);
+  jsize jlen = byte_array.GetLength(env);
+  out->resize(static_cast<size_t>(jlen));
+  if (!jlen) {
+    return;
+  }
+  env->GetByteArrayRegion(byte_array.obj(), jsize{0}, jlen,
+                          reinterpret_cast<int8_t*>(out->data()));
+  CheckException(env);
 }
 
 void JavaBooleanArrayToBoolVector(JNIEnv* env,
@@ -394,18 +407,25 @@ void JavaBooleanArrayToBoolVector(JNIEnv* env,
   if (!len) {
     return;
   }
-  // SAFETY: `SafeGetArrayLength()` returns the number of elements in the
-  // `boolean_array`, though it can return 0 if the array is invalid. So we only
-  // call `GetBooleanArrayElements()` when it's positive. Then
-  // GetBooleanArrayElements() returns a buffer of the size returned from
-  // `SafeGetArrayLength()`.
-  span<jboolean> values = UNSAFE_BUFFERS(
-      span(env->GetBooleanArrayElements(boolean_array.obj(), nullptr), len));
-  for (size_t i = 0; i < values.size(); ++i) {
-    (*out)[i] = static_cast<bool>(values[i]);
+  if (len <= 1024) {
+    std::array<jboolean, 1024> values;
+    env->GetBooleanArrayRegion(boolean_array.obj(), jsize{0},
+                               checked_cast<jsize>(len), values.data());
+    CheckException(env);
+    base::span<jboolean> values_span = base::span<jboolean>(values).first(len);
+    for (size_t i = 0; i < len; ++i) {
+      (*out)[i] = static_cast<bool>(values_span[i]);
+    }
+  } else {
+    std::vector<jboolean> values(len);
+    env->GetBooleanArrayRegion(boolean_array.obj(), jsize{0},
+                               checked_cast<jsize>(len), values.data());
+    CheckException(env);
+    base::span<jboolean> values_span(values);
+    for (size_t i = 0; i < len; ++i) {
+      (*out)[i] = static_cast<bool>(values_span[i]);
+    }
   }
-  env->ReleaseBooleanArrayElements(boolean_array.obj(), values.data(),
-                                   JNI_ABORT);
 }
 
 void JavaIntArrayToIntVector(JNIEnv* env,
@@ -425,10 +445,7 @@ void JavaLongArrayToInt64Vector(JNIEnv* env,
                                 const JavaRef<jlongArray>& long_array,
                                 std::vector<int64_t>* out) {
   DCHECK(out);
-  std::vector<int64_t> temp;
-  JavaLongArrayToLongVector(env, long_array, &temp);
-  out->resize(0);
-  Extend(*out, temp);
+  JavaLongArrayToLongVector(env, long_array, out);
 }
 
 void JavaLongArrayToLongVector(JNIEnv* env,
@@ -480,20 +497,7 @@ void JavaArrayOfByteArrayToStringVector(JNIEnv* env,
     auto bytes_array = ScopedJavaLocalRef<jbyteArray>::Adopt(
         env, static_cast<jbyteArray>(env->GetObjectArrayElement(
                  array.obj(), checked_cast<jsize>(i))));
-    size_t bytes_len = SafeGetArrayLength(env, bytes_array);
-    // SAFETY: `SafeGetArrayLength()` returns the number of elements in the
-    // `boobytes_array`, though it can return 0 if the array is invalid. So we
-    // only call `GetByteArrayElements()` when it's positive. Then
-    // GetByteArrayElements() returns a buffer of the size returned from
-    // `SafeGetArrayLength()`.
-    if (!bytes_len) {
-      (*out)[i].clear();
-      continue;
-    }
-    span<int8_t> bytes = UNSAFE_BUFFERS(
-        span(env->GetByteArrayElements(bytes_array.obj(), nullptr), bytes_len));
-    (*out)[i] = base::as_string_view(base::as_bytes(bytes));
-    env->ReleaseByteArrayElements(bytes_array.obj(), bytes.data(), JNI_ABORT);
+    JavaByteArrayToString(env, bytes_array, &(*out)[i]);
   }
 }
 
