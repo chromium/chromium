@@ -443,7 +443,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       // validation.
       const auto video_pixel_format =
           media::SharedImageFormatToVideoPixelFormat(shared_image->format());
-      if (video_pixel_format) {
+      if (!shared_image->is_software() && video_pixel_format) {
         auto gmb_handle = shared_image->CloneGpuMemoryBufferHandle();
         if (!gmb_handle.is_null() && gmb_handle.type == gfx::NATIVE_PIXMAP) {
           if (!media::VerifyGpuMemoryBufferHandle(*video_pixel_format,
