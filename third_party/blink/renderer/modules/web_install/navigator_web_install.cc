@@ -148,9 +148,9 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
   // Initiate installation of the current document.
   if (!manifest_id && !install_url) {
     CHECK(GetService());
-    GetService()->Install(
-        /*options=*/nullptr,
-        BindOnce(&blink::OnInstallResponse, WrapPersistent(resolver)));
+    GetService()->InstallFromManifest(
+        /*options=*/nullptr, BindOnce(&blink::OnInstallFromManifestResponse,
+                                      WrapPersistent(resolver)));
     return promise;
   }
 

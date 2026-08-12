@@ -161,7 +161,8 @@ void IntentPickerTabHelper::MaybeShowIntentPickerIcon() {
 void IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(
     const GURL& url,
     bool always_show,
-    ShowIntentPickerBubbleCallback callback) {
+    ShowIntentPickerBubbleCallback callback,
+    std::optional<webapps::AppId> scoped_app_id) {
   CHECK(web_contents());
   if (!intent_picker_delegate_->ShouldShowIntentPickerWithApps() ||
       !IsValidWebContentsForIntentPicker(web_contents())) {
@@ -170,11 +171,27 @@ void IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(
     return;
   }
 
+  // When the caller has already resolved the exact target app (e.g. the Web
+  // Install API confirming an already-installed app), build the single picker
+  // entry from that identity directly instead of rediscovering by the document
+  // URL. URL scope discovery can miss the app when the document is outside the
+  // app's scope, and can over-return under nested scopes.
+  if (scoped_app_id.has_value()) {
+    std::vector<apps::IntentPickerAppInfo> apps;
+    if (std::optional<apps::IntentPickerAppInfo> info =
+            intent_picker_delegate_->GetAppInfoForId(*scoped_app_id)) {
+      apps.push_back(std::move(*info));
+    }
+    ShowIntentPickerOrLaunchAppImpl(url, always_show, std::move(callback),
+                                    std::move(scoped_app_id), std::move(apps));
+    return;
+  }
+
   intent_picker_delegate_->FindAllAppsForUrl(
-      url,
-      base::BindOnce(&IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl,
-                     per_navigation_weak_factory_.GetWeakPtr(), url,
-                     always_show, std::move(callback)));
+      url, base::BindOnce(
+               &IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl,
+               per_navigation_weak_factory_.GetWeakPtr(), url, always_show,
+               std::move(callback), std::move(scoped_app_id)));
 }
 
 // static
@@ -376,7 +393,12 @@ void IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl(
     const GURL& url,
     bool always_show,
     ShowIntentPickerBubbleCallback callback,
+    std::optional<webapps::AppId> scoped_app_id,
     std::vector<apps::IntentPickerAppInfo> apps) {
+  // When `scoped_app_id` is set, callers pre-narrow `apps` to that app.
+  CHECK(!scoped_app_id.has_value() || apps.empty() ||
+        (apps.size() == 1 && apps[0].launch_name == *scoped_app_id));
+
   if (apps.empty() || IsShuttingDown(web_contents())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*launched=*/false));

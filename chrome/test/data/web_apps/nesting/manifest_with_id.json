@@ -1,0 +1,14 @@
+{
+  "name": "Parent app with custom id",
+  "id": "/web_apps/nesting/parent-app-id",
+  "icons": [
+    {
+      "src": "basic-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "minimal-ui"
+}

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_UI_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -344,11 +345,15 @@ class WebAppUiManager {
 
   virtual void ShowProfileErrorDialogForCorruptDB() = 0;
 
-  // This assumes the app is already installed. The callback is called with
-  // true when the user chooses to open the app, otherwise, false is called.
-  virtual void ShowIntentPicker(const GURL& url,
-                                content::WebContents* web_contents,
-                                ShowIntentPickerBubbleCallback callback) = 0;
+  // Shows the intent picker for an already-installed app; the callback runs
+  // with true if the user opens the app, false otherwise. When `scoped_app_id`
+  // is set, the picker is restricted to that app instead of every app
+  // controlling `url`.
+  virtual void ShowIntentPicker(
+      const GURL& url,
+      content::WebContents* web_contents,
+      ShowIntentPickerBubbleCallback callback,
+      std::optional<webapps::AppId> scoped_app_id) = 0;
 
   // Launches the Isolated Web App installer for a bundle with the given path.
   // If an installer with the given path already exists, brings it to front and

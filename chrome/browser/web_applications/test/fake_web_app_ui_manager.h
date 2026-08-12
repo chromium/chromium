@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -178,7 +179,8 @@ class FakeWebAppUiManager : public WebAppUiManager {
 
   void ShowIntentPicker(const GURL& url,
                         content::WebContents* web_contents,
-                        ShowIntentPickerBubbleCallback callback) override;
+                        ShowIntentPickerBubbleCallback callback,
+                        std::optional<webapps::AppId> scoped_app_id) override;
 
   void LaunchOrFocusIsolatedWebAppInstaller(
       const base::FilePath& bundle_path) override;
@@ -204,6 +206,10 @@ class FakeWebAppUiManager : public WebAppUiManager {
   void SetCanAddAppToQuickLaunchBar(bool can_add);
   void SetProvider(WebAppProvider* provider);
 
+  // Sets the InstallResultCode that TriggerInstallDialog passes to its
+  // callback. Defaults to kWebAppProviderNotReady.
+  void SetTriggerInstallDialogResultCode(webapps::InstallResultCode code);
+
   void UninstallAppSilentlyForMigration(const webapps::AppId& app_id) override;
 
  private:
@@ -224,6 +230,8 @@ class FakeWebAppUiManager : public WebAppUiManager {
   bool can_add_to_quick_launch_bar_ = false;
   base::flat_set<webapps::AppId> quick_launch_bar_apps_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
+  webapps::InstallResultCode trigger_install_dialog_result_code_ =
+      webapps::InstallResultCode::kWebAppProviderNotReady;
 };
 
 }  // namespace web_app

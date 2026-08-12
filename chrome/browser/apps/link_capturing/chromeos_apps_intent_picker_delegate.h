@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_APPS_INTENT_PICKER_DELEGATE_H_
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_APPS_INTENT_PICKER_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ref.h"
@@ -35,6 +36,8 @@ class ChromeOsAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
   bool ShouldShowIntentPickerWithApps() override;
   void FindAllAppsForUrl(const GURL& url,
                          IntentPickerAppsCallback apps_callback) override;
+  std::optional<apps::IntentPickerAppInfo> GetAppInfoForId(
+      const std::string& app_id) override;
   bool IsPreferredAppForSupportedLinks(const std::string& app_id) override;
   void LoadSingleAppIcon(PickerEntryType entry_type,
                          const std::string& app_id,

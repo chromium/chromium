@@ -146,6 +146,12 @@ class WebInstallServiceImpl
       InstallFromManifestCallback callback,
       bool triggered_from_element);
 
+  // Internal entry point for the no-argument API signature. Acquires the
+  // install-in-progress guard and wraps the callback so the guard is released
+  // on every exit path.
+  void InstallCurrentDocumentInternal(InstallFromManifestCallback callback,
+                                      bool triggered_from_element);
+
   WebInstallServiceImpl(
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebInstallService> receiver);
@@ -169,12 +175,12 @@ class WebInstallServiceImpl
       AppLock& lock,
       base::DictValue& debug_value);
 
-  void OnIntentPickerMaybeLaunched(
+  void OnLegacyIntentPickerMaybeLaunched(
       InstallCallbackWithMetrics callback_with_metrics,
       webapps::AppId app_id,
       bool user_chose_to_open);
 
-  void OnGotManifestForCurrentDocumentInstall(
+  void OnGotManifestForLegacyCurrentDocumentInstall(
       InstallCallbackWithMetrics callback_with_metrics,
       WebAppProvider* provider,
       base::WeakPtr<WebAppDataRetriever> data_retriever,
@@ -225,6 +231,25 @@ class WebInstallServiceImpl
   void RunIsInstalledLookup(GURL install_target,
                             std::optional<GURL> manifest_id,
                             IsInstalledCallback callback);
+
+  void OnDidCheckInstallabilityForCurrentDocumentInstall(
+      InstallFromManifestCallbackWithMetrics callback_with_metrics,
+      base::WeakPtr<WebAppDataRetriever> data_retriever,
+      blink::mojom::ManifestPtr manifest,
+      bool valid_manifest_for_web_app,
+      webapps::InstallableStatusCode error_code);
+
+  void RecheckInstalledAppMaybeLaunch(
+      InstallFromManifestCallbackWithMetrics callback_with_metrics,
+      webapps::AppId installed_app_id,
+      content::WebContents* web_contents,
+      AppLock& lock,
+      base::DictValue& debug_value);
+
+  void OnIntentPickerMaybeLaunched(
+      InstallFromManifestCallbackWithMetrics callback_with_metrics,
+      webapps::AppId app_id,
+      bool user_chose_to_open);
 
   // Callback for when InstallFromManifest's fetch completes. `install_tracker`
   // holds the registered current-install state for the web contents; dropping

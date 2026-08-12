@@ -352,14 +352,14 @@ TEST_F(HTMLInstallElementTestBase, ActivationSuccess) {
 
   element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
 
-  // The `Install` method should be called.
+  // The manifest install method should be called.
   web_install_service_.WaitForCall();
 
-  // No `installurl` was specified, so no options were sent to the service.
-  EXPECT_TRUE(web_install_service_.options().is_null());
+  // No install target was specified, so no options were sent to the service.
+  EXPECT_TRUE(web_install_service_.manifest_options().is_null());
 
   // Success should trigger an `installresult` event with result "success".
-  web_install_service_.RespondWithSuccess();
+  web_install_service_.RespondManifestWithSuccess();
   InstallResultEvent* event = WaitForInstallResultEvent(element);
   ASSERT_TRUE(event);
   EXPECT_EQ(kResultSuccess, event->result().AsString());
@@ -424,14 +424,14 @@ TEST_F(HTMLInstallElementTestBase, ActivationAborted) {
 
   element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
 
-  // The `Install` method should be called.
+  // The manifest install method should be called.
   web_install_service_.WaitForCall();
 
-  // No `installurl` was specified, so no options were sent to the service.
-  EXPECT_TRUE(web_install_service_.options().is_null());
+  // No install target was specified, so no options were sent to the service.
+  EXPECT_TRUE(web_install_service_.manifest_options().is_null());
 
   // AbortError should trigger an `installresult` event with result "aborted".
-  web_install_service_.RespondWithAbortError();
+  web_install_service_.RespondManifestWithAbortError();
   InstallResultEvent* event = WaitForInstallResultEvent(element);
   ASSERT_TRUE(event);
   EXPECT_EQ(kResultAborted, event->result().AsString());
@@ -568,7 +568,7 @@ TEST_F(HTMLInstallElementFiringSimTest, OnInstallResultContentAttributeFires) {
 
   element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
   web_install_service_.WaitForCall();
-  web_install_service_.RespondWithSuccess();
+  web_install_service_.RespondManifestWithSuccess();
 
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return !ConsoleMessages().empty(); }));

@@ -677,7 +677,8 @@ void WebAppUiManagerImpl::ShowProfileErrorDialogForCorruptDB() {
 void WebAppUiManagerImpl::ShowIntentPicker(
     const GURL& url,
     content::WebContents* web_contents,
-    ShowIntentPickerBubbleCallback callback) {
+    ShowIntentPickerBubbleCallback callback,
+    std::optional<webapps::AppId> scoped_app_id) {
   IntentPickerTabHelper* intent_picker_tab_helper =
       IntentPickerTabHelper::FromWebContents(web_contents);
 
@@ -687,7 +688,8 @@ void WebAppUiManagerImpl::ShowIntentPicker(
     return;
   }
   intent_picker_tab_helper->ShowIntentPickerBubbleOrLaunchApp(
-      url, /*always_show =*/true, std::move(callback));
+      url, /*always_show =*/true, std::move(callback),
+      std::move(scoped_app_id));
 }
 
 void WebAppUiManagerImpl::LaunchOrFocusIsolatedWebAppInstaller(

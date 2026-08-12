@@ -56,14 +56,16 @@ interface WebInstallService {
   InstallFromElement(InstallOptions? options)
       => (WebInstallServiceResult result, url.mojom.Url manifest_id);
 
-  // Installs a web app from its manifest URL directly. The browser initiates
-  // fetching and parsing the JSON from `manifest_url` and presents the install
-  // for user review.
-  InstallFromManifest(ManifestInstallOptions options)
+  // Installs the current document when `options` is null. Otherwise, installs
+  // a web app directly from its manifest URL. The browser initiates fetching
+  // and parsing the JSON from `manifest_url` and presents the install for user
+  // review.
+  InstallFromManifest(ManifestInstallOptions? options)
       => (WebInstallServiceResult result);
 
-  // Installs a web app from its manifest URL directly when triggered from an
-  // <install> element.
-  ElementInstallFromManifest(ManifestInstallOptions options)
+  // Installs the current document when `options` is null. Otherwise, installs
+  // a web app directly from its manifest URL when triggered from an <install>
+  // element.
+  ElementInstallFromManifest(ManifestInstallOptions? options)
       => (WebInstallServiceResult result);
 };

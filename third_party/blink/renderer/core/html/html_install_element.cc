@@ -205,9 +205,10 @@ void HTMLInstallElement::OnActivated() {
 
   // If no attributes provided, install current document.
   if (InstallUrl().empty() && ManifestId().empty() && Manifest().empty()) {
-    WebInstallService()->InstallFromElement(
-        /*options=*/nullptr, BindOnce(&HTMLInstallElement::OnInstallResult,
-                                      WrapWeakPersistent(this)));
+    WebInstallService()->ElementInstallFromManifest(
+        /*options=*/nullptr,
+        BindOnce(&HTMLInstallElement::OnManifestInstallResult,
+                 WrapWeakPersistent(this)));
     return;
   }
 

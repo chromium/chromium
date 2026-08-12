@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_INTENT_PICKER_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_INTENT_PICKER_TAB_HELPER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -53,7 +54,8 @@ class IntentPickerTabHelper
   void ShowIntentPickerBubbleOrLaunchApp(
       const GURL& url,
       bool always_show = false,
-      ShowIntentPickerBubbleCallback callback = base::DoNothing());
+      ShowIntentPickerBubbleCallback callback = base::DoNothing(),
+      std::optional<webapps::AppId> scoped_app_id = std::nullopt);
 
   // Shows or hides the intent picker icon for |web_contents|. Always shows a
   // generic picker icon, even if MaybeShowIconForApps() had previously applied
@@ -118,6 +120,7 @@ class IntentPickerTabHelper
       const GURL& url,
       bool always_show,
       ShowIntentPickerBubbleCallback callback,
+      std::optional<webapps::AppId> scoped_app_id,
       std::vector<apps::IntentPickerAppInfo> apps);
 
   void OnIntentPickerClosedMaybeLaunch(

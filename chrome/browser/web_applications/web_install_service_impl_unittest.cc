@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -118,29 +119,22 @@ class WebInstallServiceImplTest : public WebAppTest {
         service_remote_.BindNewPipeAndPassReceiver());
   }
 
-  // Calls Install() with no options (current document install) and waits
-  // for the mojo callback.
-  std::pair<blink::mojom::WebInstallServiceResult, GURL>
-  InstallFromApiCurrentDocument() {
-    base::test::TestFuture<blink::mojom::WebInstallServiceResult, const GURL&>
-        future;
-    service_remote_->Install(/*options=*/nullptr, future.GetCallback());
-    EXPECT_TRUE(future.Wait());
-    return {future.Get<blink::mojom::WebInstallServiceResult>(),
-            future.Get<GURL>()};
+  // Calls InstallFromManifest() with no options (current document install) and
+  // waits for the mojo callback.
+  blink::mojom::WebInstallServiceResult InstallFromApiCurrentDocument() {
+    base::test::TestFuture<blink::mojom::WebInstallServiceResult> future;
+    service_remote_->InstallFromManifest(/*options=*/nullptr,
+                                         future.GetCallback());
+    return future.Take();
   }
 
-  // Calls InstallFromElement() with no options (current document) and waits
-  // for the mojo callback.
-  std::pair<blink::mojom::WebInstallServiceResult, GURL>
-  InstallFromElementCurrentDocument() {
-    base::test::TestFuture<blink::mojom::WebInstallServiceResult, const GURL&>
-        future;
-    service_remote_->InstallFromElement(/*options=*/nullptr,
-                                        future.GetCallback());
-    EXPECT_TRUE(future.Wait());
-    return {future.Get<blink::mojom::WebInstallServiceResult>(),
-            future.Get<GURL>()};
+  // Calls ElementInstallFromManifest() with no options (current document) and
+  // waits for the mojo callback.
+  blink::mojom::WebInstallServiceResult InstallFromElementCurrentDocument() {
+    base::test::TestFuture<blink::mojom::WebInstallServiceResult> future;
+    service_remote_->ElementInstallFromManifest(/*options=*/nullptr,
+                                                future.GetCallback());
+    return future.Take();
   }
 
   // Calls Install() with an install_url (background document install) and
@@ -231,23 +225,24 @@ class WebInstallServiceImplTest : public WebAppTest {
 ///////////////////////////////////////////////////////////////////////////////
 // Current document manifest validation tests.
 // These test the shared manifest validation in
-// OnGotManifestForCurrentDocumentInstall.
+// OnDidCheckInstallabilityForCurrentDocumentInstall.
 //
-// These tests use Install() (API entry point) but only verify the shared
-// validation logic. The UMA routing to element-specific histograms is
-// tested separately in InstallFromElement_ElementUmaHistograms.
+// These tests use InstallFromManifest() with null options but only verify the
+// shared validation logic. The UMA routing to element-specific histograms is
+// tested separately in ElementCurrentDocument_ElementUmaHistograms.
 ///////////////////////////////////////////////////////////////////////////////
 
 // No manifest on the current document. Expect a DataError.
 TEST_F(WebInstallServiceImplTest, CurrentDocument_NoManifest) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   // Don't create page state - the fake will return "manifest not found" error.
 
   BindService();
-  auto [result, manifest_id] = InstallFromApiCurrentDocument();
+  blink::mojom::WebInstallServiceResult result =
+      InstallFromApiCurrentDocument();
 
   EXPECT_EQ(result, blink::mojom::WebInstallServiceResult::kDataError);
-  EXPECT_TRUE(manifest_id.is_empty());
 
   histograms.ExpectBucketCount(
       kInstallApiResultUma, WebInstallServiceResult::kInstallCommandFailed, 1);
@@ -258,6 +253,7 @@ TEST_F(WebInstallServiceImplTest, CurrentDocument_NoManifest) {
                                1);
   histograms.ExpectBucketCount(kVariantedInstallTypeUma,
                                WebInstallServiceType::kCurrentDocument, 1);
+  EXPECT_TRUE(ukm_recorder.GetEntriesByName(Entry::kEntryName).empty());
 }
 
 // Manifest exists but has no custom id. Expect a DataError with
@@ -270,10 +266,10 @@ TEST_F(WebInstallServiceImplTest, CurrentDocument_NoCustomManifestId) {
   SetupPageWithManifest(GURL(kDocumentUrl), std::move(manifest));
 
   BindService();
-  auto [result, manifest_id] = InstallFromApiCurrentDocument();
+  blink::mojom::WebInstallServiceResult result =
+      InstallFromApiCurrentDocument();
 
   EXPECT_EQ(result, blink::mojom::WebInstallServiceResult::kDataError);
-  EXPECT_TRUE(manifest_id.is_empty());
 
   histograms.ExpectBucketCount(kInstallApiResultUma,
                                WebInstallServiceResult::kNoCustomManifestId, 1);
@@ -295,10 +291,10 @@ TEST_F(WebInstallServiceImplTest, CurrentDocument_CrossOriginManifestId) {
   SetupPageWithManifest(GURL(kDocumentUrl), std::move(manifest));
 
   BindService();
-  auto [result, manifest_id] = InstallFromApiCurrentDocument();
+  blink::mojom::WebInstallServiceResult result =
+      InstallFromApiCurrentDocument();
 
   EXPECT_EQ(result, blink::mojom::WebInstallServiceResult::kDataError);
-  EXPECT_TRUE(manifest_id.is_empty());
 
   histograms.ExpectBucketCount(
       kInstallApiResultUma, WebInstallServiceResult::kInstallCommandFailed, 1);
@@ -352,12 +348,12 @@ TEST_F(WebInstallServiceImplTest, UmaInstallType_CurrentDocument) {
   BindService();
   // The FakeWebAppUiManager::TriggerInstallDialog calls the callback with
   // kWebAppProviderNotReady, which exercises OnAppInstalled.
-  auto [result, manifest_id] = InstallFromApiCurrentDocument();
+  blink::mojom::WebInstallServiceResult result =
+      InstallFromApiCurrentDocument();
 
   // FakeWebAppUiManager::TriggerInstallDialog returns kWebAppProviderNotReady,
   // which maps to kAbortError and kUnexpectedFailure.
   EXPECT_EQ(result, blink::mojom::WebInstallServiceResult::kAbortError);
-  EXPECT_TRUE(manifest_id.is_empty());
 
   // Verify install type UMA for API entry point.
   histograms.ExpectBucketCount(kInstallApiTypeUma,
@@ -369,14 +365,84 @@ TEST_F(WebInstallServiceImplTest, UmaInstallType_CurrentDocument) {
                                WebInstallServiceResult::kUnexpectedFailure, 1);
 }
 
-// InstallFromElement records UMA to element-specific histograms.
-TEST_F(WebInstallServiceImplTest, InstallFromElement_ElementUmaHistograms) {
+// A current document install that reaches CreateWebAppFromManifest while an
+// install for the same document is already in progress records kAbortError.
+TEST_F(WebInstallServiceImplTest, UmaInstallType_CurrentDocument_InProgress) {
   base::HistogramTester histograms;
+
+  // Set up a valid manifest with custom id.
+  GURL custom_id("https://requesting-app.com/my_app_id");
+  auto manifest = CreateManifest(GURL(kDocumentUrl), custom_id);
+  SetupPageWithManifest(GURL(kDocumentUrl), std::move(manifest));
+
+  // Drive TriggerInstallDialog to report that an install for the current
+  // document is already in progress.
+  static_cast<FakeWebAppUiManager&>(
+      FakeWebAppProvider::Get(profile())->ui_manager())
+      .SetTriggerInstallDialogResultCode(
+          webapps::InstallResultCode::kInstallAlreadyInProgress);
+
+  BindService();
+  blink::mojom::WebInstallServiceResult result =
+      InstallFromApiCurrentDocument();
+
+  EXPECT_EQ(result, blink::mojom::WebInstallServiceResult::kAbortError);
+
+  // Verify install type UMA for API entry point.
+  histograms.ExpectBucketCount(kInstallApiTypeUma,
+                               WebInstallServiceType::kCurrentDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kCurrentDocument, 1);
+  // Verify result code mapping.
+  histograms.ExpectBucketCount(kInstallApiResultUma,
+                               WebInstallServiceResult::kInstallInProgress, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kInstallInProgress, 1);
+}
+
+// A current document install rejected by the promoter's HasCurrentInstall()
+// guard reports kInstallInProgress. This guard is distinct from the
+// per-instance install_in_progress_ flag: it fires when another surface already
+// holds an install on this web contents.
+TEST_F(WebInstallServiceImplTest,
+       CurrentDocument_ConcurrentInstall_ReportsInProgress) {
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // Register an install on the promoter so HasCurrentInstall() is true. Hold
+  // the tracker to keep the guard armed for the duration of the call.
+  webapps::MLInstallabilityPromoter* promoter =
+      webapps::MLInstallabilityPromoter::FromWebContents(web_contents());
+  ASSERT_TRUE(promoter);
+  std::unique_ptr<webapps::MlInstallOperationTracker> tracker =
+      promoter->RegisterCurrentInstallForWebContents(
+          webapps::WebappInstallSource::WEB_INSTALL);
+  ASSERT_TRUE(tracker);
+  ASSERT_TRUE(promoter->HasCurrentInstall());
+
+  BindService();
+  blink::mojom::WebInstallServiceResult result =
+      InstallFromApiCurrentDocument();
+
+  EXPECT_EQ(result, blink::mojom::WebInstallServiceResult::kAbortError);
+
+  // Verify result code mapping for the API entry point.
+  histograms.ExpectBucketCount(kInstallApiResultUma,
+                               WebInstallServiceResult::kInstallInProgress, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kInstallInProgress, 1);
+  EXPECT_TRUE(ukm_recorder.GetEntriesByName(Entry::kEntryName).empty());
+}
+
+// ElementInstallFromManifest records UMA to element-specific histograms.
+TEST_F(WebInstallServiceImplTest, ElementCurrentDocument_ElementUmaHistograms) {
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::AutoReset<int> manifest_wait_timeout =
       WebAppDataRetriever::SetManifestWaitTimeoutForTesting(0);
 
   BindService();
-  auto [result, manifest_id] = InstallFromElementCurrentDocument();
+  InstallFromElementCurrentDocument();
 
   // Should record to element UMA, not API UMA.
   histograms.ExpectBucketCount(kInstallElementTypeUma,
@@ -388,6 +454,7 @@ TEST_F(WebInstallServiceImplTest, InstallFromElement_ElementUmaHistograms) {
   // API histograms should be empty.
   histograms.ExpectTotalCount(kInstallApiTypeUma, 0);
   histograms.ExpectTotalCount(kInstallApiResultUma, 0);
+  EXPECT_TRUE(ukm_recorder.GetEntriesByName(Entry::kEntryName).empty());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -427,9 +494,8 @@ TEST_F(WebInstallServiceImplTest, CreateIfAllowed_NonHttpsScheme) {
 
   // The receiver should have been reset. Verify by trying to call a method
   // and confirming it disconnects.
-  base::test::TestFuture<blink::mojom::WebInstallServiceResult, const GURL&>
-      future;
-  remote->Install(/*options=*/nullptr, future.GetCallback());
+  base::test::TestFuture<blink::mojom::WebInstallServiceResult> future;
+  remote->InstallFromManifest(/*options=*/nullptr, future.GetCallback());
   // The pipe is reset, so flushing should cause a disconnect.
   remote.FlushForTesting();
   EXPECT_FALSE(remote.is_connected());

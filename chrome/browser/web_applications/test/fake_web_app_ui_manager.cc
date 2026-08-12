@@ -210,8 +210,7 @@ void FakeWebAppUiManager::TriggerInstallDialog(
     content::WebContents* web_contents,
     webapps::WebappInstallSource source,
     InstallCallback callback) {
-  std::move(callback).Run("",
-                          webapps::InstallResultCode::kWebAppProviderNotReady);
+  std::move(callback).Run("", trigger_install_dialog_result_code_);
 }
 
 void FakeWebAppUiManager::TriggerInstallDialogForBackgroundInstall(
@@ -275,6 +274,11 @@ void FakeWebAppUiManager::SetProvider(WebAppProvider* provider) {
   provider_ = provider;
 }
 
+void FakeWebAppUiManager::SetTriggerInstallDialogResultCode(
+    webapps::InstallResultCode code) {
+  trigger_install_dialog_result_code_ = code;
+}
+
 void FakeWebAppUiManager::UninstallAppSilentlyForMigration(
     const webapps::AppId& app_id) {
   if (provider_) {
@@ -299,7 +303,8 @@ void FakeWebAppUiManager::ShowProfileErrorDialogForCorruptDB() {
 void FakeWebAppUiManager::ShowIntentPicker(
     const GURL& url,
     content::WebContents* web_contents,
-    ShowIntentPickerBubbleCallback callback) {}
+    ShowIntentPickerBubbleCallback callback,
+    std::optional<webapps::AppId> scoped_app_id) {}
 
 void FakeWebAppUiManager::LaunchOrFocusIsolatedWebAppInstaller(
     const base::FilePath& bundle_path) {}

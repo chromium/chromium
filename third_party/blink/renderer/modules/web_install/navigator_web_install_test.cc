@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -190,11 +191,26 @@ TEST_F(NavigatorWebInstallTest, Success) {
   ASSERT_FALSE(exception_state.HadException());
   ScriptPromiseTester tester(GetScriptState(), promise);
 
-  mock_service().WaitForCall();
-  mock_service().RespondWithSuccess();
+  mock_service().WaitForManifestCall();
+  EXPECT_FALSE(mock_service().manifest_options());
+  mock_service().RespondToManifestInstallWithSuccess();
 
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
+
+  // The manifest install flow resolves with an empty WebInstallResult
+  // dictionary: success is reported but no manifest ID is exposed to the caller
+  DummyExceptionStateForTesting conversion_exception_state;
+  WebInstallResult* result = NativeValueTraits<WebInstallResult>::NativeValue(
+      GetScriptState()->GetIsolate(), tester.Value().V8Value(),
+      conversion_exception_state);
+  ASSERT_FALSE(conversion_exception_state.HadException());
+  ASSERT_TRUE(result);
+  // TODO(crbug.com/520025525): Remove this when install_url code is removed.
+  // `manifestId` is currently the only member of WebInstallResult. When it
+  // is eventually removed from the IDL, `hasManifestId()` will no longer exist
+  // and this assertion should be removed.
+  EXPECT_FALSE(result->hasManifestId());
 }
 
 TEST_F(NavigatorWebInstallTest, AbortError) {
@@ -206,8 +222,9 @@ TEST_F(NavigatorWebInstallTest, AbortError) {
   ASSERT_FALSE(exception_state.HadException());
   ScriptPromiseTester tester(GetScriptState(), promise);
 
-  mock_service().WaitForCall();
-  mock_service().RespondWithAbortError();
+  mock_service().WaitForManifestCall();
+  EXPECT_FALSE(mock_service().manifest_options());
+  mock_service().RespondToManifestInstallWithAbortError();
 
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsRejected());
@@ -227,8 +244,9 @@ TEST_F(NavigatorWebInstallTest, DataError) {
   ASSERT_FALSE(exception_state.HadException());
   ScriptPromiseTester tester(GetScriptState(), promise);
 
-  mock_service().WaitForCall();
-  mock_service().RespondWithDataError();
+  mock_service().WaitForManifestCall();
+  EXPECT_FALSE(mock_service().manifest_options());
+  mock_service().RespondToManifestInstallWithDataError();
 
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsRejected());

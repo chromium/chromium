@@ -114,6 +114,20 @@ void WebAppsIntentPickerDelegate::FindAllAppsForUrl(
 #endif  // BUILDFLAG(IS_MAC)
 }
 
+std::optional<apps::IntentPickerAppInfo>
+WebAppsIntentPickerDelegate::GetAppInfoForId(const std::string& app_id) {
+  CHECK(ShouldShowIntentPickerWithApps());
+  CHECK(provider_);
+  const web_app::WebAppRegistrar& registrar = provider_->registrar_unsafe();
+  if (!registrar.AppMatches(
+          app_id, web_app::WebAppFilter::LaunchableFromInstallApi())) {
+    return std::nullopt;
+  }
+  // Leave the icon empty; it will be loaded when the picker is displayed.
+  return apps::IntentPickerAppInfo(PickerEntryType::kWeb, ui::ImageModel(),
+                                   app_id, registrar.GetAppShortName(app_id));
+}
+
 bool WebAppsIntentPickerDelegate::IsPreferredAppForSupportedLinks(
     const webapps::AppId& app_id) {
   CHECK(ShouldShowIntentPickerWithApps());

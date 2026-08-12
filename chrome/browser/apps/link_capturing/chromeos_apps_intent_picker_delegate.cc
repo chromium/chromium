@@ -109,6 +109,20 @@ void ChromeOsAppsIntentPickerDelegate::FindAllAppsForUrl(
       FROM_HERE, base::BindOnce(std::move(apps_callback), std::move(apps)));
 }
 
+std::optional<apps::IntentPickerAppInfo>
+ChromeOsAppsIntentPickerDelegate::GetAppInfoForId(const std::string& app_id) {
+  CHECK(proxy_);
+  std::optional<apps::IntentPickerAppInfo> info;
+  // ForOneApp runs the callback only if the app is present, so an absent app
+  // leaves `info` as nullopt.
+  proxy_->AppRegistryCache().ForOneApp(
+      app_id, [&info](const apps::AppUpdate& update) {
+        info.emplace(GetPickerEntryType(update.AppType()), ui::ImageModel(),
+                     update.AppId(), update.Name());
+      });
+  return info;
+}
+
 bool ChromeOsAppsIntentPickerDelegate::IsPreferredAppForSupportedLinks(
     const std::string& app_id) {
   CHECK(proxy_);
