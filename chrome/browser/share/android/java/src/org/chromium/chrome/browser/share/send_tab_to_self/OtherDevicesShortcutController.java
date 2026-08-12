@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -42,7 +43,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -275,7 +276,7 @@ public class OtherDevicesShortcutController implements Destroyable {
                 intent.putExtra(EXTRA_DEVICE_GUID, device.cacheGuid);
                 intent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, true);
 
-                Icon icon = createAdaptiveIcon(device.formFactor);
+                Icon icon = createAdaptiveIcon(device);
 
                 // Note: A Person can also have a name and an icon, but those are not used for the
                 // display of DirectShare targets.
@@ -374,9 +375,14 @@ public class OtherDevicesShortcutController implements Destroyable {
                 });
     }
 
-    private Icon createAdaptiveIcon(@FormFactor int formFactor) {
-        int iconRes = getIconResForFormFactor(formFactor);
-        Drawable drawable = mContext.getDrawable(iconRes);
+    private Icon createAdaptiveIcon(TargetDeviceInfo device) {
+        int iconRes =
+                DeviceResourceProviderFactory.create()
+                        .getDeviceTypeIcon(device.formFactor, device.osType);
+        // Use a themed context to inflate the drawable, as the application context (mContext)
+        // does not carry theme attributes (e.g. ?attr/colorOnSurface) which are used in the icons.
+        Context themedContext = new ContextThemeWrapper(mContext, R.style.Theme_BrowserUI_DayNight);
+        Drawable drawable = themedContext.getDrawable(iconRes);
         if (drawable == null) {
             return Icon.createWithResource(mContext, iconRes);
         }
@@ -387,12 +393,19 @@ public class OtherDevicesShortcutController implements Destroyable {
         // In particular, the icon should be 108x108 dp, but the outer 18 dp on each side may not be
         // used (reserved for use by the system UI). In addition, the remaining 72x72 dp will be
         // further masked (e.g. to a circle), leaving only a 66 dp-diameter circle as the safe zone
-        // that will not be cropped. This fits at most a 46 dp square icon.
+        // that will not be cropped. This safely fits only a 46 dp square icon, but in practice a
+        // *little* more (56dp) works better, because the icons aren't full squares.
         Resources res = mContext.getResources();
         int size = (int) (res.getDisplayMetrics().density * 108);
-        int iconSize = (int) (res.getDisplayMetrics().density * 46);
+        int iconSize = (int) (res.getDisplayMetrics().density * 56);
         Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        bitmap.eraseColor(Color.WHITE);
+        // The icons have a transparent background by default. Add an appropriate background,
+        // depending on light vs dark mode.
+        if (ColorUtils.inNightMode(mContext)) {
+            bitmap.eraseColor(mContext.getColor(R.color.baseline_neutral_variant_30));
+        } else {
+            bitmap.eraseColor(Color.WHITE);
+        }
 
         // Center the icon in the bitmap.
         Canvas canvas = new Canvas(bitmap);
@@ -401,18 +414,5 @@ public class OtherDevicesShortcutController implements Destroyable {
         drawable.draw(canvas);
 
         return Icon.createWithAdaptiveBitmap(bitmap);
-    }
-
-    private static int getIconResForFormFactor(@FormFactor int formFactor) {
-        switch (formFactor) {
-            case FormFactor.DESKTOP:
-                return R.drawable.computer_black_24dp;
-            case FormFactor.PHONE:
-                return R.drawable.smartphone_black_24dp;
-            case FormFactor.TABLET:
-                return R.drawable.tablet_black_24dp;
-            default:
-                return R.drawable.devices_black_24dp;
-        }
     }
 }
