@@ -3,3 +3,5 @@ johnchen@chromium.org
 
 per-file BUILD.gn=file://build/OWNERS
 per-file *.gni=file://build/OWNERS
+per-file test_env.py=thomasanderson@chromium.org
+per-file xvfb.py=thomasanderson@chromium.org
