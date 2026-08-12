@@ -21,28 +21,6 @@ extern bool IsExplicitlyRegisteredForElementTiming(
 class ImageElementTimingTest : public PaintTimingTestBase,
                                public PaintTestConfigurations {
  protected:
-  // Sets an image resource for the LayoutImage with the given |id| and return
-  // the LayoutImage.
-  LayoutImage* SetImageResource(const char* id, int width, int height) {
-    ImageResourceContent* content = CreateImageForTest(width, height);
-    if (auto* layout_image = DynamicTo<LayoutImage>(GetLayoutObjectById(id))) {
-      layout_image->ImageResource()->SetImageResource(content);
-      return layout_image;
-    }
-    return nullptr;
-  }
-
-  // Similar to above but for a LayoutSVGImage.
-  LayoutSVGImage* SetSVGImageResource(const char* id, int width, int height) {
-    ImageResourceContent* content = CreateImageForTest(width, height);
-    if (auto* layout_image =
-            DynamicTo<LayoutSVGImage>(GetLayoutObjectById(id))) {
-      layout_image->ImageResource()->SetImageResource(content);
-      return layout_image;
-    }
-    return nullptr;
-  }
-
   bool ImagesNotifiedContains(MediaRecordIdHash record_id_hash) {
     return ImageElementTiming::From(*GetDocument().domWindow())
         .images_notified_.Contains(record_id_hash);
@@ -105,11 +83,10 @@ TEST_P(ImageElementTimingTest, IgnoresUnmarkedElement) {
   SetBodyInnerHTML(R"HTML(
     <img id="target" style='width: 100px; height: 100px;'/>
   )HTML");
-  LayoutImage* layout_image = SetImageResource("target", 5, 5);
-  ASSERT_TRUE(layout_image);
+  ImageResourceContent* image = SetImageContent("target", 100, 100);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(ImagesNotifiedContains(
-      MediaRecordId::GenerateHash(layout_image, layout_image->CachedImage())));
+      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
 }
 
 TEST_P(ImageElementTimingTest, ImageInsideSVG) {
@@ -121,13 +98,12 @@ TEST_P(ImageElementTimingTest, ImageInsideSVG) {
       </foreignObject>
     </svg>
   )HTML");
-  LayoutImage* layout_image = SetImageResource("target", 5, 5);
-  ASSERT_TRUE(layout_image);
+  ImageResourceContent* image = SetImageContent("target", 100, 100);
   UpdateAllLifecyclePhasesForTest();
 
-  // |layout_image| should have had its paint notified to ImageElementTiming.
+  // `image` should have had its paint notified to ImageElementTiming.
   EXPECT_TRUE(ImagesNotifiedContains(
-      MediaRecordId::GenerateHash(layout_image, layout_image->CachedImage())));
+      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
 }
 
 TEST_P(ImageElementTimingTest, ImageInsideNonRenderedSVG) {
@@ -154,14 +130,13 @@ TEST_P(ImageElementTimingTest, ImageRemoved) {
     <img elementtiming="will-be-removed" id="target"
          style='width: 100px; height: 100px;'/>
   )HTML");
-  LayoutImage* layout_image = SetImageResource("target", 5, 5);
-  ASSERT_TRUE(layout_image);
+  ImageResourceContent* image = SetImageContent("target", 100, 100);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(ImagesNotifiedContains(
-      MediaRecordId::GenerateHash(layout_image, layout_image->CachedImage())));
+      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
 
   GetDocument().getElementById(AtomicString("target"))->remove();
-  // |layout_image| should no longer be part of |images_notified| since it will
+  // `image` should no longer be part of `images_notified_` since it will
   // be destroyed.
   EXPECT_EQ(ImagesNotifiedSize(), 0u);
 }
@@ -173,15 +148,14 @@ TEST_P(ImageElementTimingTest, SVGImageRemoved) {
              style='width: 100px; height: 100px;'/>
     </svg>
   )HTML");
-  LayoutSVGImage* layout_image = SetSVGImageResource("target", 5, 5);
-  ASSERT_TRUE(layout_image);
+  ImageResourceContent* image = SetImageContent("target", 100, 100);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(ImagesNotifiedContains(MediaRecordId::GenerateHash(
-      layout_image, layout_image->ImageResource()->CachedImage())));
+  EXPECT_TRUE(ImagesNotifiedContains(
+      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
 
   GetDocument().getElementById(AtomicString("target"))->remove();
-  // |layout_image| should no longer be part of |images_notified| since it will
-  // be destroyed.
+  // `image` should no longer be part of `images_notified_` since it will be
+  // destroyed.
   EXPECT_EQ(ImagesNotifiedSize(), 0u);
 }
 
