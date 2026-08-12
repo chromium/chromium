@@ -163,6 +163,10 @@ template("cpp_api_from_rust") {
     args += [
       "--",
 
+      # TODO(https://gn.issues.chromium.org/490160737): Enable this interface
+      # once we can get paths to rmeta files in GN.
+      "--enable-rmeta-interface=false",
+
       "--h-out",
       rebase_path(_h_out, root_build_dir),
 
