@@ -346,7 +346,7 @@ bool RuleInvalidationData::NeedsHasInvalidationForInsertedOrRemovedElement(
     }
   }
 
-  return !attributes_in_has_argument.empty() ||
+  return (!attributes_in_has_argument.empty() && element.hasAttributes()) ||
          NeedsHasInvalidationForTagName(element.LocalNameForSelectorMatching());
 }
 

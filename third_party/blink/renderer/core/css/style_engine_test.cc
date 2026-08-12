@@ -7078,6 +7078,99 @@ TEST_F(StyleEngineSimTest,
       fourth->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationForInsertionWithAttribute) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      .a:has([any]) .d { background-color: lime; }
+    </style>
+    <div class='a'>
+      <div class="d"></div><div class="d"></div><div class="d"></div>
+      <div id="parent"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().getElementById(AtomicString("parent"))->AppendChild(div);
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div->setAttribute(
+      QualifiedName(g_empty_atom, AtomicString("attr1"), g_empty_atom),
+      AtomicString("value1"));
+  GetDocument().getElementById(AtomicString("parent"))->AppendChild(div);
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(4U, element_count);
+}
+
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationForInsertionWithIdAttribute) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      .a:has([id="b"]) .c { background-color: lime; }
+    </style>
+    <div class='a'>
+      <div class="c"></div><div class="c"></div><div class="c"></div>
+      <div id="parent"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().getElementById(AtomicString("parent"))->AppendChild(div);
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div->setAttribute(html_names::kIdAttr, AtomicString("b"));
+  GetDocument().getElementById(AtomicString("parent"))->AppendChild(div);
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(4U, element_count);
+}
+
+TEST_F(StyleEngineTest,
+       HasPseudoClassInvalidationForInsertionWithClassAttribute) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      .a:has([class="b"]) .c { background-color: lime; }
+    </style>
+    <div class='a'>
+      <div class="c"></div><div class="c"></div><div class="c"></div>
+      <div id="parent"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().getElementById(AtomicString("parent"))->AppendChild(div);
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div->setAttribute(html_names::kClassAttr, AtomicString("b"));
+  GetDocument().getElementById(AtomicString("parent"))->AppendChild(div);
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(4U, element_count);
+}
+
 TEST_F(StyleEngineTest, StyleElementTypeAttrChange) {
   Element* style = GetDocument().CreateElementForBinding(AtomicString("style"));
   style->setAttribute(html_names::kTypeAttr, AtomicString("invalid"));

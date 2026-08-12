@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
@@ -156,6 +157,17 @@ class RuleFeatureSetTest : public testing::Test {
   bool NeedsHasInvalidationForClass(const char* class_name) {
     return rule_feature_set_.GetRuleInvalidationData()
         .NeedsHasInvalidationForClass(AtomicString(class_name));
+  }
+
+  bool NeedsHasInvalidationForAttribute(const char* attribute_name) {
+    return rule_feature_set_.GetRuleInvalidationData()
+        .NeedsHasInvalidationForAttribute(QualifiedName(
+            g_empty_atom, AtomicString(attribute_name), g_empty_atom));
+  }
+
+  bool NeedsHasInvalidationForInsertedOrRemovedElement(Element& element) {
+    return rule_feature_set_.GetRuleInvalidationData()
+        .NeedsHasInvalidationForInsertedOrRemovedElement(element);
   }
 
   void MergeInto(RuleFeatureSet& rule_feature_set) {
@@ -734,6 +746,8 @@ class RuleFeatureSetTest : public testing::Test {
   }
 
  protected:
+  Document& GetDocument() { return *document_; }
+
   test::TaskEnvironment task_environment_;
   ScopedNullExecutionContext execution_context_;
 
@@ -1739,6 +1753,156 @@ TEST_F(RuleFeatureSetTest,
     EXPECT_TRUE(HasClassInvalidation("c", invalidation_lists.descendants));
     EXPECT_TRUE(invalidation_lists.descendants[0]->TreeBoundaryCrossing());
     EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, InvalidatesHasWithAttributeAtNonSubjectPosition) {
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(".a:has([b=\"c\"]) .d"));
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasClassInvalidation("d", invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+    EXPECT_FALSE(NeedsHasInvalidationForClass("a"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForAttribute(
+        invalidation_lists,
+        QualifiedName(g_empty_atom, AtomicString("b"), g_empty_atom));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+    EXPECT_TRUE(NeedsHasInvalidationForAttribute("b"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "d");
+    EXPECT_TRUE(HasSelfInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+    EXPECT_FALSE(NeedsHasInvalidationForClass("d"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForPseudoClass(invalidation_lists,
+                                          CSSSelector::kPseudoHas);
+    EXPECT_EQ(1u, invalidation_lists.descendants.size());
+    EXPECT_TRUE(HasClassInvalidation("d", invalidation_lists.descendants));
+    EXPECT_FALSE(invalidation_lists.descendants[0]->TreeBoundaryCrossing());
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+  }
+
+  {
+    Element* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+    EXPECT_FALSE(NeedsHasInvalidationForInsertedOrRemovedElement(*element));
+
+    element->setAttribute(
+        QualifiedName(g_empty_atom, AtomicString("e"), g_empty_atom),
+        AtomicString("f"));
+    EXPECT_TRUE(NeedsHasInvalidationForInsertedOrRemovedElement(*element));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, InvalidatesHasWithIdAttributeAtNonSubjectPosition) {
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(".a:has([id=\"b\"]) .c"));
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasClassInvalidation("c", invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+    EXPECT_FALSE(NeedsHasInvalidationForClass("a"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForAttribute(
+        invalidation_lists,
+        QualifiedName(g_empty_atom, AtomicString("id"), g_empty_atom));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+    EXPECT_TRUE(NeedsHasInvalidationForAttribute("id"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "c");
+    EXPECT_TRUE(HasSelfInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+    EXPECT_FALSE(NeedsHasInvalidationForClass("c"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForPseudoClass(invalidation_lists,
+                                          CSSSelector::kPseudoHas);
+    EXPECT_EQ(1u, invalidation_lists.descendants.size());
+    EXPECT_TRUE(HasClassInvalidation("c", invalidation_lists.descendants));
+    EXPECT_FALSE(invalidation_lists.descendants[0]->TreeBoundaryCrossing());
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+  }
+
+  {
+    Element* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+    EXPECT_FALSE(NeedsHasInvalidationForInsertedOrRemovedElement(*element));
+
+    element->setAttribute(html_names::kIdAttr, AtomicString("f"));
+    EXPECT_TRUE(NeedsHasInvalidationForInsertedOrRemovedElement(*element));
+  }
+}
+
+TEST_F(RuleFeatureSetTest,
+       InvalidatesHasWithClassAttributeAtNonSubjectPosition) {
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(".a:has([class=\"b\"]) .c"));
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasClassInvalidation("c", invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+    EXPECT_FALSE(NeedsHasInvalidationForClass("a"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForAttribute(
+        invalidation_lists,
+        QualifiedName(g_empty_atom, AtomicString("class"), g_empty_atom));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+    EXPECT_TRUE(NeedsHasInvalidationForAttribute("class"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "c");
+    EXPECT_TRUE(HasSelfInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+    EXPECT_FALSE(NeedsHasInvalidationForClass("c"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForPseudoClass(invalidation_lists,
+                                          CSSSelector::kPseudoHas);
+    EXPECT_EQ(1u, invalidation_lists.descendants.size());
+    EXPECT_TRUE(HasClassInvalidation("c", invalidation_lists.descendants));
+    EXPECT_FALSE(invalidation_lists.descendants[0]->TreeBoundaryCrossing());
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+  }
+
+  {
+    Element* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+    EXPECT_FALSE(NeedsHasInvalidationForInsertedOrRemovedElement(*element));
+
+    element->setAttribute(html_names::kClassAttr, AtomicString("f"));
+    EXPECT_TRUE(NeedsHasInvalidationForInsertedOrRemovedElement(*element));
   }
 }
 
