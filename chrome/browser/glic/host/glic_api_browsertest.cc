@@ -1510,10 +1510,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
   histogram_tester.ExpectTotalCount("Glic.Api.RequestHostLatency.CreateTab", 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPinTabs) {
-  ExecuteJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsWhileClosing) {
   NavigateTabAndOpenGlicFloating();
   ExecuteJsTest();

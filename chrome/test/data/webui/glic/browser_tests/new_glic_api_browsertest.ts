@@ -7,6 +7,7 @@ import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdat
 import {Subject} from '/glic/observable.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
+import type {SequencedSubscriber} from './browser_test_base.js';
 
 class ApiTests extends ApiTestFixtureBase {
   override async setUpTest() {
@@ -70,6 +71,50 @@ class ApiTests extends ApiTestFixtureBase {
     const focus = await sequence.next();
     assertFalse(!!focus.hasFocus);
     assertDefined(focus.hasNoFocus);
+  }
+
+  // Helper function to pin the active tab. Asserts the tab is pinned, and
+  // returns the tab ID.
+  async pinActiveTab(): Promise<string> {
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.unpinTabs);
+    const tabId = this.getActiveTabId();
+    await this.host.pinTabs([tabId]);
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    await pinnedTabsUpdates.waitFor(
+        (tabs) => tabs.some(t => t.tabId === tabId));
+    return tabId;
+  }
+
+  // Asserts that there is an active tab, and returns its tab ID.
+  getActiveTabId(): string {
+    const focus =
+        checkDefined(this.host.getFocusedTabStateV2?.().getCurrentValue());
+    return checkDefined(
+        focus.hasFocus?.tabData.tabId ??
+        focus.hasNoFocus?.tabFocusCandidateData?.tabId);
+  }
+
+  observeActiveTab(): SequencedSubscriber<TabData|undefined> {
+    return observeSequence(
+        mapObservable(this.host.getFocusedTabStateV2!(), (focus) => {
+          return focus?.hasFocus?.tabData ??
+              focus?.hasNoFocus?.tabFocusCandidateData;
+        }));
+  }
+
+  async testPinTabs() {
+    // Pin the focused tab and verify it's sent.
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.unpinTabs);
+    await this.pinActiveTab();
+
+    // Unpin and verify the pinned tab list is updated.
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    const tabId = checkDefined((await pinnedTabsUpdates.next())[0]?.tabId);
+    assertTrue(await this.host.unpinTabs([tabId]));
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
   }
 
   async testGetTabByIdWithDiscard() {
