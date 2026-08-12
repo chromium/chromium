@@ -24,6 +24,7 @@ using enum NativeWidgetMacNSWindowHeadlessInfo::WindowState;
 // Window visibility and Z-Order.
 - (BOOL)isVisible;
 - (BOOL)invokeOriginalIsVisibleForTesting;
+- (NSWindowOcclusionState)occlusionState;
 - (void)orderFront:(id)sender;
 - (void)orderBack:(id)sender;
 - (void)orderOut:(id)sender;
@@ -74,6 +75,7 @@ namespace {
 DEFINE_SWIZZLER(isVisible, isVisible)
 DEFINE_SWIZZLER(invokeOriginalIsVisibleForTesting,
                 invokeOriginalIsVisibleForTesting)
+DEFINE_SWIZZLER(occlusionState, occlusionState)
 DEFINE_SWIZZLER(orderFront, orderFront:)
 DEFINE_SWIZZLER(orderBack, orderBack:)
 DEFINE_SWIZZLER(orderOut, orderOut:)
@@ -104,6 +106,7 @@ void InstallSwizzlers() {
   dispatch_once(&once, ^{
     isVisibleSwizzler();
     invokeOriginalIsVisibleForTestingSwizzler();
+    occlusionStateSwizzler();
     orderFrontSwizzler();
     orderBackSwizzler();
     orderOutSwizzler();
@@ -162,6 +165,16 @@ void InstallSwizzlers() {
   return isVisibleSwizzler().InvokeOriginal<BOOL>(self, isVisibleSelector());
 }
 
+- (NSWindowOcclusionState)occlusionState {
+  NativeWidgetMacNSWindowHeadlessInfo* headless_info = GET_HEADLESS_INFO;
+  if (!headless_info) {
+    return occlusionStateSwizzler().InvokeOriginal<NSWindowOcclusionState>(
+        self, occlusionStateSelector());
+  }
+
+  return headless_info->is_visible ? NSWindowOcclusionStateVisible : 0;
+}
+
 - (void)orderFront:(id)sender {
   NativeWidgetMacNSWindowHeadlessInfo* headless_info = GET_HEADLESS_INFO;
   if (!headless_info) {
@@ -181,6 +194,10 @@ void InstallSwizzlers() {
   if (delegate) {
     [delegate onWindowOrderChanged:nil];
   }
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidChangeOcclusionStateNotification
+                    object:self];
 }
 
 - (void)orderBack:(id)sender {
@@ -202,6 +219,10 @@ void InstallSwizzlers() {
   if (delegate) {
     [delegate onWindowOrderChanged:nil];
   }
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidChangeOcclusionStateNotification
+                    object:self];
 }
 
 - (void)orderOut:(id)sender {
@@ -231,6 +252,10 @@ void InstallSwizzlers() {
   if (delegate) {
     [delegate onWindowOrderChanged:nil];
   }
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidChangeOcclusionStateNotification
+                    object:self];
 }
 
 - (void)orderWindow:(NSWindowOrderingMode)place relativeTo:(NSInteger)otherWin {
@@ -557,6 +582,10 @@ void InstallSwizzlers() {
   if (delegate) {
     [delegate windowDidMiniaturize:nil];
   }
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidChangeOcclusionStateNotification
+                    object:self];
 }
 
 - (void)deminiaturize:(id)sender {
@@ -586,6 +615,10 @@ void InstallSwizzlers() {
       [delegate windowDidBecomeKey:nil];
     }
   }
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidChangeOcclusionStateNotification
+                    object:self];
 }
 
 - (void)performMiniaturize:(id)sender {

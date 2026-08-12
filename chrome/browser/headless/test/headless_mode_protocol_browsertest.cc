@@ -412,13 +412,7 @@ HEADLESS_MODE_PROTOCOL_TEST(StartFullscreenSwitch,
 HEADLESS_MODE_PROTOCOL_TEST(StartFullscreenSwitchScaled,
                             "sanity/start-fullscreen-switch-scaled.js")
 
-// TODO(crbug.com/543040219): flaky on macOS.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_WindowStateTransitions DISABLED_WindowStateTransitions
-#else
-#define MAYBE_WindowStateTransitions WindowStateTransitions
-#endif
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowStateTransitions,
+HEADLESS_MODE_PROTOCOL_TEST(WindowStateTransitions,
                             "shared/window-state-transitions.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowZoomOnSecondaryScreen,
