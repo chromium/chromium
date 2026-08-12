@@ -857,6 +857,7 @@ TEST_F(VariationsServiceTest, GetStoredPermanentCountry) {
     const std::string permanent_consistency_country_before;
     const std::string expected_country;
   } test_cases[] = {
+      // clang-format off
       {"", "", "<VERSION>,us", "us"},
       {"", "us", "<VERSION>,us", "us"},
       {"", "ca", "<VERSION>,us", "ca"},
@@ -865,6 +866,7 @@ TEST_F(VariationsServiceTest, GetStoredPermanentCountry) {
       {"gb", "us", "<VERSION>,us", "gb"},
       {"gb", "ca", "<VERSION>,us", "gb"},
       {"gb", "ca", "", "gb"},
+      // clang-format on
   };
 
   for (const auto& test : test_cases) {
@@ -1367,6 +1369,58 @@ TEST_F(VariationsServiceTest,
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
                      ->GetRuntimeOverride("MyStudy")
                      .has_value());
+  }
+}
+
+// Verifies that policy restrictions apply to runtime mutable changes.
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_PolicyRestriction) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    // Case 1: When policy restriction is set to ALL, runtime mutable changes
+    // should be filtered out and not applied.
+    prefs_.SetInteger(prefs::kVariationsRestrictionsByPolicy,
+                      static_cast<int>(RestrictionPolicy::ALL));
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectTotalCount(kApplyRuntimeMutableChangesResultMetric,
+                                      0);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+
+  {
+    // Case 2: When policy restriction is NO_RESTRICTIONS, runtime mutable
+    // changes should be applied normally.
+    prefs_.SetInteger(prefs::kVariationsRestrictionsByPolicy,
+                      static_cast<int>(RestrictionPolicy::NO_RESTRICTIONS));
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "MyStudy");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Group1");
   }
 }
 
