@@ -1080,10 +1080,10 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeElementWhichHasNonCustomResizer) {
                                   ->GetScrollableArea()
                                   ->GetScrollCornerDisplayItemClient();
   invalidations.push_back(RasterInvalidationInfo{
-      scroll_corner.Id(), scroll_corner.DebugName(), gfx::Rect(93, 93, 7, 7),
+      scroll_corner.Id(), scroll_corner.DebugName(), gfx::Rect(85, 85, 15, 15),
       PaintInvalidationReason::kLayout});
   invalidations.push_back(RasterInvalidationInfo{
-      scroll_corner.Id(), scroll_corner.DebugName(), gfx::Rect(193, 93, 7, 7),
+      scroll_corner.Id(), scroll_corner.DebugName(), gfx::Rect(185, 85, 15, 15),
       PaintInvalidationReason::kLayout});
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAreArray(invalidations));

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "ui/display/screen_info.h"
 
 using testing::_;
 
@@ -34,6 +35,8 @@ namespace {
 
 class ScrollableAreaMockChromeClient : public RenderingTestChromeClient {
  public:
+  ScrollableAreaMockChromeClient() { screen_info_.device_scale_factor = 1.0f; }
+
   MOCK_METHOD3(MockUpdateTooltipUnderCursor,
                void(LocalFrame*, const String&, TextDirection));
   void UpdateTooltipUnderCursor(LocalFrame& frame,
@@ -41,6 +44,21 @@ class ScrollableAreaMockChromeClient : public RenderingTestChromeClient {
                                 TextDirection dir) override {
     MockUpdateTooltipUnderCursor(&frame, tooltip_text, dir);
   }
+
+  void SetDeviceScaleFactor(float device_scale_factor) {
+    screen_info_.device_scale_factor = device_scale_factor;
+  }
+
+  const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+    return screen_info_;
+  }
+
+  float WindowToViewportScalar(LocalFrame*, const float value) const override {
+    return value * screen_info_.device_scale_factor;
+  }
+
+ private:
+  display::ScreenInfo screen_info_;
 };
 
 }  // namespace
@@ -2470,6 +2488,99 @@ TEST_P(PaintLayerScrollableAreaTest,
   // A programmatic scroll should show the non-composited overlay scrollbars
   // in the canvas layout subtree.
   EXPECT_FALSE(scroller->ScrollbarsHiddenIfOverlay());
+}
+
+TEST_P(PaintLayerScrollableAreaTest, TextareaResizerFixedSize) {
+  GetPage().GetSettings().SetTextAreasAreResizable(true);
+  SetBodyInnerHTML(R"HTML(
+    <!doctype HTML>
+    <style>
+      textarea {
+        width: 200px;
+        height: 100px;
+      }
+    </style>
+    <textarea id="target"></textarea>
+  )HTML");
+
+  // Test with feature enabled (default)
+  {
+    ScopedTextAreaResizerFixedSizeForTest scoped_feature(true);
+    const auto* paint_layer = GetPaintLayerByElementId("target");
+    ASSERT_TRUE(paint_layer);
+    auto* scrollable_area = paint_layer->GetScrollableArea();
+    ASSERT_TRUE(scrollable_area);
+
+    // By default, textareas have overlay scrollbars (or no scrollbars if no
+    // overflow). So they should use the fixed resizer corner size. 15 DIP is
+    // the default fixed size.
+    float scale = scrollable_area->ScaleFromDIP();
+    EXPECT_EQ(scale, 1.0f);
+    int expected_size = std::round(15.0f * scale);
+
+    gfx::Rect pointer_resizer_rect =
+        scrollable_area->ResizerCornerRect(kResizerForPointer);
+    EXPECT_EQ(pointer_resizer_rect.width(), expected_size);
+    EXPECT_EQ(pointer_resizer_rect.height(), expected_size);
+
+    gfx::Rect touch_resizer_rect =
+        scrollable_area->ResizerCornerRect(kResizerForTouch);
+    EXPECT_EQ(touch_resizer_rect.width(), expected_size * 2);
+    EXPECT_EQ(touch_resizer_rect.height(), expected_size * 2);
+  }
+
+  // Test with feature disabled
+  {
+    ScopedTextAreaResizerFixedSizeForTest scoped_feature(false);
+    const auto* paint_layer = GetPaintLayerByElementId("target");
+    auto* scrollable_area = paint_layer->GetScrollableArea();
+
+    // When disabled, it should use the default scrollbar thickness.
+    // On Linux desktop, this is also 15px by default, so the values might be
+    // the same, but we verify it runs without issues.
+    float scale = scrollable_area->ScaleFromDIP();
+    int expected_size =
+        scrollable_area->GetPageScrollbarTheme().ScrollbarThickness(
+            scale, EScrollbarWidth::kAuto);
+
+    gfx::Rect pointer_resizer_rect =
+        scrollable_area->ResizerCornerRect(kResizerForPointer);
+    EXPECT_EQ(pointer_resizer_rect.width(), expected_size);
+    EXPECT_EQ(pointer_resizer_rect.height(), expected_size);
+
+    gfx::Rect touch_resizer_rect =
+        scrollable_area->ResizerCornerRect(kResizerForTouch);
+    EXPECT_EQ(touch_resizer_rect.width(), expected_size * 2);
+    EXPECT_EQ(touch_resizer_rect.height(), expected_size * 2);
+  }
+
+  // Test with device scale factor 2.0 and feature enabled
+  {
+    ScopedTextAreaResizerFixedSizeForTest scoped_feature(true);
+    GetChromeClient().SetDeviceScaleFactor(2.0f);
+    // Re-layout to apply scale factor changes
+    UpdateAllLifecyclePhasesForTest();
+
+    const auto* paint_layer = GetPaintLayerByElementId("target");
+    auto* scrollable_area = paint_layer->GetScrollableArea();
+    float scale = scrollable_area->ScaleFromDIP();
+    EXPECT_EQ(scale, 2.0f);
+    int expected_size = std::round(15.0f * scale);
+
+    gfx::Rect pointer_resizer_rect =
+        scrollable_area->ResizerCornerRect(kResizerForPointer);
+    EXPECT_EQ(pointer_resizer_rect.width(), expected_size);
+    EXPECT_EQ(pointer_resizer_rect.height(), expected_size);
+
+    gfx::Rect touch_resizer_rect =
+        scrollable_area->ResizerCornerRect(kResizerForTouch);
+    EXPECT_EQ(touch_resizer_rect.width(), expected_size * 2);
+    EXPECT_EQ(touch_resizer_rect.height(), expected_size * 2);
+
+    // Reset scale factor
+    GetChromeClient().SetDeviceScaleFactor(1.0f);
+    UpdateAllLifecyclePhasesForTest();
+  }
 }
 
 }  // namespace blink
