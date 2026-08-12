@@ -22,8 +22,6 @@ source_set("password_change") {
     "cross_origin_navigation_observer.h",
     "detached_web_contents.cc",
     "detached_web_contents.h",
-    "features.cc",
-    "features.h",
     "login_state_checker.cc",
     "login_state_checker.h",
     "model_quality_logs_uploader.cc",
@@ -35,6 +33,8 @@ source_set("password_change") {
     "password_change_submission_verifier.cc",
     "password_change_submission_verifier.h",
   ]
+
+  public_deps = [ ":features" ]
 
   deps = [
     "//chrome/browser:browser_process",
@@ -64,6 +64,14 @@ source_set("password_change") {
     "//ui/views",
     "//ui/views/controls/webview",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

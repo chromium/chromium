@@ -4052,6 +4052,11 @@ inline constexpr char kPasskeyUnlockErrorUiDescription[] =
     "verification mechanism (either a system UV or a GPM PIN). This flag "
     "requires the flag `PasskeyUnlockManager` to be active.";
 
+inline constexpr char kPasswordChangeWithGlicName[] =
+    "Password change with Glic";
+inline constexpr char kPasswordChangeWithGlicDescription[] =
+    "Triggers password change flow through Glic";
+
 inline constexpr char kPasswordFormGroupedAffiliationsName[] =
     "Grouped affiliation password suggestions";
 inline constexpr char kPasswordFormGroupedAffiliationsDescription[] =

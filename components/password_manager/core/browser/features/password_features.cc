@@ -152,8 +152,6 @@ const base::FeatureParam<int> kPassDeletionOriginMinGmsVersion = {
     &kPassDeletionOriginToAndroidBackend, "min_gms_version", 261630000};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kPasswordCheckupPrototype, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Temporarily disabled as mitigation for crbug.com/485895402.
 BASE_FEATURE(kPasswordDateLastFilled, base::FEATURE_DISABLED_BY_DEFAULT);
 

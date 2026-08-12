@@ -304,6 +304,7 @@
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "components/component_updater/installer_policies/iwa_key_distribution_component_installer_policy.h"
@@ -13774,6 +13775,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          features::kReadAnythingReadAloudExperimentalPlaybackUi)},
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"password-change-with-glic",
+     flag_descriptions::kPasswordChangeWithGlicName,
+     flag_descriptions::kPasswordChangeWithGlicDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(password_change::features::kPasswordChangeWithGlic)},
 #endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

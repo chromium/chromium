@@ -8037,6 +8037,14 @@
     "expiry_milestone": 152
   },
   {
+    "name": "password-change-with-glic",
+    "owners": [
+      "vsemeniuk@google.com",
+      "chrome-password-manager-team@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "password-form-grouped-affiliations",
     "owners": ["atsvirchkova@google.com", "vsemeniuk@google.com", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 150

@@ -46,6 +46,7 @@
 // TODO(crbug.com/482430429): Reconsider the use of BrowserWindowInterface on
 // Android.
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #endif
 
@@ -129,8 +130,12 @@ AttemptLoginTool::~AttemptLoginTool() {
   // avoid uploading incorrect logs.
   // TODO(crbug.com/485620841): Remove this check once the prototyping is
   // complete for Automated Password Change.
+#if BUILDFLAG(IS_ANDROID)
+  bool prototype_features_enabled = false;
+#else
   bool prototype_features_enabled = base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordCheckupPrototype);
+      password_change::features::kPasswordChangeWithGlic);
+#endif
 
   if (opt_guide_service &&
       base::FeatureList::IsEnabled(

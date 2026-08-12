@@ -8115,6 +8115,7 @@ from previous Chrome versions.
       label="AutofillEnforceDelaysInStrikeDatabase:disabled"/>
   <int value="-2031366201"
       label="enable-segmentation-internals-survey:enabled"/>
+  <int value="-2031290658" label="PasswordChangeWithGlic:enabled"/>
   <int value="-2030972455"
       label="AutofillSuggestServerCardInsteadOfLocalCard:enabled"/>
   <int value="-2030590107" label="NoPauseMediaOnHeadphoneUnplug:disabled"/>
@@ -17766,6 +17767,7 @@ from previous Chrome versions.
   <int value="1003419905" label="AutofillImprovedLabels:disabled"/>
   <int value="1003541603"
       label="enable-isolated-web-app-inline-update:disabled"/>
+  <int value="1003569778" label="PasswordChangeWithGlic:disabled"/>
   <int value="1003612981"
       label="AutofillAutoTriggerManualFallbackForCards:enabled"/>
   <int value="1003673062" label="MediaIndicatorsAndroid:disabled"/>

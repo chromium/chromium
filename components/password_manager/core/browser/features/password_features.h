@@ -166,10 +166,6 @@ BASE_DECLARE_FEATURE(kPassDeletionOriginToAndroidBackend);
 extern const base::FeatureParam<int> kPassDeletionOriginMinGmsVersion;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Triggers password change glow invoking Glic from settings.
-// This flag is only for the prototype version.
-BASE_DECLARE_FEATURE(kPasswordCheckupPrototype);
-
 // Populate the `date_last_filled` timestamp for passwords.
 BASE_DECLARE_FEATURE(kPasswordDateLastFilled);
 

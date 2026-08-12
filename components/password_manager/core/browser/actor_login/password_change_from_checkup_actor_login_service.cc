@@ -36,7 +36,7 @@ PasswordChangeFromCheckupActorLoginService::
 
 // TODO(crbug.com/509823221): Actor Login MQLS logs should be uploaded and
 // recorded as APC flows. Currently, MQLS is disabled for Actor Login
-// when `kPasswordCheckupPrototype` is enabled. Instead, the MQLS logs
+// when `kPasswordChangeWithGlic` is enabled. Instead, the MQLS logs
 // should be marked as APC flows and uploaded.
 void PasswordChangeFromCheckupActorLoginService::GetCredentials(
     ActorLoginDelegateClient* client,
@@ -156,7 +156,7 @@ void PasswordChangeFromCheckupActorLoginService::AttemptLogin(
 
   // TODO(crbug.com/509823221): Actor Login MQLS logs should be uploaded and
   // recorded as APC flows. Currently, MQLS is disabled for Actor Login
-  // when `kPasswordCheckupPrototype` is enabled. Instead, the MQLS logs
+  // when `kPasswordChangeWithGlic` is enabled. Instead, the MQLS logs
   // should be marked as APC flows and uploaded.
   credential_filler_ =
       std::make_unique<AutomatedPasswordChangeCredentialFiller>(

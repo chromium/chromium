@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change/password_change_from_checkup_delegate.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
@@ -74,7 +75,7 @@ class PasswordChangeFromCheckupDelegateBrowserTest
  public:
   PasswordChangeFromCheckupDelegateBrowserTest() {
     feature_list_.InitWithFeatures(
-        {password_manager::features::kPasswordCheckupPrototype,
+        {password_change::features::kPasswordChangeWithGlic,
          autofill::features::debug::kShowDomNodeIDs},
         {});
   }

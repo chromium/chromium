@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/test_passwords_private_delegate.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/test/base/testing_profile.h"
@@ -548,7 +549,7 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordCheckupPrototype);
+      password_change::features::kPasswordChangeWithGlic);
 
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
@@ -592,7 +593,7 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
        StartPasswordChange_InvalidCredentialId_DoesNotCallService) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordCheckupPrototype);
+      password_change::features::kPasswordChangeWithGlic);
 
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
@@ -622,7 +623,7 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordCheckupPrototype);
+      password_change::features::kPasswordChangeWithGlic);
 
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
@@ -655,7 +656,7 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordCheckupPrototype);
+      password_change::features::kPasswordChangeWithGlic);
 
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
