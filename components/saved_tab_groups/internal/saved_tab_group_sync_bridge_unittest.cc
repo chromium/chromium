@@ -1273,6 +1273,37 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddTabLocally) {
   saved_tab_group_model_.AddTabToGroupLocally(group_guid, tab_3);
 }
 
+TEST_F(SavedTabGroupSyncBridgeTest, AddTabLocallyInMiddlePersistsPositions) {
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
+                      /*position=*/std::nullopt);
+  SavedTabGroupTab tab_1(GURL("https://one.com"), u"One", group.saved_guid(),
+                         /*position=*/0);
+  SavedTabGroupTab tab_3(GURL("https://three.com"), u"Three",
+                         group.saved_guid(), /*position=*/1);
+  group.AddTabLocally(tab_1).AddTabLocally(tab_3);
+
+  const base::Uuid group_guid = group.saved_guid();
+  saved_tab_group_model_.AddedLocally(std::move(group));
+
+  SavedTabGroupTab tab_2(GURL("https://two.com"), u"Two", group_guid,
+                         /*position=*/1);
+  const base::Uuid tab_2_guid = tab_2.saved_tab_guid();
+  saved_tab_group_model_.AddTabToGroupLocally(group_guid, std::move(tab_2));
+
+  std::optional<proto::SavedTabGroupData> stored_tab_1 =
+      ReadSavedTabGroupDataFromStore(tab_1.saved_tab_guid());
+  std::optional<proto::SavedTabGroupData> stored_tab_2 =
+      ReadSavedTabGroupDataFromStore(tab_2_guid);
+  std::optional<proto::SavedTabGroupData> stored_tab_3 =
+      ReadSavedTabGroupDataFromStore(tab_3.saved_tab_guid());
+  ASSERT_TRUE(stored_tab_1.has_value());
+  ASSERT_TRUE(stored_tab_2.has_value());
+  ASSERT_TRUE(stored_tab_3.has_value());
+  EXPECT_EQ(stored_tab_1->specifics().tab().position(), 0);
+  EXPECT_EQ(stored_tab_2->specifics().tab().position(), 1);
+  EXPECT_EQ(stored_tab_3->specifics().tab().position(), 2);
+}
+
 // Verify that locally removed tabs remove the correct tabs from the processor.
 TEST_F(SavedTabGroupSyncBridgeTest, RemoveTabLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());

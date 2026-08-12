@@ -8,10 +8,12 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -28,6 +30,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/collaboration/public/messaging/empty_messaging_backend_service.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -50,6 +53,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view_utils.h"
@@ -180,6 +184,16 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
   base::CallbackListSubscription dependency_manager_subscription_;
 };
 
+class TabGroupSyncDelegateSessionRestoreBrowserTest
+    : public TabGroupSyncDelegateBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    TabGroupSyncDelegateBrowserTest::SetUpOnMainThread();
+    SessionStartupPref::SetStartupPref(
+        browser()->GetProfile(), SessionStartupPref(SessionStartupPref::LAST));
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
                        GetBrowserWithTabGroupId) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -239,6 +253,79 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   ASSERT_TRUE(listener->saved_group());
   ASSERT_TRUE(model_->Contains(group_id));
   EXPECT_EQ(model_->Get(group_id)->saved_tabs().size(), 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateSessionRestoreBrowserTest,
+                       PRE_TabsAddedToGroupFrontRestoreInOrder) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::vector<GURL> urls;
+  for (int i = 1; i <= 6; ++i) {
+    urls.emplace_back(embedded_test_server()->GetURL("/title1.html?number=" +
+                                                     base::NumberToString(i)));
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls[0]));
+  for (int i = 1; i < 6; ++i) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), urls[i], WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(6, tab_strip_model->count());
+  const LocalTabGroupID group_id = tab_strip_model->AddToNewGroup({3, 4, 5});
+  ASSERT_TRUE(model_->Contains(group_id));
+
+  // This is the TabStripModel operation used by chrome.tabs.group() when
+  // adding several tabs to an existing group.
+  tab_strip_model->AddToExistingGroup({0, 1, 2}, group_id);
+
+  const TabGroup* group = tab_strip_model->group_model()->GetTabGroup(group_id);
+  ASSERT_TRUE(group);
+  tab_strip_model->ChangeTabGroupVisuals(
+      group_id,
+      TabGroupVisualData(group->visual_data()->title(),
+                         group->visual_data()->color(), /*is_collapsed=*/true));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    const SavedTabGroup* saved_group = model_->Get(group_id);
+    return saved_group && saved_group->saved_tabs().size() == urls.size();
+  }));
+
+  const SavedTabGroup* saved_group = model_->Get(group_id);
+  ASSERT_TRUE(saved_group);
+  for (int i = 0; i < 6; ++i) {
+    EXPECT_EQ("number=" + base::NumberToString(i + 1),
+              tab_strip_model->GetWebContentsAt(i)->GetVisibleURL().query());
+    EXPECT_EQ("number=" + base::NumberToString(i + 1),
+              saved_group->saved_tabs()[i].url().query());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateSessionRestoreBrowserTest,
+                       TabsAddedToGroupFrontRestoreInOrder) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1u, tab_strip_model->group_model()->ListTabGroups().size());
+  const LocalTabGroupID group_id =
+      tab_strip_model->group_model()->ListTabGroups().front();
+  const gfx::Range group_range =
+      tab_strip_model->group_model()->GetTabGroup(group_id)->ListTabs();
+  ASSERT_EQ(6u, group_range.length());
+
+  // Verify both the restored tab state and the loaded tabs preserve order.
+  for (int i = 0; i < 6; ++i) {
+    const int tab_index = group_range.start() + i;
+    EXPECT_EQ(
+        "number=" + base::NumberToString(i + 1),
+        tab_strip_model->GetWebContentsAt(tab_index)->GetVisibleURL().query())
+        << "before activation: " << i;
+    tab_strip_model->ActivateTabAt(tab_index);
+    content::WaitForLoadStop(tab_strip_model->GetWebContentsAt(tab_index));
+    EXPECT_EQ(
+        "number=" + base::NumberToString(i + 1),
+        tab_strip_model->GetWebContentsAt(tab_index)->GetVisibleURL().query());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,

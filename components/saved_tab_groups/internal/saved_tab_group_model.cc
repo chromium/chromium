@@ -342,12 +342,24 @@ void SavedTabGroupModel::AddTabToGroupLocally(const base::Uuid& group_id,
 
   group.AddTabLocally(std::move(tab));
 
+  // Saved groups use numeric positions, so inserting before an existing tab
+  // also requires a tab-order update.
+  const bool existing_tab_positions_changed =
+      !group.is_shared_tab_group() &&
+      group.saved_tabs().back().saved_tab_guid() != tab_id;
+
   // When adding a tab locally, we should also check for any pending NTP
   // and start syncing them.
   StartSyncingPendingNtpIfAny(group);
 
   for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(group_id, tab_id);
+  }
+
+  if (existing_tab_positions_changed) {
+    for (auto& observer : observers_) {
+      observer.SavedTabGroupTabMovedLocally(group_id, tab_id);
+    }
   }
 
   base::RecordAction(
