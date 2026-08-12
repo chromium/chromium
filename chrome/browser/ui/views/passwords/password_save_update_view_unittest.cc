@@ -598,6 +598,26 @@ TEST_F(PasswordDropdownExperimentTest,
             NeverButtonCaption());
 }
 
+TEST_F(PasswordDropdownExperimentTest, TrustedVaultErrorUiState) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kPasswordSaveInContextErrorResolution};
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile()), "test@email.com",
+      signin::ConsentLevel::kSignin);
+  ON_CALL(*model_delegate_mock(), IsSavingBlockedByTrustedVaultError)
+      .WillByDefault(Return(true));
+
+  CreateViewAndShow();
+
+  EXPECT_EQ(view()->GetSubtitle(),
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_BUBBLES_SUBTITLE_TRUSTED_VAULT_ERROR));
+  views::MdTextButton* ok_button = view()->GetOkButtonForTesting();
+  ASSERT_TRUE(ok_button);
+  EXPECT_EQ(ok_button->GetText(), l10n_util::GetStringUTF16(IDS_CONTINUE));
+  ASSERT_TRUE(view()->GetFootnoteViewForTesting());
+}
+
 TEST_P(PasswordSaveUpdateViewTest, TrustedVaultErrorUiState) {
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::kPasswordSaveInContextErrorResolution};
