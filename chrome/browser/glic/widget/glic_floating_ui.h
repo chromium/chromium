@@ -58,7 +58,6 @@ class GlicFloatingUi : public GlicUiEmbedder,
   static gfx::Size GetCompositeViewDefaultSize();
 
   // GlicUiEmbedder:
-  void OnClientReady() override;
   Host::EmbedderDelegate* GetHostEmbedderDelegate() override;
   void Show(const ShowOptions& options) override;
   bool IsShowing() const override;

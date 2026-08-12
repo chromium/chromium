@@ -109,10 +109,6 @@ GlicFloatingUi::~GlicFloatingUi() {
   }
 }
 
-void GlicFloatingUi::OnClientReady() {
-  instance_metrics_->OnClientReady(EmbedderType::kFloaty);
-}
-
 Host::EmbedderDelegate* GlicFloatingUi::GetHostEmbedderDelegate() {
   return this;
 }

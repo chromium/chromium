@@ -617,14 +617,13 @@ void Host::OnWebClientStateChanged(mojom::WebClientState state) {
 void Host::PanelWillOpenComplete(GlicWebClientAccess* client,
                                  mojom::OpenPanelInfoPtr open_info) {
   CHECK(client);
-  // If the panel was closed before opening finished, return early.
-  if (!panel_open_) {
-    return;
-  }
   if (web_client_ == client) {
-    if (handler_info_) {
+    if (handler_info_ && panel_open_) {
       handler_info_->open_complete = true;
     }
+    // Notify observers that the client is ready even if `panel_open_` is false
+    // (e.g. if the user backgrounded or closed the panel during load) so that
+    // metrics can record load completion and clear any pending timers.
     observers_.Notify(&Observer::ClientReadyToShow, *open_info);
   }
 }

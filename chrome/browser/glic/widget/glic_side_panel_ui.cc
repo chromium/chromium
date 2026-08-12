@@ -94,10 +94,6 @@ GlicSidePanelUi::~GlicSidePanelUi() {
   SetModalDialogDelegate(nullptr);
 }
 
-void GlicSidePanelUi::OnClientReady() {
-  instance_metrics_->OnClientReady(EmbedderType::kSidePanel);
-}
-
 Host::EmbedderDelegate* GlicSidePanelUi::GetHostEmbedderDelegate() {
   return this;
 }

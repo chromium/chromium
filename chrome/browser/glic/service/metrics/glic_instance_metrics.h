@@ -199,7 +199,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnWebUiStateChanged(mojom::WebUiState state);
 
   // Called when the client is ready to show.
-  void OnClientReady(EmbedderType type);
+  void OnClientReady();
 
   void OnUserResizeStarted(const gfx::Size& start_size);
   void OnUserResizeEnded(const gfx::Size& end_size);
@@ -282,6 +282,10 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // closed or the tab is switched.
   void MaybeRecordFirstSidePanelOpenMetrics(base::TimeDelta duration);
 
+  // Records the duration the user waited before closing/dismissing the panel
+  // while the client was still loading.
+  void MaybeRecordTimeToDismissWhileLoading();
+
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   EmbedderType current_ui_mode_ = EmbedderType::kUnknown;
 
@@ -296,6 +300,13 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
   base::EnumSet<mojom::WebClientMode> inputs_modes_used_;
 
+  // Stores info scoped to the current invocation loading phase.
+  struct InvocationLoadState {
+    base::TimeTicks start_time;
+    EmbedderType embedder_type = EmbedderType::kUnknown;
+    bool has_logged_dismiss_while_loading = false;
+  };
+
   // The last web ui state received.
   mojom::WebUiState last_web_ui_state_ = mojom::WebUiState::kUninitialized;
   // The last invocation source that was used to show the panel.
@@ -304,8 +315,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   std::optional<mojom::InvocationSource> initial_invocation_source_ =
       std::nullopt;
   bool did_open_ = false;
-  // Timestamp of last show start.
-  base::TimeTicks invocation_start_time_;
+  InvocationLoadState invocation_load_state_;
   base::TimeTicks web_ui_load_start_time_;
 
   base::TimeTicks last_active_time_;

@@ -1331,6 +1331,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.Instance.PanelPresentationTime.Inactive.{EmbedderType}"
+    units="ms" expires_after="2027-08-11">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <summary>
+    Measures the time from when a user toggles the Glic panel to be shown until
+    the web client signals that it is ready, for panels that were backgrounded
+    or closed before the client finished loading. Recorded each time an inactive
+    {EmbedderType} panel finishes loading.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+</histogram>
+
 <histogram name="Glic.Instance.PanelPresentationTime.{EmbedderType}" units="ms"
     expires_after="2027-01-31">
   <owner>birnie@google.com</owner>
@@ -1612,6 +1625,19 @@ chromium-metrics-reviews@google.com.
     Records the time elapsed since the last active Glic instance was active.
     Recorded when Glic is opened and a previous active instance exists.
   </summary>
+</histogram>
+
+<histogram name="Glic.Instance.TimeToDismissWhileLoading.{EmbedderType}"
+    units="ms" expires_after="2027-08-11">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <summary>
+    Measures the time from when a user toggles the Glic panel to be shown until
+    the user closes, collapses, or switches away from the panel before the web
+    client finishes loading. Recorded when an active {EmbedderType} panel is
+    dismissed while loading.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
 </histogram>
 
 <histogram name="Glic.Instance.TotalActiveDuration" units="ms"

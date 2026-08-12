@@ -79,6 +79,19 @@ std::string_view GetInputModeString(mojom::WebClientMode input_mode) {
   }
 }
 
+EmbedderType GetEmbedderTypeFromShowOptions(const ShowOptions& options) {
+  if (std::holds_alternative<SidePanelShowOptions>(options.embedder_options)) {
+    return EmbedderType::kSidePanel;
+  }
+  if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {
+    return EmbedderType::kFloaty;
+  }
+  if (std::holds_alternative<TabShowOptions>(options.embedder_options)) {
+    return EmbedderType::kTab;
+  }
+  return EmbedderType::kUnknown;
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(GlicTurnSource)
@@ -683,9 +696,32 @@ void GlicInstanceMetrics::OnRegisterConversation(
   LogEvent(GlicInstanceEvent::kRegisterConversation);
 }
 
+void GlicInstanceMetrics::MaybeRecordTimeToDismissWhileLoading() {
+  // If the client has not yet signaled ready, record the duration the user
+  // waited from invocation until they dismissed (hid or closed) the panel.
+  // We gate on `!has_logged_dismiss_while_loading` to ensure we only record
+  // once per dismissal (e.g., avoiding duplicate logging if OnInstanceHidden
+  // is followed by OnClose).
+  if (invocation_load_state_.start_time.is_null() || is_client_ready_ ||
+      invocation_load_state_.has_logged_dismiss_while_loading) {
+    return;
+  }
+  base::TimeDelta wait_time =
+      base::TimeTicks::Now() - invocation_load_state_.start_time;
+  if (invocation_load_state_.embedder_type != EmbedderType::kUnknown) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat(
+            {"Glic.Instance.TimeToDismissWhileLoading.",
+             GetEmbedderTypeString(invocation_load_state_.embedder_type)}),
+        wait_time, base::Milliseconds(1), base::Seconds(60), 50);
+  }
+  invocation_load_state_.has_logged_dismiss_while_loading = true;
+}
+
 void GlicInstanceMetrics::OnInstanceHidden() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Hide"));
   LogEvent(GlicInstanceEvent::kInstanceHidden);
+  MaybeRecordTimeToDismissWhileLoading();
 }
 
 void GlicInstanceMetrics::OnClose() {
@@ -697,6 +733,8 @@ void GlicInstanceMetrics::OnClose() {
     base::UmaHistogramEnumeration("Glic.Fre.PanelWebUiState.FinishState",
                                   last_web_ui_state_);
   }
+  MaybeRecordTimeToDismissWhileLoading();
+  invocation_load_state_ = {};
 }
 
 bool GlicInstanceMetrics::MarkShownAndCheckIfFirstTime(EmbedderKey key) {
@@ -711,7 +749,13 @@ void GlicInstanceMetrics::ResetShownState(EmbedderKey key) {
 
 void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
                                  const ShowOptions& options) {
-  invocation_start_time_ = base::TimeTicks::Now();
+  if (!is_client_ready_) {
+    invocation_load_state_ = {
+        .start_time = base::TimeTicks::Now(),
+        .embedder_type = GetEmbedderTypeFromShowOptions(options),
+        .has_logged_dismiss_while_loading = false,
+    };
+  }
   last_invocation_source_ = source;
 
   // 1. Log Events
@@ -938,23 +982,27 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
   }
 }
 
-void GlicInstanceMetrics::OnClientReady(EmbedderType type) {
+void GlicInstanceMetrics::OnClientReady() {
   is_client_ready_ = true;
   MaybeRecordOptInImpression();
   LogEvent(GlicInstanceEvent::kClientReady);
 
-  if (invocation_start_time_.is_null()) {
+  if (invocation_load_state_.start_time.is_null()) {
     return;
   }
   base::TimeDelta presentation_time =
-      base::TimeTicks::Now() - invocation_start_time_;
-  if (type != EmbedderType::kUnknown) {
-    base::UmaHistogramCustomTimes(
-        base::StrCat({"Glic.Instance.PanelPresentationTime.",
-                      GetEmbedderTypeString(type)}),
-        presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
+      base::TimeTicks::Now() - invocation_load_state_.start_time;
+  if (invocation_load_state_.embedder_type != EmbedderType::kUnknown) {
+    bool is_visible =
+        visibility_tracker_ ? visibility_tracker_->state() : false;
+    std::string_view inactive_str = is_visible ? "" : "Inactive.";
+    std::string histogram_name = base::StrCat(
+        {"Glic.Instance.PanelPresentationTime.", inactive_str,
+         GetEmbedderTypeString(invocation_load_state_.embedder_type)});
+    base::UmaHistogramCustomTimes(histogram_name, presentation_time,
+                                  base::Milliseconds(1), base::Seconds(60), 50);
   }
-  invocation_start_time_ = base::TimeTicks();
+  invocation_load_state_ = {};
 }
 
 void GlicInstanceMetrics::LogEvent(GlicInstanceEvent event) {

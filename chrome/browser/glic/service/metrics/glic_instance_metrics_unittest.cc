@@ -77,7 +77,7 @@ TEST_F(GlicInstanceMetricsTest, OptinImpression) {
       user_action_tester_.GetActionCount("Glic.Onboarding.OptInImpression"), 0);
 
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnClientReady(EmbedderType::kSidePanel);
+  metrics_.OnClientReady();
 
   EXPECT_EQ(
       user_action_tester_.GetActionCount("Glic.Onboarding.OptInImpression"), 1);
@@ -90,7 +90,7 @@ TEST_F(GlicInstanceMetricsTest, OptinImpression_KillSwitchDisabled) {
 
   metrics_.OnOptinImpression();
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnClientReady(EmbedderType::kSidePanel);
+  metrics_.OnClientReady();
 
   EXPECT_EQ(
       user_action_tester_.GetActionCount("Glic.Onboarding.OptInImpression"), 0);
@@ -1006,6 +1006,146 @@ TEST_F(GlicInstanceMetricsTest,
       "Glic.InvocationSource.TopChromeButton.SidePanelFirstOpenDuration."
       "WithPrompts",
       0);
+}
+
+TEST_F(GlicInstanceMetricsTest, PanelPresentationTime_ActiveFlow_SidePanel) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(350));
+  metrics_.OnClientReady();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.PanelPresentationTime.SidePanel", base::Milliseconds(350),
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToDismissWhileLoading.SidePanel", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, PanelPresentationTime_ActiveFlow_Floaty) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  metrics_.OnClientReady();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.PanelPresentationTime.Floaty", base::Milliseconds(250), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.Inactive.Floaty", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToDismissWhileLoading.Floaty", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       PanelPresentationTime_InactiveFlow_HiddenDuringLoad) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(150));
+
+  // User hides/switches away from the panel before client load completes.
+  metrics_.OnVisibilityChanged(false);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToDismissWhileLoading.SidePanel",
+      base::Milliseconds(150), 1);
+
+  // Client finishes loading in background 200ms later (total 350ms).
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  metrics_.OnClientReady();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.PanelPresentationTime.Inactive.SidePanel",
+      base::Milliseconds(350), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.SidePanel", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       PanelPresentationTime_ActiveFlow_ReopenedWhileLoading) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+
+  // User hides/switches away.
+  metrics_.OnVisibilityChanged(false);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToDismissWhileLoading.SidePanel",
+      base::Milliseconds(100), 1);
+
+  // User reopens panel 50ms later while still loading.
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  metrics_.OnVisibilityChanged(true);
+
+  // Client finishes loading 200ms later (total 350ms) while panel is visible.
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  metrics_.OnClientReady();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.PanelPresentationTime.SidePanel", base::Milliseconds(350),
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       PanelPresentationTime_TimeToDismissWhileLoading_ClosedBeforeReady) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+
+  // User explicitly closes before load finishes.
+  metrics_.OnClose();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToDismissWhileLoading.SidePanel",
+      base::Milliseconds(200), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+
+  // Client finishes loading later after close; should not record presentation
+  // time.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  metrics_.OnClientReady();
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       PanelPresentationTime_ReshowAfterBackgroundedLoadDoesNotDuplicate) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+
+  metrics_.OnVisibilityChanged(false);
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  metrics_.OnClientReady();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.PanelPresentationTime.Inactive.SidePanel",
+      base::Milliseconds(350), 1);
+
+  // User returns 10 minutes later. Client was already ready, so calling
+  // OnClientReady again should not record any additional/inflated sample.
+  task_environment_.FastForwardBy(base::Minutes(10));
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnClientReady();
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.SidePanel", 0);
 }
 
 }  // namespace glic
