@@ -17,6 +17,10 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "components/viz/common/hit_test/aggregated_hit_test_region.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
+#include "components/viz/host/host_frame_sink_manager.h"
+#include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
@@ -221,6 +225,10 @@ class TestTouchSelectionControllerClientAura
 
   ui::TouchSelectionMenuClient* GetActiveMenuClient() {
     return active_menu_client_;
+  }
+
+  bool ActiveClientIsInternal() const {
+    return active_client_ == &internal_client_;
   }
 
   bool IsMagnifierVisible() const {
@@ -803,6 +811,128 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
       selection_controller->GetStartPosition();
   EXPECT_EQ(scroll_delta,
             final_start_handle_position - initial_start_handle_position);
+}
+
+// Test for https://crbug.com/522399466.
+// Verifies that when a coordinate transform fails (e.g. if the embedding
+// renderer omits the child's FrameSinkId from the hit-test data), the child
+// frame's TouchSelectionControllerClient does not fall back to root-space
+// coordinates, which could lead to coordinate redirection.
+IN_PROC_BROWSER_TEST_P(
+    TouchSelectionControllerClientAuraSiteIsolationTest,
+    ConvertFromRootIgnoresTransformFailure_PoisonedHitTestRegion) {
+  // Step 1: Navigate to page with cross-origin OOPIF.
+  GURL test_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  TestNavigationObserver observer(shell()->web_contents());
+  ASSERT_EQ(1u, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+
+  InitSelectionController(true);
+
+  GURL child_url(
+      embedded_test_server()->GetURL("b.com", "/touch_selection.html"));
+  ASSERT_TRUE(NavigateToURLFromRenderer(child, child_url));
+  child = root->child_at(0);
+  WaitForHitTestData(child->current_frame_host());
+
+  RenderWidgetHostViewChildFrame* child_view =
+      static_cast<RenderWidgetHostViewChildFrame*>(
+          child->current_frame_host()->GetRenderWidgetHost()->GetView());
+  RenderWidgetHostViewAura* parent_view = GetRenderWidgetHostViewAura();
+
+  // Step 2: Trigger selection in the child frame to make it the active client.
+  ui::test::EventGenerator generator(
+      parent_view->GetNativeView()->GetRootWindow());
+  const gfx::PointF child_text_point =
+      GetPointInTextInFrame(child->current_frame_host(), /*cursor_index=*/2);
+  const gfx::Point press_point = ConvertPointFromChildFrame(
+      child->current_frame_host(), generator.delegate(), child_text_point);
+  SelectWithLongPress(generator, press_point);
+  generator.ReleaseTouch();
+
+  ASSERT_EQ(ui::TouchSelectionController::ActiveStatus::kSelectionActive,
+            parent_view->selection_controller()->active_status());
+  ASSERT_FALSE(selection_controller_client()->ActiveClientIsInternal())
+      << "OOPIF child-frame client must be the active touch-selection client";
+
+  // Record the iframe origin in root coords and the root-space points.
+  // All child->root transforms are computed BEFORE poisoning.
+  const gfx::PointF child_origin_in_root =
+      child_view->TransformPointToRootCoordSpaceF(gfx::PointF());
+  const gfx::PointF base_child =
+      GetPointInTextInFrame(child->current_frame_host(), /*cursor_index=*/0);
+  const gfx::PointF extent_child =
+      GetPointInTextInFrame(child->current_frame_host(), /*cursor_index=*/4);
+  const gfx::PointF base_root =
+      child_view->TransformPointToRootCoordSpaceF(base_child);
+  const gfx::PointF extent_root =
+      child_view->TransformPointToRootCoordSpaceF(extent_child);
+  ASSERT_GT(child_origin_in_root.x(), 5.f);
+  ASSERT_GT(child_origin_in_root.y(), 5.f);
+
+  // Sanity: with un-poisoned data, root->child transform succeeds.
+  {
+    gfx::PointF out;
+    bool ok = parent_view->TransformPointToCoordSpaceForView(base_root,
+                                                             child_view, &out);
+    ASSERT_TRUE(ok);
+    ASSERT_EQ(gfx::ToRoundedPoint(base_child), gfx::ToRoundedPoint(out));
+  }
+
+  // Step 3: Poison the hit-test data by replacing the child's FrameSinkId.
+  // This simulates a compromised parent renderer omitting the child's ID.
+  const viz::FrameSinkId child_fsid = child_view->GetFrameSinkId();
+  const viz::FrameSinkId root_fsid = parent_view->GetRootFrameSinkId();
+  ASSERT_TRUE(child_fsid.is_valid());
+  ASSERT_TRUE(root_fsid.is_valid());
+
+  const auto& query_map = GetHostFrameSinkManager()->GetDisplayHitTestQuery();
+  auto it = query_map.find(root_fsid);
+  ASSERT_NE(it, query_map.end());
+  viz::HitTestQuery* query = it->second.get();
+
+  std::vector<viz::AggregatedHitTestRegion> poisoned = query->GetHitTestData();
+  bool replaced = false;
+  for (auto& region : poisoned) {
+    if (region.frame_sink_id == child_fsid) {
+      region.frame_sink_id = viz::FrameSinkId(0xDEAD, 0xBEEF);
+      replaced = true;
+    }
+  }
+  ASSERT_TRUE(replaced) << "child FrameSinkId not found in aggregated data";
+  query->OnAggregatedHitTestRegionListUpdated(poisoned);
+
+  // Step 4: Verify that the transform now fails.
+  gfx::PointF out_after(-1, -1);
+  const bool ok_after = parent_view->TransformPointToCoordSpaceForView(
+      base_root, child_view, &out_after);
+  EXPECT_FALSE(ok_after) << "transform must fail when child FrameSinkId is "
+                            "missing from aggregated hit-test data";
+  EXPECT_EQ(gfx::ToRoundedPoint(base_root), gfx::ToRoundedPoint(out_after))
+      << "on failure the out-param holds the untransformed root coordinate";
+  EXPECT_NE(gfx::ToRoundedPoint(base_child), gfx::ToRoundedPoint(out_after));
+
+  // Step 5: Try to drag selection handles. The transform failure should cause
+  // the selection request to be dropped, so the selection should remain
+  // unchanged.
+  static_cast<ui::TouchSelectionControllerClient*>(
+      selection_controller_client())
+      ->SelectBetweenCoordinates(base_root, extent_root);
+
+  // The handle drag was over B-local [0,4) of the textDiv, i.e. the word
+  // "Some". If the bug is fixed, the coordinate conversion fails and the
+  // selection request is dropped, so the selection should remain "Some".
+  std::string selected =
+      EvalJs(child->current_frame_host(), "window.getSelection().toString()")
+          .ExtractString();
+  EXPECT_EQ("Some", selected);
+  EXPECT_EQ(ui::TouchSelectionController::ActiveStatus::kInactive,
+            parent_view->selection_controller()->active_status());
 }
 
 // Tests that the selection handles in a child view have their bounds updated

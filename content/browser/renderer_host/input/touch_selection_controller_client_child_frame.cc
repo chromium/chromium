@@ -138,13 +138,24 @@ void TouchSelectionControllerClientChildFrame::DidScroll() {
   TransformSelectionBoundsAndUpdate();
 }
 
-gfx::Point TouchSelectionControllerClientChildFrame::ConvertFromRoot(
+std::optional<gfx::Point>
+TouchSelectionControllerClientChildFrame::ConvertFromRoot(
     const gfx::PointF& point_f) const {
-  gfx::PointF transformed_point(point_f);
   RenderWidgetHostViewBase* root_view = rwhv_->GetRootRenderWidgetHostView();
-  if (root_view) {
-    root_view->TransformPointToCoordSpaceForView(point_f, rwhv_,
-                                                 &transformed_point);
+  if (!root_view) {
+    return std::nullopt;
+  }
+
+  gfx::PointF transformed_point(point_f);
+  // The root->child transform walks the renderer-supplied aggregated
+  // HitTestRegionList. If the (potentially compromised) embedding renderer
+  // omitted this child's FrameSinkId, the transform fails and the out-param
+  // is left holding the *root* coordinate. Drop the request in that case
+  // rather than dispatching root coordinates to the child renderer.
+  // See https://crbug.com/522399466
+  if (!root_view->TransformPointToCoordSpaceForView(point_f, rwhv_,
+                                                    &transformed_point)) {
+    return std::nullopt;
   }
 
   return gfx::ToRoundedPoint(transformed_point);
@@ -161,24 +172,48 @@ void TouchSelectionControllerClientChildFrame::SetNeedsAnimate() {
 void TouchSelectionControllerClientChildFrame::MoveCaret(
     const gfx::PointF& position) {
   RenderWidgetHostDelegate* host_delegate = rwhv_->host()->delegate();
-  if (host_delegate)
-    host_delegate->MoveCaret(ConvertFromRoot(position));
+  if (!host_delegate) {
+    return;
+  }
+  std::optional<gfx::Point> child_position = ConvertFromRoot(position);
+  if (!child_position) {
+    manager_->GetTouchSelectionController()
+        ->HideAndDisallowShowingAutomatically();
+    return;
+  }
+  host_delegate->MoveCaret(*child_position);
 }
 
 void TouchSelectionControllerClientChildFrame::MoveRangeSelectionExtent(
     const gfx::PointF& extent) {
   RenderWidgetHostDelegate* host_delegate = rwhv_->host()->delegate();
-  if (host_delegate)
-    host_delegate->MoveRangeSelectionExtent(ConvertFromRoot(extent));
+  if (!host_delegate) {
+    return;
+  }
+  std::optional<gfx::Point> child_extent = ConvertFromRoot(extent);
+  if (!child_extent) {
+    manager_->GetTouchSelectionController()
+        ->HideAndDisallowShowingAutomatically();
+    return;
+  }
+  host_delegate->MoveRangeSelectionExtent(*child_extent);
 }
 
 void TouchSelectionControllerClientChildFrame::SelectBetweenCoordinates(
     const gfx::PointF& base,
     const gfx::PointF& extent) {
   RenderWidgetHostDelegate* host_delegate = rwhv_->host()->delegate();
-  if (host_delegate) {
-    host_delegate->SelectRange(ConvertFromRoot(base), ConvertFromRoot(extent));
+  if (!host_delegate) {
+    return;
   }
+  std::optional<gfx::Point> child_base = ConvertFromRoot(base);
+  std::optional<gfx::Point> child_extent = ConvertFromRoot(extent);
+  if (!child_base || !child_extent) {
+    manager_->GetTouchSelectionController()
+        ->HideAndDisallowShowingAutomatically();
+    return;
+  }
+  host_delegate->SelectRange(*child_base, *child_extent);
 }
 
 void TouchSelectionControllerClientChildFrame::OnSelectionEvent(

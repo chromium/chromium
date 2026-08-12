@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_CHILD_FRAME_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/selection.h"
@@ -70,7 +71,7 @@ class TouchSelectionControllerClientChildFrame
   bool ShouldShowQuickMenu(bool can_paste) override;
   std::u16string GetSelectedText() override;
 
-  gfx::Point ConvertFromRoot(const gfx::PointF& point) const;
+  std::optional<gfx::Point> ConvertFromRoot(const gfx::PointF& point) const;
 
   // Not owned, non-null for the lifetime of this object.
   raw_ptr<RenderWidgetHostViewChildFrame> rwhv_;
