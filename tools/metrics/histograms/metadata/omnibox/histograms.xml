@@ -357,6 +357,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 <!-- LINT.IfChange(OmniboxToolMode) -->
 
 <variants name="OmniboxToolMode">
+  <variant name="AgentTask" summary="Agent Task tool"/>
   <variant name="Aim" summary="AIM tool"/>
   <variant name="AimGenPrompt" summary="AIM Generated Prompt tool"/>
   <variant name="Canvas" summary="Canvas tool"/>

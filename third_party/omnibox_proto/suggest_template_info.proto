@@ -13,10 +13,9 @@ option java_outer_classname = 'SuggestTemplateInfoProto';
 
 package omnibox;
 
-import "answer_data.proto";
 import "chrome_searchbox_stats.proto";
+import "formatted_string.proto";
 import "input_source.proto";
-import "input_type.proto";
 import "model_mode.proto";
 import "suggest_inventory.proto";
 import "tool_mode.proto";
@@ -37,7 +36,7 @@ message SuggestTemplateInfo {
   // The style of the suggestion.
   optional StandardSuggestStyle style = 1;
 
-  // Next ID: 11
+  // Next ID: 15
   enum IconType {
     // Unspecified.
     ICON_TYPE_UNSPECIFIED = 0;
@@ -63,6 +62,14 @@ message SuggestTemplateInfo {
     NOTES_SPARK = 9;
     // Draft spark icon, typically used for AIM canvas suggestions.
     DRAFT_SPARK = 10;
+    // A light bulb icon, used for the Brainstorm suggestions.
+    LIGHTBULB = 11;
+    // Attach file icon, used in suggestions that ask the user to attach a file.
+    ATTACH_FILE = 12;
+    // School icon, used in EDU suggestions.
+    SCHOOL = 13;
+    // Ink pen icon, used for writing suggestions.
+    INK_PEN = 14;
   }
 
   // The icon type of the suggestion, this is typically the icon in front of
@@ -139,7 +146,7 @@ message SuggestTemplateInfo {
 
   // This sends information about what the Fusebox action does. For example,
   // it might preselect a tool, a model or something else.
-  // Next ID: 10
+  // Next ID: 7
   message FuseboxAction {
     // Which tool gets preselected when the user clicks on the suggestion.
     optional ToolMode preselected_tool = 1;
@@ -155,19 +162,7 @@ message SuggestTemplateInfo {
     // (e.g., tab picker, image picker, file picker).
     optional InputSource preselected_input_source = 4;
 
-    // Force a specific modality (e.g. Voice, Lens, Search Live)
-    optional InputType preselected_input_type = 5;
-
-    message TabAttachment {
-      optional int32 tab_id = 1;
-      optional string title = 2;
-      optional string url = 3;
-    }
-    // Add a specific tab as context to the composebox.
-    optional TabAttachment tab_attachment = 6;
-
     // This changes what the suggestion text (query) does on click.
-    // LINT.IfChange(QueryActionOverride)
     enum QueryActionOverride {
       // Default implicit behavior: submits the query immediately.
       QUERY_ACTION_DEFAULT = 0;
@@ -179,8 +174,7 @@ message SuggestTemplateInfo {
       // placeholder hint.
       QUERY_ACTION_HINT = 2;
     }
-    // LINT.ThenChange(//components/omnibox/browser/fusebox_action.mojom:QueryActionOverride)
-    optional QueryActionOverride query_action_override = 7;
+    optional QueryActionOverride query_action_override = 5;
 
     // This changes which searchbox opens on click.
     enum SearchboxOverride {
@@ -193,13 +187,7 @@ message SuggestTemplateInfo {
       // Opens the composebox.
       SEARCHBOX_OVERRIDE_COMPOSEBOX = 2;
     }
-    optional SearchboxOverride searchbox_override = 8;
-
-    enum TutorialId {
-      TUTORIAL_ID_UNSPECIFIED = 0;
-    }
-    // Trigger a specific user tutorial overlay.
-    optional TutorialId tutorial_id = 9;
+    optional SearchboxOverride searchbox_override = 6;
   }
 
   optional FuseboxAction fusebox_action = 8;

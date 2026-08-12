@@ -110,6 +110,8 @@ enum ToolMode {
   kAim = 9,
   // Enables AIM Gen Prompt mode.
   kAimGenPrompt = 10,
+  // Enables Agent Task mode.
+  kAgentTask = 11,
 };
 // LINT.ThenChange(//third_party/omnibox_proto/tool_mode.proto:ToolMode)
 

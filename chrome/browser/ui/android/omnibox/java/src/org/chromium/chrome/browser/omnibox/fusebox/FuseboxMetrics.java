@@ -51,7 +51,9 @@ public class FuseboxMetrics {
     static final String FILE_ATTACHMENT_SIZE_LIMIT_CHECK_HISTOGRAM =
             "Omnibox.MobileFusebox.AttachmentSizeLimitCheck";
 
-    @VisibleForTesting /* package */ static final int TOOL_MODE_HISTOGRAM_BOUND = 11;
+    // LINT.IfChange(ToolMode)
+    @VisibleForTesting /* package */ static final int TOOL_MODE_HISTOGRAM_BOUND = 12;
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxToolMode)
     @VisibleForTesting /* package */ static final int MODEL_MODE_HISTOGRAM_BOUND = 5;
 
     // LINT.IfChange(AiModeActivationSource)

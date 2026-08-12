@@ -6,7 +6,6 @@
 # See README.chromium for details.
 
 import("//components/proto_extras/proto_extras.gni")
-import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -21,6 +20,7 @@ _proto_files = [
   "chrome_aim_entry_point.proto",
   "chrome_searchbox_stats.proto",
   "entity_info.proto",
+  "formatted_string.proto",
   "groups.proto",
   "icon.proto",
   "icon_resource_ids.proto",

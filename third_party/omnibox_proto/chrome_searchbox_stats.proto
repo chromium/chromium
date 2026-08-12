@@ -17,15 +17,12 @@ import "smart_compose_stats.proto";
 
 // Chrome-specific version of searchbox_stats.proto containing a strict subset
 // of the fields in searchbox_stats.proto.
-//
 // This proto is serialized and sent over by Chrome as a Base64-encoded URL
 // param for logging. Note that this proto is not itself persisted in logs. It
 // is instead decoded and deserialized into the searchbox_stats.proto which is
 // persisted in logs.
-//
 // Field types, IDs, labels, annotations, optional-ness, and default values MUST
 // match those of their counterparts.
-//
 // See searchbox_stats.proto for documentation of these fields and do not
 // duplicate comments here.
 message ChromeSearchboxStats {
@@ -57,6 +54,7 @@ message ChromeSearchboxStats {
   repeated fixed64 gws_event_id_hash = 94;
   optional SmartComposeStats smart_compose_stats = 125;
 
+  // LINT.IfChange(InputMethod)
   enum InputMethod {
     KEYBOARD = 1;
     PASTE = 2;
@@ -65,6 +63,7 @@ message ChromeSearchboxStats {
     LENS_CAMERA = 10;
     SMART_COMPOSE = 11;
   }
+  // LINT.ThenChange(//components/omnibox/browser/searchbox.mojom:SearchboxInputMethod)
   repeated InputMethod input_methods = 31;
 }
 

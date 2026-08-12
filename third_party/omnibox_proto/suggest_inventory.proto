@@ -15,26 +15,31 @@ package omnibox;
 
 // This enum can switch the inventory of suggestions that are shown dynamically
 // based on the SBS entry point.
-// Next ID: 13
+// Next ID: 16
 enum SuggestInventory {
   SUGGEST_INVENTORY_DEFAULT = 0;
 
   // Inventories for Deep Search zero state refresh promos.
   SUGGEST_INVENTORY_TRAVEL = 1;
-  // Used for AIM I/O HP takeover,
+  // Used for AIM I/O HP takeover.
   SUGGEST_INVENTORY_AIM_IO_HP_TAKEOVER = 2;
   SUGGEST_INVENTORY_IMG_GEN_IO_HP_TAKEOVER = 3;
-  // Used for forcing Conversation Starters suggestions, see
-  // https://screenshot.googleplex.com/8MQodhwxp54a96W.
+  // Used for forcing Conversation Starters suggestions.
   SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS = 4;
-  // Inventories for AI HP chips,
+  // Inventories for AI HP chips.
   SUGGEST_INVENTORY_AI_HP_CREATE_CHIP = 5;
   SUGGEST_INVENTORY_AI_HP_GET_IT_DONE_CHIP = 6;
   SUGGEST_INVENTORY_AI_HP_SIMPLIFY_CHIP = 7;
   SUGGEST_INVENTORY_AI_HP_IFL = 8;
   SUGGEST_INVENTORY_AI_HP_RESERVATIONS = 9;
+
+  // These inventories are for the post click of the merch chips.
   SUGGEST_INVENTORY_BRAINSTORM = 10;
   SUGGEST_INVENTORY_HELP_ME_LEARN = 11;
   SUGGEST_INVENTORY_WRITE_OR_EDIT = 12;
-}
 
+  // These inventories are for suggestions that ask the user to add context.
+  SUGGEST_INVENTORY_ADD_FILE = 13;
+  SUGGEST_INVENTORY_ADD_TAB = 14;
+  SUGGEST_INVENTORY_AIM_IMAGES = 15;
+}

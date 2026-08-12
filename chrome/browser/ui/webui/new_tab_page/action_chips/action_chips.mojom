@@ -34,6 +34,10 @@ enum IconType {
   kFavicon = 8,
   kNotesSpark = 9,
   kDraftSpark = 10,
+  kLightbulb = 11,
+  kAttachFile = 12,
+  kSchool = 13,
+  kInkPen = 14,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ActionChipIconType)
