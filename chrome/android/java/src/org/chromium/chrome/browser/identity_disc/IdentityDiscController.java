@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -189,7 +190,11 @@ public class IdentityDiscController
 
     @Override
     public ButtonData get(@Nullable Tab tab) {
-        mIsTabNtp = tab != null && tab.getNativePage() instanceof NewTabPage;
+        mIsTabNtp =
+                tab != null
+                        && !tab.isOffTheRecord()
+                        && (tab.getNativePage() instanceof NewTabPage
+                                || UrlUtilities.isNtpUrl(tab.getUrl()));
         if (!mIsTabNtp) {
             mButtonData.setCanShow(false);
             return mButtonData;
