@@ -23,6 +23,7 @@ try_.defaults.set(
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
     experiments = {
         "chromium_tests.resultdb_module": 100,
+        "luci.buildbucket.run_in_turboci": 25,
     },
     orchestrator_cores = 2,
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
@@ -73,9 +74,6 @@ try_.builder(
             "media/.+",
         ],
     ),
-    experiments = {
-        "luci.buildbucket.run_in_turboci": 100,
-    },
     main_list_view = "try",
 )
 
@@ -139,7 +137,6 @@ try_.builder(
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
-        "luci.buildbucket.run_in_turboci": 50,
         # go/rts-project-proposal
         "chromium_rts.filter_file_analysis": 100,
     },
@@ -162,9 +159,6 @@ try_.builder(
         ],
     ),
     contact_team_email = "chrome-fuzzing-core@google.com",
-    experiments = {
-        "luci.buildbucket.run_in_turboci": 100,
-    },
 )
 
 try_.builder(
@@ -228,7 +222,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # go/rts-project-proposal
         "chromium_rts.filter_file_analysis": 100,
-        "luci.buildbucket.run_in_turboci": 2,
     },
     main_list_view = "try",
     use_clang_coverage = True,
