@@ -5234,8 +5234,11 @@ inline constexpr char kGemma4ForBuiltInAIDescription[] =
 inline constexpr char kOnDeviceModelSpeculativeDecodingName[] =
     "Speculative Decoding for Built-in AI";
 inline constexpr char kOnDeviceModelSpeculativeDecodingDescription[] =
-    "Enables speculative decoding for built-in AI models using LiteRT LM and "
-    "Gemma 4.";
+    "Enables speculative decoding enhancements for built-in AI APIs. Also "
+    "enables requisite LiteRT-LM, Gemma 4, and Sampling Mode features. "
+    "Prompt API sessions must specify compatible sampling options, i.e. "
+    "`samplingMode:'most-predictable'` or `topK:1` or `temperature:0`. "
+    "Constrained decoding is not supported for now.";
 
 inline constexpr char kPromptAPIMultimodalInputName[] =
     "Prompt API Multimodal Input";

@@ -244,18 +244,17 @@ bool IsSpeculativeDecodingCompatibleWithSampling(
     return true;
   }
   if (!options) {
-    return true;
-  }
-  if (options->sampling_params && options->sampling_params->top_k > 1 &&
-      options->sampling_params->temperature > 0.0f) {
     return false;
   }
-  if (options->sampling_mode.has_value() &&
-      options->sampling_mode.value() !=
-          blink::mojom::AILanguageModelSamplingMode::kMostPredictable) {
-    return false;
+  if (options->sampling_params) {
+    return options->sampling_params->top_k == 1 ||
+           options->sampling_params->temperature == 0.0f;
   }
-  return true;
+  if (options->sampling_mode.has_value()) {
+    return options->sampling_mode.value() ==
+           blink::mojom::AILanguageModelSamplingMode::kMostPredictable;
+  }
+  return false;
 }
 
 on_device_model::Capabilities GetExpectedInputCapabilities(
