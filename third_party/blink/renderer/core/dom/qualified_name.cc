@@ -39,9 +39,9 @@ struct SameSizeAsQualifiedNameImpl
   void* pointers[4];
 };
 
-ASSERT_SIZE(QualifiedName::QualifiedNameImpl, SameSizeAsQualifiedNameImpl);
+ASSERT_SIZE(QualifiedNameImpl, SameSizeAsQualifiedNameImpl);
 
-using QualifiedNameCache = HashSet<QualifiedName::QualifiedNameImpl*>;
+using QualifiedNameCache = HashSet<QualifiedNameImpl*>;
 
 static QualifiedNameCache& GetQualifiedNameCache() {
   // This code is lockless and thus assumes it all runs on one thread!
@@ -54,19 +54,18 @@ struct QNameComponentsTranslator {
   static unsigned GetHash(const QualifiedNameData& data) {
     return HashComponents(data.components_);
   }
-  static bool Equal(QualifiedName::QualifiedNameImpl* name,
-                    const QualifiedNameData& data) {
+  static bool Equal(QualifiedNameImpl* name, const QualifiedNameData& data) {
     return data.components_.prefix_ == name->prefix_.Impl() &&
            data.components_.local_name_ == name->local_name_.Impl() &&
            data.components_.namespace_ == name->namespace_.Impl();
   }
-  static void Store(QualifiedName::QualifiedNameImpl*& location,
+  static void Store(QualifiedNameImpl*& location,
                     const QualifiedNameData& data,
                     unsigned) {
     const QualifiedNameComponents& components = data.components_;
-    auto name = QualifiedName::QualifiedNameImpl::Create(
-        components.prefix_, components.local_name_, components.namespace_,
-        data.is_static_);
+    auto name =
+        QualifiedNameImpl::Create(components.prefix_, components.local_name_,
+                                  components.namespace_, data.is_static_);
     name->AddRef();
     location = name.get();
   }
@@ -103,7 +102,7 @@ QualifiedName::QualifiedName(const AtomicString& p,
 
 QualifiedName::~QualifiedName() = default;
 
-QualifiedName::QualifiedNameImpl::~QualifiedNameImpl() {
+QualifiedNameImpl::~QualifiedNameImpl() {
   GetQualifiedNameCache().erase(this);
 }
 
@@ -133,7 +132,7 @@ const AtomicString& QualifiedName::LocalNameUpperSlow() const {
   return impl_->local_name_upper_;
 }
 
-unsigned QualifiedName::QualifiedNameImpl::ComputeHash() const {
+unsigned QualifiedNameImpl::ComputeHash() const {
   QualifiedNameComponents components = {prefix_.Impl(), local_name_.Impl(),
                                         namespace_.Impl()};
   return HashComponents(components);

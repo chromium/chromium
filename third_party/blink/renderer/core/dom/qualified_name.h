@@ -49,17 +49,69 @@ struct QualifiedNameData {
 
 class CORE_EXPORT QualifiedName;
 
-}  // namespace blink
+class CORE_EXPORT QualifiedNameImpl : public RefCounted<QualifiedNameImpl> {
+ public:
+  static scoped_refptr<QualifiedNameImpl> Create(StringImpl* prefix,
+                                                 StringImpl* local_name,
+                                                 StringImpl* namespace_uri,
+                                                 bool is_static) {
+    return base::AdoptRef(
+        new QualifiedNameImpl(prefix, local_name, namespace_uri, is_static));
+  }
 
-// `QualifiedName`'s only field is an interned pointer, so it's safe to hash;
-// allow conversion to a byte span to facilitate this.
-namespace base {
-template <>
-inline constexpr bool kCanSafelyConvertToByteSpan<::blink::QualifiedName> =
-    true;
-}
+  ~QualifiedNameImpl();
 
-namespace blink {
+  unsigned ComputeHash() const;
+
+  bool IsStatic() const {
+    return is_static_and_html_attribute_triggers_index_ != kNotStatic;
+  }
+
+  void AddRef() {
+    if (IsStatic()) {
+      return;
+    }
+    RefCounted<QualifiedNameImpl>::AddRef();
+  }
+
+  void Release() {
+    if (IsStatic()) {
+      return;
+    }
+    RefCounted<QualifiedNameImpl>::Release();
+  }
+
+  enum StaticAndAttributeTriggersConstants {
+    kLargestAllowedIndex = 253,
+    kNotStatic = 254,
+    kStaticWithNoIndex = 255
+  };
+
+  // We rely on HashComponents() clearing out the top 8 bits when
+  // doing hashing and use one of the bits for the is_static_ value.
+  mutable unsigned existing_hash_ : 24;
+  mutable unsigned is_static_and_html_attribute_triggers_index_ : 8;
+  const AtomicString prefix_;
+  const AtomicString local_name_;
+  const AtomicString namespace_;
+  mutable AtomicString local_name_upper_;
+
+ private:
+  QualifiedNameImpl(StringImpl* prefix,
+                    StringImpl* local_name,
+                    StringImpl* namespace_uri,
+                    bool is_static)
+      : existing_hash_(0),
+        is_static_and_html_attribute_triggers_index_(
+            is_static ? kStaticWithNoIndex : kNotStatic),
+        prefix_(prefix),
+        local_name_(local_name),
+        namespace_(namespace_uri)
+
+  {
+    DCHECK(!namespace_.empty() || namespace_.IsNull());
+  }
+};
 
 CORE_EXPORT extern const QualifiedName& g_any_name;
 CORE_EXPORT extern const QualifiedName& g_null_name;
@@ -68,70 +120,6 @@ class CORE_EXPORT QualifiedName {
   USING_FAST_MALLOC(QualifiedName);
 
  public:
-  class CORE_EXPORT QualifiedNameImpl : public RefCounted<QualifiedNameImpl> {
-   public:
-    static scoped_refptr<QualifiedNameImpl> Create(StringImpl* prefix,
-                                                   StringImpl* local_name,
-                                                   StringImpl* namespace_uri,
-                                                   bool is_static) {
-      return base::AdoptRef(
-          new QualifiedNameImpl(prefix, local_name, namespace_uri, is_static));
-    }
-
-    ~QualifiedNameImpl();
-
-    unsigned ComputeHash() const;
-
-    bool IsStatic() const {
-      return is_static_and_html_attribute_triggers_index_ != kNotStatic;
-    }
-
-    void AddRef() {
-      if (IsStatic()) {
-        return;
-      }
-      RefCounted<QualifiedNameImpl>::AddRef();
-    }
-
-    void Release() {
-      if (IsStatic()) {
-        return;
-      }
-      RefCounted<QualifiedNameImpl>::Release();
-    }
-
-    enum StaticAndAttributeTriggersConstants {
-      kLargestAllowedIndex = 253,
-      kNotStatic = 254,
-      kStaticWithNoIndex = 255
-    };
-
-    // We rely on HashComponents() clearing out the top 8 bits when
-    // doing hashing and use one of the bits for the is_static_ value.
-    mutable unsigned existing_hash_ : 24;
-    mutable unsigned is_static_and_html_attribute_triggers_index_ : 8;
-    const AtomicString prefix_;
-    const AtomicString local_name_;
-    const AtomicString namespace_;
-    mutable AtomicString local_name_upper_;
-
-   private:
-    QualifiedNameImpl(StringImpl* prefix,
-                      StringImpl* local_name,
-                      StringImpl* namespace_uri,
-                      bool is_static)
-        : existing_hash_(0),
-          is_static_and_html_attribute_triggers_index_(
-              is_static ? kStaticWithNoIndex : kNotStatic),
-          prefix_(prefix),
-          local_name_(local_name),
-          namespace_(namespace_uri)
-
-    {
-      DCHECK(!namespace_.empty() || namespace_.IsNull());
-    }
-  };
-
   QualifiedName(const AtomicString& prefix,
                 const AtomicString& local_name,
                 const AtomicString& namespace_uri);
@@ -270,9 +258,8 @@ inline unsigned HashComponents(const QualifiedNameComponents& buf) {
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const QualifiedName&);
 
 template <>
-struct HashTraits<QualifiedName::QualifiedNameImpl*>
-    : GenericHashTraits<QualifiedName::QualifiedNameImpl*> {
-  static unsigned GetHash(const QualifiedName::QualifiedNameImpl* name) {
+struct HashTraits<QualifiedNameImpl*> : GenericHashTraits<QualifiedNameImpl*> {
+  static unsigned GetHash(const QualifiedNameImpl* name) {
     if (!name->existing_hash_) {
       name->existing_hash_ = name->ComputeHash();
     }
@@ -283,7 +270,6 @@ struct HashTraits<QualifiedName::QualifiedNameImpl*>
 
 template <>
 struct HashTraits<QualifiedName> : GenericHashTraits<QualifiedName> {
-  using QualifiedNameImpl = QualifiedName::QualifiedNameImpl;
   static unsigned GetHash(const QualifiedName& name) {
     return blink::GetHash(name.Impl());
   }
@@ -303,6 +289,14 @@ struct HashTraits<QualifiedName> : GenericHashTraits<QualifiedName> {
 };
 
 }  // namespace blink
+
+// `QualifiedName`'s only field is an interned pointer, so it's safe to hash;
+// allow conversion to a byte span to facilitate this.
+namespace base {
+template <>
+inline constexpr bool kCanSafelyConvertToByteSpan<::blink::QualifiedName> =
+    true;
+}
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::QualifiedName)
 
