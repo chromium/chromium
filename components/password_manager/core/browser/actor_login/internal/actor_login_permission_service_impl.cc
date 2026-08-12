@@ -111,8 +111,12 @@ base::DictValue CreateFederatedPermissionFilter(
   }
   federated_filter.Set("matchAffiliatedRequesterOrigins", true);
 
-  return base::DictValue().Set("federatedCredentialPermissionFilter",
-                               std::move(federated_filter));
+  auto agent_dict =
+      base::DictValue().Set("type", "AGENT_TYPE_GEMINI_IN_CHROME");
+
+  return base::DictValue()
+      .Set("federatedCredentialPermissionFilter", std::move(federated_filter))
+      .Set("agent", std::move(agent_dict));
 }
 
 base::DictValue CreateFederatedPermissionFilter(
