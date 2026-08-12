@@ -6,15 +6,24 @@
 
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "media/audio/audio_system_test_util.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/media_buildflags.h"
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+#include "media/webrtc/ml_model_handle.h"  // nogncheck crbug.com/40147906
+#endif
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/audio/in_process_audio_manager_accessor.h"
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+#include "services/audio/ml_model_manager.h"
+#endif
 #include "services/audio/system_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,8 +51,13 @@ class AudioSystemToServiceAdapterTestBase : public testing::Test {
     audio_manager_ = std::make_unique<media::MockAudioManager>(
         std::make_unique<media::TestAudioThread>(
             false /* we do not use separate thread here */));
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    system_info_impl_ =
+        std::make_unique<audio::SystemInfo>(audio_manager_.get(), nullptr);
+#else
     system_info_impl_ =
         std::make_unique<audio::SystemInfo>(audio_manager_.get());
+#endif
     system_info_receiver_ = std::make_unique<mojo::Receiver<mojom::SystemInfo>>(
         system_info_impl_.get());
     audio_system_ =
@@ -506,6 +520,165 @@ TEST_F(AudioSystemToServiceAdapterDisconnectTest,
                                            response_received_.Get());
   task_environment_.FastForwardUntilNoTasksRemain();
 }
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+class MockMlModelManager : public MlModelManager {
+ public:
+  scoped_refptr<media::MlModelHandle> GetModel(
+      mojom::MlModelType model_type) override {
+    if (model_type == mojom::MlModelType::kVoiceIsolationDenoiser &&
+        is_voice_isolation_available_) {
+      return base::MakeRefCounted<MockMlModelHandle>();
+    }
+    return nullptr;
+  }
+
+  void SetVoiceIsolationAvailable(bool available) {
+    is_voice_isolation_available_ = available;
+  }
+
+ private:
+  class MockMlModelHandle : public media::MlModelHandle {
+   public:
+    const tflite::FlatBufferModel& Get() override { NOTREACHED(); }
+
+   private:
+    ~MockMlModelHandle() override = default;
+  };
+
+  bool is_voice_isolation_available_ = false;
+};
+
+class SystemInfoVoiceIsolationTest : public testing::Test {
+ protected:
+  SystemInfoVoiceIsolationTest()
+      : audio_manager_(std::make_unique<media::MockAudioManager>(
+            std::make_unique<media::TestAudioThread>(false))),
+        system_info_(audio_manager_.get(), &mock_ml_model_manager_) {
+    media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                  media::ChannelLayoutConfig::Stereo(), 48000,
+                                  480);
+    audio_manager_->SetInputStreamParameters(params);
+  }
+
+  ~SystemInfoVoiceIsolationTest() override { audio_manager_->Shutdown(); }
+
+  mojom::SystemInfo& system_info_api() { return system_info_; }
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<media::MockAudioManager> audio_manager_;
+  MockMlModelManager mock_ml_model_manager_;
+  SystemInfo system_info_;
+};
+
+TEST_F(SystemInfoVoiceIsolationTest,
+       GetInputStreamParameters_ModelNotAvailable) {
+  mock_ml_model_manager_.SetVoiceIsolationAvailable(false);
+  base::RunLoop run_loop;
+  system_info_api().GetInputStreamParameters(
+      media::AudioDeviceDescription::kDefaultDeviceId,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             const std::optional<media::AudioParameters>& returned_params) {
+            ASSERT_TRUE(returned_params.has_value());
+            EXPECT_FALSE(returned_params->effects() &
+                         media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(SystemInfoVoiceIsolationTest, GetInputStreamParameters_ModelAvailable) {
+  mock_ml_model_manager_.SetVoiceIsolationAvailable(true);
+  base::RunLoop run_loop;
+  system_info_api().GetInputStreamParameters(
+      media::AudioDeviceDescription::kDefaultDeviceId,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             const std::optional<media::AudioParameters>& returned_params) {
+            ASSERT_TRUE(returned_params.has_value());
+            EXPECT_TRUE(returned_params->effects() &
+                        media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(SystemInfoVoiceIsolationTest, GetInputDeviceInfo_ModelNotAvailable) {
+  mock_ml_model_manager_.SetVoiceIsolationAvailable(false);
+  base::RunLoop run_loop;
+  system_info_api().GetInputDeviceInfo(
+      media::AudioDeviceDescription::kDefaultDeviceId,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             const std::optional<media::AudioParameters>& returned_params,
+             const std::optional<std::string>& associated_output_device_id) {
+            ASSERT_TRUE(returned_params.has_value());
+            EXPECT_FALSE(returned_params->effects() &
+                         media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(SystemInfoVoiceIsolationTest, GetInputDeviceInfo_ModelAvailable) {
+  mock_ml_model_manager_.SetVoiceIsolationAvailable(true);
+  base::RunLoop run_loop;
+  system_info_api().GetInputDeviceInfo(
+      media::AudioDeviceDescription::kDefaultDeviceId,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             const std::optional<media::AudioParameters>& returned_params,
+             const std::optional<std::string>& associated_output_device_id) {
+            ASSERT_TRUE(returned_params.has_value());
+            EXPECT_TRUE(returned_params->effects() &
+                        media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+}
+
+TEST_F(SystemInfoVoiceIsolationTest,
+       GetInputStreamParameters_NullModelManager) {
+  SystemInfo system_info(audio_manager_.get(), nullptr);
+  mojom::SystemInfo& system_info_api = system_info;
+  base::RunLoop run_loop;
+  system_info_api.GetInputStreamParameters(
+      media::AudioDeviceDescription::kDefaultDeviceId,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             const std::optional<media::AudioParameters>& returned_params) {
+            ASSERT_TRUE(returned_params.has_value());
+            EXPECT_FALSE(returned_params->effects() &
+                         media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(SystemInfoVoiceIsolationTest, GetInputDeviceInfo_NullModelManager) {
+  SystemInfo system_info(audio_manager_.get(), nullptr);
+  mojom::SystemInfo& system_info_api = system_info;
+  base::RunLoop run_loop;
+  system_info_api.GetInputDeviceInfo(
+      media::AudioDeviceDescription::kDefaultDeviceId,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             const std::optional<media::AudioParameters>& returned_params,
+             const std::optional<std::string>& associated_output_device_id) {
+            ASSERT_TRUE(returned_params.has_value());
+            EXPECT_FALSE(returned_params->effects() &
+                         media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
 }  // namespace audio
 

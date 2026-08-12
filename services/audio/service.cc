@@ -118,8 +118,13 @@ void Service::BindSystemInfo(
   }
 
   if (!system_info_) {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    system_info_ = std::make_unique<SystemInfo>(
+        audio_manager_accessor_->GetAudioManager(), &ml_model_manager_);
+#else
     system_info_ = std::make_unique<SystemInfo>(
         audio_manager_accessor_->GetAudioManager());
+#endif
   }
   system_info_->Bind(std::move(receiver));
 }

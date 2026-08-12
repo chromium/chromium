@@ -6,12 +6,59 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
+#include "build/buildflag.h"
+#include "media/base/audio_parameters.h"
+#include "media/media_buildflags.h"
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+#include "media/webrtc/ml_model_handle.h"  // nogncheck crbug.com/40147906
+#include "services/audio/ml_model_manager.h"
+#endif
 
 namespace audio {
 
-SystemInfo::SystemInfo(media::AudioManager* audio_manager)
-    : helper_(audio_manager) {}
+namespace {
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+std::optional<media::AudioParameters> UpdateVoiceIsolationSupport(
+    std::optional<media::AudioParameters> params,
+    bool is_supported) {
+  if (params) {
+    int effects = params->effects();
+    if (is_supported) {
+      effects |= media::AudioParameters::VOICE_ISOLATION_SUPPORTED;
+      params->set_effects(effects);
+    } else {
+      CHECK(!(effects & media::AudioParameters::VOICE_ISOLATION_SUPPORTED));
+    }
+  }
+  return params;
+}
+
+bool IsVoiceIsolationSupported(MlModelManager* ml_model_manager) {
+  return ml_model_manager &&
+         ml_model_manager->GetModel(
+             mojom::MlModelType::kVoiceIsolationDenoiser) != nullptr;
+}
+#endif
+
+}  // namespace
+
+SystemInfo::SystemInfo(media::AudioManager* audio_manager
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+                       ,
+                       MlModelManager* ml_model_manager
+#endif
+                       )
+    : helper_(audio_manager)
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+      ,
+      ml_model_manager_(ml_model_manager)
+#endif
+{
+}
 
 SystemInfo::~SystemInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(binding_sequence_checker_);
@@ -25,9 +72,22 @@ void SystemInfo::Bind(mojo::PendingReceiver<mojom::SystemInfo> receiver) {
 void SystemInfo::GetInputStreamParameters(
     const std::string& device_id,
     GetInputStreamParametersCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(binding_sequence_checker_);
   TRACE_EVENT1("audio", "audio::SystemInfo::GetInputStreamParameters",
                "device_id", device_id);
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  auto wrapped_callback = base::BindOnce(
+      [](bool is_supported, GetInputStreamParametersCallback original_callback,
+         const std::optional<media::AudioParameters>& params) {
+        std::move(original_callback)
+            .Run(UpdateVoiceIsolationSupport(params, is_supported));
+      },
+      IsVoiceIsolationSupported(ml_model_manager_), std::move(callback));
+
+  helper_.GetInputStreamParameters(device_id, std::move(wrapped_callback));
+#else
   helper_.GetInputStreamParameters(device_id, std::move(callback));
+#endif
 }
 
 void SystemInfo::GetOutputStreamParameters(
@@ -70,9 +130,24 @@ void SystemInfo::GetAssociatedOutputDeviceID(
 
 void SystemInfo::GetInputDeviceInfo(const std::string& input_device_id,
                                     GetInputDeviceInfoCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(binding_sequence_checker_);
   TRACE_EVENT1("audio", "audio::SystemInfo::GetInputDeviceInfo",
                "input_device_id", input_device_id);
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  auto wrapped_callback = base::BindOnce(
+      [](bool is_supported, GetInputDeviceInfoCallback original_callback,
+         const std::optional<media::AudioParameters>& input_params,
+         const std::optional<std::string>& associated_output_device_id) {
+        std::move(original_callback)
+            .Run(UpdateVoiceIsolationSupport(input_params, is_supported),
+                 associated_output_device_id);
+      },
+      IsVoiceIsolationSupported(ml_model_manager_), std::move(callback));
+
+  helper_.GetInputDeviceInfo(input_device_id, std::move(wrapped_callback));
+#else
   helper_.GetInputDeviceInfo(input_device_id, std::move(callback));
+#endif
 }
 
 }  // namespace audio

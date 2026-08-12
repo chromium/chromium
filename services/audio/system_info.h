@@ -8,8 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "build/buildflag.h"
 #include "media/audio/audio_system_helper.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/audio/public/mojom/system_info.mojom.h"
@@ -20,9 +23,16 @@ class AudioManager;
 
 namespace audio {
 
+class MlModelManager;
+
 class SystemInfo : public mojom::SystemInfo {
  public:
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  SystemInfo(media::AudioManager* audio_manager,
+             MlModelManager* ml_model_manager);
+#else
   explicit SystemInfo(media::AudioManager* audio_manager);
+#endif
 
   SystemInfo(const SystemInfo&) = delete;
   SystemInfo& operator=(const SystemInfo&) = delete;
@@ -52,6 +62,10 @@ class SystemInfo : public mojom::SystemInfo {
                           GetInputDeviceInfoCallback callback) override;
 
   media::AudioSystemHelper helper_;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  const raw_ptr<MlModelManager> ml_model_manager_
+      GUARDED_BY_CONTEXT(binding_sequence_checker_);
+#endif
 
   mojo::ReceiverSet<mojom::SystemInfo> receivers_;
 

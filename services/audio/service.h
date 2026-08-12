@@ -125,7 +125,7 @@ class Service final : public mojom::AudioService {
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   // Manages Machine Learning models used within the audio
-  // service. It must outlive `stream_factory_`.
+  // service. It must outlive `stream_factory_` and `system_info_`.
   MlModelManagerImpl ml_model_manager_;
 #endif
   std::unique_ptr<AudioManagerAccessor> audio_manager_accessor_;
