@@ -15,6 +15,7 @@
 #include "base/types/optional_ref.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/page_vertical.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 
@@ -70,6 +71,7 @@ class RemoteSuggestionsServiceSimple {
   // - title: the title of a recent tab, if any.
   // - url: the url of a recent tab, if any.
   // - allowed_tools: a list of tool/model pairs that are allowed to be used.
+  // - allowed_inputs: a list of input types that are allowed to be used.
   // - page_vertical: the vertical information of the page to be passed to the
   //   remote endpoint.
   // - callback: the callback run when the remote call is complete.
@@ -77,6 +79,7 @@ class RemoteSuggestionsServiceSimple {
       base::optional_ref<const std::u16string> title,
       base::optional_ref<const GURL> url,
       base::span<const omnibox::ToolMode> allowed_tools,
+      base::span<const omnibox::InputType> allowed_inputs,
       base::optional_ref<const omnibox::PageVertical> page_vertical,
       base::OnceCallback<
           void(RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
@@ -109,6 +112,7 @@ class RemoteSuggestionsServiceSimpleImpl
       base::optional_ref<const std::u16string> title,
       base::optional_ref<const GURL> url,
       base::span<const omnibox::ToolMode> allowed_tools,
+      base::span<const omnibox::InputType> allowed_inputs,
       base::optional_ref<const omnibox::PageVertical> page_vertical,
       base::OnceCallback<
           void(RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
