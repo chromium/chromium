@@ -826,9 +826,8 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   if (IsFullscreenRefactoringEnabled()) {
     [HandlerForProtocol(self.browser->GetCommandDispatcher(),
                         FullscreenCommands)
-        enterFullscreenWithTrigger:FullscreenModeTransitionTrigger::
-                                       kForcedByUser
-                          animated:YES];
+        forceFullscreen:YES
+                feature:ForceFullscreenFeature::kHideToolbars];
     return;
   }
   FullscreenController* fullscreenController =

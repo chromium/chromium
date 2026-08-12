@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/shared/public/commands/cobalt_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -303,6 +304,10 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
       HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
   mediator.findInPageHandler =
       HandlerForProtocol(dispatcher, FindInPageCommands);
+  if (IsFullscreenRefactoringEnabled()) {
+    mediator.fullscreenHandler =
+        HandlerForProtocol(dispatcher, FullscreenCommands);
+  }
   mediator.readerModeHandler =
       HandlerForProtocol(dispatcher, ReaderModeCommands);
   mediator.helpHandler = HandlerForProtocol(dispatcher, HelpCommands);

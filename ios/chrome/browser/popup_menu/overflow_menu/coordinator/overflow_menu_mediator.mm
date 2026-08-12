@@ -92,6 +92,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/cobalt_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -2973,6 +2974,12 @@ void GetPresetNTPBackgroundPreview(
 
 - (void)startCollapseToolbars {
   [self dismissMenu];
+  if (IsFullscreenRefactoringEnabled()) {
+    [self.fullscreenHandler
+        forceFullscreen:YES
+                feature:ForceFullscreenFeature::kHideToolbars];
+    return;
+  }
   [self.browserCoordinatorHandler
       forceFullscreenMode:FullscreenModeTransitionTrigger::kForcedByUser];
 }

@@ -169,10 +169,9 @@ using tab_groups::VersioningMessageController;
 - (void)exitFullscreen:
     (FullscreenModeTransitionTrigger)fullscreenTransitionTrigger {
   if (IsFullscreenRefactoringEnabled()) {
-    // TODO(crbug.com/500669310): Support forced fullscreen mode in
-    // FullscreenCommands.
     id<FullscreenCommands> fullscreenHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), FullscreenCommands);
+    [fullscreenHandler exitForceFullscreen];
     [fullscreenHandler exitFullscreenWithTrigger:fullscreenTransitionTrigger
                                         animated:YES];
   } else {

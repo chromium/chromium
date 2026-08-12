@@ -264,6 +264,7 @@
       FullscreenModeTransitionTrigger::kForcedByUser;
 
   if (IsFullscreenRefactoringEnabled()) {
+    [self.fullscreenCommands exitForceFullscreen];
     [self.fullscreenCommands exitFullscreenWithTrigger:trigger animated:YES];
     return;
   }
