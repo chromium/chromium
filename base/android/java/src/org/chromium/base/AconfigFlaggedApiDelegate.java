@@ -348,22 +348,9 @@ public interface AconfigFlaggedApiDelegate {
         return false;
     }
 
-    /** Whether the feature to split the Android setting 'Show passwords' is enabled. */
-    default boolean isShowPasswordsSplitEnabled() {
-        return false;
-    }
-
     /** Whether temporal layer encoding is enabled. */
     default boolean isTemporalLayerEncodingEnabled() {
         return false;
-    }
-
-    /**
-     * Returns the {@link PasswordEchoSettingDelegate} if the feature to split the Android setting
-     * 'Show passwords' is enabled. the feature is enabled. Returns null otherwise.
-     */
-    default @Nullable PasswordEchoSettingDelegate getPasswordEchoSettingDelegate() {
-        return null;
     }
 
     /**
