@@ -24,12 +24,14 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/common/application_hotkey_delegate.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_transport_handler.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -66,6 +68,10 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "components/browser_actuator/public/browser_actuator_service.h"
+#include "components/browser_actuator/public/features.h"
+#include "components/browser_actuator/public/transport_channel.h"
+#include "components/browser_actuator/public/transport_handler_factory_registry.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
@@ -208,6 +214,24 @@ GlicKeyedService::GlicKeyedService(
           base::BindRepeating(
               &GlicKeyedService::OnExperimentalTriggeringStateChanged,
               base::Unretained(this)));
+
+  if (base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator) &&
+      base::FeatureList::IsEnabled(
+          browser_actuator::
+              kEnableBrowserActuatorForGlicExperimentalTriggering)) {
+    browser_actuator::BrowserActuatorService* actuator_service =
+        browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
+            profile_);
+    if (actuator_service && actuator_service->GetChannel()) {
+      experimental_triggering_transport_handler_factory_ =
+          std::make_unique<GlicExperimentalTriggeringTransportHandlerFactory>(
+              &opt_in_controller());
+      actuator_service->GetChannel()
+          ->GetHandlerFactoryRegistry()
+          ->RegisterFactory(
+              experimental_triggering_transport_handler_factory_.get());
+    }
+  }
 }
 
 void GlicKeyedService::InitializeAfterConstruction() {
@@ -229,6 +253,18 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 }
 
 void GlicKeyedService::Shutdown() {
+  if (experimental_triggering_transport_handler_factory_) {
+    browser_actuator::BrowserActuatorService* actuator_service =
+        browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
+            profile_);
+    if (actuator_service && actuator_service->GetChannel()) {
+      actuator_service->GetChannel()
+          ->GetHandlerFactoryRegistry()
+          ->UnregisterFactory(
+              experimental_triggering_transport_handler_factory_.get());
+    }
+    experimental_triggering_transport_handler_factory_.reset();
+  }
   experimental_triggering_state_subscription_ = {};
   instance_coordinator().Shutdown();
 }

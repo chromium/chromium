@@ -22,6 +22,7 @@ enum class PayloadType {
 enum class FactoryId {
   kUnset = 0,
   kControl = 1,
+  kExperimentalTriggering = 2,
 };
 
 }  // namespace browser_actuator

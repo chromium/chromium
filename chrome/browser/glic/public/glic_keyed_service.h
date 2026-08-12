@@ -59,6 +59,7 @@ class GlicTabDataObserver;
 class GlicTabFaviconObserver;
 class GlicInstanceCoordinator;
 class GlicExperimentalOptInController;
+class GlicExperimentalTriggeringTransportHandlerFactory;
 
 enum class GlicPrewarmingChecksResult;
 
@@ -291,6 +292,8 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   std::unique_ptr<GlicTabDataObserver> tab_data_observer_;
   std::unique_ptr<GlicTabFaviconObserver> tab_favicon_observer_;
+  std::unique_ptr<GlicExperimentalTriggeringTransportHandlerFactory>
+      experimental_triggering_transport_handler_factory_;
 
   base::CallbackListSubscription experimental_triggering_state_subscription_;
 
