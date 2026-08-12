@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "components/crash/core/app/shared_memory_user_stream_writer.h"
+#include "components/crash/core/common/shared_memory_user_stream_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/crashpad/crashpad/minidump/minidump_user_extension_stream_data_source.h"
 

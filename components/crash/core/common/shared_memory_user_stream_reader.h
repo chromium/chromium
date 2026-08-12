@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CRASH_CORE_APP_SHARED_MEMORY_USER_STREAM_READER_H_
-#define COMPONENTS_CRASH_CORE_APP_SHARED_MEMORY_USER_STREAM_READER_H_
+#ifndef COMPONENTS_CRASH_CORE_COMMON_SHARED_MEMORY_USER_STREAM_READER_H_
+#define COMPONENTS_CRASH_CORE_COMMON_SHARED_MEMORY_USER_STREAM_READER_H_
 
 #include <stdint.h>
 
@@ -34,4 +34,4 @@ std::optional<UserStreamData> ExtractSharedMemoryUserStreamData(
 
 }  // namespace crash_reporter
 
-#endif  // COMPONENTS_CRASH_CORE_APP_SHARED_MEMORY_USER_STREAM_READER_H_
+#endif  // COMPONENTS_CRASH_CORE_COMMON_SHARED_MEMORY_USER_STREAM_READER_H_

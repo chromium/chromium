@@ -28,7 +28,13 @@ group("common") {
 }
 
 source_set("shared_memory_user_stream") {
-  sources = [ "shared_memory_user_stream.h" ]
+  sources = [
+    "shared_memory_user_stream.h",
+    "shared_memory_user_stream_reader.cc",
+    "shared_memory_user_stream_reader.h",
+    "shared_memory_user_stream_writer.cc",
+    "shared_memory_user_stream_writer.h",
+  ]
 
   deps = [ "//base" ]
 }
@@ -168,11 +174,14 @@ source_set("unit_tests") {
   sources = [
     "crash_key_unittest.cc",
     "crash_keys_unittest.cc",
+    "shared_memory_user_stream_reader_unittest.cc",
+    "shared_memory_user_stream_writer_unittest.cc",
   ]
 
   deps = [
     ":common",
     "//base",
+    "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

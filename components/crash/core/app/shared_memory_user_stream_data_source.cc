@@ -9,7 +9,7 @@
 #include <optional>
 #include <vector>
 
-#include "components/crash/core/app/shared_memory_user_stream_reader.h"
+#include "components/crash/core/common/shared_memory_user_stream_reader.h"
 #include "third_party/crashpad/crashpad/minidump/minidump_user_extension_stream_data_source.h"
 
 namespace crash_reporter::internal {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/crash/core/app/shared_memory_user_stream_reader.h"
+#include "components/crash/core/common/shared_memory_user_stream_reader.h"
 
 #include <stdint.h>
 

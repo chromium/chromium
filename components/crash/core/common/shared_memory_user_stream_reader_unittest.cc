@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/crash/core/app/shared_memory_user_stream_reader.h"
+#include "components/crash/core/common/shared_memory_user_stream_reader.h"
 
 #include <stdint.h>
 
@@ -13,7 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "components/crash/core/app/shared_memory_user_stream_writer.h"
+#include "components/crash/core/common/shared_memory_user_stream_writer.h"
 #include "components/crash/core/common/shared_memory_user_stream.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
