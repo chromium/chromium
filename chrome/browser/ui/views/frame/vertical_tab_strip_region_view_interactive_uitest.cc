@@ -136,3 +136,27 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewInteractiveUiTest,
              testing::Gt(0), "Check fps is nonzero.")),
          Else(Log("Compositor failed to render during test."))));
 }
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewInteractiveUiTest,
+                       CollapseButtonSuppressesExpandOnHover) {
+  auto* const controller =
+      tabs::VerticalTabStripStateController::From(browser());
+  controller->SetExpandOnHoverEnabled(true);
+
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripCollapseButtonElementId),
+      EnsurePresent(kVerticalTabStripCollapseButtonElementId),
+
+      // Move mouse to the collapse button and click it to collapse.
+      MoveMouseTo(kVerticalTabStripCollapseButtonElementId), ClickMouse(),
+
+      // Wait for collapse animation to complete.
+      WaitForEvent(kTabStripRegionElementId,
+                   VerticalTabStripRegionView::kAnimationCompletedEvent),
+
+      // Verify that the tab strip remains unexpanded despite the mouse hovering
+      // over the top container.
+      CheckViewProperty(kTabStripRegionElementId,
+                        &VerticalTabStripRegionView::is_expanded_on_hover,
+                        false));
+}

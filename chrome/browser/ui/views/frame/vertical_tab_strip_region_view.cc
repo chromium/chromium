@@ -665,6 +665,12 @@ bool VerticalTabStripRegionView::IsCollapsing() {
 
 void VerticalTabStripRegionView::RequestCollapse(bool collapse) {
   target_collapse_state_.collapsed = collapse;
+  if (collapse) {
+    suppress_expand_on_hover_ = IsCollapseButtonHovered();
+    ResetExpandOnHoverTimers();
+  } else {
+    suppress_expand_on_hover_ = false;
+  }
   // Do not trigger the animation before tab_strip_view() is set, as the region
   // view only subscribes to animation updates once tab_strip_view() has been
   // attached. target_collapse_state_ is still set so that when
@@ -807,6 +813,13 @@ bool VerticalTabStripRegionView::IsFrameActive() const {
   return GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
 }
 
+bool VerticalTabStripRegionView::IsCollapseButtonHovered() const {
+  if (top_button_container_ && top_button_container_->GetCollapseButton()) {
+    return top_button_container_->GetCollapseButton()->IsMouseHovered();
+  }
+  return false;
+}
+
 gfx::Rect VerticalTabStripRegionView::GetTabStripDraggableBounds() const {
   // Tabs should be draggable from the top of the tab strip to the bottom of the
   // tab strip's max size, saving space for the bottom button container and
@@ -836,6 +849,11 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
     is_expanded_on_hover_ = false;
     return;
   }
+
+  if (suppress_expand_on_hover_ && !IsCollapseButtonHovered()) {
+    suppress_expand_on_hover_ = false;
+  }
+
   // If the force collapse lock is held, collapse the tab strip.
   if (force_collapse_lock_count_ > 0) {
     if (is_expanded_on_hover_) {
@@ -870,6 +888,7 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
   }
 
   const bool should_expand =
+      !suppress_expand_on_hover_ &&
       state_controller_->IsExpandOnHoverEnabled() &&
       (hovered.value_or(IsMouseHovered()) ||
        (GetFocusManager() && Contains(GetFocusManager()->GetFocusedView())));
