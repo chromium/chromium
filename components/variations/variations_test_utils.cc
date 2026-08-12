@@ -7,8 +7,12 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -18,6 +22,8 @@
 #include "components/variations/hashing.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/client_variations.pb.h"
+#include "components/variations/proto/stored_seed_info.pb.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
@@ -294,6 +300,31 @@ void WriteSignedSeedData(PrefService* local_state,
   local_state->SetString(pref_keys.base64_signature_key,
                          seed_data.base64_signature);
   local_state->CommitPendingWrite();
+}
+
+void WriteSeedData(const base::FilePath& user_data_dir,
+                   const VariationsSeed& seed) {
+  const base::FilePath local_state_path =
+      user_data_dir.Append(FILE_PATH_LITERAL("Local State"));
+  const base::FilePath seed_file_path =
+      user_data_dir.Append(FILE_PATH_LITERAL("VariationsSeedV2"));
+
+  const std::string serialized_seed = seed.SerializeAsString();
+  std::string compressed_seed;
+  compression::GzipCompress(serialized_seed, &compressed_seed);
+
+  // Write the Local-State-based seed.
+  base::DictValue local_state;
+  local_state.SetByDottedPath(prefs::kVariationsCompressedSeed,
+                              base::Base64Encode(compressed_seed));
+  CHECK(JSONFileValueSerializer(local_state_path).Serialize(local_state));
+
+  // Write the seed-file-based seed.
+  StoredSeedInfo seed_info;
+  seed_info.set_data(serialized_seed);
+  CHECK(base::WriteFile(seed_file_path,
+                        SeedReaderWriter::CompressForSeedFileForTesting(
+                            seed_info.SerializeAsString())));
 }
 
 bool FieldTrialListHasAllStudiesFrom(const SignedSeedData& seed_data) {

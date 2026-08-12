@@ -21,6 +21,10 @@
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 class PrefService;
 
 namespace variations {
@@ -120,6 +124,10 @@ void SimulateCrash(PrefService* local_state);
 void WriteSignedSeedData(PrefService* local_state,
                          const SignedSeedData& seed_data,
                          const SignedSeedPrefKeys& pref_keys);
+
+// Writes the seed to both Local State and a seed file.
+void WriteSeedData(const base::FilePath& user_data_dir,
+                   const VariationsSeed& seed);
 
 // Returns true if all of the study_names listed in |seed_data| exist in the
 // (global) field trial list.

@@ -6,23 +6,16 @@
 #include <string>
 #include <string_view>
 
-#include "base/base64.h"
 #include "base/command_line.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/json/json_file_value_serializer.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
-#include "components/variations/pref_names.h"
 #include "components/variations/proto/layer.pb.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
@@ -32,7 +25,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
-#include "third_party/zlib/google/compression_utils.h"
 
 namespace variations {
 namespace {
@@ -217,28 +209,8 @@ class FieldTrialsProviderBrowserTest
 
   // PlatformBrowserTest:
   bool SetUpUserDataDirectory() override {
-    const base::FilePath user_data_dir =
-        base::PathService::CheckedGet(chrome::DIR_USER_DATA);
-    const base::FilePath local_state_path =
-        user_data_dir.Append(chrome::kLocalStateFilename);
-    const base::FilePath seed_file_path =
-        user_data_dir.AppendASCII("VariationsSeedV2");
-    const std::string serialized_seed = GetParam().seed.SerializeAsString();
-
-    // Write the seed for the seed file experiment's control-group clients.
-    std::string compressed_seed;
-    compression::GzipCompress(serialized_seed, &compressed_seed);
-    base::DictValue local_state;
-    local_state.SetByDottedPath(prefs::kVariationsCompressedSeed,
-                                base::Base64Encode(compressed_seed));
-    CHECK(JSONFileValueSerializer(local_state_path).Serialize(local_state));
-
-    // Write the seed for the seed file experiment's treatment-group clients.
-    StoredSeedInfo seed_info;
-    seed_info.set_data(serialized_seed);
-    CHECK(base::WriteFile(seed_file_path,
-                          SeedReaderWriter::CompressForSeedFileForTesting(
-                              seed_info.SerializeAsString())));
+    WriteSeedData(base::PathService::CheckedGet(chrome::DIR_USER_DATA),
+                  GetParam().seed);
     return true;
   }
 

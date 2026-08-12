@@ -709,27 +709,9 @@ class VariationsHttpHeadersBrowserTestWithLimitedLayerBase
   }
 
   bool SetUpUserDataDirectoryWithGroup(std::optional<Study::Experiment> group) {
-    const base::FilePath user_data_dir =
-        base::PathService::CheckedGet(chrome::DIR_USER_DATA);
-    const base::FilePath seed_file_path =
-        user_data_dir.AppendASCII("VariationsSeedV1");
-    const base::FilePath local_state_path =
-        user_data_dir.Append(chrome::kLocalStateFilename);
-
-    std::string serialized_seed = CreateTestSeedWithLimitedEntropyLayer(
-                                      /*limited_layer_study_group=*/group)
-                                      .SerializeAsString();
-    std::string compressed_seed;
-    compression::GzipCompress(serialized_seed, &compressed_seed);
-
-    // Write the seed for the seed file experiment's treatment-group clients.
-    CHECK(base::WriteFile(seed_file_path, compressed_seed));
-
-    // Write the seed for the seed file experiment's control-group clients.
-    base::DictValue local_state;
-    local_state.SetByDottedPath(prefs::kVariationsCompressedSeed,
-                                base::Base64Encode(compressed_seed));
-    CHECK(JSONFileValueSerializer(local_state_path).Serialize(local_state));
+    WriteSeedData(base::PathService::CheckedGet(chrome::DIR_USER_DATA),
+                  CreateTestSeedWithLimitedEntropyLayer(
+                      /*limited_layer_study_group=*/group));
     return true;
   }
 
