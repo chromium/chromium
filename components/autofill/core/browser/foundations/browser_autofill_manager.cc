@@ -1593,18 +1593,22 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
 
   AutofillAiManager* ai_manager = client().GetAutofillAiManager();
   if (form_structure && autofill_field && ai_manager &&
-      !context.do_not_generate_autofill_suggestions &&
-      GetFieldsFillableByAutofillAi(*form_structure, client())
-          .contains(field.global_id())) {
+      !context.do_not_generate_autofill_suggestions) {
+    const bool is_fillable_by_ai =
+        GetFieldsFillableByAutofillAi(*form_structure, client())
+            .contains(field.global_id());
     std::vector<Suggestion> autofill_ai_suggestions =
         ai_manager->GetSuggestions(*form_structure, field);
-    std::move(callback).Run(
-        /*show_suggestions=*/true, std::move(autofill_ai_suggestions));
-    return;
-  } else if (suggestions.empty() && ai_manager && form_structure &&
-             ai_manager->ShouldDisplayIph(*form_structure, field.global_id()) &&
-             client().ShowAutofillFieldIphForFeature(
-                 field, AutofillClient::IphFeature::kAutofillAi)) {
+    if (is_fillable_by_ai || !autofill_ai_suggestions.empty()) {
+      std::move(callback).Run(
+          /*show_suggestions=*/true, std::move(autofill_ai_suggestions));
+      return;
+    }
+  }
+  if (suggestions.empty() && ai_manager && form_structure &&
+      ai_manager->ShouldDisplayIph(*form_structure, field.global_id()) &&
+      client().ShowAutofillFieldIphForFeature(
+          field, AutofillClient::IphFeature::kAutofillAi)) {
     std::move(callback).Run(/*show_suggestions=*/false, /*suggestions=*/{});
     return;
   }
