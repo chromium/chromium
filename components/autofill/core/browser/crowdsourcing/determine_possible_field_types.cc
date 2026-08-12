@@ -591,8 +591,7 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
   FindAndSetPossibleCvcFieldTypes(last_unlocked_credit_card_cvc, fields,
                                   possible_types);
 
-  if (!recent_otps.empty() &&
-      base::FeatureList::IsEnabled(features::kAutofillSmsOtpCrowdsourcing)) {
+  if (!recent_otps.empty()) {
     // OTPs are not stored, run special logic to detect OTP values.
     FindAndSetPossibleOtpFieldTypes(fields, recent_otps, possible_types);
   }
@@ -640,8 +639,7 @@ FieldTypeSet DetermineAvailableFieldTypes(
     types.insert(LOYALTY_MEMBERSHIP_ID);
   }
 
-  if (!recent_otps.empty() &&
-      base::FeatureList::IsEnabled(features::kAutofillSmsOtpCrowdsourcing)) {
+  if (!recent_otps.empty()) {
     types.insert(ONE_TIME_CODE);
   }
   return types;

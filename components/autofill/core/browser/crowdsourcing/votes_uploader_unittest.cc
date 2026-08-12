@@ -50,9 +50,7 @@ class AutofillVotesUploaderTest : public testing::Test,
     InitAutofillClient();
     AddTestProfile();
     feature_list_.InitWithFeatures(
-        {features::kAutofillSmsOtpCrowdsourcing,
-         features::kAutofillSmsOtpCrowdsourcingFetchFromGmscore},
-        {});
+        {features::kAutofillSmsOtpCrowdsourcingFetchFromGmscore}, {});
 
     std::unique_ptr<one_time_tokens::MockOneTimeTokenService> mock_service =
         std::make_unique<one_time_tokens::MockOneTimeTokenService>();
