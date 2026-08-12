@@ -190,8 +190,11 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void show(boolean waitForKeyboard, boolean shouldShowOnLargeFormFactor) {
-        mMediator.show(waitForKeyboard, shouldShowOnLargeFormFactor);
+    public void show(
+            boolean waitForKeyboard,
+            boolean shouldShowOnLargeFormFactor,
+            boolean isContentEditable) {
+        mMediator.show(waitForKeyboard, shouldShowOnLargeFormFactor, isContentEditable);
     }
 
     @Override
@@ -273,7 +276,10 @@ class ManualFillingCoordinator implements ManualFillingComponent {
 
     @Override
     public void forceShowForTesting() {
-        mMediator.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mMediator.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
     }
 
     @Override

@@ -78,7 +78,10 @@ public class EmptyManualFillingComponent implements ManualFillingComponent {
     public void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate) {}
 
     @Override
-    public void show(boolean waitForKeyboard, boolean shouldShowOnLargeFormFactor) {}
+    public void show(
+            boolean waitForKeyboard,
+            boolean shouldShowOnLargeFormFactor,
+            boolean isContentEditable) {}
 
     @Override
     public void closeAccessorySheet() {}

@@ -48,6 +48,7 @@ class MockAtMemoryAccessoryController : public AtMemoryAccessoryController {
               OnToggleChanged,
               (autofill::AccessoryAction toggled_action, bool enabled),
               (override));
+  MOCK_METHOD(bool, IsAtMemoryAvailable, (), (const, override));
 
   base::WeakPtr<AtMemoryAccessoryController> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

@@ -339,10 +339,11 @@ bool ManualFillingControllerImpl::ShouldShowAccessoryForLastFocusedFieldType()
     // Unlike database-backed fallback sheets (passwords, addresses, payments)
     // which signal availability asynchronously via `available_sources_`,
     // AtMemory availability on contenteditables is purely focus-driven and
-    // only requires that the `AtMemoryAccessoryController` is attached.
+    // only requires that the `AtMemoryAccessoryController` is available.
     // Note: `PasswordAutofillAgent` verifies the feature enablement.
     case FocusedFieldType::kContenteditableField:
-      return at_memory_controller_ != nullptr;
+      return at_memory_controller_ &&
+             at_memory_controller_->IsAtMemoryAvailable();
   }
 }
 
@@ -352,6 +353,12 @@ void ManualFillingControllerImpl::UpdateVisibility() {
     for (const FillingSource& source : available_sources_) {
       if (source == FillingSource::AUTOFILL) {
         continue;  // Autofill suggestions have no sheet.
+      }
+      // On contenteditable elements, only AtMemory is supported. Suppress
+      // pushing fallback sheet data (passwords, addresses, payments).
+      if (last_focused_field_type_ == FocusedFieldType::kContenteditableField &&
+          source != FillingSource::AT_MEMORY) {
+        continue;
       }
       AccessoryController* controller = GetControllerForFillingSource(source);
       if (!controller) {
@@ -374,7 +381,10 @@ void ManualFillingControllerImpl::UpdateVisibility() {
                 FocusedFieldType::kFillablePasswordField ||
             last_focused_field_type_ ==
                 FocusedFieldType::kContenteditableField ||
-            available_sources_.contains(FillingSource::AUTOFILL)));
+            available_sources_.contains(FillingSource::AUTOFILL)),
+        ManualFillingViewInterface::IsContentEditable(
+            last_focused_field_type_ ==
+                FocusedFieldType::kContenteditableField));
   } else {
     view_->Hide();
   }
@@ -404,7 +414,12 @@ void ManualFillingControllerImpl::OnSourceAvailabilityChanged(
   // TODO(crbug.com/40165275): Remove once all sheets pull this information
   // instead of waiting to get it pushed.
   if (sheet.has_value()) {
-    view_->OnItemsAvailable(std::move(sheet.value()));
+    // Suppress forwarding fallback sheet data for contenteditable elements
+    // so only the AtMemory sheet is made available to the view.
+    if (last_focused_field_type_ != FocusedFieldType::kContenteditableField ||
+        source == FillingSource::AT_MEMORY) {
+      view_->OnItemsAvailable(std::move(sheet.value()));
+    }
   }
   UpdateSourceAvailability(source, show_filling_source);
 }

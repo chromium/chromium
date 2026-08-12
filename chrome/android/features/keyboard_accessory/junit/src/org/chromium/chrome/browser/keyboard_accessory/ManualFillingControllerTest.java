@@ -831,7 +831,10 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
         // Show the accessory bar for the default dimensions (300x128@2.f).
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
         verify(mMockKeyboardAccessory).show();
 
         // The accessory is shown and the content area plus bar size don't exceed the threshold.
@@ -857,7 +860,10 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
         // Show the accessory bar for the default dimensions (300x128@2.f).
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
         verify(mMockKeyboardAccessory).show();
 
         // The accessory is shown and the content area plus bar size don't exceed the threshold.
@@ -878,7 +884,10 @@ public class ManualFillingControllerTest {
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(true);
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
         setContentAreaDimensions(2.f, 180, 220);
         mMediator.onLayoutChange(mMockContentView, 0, 0, 540, 360, 0, 0, 640, 360);
         verify(mMockKeyboardAccessory).show();
@@ -908,7 +917,10 @@ public class ManualFillingControllerTest {
         // Show the accessory bar for the dimensions exactly at the threshold: 300x128@2.f.
         simulateLayoutSizeChange(
                 2.0f, 300, 128, /* keyboardShown= */ true, VirtualKeyboardMode.RESIZES_CONTENT);
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
         verify(mMockKeyboardAccessory).show();
 
@@ -948,7 +960,10 @@ public class ManualFillingControllerTest {
         // Show the accessory bar for the dimensions exactly at the threshold: 180x128@2.f.
         simulateLayoutSizeChange(
                 2.0f, 180, 128, /* keyboardShown= */ true, VirtualKeyboardMode.RESIZES_VISUAL);
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
 
         // Use a width that is too small but with a valid height (e.g. resized multi-window window).
@@ -1394,7 +1409,10 @@ public class ManualFillingControllerTest {
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(true);
 
         // Showing the keyboard should now trigger a transition into EXTENDING state.
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
     }
@@ -1410,7 +1428,10 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
         // Showing the keyboard should now trigger a transition into EXTENDING state.
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
     }
@@ -1548,7 +1569,10 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
         // Showing the keyboard should now trigger a transition into EXTENDING state.
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ false);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ false,
+                /* isContentEditable= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
         verify(mMockKeyboardAccessory, never()).setStyle(any());
@@ -1568,7 +1592,10 @@ public class ManualFillingControllerTest {
                 new RectF(/* left= */ 10, /* top= */ 10, /* right= */ 20, /* bottom= */ 20));
 
         // Showing the keyboard should now trigger a transition into EXTENDING state.
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
@@ -1635,7 +1662,10 @@ public class ManualFillingControllerTest {
                         R.dimen.keyboard_accessory_bar_dynamic_positioning_horizontal_margin))
                 .thenReturn(horizontalMargin);
 
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
 
         // Verify the accessory is shown as a floating bar with the correct style.
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
@@ -1677,7 +1707,10 @@ public class ManualFillingControllerTest {
                         R.dimen.keyboard_accessory_bar_dynamic_positioning_horizontal_margin))
                 .thenReturn(horizontalMargin);
 
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
 
         // Verify the accessory is shown as a floating bar with the correct style.
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
@@ -1706,7 +1739,10 @@ public class ManualFillingControllerTest {
                 new RectF(/* left= */ 10, /* top= */ 10, /* right= */ 20, /* bottom= */ 20));
 
         // Showing the keyboard should now trigger a transition into FLOATING state.
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
@@ -1731,7 +1767,10 @@ public class ManualFillingControllerTest {
                 new RectF(/* left= */ 10, /* top= */ 10, /* right= */ 20, /* bottom= */ 20));
 
         // Showing the keyboard should now trigger a transition into FLOATING state.
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
@@ -1754,7 +1793,10 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
         // Showing the keyboard should now trigger a transition into EXTENDING state.
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
@@ -1800,7 +1842,10 @@ public class ManualFillingControllerTest {
         mController.setFieldBounds(
                 new RectF(/* left= */ 10, /* top= */ 10, /* right= */ 20, /* bottom= */ 20));
 
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
 
         // Scrolling should trigger a transition into HIDDEN state.
@@ -1819,7 +1864,10 @@ public class ManualFillingControllerTest {
         mController.setFieldBounds(
                 new RectF(/* left= */ 10, /* top= */ 10, /* right= */ 20, /* bottom= */ 20));
 
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
 
         // Scrolling shouldn't trigger a transition into HIDDEN state.
@@ -1851,7 +1899,10 @@ public class ManualFillingControllerTest {
 
         // Showing the keyboard should NOT reset mWaitingForFetch if it's already true.
         // (In the actual code, show() calls mMediator.show(), which should respect the flag).
-        mController.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
 
         // We can't directly check mWaitingForFetch because it's private in Mediator,
         // but we can verify that dismissIfWaitingForFetch still works.
@@ -1914,6 +1965,59 @@ public class ManualFillingControllerTest {
 
         verify(mManualFillingComponentBridgeJniMock)
                 .hideAtMemoryBottomSheet(eq(mLastMockWebContents));
+    }
+
+    @Test
+    public void testContentEditableHidesOtherTabs() {
+        when(mManualFillingComponentBridgeJniMock.isAtMemoryEnabled(any())).thenReturn(true);
+        addBrowserTab(mMediator, 1111, null);
+        mController.registerSheetDataProvider(
+                mLastMockWebContents, AccessoryTabType.PASSWORDS, new Provider<>());
+
+        // Verify that initially the passwords tab is set on both components and AtMemory is
+        // enabled.
+        ArgumentCaptor<KeyboardAccessoryData.Tab[]> barTabCaptor =
+                ArgumentCaptor.forClass(KeyboardAccessoryData.Tab[].class);
+        ArgumentCaptor<KeyboardAccessoryData.Tab[]> sheetTabCaptor =
+                ArgumentCaptor.forClass(KeyboardAccessoryData.Tab[].class);
+        verify(mMockKeyboardAccessory, atLeastOnce()).setTabs(barTabCaptor.capture());
+        verify(mMockAccessorySheet, atLeastOnce()).setTabs(sheetTabCaptor.capture());
+        verify(mMockKeyboardAccessory, atLeastOnce()).setAtMemoryEnabled(true);
+        assertThat(barTabCaptor.getValue().length, is(1));
+        assertThat(sheetTabCaptor.getValue().length, is(1));
+
+        reset(mMockKeyboardAccessory);
+        reset(mMockAccessorySheet);
+
+        // Show accessory on a contenteditable field.
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ true);
+
+        // Verify that AtMemory remains enabled while empty tabs are passed to both accessory bar
+        // and accessory sheet (so exclusively the AtMemory icon is displayed).
+        verify(mMockKeyboardAccessory).setAtMemoryEnabled(true);
+        verify(mMockKeyboardAccessory).setTabs(barTabCaptor.capture());
+        verify(mMockAccessorySheet).setTabs(sheetTabCaptor.capture());
+        assertThat(barTabCaptor.getValue().length, is(0));
+        assertThat(sheetTabCaptor.getValue().length, is(0));
+
+        reset(mMockKeyboardAccessory);
+        reset(mMockAccessorySheet);
+
+        // Switch focus back to a non-contenteditable field.
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
+
+        // Verify that the cached tabs (passwords) are restored alongside AtMemory enablement.
+        verify(mMockKeyboardAccessory).setAtMemoryEnabled(true);
+        verify(mMockKeyboardAccessory).setTabs(barTabCaptor.capture());
+        verify(mMockAccessorySheet).setTabs(sheetTabCaptor.capture());
+        assertThat(barTabCaptor.getValue().length, is(1));
+        assertThat(sheetTabCaptor.getValue().length, is(1));
     }
 
     private Tab addBrowserTab(ManualFillingMediator mediator, int id, @Nullable Tab lastTab) {

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.FIELD_BOUNDS;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_CONTENT_EDITABLE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_FULLSCREEN;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.EXTENDING_KEYBOARD;
@@ -444,8 +445,12 @@ class ManualFillingMediator
         hideSoftKeyboard();
     }
 
-    void show(boolean waitForKeyboard, boolean shouldShowOnLargeFormFactor) {
+    void show(
+            boolean waitForKeyboard,
+            boolean shouldShowOnLargeFormFactor,
+            boolean isContentEditable) {
         mModel.set(SHOULD_SHOW_ON_LARGE_FORM_FACTOR, shouldShowOnLargeFormFactor);
+        mModel.set(IS_CONTENT_EDITABLE, isContentEditable);
         showWithKeyboardExtensionState(waitForKeyboard);
     }
 
@@ -503,7 +508,7 @@ class ManualFillingMediator
     }
 
     private void updateAtMemoryEnablement() {
-        WebContents webContents = mActivity.getCurrentWebContents();
+        WebContents webContents = mActivity != null ? mActivity.getCurrentWebContents() : null;
         boolean enabled = false;
         if (webContents != null && !webContents.isDestroyed()) {
             enabled = ManualFillingComponentBridge.isAtMemoryEnabled(webContents);
@@ -513,6 +518,11 @@ class ManualFillingMediator
             }
         }
         mKeyboardAccessory.setAtMemoryEnabled(enabled);
+        // If AtMemory becomes disabled while focused on a contenteditable element, hide the
+        // accessory to avoid displaying an empty bar.
+        if (mModel.get(IS_CONTENT_EDITABLE) && !enabled) {
+            hide();
+        }
     }
 
     void resume() {
@@ -583,6 +593,10 @@ class ManualFillingMediator
         } else if (property == SHOULD_SHOW_ON_LARGE_FORM_FACTOR) {
             // Do nothing. SHOULD_SHOW_ON_LARGE_FORM_FACTOR is used with
             // KEYBOARD_EXTENSION_STATE.
+            return;
+        } else if (property == IS_CONTENT_EDITABLE) {
+            // Contenteditable state dictates whether fallback tabs should be hidden on the bar.
+            refreshTabs();
             return;
         } else if (property == FIELD_BOUNDS) {
             // For password fields, the accessory is shown before the FIELD_BOUNDS property is set.
@@ -1172,7 +1186,12 @@ class ManualFillingMediator
         ManualFillingState state = mStateCache.getStateFor(mActivity.getCurrentWebContents());
         state.notifyObservers();
         updateAtMemoryEnablement();
-        KeyboardAccessoryData.Tab[] tabs = state.getTabs();
+        // For contenteditable fields, provide empty tabs so that only the AtMemory
+        // button is displayed without clearing cached tabs in ManualFillingState.
+        KeyboardAccessoryData.Tab[] tabs =
+                mModel.get(IS_CONTENT_EDITABLE)
+                        ? new KeyboardAccessoryData.Tab[0]
+                        : state.getTabs();
         mAccessorySheet.setTabs(tabs); // Set the sheet tabs first to invalidate the tabs properly.
         mKeyboardAccessory.setTabs(tabs);
         state.requestRecentSheets();

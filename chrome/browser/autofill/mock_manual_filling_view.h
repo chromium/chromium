@@ -31,7 +31,7 @@ class MockManualFillingView : public ManualFillingViewInterface {
   MOCK_METHOD((void), SwapSheetWithKeyboard, (), (override));
   MOCK_METHOD((void),
               Show,
-              (WaitForKeyboard, ShouldShowOnLargeFormFactor),
+              (WaitForKeyboard, ShouldShowOnLargeFormFactor, IsContentEditable),
               (override));
   MOCK_METHOD((void), Hide, (), (override));
   MOCK_METHOD((void),
