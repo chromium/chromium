@@ -250,9 +250,8 @@ export class
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     // The mixin also sets `smartTabSharingActive` directly (browser callback,
-    // visible-change fetch), so clear on any transition to active here.
-    if (changedProperties.has('smartTabSharingActive') &&
-        this.smartTabSharingActive) {
+    // visible-change fetch), so clear on any transition here.
+    if (changedProperties.has('smartTabSharingActive')) {
       this.clearContextForSmartTabSharingActive_();
     }
     if (changedProperties.has('inputPlaceholderOverride') ||
@@ -346,9 +345,7 @@ export class
 
   override onSmartTabSharingActiveChanged(e: CustomEvent<{active: boolean}>) {
     super.onSmartTabSharingActiveChanged(e);
-    if (e.detail.active) {
-      this.clearContextForSmartTabSharingActive_();
-    }
+    this.clearContextForSmartTabSharingActive_();
   }
 
   private clearContextForSmartTabSharingActive_() {
@@ -363,7 +360,7 @@ export class
   private clearManualTabs_() {
     const fileMap = new Map(this.files);
     for (const [uuid, file] of fileMap.entries()) {
-      if (file.type === 'tab' &&
+      if ((file.type === 'tab' || !!file.tabId) &&
           (!this.automaticActiveTab_ ||
            file.uuid !== this.automaticActiveTab_.uuid)) {
         this.deleteFile(uuid, /*fromUserAction=*/ false);
