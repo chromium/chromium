@@ -61,7 +61,7 @@
 }
 
 #aimIcon {
-  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/search_spark_old.svg);
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/search_spark.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: cover;
@@ -327,11 +327,5 @@
 @media (forced-colors: active) {
   .action-icon {
     border: var(--composebox-outline-hcm);
-  }
-}
-
-:host-context([webui-rounded-icons]) {
-  #aimIcon {
-    -webkit-mask-image: url(//resources/cr_components/searchbox/icons/search_spark.svg);
   }
 }

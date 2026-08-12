@@ -15,11 +15,9 @@
 #include "base/base64url.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -205,8 +203,6 @@ constexpr char kPedalsIconResourceName[] =
     "//resources/cr_components/searchbox/icons/chrome_product_cr23.svg";
 constexpr char kSearchIconResourceName[] =
     "//resources/cr_components/searchbox/icons/search_cr23.svg";
-constexpr char kSearchOldIconResourceName[] =
-    "//resources/cr_components/searchbox/icons/search_cr23_old.svg";
 constexpr char kSparkIconResourceName[] =
     "//resources/cr_components/searchbox/icons/spark.svg";
 constexpr char kStarActiveIconResourceName[] =
@@ -498,9 +494,7 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
                                  u"https://myactivity.google.com/"
                                  u"activitycontrols?settings=search&utm_source="
                                  u"aim&utm_campaign=aim_str"));
-  dict.Set("searchboxDefaultIcon", features::IsRoundedIconsEnabled()
-                                       ? kSearchIconResourceName
-                                       : kSearchOldIconResourceName);
+  dict.Set("searchboxDefaultIcon", kSearchIconResourceName);
 
   dict.Set("searchboxVoiceSearch", options.enable_voice_search);
   dict.Set("searchboxLensSearch", options.enable_lens_search);
@@ -583,157 +577,163 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
   // - `omnibox::kB`
   // - `vector_icons::kA`
 
-  std::string resource_name;
   if (icon.name == (features::IsRoundedIconsEnabled()
                         ? omnibox::kAutorenewIcon.name
                         : omnibox::kAnswerCurrencyChromeRefreshOldIcon.name)) {
-    resource_name = kAnswerCurrencyIconResourceName;
+    return kAnswerCurrencyIconResourceName;
   } else if (icon.name == omnibox::kAnswerDefaultIcon.name) {
-    resource_name = kAnswerDefaultIconResourceName;
+    return kAnswerDefaultIconResourceName;
   } else if (icon.name ==
              (features::IsRoundedIconsEnabled()
                   ? omnibox::kBookIcon.name
                   : omnibox::kAnswerDictionaryChromeRefreshOldIcon.name)) {
-    resource_name = kAnswerDictionaryIconResourceName;
+    return kAnswerDictionaryIconResourceName;
   } else if (icon.name ==
              (features::IsRoundedIconsEnabled()
                   ? omnibox::kSwapVertIcon.name
                   : omnibox::kAnswerFinanceChromeRefreshOldIcon.name)) {
-    resource_name = kAnswerFinanceIconResourceName;
+    return kAnswerFinanceIconResourceName;
   } else if (icon.name ==
              (features::IsRoundedIconsEnabled()
                   ? omnibox::kWbSunnyIcon.name
                   : omnibox::kAnswerSunriseChromeRefreshOldIcon.name)) {
-    resource_name = kAnswerSunriseIconResourceName;
+    return kAnswerSunriseIconResourceName;
   } else if (icon.name ==
              (features::IsRoundedIconsEnabled()
                   ? omnibox::kTranslateIcon.name
                   : omnibox::kAnswerTranslationChromeRefreshOldIcon.name)) {
-    resource_name = kAnswerTranslationIconResourceName;
+    return kAnswerTranslationIconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kStarIcon.name
                                : omnibox::kBookmarkChromeRefreshOldIcon.name)) {
-    resource_name = kBookmarkIconResourceName;
+    return kBookmarkIconResourceName;
   } else if (icon.name ==
              (features::IsRoundedIconsEnabled()
                   ? omnibox::kEqualIcon.name
                   : omnibox::kCalculatorChromeRefreshOldIcon.name)) {
-    resource_name = kCalculatorIconResourceName;
+    return kCalculatorIconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kOfflineDinoIcon.name
                                : omnibox::kDinoCr2023OldIcon.name)) {
-    resource_name = kDinoIconResourceName;
+    return kDinoIconResourceName;
   } else if (icon.name == omnibox::kDriveDocsCustomIcon.name) {
-    resource_name = kDriveDocsIconResourceName;
+    return kDriveDocsIconResourceName;
   } else if (icon.name == omnibox::kDriveFolderCustomIcon.name) {
-    resource_name = kDriveFolderIconResourceName;
+    return kDriveFolderIconResourceName;
   } else if (icon.name == omnibox::kDriveFormsCustomIcon.name) {
-    resource_name = kDriveFormIconResourceName;
+    return kDriveFormIconResourceName;
   } else if (icon.name == omnibox::kDriveImageCustomIcon.name) {
-    resource_name = kDriveImageIconResourceName;
+    return kDriveImageIconResourceName;
   } else if (icon.name == omnibox::kDriveLogoCustomIcon.name) {
-    resource_name = kDriveLogoIconResourceName;
+    return kDriveLogoIconResourceName;
   } else if (icon.name == omnibox::kDrivePdfCustomIcon.name) {
-    resource_name = kDrivePdfIconResourceName;
+    return kDrivePdfIconResourceName;
   } else if (icon.name == omnibox::kDriveSheetsCustomIcon.name) {
-    resource_name = kDriveSheetsIconResourceName;
+    return kDriveSheetsIconResourceName;
   } else if (icon.name == omnibox::kDriveSlidesCustomIcon.name) {
-    resource_name = kDriveSlidesIconResourceName;
+    return kDriveSlidesIconResourceName;
   } else if (icon.name == omnibox::kDriveVideoCustomIcon.name) {
-    resource_name = kDriveVideoIconResourceName;
+    return kDriveVideoIconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kDomainIcon.name
                                : omnibox::kEnterpriseOldIcon.name)) {
-    resource_name = kEnterpriseIconResourceName;
+    return kEnterpriseIconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kExtensionFilledIcon.name
                                : omnibox::kExtensionAppOldIcon.name)) {
-    resource_name = kExtensionAppIconResourceName;
+    return kExtensionAppIconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kIncognitoIcon.name
                                : omnibox::kIncognitoCr2023OldIcon.name)) {
-    resource_name = kIncognitoIconResourceName;
+    return kIncognitoIconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kConversionPathIcon.name
                                : omnibox::kJourneysChromeRefreshOldIcon.name)) {
-    resource_name = kJourneysIconResourceName;
+    return kJourneysIconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kConversionPathIcon.name
                                : omnibox::kJourneysOldIcon.name)) {
-    resource_name = kJourneysIconResourceName;
+    return kJourneysIconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kNotesSparkIcon.name
                                : omnibox::kNotesSparkOldIcon.name)) {
-    resource_name = kNotesSparkIconResourceName;
+    return kNotesSparkIconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kPublicIcon.name
                                : omnibox::kPageChromeRefreshOldIcon.name)) {
-    resource_name = kPageIconResourceName;
+    return kPageIconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kChromeProductIcon.name
                                : omnibox::kProductChromeRefreshOldIcon.name)) {
-    resource_name = kPedalsIconResourceName;
+    return kPedalsIconResourceName;
   } else if (icon.name == omnibox::kReplyRotated180CustomIcon.name) {
-    resource_name = searchbox_internal::kReplyRotated180IconResourceName;
+    return searchbox_internal::kReplyRotated180IconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kSearchSparkIcon.name
                                : omnibox::kSearchSparkOldIcon.name)) {
-    resource_name = searchbox_internal::kSearchSparkIconResourceName;
+    return searchbox_internal::kSearchSparkIconResourceName;
   } else if (icon.name == omnibox::kSparkIcon.name) {
-    resource_name = kSparkIconResourceName;
+    return kSparkIconResourceName;
   } else if (icon.name ==
              (features::IsRoundedIconsEnabled()
                   ? omnibox::kStarFilledIcon.name
                   : omnibox::kStarActiveChromeRefreshOldIcon.name)) {
-    resource_name = kStarActiveIconResourceName;
+    return kStarActiveIconResourceName;
   } else if (icon.name ==
              (features::IsRoundedIconsEnabled()
                   ? omnibox::kSubdirectoryArrowRightIcon.name
                   : omnibox::kSubdirectoryArrowRightOldIcon.name)) {
-    resource_name = kSubdirectoryArrowRightResourceName;
+    return kSubdirectoryArrowRightResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kTabIcon.name
                                : omnibox::kSwitchCr2023OldIcon.name)) {
-    resource_name = kTabIconResourceName;
+    return kTabIconResourceName;
   } else if (icon.name ==
              (features::IsRoundedIconsEnabled()
                   ? omnibox::kTrendingUpIcon.name
                   : omnibox::kTrendingUpChromeRefreshOldIcon.name)) {
-    resource_name = kTrendingUpIconResourceName;
-  } else if (icon.name == (features::IsRoundedIconsEnabled()
-                               ? vector_icons::kDevicesIcon.name
-                               : vector_icons::kDevicesOldIcon.name)) {
-    resource_name = kTabIconResourceName;
+    return kTrendingUpIconResourceName;
+  } else if (icon.name ==
+             (features::IsRoundedIconsEnabled()
+                  ? vector_icons::kDevicesIcon.name
+                  : vector_icons::kDevicesOldIcon.name)) {
+    return kTabIconResourceName;
   } else if (icon.name ==
              (features::IsRoundedIconsEnabled()
                   ? vector_icons::kHistoryIcon.name
                   : vector_icons::kHistoryChromeRefreshOldIcon.name)) {
-    resource_name = kHistoryIconResourceName;
+    return kHistoryIconResourceName;
   } else if (icon.name ==
              (features::IsRoundedIconsEnabled()
                   ? vector_icons::kSearchIcon.name
                   : vector_icons::kSearchChromeRefreshOldIcon.name)) {
-    resource_name = kSearchIconResourceName;
+    return kSearchIconResourceName;
   }
+
+  // Don't add new icons here. Add them alphabetically by `if` predicate. E.g.
+  // - `omnibox::kA`
+  // - `omnibox::kB`
+  // - `vector_icons::kA`
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (icon.name == vector_icons::kGoogleAgentspaceMonochromeLogoIcon.name) {
-    resource_name = kGoogleAgentspaceMonochromeLogoIcon;
+    return kGoogleAgentspaceMonochromeLogoIcon;
   } else if (icon.name ==
              vector_icons::kGoogleAgentspaceMonochromeLogo25Icon.name) {
-    resource_name = kGoogleAgentspaceMonochromeLogo25Icon;
+    return kGoogleAgentspaceMonochromeLogo25Icon;
   } else if (icon.name == vector_icons::kGoogleCalendarIcon.name) {
-    resource_name = kGoogleCalendarIconResourceName;
+    return kGoogleCalendarIconResourceName;
   } else if (icon.name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
-    resource_name = kGoogleGIconResourceName;
+    return kGoogleGIconResourceName;
   } else if (icon.name == vector_icons::kGoogleKeepNoteIcon.name) {
-    resource_name = kGoogleKeepNoteIconResourceName;
-  } else if (icon.name == vector_icons::kGoogleLensLogoIcon.name ||
-             icon.name == vector_icons::kGoogleLensMonochromeLogoIcon.name) {
+    return kGoogleKeepNoteIconResourceName;
+  } else if (icon.name == vector_icons::kGoogleLensLogoIcon.name) {
     // TODO(crbug.com/446957004): Temporarily use the monochrome logo.
-    resource_name = kGoogleLensMonochromeLogoIcon;
+    return kGoogleLensMonochromeLogoIcon;
+  } else if (icon.name == vector_icons::kGoogleLensMonochromeLogoIcon.name) {
+    return kGoogleLensMonochromeLogoIcon;
   } else if (icon.name == vector_icons::kGoogleSitesIcon.name) {
-    resource_name = kGoogleSitesIconResourceName;
+    return kGoogleSitesIconResourceName;
   }
 #endif
 
@@ -741,58 +741,41 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
   if (icon.name == (features::IsRoundedIconsEnabled()
                         ? omnibox::kIosShareIcon.name
                         : omnibox::kShareMacChromeRefreshOldIcon.name)) {
-    resource_name = kMacShareIconResourceName;
+    return kMacShareIconResourceName;
   }
 #elif BUILDFLAG(IS_WIN)
   if (icon.name == (features::IsRoundedIconsEnabled()
                         ? omnibox::kShareWindowsIcon.name
                         : omnibox::kShareWinChromeRefreshOldIcon.name)) {
-    resource_name = kWinShareIconResourceName;
+    return kWinShareIconResourceName;
   }
 #elif BUILDFLAG(IS_LINUX)
   if (icon.name == (features::IsRoundedIconsEnabled()
                         ? omnibox::kSendIcon.name
                         : omnibox::kShareLinuxChromeRefreshOldIcon.name)) {
-    resource_name = kLinuxShareIconResourceName;
+    return kLinuxShareIconResourceName;
   }
 #else
   if (icon.name == (features::IsRoundedIconsEnabled()
                         ? omnibox::kShareIcon.name
                         : omnibox::kShareChromeRefreshOldIcon.name)) {
-    resource_name = kShareIconResourceName;
+    return kShareIconResourceName;
   }
 #endif
 
-  if (resource_name.empty()) {
-    DUMP_WILL_BE_NOTREACHED()
-        << "Every autocomplete icon must have an equivalent SVG "
-           "resource for the NTP Realbox. icon.name: '"
-        << icon.name << "'";
-    return "";
-  }
+  // Don't add new icons here. Add them alphabetically by `if` predicate. E.g.
+  // - `omnibox::kA`
+  // - `omnibox::kB`
+  // - `vector_icons::kA`
 
-  if (!features::IsRoundedIconsEnabled()) {
-    static const base::NoDestructor<base::flat_set<std::string_view>>
-        kNoOldVersionIcons({
-            kDriveLogoIconResourceName,
-            kEnterpriseIconResourceName,
-            searchbox_internal::kReplyRotated180IconResourceName,
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-            kGoogleAgentspaceMonochromeLogoIcon,
-            kGoogleAgentspaceMonochromeLogo25Icon,
-            kGoogleCalendarIconResourceName,
-            kGoogleGIconResourceName,
-            kGoogleLensMonochromeLogoIcon,
-            kGoogleSitesIconResourceName,
-#endif
-        });
-
-    if (!kNoOldVersionIcons->contains(resource_name)) {
-      base::ReplaceSubstringsAfterOffset(&resource_name, 0, ".svg", "_old.svg");
-    }
-  }
-
-  return resource_name;
+  // TODO(446953331): It's error-prone to keep the above if's up to date. When
+  //   omnibox input and popup views are replaced with webUI, matches and
+  //   actions can store an icon enum instead of `VectorIcon`.
+  DUMP_WILL_BE_NOTREACHED()
+      << "Every autocomplete icon must have an equivalent SVG "
+         "resource for the NTP Realbox. icon.name: '"
+      << icon.name << "'";
+  return "";
 }
 
 searchbox::mojom::AutocompleteResultPtr

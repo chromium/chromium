@@ -118,9 +118,7 @@ export class SearchboxComposeButtonElement extends
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
 
   protected accessor arrowIcon_: string =
-      (document.documentElement.hasAttribute('webui-rounded-icons') ?
-           '//resources/cr_components/searchbox/icons/arrow_forward.svg' :
-           '//resources/cr_components/searchbox/icons/arrow_forward_old.svg');
+      '//resources/cr_components/searchbox/icons/arrow_forward.svg';
 
   protected accessor showAnimation_: boolean = false;
 

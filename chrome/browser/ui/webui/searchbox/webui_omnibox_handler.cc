@@ -76,7 +76,6 @@
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/widget/widget.h"
@@ -584,10 +583,7 @@ void WebuiOmniboxHandler::OnAiModeButtonConfigChanged(
     return;
   }
   GURL compose_icon(
-      features::IsRoundedIconsEnabled()
-          ? "chrome://resources/cr_components/searchbox/icons/search_spark.svg"
-          : "chrome://resources/cr_components/searchbox/icons/"
-            "search_spark_old.svg");
+      "chrome://resources/cr_components/searchbox/icons/search_spark.svg");
   std::string favicon_url(config->favicon_url);
   if (config->id != SearchEngineType::SEARCH_ENGINE_GOOGLE &&
       !favicon_url.empty()) {

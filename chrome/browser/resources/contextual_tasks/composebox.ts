@@ -58,10 +58,7 @@ function createGhostMatch(): AutocompleteMatch {
     description: '\u200b',
     type: 'SEARCH_SUGGEST',
     isSearchType: true,
-    iconPath:
-        (document.documentElement.hasAttribute('webui-rounded-icons') ?
-             '//resources/cr_components/searchbox/icons/search_spark.svg' :
-             '//resources/cr_components/searchbox/icons/search_spark_old.svg'),
+    iconPath: '//resources/cr_components/searchbox/icons/search_spark.svg',
   });
 }
 export interface ContextualTasksComposeboxElement {
