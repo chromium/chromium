@@ -214,6 +214,10 @@ void GlicPasswordChangeActuator::Start() {
     return;
   }
 
+  tab_will_detach_subscription_ = new_tab_interface->RegisterWillDetach(
+      base::BindRepeating(&GlicPasswordChangeActuator::OnTabWillDetach,
+                          weak_ptr_factory_.GetWeakPtr()));
+
   glic::GlicInvokeOptions options(
       glic::Target(*new_tab_interface),
       glic::mojom::InvocationSource::kPasswordChange);
@@ -230,6 +234,7 @@ void GlicPasswordChangeActuator::Start() {
   actor::ActorKeyedService* actor_service = actor::ActorKeyedService::Get(
       Profile::FromBrowserContext(new_contents->GetBrowserContext()));
   if (!actor_service) {
+    CloseGlicSession();
     NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
     return;
   }
@@ -323,6 +328,15 @@ glic::GlicKeyedService* GlicPasswordChangeActuator::GetGlicService() {
   return nullptr;
 }
 
+void GlicPasswordChangeActuator::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    Cancel();
+    NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
+  }
+}
+
 void GlicPasswordChangeActuator::OnFindFormTaskStateChanged(
     actor::ActorTask& task) {
   tabs::TabInterface* actuation_tab =
@@ -382,6 +396,7 @@ void GlicPasswordChangeActuator::OnChangePasswordFormManagerFound(
   form_waiter_.reset();
 
   if (!actuation_web_contents_ || !form_manager) {
+    CloseGlicSession();
     NotifyStateChanged(
         PasswordChangeActuator::State::kChangePasswordFormNotFound);
     return;
@@ -415,12 +430,14 @@ void GlicPasswordChangeActuator::OnChangePasswordFormFilled(
   form_filler_.reset();
 
   if (!result.has_value()) {
+    CloseGlicSession();
     NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
     return;
   }
 
   saved_form_manager_ = std::move(result).value();
   if (!actuation_web_contents_) {
+    CloseGlicSession();
     NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
     return;
   }
@@ -431,6 +448,7 @@ void GlicPasswordChangeActuator::OnChangePasswordFormFilled(
 
   glic::GlicKeyedService* glic_service = GetGlicService();
   if (!glic_service) {
+    CloseGlicSession();
     NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
     return;
   }
@@ -438,6 +456,7 @@ void GlicPasswordChangeActuator::OnChangePasswordFormFilled(
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(actuation_web_contents_.get());
   if (!tab_interface) {
+    CloseGlicSession();
     NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
     return;
   }
@@ -448,12 +467,12 @@ void GlicPasswordChangeActuator::OnChangePasswordFormFilled(
   std::string post_submission_prompt = GetPostSubmissionPrompt();
 
   if (post_submission_prompt.empty()) {
+    CloseGlicSession();
     NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
     return;
   }
 
-  glic_service->CloseAndShutdown(
-      actuation_web_contents_->GetPrimaryMainFrame());
+  CloseGlicSession();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&GlicPasswordChangeActuator::InvokeVerificationFlow,
@@ -465,6 +484,7 @@ void GlicPasswordChangeActuator::InvokeVerificationFlow(
     std::string post_submission_prompt) {
   glic::GlicKeyedService* glic_service = GetGlicService();
   if (!glic_service || !actuation_web_contents_) {
+    CloseGlicSession();
     NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
     return;
   }
@@ -472,6 +492,7 @@ void GlicPasswordChangeActuator::InvokeVerificationFlow(
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(actuation_web_contents_.get());
   if (!tab_interface) {
+    CloseGlicSession();
     NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
     return;
   }
@@ -584,10 +605,8 @@ void GlicPasswordChangeActuator::HandleMaybeSuccessfulPasswordChange() {
 }
 
 void GlicPasswordChangeActuator::CloseGlicSession() {
-  glic::GlicKeyedService* glic_service = GetGlicService();
-  if (glic_service && actuation_web_contents_) {
-    glic_service->CloseAndShutdown(
-        actuation_web_contents_->GetPrimaryMainFrame());
+  if (glic_instance_) {
+    glic_instance_->CancelInvoke();
   }
 }
 
@@ -611,6 +630,7 @@ void GlicPasswordChangeActuator::ResetInternalState(
 
   CloseGlicSession();
 
+  tab_will_detach_subscription_ = {};
   form_filler_.reset();
   form_waiter_.reset();
   saved_form_manager_.reset();

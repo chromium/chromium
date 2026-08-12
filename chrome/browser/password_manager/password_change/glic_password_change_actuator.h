@@ -63,6 +63,8 @@ class GlicPasswordChangeActuator : public PasswordChangeActuator {
  private:
   glic::GlicKeyedService* GetGlicService();
 
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
   void OnFindFormTaskStateChanged(actor::ActorTask& task);
   void OnChangePasswordFormManagerFound(
       password_manager::PasswordFormManager* form_manager);
@@ -85,6 +87,7 @@ class GlicPasswordChangeActuator : public PasswordChangeActuator {
 
   base::WeakPtr<content::WebContents> actuation_web_contents_;
   base::WeakPtr<glic::GlicInstance> glic_instance_;
+  base::CallbackListSubscription tab_will_detach_subscription_;
 
   std::optional<actor::TaskId> find_form_task_id_;
   base::CallbackListSubscription actor_task_state_subscription_;
