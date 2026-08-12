@@ -980,10 +980,18 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
     }
 
     DCHECK(tab_to_insert);
+    std::optional<tab_groups::TabGroupId> group = params->group;
+    if (!(params->tabstrip_add_types & AddTabTypes::ADD_PINNED)) {
+      if (!group.has_value()) {
+        group = params->browser->GetBrowserForMigrationOnly()
+                    ->tab_strip_model()
+                    ->GetFocusedGroup();
+      }
+    }
     // The navigation should insert a new tab into the target Browser.
     params->browser->GetBrowserForMigrationOnly()->tab_strip_model()->AddTab(
         std::move(tab_to_insert), params->tabstrip_index, params->transition,
-        params->tabstrip_add_types, params->group);
+        params->tabstrip_add_types, group);
 
     // For NEW_SPLIT_VIEW, pair the new tab with the active tab. The
     // "already split" case is handled in Browser::OpenURLFromTab().

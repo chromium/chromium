@@ -2661,18 +2661,20 @@ TEST_F(TabStripModelTest, ClosingOnlyTabInFocusedGroupUnsetsFocus) {
   EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
 }
 
-TEST_F(TabStripModelTest, NewTabInFocusedGroupJoinsFocusedGroup) {
+TEST_F(TabStripModelTest, NewBackgroundTabWithoutGroupUnsetsFocus) {
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
   tabstrip()->SetFocusedGroup(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
-  // Add a new tab without specifying a group.
+  // Add a background tab without specifying a group.
   tabstrip()->AddWebContents(CreateWebContents(), -1, ui::PAGE_TRANSITION_TYPED,
-                             AddTabTypes::ADD_ACTIVE);
+                             AddTabTypes::ADD_NONE);
 
-  // The newly created tab should automatically belong to the focused group.
-  EXPECT_EQ(group_id, tabstrip()->GetTabGroupForTab(3));
+  // The tab is ungrouped, and adding a tab outside the focused group unsets
+  // focus.
+  EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(4));
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
 }
 
 TEST_F(TabStripModelTest, NewPinnedTabInFocusedGroupDoesNotJoinFocusedGroup) {

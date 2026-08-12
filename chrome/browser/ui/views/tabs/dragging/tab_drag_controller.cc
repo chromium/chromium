@@ -1448,13 +1448,16 @@ void TabDragController::AttachToNewContext(
                              });
       CHECK(it != drag_data_.tab_drag_data_.end());
       TabDragData& tab_data = *it;
+      std::optional<tab_groups::TabGroupId> group_for_tab = std::nullopt;
       if (tab_data.pinned) {
         add_types |= AddTabTypes::ADD_PINNED;
+      } else {
+        group_for_tab = focused_group;
       }
 
       const size_t inserted_index =
           attached_context_->GetTabStripModel()->InsertDetachedTabAt(
-              index, std::move(tab->get()->tab), add_types);
+              index, std::move(tab->get()->tab), add_types, group_for_tab);
       CHECK_EQ(inserted_index, index);
       update_sad_tab.Run(index);
       index++;

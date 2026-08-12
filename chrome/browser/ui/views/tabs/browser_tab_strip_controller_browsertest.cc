@@ -344,6 +344,25 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
   EXPECT_NE(widget->user_color_override(), std::nullopt);
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
+                       NewTabInFocusedGroupJoinsFocusedGroup) {
+  // Create tabs and a group.
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  EXPECT_EQ(tab_strip_model()->count(), 2);
+  const tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0, 1});
+
+  // Focus on the group.
+  controller()->SetFocusedGroup(group);
+  EXPECT_EQ(controller()->GetFocusedGroup(), group);
+
+  // Creating a new tab via user intent (controller/command) should join the
+  // focused group.
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  EXPECT_EQ(tab_strip_model()->count(), 3);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(2), group);
+  EXPECT_EQ(controller()->GetFocusedGroup(), group);
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTest,
                        CloseTabFromTabStripExecutesClose) {
   controller()->CreateNewTab(NewTabTypes::kNewTabCommand);

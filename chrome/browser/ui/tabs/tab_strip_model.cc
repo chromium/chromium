@@ -408,13 +408,6 @@ int TabStripModel::InsertDetachedTabAt(
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   tab->OnAddedToModel(this);
 
-  // Newly attached dragged tabs without an explicit group should join the
-  // focused group if focus mode is active, unless the tab is pinned.
-  const bool is_pinned = (add_types & ADD_PINNED) != 0;
-  if (!group.has_value() && !is_pinned) {
-    group = GetFocusedGroup();
-  }
-
   // Ensure the insertion index stays within the group's range to preserve
   // group contiguity when adding a tab into a group.
   if (group_model_ && group.has_value()) {
@@ -1786,13 +1779,6 @@ void TabStripModel::AddTab(std::unique_ptr<tabs::TabModel> tab,
     if (index < 0 || index > count()) {
       index = count();
     }
-  }
-
-  // Newly created tabs without an explicit group join the focused group if
-  // focus mode is active, unless the tab is pinned.
-  const bool is_pinned = (add_types & ADD_PINNED) != 0;
-  if (!group.has_value() && !is_pinned) {
-    group = GetFocusedGroup();
   }
 
   // Prevent the tab from being inserted at an index that would make the group
@@ -4667,6 +4653,15 @@ void TabStripModel::InsertTabAtIndexImpl(
   contents_data_->AddTabRecursive(tabs::ScopedTab(tab_model.release()), index,
                                   group, pin);
   selection_model_.InvalidateListSelectionModel(base::PassKey<TabStripModel>());
+
+  // If a tab is added that does not belong to the focused group (and is not
+  // a pinned tab allowed in focus mode), drop focus mode so the tab is visible.
+  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
+  if (focused_group.has_value() &&
+      !tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
+          tab_ptr, focused_group)) {
+    SetFocusedGroup(std::nullopt);
+  }
 
   // Start computing selection change after updating the indices in
   // `selection_model_`.
