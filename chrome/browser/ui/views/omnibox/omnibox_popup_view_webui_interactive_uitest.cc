@@ -702,11 +702,13 @@ class OmniboxPopupViewWebUIFrameCacheTest
       feature_list_.InitWithFeatures(
           {omnibox::kOmniboxWebUIPopupMarkAsHidden,
            ::features::kHideDelegatedFrameHostMac},
-          {omnibox::kOmniboxWebUIDetachWebContentsOnHide});
+          {omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady,
+           omnibox::kOmniboxWebUIDetachWebContentsOnHide});
     } else {
       feature_list_.InitWithFeatures(
           {omnibox::kOmniboxWebUIPopupMarkAsHidden},
-          {omnibox::kOmniboxWebUIDetachWebContentsOnHide,
+          {omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady,
+           omnibox::kOmniboxWebUIDetachWebContentsOnHide,
            ::features::kHideDelegatedFrameHostMac});
     }
   }
