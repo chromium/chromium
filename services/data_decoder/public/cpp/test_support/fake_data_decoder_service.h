@@ -8,7 +8,6 @@
 #include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/data_decoder/public/mojom/cbor_parser.mojom.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
@@ -39,8 +38,6 @@ class FakeDataDecoderService : public mojom::DataDecoderService {
           receiver) override;
   void BindGzipper(
       mojo::PendingReceiver<data_decoder::mojom::Gzipper> receiver) override;
-  void BindCborParser(mojo::PendingReceiver<data_decoder::mojom::CborParser>
-                          receiver) override;
   void BindPixCodeValidator(
       mojo::PendingReceiver<payments::facilitated::mojom::PixCodeValidator>
           receiver) override;

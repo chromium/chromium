@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "net/http/structured_headers.h"
-#include "services/data_decoder/public/mojom/cbor_parser.mojom.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
 #include "services/data_decoder/public/mojom/structured_headers_parser.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
@@ -359,19 +358,6 @@ void DataDecoder::GzipUncompress(base::span<const uint8_t> data,
       data,
       base::BindOnce(&ValueParseRequest<mojom::Gzipper,
                                         mojo_base::BigBuffer>::OnServiceValue,
-                     request));
-}
-
-void DataDecoder::ParseCbor(base::span<const uint8_t> data,
-                            ValueParseCallback callback) {
-  auto request =
-      base::MakeRefCounted<ValueParseRequest<mojom::CborParser, base::Value>>(
-          std::move(callback), cancel_requests_);
-  GetService()->BindCborParser(request->BindRemote());
-  request->remote()->Parse(
-      data,
-      base::BindOnce(&ValueParseRequest<mojom::CborParser,
-                                        base::Value>::OnServiceValueOrError,
                      request));
 }
 

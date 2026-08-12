@@ -182,18 +182,6 @@ class DataDecoder {
   // or fails before this DataDecoder is destroyed.
   void GzipUncompress(base::span<const uint8_t> data, GzipperCallback callback);
 
-  // Parses the potentially unsafe CBOR bytes in |cbor| using this
-  // DataDecoder's service instance or some other platform-specific decoding
-  // facility. The parser conforms to RFC 7049, except a few limitations:
-  // - Does not support null or undefined values.
-  // - Integers must fit in the 'int' type.
-  // - The keys in Maps must be a string or byte-string.
-  // - If at least one Map key is invalid, an error will be returned.
-  //
-  // Note that |callback| will only be called if the parsing operation succeeds
-  // or fails before this DataDecoder is destroyed.
-  void ParseCbor(base::span<const uint8_t> cbor, ValueParseCallback callback);
-
   // Validates the format of the potentially unsafe `pix_code`.
   void ValidatePixCode(const std::string& pix_code,
                        ValidationCallback callback);

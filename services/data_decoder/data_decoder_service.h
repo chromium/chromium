@@ -9,7 +9,6 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/data_decoder/public/mojom/cbor_parser.mojom.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
@@ -45,8 +44,6 @@ class DataDecoderService : public mojom::DataDecoderService {
       mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
           receiver) override;
   void BindGzipper(mojo::PendingReceiver<mojom::Gzipper> receiver) override;
-  void BindCborParser(
-      mojo::PendingReceiver<mojom::CborParser> receiver) override;
   void BindPixCodeValidator(
       mojo::PendingReceiver<payments::facilitated::mojom::PixCodeValidator>
           receiver) override;

@@ -39,11 +39,6 @@ void FakeDataDecoderService::BindGzipper(
   FAIL();
 }
 
-void FakeDataDecoderService::BindCborParser(
-    mojo::PendingReceiver<data_decoder::mojom::CborParser> receiver) {
-  FAIL();
-}
-
 void FakeDataDecoderService::BindPixCodeValidator(
     mojo::PendingReceiver<payments::facilitated::mojom::PixCodeValidator>
         receiver) {

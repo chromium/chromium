@@ -17,8 +17,6 @@ source_set("lib") {
   ]
 
   sources = [
-    "cbor_parser_impl.cc",
-    "cbor_parser_impl.h",
     "data_decoder_service.cc",
     "data_decoder_service.h",
     "gzipper.cc",
@@ -34,7 +32,6 @@ source_set("lib") {
   deps = [
     "//base",
     "//build:blink_buildflags",
-    "//components/cbor",
     "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
     "//components/facilitated_payments/core/validation",
     "//components/web_package",
@@ -64,7 +61,6 @@ source_set("tests") {
   testonly = true
 
   sources = [
-    "cbor_parser_unittest.cc",
     "gzipper_unittest.cc",
     "public/cpp/data_decoder_unittest.cc",
     "public/cpp/safe_web_bundle_parser_unittest.cc",
@@ -78,7 +74,6 @@ source_set("tests") {
     ":lib",
     "//base",
     "//base/test:test_support",
-    "//components/cbor",
     "//components/web_package",
     "//components/web_package/test_support",
     "//services/data_decoder/public/cpp",
