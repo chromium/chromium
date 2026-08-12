@@ -173,6 +173,12 @@ public class TabSwitcherGroupSuggestionService {
                 }
 
                 @Override
+                public void willCloseTabs(
+                        List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                    clearSuggestions();
+                }
+
+                @Override
                 public void willAddTab(Tab tab, @TabLaunchType int type) {
                     clearSuggestions();
                 }
