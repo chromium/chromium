@@ -422,13 +422,8 @@ Suggestion::Icon GetSuggestionIcon(
       return is_personal_context ? Suggestion::Icon::kOrderSpark
                                  : Suggestion::Icon::kOrder;
     case EntityTypeName::kPassport:
-      if (is_personal_context) {
-        return Suggestion::Icon::kPassportSpark;
-      }
-      return base::FeatureList::IsEnabled(
-                 features::kAutofillAiWalletPrivatePasses)
-                 ? Suggestion::Icon::kPassport
-                 : Suggestion::Icon::kIdCard;
+      return is_personal_context ? Suggestion::Icon::kPassportSpark
+                                 : Suggestion::Icon::kPassport;
     case EntityTypeName::kKnownTravelerNumber:
     case EntityTypeName::kRedressNumber:
       return is_personal_context ? Suggestion::Icon::kIdCard2Spark
