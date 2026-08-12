@@ -723,7 +723,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="399788104667917863">Fijar en la barra de herramientas</translation>
 <translation id="4000212216660919741">Página principal del modo sin conexión</translation>
 <translation id="4000670338830950598">Personalizar y controlar Google Chrome con un elemento destacado</translation>
-<translation id="4002066346123236978">Título</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 contraseña vulnerada en tu cuenta de Google}other{# contraseñas vulneradas en tu cuenta de Google}}</translation>
 <translation id="4023638601467301498">Inicia sesión en Chrome para acceder a tus marcadores y otros elementos en todos tus dispositivos</translation>
 <translation id="4024768890073681126">Tu padre o madre gestiona tu navegador</translation>
@@ -1973,6 +1972,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8937772741022875483">¿Eliminar tu actividad de Chrome de Bienestar digital?</translation>
 <translation id="8942627711005830162">Abrir en otra ventana</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: este idioma no se ha podido descargar. Inténtalo de nuevo más tarde.</translation>
+<translation id="8945348199139712719">Pegar e ir al texto copiado</translation>
 <translation id="8946759102391960088">Mantén el acceso a tus contraseñas</translation>
 <translation id="895442993047180128">Aceptación de notificaciones de consejos cerrada</translation>
 <translation id="8957528460562961174">Para seguir teniendo acceso a tus contraseñas, expórtalas ahora y, a continuación, impórtalas en el gestor de contraseñas que prefieras. El Gestor de contraseñas de Google ha dejado de funcionar porque Servicios de Google Play no está disponible.</translation>

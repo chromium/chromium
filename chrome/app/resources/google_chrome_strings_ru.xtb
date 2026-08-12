@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">Ошибка настройки: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Подождите, пока Chrome устанавливает последние обновления системы</translation>
 <translation id="1330562121671411446">Определить язык</translation>
+<translation id="1333654552732143316">Запустить Chrome</translation>
 <translation id="1341711321000856656">Вы можете переключиться на другой профиль Chrome и посмотреть пароли в нем</translation>
 <translation id="1343830902827845050">Войдите в Chrome</translation>
 <translation id="1356661055722410047">Новая функция! Теперь вы можете переводить и текст, и изображения на экране.</translation>
@@ -377,7 +378,6 @@
 <translation id="4885446229353981848">Всегда показывать значок Google Объектива</translation>
 <translation id="4891791193823137474">Разрешить работу Google Chrome в фоновом режиме</translation>
 <translation id="4895437082222824641">Открыть ссылку в новой вкладке браузера Chrome</translation>
-<translation id="4896867431081882115">Чтобы пользоваться привычными и проверенными функциями, сделайте Chrome браузером по умолчанию. Для быстрого доступа Chrome будет закреплен на панели задач.</translation>
 <translation id="4904953848704395458">Открывать Gemini в Chrome с помощью быстрых клавиш.</translation>
 <translation id="4918086044614829423">Принять</translation>
 <translation id="4918844574251943176">Изображение скопировано.</translation>

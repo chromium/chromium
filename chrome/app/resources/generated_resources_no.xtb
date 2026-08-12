@@ -5775,6 +5775,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5444281205834970653">Slett og fortsett</translation>
 <translation id="5444452275167152925">Importert fra ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Idémyldring</translation>
 <translation id="5449551289610225147">Ugyldig passord</translation>
 <translation id="5449588825071916739">Angi bokmerker for alle faner</translation>
@@ -8138,6 +8139,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7311244614769792472">Fant ingen resultater</translation>
 <translation id="7312040805247765153">Kan ikke installere appen</translation>
 <translation id="7312210124139670355">Administratoren holder på å tilbakestille eSIM-kortet ditt. Dette kan ta noen minutter.</translation>
+<translation id="731239254927333251">Alt + L</translation>
 <translation id="7313539585802573958">Tastaturlysfarger</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 hendelse kunne ikke dateres og vises ikke}other{# hendelser kunne ikke dateres og vises ikke}}</translation>
 <translation id="7314865262803554456">Du varsles ikke når opptaket starter.</translation>

@@ -17,6 +17,7 @@
 <translation id="1237769345474105984">Z Chrome</translation>
 <translation id="124228879633599436">Twoja przeglądarka Chrome jest nieaktualna. Zaktualizuj ją dla bezpieczeństwa.</translation>
 <translation id="1258531953614971819">Wskazówka dotycząca Chrome: przenieś Chrome na ekran główny</translation>
+<translation id="1333577334443425318">Ustaw Chrome jako domyślną przeglądarkę, aby przestać kopiować linki z innych aplikacji.</translation>
 <translation id="1333745675627230582">Zagraj w grę z dinozaurem w Chrome</translation>
 <translation id="1343830902827845050">Zaloguj się w Chrome</translation>
 <translation id="1352919863522755794">Menedżerowi haseł Google nie udało się sprawdzić haseł. Sprawdź połączenie z internetem.</translation>
@@ -38,6 +39,7 @@ Pamiętaj, że:
 <translation id="1554731936187952550">Korzystasz z najlepszych zabezpieczeń Chrome przed szkodliwymi stronami</translation>
 <translation id="155816064895200734">Ustaw Chrome jako przeglądarkę domyślną</translation>
 <translation id="1580570086594302477">Otwiera nową kartę incognito w Chrome.</translation>
+<translation id="1605168141396675642">Nie musisz już kopiować. Otwieraj linki bezpośrednio w Chrome.</translation>
 <translation id="1646463005043273333">Otwiera opcję Chrome pozwalającą ustawić Chrome jako przeglądarkę domyślną.</translation>
 <translation id="1670609221633730681">Wskazówka dotycząca Chrome: wybierz położenie paska adresu</translation>
 <translation id="1683863426423719967">Aby otrzymywać przypomnienia o kartach z Chrome, włącz powiadomienia w ustawieniach iOS.</translation>
@@ -71,6 +73,7 @@ Pamiętaj, że:
 <translation id="2423077901494354337">Teraz możesz w pełni korzystać z możliwości Chrome na swoim urządzeniu.</translation>
 <translation id="2427791862912929107">W Chrome są funkcje, które pomogą Ci zarządzać szybkością wczytywania stron internetowych oraz danymi przesyłanymi przez sieć.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="2450221499140985490">Otwieraj linki z wiadomości i dokumentów bezpośrednio w Chrome.</translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minutę. Może to obejmować historię i autouzupełnianie.}few{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty. Może to obejmować historię i autouzupełnianie.}many{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minut. Może to obejmować historię i autouzupełnianie.}other{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty. Może to obejmować historię i autouzupełnianie.}}</translation>
 <translation id="2561231791489583059">Używaj Chrome jako przeglądarki domyślnej, aby korzystać z ochrony przed niebezpiecznymi stronami i bezpiecznie przechowywać swoje hasła</translation>
 <translation id="2574249610672786438">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, zaloguj się na wszystkich urządzeniach</translation>
@@ -127,8 +130,10 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="3827545470516145620">Na tym urządzeniu korzystasz ze standardowej ochrony</translation>
 <translation id="384394811301901750">Google Chrome nie może teraz użyć aparatu</translation>
 <translation id="3863841106411295595">Dodaje wpisane adresy URL do listy Do przeczytania w Chrome.</translation>
+<translation id="3878515067127964393">Unikaj kopiowania. Ustaw Chrome jako domyślną przeglądarkę w iOS.</translation>
 <translation id="3901001113120561395">W pełni wykorzystuj potencjał Chrome.</translation>
 <translation id="3913386780052199712">Zalogowany w Chrome</translation>
+<translation id="3913747277937572860">Ustaw Chrome jako domyślną przeglądarkę i otwieraj treści internetowe automatycznie.</translation>
 <translation id="3984746313391923992">Twoja organizacja nie pozwala Ci zalogować się w Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nie ma dostępu do Twoich zdjęć ani filmów. Aby włączyć dostęp w iOS, wybierz Ustawienia &gt; Prywatność &gt; Zdjęcia.</translation>
 <translation id="4064699917955374540">Aby móc zapisywać dane z Chrome na koncie Google i ich używać, potwierdź swoją tożsamość.</translation>
@@ -235,6 +240,7 @@ Dane zostały zaszyfrowane za pomocą Twojego hasła wielowyrazowego. Podaj to h
 <translation id="6533470733797826516">Loguj się szybciej dzięki autouzupełnianiu w Chrome</translation>
 <translation id="6536544321553662809">Ustaw Chrome jako przeglądarkę domyślną, aby łatwo udostępniać i otwierać linki</translation>
 <translation id="6545449117344801102">Chrome wykrywa adresy i wykorzystuje Mapy Google, aby wyświetlać Ci wskazówki dojazdu i informacje lokalne.</translation>
+<translation id="660537754475262202">Ustaw Chrome jako domyślną przeglądarkę, aby od razu otwierać linki.</translation>
 <translation id="6611692150236062461">Aby mieć łatwy dostęp do zapisanych haseł w innych aplikacjach, użyj autouzupełniania w Chrome.</translation>
 <translation id="6636941099779251629">Twoja organizacja wymaga od Ciebie zalogowania się w Chrome. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Wysyła zaciemnioną część adresu URL do Google przez serwer prywatności, który ukrywa Twój adres IP. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać adresy URL wraz z fragmentami zawartości strony do Google.</translation>
@@ -269,6 +275,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="722167379782941918">Chrome zaleca silniejszą ochronę</translation>
 <translation id="723787869754590019">Używaj autouzupełniania w Chrome</translation>
 <translation id="7261678641327190792">Chrome nie może sprawdzić Twoich haseł</translation>
+<translation id="7272091023280308138">Następnym razem otwieraj linki bezpośrednio w Chrome bez kopiowania adresów URL.</translation>
 <translation id="7272930098487145294">Aby zapisać obrazy, kliknij Ustawienia i pozwól Chrome na dodanie ich do Twoich zdjęć</translation>
 <translation id="7275945473750112644">Twoim kontem zarządza <ph name="HOSTED_DOMAIN" />, więc Twoje dane z Chrome zostaną usunięte z tego urządzenia</translation>
 <translation id="7284245284340063465">Jeśli zapomnisz hasło lub postanowisz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
@@ -284,6 +291,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="7466693328838535498">W polu Widżety wyszukiwania wpisz Chrome</translation>
 <translation id="7477056987201678345">Usuwam dane Chrome…</translation>
 <translation id="7492574581995589075">Twoja organizacja wyłączyła możliwość używania i zapisywania danych Chrome na Twoim koncie Google. Nowe zakładki, hasła i inne ustawienia będą zapisywane tylko na tym urządzeniu.</translation>
+<translation id="752120807649195785">Ustaw Chrome jako domyślną przeglądarkę, aby otwierać linki jednym kliknięciem, zamiast je kopiować.</translation>
 <translation id="7540272326042438331">Udostępnij Chrome</translation>
 <translation id="7575971113404272499">Wskazówka dotycząca Chrome: używaj domyślnie Chrome</translation>
 <translation id="7581063337314642333">Wyświetl siatkę kart w Chrome</translation>
@@ -323,6 +331,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="8245080522851805544">Chroń swoją prywatność podczas przeglądania dzięki uwierzytelnianiu urządzenia przy zamykaniu Chrome</translation>
 <translation id="8248887045858762645">Wskazówka dotycząca Chrome</translation>
 <translation id="8265730590513812063">Otwórz menu Chrome</translation>
+<translation id="8276803169904409881">Ustaw Chrome jako domyślną przeglądarkę, aby otwierać linki z innych aplikacji.</translation>
 <translation id="8284376267694582021">Aby korzystać z funkcji chroniących dzieci, możesz użyć konta Google skonfigurowanego dla dziecka lub używać Chrome bez konta. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
 
@@ -360,6 +369,7 @@ Dane zostały zaszyfrowane za pomocą hasła wielowyrazowego <ph name="TIME" />.
 <translation id="8865415417596392024">Dane z Chrome na Twoim koncie</translation>
 <translation id="8874688701962049679">Wskazówki na temat pełnego wykorzystania możliwości Chrome.</translation>
 <translation id="8897749957032330183">Hasła są zapisywane w Menedżerze haseł Google na tym urządzeniu.</translation>
+<translation id="898288749595466683">Przestań kopiować adresy URL. Ustaw Chrome jako domyślną przeglądarkę, aby wczytywać strony bezpośrednio.</translation>
 <translation id="9004772704776174843">Wylogowano z Chrome</translation>
 <translation id="9068336935206019333">Otwórz w Chrome w trybie incognito</translation>
 <translation id="9082304295862405388">Gemini może używać Twojej dokładnej lokalizacji w zależności od uprawnień, które zostały już przyznane Chrome</translation>

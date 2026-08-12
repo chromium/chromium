@@ -62,6 +62,7 @@
 <translation id="2168593389981132306">Chromium වඩාත් යහපත් කරන්න</translation>
 <translation id="2178608107313874732">Chromium හට මේ අවස්ථාවේදී ඔබේ කැමරාව භාවිත කළ නොහැකිය</translation>
 <translation id="2195025571279539885">ඔබ Chromium ඊළඟ අවස්ථාවේ මෙම අඩවිය වෙතින් <ph name="LANGUAGE_NAME" /> පිටු පරිවර්තනය කිරීමට පිරිනමනවාට කැමතිද?</translation>
+<translation id="2200643763959651131">වෙනත් යෙදුම්වලින් සබැඳි පිටපත් කිරීම නැවැත්වීමට Chromium ඔබේ පෙරනිමිය බවට පත් කරන්න.</translation>
 <translation id="22313767259766852">මෙම ලිපිනය දැනට Chromium වෙත සුරැකෙයි. එය Google නිෂ්පාදන පුරා භාවිතා කිරීමට, එය ඔබේ Google ගිණුම, <ph name="USER_EMAIL" /> තුළ සුරකින්න.</translation>
 <translation id="2236584955986023187">මෙයින් අදහස් කරන්නේ Chromium සැම විටම ඩෙස්ක්ටොප් අඩවිය ඉල්ලනු ඇති බවය.</translation>
 <translation id="2245694534483711162">ඔබ දැනටමත් Chromium ලබා දී ඇති අවසරය මත පදනම්ව, Gemini ඔබේ නිශ්චිත ස්ථානය භාවිතා කළ හැක</translation>
@@ -97,11 +98,13 @@
 ඔබේ Chromium අත්දැකීම වැඩි දියුණු කිරීමට දත්ත භාවිතා කරන තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> වෙත යන්න.</translation>
 <translation id="2832168932648876507">Chromium තුළ Voice සමග සොයන්න.</translation>
 <translation id="2843571538056574338">ස්වයං පිරවීම සඳහා Chromium භාවිතා කරන්න</translation>
+<translation id="2844923129028437362">පිටපත් කිරීමෙන් වළකින්න. Chromium ඔබේ පෙරනිමි iOS බ්‍රවුසරය ලෙස සකසා ගන්න.</translation>
 <translation id="2918709798697875261">ඔබගේ සංවිධානයට ඔබ Chromium වෙතින් වරා සිටීම අවශ්‍ය වේ.</translation>
 <translation id="2942241131342758843">සබැඳි විවෘත කිරීමට, විජට්වලින් සෙවීමට සහ වෙනත් යෙදුම්වල මුරපද ස්වයං පිරවීමට පෙරනිමියෙන් Chromium භාවිත කරන්න</translation>
 <translation id="2977470724722393594">Chromium යාවත්කාලීනයි</translation>
 <translation id="3044857325852340337">මකන ලද Chromium දත්ත</translation>
 <translation id="3054480780637153380">iOS හි Chromium සැකසීම් විවෘත කර, ඉන්පසු "පෙරනිමි බ්‍රව්සර් යෙදුම" මත තට්ටු කර Chromium තෝරන්න.</translation>
+<translation id="3072591112723064972">සබැඳි මෙහි ක්ෂණිකව දියත් කිරීමට Chromium ඔබේ පෙරනිමි බ්‍රව්සරය බවට පත් කරන්න.</translation>
 <translation id="3115956258722352278">Chromium ඔබේ පෙරනිමි බ්‍රව්සරය කරන්න ද?</translation>
 <translation id="3180939591219927904">"ඔබ Chromium වසා දැමූ විට අප්‍රසිද්ධ පටිති අගුළු දමන්න" ක්‍රියාත්මක කරන්න</translation>
 <translation id="327628223428512207">මෙම මුරපදය සුරැකීමට සහ ඔබේ සියලු උපාංගවල Chromium දත්ත ලබා ගැනීමට මුර-වැකිකඩ ඇතුළු කරන්න</translation>
@@ -112,6 +115,7 @@
 <translation id="3410395242749598859">ඔබේ Chromium දත්ත සමහරක් තවම <ph name="EMAIL" /> තුළ සුරැකී නැත.
 ගිණුම් මාරු කිරීමට පෙර මිනිත්තු කිහිපයක් රැඳී සිටීමට උත්සාහ කරන්න. ඔබ දැන් ගිණුම් මාරු කරන්නේ නම්, මෙම දත්ත මකා දැමෙනු ඇත.</translation>
 <translation id="3440830787838130530">Google මුරපද කළමනාකරු තුළ ඔබේ පවුලේ කණ්ඩායම සමග මුරපදයක පිටපතක් පහසුවෙන් සහ ආරක්ෂිතව බෙදා ගන්න</translation>
+<translation id="3445351634096573377">පණිවිඩ සහ ලේඛන වලින් සබැඳි Chromium හි සෘජුවම විවෘත කරන්න.</translation>
 <translation id="3472200483164753384">Chromium කැනරි තුළ සහාය නොදක්වයි</translation>
 <translation id="347967311580159871">ඔබේ Chromium අත්දැකීම වැඩි දියුණු කිරීමට දත්ත භාවිතා කරන තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> වෙත යන්න.</translation>
 <translation id="3512168799938877162">ඔබේ මුරපදය බෙදා ගෙන නැත. ඔබේ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කර ඔබ Chromium වෙත පුරනය වී ඇති බව සහතික කර ගන්න. අනතුරුව, නැවත උත්සාහ කරන්න.</translation>
@@ -141,6 +145,7 @@
 <translation id="3949514465204582407">Chromium ඉඟිය: ඕනෑම යෙදුමකින් ඔබේ මුරපද ලබා ගන්න</translation>
 <translation id="4005283307739974863">Chromium තුළ ආරක්ෂක පරීක්ෂාව විවෘත කර ධාවනය කරයි.</translation>
 <translation id="4043291146360695975">මුරපද මෙම උපාංගයේ මුරපද කළමනාකරු තුළ පමණක් සුරැකේ.</translation>
+<translation id="4046625794029820944">URL පිටපත් කිරීම නවත්වන්න. පිටු සෘජුවම පූරණය කිරීමට Chromium පෙරනිමිය ලෙස සකසන්න.</translation>
 <translation id="4066426933127344530">පෙරනිමියෙන් Chromium භාවිතා කරන්න</translation>
 <translation id="4087314024407094071">Chromium තුළ සැකසීම් විවෘත කරයි.</translation>
 <translation id="4099085513035183040">Chromium බීටා තුළ සහාය නොදක්වයි</translation>
@@ -222,6 +227,7 @@
 
         මුරයතුරු මුරපද කළමනාකරු තුළ සුරකින අතර, එමඟින් ඔබට ඒවා ඕනෑම උපාංගයක Chromium හි භාවිතා කිරීමට ඉඩ දෙයි.</translation>
 <translation id="575593940213760950"><ph name="EMAIL" /> සඳහා මුරපද කළමනාකරු වෙත</translation>
+<translation id="5786958731263984543">පිටපත් කිරීමේ කරදර වළක්වා ගන්න. සබැඳි කෙළින්ම Chromium වෙත දියත් කරන්න.</translation>
 <translation id="584550191241316896">Chromium වෙත පුරනය වී ඇත</translation>
 <translation id="5862307444128926510">Chromium වෙත සාදරයෙන් පිළිගනිමු</translation>
 <translation id="5889847953983052353">සක්‍රීය වූ විට:
@@ -241,6 +247,7 @@
 <translation id="6104024151682120539">Chromium තුළ විවෘත කරන්න</translation>
 <translation id="61109258320235597">ඔබේ Google ගිණුමේ Chromium දත්ත භාවිතා කිරීමට සහ සුරැකීමට, ඔබේ මුර-වැකිකඩ ඇතුළු කරන්න.</translation>
 <translation id="6132149203299792222">ඔබේ මුරපද, පිටුසන්, සහ තවත් දේ සමමුහුර්ත කිරීමට ඔබේ Google ගිණුම සමගින් පුරන්න.</translation>
+<translation id="6139490926154511684">සබැඳි පිටපත් කිරීම වෙනුවට එක තට්ටු කිරීමකින් විවෘත කිරීමට Chromium පෙරනිමිය ලෙස සකසන්න.</translation>
 <translation id="6148377327556085395">Chromium වෙත පිටුසන් එක් කරන්න</translation>
 <translation id="6154098560469640583">ඔබ පණිවිඩ, ලේඛන, සහ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක Chromium භාවිතා කරන්න.</translation>
 <translation id="6157162508956739031">Chromium වෙතින් ඔබේ මුරපද සහ මුරයතුරු ස්වයං පිරවීමෙන් යෙදුම් සහ වෙබ් අඩවි වෙත ඉක්මනින් පුරන්න</translation>
@@ -264,6 +271,7 @@
 <translation id="6590232959690355435">ඔබේ Chromium ඉතිහාස පිටුව විවෘත කරයි.</translation>
 <translation id="6674470628873622334">නව Chromium අප්‍රකට පටිත්තක් විවෘත කරයි.</translation>
 <translation id="6680609900732453726">ඔබ Chromium වසා දැමූ විට උපාංග සත්‍යාපනය සමග ඔබේ බ්‍රවුස් කිරීම පුද්ගලිකව තබා ගන්න</translation>
+<translation id="6696512128741076907">වෙනත් යෙදුම් වලින් සබැඳි ක්ෂණිකව විවෘත කිරීමට Chromium පෙරනිමිය ලෙස සකසන්න.</translation>
 <translation id="6752854822223394465">ඔබගේ සංවිධානය Chromium පිහිටුවමින්...</translation>
 <translation id="6794054469102824109">Chromium Dino ක්‍රීඩාව විවෘත කරයි.</translation>
 <translation id="6820823224820483452">Chromium හට සියලු මුරපද පරීක්ෂා කළ නොහැකි විය. හෙට නැවත උත්සාහ කරන්න.</translation>
@@ -276,6 +284,7 @@
 <translation id="7018284295775193585">Chromium යාවත්කාලීන කළ නොහැකිය</translation>
 <translation id="7055269218854630176">ඔබේ සංවිධානය, <ph name="DOMAIN" />, ඔබ පුරනය වන ගිණුම සහ Chromium භාවිතා කළ හැකි ආකාරය කළමනාකරණය කරයි. ඔබේ පරිපාලකයාට ඇතැම් විශේෂාංග පිහිටුවීමට හෝ සීමා කිරීමට හැක.</translation>
 <translation id="7099326575020694068">Chromium හට බෙදුම් දසුන් ප්‍රකාරය තුළ ඔබගේ කැමරාව භාවිත කළ නොහැකිය</translation>
+<translation id="7110290529575835890">මීළඟ වතාවේ URLs පළමුව පිටපත් නොකර Chromium හි සබැඳි සෘජුවම විවෘත කරන්න.</translation>
 <translation id="7165402419892018581">ස්වයං පිරවුම සඳහා Chromium තෝරා ගන්න</translation>
 <translation id="7175400662502680481">ඔබගේ මුරපදය දත්ත කඩ කිරීමකින් නිරාවරණය විය. මුරපද කළමනාකරු එය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="7185731475720473450">ගෙවීමේ ක්‍රම සහ ලිපින සංකේතන නොකෙරේ Chromium වෙතින් බ්‍රවුස් කිරීමේ ඉතිහාසය සමමුහූර්ත නොවේ.
@@ -304,6 +313,7 @@
 <translation id="7762622637388462191">ඔබ Chromium හැර යන විට හෝ වෙනස් යෙදුමකට මාරු වන විට ඔබේ අප්‍රසිද්ධ පටිති අගුළු දමන්න.</translation>
 <translation id="7763454117143368771">අනතුරුදායක අඩවිවලින් ආරක්ෂා වීමට සහ ඔබගේ මුරපද ආරක්ෂිතව තබා ගැනීමට ඔබගේ පෙරනිමි බ්‍රව්සරය ලෙස Chromium භාවිත කරන්න</translation>
 <translation id="7784950022329154821">ඔබ Chromium වසන විට අප්‍රකට ටැබ අගුළු දමන්න</translation>
+<translation id="7798616345453618228">Chromium ඔබේ පෙරනිමිය බවට පත් කර වෙබ් අන්තර්ගතය ස්වයංක්‍රීයව විවෘත කරන්න.</translation>
 <translation id="78025249032851484">ඔබේ Chromium යල් පැන ඇත.</translation>
 <translation id="784098351033299289">සිතියම් සබැඳි පිළිබඳ ඔබට උපදෙස් සහ ස්ථානික තතු ලබා දීමට Chromium Google සිතියම් භාවිත කරයි</translation>
 <translation id="7859018312476869945">ඔබ ලිපින තීරුවේ හෝ සෙවීම් පෙට්ටියේ ටයිප් කරන විට, වඩා හොඳ යෝජනා ලබා ගැනීමට Chromium ඔබ ටයිප් කරන දේ ඔබේ පෙරනිමි සෙවීම් යන්ත්‍රයට යවයි. මෙය අප්‍රසිද්ධ තුළ ක්‍රියා විරහිතයි.</translation>

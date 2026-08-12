@@ -304,6 +304,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1504042622576912555">Bølgepapp</translation>
 <translation id="1507202001669085618">&lt;p&gt;Du ser denne feilmeldingen hvis du bruker en Wifi-portal hvor du må logge på før du kommer deg på nettet.&lt;/p&gt;
     &lt;p&gt;For å fikse feilen, klikk på &lt;strong&gt;Koble til&lt;/strong&gt; på siden du prøver å åpne.&lt;/p&gt;</translation>
+<translation id="1507635939006264930">Slår på autofyll</translation>
 <translation id="1508605873202255562">Lag en tilpasset sporingsenhet for å holde oversikt over målene mine</translation>
 <translation id="1513706915089223971">Liste over loggoppføringer</translation>
 <translation id="1515436033764190215">t siden</translation>
@@ -631,6 +632,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2093982008204312032">Google Chrome prøver å slå av Windows Hello for utfylling av passord.</translation>
 <translation id="2094505752054353250">Domenene samsvarer ikke</translation>
 <translation id="2094704029599359040">Versjonsinformasjon</translation>
+<translation id="2096183846792489672">Innholdet og nettadressene til sidene du besøker kan behandles i et privat område i skyen</translation>
 <translation id="209961642949927292">Vil du betale raskere neste gang?</translation>
 <translation id="2099652385553570808">Tre stifter venstre</translation>
 <translation id="2101225219012730419">Versjon:</translation>
@@ -1591,6 +1593,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3738166223076830879">Nettleseren administreres av administratoren din.</translation>
 <translation id="3739842843727261045">Tommel opp sender tilbakemelding om at du liker disse resultatene</translation>
 <translation id="3740447166056383374">Filene må gjennomgås før de kan kopieres</translation>
+<translation id="3742104862808477448">Hjelp Chromium med å forstå og fylle ut komplekse skjemaer bedre ved å behandle data på Googles tjenere på en sikker måte. Informasjonen din holdes privat og blir ikke gjennomgått av noen.</translation>
 <translation id="3744111561329211289">Bakgrunnssynkronisering</translation>
 <translation id="3744212718085287312">Vil du gjøre det sikrere med et virtuelt kort neste gang?</translation>
 <translation id="3744899669254331632">Du kan ikke gå til <ph name="SITE" /> akkurat nå, fordi nettstedet sendte kryptert legitimasjon som Chromium ikke kan behandle. Nettverksfeil og -angrep er vanligvis forbigående, så siden kommer sikkert til å virke senere.</translation>
@@ -1614,6 +1617,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3769584711865378220"><ph name="URL" /> vil endre posisjonstilgangen fra omtrentlig til nøyaktig</translation>
 <translation id="3772211998634047851">Papir (obligasjon)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette et nytt notat i Google Keep raskt</translation>
+<translation id="3778045607993018262">Pix-kontoen blir knyttet til <ph name="ACCOUNT_EMAIL" />. For å slå av gjenkjenning av Pix-koder, gå til <ph name="BEGIN_LINK1" />Chrome-innstillingene<ph name="END_LINK1" />.</translation>
 <translation id="3780694243617746492">Ut-skuff</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-enheter</translation>
@@ -1633,6 +1637,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803481123869276674">Når du kjøper noe i Chrome, kan du se e-lommebok som et alternativ</translation>
 <translation id="3803801106042434208">Disse søkemotorene er populære i din region</translation>
+<translation id="3804112825000113857">Se innstillingene for autofyll</translation>
 <translation id="380666903981445943">Lagre en betalingsmåte i Google-kontoen din for å autofylle den ved kjøp i Chrome</translation>
 <translation id="3807366285948165054">X-forskyvning av bilde</translation>
 <translation id="3807873520724684969">Skadelig innhold er blokkert.</translation>
@@ -3311,6 +3316,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="666259744093848177">(x86_64 oversatt)</translation>
 <translation id="6665553082534466207">Tre hull høyre</translation>
 <translation id="6668389483194953109">Fant en papirstørrelse med navnet «custom», men «custom_size»-egenskapen er tom eller ugyldig.</translation>
+<translation id="667044980437620424">Autofyll er slått på</translation>
 <translation id="6670729408462528018">Galleri</translation>
 <translation id="6671697161687535275">Vil du fjerne forslaget fra Chromium?</translation>
 <translation id="6675846980676550611">AR er ikke tillatt</translation>
@@ -3540,6 +3546,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7064851114919012435">Kontaktinformasjon</translation>
 <translation id="7070144569727915108">systeminnstillingene</translation>
 <translation id="70705239631109039">Tilkoblingen er ikke helt sikker</translation>
+<translation id="7074595960655571061">Nå kan du lagre betalingsmåter for å autofylle dem når du betaler i Chrome. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">Forespørselen er for stor</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 med RSA-kryptering</translation>
 <translation id="7075896597860500885">Det anbefales ikke å kopiere fra dette nettstedet</translation>
@@ -4402,6 +4409,7 @@ Mer informasjon:
 <translation id="8564182942834072828">Separate dokumenter / ukollaterte eksemplarer</translation>
 <translation id="8564466070529550495">Virtuelt kort er ikke tilgjengelig akkurat nå. Prøv igjen senere.</translation>
 <translation id="8564985650692024650">Chromium anbefaler at du tilbakestiller passordet ditt for <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> hvis du også har brukt det på andre nettsteder.</translation>
+<translation id="8568406155558596128">Hjelp Chrome med å forstå og fylle ut komplekse skjemaer bedre ved å behandle data på Googles tjenere på en sikker måte. Informasjonen din holdes privat og blir ikke gjennomgått av noen.</translation>
 <translation id="8574570240981266561">Elementet er slettet</translation>
 <translation id="8577192028579836704">Alle alternativer koster vanligvis <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuelt kort er ikke tilgjengelig</translation>

@@ -304,6 +304,7 @@
 <translation id="1504042622576912555">ফ্লুট</translation>
 <translation id="1507202001669085618">&lt;p&gt;আপনি যদি এমন কোনও ওয়াই-ফাই পোর্টাল ব্যবহার করেন যেখানে অনলাইন হওয়ার জন্য সাইন-ইন করতে হয়, তাহলে এই সমস্যাটি হতে পারে।&lt;/p&gt;
     &lt;p&gt;এই সমস্যার সমাধান করতে, যে পৃষ্ঠাটি খুলতে চান সেটিতে &lt;strong&gt;কানেক্ট করুন&lt;/strong&gt; বোতামে ক্লিক করুন।&lt;/p&gt;</translation>
+<translation id="1507635939006264930">অটোফিল চালু করা হচ্ছে</translation>
 <translation id="1508605873202255562">আমার লক্ষ্য পূরণ করতে কাস্টমাইজ করা ট্র্যাকার তৈরি করো</translation>
 <translation id="1513706915089223971">ইতিহাসে এন্ট্রির তালিকা</translation>
 <translation id="1515436033764190215">ঘণ্টা আগে</translation>
@@ -632,6 +633,7 @@
 <translation id="2093982008204312032">Google Chrome পাসওয়ার্ড পূরণ করার জন্য Windows Hello বন্ধ করার চেষ্টা করছে।</translation>
 <translation id="2094505752054353250">ডোমেন মেলেনি</translation>
 <translation id="2094704029599359040">ভার্সন সংক্রান্ত তথ্য</translation>
+<translation id="2096183846792489672">আপনার ভিজিট করা পৃষ্ঠার কন্টেন্ট এবং URL ক্লাউডের প্রাইভেট স্পেসে প্রসেস করা হতে পারে</translation>
 <translation id="209961642949927292">পরের বার আরও দ্রুত চেক আউট করতে চান?</translation>
 <translation id="2099652385553570808">বাঁদিকে ট্রিপল স্টেপল</translation>
 <translation id="2101225219012730419">ভার্সন:</translation>
@@ -1592,6 +1594,7 @@
 <translation id="3738166223076830879">আপনার অ্যাডমিনিস্ট্রেটর ব্রাউজারটি ম্যানেজ করেন।</translation>
 <translation id="3739842843727261045">আপনি যে এইসব ফলাফল পছন্দ করেন, 'থাম্বস-আপ' আইকন সেই মতামত জমা দেয়</translation>
 <translation id="3740447166056383374">কপি করার আগে পর্যালোচনা করা প্রয়োজন</translation>
+<translation id="3742104862808477448">Chromium যাতে জটিল ফর্ম আরও ভালোভাবে বুঝতে ও তা পূরণ করতে পারে, সেই জন্য Google তার সার্ভারে সুরক্ষিতভাবে ডেটা প্রসেস করে। আপনার তথ্য ব্যক্তিগত থাকে এবং তা কেউ পর্যালোচনা করে না।</translation>
 <translation id="3744111561329211289">পটভূমি সিঙ্ক</translation>
 <translation id="3744212718085287312">পরবর্তী সময় ভার্চুয়াল কার্ডের মাধ্যমে এটি আরও সুরক্ষিত করতে চান?</translation>
 <translation id="3744899669254331632">এই মূহুর্তে আপনি <ph name="SITE" />-এ যেতে পারবেন না কারণ ওয়েবসাইটি অসংলগ্ন ক্রেডেনশিয়াল পাঠিয়েছে যা Chromium প্রসেস করতে পারেনা৷ নেটওয়ার্ক সমস্যা এবং আক্রমণ সাধারণত অস্থায়ী, তাই এই পৃষ্ঠাটি সম্ভবত পরে কাজ করবে৷</translation>
@@ -1615,6 +1618,7 @@
 <translation id="3769584711865378220"><ph name="URL" /> লোকেশন অ্যাক্সেস 'আনুমানিক' বিকল্প থেকে 'সুনির্দিষ্ট' হিসেবে পরিবর্তন করতে চায়</translation>
 <translation id="3772211998634047851">পেপার (বন্ড)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-এ চটপট নতুন নোট তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
+<translation id="3778045607993018262">Pix অ্যাকাউন্ট <ph name="ACCOUNT_EMAIL" />-এর সাথে লিঙ্ক করা হবে। Pix কোড শনাক্তকরণ বন্ধ করতে, <ph name="BEGIN_LINK1" />Chrome সেটিংসে<ph name="END_LINK1" /> যান</translation>
 <translation id="3780694243617746492">আউটপুট বিন</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ব্লুটুথ ডিভাইস</translation>
@@ -1634,6 +1638,7 @@
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803481123869276674">Chrome-এ কেনাকাটা করার সময় বিকল্প হিসেবে eWallet দেখুন</translation>
 <translation id="3803801106042434208">এইসব সার্চ ইঞ্জিন আপনার অঞ্চলে জনপ্রিয়</translation>
+<translation id="3804112825000113857">অটোফিল সেটিংস দেখুন</translation>
 <translation id="380666903981445943">আপনার Google অ্যাকাউন্টে কোনও পেমেন্ট পদ্ধতি সেভ করুন যাতে Chrome-এ কেনাকাটা করা সময় সেটি অটোফিল করতে পারেন</translation>
 <translation id="3807366285948165054">ছবি X শিফ্ট</translation>
 <translation id="3807873520724684969">ক্ষতিকর কন্টেন্ট ব্লক করা হয়েছে।</translation>
@@ -3311,6 +3316,7 @@
 <translation id="666259744093848177">(x86_64-এর অনুবাদ করা হয়েছে)</translation>
 <translation id="6665553082534466207">ডানদিকে ট্রিপল পাঞ্চ</translation>
 <translation id="6668389483194953109">পেপার সাইজের নাম "কাস্টম" হিসেবে শনাক্ত করা হয়েছে, কিন্তু "custom_size" প্রপার্টি খালি বা সঠিক নয়।</translation>
+<translation id="667044980437620424">অটোফিল চালু করা আছে</translation>
 <translation id="6670729408462528018">গ্যালারি</translation>
 <translation id="6671697161687535275">Chromium থেকে ফর্ম প্রস্তাবনা সরাবেন?</translation>
 <translation id="6675846980676550611">এ আর (AR) ব্যবহার করার অনুমতি নেই</translation>
@@ -3540,6 +3546,7 @@
 <translation id="7064851114919012435">পরিচিতি তথ্য</translation>
 <translation id="7070144569727915108">সিস্টেম সেটিংস</translation>
 <translation id="70705239631109039">এই কানেকশন সম্পূর্ণরূপে নিরাপদ নয়</translation>
+<translation id="7074595960655571061">এখন আপনি Chrome-এ চেক-আউটের সময় অটোফিল করার জন্য পেমেন্ট পদ্ধতি সেভ করতে পারবেন। <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">অনুরোধ অত্যন্ত বড়</translation>
 <translation id="7075513071073410194">RSA এনক্রিপশান সহ PKCS #1 MD5</translation>
 <translation id="7075896597860500885">এই সাইট থেকে কপি করার সাজেশন দেওয়া হয় না</translation>
@@ -4403,6 +4410,7 @@
 <translation id="8564182942834072828">আলাদা ডকুমেন্ট/সংগ্রহ না করা কপি</translation>
 <translation id="8564466070529550495">এই মুহূর্তে ভার্চুয়াল কার্ড উপলভ্য নয়, পরে আবার চেষ্টা করুন।</translation>
 <translation id="8564985650692024650">Chromium-এর নীতি অনুযায়ী আপনার <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
+<translation id="8568406155558596128">Chrome যাতে জটিল ফর্ম আরও ভালোভাবে বুঝতে ও তা পূরণ করতে পারে, সেই জন্য Google তার সার্ভারে সুরক্ষিতভাবে ডেটা প্রসেস করে। আপনার তথ্য ব্যক্তিগত থাকে এবং তা কেউ পর্যালোচনা করে না।</translation>
 <translation id="8574570240981266561">আইটেম মোছা হয়েছে</translation>
 <translation id="8577192028579836704">সব বিকল্প সাধারণত <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ভার্চুয়াল কার্ড উপলভ্য নেই</translation>

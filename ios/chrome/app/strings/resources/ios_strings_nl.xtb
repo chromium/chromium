@@ -38,6 +38,7 @@
 <translation id="1097807529207545420">{count,plural, =1{1 wachtwoord direct geverifieerd}other{# wachtwoorden direct geverifieerd}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> altijd vertalen</translation>
 <translation id="1110772719190051587">Ontgrendelen met Face ID</translation>
+<translation id="1111776967764068277">Klaar met dat eeuwige kopiëren van links?</translation>
 <translation id="1112015203684611006">Afdrukken mislukt.</translation>
 <translation id="1118569444314402022">Welkom terug, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Foto's en afbeeldingen</translation>
@@ -478,6 +479,7 @@
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
 <translation id="2496626742194544812">Naar het eerste tabblad gaan</translation>
 <translation id="2499505845365628575">Je vindt je hele browsegeschiedenis via de <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="251033673027346551">Ga naar Google Wallet om <ph name="BEGIN_LINK" />voorkeuren voor gegevens en privacy<ph name="END_LINK" /> te beheren.</translation>
 <translation id="2511117522375201202">Je hebt <ph name="NUMBER_OF_PASSWORDS" /> gehackte wachtwoorden die een beveiligingsrisico kunnen vormen.</translation>
 <translation id="2512709994717613803">Niveau <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Hier vind je je tabbladgroepen</translation>
@@ -527,6 +529,7 @@
 <translation id="2666092431469916601">Boven</translation>
 <translation id="2669454659051515572">Iedereen die dit apparaat gebruikt, kan gedownloade bestanden zien</translation>
 <translation id="2671423594960767771">Groep delen</translation>
+<translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Gespreid betalen</translation>
 <translation id="2673508731173059946">Gekopieerde link bezoeken</translation>
 <translation id="2679659833697380">Je informatie wordt opgeslagen op je apparaat</translation>
@@ -543,6 +546,7 @@
 <translation id="271033894570825754">Nieuwe collectie</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
 <translation id="2713106313042589954">Camera uitzetten</translation>
+<translation id="2715440913764382254">Start links rechtstreeks hier</translation>
 <translation id="2718352093833049315">Alleen via wifi</translation>
 <translation id="2721190673959776287">Voorbeeld van uitgebreide in-product hulp voor het contextuele deelvenster, die als het goed is meerdere keren per dag wordt getoond.</translation>
 <translation id="2739887572830526131">Behoud deze groep om later tabbladen toe te voegen of verwijder de groep als je deze niet meer nodig hebt.</translation>
@@ -1004,6 +1008,7 @@
 <translation id="4338258232580025606">Inloggen lukt niet</translation>
 <translation id="4338650699862464074">Verzendt de URL's van pagina's die je bezoekt naar Google.</translation>
 <translation id="4342946437867096381">Je hebt al een wachtwoord voor deze site opgeslagen in je Google-account. Google kan het meest recente wachtwoord voor je kiezen.</translation>
+<translation id="4355702523442402731">Soepel browsen tussen apps</translation>
 <translation id="4365121137632832185">Tabbladgroep. Uitgevouwen.</translation>
 <translation id="4365685757967464989">Gemini toestemming geven om je camera te gebruiken om foto's te maken</translation>
 <translation id="4367971618859387374">Weergavenaam</translation>
@@ -1281,6 +1286,7 @@
 <translation id="5233111790346066304">Sla bestanden op in je Google Drive en open ze wanneer je maar wilt.</translation>
 <translation id="5233638681132016545">Nieuw tabblad</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bookmark opgeslagen in je Google-account {email}.}other{Bookmarks opgeslagen in je Google-account {email}.}}</translation>
+<translation id="5234162151438379838">{COUNT,plural, =1{Je kunt maar 1 tabblad delen.}other{Je kunt maar {COUNT} tabbladen delen.}}</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> kan nu je gebruikersnaam en wachtwoord gebruiken als die Google Wachtwoordmanager gebruikt om in te loggen bij <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, beheerd door je organisatie, is op dit moment geselecteerd. Kies een account.</translation>
@@ -1313,6 +1319,7 @@
 <translation id="5351613737248079168">Je moet ingelogd zijn om Level Up te gebruiken</translation>
 <translation id="5352128922772839949">Bestand opslaan</translation>
 <translation id="5355191726083956201">Geoptimaliseerde beveiliging staat aan</translation>
+<translation id="5359436665022446585">Beter links openen</translation>
 <translation id="536067926684072644">Bookmarks tonen</translation>
 <translation id="5364647308446127983">{count,plural, =1{Kan {count} toegangssleutel niet importeren}other{Kan {count} toegangssleutels niet importeren}}</translation>
 <translation id="5371112366564891538">Lettergrootte groter maken</translation>
@@ -1491,6 +1498,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5952641243319721872">Weet je zeker dat je je selectie niet wilt opslaan?</translation>
 <translation id="5956112131836209882">Tabblad in tabbladgroep. <ph name="TAB_INDEX_IN_GROUP" /> van <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Zoeken met <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5963694076845073027">Open links de volgende keer hier</translation>
 <translation id="5963939892571022323">Er kan geen link naar de markering worden gemaakt.</translation>
 <translation id="5968400720580217226">AI-modus</translation>
 <translation id="5971459446352190251">Zoeken naar QR-code</translation>
@@ -1820,6 +1828,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="6937083164784433305">{count,plural, =1{Je hebt 1 foto gebruikt om te zoeken}other{Je hebt # foto's gebruikt om te zoeken}}</translation>
 <translation id="693761253105515415">Toegangscode instellen</translation>
+<translation id="6938212956536472404">Dit tabblad kan niet worden gedeeld</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6946722113367118030">Denken</translation>
 <translation id="6950522403736391608">Verborgen</translation>
@@ -1995,6 +2004,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7561982940498449837">Menu sluiten</translation>
 <translation id="7566349809380613217"><ph name="GROUP_TITLE" /> openen, gedeelde groep van <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Bookmarks zijn verborgen</translation>
+<translation id="7575664680938145959">Openen met één tik</translation>
 <translation id="7577900504646297215">Interesses beheren</translation>
 <translation id="7582666837709186351">Vertaal tekst in je foto's of je omgeving met je camera.</translation>
 <translation id="7582857256643797524">Deze instelling staat aan op je apparaat</translation>
@@ -2018,6 +2028,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7646263789464975852">Menu → Instellingen → Veiligheidscheck</translation>
 <translation id="7646772052135772216">Wachtwoordsynchronisatie werkt niet</translation>
 <translation id="764827086632467055">Tik op Standaard browser-app</translation>
+<translation id="7648666127045672239">Kom hier met één tik</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="765555660695722850">Hiermee worden adressen verwijderd die zijn opgeslagen op dit apparaat. Ook wordt bepaalde informatie uit je Google-account verwijderd, maar niet basisinformatie zoals je naam of woonadres.</translation>
 <translation id="765631330137769217">Tik op Opslaan om dit wachtwoord makkelijk te vinden als je de volgende keer inlogt</translation>
@@ -2035,6 +2046,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7702428539671224160">Betalingsgegevens automatisch invullen op <ph name="URL" /></translation>
 <translation id="7708994397325774423">Al je wachtwoorden ophalen</translation>
+<translation id="7710096647785049958">Bespaar tijd bij elke link</translation>
 <translation id="7711440461521638739">Je hergebruikt geen wachtwoorden</translation>
 <translation id="7712361583414030698">Offline versie bekijken</translation>
 <translation id="7719038820139380048">Log in om content op basis van je interesses te krijgen.</translation>
@@ -2360,6 +2372,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="8706806585855470492">Je kunt tabbladgroepen delen, eraan deelnemen en eraan samenwerken</translation>
 <translation id="8709409604518538305">Tabbladen zijn gesloten</translation>
 <translation id="8712637175834984815">Begrepen</translation>
+<translation id="8717519179050551968">Minder plakken, meer browsen</translation>
 <translation id="8717864919010420084">Link kopiëren</translation>
 <translation id="8722229818691036192">Accounts op dit apparaat</translation>
 <translation id="8722649775263832315">Tik of markeer om te zoeken met Google Lens</translation>
@@ -2499,6 +2512,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="9148126808321036104">Opnieuw inloggen</translation>
 <translation id="9149866541089851383">Bewerken...</translation>
 <translation id="9152637745605628097">Kies uit thema's en kleuren of upload een afbeelding</translation>
+<translation id="9153159728062222866">Sla kopiëren en plakken over</translation>
 <translation id="9159628751968616911">Webpagina verzenden</translation>
 <translation id="9162412286847966593">De gegevens en opnamen van je organisatie worden niet gebruikt om generatieve AI-modellen te verbeteren. <ph name="BEGIN_LINK" />Je privacy en Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Zet Wachtwoorden automatisch invullen aan</translation>

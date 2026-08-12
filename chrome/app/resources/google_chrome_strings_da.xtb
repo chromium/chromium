@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">Konfigurationsfejl: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Vent, mens Chrome installerer de nyeste systemopdateringer.</translation>
 <translation id="1330562121671411446">Registrer sprog</translation>
+<translation id="1333654552732143316">Start Chrome</translation>
 <translation id="1341711321000856656">Du kan skifte for at se adgangskoder fra en anden Chrome-profil</translation>
 <translation id="1343830902827845050">Log ind i Chrome</translation>
 <translation id="1356661055722410047">Nyhed! Du kan oversætte både tekst og billeder på din skærm</translation>
@@ -378,7 +379,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="4885446229353981848">Vis altid genvejen til Google Lens</translation>
 <translation id="4891791193823137474">Lad Google Chrome køre i baggrunden</translation>
 <translation id="4895437082222824641">Åbn linket i en ny Chrome-&amp;fane</translation>
-<translation id="4896867431081882115">Få nem adgang til de funktioner, du kender, elsker og har tillid til, ved at angive Chrome som din standardbrowser. Chrome fastgøres til proceslinjen, så du hurtigt kan tilgå browseren.</translation>
 <translation id="4904953848704395458">Åbn Gemini i Chrome med en tastaturgenvej.</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4918844574251943176">Billedet er kopieret</translation>

@@ -38,6 +38,7 @@
 <translation id="1097807529207545420">{count,plural, =1{1 Passwort wurde sofort bestätigt}other{# Passwörter wurden sofort bestätigt}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
 <translation id="1110772719190051587">Mit Face ID entsperren</translation>
+<translation id="1111776967764068277">Du möchtest nicht ständig Links kopieren?</translation>
 <translation id="1112015203684611006">Fehler beim Drucken.</translation>
 <translation id="1118569444314402022">Willkommen zurück, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotos &amp; Bilder</translation>
@@ -527,6 +528,7 @@
 <translation id="2666092431469916601">Oben</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
 <translation id="2671423594960767771">Gruppe freigeben</translation>
+<translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">In Raten zahlen</translation>
 <translation id="2673508731173059946">Kopierten Link aufrufen</translation>
 <translation id="2679659833697380">Deine Informationen werden auf deinem Gerät gespeichert</translation>
@@ -543,6 +545,7 @@
 <translation id="271033894570825754">Neue Sammlung</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
 <translation id="2713106313042589954">Kamera ausschalten</translation>
+<translation id="2715440913764382254">Links direkt hier starten</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
 <translation id="2721190673959776287">Beispiel für ein umfassendes Infofeld im Kontextmenü, das mehrmals täglich angezeigt wird.</translation>
 <translation id="2739887572830526131">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie löschen, wenn du sie nicht mehr benötigst.</translation>
@@ -1004,6 +1007,7 @@
 <translation id="4338258232580025606">Anmelden nicht möglich</translation>
 <translation id="4338650699862464074">URLs der von dir besuchten Seiten werden an Google gesendet.</translation>
 <translation id="4342946437867096381">Du hast bereits ein Passwort für diese Website in deinem Google-Konto gespeichert. Google kann für dich das neueste Passwort auswählen.</translation>
+<translation id="4355702523442402731">Flüssiges appübergreifendes Surfen</translation>
 <translation id="4365121137632832185">Tabgruppe. Maximiert.</translation>
 <translation id="4365685757967464989">Erlaube Gemini, die Kamera zum Aufnehmen von Fotos zu verwenden</translation>
 <translation id="4367971618859387374">Anzeigename</translation>
@@ -1281,6 +1285,7 @@
 <translation id="5233111790346066304">Du kannst Dateien in Google Drive speichern und jederzeit darauf zugreifen.</translation>
 <translation id="5233638681132016545">Neuer Tab</translation>
 <translation id="5234094073825090254">{count,plural, =1{Das Lesezeichen wurde in deinem Google-Konto {email} gespeichert.}other{Die Lesezeichen wurden in deinem Google-Konto {email} gespeichert.}}</translation>
+<translation id="5234162151438379838">{COUNT,plural, =1{Es kann nur 1 Tab geteilt werden.}other{Es können nur {COUNT} Tabs geteilt werden.}}</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> kann jetzt über den Google Passwortmanager deinen Nutzernamen und dein Passwort verwenden, um sich auf <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> anzumelden.</translation>
 <translation id="5241106044372754566">Das Konto „<ph name="NAME" />, <ph name="EMAIL" />, von deiner Organisation verwaltet“ ist aktuell ausgewählt. Wähle ein Konto aus.</translation>
@@ -1313,6 +1318,7 @@
 <translation id="5351613737248079168">Du musst angemeldet sein, um die Vorteile des Level Up-Programms nutzen zu können</translation>
 <translation id="5352128922772839949">Datei speichern</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
+<translation id="5359436665022446585">Besseres Öffnen von Links</translation>
 <translation id="536067926684072644">Lesezeichen einblenden</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} Passkey konnte nicht importiert werden}other{{count} Passkeys konnten nicht importiert werden}}</translation>
 <translation id="5371112366564891538">Text vergrößern</translation>
@@ -1491,6 +1497,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5952641243319721872">Möchtest du deine Auswahl wirklich verwerfen?</translation>
 <translation id="5956112131836209882">Tabgruppen-Tab. <ph name="TAB_INDEX_IN_GROUP" /> von <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Mit <ph name="SEARCH_PROVIDER" /> suchen</translation>
+<translation id="5963694076845073027">Links beim nächsten Mal hier öffnen</translation>
 <translation id="5963939892571022323">Zum markierten Text kann kein Link erstellt werden.</translation>
 <translation id="5968400720580217226">KI‑Modus</translation>
 <translation id="5971459446352190251">QR‑Code-Suche</translation>
@@ -1820,6 +1827,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="6937083164784433305">{count,plural, =1{Du hast 1 Foto für die Suche verwendet,}other{Du hast # Fotos für die Suche verwendet,}}</translation>
 <translation id="693761253105515415">Sicherheitscode einrichten</translation>
+<translation id="6938212956536472404">Dieser Tab kann nicht geteilt werden</translation>
 <translation id="6945221475159498467">Auswählen</translation>
 <translation id="6946722113367118030">Denken</translation>
 <translation id="6950522403736391608">Ausgeblendet</translation>
@@ -1995,6 +2003,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7561982940498449837">Menü schließen</translation>
 <translation id="7566349809380613217">„<ph name="GROUP_TITLE" />“ geöffnet, geteilte Gruppe mit <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Lesezeichen sind ausgeblendet</translation>
+<translation id="7575664680938145959">Mit einem Fingertipp öffnen</translation>
 <translation id="7577900504646297215">Interessen verwalten</translation>
 <translation id="7582666837709186351">Du kannst Text in deinen Fotos oder in deiner Umgebung übersetzen lassen.</translation>
 <translation id="7582857256643797524">Diese Einstellung ist auf deinem Gerät aktiviert</translation>
@@ -2018,6 +2027,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7646263789464975852">Menü → Einstellungen → Sicherheitscheck</translation>
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="764827086632467055">Tippe auf „Standardbrowser-App“</translation>
+<translation id="7648666127045672239">Mit einem Tippen hierher gelangen</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="765555660695722850">Dadurch werden auf diesem Gerät gespeicherte Adressen gelöscht. Außerdem werden einige Informationen aus deinem Google-Konto gelöscht, aber keine grundlegenden Informationen wie dein Name oder deine Privatadresse.</translation>
 <translation id="765631330137769217">Tippe auf „Speichern“, um bei der nächsten Anmeldung einfach auf dieses Passwort zuzugreifen</translation>
@@ -2035,6 +2045,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7701040980221191251">Keine Einträge</translation>
 <translation id="7702428539671224160">Zahlungsinformationen auf <ph name="URL" /> automatisch einfügen</translation>
 <translation id="7708994397325774423">Auf alle deine Passwörter zugreifen</translation>
+<translation id="7710096647785049958">Zeit bei jedem Link sparen</translation>
 <translation id="7711440461521638739">Du verwendest keine Passwörter mehrfach</translation>
 <translation id="7712361583414030698">Offlineversion wird angezeigt</translation>
 <translation id="7719038820139380048">Melde dich an, um Inhalte zu erhalten, die deinen Interessen entsprechen.</translation>
@@ -2360,6 +2371,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8706806585855470492">Du kannst dann Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten</translation>
 <translation id="8709409604518538305">Tabs wurden geschlossen</translation>
 <translation id="8712637175834984815">Ok</translation>
+<translation id="8717519179050551968">Weniger einfügen, mehr surfen</translation>
 <translation id="8717864919010420084">Link kopieren</translation>
 <translation id="8722229818691036192">Konten auf diesem Gerät</translation>
 <translation id="8722649775263832315">Markiere einen beliebigen Bereich oder tippe darauf, um mit Google Lens zu suchen</translation>
@@ -2499,6 +2511,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="9148126808321036104">Erneut anmelden</translation>
 <translation id="9149866541089851383">Bearbeiten...</translation>
 <translation id="9152637745605628097">Du kannst Designs und Farben auswählen oder ein Bild hochladen</translation>
+<translation id="9153159728062222866">Kein Kopieren und Einfügen mehr</translation>
 <translation id="9159628751968616911">Webseite senden</translation>
 <translation id="9162412286847966593">Die Daten und Aufzeichnungen deiner Organisation werden nicht zur Verbesserung generativer KI-Modelle verwendet. <ph name="BEGIN_LINK" />Datenschutz und Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Aktiviere die Option zum automatischen Einfügen von Passwörtern</translation>

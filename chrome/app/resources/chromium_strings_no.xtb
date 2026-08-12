@@ -152,6 +152,7 @@
 <translation id="2635452620547538388">Bekreft at det er deg, for å bruke og lagre Chromium-data i kontoen din, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2636783171884046627">Bruk hurtigtasten for å veksle mellom å gå ut av eller tilbake til Gemini i Chromium.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Avansert beskyttelse krever at du starter Chromium på nytt for å ta i bruk en oppdatering}=1{Avansert beskyttelse krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Avansert beskyttelse krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Dine # inkognitovinduer gjenåpnes ikke.}}</translation>
+<translation id="263863604136125912">Åpne Chromium</translation>
 <translation id="2648074677641340862">Det oppsto en systemfeil under installering. Last ned Chromium på nytt.</translation>
 <translation id="2661879430930417727">Hvis du deler en enhet med andre, kan venner og familie surfe hver for seg og konfigurere Chromium akkurat slik de vil</translation>
 <translation id="2676569452213089702">Enkel tilgang til Gemini i Chromium på hele enheten, selv om Chromium er minimert.</translation>
@@ -305,7 +306,6 @@
 <translation id="4304713468139749426">Passordlagring</translation>
 <translation id="4334241893986177674">Søk i dette skjermbildet</translation>
 <translation id="4384331407722351213">Start Chromium når Windows starter</translation>
-<translation id="4384993550046411228">Få enkel tilgang til funksjonene du kjenner, liker og stoler på, ved å angi Chromium som standardnettleser. Chromium festes til oppgavelinjen for rask tilgang.</translation>
 <translation id="4400772909124543403">Ingen oppdatering er tilgjengelig</translation>
 <translation id="4407044323746248786">Vil du avslutte Chromium likevel?</translation>
 <translation id="4413205837991854510">Vis alltid snarveien til bildesøk</translation>

@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">Помилка налаштування: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Зачекайте, доки Chrome установить найновіші оновлення системи.</translation>
 <translation id="1330562121671411446">Визначити мову</translation>
+<translation id="1333654552732143316">Запустити Chrome</translation>
 <translation id="1341711321000856656">Щоб переглянути паролі з іншого профілю Chrome, перейдіть у нього</translation>
 <translation id="1343830902827845050">Увійдіть у Chrome</translation>
 <translation id="1356661055722410047">Новинка! Тепер ви можете перекладати текст і зображення на екрані.</translation>
@@ -378,7 +379,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4885446229353981848">Завжди показувати ярлик Google Об’єктива</translation>
 <translation id="4891791193823137474">Дозволити Google Chrome працювати у фоновому режимі</translation>
 <translation id="4895437082222824641">Відкрити посилання в новій &amp;вкладці Chrome</translation>
-<translation id="4896867431081882115">Зробіть Chrome вебпереглядачем за умовчанням, щоб легко користуватись улюбленими функціями. Chrome буде закріплено на панелі завдань для швидкого доступу.</translation>
 <translation id="4904953848704395458">Відкривайте Gemini у Chrome за допомогою комбінації клавіш.</translation>
 <translation id="4918086044614829423">Прийняти</translation>
 <translation id="4918844574251943176">Зображення скопійовано</translation>

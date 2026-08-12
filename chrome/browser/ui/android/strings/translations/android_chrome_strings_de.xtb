@@ -723,7 +723,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="399788104667917863">An Symbolleiste anpinnen</translation>
 <translation id="4000212216660919741">Offline-Startseite</translation>
 <translation id="4000670338830950598">Du kannst Google Chrome mit einem hervorgehobenen Element anpassen und verwalten</translation>
-<translation id="4002066346123236978">Titel</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 kompromittiertes Passwort in deinem Google-Konto}other{# kompromittierte Passwörter in deinem Google-Konto}}</translation>
 <translation id="4023638601467301498">Wenn du auf allen deinen Geräten auf deine Lesezeichen und andere Daten zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="4024768890073681126">Dein Browser wird von deinen Eltern verwaltet</translation>
@@ -1973,6 +1972,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8937772741022875483">Deine Chrome-Aktivitäten aus Digital Wellbeing entfernen?</translation>
 <translation id="8942627711005830162">In anderem Fenster öffnen</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Diese Sprache konnte nicht heruntergeladen werden. Versuche es später noch einmal.</translation>
+<translation id="8945348199139712719">Kopierten Text einfügen und aufrufen</translation>
 <translation id="8946759102391960088">Weiter auf deine Passwörter zugreifen</translation>
 <translation id="895442993047180128">Opt-in für Benachrichtigungen mit Tipps geschlossen</translation>
 <translation id="8957528460562961174">Wenn du weiterhin auf deine Passwörter zugreifen möchtest, exportiere sie jetzt und importiere sie dann in deinen bevorzugten Passwortmanager. Der Google Passwortmanager funktioniert nicht mehr, weil die Google Play-Dienste nicht verfügbar sind.</translation>

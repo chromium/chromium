@@ -5765,6 +5765,7 @@
 <translation id="5444281205834970653">Ջնջել և շարունակել</translation>
 <translation id="5444452275167152925">Ներմուծվել է ChromeOS-ից</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Գեներացնել գաղափարներ</translation>
 <translation id="5449551289610225147">Սխալ գաղտնաբառ</translation>
 <translation id="5449588825071916739">Բոլոր ներդիրների էջանշում</translation>
@@ -8126,6 +8127,7 @@
 <translation id="7311244614769792472">Ոչինչ չի գտնվել</translation>
 <translation id="7312040805247765153">Չհաջողվեց տեղադրել հավելվածը</translation>
 <translation id="7312210124139670355">Ադմինիստրատորը վերակայում է ձեր eSIM-ը։ Դա կարող է մի քանի րոպե տևել։</translation>
+<translation id="731239254927333251">Alt + L</translation>
 <translation id="7313539585802573958">Հետին լուսավորությամբ ստեղնաշարի գույներ</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Չհաջողվեց թվագրել 1 իրադարձություն, և այն չի ցուցադրվում}one{Չհաջողվեց թվագրել # իրադարձություն, և այն չի ցուցադրվում}other{Չհաջողվեց թվագրել # իրադարձություն, և դրանք չեն ցուցադրվում}}</translation>
 <translation id="7314865262803554456">Դուք ծանուցում չեք ստանա, երբ տեսագրումը սկսվի։</translation>

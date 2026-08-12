@@ -17,6 +17,7 @@
 <translation id="1237769345474105984">Chromedan</translation>
 <translation id="124228879633599436">Chrome eskirgan. Himoya ostida qolish uchun yangilang.</translation>
 <translation id="1258531953614971819">Chrome maslahati: Chromeni bosh ekranga oling</translation>
+<translation id="1333577334443425318">Boshqa ilovalardan havolalarni nusxalamaslik uchun Chromeni birlamchi brauzer qilib belgilang.</translation>
 <translation id="1333745675627230582">Chrome Dino oʻyinini boshlash</translation>
 <translation id="1343830902827845050">Chrome hisobiga kirish</translation>
 <translation id="1352919863522755794">Google Parollar menejeri parollarni tekshira olmadi. Internet aloqasini tekshiring.</translation>
@@ -39,6 +40,7 @@ Bularni hisobga olish kerak:
 <translation id="1554731936187952550">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>
 <translation id="155816064895200734">Chrome birlamchi brauzer boʻlsin</translation>
 <translation id="1580570086594302477">Chromeda yangi inkognito varaq ochadi.</translation>
+<translation id="1605168141396675642">Nusxalashga hojat qolmasin. Havolalarni bevosita Chrome orqali oching.</translation>
 <translation id="1646463005043273333">Chromeni birlamchi brauzer etib belgilash Chrome sozlamasini ochadi.</translation>
 <translation id="1670609221633730681">Chrome maslahati: Manzillar qatori joylashuvini tanlang</translation>
 <translation id="1683863426423719967">Chrome varaqlar haqidagi bildirishnomalarini olish uchun iOS sozlamalari orqali bildirishnomalarni yoqing.</translation>
@@ -72,6 +74,7 @@ Bularni hisobga olish kerak:
 <translation id="2423077901494354337">Endi qurilmangizda Chromedan unumli foydalanasiz.</translation>
 <translation id="2427791862912929107">Google Chrome brauzerida Internet maʼlumotlarini qayta ishlash parametrlari va sahifalarning yuklanish tezligini belgilash mumkin.
 <ph name="BEGIN_LINK" />Batafsil axborot<ph name="END_LINK" /></translation>
+<translation id="2450221499140985490">Xabarlar va hujjatlardagi havolalarni bevosita Chrome orqali oching.</translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Bunga tarix va avtomatik kiritish maʼlumotlari kirishi mumkin.}other{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Bunga tarix va avtomatik kiritish maʼlumotlari kirishi mumkin.}}</translation>
 <translation id="2561231791489583059">Internetni xavfsiz kezish va parollaringizni himoyalashda Chrome birlamchi brauzer sifatida ishlatilsin</translation>
 <translation id="2574249610672786438">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun barcha qurilmalarda hisobingizga kiring</translation>
@@ -128,8 +131,10 @@ Ayrim bukmarklar hisobingizdan oʻchirilmaguncha yangilari saqlanmaydi. Hozir hi
 <translation id="3827545470516145620">Bu qurilmada standart xavfsizlik sozlamasi amal qiladi</translation>
 <translation id="384394811301901750">Google Chrome hozir kamerangizdan foydalana olmaydi.</translation>
 <translation id="3863841106411295595">Kiritilgan URL manzillarni Chrome Saqlangan sahifalariga qoʻshadi.</translation>
+<translation id="3878515067127964393">Nusxalashga hojat qolmasin. Chromeni iOS uchun asosiy brauzeringiz qilib belgilang.</translation>
 <translation id="3901001113120561395">Chromedan unumli foydalaning</translation>
 <translation id="3913386780052199712">Chrome hisobiga kirildi</translation>
+<translation id="3913747277937572860">Chromeni birlamchi brauzer qilib belgilang va veb-kontentni avtomatik oching.</translation>
 <translation id="3984746313391923992">Tashkilotingiz Chrome hisobidan chiqishingizni talab qilmoqda.</translation>
 <translation id="3988789688219830639">Google Chrome rasm va videolaringizni ko‘ra olmayapti. “Sozlamalar &gt; Maxfiylik &gt; Rasmlar” oynasida ruxsat bering.</translation>
 <translation id="4064699917955374540">Chrome maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun shaxsingizni tasdiqlang.</translation>
@@ -236,6 +241,7 @@ Maʼlumotlaringiz kodli ibora bilan shifrlangan. Chrome maʼlumotlarini Google h
 <translation id="6533470733797826516">Chrome avtomatik kiritish bilan hisobga tezroq kiring</translation>
 <translation id="6536544321553662809">Havolalarni oson ochish va ulashish uchun Chromeni birlamchi brauzer deb belgilang</translation>
 <translation id="6545449117344801102">Chrome marshrut va mahalliy axborot berish uchun manzillarni Google Xaritalar yordamida aniqlaydi.</translation>
+<translation id="660537754475262202">Havolalarni shu yerda bir zumda ochish uchun Chromeni birlamchi brauzeringizga aylantiring.</translation>
 <translation id="6611692150236062461">Boshqa ilovalarda saqlangan parollarni oson ochish uchun Chrome avtomatik kiritishini tanlang.</translation>
 <translation id="6636941099779251629">Chrome brauzeridan foydalanishingiz uchun tashkilotingiz roʻyxatdan oʻtishni talab qiladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Himoyalangan URL parchasini IP manzilni yashiruvchi maxfiy server orqali Googlega yuboradi. Agar sayt parolingizni oʻgʻirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome URL manzillar va sahifa elementlarini ham Googlega yuborishi mumkin.</translation>
@@ -270,6 +276,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="722167379782941918">Chrome kuchaytirilgan himoyani tavsiya qiladi</translation>
 <translation id="723787869754590019">Avtomatik kiritish uchun Chrome ishlatish</translation>
 <translation id="7261678641327190792">Chrome parollaringizni tekshira olmadi</translation>
+<translation id="7272091023280308138">Keyingi safar URL manzillarni nusxalamasdan, havolalarni bevosita Chrome brauzerida oching.</translation>
 <translation id="7272930098487145294">Rasmlarni saqlash uchun Sozlamalar ustiga bosib, Chromega rasmlarni ochishga ruxsat bering.</translation>
 <translation id="7275945473750112644">Hisobingiz <ph name="HOSTED_DOMAIN" /> domenida boshqariladi, shuning uchun bu qurilmadagi Chrome maʼlumotlari tozalanadi</translation>
 <translation id="7284245284340063465">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
@@ -285,6 +292,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="7466693328838535498">Qidiruv vidjetlari maydonida Chrome kiriting</translation>
 <translation id="7477056987201678345">Chrome maʼlumotlari oʻchirilmoqda…</translation>
 <translation id="7492574581995589075">Google hisobida saqlangan Chrome maʼlumotlaridan foydalanish tashkilotingiz tomonidan faolsizlantierilgan. Yangi bukmarklar, parollar va boshqalar faqat shu qurilmada saqlanadi.</translation>
+<translation id="752120807649195785">Havolalarni nusxalamasdan, birgina teginish bilan ochish uchun Chromeni asosiy brauzer qilib belgilang.</translation>
 <translation id="7540272326042438331">Chromeni ulashish</translation>
 <translation id="7575971113404272499">Chrome maslahati: Chromeni asosiy brauzer etib tayinlang</translation>
 <translation id="7581063337314642333">Chromeda varaqlar jadvaliga kirish</translation>
@@ -324,6 +332,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="8245080522851805544">Chrome yopilganda Inkognito varaqlar qulflansin</translation>
 <translation id="8248887045858762645">Chrome maslahati</translation>
 <translation id="8265730590513812063">Chrome menyusini oching</translation>
+<translation id="8276803169904409881">Boshqa ilovalardagi havolalarni darhol ochish uchun Chromeni asosiy brauzer sifatida belgilang.</translation>
 <translation id="8284376267694582021">Bolalar xavfsizligi funksiyalarini olish uchun farzandingiz uchun sozlangan Google hisobidan foydalanishingiz yoki Chromedan hisobsiz foydalanishingiz mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
 
@@ -361,6 +370,7 @@ Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chr
 <translation id="8865415417596392024">Hisobingizdagi Chrome maʼlumotlari</translation>
 <translation id="8874688701962049679">Chromedan unumli foydalanish maslahatlari.</translation>
 <translation id="8897749957032330183">Parollar shu qurilmadagi Google Parollar menejeriga saqlanadi.</translation>
+<translation id="898288749595466683">URL manzillarni nusxalashdan charchadingizmi? Sahifalarni bevosita ochish uchun Chromeni asosiy brauzer qilib belgilang.</translation>
 <translation id="9004772704776174843">Chrome hisobidan chiqildi</translation>
 <translation id="9068336935206019333">Chrome Inkognito oynasida ochish</translation>
 <translation id="9082304295862405388">Gemini aniq joylashuvingizdan Chromega ilgari berilgan ruxsat asosida foydalanishi mumkin</translation>

@@ -304,6 +304,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1504042622576912555">Innvols pappa</translation>
 <translation id="1507202001669085618">&lt;p&gt;Þú sérð þessa villu ef þú notar Wi-Fi gátt sem þú þarft að skrá þig inn á áður en þú tengist internetinu.&lt;/p&gt;
     &lt;p&gt;Til að leysa vandann skaltu smella á &lt;strong&gt;Tengjast&lt;/strong&gt; á síðunni sem þú ert að reyna að opna.&lt;/p&gt;</translation>
+<translation id="1507635939006264930">Kveikir á sjálfvirkri útfyllingu</translation>
 <translation id="1508605873202255562">Búðu til sérsniðna rakningu til að ég hafi yfirsýn yfir markmiðin mín</translation>
 <translation id="1513706915089223971">Listi yfir færslur í ferli</translation>
 <translation id="1515436033764190215">fyrir # klukkustund</translation>
@@ -631,6 +632,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2093982008204312032">Google Chrome er að reyna að slökkva á Windows Hello til að fylla út aðgangsorð.</translation>
 <translation id="2094505752054353250">Misræmi í léni</translation>
 <translation id="2094704029599359040">Útgáfuupplýsingar</translation>
+<translation id="2096183846792489672">Hægt er að vinna úr efni og vefslóðum síðnanna sem þú opnar í leynirými í skýinu</translation>
 <translation id="209961642949927292">Viltu vera fljótari að ganga frá kaupunum næst?</translation>
 <translation id="2099652385553570808">Þrjú hefti vinstra megin</translation>
 <translation id="2101225219012730419">Útgáfa:</translation>
@@ -1591,6 +1593,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3738166223076830879">Vafranum er stjórnað af kerfisstjóranum þínum.</translation>
 <translation id="3739842843727261045">Þumall upp sendir ábendingu um að þér líki við þessar niðurstöður</translation>
 <translation id="3740447166056383374">Yfirferðar er krafist fyrir afritun</translation>
+<translation id="3742104862808477448">Auðveldaðu Chromium að greina og fylla út flókin eyðublöð með því að vinna úr gögnum á öruggan hátt á þjónum Google. Upplýsingarnar þínar eru áfram lokaðar og enginn fer yfir þær.</translation>
 <translation id="3744111561329211289">Samstilling í bakgrunni</translation>
 <translation id="3744212718085287312">Auka öryggið með sýndarkorti næst?</translation>
 <translation id="3744899669254331632">Þú getur ekki heimsótt <ph name="SITE" /> í augnablikinu vegna þess að vefsvæðið sendi dulkóðuð skilríki sem Chromium getur ekki unnið úr. Netkerfisvillur og árásir ganga yfirleitt fljótt yfir svo síðan mun líklega virka aftur síðar.</translation>
@@ -1614,6 +1617,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3769584711865378220"><ph name="URL" /> vill breyta aðgangi staðsetningu úr áætlaðri í nákvæma</translation>
 <translation id="3772211998634047851">Pappír (teikningapappír)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að búa til nýja glósu í Google Keep á skjótan hátt</translation>
+<translation id="3778045607993018262">Pix-reikningur verður tengdur við <ph name="ACCOUNT_EMAIL" />. Opnaðu <ph name="BEGIN_LINK1" />stillingar Chrome<ph name="END_LINK1" /> til að slökkva á Pix-kóðagreiningu</translation>
 <translation id="3780694243617746492">Útbakki</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-tæki</translation>
@@ -1633,6 +1637,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="380329542618494757">Nafn</translation>
 <translation id="3803481123869276674">Sjáðu rafveski sem valkost þegar þú gengur frá kaupum í Chrome</translation>
 <translation id="3803801106042434208">Þessar leitarvélar eru vinsælar á þínu svæði</translation>
+<translation id="3804112825000113857">Skoða stillingar sjálfvirkrar útfyllingar</translation>
 <translation id="380666903981445943">Vistaðu greiðslumáta á Google-reikningnum til að fylla hann út sjálfkrafa fyrir kaup sem gerð eru í Chrome</translation>
 <translation id="3807366285948165054">X-færsla myndar</translation>
 <translation id="3807873520724684969">Lokað á skaðlegt efni.</translation>
@@ -3311,6 +3316,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="666259744093848177">(x86_64 þýtt)</translation>
 <translation id="6665553082534466207">Þrjú göt hægra megin</translation>
 <translation id="6668389483194953109">Fann pappírsstærð með heitinu „custom“ en eiginleikinn „custom size" er auður eða ógildur.</translation>
+<translation id="667044980437620424">Kveikt á sjálfvirkri útfyllingu</translation>
 <translation id="6670729408462528018">Gallerí</translation>
 <translation id="6671697161687535275">Fjarlægja eyðublaðstillögu úr Chromium?</translation>
 <translation id="6675846980676550611">Aukinn veruleiki ekki leyfður</translation>
@@ -3540,6 +3546,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7064851114919012435">Samskiptaupplýsingar</translation>
 <translation id="7070144569727915108">kerfisstillingar</translation>
 <translation id="70705239631109039">Tengingin er ekki alveg örugg</translation>
+<translation id="7074595960655571061">Nú geturðu vistað greiðslumáta til að fylla sjálfkrafa út við greiðslu í Chrome. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">Beiðnin er of stór</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 með RSA-dulkóðun</translation>
 <translation id="7075896597860500885">Ekki er mælt með að afrita efni af þessu vefsvæði</translation>
@@ -4402,6 +4409,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8564182942834072828">Aðskilin skjöl / ekki samröðuð eintök</translation>
 <translation id="8564466070529550495">Sýndarkort er ekki tiltækt eins og er, reyndu aftur síðar.</translation>
 <translation id="8564985650692024650">Chromium mælir með því að þú endurstillir aðgangsorðið fyrir <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ef þú notaðir það einnig á öðrum síðum.</translation>
+<translation id="8568406155558596128">Auðveldaðu Chrome að greina og fylla út flókin eyðublöð með því að vinna úr gögnum á öruggan hátt á þjónum Google. Upplýsingarnar þínar eru áfram lokaðar og enginn fer yfir þær.</translation>
 <translation id="8574570240981266561">Atriði eytt</translation>
 <translation id="8577192028579836704">Verð eru yfirleitt <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Sýndarkort ekki tiltækt</translation>

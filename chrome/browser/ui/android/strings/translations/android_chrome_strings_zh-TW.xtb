@@ -723,7 +723,6 @@
 <translation id="399788104667917863">在工具列中固定</translation>
 <translation id="4000212216660919741">離線首頁</translation>
 <translation id="4000670338830950598">自訂及管理 Google Chrome 選單中有醒目顯示項目</translation>
-<translation id="4002066346123236978">標題</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{你的 Google 帳戶有 1 組密碼外洩}other{你的 Google 帳戶有 # 組密碼外洩}}</translation>
 <translation id="4023638601467301498">如要在所有裝置上存取書籤和其他資料，請登入 Chrome</translation>
 <translation id="4024768890073681126">瀏覽器由家長管理</translation>
@@ -1973,6 +1972,7 @@
 <translation id="8937772741022875483">要將你的 Chrome 活動記錄從數位健康中移除嗎？</translation>
 <translation id="8942627711005830162">在其他視窗中開啟</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - 無法下載這個語言套件，請稍後再試。</translation>
+<translation id="8945348199139712719">貼上並前往複製的文字</translation>
 <translation id="8946759102391960088">繼續存取密碼</translation>
 <translation id="895442993047180128">提示通知啟用畫面已關閉</translation>
 <translation id="8957528460562961174">如要繼續存取密碼，請立即匯出密碼，然後匯入至偏好的密碼管理工具。由於無法使用 Google Play 服務，Google 密碼管理工具已停止運作。</translation>

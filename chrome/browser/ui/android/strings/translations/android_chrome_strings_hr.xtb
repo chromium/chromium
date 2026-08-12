@@ -723,7 +723,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="399788104667917863">Prikvači na alatnu traku</translation>
 <translation id="4000212216660919741">Početna stranica offline</translation>
 <translation id="4000670338830950598">Prilagodite Google Chrome i upravljajte njime pomoću istaknute stavke</translation>
-<translation id="4002066346123236978">Naslov</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Jedna ugrožena zaporka na vašem Google računu}one{# ugrožena zaporka na vašem Google računu}few{# ugrožene zaporke na vašem Google računu}other{# ugroženih zaporki na vašem Google računu}}</translation>
 <translation id="4023638601467301498">Da biste mogli pristupati svojim oznakama i drugim podacima na svim svojim uređajima, prijavite se na Chrome</translation>
 <translation id="4024768890073681126">Preglednikom upravlja tvoj roditelj</translation>
@@ -1973,6 +1972,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8937772741022875483">Želite li ukloniti svoju aktivnost u Chromeu iz Digitalne ravnoteže?</translation>
 <translation id="8942627711005830162">Otvori u drugom prozoru</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – preuzimanje tog jezika nije uspjelo. Pokušajte ponovo kasnije.</translation>
+<translation id="8945348199139712719">Zalijepi i otvori kopirani tekst</translation>
 <translation id="8946759102391960088">Zadržite pristup zaporkama</translation>
 <translation id="895442993047180128">Zatvoreno je uključivanje obavijesti o savjetima</translation>
 <translation id="8957528460562961174">Da biste zadržali pristup svojim zaporkama, odmah ih izvezite, a zatim ih ponovo uvezite u svoj omiljeni upravitelj zaporki. Google upravitelj zaporki prestao je funkcionirati jer usluge za Google Play nisu dostupne.</translation>

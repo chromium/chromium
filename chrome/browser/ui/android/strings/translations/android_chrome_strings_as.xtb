@@ -723,7 +723,6 @@
 <translation id="399788104667917863">টুলবাৰত পিন কৰক</translation>
 <translation id="4000212216660919741">অফলাইন গৃহপৃষ্ঠা</translation>
 <translation id="4000670338830950598">হাইলাইট কৰা বস্তু এটাৰে Google Chrome কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক</translation>
-<translation id="4002066346123236978">শিৰোনাম</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{আপোনাৰ Google একাউণ্টত ১ টা হেক কৰা পাছৱৰ্ড আছে}one{আপোনাৰ Google একাউণ্টত # টা হেক কৰা পাছৱৰ্ড আছে}other{আপোনাৰ Google একাউণ্টত # টা হেক কৰা পাছৱৰ্ড আছে}}</translation>
 <translation id="4023638601467301498">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ বুকমাৰ্ক আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
 <translation id="4024768890073681126">আপোনাৰ অভিভাৱকে আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
@@ -1973,6 +1972,7 @@
 <translation id="8937772741022875483">আপুনি Chromeত কৰা কাৰ্যকলাপ ডিজিটেল ৱেলবিইঙ-ৰ পৰা আঁতৰাবনে?</translation>
 <translation id="8942627711005830162">অন্য উইণ্ড’ত খোলক</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - এই ভাষাটো ডাউনল'ড কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।</translation>
+<translation id="8945348199139712719">পে’ষ্ট কৰক আৰু প্ৰতিলিপি কৰা পাঠলৈ যাওক</translation>
 <translation id="8946759102391960088">আপোনাৰ পাছৱৰ্ডসমূহৰ এক্সেছ ৰাখক</translation>
 <translation id="895442993047180128">পৰামৰ্শৰ জাননীৰ অপ্ট ইন কৰাটো বন্ধ কৰা হৈছে</translation>
 <translation id="8957528460562961174">আপোনাৰ পাছৱৰ্ডসমূহৰ এক্সেছ ৰাখিবলৈ, এতিয়াই সেইসমূহ ৰপ্তানি কৰি আপুনি অগ্ৰাধিকাৰ দিয়া Password Managerলৈ সেয়া আমদানি কৰক। Google Play সেৱাসমূহ উপলব্ধ নোহোৱাৰ বাবে Google Password Managerএ কাম নকৰা হৈছে।</translation>

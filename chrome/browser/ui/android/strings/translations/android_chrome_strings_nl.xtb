@@ -723,7 +723,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="399788104667917863">Vastzetten op werkbalk</translation>
 <translation id="4000212216660919741">Homepage voor offline</translation>
 <translation id="4000670338830950598">Google Chrome aanpassen en beheren met een gemarkeerd item</translation>
-<translation id="4002066346123236978">Titel</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 gehackt wachtwoord in je Google-account}other{# gehackte wachtwoorden in je Google-account}}</translation>
 <translation id="4023638601467301498">Log in bij Chrome om onder andere je bookmarks op al je apparaten te gebruiken</translation>
 <translation id="4024768890073681126">Je browser wordt beheerd door je ouder</translation>
@@ -1973,6 +1972,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8937772741022875483">Je Chrome-activiteit verwijderen uit Digitaal welzijn?</translation>
 <translation id="8942627711005830162">Openen in een ander venster</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Deze taal kan niet worden gedownload. Probeer het later opnieuw.</translation>
+<translation id="8945348199139712719">Plakken en naar gekopieerde tekst gaan</translation>
 <translation id="8946759102391960088">Toegang houden tot je wachtwoorden</translation>
 <translation id="895442993047180128">Aanmelding voor meldingen met tips gesloten</translation>
 <translation id="8957528460562961174">Als je toegang wilt houden tot je wachtwoorden, exporteer je ze nu en importeer je ze daarna in de wachtwoordmanager van je keuze. Google Wachtwoordmanager werkt niet meer omdat Google Play-services niet beschikbaar is.</translation>

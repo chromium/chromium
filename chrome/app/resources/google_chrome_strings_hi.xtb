@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">सेटअप करने में गड़बड़ी हुई: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">कृपया Chrome के द्वारा नवीनतम सिस्टम अपडेट इंस्टॉल करने के दौरान इंतज़ार करें.</translation>
 <translation id="1330562121671411446">भाषा का पता लगाएं</translation>
+<translation id="1333654552732143316">क्रोम आरंभ करें</translation>
 <translation id="1341711321000856656">पासवर्ड देखने के लिए, Chrome की किसी दूसरी प्रोफ़ाइल पर स्विच करें</translation>
 <translation id="1343830902827845050">Chrome में साइन इन करें</translation>
 <translation id="1356661055722410047">नया! स्क्रीन पर दिख रहे टेक्स्ट और इमेज का अनुवाद किया जा सकता है</translation>
@@ -377,7 +378,6 @@
 <translation id="4885446229353981848">हमेशा Google Lens का शॉर्टकट दिखाएं</translation>
 <translation id="4891791193823137474">Google Chrome को पृष्ठभूमि में चलने दें</translation>
 <translation id="4895437082222824641">नए Chrome &amp;टैब में लिंक खोलें</translation>
-<translation id="4896867431081882115">Chrome को अपना डिफ़ॉल्ट ब्राउज़र सेट करके, अपनी पसंदीदा और भरोसेमंद सुविधाओं को आसानी से ऐक्सेस करें. Chrome को आपके टास्कबार पर पिन कर दिया जाएगा, ताकि आप इसे तुरंत ऐक्सेस कर सकें.</translation>
 <translation id="4904953848704395458">कीबोर्ड शॉर्टकट का इस्तेमाल करके 'Chrome में Gemini' खोलें.</translation>
 <translation id="4918086044614829423">स्वीकार करें</translation>
 <translation id="4918844574251943176">इमेज को कॉपी किया गया</translation>

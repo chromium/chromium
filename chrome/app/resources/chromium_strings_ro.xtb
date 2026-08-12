@@ -152,6 +152,7 @@
 <translation id="2635452620547538388">Confirmă-ți identitatea pentru a folosi și a salva datele Chromium în contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2636783171884046627">Pentru a ieși din Gemini sau a reveni la Gemini în Chromium, folosește comanda rapidă de la tastatură.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare}=1{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
+<translation id="263863604136125912">Porniți Chromium</translation>
 <translation id="2648074677641340862">S-a produs o eroare de sistem de operare în timpul instalării. Descărcați din nou Chromium.</translation>
 <translation id="2661879430930417727">Dacă permiți accesul la un dispozitiv, familia și prietenii pot să navigheze separat și să configureze Chromium cum doresc</translation>
 <translation id="2676569452213089702">Acces ușor pentru a folosi Gemini în Chromium pe dispozitiv, chiar dacă Chromium este minimizat.</translation>
@@ -305,7 +306,6 @@
 <translation id="4304713468139749426">Manager de parole</translation>
 <translation id="4334241893986177674">Caută în această captură de ecran</translation>
 <translation id="4384331407722351213">Lansează Chromium când pornește Windows</translation>
-<translation id="4384993550046411228">Accesează cu ușurință funcțiile pe care le cunoști, le apreciezi și în care ai încredere setând Chromium ca browser prestabilit. Chromium va fi fixat în bara de activități pentru acces rapid.</translation>
 <translation id="4400772909124543403">Nu este disponibilă nicio actualizare</translation>
 <translation id="4407044323746248786">Ieși din Chromium oricum?</translation>
 <translation id="4413205837991854510">Afișează întotdeauna comanda rapidă pentru Căutarea de imagini</translation>

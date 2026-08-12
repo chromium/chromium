@@ -304,6 +304,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1504042622576912555">Cartón dunha onda</translation>
 <translation id="1507202001669085618">&lt;p&gt;Verás este erro se utilizas un portal wifi no que tes que iniciar sesión para poder conectarte a Internet.&lt;/p&gt;
     &lt;p&gt;Para solucionar o erro, fai clic en &lt;strong&gt;Conectar&lt;/strong&gt; na páxina que tentas abrir.&lt;/p&gt;</translation>
+<translation id="1507635939006264930">Activando autocompletar</translation>
 <translation id="1508605873202255562">Crea unha táboa de seguimento personalizada para non perder de vista os meus obxectivos</translation>
 <translation id="1513706915089223971">Lista de entradas do historial</translation>
 <translation id="1515436033764190215">h antes</translation>
@@ -631,6 +632,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2093982008204312032">Google Chrome está tentando desactivar Windows Hello para completar contrasinais.</translation>
 <translation id="2094505752054353250">Os dominios non coinciden</translation>
 <translation id="2094704029599359040">Información da versión</translation>
+<translation id="2096183846792489672">O contido e os URL das páxinas que visites poden procesarse nun espazo privado da nube</translation>
 <translation id="209961642949927292">Queres procesar a compra máis rápido a próxima vez?</translation>
 <translation id="2099652385553570808">Tres grampas na parte esquerda</translation>
 <translation id="2101225219012730419">Versión:</translation>
@@ -1105,6 +1107,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2905107382358353958">Alerta sobre unha nova configuración de pago</translation>
 <translation id="2909946352844186028">Detectouse un cambio de rede.</translation>
 <translation id="2910062169995917863">Esgotouse o tempo de espera da sesión</translation>
+<translation id="2911224142899421774">A túa configuración de Google Wallet aplícase á información gardada desde Chrome</translation>
 <translation id="2911973620368911614">ID de usuario de contabilidade de traballos</translation>
 <translation id="2914160345369867329">Normalmente, <ph name="SITE" /> encripta a túa información para protexela. Nesta ocasión, cando Chrome tentou conectar con <ph name="SITE" />, o sitio web devolveu unhas credenciais estrañas e incorrectas. É posible que un atacante tentase facerse pasar por <ph name="SITE" /> ou que a pantalla de inicio de sesión da wifi interrompese a conexión. Non obstante, a túa información segue a salvo porque Chrome detivo a conexión antes de intercambiar datos.</translation>
 <translation id="2915068235268646559">Fallo (<ph name="CRASH_TIME" />)</translation>
@@ -1591,6 +1594,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3738166223076830879">O teu administrador xestiona o teu navegador.</translation>
 <translation id="3739842843727261045">Coa opción Gústame indicas que che gustan estes resultados</translation>
 <translation id="3740447166056383374">Cómpre revisar os ficheiros antes de copialos</translation>
+<translation id="3742104862808477448">Axúdalle a Chromium a entender e completar mellor os formularios complexos procesando de forma segura os datos nos servidores de Google. A túa información segue sendo privada e ninguén a revisa.</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3744212718085287312">Queres aumentar a protección cunha tarxeta virtual a próxima vez?</translation>
 <translation id="3744899669254331632">Non se pode visitar <ph name="SITE" /> nestes momentos porque o sitio web enviou credenciais codificadas que Chromium non pode procesar. Os erros e ataques da rede normalmente son temporais, polo que é probable que esta páxina funcione máis tarde.</translation>
@@ -1614,6 +1618,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3769584711865378220"><ph name="URL" /> quere cambiar o acceso á localización de Aproximada a Precisa</translation>
 <translation id="3772211998634047851">Papel (carta)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente unha nota nova en Google Keep</translation>
+<translation id="3778045607993018262">A conta de Pix vincularase a <ph name="ACCOUNT_EMAIL" />. Para desactivar a detección de código de Pix, vai á <ph name="BEGIN_LINK1" />configuración de Chrome<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Bandexa de saída</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
@@ -1633,6 +1638,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803481123869276674">Cando fagas compras en Chrome, verás o moedeiro electrónico como opción</translation>
 <translation id="3803801106042434208">Estes buscadores son populares na túa rexión</translation>
+<translation id="3804112825000113857">Ver a configuración de autocompletar</translation>
 <translation id="380666903981445943">Garda un método de pago na túa Conta de Google para que se autocomplete a información cando fagas compras en Chrome</translation>
 <translation id="3807366285948165054">Desprazamento da imaxe no eixe X</translation>
 <translation id="3807873520724684969">Bloqueouse o contido daniño.</translation>
@@ -3311,6 +3317,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="666259744093848177">(x86_64 traducido)</translation>
 <translation id="6665553082534466207">Tres perforacións na parte dereita</translation>
 <translation id="6668389483194953109">Atopouse o nome de tamaño de papel "custom", pero a propiedade "custom_size" está baleira ou non é válida.</translation>
+<translation id="667044980437620424">Activouse a función de autocompletado</translation>
 <translation id="6670729408462528018">Galería</translation>
 <translation id="6671697161687535275">Queres eliminar a túa suxestión de formulario de Chromium?</translation>
 <translation id="6675846980676550611">Non se permitiu a realidade aumentada</translation>
@@ -3540,6 +3547,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="7064851114919012435">Información de contacto</translation>
 <translation id="7070144569727915108">configuración do sistema</translation>
 <translation id="70705239631109039">A túa conexión non é completamente segura</translation>
+<translation id="7074595960655571061">Agora podes gardar métodos de pago para que se autocomplete a información ao tramitar as compras en Chrome. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">A solicitude é demasiado grande</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 con cifrado RSA</translation>
 <translation id="7075896597860500885">Non se recomenda copiar contido deste sitio</translation>
@@ -4402,6 +4410,7 @@ Detalles adicionais:
 <translation id="8564182942834072828">Documentos independentes/copias non intercaladas</translation>
 <translation id="8564466070529550495">A tarxeta virtual non está dispoñible nestes intres. Téntao de novo máis tarde.</translation>
 <translation id="8564985650692024650">Chromium recoméndache que restablezas o contrasinal de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se o reutilizaches noutros sitios.</translation>
+<translation id="8568406155558596128">Axúdalle a Chrome a entender e completar mellor os formularios complexos procesando de forma segura os datos nos servidores de Google. A túa información segue sendo privada e ninguén a revisa.</translation>
 <translation id="8574570240981266561">Eliminouse o elemento</translation>
 <translation id="8577192028579836704">Prezo habitual de todas as opcións: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">A tarxeta virtual non está dispoñible</translation>

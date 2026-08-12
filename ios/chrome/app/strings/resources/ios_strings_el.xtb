@@ -38,6 +38,7 @@
 <translation id="1097807529207545420">{count,plural, =1{Επαληθεύτηκε άμεσα 1 κωδικός πρόσβασης}other{Επαληθεύτηκαν άμεσα # κωδικοί πρόσβασης}}</translation>
 <translation id="1103523840287552314">Να μεταφράζονται πάντα τα <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Ξεκλείδωμα με Face ID</translation>
+<translation id="1111776967764068277">Κουραστήκατε να αντιγράφετε συνδέσμους;</translation>
 <translation id="1112015203684611006">Η εκτύπωση απέτυχε.</translation>
 <translation id="1118569444314402022">Καλώς ορίσατε και πάλι, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Φωτογραφίες και εικόνες</translation>
@@ -478,6 +479,7 @@
 <translation id="2496180316473517155">Ιστορικό περιήγησης</translation>
 <translation id="2496626742194544812">Μετάβαση στην πρώτη καρτέλα</translation>
 <translation id="2499505845365628575">Μπορείτε να βρείτε όλο το ιστορικό περιήγησης χρησιμοποιώντας το κουμπί <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="251033673027346551">Επισκεφτείτε το Πορτοφόλι Google για να διαχειριστείτε τις <ph name="BEGIN_LINK" />προτιμήσεις δεδομένων και απορρήτου<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">Έχετε <ph name="NUMBER_OF_PASSWORDS" /> παραβιασμένους κωδικούς πρόσβασης που θα μπορούσαν να διακυβεύσουν την ασφάλειά σας.</translation>
 <translation id="2512709994717613803">Επίπεδο <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Εδώ θα βρείτε τις ομάδες καρτελών</translation>
@@ -527,6 +529,7 @@
 <translation id="2666092431469916601">Κορυφή</translation>
 <translation id="2669454659051515572">Όλοι όσοι χρησιμοποιούν αυτήν τη συσκευή θα μπορούν να βλέπουν τα αρχεία που έχετε κατεβάσει</translation>
 <translation id="2671423594960767771">Κοινοποίηση ομάδας</translation>
+<translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Πληρωμή σε βάθος χρόνου</translation>
 <translation id="2673508731173059946">Μετάβαση στον αντιγραμμένο σύνδεσμο</translation>
 <translation id="2679659833697380">Οι πληροφορίες σας αποθηκεύονται στη συσκευή σας</translation>
@@ -543,6 +546,7 @@
 <translation id="271033894570825754">Νέα συλλογή</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
 <translation id="2713106313042589954">Απενεργοποίηση κάμερας</translation>
+<translation id="2715440913764382254">Ανοίξτε συνδέσμους απευθείας εδώ</translation>
 <translation id="2718352093833049315">Μόνο σε Wi-Fi</translation>
 <translation id="2721190673959776287">Πλούσιο δείγμα βοήθειας εντός προϊόντος για το Συμφραστικό πλαίσιο που θα εμφανίζεται πολλές φορές την ημέρα.</translation>
 <translation id="2739887572830526131">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα, ή διαγράψτε την, αν δεν τη χρειάζεστε πλέον.</translation>
@@ -1004,6 +1008,7 @@
 <translation id="4338258232580025606">Δεν είναι δυνατή η σύνδεση</translation>
 <translation id="4338650699862464074">Αποστέλλει στην Google URL των σελίδων που επισκέπτεστε.</translation>
 <translation id="4342946437867096381">Έχετε ήδη αποθηκεύσει έναν κωδικό πρόσβασης για αυτόν τον ιστότοπο στον Λογαριασμό σας Google. Το Google μπορεί να επιλέξει τον πιο πρόσφατο κωδικό πρόσβασης για εσάς.</translation>
+<translation id="4355702523442402731">Απρόσκοπτη περιήγηση μεταξύ εφαρμογών</translation>
 <translation id="4365121137632832185">Ομάδα καρτελών. Αναπτύχθηκε.</translation>
 <translation id="4365685757967464989">Επιτρέψτε στο Gemini να χρησιμοποιεί την κάμερά σας για τη λήψη φωτογραφιών</translation>
 <translation id="4367971618859387374">Εμφανιζόμενο όνομα</translation>
@@ -1281,6 +1286,7 @@
 <translation id="5233111790346066304">Αποθηκεύστε αρχεία στο Google Drive και αποκτήστε πρόσβαση σε αυτά ανά πάσα στιγμή.</translation>
 <translation id="5233638681132016545">Νέα καρτέλα</translation>
 <translation id="5234094073825090254">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον Λογαριασμό σας Google, {email}}other{Οι σελιδοδείκτες αποθηκεύτηκαν στον Λογαριασμό σας Google, {email}}}</translation>
+<translation id="5234162151438379838">{COUNT,plural, =1{Είναι δυνατή η κοινή χρήση μόνο 1 καρτέλας.}other{Είναι δυνατή η κοινή χρήση μόνο {COUNT} καρτελών.}}</translation>
 <translation id="5234764350956374838">Παράβλεψη</translation>
 <translation id="5238596603078743134">Ο χρήστης <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> μπορεί πλέον να χρησιμοποιήσει το όνομα χρήστη και τον κωδικό πρόσβασής σας όταν χρησιμοποιεί τη Διαχείριση κωδικών πρόσβασης για σύνδεση στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566">Τρέχουσα επιλογή: <ph name="NAME" />, <ph name="EMAIL" />, υπό τη διαχείριση του οργανισμού σας. Επιλέξτε λογαριασμό.</translation>
@@ -1313,6 +1319,7 @@
 <translation id="5351613737248079168">Πρέπει να είστε συνδεδεμένοι για να χρησιμοποιήσετε το Level Up</translation>
 <translation id="5352128922772839949">Αποθήκευση αρχείου</translation>
 <translation id="5355191726083956201">Η Βελτιωμένη προστασία είναι ενεργή</translation>
+<translation id="5359436665022446585">Καλύτερο άνοιγμα συνδέσμων</translation>
 <translation id="536067926684072644">Εμφάνιση σελιδοδεικτών</translation>
 <translation id="5364647308446127983">{count,plural, =1{Δεν ήταν δυνατή η εισαγωγή {count} κλειδιού πρόσβασης}other{Δεν ήταν δυνατή η εισαγωγή {count} κλειδιών πρόσβασης}}</translation>
 <translation id="5371112366564891538">Αύξηση μεγέθους κειμένου</translation>
@@ -1491,6 +1498,7 @@
 <translation id="5952641243319721872">Είστε βέβαιοι ότι θέλετε να απορρίψετε την επιλογή σας;</translation>
 <translation id="5956112131836209882">Καρτέλα ομάδας καρτελών. <ph name="TAB_INDEX_IN_GROUP" /> από <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Αναζήτηση με <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5963694076845073027">Ανοίξτε συνδέσμους εδώ την επόμενη φορά</translation>
 <translation id="5963939892571022323">Δεν είναι δυνατή η δημιουργία συνδέσμου προς την επισήμανση.</translation>
 <translation id="5968400720580217226">Λειτουργία AI</translation>
 <translation id="5971459446352190251">Αναζήτηση κωδικού QR</translation>
@@ -1821,6 +1829,7 @@
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="6937083164784433305">{count,plural, =1{Χρησιμοποιήσατε 1 φωτογραφία για αναζήτηση}other{Χρησιμοποιήσατε # φωτογραφίες για αναζήτηση}}</translation>
 <translation id="693761253105515415">Ορισμός κωδικού πρόσβασης</translation>
+<translation id="6938212956536472404">Δεν είναι δυνατή η κοινή χρήση αυτής της καρτέλας</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6946722113367118030">Σκέψη</translation>
 <translation id="6950522403736391608">Κρυφό</translation>
@@ -1996,6 +2005,7 @@
 <translation id="7561982940498449837">Κλείσιμο μενού</translation>
 <translation id="7566349809380613217">Άνοιγμα ομάδας <ph name="GROUP_TITLE" />, κοινόχρηστη ομάδα <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Οι σελιδοδείκτες είναι κρυφοί</translation>
+<translation id="7575664680938145959">Άνοιγμα με ένα πάτημα</translation>
 <translation id="7577900504646297215">Διαχείριση ενδιαφερόντων</translation>
 <translation id="7582666837709186351">Μεταφράστε κείμενο στις φωτογραφίες ή στο περιβάλλον σας μέσω κάμερας.</translation>
 <translation id="7582857256643797524">Αυτή η ρύθμιση είναι ενεργοποιημένη στη συσκευή σας</translation>
@@ -2019,6 +2029,7 @@
 <translation id="7646263789464975852">Μενού → Ρυθμίσεις → Έλεγχος ασφαλείας</translation>
 <translation id="7646772052135772216">Ο συγχρονισμός κωδικών πρόσβασης δεν λειτουργεί</translation>
 <translation id="764827086632467055">Πατήστε Προεπιλεγμένη εφαρμογή προγράμματος περιήγησης.</translation>
+<translation id="7648666127045672239">Μεταβείτε εδώ με ένα πάτημα</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="765555660695722850">Αυτή η ενέργεια διαγράφει τις διευθύνσεις που έχουν αποθηκευτεί σε αυτή τη συσκευή. Διαγράφει επίσης ορισμένες πληροφορίες από τον Λογαριασμό σας Google, αλλά όχι βασικές πληροφορίες όπως το όνομα ή τη διεύθυνση σπιτιού.</translation>
 <translation id="765631330137769217">Πατήστε Αποθήκευση, για να αποκτήσετε εύκολα πρόσβαση σε αυτόν τον κωδικό πρόσβασης την επόμενη φορά που θα συνδεθείτε</translation>
@@ -2036,6 +2047,7 @@
 <translation id="7701040980221191251">Καμία</translation>
 <translation id="7702428539671224160">Αυτόματη συμπλήρωση στοιχείων πληρωμής στο <ph name="URL" /></translation>
 <translation id="7708994397325774423">Λάβετε όλους τους κωδικούς πρόσβασής σας</translation>
+<translation id="7710096647785049958">Εξοικονομήστε χρόνο σε κάθε σύνδεσμο</translation>
 <translation id="7711440461521638739">Δεν διαθέτετε επαναχρησιμοποιημένους κωδικούς πρόσβασης</translation>
 <translation id="7712361583414030698">Προβολή έκδοσης εκτός σύνδεσης</translation>
 <translation id="7719038820139380048">Συνδεθείτε για να λάβετε περιεχόμενο με βάση τα ενδιαφέροντά σας.</translation>
@@ -2361,6 +2373,7 @@
 <translation id="8706806585855470492">Θα μπορείτε να μοιραστείτε, να συμμετάσχετε και να συνεργαστείτε σε ομάδες καρτελών</translation>
 <translation id="8709409604518538305">Οι καρτέλες έκλεισαν</translation>
 <translation id="8712637175834984815">Κατάλαβα!</translation>
+<translation id="8717519179050551968">Λιγότερη επικόλληση, περισσότερη περιήγηση</translation>
 <translation id="8717864919010420084">Αντιγραφή συνδέσμου</translation>
 <translation id="8722229818691036192">Λογαριασμοί σε αυτή τη συσκευή</translation>
 <translation id="8722649775263832315">Πατήστε ή επισημάνετε κάτι, για να το αναζητήσετε με το Google Lens</translation>
@@ -2500,6 +2513,7 @@
 <translation id="9148126808321036104">Συνδεθείτε ξανά</translation>
 <translation id="9149866541089851383">Επεξεργασία...</translation>
 <translation id="9152637745605628097">Επιλέξτε θέματα, χρώματα ή ανεβάστε μια εικόνα</translation>
+<translation id="9153159728062222866">Αποφύγετε την αντιγραφή και επικόλληση</translation>
 <translation id="9159628751968616911">Αποστολή ιστοσελίδας</translation>
 <translation id="9162412286847966593">Τα δεδομένα και οι εγγραφές του οργανισμού σας δεν θα χρησιμοποιούνται για τη βελτίωση των μοντέλων παραγωγικού AI. <ph name="BEGIN_LINK" />Το απόρρητό σας και το Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Ενεργοποιήστε την επιλογή Αυτόματη συμπλήρωση κωδικών πρόσβασης.</translation>

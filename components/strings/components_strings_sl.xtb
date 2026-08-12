@@ -304,6 +304,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1504042622576912555">Flute</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ta napaka se prikaže, če uporabljate portal Wi-Fi, ki pred uporabo spleta zahteva prijavo.&lt;/p&gt;
     &lt;p&gt;Napravo odpravite tako, da na strani, ki jo poskušate odpreti, kliknete &lt;strong&gt;Poveži&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1507635939006264930">Vklop samodejnega izpolnjevanja</translation>
 <translation id="1508605873202255562">Ustvari prilagojen sledilnik, da bom na tekočem s svojimi cilji</translation>
 <translation id="1513706915089223971">Seznam vnosov v zgodovino</translation>
 <translation id="1515436033764190215">(pred toliko urami)</translation>
@@ -631,6 +632,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2093982008204312032">Google Chrome poskuša izklopiti Windows Hello za izpolnjevanje gesel.</translation>
 <translation id="2094505752054353250">Neujemanje domen</translation>
 <translation id="2094704029599359040">Informacije o različici</translation>
+<translation id="2096183846792489672">Vsebina in URL-ji strani, ki jih obiščete, se lahko obdelujejo v zasebnem prostoru v oblaku</translation>
 <translation id="209961642949927292">Želite naslednjič hitreje dokončati nakup?</translation>
 <translation id="2099652385553570808">Trojno spenjanje na levi</translation>
 <translation id="2101225219012730419">Različica:</translation>
@@ -1591,6 +1593,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3738166223076830879">Brskalnik upravlja vaš skrbnik.</translation>
 <translation id="3739842843727261045">S palcem gor pošljete povratne informacije, da so vam ti rezultati všeč</translation>
 <translation id="3740447166056383374">Pred kopiranjem je zahtevan pregled</translation>
+<translation id="3742104862808477448">Chromiumu pomagajte bolje razumeti in izpolnjevati zapletene obrazce z varnim obdelovanjem podatkov v Googlovih strežnikih. Vaši podatki ostanejo zasebni in jih ne pregleduje nihče.</translation>
 <translation id="3744111561329211289">Sinhroniziranje v ozadju</translation>
 <translation id="3744212718085287312">Ali želite naslednjič poskrbeti za večjo zaščito z navidezno kartico?</translation>
 <translation id="3744899669254331632">Spletnega mesta <ph name="SITE" /> trenutno ne morete obiskati, ker je poslalo šifrirane poverilnice, ki jih Chromium ne more obdelati. Napake v omrežju in napadi so običajno začasni, zato bo ta stran verjetno delovala pozneje.</translation>
@@ -1614,6 +1617,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3769584711865378220"><ph name="URL" /> želi spremeniti dostop do lokacije s približne na natančno</translation>
 <translation id="3772211998634047851">Paper (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite hitro ustvariti nov zapisek v Googlu Keep</translation>
+<translation id="3778045607993018262">Račun Pix bo povezan z računom <ph name="ACCOUNT_EMAIL" />. Zaznavanje kode Pix lahko izklopite v <ph name="BEGIN_LINK1" />Chromovih nastavitvah<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Izhodni koš</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Naprave Bluetooth</translation>
@@ -1633,6 +1637,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803481123869276674">Pri nakupih v Chromu naj bo kot možnost prikazana e-denarnica</translation>
 <translation id="3803801106042434208">Ti iskalniki so priljubljeni na vašem območju</translation>
+<translation id="3804112825000113857">Ogled nastavitev samodejnega izpolnjevanja</translation>
 <translation id="380666903981445943">Shranite plačilno sredstvo v račun Google, da ga boste lahko samodejno izpolnili za nakupe v Chromu</translation>
 <translation id="3807366285948165054">Zamike slike v X</translation>
 <translation id="3807873520724684969">Škodljiva vsebina je bila blokirana.</translation>
@@ -3311,6 +3316,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="666259744093848177">(prevedeno za x86_64)</translation>
 <translation id="6665553082534466207">Trojno luknjanje na desni</translation>
 <translation id="6668389483194953109">Najdeno je bilo ime velikosti papirja »custom«, vendar je lastnost »custom_size« prazna ali neveljavna.</translation>
+<translation id="667044980437620424">Samodejno izpolnjevanje je vklopljeno</translation>
 <translation id="6670729408462528018">Galerija</translation>
 <translation id="6671697161687535275">Želite predlog obrazca odstraniti iz Chromiuma?</translation>
 <translation id="6675846980676550611">Razširjena resničnost ni dovoljena</translation>
@@ -3540,6 +3546,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7064851114919012435">Podatki o stiku</translation>
 <translation id="7070144569727915108">sistemskih nastavitvah</translation>
 <translation id="70705239631109039">Povezava ni v celoti varna</translation>
+<translation id="7074595960655571061">Zdaj lahko shranite plačilna sredstva za samodejno izpolnjevanje ob zaključku nakupa v Chromu. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">Zahteva je prevelika</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 s šifriranjem RSA</translation>
 <translation id="7075896597860500885">Kopiranje s tega spletnega mesta ni priporočljivo</translation>
@@ -4403,6 +4410,7 @@ Dodatne podrobnosti:
 <translation id="8564182942834072828">Ločeni dokumenti/nezbrane kopije</translation>
 <translation id="8564466070529550495">Virtualna kartica trenutno ni na voljo. Poskusite znova pozneje.</translation>
 <translation id="8564985650692024650">Chromium priporoča, da ponastavite geslo za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, če ste ga uporabljali tudi na drugih spletnih mestih.</translation>
+<translation id="8568406155558596128">Chromu pomagajte bolje razumeti in izpolnjevati zapletene obrazce z varnim obdelovanjem podatkov v Googlovih strežnikih. Vaši podatki ostanejo zasebni in jih ne pregleduje nihče.</translation>
 <translation id="8574570240981266561">Element je izbrisan</translation>
 <translation id="8577192028579836704">Vse možnosti običajno stanejo <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtualna kartica ni na voljo</translation>

@@ -723,7 +723,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="399788104667917863">Zakačite na alatnu traku</translation>
 <translation id="4000212216660919741">Početna stranica van mreže</translation>
 <translation id="4000670338830950598">Prilagođavanje Google Chromea i upravljanje njime pomoću istaknute stavke</translation>
-<translation id="4002066346123236978">Naslov</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 ugrožena lozinka na Google računu}one{# ugrožena lozinka na Google računu}few{# ugrožene lozinke na Google računu}other{# ugroženih lozinki na Google računu}}</translation>
 <translation id="4023638601467301498">Da dobijate oznake i druge stavke na svim svojim uređajima, prijavite se u Chrome</translation>
 <translation id="4024768890073681126">Roditelj upravlja tvojim preglednikom</translation>
@@ -1973,6 +1972,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8937772741022875483">Ukloniti aktivnosti Chromea iz Digitalnog blagostanja?</translation>
 <translation id="8942627711005830162">Otvori u drugom prozoru</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Preuzimanje ovog jezika nije uspjelo. Pokušajte ponovo kasnije.</translation>
+<translation id="8945348199139712719">Zalijepi i idi na kopirani tekst</translation>
 <translation id="8946759102391960088">Zadržite pristup lozinkama</translation>
 <translation id="895442993047180128">Donja tabela uključivanja obavještenja o savjetima je zatvorena</translation>
 <translation id="8957528460562961174">Da zadržite pristup lozinkama, izvezite ih sada, a zatim ih uvezite na željeni upravitelj lozinki. Google upravitelj lozinki je prestao funkcionirati jer Google Play usluge nisu dostupne.</translation>

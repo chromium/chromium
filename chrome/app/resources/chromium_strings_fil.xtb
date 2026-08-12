@@ -154,6 +154,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2635452620547538388">I-verify na ikaw ito para magamit at ma-save ang data sa Chromium sa iyong account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2636783171884046627">Para umalis o bumalik sa Gemini sa Chromium, gamitin ang keyboard shortcut.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang isang update}=1{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang isang update. Hindi magbubukas ulit ang iyong Incognito window.}one{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang isang update. Hindi magbubukas ulit ang iyong # Incognito window.}other{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang isang update. Hindi magbubukas ulit ang iyong # na Incognito window.}}</translation>
+<translation id="263863604136125912">Simulan ang Chromium</translation>
 <translation id="2648074677641340862">May naganap na error sa operating system sa panahon ng pag-install. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="2661879430930417727">Kung magpapahiram ka ng device, puwedeng mag-browse nang hiwalay ang mga kaibigan at kapamilya, at puwede nilang i-set up ang Chromium sa paraang gusto nila</translation>
 <translation id="2676569452213089702">Madaling pag-access para magamit ang Gemini sa Chromium sa iyong device, kahit na naka-minimize ang Chromium.</translation>
@@ -307,7 +308,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4334241893986177674">Maghanap sa screenshot na ito</translation>
 <translation id="4384331407722351213">Ilunsad ang Chromium kapag nagsimula na ang Windows</translation>
-<translation id="4384993550046411228">Magkaroon ng madaling access sa mga feature na alam, gusto, at pinagkakatiwalaan mo sa pamamagitan ng pagtatakda sa Chromium bilang default browser mo. Ipi-pin ang Chromium sa iyong taskbar para sa mabilis na pag-access.</translation>
 <translation id="4400772909124543403">Walang available na update</translation>
 <translation id="4407044323746248786">Lumabas pa rin sa Chromium?</translation>
 <translation id="4413205837991854510">Palaging Ipakita ang Shortcut ng Paghahanap ng Larawan</translation>

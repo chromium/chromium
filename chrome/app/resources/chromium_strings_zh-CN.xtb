@@ -151,6 +151,7 @@
 <translation id="2635452620547538388">请验证您的身份，以便将 Chromium 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="2636783171884046627">可以使用键盘快捷键退出或返回 Chromium 中的 Gemini。</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{高级保护计划要求您重新启动 Chromium 以应用一项更新}=1{高级保护计划要求您重新启动 Chromium 以应用一项更新。无痕式窗口将不会重新打开。}other{高级保护计划要求您重新启动 Chromium 以应用一项更新。# 个无痕式窗口将不会重新打开。}}</translation>
+<translation id="263863604136125912">启动 Chromium</translation>
 <translation id="2648074677641340862">安装过程中出现操作系统错误。请重新下载 Chromium。</translation>
 <translation id="2661879430930417727">如果您是与亲朋好友共用一部设备，他们将能够使用单独的账号进行浏览，并可随心所欲地设置 Chromium</translation>
 <translation id="2676569452213089702">在设备上轻松使用 Chromium 中的 Gemini，即使 Chromium 已最小化也无妨。</translation>
@@ -304,7 +305,6 @@
 <translation id="4304713468139749426">密码管理工具</translation>
 <translation id="4334241893986177674">搜索此屏幕截图</translation>
 <translation id="4384331407722351213">在 Windows 启动时启动 Chromium</translation>
-<translation id="4384993550046411228">将 Chromium 设为默认浏览器，即可轻松使用您熟悉、喜爱和信任的功能。Chromium 将固定到任务栏，以便您快速访问。</translation>
 <translation id="4400772909124543403">没有可用的更新</translation>
 <translation id="4407044323746248786">仍要退出 Chromium？</translation>
 <translation id="4413205837991854510">始终显示图片搜索快捷方式</translation>

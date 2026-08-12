@@ -5767,6 +5767,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5444281205834970653">Șterge și continuă</translation>
 <translation id="5444452275167152925">Importate din ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Caută idei</translation>
 <translation id="5449551289610225147">Parolă nevalidă</translation>
 <translation id="5449588825071916739">Marcați toate filele</translation>
@@ -8132,6 +8133,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7311244614769792472">Niciun rezultat</translation>
 <translation id="7312040805247765153">Aplicația nu poate fi instalată</translation>
 <translation id="7312210124139670355">Administratorul îți resetează cardul eSIM Poate dura câteva minute.</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">Culori pentru iluminarea din spate a tastaturii</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Un eveniment nu a putut fi datat și nu este afișat}few{# evenimente nu au putut fi datate și nu sunt afișate}other{# de evenimente nu au putut fi datate și nu sunt afișate}}</translation>
 <translation id="7314865262803554456">Nu vei primi o notificare când începe înregistrarea.</translation>

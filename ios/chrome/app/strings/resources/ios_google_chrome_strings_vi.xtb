@@ -17,6 +17,7 @@
 <translation id="1237769345474105984">Từ Chrome</translation>
 <translation id="124228879633599436">Phiên bản Chrome bạn đang sử dụng đã lỗi thời. Hãy cập nhật để đảm bảo an toàn.</translation>
 <translation id="1258531953614971819">Mẹo khi dùng Chrome: Đưa Chrome vào màn hình chính</translation>
+<translation id="1333577334443425318">Đặt Chrome làm trình duyệt mặc định để không phải sao chép đường liên kết từ các ứng dụng khác nữa.</translation>
 <translation id="1333745675627230582">Chơi Trò chơi khủng long trên Chrome</translation>
 <translation id="1343830902827845050">Đăng nhập vào Chrome</translation>
 <translation id="1352919863522755794">Trình quản lý mật khẩu của Google không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
@@ -38,6 +39,7 @@ Những yếu tố cần xem xét:
 <translation id="1554731936187952550">Chrome sở hữu khả năng bảo mật mạnh nhất để bảo vệ bạn trước các trang web có hại</translation>
 <translation id="155816064895200734">Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="1580570086594302477">Mở thẻ Ẩn danh mới trên Chrome.</translation>
+<translation id="1605168141396675642">Không còn mất công sao chép. Mở đường liên kết ngay trong Chrome.</translation>
 <translation id="1646463005043273333">Mở phần Cài đặt Chrome để đặt Chrome làm trình duyệt mặc định.</translation>
 <translation id="1670609221633730681">Mẹo dùng Chrome: Chọn vị trí thanh địa chỉ</translation>
 <translation id="1683863426423719967">Để nhận Lời nhắc về thẻ của Chrome, hãy bật thông báo trong phần Cài đặt trên iOS.</translation>
@@ -71,6 +73,7 @@ Những yếu tố cần xem xét:
 <translation id="2423077901494354337">Giờ đây, bạn có thể khai thác tối đa Chrome trên thiết bị của mình.</translation>
 <translation id="2427791862912929107">Chrome có tính năng giúp bạn quản lý dữ liệu Internet của mình và tốc độ mà bạn có thể tải trang web.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="2450221499140985490">Mở đường liên kết trong thư và tài liệu ngay trong Chrome.</translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Phạm vi tác động có thể bao gồm nhật ký và tính năng tự động điền.}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Phạm vi tác động có thể bao gồm nhật ký và tính năng tự động điền.}}</translation>
 <translation id="2561231791489583059">Hãy đặt Chrome làm trình duyệt mặc định để luôn được bảo vệ khỏi các trang web nguy hiểm và giữ cho mật khẩu của bạn an toàn</translation>
 <translation id="2574249610672786438">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị.</translation>
@@ -127,8 +130,10 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="3827545470516145620">Bạn đang sử dụng biện pháp bảo mật tiêu chuẩn trên thiết bị này</translation>
 <translation id="384394811301901750">Chrome không thể dùng máy ảnh bây giờ</translation>
 <translation id="3863841106411295595">Thêm các URL đã nhập vào danh sách đọc trong Chrome.</translation>
+<translation id="3878515067127964393">Không cần sao chép nữa. Đặt Chrome làm trình duyệt mặc định trên iOS.</translation>
 <translation id="3901001113120561395">Khai thác tối đa Chrome.</translation>
 <translation id="3913386780052199712">Đã đăng nhập vào Chrome</translation>
+<translation id="3913747277937572860">Đặt Chrome làm trình duyệt mặc định để tự động mở nội dung trên web.</translation>
 <translation id="3984746313391923992">Tổ chức của bạn yêu cầu bạn duy trì trạng thái đăng xuất khỏi Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome không có quyền truy cập ảnh hoặc video của bạn. Hãy cho phép truy cập trong Cài đặt iOS &gt; Bảo mật &gt; Ảnh.</translation>
 <translation id="4064699917955374540">Để sử dụng và lưu dữ liệu trên Chrome vào Tài khoản Google, hãy xác minh danh tính của bạn.</translation>
@@ -235,6 +240,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="6533470733797826516">Đăng nhập nhanh hơn nhờ tính năng tự động điền của Chrome</translation>
 <translation id="6536544321553662809">Đặt Chrome làm trình duyệt mặc định để dễ dàng chia sẻ và mở đường liên kết</translation>
 <translation id="6545449117344801102">Chrome phát hiện các địa chỉ và sử dụng Google Maps để chỉ đường và cung cấp cho bạn thông tin địa phương.</translation>
+<translation id="660537754475262202">Đặt Chrome làm trình duyệt mặc định để mở ngay các đường liên kết tại đây.</translation>
 <translation id="6611692150236062461">Để dễ dàng sử dụng mật khẩu đã lưu trong các ứng dụng khác, hãy chọn tính năng Tự động điền trong Chrome.</translation>
 <translation id="6636941099779251629">Theo yêu cầu của tổ chức bạn, bạn phải đăng nhập thì mới có thể sử dụng Chrome. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Gửi một phần URL đã làm rối mã nguồn đến Google thông qua một máy chủ đảm bảo quyền riêng tư giúp ẩn địa chỉ IP của bạn. Nếu một trang web tìm cách đánh cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL (bao gồm cả các đoạn nội dung trên trang) cho Google.</translation>
@@ -269,6 +275,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="722167379782941918">Chrome khuyên dùng chế độ bảo vệ nâng cao</translation>
 <translation id="723787869754590019">Dùng Chrome để tự động điền</translation>
 <translation id="7261678641327190792">Chrome không thể kiểm tra mật khẩu của bạn</translation>
+<translation id="7272091023280308138">Mở đường liên kết ngay trong Chrome vào lần tới mà không cần sao chép URL trước.</translation>
 <translation id="7272930098487145294">Để lưu hình ảnh, hãy nhấn vào Cài đặt để cho phép Chrome thêm vào ảnh của bạn</translation>
 <translation id="7275945473750112644">Tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý nên dữ liệu của bạn trên Chrome sẽ bị xóa khỏi thiết bị này</translation>
 <translation id="7284245284340063465">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
@@ -284,6 +291,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="7466693328838535498">Trong hộp Tiện ích Tìm kiếm, nhập Chrome</translation>
 <translation id="7477056987201678345">Đang xoá dữ liệu trên Chrome…</translation>
 <translation id="7492574581995589075">Tổ chức của bạn đã tắt tính năng sử dụng và lưu dữ liệu Chrome vào Tài khoản Google. Dấu trang, mật khẩu mới và các nội dung khác sẽ chỉ được lưu trên thiết bị này.</translation>
+<translation id="752120807649195785">Đặt Chrome làm trình duyệt mặc định để mở đường liên kết bằng một lần nhấn thay vì sao chép.</translation>
 <translation id="7540272326042438331">Chia sẻ Chrome</translation>
 <translation id="7575971113404272499">Mẹo dùng Chrome: Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="7581063337314642333">Truy cập lưới thẻ trong Chrome</translation>
@@ -323,6 +331,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="8245080522851805544">Giữ cho hoạt động duyệt web ở chế độ riêng tư bằng tính năng xác thực thiết bị khi bạn đóng Chrome</translation>
 <translation id="8248887045858762645">Mẹo dùng Chrome</translation>
 <translation id="8265730590513812063">Mở trình đơn Chrome</translation>
+<translation id="8276803169904409881">Đặt Chrome làm trình duyệt mặc định để mở ngay đường liên kết từ các ứng dụng khác.</translation>
 <translation id="8284376267694582021">Để sử dụng các tính năng đảm bảo an toàn cho trẻ, bạn có thể dùng một Tài khoản Google được thiết lập cho trẻ hoặc dùng Chrome mà không cần tài khoản. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Địa chỉ và phương thức thanh toán sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
 
@@ -360,6 +369,7 @@ Dữ liệu của bạn đã được mã hoá bằng cụm mật khẩu vào <p
 <translation id="8865415417596392024">Dữ liệu trên Chrome trong tài khoản của bạn</translation>
 <translation id="8874688701962049679">Mẹo để khai thác tối đa Chrome.</translation>
 <translation id="8897749957032330183">Mật khẩu sẽ được lưu vào Trình quản lý mật khẩu của Google trên thiết bị này.</translation>
+<translation id="898288749595466683">Không cần sao chép URL nữa. Hãy đặt Chrome làm trình duyệt mặc định để tải trực tiếp các trang.</translation>
 <translation id="9004772704776174843">Bạn đã bị đăng xuất khỏi Chrome</translation>
 <translation id="9068336935206019333">Mở trong chế độ ẩn danh của Chrome</translation>
 <translation id="9082304295862405388">Gemini có thể sử dụng vị trí chính xác của bạn, tuỳ thuộc vào quyền bạn đã cấp cho Chrome</translation>

@@ -17,6 +17,7 @@
 <translation id="1237769345474105984">De Chrome</translation>
 <translation id="124228879633599436">Tu navegador Chrome está desactualizado. Actualízalo para protegerte.</translation>
 <translation id="1258531953614971819">Sugerencia para Chrome: Mueve Chrome a la pantalla principal</translation>
+<translation id="1333577334443425318">Establece Chrome como el navegador predeterminado para dejar de copiar vínculos de otras apps.</translation>
 <translation id="1333745675627230582">Jugar al juego del dinosaurio de Chrome</translation>
 <translation id="1343830902827845050">Accede a Chrome</translation>
 <translation id="1352919863522755794">El Administrador de contraseñas de Google no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
@@ -38,6 +39,7 @@ Aspectos que debes tener en cuenta:
 <translation id="1554731936187952550">Tienes la seguridad más sólida de Chrome contra sitios web dañinos</translation>
 <translation id="155816064895200734">Establece Chrome como navegador predeterminado</translation>
 <translation id="1580570086594302477">Abre una nueva pestaña de incógnito en Chrome.</translation>
+<translation id="1605168141396675642">Evita la molestia de copiar URLs. Abre vínculos directamente en Chrome.</translation>
 <translation id="1646463005043273333">Abre la Configuración de Chrome para establecer Chrome como navegador predeterminado.</translation>
 <translation id="1670609221633730681">Sugerencia para Chrome: Elige la posición de la barra de direcciones</translation>
 <translation id="1683863426423719967">Para recibir Tab Reminders de Chrome, activa las notificaciones en la configuración de iOS.</translation>
@@ -71,6 +73,7 @@ Aspectos que debes tener en cuenta:
 <translation id="2423077901494354337">Ahora puedes aprovechar Chrome al máximo en tu dispositivo.</translation>
 <translation id="2427791862912929107">Chrome tiene funciones que te ayudan a administrar tus datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="2450221499140985490">Abre vínculos de mensajes y documentos directamente en Chrome.</translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chrome durante {THRESHOLD} minuto. Esto podría incluir el historial y la función Autocompletar.}other{Esto sucede cuando no usas Chrome durante {THRESHOLD} minutos. Esto podría incluir el historial y la función Autocompletar.}}</translation>
 <translation id="2561231791489583059">Usa Chrome como tu navegador predeterminado para protegerte de sitios peligrosos y mantener tus contraseñas seguras</translation>
 <translation id="2574249610672786438">Para ver tus pestañas donde sea que uses Chrome, accede a tu cuenta en todos los dispositivos</translation>
@@ -127,8 +130,10 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="3827545470516145620">Recibes protección de seguridad estándar en este dispositivo</translation>
 <translation id="384394811301901750">Google Chrome no puede usar tu cámara en este momento</translation>
 <translation id="3863841106411295595">Agrega las URLs ingresadas a tu Lista de lectura en Chrome.</translation>
+<translation id="3878515067127964393">Omite el paso de copiar URLs. Establece Chrome como tu navegador predeterminado de iOS.</translation>
 <translation id="3901001113120561395">Aprovecha Chrome al máximo.</translation>
 <translation id="3913386780052199712">Accediste a Chrome.</translation>
+<translation id="3913747277937572860">Establece Chrome como el navegador predeterminado y abre contenido web automáticamente.</translation>
 <translation id="3984746313391923992">Tu organización requiere que no accedas a tu cuenta en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome no puede acceder a tus fotos ni videos. Habilita el acceso en Configuración de iOS &gt; Privacidad &gt; Fotos.</translation>
 <translation id="4064699917955374540">Para usar y guardar datos de Chrome en tu Cuenta de Google, verifica tu identidad.</translation>
@@ -235,6 +240,7 @@ Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guard
 <translation id="6533470733797826516">Accede más rápido con Autocompletar de Chrome</translation>
 <translation id="6536544321553662809">Establece Chrome como tu navegador predeterminado para compartir y abrir vínculos fácilmente</translation>
 <translation id="6545449117344801102">Chrome detecta direcciones y usa Google Maps para brindarte información local, además de instrucciones sobre cómo llegar.</translation>
+<translation id="660537754475262202">Establece Chrome como tu navegador predeterminado para abrir vínculos aquí al instante.</translation>
 <translation id="6611692150236062461">Para obtener fácilmente tus contraseñas guardadas en otras apps, elige Autocompletar en Chrome.</translation>
 <translation id="6636941099779251629">Tu organización requiere que accedas para usar Chrome. <ph name="BEGIN_LINK" />Obtén más información<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Envía una parte ofuscada de la URL a Google con un servidor de privacidad que oculta la dirección IP. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, Chrome también puede enviar las URLs, con partes del contenido de la página, a Google.</translation>
@@ -269,6 +275,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="722167379782941918">Chrome recomienda una protección mejorada</translation>
 <translation id="723787869754590019">Usa Chrome para autocompletar</translation>
 <translation id="7261678641327190792">Chrome no puede revisar las contraseñas</translation>
+<translation id="7272091023280308138">La próxima vez, abre vínculos directamente en Chrome sin copiar primero las URLs.</translation>
 <translation id="7272930098487145294">Para guardar imágenes, presiona en la Configuración a fin de permitir que Chrome agregue tus fotos</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> administra tu cuenta, por lo que se borrarán los datos de Chrome almacenados en este dispositivo.</translation>
 <translation id="7284245284340063465">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
@@ -284,6 +291,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="7466693328838535498">En el cuadro Widgets de la Búsqueda, ingresa "Chrome"</translation>
 <translation id="7477056987201678345">Borrando datos de Chrome…</translation>
 <translation id="7492574581995589075">Tu organización desactivó la función para usar y guardar datos de Chrome en tu Cuenta de Google. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>
+<translation id="752120807649195785">Establece Chrome como el navegador predeterminado para abrir vínculos con un toque en lugar de copiarlos.</translation>
 <translation id="7540272326042438331">Compartir Chrome</translation>
 <translation id="7575971113404272499">Sugerencia para Chrome: Usa Chrome de forma predeterminada</translation>
 <translation id="7581063337314642333">Visitar la cuadrícula de pestañas en Chrome</translation>
@@ -323,6 +331,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="8245080522851805544">Mantén la privacidad de tu navegación con la autenticación del dispositivo cuando cierres Chrome</translation>
 <translation id="8248887045858762645">Sugerencia para Chrome</translation>
 <translation id="8265730590513812063">Abre el Menú de Chrome.</translation>
+<translation id="8276803169904409881">Establece Chrome como el navegador predeterminado para abrir vínculos al instante desde otras apps.</translation>
 <translation id="8284376267694582021">Para obtener funciones de seguridad para niños, puedes usar una Cuenta de Google configurada para un niño o una niña, o usar Chrome sin una cuenta. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">No se encriptarán formas de pago ni direcciones. No se sincronizará el historial de navegación de Chrome.
 
@@ -360,6 +369,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="8865415417596392024">Datos de Chrome de tu cuenta</translation>
 <translation id="8874688701962049679">Sugerencias para aprovechar Chrome al máximo.</translation>
 <translation id="8897749957032330183">Las contraseñas se guardan en el Administrador de contraseñas de Google en este dispositivo.</translation>
+<translation id="898288749595466683">Deja de copiar URLs. Establece Chrome como el navegador predeterminado para cargar páginas directamente.</translation>
 <translation id="9004772704776174843">Saliste de Chrome</translation>
 <translation id="9068336935206019333">Abrir en modo Incógnito en Chrome</translation>
 <translation id="9082304295862405388">Gemini puede usar tu ubicación precisa, según el permiso que ya le hayas otorgado a Chrome</translation>

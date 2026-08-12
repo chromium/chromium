@@ -723,7 +723,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="399788104667917863">Asboblar paneliga mahkamlash</translation>
 <translation id="4000212216660919741">Uy oflayn</translation>
 <translation id="4000670338830950598">Ajratilgan element bilan Google Chrome brauzerini oʻz didingizda sozlang</translation>
-<translation id="4002066346123236978">Nomi</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Google hisobida 1 ta oshkor qilingan parol aniqlandi}other{Google hisobida # ta oshkor qilingan parol aniqlandi}}</translation>
 <translation id="4023638601467301498">Barcha qurilmalarda bukmarklarni olish uchun Chrome hisobiga kiring</translation>
 <translation id="4024768890073681126">Brauzer ota-onangiz boshqaruvida</translation>
@@ -1973,6 +1972,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8937772741022875483">Raqamli muvozanat xizmatidan Chrome amallari olib tashlansinmi?</translation>
 <translation id="8942627711005830162">Yangi oynada ochish</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Bu til yuklab olinmadi. Keyinroq urining.</translation>
+<translation id="8945348199139712719">Nusxalangan matnni joylash va ochish</translation>
 <translation id="8946759102391960088">Parollarga ruxsatni saqlab qoling</translation>
 <translation id="895442993047180128">Maslahat bildirishnomalariga yozilish oynasi yopildi</translation>
 <translation id="8957528460562961174">Parollardan foydalanishda davom etish uchun ularni hoziroq eksport qiling va afzal parollar menejeriga import qiling. Google Play xizmatlari ishlamagani sababli Google Parollar menejeri ishlamay qoldi.</translation>

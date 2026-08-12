@@ -723,7 +723,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="399788104667917863">Fixa a la barra d'eines</translation>
 <translation id="4000212216660919741">Pàgina d'inici sense connexió</translation>
 <translation id="4000670338830950598">Personalitza i controla Google Chrome amb un element marcat</translation>
-<translation id="4002066346123236978">Títol</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 contrasenya en perill al teu Compte de Google}other{# contrasenyes en perill al teu Compte de Google}}</translation>
 <translation id="4023638601467301498">Per obtenir les teves adreces d'interès i altres dades en tots els dispositius, inicia la sessió a Chrome</translation>
 <translation id="4024768890073681126">El pare o la mare gestiona el navegador</translation>
@@ -1973,6 +1972,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8937772741022875483">Vols suprimir l'activitat de Chrome a Benestar digital?</translation>
 <translation id="8942627711005830162">Obre en una altra finestra</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: no s'ha pogut baixar aquest idioma. Torna-ho a provar més tard.</translation>
+<translation id="8945348199139712719">Enganxa i ves al text copiat</translation>
 <translation id="8946759102391960088">Mantén l'accés a les contrasenyes</translation>
 <translation id="895442993047180128">L'opció d'activar les notificacions de consells està tancada</translation>
 <translation id="8957528460562961174">Per mantenir l'accés a les contrasenyes, exporta-les ara i després importa-les al gestor de contrasenyes que prefereixis. El gestor de contrasenyes de Google ha deixat de funcionar perquè Serveis de Google Play no està disponible.</translation>

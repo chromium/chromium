@@ -5780,6 +5780,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5444281205834970653">Törlés és folytatás</translation>
 <translation id="5444452275167152925">ChromeOS rendszerről importálva</translation>
 <translation id="5445400788035474247">10×</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Ötletelés</translation>
 <translation id="5449551289610225147">Érvénytelen jelszó</translation>
 <translation id="5449588825071916739">Összes lap hozzáadása a könyvjelzőkhöz</translation>
@@ -8144,6 +8145,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7311244614769792472">Nincs találat</translation>
 <translation id="7312040805247765153">Nem sikerült telepíteni az alkalmazást</translation>
 <translation id="7312210124139670355">A rendszergazda visszaállítja az Ön eSIM-jét. Ez eltarthat néhány percig.</translation>
+<translation id="731239254927333251">Alt + L</translation>
 <translation id="7313539585802573958">Billentyűzet háttérvilágításának színei</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 esemény dátumát nem sikerült megállapítani, és nem jelenik meg}other{# esemény dátumát nem sikerült megállapítani, és nem jelennek meg}}</translation>
 <translation id="7314865262803554456">A rögzítés megkezdéséről nem kap értesítést.</translation>

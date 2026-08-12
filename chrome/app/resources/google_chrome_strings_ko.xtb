@@ -33,6 +33,7 @@
 <translation id="1290883685122687410">설정 오류: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
 <translation id="1330562121671411446">언어 감지</translation>
+<translation id="1333654552732143316">크롬 시작</translation>
 <translation id="1341711321000856656">다른 Chrome 프로필의 비밀번호를 보도록 전환할 수 있습니다.</translation>
 <translation id="1343830902827845050">Chrome에 로그인하세요</translation>
 <translation id="1356661055722410047">New! 화면의 텍스트와 이미지를 모두 번역할 수 있습니다.</translation>
@@ -381,7 +382,6 @@
 <translation id="4885446229353981848">Google 렌즈 바로가기 항상 표시</translation>
 <translation id="4891791193823137474">백그라운드에서 Chrome을 실행</translation>
 <translation id="4895437082222824641">새 Chrome 탭에서 링크 열기(&amp;T)</translation>
-<translation id="4896867431081882115">Chrome을 기본 브라우저로 설정하여 잘 알고 즐겨 사용하며 신뢰하는 기능에 간편하게 액세스하세요. 빠른 액세스를 위해 Chrome이 작업 표시줄에 고정됩니다.</translation>
 <translation id="4904953848704395458">키보드 단축키를 사용하여 Chrome의 Gemini를 엽니다.</translation>
 <translation id="4918086044614829423">수락</translation>
 <translation id="4918844574251943176">이미지 복사됨</translation>

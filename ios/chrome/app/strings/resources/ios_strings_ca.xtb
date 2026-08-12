@@ -38,6 +38,7 @@
 <translation id="1097807529207545420">{count,plural, =1{S'ha verificat 1 contrasenya a l'instant}other{S'han verificat # contrasenyes a l'instant}}</translation>
 <translation id="1103523840287552314">Tradueix sempre el text en <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloqueja amb Face ID</translation>
+<translation id="1111776967764068277">T'has cansat de copiar enllaços?</translation>
 <translation id="1112015203684611006">Error en imprimir</translation>
 <translation id="1118569444314402022">Et donem la benvinguda de nou, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotos i imatges</translation>
@@ -527,6 +528,7 @@
 <translation id="2666092431469916601">Superior</translation>
 <translation id="2669454659051515572">Qualsevol persona que utilitzi aquest dispositiu pot veure els fitxers baixats</translation>
 <translation id="2671423594960767771">Comparteix el grup</translation>
+<translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Paga a terminis</translation>
 <translation id="2673508731173059946">Ves a l'enllaç copiat</translation>
 <translation id="2679659833697380">La teva informació es desa al dispositiu</translation>
@@ -543,6 +545,7 @@
 <translation id="271033894570825754">Col·lecció nova</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
 <translation id="2713106313042589954">Desactiva la càmera</translation>
+<translation id="2715440913764382254">Obre els enllaços directament aquí</translation>
 <translation id="2718352093833049315">Només amb Wi-Fi</translation>
 <translation id="2721190673959776287">Completa ajuda de mostra al producte per al tauler contextual, la qual hauria d'aparèixer diverses vegades al dia.</translation>
 <translation id="2739887572830526131">Conserva aquest grup per afegir-hi pestanyes més tard o suprimeix-lo si ja no el necessites.</translation>
@@ -1004,6 +1007,7 @@
 <translation id="4338258232580025606">No es pot iniciar la sessió</translation>
 <translation id="4338650699862464074">Envia a Google els URL de les pàgines que visites.</translation>
 <translation id="4342946437867096381">Ja has desat una contrasenya per a aquest lloc web al teu Compte de Google. Google pot triar la contrasenya més recent.</translation>
+<translation id="4355702523442402731">Navegació fluida entre aplicacions</translation>
 <translation id="4365121137632832185">Grup de pestanyes. Desplegat.</translation>
 <translation id="4365685757967464989">Permet que Gemini utilitzi la càmera per fer fotos</translation>
 <translation id="4367971618859387374">Nom visible</translation>
@@ -1281,6 +1285,7 @@
 <translation id="5233111790346066304">Desa fitxers a Google Drive i accedeix-hi en qualsevol moment.</translation>
 <translation id="5233638681132016545">Pestanya nova</translation>
 <translation id="5234094073825090254">{count,plural, =1{L'adreça d'interès s'ha desat al teu Compte de Google ({email}).}other{Les adreces d'interès s'han desat al teu Compte de Google ({email}).}}</translation>
+<translation id="5234162151438379838">{COUNT,plural, =1{Només es pot compartir 1 pestanya.}other{Només es poden compartir {COUNT} pestanyes.}}</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5238596603078743134">Ara, <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> pot fer servir el teu nom d'usuari i la teva contrasenya quan utilitzi el gestor de contrasenyes de Google per iniciar la sessió a <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, gestionat per la teva organització, està seleccionat actualment. Tria un compte.</translation>
@@ -1313,6 +1318,7 @@
 <translation id="5351613737248079168">Has d'haver iniciat la sessió per utilitzar Level Up</translation>
 <translation id="5352128922772839949">Desa el fitxer</translation>
 <translation id="5355191726083956201">La protecció millorada està activada</translation>
+<translation id="5359436665022446585">Millor obertura d'enllaços</translation>
 <translation id="536067926684072644">Mostra adreces d'interès</translation>
 <translation id="5364647308446127983">{count,plural, =1{No s'ha pogut importar {count} clau d'accés}other{No s'han pogut importar {count} claus d'accés}}</translation>
 <translation id="5371112366564891538">Augmenta la mida del text</translation>
@@ -1491,6 +1497,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5952641243319721872">Confirmes que vols descartar la selecció?</translation>
 <translation id="5956112131836209882">Pestanya del grup de pestanyes. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Cerca amb <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5963694076845073027">Obre els enllaços aquí la propera vegada</translation>
 <translation id="5963939892571022323">No es pot crear un enllaç al text marcat.</translation>
 <translation id="5968400720580217226">Mode IA</translation>
 <translation id="5971459446352190251">Cerca mitjançant un codi QR</translation>
@@ -1820,6 +1827,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="6937083164784433305">{count,plural, =1{Has utilitzat 1 foto per fer la cerca}other{Has utilitzat # fotos per fer la cerca}}</translation>
 <translation id="693761253105515415">Estableix un codi d'accés</translation>
+<translation id="6938212956536472404">Aquesta pestanya no es pot compartir</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6946722113367118030">Pensant</translation>
 <translation id="6950522403736391608">Amagades</translation>
@@ -1995,6 +2003,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="7561982940498449837">Tanca el menú</translation>
 <translation id="7566349809380613217">Obre <ph name="GROUP_TITLE" />, grup compartit de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Les adreces d'interès estan amagades</translation>
+<translation id="7575664680938145959">Obre amb un toc</translation>
 <translation id="7577900504646297215">Gestiona els interessos</translation>
 <translation id="7582666837709186351">Tradueix el text de les fotos o de l'entorn amb la càmera.</translation>
 <translation id="7582857256643797524">Aquesta opció de configuració està activada al dispositiu</translation>
@@ -2018,6 +2027,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="7646263789464975852">Menú → Configuració → Comprovació de seguretat</translation>
 <translation id="7646772052135772216">La sincronització de contrasenyes no funciona</translation>
 <translation id="764827086632467055">Toca App de navegació per omissió</translation>
+<translation id="7648666127045672239">Arriba aquí amb un sol toc</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="765555660695722850">Se suprimiran les adreces desades en aquest dispositiu. També se suprimirà part de la informació del teu Compte de Google, però no informació bàsica com ara el teu nom o l'adreça de casa.</translation>
 <translation id="765631330137769217">Toca Desa per accedir fàcilment a aquesta contrasenya la propera vegada que iniciïs la sessió</translation>
@@ -2035,6 +2045,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7702428539671224160">Emplena automàticament la informació de pagament a <ph name="URL" /></translation>
 <translation id="7708994397325774423">Obtén totes les teves contrasenyes</translation>
+<translation id="7710096647785049958">Estalvia temps en cada enllaç</translation>
 <translation id="7711440461521638739">No estàs reutilitzant cap contrasenya</translation>
 <translation id="7712361583414030698">S'està mostrant la versió sense connexió</translation>
 <translation id="7719038820139380048">Inicia la sessió per obtenir contingut basat en els teus interessos.</translation>
@@ -2360,6 +2371,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8706806585855470492">Podràs compartir grups de pestanyes, unir-t'hi i col·laborar-hi</translation>
 <translation id="8709409604518538305">Les pestanyes s'han tancat</translation>
 <translation id="8712637175834984815">Entesos</translation>
+<translation id="8717519179050551968">Enganxa menys, navega més</translation>
 <translation id="8717864919010420084">Copia l'enllaç</translation>
 <translation id="8722229818691036192">Comptes d'aquest dispositiu</translation>
 <translation id="8722649775263832315">Toca o marca per cercar qualsevol cosa amb Google Lens</translation>
@@ -2499,6 +2511,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="9148126808321036104">Torna a iniciar la sessió</translation>
 <translation id="9149866541089851383">Edita...</translation>
 <translation id="9152637745605628097">Tria entre temes i colors, o penja una imatge</translation>
+<translation id="9153159728062222866">Omet la funció Copia i enganxa</translation>
 <translation id="9159628751968616911">Envia la pàgina web</translation>
 <translation id="9162412286847966593">Les dades i les gravacions de la teva organització no s'utilitzaran per millorar els models d'IA generativa. <ph name="BEGIN_LINK" />La teva privadesa i Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Activa l'opció Emplena automàticament les contrasenyes</translation>

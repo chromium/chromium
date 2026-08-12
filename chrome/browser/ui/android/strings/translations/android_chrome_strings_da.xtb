@@ -723,7 +723,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="399788104667917863">Fastgør til værktøjslinje</translation>
 <translation id="4000212216660919741">Hjemmet er offline</translation>
 <translation id="4000670338830950598">Tilpas og administrer Google Chrome med et fremhævet element</translation>
-<translation id="4002066346123236978">Titel</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 kompromitteret adgangskode på din Google-konto}one{# kompromitteret adgangskode på din Google-konto}other{# kompromitterede adgangskoder på din Google-konto}}</translation>
 <translation id="4023638601467301498">Hvis du vil have dine bogmærker m.m. på alle dine enheder skal du logge ind i Chrome</translation>
 <translation id="4024768890073681126">Din browser administreres af din forælder</translation>
@@ -1973,6 +1972,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8937772741022875483">Vil du fjerne din Chrome-aktivitet fra Digital balance?</translation>
 <translation id="8942627711005830162">Åbn i et andet vindue</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Dette sprog kunne ikke downloades. Prøv igen senere.</translation>
+<translation id="8945348199139712719">Indsæt, og gå til kopieret tekst</translation>
 <translation id="8946759102391960088">Bevar adgangen til dine adgangskoder</translation>
 <translation id="895442993047180128">Tilvalg af notifikationer med tips er lukket</translation>
 <translation id="8957528460562961174">Hvis du fortsat vil have adgang til dine adgangskoder, skal du eksportere dem nu og derefter importere dem til din foretrukne adgangskodeadministrator. Google Adgangskodeadministrator stoppede med at fungere, fordi Google Play-tjenester ikke er tilgængelige.</translation>

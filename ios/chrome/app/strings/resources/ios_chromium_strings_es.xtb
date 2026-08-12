@@ -62,6 +62,7 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="2168593389981132306">Mejora Chromium</translation>
 <translation id="2178608107313874732">Chromium no puede usar la cámara en este momento</translation>
 <translation id="2195025571279539885">¿Quieres que Chromium te ofrezca la posibilidad de traducir las páginas en <ph name="LANGUAGE_NAME" /> de este sitio web la próxima vez?</translation>
+<translation id="2200643763959651131">Establece Chromium como navegador predeterminado para dejar de tener que copiar enlaces de otras aplicaciones.</translation>
 <translation id="22313767259766852">Actualmente, esta dirección está guardada en Chromium. Para usarla en los productos de Google, guárdala en tu cuenta de Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Esto significa que Chromium siempre solicitará la vista del sitio web como ordenador.</translation>
 <translation id="2245694534483711162">Gemini puede usar tu ubicación precisa, según el permiso que ya hayas dado a Chromium</translation>
@@ -97,11 +98,13 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chromium, ve a los <ph name="BEGIN_LINK" />servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="2832168932648876507">Busca por voz en Chromium.</translation>
 <translation id="2843571538056574338">Usa la función Autocompletar con Chromium</translation>
+<translation id="2844923129028437362">Evita la acción de copiar. Establece Chromium como tu navegador predeterminado en iOS.</translation>
 <translation id="2918709798697875261">Tu organización requiere que mantengas tu sesión cerrada en Chromium.</translation>
 <translation id="2942241131342758843">Usa Chromium de forma predeterminada para abrir enlaces, hacer búsquedas desde widgets y autocompletar contraseñas en otras aplicaciones</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="3044857325852340337">Datos de Chromium eliminados</translation>
 <translation id="3054480780637153380">En iOS, ve a Ajustes, selecciona Chromium, toca Navegador predeterminado y elige Chromium.</translation>
+<translation id="3072591112723064972">Para abrir enlaces en Chromium al instante, configúralo como navegador predeterminado.</translation>
 <translation id="3115956258722352278">¿Establecer Chromium como navegador predeterminado?</translation>
 <translation id="3180939591219927904">Activa Bloquear las pestañas de Incógnito al cerrar Chromium</translation>
 <translation id="327628223428512207">Introduce la frase de contraseña para guardar esta contraseña y acceder a datos de Chromium en todos tus dispositivos</translation>
@@ -112,6 +115,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="3410395242749598859">Algunos de tus datos de Chromium aún no se han guardado en <ph name="EMAIL" />.
 Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, estos datos se eliminarán.</translation>
 <translation id="3440830787838130530">Comparte la copia de una contraseña con tu grupo familiar de forma fácil y segura en el Gestor de contraseñas de Google</translation>
+<translation id="3445351634096573377">Abre enlaces de mensajes y documentos directamente en Chromium.</translation>
 <translation id="3472200483164753384">No compatible con Chromium Canary</translation>
 <translation id="347967311580159871">Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chromium, ve a los <ph name="BEGIN_LINK" />servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">No se ha compartido tu contraseña. Comprueba tu conexión a Internet y asegúrate de haber iniciado sesión en Chromium. Después, inténtalo de nuevo.</translation>
@@ -141,6 +145,7 @@ Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, esto
 <translation id="3949514465204582407">Consejo de Chromium: Puedes acceder a tus contraseñas en cualquier aplicación</translation>
 <translation id="4005283307739974863">Abre y ejecuta una comprobación de seguridad en Chromium.</translation>
 <translation id="4043291146360695975">Las contraseñas se guardan en el gestor de contraseñas solo en este dispositivo.</translation>
+<translation id="4046625794029820944">Deja de copiar URLs. Establece Chromium como navegador predeterminado para cargar páginas directamente.</translation>
 <translation id="4066426933127344530">Usa Chromium de forma predeterminada</translation>
 <translation id="4087314024407094071">Abre la configuración de Chromium.</translation>
 <translation id="4099085513035183040">No compatible con Chromium Beta</translation>
@@ -222,6 +227,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium 
 
         Las llaves de acceso se guardan en el Gestor de contraseñas, lo que te permite usarlas en Chromium en cualquier dispositivo.</translation>
 <translation id="575593940213760950">En el Gestor de contraseñas de <ph name="EMAIL" /></translation>
+<translation id="5786958731263984543">Evita la molestia de copiar. Abre enlaces directamente en Chromium.</translation>
 <translation id="584550191241316896">Sesión iniciada en Chromium</translation>
 <translation id="5862307444128926510">Te damos la bienvenida a Chromium</translation>
 <translation id="5889847953983052353">Si esta opción está activada:
@@ -241,6 +247,7 @@ Notas importantes:
 <translation id="6104024151682120539">Abrir en Chromium</translation>
 <translation id="61109258320235597">Para usar y guardar los datos de Chromium en tu cuenta de Google, debes introducir tu frase de contraseña.</translation>
 <translation id="6132149203299792222">Inicia sesión con tu cuenta de Google para sincronizar tus contraseñas, marcadores y otros elementos.</translation>
+<translation id="6139490926154511684">Establece Chromium como navegador predeterminado para abrir enlaces con un toque en lugar de tener que copiarlos.</translation>
 <translation id="6148377327556085395">Añadir marcadores a Chromium</translation>
 <translation id="6154098560469640583">Usa Chromium siempre que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="6157162508956739031">Inicia sesión rápidamente en aplicaciones y sitios con el autocompletado de contraseñas y llaves de acceso de Chromium</translation>
@@ -264,6 +271,7 @@ Notas importantes:
 <translation id="6590232959690355435">Abre la página del historial de Chromium.</translation>
 <translation id="6674470628873622334">Abre una nueva pestaña de Incógnito de Chromium.</translation>
 <translation id="6680609900732453726">Mantén tu navegación privada con la autenticación del dispositivo al cerrar Chromium</translation>
+<translation id="6696512128741076907">Establece Chromium como navegador predeterminado para abrir enlaces de otras aplicaciones al instante.</translation>
 <translation id="6752854822223394465">Tu organización está configurando Chromium...</translation>
 <translation id="6794054469102824109">Abre el juego El dinosaurio de Chromium.</translation>
 <translation id="6820823224820483452">Chromium no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
@@ -276,6 +284,7 @@ Notas importantes:
 <translation id="7018284295775193585">Chromium no se puede actualizar</translation>
 <translation id="7055269218854630176">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en el que se puede usar Chromium. Tu administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="7099326575020694068">Chromium no puede usar la cámara en el modo Vista dividida</translation>
+<translation id="7110290529575835890">La próxima vez, abre enlaces directamente en Chromium sin tener que copiar primero las URLs.</translation>
 <translation id="7165402419892018581">Elige Chromium para la función Autocompletar</translation>
 <translation id="7175400662502680481">Tu contraseña se ha visto expuesta en una brecha de seguridad de datos. El gestor de contraseñas te recomienda que cambies esa contraseña ahora.</translation>
 <translation id="7185731475720473450">Los métodos de pago y las direcciones no se cifrarán. El historial de navegación de Chromium no se sincronizará.
@@ -304,6 +313,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="7762622637388462191">Bloquea tus pestañas de Incógnito al salir de Chromium o al cambiar de aplicación.</translation>
 <translation id="7763454117143368771">Usa Chromium como tu navegador predeterminado para protegerte de sitios peligrosos y mantener a salvo tus contraseñas</translation>
 <translation id="7784950022329154821">Bloquear las pestañas de Incógnito al cerrar Chromium</translation>
+<translation id="7798616345453618228">Establece Chromium como navegador predeterminado y abre contenido web automáticamente.</translation>
 <translation id="78025249032851484">Tu Chromium no está actualizado.</translation>
 <translation id="784098351033299289">Chromium usa Google Maps para ofrecerte indicaciones e información local sobre enlaces de mapas</translation>
 <translation id="7859018312476869945">Al escribir en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes al buscador predeterminado para que obtengas mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>

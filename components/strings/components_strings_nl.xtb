@@ -304,6 +304,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1504042622576912555">Golf</translation>
 <translation id="1507202001669085618">&lt;p&gt;J​e ​zi​et​ d​ez​e ​fo​ut​ a​ls​ j​e ​ee​n ​wi​fi​-p​or​ta​l ​ge​br​ui​kt​ w​aa​ro​p ​je​ m​oe​t ​in​lo​gg​en​ v​oo​rd​at​ j​e ​on​li​ne​ k​un​t ​ga​an​.&lt;/p&gt;
    &lt;p&gt;​K​li​k ​op​ &lt;​st​ro​ng​&gt;V​er​bi​nd​in​g ​ma​ke​n&lt;​/s​tr​on​g&gt;​ o​p ​de​ p​ag​in​a ​di​e ​je​ p​ro​be​er​t ​te​ o​pe​ne​n ​om​ d​ez​e ​fo​ut​ o​p ​te​ l​os​se​n.​&lt;/p&gt;</translation>
+<translation id="1507635939006264930">Automatisch invullen aanzetten</translation>
 <translation id="1508605873202255562">Maak een aangepaste tracker om mijn doelen bij te houden</translation>
 <translation id="1513706915089223971">Lijst met geschiedenisitems</translation>
 <translation id="1515436033764190215">u geleden</translation>
@@ -631,6 +632,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2093982008204312032">Google Chrome probeert Windows Hello aan te zetten voor het invullen van wachtwoorden.</translation>
 <translation id="2094505752054353250">Domeinen komen niet overeen</translation>
 <translation id="2094704029599359040">Versiegegevens</translation>
+<translation id="2096183846792489672">De content en URL's van de pagina's die je bezoekt, kunnen worden verwerkt in een privégedeelte in de cloud</translation>
 <translation id="209961642949927292">De volgende keer sneller betalen?</translation>
 <translation id="2099652385553570808">Drie nietjes links</translation>
 <translation id="2101225219012730419">Versie:</translation>
@@ -1105,6 +1107,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2905107382358353958">Melding over nieuwe betaalinstelling</translation>
 <translation id="2909946352844186028">Er is een netwerkwijziging gedetecteerd.</translation>
 <translation id="2910062169995917863">Sessie is verlopen</translation>
+<translation id="2911224142899421774">Je Google Wallet-instellingen zijn van toepassing op informatie die is opgeslagen vanuit Chrome</translation>
 <translation id="2911973620368911614">Gebruikers-ID van taakaccount</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> gebruikt gewoonlijk versleuteling om je informatie te beschermen. Toen Chrome deze keer probeerde verbinding te maken met <ph name="SITE" />, stuurde de website ongewone en onjuiste inloggegevens terug. Dit kan gebeuren als een aanvaller probeert zich als <ph name="SITE" /> voor te doen of als een wifi-inlogscherm de verbinding heeft verbroken. Je informatie is nog steeds beveiligd omdat Chrome de verbinding heeft beëindigd voordat gegevens konden worden uitgewisseld.</translation>
 <translation id="2915068235268646559">Crash van <ph name="CRASH_TIME" /></translation>
@@ -1586,6 +1589,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3738166223076830879">Je browser wordt beheerd door je beheerder.</translation>
 <translation id="3739842843727261045">Met Leuk stuur je feedback dat je deze resultaten leuk vindt</translation>
 <translation id="3740447166056383374">Check bestanden voordat je ze kopieert</translation>
+<translation id="3742104862808477448">Help Chromium complexe formulieren beter te begrijpen en in te vullen door gegevens beveiligd te verwerken op de servers van Google. Je informatie blijft privé en wordt door niemand beoordeeld.</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3744212718085287312">Wil je deze kaart de volgende keer beter beveiligen met een virtuele kaart?</translation>
 <translation id="3744899669254331632">Je kunt <ph name="SITE" /> op dit moment niet bezoeken, omdat de website gecodeerde inloggegevens heeft verstuurd die niet door Chromium kunnen worden verwerkt. Aangezien netwerkfouten en aanvallen doorgaans van tijdelijke aard zijn, zal deze pagina later waarschijnlijk wel werken.</translation>
@@ -1609,6 +1613,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3769584711865378220"><ph name="URL" /> wil de locatietoegang wijzigen van geschat in exact</translation>
 <translation id="3772211998634047851">Papier (gebonden)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuwe notitie in Google Keep te maken</translation>
+<translation id="3778045607993018262">Het Pix-account wordt gekoppeld aan <ph name="ACCOUNT_EMAIL" />. Als je detectie van Pix-codes wilt uitzetten, ga je naar de <ph name="BEGIN_LINK1" />Chrome-instellingen<ph name="END_LINK1" />.</translation>
 <translation id="3780694243617746492">Uitvoerbak</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-apparaten</translation>
@@ -1628,6 +1633,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803481123869276674">Als je aankopen doet in Chrome, zie je eWallet als optie</translation>
 <translation id="3803801106042434208">Deze zoekmachines zijn populair in je regio</translation>
+<translation id="3804112825000113857">Instellingen voor automatisch invullen bekijken</translation>
 <translation id="380666903981445943">Sla een betaalmethode op in je Google-account om deze automatisch in te vullen voor aankopen die je in Chrome doet</translation>
 <translation id="3807366285948165054">Beeldverschuiving X</translation>
 <translation id="3807873520724684969">Schadelijke content geblokkeerd.</translation>
@@ -3304,6 +3310,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="666259744093848177">(x86_64 vertaald)</translation>
 <translation id="6665553082534466207">Drie perforaties rechts</translation>
 <translation id="6668389483194953109">De papierformaatnaam 'custom' is gevonden, maar de property 'custom_size' is leeg of ongeldig.</translation>
+<translation id="667044980437620424">Automatisch invullen aangezet</translation>
 <translation id="6670729408462528018">Galerij</translation>
 <translation id="6671697161687535275">Formuliersuggestie verwijderen uit Chromium?</translation>
 <translation id="6675846980676550611">AR niet toegestaan</translation>
@@ -3533,6 +3540,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7064851114919012435">Contactgegevens</translation>
 <translation id="7070144569727915108">systeeminstellingen</translation>
 <translation id="70705239631109039">Je verbinding is niet volledig beveiligd</translation>
+<translation id="7074595960655571061">Je kunt nu betaalmethoden opslaan om automatisch in te vullen als je afrekent in Chrome. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">Verzoek is te groot</translation>
 <translation id="7075513071073410194">PKCS nr. 1 MD5 met RSA-versleuteling</translation>
 <translation id="7075896597860500885">Kopiëren vanaf deze site wordt niet aanbevolen</translation>
@@ -4396,6 +4404,7 @@ Aanvullende informatie:
 <translation id="8564182942834072828">Afzonderlijke documenten/ongesorteerde exemplaren</translation>
 <translation id="8564466070529550495">Virtuele kaart is nu niet beschikbaar, probeer het later opnieuw.</translation>
 <translation id="8564985650692024650">Chromium raadt je aan het wachtwoord voor <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> opnieuw in te stellen als je het voor andere sites hebt hergebruikt.</translation>
+<translation id="8568406155558596128">Help Chrome complexe formulieren beter te begrijpen en in te vullen door gegevens beveiligd te verwerken op de servers van Google. Je informatie blijft privé en wordt door niemand beoordeeld.</translation>
 <translation id="8574570240981266561">Item verwijderd</translation>
 <translation id="8577192028579836704">Alle opties zijn meestal <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuele kaart niet beschikbaar</translation>

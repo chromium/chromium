@@ -33,6 +33,7 @@
 <translation id="1290883685122687410">Грешка при подешавању: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Сачекајте да Chrome инсталира најновија ажурирања система.</translation>
 <translation id="1330562121671411446">Откривени језик</translation>
+<translation id="1333654552732143316">Покрени Chrome</translation>
 <translation id="1341711321000856656">Можете да се пребаците да бисте видели лозинке са другог Chrome профила</translation>
 <translation id="1343830902827845050">Пријавите се у Chrome</translation>
 <translation id="1356661055722410047">Ново. Можете да преводите и текст и слике на екрану</translation>
@@ -382,7 +383,6 @@
 <translation id="4885446229353981848">Увек приказуј пречицу за Google објектив</translation>
 <translation id="4891791193823137474">Нека Google Chrome ради у позадини</translation>
 <translation id="4895437082222824641">Отвори линк у новој Chrome &amp;картици</translation>
-<translation id="4896867431081882115">Подесите Chrome као подразумевани прегледач да бисте лако приступали функцијама које знате, волите и којима верујете. Chrome ће бити закачен на траку задатака ради брзог приступа.</translation>
 <translation id="4904953848704395458">Отворите Gemini у Chrome-у помоћу тастерске пречице.</translation>
 <translation id="4918086044614829423">Прихвати</translation>
 <translation id="4918844574251943176">Слика је копирана</translation>

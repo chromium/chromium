@@ -5767,6 +5767,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5444281205834970653">Izbriši i nastavi</translation>
 <translation id="5444452275167152925">Uvezeno iz ChromeOS-a</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Generišite ideje</translation>
 <translation id="5449551289610225147">Nevažeća lozinka</translation>
 <translation id="5449588825071916739">Obeleži sve kartice</translation>
@@ -8135,6 +8136,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
 <translation id="7312040805247765153">Instaliranje aplikacije nije uspelo</translation>
 <translation id="7312210124139670355">Administrator resetuje eSIM. To može da potraje nekoliko minuta.</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">Boje pozadinskog osvetljenja tastature</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Datum nije mogao da se odredi za 1 događaj i taj događaj se ne prikazuje}one{Datum nije mogao da se odredi za # događaj i ti događaji se ne prikazuju}few{Datum nije mogao da se odredi za # događaja i ti događaji se ne prikazuju}other{Datum nije mogao da se odredi za # događaja i ti događaji se ne prikazuju}}</translation>
 <translation id="7314865262803554456">Obavestićemo vas kada počne snimanje.</translation>

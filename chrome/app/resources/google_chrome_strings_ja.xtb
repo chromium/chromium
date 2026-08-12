@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">設定エラー: <ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="1330562121671411446">検出言語</translation>
+<translation id="1333654552732143316">Chrome を起動</translation>
 <translation id="1341711321000856656">別の Chrome プロフィールに切り替えて、そのプロフィールのパスワードを表示できます</translation>
 <translation id="1343830902827845050">Chrome にログイン</translation>
 <translation id="1356661055722410047">New! 画面上のテキストや画像を翻訳できるようになりました</translation>
@@ -375,7 +376,6 @@
 <translation id="4885446229353981848">Google レンズのショートカットを常に表示する</translation>
 <translation id="4891791193823137474">Google Chrome のバックグラウンドでの実行を許可する</translation>
 <translation id="4895437082222824641">新しい Chrome タブでリンクを開く(&amp;T)</translation>
-<translation id="4896867431081882115">Chrome を既定のブラウザに設定すると、お馴染みの信頼できる機能を簡単に利用できるようになります。Chrome はタスクバーに固定され、すばやくアクセスできます。</translation>
 <translation id="4904953848704395458">Gemini in Chrome を開くときに、キーボード ショートカットを使用します。</translation>
 <translation id="4918086044614829423">同意する</translation>
 <translation id="4918844574251943176">画像をコピーしました</translation>

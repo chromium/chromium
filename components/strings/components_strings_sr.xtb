@@ -304,6 +304,7 @@
 <translation id="1504042622576912555">Флаута</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ова грешка се приказује ако користите WiFi портал на коме морате да се пријавите да бисте се повезали на интернет.&lt;/p&gt;
     &lt;p&gt;Да бисте отклонили ту грешку, кликните на &lt;strong&gt;Повежи се&lt;/strong&gt; на страници коју покушавате да отворите.&lt;/p&gt;</translation>
+<translation id="1507635939006264930">Укључује се аутоматско попуњавање</translation>
 <translation id="1508605873202255562">Направи прилагођену табелу за праћење за лакше остваривање циљева</translation>
 <translation id="1513706915089223971">Листа уноса у историји</translation>
 <translation id="1515436033764190215">с пре сте посетили</translation>
@@ -631,6 +632,7 @@
 <translation id="2093982008204312032">Google Chrome покушава да искључи Windows Hello за попуњавање лозинки.</translation>
 <translation id="2094505752054353250">Домени се не подударају</translation>
 <translation id="2094704029599359040">Информације о верзији</translation>
+<translation id="2096183846792489672">Садржај и URL-ови страница које посећујете могу да се обрађују у приватном простору у клауду</translation>
 <translation id="209961642949927292">Желите да следећи пут проверите брже?</translation>
 <translation id="2099652385553570808">Троструко спајање на левој страни</translation>
 <translation id="2101225219012730419">Верзија:</translation>
@@ -1592,6 +1594,7 @@
 <translation id="3738166223076830879">Администратор управља прегледачем.</translation>
 <translation id="3739842843727261045">Опција Свиђа ми се шаље повратне информације да вам се свиђају ови резултати</translation>
 <translation id="3740447166056383374">Потребан је преглед пре копирања</translation>
+<translation id="3742104862808477448">Помозите Chromium-у да боље разуме и попуњава сложене обрасце безбедном обрадом података на Google серверима. Ваши подаци остају приватни и нико их не прегледа.</translation>
 <translation id="3744111561329211289">Синхронизација у позадини</translation>
 <translation id="3744212718085287312">Желите ли додатну заштиту следећи пут помоћу виртуелне картице?</translation>
 <translation id="3744899669254331632">Тренутно не можете да посетите <ph name="SITE" /> јер је веб-сајт послао кодиране акредитиве које Chromium не може да обради. Грешке на мрежи и напади су углавном привремени, па ће страница вероватно прорадити касније.</translation>
@@ -1615,6 +1618,7 @@
 <translation id="3769584711865378220"><ph name="URL" /> жели да промени приступ локацији са приближне на прецизну</translation>
 <translation id="3772211998634047851">Папир (издржљив)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нову белешку у Google Keep-у</translation>
+<translation id="3778045607993018262">Pix налог ће се повезати са налогом <ph name="ACCOUNT_EMAIL" />. Да бисте онемогућили препознавање Pix кода, идите у <ph name="BEGIN_LINK1" />Подешавања Chrome-а<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Излазна преграда</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth уређаји</translation>
@@ -1634,6 +1638,7 @@
 <translation id="380329542618494757">Име</translation>
 <translation id="3803481123869276674">Када купујете у Chrome-у, погледајте е-новчаник као опцију</translation>
 <translation id="3803801106042434208">Ови претраживачи су популарни у вашем региону</translation>
+<translation id="3804112825000113857">Прикажи подешавања аутоматског попуњавања</translation>
 <translation id="380666903981445943">Сачувајте начин плаћања на Google налогу да бисте га аутоматски попуњавали за куповине у Chrome-у</translation>
 <translation id="3807366285948165054">Померање слике по X оси</translation>
 <translation id="3807873520724684969">Блокиран је штетан садржај.</translation>
@@ -3311,6 +3316,7 @@
 <translation id="666259744093848177">(x86_64 преведено)</translation>
 <translation id="6665553082534466207">Троструко бушење на десној страни</translation>
 <translation id="6668389483194953109">Пронађен је назив величине папира „прилагођено“, али је својство „custom_size“ празно или неважеће.</translation>
+<translation id="667044980437620424">Аутоматско попуњавање је укључено</translation>
 <translation id="6670729408462528018">Галерија</translation>
 <translation id="6671697161687535275">Желите ли да уклоните предлог из Chromium-а?</translation>
 <translation id="6675846980676550611">ПР није дозвољен</translation>
@@ -3540,6 +3546,7 @@
 <translation id="7064851114919012435">Контакт информације</translation>
 <translation id="7070144569727915108">системска подешавања</translation>
 <translation id="70705239631109039">Веза није потпуно безбедна</translation>
+<translation id="7074595960655571061">Сада можете да сачувате начине плаћања за аутоматско попуњавање при плаћању у Chrome-у. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">Захтев је превелик</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 са RSA шифровањем</translation>
 <translation id="7075896597860500885">Копирање са овог сајта није препоручено</translation>
@@ -4403,6 +4410,7 @@
 <translation id="8564182942834072828">Одвојени документи/несређене копије</translation>
 <translation id="8564466070529550495">Виртуелна картица тренутно није доступна. Пробајте поново касније.</translation>
 <translation id="8564985650692024650">Chromium вам препоручује да ресетујете лозинку за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако сте је користили на другим сајтовима.</translation>
+<translation id="8568406155558596128">Помозите Chrome-у да боље разуме и попуњава сложене обрасце безбедном обрадом података на Google серверима. Ваши подаци остају приватни и нико их не прегледа.</translation>
 <translation id="8574570240981266561">Ставка је избрисана</translation>
 <translation id="8577192028579836704">Све опције су обично <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Виртуелна картица није доступна</translation>

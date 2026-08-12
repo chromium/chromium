@@ -5761,6 +5761,7 @@
 <translation id="5444281205834970653">刪除並繼續</translation>
 <translation id="5444452275167152925">從 ChromeOS 匯入</translation>
 <translation id="5445400788035474247">10 倍</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">腦力激盪</translation>
 <translation id="5449551289610225147">密碼無效</translation>
 <translation id="5449588825071916739">將所有分頁加入書籤</translation>
@@ -8120,6 +8121,7 @@
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7312040805247765153">無法安裝應用程式</translation>
 <translation id="7312210124139670355">管理員正在重設 eSIM，請稍候片刻。</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">鍵盤背光顏色</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{無法為 1 個事件設定日期，因此未顯示}other{無法為 # 個事件設定日期，因此未顯示}}</translation>
 <translation id="7314865262803554456">開始錄製時，你不會收到通知。</translation>

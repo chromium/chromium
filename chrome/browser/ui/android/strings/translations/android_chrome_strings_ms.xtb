@@ -723,7 +723,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="399788104667917863">Semat pada bar alat</translation>
 <translation id="4000212216660919741">Rumah Luar Talian</translation>
 <translation id="4000670338830950598">Sesuaikan dan kawal Google Chrome dengan item yang diserlahkan</translation>
-<translation id="4002066346123236978">Tajuk</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 kata laluan yang terjejas dalam Google Account anda}other{# kata laluan yang terjejas dalam Google Account anda}}</translation>
 <translation id="4023638601467301498">Untuk mendapatkan penanda halaman anda serta pelbagai lagi pada semua peranti anda, log masuk ke Chrome</translation>
 <translation id="4024768890073681126">Penyemak imbas anda diurus oleh ibu/bapa anda</translation>
@@ -1973,6 +1972,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8937772741022875483">Alih keluar aktiviti Chrome anda daripada Kesejahteraan Digital?</translation>
 <translation id="8942627711005830162">Buka dalam tetingkap lain</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Bahasa ini tidak dapat dimuat turun. Cuba lagi nanti.</translation>
+<translation id="8945348199139712719">Tampal dan akses teks yang disalin</translation>
 <translation id="8946759102391960088">Simpan akses kepada kata laluan anda</translation>
 <translation id="895442993047180128">Ikut serta pemberitahuan petua ditutup</translation>
 <translation id="8957528460562961174">Untuk mengekalkan akses kepada kata laluan anda, eksport kata laluan tersebut sekarang, kemudian import kata laluan tersebut pada pengurus kata laluan pilihan anda. Google Password Manager berhenti berfungsi kerana perkhidmatan Google Play tidak tersedia.</translation>

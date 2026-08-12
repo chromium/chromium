@@ -152,6 +152,7 @@
 <translation id="2635452620547538388">Igazolja személyazonosságát, ha a Chromium-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="2636783171884046627">Billentyűparancs használata a Gemini a Chromiumban szolgáltatásból való kilépéshez vagy a Gemini a Chromiumban szolgáltatásba való visszatéréshez.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{A Speciális védelemhez újra kell indítania a Chromiumot a frissítés alkalmazásához}=1{A Speciális védelemhez újra kell indítania a Chromiumot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{A Speciális védelemhez újra kell indítania a Chromiumot a frissítés alkalmazásához. A(z) # inkognitóablak nem fog újra megnyílni.}}</translation>
+<translation id="263863604136125912">A Chromium indítása</translation>
 <translation id="2648074677641340862">Az operációs rendszer hibát jelzett a telepítés során. Kérjük, töltse le újra a Chromiumot.</translation>
 <translation id="2661879430930417727">Ha megoszt egy eszközt, ismerősei és családtagjai külön fiókokban internetezve a saját kívánságaik szerint állíthatják be a Chromiumot.</translation>
 <translation id="2676569452213089702">Könnyen hozzáférhet a Gemini a Chromiumban szolgáltatáshoz az eszközén, még akkor is, ha a Chromium kis méretre van állítva.</translation>
@@ -305,7 +306,6 @@
 <translation id="4304713468139749426">Jelszókezelő</translation>
 <translation id="4334241893986177674">Keresés ezen a képernyőképen</translation>
 <translation id="4384331407722351213">A Chromium indítása a Windows indulásakor</translation>
-<translation id="4384993550046411228">A Chromium alapértelmezett böngészőként való beállításával könnyen hozzáférhet a már ismert, szeretett és megbízható funkciókhoz. A Chromium a gyors hozzáférés érdekében ki lesz tűzve a tálcára.</translation>
 <translation id="4400772909124543403">Nincs rendelkezésre álló frissítés</translation>
 <translation id="4407044323746248786">Biztosan kilép a Chromiumból?</translation>
 <translation id="4413205837991854510">A Képkereső parancsikonja mindig jelenjen meg</translation>

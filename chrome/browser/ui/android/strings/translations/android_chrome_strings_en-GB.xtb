@@ -723,7 +723,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="399788104667917863">Pin to toolbar</translation>
 <translation id="4000212216660919741">Offline Home</translation>
 <translation id="4000670338830950598">Customise and control Google Chrome with a highlighted item</translation>
-<translation id="4002066346123236978">Title</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 compromised password in your Google Account}other{# compromised passwords in your Google Account}}</translation>
 <translation id="4023638601467301498">To get your bookmarks and more on all your devices, sign in to Chrome</translation>
 <translation id="4024768890073681126">Your browser is managed by your parent</translation>
@@ -1973,6 +1972,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8937772741022875483">Remove your Chrome activity from Digital Wellbeing?</translation>
 <translation id="8942627711005830162">Open in other window</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – This language couldn't be downloaded. Try again later.</translation>
+<translation id="8945348199139712719">Paste and go to copied text</translation>
 <translation id="8946759102391960088">Keep access to your passwords</translation>
 <translation id="895442993047180128">Tips notifications opt-in closed</translation>
 <translation id="8957528460562961174">To keep access to your passwords, export them now and then import them to your preferred password manager. Google Password Manager stopped working because Google Play services isn't available.</translation>

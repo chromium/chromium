@@ -38,6 +38,7 @@
 <translation id="1097807529207545420">{count,plural, =1{1 palavra-passe validada instantaneamente}other{# palavras-passe validadas instantaneamente}}</translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloqueie com o Face ID</translation>
+<translation id="1111776967764068277">Cansou-se de copiar links?</translation>
 <translation id="1112015203684611006">Falha ao imprimir.</translation>
 <translation id="1118569444314402022">Damos-lhe as boas-vindas de volta, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotos e imagens</translation>
@@ -528,6 +529,7 @@
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os ficheiros transferidos</translation>
 <translation id="2671423594960767771">Partilhar grupo</translation>
+<translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Pagar em prestações</translation>
 <translation id="2673508731173059946">Aceder ao link copiado</translation>
 <translation id="2679659833697380">As informações são guardadas no seu dispositivo</translation>
@@ -544,6 +546,7 @@
 <translation id="271033894570825754">Nova coleção</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
 <translation id="2713106313042589954">Desligar câmara</translation>
+<translation id="2715440913764382254">Abra links diretamente aqui</translation>
 <translation id="2718352093833049315">Apenas em Wi-Fi</translation>
 <translation id="2721190673959776287">Exemplo de ajuda detalhada no produto para o painel de contexto, que deve aparecer várias vezes por dia.</translation>
 <translation id="2739887572830526131">Mantenha este grupo para adicionar separadores mais tarde ou elimine-o se já não precisar dele.</translation>
@@ -1005,6 +1008,7 @@
 <translation id="4338258232580025606">Não é possível iniciar sessão</translation>
 <translation id="4338650699862464074">Envia para a Google os URLs das páginas que visita.</translation>
 <translation id="4342946437867096381">Já guardou uma palavra-passe para este site na sua Conta Google. A Google pode escolher a palavra-passe mais recente para si.</translation>
+<translation id="4355702523442402731">Navegação fluida entre apps</translation>
 <translation id="4365121137632832185">Grupo de separadores Expandido.</translation>
 <translation id="4365685757967464989">Permita que o Gemini use a sua câmara para tirar fotos</translation>
 <translation id="4367971618859387374">Nome a apresentar</translation>
@@ -1282,6 +1286,7 @@
 <translation id="5233111790346066304">Guarde os ficheiros no Google Drive e aceda aos mesmos em qualquer altura.</translation>
 <translation id="5233638681132016545">Novo separador</translation>
 <translation id="5234094073825090254">{count,plural, =1{Marcador guardado na sua Conta Google, {email}.}other{Marcadores guardados na sua Conta Google, {email}.}}</translation>
+<translation id="5234162151438379838">{COUNT,plural, =1{Só é possível partilhar 1 separador.}other{Só é possível partilhar {COUNT} separadores.}}</translation>
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> já pode usar o seu nome de utilizador e palavra-passe quando usar o Gestor de Palavras-passe da Google para iniciar sessão em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, gerida pela sua organização, atualmente selecionada. Selecione uma conta.</translation>
@@ -1314,6 +1319,7 @@
 <translation id="5351613737248079168">Tem de ter sessão iniciada para usar o Level Up</translation>
 <translation id="5352128922772839949">Guardar ficheiro</translation>
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
+<translation id="5359436665022446585">Melhor abertura de links</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5364647308446127983">{count,plural, =1{Não foi possível importar {count} chave de acesso}other{Não foi possível importar {count} chaves de acesso}}</translation>
 <translation id="5371112366564891538">Aumentar tamanho do texto</translation>
@@ -1492,6 +1498,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5952641243319721872">Quer mesmo rejeitar a sua seleção?</translation>
 <translation id="5956112131836209882">Separador do grupo de separadores. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5963694076845073027">Abra os links aqui da próxima vez</translation>
 <translation id="5963939892571022323">Não é possível criar um link para o realce.</translation>
 <translation id="5968400720580217226">Modo IA</translation>
 <translation id="5971459446352190251">Pesquisa de códigos QR</translation>
@@ -1821,6 +1828,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="6937083164784433305">{count,plural, =1{Usou 1 foto para pesquisar}other{Usou # fotos para pesquisar}}</translation>
 <translation id="693761253105515415">Defina um código secreto</translation>
+<translation id="6938212956536472404">Não é possível partilhar este separador</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6946722113367118030">Pensativo</translation>
 <translation id="6950522403736391608">Oculto</translation>
@@ -1996,6 +2004,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="7561982940498449837">Fechar menu</translation>
 <translation id="7566349809380613217">Abrir <ph name="GROUP_TITLE" />, grupo partilhado de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Os marcadores estão ocultos</translation>
+<translation id="7575664680938145959">Abertura de links com um toque</translation>
 <translation id="7577900504646297215">Gerir interesses</translation>
 <translation id="7582666837709186351">Traduza texto nas suas fotos ou no ambiente à sua volta com a câmara.</translation>
 <translation id="7582857256643797524">Esta definição está ativada no seu dispositivo</translation>
@@ -2019,6 +2028,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="7646263789464975852">Menu → Definições → Verificação de segurança</translation>
 <translation id="7646772052135772216">A sincronização de palavras-passe não está a funcionar</translation>
 <translation id="764827086632467055">Toque em App de navegador predefinida</translation>
+<translation id="7648666127045672239">Aceda aqui com um só toque</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="765555660695722850">Esta ação elimina as moradas guardadas neste dispositivo. Também elimina algumas informações da sua Conta Google, mas não informações básicas, como o seu nome ou morada de casa.</translation>
 <translation id="765631330137769217">Toque em "Guardar" para aceder facilmente a esta palavra-passe na próxima vez que iniciar sessão</translation>
@@ -2036,6 +2046,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7702428539671224160">Preenchimento automático de informações de pagamento ativado em <ph name="URL" /></translation>
 <translation id="7708994397325774423">Tenha acesso a todas as suas palavras-passe</translation>
+<translation id="7710096647785049958">Poupe tempo em cada link</translation>
 <translation id="7711440461521638739">Não está a reutilizar nenhuma palavra-passe</translation>
 <translation id="7712361583414030698">Ver a versão offline</translation>
 <translation id="7719038820139380048">Inicie sessão para obter conteúdo com base nos seus interesses.</translation>
@@ -2361,6 +2372,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="8706806585855470492">Vai poder partilhar, aderir e colaborar em grupos de separadores</translation>
 <translation id="8709409604518538305">Os separadores foram fechados</translation>
 <translation id="8712637175834984815">OK</translation>
+<translation id="8717519179050551968">Cole menos, navegue mais</translation>
 <translation id="8717864919010420084">Copiar link</translation>
 <translation id="8722229818691036192">Contas neste dispositivo</translation>
 <translation id="8722649775263832315">Toque ou realce para pesquisar qualquer coisa com o Google Lens</translation>
@@ -2500,6 +2512,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="9148126808321036104">Iniciar sessão novamente</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9152637745605628097">Escolha entre temas, cores ou carregue uma imagem</translation>
+<translation id="9153159728062222866">Evite copiar e colar</translation>
 <translation id="9159628751968616911">Envie a página Web</translation>
 <translation id="9162412286847966593">Os dados e as gravações da sua organização não são usados para melhorar os modelos de IA generativa. <ph name="BEGIN_LINK" />A sua privacidade e o Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Ative o Preenchimento automático de palavras-passe</translation>

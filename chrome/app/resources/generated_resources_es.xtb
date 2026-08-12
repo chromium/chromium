@@ -5768,6 +5768,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5444281205834970653">Eliminar y continuar</translation>
 <translation id="5444452275167152925">Importados desde ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥ L</translation>
 <translation id="5447289297870286353">Explorar ideas</translation>
 <translation id="5449551289610225147">La contraseña no es válida</translation>
 <translation id="5449588825071916739">Añadir todas las pestañas a marcadores...</translation>
@@ -8131,6 +8132,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7311244614769792472">No se han encontrado resultados</translation>
 <translation id="7312040805247765153">No se puede instalar la aplicación</translation>
 <translation id="7312210124139670355">Tu administrador está restableciendo tu eSIM. Este proceso puede tardar unos minutos.</translation>
+<translation id="731239254927333251">Alt + L</translation>
 <translation id="7313539585802573958">Colores de retroiluminación del teclado</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{No se ha podido establecer la fecha de 1 evento y no se muestra}other{No se ha podido establecer la fecha de # eventos y no se muestran}}</translation>
 <translation id="7314865262803554456">No recibirás ninguna notificación cuando se inicie la grabación.</translation>

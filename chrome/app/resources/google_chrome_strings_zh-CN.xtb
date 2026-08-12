@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">设置错误：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome正在安装最新的系统更新，请稍候。</translation>
 <translation id="1330562121671411446">检测语言</translation>
+<translation id="1333654552732143316">启动 Chrome</translation>
 <translation id="1341711321000856656">您可切换到另一份 Chrome 个人资料以查看其中的密码</translation>
 <translation id="1343830902827845050">登录 Chrome</translation>
 <translation id="1356661055722410047">新功能！您可以翻译屏幕上的文字和图片</translation>
@@ -377,7 +378,6 @@
 <translation id="4885446229353981848">始终显示 Google 智能镜头快捷方式</translation>
 <translation id="4891791193823137474">让 Google Chrome 浏览器在后台运行</translation>
 <translation id="4895437082222824641">在 Chrome 新标签页中打开链接(&amp;T)</translation>
-<translation id="4896867431081882115">将 Chrome 设为默认浏览器，即可轻松使用您熟悉、喜爱和信赖的功能。Chrome 将固定到任务栏，以便您快速访问。</translation>
 <translation id="4904953848704395458">使用键盘快捷键打开 Chrome 中的 Gemini。</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4918844574251943176">已复制图片</translation>

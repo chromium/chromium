@@ -723,7 +723,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="399788104667917863">ツールバーに固定する</translation>
 <translation id="4000212216660919741">オフライン ホーム</translation>
 <translation id="4000670338830950598">Google Chrome をカスタマイズ、制御します（ハイライト表示された項目あり）</translation>
-<translation id="4002066346123236978">タイトル</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Google アカウントに 1 件の不正使用されたパスワードがあります}other{Google アカウントに # 件の不正使用されたパスワードがあります}}</translation>
 <translation id="4023638601467301498">すべてのデバイスで同じブックマークやその他の設定を使用するには、Chrome にログインしてください</translation>
 <translation id="4024768890073681126">お使いのブラウザは保護者によって管理されています</translation>
@@ -1973,6 +1972,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8937772741022875483">Chrome のアクティビティを Digital Wellbeing から削除しますか？</translation>
 <translation id="8942627711005830162">別のウィンドウで開く</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - この言語をダウンロードできませんでした。しばらくしてからもう一度お試しください。</translation>
+<translation id="8945348199139712719">コピーしたテキストを貼り付けて実行</translation>
 <translation id="8946759102391960088">パスワードへのアクセスを保持</translation>
 <translation id="895442993047180128">ヒントの通知のオプトイン メッセージが閉じられました</translation>
 <translation id="8957528460562961174">パスワードを引き続き使用できるようにするには、今すぐパスワードをエクスポートして、お好みのパスワード マネージャーにインポートしてください。Google Play 開発者サービスを使用できないため、Google パスワード マネージャーは動作を停止しています。</translation>

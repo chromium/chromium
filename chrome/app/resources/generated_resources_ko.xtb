@@ -5782,6 +5782,7 @@
 <translation id="5444281205834970653">삭제하고 계속하기</translation>
 <translation id="5444452275167152925">ChromeOS에서 가져옴</translation>
 <translation id="5445400788035474247">10배</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">브레인스토밍</translation>
 <translation id="5449551289610225147">비밀번호가 잘못되었습니다.</translation>
 <translation id="5449588825071916739">모든 탭 북마크</translation>
@@ -8145,6 +8146,7 @@
 <translation id="7311244614769792472">검색 결과 없음</translation>
 <translation id="7312040805247765153">앱을 설치할 수 없음</translation>
 <translation id="7312210124139670355">관리자가 eSIM을 재설정하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">키보드 백라이트 색상</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{이벤트 1개의 날짜를 지정할 수 없어 표시되지 않음}other{이벤트 #개의 날짜를 지정할 수 없어 표시되지 않음}}</translation>
 <translation id="7314865262803554456">녹화가 시작될 때 알림이 전송되지 않습니다.</translation>

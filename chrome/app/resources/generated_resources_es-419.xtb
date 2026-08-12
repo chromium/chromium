@@ -4276,7 +4276,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4276390967705106170">Abrir en una pestaña nueva del navegador</translation>
 <translation id="4276598757692536305">PPD de la impresora</translation>
 <translation id="4277434192562187284">Configuración de la fuente de XML</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Con permiso</translation>
 <translation id="4279129444466079448">Puedes instalar hasta <ph name="PROFILE_LIMIT" /> perfiles de eSIM en este dispositivo. Para agregar otro perfil, primero debes quitar uno de los perfiles existentes.</translation>
 <translation id="427987768447457592">Nuevo grupo de pestañas</translation>
 <translation id="4280325816108262082">El dispositivo se desconectará de forma automática cuando lo desactives o no lo uses</translation>
@@ -5770,6 +5770,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5444281205834970653">Borrar y continuar</translation>
 <translation id="5444452275167152925">Importados de ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Generar ideas</translation>
 <translation id="5449551289610225147">Contraseña no válida</translation>
 <translation id="5449588825071916739">Agregar a favoritos todas las pestañas</translation>
@@ -7057,7 +7058,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6476671549211161535">Presiona un botón que no sea el botón izquierdo o derecho del mouse en tu <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">No se admite la sincronización de notificaciones para teléfonos que tengan un perfil de trabajo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6479881432656947268">Visitar Chrome Web Store</translation>
-<translation id="6480327114083866287">Administrador: <ph name="MANAGER" /></translation>
+<translation id="6480327114083866287">Administrado por <ph name="MANAGER" /></translation>
 <translation id="6480532238409319936">No se pudo completar la operación de actualización</translation>
 <translation id="6481749622989211463">Comparte archivos y mucho más con dispositivos cercanos. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="648204537326351595">Permite que <ph name="SPECIFIC_NAME" /> acceda a tu micrófono</translation>
@@ -8133,6 +8134,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7311244614769792472">No se encontraron resultados</translation>
 <translation id="7312040805247765153">No se puede instalar la aplicación</translation>
 <translation id="7312210124139670355">El administrador está restableciendo tu eSIM. Es posible que este proceso demore unos minutos.</translation>
+<translation id="731239254927333251">Alt + L</translation>
 <translation id="7313539585802573958">Colores de retroiluminación del teclado</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{No se pudo determinar la fecha de 1 evento; por lo tanto, este no se muestra}other{No se pudo determinar la fecha de # eventos; por lo tanto, estos no se muestran}}</translation>
 <translation id="7314865262803554456">No recibirás una notificación cuando comience la grabación.</translation>

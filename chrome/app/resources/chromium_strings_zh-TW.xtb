@@ -151,6 +151,7 @@
 <translation id="2635452620547538388">請驗證身分，才能將 Chromium 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chromium 資料</translation>
 <translation id="2636783171884046627">使用鍵盤快速鍵離開或返回 Chromium 內建 Gemini。</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{「進階保護」要求你重新啟動 Chromium，以套用更新}=1{「進階保護」要求你重新啟動 Chromium，以套用更新。無痕視窗不會重新開啟。}other{「進階保護」要求你重新啟動 Chromium，以套用更新。# 個無痕視窗不會重新開啟。}}</translation>
+<translation id="263863604136125912">啟用 Chromium</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請重新下載 Chromium。</translation>
 <translation id="2661879430930417727">如果你與親朋好友共用裝置，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium</translation>
 <translation id="2676569452213089702">即使 Chromium 最小化，也能輕鬆在裝置上使用 Chromium 內建 Gemini。</translation>
@@ -304,7 +305,6 @@
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4334241893986177674">搜尋這張螢幕截圖</translation>
 <translation id="4384331407722351213">在 Windows 啟動時執行 Chromium</translation>
-<translation id="4384993550046411228">將 Chromium 設為預設瀏覽器，輕鬆存取你熟悉、喜愛且信任的功能。Chromium 會釘選到工作列，方便你快速存取。</translation>
 <translation id="4400772909124543403">沒有可用的更新</translation>
 <translation id="4407044323746248786">確定要結束 Chromium 嗎？</translation>
 <translation id="4413205837991854510">一律顯示「圖片搜尋」捷徑</translation>

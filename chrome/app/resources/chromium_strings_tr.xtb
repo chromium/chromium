@@ -151,6 +151,7 @@
 <translation id="2635452620547538388">Chromium verilerini kullanmak ve <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydetmek için kimliğinizi doğrulayın</translation>
 <translation id="2636783171884046627">Chromium'da Gemini'dan çıkmak veya Gemini'a dönmek için klavye kısayolunu kullanın.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor.}=1{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. Gizli pencereniz yeniden açılmayacak.}other{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. # gizli pencereniz yeniden açılmayacak.}}</translation>
+<translation id="263863604136125912">Chromium'u Başlat</translation>
 <translation id="2648074677641340862">Yükleme sırasında bir işletim sistemi hatası oluştu. Lütfen Chromium'u yeniden indirin.</translation>
 <translation id="2661879430930417727">Bir cihazı paylaşıyorsanız arkadaşlarınız ve aileniz ayrı olarak göz atabilir ve Chromium'u tam olarak istedikleri şekilde ayarlayabilirler.</translation>
 <translation id="2676569452213089702">Chromium simge durumuna küçültülmüş olsa bile Chromium'da Gemini'a cihazınızda kolayca erişebilirsiniz.</translation>
@@ -302,7 +303,6 @@
 <translation id="4304713468139749426">Şifre Yöneticisi</translation>
 <translation id="4334241893986177674">Bu ekran görüntüsünde arama yapın</translation>
 <translation id="4384331407722351213">Windows başlatıldığında Chromium'u aç</translation>
-<translation id="4384993550046411228">Chromium'u varsayılan tarayıcınız olarak ayarlayarak bildiğiniz, sevdiğiniz ve güvendiğiniz özelliklere kolayca erişin. Chromium, hızlı erişim için görev çubuğunuza sabitlenir.</translation>
 <translation id="4400772909124543403">Kullanılabilir güncelleme yok.</translation>
 <translation id="4407044323746248786">Yine de Chromium'dan çıkılsın mı?</translation>
 <translation id="4413205837991854510">Görsel Arama Kısayolunu Her Zaman Göster</translation>

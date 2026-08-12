@@ -723,7 +723,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="399788104667917863">Festa á tækjastiku</translation>
 <translation id="4000212216660919741">Ónettengt</translation>
 <translation id="4000670338830950598">Sérstilltu og stjórnaðu Google Chrome með auðkenndu atriði</translation>
-<translation id="4002066346123236978">Heiti</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 aðgangsorð í hættu á Google-reikningnum þínum}one{# aðgangsorð í hættu á Google-reikningnum þínum}other{# aðgangsorð í hættu á Google-reikningnum þínum}}</translation>
 <translation id="4023638601467301498">Skráðu þig inn á Chromium til að fá aðgang að bókamerkjum og fleiru í öllum tækjunum þínum</translation>
 <translation id="4024768890073681126">Foreldri þitt stjórnar vafranum</translation>
@@ -1973,6 +1972,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8937772741022875483">Viltu fjarlægja það sem þú gerir í Chrome úr stafrænni vellíðan?</translation>
 <translation id="8942627711005830162">Opna í öðrum glugga</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Ekki tókst að hlaða þessu tungumáli niður. Reyndu aftur síðar.</translation>
+<translation id="8945348199139712719">Líma og fara á afritaðan texta</translation>
 <translation id="8946759102391960088">Ekki missa aðgang að aðgangsorðunum þínum</translation>
 <translation id="895442993047180128">Val um að fá tilkynningar um ráð lokað</translation>
 <translation id="8957528460562961174">Til að tryggja að þú hafir aðgang að aðgangsorðunum þínum skaltu flytja þau út núna og flytja þau síðan inn í aðgangsorðastjórnun að eigin vali. Google-aðgangsorðastjórnun hætti að virka vegna þess að þjónusta Google Play er ekki í boði.</translation>

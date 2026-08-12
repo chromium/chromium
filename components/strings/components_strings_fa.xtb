@@ -304,6 +304,7 @@
 <translation id="1504042622576912555">فلوت</translation>
 <translation id="1507202001669085618">‏&lt;p&gt;اگر از پورتالی از Wi-Fi استفاده می‌کنید که پیش از آنلاین شدن شما را ملزم به ورود به سیستم می‌کند، این خطا را می‌بینید.&lt;/p&gt;
     &lt;p&gt;برای برطرف کردن این خطا، در صفحه‌ای که می‌خواهید باز کنید روی &lt;strong&gt;اتصال&lt;/strong&gt; کلیک کنید.&lt;/p&gt;</translation>
+<translation id="1507635939006264930">روشن کردن تکمیل خودکار</translation>
 <translation id="1508605873202255562">برای اینکه از اهدافم عقب نمانم، ردیاب سفارشی‌سازی‌شده‌ای بسازید</translation>
 <translation id="1513706915089223971">فهرست ورودی‌های سابقه</translation>
 <translation id="1515436033764190215">ساعت پیش</translation>
@@ -631,6 +632,7 @@
 <translation id="2093982008204312032">‏Google Chrome می‌خواهد Windows Hello را برای درج گذرواژه‌ها خاموش کند.</translation>
 <translation id="2094505752054353250">عدم تطابق دامنه</translation>
 <translation id="2094704029599359040">اطلاعات نسخه</translation>
+<translation id="2096183846792489672">محتوا و نشانی‌های وب صفحه‌هایی که بازدید می‌کنید می‌توانند در یک فضای خصوصی ابری پردازش شوند</translation>
 <translation id="209961642949927292">می‌خواهید دفعه بعدی سریع‌تر تسویه حساب کنید؟</translation>
 <translation id="2099652385553570808">سه منگنه در چپ</translation>
 <translation id="2101225219012730419">نسخه:</translation>
@@ -1592,6 +1594,7 @@
 <translation id="3738166223076830879">سرپرست شما مرورگرتان را مدیریت می‌کند.</translation>
 <translation id="3739842843727261045">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما این نتایج را می‌پسندید</translation>
 <translation id="3740447166056383374">قبل‌از کپی کردن باید بررسی شود</translation>
+<translation id="3742104862808477448">‏با پردازش ایمن داده‌ها در سرورهای Google، به Chromium کمک کنید تا فرم‌های پیچیده را بهتر درک کند و پر کند. اطلاعات شما خصوصی باقی می‌ماند و توسط هیچ‌کس بازبینی نمی‌شود.</translation>
 <translation id="3744111561329211289">همگام‌سازی پس‌زمینه</translation>
 <translation id="3744212718085287312">می‌خواهید آن را دفعه بعدی با کارت مجازی ایمن‌تر کنیم؟</translation>
 <translation id="3744899669254331632">‏نمی‌توانید اکنون از <ph name="SITE" /> دیدن کنید زیرا وب‌سایت اعتبارنامه‌های درهمی ارسال کرده که Chromium نمی‌تواند پردازش کند. خطاها و حمله‌های شبکه معمولاً موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار می‌کند.</translation>
@@ -1615,6 +1618,7 @@
 <translation id="3769584711865378220">‫<ph name="URL" /> می‌خواهد اجازه دسترسی مکان را از تقریبی به دقیق تغییر دهد</translation>
 <translation id="3772211998634047851">کاغذ (باند)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع یادداشت جدید در Google Keep، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="3778045607993018262">‏حساب Pix به <ph name="ACCOUNT_EMAIL" /> پیوند داده خواهد شد. برای خاموش کردن شناسایی کد Pix، به <ph name="BEGIN_LINK1" />تنظیمات Chrome<ph name="END_LINK1" /> بروید</translation>
 <translation id="3780694243617746492">مخزن خروجی</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">دستگاه‌های بلوتوث</translation>
@@ -1634,6 +1638,7 @@
 <translation id="380329542618494757">نام</translation>
 <translation id="3803481123869276674">‏هنگام خرید کردن در Chrome، «کیف پول الکترونیکی» را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید</translation>
 <translation id="3803801106042434208">این موتورهای جستجو در منطقه شما پرطرفدار هستند</translation>
+<translation id="3804112825000113857">مشاهده تنظیمات «تکمیل خودکار»</translation>
 <translation id="380666903981445943">‏روش پرداختی در «حساب Google» خود ذخیره کنید تا برای خریدهای انجام‌شده در Chrome به‌طور خودکار تکمیل شود</translation>
 <translation id="3807366285948165054">‏تغییر جهت تصویر حول محور X</translation>
 <translation id="3807873520724684969">محتوای مضر مسدود شد.</translation>
@@ -2213,7 +2218,7 @@
 <translation id="4780366598804516005">صندوق پست ۱</translation>
 <translation id="4785273477715803444">فیلتر کردن گزارش‌ها</translation>
 <translation id="4785376858512657294">‏مدیریت «حساب Google»</translation>
-<translation id="4785689107224900852">جابجا شدن به این برگه</translation>
+<translation id="4785689107224900852">عوض کردن به این زبانه</translation>
 <translation id="4785998536350006000">درحال جستجوی «<ph name="SEARCH_QUERY" />»</translation>
 <translation id="4787182171088676626">پاکت (مرغوب)</translation>
 <translation id="4791134497475588553">‏اینکه برنامه‌های Linux نصب شدند و زمانی‌که آخرین بار استفاده شدند</translation>
@@ -3312,6 +3317,7 @@
 <translation id="666259744093848177">‏(x86_64 ترجمه‌شده)</translation>
 <translation id="6665553082534466207">سه سوراخ در راست</translation>
 <translation id="6668389483194953109">‏نام اندازه کاغذ «custom» پیدا شد، اما خصوصیت «custom_size» خالی یا نامعتبر است.</translation>
+<translation id="667044980437620424">«تکمیل خودکار» روشن شد</translation>
 <translation id="6670729408462528018">گالری</translation>
 <translation id="6671697161687535275">‏پیشنهاد فرم از Chromium پاک شود؟</translation>
 <translation id="6675846980676550611">«واقعیت افزوده» مجاز نشد</translation>
@@ -3541,6 +3547,7 @@
 <translation id="7064851114919012435">اطلاعات تماس</translation>
 <translation id="7070144569727915108">تنظیمات سیستم</translation>
 <translation id="70705239631109039">اتصال شما کاملاً ایمن نیست</translation>
+<translation id="7074595960655571061">‏اکنون می‌توانید روش‌های پرداخت را ذخیره کنید تا در تسویه‌حساب در Chrome «تکمیل خودکار» انجام شود. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">درخواست خیلی بزرگ است</translation>
 <translation id="7075513071073410194">‏PKCS #1 MD5 با رمزگذاری RSA</translation>
 <translation id="7075896597860500885">کپی کردن از این سایت توصیه نمی‌شود</translation>
@@ -4167,7 +4174,7 @@
 <translation id="8148608574971654810">‏نسخه PDF:</translation>
 <translation id="8149426793427495338">رایانه‌تان به خواب رفته است.</translation>
 <translation id="815036624016370447">‏اطلاعات «حساب Google»‏ (<ph name="ACCOUNT" />) می‌تواند به شما کمک کند فرم‌ها را در Chrome سریع‌تر تکمیل کنید</translation>
-<translation id="8150722005171944719">این فایل در <ph name="URL" /> قابل خواندن نیست. ممکن است حذف شده، جابجا شده باشد و یا مجوزهای فایل از دسترسی جلوگیری می‌کنند.</translation>
+<translation id="8150722005171944719">این فایل در <ph name="URL" /> قابل خواندن نیست. ممکن است حذف شده، جابه‌جا شده باشد و یا مجوزهای فایل از دسترسی جلوگیری می‌کنند.</translation>
 <translation id="8151185429379586178">ابزارهای برنامه‌نویس</translation>
 <translation id="8152194419479742504">‏برای پیدا کردن و تکمیل اطلاعات بدون تعویض بین زبانه‌ها، در هر فرمی ‎@@ را تایپ کنید</translation>
 <translation id="8153865548451212769">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگیری کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگیری کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> بارگیری کنید}}</translation>
@@ -4404,6 +4411,7 @@
 <translation id="8564182942834072828">اسناد جداگانه/کپی‌های تلفیق‌نشده</translation>
 <translation id="8564466070529550495">کارت مجازی درحال‌حاضر دردسترس نیست، لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="8564985650692024650">‏Chromium توصیه می‌کند اگر از گذرواژه <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> خود در سایت دیگری استفاده کردید آن را بازنشانی کنید.</translation>
+<translation id="8568406155558596128">‏با پردازش ایمن داده‌ها در سرورهای Google، به Chrome کمک کنید فرم‌های پیچیده را بهتر درک کند و تکمیل کند. اطلاعات شما خصوصی باقی می‌ماند و توسط هیچ‌کس بازبینی نمی‌شود.</translation>
 <translation id="8574570240981266561">مورد حذف شد</translation>
 <translation id="8577192028579836704">همه گزینه‌ها در محدوده قیمت معمول <ph name="TYPICAL_PRICE" /> قرار دارند</translation>
 <translation id="8577348305244205642">کارت مجازی دردسترس نیست</translation>

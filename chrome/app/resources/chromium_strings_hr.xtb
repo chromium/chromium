@@ -152,6 +152,7 @@
 <translation id="2635452620547538388">Potvrdite svoj identitet kako biste upotrebljavali i spremali podatke iz Chromiuma na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2636783171884046627">Da biste napustili Gemini u Chromiumu ili se vratili na njega, upotrijebite tipkovni prečac.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Napredna zaštita zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja}=1{Napredna zaštita zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaš anonimni prozor neće se ponovno otvoriti.}one{Napredna zaštita zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Napredna zaštita zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Napredna zaštita zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
+<translation id="263863604136125912">Pokreni Chromium</translation>
 <translation id="2648074677641340862">Došlo je do pogreške operativnog sustava tijekom instalacije. Ponovo preuzmite Chromium.</translation>
 <translation id="2661879430930417727">Ako dijelite uređaj, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chromium prema svojim željama</translation>
 <translation id="2676569452213089702">Jednostavan pristup za upotrebu Geminija u Chromiumu na cijelom uređaju, čak i ako je Chromium minimiziran.</translation>
@@ -305,7 +306,6 @@
 <translation id="4304713468139749426">Upravitelj zaporki</translation>
 <translation id="4334241893986177674">Pretražite ovu snimku zaslona</translation>
 <translation id="4384331407722351213">Pokreni Chromium pri pokretanju Windowsa</translation>
-<translation id="4384993550046411228">Postavite Chromium kao zadani preglednik da biste jednostavno pristupali svojim omiljenim pouzdanim značajkama. Chromium će se prikvačiti na traku sa zadacima radi brzog pristupa.</translation>
 <translation id="4400772909124543403">Ažuriranja nisu dostupna</translation>
 <translation id="4407044323746248786">Želite li ipak zatvoriti Chromium?</translation>
 <translation id="4413205837991854510">Uvijek prikaži prečac za pretraživanje slika</translation>

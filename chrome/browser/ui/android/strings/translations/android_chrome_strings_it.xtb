@@ -723,7 +723,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="399788104667917863">Fissa sulla barra degli strumenti</translation>
 <translation id="4000212216660919741">Home page offline</translation>
 <translation id="4000670338830950598">Personalizza e controlla Google Chrome con un elemento evidenziato</translation>
-<translation id="4002066346123236978">Titolo</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 password compromessa nel tuo Account Google}other{# password compromesse nel tuo Account Google}}</translation>
 <translation id="4023638601467301498">Accedi a Chrome per avere preferiti e altro su tutti i tuoi dispositivi</translation>
 <translation id="4024768890073681126">Il tuo browser è gestito da un genitore</translation>
@@ -1439,7 +1438,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6858893072923394368">Aggiungi pagina…</translation>
 <translation id="6864459304226931083">Scarica immagine</translation>
 <translation id="686490460830618322">Foglio di filtro delle app</translation>
-<translation id="6865313869410766144">Dati della compilazione automatica dei moduli</translation>
+<translation id="6865313869410766144">Dati per la compilazione automatica dei moduli</translation>
 <translation id="6867400383614725881">Nuova scheda Incognito</translation>
 <translation id="686899695320434745">Gli indirizzi non vengono criptati con la tua passphrase. In questo modo puoi utilizzarli in altri servizi Google.</translation>
 <translation id="6870625088374152862">Accesso eseguito come <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1973,6 +1972,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8937772741022875483">Vuoi rimuovere la tua attività di Chrome da Benessere digitale?</translation>
 <translation id="8942627711005830162">Apri nell'altra finestra</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: impossibile scaricare questa lingua. Riprova più tardi.</translation>
+<translation id="8945348199139712719">Incolla e vai al testo copiato</translation>
 <translation id="8946759102391960088">Mantieni l'accesso alle tue password</translation>
 <translation id="895442993047180128">Attivazione delle notifiche di suggerimenti chiusa</translation>
 <translation id="8957528460562961174">Per mantenere l'accesso alle tue password, esportale ora e poi importale nel gestore delle password che preferisci. Gestore delle password di Google ha smesso di funzionare perché Google Play Services non è disponibile.</translation>

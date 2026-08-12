@@ -5766,6 +5766,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5444281205834970653">Löschen und fortfahren</translation>
 <translation id="5444452275167152925">Aus ChromeOS importiert</translation>
 <translation id="5445400788035474247">10-fach</translation>
+<translation id="5446836766119801744">⌥ + L</translation>
 <translation id="5447289297870286353">Brainstorming</translation>
 <translation id="5449551289610225147">Ungültiges Passwort</translation>
 <translation id="5449588825071916739">Alle Tabs als Lesezeichen speichern</translation>
@@ -8126,6 +8127,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7311244614769792472">Keine Ergebnisse gefunden</translation>
 <translation id="7312040805247765153">Die App kann nicht installiert werden</translation>
 <translation id="7312210124139670355">Dein Administrator setzt deine eSIM zurück. Das kann einige Minuten dauern.</translation>
+<translation id="731239254927333251">Alt + L</translation>
 <translation id="7313539585802573958">Farben der Tastaturbeleuchtung</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 Ereignis konnte nicht datiert werden und wird nicht angezeigt}other{# Ereignisse konnten nicht datiert werden und werden nicht angezeigt}}</translation>
 <translation id="7314865262803554456">Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.</translation>

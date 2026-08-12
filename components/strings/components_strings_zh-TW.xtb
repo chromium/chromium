@@ -303,6 +303,7 @@
 <translation id="1504042622576912555">溝紋</translation>
 <translation id="1507202001669085618">&lt;p&gt;如果您使用的 Wi-Fi 入口網站必須先登入才能連上網路，系統就會顯示這則錯誤訊息。&lt;/p&gt;
     &lt;p&gt;如要修正這個錯誤，請在您要嘗試開啟的網頁上按一下 [連線]&lt;strong&gt;&lt;/strong&gt;。&lt;/p&gt;</translation>
+<translation id="1507635939006264930">正在開啟自動填入功能</translation>
 <translation id="1508605873202255562">建立自訂追蹤工具，掌握目標達成進度</translation>
 <translation id="1513706915089223971">歷史記錄項目清單</translation>
 <translation id="1515436033764190215">小時前</translation>
@@ -630,6 +631,7 @@
 <translation id="2093982008204312032">Google Chrome 正在嘗試關閉 Windows Hello，以便填入密碼。</translation>
 <translation id="2094505752054353250">網域不符</translation>
 <translation id="2094704029599359040">版本資訊</translation>
+<translation id="2096183846792489672">系統可能會在雲端私人空間處理你造訪的網頁內容和網址</translation>
 <translation id="209961642949927292">想加快之後的結帳速度嗎？</translation>
 <translation id="2099652385553570808">三釘 (左側)</translation>
 <translation id="2101225219012730419">版本：</translation>
@@ -1104,6 +1106,7 @@
 <translation id="2905107382358353958">新付款設定的快訊</translation>
 <translation id="2909946352844186028">系統偵測到網路變更。</translation>
 <translation id="2910062169995917863">工作階段逾時</translation>
+<translation id="2911224142899421774">Google 錢包設定適用於從 Chrome 儲存的資訊</translation>
 <translation id="2911973620368911614">工作帳戶使用者 ID</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> 通常會使用加密方式保護你的資訊。但 Chrome 這次嘗試連線到 <ph name="SITE" /> 時，該網站傳回了異常且錯誤的憑證。這可能是因為有攻擊者企圖偽裝成 <ph name="SITE" />，或是受到 Wi-Fi 登入畫面影響而造成連線中斷。不過請放心，Chrome 已及時停止連線，並未傳輸任何資料，因此你的資訊仍然安全無虞。</translation>
 <translation id="2915068235268646559">當機時間：<ph name="CRASH_TIME" /></translation>
@@ -1589,6 +1592,7 @@
 <translation id="3738166223076830879">你的瀏覽器是由系統管理員管理。</translation>
 <translation id="3739842843727261045">按讚可對這些結果給予正面評價</translation>
 <translation id="3740447166056383374">複製檔案前請務必確認</translation>
+<translation id="3742104862808477448">透過 Google 伺服器安全地處理資料，協助 Chromium 進一步辨識並填寫複雜表單。你的資訊不會對外公開，也不會交由人工審查。</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3744212718085287312">下次要使用虛擬卡片，強化安全保障嗎？</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> 傳送的憑證受到干擾，造成 Chromium 無法處理，因此你目前無法造訪該網站。網路錯誤和攻擊通常是暫時性狀態，因此這個網頁可能稍後就會恢復正常運作。</translation>
@@ -1612,6 +1616,7 @@
 <translation id="3769584711865378220"><ph name="URL" /> 想將位置存取權從「大概」改成「精確」</translation>
 <translation id="3772211998634047851">紙 (證券紙)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Google Keep 中快速建立新記事</translation>
+<translation id="3778045607993018262">Pix 帳戶將連結至「<ph name="ACCOUNT_EMAIL" />」。如要關閉 Pix 圖碼偵測功能，請前往 <ph name="BEGIN_LINK1" />Chrome 設定<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">輸出紙槽</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">藍牙裝置</translation>
@@ -1631,6 +1636,7 @@
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803481123869276674">在 Chrome 中進行購買交易時可選擇「電子錢包」</translation>
 <translation id="3803801106042434208">以下是你所在地區的熱門搜尋引擎</translation>
+<translation id="3804112825000113857">查看自動填入設定</translation>
 <translation id="380666903981445943">將付款方式儲存至 Google 帳戶，就能在 Chrome 中購物時自動填入</translation>
 <translation id="3807366285948165054">圖片 X 批次</translation>
 <translation id="3807873520724684969">已封鎖有害內容。</translation>
@@ -3309,6 +3315,7 @@
 <translation id="666259744093848177">(經過翻譯的 x86_64)</translation>
 <translation id="6665553082534466207">三孔 (右側)</translation>
 <translation id="6668389483194953109">系統偵測到紙張大小名稱為「自訂」，但「custom_size」屬性空白或無效。</translation>
+<translation id="667044980437620424">已開啟自動填入功能</translation>
 <translation id="6670729408462528018">相片庫</translation>
 <translation id="6671697161687535275">要從 Chromium 中移除表單填寫建議嗎？</translation>
 <translation id="6675846980676550611">不允許使用 AR</translation>
@@ -3538,6 +3545,7 @@
 <translation id="7064851114919012435">聯絡資訊</translation>
 <translation id="7070144569727915108">系統設定</translation>
 <translation id="70705239631109039">你的連線可能有安全漏洞</translation>
+<translation id="7074595960655571061">你現在可以儲存付款方式，在 Chrome 中結帳時自動填入。<ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">要求過大</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 (使用 RSA 加密)</translation>
 <translation id="7075896597860500885">不建議複製這個網站的內容</translation>
@@ -4401,6 +4409,7 @@
 <translation id="8564182942834072828">個別文件/未自動分頁的副本</translation>
 <translation id="8564466070529550495">目前無法使用虛擬卡片，請稍後再試。</translation>
 <translation id="8564985650692024650">如果你在其他網站上重複使用過你的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密碼，Chromium 會建議你重設密碼。</translation>
+<translation id="8568406155558596128">透過 Google 伺服器安全地處理資料，協助 Chrome 進一步辨識並填寫複雜表單。你的資訊不會對外公開，也不會交由人工審查。</translation>
 <translation id="8574570240981266561">項目已刪除</translation>
 <translation id="8577192028579836704">所有選項一般為 <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">虛擬卡片無法使用</translation>

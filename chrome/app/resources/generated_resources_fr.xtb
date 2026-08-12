@@ -5766,6 +5766,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5444281205834970653">Supprimer et continuer</translation>
 <translation id="5444452275167152925">Importés depuis ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Trouver des idées</translation>
 <translation id="5449551289610225147">Mot de passe incorrect</translation>
 <translation id="5449588825071916739">Ajouter tous les onglets aux favoris…</translation>
@@ -8132,6 +8133,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7312040805247765153">Impossible d'installer l'appli</translation>
 <translation id="7312210124139670355">Votre administrateur réinitialise votre eSIM. Cela peut prendre quelques minutes.</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">Couleurs de rétroéclairage du clavier</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Impossible de dater 1 événement, qui n'est pas affiché}one{Impossible de dater # événement, qui n'est pas affiché}other{Impossible de dater # événements, qui ne sont pas affichés}}</translation>
 <translation id="7314865262803554456">Vous ne recevrez pas de notification au début de l'enregistrement.</translation>

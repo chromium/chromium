@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">Erro de configuração: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Aguarde enquanto o Chrome instala as últimas atualizações do sistema.</translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
+<translation id="1333654552732143316">Iniciar o Chrome</translation>
 <translation id="1341711321000856656">Mude para outro perfil do Chrome para conferir as senhas dele</translation>
 <translation id="1343830902827845050">Faça login no Chrome</translation>
 <translation id="1356661055722410047">Novidade! Agora é possível traduzir textos e imagens na tela.</translation>
@@ -378,7 +379,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="4885446229353981848">Sempre mostrar o atalho do Google Lens</translation>
 <translation id="4891791193823137474">Executar o Google Chrome em segundo plano</translation>
 <translation id="4895437082222824641">Abrir link em nova &amp;guia do Chrome</translation>
-<translation id="4896867431081882115">Defina o Chrome como o navegador padrão para acessar com facilidade seus recursos favoritos. O Chrome será fixado na barra de tarefas para agilizar o seu acesso.</translation>
 <translation id="4904953848704395458">Abra o Gemini no Chrome com um atalho do teclado.</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4918844574251943176">Imagem copiada</translation>

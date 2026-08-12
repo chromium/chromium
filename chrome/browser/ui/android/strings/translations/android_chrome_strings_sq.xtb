@@ -723,7 +723,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="399788104667917863">Gozhdo te shiriti i veglave</translation>
 <translation id="4000212216660919741">Shtëpia offline</translation>
 <translation id="4000670338830950598">Personalizo dhe kontrollo Google Chrome me një artikull të theksuar</translation>
-<translation id="4002066346123236978">Titulli</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 fjalëkalim i komprometuar në "Llogarinë tënde të Google"}other{# fjalëkalime të komprometuara në "Llogarinë tënde të Google"}}</translation>
 <translation id="4023638601467301498">Për të marrë faqeshënuesit etj. në të gjitha pajisjet e tua, identifikohu në Chrome</translation>
 <translation id="4024768890073681126">Shfletuesi yt menaxhohet nga prindi yt</translation>
@@ -1973,6 +1972,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8937772741022875483">Dëshiron të heqësh aktivitetin tënd të Chrome nga "Mirëqenia dixhitale"?</translation>
 <translation id="8942627711005830162">Hap në një dritare tjetër</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Kjo gjuhë nuk mund të shkarkohet. Provo përsëri më vonë.</translation>
+<translation id="8945348199139712719">Ngjit dhe shko te teksti i kopjuar</translation>
 <translation id="8946759102391960088">Mbaj qasjen te fjalëkalimet e tua</translation>
 <translation id="895442993047180128">Regjistrimi për njoftimet e këshillave u mbyll</translation>
 <translation id="8957528460562961174">Për të mbajtur qasjen në fjalëkalimet e tua, eksportoji ato tani dhe më pas importoji te menaxheri yt i preferuar i fjalëkalimeve. "Menaxheri i fjalëkalimeve i Google" ndaloi së funksionuari sepse shërbimet e Google Play nuk ofrohen.</translation>

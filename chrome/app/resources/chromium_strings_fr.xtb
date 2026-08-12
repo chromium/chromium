@@ -152,6 +152,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2635452620547538388">Confirmez votre identité pour utiliser et enregistrer des données Chromium dans votre compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2636783171884046627">Pour quitter Gemini dans Chromium ou y revenir, utilisez un raccourci clavier.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour}=1{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. La fenêtre de navigation privée ne se rouvrira pas.}one{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. # fenêtre de navigation privée ne se rouvrira pas.}other{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. Les # fenêtres de navigation privée ne se rouvriront pas.}}</translation>
+<translation id="263863604136125912">Démarrer Chromium</translation>
 <translation id="2648074677641340862">Une erreur du système d'exploitation s'est produite pendant l'installation. Veuillez télécharger Chromium à nouveau.</translation>
 <translation id="2661879430930417727">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chromium selon leurs préférences et naviguer sur le Web de façon indépendante.</translation>
 <translation id="2676569452213089702">Accédez facilement à Gemini dans Chromium partout sur votre appareil, même si Chromium est réduit.</translation>
@@ -305,7 +306,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4334241893986177674">Rechercher dans cette capture d'écran</translation>
 <translation id="4384331407722351213">Lancer Chromium au démarrage de Windows</translation>
-<translation id="4384993550046411228">Accédez facilement aux fonctionnalités que vous connaissez, appréciez et auxquelles vous faites confiance en définissant Chromium comme navigateur par défaut. Chromium sera épinglé à la barre des tâches pour un accès rapide.</translation>
 <translation id="4400772909124543403">Aucune mise à jour disponible</translation>
 <translation id="4407044323746248786">Quitter Chromium quand même ?</translation>
 <translation id="4413205837991854510">Toujours afficher le raccourci de recherche dans des images</translation>

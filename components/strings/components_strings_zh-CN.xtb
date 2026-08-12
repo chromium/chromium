@@ -304,6 +304,7 @@
 <translation id="1504042622576912555">瓦楞纸板</translation>
 <translation id="1507202001669085618">&lt;p&gt;如果您使用的 Wi-Fi 门户网站必须登录才能连接网络，您就会看到这条错误消息。&lt;/p&gt;
     &lt;p&gt;要修正该错误，请在您尝试打开的网页上点击&lt;strong&gt;连接&lt;/strong&gt;。&lt;/p&gt;</translation>
+<translation id="1507635939006264930">正在开启自动填充功能</translation>
 <translation id="1508605873202255562">帮我做一个自定义追踪表，让我能随时掌握目标进度</translation>
 <translation id="1513706915089223971">历史记录条目列表</translation>
 <translation id="1515436033764190215">小时前</translation>
@@ -631,6 +632,7 @@
 <translation id="2093982008204312032">Google Chrome 正在尝试关闭 Windows Hello，以使其不再作为填充密码时的验证机制。</translation>
 <translation id="2094505752054353250">网域不匹配</translation>
 <translation id="2094704029599359040">版本信息</translation>
+<translation id="2096183846792489672">系统可以在云端的私密空间中处理您所访问网页的内容和网址</translation>
 <translation id="209961642949927292">想下次更快捷地结账？</translation>
 <translation id="2099652385553570808">三钉（左侧）</translation>
 <translation id="2101225219012730419">版本：</translation>
@@ -1587,6 +1589,7 @@
 <translation id="3738166223076830879">您的浏览器由管理员管理。</translation>
 <translation id="3739842843727261045">选择“我喜欢”可对这些结果给予正面反馈</translation>
 <translation id="3740447166056383374">复制前需要检查</translation>
+<translation id="3742104862808477448">在 Google 的服务器上安全地处理数据，帮助 Chromium 更好地理解和填写复杂的表单。您的信息将保持私密，且不会被任何人查看。</translation>
 <translation id="3744111561329211289">后台同步</translation>
 <translation id="3744212718085287312">下次使用虚拟卡以提高安全性？</translation>
 <translation id="3744899669254331632">您目前无法访问 <ph name="SITE" />，因为此网站发送了 Chromium 无法处理的杂乱凭据。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
@@ -1610,6 +1613,7 @@
 <translation id="3769584711865378220"><ph name="URL" /> 想要将位置信息访问权限从大致位置改为精确位置</translation>
 <translation id="3772211998634047851">纸（证券纸）</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google Keep 中快速创建新记事</translation>
+<translation id="3778045607993018262">Pix 账号将关联到 <ph name="ACCOUNT_EMAIL" />。如需关闭 Pix 代码检测，请前往 <ph name="BEGIN_LINK1" />Chrome 设置<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">出纸槽</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">蓝牙设备</translation>
@@ -1629,6 +1633,7 @@
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803481123869276674">当您在 Chrome 中购物时，可看到电子钱包选项</translation>
 <translation id="3803801106042434208">这些搜索引擎在您所在地区非常热门</translation>
+<translation id="3804112825000113857">查看自动填充功能设置</translation>
 <translation id="380666903981445943">将支付方式保存在您的 Google 账号中，以便在 Chrome 中购物时自动填充</translation>
 <translation id="3807366285948165054">图片沿 X 轴位移</translation>
 <translation id="3807873520724684969">有害内容已被拦截。</translation>
@@ -1976,7 +1981,7 @@
 <translation id="4349810866125026513">仍然上传</translation>
 <translation id="4350629523305688469">多功能纸匣</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> 想搜索附近的蓝牙设备，并发现了以下设备：</translation>
-<translation id="435434000498374342">为想要挑战 5 公里跑的零基础新手制定一份为期 8 周的训练计划。计划中要包含走跑交替的间歇训练，并安排专门的休息日</translation>
+<translation id="435434000498374342">为想要挑战 5 公里跑的零基础新手制定一份为期 8 周的训练计划。要安排走跑交替的间歇训练，并预留专门的休息日</translation>
 <translation id="4357577888320640139">要在所有对话串中自动分享相关标签页吗？</translation>
 <translation id="4358059973562876591">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策出错了。</translation>
 <translation id="4358461427845829800">管理付款方式…</translation>
@@ -3306,6 +3311,7 @@
 <translation id="666259744093848177">（经过翻译的 x86_64）</translation>
 <translation id="6665553082534466207">三孔（右侧）</translation>
 <translation id="6668389483194953109">发现纸张尺寸名称为“custom”，但“custom_size”属性为空或无效。</translation>
+<translation id="667044980437620424">自动填充功能已开启</translation>
 <translation id="6670729408462528018">图库</translation>
 <translation id="6671697161687535275">要从 Chromium 中移除表单填写建议吗？</translation>
 <translation id="6675846980676550611">不允许使用 AR</translation>
@@ -3535,6 +3541,7 @@
 <translation id="7064851114919012435">联系信息</translation>
 <translation id="7070144569727915108">系统设置</translation>
 <translation id="70705239631109039">您的连接存在安全隐患</translation>
+<translation id="7074595960655571061">现在，您可以保存支付方式，以便在 Chrome 中结账时自动填充。<ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">请求过大</translation>
 <translation id="7075513071073410194">PKCS #1，带有 RSA 加密的 MD5</translation>
 <translation id="7075896597860500885">不建议从该网站复制</translation>
@@ -4398,6 +4405,7 @@
 <translation id="8564182942834072828">单独的文档/非逐份打印的副本</translation>
 <translation id="8564466070529550495">暂时无法使用虚拟卡，请稍后再试。</translation>
 <translation id="8564985650692024650">如果您在其他网站上重复使用了您的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密码，Chromium 建议您重置该密码。</translation>
+<translation id="8568406155558596128">在 Google 的服务器上安全地处理数据，帮助 Chrome 更好地理解和填写复杂的表单。您的信息将保持私密，且不会被任何人查看。</translation>
 <translation id="8574570240981266561">已删除该项</translation>
 <translation id="8577192028579836704">所有选项的一般价格为 <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">无法使用虚拟卡</translation>

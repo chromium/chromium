@@ -5783,6 +5783,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5444281205834970653">Delete and continue</translation>
 <translation id="5444452275167152925">Imported from ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Brainstorm</translation>
 <translation id="5449551289610225147">Invalid password</translation>
 <translation id="5449588825071916739">Bookmark All Tabs</translation>
@@ -8146,6 +8147,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7312040805247765153">Can't install app</translation>
 <translation id="7312210124139670355">Your administrator is resetting your eSIM. This may take a few minutes.</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">Keyboard backlight colours</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 event could not be dated and is not shown}other{# events could not be dated and are not shown}}</translation>
 <translation id="7314865262803554456">You will not be notified when the recording starts.</translation>

@@ -5763,6 +5763,7 @@
 <translation id="5444281205834970653">削除して続行</translation>
 <translation id="5444452275167152925">ChromeOS からインポート</translation>
 <translation id="5445400788035474247">10 倍</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">ブレインストーミング</translation>
 <translation id="5449551289610225147">パスワードが無効です</translation>
 <translation id="5449588825071916739">すべてのタブをブックマークに追加する</translation>
@@ -8126,6 +8127,7 @@
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7312040805247765153">アプリをインストールできません</translation>
 <translation id="7312210124139670355">管理者が eSIM をリセットしています。この処理には数分かかることがあります。</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">キーボード バックライトの色</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{日付を特定できなかった 1 件のイベントは表示されていません}other{日付を特定できなかった # 件のイベントは表示されていません}}</translation>
 <translation id="7314865262803554456">録画の開始時には通知されません。</translation>

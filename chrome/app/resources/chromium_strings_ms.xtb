@@ -152,6 +152,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2635452620547538388">Sahkan identiti anda untuk menggunakan dan menyimpan data Chromium dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2636783171884046627">Untuk meninggalkan atau kembali kepada Gemini dalam Chromium, gunakan pintasan papan kekunci.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Perlindungan Lanjutan memerlukan anda melancarkan semula Chromium untuk menggunakan kemaskinian}=1{Perlindungan Lanjutan memerlukan anda melancarkan semula Chromium untuk menggunakan kemaskinian. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Perlindungan Lanjutan memerlukan anda melancarkan semula Chromium untuk menggunakan kemaskinian. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
+<translation id="263863604136125912">Mulakan Chromium</translation>
 <translation id="2648074677641340862">Ralat sistem pengendalian berlaku semasa pemasangan. Sila muat turun Chromium semula.</translation>
 <translation id="2661879430930417727">Jika anda berkongsi peranti, rakan dan keluarga boleh menyemak imbas secara terpisah dan menyediakan Chromium sebagaimana yang mereka ingini</translation>
 <translation id="2676569452213089702">Akses mudah untuk menggunakan Gemini dalam Chromium merentas peranti anda walaupun Chromium diminimumkan.</translation>
@@ -305,7 +306,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4304713468139749426">Pengurus Kata Laluan</translation>
 <translation id="4334241893986177674">Cari pada tangkapan skrin ini</translation>
 <translation id="4384331407722351213">Lancarkan Chromium apabila Windows dimulakan</translation>
-<translation id="4384993550046411228">Dapatkan akses mudah kepada ciri yang anda ketahui, sukai dan percayai dengan menetapkan Chromium sebagai penyemak imbas lalai anda. Chromium akan disematkan pada bar tugas anda untuk akses pantas.</translation>
 <translation id="4400772909124543403">Tiada kemaskinian tersedia</translation>
 <translation id="4407044323746248786">Keluar daripada Chromium juga?</translation>
 <translation id="4413205837991854510">Pintasan Sentiasa Paparkan Carian Imej</translation>

@@ -723,7 +723,6 @@
 <translation id="399788104667917863">ወደ የመሣሪያ አሞሌ ፒን አድርግ</translation>
 <translation id="4000212216660919741">ከመስመር ውጭ መነሻ</translation>
 <translation id="4000670338830950598">በደመቀ ንጥል Google Chromeን ያብጁ እና ይቆጥጠሩ</translation>
-<translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{በGoogle መለያዎ ውስጥ ያለ 1 የተጠለፈ የይለፍ ቃል}one{በGoogle መለያዎ ውስጥ ያለ # የተጠለፈ የይለፍ ቃል}other{በGoogle መለያዎ ውስጥ ያሉ # የተጠለፉ የይለፍ ቃላት}}</translation>
 <translation id="4023638601467301498">የእርስዎን ዕልባቶች እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="4024768890073681126">የእርስዎ አሳሽ በወላጅዎ የሚተዳደር ነው</translation>
@@ -1973,6 +1972,7 @@
 <translation id="8937772741022875483">የChrome እንቅስቃሰዎ ከዲጂታል ብቁ መሆን ይወገድ?</translation>
 <translation id="8942627711005830162">በሌላ መስኮት ውስጥ ክፈት</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ይህ ቋንቋ ሊወርድ አልቻለም ቆይተው እንደገና ይሞክሩ።</translation>
+<translation id="8945348199139712719">ይለጥፉ እና ወደ የተቀዳው ጽሑፍ ይሂዱ</translation>
 <translation id="8946759102391960088">ለይለፍ ቃላትዎ መዳረሻን ያቆዩ</translation>
 <translation id="895442993047180128">የጠቃሚ ምክሮች ማሳወቂያዎች መርጦ መግባት ተዘግቷል</translation>
 <translation id="8957528460562961174">የይለፍ ቃላትዎን መዳረሻ ለማቆየት አሁን ወደ ውጪ ይላኳቸው ከዚያም ወደመረጡት የይለፍ ቃል አስተዳዳሪ ያስመጧቸው። Google Play አገልግሎቶች ስለማይገኝ Google የይለፍ ቃል አስተዳዳሪ መስራት አቁሟል።</translation>

@@ -723,7 +723,6 @@
 <translation id="399788104667917863">Самбарт бэхлэх</translation>
 <translation id="4000212216660919741">Офлайн нүүр</translation>
 <translation id="4000670338830950598">Тодруулсан зүйлээр Google Chrome-г тусгайлан өөрчилж, хянана уу</translation>
-<translation id="4002066346123236978">Гарчиг</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Таны Google Бүртгэлээс 1 нууц үг алдагдсан байна}other{Таны Google Бүртгэлээс # нууц үг алдагдсан байна}}</translation>
 <translation id="4023638601467301498">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="4024768890073681126">Таны хөтчийг танай эцэг эх удирддаг</translation>
@@ -1973,6 +1972,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8937772741022875483">Chrome-н үйл ажиллагаагаа Дижитал хэрэглээнээс устгах уу?</translation>
 <translation id="8942627711005830162">Өөр цонхонд нээх</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Энэ хэлийг татаж чадсангүй. Дараа дахин оролдоно уу.</translation>
+<translation id="8945348199139712719">Хуулсан текстийг буулгаж, тийш очих</translation>
 <translation id="8946759102391960088">Нууц үгэндээ хандах эрхээ хадгалаарай</translation>
 <translation id="895442993047180128">Зөвлөгөөний мэдэгдэлд нэгдэх сонголтыг хаасан</translation>
 <translation id="8957528460562961174">Нууц үгэндээ хандах эрхээ хадгалахын тулд одоо нууц үгээ экспортолж, дараа нь сонгосон нууц үгний менежер лүүгээ импортолно уу. Google Play үйлчилгээг ашиглах боломжгүй тул Google Нууц үгний менежер ажиллахаа больсон.</translation>

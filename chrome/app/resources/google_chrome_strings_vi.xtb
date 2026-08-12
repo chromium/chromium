@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">Lỗi thiết lập: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Vui lòng đợi khi Chrome cài đặt các bản cập nhật hệ thống mới nhất.</translation>
 <translation id="1330562121671411446">Phát hiện ngôn ngữ</translation>
+<translation id="1333654552732143316">Khởi động Chrome</translation>
 <translation id="1341711321000856656">Bạn có thể chuyển để xem mật khẩu trong một hồ sơ Chrome khác</translation>
 <translation id="1343830902827845050">Đăng nhập vào Chrome</translation>
 <translation id="1356661055722410047">Mới! Bạn có thể dịch cả văn bản và hình ảnh trên màn hình</translation>
@@ -380,7 +381,6 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="4885446229353981848">Luôn hiện lối tắt đến Google Ống kính</translation>
 <translation id="4891791193823137474">Để Google Chrome chạy trên nền</translation>
 <translation id="4895437082222824641">Mở đường liên kết trong thẻ mới của Chrome</translation>
-<translation id="4896867431081882115">Dễ dàng sử dụng các tính năng mà bạn biết, yêu thích và tin tưởng bằng cách đặt Chrome làm trình duyệt mặc định. Chrome sẽ được ghim vào thanh tác vụ để bạn truy cập nhanh.</translation>
 <translation id="4904953848704395458">Mở Gemini trong Chrome bằng một phím tắt.</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
 <translation id="4918844574251943176">Đã sao chép hình ảnh</translation>

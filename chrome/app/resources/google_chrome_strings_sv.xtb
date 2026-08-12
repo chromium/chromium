@@ -33,6 +33,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1290883685122687410">Konfigureringsfel: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Vänta medan de senaste systemuppdateringarna installeras av Chrome.</translation>
 <translation id="1330562121671411446">Identifiera språk</translation>
+<translation id="1333654552732143316">Starta Chrome</translation>
 <translation id="1341711321000856656">Du kan byta för att se lösenord från en annan Chrome-profil</translation>
 <translation id="1343830902827845050">Logga in i Chrome</translation>
 <translation id="1356661055722410047">Nyhet! Du kan översätta både text och bilder på skärmen</translation>
@@ -382,7 +383,6 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="4885446229353981848">Visa alltid genväg till Google Lens</translation>
 <translation id="4891791193823137474">Låt Google Chrome köras i bakgrunden</translation>
 <translation id="4895437082222824641">Öppna länkar i en ny flik i Chrome</translation>
-<translation id="4896867431081882115">Få enkel åtkomst till funktionerna du känner till, gillar och litar på genom att ställa in Chrome som standardwebbläsare. Chrome fästs i aktivitetsfältet för snabb åtkomst.</translation>
 <translation id="4904953848704395458">Öppna Gemini i Chrome med ett kortkommando.</translation>
 <translation id="4918086044614829423">Acceptera</translation>
 <translation id="4918844574251943176">Bilden har kopierats</translation>

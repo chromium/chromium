@@ -304,6 +304,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1504042622576912555">Flute</translation>
 <translation id="1507202001669085618">&lt;p&gt;Anda akan melihat error ini jika menggunakan portal Wi-Fi yang mengharuskan Anda login sebelum terhubung online.&lt;/p&gt;
     &lt;p&gt;Untuk memperbaiki error, klik &lt;strong&gt;Sambungkan&lt;/strong&gt; di halaman yang ingin Anda buka.&lt;/p&gt;</translation>
+<translation id="1507635939006264930">Mengaktifkan isi otomatis</translation>
 <translation id="1508605873202255562">Buatkan alat pemantau progres khusus agar saya bisa mencapai target saya</translation>
 <translation id="1513706915089223971">Daftar entri histori</translation>
 <translation id="1515436033764190215">jam lalu</translation>
@@ -632,6 +633,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2093982008204312032">Google Chrome mencoba menonaktifkan Windows Hello untuk mengisi sandi.</translation>
 <translation id="2094505752054353250">Ketidakcocokan domain</translation>
 <translation id="2094704029599359040">Informasi Versi</translation>
+<translation id="2096183846792489672">Konten dan URL halaman yang Anda kunjungi dapat diproses di ruang privasi di cloud</translation>
 <translation id="209961642949927292">Check out lebih cepat lain kali?</translation>
 <translation id="2099652385553570808">Tiga jepretan di kiri</translation>
 <translation id="2101225219012730419">Versi:</translation>
@@ -1591,6 +1593,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3738166223076830879">Browser dikelola oleh administrator Anda.</translation>
 <translation id="3739842843727261045">Memberi tanda Suka akan mengirim masukan bahwa Anda menyukai hasil ini</translation>
 <translation id="3740447166056383374">Peninjauan diperlukan sebelum menyalin</translation>
+<translation id="3742104862808477448">Bantu Chromium memahami dan mengisi formulir yang kompleks dengan lebih baik melalui pemrosesan data secara aman di server Google. Info Anda akan tetap bersifat pribadi dan tidak akan ditinjau oleh siapa pun.</translation>
 <translation id="3744111561329211289">Sinkronisasi latar belakang</translation>
 <translation id="3744212718085287312">Mau lebih aman dengan kartu virtual di lain waktu?</translation>
 <translation id="3744899669254331632">Anda tidak dapat mengunjungi <ph name="SITE" /> sekarang karena situs web mengirim kredensial tak beraturan yang tidak dapat diproses Chromium. Kesalahan jaringan dan serangan biasanya bersifat sementara, sehingga halaman ini mungkin akan bekerja nanti.</translation>
@@ -1614,6 +1617,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3769584711865378220"><ph name="URL" /> ingin mengubah akses lokasi dari perkiraan ke presisi</translation>
 <translation id="3772211998634047851">Kertas (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat catatan baru di Google Keep dengan cepat</translation>
+<translation id="3778045607993018262">Akun Pix akan ditautkan ke <ph name="ACCOUNT_EMAIL" />. Untuk menonaktifkan deteksi kode Pix, buka <ph name="BEGIN_LINK1" />setelan Chrome<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Tampungan keluaran</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Perangkat bluetooth</translation>
@@ -1633,6 +1637,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803481123869276674">Saat Anda melakukan pembelian di Chrome, lihat eWallet sebagai opsi</translation>
 <translation id="3803801106042434208">Mesin telusur ini populer di wilayah Anda</translation>
+<translation id="3804112825000113857">Lihat setelan isi otomatis</translation>
 <translation id="380666903981445943">Simpan metode pembayaran di Akun Google Anda untuk otomatis mengisikannya pada pembelian yang dilakukan di Chrome</translation>
 <translation id="3807366285948165054">Perpindahan image X</translation>
 <translation id="3807873520724684969">Konten yang berbahaya diblokir.</translation>
@@ -3311,6 +3316,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="666259744093848177">(x86_64 diterjemahkan)</translation>
 <translation id="6665553082534466207">Tiga lubang di kanan</translation>
 <translation id="6668389483194953109">Ditemukan nama ukuran kertas "custom", tetapi properti "custom_size" kosong atau tidak valid.</translation>
+<translation id="667044980437620424">Isi otomatis diaktifkan</translation>
 <translation id="6670729408462528018">Galeri</translation>
 <translation id="6671697161687535275">Hapus saran formulir dari Chromium?</translation>
 <translation id="6675846980676550611">AR tidak diizinkan</translation>
@@ -3540,6 +3546,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7064851114919012435">Info kontak</translation>
 <translation id="7070144569727915108">setelan sistem</translation>
 <translation id="70705239631109039">Koneksi Anda tidak sepenuhnya aman</translation>
+<translation id="7074595960655571061">Anda kini dapat menyimpan metode pembayaran agar terisi otomatis saat checkout di Chrome. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">Permintaan terlalu besar</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 Dengan Enkripsi RSA</translation>
 <translation id="7075896597860500885">Tidak disarankan menyalin dari situs ini</translation>
@@ -4399,6 +4406,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8564182942834072828">Dokumen terpisah/Salinan tidak tersusun</translation>
 <translation id="8564466070529550495">Kartu virtual saat ini tidak tersedia, coba lagi nanti.</translation>
 <translation id="8564985650692024650">Chromium menyarankan untuk menyetel ulang sandi <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> jika Anda juga menggunakannya di situs lain.</translation>
+<translation id="8568406155558596128">Bantu Chrome memahami dan mengisi formulir yang kompleks dengan lebih baik melalui pemrosesan data secara aman di server Google. Info Anda akan tetap bersifat pribadi dan tidak akan ditinjau oleh siapa pun.</translation>
 <translation id="8574570240981266561">Item dihapus</translation>
 <translation id="8577192028579836704">Semua opsi berharga standar <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Kartu virtual tidak tersedia</translation>

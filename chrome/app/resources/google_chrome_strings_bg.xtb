@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">Грешка при настройването: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Моля, изчакайте, докато Chrome инсталира най-новите системни актуализации.</translation>
 <translation id="1330562121671411446">Разпознаване на езика</translation>
+<translation id="1333654552732143316">Стартиране на Chrome</translation>
 <translation id="1341711321000856656">Можете да превключите, за да видите паролите от друг потребителски профил в Chrome</translation>
 <translation id="1343830902827845050">Вход в Chrome</translation>
 <translation id="1356661055722410047">Ново! Можете да превеждате текст и изображения на екрана си</translation>
@@ -380,7 +381,6 @@
 <translation id="4885446229353981848">Прекият път към Google Обектив да се показва винаги</translation>
 <translation id="4891791193823137474">Google Chrome да се изпълнява на заден план</translation>
 <translation id="4895437082222824641">Отваряне на връзката в нов &amp;раздел на Chrome</translation>
-<translation id="4896867431081882115">Получете лесен достъп до познати, любими и надеждни функции, като зададете Chrome като браузър по подразбиране. Chrome ще бъде фиксиран в лентата на задачите за бърз достъп.</translation>
 <translation id="4904953848704395458">Отваряйте Gemini в Chrome с клавишна комбинация.</translation>
 <translation id="4918086044614829423">Приемам</translation>
 <translation id="4918844574251943176">Изображението е копирано</translation>

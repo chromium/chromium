@@ -2266,7 +2266,7 @@
 <translation id="2739240477418971307">שינוי הגדרות הנגישות שלך</translation>
 <translation id="2739331588276254426">יש חיבור לאינטרנט דרך <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="2739887572830526131">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או למחוק אותה אם אין לך יותר צורך בה.</translation>
-<translation id="2739917034504760471">כאן אפשר למצוא הגדרות של מילים או מידע נוסף על הנושא</translation>
+<translation id="2739917034504760471">קבלת הגדרות של מילים או מידע נוסף בנושא מסוים</translation>
 <translation id="274029851662193272">שקוע</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2740876196999178364">‏מפתחות הגישה האלה נשמרים רק במכשיר הזה. הם לא נשמרים בחשבון Google.</translation>
@@ -3362,7 +3362,7 @@
 <translation id="3577036603268648505">שמירה על הבטיחות אונליין</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3577487026101678864">סנכרון הקבצים פועל</translation>
-<translation id="3578230582111850125">‏כדי לשאול את Gemini, צריך לבחור טקסט</translation>
+<translation id="3578230582111850125">‏סימון טקסט כדי לשאול את Gemini</translation>
 <translation id="3581605050355435601">‏הגדרה אוטומטית של כתובת IP</translation>
 <translation id="3581861561942370740">חיפוש בהיסטוריית ההורדות</translation>
 <translation id="3582057310199111521">הוזנה באתר מטעה ונמצאה בפרצה באבטחת מידע</translation>
@@ -5783,6 +5783,7 @@
 <translation id="5444281205834970653">מחיקה והמשך</translation>
 <translation id="5444452275167152925">‏יובאו מ-ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">‎⌥L</translation>
 <translation id="5447289297870286353">סיעור מוחות</translation>
 <translation id="5449551289610225147">סיסמה לא חוקית</translation>
 <translation id="5449588825071916739">הוספת סימנייה לכל הכרטיסיות</translation>
@@ -7309,7 +7310,7 @@
 <translation id="6660301751798595791">בחירת הקול</translation>
 <translation id="6660819301598582123">השועל המהיר קפץ מעל לכלב שנח לו בעצלתיים.</translation>
 <translation id="666099631117081440">שרתי הדפסה</translation>
-<translation id="6662339038589469159">‏כדי לשאול את Gemini, צריך לבחור טקסט</translation>
+<translation id="6662339038589469159">‏סימון טקסט כדי לשאול את Gemini</translation>
 <translation id="6662394424395160792">‏אפשר להשתמש במנהל הסיסמאות של Google כדי להיכנס לאתרים מהר יותר מכל המכשירים</translation>
 <translation id="6662931079349804328">מדיניות הארגון השתנתה. כפתור הניסויים הוסר מסרגל הכלים.</translation>
 <translation id="6664774537677393800">משהו השתבש בפתיחת הפרופיל שלך. יש לצאת ולאחר מכן להיכנס מחדש.</translation>
@@ -8150,6 +8151,7 @@
 <translation id="7311244614769792472">לא נמצאו תוצאות</translation>
 <translation id="7312040805247765153">לא ניתן להתקין את האפליקציה</translation>
 <translation id="7312210124139670355">‏ה-eSIM הזה עובר איפוס בהוראת האדמין שלך. הפעולה עשויה להימשך מספר דקות.</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">צבעים לתאורה האחורית במקלדת</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{לא ניתן לתארך אירוע אחד והוא לא מוצג}one{לא ניתן לתארך # אירועים והם לא מוצגים}two{לא ניתן לתארך # אירועים והם לא מוצגים}other{לא ניתן לתארך # אירועים והם לא מוצגים}}</translation>
 <translation id="7314865262803554456">לא תישלח לך התראה כשההקלטה תתחיל.</translation>

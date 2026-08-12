@@ -17,6 +17,7 @@
 <translation id="1237769345474105984">Chrome から</translation>
 <translation id="124228879633599436">お使いの Chrome は最新ではありません。安全性を確保するため更新してください。</translation>
 <translation id="1258531953614971819">Chrome のヒント: Chrome をホーム画面に移動</translation>
+<translation id="1333577334443425318">Chrome を既定に設定すると、他のアプリからリンクをコピーする手間を省けます。</translation>
 <translation id="1333745675627230582">Chrome Dino ゲームをプレイ</translation>
 <translation id="1343830902827845050">Chrome にログイン</translation>
 <translation id="1352919863522755794">Google パスワード マネージャーでパスワードを確認できませんでした。インターネット接続を確認してみてください。</translation>
@@ -38,6 +39,7 @@
 <translation id="1554731936187952550">Chrome の最高強度のセキュリティで有害なウェブサイトから保護します</translation>
 <translation id="155816064895200734">Chrome を既定のブラウザに設定する</translation>
 <translation id="1580570086594302477">Chrome で新しいシークレット タブを開きます。</translation>
+<translation id="1605168141396675642">コピーの手間を省いて、Chrome でリンクを直接開くことができます。</translation>
 <translation id="1646463005043273333">Chrome の設定を開いて Chrome を既定のブラウザに設定します。</translation>
 <translation id="1670609221633730681">Chrome のヒント: アドレスバーの位置を選択</translation>
 <translation id="1683863426423719967">Chrome からタブ リマインダーを受け取るには、iOS の [設定] で通知をオンにしてください。</translation>
@@ -71,6 +73,7 @@
 <translation id="2423077901494354337">お使いのデバイスで Chrome を最大限に活用できるようになりました。</translation>
 <translation id="2427791862912929107">Chrome には、インターネットのデータ利用量やウェブページの読み込み速度を管理できる機能があります。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="2450221499140985490">メッセージやドキュメントのリンクを Chrome で直接開くことができます。</translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome を {THRESHOLD} 分間使用しなかった場合に行われます。履歴や自動入力も対象となります。}other{Chrome を {THRESHOLD} 分間使用しなかった場合に行われます。履歴や自動入力も対象となります。}}</translation>
 <translation id="2561231791489583059">Chrome を既定のブラウザに設定すれば、危険なサイトから保護され、パスワードを保護できます</translation>
 <translation id="2574249610672786438">どのデバイスからでも Chrome で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
@@ -127,8 +130,10 @@
 <translation id="3827545470516145620">このデバイスは標準のセキュリティ機能で保護されます</translation>
 <translation id="384394811301901750">現在 Google Chrome ではカメラを使用できません</translation>
 <translation id="3863841106411295595">入力した URL を Chrome のリーディング リストに追加します。</translation>
+<translation id="3878515067127964393">コピーの手間を省くには、Chrome を既定の iOS ブラウザに設定します。</translation>
 <translation id="3901001113120561395">Chrome を最大限に活用しましょう。</translation>
 <translation id="3913386780052199712">Chrome にログイン</translation>
+<translation id="3913747277937572860">Chrome を既定に設定すると、ウェブ コンテンツを自動的に開くことができます。</translation>
 <translation id="3984746313391923992">組織が Chrome にログインしないように求めています。</translation>
 <translation id="3988789688219830639">Google Chrome で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
 <translation id="4064699917955374540">Google アカウントで Chrome のデータを使用して保存するには、本人確認を行ってください。</translation>
@@ -235,6 +240,7 @@
 <translation id="6533470733797826516">Chrome の自動入力機能ですばやくログイン</translation>
 <translation id="6536544321553662809">Chrome を既定のブラウザに設定すると、リンクを簡単に共有したり開いたりできます</translation>
 <translation id="6545449117344801102">Chrome では、住所を検出し、Google マップを使用して経路やローカル情報を表示しています。</translation>
+<translation id="660537754475262202">Chrome を既定のブラウザに設定すると、リンクをここですぐに開くことができます。</translation>
 <translation id="6611692150236062461">保存したパスワードを他のアプリで簡単に使用できるようするには、Chrome の自動入力を選択します。</translation>
 <translation id="6636941099779251629">組織が、Chrome を使用するにはログインすることを求めています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">ユーザーの　IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部を　Google　に送信することがあります</translation>
@@ -269,6 +275,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="722167379782941918">Chrome は保護強化機能を推奨しています</translation>
 <translation id="723787869754590019">自動入力に Chrome を使用する</translation>
 <translation id="7261678641327190792">Chrome でパスワードを確認できません</translation>
+<translation id="7272091023280308138">次回からは、URL をコピーしなくても、Chrome でリンクを直接開くことができます。</translation>
 <translation id="7272930098487145294">画像を保存するには、[設定] をタップして写真への追加を Chrome に許可してください</translation>
 <translation id="7275945473750112644">アカウントは <ph name="HOSTED_DOMAIN" /> で管理されているため、Chrome データはこのデバイスから削除されます</translation>
 <translation id="7284245284340063465">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを削除<ph name="END_LINK" />してください。</translation>
@@ -284,6 +291,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7466693328838535498">[検索ウィジェット] ボックスに「Chrome」と入力</translation>
 <translation id="7477056987201678345">Chrome のデータを削除しています…</translation>
 <translation id="7492574581995589075">Google アカウントで Chrome データを使用、保存する機能は組織によって無効にされています。新しいブックマークやパスワードなどは、このデバイスにのみ保存されます。</translation>
+<translation id="752120807649195785">Chrome を既定に設定すると、リンクをコピーしなくてもワンタップで開くことができます。</translation>
 <translation id="7540272326042438331">Chrome を共有</translation>
 <translation id="7575971113404272499">Chrome のヒント: デフォルトで Chrome を使用する</translation>
 <translation id="7581063337314642333">Chrome でタブグリッドにアクセス</translation>
@@ -323,6 +331,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8245080522851805544">Chrome を終了するときにデバイス認証でブラウジングのプライバシーを保護</translation>
 <translation id="8248887045858762645">Chrome のヒント</translation>
 <translation id="8265730590513812063">Chrome メニューを開く</translation>
+<translation id="8276803169904409881">Chrome を既定に設定すると、他のアプリからリンクをすぐに開くことができます。</translation>
 <translation id="8284376267694582021">お子様の安全を守る機能を利用するには、子ども向けに設定された Google アカウントを使用するか、アカウントなしで Chrome を使用します。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">お支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。
 
@@ -360,6 +369,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8865415417596392024">アカウント内の Chrome のデータ</translation>
 <translation id="8874688701962049679">Chrome を最大限に活用するためのヒント。</translation>
 <translation id="8897749957032330183">パスワードは、このデバイスの Google パスワード マネージャーに保存されます。</translation>
+<translation id="898288749595466683">URL をコピーしなくても、Chrome を既定に設定すると、ページを直接読み込むことができます。</translation>
 <translation id="9004772704776174843">Chrome はログアウト状態です</translation>
 <translation id="9068336935206019333">シークレット モードの Chrome で開く</translation>
 <translation id="9082304295862405388">Gemini は、Chrome にすでに付与されている権限に応じて、正確な位置情報を使用することがあります</translation>

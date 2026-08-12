@@ -5783,6 +5783,7 @@
 <translation id="5444281205834970653">ਮਿਟਾਓ ਅਤੇ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="5444452275167152925">ChromeOS ਤੋਂ ਆਯਾਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">ਵਿਚਾਰ-ਵਟਾਂਦਰਾ ਕਰੋ</translation>
 <translation id="5449551289610225147">ਅਵੈਧ ਪਾਸਵਰਡ</translation>
 <translation id="5449588825071916739">ਸਾਰੀਆਂ ਟੈਬਾਂ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ</translation>
@@ -8147,6 +8148,7 @@
 <translation id="7311244614769792472">ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="7312040805247765153">ਐਪ ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="7312210124139670355">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੇ ਈ-ਸਿਮ ਨੂੰ ਰੀਸੈੱਟ ਕਰ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ ਰੰਗ</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 ਇਵੈਂਟ ਨੂੰ ਤਾਰੀਖ ਨਹੀਂ ਦਿੱਤੀ ਜਾ ਸਕੀ ਅਤੇ ਉਸਨੂੰ ਦਿਖਾਇਆ ਨਹੀਂ ਗਿਆ ਹੈ}one{# ਇਵੈਂਟ ਨੂੰ ਤਾਰੀਖ ਨਹੀਂ ਦਿੱਤੀ ਜਾ ਸਕੀ ਅਤੇ ਉਸਨੂੰ ਦਿਖਾਇਆ ਨਹੀਂ ਗਿਆ ਹੈ}other{# ਇਵੈਂਟਾਂ ਨੂੰ ਤਾਰੀਖ ਨਹੀਂ ਦਿੱਤੀ ਜਾ ਸਕੀ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਦਿਖਾਇਆ ਨਹੀਂ ਗਿਆ ਹੈ}}</translation>
 <translation id="7314865262803554456">ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
@@ -10101,7 +10103,7 @@
 <translation id="8818152010000655963">ਵਾਲਪੇਪਰ</translation>
 <translation id="8818988764764862764">ਵਿੰਡੋ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="8819510664278523111">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ EID ਨੰਬਰ <ph name="EID_NUMBER" /> ਹੈ, ਡੀਵਾਈਸ ਦਾ IMEI ਨੰਬਰ <ph name="IMEI_NUMBER" /> ਹੈ ਅਤੇ ਡੀਵਾਈਸ ਦਾ ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" /> ਹੈ। ਇਨ੍ਹਾਂ ਨੰਬਰਾਂ ਦੀ ਵਰਤੋਂ ਸੇਵਾ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
-<translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8820817407110198400">ਬੁੱਕਮਾਰਕ</translation>
 <translation id="8821045908425223359">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ IP ਪਤੇ ਦਾ ਸੰਰੂਪਣ ਕਰੋ</translation>
 <translation id="8821206216942230957">ਤੁਹਾਡੇ ਖਾਤੇ ਕੋਲ Chrome ਵਿੱਚ Gemini ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਹੈ</translation>
 <translation id="8823514049557262177">ਕਾਪੀ ਲਿੰਕ ਲਿ&amp;ਖਤ</translation>

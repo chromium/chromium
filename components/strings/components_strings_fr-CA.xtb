@@ -1105,6 +1105,7 @@
 <translation id="2905107382358353958">Alerte sur les nouveaux paramètres de paiement</translation>
 <translation id="2909946352844186028">Un changement réseau a été détecté.</translation>
 <translation id="2910062169995917863">Délai de session dépassé</translation>
+<translation id="2911224142899421774">Vos paramètres Google Portefeuille s'appliquent aux informations enregistrées à partir de Chrome</translation>
 <translation id="2911973620368911614">Identifiant d'utilisateur pour la comptabilisation de travaux</translation>
 <translation id="2914160345369867329">Un chiffrement est normalement utilisé sur le site <ph name="SITE" /> pour protéger vos données personnelles. Lors de la dernière tentative de connexion de Chrome au site <ph name="SITE" />, un authentifiant inhabituel et incorrect a été retourné. Cela peut arriver lorsqu'un individu malveillant tente de se faire passer pour <ph name="SITE" /> ou qu'un écran de connexion Wi-Fi a interrompu la connexion. Vos données restent sécurisées parce que nous avons arrêté la connexion avant l'échange des données.</translation>
 <translation id="2915068235268646559">Plantage à <ph name="CRASH_TIME" /></translation>

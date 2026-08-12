@@ -151,6 +151,7 @@
 <translation id="2635452620547538388">Potwierdź swoją tożsamość, aby móc zapisywać dane z Chromium na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
 <translation id="2636783171884046627">Aby wyjść z Gemini w Chromium lub do niego wrócić, użyj skrótu klawiszowego.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Ochrona zaawansowana wymaga ponownego uruchomienia Chromium, aby zastosować aktualizację}=1{Ochrona zaawansowana wymaga ponownego uruchomienia Chromium, aby zastosować aktualizację. Okno incognito nie otworzy się ponownie.}few{Ochrona zaawansowana wymaga ponownego uruchomienia Chromium, aby zastosować aktualizację. # okna incognito nie otworzą się ponownie.}many{Ochrona zaawansowana wymaga ponownego uruchomienia Chromium, aby zastosować aktualizację. # okien incognito nie otworzy się ponownie.}other{Ochrona zaawansowana wymaga ponownego uruchomienia Chromium, aby zastosować aktualizację. # okna incognito nie otworzy się ponownie.}}</translation>
+<translation id="263863604136125912">Uruchom Chromium</translation>
 <translation id="2648074677641340862">Podczas instalacji wystąpił błąd systemu operacyjnego. Pobierz Chromium ponownie.</translation>
 <translation id="2661879430930417727">Jeśli dzielisz urządzenie ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i skonfigurować Chromium po swojemu</translation>
 <translation id="2676569452213089702">Łatwy dostęp do Gemini w Chromium na całym urządzeniu, nawet gdy przeglądarka Chromium jest zminimalizowana.</translation>
@@ -302,7 +303,6 @@
 <translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="4334241893986177674">Przeszukaj ten zrzut ekranu</translation>
 <translation id="4384331407722351213">Uruchamiaj Chromium po uruchomieniu systemu Windows</translation>
-<translation id="4384993550046411228">Ustaw Chromium jako przeglądarkę domyślną, aby mieć łatwy dostęp do znanych, lubianych i zaufanych funkcji. Przeglądarka Chromium zostanie przypięta do paska zadań, aby była łatwo dostępna.</translation>
 <translation id="4400772909124543403">Brak dostępnych aktualizacji</translation>
 <translation id="4407044323746248786">Zamknąć Chromium mimo to?</translation>
 <translation id="4413205837991854510">Zawsze pokazuj skrót do wyszukiwania obrazów</translation>

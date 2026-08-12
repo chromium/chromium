@@ -4343,6 +4343,14 @@ incluir as duas opções em certificados RSA destinados a HTTPS.</translation>
 <translation id="366494444808132420">Permitir integrações com o Gemini.</translation>
 <translation id="3665437376055221832">Consultar o usuário apenas quando nenhum certificado corresponder à seleção automática.</translation>
 <translation id="3671773704245936868">Desativar destaque de foco do teclado</translation>
+<translation id="367258298235646178">Permite que os admins personalizem a aparência das marcas-d'água aplicadas pelas regras de Prevenção Contra Perda de Dados (DLP, na sigla em inglês). Isso inclui configurar a opacidade do preenchimento/contorno, o tamanho da fonte e o fuso horário do carimbo de data/hora.
+Se a política ou alguns valores não forem definidos, o Chrome vai usar o comportamento padrão de marca-d'água.
+Os valores padrão no computador são: opacidade do preenchimento em 4, opacidade do contorno em 6 e tamanho da fonte em 24. No iOS, os valores padrão são: opacidade do preenchimento em 10, opacidade do contorno em 15 e tamanho da fonte em 16. Em todas as plataformas, o fuso horário do carimbo de data/hora é definido como "user_device" (fuso horário local do dispositivo do usuário).
+
+A "Opacidade do preenchimento" é uma porcentagem de 0 (totalmente transparente) a 100 (totalmente opaco).
+A "Opacidade do contorno" é uma porcentagem de 0 (totalmente transparente) a 100 (totalmente opaco).
+O "Tamanho da fonte" é definido em pontos.
+O "Fuso horário do carimbo de data/hora" especifica o identificador da IANA (por exemplo, "America/Toronto") usado para formatar marcas-d'água com carimbo de data/hora (disponível a partir do Chrome 152), seguindo os nomes no banco de dados dessa organização (https://www.iana.org/time-zones, site em inglês).</translation>
 <translation id="3674010627788940405">Não oferecer suporte a cabeçalhos de solicitação de CORS sem caractere curinga.</translation>
 <translation id="3675248815331229366">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não têm permissão para acessar a geolocalização do usuário e também não podem pedir permissão do usuário para fazer isso.
 

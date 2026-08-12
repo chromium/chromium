@@ -5765,6 +5765,7 @@
 <translation id="5444281205834970653">删除并继续</translation>
 <translation id="5444452275167152925">从 ChromeOS 导入</translation>
 <translation id="5445400788035474247">10 倍</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">头脑风暴</translation>
 <translation id="5449551289610225147">密码无效</translation>
 <translation id="5449588825071916739">为所有标签页添加书签</translation>
@@ -8005,7 +8006,7 @@
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{在包含 1 个标签页的分组中新增标签页}other{在包含 # 个标签页的分组中新增标签页}}</translation>
 <translation id="721490496276866468">导入密码</translation>
 <translation id="7217208603285112910">所选内容不是<ph name="LANGUAGE" /></translation>
-<translation id="7217317914610152390">使用新的“文本注释”工具添加文字、评论和备注</translation>
+<translation id="7217317914610152390">使用新的“文字注释”工具，轻松添加文字、评论和备注</translation>
 <translation id="7219254577985949841">删除网站数据？</translation>
 <translation id="7219473482981809164">我们找到了多份可供下载的个人资料。请先选择您想下载的个人资料，然后继续操作。</translation>
 <translation id="7220019174139618249">无法将密码导出到“<ph name="FOLDER" />”</translation>
@@ -8125,6 +8126,7 @@
 <translation id="7311244614769792472">找不到任何结果</translation>
 <translation id="7312040805247765153">无法安装应用</translation>
 <translation id="7312210124139670355">您的管理员正在重置您的 eSIM 卡。这可能需要几分钟的时间。</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">键盘背光颜色</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 个事件无法确定时间戳，因此未显示在日志中}other{# 个事件无法确定时间戳，因此未显示在日志中}}</translation>
 <translation id="7314865262803554456">录制开始时，您不会收到通知。</translation>

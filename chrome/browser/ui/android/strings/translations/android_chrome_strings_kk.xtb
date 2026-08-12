@@ -723,7 +723,6 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="399788104667917863">Құралдар тақтасына бекіту</translation>
 <translation id="4000212216660919741">Негізгі экран офлайн режимде</translation>
 <translation id="4000670338830950598">Google Chrome-ды ерекшеленген элементпен бейімдеу және басқару</translation>
-<translation id="4002066346123236978">Тақырып</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Google аккаунтыңызда 1 құпия сөз ұрланған}other{Google аккаунтыңызда # құпия сөз ұрланған}}</translation>
 <translation id="4023638601467301498">Бетбелгілер мен басқа ақпаратты барлық құрылғыдан алу үшін Chrome аккаунтына кіріңіз.</translation>
 <translation id="4024768890073681126">Браузеріңізді ата-анаңыз басқарады</translation>
@@ -1973,6 +1972,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8937772741022875483">Chrome браузерін пайдалану деректері Digital Wellbeing қызметінен өшірілсін бе?</translation>
 <translation id="8942627711005830162">Басқа терезеде ашу</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – бұл тіл жүктеп алынбады. Кейінірек қайталап көріңіз.</translation>
+<translation id="8945348199139712719">Көшірілген мәтінді қойып, оған өту</translation>
 <translation id="8946759102391960088">Құпия сөздеріңізге рұқсатты жоғалтпаңыз</translation>
 <translation id="895442993047180128">Кеңестер хабарландыруларына жазылу терезесі жабылды.</translation>
 <translation id="8957528460562961174">Құпия сөздерді пайдалану рұқсатын сақтау үшін оларды қазір экспорттап, кейін қажетті Password Manager-ге импорттаңыз. Google Password Manager жұмысы тоқтады, себебі Google Play қызметтері қолжетімді емес.</translation>

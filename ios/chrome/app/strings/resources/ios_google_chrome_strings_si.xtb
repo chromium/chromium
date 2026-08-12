@@ -17,6 +17,7 @@
 <translation id="1237769345474105984">Chrome වෙතින්</translation>
 <translation id="124228879633599436">ඔබේ Chrome යල් පැන ඇත. ආරක්ෂිතව සිටීමට එය යාවත්කාලීන කරන්න.</translation>
 <translation id="1258531953614971819">Chrome ඉඟිය: Chrome ඔබේ මුල් තිරය වෙත ගෙන යන්න</translation>
+<translation id="1333577334443425318">වෙනත් යෙදුම් වලින් සබැඳි පිටපත් කිරීම නැවැත්වීමට Chrome ඔබේ පෙරනිමිය බවට පත් කරන්න.</translation>
 <translation id="1333745675627230582">Chrome Dino ක්‍රීඩාව කරන්න</translation>
 <translation id="1343830902827845050">Chrome වෙත පුරනය වන්න</translation>
 <translation id="1352919863522755794">Google මුරපද කළමනාකරු හට ඔබේ මුරපද පරීක්ෂා කිරීමට නොහැකි විය. ඔබේ අන්තර්ජාල සම්බන්ධතාව පරීක්ෂා කිරීමට උත්සාහ කරන්න.</translation>
@@ -38,6 +39,7 @@
 <translation id="1554731936187952550">ඔබට හානිකර වෙබ් අඩවිවලට එරෙහිව Chrome හි ශක්තිමත්ම ආරක්ෂාව ඇත</translation>
 <translation id="155816064895200734">Chrome පෙරනිමි බ්‍රව්සරය ලෙස සකසන්න</translation>
 <translation id="1580570086594302477">නව Chrome අප්‍රකට පටිත්තක් විවෘත කරයි.</translation>
+<translation id="1605168141396675642">පිටපත් කිරීමේ කරදර වළක්වා ගන්න. සබැඳි Chrome වෙත කෙළින්ම දියත් කරන්න.</translation>
 <translation id="1646463005043273333">Chrome පෙරනිමි බ්‍රව්සරය ලෙස සැකසීමට Chrome සැකසීම විවෘත කරයි.</translation>
 <translation id="1670609221633730681">Chrome ඉඟිය: ඔබේ ලිපින තීරුවේ පිහිටීම තෝරන්න</translation>
 <translation id="1683863426423719967">Chrome වෙතින් පටිති සිහිකැඳවීම් ලැබීමට, ඔබේ iOS සැකසීම් තුළ දැනුම්දීම් ක්‍රියාත්මක කරන්න.</translation>
@@ -71,6 +73,7 @@
 <translation id="2423077901494354337">ඔබ දැන් ඔබේ උපාංගයෙහි Chrome වෙතින් උපරිමය ලබා ගනු ඇත.</translation>
 <translation id="2427791862912929107">Chrome හට ඔබගේ අන්තර්ජාල දත්ත සහ ඔබට කොතරම් ඉක්මනින් වෙබ් පිටු පූරණය කළ හැකිද යන්න කළමනාකරණය කිරීමට උදවු වන විශේෂාංග ඇත.
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
+<translation id="2450221499140985490">පණිවිඩ සහ ලේඛනවලින් සබැඳි කෙලින්ම Chrome හි විවෘත කරන්න.</translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}one{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}other{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}}</translation>
 <translation id="2561231791489583059">අනතුරුදායක අඩවිවලින් ආරක්ෂා වීමට සහ ඔබගේ මුරපද ආරක්ෂිතව තබා ගැනීමට ඔබගේ පෙරනිමි බ්‍රව්සරය ලෙස Chrome භාවිත කරන්න</translation>
 <translation id="2574249610672786438">ඔබ Chrome භාවිත කරන ඕනෑම ස්ථානයක සිට ඔබේ ටැබ බැලීමට, ඔබේ සියලු උපාංගවල පුරන්න</translation>
@@ -127,8 +130,10 @@
 <translation id="3827545470516145620">ඔබට මෙම උපාංගයේ සම්මත ආරක්ෂක රැකවරණය ලැබේ</translation>
 <translation id="384394811301901750">Google Chrome හට මේ අවස්ථාවේදී ඔබේ කැමරාව භාවිත කළ නොහැකිය</translation>
 <translation id="3863841106411295595">Chrome හි ඔබේ කියවීම් ලැයිස්තුවට ආදාන URL එක් කරයි.</translation>
+<translation id="3878515067127964393">පිටපත් කිරීමෙන් වළකින්න. Chrome ඔබේ පෙරනිමි iOS බ්‍රව්සරය ලෙස සකසා ගන්න.</translation>
 <translation id="3901001113120561395">Chrome වෙතින් උපරිම ඵලය ගන්න.</translation>
 <translation id="3913386780052199712">Chrome වෙත පුරන ලදි</translation>
+<translation id="3913747277937572860">Chrome ඔබේ පෙරනිමි බවට පත් කර වෙබ් අන්තර්ගතය ස්වයංක්‍රීයව විවෘත කරන්න.</translation>
 <translation id="3984746313391923992">ඔබගේ සංවිධානයට ඔබ Chrome වෙතින් වරා සිටීම අවශ්‍ය වේ.</translation>
 <translation id="3988789688219830639">Google Chrome හට ඔබේ ඡායාරූප හෝ වීඩියෝවලට ප්‍රවේශය නැත. iOS සැකසීම් &gt; රහස්‍යතාව &gt; ඡායාරූප තුළ ප්‍රවේශය සබල කරන්න.</translation>
 <translation id="4064699917955374540">ඔබේ Google ගිණුමේ Chrome දත්ත භාවිතා කිරීමට සහ සුරැකීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න.</translation>
@@ -235,6 +240,7 @@
 <translation id="6533470733797826516">Chrome ස්වයං පිරවුම සමග වේගයෙන් පුරන්න</translation>
 <translation id="6536544321553662809">සබැඳි පහසුවෙන් බෙදා ගැනීමට සහ විවෘත කිරීමට Chrome ඔබේ පෙරනිමි බ්‍රව්සරය ලෙස සකසන්න</translation>
 <translation id="6545449117344801102">Chrome ලිපින හඳුනාගෙන ඔබට උපදෙස් සහ ස්ථානික තතු ලබා දීමට Google සිතියම් භාවිතා කරයි.</translation>
+<translation id="660537754475262202">මෙහි සබැඳි ක්ෂණිකව දියත් කිරීමට Chrome ඔබේ පෙරනිමි බ්‍රව්සරය බවට පත් කරන්න.</translation>
 <translation id="6611692150236062461">අනෙකුත් යෙදුම්වල සුරකින ලද මුරපද පහසුවෙන් ලබා ගැනීමට, ස්වයං පිරවීම සඳහා Chrome තෝරන්න.</translation>
 <translation id="6636941099779251629">ඔබේ සංවිධානයට ඔබ Chrome භාවිත කිරීමට පිරීම අවශ්‍ය වේ. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">ඔබේ IP ලිපිනය සඟවන පෞද්ගලිකත්ව සේවාදායකයක් හරහා URL හි අපැහැදිලි කොටසක් Google වෙත යවයි. වෙබ් අඩවියක් ඔබේ මුරපදය සොරා ගැනීමට උත්සාහ කළහොත්, හෝ ඔබ හානිකර ගොනුවක් බාගන්නා විට, Chrome පිටු අන්තර්ගතයේ කැබලි ඇතුළුව, URL Google වෙත යැවීමට ද හැක.</translation>
@@ -269,6 +275,7 @@
 <translation id="722167379782941918">Chrome වැඩි දියුණු කළ ආරක්ෂාවක් නිර්දේශ කරයි</translation>
 <translation id="723787869754590019">ස්වයං පිරවීම සඳහා Chrome භාවිතා කරන්න</translation>
 <translation id="7261678641327190792">Chrome හට ඔබේ මුරපද පරීක්‍ෂා කළ නොහැකිය</translation>
+<translation id="7272091023280308138">URL පළමුව පිටපත් නොකර ඊළඟ වතාවේ Chrome හි සබැඳි සෘජුවම විවෘත කරන්න.</translation>
 <translation id="7272930098487145294">රූප සුරැකීමට, Chrome හට ඔබේ ඡායාරූප එක් කිරීමට ඉඩ දීමට සැකසීම් මත තට්ටු කරන්න</translation>
 <translation id="7275945473750112644">ඔබගේ ගිණුම <ph name="HOSTED_DOMAIN" /> මගින් කළමනාකරණය කරන නිසා, ඔබගේ Chrome දත්ත මෙම උපාංගයෙන් හිස් කරනු ඇත</translation>
 <translation id="7284245284340063465">ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම්, <ph name="BEGIN_LINK" />ඔබේ ගිණුමේ ඇති Chrome දත්ත මකන්න<ph name="END_LINK" />.</translation>
@@ -284,6 +291,7 @@
 <translation id="7466693328838535498">සෙවීම් විජට්ටු කොටුව තුළ, Chrome ඇතුළු කරන්න</translation>
 <translation id="7477056987201678345">Chrome දත්ත මකමින්…</translation>
 <translation id="7492574581995589075">ඔබේ සංවිධානය ඔබේ Google ගිණුම තුළ Chrome දත්ත භාවිත කිරීමේ සහ සුරැකීමේ හැකියාව අක්‍රිය කළා. නව පිටුසන්, මුරපද, සහ තවත් ඒවා මෙම උපාංගයට පමණක් සුරකිනු ලැබේ.</translation>
+<translation id="752120807649195785">සබැඳි පිටපත් කිරීම වෙනුවට එක තට්ටු කිරීමකින් විවෘත කිරීමට Chrome පෙරනිමිය ලෙස සකසන්න.</translation>
 <translation id="7540272326042438331">Chrome බෙදා ගන්න</translation>
 <translation id="7575971113404272499">Chrome ඉඟිය: පෙරනිමියෙන් Chrome භාවිතා කරන්න</translation>
 <translation id="7581063337314642333">Chrome තුළ පටිති ජාලක වෙත පිවිසෙන්න</translation>
@@ -323,6 +331,7 @@
 <translation id="8245080522851805544">ඔබ Chrome වසා දැමූ විට උපාංග සත්‍යාපනය සමග ඔබේ බ්‍රවුස් කිරීම පුද්ගලිකව තබා ගන්න</translation>
 <translation id="8248887045858762645">Chrome ඉඟිය</translation>
 <translation id="8265730590513812063">Chrome මෙනුව විවෘත කරන්න</translation>
+<translation id="8276803169904409881">වෙනත් යෙදුම් වලින් සබැඳි ක්ෂණිකව විවෘත කිරීමට Chrome පෙරනිමිය ලෙස සකසන්න.</translation>
 <translation id="8284376267694582021">ළමා ආරක්ෂණ විශේෂාංග ලබා ගැනීමට, ඔබට දරුවෙකු සඳහා පිහිටුවා ඇති Google ගිණුමක් භාවිතා කළ හැක හෝ ගිණුමක් නොමැතිව Chrome භාවිතා කළ හැක. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">ගෙවීමේ ක්‍රම සහ ලිපින සංකේතන නොකෙරේ Chrome වෙතින් ලැබෙන බ්‍රවුස් කිරීමේ ඉතිහාසය සමමුහූර්ත නොවේ.
 
@@ -360,6 +369,7 @@
 <translation id="8865415417596392024">ඔබේ ගිණුමේ Chrome දත්ත</translation>
 <translation id="8874688701962049679">Chrome වෙතින් උපරිම දේ ලබා ගැනීම සඳහා ඉඟි.</translation>
 <translation id="8897749957032330183">මුරපද මෙම උපාංගයෙහි Google මුරපද කළමනාකරු තුළ සුරැකේ.</translation>
+<translation id="898288749595466683">URL පිටපත් කිරීම නවත්වන්න. පිටු සෘජුවම පූරණය කිරීමට Chrome පෙරනිමිය ලෙස සකසන්න.</translation>
 <translation id="9004772704776174843">Chrome වරනය වී ඇත</translation>
 <translation id="9068336935206019333">Chrome අප්‍රසිද්ධ තුළ විවෘත කරන්න</translation>
 <translation id="9082304295862405388">ඔබ දැනටමත් Chrome වෙත ලබා දී ඇති අවසරය මත පදනම්ව, Gemini ඔබේ නිශ්චිත ස්ථානය භාවිතා කළ හැක</translation>

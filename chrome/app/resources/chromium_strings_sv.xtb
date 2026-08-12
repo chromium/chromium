@@ -154,6 +154,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2635452620547538388">Verifiera din identitet för att använda och spara Chromium-data i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2636783171884046627">Använd kortkommandot för att lämna eller återgå till Gemini i Chromium.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Avancerat skydd kräver att du startar om Chromium så att en uppdatering tillämpas}=1{Avancerat skydd kräver att du startar om Chromium så att en uppdatering tillämpas. Inkognitofönstret öppnas inte igen.}other{Avancerat skydd kräver att du startar om Chromium så att en uppdatering tillämpas. De # inkognitofönstren öppnas inte igen.}}</translation>
+<translation id="263863604136125912">Starta Chromium</translation>
 <translation id="2648074677641340862">Ett operativsystemsfel inträffade under installationen. Ladda ned Chromium igen.</translation>
 <translation id="2661879430930417727">Om du delar en enhet med vänner och familj kan de konfigurera Chromium precis som de vill och surfa separat.</translation>
 <translation id="2676569452213089702">Enkel åtkomst till Gemini i Chromium på alla dina enheter, även när Chromium är minimerat.</translation>
@@ -307,7 +308,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="4334241893986177674">Sök i den här skärmbilden</translation>
 <translation id="4384331407722351213">Starta Chromium när Windows startas</translation>
-<translation id="4384993550046411228">Få enkel åtkomst till funktionerna du känner till, gillar och litar på genom att ställa in Chromium som standardwebbläsare. Chromium fästs i aktivitetsfältet för snabb åtkomst.</translation>
 <translation id="4400772909124543403">Det finns ingen tillgänglig uppdatering</translation>
 <translation id="4407044323746248786">Vill du avsluta Chromium ändå?</translation>
 <translation id="4413205837991854510">Visa alltid genvägen för bildsökning</translation>

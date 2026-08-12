@@ -38,6 +38,7 @@
 <translation id="1097807529207545420">{count,plural, =1{1 contrasinal verificado ao instante}other{# contrasinais verificados ao instante}}</translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloquea o dispositivo con Face ID</translation>
+<translation id="1111776967764068277">Cansaches de copiar ligazóns?</translation>
 <translation id="1112015203684611006">Erro impresión</translation>
 <translation id="1118569444314402022">Dámosche a benvida de novo, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotos e imaxes</translation>
@@ -478,6 +479,7 @@
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2496626742194544812">Ir á primeira pestana</translation>
 <translation id="2499505845365628575">Podes atopar todo o historial de navegación en <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="251033673027346551">Visita a Google Wallet para xestionar as <ph name="BEGIN_LINK" />preferencias de datos e privacidade<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">Tes <ph name="NUMBER_OF_PASSWORDS" /> contrasinais vulnerados que poderían poñer en perigo a túa seguranza.</translation>
 <translation id="2512709994717613803">Nivel <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Atoparás os teus grupos de pestanas aquí</translation>
@@ -527,6 +529,7 @@
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
+<translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Pagar a prazos</translation>
 <translation id="2673508731173059946">Visitar ligazón copiada</translation>
 <translation id="2679659833697380">A túa información gárdase no teu dispositivo</translation>
@@ -543,6 +546,7 @@
 <translation id="271033894570825754">Novo</translation>
 <translation id="2712929214961145009">Sen serifas</translation>
 <translation id="2713106313042589954">Apagar cámara</translation>
+<translation id="2715440913764382254">Abre as ligazóns directamente aquí</translation>
 <translation id="2718352093833049315">Só con wifi</translation>
 <translation id="2721190673959776287">Exemplo de axuda detallada integrada no produto para o panel contextual, que debería mostrarse varias veces ao día.</translation>
 <translation id="2739887572830526131">Mantén este grupo para engadir pestanas máis adiante ou elimínao se xa non o necesitas.</translation>
@@ -1004,6 +1008,7 @@
 <translation id="4338258232580025606">Non se puido iniciar sesión</translation>
 <translation id="4338650699862464074">Envía a Google os URL das páxinas que visitas.</translation>
 <translation id="4342946437867096381">Xa gardaches un contrasinal para este sitio na túa Conta de Google. Google pode seleccionar o contrasinal máis recente por ti.</translation>
+<translation id="4355702523442402731">Navegación fluída entre aplicacións</translation>
 <translation id="4365121137632832185">Grupo de pestanas. Despregado.</translation>
 <translation id="4365685757967464989">Permite que Gemini use a cámara para facer fotos</translation>
 <translation id="4367971618859387374">Nome visible</translation>
@@ -1281,6 +1286,7 @@
 <translation id="5233111790346066304">Garda ficheiros en Google Drive e accede a eles cando queiras.</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
 <translation id="5234094073825090254">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email}).}other{Os marcadores gardáronse na túa Conta de Google ({email}).}}</translation>
+<translation id="5234162151438379838">{COUNT,plural, =1{Só se pode compartir 1 pestana.}other{Só se poden compartir {COUNT} pestanas.}}</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> agora pode utilizar o teu nome de usuario e contrasinal para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> se usa o xestor de contrasinais de Google.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, perfil xestionado pola túa organización, actualmente seleccionado. Escolle unha conta.</translation>
@@ -1313,6 +1319,7 @@
 <translation id="5351613737248079168">Para usar Level Up, debes ter a sesión iniciada</translation>
 <translation id="5352128922772839949">Gardar o ficheiro</translation>
 <translation id="5355191726083956201">A protección mellorada está activada</translation>
+<translation id="5359436665022446585">Mellora na apertura de ligazóns</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5364647308446127983">{count,plural, =1{Non se puido importar {count} clave de acceso}other{Non se puideron importar {count} claves de acceso}}</translation>
 <translation id="5371112366564891538">Aumentar tamaño do texto</translation>
@@ -1491,6 +1498,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5952641243319721872">Seguro que queres descartar a selección?</translation>
 <translation id="5956112131836209882">Pestana do grupo de pestanas. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Buscar resultados con <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5963694076845073027">Abrir as ligazóns aquí a próxima vez</translation>
 <translation id="5963939892571022323">Non se puido crear unha ligazón ao texto destacado.</translation>
 <translation id="5968400720580217226">Modo IA</translation>
 <translation id="5971459446352190251">Busca de códigos QR</translation>
@@ -1820,6 +1828,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="6937083164784433305">{count,plural, =1{Usaches 1 foto para facer unha busca}other{Usaches # fotos para facer unha busca}}</translation>
 <translation id="693761253105515415">Define un contrasinal</translation>
+<translation id="6938212956536472404">Non se pode compartir esta pestana</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6946722113367118030">Pensar</translation>
 <translation id="6950522403736391608">Ocultos</translation>
@@ -1995,6 +2004,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="7561982940498449837">Pechar menú</translation>
 <translation id="7566349809380613217">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" /> pestanas compartido, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Os marcadores están ocultos</translation>
+<translation id="7575664680938145959">Abrir cun toque</translation>
 <translation id="7577900504646297215">Xestionar intereses</translation>
 <translation id="7582666837709186351">Traduce o texto das fotos ou o que captes dos arredores coa cámara.</translation>
 <translation id="7582857256643797524">Esta opción de configuración está activada no teu dispositivo</translation>
@@ -2018,6 +2028,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="7646263789464975852">Menú → Configuración → Comprobación de seguranza</translation>
 <translation id="7646772052135772216">A sincronización de contrasinais non funciona</translation>
 <translation id="764827086632467055">Toca Aplicación de navegador predeterminada</translation>
+<translation id="7648666127045672239">Accede aquí cun só toque</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="765555660695722850">Con esta acción, elimínanse os enderezos gardados neste dispositivo. Tamén se elimina outra información da túa Conta de Google, pero non datos básicos como o teu nome ou enderezo particular.</translation>
 <translation id="765631330137769217">Toca Gardar para acceder facilmente a este contrasinal a próxima vez que inicies sesión</translation>
@@ -2035,6 +2046,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7702428539671224160">Autocompletar a información de pago en <ph name="URL" /></translation>
 <translation id="7708994397325774423">Obtén todos os teus contrasinais</translation>
+<translation id="7710096647785049958">Aforra tempo en cada ligazón</translation>
 <translation id="7711440461521638739">Non estás reutilizando ningún contrasinal</translation>
 <translation id="7712361583414030698">Mostrando versión sen conexión</translation>
 <translation id="7719038820139380048">Inicia sesión para desfrutar de contido en función dos teus intereses.</translation>
@@ -2360,6 +2372,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="8706806585855470492">Poderás compartir grupos de pestanas, unirte a eles e colaborar</translation>
 <translation id="8709409604518538305">Pecháronse as pestanas</translation>
 <translation id="8712637175834984815">De acordo</translation>
+<translation id="8717519179050551968">Pega menos e explora máis</translation>
 <translation id="8717864919010420084">Copiar ligazón</translation>
 <translation id="8722229818691036192">Contas neste dispositivo</translation>
 <translation id="8722649775263832315">Toca ou destaca calquera elemento para buscalo con Google Lens</translation>
@@ -2499,6 +2512,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9152637745605628097">Escolle entre temas e cores, ou carga unha imaxe</translation>
+<translation id="9153159728062222866">Non te compliques coa opción de copiar e pegar</translation>
 <translation id="9159628751968616911">Enviar a páxina web</translation>
 <translation id="9162412286847966593">Os datos e as gravacións da túa organización non se usarán para mellorar os modelos de IA xenerativa. <ph name="BEGIN_LINK" />A túa privacidade e Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Activa a opción Autofill Passwords (Autocompletar contrasinais)</translation>

@@ -304,6 +304,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1504042622576912555">Lainepapp</translation>
 <translation id="1507202001669085618">&lt;p&gt;Seda viga näete juhul, kui kasutate WiFi-portaali, kuhu tuleb enne võrguühenduse loomist sisse logida.&lt;/p&gt;
     &lt;p&gt;Vea parandamiseks klõpsake avataval lehel käsul &lt;strong&gt;Loo ühendus&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1507635939006264930">Automaattäite sisselülitamine</translation>
 <translation id="1508605873202255562">Loo kohandatud jälgija, mis aitab mul oma eesmärkidega kursis püsida</translation>
 <translation id="1513706915089223971">Ajalookannete loend</translation>
 <translation id="1515436033764190215">h tagasi</translation>
@@ -631,6 +632,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2093982008204312032">Google Chrome üritab paroolide sisestamiseks lülitada sisse Windows Hello.</translation>
 <translation id="2094505752054353250">Domeeni vastuolu</translation>
 <translation id="2094704029599359040">Versiooniteave</translation>
+<translation id="2096183846792489672">Teie külastatavate lehtede sisu ja URL-e võidakse privaatses pilveruumis töödelda.</translation>
 <translation id="209961642949927292">Kas soovite järgmine kord kiiremini maksta?</translation>
 <translation id="2099652385553570808">Kolm kirjaklambrit vasakul</translation>
 <translation id="2101225219012730419">Versioon:</translation>
@@ -1591,6 +1593,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3738166223076830879">Teie brauserit haldab teie administraator.</translation>
 <translation id="3739842843727261045">Meeldivaks märkimine saadab tagasisidet, et need tulemused meeldivad teile</translation>
 <translation id="3740447166056383374">Enne kopeerimist on ülevaatus nõutav</translation>
+<translation id="3742104862808477448">See aitab Chromiumil keerukaid vorme paremini mõista ja täita, töödeldes andmeid turvaliselt Google'i serverites. Teie teave jääb privaatseks ja keegi ei vaata seda üle.</translation>
 <translation id="3744111561329211289">Taustal sünkroonimine</translation>
 <translation id="3744212718085287312">Kas soovite selle muuta järgmisel korral virtuaalkaardiga veelgi turvalisemaks?</translation>
 <translation id="3744899669254331632">Te ei saa saiti <ph name="SITE" /> praegu külastada, sest veebisait saatis tagasi arusaamatud mandaadid, mida Chromium ei saa töödelda. Võrguvead ja -rünnakud on tavaliselt ajutised, nii et leht tõenäoliselt hiljem töötab.</translation>
@@ -1614,6 +1617,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3769584711865378220"><ph name="URL" /> soovib muuta asukohale juurdepääsu ligikaudsest täpseks.</translation>
 <translation id="3772211998634047851">Paber (võlakirjapaber)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, rakenduses Google Keep kiirelt uue märkuse loomiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
+<translation id="3778045607993018262">Pixi konto lingitakse kontoga <ph name="ACCOUNT_EMAIL" />. Pixi koodi tuvastamise väljalülitamiseks avage <ph name="BEGIN_LINK1" />Chrome'i seaded<ph name="END_LINK1" />.</translation>
 <translation id="3780694243617746492">Väljundsalv</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-seadmed</translation>
@@ -1633,6 +1637,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="380329542618494757">Nimi</translation>
 <translation id="3803481123869276674">Kui teete oste Chrome'is, on valikus ka e-rahakott</translation>
 <translation id="3803801106042434208">Need otsingumootorid on teie piirkonnas populaarsed</translation>
+<translation id="3804112825000113857">Vaadake automaattäite seadeid</translation>
 <translation id="380666903981445943">Salvestage makseviis oma Google'i kontole, et see Chrome'is tehtud ostude puhul automaatselt täita</translation>
 <translation id="3807366285948165054">Pildi nihe X-teljel</translation>
 <translation id="3807873520724684969">Kahjulik sisu on blokeeritud.</translation>
@@ -3311,6 +3316,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="666259744093848177">(x86_64 tõlgitud)</translation>
 <translation id="6665553082534466207">Kolm auku paremal</translation>
 <translation id="6668389483194953109">Leiti paberi suurus „custom“, kuid atribuut „custom_size“ on tühi või sobimatu.</translation>
+<translation id="667044980437620424">Automaattäide on sisse lülitatud</translation>
 <translation id="6670729408462528018">Galerii</translation>
 <translation id="6671697161687535275">Kas eemaldada Chromiumist vormi soovitus?</translation>
 <translation id="6675846980676550611">AR ei ole lubatud</translation>
@@ -3540,6 +3546,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="7064851114919012435">Kontaktteave</translation>
 <translation id="7070144569727915108">süsteemiseaded</translation>
 <translation id="70705239631109039">Teie ühendus ei ole täielikult turvaline</translation>
+<translation id="7074595960655571061">Nüüd saate Chrome'is makseviise salvestada, et need kassas automaatselt sisestada. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">Taotlus on liiga suur</translation>
 <translation id="7075513071073410194">PKCS 1 MD5 koos RSA krüpteerimisega</translation>
 <translation id="7075896597860500885">Sellelt saidilt kopeerimine ei ole soovitatav</translation>
@@ -4403,6 +4410,7 @@ Lisateave:
 <translation id="8564182942834072828">Eraldi dokumendid / järjestamata koopiad</translation>
 <translation id="8564466070529550495">Virtuaalkaart pole praegu saadaval. Proovige hiljem uuesti.</translation>
 <translation id="8564985650692024650">Chromium soovitab teil organisatsiooni <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> parooli lähtestada, kui kasutasite seda ka muudel saitidel.</translation>
+<translation id="8568406155558596128">See aitab Chrome'il keerukaid vorme paremini mõista ja täita, töödeldes andmeid turvaliselt Google'i serverites. Teie teave jääb privaatseks ja keegi ei vaata seda üle.</translation>
 <translation id="8574570240981266561">Üksus on kustutatud.</translation>
 <translation id="8577192028579836704">Kõigi valikute tavaline hind on <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuaalkaart pole saadaval</translation>

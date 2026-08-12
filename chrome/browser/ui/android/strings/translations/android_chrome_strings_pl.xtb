@@ -723,7 +723,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="399788104667917863">Przypnij do paska narzędzi</translation>
 <translation id="4000212216660919741">Ekran główny offline</translation>
 <translation id="4000670338830950598">Dostosowywanie i kontrolowanie Google Chrome za pomocą wyróżnionego elementu</translation>
-<translation id="4002066346123236978">Tytuł</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 przejęte hasło na Twoim koncie Google}few{# przejęte hasła na Twoim koncie Google}many{# przejętych haseł na Twoim koncie Google}other{# przejętego hasła na Twoim koncie Google}}</translation>
 <translation id="4023638601467301498">Aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome</translation>
 <translation id="4024768890073681126">Przeglądarką zarządza Twój rodzic</translation>
@@ -1973,6 +1972,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8937772741022875483">Usunąć Twoją aktywność w Chrome z Cyfrowej równowagi?</translation>
 <translation id="8942627711005830162">Otwórz w innym oknie</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – nie udało się pobrać tego języka. Spróbuj później.</translation>
+<translation id="8945348199139712719">Wklej i przejdź do skopiowanego tekstu</translation>
 <translation id="8946759102391960088">Zachowaj dostęp do swoich haseł</translation>
 <translation id="895442993047180128">Opcja wyrażenia zgody na powiadomienia o wskazówkach zamknięta</translation>
 <translation id="8957528460562961174">Aby zachować dostęp do haseł, wyeksportuj je teraz, a następnie zaimportuj do menedżera haseł, którego najczęściej używasz. Menedżer haseł Google przestał działać, ponieważ Usługi Google Play są niedostępne.</translation>

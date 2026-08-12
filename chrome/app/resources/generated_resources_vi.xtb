@@ -5783,6 +5783,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5444281205834970653">Xoá và tiếp tục</translation>
 <translation id="5444452275167152925">Được nhập từ ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Lên ý tưởng</translation>
 <translation id="5449551289610225147">Mật khẩu không hợp lệ</translation>
 <translation id="5449588825071916739">Đánh dấu tất cả các thẻ</translation>
@@ -8148,6 +8149,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7311244614769792472">Không tìm thấy kết quả nào</translation>
 <translation id="7312040805247765153">Không cài đặt được ứng dụng</translation>
 <translation id="7312210124139670355">Quản trị viên đang đặt lại eSIM của bạn. Quá trình này có thể mất vài phút.</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">Màu đèn nền bàn phím</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Không thể xác định ngày cho 1 sự kiện nên sự kiện này đã bị ẩn}other{Không thể xác định ngày cho # sự kiện nên các sự kiện này đã bị ẩn}}</translation>
 <translation id="7314865262803554456">Bạn sẽ không nhận được thông báo khi quá trình ghi bắt đầu.</translation>

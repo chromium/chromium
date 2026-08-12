@@ -723,7 +723,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="399788104667917863">Pripni v orodno vrstico</translation>
 <translation id="4000212216660919741">Začetna stran brez povezave</translation>
 <translation id="4000670338830950598">Prilagajanje in nadziranje brskalnika Google Chrome z označenim elementom</translation>
-<translation id="4002066346123236978">Naslov</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 ogroženo geslo v računu Google}one{# ogroženo geslo v računu Google}two{# ogroženi gesli v računu Google}few{# ogrožena gesla v računu Google}other{# ogroženih gesel v računu Google}}</translation>
 <translation id="4023638601467301498">Če želite dostopati do zaznamkov in drugega v vseh napravah, se prijavite v Chrome</translation>
 <translation id="4024768890073681126">Vaš brskalnik upravlja starš</translation>
@@ -1973,6 +1972,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8937772741022875483">Ali želite svojo dejavnost v Chromu odstraniti iz Digitalne dobrobiti?</translation>
 <translation id="8942627711005830162">Odpri v drugem oknu</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – tega jezika ni bilo mogoče prenesti. Poskusite pozneje.</translation>
+<translation id="8945348199139712719">Prilepite in odprite kopirano besedilo</translation>
 <translation id="8946759102391960088">Ohranite dostop do gesel</translation>
 <translation id="895442993047180128">Omogočanje obvestil z nasveti je zaprto</translation>
 <translation id="8957528460562961174">Če želite ohraniti dostop do gesel, jih izvozite in nato uvozite v želenega upravitelja gesel. Googlov upravitelj gesel je prenehal delovati, ker Storitve Google Play niso na voljo.</translation>

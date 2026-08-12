@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">Iestatīšanas kļūda: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Lūdzu, uzgaidiet, kamēr Chrome instalē jaunākos sistēmas atjauninājumus.</translation>
 <translation id="1330562121671411446">Valodas noteikšana</translation>
+<translation id="1333654552732143316">Sākt Chrome</translation>
 <translation id="1341711321000856656">Varat pārslēgties, lai skatītu paroles no cita Chrome profila.</translation>
 <translation id="1343830902827845050">Pierakstīšanās pārlūkā Chrome</translation>
 <translation id="1356661055722410047">Jaunums! Varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
@@ -379,7 +380,6 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="4885446229353981848">Vienmēr rādīt Google Lens saīsni</translation>
 <translation id="4891791193823137474">Ļaut Google Chrome darboties fonā</translation>
 <translation id="4895437082222824641">Atvērt saiti jaunā Chrome &amp;cilnē</translation>
-<translation id="4896867431081882115">Iegūstiet ērtu piekļuvi zināmajām, iecienītajām un uzticamajām funkcijām, iestatot Chrome kā noklusējuma pārlūku. Lai nodrošinātu ātru piekļuvi, pārlūks Chrome tiks piesprausts uzdevumu joslai.</translation>
 <translation id="4904953848704395458">Atveriet pakalpojumu Gemini pārlūkā Chrome, izmantojot īsinājumtaustiņu.</translation>
 <translation id="4918086044614829423">Pieņemt</translation>
 <translation id="4918844574251943176">Attēls ir nokopēts</translation>

@@ -33,6 +33,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1290883685122687410">Setup error: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Please wait while Chrome installs the latest system updates.</translation>
 <translation id="1330562121671411446">Detect language</translation>
+<translation id="1333654552732143316">Start Chrome</translation>
 <translation id="1341711321000856656">You can switch to see passwords from another Chrome profile</translation>
 <translation id="1343830902827845050">Sign in to Chrome</translation>
 <translation id="1356661055722410047">New! You can translate both text and images on your screen</translation>
@@ -382,7 +383,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4885446229353981848">Always show Google Lens shortcut</translation>
 <translation id="4891791193823137474">Let Google Chrome run in the background</translation>
 <translation id="4895437082222824641">Open link in new Chrome &amp;tab</translation>
-<translation id="4896867431081882115">Get easy access to the features that you know, love and trust by setting Chrome as your default browser. Chrome will be pinned to your taskbar for quick access.</translation>
 <translation id="4904953848704395458">Open Gemini in Chrome with a keyboard shortcut.</translation>
 <translation id="4918086044614829423">Accept</translation>
 <translation id="4918844574251943176">Image copied</translation>

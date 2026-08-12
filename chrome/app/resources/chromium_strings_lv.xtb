@@ -151,6 +151,7 @@
 <translation id="2635452620547538388">Lai izmantotu un saglabātu Chromium datus savā kontā (<ph name="ACCOUNT_EMAIL" />), apstipriniet savu identitāti.</translation>
 <translation id="2636783171884046627">Lai izietu no pakalpojuma Gemini pārlūkā Chromium vai atgrieztos tajā, izmantojiet īsinājumtaustiņu.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chromium ir jāpalaiž atkārtoti, lai atjauninājums tiktu lietots.}=1{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chromium ir jāpalaiž atkārtoti, lai atjauninājums tiktu lietots. Inkognito režīma logs netiks atkārtoti atvērts.}zero{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chromium ir jāpalaiž atkārtoti, lai atjauninājums tiktu lietots. # inkognito režīma logi netiks atkārtoti atvērti.}one{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chromium ir jāpalaiž atkārtoti, lai atjauninājums tiktu lietots. # inkognito režīma logs netiks atkārtoti atvērts.}other{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chromium ir jāpalaiž atkārtoti, lai atjauninājums tiktu lietots. # inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
+<translation id="263863604136125912">Startēt Chromium</translation>
 <translation id="2648074677641340862">Instalācijas laikā radās operētājsistēmas kļūda. Lejupielādējiet Chromium vēlreiz.</translation>
 <translation id="2661879430930417727">Ja ierīci izmanto arī jūsu draugi un ģimenes locekļi, viņi var iestatīt pārlūku Chromium atbilstoši savām vēlmēm un pārlūkot saturu atsevišķos profilos.</translation>
 <translation id="2676569452213089702">Ērti piekļūstiet pakalpojumam Gemini pārlūkā Chromium savā ierīcē, pat ja pārlūka Chromium logs ir minimizēts.</translation>
@@ -304,7 +305,6 @@
 <translation id="4304713468139749426">Paroļu pārvaldnieks</translation>
 <translation id="4334241893986177674">Meklēt šajā ekrānuzņēmumā</translation>
 <translation id="4384331407722351213">Palaist pārlūku Chromium, kad tiek palaista operētājsistēma Windows</translation>
-<translation id="4384993550046411228">Iegūstiet ērtu piekļuvi zināmajām, iecienītajām un uzticamajām funkcijām, iestatot Chromium kā noklusējuma pārlūku. Lai nodrošinātu ātru piekļuvi, pārlūks Chromium tiks piesprausts uzdevumu joslai.</translation>
 <translation id="4400772909124543403">Neviens atjauninājums nav pieejams.</translation>
 <translation id="4407044323746248786">Vai tik un tā aizvērt pārlūku Chromium?</translation>
 <translation id="4413205837991854510">Vienmēr rādīt funkcijas Attēlu meklēšana saīsni</translation>

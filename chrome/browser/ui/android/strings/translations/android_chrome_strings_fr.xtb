@@ -723,7 +723,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="399788104667917863">Épingler à la barre d'outils</translation>
 <translation id="4000212216660919741">Mode hors connexion</translation>
 <translation id="4000670338830950598">Personnaliser et contrôler Google Chrome avec un élément mis en surbrillance</translation>
-<translation id="4002066346123236978">Titre</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis dans votre compte Google}one{# mot de passe compromis dans votre compte Google}other{# mots de passe compromis dans votre compte Google}}</translation>
 <translation id="4023638601467301498">Pour accéder à vos favoris et plus sur tous vos appareils, connectez-vous à Chrome</translation>
 <translation id="4024768890073681126">Ton navigateur est géré par ton parent</translation>
@@ -1973,6 +1972,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8937772741022875483">Supprimer votre activité Chrome de Bien-être numérique ?</translation>
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Impossible de télécharger cette langue. Réessayez plus tard.</translation>
+<translation id="8945348199139712719">Coller le texte et accéder au texte copié</translation>
 <translation id="8946759102391960088">Conservez l'accès à vos mots de passe</translation>
 <translation id="895442993047180128">Activation des notifications de conseils fermée</translation>
 <translation id="8957528460562961174">Pour conserver l'accès à vos mots de passe, exportez-les maintenant, puis importez-les dans le gestionnaire de mots de passe de votre choix. Le Gestionnaire de mots de passe de Google a cessé de fonctionner, car les services Google Play ne sont pas disponibles.</translation>

@@ -723,7 +723,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="399788104667917863">Rögzítés az eszköztárra</translation>
 <translation id="4000212216660919741">Offline kezdőlap</translation>
 <translation id="4000670338830950598">A Google Chrome személyre szabása és vezérlése kiemelt elemmel</translation>
-<translation id="4002066346123236978">Cím</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 olyan jelszó található az Ön Google-fiókjában, amelyhez illetéktelenül hozzáfértek}other{# olyan jelszó található az Ön Google-fiókjában, amelyhez illetéktelenül hozzáfértek}}</translation>
 <translation id="4023638601467301498">Ha az összes eszközén szeretne hozzáférni könyvjelzőihez, könyvjelzőihez és egyebekhez, jelentkezzen be a Chrome-ba</translation>
 <translation id="4024768890073681126">Böngésződet a szülőd kezeli</translation>
@@ -1973,6 +1972,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8937772741022875483">Eltávolítja Chrome-beli tevékenységét a digitális jóllét funkcióból?</translation>
 <translation id="8942627711005830162">Megnyitás másik ablakban</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Ezt a nyelvet nem lehetett letölteni. Próbálja újra később.</translation>
+<translation id="8945348199139712719">Beillesztés és ugrás a másolt szöveghez</translation>
 <translation id="8946759102391960088">Őrizze meg a jelszavaihoz való hozzáférését</translation>
 <translation id="895442993047180128">A tippekre vonatkozó értesítésekre való feliratkozás bezárva</translation>
 <translation id="8957528460562961174">Ha továbbra is hozzá szeretne férni a jelszavaihoz, exportálja őket haladéktalanul, majd importálja őket a kívánt jelszókezelőbe. A Google Jelszókezelő leállt, mert a Google Play-szolgáltatások nem állnak rendelkezésre.</translation>

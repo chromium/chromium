@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">Error de configuració: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Espereu mentre Chrome instal·la les actualitzacions més recents del sistema.</translation>
 <translation id="1330562121671411446">Detecta l'idioma</translation>
+<translation id="1333654552732143316">Inicia Chrome</translation>
 <translation id="1341711321000856656">Pots canviar de perfil per veure les contrasenyes d'un altre perfil de Chrome</translation>
 <translation id="1343830902827845050">Inicia la sessió a Chrome</translation>
 <translation id="1356661055722410047">Novetat! Pots traduir tant el text com les imatges en pantalla</translation>
@@ -378,7 +379,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="4885446229353981848">Mostra sempre la drecera de Google Lens</translation>
 <translation id="4891791193823137474">Permet que Google Chrome s'executi en procés de fons</translation>
 <translation id="4895437082222824641">Obre l'enllaç en una pes&amp;tanya nova a Chrome</translation>
-<translation id="4896867431081882115">Accedeix fàcilment a les funcions que coneixes, que tant t'agraden i en què confies establint Chrome com a navegador predeterminat. Chrome es fixarà a la barra de tasques perquè hi puguis accedir ràpidament.</translation>
 <translation id="4904953848704395458">Obre Gemini a Chrome amb una drecera de teclat.</translation>
 <translation id="4918086044614829423">Accepta</translation>
 <translation id="4918844574251943176">La imatge s'ha copiat</translation>

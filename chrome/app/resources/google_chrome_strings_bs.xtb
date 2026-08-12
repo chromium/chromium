@@ -33,6 +33,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1290883685122687410">Greška prilikom postavljanja: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Sačekajte dok Chrome instalira najnovija sistemska ažuriranja.</translation>
 <translation id="1330562121671411446">Otkrij jezik</translation>
+<translation id="1333654552732143316">Pokreni Chrome</translation>
 <translation id="1341711321000856656">Možete se prebaciti da vidite lozinke s drugog Chrome profila</translation>
 <translation id="1343830902827845050">Prijavite se u Chrome</translation>
 <translation id="1356661055722410047">Novo! Možete prevesti i tekst i slike s ekrana</translation>
@@ -382,7 +383,6 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="4885446229353981848">Uvijek prikazuj prečicu Google Objektiva</translation>
 <translation id="4891791193823137474">Neka Google Chrome radi u pozadini</translation>
 <translation id="4895437082222824641">Otvori link u novoj &amp;kartici Chromea</translation>
-<translation id="4896867431081882115">Postavite Chrome kao zadani preglednik da dobijete lak pristup funkcijama koje poznajete, volite i koje smatrate pouzdanim. Chrome će se zakačiti na traku zadataka radi brzog pristupa.</translation>
 <translation id="4904953848704395458">Otvorite Gemini u Chromeu pomoću prečice na tastaturi.</translation>
 <translation id="4918086044614829423">Prihvati</translation>
 <translation id="4918844574251943176">Slika je kopirana</translation>

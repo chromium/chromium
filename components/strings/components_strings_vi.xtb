@@ -304,6 +304,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1504042622576912555">Giấy gợn sóng</translation>
 <translation id="1507202001669085618">&lt;p&gt;Bạn sẽ gặp lỗi này nếu đang sử dụng cổng Wi-Fi yêu cầu bạn đăng nhập để có thể vào mạng.&lt;/p&gt;
     &lt;p&gt;Để khắc phục lỗi này, hãy nhấp vào &lt;strong&gt;Kết nối&lt;/strong&gt; trên trang mà bạn đang cố mở.&lt;/p&gt;</translation>
+<translation id="1507635939006264930">Đang bật tính năng tự động điền</translation>
 <translation id="1508605873202255562">Lập bảng theo dõi tuỳ chỉnh để tôi luôn theo sát các mục tiêu</translation>
 <translation id="1513706915089223971">Danh sách các mục lịch sử</translation>
 <translation id="1515436033764190215">giờ trước</translation>
@@ -631,6 +632,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2093982008204312032">Google Chrome đang cố gắng tắt Windows Hello để điền mật khẩu.</translation>
 <translation id="2094505752054353250">Miền không khớp</translation>
 <translation id="2094704029599359040">Thông tin phiên bản</translation>
+<translation id="2096183846792489672">Nội dung và URL của những trang bạn truy cập có thể được xử lý trong một không gian riêng tư trên đám mây</translation>
 <translation id="209961642949927292">Thanh toán nhanh hơn vào lần tới?</translation>
 <translation id="2099652385553570808">Dập 3 ghim bên trái</translation>
 <translation id="2101225219012730419">Phiên bản:</translation>
@@ -1105,6 +1107,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2905107382358353958">Thông báo về chế độ cài đặt thông tin thanh toán mới</translation>
 <translation id="2909946352844186028">Đã phát hiện thấy thay đổi mạng.</translation>
 <translation id="2910062169995917863">Phiên đã hết giờ</translation>
+<translation id="2911224142899421774">Chế độ cài đặt Google Wallet của bạn sẽ áp dụng cho thông tin được lưu từ Chrome</translation>
 <translation id="2911973620368911614">Mã người dùng tài khoản công việc</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> thường sử dụng mã hóa để bảo vệ thông tin của bạn. Khi Chrome cố gắng kết nối với <ph name="SITE" /> tại thời điểm này, trang web đã gửi lại thông tin xác thực không chính xác và bất thường. Điều này có thể xảy ra khi kẻ tấn công đang cố gắng giả mạo là <ph name="SITE" /> hoặc màn hình đăng nhập Wi-Fi đã làm gián đoạn kết nối. Thông tin của bạn vẫn an toàn do Chrome đã ngừng kết nối trước khi bất kỳ dữ liệu nào được trao đổi.</translation>
 <translation id="2915068235268646559">Sự cố từ <ph name="CRASH_TIME" /></translation>
@@ -1591,6 +1594,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3738166223076830879">Trình duyệt này do quản trị viên của bạn quản lý.</translation>
 <translation id="3739842843727261045">Nút Thích gửi phản hồi cho biết bạn thích các kết quả này</translation>
 <translation id="3740447166056383374">Bạn cần xem xét trước khi sao chép</translation>
+<translation id="3742104862808477448">Giúp Chromium hiểu rõ hơn và điền vào các biểu mẫu phức tạp nhờ xử lý dữ liệu một cách an toàn trên máy chủ của Google. Thông tin của bạn luôn được bảo mật và không ai có thể xem được.</translation>
 <translation id="3744111561329211289">Đồng bộ hoá trong nền</translation>
 <translation id="3744212718085287312">Tăng cường bảo mật bằng một thẻ ảo vào lần tới?</translation>
 <translation id="3744899669254331632">Bạn không thể truy cập <ph name="SITE" /> ngay bây giờ vì trang web này đã gửi thông tin đăng nhập hỗn độn mà Chromium không thể xử lý. Lỗi mạng và các cuộc tấn công thường chỉ diễn ra tạm thời nên trang này có thể sẽ hoạt động sau.</translation>
@@ -1614,6 +1618,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3769584711865378220"><ph name="URL" /> muốn thay đổi quyền truy cập thông tin vị trí từ vị trí ước chừng thành vị trí chính xác</translation>
 <translation id="3772211998634047851">Giấy (Giấy bông)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để tạo nhanh ghi chú mới trong Google Keep</translation>
+<translation id="3778045607993018262">Tài khoản Pix sẽ được liên kết với <ph name="ACCOUNT_EMAIL" />. Để tắt tính năng phát hiện mã Pix, hãy chuyển đến <ph name="BEGIN_LINK1" />phần cài đặt Chrome<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Khay giấy ra</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Thiết bị Bluetooth</translation>
@@ -1633,6 +1638,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="380329542618494757">Tên</translation>
 <translation id="3803481123869276674">Khi bạn mua hàng trên Chrome, hãy cân nhắc sử dụng Ví điện tử</translation>
 <translation id="3803801106042434208">Dưới đây là những công cụ tìm kiếm phổ biến tại khu vực của bạn</translation>
+<translation id="3804112825000113857">Xem chế độ cài đặt tự động điền</translation>
 <translation id="380666903981445943">Lưu phương thức thanh toán vào Tài khoản Google để tự động điền thông tin thanh toán khi mua hàng trong Chrome</translation>
 <translation id="3807366285948165054">Trục X của hình ảnh</translation>
 <translation id="3807873520724684969">Đã chặn nội dung độc hại.</translation>
@@ -3311,6 +3317,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="666259744093848177">(x86_64 bản dịch)</translation>
 <translation id="6665553082534466207">Đục 3 lỗ bên phải</translation>
 <translation id="6668389483194953109">Đã tìm thấy tên khổ giấy là "custom", nhưng thuộc tính "custom_size" đang trống hoặc không hợp lệ.</translation>
+<translation id="667044980437620424">Đã bật tính năng tự động điền</translation>
 <translation id="6670729408462528018">Thư viện</translation>
 <translation id="6671697161687535275">Bạn muốn xóa đề xuất biểu mẫu khỏi Chromium?</translation>
 <translation id="6675846980676550611">Cho phép sử dụng thực tế tăng cường</translation>
@@ -3540,6 +3547,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7064851114919012435">Thông tin liên hệ</translation>
 <translation id="7070144569727915108">cài đặt hệ thống</translation>
 <translation id="70705239631109039">Kết nối của bạn không đủ an toàn</translation>
+<translation id="7074595960655571061">Giờ đây, bạn có thể lưu phương thức thanh toán để tự động điền khi thanh toán trong Chrome. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">Yêu cầu quá lớn</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 Với Mã hóa RSA</translation>
 <translation id="7075896597860500885">Không nên sao chép từ trang web này</translation>
@@ -4403,6 +4411,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8564182942834072828">Tài liệu riêng biệt/Bản sao chưa đối chiếu</translation>
 <translation id="8564466070529550495">Thẻ ảo hiện chưa dùng được, vui lòng thử lại sau.</translation>
 <translation id="8564985650692024650">Chromium khuyên bạn nên đặt lại mật khẩu <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> của mình nếu đã sử dụng lại mật khẩu này trên các trang web khác.</translation>
+<translation id="8568406155558596128">Giúp Chrome hiểu rõ hơn và điền vào các biểu mẫu phức tạp nhờ xử lý dữ liệu một cách an toàn trên máy chủ của Google. Thông tin của bạn luôn được bảo mật và không ai có thể xem được.</translation>
 <translation id="8574570240981266561">Đã xoá mục</translation>
 <translation id="8577192028579836704">Tất cả lựa chọn thường có giá là <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Không thể sử dụng thẻ ảo</translation>

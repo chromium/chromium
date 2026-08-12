@@ -31,6 +31,7 @@
 <translation id="1290883685122687410">שגיאה בהגדרה: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">‏יש להמתין בזמן ש-Chrome מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="1330562121671411446">זיהוי שפה אוטומטי</translation>
+<translation id="1333654552732143316">‏התחל את Chrome</translation>
 <translation id="1341711321000856656">‏אפשר לעבור כדי לראות סיסמאות מפרופיל Chrome אחר</translation>
 <translation id="1343830902827845050">‏כניסה ל-Chrome</translation>
 <translation id="1356661055722410047">חדש! אפשר לתרגם טקסט ותמונות במסך</translation>
@@ -378,7 +379,6 @@
 <translation id="4885446229353981848">‏תמיד להציג את קיצור הדרך ל-Google Lens</translation>
 <translation id="4891791193823137474">‏לאפשר ל-Google Chrome לפעול ברקע</translation>
 <translation id="4895437082222824641">‏פתיחת הקישור ב&amp;כרטיסיית Chrome חדשה</translation>
-<translation id="4896867431081882115">‏כדי להשתמש בקלות בתכונות המוכרות והאהובות, צריך להגדיר את Chrome בתור דפדפן ברירת המחדל. לגישה מהירה, Chrome יוצמד לסרגל האפליקציות.</translation>
 <translation id="4904953848704395458">‏פתיחת Gemini ב-Chrome בעזרת מקש קיצור.</translation>
 <translation id="4918086044614829423">אישור</translation>
 <translation id="4918844574251943176">התמונה הועתקה</translation>

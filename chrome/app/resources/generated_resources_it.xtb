@@ -5768,6 +5768,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5444281205834970653">Elimina e continua</translation>
 <translation id="5444452275167152925">Importato da ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Fai brainstorming</translation>
 <translation id="5449551289610225147">Password non valida</translation>
 <translation id="5449588825071916739">Aggiungi tutte le schede ai preferiti</translation>
@@ -7564,7 +7565,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6863496016067551393">Uso di tutte le estensioni consentito</translation>
 <translation id="686366188661646310">Vuoi eliminare la password?</translation>
 <translation id="6863925886424789941">Colosseo</translation>
-<translation id="6865313869410766144">Dati della compilazione automatica dei moduli</translation>
+<translation id="6865313869410766144">Dati per la compilazione automatica dei moduli</translation>
 <translation id="6865708901122695652">Log eventi WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Basso</translation>
 <translation id="686664946474413495">Temperatura del colore</translation>
@@ -8128,6 +8129,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7311244614769792472">Nessun risultato trovato</translation>
 <translation id="7312040805247765153">Impossibile installare l'app</translation>
 <translation id="7312210124139670355">Il tuo amministratore sta reimpostando l'eSIM. Questa operazione può richiedere alcuni minuti.</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">Colori della retroilluminazione della tastiera</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Impossibile datare 1 evento, che non viene mostrato}other{Impossibile datare # eventi, che non vengono mostrati}}</translation>
 <translation id="7314865262803554456">Non riceverai una notifica all'inizio della registrazione.</translation>

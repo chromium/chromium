@@ -152,6 +152,7 @@
 <translation id="2635452620547538388">Verificer din identitet for at bruge og gemme Chromium-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2636783171884046627">Brug tastaturgenvejen for at forlade eller vende tilbage til Gemini i Chromium.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Avanceret beskyttelse kræver, at du genstarter Chromium for at anvende en opdatering}=1{Avanceret beskyttelse kræver, at du genstarter Chromium for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Avanceret beskyttelse kræver, at du genstarter Chromium for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Avanceret beskyttelse kræver, at du genstarter Chromium for at anvende en opdatering. # inkognitovinduer åbnes ikke igen.}}</translation>
+<translation id="263863604136125912">Start Chromium</translation>
 <translation id="2648074677641340862">Der opstod en fejl i operativsystemet under installationen. Download Chromium igen.</translation>
 <translation id="2661879430930417727">Hvis du deler en enhed, kan venner og familie browse individuelt og konfigurere Chromium hver især</translation>
 <translation id="2676569452213089702">Nem adgang til Gemini i Chromium overalt på din enhed, selvom Chromium er minimeret.</translation>
@@ -305,7 +306,6 @@
 <translation id="4304713468139749426">Adgangskode­administrator</translation>
 <translation id="4334241893986177674">Søg i dette screenshot</translation>
 <translation id="4384331407722351213">Åbn Chromium, når Windows starter</translation>
-<translation id="4384993550046411228">Få nem adgang til de funktioner, du kender, elsker og har tillid til, ved at angive Chromium som din standardbrowser. Chromium fastgøres til proceslinjen, så du hurtigt kan tilgå den.</translation>
 <translation id="4400772909124543403">Der er ingen tilgængelig opdatering</translation>
 <translation id="4407044323746248786">Vil du afslutte Chromium alligevel?</translation>
 <translation id="4413205837991854510">Vis altid genvejen til billedsøgning</translation>
