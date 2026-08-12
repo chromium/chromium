@@ -4,8 +4,8 @@
 
 #include "chrome/browser/devtools/chrome_devtools_session_android.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/metrics_hashes.h"
+#include <type_traits>
+
 #include "chrome/browser/devtools/protocol/autofill_handler.h"
 #include "chrome/browser/devtools/protocol/browser_handler_android.h"
 #include "chrome/browser/devtools/protocol/target_handler_android.h"
@@ -24,7 +24,7 @@ bool IsDomainAvailableToUntrustedClient() {
 
 ChromeDevToolsSessionAndroid::ChromeDevToolsSessionAndroid(
     content::DevToolsAgentHostClientChannel* channel)
-    : dispatcher_(this), client_channel_(channel) {
+    : ChromeDevToolsSessionBase(channel) {
   content::DevToolsAgentHost* agent_host = channel->GetAgentHost();
   if (agent_host->GetWebContents() &&
       (agent_host->GetType() == content::DevToolsAgentHost::kTypePage ||
@@ -32,64 +32,20 @@ ChromeDevToolsSessionAndroid::ChromeDevToolsSessionAndroid(
     if (IsDomainAvailableToUntrustedClient<AutofillHandler>() ||
         channel->GetClient()->IsTrusted()) {
       autofill_handler_ =
-          std::make_unique<AutofillHandler>(&dispatcher_, agent_host->GetId());
+          std::make_unique<AutofillHandler>(dispatcher(), agent_host->GetId());
     }
   }
   if (IsDomainAvailableToUntrustedClient<BrowserHandlerAndroid>() ||
       channel->GetClient()->IsTrusted()) {
     browser_handler_ = std::make_unique<BrowserHandlerAndroid>(
-        &dispatcher_, agent_host->GetId());
+        dispatcher(), agent_host->GetId());
   }
   if (IsDomainAvailableToUntrustedClient<TargetHandlerAndroid>() ||
       channel->GetClient()->IsTrusted()) {
     target_handler_ = std::make_unique<TargetHandlerAndroid>(
-        &dispatcher_, channel->GetClient()->IsTrusted(),
+        dispatcher(), channel->GetClient()->IsTrusted(),
         channel->GetClient()->MayReadLocalFiles(), browser_handler_.get());
   }
 }
 
 ChromeDevToolsSessionAndroid::~ChromeDevToolsSessionAndroid() = default;
-
-base::HistogramBase::Sample32 GetCommandUmaId(std::string_view command_name) {
-  return static_cast<base::HistogramBase::Sample32>(
-      base::HashMetricName(command_name));
-}
-
-void ChromeDevToolsSessionAndroid::HandleCommand(
-    base::span<const uint8_t> message,
-    content::DevToolsManagerDelegate::NotHandledCallback callback) {
-  crdtp::Dispatchable dispatchable(
-      crdtp::SpanFrom(message), std::string_view(),
-      [cb = std::move(callback)](int call_id, crdtp::span<uint8_t> method,
-                                 crdtp::span<uint8_t> message,
-                                 std::string_view fallthrough_data) {
-        cb.Run(message);
-      });
-  DCHECK(dispatchable.ok());  // Checked by content::DevToolsSession.
-
-  auto command_uma_id = GetCommandUmaId(std::string_view(
-      reinterpret_cast<const char*>(dispatchable.Method().data()),
-      dispatchable.Method().size()));
-  std::string client_type = client_channel_->GetClient()->GetTypeForMetrics();
-  DCHECK(client_type == "DevTools" || client_type == "Extension" ||
-         client_type == "RemoteDebugger" || client_type == "Other");
-  base::UmaHistogramSparse("DevTools.CDPCommandFrom" + client_type,
-                           command_uma_id);
-
-  dispatcher_.Dispatch(dispatchable);
-}
-
-// The following methods handle responses or notifications coming from
-// the browser to the client.
-void ChromeDevToolsSessionAndroid::SendProtocolResponse(
-    int call_id,
-    std::unique_ptr<protocol::Serializable> message) {
-  client_channel_->DispatchProtocolMessageToClient(message->Serialize());
-}
-
-void ChromeDevToolsSessionAndroid::SendProtocolNotification(
-    std::unique_ptr<protocol::Serializable> message) {
-  client_channel_->DispatchProtocolMessageToClient(message->Serialize());
-}
-
-void ChromeDevToolsSessionAndroid::FlushProtocolNotifications() {}

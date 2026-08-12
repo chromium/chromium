@@ -103,7 +103,10 @@ inspector_protocol_generate("protocol_generated_sources") {
 
 static_library("devtools") {
   # Note: new sources and deps should be generally added in (!is_android) below.
-  sources = []
+  sources = [
+    "chrome_devtools_session_base.cc",
+    "chrome_devtools_session_base.h",
+  ]
 
   configs += [
     "//build/config/compiler:wexit_time_destructors",
@@ -159,6 +162,7 @@ static_library("devtools") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/viz/privileged/mojom/compositing",
     "//third_party/blink/public:buildflags",
+    "//third_party/inspector_protocol:crdtp",
     "//ui/events:dom_keycode_converter",
   ]
 
@@ -417,7 +421,6 @@ static_library("devtools") {
       "//components/web_package",
       "//components/webapps/browser",
       "//third_party/blink/public/common:headers",
-      "//third_party/inspector_protocol:crdtp",
       "//ui/display/",
       "//ui/display/util",
       "//ui/gfx/geometry",
