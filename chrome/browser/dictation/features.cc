@@ -25,7 +25,4 @@ const base::FeatureParam<bool> kShowPartials{&kDictation, "show_partials",
 const base::FeatureParam<bool> kWebSpeechApiBackend{
     &kDictation, "web_speech_api_backend", false};
 
-const base::FeatureParam<bool> kShowCaretBubble{&kDictation,
-                                                "show_caret_bubble", false};
-
 }  // namespace dictation
