@@ -729,7 +729,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
                   }))),
       // Click the bookmark button situated directly beneath the Omnibox.
       InContext(browser_context, MoveMouseTo(kBookmarkButtonName)),
-      InContext(browser_context, ClickMouse()),
+      InSameContextAs(OmniboxPopupPresenter::kRoundedResultsFrame,
+                      ClickMouse()),
       // Verify the popup closes, navigation occurs, and Omnibox loses focus.
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
       InContext(browser_context,

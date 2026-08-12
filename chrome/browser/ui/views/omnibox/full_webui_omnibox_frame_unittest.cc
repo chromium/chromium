@@ -158,7 +158,7 @@ TEST_F(FullWebUIOmniboxFrameTest, ViewTargeterHitTesting) {
             frame);
 }
 
-TEST_F(FullWebUIOmniboxFrameTest, OnMouseEventMarksHandledWhenForwarding) {
+TEST_F(FullWebUIOmniboxFrameTest, OnMouseEventMarksHandled) {
   auto* frame = widget_->SetContentsView(
       std::make_unique<FullWebUIOmniboxFrame>(new views::View(), &location_bar_,
                                               /*forward_mouse_events=*/true));
@@ -175,7 +175,7 @@ TEST_F(FullWebUIOmniboxFrameTest, OnMouseEventMarksHandledWhenForwarding) {
                         gfx::PointF(10, 10), base::TimeTicks::Now(),
                         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   frame->OnMouseEvent(&event2);
-  EXPECT_FALSE(event2.handled());
+  EXPECT_TRUE(event2.handled());
 }
 
 #endif  // USE_AURA

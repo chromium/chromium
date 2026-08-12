@@ -113,9 +113,9 @@ void FullWebUIOmniboxFrame::AddedToWidget() {
 
 void FullWebUIOmniboxFrame::OnMouseEvent(ui::MouseEvent* event) {
   RoundedOmniboxResultsFrame::OnMouseEvent(event);
-  if (forward_mouse_events()) {
-    event->SetHandled();
-  }
+  // Mark the event as handled after forwarding to the parent widget so it
+  // does not propagate up the popup's view hierarchy and get double-handled.
+  event->SetHandled();
 }
 
 #endif  // !USE_AURA
