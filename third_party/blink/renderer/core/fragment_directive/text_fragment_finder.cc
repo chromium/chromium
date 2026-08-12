@@ -127,7 +127,8 @@ void TextFragmentFinder::FindMatchInRange(String search_text,
           .SetCaseInsensitive(true)
           .SetRequireWordBoundedStart(word_start_bounded)
           .SetRequireWordBoundedEnd(word_end_bounded)
-          .SetAllowOverlapMatches(true),
+          .SetAllowOverlapMatches(true)
+          .SetMatchAcrossIgnoredNodes(true),
       BindOnce(&TextFragmentFinder::OnFindMatchInRangeComplete,
                WrapWeakPersistent(this), search_text,
                WrapWeakPersistent(search_range)));

@@ -3021,6 +3021,10 @@
       implied_by: ["FilterableSelect", "CustomizableCombobox"],
     },
     {
+      name: "FindBufferMatchAcrossIgnoredNodes",
+      status: "stable",
+    },
+    {
       name: "FindFirstMisspellingEndWhenNonEditable",
       status: "stable",
     },

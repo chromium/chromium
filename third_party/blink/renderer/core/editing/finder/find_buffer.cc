@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -230,7 +231,9 @@ bool IsIfcWithRuby(const Node& block_ancestor) {
 
 // FindBuffer implementation.
 FindBuffer::FindBuffer(const EphemeralRangeInFlatTree& range,
-                       RubySupport ruby_support) {
+                       RubySupport ruby_support,
+                       FindOptions find_options)
+    : buffer_options_(find_options) {
   DCHECK(range.IsNotNull() && !range.IsCollapsed()) << range;
   CollectTextUntilBlockBoundary(range, ruby_support);
 }
@@ -300,7 +303,8 @@ EphemeralRangeInFlatTree FindBuffer::FindMatchInRange(
     FindBuffer buffer(
         EphemeralRangeInFlatTree(start_position, range.EndPosition()),
         options.IsRubySupported() ? RubySupport::kEnabledIfNecessary
-                                  : RubySupport::kDisabled);
+                                  : RubySupport::kDisabled,
+        options);
     FindResults match_results = buffer.FindMatches(search_text, options);
     if (!match_results.IsEmpty()) {
       if (!options.IsBackwards()) {
@@ -405,6 +409,11 @@ Node* FindBuffer::BackwardVisibleTextNode(Node& start_node) {
 
 FindResults FindBuffer::FindMatches(const String& search_text,
                                     const blink::FindOptions options) {
+  // MatchAcrossIgnoredNodes is determined by buffer construction. Checked here
+  // to catch caller mismatches.
+  DCHECK_EQ(buffer_options_.MatchAcrossIgnoredNodes(),
+            options.MatchAcrossIgnoredNodes());
+
   // We should return empty result if it's impossible to get a match (buffer is
   // empty), or when something went wrong in layout, in which case
   // |offset_mapping_| is null.
@@ -486,7 +495,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       }
       // Replace the node with char constants so we wouldn't encounter this node
       // or its descendants later.
-      ReplaceNodeWithCharConstants(*node, buffer_);
+      ReplaceNodeWithCharConstants(*node);
       node = FlatTreeTraversal::NextSkippingChildren(*node);
       continue;
     }
@@ -529,10 +538,14 @@ void FindBuffer::CollectTextUntilBlockBoundary(
   FoldQuoteMarksAndSoftHyphens(base::span(buffer_));
 }
 
-void FindBuffer::ReplaceNodeWithCharConstants(const Node& node,
-                                              Vector<UChar>& buffer) {
+void FindBuffer::ReplaceNodeWithCharConstants(const Node& node) {
   if (std::optional<UChar> ch = CharConstantForNode(node)) {
-    buffer.push_back(*ch);
+    if (RuntimeEnabledFeatures::FindBufferMatchAcrossIgnoredNodesEnabled() &&
+        *ch == uchar::kNonCharacter &&
+        buffer_options_.MatchAcrossIgnoredNodes()) {
+      return;
+    }
+    buffer_.push_back(*ch);
   }
 }
 

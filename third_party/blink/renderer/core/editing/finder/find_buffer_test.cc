@@ -1174,4 +1174,27 @@ TEST_F(FindBufferTest, IsInSameUninterruptedBlockNoCrash) {
   // The match count result isn't important.
 }
 
+TEST_F(FindBufferTest, MatchAcrossIgnoredNode) {
+  SetBodyContent("<div id='container'>hello<img>world</div>");
+  FindOptions options = FindOptions().SetMatchAcrossIgnoredNodes(true);
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kDisabled, options);
+  EXPECT_EQ("helloworld", buffer.BuffersForTesting()[0].Utf8());
+  FindResults results = buffer.FindMatches("helloworld", options);
+  ASSERT_EQ(1u, results.CountForTesting());
+  MatchResultIcu match = *results.begin();
+  EXPECT_EQ(
+      EphemeralRangeInFlatTree(
+          PositionFromParentId("container", 0),
+          PositionInFlatTree(*GetElementById("container")->lastChild(), 5)),
+      buffer.RangeFromBufferIndex(match.start, match.start + match.length));
+}
+
+TEST_F(FindBufferTest, BreakNotOmittedByMatchAcrossIgnoredNodes) {
+  SetBodyContent("<div>hello<br>world</div>");
+  FindOptions options = FindOptions().SetMatchAcrossIgnoredNodes(true);
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kDisabled, options);
+  EXPECT_EQ(0u, buffer.FindMatches("helloworld", options).CountForTesting());
+  EXPECT_EQ(1u, buffer.FindMatches("hello\nworld", options).CountForTesting());
+}
+
 }  // namespace blink
