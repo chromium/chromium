@@ -7,6 +7,14 @@ import("//tools/grit/grit_rule.gni")
 
 grit_strings("strings") {
   source = "ios_whats_new_strings.grd"
+  inputs = process_file_template(
+               xtb_locales,
+               [ "resources/ios_whats_new_strings_{{source_name_part}}.xtb" ]) +
+           [
+             "m143_strings.grdp",
+             "subtitle_strings.grdp",
+             "tips_strings.grdp",
+           ]
   output_dir = "$root_gen_dir/ios/chrome"
   outputs = [ "grit/ios_whats_new_strings.h" ]
   output_prefix = "ios_whats_new_strings_"

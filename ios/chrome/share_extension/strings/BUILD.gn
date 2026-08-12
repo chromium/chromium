@@ -15,6 +15,9 @@ group("strings") {
 
 grit_strings("share_extension_strings") {
   source = "ios_share_extension_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "resources/ios_share_extension_strings_{{source_name_part}}.xtb" ])
   output_dir = "$root_gen_dir/ios/share_extension"
   outputs = [ "grit/ios_share_extension_strings.h" ]
   output_prefix = "ios_share_extension_strings_"
@@ -22,6 +25,9 @@ grit_strings("share_extension_strings") {
 
 grit_strings("share_extension_branded_strings") {
   source = "ios_share_extension_${branding_path_product}_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "resources/ios_share_extension_${branding_path_product}_strings_{{source_name_part}}.xtb" ])
   output_dir = "$root_gen_dir/ios/share_extension"
   outputs = [ "grit/ios_share_extension_branded_strings.h" ]
   output_prefix = "ios_share_extension_branded_strings_"

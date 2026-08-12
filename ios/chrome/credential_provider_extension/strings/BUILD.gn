@@ -7,6 +7,9 @@ import("//tools/grit/grit_rule.gni")
 
 grit_strings("strings") {
   source = "ios_credential_provider_extension_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "resources/ios_credential_provider_extension_strings_{{source_name_part}}.xtb" ])
   output_dir = "$root_gen_dir/ios/credential_provider_extension"
   outputs = [ "grit/ios_credential_provider_extension_strings.h" ]
   output_prefix = "ios_credential_provider_extension_strings_"

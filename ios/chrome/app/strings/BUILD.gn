@@ -15,12 +15,18 @@ group("strings") {
 
 grit_strings("ios_strings") {
   source = "ios_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "resources/ios_strings_{{source_name_part}}.xtb" ])
   output_dir = "$root_gen_dir/ios/chrome"
   outputs = [ "grit/ios_strings.h" ]
 }
 
 grit_strings("ios_branded_strings") {
   source = "ios_${branding_path_product}_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "resources/ios_${branding_path_product}_strings_{{source_name_part}}.xtb" ])
   output_dir = "$root_gen_dir/ios/chrome"
   outputs = [ "grit/ios_branded_strings.h" ]
 }
