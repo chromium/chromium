@@ -10,6 +10,9 @@
 // Commands for interacting with the Welcome Back promo.
 @protocol WelcomeBackPromoCommands <NSObject>
 
+// Shows the Welcome Back promo.
+- (void)showWelcomeBack;
+
 // Dismisses the Welcome Back promo.
 - (void)hideWelcomeBackPromo;
 

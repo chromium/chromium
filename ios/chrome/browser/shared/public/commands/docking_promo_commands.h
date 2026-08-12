@@ -5,8 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_DOCKING_PROMO_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_DOCKING_PROMO_COMMANDS_H_
 
+@protocol PromosManagerUIHandler;
+
 // Commands to manage app-wide Docking Promo(s).
 @protocol DockingPromoCommands <NSObject>
+
+// Shows the Docking Promo UI.
+- (void)showDockingPromoWithPromosUIHandler:
+    (id<PromosManagerUIHandler>)promosUIHandler;
 
 // Dismisses the currently active Docking Promo UI.
 - (void)dismissDockingPromo;

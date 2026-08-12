@@ -12,8 +12,10 @@
 #import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_coordinator.h"
@@ -30,10 +32,12 @@
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_coordinator.h"
 #import "ios/chrome/browser/autofill/wallet_reminder_notice/coordinator/wallet_reminder_notice_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_passwords_coordinator.h"
+#import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_overlay_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
@@ -52,6 +56,7 @@
 #import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_coordinator.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_view_coordinator.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
+#import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h"
@@ -69,11 +74,13 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
+#import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
@@ -83,6 +90,8 @@
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
@@ -92,10 +101,12 @@
 #import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tips_passwords_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
+#import "ios/chrome/browser/shared/public/commands/welcome_back_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/layout_guide/layout_guide_swift.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -108,6 +119,7 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/webauthn/coordinator/passkey_incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/webauthn/coordinator/passkey_welcome_screen_coordinator.h"
+#import "ios/chrome/browser/welcome_back/coordinator/welcome_back_coordinator.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_coordinator.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/public/provider/chrome/browser/cobalt/cobalt_api.h"
@@ -125,10 +137,12 @@ const char kChromeAppStoreUrl[] =
                                 AutofillCommands,
                                 CobaltCommands,
                                 CountryCodePickerCommands,
+                                DockingPromoCommands,
                                 DownloadListCommands,
                                 DriveFilePickerCommands,
                                 EnhancedCalendarCommands,
                                 FileUploadPanelCommands,
+                                GoogleOneCommands,
                                 IOSPasskeyClientCommands,
                                 LevelUpCommands,
                                 MiniMapCommands,
@@ -140,6 +154,8 @@ const char kChromeAppStoreUrl[] =
                                 PasswordProtectionCommands,
                                 PasswordProtectionCoordinatorDelegate,
                                 PriceTrackedItemsCommands,
+                                ReminderNotificationsCommands,
+                                ReminderNotificationsCoordinatorDelegate,
                                 SaveToDriveCommands,
                                 SaveToPhotosCommands,
                                 SearchEngineChoiceCommands,
@@ -149,6 +165,7 @@ const char kChromeAppStoreUrl[] =
                                 TipsPasswordsCommands,
                                 TipsPasswordsCoordinatorDelegate,
                                 UnitConversionCommands,
+                                WelcomeBackPromoCommands,
                                 WhatsNewCommands>
 
 // The webState of the active tab.
@@ -178,12 +195,14 @@ const char kChromeAppStoreUrl[] =
   CountryCodePickerCoordinator* _countryCodePickerCoordinator;
   CredentialSuggestionBottomSheetCoordinator*
       _credentialSuggestionBottomSheetCoordinator;
+  DockingPromoCoordinator* _dockingPromoCoordinator;
   DownloadListCoordinator* _downloadListCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
   InfobarAutofillEditProfileBottomSheetHandler* _editProfileBottomSheetHandler;
   EnhancedCalendarCoordinator* _enhancedCalendarCoordinator;
   API_AVAILABLE(ios(18.4))
   FileUploadPanelCoordinator* _fileUploadPanelCoordinator;
+  GoogleOneCoordinator* _googleOneCoordinator;
   LevelUpCoordinator* _levelUpCoordinator;
   MiniMapCoordinator* _miniMapCoordinator;
   PageActionMenuCoordinator* _pageActionMenuCoordinator;
@@ -198,6 +217,7 @@ const char kChromeAppStoreUrl[] =
   PaymentsSuggestionBottomSheetCoordinator*
       _paymentsSuggestionBottomSheetCoordinator;
   PriceNotificationsViewCoordinator* _priceNotificationsViewCoordinator;
+  ReminderNotificationsCoordinator* _reminderNotificationsCoordinator;
   SaveCardBottomSheetCoordinator* _saveCardBottomSheetCoordinator;
   SaveToDriveCoordinator* _saveToDriveCoordinator;
   SaveToPhotosCoordinator* _saveToPhotosCoordinator;
@@ -211,6 +231,7 @@ const char kChromeAppStoreUrl[] =
   VirtualCardEnrollmentBottomSheetCoordinator*
       _virtualCardEnrollmentBottomSheetCoordinator;
   WalletReminderNoticeCoordinator* _walletReminderNoticeCoordinator;
+  WelcomeBackCoordinator* _welcomeBackCoordinator;
   WhatsNewCoordinator* _whatsNewCoordinator;
 }
 
@@ -261,6 +282,7 @@ const char kChromeAppStoreUrl[] =
   [self hideCobaltAlert];
   [self hideCobaltPopup];
   [self hideCountryCodePicker];
+  [self dismissDockingPromo];
   if (IsDownloadListEnabled()) {
     [self hideDownloadList];
   }
@@ -269,6 +291,7 @@ const char kChromeAppStoreUrl[] =
   if (@available(iOS 18.4, *)) {
     [self hideFileUploadPanel];
   }
+  [self hideGoogleOne];
   [self dismissPasskeyCreation];
   [self dismissPasskeySuggestions];
   [self stopPasskeyWelcomeScreenCoordinator];
@@ -281,6 +304,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissPageActionMenuWithCompletion:nil];
   [self hideParentAccessBottomSheet];
   [self hidePriceTrackedItems];
+  [self stopReminderNotificationsCoordinator];
   [self hideSaveToDrive];
   [self stopSaveToPhotos];
   [self stopSearchEngineChoiceScreen];
@@ -289,6 +313,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissPasswordsTip];
   [self hideUnitConversion];
   [self dismissWalletReminderNotice];
+  [self hideWelcomeBackPromo];
   [self dismissWhatsNew];
 }
 
@@ -331,6 +356,13 @@ const char kChromeAppStoreUrl[] =
   _passwordProtectionCoordinator = nil;
 }
 
+// Stops the reminder notifications coordinator.
+- (void)stopReminderNotificationsCoordinator {
+  [_reminderNotificationsCoordinator stop];
+  _reminderNotificationsCoordinator.delegate = nil;
+  _reminderNotificationsCoordinator = nil;
+}
+
 // Exits fullscreen mode.
 - (void)exitFullscreen {
   if (IsFullscreenRefactoringEnabled()) {
@@ -365,10 +397,12 @@ const char kChromeAppStoreUrl[] =
     @protocol(AutofillCommands),
     @protocol(CobaltCommands),
     @protocol(CountryCodePickerCommands),
+    @protocol(DockingPromoCommands),
     @protocol(DownloadListCommands),
     @protocol(DriveFilePickerCommands),
     @protocol(EnhancedCalendarCommands),
     @protocol(FileUploadPanelCommands),
+    @protocol(GoogleOneCommands),
     @protocol(IOSPasskeyClientCommands),
     @protocol(LevelUpCommands),
     @protocol(MiniMapCommands),
@@ -378,12 +412,14 @@ const char kChromeAppStoreUrl[] =
     @protocol(PasswordBreachCommands),
     @protocol(PasswordProtectionCommands),
     @protocol(PriceTrackedItemsCommands),
+    @protocol(ReminderNotificationsCommands),
     @protocol(SaveToDriveCommands),
     @protocol(SaveToPhotosCommands),
     @protocol(SearchEngineChoiceCommands),
     @protocol(SyncedSetUpCommands),
     @protocol(TipsPasswordsCommands),
     @protocol(UnitConversionCommands),
+    @protocol(WelcomeBackPromoCommands),
     @protocol(WhatsNewCommands),
   ];
 
@@ -901,6 +937,23 @@ const char kChromeAppStoreUrl[] =
   _countryCodePickerCoordinator = nil;
 }
 
+#pragma mark - DockingPromoCommands
+
+- (void)showDockingPromoWithPromosUIHandler:
+    (id<PromosManagerUIHandler>)promosUIHandler {
+  [_dockingPromoCoordinator stop];
+  _dockingPromoCoordinator = [[DockingPromoCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser];
+  _dockingPromoCoordinator.promosUIHandler = promosUIHandler;
+  [_dockingPromoCoordinator start];
+}
+
+- (void)dismissDockingPromo {
+  [_dockingPromoCoordinator stop];
+  _dockingPromoCoordinator = nil;
+}
+
 #pragma mark - DownloadListCommands
 
 - (void)hideDownloadList {
@@ -1035,6 +1088,36 @@ const char kChromeAppStoreUrl[] =
 - (void)hideFileUploadPanel API_AVAILABLE(ios(18.4)) {
   [_fileUploadPanelCoordinator stop];
   _fileUploadPanelCoordinator = nil;
+}
+
+#pragma mark - GoogleOneCommands
+
+- (void)showGoogleOneForIdentity:(id<SystemIdentity>)identity
+                      entryPoint:(GoogleOneEntryPoint)entryPoint
+              baseViewController:(UIViewController*)baseViewController {
+  [self hideGoogleOne];
+  UIViewController* viewController = baseViewController ?: _baseViewController;
+  _googleOneCoordinator =
+      [[GoogleOneCoordinator alloc] initWithBaseViewController:viewController
+                                                       browser:_browser
+                                                    entryPoint:entryPoint
+                                                      identity:identity];
+  [_googleOneCoordinator start];
+}
+
+- (void)showGoogleOneForURL:(const GURL&)inputURL {
+  [self hideGoogleOne];
+  _googleOneCoordinator = [[GoogleOneCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser
+                      entryPoint:GoogleOneEntryPoint::kDeepLink
+                        inputURL:inputURL];
+  [_googleOneCoordinator start];
+}
+
+- (void)hideGoogleOne {
+  [_googleOneCoordinator stop];
+  _googleOneCoordinator = nil;
 }
 
 #pragma mark - IOSPasskeyClientCommands
@@ -1376,6 +1459,27 @@ const char kChromeAppStoreUrl[] =
   [_priceNotificationsViewCoordinator start];
 }
 
+#pragma mark - ReminderNotificationsCommands
+
+- (void)showSetTabReminderUI:(SetTabReminderEntryPoint)entryPoint {
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
+
+  [self stopReminderNotificationsCoordinator];
+  _reminderNotificationsCoordinator = [[ReminderNotificationsCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser];
+  _reminderNotificationsCoordinator.delegate = self;
+  [_reminderNotificationsCoordinator start];
+}
+
+#pragma mark - ReminderNotificationsCoordinatorDelegate
+
+- (void)reminderNotificationsCoordinatorWantsToBeDismissed:
+    (ReminderNotificationsCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _reminderNotificationsCoordinator);
+  [self stopReminderNotificationsCoordinator];
+}
+
 #pragma mark - SaveToDriveCommands
 
 - (void)showSaveToDriveForDownload:(web::DownloadTask*)downloadTask {
@@ -1523,6 +1627,21 @@ const char kChromeAppStoreUrl[] =
 - (void)hideUnitConversion {
   [_unitConversionCoordinator stop];
   _unitConversionCoordinator = nil;
+}
+
+#pragma mark - WelcomeBackPromoCommands
+
+- (void)showWelcomeBack {
+  [_welcomeBackCoordinator stop];
+  _welcomeBackCoordinator = [[WelcomeBackCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser];
+  [_welcomeBackCoordinator start];
+}
+
+- (void)hideWelcomeBackPromo {
+  [_welcomeBackCoordinator stop];
+  _welcomeBackCoordinator = nil;
 }
 
 #pragma mark - WhatsNewCommands

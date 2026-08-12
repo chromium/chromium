@@ -41,7 +41,6 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/service/sync_service.h"
@@ -107,7 +106,6 @@
 #import "ios/chrome/browser/default_browser/promo/non_modal/coordinator/default_browser_promo_non_modal_coordinator.h"
 #import "ios/chrome/browser/default_browser/promo/non_modal/coordinator/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/default_browser/promo/non_modal/public/default_browser_promo_non_modal_commands.h"
-#import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/download_manager_coordinator.h"
@@ -127,7 +125,6 @@
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
-#import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -180,7 +177,6 @@
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator_delegate.h"
 #import "ios/chrome/browser/recent_tabs/coordinator/recent_tabs_coordinator.h"
 #import "ios/chrome/browser/recent_tabs/coordinator/recent_tabs_coordinator_delegate.h"
-#import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h"
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_coordinator.h"
 #import "ios/chrome/browser/safe_browsing/ui_bundled/safe_browsing_coordinator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
@@ -224,7 +220,6 @@
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
-#import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
@@ -240,7 +235,6 @@
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
-#import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
@@ -319,7 +313,6 @@
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/ui_bundled/net_export_coordinator.h"
-#import "ios/chrome/browser/welcome_back/coordinator/welcome_back_coordinator.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -351,12 +344,10 @@
     DefaultBrowserGenericPromoCommands,
     DefaultBrowserPromoNonModalCommands,
     DefaultPromoNonModalPresentationDelegate,
-    DockingPromoCommands,
     EditMenuBuilder,
     EnterpriseCommands,
     EnterprisePromptCoordinatorDelegate,
     FindInPageCommands,
-    GoogleOneCommands,
     NetExportTabHelperDelegate,
     NewTabPageCommands,
     NonModalSignInPromoCommands,
@@ -378,8 +369,6 @@
     ReaderModeCoordinatorDelegate,
     ReadingListCoordinatorDelegate,
     RecentTabsCoordinatorDelegate,
-    ReminderNotificationsCommands,
-    ReminderNotificationsCoordinatorDelegate,
     RepostFormCoordinatorDelegate,
     RepostFormTabHelperDelegate,
     SendTabToSelfCommands,
@@ -396,8 +385,7 @@
     URLLoadingDelegate,
     WebContentCommands,
     WebNavigationNTPDelegate,
-    WebUsageEnablerBrowserAgentObserving,
-    WelcomeBackPromoCommands>
+    WebUsageEnablerBrowserAgentObserving>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -571,7 +559,6 @@
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
   BookmarksCoordinator* _bookmarksCoordinator;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
-  DockingPromoCoordinator* _dockingPromoCoordinator;
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
   raw_ptr<UrlLoadingNotifierBrowserAgent> _urlLoadingNotifierBrowserAgent;
@@ -583,7 +570,6 @@
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
   ContextualSheetCoordinator* _contextualSheetCoordinator;
-  GoogleOneCoordinator* _googleOneCoordinator;
 
   // The coordinator that manages the BrowserLayoutViewController.
   BrowserLayoutCoordinator* _browserLayoutCoordinator;
@@ -592,9 +578,6 @@
   ReaderModeCoordinator* _readerModeCoordinator;
   ReaderModeBlurOverlayCoordinator* _readerModeBlurOverlayCoordinator;
 
-  // Coordinator to display the "Set a reminder" screen for the user's current
-  // tab.
-  ReminderNotificationsCoordinator* _reminderNotificationsCoordinator;
   SafeAreaProvider* _safeAreaProvider;
   // Number of time `showActivityOverlay` was called and its callback not
   // called.
@@ -625,9 +608,6 @@
 
   // The coordinator for the notifications opt-in screen.
   NotificationsOptInCoordinator* _notificationsOptInCoordinator;
-
-  // The coordinator for the Welcome Back promo.
-  WelcomeBackCoordinator* _welcomeBackCoordinator;
 
   // The coordinator for displaying Enterprise dialogs.
   EnterpriseDialogCoordinator* _enterpriseDialogCoordinator;
@@ -977,12 +957,6 @@
   self.recentTabsCoordinator = nil;
 }
 
-// Stops the reminder notifications coordinator.
-- (void)stopReminderNotificationsCoordinator {
-  [_reminderNotificationsCoordinator stop];
-  _reminderNotificationsCoordinator.delegate = nil;
-  _reminderNotificationsCoordinator = nil;
-}
 
 // Stop the store kit coordinator.
 - (void)stopStoreKitCoordinator {
@@ -1114,10 +1088,6 @@
     @protocol(TextZoomCommands),
     @protocol(WebContentCommands),
     @protocol(DefaultBrowserGenericPromoCommands),
-    @protocol(ReminderNotificationsCommands),
-    @protocol(GoogleOneCommands),
-    @protocol(WelcomeBackPromoCommands),
-    @protocol(DockingPromoCommands),
     @protocol(EnterpriseCommands),
     @protocol(PictureInPictureCommands),
   ];
@@ -1570,8 +1540,6 @@
 
   [self stopRecentTabsCoordinator];
 
-  [self stopReminderNotificationsCoordinator];
-
   [self stopRepostFormCoordinator];
 
   // TODO(crbug.com/40823248): Should stop when the Sad Tab UI appears.
@@ -1606,8 +1574,6 @@
   [_credentialProviderPromoCoordinator stop];
   _credentialProviderPromoCoordinator = nil;
 
-  [_dockingPromoCoordinator stop];
-  _dockingPromoCoordinator = nil;
 
   [self.defaultBrowserGenericPromoCoordinator stop];
   self.defaultBrowserGenericPromoCoordinator = nil;
@@ -1632,13 +1598,10 @@
   [self dismissEnhancedSafeBrowsingPromo];
   [self dismissPriceTrackingPromo];
   [self dismissAutoDeletionActionSheet];
-  [self hideGoogleOne];
   [self stopTrustedVaultReauthentication];
   [self dismissSearchWhatYouSeePromo];
   [self dismissTabGroupsPromo];
   [self dismissNotificationsOptIn];
-  [self dismissDockingPromo];
-  [self hideWelcomeBackPromo];
   [self hideComposeboxImmediately:YES completion:nil];
   [self dismissMultimodalActionsMenu];
 }
@@ -2402,7 +2365,6 @@
   [_enterpriseDialogCoordinator stop];
   _enterpriseDialogCoordinator = nil;
 
-  [self hideGoogleOne];
   [self updateLensUIForBackground];
 
   [self dismissLensPromo];
@@ -2412,7 +2374,6 @@
   [self dismissPriceTrackingPromo];
   [self dismissTabGroupsPromo];
   [self dismissNotificationsOptIn];
-  [self hideWelcomeBackPromo];
 
   [self cancelCollaborationFlows];
   [self.NTPCoordinator clearPresentedState];
@@ -2843,11 +2804,8 @@
 }
 
 - (void)showWelcomeBackPromo {
-  _welcomeBackCoordinator = [[WelcomeBackCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-
-  [_welcomeBackCoordinator start];
+  [HandlerForProtocol(self.dispatcher, WelcomeBackPromoCommands)
+      showWelcomeBack];
 }
 
 - (void)showHomeBackgroundCustomizationPromo {
@@ -2863,11 +2821,8 @@
 }
 
 - (void)showDockingPromo {
-  _dockingPromoCoordinator = [[DockingPromoCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  _dockingPromoCoordinator.promosUIHandler = self.promosManagerCoordinator;
-  [_dockingPromoCoordinator start];
+  [HandlerForProtocol(self.dispatcher, DockingPromoCommands)
+      showDockingPromoWithPromosUIHandler:self.promosManagerCoordinator];
 }
 
 #pragma mark - AutofillSettingsNavigator
@@ -4032,26 +3987,6 @@
   [self stopRecentTabsCoordinator];
 }
 
-#pragma mark - ReminderNotificationsCommands
-
-- (void)showSetTabReminderUI:(SetTabReminderEntryPoint)entryPoint {
-  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
-
-  CHECK(!_reminderNotificationsCoordinator);
-  _reminderNotificationsCoordinator = [[ReminderNotificationsCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  _reminderNotificationsCoordinator.delegate = self;
-  [_reminderNotificationsCoordinator start];
-}
-
-#pragma mark - ReminderNotificationsCoordinatorDelegate
-
-- (void)reminderNotificationsCoordinatorWantsToBeDismissed:
-    (ReminderNotificationsCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _reminderNotificationsCoordinator);
-  [self stopReminderNotificationsCoordinator];
-}
 
 #pragma mark - StoreKitCoordinatorDelegate
 
@@ -4157,19 +4092,6 @@
                                           completion:dismissalCompletion];
 }
 
-#pragma mark - DockingPromoCommands
-
-- (void)dismissDockingPromo {
-  [_dockingPromoCoordinator stop];
-  _dockingPromoCoordinator = nil;
-}
-
-#pragma mark - WelcomeBackPromoCommands
-
-- (void)hideWelcomeBackPromo {
-  [_welcomeBackCoordinator stop];
-  _welcomeBackCoordinator = nil;
-}
 
 #pragma mark - PictureInPictureCommands
 
@@ -4207,35 +4129,6 @@
   [self dismissNotificationsOptIn];
 }
 
-#pragma mark - GoogleOneCommands
-
-- (void)showGoogleOneForIdentity:(id<SystemIdentity>)identity
-                      entryPoint:(GoogleOneEntryPoint)entryPoint
-              baseViewController:(UIViewController*)baseViewController {
-  [self hideGoogleOne];
-  UIViewController* viewController = baseViewController ?: self.viewController;
-  _googleOneCoordinator =
-      [[GoogleOneCoordinator alloc] initWithBaseViewController:viewController
-                                                       browser:self.browser
-                                                    entryPoint:entryPoint
-                                                      identity:identity];
-  [_googleOneCoordinator start];
-}
-
-- (void)showGoogleOneForURL:(const GURL&)inputURL {
-  [self hideGoogleOne];
-  _googleOneCoordinator = [[GoogleOneCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                      entryPoint:GoogleOneEntryPoint::kDeepLink
-                        inputURL:inputURL];
-  [_googleOneCoordinator start];
-}
-
-- (void)hideGoogleOne {
-  [_googleOneCoordinator stop];
-  _googleOneCoordinator = nil;
-}
 
 #pragma mark - NonModalSignInPromoCommands
 
