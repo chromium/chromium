@@ -85,6 +85,7 @@ ci/ios-simulator-noncq
 ci/linux-archive-rel
 ci/linux-arm64-dbg
 ci/linux-arm64-dbg-tests
+ci/linux-arm64-official
 ci/linux-bfcache-rel
 ci/linux-blink-asan-rel
 ci/linux-blink-leak-rel
@@ -101,6 +102,7 @@ ci/linux-chromeos-rel
 ci/linux-extended-tracing-rel
 ci/linux-gcc-rel
 ci/linux-no-initial-webui-rel
+ci/linux-official
 ci/linux-oi-rel
 ci/linux-presubmit
 ci/linux-v4l2-codec-rel

@@ -87,6 +87,7 @@ chromium/try/ios-simulator-exp
 chromium/try/ios-simulator-full-configs
 chromium/try/ios-simulator-noncq
 chromium/try/linux-arm64-dbg
+chromium/try/linux-arm64-official
 chromium/try/linux-asan-dbg
 chromium/try/linux-asan-media-rel
 chromium/try/linux-asan-media-v8-arm-rel
@@ -116,6 +117,7 @@ chromium/try/linux-full-remote-rel
 chromium/try/linux-gcc-rel
 chromium/try/linux-libfuzzer-asan-rel
 chromium/try/linux-no-initial-webui-rel
+chromium/try/linux-official
 chromium/try/linux-oi-rel
 chromium/try/linux-rel
 chromium/try/linux-tsan-dbg

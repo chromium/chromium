@@ -621,11 +621,11 @@ ci.builder(
     ),
     builderless = False,
     cores = 32,
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "linux|off",
         short_name = "x64",
     ),
+    contact_team_email = "chrome-browser-infra-team@google.com",
     execution_timeout = 7 * time.hour,
     health_spec = health_spec.modified_default({
         "Unhealthy": health_spec.unhealthy_thresholds(
@@ -675,8 +675,6 @@ ci.builder(
     ),
     builderless = False,
     cores = 32,
-    # TODO(crbug.com/536941314): Add to gardening rotation once stable.
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "linux|off",
         short_name = "arm64",

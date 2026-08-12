@@ -53,7 +53,6 @@ ci/linux-fieldtrial-rel
 ci/linux-fuzz-coverage
 ci/linux-headless-shell-rel
 ci/linux-js-code-coverage
-ci/linux-official
 ci/linux-perfetto-rel
 ci/linux-rel-no-external-ip
 ci/linux-rust-x64-dbg
@@ -189,7 +188,6 @@ try/linux-js-coverage-rel
 try/linux-libfuzzer-asan-rel
 try/linux-msan-chained-origins-rel
 try/linux-msan-no-origins-rel
-try/linux-official
 try/linux-perfetto-rel
 try/linux-rel
 try/linux-rel-cft

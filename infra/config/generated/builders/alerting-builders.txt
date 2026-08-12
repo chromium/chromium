@@ -353,6 +353,7 @@ ci/linux-angle-chromium-nvidia
 ci/linux-archive-rel
 ci/linux-arm64-dbg
 ci/linux-arm64-dbg-tests
+ci/linux-arm64-official
 ci/linux-bfcache-rel
 ci/linux-blink-asan-rel
 ci/linux-blink-leak-rel
@@ -370,6 +371,7 @@ ci/linux-crossbench
 ci/linux-extended-tracing-rel
 ci/linux-gcc-rel
 ci/linux-no-initial-webui-rel
+ci/linux-official
 ci/linux-oi-rel
 ci/linux-presubmit
 ci/linux-rel-cft
@@ -601,6 +603,7 @@ try/ios-simulator-full-configs
 try/ios-simulator-noncq
 try/linux-angle-chromium-try
 try/linux-arm64-dbg
+try/linux-arm64-official
 try/linux-asan-dbg
 try/linux-asan-media-rel
 try/linux-asan-media-v8-arm-rel
@@ -636,6 +639,7 @@ try/linux-js-coverage-rel
 try/linux-libfuzzer-asan-rel
 try/linux-metadata-validator
 try/linux-no-initial-webui-rel
+try/linux-official
 try/linux-oi-rel
 try/linux-perfetto-rel
 try/linux-presubmit
