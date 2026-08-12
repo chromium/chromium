@@ -726,6 +726,10 @@ BASE_FEATURE(kLiveCaptionLogFlickerRate, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable or disable Live Caption from the right click menu.
 BASE_FEATURE(kLiveCaptionRightClick, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable speech recognition model LLM integration for Live Caption.
+BASE_FEATURE(kLiveCaptionSpeechRecognitionSmallExpertModel,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use a greedy text stabilizer to reduce flickering when translating partial
 // speech recognition results.
 BASE_FEATURE(kLiveCaptionUseGreedyTextStabilizer,
