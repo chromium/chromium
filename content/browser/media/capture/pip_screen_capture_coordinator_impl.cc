@@ -106,6 +106,18 @@ PipScreenCaptureCoordinatorImpl::PipScreenCaptureCoordinatorImpl() = default;
 
 PipScreenCaptureCoordinatorImpl::~PipScreenCaptureCoordinatorImpl() = default;
 
+void PipScreenCaptureCoordinatorImpl::OnPipInitiated(
+    const GlobalRenderFrameHostId& pip_owner_render_frame_host_id) {
+  if (pip_owner_render_frame_host_id_ == pip_owner_render_frame_host_id) {
+    return;
+  }
+
+  bool was_excluded = IsExcludedFromScreenCapture();
+  pip_owner_render_frame_host_id_ = pip_owner_render_frame_host_id;
+  NotifyStateChanged();
+  NotifyExclusionChanged(was_excluded);
+}
+
 void PipScreenCaptureCoordinatorImpl::OnPipShown(
     WebContents& pip_web_contents,
     const GlobalRenderFrameHostId& pip_owner_render_frame_host_id) {
@@ -132,7 +144,7 @@ void PipScreenCaptureCoordinatorImpl::OnPipShown(
 }
 
 void PipScreenCaptureCoordinatorImpl::OnPipClosed() {
-  if (!pip_window_id_) {
+  if (!pip_window_id_ && !pip_owner_render_frame_host_id_) {
     return;
   }
   pip_window_id_ = std::nullopt;
@@ -245,7 +257,7 @@ bool PipScreenCaptureCoordinatorImpl::IsExcludedFromScreenCapture() const {
   if (!base::FeatureList::IsEnabled(features::kExcludePipFromScreenCapture)) {
     return false;
   }
-  if (!pip_window_id_ || captures_.empty()) {
+  if (!pip_owner_render_frame_host_id_ || captures_.empty()) {
     return false;
   }
   for (const auto& capture : captures_) {

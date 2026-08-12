@@ -407,6 +407,10 @@ void DesktopWindowTreeHostWin::Show(ui::mojom::WindowShowState show_state,
         display::win::GetScreenWin()->DIPToScreenRect(nullptr, restore_bounds);
   }
 
+  // Ensure the display affinity is updated on the HWND before ShowWindow is
+  // called so that DWM is already aware of exclusion when the window appears.
+  UpdateDisplayAffinity();
+
   // Show content window first so that Widget::IsVisible() returns true during
   // the synchronous HandleVisibilityChanged(true) triggered by ShowWindow().
   content_window()->Show();

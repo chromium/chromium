@@ -43,6 +43,8 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl
       const PipScreenCaptureCoordinatorImpl&) = delete;
 
   // PipScreenCaptureCoordinator:
+  void OnPipInitiated(
+      const GlobalRenderFrameHostId& pip_owner_render_frame_host_id) override;
   void OnPipShown(
       WebContents& pip_web_contents,
       const GlobalRenderFrameHostId& pip_owner_render_frame_host_id) override;

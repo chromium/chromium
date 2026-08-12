@@ -622,4 +622,49 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, RegisterMediaPickerAsCapture) {
   EXPECT_FALSE(coordinator_->IsExcludedFromScreenCapture());
 }
 
+TEST_F(PipScreenCaptureCoordinatorImplTest,
+       OnPipInitiatedBeforePipShownExcludesCapture) {
+  // Capture is already active for the opener before PiP window is shown.
+  const base::UnguessableToken session_owner = base::UnguessableToken::Create();
+  coordinator_->AddCapture(
+      {.session_id = session_owner,
+       .render_frame_host_id = kPipOwnerId,
+       .desktop_media_id = content::DesktopMediaID(
+           content::DesktopMediaID::TYPE_SCREEN, kDesktopId)});
+  EXPECT_FALSE(coordinator_->IsExcludedFromScreenCapture());
+
+  // OnPipInitiated is called when PiP is initiated before native window is
+  // shown.
+  coordinator_->OnPipInitiated(kPipOwnerId);
+  EXPECT_TRUE(coordinator_->IsExcludedFromScreenCapture());
+
+  // Window becomes visible later.
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+  EXPECT_TRUE(coordinator_->IsExcludedFromScreenCapture());
+
+  // Window closed.
+  coordinator_->OnPipClosed();
+  EXPECT_FALSE(coordinator_->IsExcludedFromScreenCapture());
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest,
+       OnPipInitiatedNotifiesExclusionObserver) {
+  MockPipExcludedObserver observer;
+  coordinator_->AddExclusionObserver(&observer);
+
+  const base::UnguessableToken session_owner = base::UnguessableToken::Create();
+  coordinator_->AddCapture(
+      {.session_id = session_owner,
+       .render_frame_host_id = kPipOwnerId,
+       .desktop_media_id = content::DesktopMediaID(
+           content::DesktopMediaID::TYPE_SCREEN, kDesktopId)});
+
+  // Calling OnPipInitiated while capture is running should notify observer.
+  EXPECT_CALL(observer, OnExcludeFromScreenCaptureChanged(true));
+  coordinator_->OnPipInitiated(kPipOwnerId);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  coordinator_->RemoveExclusionObserver(&observer);
+}
+
 }  // namespace content

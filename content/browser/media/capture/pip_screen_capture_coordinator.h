@@ -37,6 +37,11 @@ class CONTENT_EXPORT PipScreenCaptureCoordinator {
   PipScreenCaptureCoordinator& operator=(const PipScreenCaptureCoordinator&) =
       delete;
 
+  // Called when a document PiP window is initiated from the opener
+  // RenderFrameHost before the native window is created.
+  virtual void OnPipInitiated(
+      const GlobalRenderFrameHostId& pip_owner_render_frame_host_id) = 0;
+
   // Called when a document PiP window is shown from the WebContents
   // which this coordinator belongs to.
   virtual void OnPipShown(

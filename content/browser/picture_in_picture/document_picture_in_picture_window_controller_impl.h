@@ -76,7 +76,7 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
   // Called when the child WebContents discovers that it's being deleted.
   void OnChildContentsDestroyed();
 
-  // Returns the web_contents() as a WebContentsImpl*.
+  // Returns the opener WebContents as a WebContentsImpl*.
   WebContentsImpl* GetWebContentsImpl();
 
   // The WebContents for the PiP window. If this is null, then we have already
