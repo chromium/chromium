@@ -202,10 +202,6 @@ class NavigationHandler implements TouchEventObserver {
         if (GestureNavigationUtils.shouldAnimateBackForwardTransitions()) {
             onGestureEnd(OverscrollActivationStatus.RESET);
         } else {
-            // No mTabOnBackGestureHandler to cancel here: it is only created under
-            // GestureNavigationUtils#allowTransition, whose first condition is
-            // shouldAnimateBackForwardTransitions(), and that value is constant for
-            // the lifetime of the process.
             mBackGestureForTabHistoryInProgress = false;
         }
         mTab = tab;
@@ -239,22 +235,11 @@ class NavigationHandler implements TouchEventObserver {
      * @see GestureDetector#SimpleOnGestureListener#onDown(MotionEvent)
      */
     public boolean onDown() {
-        if (!isStopped()) {
-            // The previous gesture was never released. This happens on the web page
-            // overscroll path, where SwipeRefreshHandler#start calls startGesture()
-            // (i.e. this method) and triggerUi() again for the next swipe without a
-            // release() in between, e.g. when the RenderWidgetHostView that owns
-            // OverscrollRefresh is replaced mid-gesture. End the previous gesture
-            // here, so that the state triggerUi() is about to overwrite
-            // (mInitiatingEdge, mPullOffsetX and mTabOnBackGestureHandler) does not
-            // outlive it: pull() would otherwise keep driving the previous native
-            // gesture with the new edge, which is crbug.com/530682179.
-            onGestureEnd(OverscrollActivationStatus.RESET);
-        }
         mDownWidth = mParentView.getWidth();
         mDownHeight = mParentView.getHeight();
-        mTriggerUiCallSource = TriggerUiCallSource.NO_TRIGGER;
-        mPullOffsetX = 0.f;
+        if (isStopped()) {
+            mTriggerUiCallSource = TriggerUiCallSource.NO_TRIGGER;
+        }
         mState = GestureState.STARTED;
         return true;
     }
@@ -479,8 +464,6 @@ class NavigationHandler implements TouchEventObserver {
         if (GestureNavigationUtils.shouldAnimateBackForwardTransitions()) {
             onGestureEnd(OverscrollActivationStatus.RESET);
         } else {
-            // See setTab() for why there is no mTabOnBackGestureHandler to cancel on
-            // this branch.
             if (mState == GestureState.DRAGGED) {
                 mModel.set(ACTION, GestureAction.RESET_BUBBLE);
             }
