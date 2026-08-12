@@ -509,8 +509,8 @@ ProfileSubMenuModel::ProfileSubMenuModel(
   const int avatar_icon_size =
       GetLayoutConstant(LayoutConstant::kAppMenuProfileRowAvatarIconSize);
   avatar_image_model_ = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled()   ? kAccountCircleIcon
-                                          : kAccountCircleChromeRefreshOldIcon,
+      features::IsRoundedIconsEnabled() ? kAccountCircleIcon
+                                        : kAccountCircleChromeRefreshOldIcon,
       ui::kColorMenuIcon, avatar_icon_size);
   if (profile->IsIncognitoProfile()) {
     avatar_image_model_ = ui::ImageModel::FromVectorIcon(
@@ -1109,49 +1109,49 @@ HelpMenuModel::~HelpMenuModel() = default;
 
 void HelpMenuModel::Build(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS) && defined(OFFICIAL_BUILD)
-    int help_string_id = IDS_GET_HELP;
+  int help_string_id = IDS_GET_HELP;
 #else
-    int help_string_id = IDS_HELP_PAGE;
+  int help_string_id = IDS_HELP_PAGE;
 #endif
-    AddItemWithStringIdAndVectorIcon(this, IDC_ABOUT, IDS_ABOUT,
-                                     features::IsRoundedIconsEnabled()
-                                         ? vector_icons::kInfoIcon
-                                         : vector_icons::kInfoRefreshOldIcon);
+  AddItemWithStringIdAndVectorIcon(this, IDC_ABOUT, IDS_ABOUT,
+                                   features::IsRoundedIconsEnabled()
+                                       ? vector_icons::kInfoIcon
+                                       : vector_icons::kInfoRefreshOldIcon);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (whats_new::IsEnabled()) {
-      AddItemWithStringIdAndVectorIcon(
-          this, IDC_CHROME_WHATS_NEW, IDS_CHROME_WHATS_NEW,
-          features::IsRoundedIconsEnabled() ? kReleaseAlertIcon
-                                            : kReleaseAlertOldIcon);
-    }
+  if (whats_new::IsEnabled()) {
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_CHROME_WHATS_NEW, IDS_CHROME_WHATS_NEW,
+        features::IsRoundedIconsEnabled() ? kReleaseAlertIcon
+                                          : kReleaseAlertOldIcon);
+  }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    AddItemWithStringId(IDC_HELP_PAGE_VIA_MENU, help_string_id);
-    if (browser_defaults::kShowHelpMenuItemIcon) {
-      ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-      SetIconForCommandId(
-          IDC_HELP_PAGE_VIA_MENU,
-          ui::ImageModel::FromImage(rb.GetNativeImageNamed(IDR_HELP_MENU)));
-    } else {
-      SetCommandIcon(this, IDC_HELP_PAGE_VIA_MENU,
-                     features::IsRoundedIconsEnabled() ? kHelpCustomIcon
-                                                       : kHelpMenuOldIcon);
-    }
+  AddItemWithStringId(IDC_HELP_PAGE_VIA_MENU, help_string_id);
+  if (browser_defaults::kShowHelpMenuItemIcon) {
+    ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+    SetIconForCommandId(
+        IDC_HELP_PAGE_VIA_MENU,
+        ui::ImageModel::FromImage(rb.GetNativeImageNamed(IDR_HELP_MENU)));
+  } else {
+    SetCommandIcon(
+        this, IDC_HELP_PAGE_VIA_MENU,
+        features::IsRoundedIconsEnabled() ? kHelpCustomIcon : kHelpMenuOldIcon);
+  }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (chrome::CanShowFeedback(browser->GetProfile())) {
-      AddItemWithStringIdAndVectorIcon(
-          this, IDC_FEEDBACK, IDS_FEEDBACK,
-          features::IsRoundedIconsEnabled() ? kFeedbackIcon : kReportOldIcon);
+  if (chrome::CanShowFeedback(browser->GetProfile())) {
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_FEEDBACK, IDS_FEEDBACK,
+        features::IsRoundedIconsEnabled() ? kFeedbackIcon : kReportOldIcon);
 
-      if (feedback::ReportUnsafeSiteDialog::IsEnabled(*browser->GetProfile())) {
-        AddItemWithStringIdAndVectorIcon(
-            this, IDC_REPORT_UNSAFE_SITE, IDS_REPORT_UNSAFE_SITE,
-            features::IsRoundedIconsEnabled() ? vector_icons::kWarningFilledIcon
-                                              : vector_icons::kWarningOldIcon);
-        SetElementIdentifierAt(
-            GetIndexOfCommandId(IDC_REPORT_UNSAFE_SITE).value(),
-            HelpMenuModel::kReportUnsafeSiteMenuItem);
-      }
+    if (feedback::ReportUnsafeSiteDialog::IsEnabled(*browser->GetProfile())) {
+      AddItemWithStringIdAndVectorIcon(
+          this, IDC_REPORT_UNSAFE_SITE, IDS_REPORT_UNSAFE_SITE,
+          features::IsRoundedIconsEnabled() ? vector_icons::kWarningFilledIcon
+                                            : vector_icons::kWarningOldIcon);
+      SetElementIdentifierAt(
+          GetIndexOfCommandId(IDC_REPORT_UNSAFE_SITE).value(),
+          HelpMenuModel::kReportUnsafeSiteMenuItem);
     }
+  }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
@@ -1214,11 +1214,11 @@ void ToolsMenuModel::Build(Browser* browser) {
           NtpCustomBackgroundServiceFactory::GetForProfile(
               browser->GetProfile()),
           browser->GetProfile())) {
-    AddItemWithStringIdAndVectorIcon(
-        this, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
-        IDS_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
-        features::IsRoundedIconsEnabled()   ? kEditIcon
-                                            : kEditChromeRefreshOldIcon);
+    AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
+                                     IDS_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
+                                     features::IsRoundedIconsEnabled()
+                                         ? kEditIcon
+                                         : kEditChromeRefreshOldIcon);
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -2213,7 +2213,6 @@ void AppMenuModel::Build() {
           ? IDS_NEW_INCOGNITO_TAB
           : IDS_NEW_TAB,
       features::IsRoundedIconsEnabled() ? kTabIcon : kNewTabRefreshOldIcon);
-
 
   AddItemWithStringIdAndVectorIcon(
       this, IDC_NEW_WINDOW, IDS_NEW_WINDOW,
