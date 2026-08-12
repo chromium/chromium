@@ -41,8 +41,9 @@ class SuggestInventoryFallbackUtilsTest : public testing::Test {
 TEST_F(SuggestInventoryFallbackUtilsTest,
        GetFallbackPromptsForSuggestInventory_Brainstorm) {
   auto prompts = GetFallbackPromptsForSuggestInventory(
-      SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM, /*num_suggestions=*/3);
-  EXPECT_EQ(prompts.size(), 3u);
+      SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM,
+      kDefaultFallbackNumSuggestions);
+  EXPECT_EQ(prompts.size(), kDefaultFallbackNumSuggestions);
   for (const auto& prompt : prompts) {
     EXPECT_FALSE(prompt.first.empty());
     EXPECT_FALSE(prompt.second.empty());
@@ -53,8 +54,8 @@ TEST_F(SuggestInventoryFallbackUtilsTest,
        GetFallbackPromptsForSuggestInventory_HelpMeLearn) {
   auto prompts = GetFallbackPromptsForSuggestInventory(
       SuggestInventory::SUGGEST_INVENTORY_HELP_ME_LEARN,
-      /*num_suggestions=*/3);
-  EXPECT_EQ(prompts.size(), 3u);
+      kDefaultFallbackNumSuggestions);
+  EXPECT_EQ(prompts.size(), kDefaultFallbackNumSuggestions);
   for (const auto& prompt : prompts) {
     EXPECT_FALSE(prompt.first.empty());
     EXPECT_FALSE(prompt.second.empty());
@@ -65,8 +66,8 @@ TEST_F(SuggestInventoryFallbackUtilsTest,
        GetFallbackPromptsForSuggestInventory_WriteOrEdit) {
   auto prompts = GetFallbackPromptsForSuggestInventory(
       SuggestInventory::SUGGEST_INVENTORY_WRITE_OR_EDIT,
-      /*num_suggestions=*/3);
-  EXPECT_EQ(prompts.size(), 3u);
+      kDefaultFallbackNumSuggestions);
+  EXPECT_EQ(prompts.size(), kDefaultFallbackNumSuggestions);
   for (const auto& prompt : prompts) {
     EXPECT_FALSE(prompt.first.empty());
     EXPECT_FALSE(prompt.second.empty());
@@ -77,15 +78,17 @@ TEST_F(SuggestInventoryFallbackUtilsTest,
        GetFallbackPromptsForSuggestInventory_Unsupported) {
   auto prompts = GetFallbackPromptsForSuggestInventory(
       SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
-      /*num_suggestions=*/3);
+      kDefaultFallbackNumSuggestions);
   EXPECT_TRUE(prompts.empty());
 }
 
 TEST_F(SuggestInventoryFallbackUtilsTest,
        GetFallbackPromptsForSuggestInventory_MaxCountLimit) {
+  const size_t kMaxCount = 2;
   auto prompts = GetFallbackPromptsForSuggestInventory(
-      SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM, /*num_suggestions=*/2);
-  EXPECT_EQ(prompts.size(), 2u);
+      SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM,
+      /*num_suggestions=*/kMaxCount);
+  EXPECT_EQ(prompts.size(), kMaxCount);
 }
 
 TEST_F(SuggestInventoryFallbackUtilsTest,
@@ -98,10 +101,10 @@ TEST_F(SuggestInventoryFallbackUtilsTest,
   input.set_suggest_inventory(SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM);
 
   auto matches = MaybeCreateFallbackMatchesForSuggestInventory(
-      /*provider=*/nullptr, &client_, input, /*num_suggestions=*/3);
+      /*provider=*/nullptr, &client_, input, kDefaultFallbackNumSuggestions);
 
-  EXPECT_EQ(matches.size(), 3u);
-  int expected_relevance = 300;
+  EXPECT_EQ(matches.size(), kDefaultFallbackNumSuggestions);
+  int expected_relevance = kDefaultFallbackSuggestRelevance;
   for (const auto& match : matches) {
     EXPECT_EQ(match.type, AutocompleteMatchType::SEARCH_SUGGEST);
     EXPECT_EQ(match.relevance, expected_relevance--);

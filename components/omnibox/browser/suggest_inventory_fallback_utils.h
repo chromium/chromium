@@ -17,7 +17,7 @@ class AutocompleteProviderClient;
 
 namespace omnibox {
 
-inline constexpr size_t kDefaultFallbackNumSuggestions = 3;
+inline constexpr size_t kDefaultFallbackNumSuggestions = 5;
 inline constexpr int kDefaultFallbackSuggestRelevance = 300;
 
 // Returns `num_suggestions` randomized UTF-16 fallback prompt strings for
