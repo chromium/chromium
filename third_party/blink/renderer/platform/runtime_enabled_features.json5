@@ -7104,6 +7104,10 @@
       status: "test",
     },
     {
+      name: "WebSocketOptionBag",
+      status: "experimental",
+    },
+    {
       name: "WebSocketStream",
       status: "stable",
     },

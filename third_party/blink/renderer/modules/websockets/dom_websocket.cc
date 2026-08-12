@@ -44,7 +44,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_string_stringsequence_websocketinit.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -203,16 +204,14 @@ void DOMWebSocket::LogError(const String& message) {
 DOMWebSocket* DOMWebSocket::Create(ExecutionContext* context,
                                    const String& url,
                                    ExceptionState& exception_state) {
-  return Create(
-      context, url,
-      MakeGarbageCollected<V8UnionStringOrStringSequence>(Vector<String>()),
-      exception_state);
+  return Create(context, url, /*protocols_or_options=*/nullptr,
+                exception_state);
 }
 
 DOMWebSocket* DOMWebSocket::Create(
     ExecutionContext* context,
     const String& url,
-    const V8UnionStringOrStringSequence* protocols,
+    const V8UnionStringOrStringSequenceOrWebSocketInit* protocols_or_options,
     ExceptionState& exception_state) {
   if (url.IsNull()) {
     exception_state.ThrowDOMException(
@@ -221,26 +220,54 @@ DOMWebSocket* DOMWebSocket::Create(
     return nullptr;
   }
 
-  DOMWebSocket* websocket = MakeGarbageCollected<DOMWebSocket>(context);
-
-  DCHECK(protocols);
-  switch (protocols->GetContentType()) {
-    case V8UnionStringOrStringSequence::ContentType::kString: {
-      Vector<String> protocols_vector;
-      protocols_vector.push_back(protocols->GetAsString());
-      websocket->Connect(url, protocols_vector, exception_state);
-      break;
-    }
-    case V8UnionStringOrStringSequence::ContentType::kStringSequence:
-      websocket->Connect(url, protocols->GetAsStringSequence(),
-                         exception_state);
-      break;
+  Vector<String> protocols_vector;
+  if (!ParseConstructorOptions(protocols_or_options, protocols_vector,
+                               exception_state)) {
+    return nullptr;
   }
+
+  DOMWebSocket* websocket = MakeGarbageCollected<DOMWebSocket>(context);
+  websocket->Connect(url, protocols_vector, exception_state);
 
   if (exception_state.HadException())
     return nullptr;
 
   return websocket;
+}
+
+bool DOMWebSocket::ParseConstructorOptions(
+    const V8UnionStringOrStringSequenceOrWebSocketInit* protocols_or_options,
+    Vector<String>& protocols_vector,
+    ExceptionState& exception_state) {
+  if (!protocols_or_options) {
+    return true;
+  }
+
+  switch (protocols_or_options->GetContentType()) {
+    case V8UnionStringOrStringSequenceOrWebSocketInit::ContentType::kString:
+      protocols_vector.push_back(protocols_or_options->GetAsString());
+      return true;
+    case V8UnionStringOrStringSequenceOrWebSocketInit::ContentType::
+        kStringSequence:
+      protocols_vector = protocols_or_options->GetAsStringSequence();
+      return true;
+    case V8UnionStringOrStringSequenceOrWebSocketInit::ContentType::
+        kWebSocketInit: {
+      if (!RuntimeEnabledFeatures::WebSocketOptionBagEnabled()) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kSyntaxError,
+            "The subprotocol '[object Object]' is invalid.");
+        return false;
+      }
+      const WebSocketInit* options = protocols_or_options->GetAsWebSocketInit();
+      CHECK(options);
+      if (options->hasProtocols()) {
+        protocols_vector = options->protocols();
+      }
+      return true;
+    }
+  }
+  return true;
 }
 
 void DOMWebSocket::Connect(const String& url,

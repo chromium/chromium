@@ -5461,6 +5461,7 @@ crbug.com/1048761 external/wpt/websockets/constructor/018.html?wpt_flags=h2 [ Fa
 crbug.com/1048761 external/wpt/websockets/constructor/019.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/constructor/020.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/constructor/022.html?wpt_flags=h2 [ Failure ]
+crbug.com/1048761 external/wpt/websockets/constructor/023.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/cookies/001.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/cookies/002.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/cookies/003.html?wpt_flags=h2 [ Failure ]

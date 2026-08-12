@@ -38,7 +38,7 @@ enum BinaryType { "blob", "arraybuffer" };
     Exposed=(Window,Worker),
     ImplementedAs=DOMWebSocket
 ] interface WebSocket : EventTarget {
-    [CallWith=ExecutionContext, RaisesException] constructor(USVString url, optional (DOMString or sequence<DOMString>) protocols);
+    [CallWith=ExecutionContext, RaisesException] constructor(USVString url, optional (DOMString or sequence<DOMString> or WebSocketInit) protocolsOrOptions);
     readonly attribute USVString url;
 
     // ready state

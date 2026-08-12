@@ -15,6 +15,9 @@
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_string_stringsequence_websocketinit.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_init.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -24,6 +27,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -979,6 +983,76 @@ TEST(DOMWebSocketTest, GCWhileEventsPending) {
   }
 
   ThreadState::Current()->CollectAllGarbageForTesting();
+}
+
+TEST(DOMWebSocketTest, OptionBagDisabledThrowsSyntaxError) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(false);
+
+  auto* options = WebSocketInit::Create();
+  auto* union_options =
+      MakeGarbageCollected<V8UnionStringOrStringSequenceOrWebSocketInit>(
+          options);
+
+  DOMWebSocket* websocket = DOMWebSocket::Create(
+      scope.GetExecutionContext(), "ws://example.com/", union_options,
+      scope.GetExceptionState());
+  EXPECT_EQ(nullptr, websocket);
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kSyntaxError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_EQ("The subprotocol '[object Object]' is invalid.",
+            scope.GetExceptionState().Message());
+}
+
+TEST(DOMWebSocketTest, OptionBagWithProtocolsSequence) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(true);
+  DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
+
+  auto* options = WebSocketInit::Create();
+  options->setProtocols(Vector<String>{"chat", "superchat"});
+  auto* union_options =
+      MakeGarbageCollected<V8UnionStringOrStringSequenceOrWebSocketInit>(
+          options);
+
+  EXPECT_CALL(websocket_scope.Channel(),
+              Connect(KURL("ws://example.com/"), String("chat, superchat")))
+      .WillOnce(Return(true));
+
+  Vector<String> protocols_vector;
+  EXPECT_TRUE(DOMWebSocket::ParseConstructorOptions(
+      union_options, protocols_vector, scope.GetExceptionState()));
+
+  websocket_scope.Socket().Connect("ws://example.com/", protocols_vector,
+                                   scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMWebSocket::kConnecting, websocket_scope.Socket().readyState());
+}
+
+TEST(DOMWebSocketTest, OptionBagWithInvalidProtocolThrowsSyntaxError) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(true);
+  DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
+
+  auto* options = WebSocketInit::Create();
+  options->setProtocols(Vector<String>{"invalid, protocol"});
+  auto* union_options =
+      MakeGarbageCollected<V8UnionStringOrStringSequenceOrWebSocketInit>(
+          options);
+
+  Vector<String> protocols_vector;
+  EXPECT_TRUE(DOMWebSocket::ParseConstructorOptions(
+      union_options, protocols_vector, scope.GetExceptionState()));
+
+  websocket_scope.Socket().Connect("ws://example.com/", protocols_vector,
+                                   scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kSyntaxError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
 }
 
 }  // namespace
