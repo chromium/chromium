@@ -51,12 +51,21 @@ namespace autofill {
 namespace {
 
 using ::autofill::test::MakeGuid;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::Optional;
 using ::testing::Property;
+using ::testing::ResultOf;
 using ::testing::SizeIs;
+
+auto HasRawInfo(FieldType type, const std::u16string& expected) {
+  return ResultOf(
+      [type](const AutofillProfile& p) { return p.GetRawInfo(type); },
+      expected);
+}
 
 constexpr char kAddressesSuppressedHistogramName[] =
     "Autofill.AddressesSuppressedForDisuse";
@@ -341,8 +350,7 @@ TEST_F(AddressSuggestionGeneratorTest,
       address_data(), test::GetFormFieldData({.value = u"Test@"}),
       EMAIL_ADDRESS, {});
 
-  ASSERT_EQ(profiles.size(), 1u);
-  EXPECT_EQ(profiles[0], profile_1);
+  EXPECT_THAT(profiles, ElementsAre(profile_1));
 }
 
 TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_HideSubsets) {
@@ -390,9 +398,8 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_HideSubsets) {
   std::vector<AutofillProfile> profiles = GetProfilesToSuggestForTest(
       address_data(), test::GetFormFieldData({.value = u"123"}),
       ADDRESS_HOME_STREET_ADDRESS, types);
-  ASSERT_EQ(profiles.size(), 2U);
-  EXPECT_EQ(profiles[0].GetRawInfo(ADDRESS_HOME_STATE), u"CA");
-  EXPECT_EQ(profiles[1].GetRawInfo(ADDRESS_HOME_STATE), u"TX");
+  EXPECT_THAT(profiles, ElementsAre(HasRawInfo(ADDRESS_HOME_STATE, u"CA"),
+                                    HasRawInfo(ADDRESS_HOME_STATE, u"TX")));
 }
 
 // Drawing takes noticeable time when there are more than 10 profiles.
@@ -487,9 +494,9 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
 
   ASSERT_EQ(kMaxPrefixMatchedProfilesForSuggestion + 1,
             address_data().GetProfiles().size());
-  ASSERT_EQ(suggested_profiles.size(), 1U);
-  EXPECT_EQ(suggested_profiles.front().GetRawInfo(NAME_FIRST),
-            profiles.front().GetRawInfo(NAME_FIRST));
+  EXPECT_THAT(suggested_profiles,
+              ElementsAre(HasRawInfo(NAME_FIRST,
+                                     profiles.front().GetRawInfo(NAME_FIRST))));
 }
 
 // Tests that GetProfilesToSuggest orders its suggestions based on the
@@ -559,10 +566,10 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
 
   std::vector<AutofillProfile> suggested_profiles = GetProfilesToSuggestForTest(
       address_data(), test::GetFormFieldData({.value = u"Ma"}), NAME_FIRST, {});
-  ASSERT_EQ(suggested_profiles.size(), 3U);
-  EXPECT_EQ(suggested_profiles[0].GetRawInfo(NAME_FIRST), u"Marion1");
-  EXPECT_EQ(suggested_profiles[1].GetRawInfo(NAME_FIRST), u"Marion2");
-  EXPECT_EQ(suggested_profiles[2].GetRawInfo(NAME_FIRST), u"Marion3");
+  EXPECT_THAT(suggested_profiles,
+              ElementsAre(HasRawInfo(NAME_FIRST, u"Marion1"),
+                          HasRawInfo(NAME_FIRST, u"Marion2"),
+                          HasRawInfo(NAME_FIRST, u"Marion3")));
 }
 
 // Tests that GetProfilesToSuggest returns all profiles suggestions.
@@ -818,8 +825,8 @@ TEST_F(AddressSuggestionGeneratorTest,
         GetProfilesToSuggestForTest(address_data(),
                                     test::GetFormFieldData({.value = u"123"}),
                                     ADDRESS_HOME_STREET_ADDRESS, {});
-    ASSERT_EQ(suggested_profiles.size(), 1U);
-    EXPECT_EQ(suggested_profiles[0].GetRawInfo(NAME_FIRST), u"Marion1");
+    EXPECT_THAT(suggested_profiles,
+                ElementsAre(HasRawInfo(NAME_FIRST, u"Marion1")));
   }
 
   // Query with prefix for profile2 returns profile2.
@@ -828,8 +835,8 @@ TEST_F(AddressSuggestionGeneratorTest,
         GetProfilesToSuggestForTest(address_data(),
                                     test::GetFormFieldData({.value = u"456"}),
                                     ADDRESS_HOME_STREET_ADDRESS, {});
-    EXPECT_EQ(suggested_profiles.size(), 1U);
-    EXPECT_EQ(suggested_profiles[0].GetRawInfo(NAME_FIRST), u"Marion2");
+    EXPECT_THAT(suggested_profiles,
+                ElementsAre(HasRawInfo(NAME_FIRST, u"Marion2")));
   }
 }
 
@@ -931,10 +938,11 @@ TEST_F(AddressSuggestionGeneratorTest,
       GetProfilesToSuggestForTest(address_data(), FormFieldData(), NAME_FULL,
                                   {NAME_FULL});
 
-  ASSERT_EQ(profiles_to_suggest.size(), 1u);
-  EXPECT_EQ(profile_1.guid(), profiles_to_suggest[0].guid());
-  EXPECT_EQ(profiles_to_suggest[0].record_type(),
-            AutofillProfile::RecordType::kAccount);
+  EXPECT_THAT(
+      profiles_to_suggest,
+      ElementsAre(AllOf(Property(&AutofillProfile::guid, profile_1.guid()),
+                        Property(&AutofillProfile::record_type,
+                                 AutofillProfile::RecordType::kAccount))));
 }
 
 TEST_F(AddressSuggestionGeneratorTest,
@@ -954,8 +962,9 @@ TEST_F(AddressSuggestionGeneratorTest,
                                   test::GetFormFieldData({.value = u"Mar"}),
                                   NAME_FIRST, {});
 
-  ASSERT_EQ(profiles_to_suggest.size(), 1U);
-  EXPECT_EQ(marion_profile.guid(), profiles_to_suggest[0].guid());
+  EXPECT_THAT(
+      profiles_to_suggest,
+      ElementsAre(Property(&AutofillProfile::guid, marion_profile.guid())));
 }
 
 TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_NoMatchingProfile) {
@@ -1004,8 +1013,8 @@ TEST_F(AddressSuggestionGeneratorTest,
       GetProfilesToSuggestForTest(address_data(), FormFieldData(), NAME_FULL,
                                   {NAME_FULL});
 
-  ASSERT_EQ(profiles_to_suggest.size(), 1u);
-  EXPECT_EQ(profiles_to_suggest.front().guid(), profile_1.guid());
+  EXPECT_THAT(profiles_to_suggest,
+              ElementsAre(Property(&AutofillProfile::guid, profile_1.guid())));
   histogram_tester.ExpectUniqueSample(kAddressesSuppressedHistogramName, 1, 1);
 }
 
@@ -1330,11 +1339,10 @@ TEST_F(AddressSuggestionGeneratorTest,
 
   // There should be one `SuggestionType::kDevtoolsTestAddresses`, one
   // `SuggestionType::kSeparator` and one `SuggestionType::kManageAddress`.
-  ASSERT_EQ(suggestions.size(), 3u);
-  EXPECT_EQ(suggestions[0].type, SuggestionType::kDevtoolsTestAddresses);
-  EXPECT_EQ(suggestions[1].type, SuggestionType::kSeparator);
-  EXPECT_EQ(suggestions[2].type, SuggestionType::kManageAddress);
-
+  ASSERT_THAT(suggestions,
+              SuggestionVectorIdsAre(SuggestionType::kDevtoolsTestAddresses,
+                                     SuggestionType::kSeparator,
+                                     SuggestionType::kManageAddress));
   EXPECT_EQ(suggestions[0].main_text.value, u"Developer tools");
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kCode);
   EXPECT_EQ(suggestions[0].children.size(), 3u);
