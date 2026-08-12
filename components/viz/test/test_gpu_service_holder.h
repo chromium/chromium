@@ -31,6 +31,7 @@ class ShelfContextMenuTest;
 
 namespace gpu {
 class CommandBufferTaskExecutor;
+class GraphiteSharedContext;
 class SingleTaskSequence;
 #if BUILDFLAG(ENABLE_VULKAN)
 class VulkanImplementation;
@@ -130,6 +131,8 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
   // gpu::GpuInProcessThreadServiceDelegate implementation:
   scoped_refptr<gpu::SharedContextState> GetSharedContextState() override;
   scoped_refptr<gl::GLShareGroup> GetShareGroup() override;
+
+  gpu::GraphiteSharedContext* GetGraphiteSharedContext() const;
 
  private:
   void InitializeOnGpuThread(const gpu::GpuPreferences& preferences,

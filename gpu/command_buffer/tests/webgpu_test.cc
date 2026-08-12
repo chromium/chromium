@@ -42,8 +42,12 @@ void CountCallback(int* count) {
 
 WebGPUTest::Options::Options() = default;
 
-std::map<std::pair<WGPUDevice, wgpu::ErrorType>, /* matched */ bool>
+// static
+std::map<std::pair<WGPUDevice, wgpu::ErrorType>, bool>
     WebGPUTest::s_expected_errors = {};
+
+// static
+std::map<WGPUDevice, bool> WebGPUTest::s_expected_devices_lost = {};
 
 WebGPUTest::WebGPUTest() = default;
 WebGPUTest::~WebGPUTest() = default;
@@ -243,8 +247,13 @@ wgpu::Device WebGPUTest::GetNewDevice(
 
   device_desc.SetDeviceLostCallback(
       wgpu::CallbackMode::AllowSpontaneous,
-      [](const wgpu::Device&, wgpu::DeviceLostReason reason,
+      [](const wgpu::Device& device, wgpu::DeviceLostReason reason,
          wgpu::StringView message) {
+        auto it = s_expected_devices_lost.find(device.Get());
+        if (it != s_expected_devices_lost.end() && !it->second) {
+          it->second = true;
+          return;
+        }
         if (reason == wgpu::DeviceLostReason::Destroyed) {
           return;
         }
