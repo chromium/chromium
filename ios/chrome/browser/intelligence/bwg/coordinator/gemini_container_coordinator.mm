@@ -51,9 +51,6 @@
   _mediator = [[GeminiContainerMediator alloc]
       initWithBrowser:self.browser
          eventHandler:GeminiBrowserAgent::FromBrowser(self.browser)];
-  _containerHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                         AssistantContainerCommands);
-  _mediator.containerHandler = _containerHandler;
 
   [self setSessionCommandHandlers];
 
@@ -71,10 +68,10 @@
       initWithGeminiViewController:geminiViewController];
   _viewController.delegate = self;
 
+  _containerHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                                         AssistantContainerCommands);
   [_containerHandler showAssistantContainerWithContent:_viewController
                                               delegate:self];
-  // Set the consumer only after the bottom sheet is presenting.
-  _mediator.consumer = _viewController;
 }
 
 - (void)dismissWithCompletion:(void (^)(void))completion {

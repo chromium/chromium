@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_consumer.h"
-
 @class GeminiContainerViewController;
 
 // Delegate for the GeminiContainerViewController.
@@ -23,8 +21,7 @@
 @end
 
 // A view controller that acts as a container for Gemini features.
-@interface GeminiContainerViewController
-    : UIViewController <GeminiContainerConsumer>
+@interface GeminiContainerViewController : UIViewController
 
 // The delegate for this view controller.
 @property(nonatomic, weak) id<GeminiContainerViewControllerDelegate> delegate;

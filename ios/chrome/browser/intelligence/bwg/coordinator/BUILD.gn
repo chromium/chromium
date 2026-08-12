@@ -9,11 +9,8 @@ source_set("container_mediator") {
     "gemini_container_mediator_event_handler.h",
   ]
   public_deps = [
-    "//ios/chrome/browser/assistant/coordinator:commands",
-    "//ios/chrome/browser/assistant/ui:detent",
     "//ios/chrome/browser/intelligence/bwg/model",
     "//ios/chrome/browser/intelligence/bwg/model:gateway_manager",
-    "//ios/chrome/browser/intelligence/bwg/ui",
   ]
   deps = [
     "//base",

@@ -11,7 +11,6 @@ source_set("ui") {
     "gemini_consent_view_controller.h",
     "gemini_consent_view_controller.mm",
     "gemini_consent_view_controller_delegate.h",
-    "gemini_container_consumer.h",
     "gemini_container_view_controller.h",
     "gemini_container_view_controller.mm",
     "gemini_first_run_mutator.h",

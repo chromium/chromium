@@ -20,39 +20,13 @@ class WebStateList;
 @class GeminiGatewayManager;
 @class GeminiPageContext;
 @class GeminiStartupState;
-@protocol AssistantContainerCommands;
 @protocol BWGGatewayProtocol;
-
-#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_consumer.h"
 
 // Mediator for the Gemini container.
 @interface GeminiContainerMediator : NSObject <GeminiViewStateDelegate>
 
-// Delegate for handling events from the mediator. Temporarily used by
-// `GeminiBrowserAgent` to support pre-migration logic.
+// Delegate for handling events from the mediator.
 @property(nonatomic, assign) GeminiContainerMediatorEventHandler* eventHandler;
-
-// Handler for container commands to update detent and grabber state.
-@property(nonatomic, weak) id<AssistantContainerCommands> containerHandler;
-
-// Consumer interface for handling UI updates from the coordinator.
-@property(nonatomic, weak) id<GeminiContainerConsumer> consumer;
-
-// Whether the container grabber is visible.
-@property(nonatomic, assign) BOOL hasGrabber;
-
-// Current detent size of the container.
-@property(nonatomic, assign) AssistantContainerDetent detentSize;
-
-// Whether the container is in zero state.
-@property(nonatomic, assign, getter=isZeroState) BOOL zeroState;
-
-// Current processing status of the Gemini client.
-@property(nonatomic, readonly) ios::provider::GeminiClientMode processingStatus;
-
-// Current view mode of the Gemini UI (e.g. chat or live).
-@property(nonatomic, readonly) ios::provider::GeminiViewMode viewMode;
 
 // The gateway for bridging internal protocols.
 @property(nonatomic, readonly) id<BWGGatewayProtocol> gateway;

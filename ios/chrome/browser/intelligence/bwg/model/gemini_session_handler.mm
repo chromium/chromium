@@ -334,8 +334,6 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   _waitingForResponse = NO;
   _lastPromptSentTime = base::TimeTicks();
   _lastPromptHadPageContext = NO;
-
-  [self.geminiViewStateDelegate didTapNewChatButton];
 }
 
 // Called when a feedback button is tapped in the Gemini UI.

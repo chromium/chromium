@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -484,20 +483,6 @@ TEST_F(GeminiSessionHandlerTest, TestNewChatButtonResetsFlags) {
   histogram_tester_.ExpectBucketCount(
       kPromptSubmissionMethodHistogram,
       IOSGeminiFirstPromptSubmissionMethod::kText, 2);
-}
-
-// Tests that didTapNewChatButtonWithSessionID calls didTapNewChatButton on
-// geminiViewStateDelegate.
-TEST_F(GeminiSessionHandlerTest, TestNewChatButtonNotifiesViewStateDelegate) {
-  id mock_delegate = OCMProtocolMock(@protocol(GeminiViewStateDelegate));
-  session_handler_.geminiViewStateDelegate = mock_delegate;
-
-  OCMExpect([mock_delegate didTapNewChatButton]);
-
-  [session_handler_ didTapNewChatButtonWithSessionID:@"session_123"
-                                      conversationID:@"conv_123"];
-
-  [mock_delegate verify];
 }
 
 // Tests that didTapFeedbackButton records the correct metrics.
