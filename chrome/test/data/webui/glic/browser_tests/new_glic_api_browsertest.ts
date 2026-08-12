@@ -117,6 +117,17 @@ class ApiTests extends ApiTestFixtureBase {
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
   }
 
+  async testUnpinTabsWhileClosing() {
+    assertDefined(this.host.closePanel);
+    const tabId = await this.pinActiveTab();
+    const {promise, resolve} = Promise.withResolvers<boolean>();
+    this.client.onNotifyPanelWasClosed = () => {
+      this.host.unpinTabs!([tabId]).then(resolve);
+    };
+    await this.host.closePanel();
+    assertTrue(await promise);
+  }
+
   async testGetTabByIdWithDiscard() {
     assertDefined(this.host.getTabById);
 

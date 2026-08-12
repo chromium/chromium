@@ -1418,6 +1418,12 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
   CloseMainBrowserWithIncognitoKeepAlive();
   ContinueJsTest();
 }
+
+// TODO(b/545187457): Figure out if this test really needs detached mode.
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testUnpinTabsWhileClosing) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  ExecuteJsTest();
+}
 #endif
 
 class NewGlicApiTestWithContextualCueing : public NewGlicApiTest {
