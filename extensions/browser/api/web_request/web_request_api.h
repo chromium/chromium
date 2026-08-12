@@ -499,20 +499,6 @@ class WebRequestInternalEventHandledFunction
   ResponseAction Run() override;
 };
 
-class WebRequestInternalEventHandlingDoneFunction
-    : public WebRequestInternalFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("webRequestInternal.eventHandlingDone",
-                             WEBREQUESTINTERNAL_EVENTHANDLINGDONE)
-
- protected:
-  ~WebRequestInternalEventHandlingDoneFunction() override = default;
-
- private:
-  // ExtensionFunction:
-  ResponseAction Run() override;
-};
-
 class WebRequestHandlerBehaviorChangedFunction
     : public WebRequestInternalFunction {
  public:

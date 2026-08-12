@@ -600,6 +600,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="38" label="EMF_INVALID_MESSAGE_FROM_SANDBOXED_PROCESS"/>
   <int value="39" label="WRA_INVALID_EXTENSION_ID_FOR_PROCESS"/>
   <int value="40" label="WRA_INVALID_LISTENER_REGISTRATION"/>
+  <int value="41" label="WER_UNEXPECTED_EVENT_HANDLING_DONE"/>
+  <int value="42" label="WER_INVALID_EXTENSION_ID"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">

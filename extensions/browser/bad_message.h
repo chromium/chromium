@@ -78,6 +78,8 @@ enum BadMessageReason {
   EMF_INVALID_MESSAGE_FROM_SANDBOXED_PROCESS = 38,
   WRA_INVALID_EXTENSION_ID_FOR_PROCESS = 39,
   WRA_INVALID_LISTENER_REGISTRATION = 40,
+  WER_UNEXPECTED_EVENT_HANDLING_DONE = 41,
+  WER_INVALID_EXTENSION_ID = 42,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ExtensionHost becomes EH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:

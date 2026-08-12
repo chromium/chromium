@@ -1,0 +1,26 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "extensions/common/mojom/extension_id.mojom";
+
+// Channel-associated interface implemented by the browser process. It hosts
+// webRequest messages from the renderer that must keep FIFO order with the
+// extension-function messages on the same channel, in particular the
+// webRequestInternal.eventHandled calls.
+interface WebRequestHost {
+  // Signals that all matching webRequest listeners in the calling process
+  // finished handling one blocking event (per-context webRequest event
+  // dispatch). Resolves the pending dispatch target identified by the
+  // arguments and the calling process. Carries no listener responses: those
+  // arrive through webRequestInternal.eventHandled. `extension_id` is null
+  // for non-extension webview embedders.
+  EventHandlingDone(ExtensionId? extension_id,
+                    string event_name,
+                    uint64 request_id,
+                    int32 web_view_instance_id,
+                    int32 worker_thread_id,
+                    int64 service_worker_version_id);
+};

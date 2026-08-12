@@ -330,7 +330,7 @@ BASE_DECLARE_FEATURE(kOptimizeWebRequestProxy);
 // (using per-listener synthetic sub-event names). The renderer matches
 // listeners itself, reports each blocking listener's response via the
 // `webRequestInternal.eventHandled` function, and signals completion with a
-// single `webRequestInternal.eventHandlingDone` per context.
+// single `WebRequestHost.EventHandlingDone` mojo call per target.
 BASE_DECLARE_FEATURE(kWebRequestPerContextEventDispatch);
 
 }  // namespace extensions_features

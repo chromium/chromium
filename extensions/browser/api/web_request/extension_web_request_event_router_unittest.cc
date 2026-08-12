@@ -34,7 +34,9 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/mojom/web_request_host.mojom.h"
 #include "extensions/common/url_pattern.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -316,9 +318,14 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
     ExtensionRegistry::Get(browser_context())->AddEnabled(extension_);
     ProcessMap::Get(browser_context())
         ->Insert(extension_->id(), render_process_host_->GetID());
+
+    WebRequestEventRouter::BindForRenderer(
+        render_process_host_->GetID(),
+        web_request_host_.BindNewEndpointAndPassDedicatedReceiver());
   }
 
   void TearDown() override {
+    web_request_host_.reset();
     event_router_ = nullptr;
     render_process_host_.reset();
     ExtensionsTest::TearDown();
@@ -434,10 +441,10 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
   // Simulates the target's completion signal, sent after all matching
   // listeners in the context have run.
   void FinishHandling(uint64_t request_id) {
-    router()->OnEventHandlingDone(browser_context(), extension_id(), kEventName,
-                                  request_id, render_process_host_->GetID(),
-                                  /*web_view_instance_id=*/0, kWorkerThreadId,
-                                  kServiceWorkerVersionId);
+    web_request_host_->EventHandlingDone(
+        extension_id(), kEventName, request_id, /*web_view_instance_id=*/0,
+        kWorkerThreadId, kServiceWorkerVersionId);
+    web_request_host_.FlushForTesting();
   }
 
   // Fires the worker-stop teardown signal, as the ProcessManager would when the
@@ -450,6 +457,7 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
                      kServiceWorkerVersionId, kWorkerThreadId));
   }
 
+  mojo::AssociatedRemote<mojom::WebRequestHost> web_request_host_;
   net::HttpRequestHeaders headers_;
   std::optional<int> result_;
   std::set<std::string> removed_headers_;
@@ -745,6 +753,51 @@ TEST_F(WebRequestEventRouterContextDispatchTest,
   FinishHandling(request->id);
   ASSERT_TRUE(result_.has_value());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, *result_);
+}
+
+// A valid completion signal is accepted. A null extension id is valid for
+// webview embedders.
+TEST_F(WebRequestEventRouterContextDispatchTest, EventHandlingDoneValid) {
+  web_request_host_->EventHandlingDone(
+      extension_id(), kEventName, /*request_id=*/1, /*web_view_instance_id=*/0,
+      kWorkerThreadId, kServiceWorkerVersionId);
+  web_request_host_->EventHandlingDone(
+      std::nullopt, kEventName, /*request_id=*/1, /*web_view_instance_id=*/7,
+      kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId);
+  web_request_host_.FlushForTesting();
+  EXPECT_EQ(0, process()->bad_msg_count());
+}
+
+// The browser rejects a null extension id when web_view_instance_id is zero
+// (i.e. not a webview target).
+TEST_F(WebRequestEventRouterContextDispatchTest,
+       EventHandlingDoneRejectsNullExtensionIdForNonWebView) {
+  web_request_host_->EventHandlingDone(
+      std::nullopt, kEventName, /*request_id=*/1, /*web_view_instance_id=*/0,
+      kWorkerThreadId, kServiceWorkerVersionId);
+  web_request_host_.FlushForTesting();
+  EXPECT_EQ(1, process()->bad_msg_count());
+}
+
+// The browser accepts the completion signal over WebRequestHost only from a
+// process that hosts the claimed extension.
+TEST_F(WebRequestEventRouterContextDispatchTest,
+       EventHandlingDoneRejectsForeignExtension) {
+  web_request_host_->EventHandlingDone(
+      ExtensionId(32, 'b'), kEventName, /*request_id=*/1,
+      /*web_view_instance_id=*/0, kWorkerThreadId, kServiceWorkerVersionId);
+  web_request_host_.FlushForTesting();
+  EXPECT_EQ(1, process()->bad_msg_count());
+}
+
+// The browser rejects a completion signal when a sub-event name is passed.
+TEST_F(WebRequestEventRouterContextDispatchTest,
+       EventHandlingDoneRejectsSubEventName) {
+  web_request_host_->EventHandlingDone(
+      extension_id(), std::string(kEventName) + "/1", /*request_id=*/1,
+      /*web_view_instance_id=*/0, kWorkerThreadId, kServiceWorkerVersionId);
+  web_request_host_.FlushForTesting();
+  EXPECT_EQ(1, process()->bad_msg_count());
 }
 
 // Tests for blocked requests that cross between the regular context and its

@@ -8,12 +8,14 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_version_base_info.h"
+#include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker/service_worker_host.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
+#include "extensions/common/mojom/web_request_host.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -36,6 +38,10 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
     content::RenderProcessHost* host) {
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, host->GetID()));
+  // TODO(crbug.com/494684626): Move API-specific bindings out of core
+  // extensions code and into //extensions or a dedicated API glue layer.
+  associated_registry->AddInterface<mojom::WebRequestHost>(base::BindRepeating(
+      &WebRequestEventRouter::BindForRenderer, host->GetID()));
 }
 
 void ChromeContentBrowserClientExtensionsPart::
@@ -49,6 +55,9 @@ void ChromeContentBrowserClientExtensionsPart::
                           service_worker_version_info.process_id));
   associated_registry.AddInterface<mojom::ServiceWorkerHost>(
       base::BindRepeating(&ServiceWorkerHost::BindReceiver,
+                          service_worker_version_info.process_id));
+  associated_registry.AddInterface<mojom::WebRequestHost>(
+      base::BindRepeating(&WebRequestEventRouter::BindForRenderer,
                           service_worker_version_info.process_id));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   associated_registry.AddInterface<mojom::RendererAutomationRegistry>(

@@ -1451,8 +1451,8 @@ void WebRequestInternalEventHandledFunction::RouteEventResponse(
           extensions_features::kWebRequestPerContextEventDispatch)) {
     // Per-context dispatch: the renderer sends the parent event name.
     // Append this listener's response to the pending dispatch target without
-    // resolving it; the target is resolved by a separate `eventHandlingDone`
-    // signal.
+    // resolving it; the target is resolved by a separate completion signal
+    // (`WebRequestHost.EventHandlingDone`).
     // TODO(crbug.com/379869738): Remove FromUnsafeValue.
     router->OnEventHandledForTarget(
         browser_context(), extension_id_safe(), event_name, request_id,
@@ -1633,37 +1633,6 @@ WebRequestInternalEventHandledFunction::Run() {
   RouteEventResponse(event_name, sub_event_name, request_id, render_process_id,
                      web_view_instance_id, extra_info_spec,
                      std::move(response));
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-WebRequestInternalEventHandlingDoneFunction::Run() {
-  // Per-context dispatch completion signal: all of this renderer context's
-  // matching listeners have finished handling the blocking event. Carries no
-  // response (each listener's response arrived via `eventHandled`).
-  EXTENSION_FUNCTION_VALIDATE(base::FeatureList::IsEnabled(
-      extensions_features::kWebRequestPerContextEventDispatch));
-  EXTENSION_FUNCTION_VALIDATE(args().size() >= 3);
-  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
-  EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
-  EXTENSION_FUNCTION_VALIDATE(args()[2].is_int());
-  std::string event_name = args()[0].GetString();
-  std::string request_id_str = args()[1].GetString();
-  int web_view_instance_id = args()[2].GetInt();
-  EXTENSION_FUNCTION_VALIDATE(!EventRouter::IsSubEventName(event_name));
-
-  uint64_t request_id;
-  EXTENSION_FUNCTION_VALIDATE(
-      base::StringToUint64(request_id_str, &request_id));
-
-  // TODO(crbug.com/379869738): Remove FromUnsafeValue.
-  WebRequestEventRouter::Get(browser_context())
-      ->OnEventHandlingDone(
-          browser_context(), extension_id_safe(), event_name, request_id,
-          content::ChildProcessId::FromUnsafeValue(source_process_id()),
-          web_view_instance_id, worker_thread_id(),
-          service_worker_version_id());
-
   return RespondNow(NoArguments());
 }
 

@@ -37,7 +37,9 @@
 #include "extensions/common/api/web_request/web_request_resource_type.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/web_request_host.mojom.h"
 #include "extensions/common/url_pattern_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "net/base/completion_once_callback.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
@@ -64,8 +66,22 @@ struct WorkerId;
 
 class WebRequestEventRouter : public KeyedService,
                               public ProcessManagerObserver,
-                              public content::RenderProcessHostObserver {
+                              public content::RenderProcessHostObserver,
+                              public mojom::WebRequestHost {
  public:
+  static void BindForRenderer(
+      content::ChildProcessId render_process_id,
+      mojo::PendingAssociatedReceiver<mojom::WebRequestHost> receiver);
+
+  // mojom::WebRequestHost
+  // Resolves the pending dispatch target through `OnEventHandlingDone()`.
+  void EventHandlingDone(const std::optional<ExtensionId>& extension_id,
+                         const std::string& event_name,
+                         uint64_t request_id,
+                         int32_t web_view_instance_id,
+                         int32_t worker_thread_id,
+                         int64_t service_worker_version_id) override;
+
   struct BlockedRequest;
 
   // The events denoting the lifecycle of a given network request.
@@ -1019,6 +1035,9 @@ class WebRequestEventRouter : public KeyedService,
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       render_process_host_observations_{this};
+
+  mojo::AssociatedReceiverSet<mojom::WebRequestHost, content::ChildProcessId>
+      receivers_;
 
   base::WeakPtrFactory<WebRequestEventRouter> weak_ptr_factory_{this};
 };

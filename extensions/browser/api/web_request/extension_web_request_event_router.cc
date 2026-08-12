@@ -46,6 +46,7 @@
 #include "extensions/browser/api/web_request/web_request_permissions.h"
 #include "extensions/browser/api/web_request/web_request_time_tracker.h"
 #include "extensions/browser/api_activity_monitor.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_navigation_registry.h"
 #include "extensions/browser/extension_registry.h"
@@ -538,6 +539,61 @@ void WebRequestEventRouter::Shutdown() {
 WebRequestEventRouter* WebRequestEventRouter::Get(
     content::BrowserContext* browser_context) {
   return WebRequestEventRouterFactory::GetForBrowserContext(browser_context);
+}
+
+// static
+void WebRequestEventRouter::BindForRenderer(
+    content::ChildProcessId render_process_id,
+    mojo::PendingAssociatedReceiver<mojom::WebRequestHost> receiver) {
+  auto* host = content::RenderProcessHost::FromID(render_process_id);
+  if (!host) {
+    return;
+  }
+  // The router might be null for some irregular profile, e.g. the System
+  // Profile.
+  WebRequestEventRouter* router = Get(host->GetBrowserContext());
+  if (!router) {
+    return;
+  }
+
+  router->receivers_.Add(router, std::move(receiver), render_process_id);
+}
+
+void WebRequestEventRouter::EventHandlingDone(
+    const std::optional<ExtensionId>& extension_id,
+    const std::string& event_name,
+    uint64_t request_id,
+    int32_t web_view_instance_id,
+    int32_t worker_thread_id,
+    int64_t service_worker_version_id) {
+  auto* process =
+      content::RenderProcessHost::FromID(receivers_.current_context());
+  if (!process) {
+    return;
+  }
+  // The browser starts per-context webRequest event dispatches only when the
+  // feature is enabled, and only for parent event names, so a well-behaved
+  // renderer never sends anything else.
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kWebRequestPerContextEventDispatch) ||
+      EventRouter::IsSubEventName(event_name)) {
+    bad_message::ReceivedBadMessage(
+        process, bad_message::WER_UNEXPECTED_EVENT_HANDLING_DONE);
+    return;
+  }
+  content::BrowserContext* browser_context = process->GetBrowserContext();
+  // A null id is valid solely for WebUI/ControlledFrame webview embedders.
+  if (extension_id ? !ProcessMap::Get(browser_context)
+                          ->Contains(*extension_id, process->GetID())
+                   : web_view_instance_id == 0) {
+    bad_message::ReceivedBadMessage(process,
+                                    bad_message::WER_INVALID_EXTENSION_ID);
+    return;
+  }
+  OnEventHandlingDone(browser_context,
+                      extension_id.value_or(base::EmptyString()), event_name,
+                      request_id, process->GetID(), web_view_instance_id,
+                      worker_thread_id, service_worker_version_id);
 }
 
 // static

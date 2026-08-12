@@ -67,16 +67,6 @@
             }
           }
         ]
-      },
-      {
-        "name": "eventHandlingDone",
-        "type": "function",
-        "description": "Used internally to signal that a renderer context has finished handling a per-context blocking webRequest event.",
-        "parameters": [
-          {"type": "string", "name": "eventName"},
-          {"type": "string", "name": "requestId"},
-          {"type": "integer", "name": "webViewInstanceId"}
-        ]
       }
     ]
   }

@@ -114,6 +114,7 @@ mojom("mojom") {
     "mojom/stack_frame.mojom",
     "mojom/url_pattern_set.mojom",
     "mojom/view_type.mojom",
+    "mojom/web_request_host.mojom",
   ]
 
   public_deps = [
