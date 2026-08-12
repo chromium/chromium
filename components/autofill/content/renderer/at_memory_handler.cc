@@ -147,10 +147,26 @@ bool AtMemoryHandler::DidReceiveKeyDown(const WebElement& element,
       agent_->GetCallTimerState(CallTimerState::CallSite::kDidReceiveKeyDown),
       agent_->button_titles_cache());
 
-  const RendererPreferences* prefs = GetRendererPreferences();
-  if (!prefs || prefs->autofill_shortcut_key_code == ui::VKEY_UNKNOWN ||
-      !base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
+    return false;
+  }
+  if (DidReceiveKeyDownForAtMemoryShortcut(element, event)) {
+    return true;
+  }
+  DidReceiveKeyDownForAtMemoryTriggerString(element, event);
+  return false;
+}
+
+bool AtMemoryHandler::DidReceiveKeyDownForAtMemoryShortcut(
+    const WebElement& element,
+    const WebKeyboardEvent& event) {
+  if (!base::FeatureList::IsEnabled(
           features::kAutofillAtMemoryTriggerShortcut)) {
+    return false;
+  }
+
+  const RendererPreferences* prefs = GetRendererPreferences();
+  if (!prefs || prefs->autofill_shortcut_key_code == ui::VKEY_UNKNOWN) {
     return false;
   }
 
@@ -160,28 +176,34 @@ bool AtMemoryHandler::DidReceiveKeyDown(const WebElement& element,
   const ui::Accelerator actual_accelerator(
       static_cast<ui::KeyboardCode>(event.windows_key_code),
       ui::WebEventModifiersToEventFlags(event.GetModifiers()));
+  if (expected_accelerator != actual_accelerator || IsPrintable(event)) {
+    return false;
+  }
 
-  if (expected_accelerator == actual_accelerator && !IsPrintable(event)) {
-    if (auto control = element.DynamicTo<WebFormControlElement>();
-        control && form_util::IsTextAreaElementOrTextInput(control) &&
-        control.FormControlTypeForAutofill() !=
-            blink::mojom::FormControlType::kInputPassword) {
-      if (!actual_accelerator.IsRepeat()) {
-        agent_->ShowSuggestions(
-            control, AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
-            SynchronousFormCache(), std::nullopt);
-      }
-      return true;  // Prevent default.
-    } else if (element.IsContentEditable()) {
-      if (!actual_accelerator.IsRepeat()) {
-        agent_->ShowSuggestionsForContentEditable(
-            element,
-            AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut);
-      }
-      return true;  // Prevent default.
+  if (auto control = element.DynamicTo<WebFormControlElement>();
+      control && form_util::IsTextAreaElementOrTextInput(control) &&
+      control.FormControlTypeForAutofill() !=
+          blink::mojom::FormControlType::kInputPassword) {
+    if (!actual_accelerator.IsRepeat()) {
+      agent_->ShowSuggestions(
+          control, AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
+          SynchronousFormCache(), std::nullopt);
     }
+    return true;  // Prevent default.
+  } else if (element.IsContentEditable()) {
+    if (!actual_accelerator.IsRepeat()) {
+      agent_->ShowSuggestionsForContentEditable(
+          element, AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut);
+    }
+    return true;  // Prevent default.
   }
   return false;
+}
+
+void AtMemoryHandler::DidReceiveKeyDownForAtMemoryTriggerString(
+    const WebElement& element,
+    const WebKeyboardEvent& event) {
+  // TODO(crbug.com/538494080): Implement this.
 }
 
 void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement& element,
