@@ -279,8 +279,8 @@ class MockSafeSeedManager : public SafeSeedManager {
                     base::Time seed_fetch_time));
 
   void SetActiveSeedState(
-      const std::string& seed_data,
-      const std::string& base64_seed_signature,
+      std::string seed_data,
+      std::string base64_seed_signature,
       int seed_milestone,
       std::unique_ptr<ClientFilterableState> client_filterable_state,
       base::Time seed_fetch_time) override {

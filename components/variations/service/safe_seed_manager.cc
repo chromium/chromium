@@ -148,26 +148,26 @@ void SafeSeedManager::RecordSuccessfulFetch(VariationsSeedStore* seed_store) {
 }
 
 void SafeSeedManager::SetActiveSeedState(
-    const std::string& seed_data,
-    const std::string& base64_seed_signature,
+    std::string seed_data,
+    std::string base64_seed_signature,
     int seed_milestone,
     std::unique_ptr<ClientFilterableState> client_filterable_state,
     base::Time seed_fetch_time) {
   DCHECK(!active_seed_state_.has_value());
 
-  active_seed_state_.emplace(seed_data, base64_seed_signature, seed_milestone,
-                             std::move(client_filterable_state),
-                             seed_fetch_time);
+  active_seed_state_.emplace(
+      std::move(seed_data), std::move(base64_seed_signature), seed_milestone,
+      std::move(client_filterable_state), seed_fetch_time);
 }
 
 SafeSeedManager::ActiveSeedState::ActiveSeedState(
-    const std::string& seed_data,
-    const std::string& base64_seed_signature,
+    std::string seed_data,
+    std::string base64_seed_signature,
     int seed_milestone,
     std::unique_ptr<ClientFilterableState> client_filterable_state,
     base::Time seed_fetch_time)
-    : seed_data(seed_data),
-      base64_seed_signature(base64_seed_signature),
+    : seed_data(std::move(seed_data)),
+      base64_seed_signature(std::move(base64_seed_signature)),
       seed_milestone(seed_milestone),
       client_filterable_state(std::move(client_filterable_state)),
       seed_fetch_time(seed_fetch_time) {}
