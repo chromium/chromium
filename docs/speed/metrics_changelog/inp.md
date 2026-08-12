@@ -2,6 +2,19 @@
 
 This is a list of changes to [Interaction to Next Paint](https://web.dev/inp).
 
+* Chrome 150
+  * Metric bug fix: Nested clicks (such as `<label>` clicks forwarding to form controls) assigned `interactionId = 0` to align with web standards ([7870025](https://chromium-review.googlesource.com/c/chromium/src/+/7870025)).
+* Chrome 148
+  * Metric bug fix: [Report only web-exposed event targets in Event Timing](2026_03_inp.md)
+* Chrome 147
+  * Metric definition improvement: [Early interaction ID assignment and context menu fallback](2026_02_inp.md)
+* Chrome 144
+  * Launch feature: [Launch performance.interactionCount API to stable](2025_10_inp.md)
+* Chrome 135
+  * Metric definition improvement: Updated `interactionId` type to `unsigned long long` (`uint64_t`) per W3C specification ([6300797](https://chromium-review.googlesource.com/c/chromium/src/+/6300797)).
+* Chrome 134
+  * Implementation optimizations: [Defer non-urgent renderer tasks after input by default](2025_01_inp.md)
+
 * Chrome 133
   * Launch feature: [Enable EventTimingSelectionAutoScrollNoInteractionId by default](2025_02_inp.md)
 * Chrome 130

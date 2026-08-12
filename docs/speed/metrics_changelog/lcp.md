@@ -2,6 +2,17 @@
 
 This is a list of changes to [Largest Contentful Paint](https://web.dev/lcp).
 
+* Chrome 153
+  * Metric bug fix: Fixed race conditions in presentation timestamp attribution for animated images and first video frames ([8178904](https://chromium-review.googlesource.com/c/chromium/src/+/8178904), [8177704](https://chromium-review.googlesource.com/c/chromium/src/+/8177704)).
+* Chrome 151
+  * Launch feature: [Prompt LCP entry emission for video elements (RequestMainFrameAfterFirstVideoFrame)](2026_06_lcp.md)
+  * Metric bug fix: Prevent premature garbage collection of VideoTiming metadata to ensure video LCP entries are accurately reported ([7911270](https://chromium-review.googlesource.com/c/chromium/src/+/7911270)).
+* Chrome 147
+  * Metric definition improvement: [Emit LCP candidates based on largest painted image instead of largest pending image](2026_02_lcp.md)
+* Chrome 145
+  * Launch feature: Shipped `PaintTimingMixin` exposing standard paint timing properties across entry types ([7224616](https://chromium-review.googlesource.com/c/chromium/src/+/7224616)).
+* Chrome 144
+  * Metric bug fix: Corrected LCP and FCP handling when document opacity changes from zero to non-zero ([7137609](https://chromium-review.googlesource.com/c/chromium/src/+/7137609), [7164696](https://chromium-review.googlesource.com/c/chromium/src/+/7164696)).
 * Chrome 143
   * Metric bug fix: [Fixed text presentation timestamps reporting too early, impacting LCP (introduced in M140)](2025_09_lcp.md)
 * Chrome 140
