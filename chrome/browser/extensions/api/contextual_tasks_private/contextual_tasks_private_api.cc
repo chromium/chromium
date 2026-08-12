@@ -16,6 +16,7 @@
 #include "chrome/common/extensions/api/contextual_tasks_private.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "net/base/url_util.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -176,6 +178,8 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
   GURL base_aim_url = default_ai_url.ReplaceComponents(replacements);
 
   GURL aim_url = AppendAimUrlParams(base_aim_url, params->details.aim_params);
+  aim_url = contextual_tasks::AppendAimEntryPointParams(
+      aim_url, omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_AIO_LINK);
 
   if (!aim_url.is_valid() || !aim_url.SchemeIs(url::kHttpsScheme)) {
     return RespondNow(Error("Generated AI URL is invalid or not HTTPS"));
@@ -241,13 +245,16 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
   bool use_no_animation =
       contextual_tasks::ShouldContextualTasksPrivateApiUseNoAnimation();
 
-  ui_service->StartTaskUiInSidePanel(browser, target_tab, aim_url,
-                                     /*session_handle=*/nullptr,
-                                     contextual_tasks::StartTaskUiOptions{
-                                         .associate_web_contents = false,
-                                         .use_mstk_for_task_association = true,
-                                         .use_no_animation = use_no_animation,
-                                     });
+  ui_service->StartTaskUiInSidePanel(
+      browser, target_tab, aim_url,
+      /*session_handle=*/nullptr,
+      contextual_tasks::StartTaskUiOptions{
+          .associate_web_contents = false,
+          .entry_point =
+              omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_AIO_LINK,
+          .use_mstk_for_task_association = true,
+          .use_no_animation = use_no_animation,
+      });
 
   return RespondNow(NoArguments());
 }

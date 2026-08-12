@@ -24,6 +24,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -193,13 +194,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
                   testing::HasSubstr("mstk=abc"), testing::HasSubstr("aioh=1"),
                   testing::HasSubstr("csuir=1"), testing::HasSubstr("ved=123"),
                   testing::HasSubstr("cs=1"), testing::HasSubstr("sxsrf=xyz"),
-                  testing::HasSubstr("ei=456"),
+                  testing::HasSubstr("ei=456"), testing::HasSubstr("aep=173"),
                   testing::HasSubstr("q=some_query"))),
           testing::_,
           testing::AllOf(
               testing::Field(
                   &contextual_tasks::StartTaskUiOptions::associate_web_contents,
                   false),
+              testing::Field(&contextual_tasks::StartTaskUiOptions::entry_point,
+                             omnibox::ChromeAimEntryPoint::
+                                 DESKTOP_CHROME_COBROWSE_AIO_LINK),
               testing::Field(&contextual_tasks::StartTaskUiOptions::
                                  use_mstk_for_task_association,
                              true),
@@ -241,13 +245,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleDisabledTest,
                   testing::HasSubstr("mstk=abc"), testing::HasSubstr("aioh=1"),
                   testing::HasSubstr("csuir=1"), testing::HasSubstr("ved=123"),
                   testing::HasSubstr("cs=1"), testing::HasSubstr("sxsrf=xyz"),
-                  testing::HasSubstr("ei=456"),
+                  testing::HasSubstr("ei=456"), testing::HasSubstr("aep=173"),
                   testing::Not(testing::HasSubstr("q=")))),
           testing::_,
           testing::AllOf(
               testing::Field(
                   &contextual_tasks::StartTaskUiOptions::associate_web_contents,
                   false),
+              testing::Field(&contextual_tasks::StartTaskUiOptions::entry_point,
+                             omnibox::ChromeAimEntryPoint::
+                                 DESKTOP_CHROME_COBROWSE_AIO_LINK),
               testing::Field(&contextual_tasks::StartTaskUiOptions::
                                  use_mstk_for_task_association,
                              true),
