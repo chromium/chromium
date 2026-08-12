@@ -454,17 +454,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
     devtools_throttling_token_ = devtools_token;
   }
 
-  const scoped_refptr<
-      base::RefCountedData<base::flat_set<net::SourceStreamType>>>&
-  GetDevToolsAcceptedStreamTypes() const {
-    return devtools_accepted_stream_types_;
-  }
-  void SetDevToolsAcceptedStreamTypes(
-      const scoped_refptr<
-          base::RefCountedData<base::flat_set<net::SourceStreamType>>>& types) {
-    devtools_accepted_stream_types_ = types;
-  }
-
   const String& GetDevToolsId() const { return devtools_id_; }
   void SetDevToolsId(const String devtools_id) { devtools_id_ = devtools_id; }
 
@@ -766,15 +755,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // reporting for redirects.
   RenderBlockingBehavior render_blocking_behavior_ =
       RenderBlockingBehavior::kUnset;
-
-  // If not null, the network service will not advertise any stream types
-  // (via Accept-Encoding) that are not listed. Also, it will not attempt
-  // decoding any non-listed stream types.
-  // Instead of using std::optional, we use scoped_refptr to reduce
-  // blink memory footprint because the attribute is only used by DevTools
-  // and we should keep the footprint minimal when DevTools is closed.
-  scoped_refptr<base::RefCountedData<base::flat_set<net::SourceStreamType>>>
-      devtools_accepted_stream_types_;
 
   net::StorageAccessApiStatus storage_access_api_status_ =
       net::StorageAccessApiStatus::kNone;

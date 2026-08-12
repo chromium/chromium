@@ -5987,13 +5987,11 @@ void NavigationRequest::OnStartChecksComplete(
   // Give DevTools a chance to override begin params (headers, skip SW)
   // before actually loading resource.
   bool report_raw_headers = false;
-  std::optional<std::vector<net::SourceStreamType>>
-      devtools_accepted_stream_types;
   GURL devtools_referrer_override;
   devtools_instrumentation::ApplyNetworkRequestOverrides(
       frame_tree_node_, begin_params_.get(), &report_raw_headers,
-      &devtools_accepted_stream_types, &devtools_user_agent_override_,
-      &devtools_accept_language_override_, &devtools_referrer_override);
+      &devtools_user_agent_override_, &devtools_accept_language_override_,
+      &devtools_referrer_override);
 
   if (!devtools_referrer_override.is_empty()) {
     // When the `Referer` header is overridden by DevTools (e.g. by CDP command
@@ -6085,10 +6083,10 @@ void NavigationRequest::OnStartChecksComplete(
           blob_url_loader_factory_ ? blob_url_loader_factory_->Clone()
                                    : nullptr,
           devtools_navigation_token(), local_root_rfh->devtools_frame_token(),
-          BuildClientSecurityStateForNavigationFetch(),
-          devtools_accepted_stream_types, IsPdf(), GetInitiatorProcessId(),
-          initiator_document_token_, allow_cookies_from_browser_,
-          navigation_id_, is_ad_tagged_, force_no_https_upgrade_),
+          BuildClientSecurityStateForNavigationFetch(), IsPdf(),
+          GetInitiatorProcessId(), initiator_document_token_,
+          allow_cookies_from_browser_, navigation_id_, is_ad_tagged_,
+          force_no_https_upgrade_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       std::move(prefetched_signed_exchange_cache_), this, loader_type,
       CreateCookieAccessObserver(), CreateTrustTokenAccessObserver(),

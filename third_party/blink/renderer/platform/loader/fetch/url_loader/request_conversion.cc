@@ -277,11 +277,6 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   } else {
     dest->is_revalidating = src.IsRevalidating();
   }
-  if (src.GetDevToolsAcceptedStreamTypes()) {
-    dest->devtools_accepted_stream_types = std::vector<net::SourceStreamType>(
-        src.GetDevToolsAcceptedStreamTypes()->data.begin(),
-        src.GetDevToolsAcceptedStreamTypes()->data.end());
-  }
   if (src.RequestorOrigin()->ToString() == "null") {
     // "file:" origin is treated like an opaque unique origin when
     // allow-file-access-from-files is not specified. Such origin is not opaque

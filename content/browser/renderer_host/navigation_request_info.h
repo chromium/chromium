@@ -45,8 +45,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       const base::UnguessableToken& devtools_navigation_token,
       const base::UnguessableToken& devtools_throttling_token,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      const std::optional<std::vector<net::SourceStreamType>>&
-          devtools_accepted_stream_types,
       bool is_pdf,
       ChildProcessId initiator_process_id,
       std::optional<blink::DocumentToken> initiator_document_token,
@@ -126,12 +124,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // TODO(crbug.com/40149351): Set this for top-level navigation requests
   // too once the UX story is sorted out.
   const network::mojom::ClientSecurityStatePtr client_security_state;
-
-  // If not null, the network service will not advertise any stream types
-  // (via Accept-Encoding) that are not listed. Also, it will not attempt
-  // decoding any non-listed stream types.
-  std::optional<std::vector<net::SourceStreamType>>
-      devtools_accepted_stream_types;
 
   // Indicates that this navigation is for PDF content in a renderer.
   const bool is_pdf;

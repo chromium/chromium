@@ -26,8 +26,6 @@ NavigationRequestInfo::NavigationRequestInfo(
     const base::UnguessableToken& devtools_navigation_token,
     const base::UnguessableToken& devtools_throttling_token,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    const std::optional<std::vector<net::SourceStreamType>>&
-        devtools_accepted_stream_types,
     bool is_pdf,
     ChildProcessId initiator_process_id,
     std::optional<blink::DocumentToken> initiator_document_token,
@@ -50,7 +48,6 @@ NavigationRequestInfo::NavigationRequestInfo(
       devtools_navigation_token(devtools_navigation_token),
       devtools_throttling_token(devtools_throttling_token),
       client_security_state(std::move(client_security_state)),
-      devtools_accepted_stream_types(devtools_accepted_stream_types),
       is_pdf(is_pdf),
       initiator_process_id(initiator_process_id),
       initiator_document_token(std::move(initiator_document_token)),

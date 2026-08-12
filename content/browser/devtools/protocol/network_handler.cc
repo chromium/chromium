@@ -3827,13 +3827,10 @@ NetworkHandler::CreateRequestFromResourceRequest(
   return request_object;
 }
 
-
-void NetworkHandler::ApplyOverrides(
-    net::HttpRequestHeaders* headers,
-    bool* skip_service_worker,
-    bool* disable_cache,
-    std::optional<std::vector<net::SourceStreamType>>* accepted_stream_types,
-    GURL* referrer_override) {
+void NetworkHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
+                                    bool* skip_service_worker,
+                                    bool* disable_cache,
+                                    GURL* referrer_override) {
   for (auto& entry : extra_headers_) {
     if (referrer_override &&
         base::EqualsCaseInsensitiveASCII(entry.first,

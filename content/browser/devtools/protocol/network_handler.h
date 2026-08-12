@@ -228,12 +228,10 @@ class NetworkHandler : public DevToolsDomainHandler,
       const String& request_id,
       std::unique_ptr<GetResponseBodyCallback> callback) override;
 
-  void ApplyOverrides(
-      net::HttpRequestHeaders* headers,
-      bool* skip_service_worker,
-      bool* disable_cache,
-      std::optional<std::vector<net::SourceStreamType>>* accepted_stream_types,
-      GURL* referrer_override);
+  void ApplyOverrides(net::HttpRequestHeaders* headers,
+                      bool* skip_service_worker,
+                      bool* disable_cache,
+                      GURL* referrer_override);
   void ApplyCookieControlsOverrides(net::CookieSettingOverrides& overrides);
   void PrefetchRequestWillBeSent(
       const std::string& request_id,
