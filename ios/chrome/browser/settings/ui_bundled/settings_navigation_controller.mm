@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -1485,6 +1486,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                browser:self.browser];
   _autofillSettingsCoordinator.delegate = self;
   [_autofillSettingsCoordinator start];
+}
+
+- (void)showAutofillSettingsFromNotice {
+  if (IsYourSavedInfoSettingsPageIosEnabled()) {
+    [self showAutofillSettings];
+  } else {
+    [self showProfileSettingsFromViewController:nil];
+  }
 }
 
 #pragma mark - SyncEncryptionPassphraseTableViewControllerPresentationDelegate

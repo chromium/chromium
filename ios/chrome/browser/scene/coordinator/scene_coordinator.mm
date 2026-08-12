@@ -1420,6 +1420,13 @@ inline LayoutStateScenePassKey PassKey() {
   }];
 }
 
+- (void)showAutofillSettingsFromNotice {
+  __weak SceneCoordinator* weakSelf = self;
+  [self dismissModalDialogsWithCompletion:^{
+    [weakSelf showAutofillSettingsFromNoticeAfterModalDismiss];
+  }];
+}
+
 - (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID
     API_AVAILABLE(ios(26.0)) {
   if (!_settingsNavigationController) {
@@ -2039,6 +2046,25 @@ inline LayoutStateScenePassKey PassKey() {
                                                        kFillingFlowDropdown
                                       delegate:self];
   [_settingsNavigationController showAutofillSettings];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
+}
+
+// Shows the Autofill settings in the settings UI from an Autofill notice (no
+// back button).
+- (void)showAutofillSettingsFromNoticeAfterModalDismiss {
+  DCHECK(!self.isSigninInProgress);
+
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showAutofillSettingsFromNotice];
+    return;
+  }
+  _settingsNavigationController = [[SettingsNavigationController alloc]
+      initWithRootViewController:nil
+                         browser:_regularBrowser.get()
+                        delegate:self];
+  [_settingsNavigationController showAutofillSettingsFromNotice];
   [self.activeViewController presentViewController:_settingsNavigationController
                                           animated:YES
                                         completion:nil];

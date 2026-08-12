@@ -154,6 +154,9 @@ enum class PushNotificationClientId;
 // Shows the Autofill settings UI.
 - (void)showAutofillSettings;
 
+// Shows the Autofill settings UI from an Autofill notice (no back button).
+- (void)showAutofillSettingsFromNotice;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SETTINGS_COMMANDS_H_

@@ -69,7 +69,7 @@ TEST_F(ConfirmInfobarBannerInteractionHandlerTest, Presentation) {
 TEST_F(ConfirmInfobarBannerInteractionHandlerTest,
        ShowModalButtonTappedForPrivateInferenceNotice) {
   id settings_commands_mock = OCMProtocolMock(@protocol(SettingsCommands));
-  OCMExpect([settings_commands_mock showAutofillSettings]);
+  OCMExpect([settings_commands_mock showAutofillSettingsFromNotice]);
 
   CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
   [dispatcher startDispatchingToTarget:settings_commands_mock

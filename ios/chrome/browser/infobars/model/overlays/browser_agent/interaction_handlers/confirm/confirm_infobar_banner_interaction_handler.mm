@@ -56,7 +56,7 @@ void ConfirmInfobarBannerInteractionHandler::ShowModalButtonTapped(
       InfobarType::kInfobarTypeFormsAiPrivateInference) {
     id<SettingsCommands> settings_commands_handler =
         HandlerForProtocol(dispatcher_, SettingsCommands);
-    [settings_commands_handler showAutofillSettings];
+    [settings_commands_handler showAutofillSettingsFromNotice];
     BannerDismissedByUser(infobar);
   } else {
     InfobarBannerInteractionHandler::ShowModalButtonTapped(infobar, web_state);
