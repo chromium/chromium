@@ -2557,6 +2557,7 @@ class LocationBarMediator
             mSelectionController.setSelectionMode(LocationBarSelectionController.Mode.WRAPPING);
         } else {
             mSelectionController.setSelectionMode(LocationBarSelectionController.Mode.SATURATING);
+            mSelectionController.reset();
         }
         updateShowFocusRing();
         updateReparentingState();

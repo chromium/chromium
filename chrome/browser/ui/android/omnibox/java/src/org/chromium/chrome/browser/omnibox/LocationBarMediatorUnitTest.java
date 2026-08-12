@@ -1444,6 +1444,31 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testEscapePress_restoresFocusRingAfterNavigation() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setDisplayState(DisplayState.SUGGESTIONS);
+
+        // Simulate navigation to suggestions.
+        doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
+        doReturn(KeyEvent.KEYCODE_DPAD_DOWN).when(mKeyEvent).getKeyCode();
+        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_DPAD_DOWN, mKeyEvent));
+
+        // Verify focus ring is NOT shown (because URL bar is not selected).
+        verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(false);
+        clearInvocations(mLocationBarLayout);
+
+        // Press ESC
+        assertTrue(mMediator.handleEscPress());
+
+        // Verify focus ring is restored.
+        verify(mLocationBarLayout).setShowFocusRing(true);
+    }
+
+    @Test
     public void testEscapePress_noTab() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
