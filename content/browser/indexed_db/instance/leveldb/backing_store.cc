@@ -4613,7 +4613,7 @@ bool BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
                             storage::mojom::WriteBlobToFileResult::kSuccess);
                       },
                       weak_ptr_factory_.GetWeakPtr(),
-                      base::UnsafeDanglingUntriaged(&entry),
+                      base::Unretained(&entry),
                       write_result_callback));
           break;
         }
