@@ -365,12 +365,6 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
 
   // Place out-of-flow items after setting the intrinsic block size, since
   // out-of-flow items don't contribute to the intrinsic size of the container.
-  //
-  // TODO(celestepan): Handle content alignment (justify-content /
-  // align-content) and fill-reverse for OOF items. At the moment, we are
-  // adjusting their offsets in `MoveChildrenInDirection`, which is called
-  // earlier in `PlaceGridLanesItems`, but we don't populate the OOF children
-  // until here.
   if (!oof_children.empty()) {
     PlaceOutOfFlowItems(*layout_data, block_size, oof_children);
   }
@@ -1532,13 +1526,23 @@ void GridLanesLayoutAlgorithm::PlaceOutOfFlowItems(
   const auto& placement_data = node.CachedPlacementData();
   const LogicalSize total_fragment_size = {container_builder_.InlineSize(),
                                            block_size};
+  const BoxStrut border_scrollbar_padding = BorderScrollbarPadding();
   const auto default_containing_block_size =
-      ShrinkLogicalSize(total_fragment_size, BorderScrollbarPadding());
+      ShrinkLogicalSize(total_fragment_size, border_scrollbar_padding);
 
   const auto border_scrollbar = Borders() + Scrollbar();
   const LogicalRect padding_box_rect = {
       border_scrollbar.StartOffset(),
       ShrinkLogicalSize(total_fragment_size, border_scrollbar)};
+  const bool is_for_columns =
+      container_style.GridLanesTrackSizingDirection() == kForColumns;
+
+  // Precompute `container_end` for 'fill-reverse'. `container_end` is the
+  // end edge of the container's stacking axis.
+  const LayoutUnit container_end =
+      is_for_columns ? (block_size - border_scrollbar_padding.block_end)
+                     : (container_builder_.InlineSize() -
+                        border_scrollbar_padding.inline_end);
 
   for (LayoutBox* oof_child : oof_children) {
     GridItemData* out_of_flow_item = MakeGarbageCollected<GridItemData>(
@@ -1561,7 +1565,7 @@ void GridLanesLayoutAlgorithm::PlaceOutOfFlowItems(
     LogicalStaticPosition static_pos;
     static_pos.offset = containing_block_rect
                             ? containing_block_rect->offset
-                            : BorderScrollbarPadding().StartOffset();
+                            : border_scrollbar_padding.StartOffset();
     const auto containing_block_size = containing_block_rect
                                            ? containing_block_rect->size
                                            : default_containing_block_size;
@@ -1570,7 +1574,21 @@ void GridLanesLayoutAlgorithm::PlaceOutOfFlowItems(
                                 out_of_flow_item->Alignment(kForRows),
                                 containing_block_size, &static_pos);
 
-    // TODO(kschmi): Handle fragmentation.
+    // If 'fill-reverse' is active, reverse the static position along the
+    // stacking axis here.
+    if (container_style.IsReverseGridLanesFillDirection()) {
+      if (is_for_columns) {
+        static_pos.block_edge = LogicalStaticPosition::BlockEdge::kBlockEnd;
+        static_pos.offset.block_offset = container_end;
+      } else {
+        static_pos.inline_edge = LogicalStaticPosition::InlineEdge::kInlineEnd;
+        static_pos.offset.inline_offset = container_end;
+      }
+    }
+
+    // TODO(kschmi): Handle fragmentation. Once fragmentation is implemented,
+    // fill-reverse offsets will also need to be applied to
+    // `oof_positioned_fragmentainer_descendants_`.
     container_builder_.AddOutOfFlowChildCandidate(out_of_flow_item->node,
                                                   static_pos);
   }

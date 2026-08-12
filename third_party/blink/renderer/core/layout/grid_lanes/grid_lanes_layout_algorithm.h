@@ -197,7 +197,9 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // grid-lanes container, calculates alignment offsets using item alignment
   // properties, and adds the item as an out-of-flow candidate via
   // `AddOutOfFlowChildCandidate`. `oof_children` is a required input vector
-  // containing the layout boxes of OOF grid-lanes items.
+  // containing the layout boxes of OOF grid-lanes items. If 'fill-reverse' is
+  // enabled, this method will also apply the necessary reverse offsets to the
+  // OOF items so that they are positioned correctly along the stacking axis.
   void PlaceOutOfFlowItems(const GridLayoutData& layout_data,
                            LayoutUnit block_size,
                            HeapVector<Member<LayoutBox>>& oof_children);
