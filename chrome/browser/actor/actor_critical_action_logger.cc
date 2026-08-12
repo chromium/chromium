@@ -29,7 +29,6 @@
 #include "components/actor/core/task_id.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace actor {
 
@@ -99,7 +98,7 @@ void ActorCriticalActionLogger::MaybeLogAction(
     Profile* profile,
     const ToolRequest& action,
     const mojom::ActionResult& result,
-    ukm::SourceId navigation_id) {
+    int64_t navigation_id) {
   critical_actions::ActionType action_type =
       EvaluateToolRequest(action, result);
   if (action_type == critical_actions::ActionType::kUnknown) {
@@ -117,7 +116,7 @@ void ActorCriticalActionLogger::LogAgentSelfReportedAction(
     std::string conversation_id,
     critical_actions::ActionType action_type,
     const GURL& url,
-    ukm::SourceId navigation_id,
+    int64_t navigation_id,
     TaskId actor_task_id,
     std::string metadata) {
   if (!profile) {
@@ -141,7 +140,7 @@ void ActorCriticalActionLogger::LogEntry(
     TaskId actor_task_id,
     const GURL& url,
     std::string metadata,
-    ukm::SourceId navigation_id) {
+    int64_t navigation_id) {
   critical_actions::CriticalActionEntry entry;
   entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.timestamp = base::Time::Now();

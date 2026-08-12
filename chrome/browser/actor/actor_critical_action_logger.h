@@ -11,7 +11,6 @@
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/core/task_id.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class Profile;
 
@@ -34,7 +33,7 @@ class ActorCriticalActionLogger {
                              Profile* profile,
                              const ToolRequest& action,
                              const mojom::ActionResult& result,
-                             ukm::SourceId navigation_id);
+                             int64_t navigation_id);
 
   // Logs a self-reported agent action to the CriticalActionService.
   static void LogAgentSelfReportedAction(
@@ -42,7 +41,7 @@ class ActorCriticalActionLogger {
       std::string conversation_id,
       critical_actions::ActionType action_type,
       const GURL& url,
-      ukm::SourceId navigation_id,
+      int64_t navigation_id,
       TaskId actor_task_id = TaskId(),
       std::string metadata = "");
 
@@ -54,7 +53,7 @@ class ActorCriticalActionLogger {
                        TaskId actor_task_id,
                        const GURL& url,
                        std::string metadata,
-                       ukm::SourceId navigation_id);
+                       int64_t navigation_id);
 };
 
 }  // namespace actor

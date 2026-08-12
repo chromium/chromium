@@ -60,7 +60,7 @@ class ActorCriticalActionLoggerTest : public ChromeRenderViewHostTestHarness {
     return tab_states_.back()->tab.GetHandle();
   }
 
-  void FlushPendingActions(ukm::SourceId navigation_id) {
+  void FlushPendingActions(int64_t navigation_id) {
     critical_actions::CriticalActionService* critical_service =
         critical_actions::CriticalActionFactory::GetForProfile(profile());
     ASSERT_TRUE(critical_service);

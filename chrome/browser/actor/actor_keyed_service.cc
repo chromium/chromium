@@ -742,11 +742,10 @@ void ActorKeyedService::OnDownloadCreated(content::DownloadManager* manager,
     if (const ActorTask* task =
             GetActingActorTaskForWebContents(web_contents)) {
       RecordDirectDownloadTriggered(true);
-      ukm::SourceId navigation_id = ukm::kInvalidSourceId;
-      if (web_contents->GetPrimaryMainFrame()) {
-        navigation_id =
-            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-      }
+      int64_t navigation_id =
+          web_contents->GetPrimaryMainFrame()
+              ? web_contents->GetPrimaryMainFrame()->GetNavigationId()
+              : 0;
       ActorCriticalActionLogger::LogAgentSelfReportedAction(
           profile_, task->source_info().id.value_or(""),
           critical_actions::ActionType::kDownload, item->GetURL(),

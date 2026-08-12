@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_EXECUTION_ENGINE_H_
 #define CHROME_BROWSER_ACTOR_EXECUTION_ENGINE_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -473,8 +474,8 @@ class ExecutionEngine : public ToolDelegate,
   size_t next_action_index_ = 0;
   base::TimeTicks action_start_time_;
 
-  // The UKM Source ID of the page before the tool was invoked.
-  ukm::SourceId pre_invoke_navigation_id_ = ukm::kInvalidSourceId;
+  // The raw navigation ID of the page before the tool was invoked.
+  int64_t pre_invoke_navigation_id_ = 0;
 
   // If set, the currently executing tool should be considered failed once it
   // completes.

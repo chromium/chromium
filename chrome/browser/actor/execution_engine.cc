@@ -1415,12 +1415,12 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
 
   // Cache the navigation ID before invoking the tool to ensure we log the
   // critical action under the correct pre-navigation page context.
-  pre_invoke_navigation_id_ = ukm::kInvalidSourceId;
+  pre_invoke_navigation_id_ = 0;
   const ToolRequest& current_action = GetInProgressAction();
   tabs::TabInterface* tab = current_action.GetTabForValidation().Get();
   if (tab && tab->GetContents() && tab->GetContents()->GetPrimaryMainFrame()) {
     pre_invoke_navigation_id_ =
-        tab->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+        tab->GetContents()->GetPrimaryMainFrame()->GetNavigationId();
   }
 
   SetState(State::kToolInvoke);
@@ -1467,7 +1467,7 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
   ActorCriticalActionLogger::MaybeLogAction(*task_, &GetProfile(),
                                             current_action, *result,
                                             pre_invoke_navigation_id_);
-  pre_invoke_navigation_id_ = ukm::kInvalidSourceId;
+  pre_invoke_navigation_id_ = 0;
 
   // TODO(bokan): If tool completion is deferred due to interruption (e.g.
   // waiting on a user to confirm an action) the recorded tool metrics will look
