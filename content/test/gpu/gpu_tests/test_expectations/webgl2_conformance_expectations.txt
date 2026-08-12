@@ -562,7 +562,6 @@ crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-c
 crbug.com/1073613 [ angle-d3d11 win nvidia ] conformance2/textures/misc/tex-3d-mipmap-levels-intel-bug.html [ Failure ]
 crbug.com/1073613 [ angle-d3d11 win nvidia ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 crbug.com/1073613 [ angle-d3d11 win nvidia ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Failure ]
-crbug.com/521861816 [ angle-d3d11 win nvidia-0x2184 ] conformance2/buffers/get-buffer-sub-data-validity.html [ Failure ]
 
 # Win11/GTX 1660 experimental failures when going to 610.74
 crbug.com/543984226 [ win11 nvidia-0x2184 nvidia_ge_32.0.16.1074 ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Failure ]
@@ -643,13 +642,7 @@ crbug.com/544795247 [ mac apple-angle-metal-renderer:-apple-m2 asan ] deqp/funct
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
 ######################################################################
 
-crbug.com/angleproject/4242 [ angle-opengl mac arch-x86_64 ] conformance2/glsl3/matrix-row-major-dynamic-indexing.html [ Failure ]
 
-# Fails on multiple GPU types.
-crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
-crbug.com/630800 [ angle-opengl intel-0x3e9b sequoia ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
-crbug.com/630800 [ angle-opengl intel-0x3e9b sequoia ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
-crbug.com/1289803 [ angle-opengl arch-x86_64 mac ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
 
 ## Mac AMD ##
 
@@ -660,13 +653,7 @@ crbug.com/1289803 [ angle-opengl arch-x86_64 mac ] conformance2/extensions/webgl
 # self.Fail('conformance2/rendering/texture-switch-performance.html',
 #     ['mac', 'amd'], bug=735483)
 
-# The following two failures appeared to be a regression in the Mac AMD OpenGL
-# driver on 10.13.6 specifically, and are still flaky. Unfortunately when the
-# tests fail, they fail three times in a row, so we must mark them failing
-# rather than flaky.
-crbug.com/870856 [ mac amd angle-opengl ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
 
-crbug.com/1230781 [ mac amd angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
 
 crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
 
@@ -674,50 +661,17 @@ crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ 
 
 
 
-crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
-crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
-crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance2/rendering/blitframebuffer-resolve-to-back-buffer.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
-crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] deqp/functional/gles3/instancedrendering.html [ Failure ]
 
 crbug.com/374696517 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/uniformbuffers/random.html [ RetryOnFailure ]
-crbug.com/406424259 [ mac amd-0x7340 graphite-disabled ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 
 ## Mac Intel ##
 
 crbug.com/679692 [ angle-metal intel mac no-asan ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
-crbug.com/606074 [ angle-opengl intel-0x3e9b sequoia ] deqp/functional/gles3/texturefiltering/2d_combinations_01.html [ Failure ]
-crbug.com/606074 [ angle-opengl intel-0x3e9b sequoia ] deqp/functional/gles3/texturefiltering/cube_combinations_01.html [ Failure ]
-crbug.com/606074 [ angle-opengl intel-0x3e9b sequoia ] deqp/functional/gles3/texturefiltering/2d_array_combinations_01.html [ Failure ]
-crbug.com/606074 [ angle-opengl intel-0x3e9b sequoia ] deqp/functional/gles3/texturefiltering/3d_combinations_06.html [ Failure ]
-crbug.com/606074 [ angle-opengl intel-0x3e9b sequoia ] deqp/functional/gles3/texturefiltering/3d_combinations_07.html [ Failure ]
-crbug.com/606074 [ angle-opengl intel-0x3e9b sequoia ] deqp/functional/gles3/texturefiltering/3d_combinations_08.html [ Failure ]
-crbug.com/658724 [ angle-opengl intel-0x3e9b sequoia ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
-crbug.com/658724 [ angle-opengl intel-0x3e9b sequoia ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
 crbug.com/1334684 [ angle-metal intel sequoia ] deqp/functional/gles3/shaderbuiltinvar.html [ Failure ]
 
-crbug.com/angleproject/5222 [ angle-opengl intel-0x3e9b passthrough sequoia ] conformance2/textures/misc/tex-unpack-params.html [ Failure ]
-crbug.com/angleproject/5226 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/texturespecification/basic_copyteximage2d.html [ Failure ]
-crbug.com/angleproject/5222 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/texturespecification/teximage3d_pbo_params.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_lines.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_triangles.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/basic_types_separate_lines.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/basic_types_separate_triangles.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/position.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/random_interleaved_lines.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/random_interleaved_triangles.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/random_separate_lines.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
-crbug.com/angleproject/5221 [ angle-opengl intel-0x3e9b passthrough sequoia ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 
 
 # WebGL: INVALID_ENUM: getShaderParameter
@@ -739,7 +693,6 @@ crbug.com/444250724 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformanc
 
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/40144307 [ linux nvidia-0x2783 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
-crbug.com/488451405 [ linux nvidia angle-opengl passthrough ] conformance/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
 crbug.com/535817988 [ linux nvidia angle-opengl passthrough ] conformance/extensions/oes-texture-float-linear.html [ RetryOnFailure ]
 
 ## Linux AMD RX 5500 XT ##
@@ -759,7 +712,6 @@ crbug.com/329698340 [ linux intel angle-opengl passthrough mesa_ge_23.2 ] confor
 
 ## Linux NVIDIA RTX 5080 ##
 
-crbug.com/515133241 [ linux nvidia-0x2c02 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 
 ## Linux AMD RX 9070 XT ##
 
@@ -994,7 +946,6 @@ crbug.com/1448569 [ win angle-d3d11 ] conformance2/glsl3/texture-bias.html [ Fai
 
 crbug.com/332743717 [ android android-pixel-4 angle-disabled no-passthrough ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ linux ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
-crbug.com/332743717 [ angle-opengl intel-0x3e9b sequoia ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ chromeos chromeos-board-amd64-generic ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ android android-pixel-2 angle-disabled no-passthrough ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scissor.html [ Failure ]
