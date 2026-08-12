@@ -241,6 +241,25 @@ void GlicTabObserverAndroid::OnTabCloseUndone(
   }
 }
 
+void GlicTabObserverAndroid::WillCloseTabs(
+    const std::vector<TabAndroid*>& tabs,
+    bool is_all_tabs,
+    bool allow_undo) {
+  if (tabs.empty()) {
+    return;
+  }
+  // This is the last event when `tabs` are attached to a tab model.
+  TabModel* closing_tab_tab_model =
+      TabModelList::GetTabModelForTabAndroid(tabs.front());
+  CHECK(closing_tab_tab_model);
+
+  // Remove closing tabs from `last_active_tab_map_` before they get detached
+  // from their model.
+  for (auto* tab : tabs) {
+    MaybeClearLastActiveTab(closing_tab_tab_model, tab);
+  }
+}
+
 void GlicTabObserverAndroid::WillCloseTab(TabAndroid* tab) {
   // This is the last event when `tab` is attached to a tab model.
   TabModel* closing_tab_tab_model = TabModelList::GetTabModelForTabAndroid(tab);

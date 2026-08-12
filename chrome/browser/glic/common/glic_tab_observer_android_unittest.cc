@@ -118,6 +118,44 @@ TEST_F(GlicTabObserverAndroidTest,
   TabModelList::RemoveObserver(&observer);
 }
 
+TEST_F(GlicTabObserverAndroidTest,
+       ClosingAllTabsAndOpeningANewOneNotifiesObserver_WillCloseTabs) {
+  base::MockCallback<GlicTabObserver::EventCallback> mock_callback;
+  OwningTestTabModel tab_model(profile());
+  GlicTabObserverAndroid observer(profile(), mock_callback.Get());
+
+  std::unique_ptr<content::WebContents> web_contents1 =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  // Add a tab
+  TabAndroid* tab1 =
+      tab_model.AddTabFromWebContents(std::move(web_contents1), 0, true,
+                                      TabModel::TabLaunchType::FROM_CHROME_UI);
+
+  // Notify WillCloseTabs to clear last active tab map before closure.
+  observer.WillCloseTabs({tab1}, /*is_all_tabs=*/true, /*allow_undo=*/false);
+  tab_model.CloseTabAt(0);
+
+  std::unique_ptr<content::WebContents> web_contents2 =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContents* web_contents2_ptr = web_contents2.get();
+  EXPECT_CALL(mock_callback, Run(VariantWith<TabCreationEvent>(_)));
+  // After opening a new tab we expect a TabActivationEvent that doesn't point
+  // to the previous tab.
+  EXPECT_CALL(mock_callback, Run(VariantWith<TabActivationEvent>(_)))
+      .WillOnce([&](const GlicTabEvent& event) {
+        ASSERT_TRUE(std::holds_alternative<TabActivationEvent>(event));
+        const auto& activation_event = std::get<TabActivationEvent>(event);
+        EXPECT_EQ(web_contents2_ptr,
+                  activation_event.new_active_tab->GetContents());
+        EXPECT_NE(tab1, activation_event.old_active_tab);
+      });
+
+  // Open a new tab
+  tab_model.AddTabFromWebContents(std::move(web_contents2), 0, true,
+                                  TabModel::TabLaunchType::FROM_CHROME_UI);
+  TabModelList::RemoveObserver(&observer);
+}
+
 TEST_F(GlicTabObserverAndroidTest, TabRemovalNotifiesObserver) {
   base::MockCallback<GlicTabObserver::EventCallback> mock_callback;
   OwningTestTabModel tab_model(profile());
