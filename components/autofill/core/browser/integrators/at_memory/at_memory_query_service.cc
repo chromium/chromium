@@ -307,27 +307,53 @@ void DeduplicateResults(std::vector<MemorySearchResult>& results) {
   results = std::move(unique_results);
 }
 
+// Key used to count attribute frequencies across results. Schemaful
+// attributes are identified by their `MemoryDataType`, while schemaless
+// attributes (`MemoryDataType::kUnknown`) are identified by their `type_name`.
+struct MetadataAttributeKey {
+  MemoryDataType type;
+  std::u16string type_name;
+  std::u16string value;
+
+  bool operator==(const MetadataAttributeKey& other) const = default;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const MetadataAttributeKey& key) {
+    return H::combine(std::move(h), key.type, key.type_name, key.value);
+  }
+};
+
+MetadataAttributeKey GetMetadataAttributeKey(const EntryMetadata& metadata) {
+  return {
+      .type = metadata.type,
+      .type_name = metadata.type == MemoryDataType::kUnknown
+                       ? metadata.type_name
+                       : std::u16string(),
+      .value = metadata.value,
+  };
+}
+
 // Reorders secondary metadata attributes in each suggestion by uniqueness.
 // Attributes with lower frequency of the same type (more unique values for a
-// given attribute type across all suggestions) appear first. Ties preserve
-// their original relative order.
-// TODO(crbug.com/535951437): Improve handling on `MemoryDataType::kUnknown`
-// results.
+// given attribute type across all suggestions) appear first. Schemaful
+// attributes are identified by their `MemoryDataType`, while schemaless
+// attributes (`MemoryDataType::kUnknown`) are identified by their `type_name`.
+// Ties preserve their original relative order.
 void ReorderMetadataByUniqueness(std::vector<MemorySearchResult>& results) {
-  absl::flat_hash_map<std::pair<MemoryDataType, std::u16string>, size_t>
-      frequency_map;
+  absl::flat_hash_map<MetadataAttributeKey, size_t> frequency_map;
   for (const MemorySearchResult& result : results) {
     for (const EntryMetadata& metadata : result.metadata_list) {
-      frequency_map[{metadata.type, metadata.value}]++;
+      frequency_map[GetMetadataAttributeKey(metadata)]++;
     }
   }
 
   for (MemorySearchResult& result : results) {
-    std::ranges::stable_sort(result.metadata_list,
-                             /*comp=*/{},
-                             /*proj=*/[&frequency_map](const EntryMetadata& m) {
-                               return frequency_map[{m.type, m.value}];
-                             });
+    std::ranges::stable_sort(
+        result.metadata_list,
+        /*comp=*/{},
+        /*proj=*/[&frequency_map](const EntryMetadata& m) {
+          return frequency_map.at(GetMetadataAttributeKey(m));
+        });
   }
 }
 

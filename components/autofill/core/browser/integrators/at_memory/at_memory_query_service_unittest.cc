@@ -1762,19 +1762,88 @@ INSTANTIATE_TEST_SUITE_P(
                    u"Departure Airport", u"LAX"},
                   {MemoryDataType::kFlightReservationArrivalAirport,
                    u"Arrival Airport", u"SFO"}}},
+            .expected_metadata_per_result =
+                {{{MemoryDataType::kFlightReservationDepartureAirport,
+                   u"Departure Airport", u"SFO"},
+                  {MemoryDataType::kFlightReservationDepartureAirport,
+                   u"Departure Airport", u"LAX"}},
+                 {{MemoryDataType::kFlightReservationDepartureAirport,
+                   u"Departure Airport", u"SFO"},
+                  {MemoryDataType::kFlightReservationDepartureAirport,
+                   u"Departure Airport", u"LAX"}},
+                 {{MemoryDataType::kFlightReservationArrivalAirport,
+                   u"Arrival Airport", u"SFO"},
+                  {MemoryDataType::kFlightReservationDepartureAirport,
+                   u"Departure Airport", u"LAX"}}}},
+        // Reorders schemaless metadata attributes by uniqueness (more unique
+        // values first).
+        ReorderMetadataTestCase{
+            .input_metadata_per_result =
+                {{{MemoryDataType::kUnknown, u"Gate", u"A1"},
+                  {MemoryDataType::kUnknown, u"Terminal", u"T1"},
+                  {MemoryDataType::kUnknown, u"Seat", u"12A"}},
+                 {{MemoryDataType::kUnknown, u"Gate", u"A1"},
+                  {MemoryDataType::kUnknown, u"Terminal", u"T1"},
+                  {MemoryDataType::kUnknown, u"Seat", u"14B"}},
+                 {{MemoryDataType::kUnknown, u"Gate", u"A1"},
+                  {MemoryDataType::kUnknown, u"Terminal", u"T2"},
+                  {MemoryDataType::kUnknown, u"Seat", u"16C"}}},
+            .expected_metadata_per_result =
+                {{{MemoryDataType::kUnknown, u"Seat", u"12A"},
+                  {MemoryDataType::kUnknown, u"Terminal", u"T1"},
+                  {MemoryDataType::kUnknown, u"Gate", u"A1"}},
+                 {{MemoryDataType::kUnknown, u"Seat", u"14B"},
+                  {MemoryDataType::kUnknown, u"Terminal", u"T1"},
+                  {MemoryDataType::kUnknown, u"Gate", u"A1"}},
+                 {{MemoryDataType::kUnknown, u"Terminal", u"T2"},
+                  {MemoryDataType::kUnknown, u"Seat", u"16C"},
+                  {MemoryDataType::kUnknown, u"Gate", u"A1"}}}},
+        // Counts values of different schemaless type names independently (e.g.,
+        // "A1" in Gate vs. "A1" in Seat).
+        ReorderMetadataTestCase{
+            .input_metadata_per_result =
+                {{{MemoryDataType::kUnknown, u"Gate", u"A1"},
+                  {MemoryDataType::kUnknown, u"Gate", u"B2"}},
+                 {{MemoryDataType::kUnknown, u"Gate", u"A1"},
+                  {MemoryDataType::kUnknown, u"Gate", u"B2"}},
+                 {{MemoryDataType::kUnknown, u"Gate", u"A1"},
+                  {MemoryDataType::kUnknown, u"Seat", u"B2"}}},
+            .expected_metadata_per_result =
+                {{{MemoryDataType::kUnknown, u"Gate", u"B2"},
+                  {MemoryDataType::kUnknown, u"Gate", u"A1"}},
+                 {{MemoryDataType::kUnknown, u"Gate", u"B2"},
+                  {MemoryDataType::kUnknown, u"Gate", u"A1"}},
+                 {{MemoryDataType::kUnknown, u"Seat", u"B2"},
+                  {MemoryDataType::kUnknown, u"Gate", u"A1"}}}},
+        // Mixed schemaful and schemaless metadata are properly reordered
+        // together by uniqueness.
+        ReorderMetadataTestCase{
+            .input_metadata_per_result =
+                {{{MemoryDataType::kAddressCountry, u"Country",
+                   u"United States"},
+                  {MemoryDataType::kUnknown, u"Neighborhood", u"North End"},
+                  {MemoryDataType::kAddressState, u"State", u"MA"}},
+                 {{MemoryDataType::kAddressCountry, u"Country",
+                   u"United States"},
+                  {MemoryDataType::kUnknown, u"Neighborhood", u"Back Bay"},
+                  {MemoryDataType::kAddressState, u"State", u"MA"}},
+                 {{MemoryDataType::kAddressCountry, u"Country",
+                   u"United States"},
+                  {MemoryDataType::kUnknown, u"Neighborhood", u"North End"},
+                  {MemoryDataType::kAddressState, u"State", u"IL"}}},
             .expected_metadata_per_result = {
-                {{MemoryDataType::kFlightReservationDepartureAirport,
-                  u"Departure Airport", u"SFO"},
-                 {MemoryDataType::kFlightReservationDepartureAirport,
-                  u"Departure Airport", u"LAX"}},
-                {{MemoryDataType::kFlightReservationDepartureAirport,
-                  u"Departure Airport", u"SFO"},
-                 {MemoryDataType::kFlightReservationDepartureAirport,
-                  u"Departure Airport", u"LAX"}},
-                {{MemoryDataType::kFlightReservationArrivalAirport,
-                  u"Arrival Airport", u"SFO"},
-                 {MemoryDataType::kFlightReservationDepartureAirport,
-                  u"Departure Airport", u"LAX"}}}}));
+                {{MemoryDataType::kUnknown, u"Neighborhood", u"North End"},
+                 {MemoryDataType::kAddressState, u"State", u"MA"},
+                 {MemoryDataType::kAddressCountry, u"Country",
+                  u"United States"}},
+                {{MemoryDataType::kUnknown, u"Neighborhood", u"Back Bay"},
+                 {MemoryDataType::kAddressState, u"State", u"MA"},
+                 {MemoryDataType::kAddressCountry, u"Country",
+                  u"United States"}},
+                {{MemoryDataType::kAddressState, u"State", u"IL"},
+                 {MemoryDataType::kUnknown, u"Neighborhood", u"North End"},
+                 {MemoryDataType::kAddressCountry, u"Country",
+                  u"United States"}}}}));
 
 // Tests that local results are filtered using string filters in fetch
 // specifications.
