@@ -578,7 +578,7 @@ DeclarativePerformanceObserverStore::DeclarativePerformanceObserverStore(
           db_task_runner
               ? db_task_runner
               : base::ThreadPool::CreateSequencedTaskRunner(
-                    {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                    {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
                      base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       backend_(base::MakeRefCounted<Backend>(
           db_task_runner_,

@@ -157,8 +157,14 @@ class BrowsingDataRemover {
   // should be refactored to use a dedicated options struct instead.
   static constexpr DataType DATA_TYPE_LOGICAL_CLEAR = 1 << 26;
 
+  // Reports and policies for Declarative Performance Observer
+  // (https://github.com/explainers-by-googlers/declarative-performance-observer).
+  static constexpr DataType DATA_TYPE_DECLARATIVE_PERFORMANCE_OBSERVER = 1
+                                                                         << 27;
+
   // Embedders can add more datatypes beyond this point.
-  static constexpr DataType DATA_TYPE_CONTENT_END = DATA_TYPE_LOGICAL_CLEAR;
+  static constexpr DataType DATA_TYPE_CONTENT_END =
+      DATA_TYPE_DECLARATIVE_PERFORMANCE_OBSERVER;
 
   // Data stored by APIs in The Privacy Sandbox (https://privacysandbox.com/).
   static constexpr DataType DATA_TYPE_PRIVACY_SANDBOX =
@@ -179,7 +185,7 @@ class BrowsingDataRemover {
       DATA_TYPE_AVOID_CLOSING_CONNECTIONS | DATA_TYPE_CACHE |
       DATA_TYPE_PRIVACY_SANDBOX | DATA_TYPE_DEVICE_BOUND_SESSIONS |
       DATA_TYPE_PREFETCH_CACHE | DATA_TYPE_PRERENDER_CACHE |
-      DATA_TYPE_LOGICAL_CLEAR;
+      DATA_TYPE_LOGICAL_CLEAR | DATA_TYPE_DECLARATIVE_PERFORMANCE_OBSERVER;
 
   using OriginType = uint64_t;
   // Web storage origins that StoragePartition recognizes as NOT protected

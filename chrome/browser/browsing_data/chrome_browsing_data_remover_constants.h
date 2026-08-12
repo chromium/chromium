@@ -65,6 +65,7 @@ constexpr DataType DATA_TYPE_SITE_DATA =
     DATA_TYPE_ISOLATED_WEB_APP_COOKIES |
     content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX |
     content::BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS |
+    content::BrowsingDataRemover::DATA_TYPE_DECLARATIVE_PERFORMANCE_OBSERVER |
     DATA_TYPE_PRIVATE_VERIFICATION_TOKENS;
 
 // Datatypes protected by Important Sites.

@@ -721,6 +721,25 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveLocalStorageForLastWeek) {
       mock_policy()));
 }
 
+TEST_F(BrowsingDataRemoverImplTest, RemoveDeclarativePerformanceObserver) {
+  CreateMockPolicy();
+
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_DECLARATIVE_PERFORMANCE_OBSERVER, false);
+
+  EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_DECLARATIVE_PERFORMANCE_OBSERVER,
+            GetRemovalMask());
+  EXPECT_EQ(BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            GetOriginTypeMask());
+
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(
+      removal_data.remove_mask,
+      StoragePartition::REMOVE_DATA_MASK_DECLARATIVE_PERFORMANCE_OBSERVER);
+  EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
+}
+
 TEST_F(BrowsingDataRemoverImplTest, RemoveMultipleTypes) {
   // Downloads should be deleted through the DownloadManager, assure it would
   // be called.

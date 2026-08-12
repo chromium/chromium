@@ -435,6 +435,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE;
   }
+  if (remove_mask & DATA_TYPE_DECLARATIVE_PERFORMANCE_OBSERVER) {
+    storage_partition_remove_mask |=
+        StoragePartition::REMOVE_DATA_MASK_DECLARATIVE_PERFORMANCE_OBSERVER;
+  }
   if (remove_mask & DATA_TYPE_INDEXED_DB) {
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_INDEXEDDB;
