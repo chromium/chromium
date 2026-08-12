@@ -8,6 +8,9 @@ import("//tools/grit/repack.gni")
 
 grit_strings("strings") {
   source = "../bluetooth_strings.grd"
+  inputs =
+      process_file_template(xtb_locales,
+                            [ "bluetooth_strings_{{source_name_part}}.xtb" ])
   outputs = [ "grit/bluetooth_strings.h" ]
   output_prefix = "bluetooth_strings_"
 }
