@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -82,7 +83,7 @@
 using extensions::InstallPromptData;
 
 class InfoBarsTest : public InProcessBrowserTest {
- public:
+ protected:
   InfoBarsTest() = default;
 
   void InstallExtension(const char* filename) {
