@@ -93,3 +93,9 @@ crbug.com/545120617 [ Device ] AutofillCreditCardSettingsTestCase/testToolbarDel
 crbug.com/545120835 [ Simulator ] PasswordCheckupTestCase/testPasswordCheckupDismissCompromisedPasswordWarning [ Pass Failure ]
 crbug.com/545123760 [ iPad Simulator ] TabGroupsTestCase/testReopenGroupFromAnotherWindow [ Pass Failure ]
 crbug.com/545122908 [ iPad Simulator ] MailtoHandlerTestCase/testDefaultAppsInMultiWindow [ Pass Failure ]
+
+# Gardening suppression 2026-08-12
+crbug.com/437843552 [ Simulator ] HistorySystemEGTest/testSearchSyncedHistory [ Pass Failure ]
+crbug.com/545634498 [ iPad Device ] HistorySystemEGTest/testSearchSyncedHistory [ Pass Failure ]
+crbug.com/545633687 [ Simulator ] TabGroupsEGTest/testReopenGroupFromAnotherWindow [ Pass Failure ]
+crbug.com/545633687 [ iPad Device ] TabGroupsEGTest/testReopenGroupFromAnotherWindow [ Pass Failure ]
