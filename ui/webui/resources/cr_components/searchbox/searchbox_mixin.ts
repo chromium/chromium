@@ -475,7 +475,37 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     }
 
     async handleKeyNavigation(e: KeyboardEvent) {
-      if (e.key === 'Backspace' || e.key === 'Tab') {
+      if (e.key === 'Backspace') {
+        const inputEl = this.getInputElement().inputElement;
+        const cursorAtStart =
+            inputEl.selectionStart === 0 && inputEl.selectionEnd === 0;
+        if (this.inputKeywordModel?.type === KeywordType.kInKeyword &&
+            cursorAtStart) {
+          const remainingText = inputEl.value;
+          // TODO(b:504669216): Restoring keyword text correctly is more
+          //   complicated than just prepending keyword and a space.
+          const restoredKeywordText = this.inputKeywordModel.keyword + ' ';
+          const restoredText = restoredKeywordText + remainingText;
+          const newCursorPos = restoredKeywordText.length;
+
+          this.inputKeywordModel = null;
+
+          this.getInputElement().setInput({
+            text: restoredText,
+            inline: '',
+            moveCursorToEnd: false,
+          });
+          inputEl.setSelectionRange(newCursorPos, newCursorPos);
+
+          this.queryAutocomplete(
+              restoredText, /*preventInlineAutocomplete=*/ true,
+              /*isOnFocus=*/ false);
+          e.preventDefault();
+        }
+        return;
+      }
+
+      if (e.key === 'Tab') {
         return;
       }
 
