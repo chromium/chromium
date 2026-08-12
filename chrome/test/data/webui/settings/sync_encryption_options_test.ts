@@ -4,12 +4,10 @@
 
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrInputElement, SettingsSyncEncryptionOptionsElement} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement, CrRadioButtonElement, CrRadioGroupElement} from 'chrome://settings/settings.js';
 import {SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getSyncAllPrefs} from './sync_test_util.js';
@@ -39,20 +37,18 @@ suite('SyncEncryptionOptions', function() {
       statusAction: StatusAction.NO_ACTION,
     };
 
-    await waitBeforeNextRender(encryptionElement);
+    await microtasksFinished();
     assertTrue(!!encryptionElement, 'encryptionElement');
 
     encryptionRadioGroup =
-        encryptionElement.shadowRoot!.querySelector('#encryptionRadioGroup')!;
-    encryptWithGoogle = encryptionElement.shadowRoot!.querySelector(
+        encryptionElement.shadowRoot.querySelector('#encryptionRadioGroup')!;
+    encryptWithGoogle = encryptionElement.shadowRoot.querySelector(
         'cr-radio-button[name="encrypt-with-google"]')!;
-    encryptWithPassphrase = encryptionElement.shadowRoot!.querySelector(
+    encryptWithPassphrase = encryptionElement.shadowRoot.querySelector(
         'cr-radio-button[name="encrypt-with-passphrase"]')!;
     assertTrue(!!encryptionRadioGroup, 'encryptionRadioGroup');
     assertTrue(!!encryptWithGoogle, 'encryptWithGoogle');
     assertTrue(!!encryptWithPassphrase, 'encryptWithPassphrase');
-
-    return microtasksFinished();
   });
 
   test('RadioBoxesEnabledWhenUnencrypted', async () => {
@@ -65,15 +61,15 @@ suite('SyncEncryptionOptions', function() {
 
     // Select 'Encrypt with passphrase' to create a new passphrase.
     assertFalse(
-        !!encryptionElement.shadowRoot!.querySelector('#create-password-box'));
+        !!encryptionElement.shadowRoot.querySelector('#create-password-box'));
 
     encryptWithPassphrase.click();
     await eventToPromise('selected-changed', encryptionRadioGroup);
 
     assertTrue(
-        !!encryptionElement.shadowRoot!.querySelector('#create-password-box'));
+        !!encryptionElement.shadowRoot.querySelector('#create-password-box'));
     const saveNewPassphrase =
-        encryptionElement.shadowRoot!.querySelector<CrButtonElement>(
+        encryptionElement.shadowRoot.querySelector<CrButtonElement>(
             '#saveNewPassphrase');
     assertTrue(!!saveNewPassphrase);
 
@@ -113,15 +109,15 @@ suite('SyncEncryptionOptions', function() {
     await eventToPromise('selected-changed', encryptionRadioGroup);
 
     assertTrue(
-        !!encryptionElement.shadowRoot!.querySelector('#create-password-box'));
+        !!encryptionElement.shadowRoot.querySelector('#create-password-box'));
     const saveNewPassphrase =
-        encryptionElement.shadowRoot!.querySelector<CrButtonElement>(
+        encryptionElement.shadowRoot.querySelector<CrButtonElement>(
             '#saveNewPassphrase')!;
     const passphraseInput =
-        encryptionElement.shadowRoot!.querySelector<CrInputElement>(
+        encryptionElement.shadowRoot.querySelector<CrInputElement>(
             '#passphraseInput')!;
     const passphraseConfirmationInput =
-        encryptionElement.shadowRoot!.querySelector<CrInputElement>(
+        encryptionElement.shadowRoot.querySelector<CrInputElement>(
             '#passphraseConfirmationInput')!;
 
     passphraseInput.value = '';
@@ -154,27 +150,24 @@ suite('SyncEncryptionOptions', function() {
     await eventToPromise('selected-changed', encryptionRadioGroup);
 
     assertTrue(
-        !!encryptionElement.shadowRoot!.querySelector('#create-password-box'));
+        !!encryptionElement.shadowRoot.querySelector('#create-password-box'));
     const saveNewPassphrase =
-        encryptionElement.shadowRoot!.querySelector<CrButtonElement>(
+        encryptionElement.shadowRoot.querySelector<CrButtonElement>(
             '#saveNewPassphrase');
     assertTrue(!!saveNewPassphrase);
 
     const passphraseInput =
-        encryptionElement.shadowRoot!.querySelector<CrInputElement>(
+        encryptionElement.shadowRoot.querySelector<CrInputElement>(
             '#passphraseInput')!;
     const passphraseConfirmationInput =
-        encryptionElement.shadowRoot!.querySelector<CrInputElement>(
+        encryptionElement.shadowRoot.querySelector<CrInputElement>(
             '#passphraseConfirmationInput')!;
     passphraseInput.value = 'foo';
     passphraseConfirmationInput.value = 'bar';
-    await Promise.all([
-      passphraseInput.updateComplete,
-      passphraseConfirmationInput.updateComplete,
-    ]);
+    await microtasksFinished();
 
     saveNewPassphrase.click();
-    flush();
+    await microtasksFinished();
 
     assertFalse(passphraseInput.invalid);
     assertTrue(passphraseConfirmationInput.invalid);
@@ -185,25 +178,22 @@ suite('SyncEncryptionOptions', function() {
     await eventToPromise('selected-changed', encryptionRadioGroup);
 
     assertTrue(
-        !!encryptionElement.shadowRoot!.querySelector('#create-password-box'));
+        !!encryptionElement.shadowRoot.querySelector('#create-password-box'));
     const saveNewPassphrase =
-        encryptionElement.shadowRoot!.querySelector<CrButtonElement>(
+        encryptionElement.shadowRoot.querySelector<CrButtonElement>(
             '#saveNewPassphrase');
     assertTrue(!!saveNewPassphrase);
 
     const passphraseInput =
-        encryptionElement.shadowRoot!.querySelector<CrInputElement>(
+        encryptionElement.shadowRoot.querySelector<CrInputElement>(
             '#passphraseInput')!;
     const passphraseConfirmationInput =
-        encryptionElement.shadowRoot!.querySelector<CrInputElement>(
+        encryptionElement.shadowRoot.querySelector<CrInputElement>(
             '#passphraseConfirmationInput')!;
     passphraseInput.value = 'foo';
     passphraseConfirmationInput.value = 'foo';
     testSyncBrowserProxy.encryptionPassphraseSuccess = true;
-    await Promise.all([
-      passphraseInput.updateComplete,
-      passphraseConfirmationInput.updateComplete,
-    ]);
+    await microtasksFinished();
     saveNewPassphrase.click();
 
     const passphrase =
@@ -215,12 +205,11 @@ suite('SyncEncryptionOptions', function() {
     const newPrefs = getSyncAllPrefs();
     newPrefs.encryptAllData = true;
     encryptionElement.syncPrefs = newPrefs;
-    flush();
+    await microtasksFinished();
 
-    await waitBeforeNextRender(encryptionElement);
     // Need to re-retrieve this, as a different show passphrase radio
     // button is shown for custom passphrase users.
-    encryptWithPassphrase = encryptionElement.shadowRoot!.querySelector(
+    encryptWithPassphrase = encryptionElement.shadowRoot.querySelector(
         'cr-radio-button[name="encrypt-with-passphrase"]')!;
 
     // Assert that the radio boxes are disabled after encryption enabled.
@@ -261,37 +250,37 @@ suite('SyncEncryptionOptions', function() {
     assertTrue(encryptionRadioGroup.disabled);
     assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'true');
     assertEquals(encryptWithPassphrase.getAttribute('aria-disabled'), 'true');
-
-    // Because sync is required for supervision, passphrases should remain
-    // disabled.
-    test(
-        'PassphraseEncryptionOptionsAlwaysDisabledForSupervisedUser',
-        async () => {
-          const prefs = getSyncAllPrefs();
-          prefs.customPassphraseAllowed = false;
-          encryptionElement.syncPrefs = prefs;
-          testSyncBrowserProxy.testSyncStatus = {
-            signedInState: SignedInState.SIGNED_IN,
-            supervisedUser: true,
-            statusAction: StatusAction.NO_ACTION,
-          };
-          await microtasksFinished();
-
-          assertTrue(encryptionRadioGroup.disabled);
-          assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'true');
-          assertEquals(
-              encryptWithPassphrase.getAttribute('aria-disabled'), 'true');
-
-          // This never happens in practice, but just to be safe we are
-          // expecting the options to be disabled if full data encryption were
-          // allowed for supervised users as well.
-          prefs.customPassphraseAllowed = true;
-          encryptionElement.syncPrefs = prefs;
-          await microtasksFinished();
-          assertTrue(encryptionRadioGroup.disabled);
-          assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'true');
-          assertEquals(
-              encryptWithPassphrase.getAttribute('aria-disabled'), 'true');
-        });
   });
+
+  // Because sync is required for supervision, passphrases should remain
+  // disabled.
+  test(
+      'PassphraseEncryptionOptionsAlwaysDisabledForSupervisedUser',
+      async () => {
+        const prefs = getSyncAllPrefs();
+        prefs.customPassphraseAllowed = false;
+        encryptionElement.syncPrefs = prefs;
+        testSyncBrowserProxy.testSyncStatus = {
+          signedInState: SignedInState.SIGNED_IN,
+          supervisedUser: true,
+          statusAction: StatusAction.NO_ACTION,
+        };
+        await microtasksFinished();
+
+        assertTrue(encryptionRadioGroup.disabled);
+        assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'true');
+        assertEquals(
+            encryptWithPassphrase.getAttribute('aria-disabled'), 'true');
+
+        // This never happens in practice, but just to be safe we are
+        // expecting the options to be disabled if full data encryption were
+        // allowed for supervised users as well.
+        prefs.customPassphraseAllowed = true;
+        encryptionElement.syncPrefs = prefs;
+        await microtasksFinished();
+        assertTrue(encryptionRadioGroup.disabled);
+        assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'true');
+        assertEquals(
+            encryptWithPassphrase.getAttribute('aria-disabled'), 'true');
+      });
 });

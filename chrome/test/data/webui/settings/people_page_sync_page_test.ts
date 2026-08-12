@@ -18,10 +18,13 @@ import {loadTimeData, OpenWindowProxyImpl, PageStatus, PrefService, PrefsBrowser
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {isChildVisible, eventToPromise} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+
 // <if expr="not is_chromeos">
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
 import {simulateStoredAccounts} from './sync_test_util.js';
 // </if>
 
@@ -42,6 +45,21 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
       key: 'import_dialog_bookmarks',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
+    },
+    {
+      key: 'search.suggest_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'url_keyed_anonymized_data_collection.enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'spellcheck.use_spelling_service',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
     },
     {
       key: 'spellcheck.dictionaries',
@@ -107,10 +125,10 @@ suite('SyncSettings', function() {
         syncPage.shadowRoot!.querySelector('settings-sync-encryption-options')!;
     assertTrue(!!encryptionElement);
     encryptionRadioGroup =
-        encryptionElement.shadowRoot!.querySelector('#encryptionRadioGroup')!;
-    encryptWithGoogle = encryptionElement.shadowRoot!.querySelector(
+        encryptionElement.shadowRoot.querySelector('#encryptionRadioGroup')!;
+    encryptWithGoogle = encryptionElement.shadowRoot.querySelector(
         'cr-radio-button[name="encrypt-with-google"]')!;
-    encryptWithPassphrase = encryptionElement.shadowRoot!.querySelector(
+    encryptWithPassphrase = encryptionElement.shadowRoot.querySelector(
         'cr-radio-button[name="encrypt-with-passphrase"]')!;
     assertTrue(!!encryptionRadioGroup);
     assertTrue(!!encryptWithGoogle);
@@ -327,22 +345,19 @@ suite('SyncSettings', function() {
     assertTrue(encryptionCollapse.opened);
   });
 
-  test('RadioBoxesHiddenWhenPassphraseRequired', function() {
+  test('RadioBoxesHiddenWhenPassphraseRequired', async function() {
     const prefs = getSyncAllPrefs();
     prefs.encryptAllData = true;
     prefs.passphraseRequired = true;
     webUIListenerCallback('sync-prefs-changed', prefs);
 
-    flush();
+    await microtasksFinished();
 
     assertTrue(
         syncPage.shadowRoot!
             .querySelector<HTMLElement>('#encryptionDescription')!.hidden);
-    assertEquals(
-        encryptionElement.shadowRoot!
-            .querySelector<HTMLElement>(
-                '#encryptionRadioGroupContainer')!.style.display,
-        'none');
+    assertFalse(!!encryptionElement.shadowRoot.querySelector(
+        '#encryptionRadioGroupContainer'));
   });
 
   test('EnterPassphraseLabelWhenNoPassphraseTime', () => {
@@ -461,13 +476,25 @@ suite('SyncSettings', function() {
     newPrefs.encryptAllData = true;
     webUIListenerCallback('sync-prefs-changed', newPrefs);
 
-    flush();
-    await eventToPromise('selected-changed', encryptionRadioGroup);
+    await microtasksFinished();
+
+    const encryptionRadioGroupUpdated =
+        encryptionElement.shadowRoot.querySelector<CrRadioGroupElement>(
+            '#encryptionRadioGroup')!;
+    assertTrue(!!encryptionRadioGroupUpdated);
+    const encryptWithGoogleUpdated =
+        encryptionElement.shadowRoot.querySelector<CrRadioButtonElement>(
+            'cr-radio-button[name="encrypt-with-google"]')!;
+    assertTrue(!!encryptWithGoogleUpdated);
+    const encryptWithPassphraseUpdated =
+        encryptionElement.shadowRoot.querySelector<CrRadioButtonElement>(
+            'cr-radio-button[name="encrypt-with-passphrase"]')!;
+    assertTrue(!!encryptWithPassphraseUpdated);
 
     // Verify that the encryption radio boxes are shown but disabled.
-    assertTrue(encryptionRadioGroup.disabled);
-    assertEquals(-1, encryptWithGoogle.$.button.tabIndex);
-    assertEquals(-1, encryptWithPassphrase.$.button.tabIndex);
+    assertTrue(encryptionRadioGroupUpdated.disabled);
+    assertEquals(-1, encryptWithGoogleUpdated.$.button.tabIndex);
+    assertEquals(-1, encryptWithPassphraseUpdated.$.button.tabIndex);
 
     // Confirm that the page navigates away form the sync setup.
     await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
@@ -694,21 +721,18 @@ suite('SyncSettings', function() {
     encryptWithPassphrase.click();
     await eventToPromise('selected-changed', encryptionRadioGroup);
     const passphraseInput =
-        encryptionElement.shadowRoot!.querySelector<CrInputElement>(
+        encryptionElement.shadowRoot.querySelector<CrInputElement>(
             '#passphraseInput')!;
     const passphraseConfirmationInput =
-        encryptionElement.shadowRoot!.querySelector<CrInputElement>(
+        encryptionElement.shadowRoot.querySelector<CrInputElement>(
             '#passphraseConfirmationInput')!;
     passphraseInput.value = 'foo';
     passphraseConfirmationInput.value = 'foo';
     browserProxy.encryptionPassphraseSuccess = true;
     const saveNewPassphrase =
-        encryptionElement.shadowRoot!.querySelector<CrButtonElement>(
+        encryptionElement.shadowRoot.querySelector<CrButtonElement>(
             '#saveNewPassphrase');
-    await Promise.all([
-      passphraseInput.updateComplete,
-      passphraseConfirmationInput.updateComplete,
-    ]);
+    await microtasksFinished();
     saveNewPassphrase!.click();
 
     await browserProxy.whenCalled('setEncryptionPassphrase');

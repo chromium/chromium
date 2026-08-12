@@ -1,0 +1,31 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #import=../settings_vars.css.js
+ * #include=cr-shared-style-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+#create-password-box {
+  margin-bottom: 1em;
+}
+
+#create-password-box .list-item {
+  margin-bottom: var(--cr-form-field-bottom-spacing);
+}
+
+cr-input {
+  --cr-input-width: var(--cr-default-input-max-width);
+}
+
+.passphrase-reset-icon {
+  margin-inline-end: 8px;
+}
+
+cr-radio-button[name='encrypt-with-passphrase'] {
+  align-items: start;
+}

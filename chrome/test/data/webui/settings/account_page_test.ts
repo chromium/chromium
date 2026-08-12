@@ -169,22 +169,19 @@ suite('AccountPage', function() {
     assertTrue(encryptionCollapse.opened);
   });
 
-  test('RadioBoxesHiddenWhenPassphraseRequired', function() {
+  test('RadioBoxesHiddenWhenPassphraseRequired', async function() {
     const prefs = getSyncAllPrefs();
     prefs.encryptAllData = true;
     prefs.passphraseRequired = true;
     webUIListenerCallback('sync-prefs-changed', prefs);
 
-    flush();
+    await microtasksFinished();
 
     assertTrue(
         accountSettingsPage.shadowRoot!
             .querySelector<HTMLElement>('#encryptionDescription')!.hidden);
-    assertEquals(
-        encryptionElement.shadowRoot!
-            .querySelector<HTMLElement>(
-                '#encryptionRadioGroupContainer')!.style.display,
-        'none');
+    assertFalse(!!encryptionElement.shadowRoot.querySelector(
+        '#encryptionRadioGroupContainer'));
   });
 
   test('EEAChoiceCountry', async function() {
