@@ -38,6 +38,7 @@ class WebContents;
 }  // namespace content
 
 namespace webapps {
+class BeforeInstallPromptEvent;
 class InstallableManager;
 class MLInstallabilityPromoter;
 enum class WebappInstallSource;
@@ -60,8 +61,7 @@ extern bool g_disable_banner_triggering_for_testing;
 // web app banner (checking manifest validity, service worker, and icon).
 //
 // TODO(crbug.com/41440485): Refactor this into several simpler classes.
-class AppBannerManager final : public content::WebContentsObserver,
-                               public blink::mojom::AppBannerService {
+class AppBannerManager final : public content::WebContentsObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -196,20 +196,8 @@ class AppBannerManager final : public content::WebContentsObserver,
     PENDING_CONFLICTING_INSTALLATION_CHECK,
 
     // The beforeinstallprompt event has been sent and the pipeline is waiting
-    // for the response.
-    SENDING_EVENT,
-
-    // The beforeinstallprompt event was sent, and the web page called prompt()
-    // on the event while the event was being handled.
-    SENDING_EVENT_GOT_EARLY_PROMPT,
-
-    // The pipeline has finished running, but is waiting for the web page to
-    // call prompt() on the event.
-    PENDING_PROMPT_NOT_CANCELED,
-
-    // The pipeline has finished running, web page called preventdefault(),
-    // pipeline is waiting for the web page to call prompt() on the event.
-    PENDING_PROMPT_CANCELED,
+    // for the page to call prompt().
+    PENDING_PROMPT,
 
     // The pipeline has finished running for this page load and no more
     // processing is to be done.
@@ -444,21 +432,12 @@ class AppBannerManager final : public content::WebContentsObserver,
   friend class AppBannerManagerTest;
   friend class TestAppBannerManagerDesktop;
 
-  // Called after the manager sends a message to the renderer regarding its
-  // intention to show a prompt. The renderer will send a message back with the
-  // opportunity to cancel.
-  void OnBannerPromptReply(
-      const InstallBannerConfig& install_config,
-      mojo::Remote<blink::mojom::AppBannerController> controller,
-      blink::mojom::AppBannerPromptReply reply);
+  void OnBeforeInstallPromptPrompt();
+  void OnBeforeInstallPromptReply(const InstallBannerConfig& install_config,
+                                  bool event_canceled);
 
   // Does the non-platform specific parts of showing the app banner.
   void ShowBannerForCurrentPageState();
-
-  // blink::mojom::AppBannerService overrides.
-  // Called when Blink has prevented a banner from being shown, and is now
-  // requesting that it be shown later.
-  void DisplayAppBanner() override;
 
   // Returns a status code based on the current state, to log when terminating.
   InstallableStatusCode TerminationCodeFromState() const;
@@ -487,9 +466,7 @@ class AppBannerManager final : public content::WebContentsObserver,
   // triggering the pipeline until the load is complete.
   bool load_finished_ = false;
 
-  // beforeinstallprompt
-  mojo::Receiver<blink::mojom::AppBannerService> receiver_{this};
-  mojo::Remote<blink::mojom::AppBannerEvent> event_;
+  std::unique_ptr<BeforeInstallPromptEvent> before_install_prompt_event_;
 
   std::unique_ptr<StatusReporter> status_reporter_;
   bool install_animation_pending_ = false;

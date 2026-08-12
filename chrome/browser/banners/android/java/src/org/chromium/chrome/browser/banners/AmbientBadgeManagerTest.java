@@ -577,7 +577,7 @@ public class AmbientBadgeManagerTest {
 
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule.getActivityTestRule(), url);
 
-        assertAppBannerPipelineStatus(AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
+        assertAppBannerPipelineStatus(AppBannerManagerState.PENDING_PROMPT);
 
         Tab tab = mTabbedActivityTestRule.getActivityTab();
 

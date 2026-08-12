@@ -856,8 +856,7 @@ public class AppBannerManagerTest {
                     backgroundTab.loadUrl(new LoadUrlParams(url));
                 });
 
-        waitForAppBannerPipelineStatus(
-                backgroundTab, AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
+        waitForAppBannerPipelineStatus(backgroundTab, AppBannerManagerState.PENDING_PROMPT);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
