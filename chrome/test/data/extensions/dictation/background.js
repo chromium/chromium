@@ -85,6 +85,12 @@ async function isManualTest() {
   return options.manualTest;
 }
 
+function delay(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 async function hasOffscreenDocument() {
   const offscreenUrl = chrome.runtime.getURL(OFFSCREEN_PATH);
   const existingContexts = await chrome.runtime.getContexts({
@@ -192,6 +198,10 @@ chrome.dictationPrivate.onEndStream.addListener(async (details) => {
   }
 
   const {streamId} = details;
+
+  const optionsItems =
+      await chrome.storage.local.get({streamFinalizationDelay: 0});
+  await delay(optionsItems.streamFinalizationDelay);
 
   await endStream(streamId);
   chrome.dictationPrivate.setStreamState(
