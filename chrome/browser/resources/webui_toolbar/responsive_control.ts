@@ -19,8 +19,7 @@ export interface ResponsiveControl {
 
   /**
    * Unconditionally sets the control to its preferred width without considering
-   * window sizing or other control state. This is exposed to all tests to
-   * determine the preferred size of individual controls.
+   * window sizing or other control state.
    */
   setToPreferredWidth(): void;
 

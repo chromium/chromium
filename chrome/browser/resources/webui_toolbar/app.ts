@@ -474,8 +474,7 @@ export class ToolbarAppElement extends AppElementBase {
   private dragOverListener_ = (e: DragEvent) => this.onDragOver_(e);
   private dropListener_ = (e: DragEvent) => this.onDrop_(e);
   private keyDownListener_ = (e: KeyboardEvent) => this.onKeyDown_(e);
-  private windowResizeListener_:
-      () => void = () => this.layoutResponsiveControls();
+  private windowResizeListener_: () => void = () => this.onResize();
 
   private isRtl_: boolean = loadTimeData.getString('textdirection') === 'rtl';
 
@@ -538,8 +537,7 @@ export class ToolbarAppElement extends AppElementBase {
     this.addEventListener('drop', this.dropListener_);
     this.addEventListener('keydown', this.keyDownListener_);
 
-    this.resizeObserver_ =
-        new ResizeObserver(() => this.layoutResponsiveControls());
+    this.resizeObserver_ = new ResizeObserver(() => this.onResize());
     this.resizeObserver_.observe(this);
     window.addEventListener('resize', this.windowResizeListener_);
 
@@ -808,6 +806,25 @@ export class ToolbarAppElement extends AppElementBase {
   }
 
   /**
+   * Called on window resize or on toolbar-app resize. This makes sure there's a
+   * layout when the window is resized or when the size of controls other than
+   * ResponsiveControls change in size. When ResponsiveControls change in size,
+   * updated() calls layoutResponsiveControls() directly.
+   */
+  private onResize() {
+    // Check if a layout is needed. The width check prevents toolbar-app resizes
+    // triggered by a previous layoutResponsiveControls() call from triggering
+    // layouts unnecessarily. This check is only valid on window/toolbar resize,
+    // and not when a ResponsiveControl's minimum or preferred size changes, as
+    // the latter could require a new layoutResponsiveControls() call, even if
+    // the width of the toolbar still matches that of the window.
+    if (this.webUIToolbarFullyEnabled_ &&
+        window.innerWidth !== this.clientWidth) {
+      this.layoutResponsiveControls();
+    }
+  }
+
+  /**
    * Resizes / shows / hides responsive controls based on available space in the
    * toolbar. Returns true if all controls were successfully laid out; returns
    * false if `failOnOverflow` is true and any control overflowed.
@@ -906,6 +923,28 @@ export class ToolbarAppElement extends AppElementBase {
         this.shadowRoot.querySelector<LocationBarElement>('#location-bar')!;
     const overflowButton =
         this.shadowRoot.querySelector<OverflowButtonElement>('#overflow')!;
+
+    // If the overflow button was not shown before, set all controls to their
+    // preferred widths and see if the toolbar then fits in the window. If so,
+    // expand the location bar to take up any remaining width in the window, and
+    // we're done.
+    //
+    // This is an optimization to avoid performing extra layouts in the common
+    // case where all controls fit, since each expandUpToPreferredWidth() call
+    // in runLayoutPass() triggers a layout, which can be expensive.
+    if (overflowButton.hasAttribute('hidden')) {
+      for (const control of responsiveControls) {
+        if (control.shouldBeShown()) {
+          control.setToPreferredWidth();
+        }
+      }
+      if (window.innerWidth >= this.clientWidth) {
+        if (locationBar.shouldBeShown()) {
+          locationBar.setToAvailableWidth();
+        }
+        return;
+      }
+    }
 
     // Hide the overflow button and attempt to lay out all buttons, failing on
     // any overflow.
