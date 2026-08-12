@@ -43,6 +43,8 @@ source_set("renderer") {
     "api/messaging/one_time_message_handler.h",
     "api/runtime_hooks_delegate.cc",
     "api/runtime_hooks_delegate.h",
+    "api/web_request_event_handling_tracker.cc",
+    "api/web_request_event_handling_tracker.h",
     "api/web_request_hooks.cc",
     "api/web_request_hooks.h",
     "api/web_request_natives.cc",

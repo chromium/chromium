@@ -9,17 +9,20 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/api/web_request/web_request_filter.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "v8/include/v8-forward.h"
 
 namespace extensions {
+class NativeExtensionBindingsSystem;
 class ScriptContext;
 
 // Custom bindings for the webRequest API.
 class WebRequestNatives : public ObjectBackedNativeHandler {
  public:
-  explicit WebRequestNatives(ScriptContext* context);
+  WebRequestNatives(ScriptContext* context,
+                    NativeExtensionBindingsSystem* bindings_system);
 
   WebRequestNatives(const WebRequestNatives&) = delete;
   WebRequestNatives& operator=(const WebRequestNatives&) = delete;
@@ -62,9 +65,17 @@ class WebRequestNatives : public ObjectBackedNativeHandler {
   // `WebRequestEventRouter::ListenerMatchesRequest()`.
   void GetMatchingListeners(const v8::FunctionCallbackInfo<v8::Value>& args);
 
+  // ReportEventHandlingDone(eventName, requestId, webViewInstanceId): reports
+  // that this context finished handling a blocking webRequest event. Carries
+  // no responses; those travel through webRequestInternal.eventHandled.
+  void ReportEventHandlingDone(const v8::FunctionCallbackInfo<v8::Value>& args);
+
   // Tracked per-context listeners, keyed by the JS-assigned listener ID,
   // which is unique within the context across all events.
   base::flat_map<int, TrackedListener> tracked_listeners_;
+
+  // The bindings system of the context's thread.
+  const raw_ptr<NativeExtensionBindingsSystem> bindings_system_;
 };
 
 }  // namespace extensions

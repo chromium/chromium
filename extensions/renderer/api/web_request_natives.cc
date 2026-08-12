@@ -12,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/web_request/web_request_filter.h"
@@ -19,6 +20,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
+#include "extensions/renderer/api/web_request_event_handling_tracker.h"
+#include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
 #include "url/gurl.h"
 #include "v8/include/v8-container.h"
@@ -54,8 +57,10 @@ std::optional<WebRequestParsedFilter> ParseListenerFilter(
 
 }  // namespace
 
-WebRequestNatives::WebRequestNatives(ScriptContext* context)
-    : ObjectBackedNativeHandler(context) {}
+WebRequestNatives::WebRequestNatives(
+    ScriptContext* context,
+    NativeExtensionBindingsSystem* bindings_system)
+    : ObjectBackedNativeHandler(context), bindings_system_(bindings_system) {}
 
 WebRequestNatives::~WebRequestNatives() = default;
 
@@ -77,6 +82,10 @@ void WebRequestNatives::AddRoutes() {
   RouteHandlerFunction(
       "GetMatchingListeners",
       base::BindRepeating(&WebRequestNatives::GetMatchingListeners,
+                          base::Unretained(this)));
+  RouteHandlerFunction(
+      "ReportEventHandlingDone",
+      base::BindRepeating(&WebRequestNatives::ReportEventHandlingDone,
                           base::Unretained(this)));
 }
 
@@ -210,6 +219,32 @@ void WebRequestNatives::GetMatchingListeners(
   // Return the matching listeners IDs.
   args.GetReturnValue().Set(
       v8::Array::New(isolate, matches.data(), matches.size()));
+}
+
+void WebRequestNatives::ReportEventHandlingDone(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK_EQ(3, args.Length());
+  CHECK(args[0]->IsString());  // eventName
+  CHECK(args[1]->IsString());  // requestId
+  CHECK(args[2]->IsInt32());   // webViewInstanceId
+
+  v8::Isolate* isolate = args.GetIsolate();
+  WebRequestEventHandlingTracker::DispatchInfo info;
+  const ExtensionId& extension_id = context()->GetExtensionID();
+  if (!extension_id.empty()) {
+    info.extension_id = extension_id;
+  }
+
+  info.event_name = *v8::String::Utf8Value(isolate, args[0]);
+  if (!base::StringToUint64(*v8::String::Utf8Value(isolate, args[1]),
+                            &info.request_id)) {
+    return;
+  }
+
+  info.web_view_instance_id = args[2].As<v8::Int32>()->Value();
+
+  bindings_system_->web_request_event_handling_tracker()->OnContextReported(
+      *context(), info);
 }
 
 }  // namespace extensions

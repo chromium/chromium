@@ -5,6 +5,7 @@
 #include "extensions/renderer/native_extension_bindings_system.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -34,9 +35,11 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/utils/extension_utils.h"
+#include "extensions/renderer/api/web_request_event_handling_tracker.h"
 #include "extensions/renderer/api_activity_logger.h"
 #include "extensions/renderer/bindings/api_binding_bridge.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"
@@ -504,6 +507,9 @@ NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
     std::unique_ptr<IPCMessageSender> ipc_message_sender)
     : delegate_(delegate),
       ipc_message_sender_(std::move(ipc_message_sender)),
+      web_request_event_handling_tracker_(
+          std::make_unique<WebRequestEventHandlingTracker>(
+              ipc_message_sender_.get())),
       api_system_(
           base::BindRepeating(&GetAPISchema),
           base::BindRepeating(&IsAPIFeatureAvailable),
@@ -818,10 +824,50 @@ void NativeExtensionBindingsSystem::DispatchEventInContext(
     const base::ListValue& event_args,
     const mojom::EventFilteringInfoPtr& filtering_info,
     ScriptContext* context) {
+  // Per-context webRequest events need special handling: register the context
+  // before the event runs in it, so that a report during the dispatch finds
+  // the pending entry. `blocking_dispatch` is nullopt for every other event.
+  // TODO(crbug.com/494684626): Move this out of the generic dispatch path;
+  // see DidDispatchEvent().
+  const ExtensionId& extension_id = context->GetExtensionID();
+  std::optional<WebRequestEventHandlingTracker::DispatchInfo>
+      blocking_dispatch =
+          WebRequestEventHandlingTracker::GetBlockingDispatchInfo(
+              extension_id.empty() ? std::nullopt : std::optional(extension_id),
+              event_name, event_args);
+  if (blocking_dispatch && HasEventListenerInContext(event_name, context)) {
+    web_request_event_handling_tracker_->ExpectReportFrom(*context,
+                                                          *blocking_dispatch);
+  }
+
   v8::HandleScope handle_scope(context->isolate());
   v8::Context::Scope context_scope(context->v8_context());
   api_system_.FireEventInContext(event_name, context->v8_context(), event_args,
                                  filtering_info.Clone());
+}
+
+void NativeExtensionBindingsSystem::DidDispatchEvent(
+    const mojom::HostID& host_id,
+    const std::string& event_name,
+    const base::ListValue& event_args) {
+  // For blocking per-context webRequest events, the browser awaits the
+  // completion signal, even if no context had a matching listener. Once every
+  // listener was notified, the completion signal waits only for the pending
+  // context reports (and goes out at once if there are none).
+  // `blocking_dispatch` is nullopt for every other event.
+  std::optional<ExtensionId> extension_id;
+  if (host_id.type == mojom::HostID::HostType::kExtensions &&
+      !host_id.id.empty()) {
+    extension_id = host_id.id;
+  }
+  std::optional<WebRequestEventHandlingTracker::DispatchInfo>
+      blocking_dispatch =
+          WebRequestEventHandlingTracker::GetBlockingDispatchInfo(
+              std::move(extension_id), event_name, event_args);
+  if (blocking_dispatch) {
+    web_request_event_handling_tracker_->OnAllListenersNotified(
+        *blocking_dispatch);
+  }
 }
 
 bool NativeExtensionBindingsSystem::HasEventListenerInContext(

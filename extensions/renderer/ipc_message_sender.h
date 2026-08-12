@@ -6,6 +6,7 @@
 #define EXTENSIONS_RENDERER_IPC_MESSAGE_SENDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/values.h"
@@ -83,6 +84,16 @@ class IPCMessageSender {
       const std::string& event_name,
       const base::DictValue& filter,
       bool remove_lazy_listener) = 0;
+
+  // Tells the browser that this renderer's dispatch target finished handling
+  // one blocking webRequest event. Carries no responses; the JS reports those
+  // separately through `webRequestInternal.eventHandled`. `extension_id` is
+  // null for non-extension webview embedders.
+  virtual void SendWebRequestEventHandlingDoneIPC(
+      const std::optional<ExtensionId>& extension_id,
+      const std::string& event_name,
+      uint64_t request_id,
+      int web_view_instance_id) = 0;
 
   // Sends a message to bind a pipe for the Automation API.
   virtual void SendBindAutomationIPC(

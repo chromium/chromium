@@ -79,6 +79,13 @@ class TestIPCMessageSender : public IPCMessageSender {
                     const std::string& event_name,
                     const base::DictValue& filter,
                     bool remove_lazy_listener));
+  MOCK_METHOD(void,
+              SendWebRequestEventHandlingDoneIPC,
+              (const std::optional<ExtensionId>& extension_id,
+               const std::string& event_name,
+               uint64_t request_id,
+               int web_view_instance_id),
+              (override));
   MOCK_METHOD2(
       SendBindAutomationIPC,
       void(ScriptContext* context,

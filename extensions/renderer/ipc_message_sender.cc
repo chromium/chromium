@@ -7,8 +7,10 @@
 #include <optional>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
@@ -22,6 +24,7 @@
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
+#include "extensions/common/mojom/web_request_host.mojom.h"
 #include "extensions/common/trace_util.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/dispatcher.h"
@@ -146,6 +149,22 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     GetEventRouter(context)->RemoveFilteredListenerForMainThread(
         GetEventListenerOwner(context), event_name, filter.Clone(),
         remove_lazy_listener);
+  }
+
+  void SendWebRequestEventHandlingDoneIPC(
+      const std::optional<ExtensionId>& extension_id,
+      const std::string& event_name,
+      uint64_t request_id,
+      int web_view_instance_id) override {
+    DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
+
+    if (!web_request_host_.is_bound()) {
+      render_thread_->GetChannel()->GetRemoteAssociatedInterface(
+          &web_request_host_);
+    }
+    web_request_host_->EventHandlingDone(
+        extension_id, event_name, request_id, web_view_instance_id,
+        kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId);
   }
 
   void SendBindAutomationIPC(
@@ -297,6 +316,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
 
   const raw_ptr<content::RenderThread, DanglingUntriaged> render_thread_;
   mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
+  mojo::AssociatedRemote<mojom::WebRequestHost> web_request_host_;
 
   base::WeakPtrFactory<MainThreadIPCMessageSender> weak_ptr_factory_{this};
 };
@@ -461,6 +481,18 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
             filter.Clone(), remove_lazy_listener);
   }
 
+  void SendWebRequestEventHandlingDoneIPC(
+      const std::optional<ExtensionId>& extension_id,
+      const std::string& event_name,
+      uint64_t request_id,
+      int web_view_instance_id) override {
+    DCHECK_NE(kMainThreadId, content::WorkerThread::GetCurrentId());
+
+    GetWebRequestHost()->EventHandlingDone(
+        extension_id, event_name, request_id, web_view_instance_id,
+        content::WorkerThread::GetCurrentId(), service_worker_version_id_);
+  }
+
   void SendBindAutomationIPC(
       ScriptContext* context,
       mojo::PendingAssociatedRemote<ax::mojom::Automation> pending_remote)
@@ -560,6 +592,10 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
 
   mojom::RendererHost* GetRendererHost() {
     return WorkerThreadDispatcher::GetServiceWorkerData()->GetRendererHost();
+  }
+
+  mojom::WebRequestHost* GetWebRequestHost() {
+    return WorkerThreadDispatcher::GetServiceWorkerData()->GetWebRequestHost();
   }
 
   const raw_ptr<WorkerThreadDispatcher> dispatcher_;

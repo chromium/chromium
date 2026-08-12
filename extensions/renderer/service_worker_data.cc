@@ -111,6 +111,16 @@ mojom::RendererHost* ServiceWorkerData::GetRendererHost() {
   return renderer_host_.get();
 }
 
+mojom::WebRequestHost* ServiceWorkerData::GetWebRequestHost() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(bindings_system_);
+  if (!web_request_host_.is_bound()) {
+    proxy_->GetRemoteAssociatedInterface(
+        web_request_host_.BindNewEndpointAndPassReceiver());
+  }
+  return web_request_host_.get();
+}
+
 void ServiceWorkerData::Init() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(bindings_system_);
@@ -142,6 +152,9 @@ void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
   bindings_system()->DispatchEventInContext(params->event_name, event_args,
                                             std::move(params->filtering_info),
                                             context());
+  // The worker has a single context, so one dispatch notifies every listener.
+  bindings_system()->DidDispatchEvent(*params->host_id, params->event_name,
+                                      event_args);
 
   std::move(callback).Run(
       // False since this is only possibly true for lazy background page.

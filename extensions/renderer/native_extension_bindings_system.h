@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
@@ -25,6 +26,7 @@ namespace extensions {
 class IPCMessageSender;
 class ScriptContext;
 class ScriptContextSetIterable;
+class WebRequestEventHandlingTracker;
 
 // The class responsible for creating extension bindings in different contexts,
 // permissions/availability checks, dispatching requests and handling responses,
@@ -73,6 +75,15 @@ class NativeExtensionBindingsSystem {
       const mojom::EventFilteringInfoPtr& filtering_info,
       ScriptContext* context);
 
+  // Called after an event dispatch from the browser has fanned out to every
+  // receiving context of `host_id` on this thread.
+  // TODO(crbug.com/494684626): Make the WebRequestEventHandlingTracker observe
+  // the dispatch signals (e.g. through a UserData collection on this class)
+  // rather than be directly invoked.
+  void DidDispatchEvent(const mojom::HostID& host_id,
+                        const std::string& event_name,
+                        const base::ListValue& event_args);
+
   // Returns true if there is a listener for the given `event_name` in the
   // associated `context`.
   bool HasEventListenerInContext(const std::string& event_name,
@@ -101,6 +112,9 @@ class NativeExtensionBindingsSystem {
   APIBindingsSystem* api_system() { return &api_system_; }
   NativeRendererMessagingService* messaging_service() {
     return &messaging_service_;
+  }
+  WebRequestEventHandlingTracker* web_request_event_handling_tracker() {
+    return web_request_event_handling_tracker_.get();
   }
   Delegate* delegate() { return delegate_; }
 
@@ -163,6 +177,9 @@ class NativeExtensionBindingsSystem {
   const raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<IPCMessageSender> ipc_message_sender_;
+
+  std::unique_ptr<WebRequestEventHandlingTracker>
+      web_request_event_handling_tracker_;
 
   // The APIBindingsSystem associated with this class.
   APIBindingsSystem api_system_;

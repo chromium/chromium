@@ -891,6 +891,7 @@ void Dispatcher::DispatchEventHelper(
           &NativeExtensionBindingsSystem::DispatchEventInContext,
           base::Unretained(bindings_system_.get()), event_name,
           std::cref(event_args), base::OwnedRef(std::move(filtering_info))));
+  bindings_system_->DidDispatchEvent(host_id, event_name, event_args);
 }
 
 void Dispatcher::InvokeModuleSystemMethod(content::RenderFrame* render_frame,

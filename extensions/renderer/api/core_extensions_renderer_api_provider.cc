@@ -125,7 +125,8 @@ void CoreExtensionsRendererAPIProvider::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "runtime", std::make_unique<RuntimeCustomBindings>(context));
   module_system->RegisterNativeHandler(
-      "web_request_natives", std::make_unique<WebRequestNatives>(context));
+      "web_request_natives",
+      std::make_unique<WebRequestNatives>(context, bindings_system));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   module_system->RegisterNativeHandler(

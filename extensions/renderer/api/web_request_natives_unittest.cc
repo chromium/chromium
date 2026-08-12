@@ -18,7 +18,8 @@ class WebRequestNativesTest : public ModuleSystemTest {
     ModuleSystem::NativesEnabledScope natives_enabled(env()->module_system());
     env()->module_system()->RegisterNativeHandler(
         "web_request_natives",
-        std::make_unique<WebRequestNatives>(env()->context()));
+        std::make_unique<WebRequestNatives>(env()->context(),
+                                            /*bindings_system=*/nullptr));
     env()->RegisterModule(
         "test",
         std::string("var natives = requireNative('web_request_natives');\n"
