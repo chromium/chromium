@@ -240,7 +240,7 @@ Called by update_document_policy_enum.py.-->
 <!-- LINT.IfChange(EvpAutofillFlowResult) -->
 
 <enum name="EvpAutofillFlowResult">
-  <int value="0" label="Success"/>
+  <int value="0" label="Success (obsolete)"/>
   <int value="1" label="TokenFieldHasNoNonce"/>
   <int value="2" label="UserPrefDisabled"/>
   <int value="3" label="StrikeDatabaseBlock"/>

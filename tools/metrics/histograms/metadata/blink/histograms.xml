@@ -1454,6 +1454,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Evp.Autofill.FormSubmitted" enum="Boolean"
+    expires_after="2027-02-07">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records when a form containing a verified email verification token is
+    submitted. Recorded once when the form submission occurs after successful
+    email verification.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Evp.PermissionUi.Status" enum="EvpPermissionUiStatus"
     expires_after="2026-11-01">
   <owner>yigu@chromium.org</owner>

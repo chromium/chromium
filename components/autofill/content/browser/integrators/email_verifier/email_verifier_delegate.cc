@@ -316,8 +316,7 @@ void EmailVerifierDelegate::NotifyFlowCompleted(
         should_update = true;
         break;
       case EvpAutofillFlowResult::kSuccess:
-        should_update = false;
-        break;
+        NOTREACHED();
       case EvpAutofillFlowResult::kTokenFieldHasNoNonce:
       case EvpAutofillFlowResult::kUserPrefDisabled:
       case EvpAutofillFlowResult::kStrikeDatabaseBlock:
@@ -441,7 +440,7 @@ void EmailVerifierDelegate::OnBeforeFormWithEmailVerificationTokenSubmitted(
     GURL issuer_url = it->second;
     issuers_.erase(it);
     manager.client().ShowEmailVerifiedToast(issuer_url);
-    NotifyFlowCompleted(&manager, field_id, EvpAutofillFlowResult::kSuccess);
+    base::UmaHistogramBoolean("Blink.Evp.Autofill.FormSubmitted", true);
   }
 }
 

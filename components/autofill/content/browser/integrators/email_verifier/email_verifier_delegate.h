@@ -30,7 +30,7 @@ class AutofillClient;
 // numeric values should never be reused.
 // LINT.IfChange(EvpAutofillFlowResult)
 enum class EvpAutofillFlowResult {
-  kSuccess = 0,
+  kSuccess = 0,  // Obsolete.
   kTokenFieldHasNoNonce = 1,
   kUserPrefDisabled = 2,
   kStrikeDatabaseBlock = 3,

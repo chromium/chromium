@@ -325,11 +325,11 @@ TEST_F(EmailVerifierDelegateTest, TokenSharedSuccess) {
 
   popup_shown_run_loop_.Run();
 
-  histogram_tester.ExpectBucketCount(
+  histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Autofill.FlowResult",
       EvpAutofillFlowResult::kTokenSentToRenderer, 1);
-  histogram_tester.ExpectBucketCount("Blink.Evp.Autofill.FlowResult",
-                                     EvpAutofillFlowResult::kSuccess, 0);
+  histogram_tester.ExpectBucketCount("Blink.Evp.Autofill.FormSubmitted", true,
+                                     0);
 
   // Clear expectations on client to avoid conflict with ShowEmailVerifiedToast.
   testing::Mock::VerifyAndClearExpectations(&client());
@@ -338,8 +338,11 @@ TEST_F(EmailVerifierDelegateTest, TokenSharedSuccess) {
   delegate().OnBeforeFormWithEmailVerificationTokenSubmitted(
       manager(), form->ToFormData(), form->field(1)->global_id());
 
-  histogram_tester.ExpectBucketCount("Blink.Evp.Autofill.FlowResult",
-                                     EvpAutofillFlowResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kTokenSentToRenderer, 1);
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Autofill.FormSubmitted", true,
+                                      1);
 }
 
 TEST_F(EmailVerifierDelegateTest, ObserverNotified) {
