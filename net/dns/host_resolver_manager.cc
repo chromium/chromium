@@ -1091,7 +1091,16 @@ std::optional<HostCache::Entry> HostResolverManager::MaybeServeFromCache(
     cache_result = cache->LookupStale(effective_key, tick_clock_->NowTicks(),
                                       &staleness, ignore_secure);
   } else {
-    DCHECK(cache_usage == ResolveHostParameters::CacheUsage::ALLOWED);
+    // If the cache usage is STALE_ALLOWED_WHILE_REFRESHING, the request
+    // allows a stale result. However, stale results are checked and served
+    // synchronously before the background Job is created. When this method is
+    // called from a Job (e.g., as part of an insecure cache lookup fallback),
+    // we must only look for fresh results. Thus, treat it similarly to
+    // ALLOWED.
+    DCHECK(
+        cache_usage == ResolveHostParameters::CacheUsage::ALLOWED ||
+        cache_usage ==
+            ResolveHostParameters::CacheUsage::STALE_ALLOWED_WHILE_REFRESHING);
     cache_result =
         cache->Lookup(effective_key, tick_clock_->NowTicks(), ignore_secure);
     staleness = HostCache::kNotStale;

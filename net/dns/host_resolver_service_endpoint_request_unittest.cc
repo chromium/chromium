@@ -1850,6 +1850,56 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   ASSERT_FALSE(requester.request()->IsStaleWhileRefreshing());
 }
 
+// Tests that STALE_ALLOWED_WHILE_REFRESHING doesn't crash when a background
+// refresh job encounters a secure DNS failure and falls back to an insecure
+// cache lookup.
+TEST_F(
+    HostResolverServiceEndpointRequestTest,
+    StaleAllowedWhileRefreshing_SecureDnsTaskFailure_FallbackToInsecureCache) {
+  set_secure_dns_mode(SecureDnsMode::kAutomatic);
+
+  const std::string_view kHost = "ok";
+  const IPEndPoint stale_endpoint = MakeIPEndPoint("192.0.2.2", 443);
+
+  MockDnsClientRuleList rules;
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  AddSecureDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+                   MockDnsClientRule::ResultType::kFail, /*delay=*/false);
+  AddSecureDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::ResultType::kFail, /*delay=*/false);
+  SetDnsRules(std::move(rules));
+
+  mock_dns_client_->SetForceDohServerAvailable(true);
+
+  PopulateCacheForUrl("https://ok", {stale_endpoint});
+  AdvanceTickClockToExpirePopulatedCacheEntries();
+
+  ResolveHostParameters parameters;
+  parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
+      STALE_ALLOWED_WHILE_REFRESHING;
+  Requester requester = CreateRequester("https://ok", std::move(parameters));
+
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  requester.WaitForOnUpdated();
+  EXPECT_TRUE(requester.request()->IsStaleWhileRefreshing());
+  EXPECT_THAT(requester.request()->GetEndpointResults(),
+              ElementsAre(ExpectServiceEndpoint(ElementsAre(stale_endpoint),
+                                                IsEmpty())));
+
+  requester.WaitForFinished();
+  EXPECT_THAT(requester.finished_result(), Optional(IsOk()));
+  EXPECT_THAT(requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                  ElementsAre(MakeIPEndPoint("::1", 443)))));
+  EXPECT_FALSE(requester.request()->GetStaleInfo());
+}
+
 TEST_F(HostResolverServiceEndpointRequestTest, NoSchemeHttpsNotQueried) {
   const std::string kHost = "no_scheme_https_not_queried";
   UseHttpsNonDelayedDnsRules(kHost);
