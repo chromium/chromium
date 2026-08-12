@@ -600,6 +600,12 @@ public class ChromeTabUtils {
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         closeCallback.notifyCalled();
                     }
+
+                    @Override
+                    public void willCloseTabs(
+                            List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                        closeCallback.notifyCalled();
+                    }
                 };
         instrumentation.runOnMainSync(
                 new Runnable() {
