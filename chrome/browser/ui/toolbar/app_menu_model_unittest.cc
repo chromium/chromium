@@ -118,6 +118,18 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
  public:
   AppMenuModelTest() = default;
 
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    TestingProfile::TestingFactories factories =
+        BrowserWithTestWindowTest::GetTestingFactories();
+    factories.emplace_back(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<syncer::TestSyncService>();
+        }));
+    return factories;
+  }
+
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     safety_hub_test_util::CreateRevokedPermissionsService(

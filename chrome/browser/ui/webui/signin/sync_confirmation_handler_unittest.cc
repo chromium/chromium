@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -39,6 +40,7 @@
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 
@@ -156,8 +158,14 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
     return IdentityTestEnvironmentProfileAdaptor::
         GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
             {TestingProfile::TestingFactory{
-                ConsentAuditorFactory::GetInstance(),
-                base::BindRepeating(&BuildFakeConsentAuditor)}});
+                 ConsentAuditorFactory::GetInstance(),
+                 base::BindRepeating(&BuildFakeConsentAuditor)},
+             TestingProfile::TestingFactory{
+                 SyncServiceFactory::GetInstance(),
+                 base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+                   return std::make_unique<syncer::TestSyncService>();
+                 })}});
   }
 
   const std::unordered_map<std::string, int>& GetStringToGrdIdMap() {

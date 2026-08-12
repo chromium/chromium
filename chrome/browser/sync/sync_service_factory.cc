@@ -639,17 +639,10 @@ bool SyncServiceFactory::HasSyncService(Profile* profile) {
 bool SyncServiceFactory::IsSyncAllowed(Profile* profile) {
   DCHECK(profile);
 
-  if (HasSyncService(profile)) {
-    syncer::SyncService* sync_service = GetForProfile(profile);
-    return !sync_service->HasDisableReason(
-        syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
-  }
-
-  // No SyncServiceImpl created yet - we don't want to create one, so just
-  // infer the accessible state by looking at prefs/command line flags.
-  syncer::SyncPrefs prefs(profile->GetPrefs());
-  return syncer::IsSyncAllowedByFlag() &&
-         (!prefs.IsSyncClientDisabledByPolicy() || prefs.IsLocalSyncEnabled());
+  syncer::SyncService* sync_service = GetForProfile(profile);
+  return sync_service &&
+         !sync_service->HasDisableReason(
+             syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }
 
 // static
