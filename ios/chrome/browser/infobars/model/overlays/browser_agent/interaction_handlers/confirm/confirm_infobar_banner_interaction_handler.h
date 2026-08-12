@@ -10,16 +10,12 @@
 
 class ConfirmInfoBarDelegate;
 
-@class CommandDispatcher;
-
 // Helper object that updates the model layer for interaction events with the
 // confirm infobar banner UI.
 class ConfirmInfobarBannerInteractionHandler
     : public InfobarBannerInteractionHandler {
  public:
-  explicit ConfirmInfobarBannerInteractionHandler(
-      InfobarType infobar_type,
-      CommandDispatcher* dispatcher = nullptr);
+  explicit ConfirmInfobarBannerInteractionHandler(InfobarType infobar_type);
   ~ConfirmInfobarBannerInteractionHandler() override;
 
   // InfobarBannerInteractionHandler:
@@ -32,8 +28,6 @@ class ConfirmInfobarBannerInteractionHandler
   // Returns the password delegate from `infobar`.
   ConfirmInfoBarDelegate* GetInfobarDelegate(InfoBarIOS* infobar);
   const InfobarType infobar_type_;
-  // The command dispatcher.
-  __weak CommandDispatcher* dispatcher_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_CONFIRM_CONFIRM_INFOBAR_BANNER_INTERACTION_HANDLER_H_
