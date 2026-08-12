@@ -845,7 +845,13 @@ void HorizontalTabStripRegionViewNew::Layout(PassKey) {
 
 gfx::Size HorizontalTabStripRegionViewNew::GetMinimumSize() const {
   if (tab_strip_view()) {
-    return tab_strip_view()->GetMinimumSize();
+    gfx::Size tab_strip_min_size = tab_strip_view()->GetMinimumSize();
+    // Cap the tabstrip minimum width to a reasonable value so browser windows
+    // aren't forced to grow arbitrarily wide.
+    const int max_min_width = 520;
+    tab_strip_min_size.set_width(
+        std::min(max_min_width, tab_strip_min_size.width()));
+    return tab_strip_min_size;
   }
   return gfx::Size();
 }

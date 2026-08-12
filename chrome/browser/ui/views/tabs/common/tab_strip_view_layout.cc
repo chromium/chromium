@@ -87,9 +87,11 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
   }
 
   // Query the parent layout manager (e.g. FlexLayout in the region view) for
-  // the total space available for the tab strip in the window.
+  // the total space available for the tab strip in the window. Avoid querying
+  // the parent when size_bounds has a width of 0 (e.g. when calculating minimum
+  // size) so we do not report the live window width as the minimum size.
   const views::SizeBounds available_for_tabstrip =
-      tab_strip_view->parent()
+      (tab_strip_view->parent() && size_bounds.width() != 0)
           ? tab_strip_view->parent()->GetAvailableSize(tab_strip_view)
           : size_bounds;
   const views::SizeBound available_width =
