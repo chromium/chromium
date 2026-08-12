@@ -78,6 +78,39 @@ AtMemoryHandler::AtMemoryHandler(AutofillAgent* agent)
 
 AtMemoryHandler::~AtMemoryHandler() = default;
 
+std::optional<AtMemoryHandler::CaretInfo> AtMemoryHandler::GetCaretInfo(
+    const WebElement& element) const {
+  if (!element || !element.Focused() || !element.ContainsFrameSelection() ||
+      element.DynamicTo<WebFormElement>()) {
+    return std::nullopt;
+  }
+
+  if (const auto form_control = element.DynamicTo<WebFormControlElement>();
+      form_util::IsTextAreaElementOrTextInput(form_control) &&
+      form_util::GetAutofillFormControlType(form_control) !=
+          FormControlType::kInputPassword &&
+      form_control.IsEnabled() && !form_control.IsReadOnly()) {
+    unsigned int begin = form_control.SelectionStart();
+    unsigned int end = form_control.SelectionEnd();
+    if (begin == end) {
+      return CaretInfo{FieldType::kTextTypeFormControl, begin};
+    }
+  } else if (element.IsContentEditable()) {
+    if (auto* render_frame = agent_->unsafe_render_frame()) {
+      const WebRange selection = render_frame->GetWebFrame()
+                                     ->GetInputMethodController()
+                                     ->GetSelectionOffsets();
+      int begin = selection.StartOffset();
+      int end = selection.EndOffset();
+      if (begin == end && begin >= 0) {
+        return CaretInfo{FieldType::kContentEditable,
+                         static_cast<size_t>(begin)};
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 // AtMemory should be triggered if the field is not a password field, no text is
 // selected and the cursor is located behind the trigger string.
 bool AtMemoryHandler::ShouldTriggerAtMemorySearch(
@@ -91,35 +124,28 @@ bool AtMemoryHandler::ShouldTriggerAtMemorySearch(
     return false;
   }
 
-  const auto form_control = element.DynamicTo<WebFormControlElement>();
-  if (form_util::GetAutofillFormControlType(form_control) ==
-          FormControlType::kInputPassword ||
-      element.DynamicTo<WebFormElement>()) {
+  std::optional<CaretInfo> info = GetCaretInfo(element);
+  if (!info) {
     return false;
   }
 
-  const int trigger_len = std::max(static_cast<int>(trigger.length()), 0);
-
-  if (form_control) {
-    const unsigned int sel_start = form_control.SelectionStart();
-    const unsigned int sel_end = form_control.SelectionEnd();
-    return sel_start == sel_end && sel_start >= trigger.length() &&
-           form_control.EditingValue()
-               .Substring(sel_start - trigger.length(), trigger.length())
-               .Equals(trigger);
+  switch (info->field_type) {
+    case FieldType::kTextTypeFormControl:
+      return info->offset >= trigger.length() &&
+             element.DynamicTo<WebFormControlElement>()
+                 .EditingValue()
+                 .Substring(info->offset - trigger.length(), trigger.length())
+                 .Equals(trigger);
+    case FieldType::kContentEditable:
+      if (auto* frame = agent_->unsafe_render_frame()) {
+        return info->offset >= trigger.length() &&
+               frame->GetWebFrame()
+                   ->RangeAsText(WebRange(info->offset - trigger.length(),
+                                          trigger.length()))
+                   .Equals(trigger);
+      }
+      break;
   }
-
-  if (auto* frame = agent_->unsafe_render_frame()) {
-    const WebRange selection =
-        frame->GetWebFrame()->GetInputMethodController()->GetSelectionOffsets();
-    const int sel_start = selection.StartOffset();
-    const int sel_end = selection.EndOffset();
-    return sel_start == sel_end && sel_start >= trigger_len &&
-           frame->GetWebFrame()
-               ->RangeAsText(WebRange(sel_start - trigger_len, trigger_len))
-               .Equals(trigger);
-  }
-
   return false;
 }
 
@@ -223,17 +249,21 @@ void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement& element,
     // TODO(crbug.com/538102446): Instead of adjusting the selection, eliminate
     // the trigger string.
     const WebString trigger = WebString::FromUtf8(GetTriggerString());
-    const int trigger_len = std::max(static_cast<int>(trigger.length()), 0);
     if (auto form_control = element.DynamicTo<WebFormControlElement>()) {
-      const unsigned int offset = form_control.SelectionStart();
-      form_control.SetSelectionRange(offset - trigger_len, offset);
+      const size_t offset = form_control.SelectionStart();
+      if (offset >= trigger.length()) {
+        form_control.SetSelectionRange(offset - trigger.length(), offset);
+      }
     } else if (auto* frame = agent_->unsafe_render_frame()) {
       const WebRange selection = frame->GetWebFrame()
                                      ->GetInputMethodController()
                                      ->GetSelectionOffsets();
-      const int offset = selection.StartOffset();
-      frame->GetWebFrame()->SetEditableSelectionOffsets(offset - trigger_len,
-                                                        offset);
+      const size_t offset =
+          base::saturated_cast<size_t>(selection.StartOffset());
+      if (offset >= trigger.length()) {
+        frame->GetWebFrame()->SetEditableSelectionOffsets(
+            base::saturated_cast<int>(offset - trigger.length()), offset);
+      }
     }
   }
 
