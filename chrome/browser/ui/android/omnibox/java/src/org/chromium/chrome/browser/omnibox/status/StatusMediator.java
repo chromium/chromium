@@ -424,10 +424,11 @@ public class StatusMediator
         @PageClassification
         int pageClassification =
                 mLocationBarDataProvider.getPageClassification(/* prefetch= */ false);
-        mModel.set(
-                StatusProperties.USE_WIDE_STATUS_ICON,
-                pageClassification != PageClassification.ANDROID_TAB_SEARCH_OVERLAY
-                        && (mUrlHasFocus || isRegularNtpUrl));
+        boolean useWideStatusIcon =
+                PageClassificationUtils.isHubOrTabSearch(pageClassification)
+                        || mUrlHasFocus
+                        || isRegularNtpUrl;
+        mModel.set(StatusProperties.USE_WIDE_STATUS_ICON, useWideStatusIcon);
     }
 
     public void setUseSmallWidget(boolean useSmallWidget) {
