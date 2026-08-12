@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_PRIVATE_VERIFICATION_TOKENS_COMMON_PRIVATE_VERIFICATION_TOKENS_PUBLIC_KEY_H_
 #define COMPONENTS_PRIVATE_VERIFICATION_TOKENS_COMMON_PRIVATE_VERIFICATION_TOKENS_PUBLIC_KEY_H_
 
+#include <array>
 #include <cstdint>
 #include <vector>
 
 #include "base/time/time.h"
+#include "crypto/hash.h"
 #include "url/origin.h"
 
 namespace private_verification_tokens {
@@ -54,7 +56,8 @@ class PrivateVerificationTokensPublicKey {
   const url::Origin& issuer() const;
   const std::vector<uint8_t>& public_key() const;
   const std::vector<uint8_t>& public_key_proof() const;
-  uint8_t key_id() const;
+  const std::array<uint8_t, crypto::hash::kSha256Size>& key_id() const;
+  uint8_t truncated_key_id() const;
   base::Time expiration() const;
   uint32_t version() const;
 
@@ -66,8 +69,8 @@ class PrivateVerificationTokensPublicKey {
   std::vector<uint8_t> public_key_;
   // Serialized public key proof.
   std::vector<uint8_t> public_key_proof_;
-  // Stores truncated key id.
-  uint8_t key_id_;
+  // Stores full key id.
+  std::array<uint8_t, crypto::hash::kSha256Size> key_id_;
   base::Time expiration_;
   uint32_t version_;
 };

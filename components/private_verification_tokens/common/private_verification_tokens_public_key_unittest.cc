@@ -30,7 +30,7 @@ TEST(PrivateVerificationTokensPublicKey, Create) {
   // sha256 hash of {2,3,6,8} is
   // 0b5360a0e755a6c4b905a1b66307d6ea7715a2f2596bcb574f81fa5f58367a10
   // least significant byte in decimal is 16
-  EXPECT_EQ(pvt_key.key_id(), 16);
+  EXPECT_EQ(pvt_key.truncated_key_id(), 16);
   EXPECT_EQ(pvt_key.expiration(), expiration);
   EXPECT_EQ(pvt_key.version(), version);
 }

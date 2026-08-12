@@ -5,6 +5,7 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+sql",
+  "+third_party/anonymous_tokens/src/anonymous_tokens/cpp/privacy_pass/athm_token_encodings_utils.h",
   "+url",
 ]
 

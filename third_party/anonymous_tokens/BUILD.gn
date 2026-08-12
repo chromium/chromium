@@ -249,6 +249,19 @@ source_set("tokens_encodings") {
   ]
 }
 
+source_set("athm_token_encodings_utils") {
+  sources = [
+    "src/anonymous_tokens/cpp/privacy_pass/athm_token_encodings_utils.cc",
+    "src/anonymous_tokens/cpp/privacy_pass/athm_token_encodings_utils.h",
+  ]
+  public_configs = [ ":anonymous_tokens_config" ]
+  deps = [ ":status_utils" ]
+  public_deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl",
+  ]
+}
+
 static_library("anonymous_tokens_test_support") {
   testonly = true
   sources = [

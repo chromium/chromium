@@ -207,6 +207,41 @@ if (enable_rust) {
     deps = [ ":athm_ffi" ]
   }
 
+  source_set("privacy_pass_athm_batch_request") {
+    sources = [
+      "privacy_pass_athm_batch_request.cc",
+      "privacy_pass_athm_batch_request.h",
+    ]
+    deps = [
+      ":athm_ffi",
+      ":private_verification_tokens_parameters",
+      ":private_verification_tokens_public_key",
+      "//crypto",
+      "//third_party/anonymous_tokens:athm_token_encodings_utils",
+    ]
+    public_deps = [
+      ":private_verification_tokens_issuer_config",
+      "//base",
+    ]
+  }
+
+  source_set("privacy_pass_athm_batch_request_unittest") {
+    testonly = true
+    sources = [ "privacy_pass_athm_batch_request_unittest.cc" ]
+    deps = [
+      ":athm_test_issuer",
+      ":privacy_pass_athm_batch_request",
+      ":private_verification_tokens_issuer_config",
+      ":private_verification_tokens_parameters",
+      ":private_verification_tokens_public_key",
+      "//base",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/anonymous_tokens:athm_token_encodings_utils",
+      "//url",
+    ]
+  }
+
   source_set("athm_test_issuer_unittest") {
     testonly = true
     sources = [ "athm_test_issuer_unittest.cc" ]

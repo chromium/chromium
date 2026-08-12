@@ -21,4 +21,8 @@ TEST(PrivateVerificationTokensParametersTest, GetParametersForUnknownVersion) {
   EXPECT_FALSE(params.has_value());
 }
 
+TEST(PrivateVerificationTokensParametersTest, AthmTokenType) {
+  EXPECT_EQ(PrivateVerificationTokensParameters::kAthmTokenType, 0xC07E);
+}
+
 }  // namespace private_verification_tokens

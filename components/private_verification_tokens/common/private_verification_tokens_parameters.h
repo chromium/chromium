@@ -12,6 +12,8 @@ namespace private_verification_tokens {
 
 // Holds all PVT parameters.
 struct PrivateVerificationTokensParameters {
+  static constexpr uint16_t kAthmTokenType = 0xC07E;
+
   // Minimum acceptable batch size.
   int min_batch_size = 0;
   // Maximum acceptable batch size.

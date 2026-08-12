@@ -21,7 +21,7 @@ PrivateVerificationTokensPublicKey::PrivateVerificationTokensPublicKey(
     : issuer_(std::move(issuer)),
       public_key_(std::move(public_key)),
       public_key_proof_(std::move(public_key_proof)),
-      key_id_(crypto::hash::Sha256(public_key_).back()),
+      key_id_(crypto::hash::Sha256(public_key_)),
       expiration_(expiration),
       version_(version) {}
 
@@ -56,8 +56,13 @@ PrivateVerificationTokensPublicKey::public_key_proof() const {
   return public_key_proof_;
 }
 
-uint8_t PrivateVerificationTokensPublicKey::key_id() const {
+const std::array<uint8_t, crypto::hash::kSha256Size>&
+PrivateVerificationTokensPublicKey::key_id() const {
   return key_id_;
+}
+
+uint8_t PrivateVerificationTokensPublicKey::truncated_key_id() const {
+  return key_id_.back();
 }
 
 base::Time PrivateVerificationTokensPublicKey::expiration() const {

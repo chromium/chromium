@@ -190,7 +190,7 @@ TEST(PrivateVerificationTokensIssuerConfigInternalTest, ParseEntry_Valid) {
   EXPECT_EQ(result->batch_size, 3);
   EXPECT_EQ(result->public_key.issuer(),
             url::Origin::Create(GURL("https://example.com")));
-  EXPECT_EQ(result->public_key.key_id(), 27u);
+  EXPECT_EQ(result->public_key.truncated_key_id(), 27u);
   EXPECT_THAT(result->public_key.public_key_proof(),
               testing::ElementsAre('s', 'o', 'm', 'e', '-', 'p', 'v', 't', '-',
                                    'p', 'r', 'o', 'o', 'f'));
