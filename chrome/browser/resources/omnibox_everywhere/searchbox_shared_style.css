@@ -14,7 +14,7 @@
   flex-direction: row;
   justify-content: space-between;
   padding-inline-end: 16px;
-  padding-inline-start: 10px;
+  padding-inline-start: 16px;
   position: relative;
   width: 100%;
   z-index: 1000;

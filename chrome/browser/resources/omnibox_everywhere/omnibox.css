@@ -137,7 +137,7 @@ cr-searchbox-input::part(searchbox-input) {
 }
 
 :host([is-fusebox-enabled]) cr-searchbox-input::part(searchbox-input) {
-  padding-inline-start: 24px;
+  padding-inline-start: 12px;
   padding-inline-end: 64px;
 }
 
@@ -227,7 +227,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
     cr-composebox-contextual-entrypoint-and-menu::part(
         context-menu-entrypoint-icon) {
   --cr-icon-button-icon-size: 24px;
-  --cr-icon-button-margin-start: 2px;
+  --cr-icon-button-margin-start: 0;
   --cr-icon-button-size: 36px;
 }
 
@@ -264,14 +264,6 @@ cr-composebox-contextual-entrypoint-and-menu {
   box-shadow: none;
 }
 
-.searchbox-icon-button-container.lens {
-  margin-inline-end: 10px;
-}
-
-.searchbox-icon-button-container.voice {
-  margin-inline-end: 4px;
-}
-
 :host([is-fusebox-enabled]) .searchbox-icon-button-container.lens:hover,
 :host([is-fusebox-enabled]) .searchbox-icon-button-container.voice:hover {
   background-color: var(--color-new-tab-page-realbox-next-icon-hover);
@@ -279,7 +271,8 @@ cr-composebox-contextual-entrypoint-and-menu {
 }
 
 :host([is-fusebox-enabled]) cr-searchbox-input {
-  --cr-searchbox-icon-left-position: 20px;
+  --cr-searchbox-icon-container-size: 36px;
+  --cr-searchbox-icon-left-position: 16px;
 }
 
 :host([is-fusebox-enabled]) cr-searchbox-input::part(icon) {
