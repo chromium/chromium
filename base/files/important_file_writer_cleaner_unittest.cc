@@ -388,4 +388,115 @@ TEST_F(ImportantFileWriterCleanerTest, StopWhileRunning) {
   task_environment_.RunUntilIdle();
 }
 
+// Tests that when the target file identified by a temp file's name prefix is
+// missing, the most recent matching temp file is preserved as a recovery
+// candidate while older matching temp files are still cleaned.
+TEST_F(ImportantFileWriterCleanerTest,
+       PreservesLatestPrefixedTempFileWhenTargetMissing) {
+  const FilePath dir =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("recover_missing"));
+  ASSERT_TRUE(CreateDirectory(dir));
+
+  const Time upper_bound =
+      ImportantFileWriterCleaner::GetInstance().GetUpperBoundTimeForTest();
+
+  auto create_prefixed_temp = [&](Time mtime, FilePath* out_path) {
+    File file = CreateAndOpenTemporaryFileInDir(dir, out_path,
+                                                /*additional_flags=*/0,
+                                                kTempFilePrefix);
+    ASSERT_TRUE(file.IsValid());
+    ASSERT_TRUE(file.SetTimes(Time::Now(), mtime));
+  };
+
+  FilePath old_older;
+  FilePath old_newer;
+  // Both files are older than the cleaner's upper bound, but `old_newer` has a
+  // strictly larger mtime than `old_older`.
+  ASSERT_NO_FATAL_FAILURE(
+      create_prefixed_temp(upper_bound - Seconds(1), &old_older));
+  ASSERT_NO_FATAL_FAILURE(
+      create_prefixed_temp(upper_bound - Milliseconds(1), &old_newer));
+
+  ImportantFileWriterCleaner::GetInstance().Initialize();
+  ImportantFileWriterCleaner::AddDirectory(dir);
+  StartCleaner();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(PathExists(old_newer));
+  EXPECT_FALSE(PathExists(old_older));
+}
+
+// Tests that when the target file identified by a temp file's name prefix
+// exists, all matching temp files are cleaned (no preservation happens).
+TEST_F(ImportantFileWriterCleanerTest,
+       DoesNotPreservePrefixedTempFilesWhenTargetExists) {
+  const FilePath dir =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("recover_present"));
+  ASSERT_TRUE(CreateDirectory(dir));
+
+  // Create the target file so that no recovery candidate needs to be kept.
+  const FilePath target = dir.Append(kTempFilePrefix);
+  ASSERT_NO_FATAL_FAILURE(CreateOldFile(target));
+
+  FilePath old_1;
+  FilePath old_2;
+  ASSERT_NO_FATAL_FAILURE(CreateOldFileInDirWithPrefix(dir, old_1));
+  ASSERT_NO_FATAL_FAILURE(CreateOldFileInDirWithPrefix(dir, old_2));
+
+  ImportantFileWriterCleaner::GetInstance().Initialize();
+  ImportantFileWriterCleaner::AddDirectory(dir);
+  StartCleaner();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(PathExists(target));
+  EXPECT_FALSE(PathExists(old_1));
+  EXPECT_FALSE(PathExists(old_2));
+}
+
+// Tests that preservation is done independently per name prefix: each distinct
+// prefix keeps its own latest matching temp file when its target is missing.
+TEST_F(ImportantFileWriterCleanerTest,
+       PreservesLatestPrefixedTempFilePerPrefix) {
+  static constexpr FilePath::StringViewType kPrefixA = kTempFilePrefix;
+  static constexpr FilePath::StringViewType kPrefixB =
+      FILE_PATH_LITERAL("Preferences");
+
+  const FilePath dir =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("recover_multi"));
+  ASSERT_TRUE(CreateDirectory(dir));
+
+  auto create_old = [&](FilePath::StringViewType prefix, Time mtime,
+                        FilePath* out_path) {
+    File file = CreateAndOpenTemporaryFileInDir(dir, out_path,
+                                                /*additional_flags=*/0, prefix);
+    ASSERT_TRUE(file.IsValid());
+    ASSERT_TRUE(file.SetTimes(Time::Now(), mtime));
+  };
+
+  const Time upper_bound =
+      ImportantFileWriterCleaner::GetInstance().GetUpperBoundTimeForTest();
+  const Time t_older = upper_bound - Seconds(1);
+  const Time t_newer = upper_bound - Milliseconds(1);
+
+  FilePath a_older;
+  FilePath a_newer;
+  FilePath b_older;
+  FilePath b_newer;
+  ASSERT_NO_FATAL_FAILURE(create_old(kPrefixA, t_older, &a_older));
+  ASSERT_NO_FATAL_FAILURE(create_old(kPrefixA, t_newer, &a_newer));
+  ASSERT_NO_FATAL_FAILURE(create_old(kPrefixB, t_older, &b_older));
+  ASSERT_NO_FATAL_FAILURE(create_old(kPrefixB, t_newer, &b_newer));
+
+  ImportantFileWriterCleaner::GetInstance().Initialize();
+  ImportantFileWriterCleaner::AddDirectory(dir);
+  StartCleaner();
+  task_environment_.RunUntilIdle();
+
+  // Each prefix retains its own latest candidate; older ones are cleaned.
+  EXPECT_FALSE(PathExists(a_older));
+  EXPECT_TRUE(PathExists(a_newer));
+  EXPECT_FALSE(PathExists(b_older));
+  EXPECT_TRUE(PathExists(b_newer));
+}
+
 }  // namespace base

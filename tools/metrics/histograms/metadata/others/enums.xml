@@ -225,6 +225,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed after retry limit"/>
 </enum>
 
+<enum name="MissingFileRestoreResult">
+  <int value="0" label="No candidate temp file found"/>
+  <int value="1" label="Candidate found but restore failed"/>
+  <int value="2" label="Restored from candidate temp file"/>
+</enum>
+
 <!-- LINT.IfChange(MojoAdoptPipeResult) -->
 
 <enum name="MojoAdoptPipeResult">

@@ -3501,6 +3501,83 @@ TEST_F(FileUtilTest, GetNamePrefixForTemporaryFile) {
   EXPECT_EQ(GetNamePrefixForTemporaryFile(invalid_suffix_path), std::nullopt);
 }
 
+TEST_F(FileUtilTest, GetLatestTemporaryFileWithNamePrefix) {
+  const FilePath::StringType kPrefix = FILE_PATH_LITERAL("LocalState");
+  const FilePath::StringType kOtherPrefix = FILE_PATH_LITERAL("Preferences");
+
+  // Empty directory yields no candidate.
+  EXPECT_EQ(GetLatestTemporaryFileWithNamePrefix(temp_dir_.GetPath(), kPrefix),
+            std::nullopt);
+
+  // A temp file with an empty prefix does not match a non-empty query prefix.
+  FilePath empty_prefix_path;
+  ASSERT_TRUE(CreateAndOpenTemporaryFileInDir(temp_dir_.GetPath(),
+                                              &empty_prefix_path,
+                                              /*additional_flags=*/0, {})
+                  .IsValid());
+  EXPECT_EQ(GetLatestTemporaryFileWithNamePrefix(temp_dir_.GetPath(), kPrefix),
+            std::nullopt);
+
+  // A temp file with a different non-empty prefix does not match either.
+  FilePath other_prefix_path;
+  ASSERT_TRUE(
+      CreateAndOpenTemporaryFileInDir(temp_dir_.GetPath(), &other_prefix_path,
+                                      /*additional_flags=*/0, kOtherPrefix)
+          .IsValid());
+  EXPECT_EQ(GetLatestTemporaryFileWithNamePrefix(temp_dir_.GetPath(), kPrefix),
+            std::nullopt);
+
+  // A non-temp file whose name equals the query prefix is not enumerated.
+  const FilePath target_file = temp_dir_.GetPath().Append(kPrefix);
+  ASSERT_TRUE(WriteFile(target_file, "data"));
+  EXPECT_EQ(GetLatestTemporaryFileWithNamePrefix(temp_dir_.GetPath(), kPrefix),
+            std::nullopt);
+
+  // Create three temp files with the matching prefix and set their
+  // modification times explicitly.
+  Time t_old;
+  Time t_mid;
+  Time t_new;
+  ASSERT_TRUE(Time::FromString("Tue, 15 Nov 1994, 12:45:26 GMT", &t_old));
+  ASSERT_TRUE(Time::FromString("Wed, 16 Nov 1994, 12:45:26 GMT", &t_mid));
+  ASSERT_TRUE(Time::FromString("Thu, 17 Nov 1994, 12:45:26 GMT", &t_new));
+
+  FilePath old_match_path;
+  FilePath mid_match_path;
+  FilePath new_match_path;
+  ASSERT_TRUE(CreateAndOpenTemporaryFileInDir(temp_dir_.GetPath(),
+                                              &old_match_path,
+                                              /*additional_flags=*/0, kPrefix)
+                  .IsValid());
+  ASSERT_TRUE(CreateAndOpenTemporaryFileInDir(temp_dir_.GetPath(),
+                                              &mid_match_path,
+                                              /*additional_flags=*/0, kPrefix)
+                  .IsValid());
+  ASSERT_TRUE(CreateAndOpenTemporaryFileInDir(temp_dir_.GetPath(),
+                                              &new_match_path,
+                                              /*additional_flags=*/0, kPrefix)
+                  .IsValid());
+  ASSERT_TRUE(TouchFile(old_match_path, t_old, t_old));
+  ASSERT_TRUE(TouchFile(mid_match_path, t_mid, t_mid));
+  ASSERT_TRUE(TouchFile(new_match_path, t_new, t_new));
+
+  // The newest matching temp file is returned even though older matching temp
+  // files and temp files with other/empty prefixes coexist in the directory.
+  EXPECT_EQ(GetLatestTemporaryFileWithNamePrefix(temp_dir_.GetPath(), kPrefix),
+            new_match_path);
+
+  // Querying with the other prefix returns only that file.
+  EXPECT_EQ(
+      GetLatestTemporaryFileWithNamePrefix(temp_dir_.GetPath(), kOtherPrefix),
+      other_prefix_path);
+
+  // Querying a non-existent directory yields no candidate.
+  const FilePath missing_dir =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("no-such-dir"));
+  EXPECT_EQ(GetLatestTemporaryFileWithNamePrefix(missing_dir, kPrefix),
+            std::nullopt);
+}
+
 TEST_F(FileUtilTest, CreateTemporaryFileTest) {
   std::array<FilePath, 3> temp_files;
   for (auto& i : temp_files) {

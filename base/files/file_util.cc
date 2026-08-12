@@ -35,6 +35,7 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -577,5 +578,55 @@ bool IsReservedNameOnWindows(const base::FilePath::StringType& filename) {
          kMagicNames.contains(trimmed_filename);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+
+std::optional<FilePath> GetLatestTemporaryFileWithNamePrefix(
+    const FilePath& dir,
+    FilePath::StringViewType name_prefix) {
+  CHECK(!dir.empty());
+  CHECK(!name_prefix.empty());
+
+  // Build a wildcard that matches the fixed-length random suffix appended by
+  // CreateAndOpenTemporaryFileInDir, so the enumeration itself only returns
+  // temp files whose name prefix exactly matches `name_prefix`. This avoids
+  // matching common-prefix siblings (e.g. "Local State Backup" when searching
+  // for "Local State"). The loop below still validates each candidate with
+  // GetNamePrefixForTemporaryFile() to reject files whose random portion is
+  // not a well-formed GUID / mkstemp suffix.
+  // `name_prefix` and `kRandomSuffixPattern` are concatenated and passed to
+  // `FormatTemporaryFileName()` to construct a platform-specific temporary file
+  // name.
+#if BUILDFLAG(IS_WIN)
+  // Windows temp files are "<name_prefix><36-char GUID>.tmp".
+  constexpr FilePath::StringViewType kRandomSuffixPattern =
+      FILE_PATH_LITERAL("????????-????-????-????-????????????");
+#else
+  // POSIX temp files are ".<platform_prefix>.<name_prefix>.XXXXXX" where
+  // `platform_prefix` varies by platforms.
+  constexpr FilePath::StringViewType kRandomSuffixPattern =
+      FILE_PATH_LITERAL(".??????");
+#endif
+  FileEnumerator file_enum(
+      dir, /*recursive=*/false, FileEnumerator::FILES,
+      FormatTemporaryFileName(StrCat({name_prefix, kRandomSuffixPattern}),
+                              /*hidden=*/true)
+          .value());
+
+  std::optional<FilePath> latest_path;
+  Time latest_time;
+  for (FilePath path = file_enum.Next(); !path.empty();
+       path = file_enum.Next()) {
+    std::optional<FilePath::StringType> prefix =
+        GetNamePrefixForTemporaryFile(path);
+    if (!prefix.has_value() || *prefix != name_prefix) {
+      continue;
+    }
+    const Time modified_time = file_enum.GetInfo().GetLastModifiedTime();
+    if (!latest_path.has_value() || modified_time > latest_time) {
+      latest_path = std::move(path);
+      latest_time = modified_time;
+    }
+  }
+  return latest_path;
+}
 
 }  // namespace base

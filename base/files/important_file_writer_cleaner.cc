@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <optional>
 #include <utility>
 
 #include "base/files/file_enumerator.h"
@@ -19,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 
@@ -180,6 +182,15 @@ bool ImportantFileWriterCleaner::CleanInBackground(
     std::atomic_bool& stop_flag) {
   DCHECK(!directories.empty());
   for (auto& directory : directories) {
+    // Per-directory cache: for each temp-file name prefix encountered, this
+    // stores the latest temp file that should be preserved as a potential
+    // recovery source for a missing target file named prefix. An empty
+    // FilePath value means the prefix was inspected and no candidate needs to
+    // be preserved (either the target file already exists, or no candidate was
+    // found).
+    absl::flat_hash_map<FilePath::StringType, FilePath>
+        prefix_to_preserved_candidate;
+
     FileEnumerator file_enum(
         directory, /*recursive=*/false, FileEnumerator::FILES,
         FormatTemporaryFileName(FILE_PATH_LITERAL("*"), true).value());
@@ -189,6 +200,33 @@ bool ImportantFileWriterCleaner::CleanInBackground(
       if (info.GetLastModifiedTime() >= upper_bound_time) {
         continue;
       }
+
+      // Attempt to preserve the latest temp file for any target file that
+      // appears to be missing, so it can later be used to restore that file.
+      std::optional<FilePath::StringType> name_prefix =
+          GetNamePrefixForTemporaryFile(path);
+      if (name_prefix.has_value()) {
+        auto [it, inserted] =
+            prefix_to_preserved_candidate.try_emplace(*name_prefix, FilePath());
+        if (inserted) {
+          // First time seeing this prefix in this directory. If the target
+          // file is missing, look up the latest candidate temp file to
+          // preserve.
+          if (!PathExists(directory.Append(*name_prefix))) {
+            std::optional<FilePath> latest_candidate =
+                GetLatestTemporaryFileWithNamePrefix(directory, *name_prefix);
+            if (latest_candidate.has_value()) {
+              it->second = *std::move(latest_candidate);
+            }
+          }
+        }
+        if (path == it->second) {
+          // Do not delete: this temp file is being kept as a restore
+          // candidate.
+          continue;
+        }
+      }
+
       // Cleanup is a best-effort process, so ignore any failures here and
       // continue to clean as much as possible. Metrics tell us that ~98.4% of
       // directories are cleaned with no failures.

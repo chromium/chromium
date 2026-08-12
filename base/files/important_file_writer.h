@@ -83,6 +83,17 @@ class BASE_EXPORT ImportantFileWriter {
       std::string_view data,
       std::string_view histogram_suffix = std::string_view());
 
+  // If `file_path` does not exist, attempts to restore it by renaming the most
+  // recent temporary file in its parent directory whose name prefix matches
+  // `file_path`'s base name (i.e. a leftover temp file written by an
+  // ImportantFileWriter for that path). Does nothing if `file_path` already
+  // exists or if no matching temporary file is found. The outcome is recorded
+  // in the "ImportantFile.MissingFileRestoreResult{ImportantFileClients}"
+  // histogram only when `file_path` is missing.
+  static void RestoreMissingFileIfNeeded(
+      const FilePath& file_path,
+      std::string_view histogram_suffix = std::string_view());
+
   // Initialize the writer.
   // |path| is the name of file to write.
   // |task_runner| is the SequencedTaskRunner instance where on which we will

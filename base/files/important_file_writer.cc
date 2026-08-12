@@ -72,6 +72,18 @@ enum class ReplaceResult {
   kMaxValue = kFailure
 };
 
+// Result of an attempted restore in
+// ImportantFileWriter::RestoreMissingFileIfNeeded(), recorded to
+// ImportantFile.MissingFileRestoreResult.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MissingFileRestoreResult {
+  kNoCandidate = 0,
+  kFailed = 1,
+  kRestored = 2,
+  kMaxValue = kRestored,
+};
+
 void UmaHistogramReplaceResultWithSuffix(std::string_view histogram_suffix,
                                          ReplaceResult result) {
   constexpr char kResultHistogramName[] = "ImportantFile.FileReplaceResult";
@@ -193,6 +205,35 @@ bool ImportantFileWriter::WriteFileAtomically(
   return WriteFileAtomicallyImpl(path, data, histogram_suffix,
                                  /*from_instance=*/false,
                                  BindRepeating(&ReplaceFile));
+}
+
+// static
+void ImportantFileWriter::RestoreMissingFileIfNeeded(
+    const FilePath& file_path,
+    std::string_view histogram_suffix) {
+  if (PathExists(file_path)) {
+    return;
+  }
+
+  MissingFileRestoreResult result = MissingFileRestoreResult::kNoCandidate;
+  std::optional<FilePath> latest_temp_file =
+      GetLatestTemporaryFileWithNamePrefix(file_path.DirName(),
+                                           file_path.BaseName().value());
+  if (latest_temp_file.has_value()) {
+    result = Move(*latest_temp_file, file_path)
+                 ? MissingFileRestoreResult::kRestored
+                 : MissingFileRestoreResult::kFailed;
+  }
+
+  constexpr char kHistogramName[] = "ImportantFile.MissingFileRestoreResult";
+  if (histogram_suffix.empty()) {
+    UmaHistogramEnumeration(kHistogramName, result);
+  } else {
+    UmaHistogramEnumeration(
+        base::JoinString({kHistogramName, histogram_suffix}, "."), result);
+  }
+  UmaHistogramEnumeration(base::JoinString({kHistogramName, "All"}, "."),
+                          result);
 }
 
 // static

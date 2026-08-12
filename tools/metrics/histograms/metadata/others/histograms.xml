@@ -2520,6 +2520,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ImportantFile.MissingFileRestoreResult{ImportantFileClients}"
+    enum="MissingFileRestoreResult" expires_after="2027-07-08">
+  <owner>grt@chromium.org</owner>
+  <owner>tingshao@microsoft.com</owner>
+  <summary>
+    The result of attempting to restore a missing important file (e.g. a
+    preferences file) from a leftover temporary file previously written by
+    ImportantFileWriter. Recorded only when the target file is missing at read
+    time, from ImportantFileWriter::RestoreMissingFileIfNeeded(). Note that a
+    &quot;restored&quot; result only means that a leftover temporary file was
+    moved into place. It doesn't mean that data was recovered from that file.
+
+    {ImportantFileClients}
+  </summary>
+</histogram>
+
 <histogram name="ImportantFile.SerializationDuration{ImportantFileClients}"
     units="ms" expires_after="2027-02-07">
   <owner>battre@chromium.org</owner>

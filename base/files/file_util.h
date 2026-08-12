@@ -446,6 +446,15 @@ BASE_EXPORT File CreateAndOpenTemporaryFileInDirWithFlags(
 BASE_EXPORT std::optional<FilePath::StringType> GetNamePrefixForTemporaryFile(
     const FilePath& temp_file);
 
+// Enumerates temporary files (as produced by CreateAndOpenTemporaryFileInDir())
+// directly under `dir` (non-recursive) and returns the path of the most
+// recently modified file whose inferred name prefix (see
+// GetNamePrefixForTemporaryFile()) equals `name_prefix`. Returns nullopt if no
+// matching file is found.
+BASE_EXPORT std::optional<FilePath> GetLatestTemporaryFileWithNamePrefix(
+    const FilePath& dir,
+    FilePath::StringViewType name_prefix);
+
 // Creates a temporary file. The full path is placed in `path`, and the
 // function returns true if was successful in creating the file. The file will
 // be empty and all handles closed after this function returns.
