@@ -9,6 +9,9 @@ import("//tools/grit/repack.gni")
 
 grit_strings("strings") {
   source = "../services_strings.grd"
+  inputs =
+      process_file_template(xtb_locales,
+                            [ "services_strings_{{source_name_part}}.xtb" ])
   defines = [ "enable_screen_ai_service=$enable_screen_ai_service" ]
   outputs = [ "grit/services_strings.h" ]
   output_prefix = "services_strings_"

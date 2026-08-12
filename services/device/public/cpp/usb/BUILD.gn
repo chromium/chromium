@@ -24,6 +24,7 @@ action("usb_device_ids") {
 
 grit("usb_ids_resources") {
   source = "resources/usb_ids_resources.grd"
+  inputs = [ "$root_gen_dir/services/device/public/cpp/usb/usb_ids.dat" ]
   outputs = [
     "grit/usb_ids_resources.h",
     "usb_ids_resources.pak",
