@@ -62,6 +62,12 @@ void OverrideLocaleWithCocoaLocale() {
   if (locale_value == "en")
     locale_value = "en-US";
 
+  // The outer bundle can advertise a localization the framework has no
+  // locale.pak for (e.g. de-DE.lproj beside de.lproj); resolve to one that
+  // does, falling back to en-US like GetApplicationLocaleInternalNonMac().
+  locale_value =
+      l10n_util::CheckAndResolveLocale(locale_value).value_or("en-US");
+
   g_overridden_locale.Get() = locale_value;
 }
 
