@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
@@ -144,31 +145,38 @@ void OpaqueRange::disconnect() {
 }
 
 DOMRectList* OpaqueRange::getClientRects() const {
-  Range* range = BuildValueGeometryContext();
-  if (!range || range->collapsed()) {
+  EphemeralRange range = GetRangeForValue();
+  // A null range is also collapsed, so this covers unresolvable ranges too.
+  if (range.IsCollapsed()) {
     return MakeGarbageCollected<DOMRectList>();
   }
-  return range->getClientRects();
+  auto* dom_range = CreateRange(range);
+  DOMRectList* rects = dom_range->getClientRects();
+  dom_range->Dispose();
+  return rects;
 }
 
 DOMRect* OpaqueRange::getBoundingClientRect() const {
-  Range* range = BuildValueGeometryContext();
-  if (!range) {
+  EphemeralRange range = GetRangeForValue();
+  if (range.IsNull()) {
     return DOMRect::Create();
   }
-  return range->getBoundingClientRect();
+  auto* dom_range = CreateRange(range);
+  DOMRect* rect = dom_range->getBoundingClientRect();
+  dom_range->Dispose();
+  return rect;
 }
 
-Range* OpaqueRange::BuildValueGeometryContext() const {
+EphemeralRange OpaqueRange::GetRangeForValue() const {
   if (!element_ || !element_->isConnected()) {
-    return nullptr;
+    return EphemeralRange();
   }
 
   Document& doc = element_->GetDocument();
   doc.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   if (!element_->GetLayoutObject()) {
-    return nullptr;
+    return EphemeralRange();
   }
 
   auto [start_node, start_local] =
@@ -176,13 +184,11 @@ Range* OpaqueRange::BuildValueGeometryContext() const {
   auto [end_node, end_local] =
       element_->ResolveValueOffset(end_offset_in_value_);
   if (!start_node || !end_node) {
-    return nullptr;
+    return EphemeralRange();
   }
 
-  Range* range = Range::Create(doc);
-  range->setStart(Position(start_node, start_local));
-  range->setEnd(Position(end_node, end_local));
-  return range;
+  return EphemeralRange(Position(start_node, start_local),
+                        Position(end_node, end_local));
 }
 
 }  // namespace blink

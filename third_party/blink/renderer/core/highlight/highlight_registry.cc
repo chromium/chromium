@@ -46,19 +46,20 @@ bool IsTrackableReplacedElement(const Element& element) {
 }
 
 // Resolves `abstract_range` to an EphemeralRange for geometry queries. When the
-// OpaqueRange feature is enabled and the range is opaque, this builds its inner
-// value-geometry range and returns std::nullopt if that can't be built.
+// OpaqueRange feature is enabled and the range is opaque, this resolves its
+// value offsets to positions in the inner editor and returns std::nullopt if
+// they can't be resolved.
 std::optional<EphemeralRange> ResolveEphemeralRange(
     AbstractRange* abstract_range,
     Document* document) {
   if (RuntimeEnabledFeatures::OpaqueRangeEnabled(
           document->GetExecutionContext())) {
     if (auto* opaque_range = DynamicTo<OpaqueRange>(abstract_range)) {
-      Range* inner_range = opaque_range->BuildValueGeometryContext();
-      if (!inner_range) {
+      EphemeralRange value_range = opaque_range->GetRangeForValue();
+      if (value_range.IsNull()) {
         return std::nullopt;
       }
-      return EphemeralRange(inner_range);
+      return value_range;
     }
   }
   auto* node_range = DynamicTo<NodeRange>(abstract_range);

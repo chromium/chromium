@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
+#include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -15,7 +16,6 @@ namespace blink {
 class Document;
 class DOMRect;
 class DOMRectList;
-class Range;
 class TextControlElement;
 
 // An OpaqueRange is a live AbstractRange subtype whose boundary points
@@ -69,10 +69,12 @@ class CORE_EXPORT OpaqueRange final : public AbstractRange {
   // Returns the associated text control element, or nullptr if disconnected.
   TextControlElement* GetElement() const { return element_.Get(); }
 
-  // Creates a DOM Range spanning the stored value offsets within the element's
-  // inner editor. Forces style/layout update. Returns nullptr if the element is
-  // disconnected, has no layout object, or has no inner editor.
-  Range* BuildValueGeometryContext() const;
+  // Returns an EphemeralRange spanning the stored value offsets within the
+  // element's inner editor, forcing a style/layout update. Returns a null
+  // EphemeralRange if the element is disconnected, has no layout object, or
+  // has no inner editor. Callers needing a live `Range` must create it
+  // themselves from the returned positions, and own disposing of it.
+  EphemeralRange GetRangeForValue() const;
 
  private:
   Member<Document> owner_document_;

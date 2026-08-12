@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/opaque_range.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
@@ -199,11 +200,69 @@ TEST_F(OpaqueRangeTest, HighlightMarkersCreated) {
       To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
   auto* range = textarea->createValueRange(0, 5, ASSERT_NO_EXCEPTION);
 
+  EXPECT_FALSE(GetDocument().HasRanges());
   DocumentMarkerVector markers = RegisterHighlightAndGetMarkers(range);
+  EXPECT_FALSE(GetDocument().HasRanges());
   ASSERT_EQ(markers.size(), 1u);
   auto* marker = To<CustomHighlightMarker>(markers[0].Get());
   EXPECT_EQ(marker->StartOffset(), 0u);
   EXPECT_EQ(marker->EndOffset(), 5u);
+}
+
+TEST_F(OpaqueRangeTest, GeometryQueriesDisposeInnerRanges) {
+  SetBodyContent("<textarea>Hello World</textarea>");
+  auto* textarea =
+      To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
+  auto* range = textarea->createValueRange(0, 5, ASSERT_NO_EXCEPTION);
+  auto* collapsed_range = textarea->createValueRange(0, 0, ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(GetDocument().HasRanges());
+  range->getClientRects();
+  EXPECT_FALSE(GetDocument().HasRanges());
+  range->getBoundingClientRect();
+  EXPECT_FALSE(GetDocument().HasRanges());
+  collapsed_range->getClientRects();
+  EXPECT_FALSE(GetDocument().HasRanges());
+  collapsed_range->getBoundingClientRect();
+  EXPECT_FALSE(GetDocument().HasRanges());
+}
+
+TEST_F(OpaqueRangeTest, GetRangeForValueResolvesToInnerEditor) {
+  SetBodyContent("<textarea>Hello World</textarea>");
+  auto* textarea =
+      To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
+  auto* range = textarea->createValueRange(0, 5, ASSERT_NO_EXCEPTION);
+
+  EphemeralRange value_range = range->GetRangeForValue();
+  ASSERT_FALSE(value_range.IsNull());
+  Node* text_node = textarea->InnerEditorElement()->firstChild();
+  EXPECT_EQ(value_range.StartPosition().AnchorNode(), text_node);
+  EXPECT_EQ(value_range.StartPosition().OffsetInContainerNode(), 0u);
+  EXPECT_EQ(value_range.EndPosition().AnchorNode(), text_node);
+  EXPECT_EQ(value_range.EndPosition().OffsetInContainerNode(), 5u);
+  // Resolving value offsets must not attach a Range to the document.
+  EXPECT_FALSE(GetDocument().HasRanges());
+}
+
+TEST_F(OpaqueRangeTest, GetRangeForValueNullWhenNotRendered) {
+  SetBodyContent("<textarea style='display:none'>Hello World</textarea>");
+  auto* textarea =
+      To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
+  auto* range = textarea->createValueRange(0, 5, ASSERT_NO_EXCEPTION);
+
+  EXPECT_TRUE(range->GetRangeForValue().IsNull());
+  EXPECT_FALSE(GetDocument().HasRanges());
+}
+
+TEST_F(OpaqueRangeTest, GetRangeForValueNullAfterDisconnect) {
+  SetBodyContent("<textarea>Hello World</textarea>");
+  auto* textarea =
+      To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
+  auto* range = textarea->createValueRange(0, 5, ASSERT_NO_EXCEPTION);
+
+  range->disconnect();
+  EXPECT_TRUE(range->GetRangeForValue().IsNull());
+  EXPECT_FALSE(GetDocument().HasRanges());
 }
 
 TEST_F(OpaqueRangeTest, NoHighlightMarkersAfterDisconnect) {
