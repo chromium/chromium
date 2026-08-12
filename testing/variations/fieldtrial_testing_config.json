@@ -2480,7 +2480,6 @@
                         "AutofillAtMemory",
                         "AutofillAtMemorySupportContenteditableOnAndroid",
                         "AutofillAtMemoryTriggerShortcut",
-                        "AutofillKeydownEditableElement",
                         "IPH_AutofillAtMemory",
                         "PersonalContextForceEnablementState"
                     ]
@@ -3286,6 +3285,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillIntroduceGlobalEmptyValueRewriterRules"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillKeydownEditableElement": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillKeydownEditableElement"
                     ]
                 }
             ]
