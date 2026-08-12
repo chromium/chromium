@@ -793,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
   // Enter tab fullscreen.
   ToggleTabFullscreen(true);
-  ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
+  ASSERT_TRUE(fullscreen_controller->IsTabFullscreen());
 
   // Request a permission to show the bubble, which should exit fullscreen.
   permissions::PermissionRequestManager* permission_request_manager =
@@ -801,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   permission_request_manager->AddRequest(
       web_contents->GetPrimaryMainFrame(),
       std::make_unique<permissions::MockPermissionRequest>(
-          permissions::RequestType::kGeolocation));
+          permissions::RequestType::kCameraStream));
 
   ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = false}).Wait();
   ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
@@ -812,11 +812,12 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
 
   // Accept the permission request to close the bubble.
+  permissions::PermissionRequestObserver observer(web_contents);
   permission_request_manager->Accept(/*prompt_options=*/std::monostate());
+  observer.Wait();
 
   // Now we should be able to enter tab fullscreen again.
-  EXPECT_TRUE(content::ExecJs(web_contents,
-                              "document.documentElement.requestFullscreen()"));
+  ToggleTabFullscreen(true);
   ASSERT_TRUE(fullscreen_controller->IsTabFullscreen());
 }
 
