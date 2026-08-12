@@ -120,8 +120,6 @@ class PictureInPictureBrowserFrameView
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetVisibilityChanged(views::Widget* eidget, bool visible) override;
-  void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& new_bounds) override;
 
   // PictureInPictureWindow:
   void SetForcedTucking(bool tuck) override;
@@ -242,6 +240,7 @@ class PictureInPictureBrowserFrameView
 
   // PipChildDialogObserverHelper::Delegate:
   void EnforceTucking() override;
+  void OnUserDesiredBoundsChanged(const gfx::Rect& bounds) override;
 
   CloseReason close_reason_ = CloseReason::kOther;
 

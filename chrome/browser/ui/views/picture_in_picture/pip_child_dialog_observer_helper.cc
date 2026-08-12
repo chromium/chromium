@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/picture_in_picture/pip_child_dialog_observer_helper.h"
 
+#include <cmath>
+
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -63,19 +65,36 @@ void PipChildDialogObserverHelper::OnWidgetBoundsChanged(
 
   // Otherwise, this was due to a user resizing/moving the window, so track this
   // new location as a user-desired one. If they've also changed the size from
-  // the child-dialog-forced size, then track that too, but otherwise only
-  // change the desired location.
+  // the expected size (either the child dialog forced size or the last known
+  // user desired size), then track that too, but otherwise only change the
+  // desired location.
   latest_user_desired_bounds_.set_origin(new_bounds.origin());
-  if (resizing_state_ != ResizingState::kSizedToChildren ||
-      new_bounds.size() != latest_child_dialog_forced_bounds_.size()) {
+
+  // The expected size is the baseline we compare against to filter out 1-DIP
+  // rounding noise. If the window is currently auto-resized for a dialog,
+  // we expect it to maintain the forced dialog size. Otherwise, we expect
+  // it to match the last known user-desired size.
+  gfx::Size expected_size = (resizing_state_ == ResizingState::kSizedToChildren)
+                                ? latest_child_dialog_forced_bounds_.size()
+                                : latest_user_desired_bounds_.size();
+
+  // Ignore 1-DIP rounding fluctuations. These can occur due to rounding noise
+  // during coordinate conversion (e.g. when the window is moved to a new
+  // position or crosses monitors with different scale factors). Ignoring them
+  // prevents silent cache pollution, which would otherwise cause the window to
+  // grow (drift) when it is closed and reopened.
+  if (std::abs(new_bounds.width() - expected_size.width()) > 1 ||
+      std::abs(new_bounds.height() - expected_size.height()) > 1) {
     latest_user_desired_bounds_.set_size(new_bounds.size());
 
-    // At this point, we'll no longer resize when the child dialog closes, so
-    // reset the state to normal.
     AnimateDialogsWaitingForResize();
     resizing_state_ = ResizingState::kNotSizedToChildren;
     resize_timer_.Stop();
   }
+
+  // Notify the delegate of the updated user-desired bounds. We do this after
+  // applying the 1-DIP filter to ensure the cache is updated with clean bounds.
+  delegate_->OnUserDesiredBoundsChanged(latest_user_desired_bounds_);
 }
 
 void PipChildDialogObserverHelper::OnWidgetDestroying(views::Widget* widget) {
@@ -240,6 +259,11 @@ void PipChildDialogObserverHelper::FinishPendingResizeForChild() {
 void PipChildDialogObserverHelper::MaybeResizeForChildDialog(
     views::Widget* child_dialog,
     bool resize_immediately) {
+  // If the child dialog is not visible, do not resize the PiP window to fit it.
+  if (!child_dialog->IsVisible()) {
+    return;
+  }
+
   // If the pip window in the process of closing ignore any resizes that could
   // occur as child dialogs are destroyed during teardown.
   if (pip_widget_->IsClosed()) {

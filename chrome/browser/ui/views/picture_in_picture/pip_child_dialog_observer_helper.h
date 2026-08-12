@@ -60,6 +60,10 @@ class PipChildDialogObserverHelper : public views::WidgetObserver {
     // place dialogs and keeps the default no-op; the standalone host overrides
     // this to pin dialogs to the client-area origin.
     virtual void PositionChildDialog(views::Widget* child_dialog) {}
+
+    // Called when the helper's tracked user-desired bounds change (with
+    // rounding fluctuations filtered out).
+    virtual void OnUserDesiredBoundsChanged(const gfx::Rect& bounds) {}
   };
 
   explicit PipChildDialogObserverHelper(Delegate* delegate);

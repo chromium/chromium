@@ -843,12 +843,19 @@ void PictureInPictureBrowserFrameView::OnWidgetVisibilityChanged(
   }
 }
 
-void PictureInPictureBrowserFrameView::OnWidgetBoundsChanged(
-    views::Widget* widget,
-    const gfx::Rect& new_bounds) {
+void PictureInPictureBrowserFrameView::OnUserDesiredBoundsChanged(
+    const gfx::Rect& bounds) {
+  CHECK(GetWidget());
   const auto pip_display = display::Screen::Get()->GetDisplayNearestWindow(
-      widget->GetNativeWindow());
-  PictureInPictureWindowManager::GetInstance()->UpdateCachedBounds(new_bounds,
+      GetWidget()->GetNativeWindow());
+
+  // The cached bounds update is driven by the `PipChildDialogObserverHelper`
+  // helper, because it is the only place where we track the user-desired bounds
+  // (filtering out dialog resizes and rounding noise). In the future, we might
+  // want to split the PiP window bounds tracking into a separate component to
+  // decouple it from child dialog observation (or generalize the child dialog
+  // observation).
+  PictureInPictureWindowManager::GetInstance()->UpdateCachedBounds(bounds,
                                                                    pip_display);
 }
 

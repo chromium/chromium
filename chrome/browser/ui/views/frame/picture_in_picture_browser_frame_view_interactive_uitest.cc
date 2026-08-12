@@ -596,15 +596,17 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
       std::make_unique<ModalWidgetDelegate>(ui::mojom::ModalType::kWindow);
   auto child_dialog_1 =
       OpenChildDialogWithDelegate(child_dialog_size_1, delegate_1.get());
-  ASSERT_TRUE(pip_frame_view()->IsChildResizePendingForTesting());
+  // Should resize immediately, not pending.
+  EXPECT_FALSE(pip_frame_view()->IsChildResizePendingForTesting());
 
   auto delegate_2 =
       std::make_unique<ModalWidgetDelegate>(ui::mojom::ModalType::kWindow);
   auto child_dialog_2 =
       OpenChildDialogWithDelegate(child_dialog_size_2, delegate_2.get());
+  // Should resize immediately, not pending.
+  EXPECT_FALSE(pip_frame_view()->IsChildResizePendingForTesting());
 
-  // The pip window should increase its size to contain the child dialog.
-  pip_frame_view()->RunPendingChildResizeForTesting();
+  // The pip window should increase its size to contain both child dialogs.
   gfx::Rect new_pip_bounds =
       pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_GE(new_pip_bounds.width(), child_dialog_size_1.width());
@@ -911,15 +913,22 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   gfx::Rect initial_pip_bounds =
       pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
 
-  // Open a child dialog that is larger than the pip window.
-  const gfx::Size child_dialog_size(initial_pip_bounds.width() + 50,
-                                    initial_pip_bounds.height() + 50);
-
-  // Open the dialog but do not run the pending resize yet.
+  // Open a child dialog that fits in the pip window.
+  const gfx::Size small_child_dialog_size(100, 100);
   auto delegate =
       std::make_unique<ModalWidgetDelegate>(ui::mojom::ModalType::kWindow);
   auto child_dialog =
-      OpenChildDialogWithDelegate(child_dialog_size, delegate.get());
+      OpenChildDialogWithDelegate(small_child_dialog_size, delegate.get());
+  // Should not be pending yet.
+  EXPECT_FALSE(pip_frame_view()->IsChildResizePendingForTesting());
+
+  // Now resize the child dialog to be larger than the pip window.
+  const gfx::Size large_child_dialog_size(initial_pip_bounds.width() + 50,
+                                          initial_pip_bounds.height() + 50);
+  child_dialog->GetContentsView()->SetPreferredSize(large_child_dialog_size);
+  child_dialog->SetSize(large_child_dialog_size);
+
+  // Now it should be pending.
   ASSERT_TRUE(pip_frame_view()->IsChildResizePendingForTesting());
 
   // Move the window before the resize timer fires.
@@ -951,15 +960,19 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   gfx::Rect initial_pip_bounds =
       pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
 
-  // Open a child dialog that is larger than the pip window.
-  const gfx::Size child_dialog_size(initial_pip_bounds.width() + 50,
-                                    initial_pip_bounds.height() + 50);
-
-  // Open the dialog but do not run the pending resize yet.
+  // Open a child dialog that fits.
+  const gfx::Size small_child_dialog_size(100, 100);
   auto delegate =
       std::make_unique<ModalWidgetDelegate>(ui::mojom::ModalType::kWindow);
   auto child_dialog =
-      OpenChildDialogWithDelegate(child_dialog_size, delegate.get());
+      OpenChildDialogWithDelegate(small_child_dialog_size, delegate.get());
+  EXPECT_FALSE(pip_frame_view()->IsChildResizePendingForTesting());
+
+  // Resize child dialog to be larger.
+  const gfx::Size large_child_dialog_size(initial_pip_bounds.width() + 50,
+                                          initial_pip_bounds.height() + 50);
+  child_dialog->GetContentsView()->SetPreferredSize(large_child_dialog_size);
+  child_dialog->SetSize(large_child_dialog_size);
   ASSERT_TRUE(pip_frame_view()->IsChildResizePendingForTesting());
 
   // Manually resize the window before the timer fires.
@@ -1009,6 +1022,84 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   pip_frame_view()->RunPendingChildResizeForTesting();
 
   // The pip window should return to its original size.
+  EXPECT_EQ(initial_pip_bounds.size(),
+            pip_frame_view()->GetWidget()->GetWindowBoundsInScreen().size());
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       NoResizeForInvisibleChildDialog) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  gfx::Rect initial_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+
+  // Create a child dialog that is larger than the pip window, but do not show
+  // it.
+  const gfx::Size child_dialog_size(initial_pip_bounds.width() + 50,
+                                    initial_pip_bounds.height() + 50);
+  auto delegate =
+      std::make_unique<ModalWidgetDelegate>(ui::mojom::ModalType::kWindow);
+
+  views::Widget::InitParams init_params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  init_params.child = true;
+  init_params.parent = pip_frame_view()->GetWidget()->GetNativeView();
+  init_params.delegate = delegate.get();
+
+  auto child_dialog = std::make_unique<views::Widget>(std::move(init_params));
+  child_dialog->GetContentsView()->SetPreferredSize(child_dialog_size);
+  child_dialog->SetSize(child_dialog_size);
+
+  // The pip window should not have resized, and no resize should be pending.
+  EXPECT_EQ(initial_pip_bounds,
+            pip_frame_view()->GetWidget()->GetWindowBoundsInScreen());
+  EXPECT_FALSE(pip_frame_view()->IsChildResizePendingForTesting());
+
+  // Now show the dialog.
+  child_dialog->Show();
+
+  // The pip window should now resize to contain the child dialog.
+  // Since it resizes immediately, it shouldn't be pending.
+  EXPECT_FALSE(pip_frame_view()->IsChildResizePendingForTesting());
+
+  gfx::Rect new_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  EXPECT_GE(new_pip_bounds.width(), child_dialog_size.width());
+  EXPECT_GE(new_pip_bounds.height(), child_dialog_size.height());
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       OneDipFluctuationsDoNotPolluteUserDesiredBounds) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  gfx::Rect initial_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+
+  // Open a child dialog.
+  const gfx::Size child_dialog_size(initial_pip_bounds.width() + 50,
+                                    initial_pip_bounds.height() + 50);
+  auto delegate =
+      std::make_unique<ModalWidgetDelegate>(ui::mojom::ModalType::kWindow);
+  auto child_dialog =
+      OpenChildDialogWithDelegate(child_dialog_size, delegate.get());
+
+  // PiP window resizes to forced bounds.
+  gfx::Rect forced_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+
+  // Simulate a 1-DIP fluctuation in PiP window bounds (e.g. during drag).
+  gfx::Rect fluctuated_bounds = forced_bounds;
+  fluctuated_bounds.set_width(forced_bounds.width() + 1);
+  fluctuated_bounds.set_height(forced_bounds.height() + 1);
+  pip_frame_view()->GetWidget()->SetBounds(fluctuated_bounds);
+
+  // Close the dialog.
+  child_dialog->CloseNow();
+  pip_frame_view()->RunPendingChildResizeForTesting();
+
+  // The PiP window should return to its original user-desired bounds,
+  // not the fluctuated bounds.
   EXPECT_EQ(initial_pip_bounds.size(),
             pip_frame_view()->GetWidget()->GetWindowBoundsInScreen().size());
 }
