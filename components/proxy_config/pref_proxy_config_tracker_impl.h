@@ -39,6 +39,10 @@ class PolicyService;
 // Killswitch for the rules set by the "ProxyOverrideRules" policy.
 PROXY_CONFIG_EXPORT BASE_DECLARE_FEATURE(kEnableProxyOverrideRules);
 
+// Killswitch for preserving explicit proxy rules when system proxy is unset.
+PROXY_CONFIG_EXPORT BASE_DECLARE_FEATURE(
+    kProxyOverrideRulesFixUnsetSystemProxy);
+
 // A net::ProxyConfigService implementation that applies preference proxy
 // settings (pushed from PrefProxyConfigTrackerImpl) as overrides to the proxy
 // configuration determined by a baseline delegate ProxyConfigService on

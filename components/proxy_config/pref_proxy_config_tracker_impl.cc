@@ -328,6 +328,8 @@ bool ShouldAttachDynamicRoutingRules(
 }  // namespace
 
 BASE_FEATURE(kEnableProxyOverrideRules, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kProxyOverrideRulesFixUnsetSystemProxy,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 //============================= ProxyConfigServiceImpl =======================
 
@@ -526,7 +528,6 @@ void PrefProxyConfigTrackerImpl::DetachFromPrefService() {
 bool PrefProxyConfigTrackerImpl::PrefPrecedes(
     ProxyPrefs::ConfigState config_state) {
   return config_state == ProxyPrefs::CONFIG_POLICY ||
-         config_state == ProxyPrefs::CONFIG_POLICY_DYNAMIC_ROUTING ||
          config_state == ProxyPrefs::CONFIG_EXTENSION ||
          config_state == ProxyPrefs::CONFIG_OTHER_PRECEDE;
 }
@@ -549,8 +550,12 @@ PrefProxyConfigTrackerImpl::GetEffectiveProxyConfig(
   }
 
   if (system_availability == net::ProxyConfigService::CONFIG_UNSET) {
-    // If there's no system proxy config, fall back to prefs or default.
-    if (pref_state == ProxyPrefs::CONFIG_FALLBACK && !ignore_fallback_config) {
+    // If there's no system proxy config, fall back to prefs, explicit rules,
+    // or default.
+    if ((pref_state == ProxyPrefs::CONFIG_FALLBACK &&
+         !ignore_fallback_config) ||
+        (base::FeatureList::IsEnabled(kProxyOverrideRulesFixUnsetSystemProxy) &&
+         HasExplicitProxyRules(pref_config.value()))) {
       *effective_config = pref_config;
     } else {
       *effective_config = net::ProxyConfigWithAnnotation::CreateDirect();
