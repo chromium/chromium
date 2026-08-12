@@ -9,7 +9,6 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
-#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -20,15 +19,7 @@
 
 namespace glic {
 
-class GlicZoomBrowserTest : public GlicBrowserTest {
- public:
-  GlicZoomBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kGlicClientZoomControl);
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using GlicZoomBrowserTest = GlicBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkeys) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());

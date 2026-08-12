@@ -8,7 +8,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/glic/common/view_scoped_registration_delegate.h"
 #include "chrome/browser/glic/public/features.h"
-#include "chrome/common/chrome_features.h"
 
 namespace glic {
 
@@ -61,21 +60,12 @@ bool PanelFocusDependentHotkeyManager::AcceleratorPressed(
       }
       return false;
     case LocalHotkeyManager::Command::kZoomIn:
-      if (!base::FeatureList::IsEnabled(features::kGlicClientZoomControl)) {
-        return false;
-      }
       panel_->Zoom(mojom::ZoomAction::kZoomIn);
       return true;
     case LocalHotkeyManager::Command::kZoomOut:
-      if (!base::FeatureList::IsEnabled(features::kGlicClientZoomControl)) {
-        return false;
-      }
       panel_->Zoom(mojom::ZoomAction::kZoomOut);
       return true;
     case LocalHotkeyManager::Command::kZoomReset:
-      if (!base::FeatureList::IsEnabled(features::kGlicClientZoomControl)) {
-        return false;
-      }
       panel_->Zoom(mojom::ZoomAction::kReset);
       return true;
 #if BUILDFLAG(IS_WIN)

@@ -1699,9 +1699,6 @@ inline constexpr char kGlicChromeStatusIconDescription[] =
 inline constexpr char kGlicOSIconVariantName[] = "Glic OS Status Icon Variant";
 inline constexpr char kGlicOSIconVariantDescription[] =
     "Select the variant of the Glic OS status bar icon on Mac.";
-inline constexpr char kGlicClientZoomControlName[] = "Glic Client Zoom Control";
-inline constexpr char kGlicClientZoomControlDescription[] =
-    "Enables the use of Chrome zoom keyboard controls in the Glic UI.";
 inline constexpr char kGlicContextMenuBelowSearchName[] =
     "Glic Context Menu Below Search";
 inline constexpr char kGlicContextMenuBelowSearchDescription[] =
