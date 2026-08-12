@@ -1629,7 +1629,11 @@ class LocationBarMediator
                 mDropdown.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
 
         set.connect(R.id.delete_button, ConstraintSet.TOP, R.id.url_bar, ConstraintSet.TOP);
-        set.connect(R.id.delete_button, ConstraintSet.BOTTOM, R.id.url_bar, ConstraintSet.BOTTOM);
+        set.clear(R.id.delete_button, ConstraintSet.BOTTOM);
+        int deleteButtonMargin =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.delete_button_popover_top_margin);
+        set.setMargin(R.id.delete_button, ConstraintSet.TOP, deleteButtonMargin);
 
         set.connect(
                 R.id.fusebox_plus_button,
