@@ -56,7 +56,8 @@ class MEDIA_EXPORT AudioSystemHelper {
   std::optional<AudioParameters> ComputeOutputParameters(
       const std::string& device_id);
 
-  const raw_ptr<AudioManager, DanglingUntriaged> audio_manager_;
+  // Pointed-to AudioManager is guaranteed to outlive AudioSystemHelper.
+  const raw_ptr<AudioManager> audio_manager_;
 };
 
 }  // namespace media
