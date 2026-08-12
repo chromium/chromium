@@ -11,6 +11,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/attempt_form_filling_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -247,6 +248,60 @@ TEST_F(AttemptFormFillingToolTest,
   frames_manager->AddWebFrame(std::move(main_frame));
   web_state->SetWebFramesManager(
       ActionTargetJavaScriptFeature::GetInstance()->GetSupportedContentWorld(),
+      std::move(frames_manager));
+
+  optimization_guide::proto::AttemptFormFillingAction action;
+  auto* request = action.add_form_filling_requests();
+  request->set_requested_data(
+      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
+  auto* field = request->add_trigger_fields();
+  field->mutable_coordinate()->set_x(10);
+  field->mutable_coordinate()->set_y(20);
+
+  std::unique_ptr<AttemptFormFillingTool> tool =
+      CreateTool(action, web_state.get());
+  ASSERT_TRUE(tool);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(result.internal_code().value(),
+            InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
+}
+
+// Test that if resolving the Autofill renderer IDs returns an invalid result,
+// the tool execution fails.
+TEST_F(AttemptFormFillingToolTest,
+       Execute_GetAutofillRendererIdsInvalidResultFails) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(profile_.get());
+  web::test::OverrideJavaScriptFeatures(
+      profile_.get(),
+      {
+          ActionTargetJavaScriptFeature::GetInstance(),
+          AttemptFormFillingToolJavaScriptFeature::GetInstance(),
+      });
+  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame();
+  main_frame->set_browser_state(profile_.get());
+
+  // Set up success for target frame resolution (returns none/null).
+  base::Value resolve_iframe_result;  // default constructor is NONE
+  main_frame->AddJsResultForFunctionCall(&resolve_iframe_result,
+                                         "action_target.resolveTargetIframe");
+
+  // Set up invalid result for getAutofillRendererIds (returns a number instead
+  // of a list).
+  base::Value renderer_id_result(12345);
+  main_frame->AddJsResultForFunctionCall(
+      &renderer_id_result, "attempt_form_filling.getAutofillRendererIds");
+
+  frames_manager->AddWebFrame(std::move(main_frame));
+  web_state->SetWebFramesManager(
+      AttemptFormFillingToolJavaScriptFeature::GetInstance()
+          ->GetSupportedContentWorld(),
       std::move(frames_manager));
 
   optimization_guide::proto::AttemptFormFillingAction action;

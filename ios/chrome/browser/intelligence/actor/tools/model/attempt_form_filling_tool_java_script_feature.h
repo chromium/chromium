@@ -23,12 +23,14 @@ namespace actor {
 enum class AttemptFormFillingToolResultCode {
   // The lookup was successful and the renderer ID was resolved.
   kOk = 0,
+  // The provided target is invalid.
+  kInvalidTarget = 1,
   // The provided coordinates are out of bounds or did not match any element on
   // the page.
-  kCoordinatesOutOfBounds = 1,
+  kCoordinatesOutOfBounds = 2,
   // The provided DOM node ID could not be found or did not resolve to an
   // element.
-  kInvalidDomNodeId = 2,
+  kInvalidDomNodeId = 3,
 };
 // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/resources/attempt_form_filling_tool.ts:AttemptFormFillingToolResultCode)
 
@@ -40,10 +42,7 @@ class AttemptFormFillingToolJavaScriptFeature : public web::JavaScriptFeature {
   static AttemptFormFillingToolJavaScriptFeature* GetInstance();
 
   // Queries the Autofill renderer IDs for the given `targets` in the given
-  // `target_frame`. `offset_x` and `offset_y` specify the layout translation
-  // offset between the main frame's viewport coordinate space and the target
-  // frame's local coordinate space, which will be subtracted from any
-  // coordinate-based targets.
+  // `target_frame`.
   void GetAutofillRendererIds(base::WeakPtr<web::WebFrame> target_frame,
                               const std::vector<ActionTarget>& targets,
                               GetAutofillRendererIdsCallback callback);

@@ -155,8 +155,6 @@ void AttemptFormFillingTool::Execute(ToolExecutionCallback callback) {
 
   execute_callback_ = std::move(callback);
 
-  CHECK(!tool_requests_.empty());
-
   // Pre-allocate the resolved requests.
   CHECK(!tool_requests_.empty());
   CHECK(service_requests_.empty());
@@ -293,9 +291,11 @@ void AttemptFormFillingTool::OnRequestRendererIdsResolved(
     return;
   }
 
+  const std::string frame_id = web_frame->GetFrameId();
+
   // Deserialize target frame's LocalFrameToken.
   std::optional<base::UnguessableToken> unguessable_token =
-      autofill::DeserializeJavaScriptFrameId(web_frame->GetFrameId());
+      autofill::DeserializeJavaScriptFrameId(frame_id);
   if (!unguessable_token) {
     FailWithResult(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
@@ -306,7 +306,7 @@ void AttemptFormFillingTool::OnRequestRendererIdsResolved(
   // Save renderer ID in `service_requests_`.
   std::vector<uint32_t> renderer_ids = std::move(result.value());
   std::vector<std::pair<size_t, size_t>> indices =
-      frame_to_indices_map_[web_frame->GetFrameId()];
+      frame_to_indices_map_[frame_id];
   if (renderer_ids.size() != indices.size()) {
     FailWithResult(ToolExecutionResult(
         mojom::ActionResultCode::kArgumentsInvalid,
