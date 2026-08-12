@@ -13717,6 +13717,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOpenDownloadInPreferredAppName,
      flag_descriptions::kOpenDownloadInPreferredAppDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOpenDownloadInPreferredApp)},
+    {"queued-compositor-web-contents-updates",
+     flag_descriptions::kQueuedCompositorWebContentsUpdatesName,
+     flag_descriptions::kQueuedCompositorWebContentsUpdatesDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kQueuedCompositorWebContentsUpdates)},
 #endif
 
     {"enable-ai-subscription-avatar-ring",

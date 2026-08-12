@@ -5692,6 +5692,13 @@ inline constexpr char kOpenDownloadInPreferredAppDescription[] =
     "When enabled, downloaded items in Chrome will open in the user's "
     "preferred app for that file type.";
 
+inline constexpr char kQueuedCompositorWebContentsUpdatesName[] =
+    "Queued Compositor Web Contents Updates";
+inline constexpr char kQueuedCompositorWebContentsUpdatesDescription[] =
+    "When this is enabled, the CompositorViewHolder will queue certain updates "
+    "to web contents size, rather than trigger them synchronously, to avoid "
+    "visual jank during side UI resizing.";
+
 inline constexpr char kSidePanelTopHairlineRefactorAndroidName[] =
     "Side Panel Top Hairline Refactor Android";
 inline constexpr char kSidePanelTopHairlineRefactorAndroidDescription[] =

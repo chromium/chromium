@@ -8441,6 +8441,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "queued-compositor-web-contents-updates",
+    "owners": ["clhager@google.com", "twellington@chromium.org"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "quick-answers-material-next-ui",
     "owners": [ "assistive-eng@google.com" ],
     "expiry_milestone": 133
