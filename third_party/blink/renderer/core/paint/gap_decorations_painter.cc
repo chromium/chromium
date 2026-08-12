@@ -221,6 +221,14 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
                                   const PaintInfo& paint_info,
                                   const PhysicalRect& paint_rect,
                                   const GapGeometry& gap_geometry) {
+  // TODO(javiercon): Remove once paint side for cross gap painting is
+  // implemented.
+  if (gap_geometry.GetContainerType() ==
+          GapGeometry::ContainerType::kGridLanes &&
+      !gap_geometry.IsMainDirection(track_direction)) {
+    return;
+  }
+
   const ComputedStyle& style = box_fragment_.Style();
   const bool is_column_gap = (track_direction == kForColumns);
 

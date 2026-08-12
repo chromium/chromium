@@ -30,6 +30,7 @@ enum class GridItemContributionType;
 struct BoxStrut;
 struct GridItemData;
 struct GridLaneData;
+struct GridLanesGapGeometryState;
 struct GridPlacementData;
 using GridLanesDataVector = HeapVector<Member<GridLaneData>, 1>;
 
@@ -130,7 +131,9 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // subgrids. `out_total_intrinsic_block_size` is set to the intrinsic content
   // block size of the complete, unfragmented container. If provided,
   // `out_grid_lanes` is populated with the final item placement data for each
-  // track.
+  // track, used as a break-token snapshot for fragmentation and as the source
+  // for gap decoration placement. `out_gap_geometry_state` receives the
+  // placement-derived inputs needed to finalize gap geometry.
   void PlaceGridLanesItems(
       GridItems& grid_items,
       const GridSizingSubtree& sizing_subtree,
@@ -138,7 +141,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       GridLanesRunningPositions& running_positions,
       LayoutUnit* out_total_intrinsic_block_size,
       std::optional<SizingConstraint> sizing_constraint = std::nullopt,
-      GridLanesDataVector* out_grid_lanes = nullptr);
+      GridLanesDataVector* out_grid_lanes = nullptr,
+      GridLanesGapGeometryState* out_gap_geometry_state = nullptr);
   void PlaceGridLanesItemsForFragmentation(
       const GridLanesDataVector& grid_lanes,
       const GridLayoutSubtree& layout_subtree);
@@ -156,8 +160,9 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // baselines from the items. `sizing_subtree` represents the grid-lanes
   // container's sizing subtree; its children are finalized on demand so
   // subgridded tracks are observed against the resolved placement in the case
-  // of auto placed subgrids. If provided, `out_grid_lanes` is populated with
-  // the final item placement data for each track.
+  // of auto placed subgrids. When non-null, `out_grid_lanes` is the lane graph
+  // built during final layout placement; combined with block fragmentation it
+  // selects fragmentation collection over gap-decoration placement.
   void RunGridLanesPlacementPhase(
       GridItems& grid_items,
       const GridSizingSubtree& sizing_subtree,
@@ -170,14 +175,18 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       GridLanesDataVector* out_grid_lanes = nullptr);
 
   // Creates a constraint space for relaying out a stretch-aligned item with
-  // its stretched stacking-axis size.
+  // its stretched stacking-axis size. `builder_child_index` indexes the item's
+  // fragment in the container builder.
   ConstraintSpace CreateConstraintSpaceForStretch(
-      const GridLanesRunningPositions::AlignmentCandidate& candidate);
+      const GridLanesRunningPositions::AlignmentCandidate& candidate,
+      wtf_size_t builder_child_index);
 
   // Re-lays out a single item with stretch alignment in the stacking axis to
-  // fill the track opening after it.
+  // fill the track opening after it. `builder_child_index` indexes the item's
+  // fragment in the container builder.
   void RelayoutStackingAxisStretchItem(
       const GridLanesRunningPositions::AlignmentCandidate& candidate,
+      wtf_size_t builder_child_index,
       GridLanesRunningPositions& running_positions);
 
   // Finalizes track opening sizes, computes and applies stacking axis alignment
@@ -186,7 +195,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // stacking axis, and `stacking_axis_gap` is the size of the gap between items
   // in the container specified by the `gap` property. If provided, `grid_lanes`
   // contains the persisted item placement data to update during fragmentation
-  // collection.
+  // collection. It is also used for building gap decorations.
   void ApplyStackingAxisAlignment(GridLanesRunningPositions& running_positions,
                                   LayoutUnit effective_stacking_axis_size,
                                   LayoutUnit stacking_axis_gap,
@@ -415,11 +424,15 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   void ApplyTrackReverseOverflowShift(GridLayoutData* layout_data,
                                       LayoutUnit total_intrinsic_block_size);
 
+  GridLanesGapGeometryState ComputeGapGeometryState(
+      LayoutUnit stacking_axis_gap,
+      LayoutUnit effective_stacking_axis_size,
+      LayoutUnit content_alignment_translation,
+      bool is_fill_reverse) const;
+
   std::optional<LayoutUnit> contain_intrinsic_block_size_;
   LayoutUnit intrinsic_block_size_;
   LayoutUnit stacking_axis_size_;
-
-  const GapGeometry* gap_geometry_ = nullptr;
 
   LogicalSize grid_lanes_available_size_;
   LogicalSize grid_lanes_min_available_size_;

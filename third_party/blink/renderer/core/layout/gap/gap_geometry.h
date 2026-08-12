@@ -204,6 +204,11 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     return main_gaps_[index];
   }
 
+  const MainGap& MainGapAt(wtf_size_t index) const {
+    CHECK_LT(index, main_gaps_.size());
+    return main_gaps_[index];
+  }
+
   CrossGap& CrossGapAt(wtf_size_t index) {
     CHECK_LT(index, cross_gaps_.size());
     return cross_gaps_[index];
@@ -227,6 +232,16 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     CHECK_LT(index, flex_cross_gap_sizes_->size());
     (*flex_cross_gap_sizes_)[index] = size;
   }
+
+  // A lane boundary separates adjacent non-collapsed tracks. Maps a lane
+  // boundary to its grid-axis offset:
+  //   lane boundary 0            -> grid-axis content start
+  //   lane boundary lane_count   -> grid-axis content end
+  //   lane boundary i (else)     -> main_gaps_[i - 1] center
+  // where `lane_count == MainGapCount() + 1`.
+  // Interior lane boundaries correspond to `MainGap`s; the outer lane
+  // boundaries are content edges.
+  LayoutUnit GridAxisOffsetForLaneBoundary(wtf_size_t lane_boundary) const;
 
   // Resets transient per-paint state. A cached `GapGeometry` can be reused
   // across relayouts and repaints, so paint must not inherit state left behind

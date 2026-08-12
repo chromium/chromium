@@ -644,6 +644,29 @@ void GapGeometry::GenerateCrossIntersectionListForMulticol(
                              cursor.GetNextGapSegmentState());
 }
 
+LayoutUnit GapGeometry::GridAxisOffsetForLaneBoundary(
+    wtf_size_t lane_boundary) const {
+  CHECK_EQ(container_type_, ContainerType::kGridLanes);
+
+  // A lane boundary separates adjacent non-collapsed tracks. Interior lane
+  // boundaries correspond to `MainGap`s; the outer lane boundaries are content
+  // edges.
+  const bool grid_axis_is_inline = main_direction_ == kForColumns;
+  const LayoutUnit content_start =
+      grid_axis_is_inline ? content_inline_start_ : content_block_start_;
+  const LayoutUnit content_end =
+      grid_axis_is_inline ? content_inline_end_ : content_block_end_;
+  const wtf_size_t lane_count = main_gaps_.size() + 1;
+
+  if (lane_boundary == 0) {
+    return content_start;
+  }
+  if (lane_boundary == lane_count) {
+    return content_end;
+  }
+  return MainGapAt(lane_boundary - 1).GetGapOffset();
+}
+
 LayoutUnit GapGeometry::ComputeEndOffsetForFlexCrossGap(
     GridTrackSizingDirection direction,
     bool cross_gap_is_at_end,

@@ -3207,8 +3207,8 @@ TEST_F(GridLanesLayoutAlgorithmTest, PopulateDensePackedBreakTokenData) {
 
   // The packed item is stored under the spanner below its selected opening.
   const auto& spanner = *grid_lanes[0]->item_data[0];
-  ASSERT_EQ(spanner.items_packed_above.size(), 1u);
-  const auto& packed_item = *spanner.items_packed_above[0];
+  ASSERT_EQ(spanner.items_densely_packed_above.size(), 1u);
+  const auto& packed_item = *spanner.items_densely_packed_above[0];
 
   // The packed item's shared placement record is found by its collection index
   // and end-aligned within the opening above the spanner.
@@ -3242,8 +3242,8 @@ TEST_F(GridLanesLayoutAlgorithmTest, PopulateDensePackedSpannerBreakTokenData) {
   // Both entries for the packed spanner reference the same grid item and shared
   // placement data.
   const auto& spanner = *grid_lanes[1]->item_data[0];
-  ASSERT_EQ(spanner.items_packed_above.size(), 1u);
-  const auto& packed_spanner_start = *spanner.items_packed_above[0];
+  ASSERT_EQ(spanner.items_densely_packed_above.size(), 1u);
+  const auto& packed_spanner_start = *spanner.items_densely_packed_above[0];
   const auto& packed_spanner_continuation = *grid_lanes[2]->item_data[0];
 
   EXPECT_EQ(packed_spanner_start.item.Get(),
@@ -3285,16 +3285,18 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   // lane.
   const auto& first_parent = *grid_lanes[1]->item_data[0];
   const auto& second_parent = *grid_lanes[2]->item_data[0];
-  ASSERT_EQ(first_parent.items_packed_above.size(), 2u);
-  ASSERT_EQ(second_parent.items_packed_above.size(), 2u);
+  ASSERT_EQ(first_parent.items_densely_packed_above.size(), 2u);
+  ASSERT_EQ(second_parent.items_densely_packed_above.size(), 2u);
 
-  const auto& first_packed_spanner_start = *first_parent.items_packed_above[0];
+  const auto& first_packed_spanner_start =
+      *first_parent.items_densely_packed_above[0];
   const auto& first_packed_spanner_continuation =
-      *second_parent.items_packed_above[0];
+      *second_parent.items_densely_packed_above[0];
 
-  const auto& second_packed_spanner_start = *first_parent.items_packed_above[1];
+  const auto& second_packed_spanner_start =
+      *first_parent.items_densely_packed_above[1];
   const auto& second_packed_spanner_continuation =
-      *second_parent.items_packed_above[1];
+      *second_parent.items_densely_packed_above[1];
 
   // The first packed spanner starts at the top of both openings.
   EXPECT_NE(first_parent.item.Get(), second_parent.item.Get());
@@ -3344,15 +3346,15 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   ASSERT_EQ(grid_lanes[2]->item_data.size(), 2u);
   ASSERT_EQ(grid_lanes[3]->item_data.size(), 2u);
   const auto& root_spanner = *grid_lanes[1]->item_data[0];
-  ASSERT_EQ(root_spanner.items_packed_above.size(), 2u);
-  const auto& packed_spanner = *root_spanner.items_packed_above[0];
-  const auto& packed_item = *root_spanner.items_packed_above[1];
+  ASSERT_EQ(root_spanner.items_densely_packed_above.size(), 2u);
+  const auto& packed_spanner = *root_spanner.items_densely_packed_above[0];
+  const auto& packed_item = *root_spanner.items_densely_packed_above[1];
 
   // The single-lane item uses the opening above the packed spanner but remains
   // a sibling under the original root instead of nesting under that spanner.
   EXPECT_EQ(packed_spanner.PlacementData().offset,
             (LogicalOffset{LayoutUnit(100), LayoutUnit(10)}));
-  EXPECT_TRUE(packed_spanner.items_packed_above.empty());
+  EXPECT_TRUE(packed_spanner.items_densely_packed_above.empty());
   EXPECT_EQ(packed_item.PlacementData().offset,
             (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
 }
@@ -3382,11 +3384,12 @@ TEST_F(GridLanesLayoutAlgorithmTest,
 
   const auto& first_spanner = *grid_lanes[1]->item_data[0];
   const auto& second_spanner = *grid_lanes[1]->item_data[1];
-  ASSERT_EQ(first_spanner.items_packed_above.size(), 1u);
-  ASSERT_EQ(second_spanner.items_packed_above.size(), 1u);
+  ASSERT_EQ(first_spanner.items_densely_packed_above.size(), 1u);
+  ASSERT_EQ(second_spanner.items_densely_packed_above.size(), 1u);
 
-  const auto& first_packed_item = *first_spanner.items_packed_above[0];
-  const auto& second_packed_item = *second_spanner.items_packed_above[0];
+  const auto& first_packed_item = *first_spanner.items_densely_packed_above[0];
+  const auto& second_packed_item =
+      *second_spanner.items_densely_packed_above[0];
 
   // Each packed item is associated with the spanner below the opening it
   // selected.
@@ -3917,12 +3920,12 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   // Packed entries are reversed with their containing lane, while retaining
   // their final inline alignment offsets.
   const auto& spanner = *grid_lanes[1]->item_data[0];
-  ASSERT_EQ(spanner.items_packed_above.size(), 2u);
+  ASSERT_EQ(spanner.items_densely_packed_above.size(), 2u);
   EXPECT_EQ(spanner.PlacementData().offset,
             (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
-  EXPECT_EQ(spanner.items_packed_above[0]->PlacementData().offset,
+  EXPECT_EQ(spanner.items_densely_packed_above[0]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(100), LayoutUnit(180)}));
-  EXPECT_EQ(spanner.items_packed_above[1]->PlacementData().offset,
+  EXPECT_EQ(spanner.items_densely_packed_above[1]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(180), LayoutUnit(190)}));
 }
 
@@ -3962,12 +3965,12 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   // The packed vector likewise remains in placement order. The first packed
   // item is aligned to both the inline and block ends of its opening.
   const auto& spanner = *grid_lanes[1]->item_data[0];
-  ASSERT_EQ(spanner.items_packed_above.size(), 2u);
+  ASSERT_EQ(spanner.items_densely_packed_above.size(), 2u);
   EXPECT_EQ(spanner.PlacementData().offset,
             (LogicalOffset{LayoutUnit(), LayoutUnit(50)}));
-  EXPECT_EQ(spanner.items_packed_above[0]->PlacementData().offset,
+  EXPECT_EQ(spanner.items_densely_packed_above[0]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(190), LayoutUnit(80)}));
-  EXPECT_EQ(spanner.items_packed_above[1]->PlacementData().offset,
+  EXPECT_EQ(spanner.items_densely_packed_above[1]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(180), LayoutUnit(50)}));
 }
 
@@ -3997,11 +4000,11 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   // Once intrinsic sizing resolves the 200px block size, fill-reverse updates
   // every offset and reverses the two packed entries with their lane.
   const auto& spanner = *grid_lanes[0]->item_data[0];
-  ASSERT_EQ(spanner.items_packed_above.size(), 2u);
+  ASSERT_EQ(spanner.items_densely_packed_above.size(), 2u);
   EXPECT_EQ(spanner.PlacementData().offset, LogicalOffset());
-  EXPECT_EQ(spanner.items_packed_above[0]->PlacementData().offset,
+  EXPECT_EQ(spanner.items_densely_packed_above[0]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(), LayoutUnit(20)}));
-  EXPECT_EQ(spanner.items_packed_above[1]->PlacementData().offset,
+  EXPECT_EQ(spanner.items_densely_packed_above[1]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(), LayoutUnit(30)}));
 
   // The spanner's shared placement record appears first in column 2, followed
