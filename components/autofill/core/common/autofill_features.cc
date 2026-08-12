@@ -350,8 +350,13 @@ BASE_FEATURE(kAutofillAiShowDialogInSettingsWhenUpstreamingFails,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, a loading dialog is shown to the user during the time their data
-// is fetched from the server.
+// is fetched from the server for personal context entities.
 BASE_FEATURE(kAutofillAiShowPersonalContextFillingYourInfoDialog,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, a loading dialog is shown to the user during the time their data
+// is fetched from the server for server wallet entities.
+BASE_FEATURE(kAutofillAiShowServerWalletFillingYourInfoDialog,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 

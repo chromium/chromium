@@ -117,10 +117,19 @@ void OnCreditCardFetched(base::WeakPtr<BrowserAutofillManager> manager,
 bool ShouldShowLoadingDialog(EntityInstance::RecordType record_type,
                              bool reauth_attempted,
                              bool will_fetch_from_server) {
-  return reauth_attempted && will_fetch_from_server &&
-         record_type == EntityInstance::RecordType::kPersonalContext &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillAiShowPersonalContextFillingYourInfoDialog);
+  if (!reauth_attempted || !will_fetch_from_server) {
+    return false;
+  }
+  switch (record_type) {
+    case EntityInstance::RecordType::kLocal:
+      return false;
+    case EntityInstance::RecordType::kServerWallet:
+      return base::FeatureList::IsEnabled(
+          features::kAutofillAiShowServerWalletFillingYourInfoDialog);
+    case EntityInstance::RecordType::kPersonalContext:
+      return base::FeatureList::IsEnabled(
+          features::kAutofillAiShowPersonalContextFillingYourInfoDialog);
+  }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

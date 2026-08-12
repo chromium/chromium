@@ -3064,8 +3064,14 @@ class AutofillExternalDelegateWithWalletPrivatePassesTest
  public:
   AutofillExternalDelegateWithWalletPrivatePassesTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillAiWithDataSchema,
-         features::kAutofillAiWalletPrivatePasses},
+        {
+            features::kAutofillAiWithDataSchema,
+            features::kAutofillAiWalletPrivatePasses,
+            features::kAutofillAiReauthRequired,
+#if BUILDFLAG(IS_ANDROID)
+            features::kAutofillAiShowServerWalletFillingYourInfoDialog,
+#endif  // BUILDFLAG(IS_ANDROID)
+        },
         {});
   }
 
@@ -3128,6 +3134,13 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
                                 std::optional(FillingProduct::kAutofillAi)));
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // The loading dialog should not be shown if the user doesn't need to
+  // authenticate.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLoadingDialog()).Times(0);
+  EXPECT_CALL(autofill_client(), DismissAutofillAiLoadingDialog()).Times(0);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   external_delegate().DidAcceptSuggestion(fill_suggestion,
                                           {.multi_index = {0}});
 }
@@ -3167,6 +3180,13 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               std::optional(FillingProduct::kAutofillAi)));
 
+#if BUILDFLAG(IS_ANDROID)
+  // The loading dialog should not be shown if the user doesn't need to
+  // authenticate.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLoadingDialog()).Times(0);
+  EXPECT_CALL(autofill_client(), DismissAutofillAiLoadingDialog()).Times(0);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   external_delegate().DidAcceptSuggestion(fill_suggestion,
                                           {.multi_index = {0}});
 }
@@ -3204,6 +3224,13 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               std::optional(FillingProduct::kAutofillAi)));
 
+#if BUILDFLAG(IS_ANDROID)
+  // The loading dialog should not be shown if the user doesn't need to
+  // authenticate.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLoadingDialog()).Times(0);
+  EXPECT_CALL(autofill_client(), DismissAutofillAiLoadingDialog()).Times(0);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   external_delegate().DidAcceptSuggestion(fill_suggestion,
                                           {.multi_index = {0}});
 }
@@ -3214,8 +3241,6 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
 // no failure notification is displayed.
 TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
        AutofillAiFillMaskedServerEntityReauthFails) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAiReauthRequired};
   autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
 
@@ -3255,8 +3280,164 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               std::optional(FillingProduct::kAutofillAi)));
 
+#if BUILDFLAG(IS_ANDROID)
+  // The loading dialog should not be shown if the authentication fails.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLoadingDialog()).Times(0);
+  EXPECT_CALL(autofill_client(), DismissAutofillAiLoadingDialog()).Times(0);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   external_delegate().DidAcceptSuggestion(fill_suggestion,
                                           {.multi_index = {0}});
+}
+
+// Tests that when attempting to fill a masked server entity and re-auth
+// succeeds, no failure notification is displayed.
+TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
+       AutofillAiFillMaskedServerEntityReauthSucceeds) {
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
+
+  EntityInstance full_passport = GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance masked_passport = MaskEntityInstance(full_passport);
+  AddOrUpdateEntityInstance(masked_passport);
+
+  // Show suggestions for `masked_passport`.
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(
+      masked_passport.guid(), /*requires_server_fetch=*/true);
+  std::vector<Suggestion> suggestions = {fill_suggestion};
+  OnSuggestionsReturned(queried_field(), suggestions);
+  ON_CALL(autofill_client(), GetAutofillSuggestions)
+      .WillByDefault(Return(suggestions));
+
+  // Simulate a failed re-auth.
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
+  device_reauth::DeviceAuthenticator::AuthenticateCallback reauth_callback;
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(MoveArg<1>(&reauth_callback));
+  test_api(autofill_manager().GetAutofillAiAccessManager())
+      .SetDeviceAuthenticator(std::move(authenticator));
+
+  EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
+      .Times(0);
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                        IsQueriedFieldId(), HasFillingPayload(full_passport),
+                        DefaultTriggerSource(), _));
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                              std::optional(FillingProduct::kAutofillAi)));
+
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
+
+  // The `AutofillAiAccessManager` will fetch the server wallet passport
+  // entity from the `AutofillAiPersonalContextAccessManager` after successful
+  // authentication.
+  WalletPassAccessManager::GetUnmaskedEntityInstanceCallback
+      get_unmasked_entity_callback;
+  EXPECT_CALL(wallet_manager(),
+              GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
+      .WillOnce(MoveArg<1>(&get_unmasked_entity_callback));
+
+#if BUILDFLAG(IS_ANDROID)
+  // The loading dialog is shown only on Android after successful
+  // authentication.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLoadingDialog());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Simulate successful authentication.
+  ASSERT_FALSE(reauth_callback.is_null());
+  std::move(reauth_callback).Run(true);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Dismiss the loading dialog after the entity is fetched.
+  EXPECT_CALL(autofill_client(), DismissAutofillAiLoadingDialog());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Simulate the async response.
+  ASSERT_FALSE(get_unmasked_entity_callback.is_null());
+  std::move(get_unmasked_entity_callback).Run(full_passport);
+}
+
+// Tests that when attempting to fill a masked server entity and re-auth
+// succeeds, no failure notification is displayed.
+TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
+       AutofillAiFillMaskedServerEntityReauthSucceeds_AccessManagerReset) {
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
+
+  EntityInstance full_passport = GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance masked_passport = MaskEntityInstance(full_passport);
+  AddOrUpdateEntityInstance(masked_passport);
+
+  // Show suggestions for `masked_passport`.
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(
+      masked_passport.guid(), /*requires_server_fetch=*/true);
+  std::vector<Suggestion> suggestions = {fill_suggestion};
+  OnSuggestionsReturned(queried_field(), suggestions);
+  ON_CALL(autofill_client(), GetAutofillSuggestions)
+      .WillByDefault(Return(suggestions));
+
+  // Simulate a failed re-auth.
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
+  device_reauth::DeviceAuthenticator::AuthenticateCallback reauth_callback;
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(MoveArg<1>(&reauth_callback));
+  test_api(autofill_manager().GetAutofillAiAccessManager())
+      .SetDeviceAuthenticator(std::move(authenticator));
+
+  EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
+      .Times(0);
+  EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
+
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
+
+  // The `AutofillAiAccessManager` will fetch the server wallet passport
+  // entity from the `AutofillAiPersonalContextAccessManager` after successful
+  // authentication.
+  WalletPassAccessManager::GetUnmaskedEntityInstanceCallback
+      get_unmasked_entity_callback;
+  EXPECT_CALL(wallet_manager(),
+              GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
+      .WillOnce(MoveArg<1>(&get_unmasked_entity_callback));
+
+#if BUILDFLAG(IS_ANDROID)
+  // The loading dialog is shown only on Android after successful
+  // authentication.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLoadingDialog());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Simulate successful authentication.
+  ASSERT_FALSE(reauth_callback.is_null());
+  std::move(reauth_callback).Run(true);
+
+#if BUILDFLAG(IS_ANDROID)
+  // The loading dialog must be dismissed even if the AutofillAiAccessManager
+  // is reset.
+  EXPECT_CALL(autofill_client(), DismissAutofillAiLoadingDialog());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Reset the access manager before the server request is complete.
+  test_api(autofill_manager()).set_autofill_ai_access_manager(nullptr);
+
+  // Simulate the async response.
+  ASSERT_FALSE(get_unmasked_entity_callback.is_null());
+  std::move(get_unmasked_entity_callback).Run(full_passport);
 }
 
 class AutofillExternalDelegateWithAmbientAutofillTest
