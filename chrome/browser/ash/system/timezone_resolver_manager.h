@@ -8,6 +8,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -17,6 +18,10 @@
 #include "components/session_manager/core/session_manager_observer.h"
 
 class PrefService;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace session_manager {
 class SessionManager;
@@ -48,9 +53,12 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate,
   };
 
   // `local_state` must be non-null and must outlive `this`.
-  TimeZoneResolverManager(PrefService* local_state,
-                          SystemLocationProvider* geolocation_provider,
-                          session_manager::SessionManager* session_manager);
+  // `shared_url_loader_factory` must be non-null.
+  TimeZoneResolverManager(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      SystemLocationProvider* geolocation_provider,
+      session_manager::SessionManager* session_manager);
 
   TimeZoneResolverManager(const TimeZoneResolverManager&) = delete;
   TimeZoneResolverManager& operator=(const TimeZoneResolverManager&) = delete;
@@ -130,6 +138,8 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate,
   void OnLocalStateInitialized(bool initialized);
 
   const raw_ref<PrefService> local_state_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 
+#include <utility>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/geolocation_access_level.h"
@@ -19,8 +21,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -29,6 +29,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 namespace system {
@@ -144,10 +145,13 @@ ServiceConfiguration GetServiceConfigurationForSigninScreen(
 
 TimeZoneResolverManager::TimeZoneResolverManager(
     PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     SystemLocationProvider* geolocation_provider,
     session_manager::SessionManager* session_manager)
     : local_state_(CHECK_DEREF(local_state)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       geolocation_provider_(geolocation_provider) {
+  CHECK(shared_url_loader_factory_);
   switch (local_state_->GetInitializationStatus()) {
     case PrefService::INITIALIZATION_STATUS_SUCCESS:
     case PrefService::INITIALIZATION_STATUS_CREATED_NEW_PREF_STORE:
@@ -378,11 +382,10 @@ bool TimeZoneResolverManager::TimeZoneResolverAllowedByTimeZoneConfigData()
 }
 
 ash::TimeZoneResolver* TimeZoneResolverManager::GetResolver() {
-  if (!timezone_resolver_.get()) {
+  if (!timezone_resolver_) {
     timezone_resolver_ = std::make_unique<ash::TimeZoneResolver>(
-        &local_state_.get(), g_browser_process->shared_url_loader_factory(),
-        this, geolocation_provider_,
-        base::BindRepeating(&ash::DelayNetworkCall));
+        &local_state_.get(), shared_url_loader_factory_, this,
+        geolocation_provider_, base::BindRepeating(&ash::DelayNetworkCall));
   }
   return timezone_resolver_.get();
 }

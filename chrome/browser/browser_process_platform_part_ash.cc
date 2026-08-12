@@ -390,6 +390,7 @@ void BrowserProcessPlatformPart::InitializeTimezoneResolverManager() {
   timezone_resolver_manager_ =
       std::make_unique<ash::system::TimeZoneResolverManager>(
           g_browser_process->local_state(),
+          g_browser_process->shared_url_loader_factory(),
           ash::SystemLocationProvider::GetInstance(),
           session_manager::SessionManager::Get());
 }
