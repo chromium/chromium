@@ -4,10 +4,10 @@
 
 #include "ui/gfx/shadow_util.h"
 
-#include <map>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -105,7 +105,7 @@ struct ShadowDetailsKey {
 };
 
 // Map from shadow details key to a cached shadow.
-using ShadowDetailsMap = std::map<ShadowDetailsKey, ShadowDetails>;
+using ShadowDetailsMap = base::flat_map<ShadowDetailsKey, ShadowDetails>;
 base::LazyInstance<ShadowDetailsMap>::DestructorAtExit g_shadow_cache =
     LAZY_INSTANCE_INITIALIZER;
 
@@ -114,8 +114,19 @@ base::LazyInstance<ShadowDetailsMap>::DestructorAtExit g_shadow_cache =
 ShadowDetails::ShadowDetails(const gfx::ShadowValues& values,
                              const gfx::ImageSkia& nine_patch_image)
     : values(values), nine_patch_image(nine_patch_image) {}
+
 ShadowDetails::ShadowDetails(const ShadowDetails& other) = default;
-ShadowDetails::~ShadowDetails() {}
+ShadowDetails& ShadowDetails::operator=(const ShadowDetails& other) = default;
+
+ShadowDetails::ShadowDetails(ShadowDetails&& other) = default;
+ShadowDetails& ShadowDetails::operator=(ShadowDetails&& other) = default;
+
+ShadowDetails::~ShadowDetails() = default;
+
+bool ShadowDetails::operator==(const ShadowDetails& other) const {
+  return values == other.values &&
+         nine_patch_image.BackedBySameObjectAs(other.nine_patch_image);
+}
 
 const ShadowDetails& ShadowDetails::Get(
     int elevation,
@@ -167,7 +178,7 @@ const ShadowDetails& ShadowDetails::Get(
   }
 
   // Evict the details whose ninebox image does not have any shadow owners.
-  std::erase_if(g_shadow_cache.Get(), [](auto& pair) {
+  base::EraseIf(g_shadow_cache.Get(), [](auto& pair) {
     return pair.second.nine_patch_image.IsUniquelyOwned();
   });
 
@@ -175,12 +186,10 @@ const ShadowDetails& ShadowDetails::Get(
       std::make_unique<ShadowNineboxSource>(values, key.rounded_corners);
   const gfx::Size image_size = source->size();
   auto nine_patch_image = ImageSkia(std::move(source), image_size);
-  auto insertion = g_shadow_cache.Get().emplace(
-      key, ShadowDetails(values, nine_patch_image));
-  DCHECK(insertion.second);
-  const std::pair<const ShadowDetailsKey, ShadowDetails>& inserted_item =
-      *(insertion.first);
-  return inserted_item.second;
+  auto [inserted_iter, success] =
+      g_shadow_cache.Get().try_emplace(key, values, nine_patch_image);
+  DCHECK(success);
+  return inserted_iter->second;
 }
 
 // static
@@ -228,10 +237,6 @@ gfx::Insets ShadowDetails::GetNineboxApertureInsets(
       outer_blur.right() + std::max(inner_blur.right(), corner_insets.right()));
 }
 
-size_t ShadowDetails::GetDetailsCacheSizeForTest() {
-  return g_shadow_cache.Get().size();
-}
-
 gfx::Insets ShadowDetails::GetInsetsForRoundedCorners(
     const gfx::RoundedCornersF& rounded_corners) {
   return gfx::Insets::TLBR(
@@ -243,6 +248,10 @@ gfx::Insets ShadowDetails::GetInsetsForRoundedCorners(
                                 rounded_corners.lower_right())),
       base::ClampRound(std::max(rounded_corners.upper_right(),
                                 rounded_corners.lower_right())));
+}
+
+size_t ShadowDetails::GetDetailsCacheSizeForTest() {
+  return g_shadow_cache.Get().size();
 }
 
 }  // namespace gfx

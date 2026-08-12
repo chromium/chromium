@@ -6,6 +6,7 @@
 #define UI_COMPOSITOR_EXTRA_SHADOW_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer.h"
@@ -71,7 +72,9 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   // Set customized key and ambient shadows color map for certain elevations.
   void SetElevationToColorsMap(const ElevationToColorsMap& color_map);
 
-  const gfx::ShadowDetails* details_for_testing() const { return details_; }
+  const gfx::ShadowDetails* details_for_testing() const {
+    return details_ ? &details_.value() : nullptr;
+  }
   const gfx::RoundedCornersF& rounded_corners_for_testing() const {
     return rounded_corners_;
   }
@@ -117,11 +120,8 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   gfx::RoundedCornersF rounded_corners_{2};
 
   // The details of the shadow image that's currently set on |shadow_layer()|.
-  // This will be null until a positive elevation has been set. Once set, it
-  // will always point to a global ShadowDetails instance that is guaranteed
-  // to outlive the Shadow instance. See ui/gfx/shadow_util.h for how these
-  // ShadowDetails instances are created.
-  raw_ptr<const gfx::ShadowDetails, LeakedDanglingUntriaged> details_ = nullptr;
+  // This will be nullopt until a positive elevation has been set.
+  std::optional<gfx::ShadowDetails> details_;
 
   // The style of shadow. Use MD style by default.
   gfx::ShadowStyle style_ = gfx::ShadowStyle::kMaterialDesign;

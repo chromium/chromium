@@ -29,8 +29,16 @@ enum class ShadowStyle {
 struct COMPONENT_EXPORT(GFX) ShadowDetails {
   ShadowDetails(const gfx::ShadowValues& values,
                 const gfx::ImageSkia& nine_patch_image);
+
   ShadowDetails(const ShadowDetails& other);
+  ShadowDetails& operator=(const ShadowDetails& other);
+
+  ShadowDetails(ShadowDetails&& other);
+  ShadowDetails& operator=(ShadowDetails&& other);
+
   ~ShadowDetails();
+
+  bool operator==(const ShadowDetails& other) const;
 
   // Returns a cached ShadowDetails for the given elevation, rounded corners,
   // and shadow style. Creates the ShadowDetails first if necessary.
@@ -57,29 +65,23 @@ struct COMPONENT_EXPORT(GFX) ShadowDetails {
   //
   // Left Inset = max(r_UL, r_LL)
   // ◄─────►
-  //  (r_UL : Large)                           (r_UR: Medium)
-  //        ╭──────────────────────────────────────────────╮     ▲
-  //     ╭──╯                                              ╰──╮  |
-  //   ╭─╯                                                    │  |  Top Inset =
-  //   max(r_UL, r_UR)
-  //  ╭╯                                                      │  |
-  //  │                                                       │  ▼
-  //  │                                                       │
-  //  │                                                       │
-  //  │                                                       │
-  //  │                                                       │
-  //  ╰╮                                                      │  ▲
-  //   ╰──────────────────────────────────────────────────────┘  ▼  Bottom Inset
-  //   = max(r_LL, r_LR)
-  //  (r_LL: Small)                             (r_LR: Sharp)
-  //                                                       ◄──►
-  //                                                       Right Inset =
-  //                                                       max(r_UR, r_LR)
+  // (r_UL: Large)                                         (r_UR: Medium)
+  //       ╭──────────────────────────────────────────────────╮▲
+  //    ╭──╯                                                  ││ Top Inset =
+  //  ╭─╯                                                     ││  max(r_UL,
+  // ╭╯                                                       │▼     r_UR)
+  // │                                                        │
+  // │                                                        │
+  // │                                                        │
+  // │                                                        │▲ Bottom Inset =
+  // ╰──╮                                                     ││ max(r_LL,r_LR)
+  //    ╰─────────────────────────────────────────────────────┘▼
+  // (r_LL: Small)                                         (r_LR: Sharp)
+  //                                                      ◄──►
+  //                                          Right Inset =  max(r_UR, r_LR)
   //
   static gfx::Insets GetInsetsForRoundedCorners(
       const gfx::RoundedCornersF& rounded_corners);
-
-  static size_t GetDetailsCacheSizeForTest();
 
   // Returns the insets for the ninebox aperture given the shadows and corner
   // radius. Represents the total space need to draw  the full range of blur and
@@ -88,10 +90,12 @@ struct COMPONENT_EXPORT(GFX) ShadowDetails {
       const gfx::ShadowValues& shadows,
       const gfx::RoundedCornersF& rounded_corners);
 
+  static size_t GetDetailsCacheSizeForTest();
+
   // Description of the shadows.
-  const gfx::ShadowValues values;
+  gfx::ShadowValues values;
   // Cached ninebox image based on |values|.
-  const gfx::ImageSkia nine_patch_image;
+  gfx::ImageSkia nine_patch_image;
 };
 
 }  // namespace gfx

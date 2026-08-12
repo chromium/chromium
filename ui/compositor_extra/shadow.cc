@@ -126,7 +126,7 @@ std::unique_ptr<Layer> Shadow::ShadowLayerOwner::RecreateLayer() {
   auto result = ui::LayerOwner::RecreateLayer();
   // Now update the newly recreated shadow layer with the correct nine patch
   // image details.
-  owner_shadow_->details_ = nullptr;
+  owner_shadow_->details_ = std::nullopt;
   owner_shadow_->UpdateShadowAppearance();
   return result;
 }
@@ -141,7 +141,7 @@ void Shadow::RecreateShadowLayer() {
   shadow_layer()->SetFillsBoundsOpaquely(false);
   layer()->Add(shadow_layer());
 
-  details_ = nullptr;
+  details_ = std::nullopt;
   UpdateShadowAppearance();
 }
 
@@ -186,7 +186,7 @@ void Shadow::UpdateShadowAppearance() {
 
   // Update |shadow_layer()| if details changed and it has been updated in
   // the past (|details_| is set), or elevation is non-zero.
-  if ((&details != details_) && (details_ || size_adjusted_elevation)) {
+  if (details != details_ && (details_ || size_adjusted_elevation)) {
     shadow_layer()->UpdateNinePatchLayerImage(details.nine_patch_image);
     // The ninebox grid is defined in terms of the image size. The shadow blurs
     // in both inward and outward directions from the edge of the contents (and
@@ -195,7 +195,7 @@ void Shadow::UpdateShadowAppearance() {
     gfx::Rect aperture(details.nine_patch_image.size());
     aperture.Inset(aperture_insets);
     shadow_layer()->UpdateNinePatchLayerAperture(aperture);
-    details_ = &details;
+    details_ = details;
   }
 
   // Shadow margins are negative, so this expands outwards from
