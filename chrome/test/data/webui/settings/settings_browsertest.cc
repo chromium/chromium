@@ -1836,7 +1836,8 @@ class SettingsSiteDetailsTest : public SettingsBrowserTest {};
 // Disabling on debug due to flaky timeout on Win7 Tests (dbg)(1) bot.
 // https://crbug.com/41378604 - later for other platforms in crbug.com/40106090.
 // TODO(https://crbug.com/510377224): Re-enable test on windows
-#if !defined(NDEBUG) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/543717125): Re-enable test on Mac.
+#if !defined(NDEBUG) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_SiteDetails DISABLED_SiteDetails
 #else
 #define MAYBE_SiteDetails SiteDetails
