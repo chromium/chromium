@@ -7,4 +7,5 @@
 dictionary GPURenderBundleEncoderDescriptor : GPURenderPassLayout {
     boolean depthReadOnly = false;
     boolean stencilReadOnly = false;
+    [RuntimeEnabled=WebGPUExperimentalResourceTable] boolean usesResourceTable = false;
 };

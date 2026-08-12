@@ -58,6 +58,13 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     dawn_desc.label = label.c_str();
   }
 
+  wgpu::RenderBundleEncoderResourceTable resource_table;
+  if (webgpu_desc->usesResourceTable()) {
+    resource_table.usesResourceTable = true;
+    resource_table.nextInChain = dawn_desc.nextInChain;
+    dawn_desc.nextInChain = &resource_table;
+  }
+
   GPURenderBundleEncoder* encoder =
       MakeGarbageCollected<GPURenderBundleEncoder>(
           device, device->GetHandle().CreateRenderBundleEncoder(&dawn_desc),
