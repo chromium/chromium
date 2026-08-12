@@ -148,7 +148,6 @@
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
-#import "ios/chrome/browser/passwords/password_suggestion/coordinator/password_suggestion_coordinator.h"
 #import "ios/chrome/browser/popup_menu/coordinator/popup_menu_coordinator.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/features.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
@@ -222,7 +221,6 @@
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
@@ -350,8 +348,6 @@
     OverscrollActionsControllerDelegate,
     PasswordControllerDelegate,
     PasswordSettingsCoordinatorDelegate,
-    PasswordSuggestionCommands,
-    PasswordSuggestionCoordinatorDelegate,
     PolicyChangeCommands,
     PrerenderBrowserAgentDelegate,
     PromosManagerCommands,
@@ -460,10 +456,6 @@
 // Coordinator for the password settings UI presentation.
 @property(nonatomic, strong)
     PasswordSettingsCoordinator* passwordSettingsCoordinator;
-
-// Coordinator for the password suggestion UI presentation.
-@property(nonatomic, strong)
-    PasswordSuggestionCoordinator* passwordSuggestionCoordinator;
 
 // Coordinator for the popup menu.
 @property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
@@ -1065,7 +1057,6 @@
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
     @protocol(NonModalSignInPromoCommands),
-    @protocol(PasswordSuggestionCommands),
     @protocol(PolicyChangeCommands),
     @protocol(QuickDeleteCommands),
     @protocol(SendTabToSelfCommands),
@@ -1424,8 +1415,6 @@
 
   /* passwordSettingsCoordinator is created and started by a delegate method */
 
-  /* passwordSuggestionCoordinator is created and started by a BrowserCommand */
-
   /* paymentsScanCoordinator is created and started by a BrowserCommand */
 
   /* paymentsSuggestionBottomSheetCoordinator is created and started by a
@@ -1509,9 +1498,6 @@
 
   [self.passKitCoordinator stop];
   self.passKitCoordinator = nil;
-
-  [self.passwordSuggestionCoordinator stop];
-  self.passwordSuggestionCoordinator = nil;
 
   [self.printCoordinator stop];
   self.printCoordinator = nil;
@@ -2322,9 +2308,6 @@
 
   [self hideReaderModeBlurOverlay];
 
-  [self.passwordSuggestionCoordinator stop];
-  self.passwordSuggestionCoordinator = nil;
-
   [self stopSendTabToSelf];
 
   [self.passwordSettingsCoordinator stop];
@@ -3021,36 +3004,6 @@
       ->SetPresentationContext(nullptr);
 }
 
-#pragma mark - PasswordSuggestionCommands
-
-- (void)showPasswordSuggestion:(NSString*)passwordSuggestion
-                     proactive:(BOOL)proactive
-                      webState:(web::WebState*)webState
-                         frame:(base::WeakPtr<web::WebFrame>)frame
-               decisionHandler:(void (^)(BOOL accept))decisionHandler {
-  // Do not present the bottom sheet if the calling web state does not match the
-  // active web state in order to stop the bottom sheet from showing in a tab
-  // different than the one that triggered it.
-  if (webState != self.activeWebState) {
-    return;
-  }
-
-  // Do not present the bottom sheet if it is already being presented.
-  if (self.passwordSuggestionCoordinator) {
-    return;
-  }
-
-  self.passwordSuggestionCoordinator = [[PasswordSuggestionCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-              passwordSuggestion:passwordSuggestion
-                           frame:frame
-                 decisionHandler:decisionHandler
-                       proactive:proactive];
-  self.passwordSuggestionCoordinator.delegate = self;
-  [self.passwordSuggestionCoordinator start];
-}
-
 #pragma mark - PolicyChangeCommands
 
 - (void)showForceSignedOutPrompt {
@@ -3298,13 +3251,6 @@
              mailComposerContext:context];
 
   [self.netExportCoordinator start];
-}
-
-#pragma mark - PasswordSuggestionCoordinatorDelegate
-
-- (void)closePasswordSuggestion {
-  [self.passwordSuggestionCoordinator stop];
-  self.passwordSuggestionCoordinator = nil;
 }
 
 #pragma mark - PrerenderBrowserAgentDelegate methods

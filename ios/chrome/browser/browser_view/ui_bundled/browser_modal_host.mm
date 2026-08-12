@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/passwords/password_breach/coordinator/password_breach_coordinator.h"
 #import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator.h"
 #import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator_delegate.h"
+#import "ios/chrome/browser/passwords/password_suggestion/coordinator/password_suggestion_coordinator.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/add_contacts_coordinator.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_coordinator.h"
 #import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_coordinator.h"
@@ -95,6 +96,7 @@
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
+#import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
@@ -161,6 +163,8 @@ const char kChromeAppStoreUrl[] =
                                 PasswordBreachCommands,
                                 PasswordProtectionCommands,
                                 PasswordProtectionCoordinatorDelegate,
+                                PasswordSuggestionCommands,
+                                PasswordSuggestionCoordinatorDelegate,
                                 PictureInPictureCommands,
                                 PriceTrackedItemsCommands,
                                 ReminderNotificationsCommands,
@@ -223,6 +227,7 @@ const char kChromeAppStoreUrl[] =
   PasskeyWelcomeScreenCoordinator* _passkeyWelcomeScreenCoordinator;
   PasswordBreachCoordinator* _passwordBreachCoordinator;
   PasswordProtectionCoordinator* _passwordProtectionCoordinator;
+  PasswordSuggestionCoordinator* _passwordSuggestionCoordinator;
   PaymentsScanSaveAndFillOfferBottomSheetCoordinator* _paymentsScanCoordinator;
   PaymentsSuggestionBottomSheetCoordinator*
       _paymentsSuggestionBottomSheetCoordinator;
@@ -311,6 +316,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissPasskeyIncognitoInterstitial];
   [self stopPasswordBreach];
   [self stopPasswordProtectionCoordinator];
+  [self closePasswordSuggestion];
   [self dismissPictureInPicture];
   [self hideMiniMap];
   [self hidePageInfo];
@@ -425,6 +431,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(ParentAccessCommands),
     @protocol(PasswordBreachCommands),
     @protocol(PasswordProtectionCommands),
+    @protocol(PasswordSuggestionCommands),
     @protocol(PictureInPictureCommands),
     @protocol(PriceTrackedItemsCommands),
     @protocol(ReminderNotificationsCommands),
@@ -1462,6 +1469,44 @@ const char kChromeAppStoreUrl[] =
   // TODO(crbug.com/543366924): Remove this.
   CHECK_EQ(_passwordProtectionCoordinator, coordinator);
   [self stopPasswordProtectionCoordinator];
+}
+
+#pragma mark - PasswordSuggestionCommands
+
+- (void)showPasswordSuggestion:(NSString*)passwordSuggestion
+                     proactive:(BOOL)proactive
+                      webState:(web::WebState*)webState
+                         frame:(base::WeakPtr<web::WebFrame>)frame
+               decisionHandler:(void (^)(BOOL accept))decisionHandler {
+  // Do not present the bottom sheet if the calling web state does not match the
+  // active web state in order to stop the bottom sheet from showing in a tab
+  // different than the one that triggered it.
+  if (webState != self.activeWebState) {
+    return;
+  }
+
+  // Do not present the bottom sheet if it is already being presented.
+  if (_passwordSuggestionCoordinator) {
+    return;
+  }
+
+  _passwordSuggestionCoordinator = [[PasswordSuggestionCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser
+              passwordSuggestion:passwordSuggestion
+                           frame:frame
+                 decisionHandler:decisionHandler
+                       proactive:proactive];
+  _passwordSuggestionCoordinator.delegate = self;
+  [_passwordSuggestionCoordinator start];
+}
+
+#pragma mark - PasswordSuggestionCoordinatorDelegate
+
+- (void)closePasswordSuggestion {
+  // TODO(crbug.com/545532413): Use a command protocol instead of a delegate.
+  [_passwordSuggestionCoordinator stop];
+  _passwordSuggestionCoordinator = nil;
 }
 
 #pragma mark - PictureInPictureCommands
