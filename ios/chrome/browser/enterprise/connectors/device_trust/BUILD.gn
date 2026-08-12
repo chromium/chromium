@@ -23,8 +23,11 @@ source_set("device_trust") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "device_trust_challenge_tab_helper_unittest.mm" ]
+
   deps = [
     ":device_trust",
+    "//base/test:test_support",
+    "//ios/chrome/browser/enterprise/connectors/device_trust/model:unit_tests",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",

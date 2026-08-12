@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "device_trust_key_manager_ios.h",
+    "device_trust_key_manager_ios.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/enterprise/device_trust/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "device_trust_key_manager_ios_unittest.mm" ]
+
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
