@@ -105,7 +105,7 @@ where
 /// * signed integers: [`i8`], [`i16`], [`i32`], [`i64`], [`i128`]
 /// * floats: [`f32`], [`f64`]
 /// * bool: [`bool`]
-/// * string: [`String`], [`&str`], `Cow<'_, str>`, [`char`]
+/// * string: [`String`], [`&str`], `Cow<'_, str>`, [`StringInput`], [`char`]
 /// * bytes: [`&[u8]`][`slice`]
 /// * values: [`Value`], `&Value`
 /// * vectors: [`Vec<T>`]
@@ -552,28 +552,140 @@ impl<'a, T: ArgType<'a>> ArgType<'a> for Option<T> {
     }
 }
 
+fn value_to_string_cow(value: &Value) -> Result<Cow<'_, str>, Error> {
+    Ok(match value.0 {
+        ValueRepr::String(ref s, _) => Cow::Borrowed(s as &str),
+        ValueRepr::SmallStr(ref s) => Cow::Borrowed(s.as_str()),
+        ValueRepr::U64(v) => Cow::Owned(v.to_string()),
+        ValueRepr::I64(v) => Cow::Owned(v.to_string()),
+        ValueRepr::Bool(v) => Cow::Borrowed(if v { "True" } else { "False" }),
+        _ => {
+            if value.is_kwargs() {
+                return Err(Error::new(
+                    ErrorKind::InvalidOperation,
+                    "cannot convert kwargs to string",
+                ));
+            }
+            Cow::Owned(value.to_string())
+        }
+    })
+}
+
+/// A string coerced from a value together with its safety provenance.
+///
+/// `StringInput` can be used as an argument to filters and functions when a
+/// string transformation needs to account for whether the input value was
+/// marked safe.  Unlike [`String`] and [`Cow<str>`], it retains that information
+/// during argument conversion.
+///
+/// It intentionally does not dereference to `str`, since doing so would make it
+/// easy to apply a string transformation and accidentally discard the safety
+/// provenance.
+///
+/// ```
+/// # use minijinja::{Environment, Value};
+/// use minijinja::value::StringInput;
+///
+/// fn shout(value: StringInput<'_>) -> Value {
+///     let output = value.as_str().to_uppercase();
+///     value.preserve_safety(output)
+/// }
+///
+/// # let mut env = Environment::new();
+/// env.add_filter("shout", shout);
+/// ```
+#[derive(Debug)]
+pub struct StringInput<'a> {
+    value: Cow<'a, str>,
+    safe: bool,
+}
+
+impl<'a> StringInput<'a> {
+    /// Coerces a value into a string while retaining its safety provenance.
+    ///
+    /// This applies the state's undefined behavior in the same way as automatic
+    /// string argument conversion.
+    pub fn new(state: &State, value: &'a Value) -> Result<Self, Error> {
+        ok!(state.undefined_behavior().assert_value_not_undefined(value));
+        Self::from_value(value)
+    }
+
+    fn from_value(value: &'a Value) -> Result<Self, Error> {
+        Ok(StringInput {
+            value: ok!(value_to_string_cow(value)),
+            safe: value.is_safe(),
+        })
+    }
+
+    /// Returns the coerced string.
+    pub fn as_str(&self) -> &str {
+        &self.value
+    }
+
+    /// Returns `true` if the original value was marked safe.
+    pub fn is_safe(&self) -> bool {
+        self.safe
+    }
+
+    /// Formats the string for insertion into a safe result.
+    ///
+    /// Safe inputs are returned unchanged.  Other inputs are escaped in the
+    /// same way as the [`escape`](crate::filters::escape) filter.
+    pub fn format(&self, state: &State) -> Result<Cow<'_, str>, Error> {
+        if self.safe {
+            Ok(Cow::Borrowed(self.as_str()))
+        } else {
+            Ok(Cow::Owned(
+                crate::filters::escape(state, &Value::from(self.as_str()))?
+                    .as_str()
+                    .unwrap()
+                    .to_string(),
+            ))
+        }
+    }
+
+    /// Wraps a derived string while preserving the input's safety.
+    ///
+    /// This should only be used when the output is derived entirely from this
+    /// input and does not introduce other potentially unsafe content.
+    pub fn preserve_safety(&self, value: String) -> Value {
+        if self.safe {
+            Value::from_safe_string(value)
+        } else {
+            Value::from(value)
+        }
+    }
+}
+
+impl<'a> ArgType<'a> for StringInput<'_> {
+    type Output = StringInput<'a>;
+
+    fn from_value(value: Option<&'a Value>) -> Result<Self::Output, Error> {
+        match value {
+            Some(value) => StringInput::from_value(value),
+            None => Err(Error::from(ErrorKind::MissingArgument)),
+        }
+    }
+
+    fn from_state_and_value(
+        state: Option<&'a State>,
+        value: Option<&'a Value>,
+    ) -> Result<(Self::Output, usize), Error> {
+        let value = value.ok_or_else(|| Error::from(ErrorKind::MissingArgument))?;
+        if let Some(state) = state {
+            ok!(state.undefined_behavior().assert_value_not_undefined(value));
+        }
+        Ok((ok!(StringInput::from_value(value)), 1))
+    }
+}
+
 impl<'a> ArgType<'a> for Cow<'_, str> {
     type Output = Cow<'a, str>;
 
     #[inline(always)]
     fn from_value(value: Option<&'a Value>) -> Result<Cow<'a, str>, Error> {
         match value {
-            Some(value) => Ok(match value.0 {
-                ValueRepr::String(ref s, _) => Cow::Borrowed(s as &str),
-                ValueRepr::SmallStr(ref s) => Cow::Borrowed(s.as_str()),
-                ValueRepr::U64(v) => Cow::Owned(v.to_string()),
-                ValueRepr::I64(v) => Cow::Owned(v.to_string()),
-                ValueRepr::Bool(v) => Cow::Owned(v.to_string()),
-                _ => {
-                    if value.is_kwargs() {
-                        return Err(Error::new(
-                            ErrorKind::InvalidOperation,
-                            "cannot convert kwargs to string",
-                        ));
-                    }
-                    Cow::Owned(value.to_string())
-                }
-            }),
+            Some(value) => value_to_string_cow(value),
             None => Err(Error::from(ErrorKind::MissingArgument)),
         }
     }

@@ -90,7 +90,7 @@ fn write_with_html_escaping(out: &mut Output, value: &Value) -> fmt::Result {
         }
         ValueRepr::I64(v) => return write!(out, "{v}"),
         ValueRepr::Bool(v) => {
-            return out.write_str(if v { "true" } else { "false" });
+            return out.write_str(if v { "True" } else { "False" });
         }
         _ => {}
     }

@@ -557,7 +557,7 @@ impl<'env> Vm<'env> {
                     ctx_ok!(self.push_loop(state, a, *flags, pc, next_loop_recursion_jump.take()));
                 }
                 Instruction::Iterate(jump_target) => {
-                    match state.ctx.current_loop().unwrap().next() {
+                    match state.ctx.next_loop_item() {
                         Some(item) => stack.push(assert_valid!(item)),
                         None => {
                             pc = *jump_target;

@@ -22,6 +22,12 @@ pub enum FormatStyle {
     StrFormat,
 }
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub(crate) enum FormatConversion {
+    Other,
+    Character,
+}
+
 /// A helper function to apply a set of values to a given format string.
 ///
 /// The function supports two styles of formatting as described by the
@@ -37,6 +43,14 @@ pub fn format_filter(
         FormatStyle::Printf => printf_style::format(format_str, args),
         FormatStyle::StrFormat => str_format_style::format(format_str, args),
     }
+}
+
+pub(crate) fn format_printf_with(
+    format_str: &str,
+    args: &[Value],
+    transform: impl Fn(&Value, FormatConversion) -> Result<Option<Value>, Error>,
+) -> Result<String, Error> {
+    printf_style::format_with(format_str, args, &transform)
 }
 
 // Token produced by the format string parser
@@ -195,12 +209,16 @@ impl FormatSpec {
 
         match self.ty {
             Type::Default if !treat_as_integer => {
-                // Format "true" or "false" as a regular string, ignoring the
+                // Format "True" or "False" as a regular string, ignoring the
                 // precision (i.e. without truncating)
-                Ok(self.apply_padding(format!("{val}"), Align::Left))
+                let text = if val { "True" } else { "False" };
+                Ok(self.apply_padding(text.to_owned(), Align::Left))
             }
             Type::String => match self.format_style {
-                FormatStyle::Printf => Ok(self.apply_padding(format!("{val}"), Align::Right)),
+                FormatStyle::Printf => {
+                    let text = if val { "True" } else { "False" };
+                    Ok(self.apply_padding(text.to_owned(), Align::Right))
+                }
                 FormatStyle::StrFormat => Err(self.type_conversion_err("bool", Type::String)),
             },
             Type::Default
@@ -227,9 +245,9 @@ impl FormatSpec {
                     FormatStyle::StrFormat => Align::Left,
                 };
 
-                if let Some(p) = &self.precision {
-                    if *p < text.len() {
-                        return Ok(self.apply_padding(text[..*p].to_string(), default_align));
+                if let Some(p) = self.precision {
+                    if let Some((offset, _)) = text.char_indices().nth(p) {
+                        return Ok(self.apply_padding(text[..offset].to_string(), default_align));
                     }
                 }
                 Ok(self.apply_padding(text, default_align))
@@ -1125,6 +1143,14 @@ mod printf_style {
     // to the fields found in the string, by formatting the value according to the
     // spec found in the field.
     pub(super) fn format(format_str: &str, args: &[Value]) -> Result<String, Error> {
+        format_with(format_str, args, &|_, _| Ok(None))
+    }
+
+    pub(super) fn format_with(
+        format_str: &str,
+        args: &[Value],
+        transform: &impl Fn(&Value, FormatConversion) -> Result<Option<Value>, Error>,
+    ) -> Result<String, Error> {
         let mut input = Tokenizer::new(format_str, FormatStyle::Printf);
         let mut result = String::new();
         let mut arg_index = 0;
@@ -1173,7 +1199,15 @@ mod printf_style {
                             return Err(missing_arg_err(format_spec.location));
                         }
                     };
-                    result.push_str(&ok!(format_spec.format(&arg)));
+                    let conversion = if format_spec.ty == Type::Char {
+                        FormatConversion::Character
+                    } else {
+                        FormatConversion::Other
+                    };
+                    let transformed = ok!(transform(&arg, conversion));
+                    result.push_str(&ok!(
+                        format_spec.format(transformed.as_ref().unwrap_or(&arg))
+                    ));
                 }
             }
         }

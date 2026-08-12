@@ -59,19 +59,18 @@
 //! ```
 //!
 //! The special [`Undefined`](Value::UNDEFINED) value also exists but does not
-//! have a rust equivalent.  It can be created via the
-//! [`UNDEFINED`](Value::UNDEFINED) constant.
+//! have a rust equivalent.  It can be created via the [`UNDEFINED`](Value::UNDEFINED)
+//! constant.
 //!
 //! # Collections
 //!
 //! The standard library's collection types such as
 //! [`HashMap`](std::collections::HashMap), [`Vec`] and various others from the
-//! collections module are implemented are objects.  There is a cavet here which
-//! is that maps can only have string or [`Value`] as key.  The values in the
-//! collections are lazily converted into value when accessed or iterated over.
-//! These types can be constructed either from [`Value::from`] or
-//! [`Value::from_object`].  Because the types are boxed unchanged, you can also
-//! downcast them.
+//! collections module are implemented are objects.  There is a cavet here which is
+//! that maps can only have string or [`Value`] as key.  The values in the collections
+//! are lazily converted into value when accessed or iterated over.   These types can
+//! be constructed either from [`Value::from`] or [`Value::from_object`].  Because the
+//! types are boxed unchanged, you can also downcast them.
 //!
 //! ```rust
 //! # use minijinja::Value;
@@ -80,15 +79,14 @@
 //! assert_eq!(vec_ref, &vec![1, 2, 3, 4]);
 //! ```
 //!
-//! **Caveat:** for convenience reasons maps with `&str` keys can be stored.
-//! The keys however are converted into `Arc<str>`.
+//! **Caveat:** for convenience reasons maps with `&str` keys can be stored.  The keys
+//! however are converted into `Arc<str>`.
 //!
 //! # Serde Conversions
 //!
-//! MiniJinja will usually however create values via an indirection via
-//! [`serde`] when a template is rendered or an expression is evaluated.  This
-//! can also be triggered manually by using the [`Value::from_serialize`]
-//! method:
+//! MiniJinja will usually however create values via an indirection via [`serde`] when
+//! a template is rendered or an expression is evaluated.  This can also be
+//! triggered manually by using the [`Value::from_serialize`] method:
 //!
 //! ```
 //! # use minijinja::value::Value;
@@ -98,6 +96,7 @@
 //! The inverse of that operation is to pass a value directly as serializer to
 //! a type that supports deserialization.  This requires the `deserialization`
 //! feature.
+//!
 #![cfg_attr(
     feature = "deserialization",
     doc = r"
@@ -112,10 +111,9 @@ let vec = Vec::<i32>::deserialize(value).unwrap();
 //!
 //! # Value Function Arguments
 //!
-//! [Filters](crate::filters) and [tests](crate::tests) can take values as
-//! arguments but optionally also rust types directly.  This conversion for
-//! function arguments is performed by the [`FunctionArgs`] and related traits
-//! ([`ArgType`], [`FunctionResult`]).
+//! [Filters](crate::filters) and [tests](crate::tests) can take values as arguments
+//! but optionally also rust types directly.  This conversion for function arguments
+//! is performed by the [`FunctionArgs`] and related traits ([`ArgType`], [`FunctionResult`]).
 //!
 //! # Memory Management
 //!
@@ -128,15 +126,15 @@ let vec = Vec::<i32>::deserialize(value).unwrap();
 //! MiniJinja inherits the general desire to be clever about escaping.  For this
 //! purpose a value will (when auto escaping is enabled) always be escaped.  To
 //! prevent this behavior the [`safe`](crate::filters::safe) filter can be used
-//! in the template.  Outside of templates the [`Value::from_safe_string`]
-//! method can be used to achieve the same result.
+//! in the template.  Outside of templates the [`Value::from_safe_string`] method
+//! can be used to achieve the same result.
 //!
 //! # Dynamic Objects
 //!
-//! Values can also hold "dynamic" objects.  These are objects which implement
-//! the [`Object`] trait.  These can be used to implement dynamic functionality
-//! such as stateful values and more.  Dynamic objects are internally also used
-//! to implement the special `loop` variable, macros and similar things.
+//! Values can also hold "dynamic" objects.  These are objects which implement the
+//! [`Object`] trait.  These can be used to implement dynamic functionality such
+//! as stateful values and more.  Dynamic objects are internally also used to
+//! implement the special `loop` variable, macros and similar things.
 //!
 //! To create a [`Value`] from a dynamic object use [`Value::from_object`],
 //! [`Value::from_dyn_object`]:
@@ -157,11 +155,11 @@ let vec = Vec::<i32>::deserialize(value).unwrap();
 //!
 //! # Invalid Values
 //!
-//! MiniJinja knows the concept of an "invalid value".  These are rare in
-//! practice and should not be used, but they are needed in some situations.  An
-//! invalid value looks like a value but working with that value in the context
-//! of the engine will fail in most situations.  In principle an invalid value
-//! is a value that holds an error internally.  It's created with [`From`]:
+//! MiniJinja knows the concept of an "invalid value".  These are rare in practice
+//! and should not be used, but they are needed in some situations.  An invalid value
+//! looks like a value but working with that value in the context of the engine will
+//! fail in most situations.  In principle an invalid value is a value that holds an
+//! error internally.  It's created with [`From`]:
 //!
 //! ```
 //! use minijinja::{Value, Error, ErrorKind};
@@ -172,22 +170,21 @@ let vec = Vec::<i32>::deserialize(value).unwrap();
 //! Invalid values are typically encountered in the following situations:
 //!
 //! - serialization fails with an error: this is the case when a value is crated
-//!   via [`Value::from_serialize`] and the underlying [`Serialize`]
-//!   implementation fails with an error.
-//! - fallible iteration: there might be situations where an iterator cannot
-//!   indicate failure ahead of iteration and must abort.  In that case the only
-//!   option an iterator in MiniJinja has is to create an invalid value.
+//!   via [`Value::from_serialize`] and the underlying [`Serialize`] implementation
+//!   fails with an error.
+//! - fallible iteration: there might be situations where an iterator cannot indicate
+//!   failure ahead of iteration and must abort.  In that case the only option an
+//!   iterator in MiniJinja has is to create an invalid value.
 //!
-//! It's generally recommende to ignore the existence of invalid objects and let
-//! them fail naturally as they are encountered.
+//! It's generally recommende to ignore the existence of invalid objects and let them
+//! fail naturally as they are encountered.
 //!
 //! # Notes on Bytes and Strings
 //!
-//! Usually one would pass strings to templates as Jinja is entirely based on
-//! string rendering.  However there are situations where it can be useful to
-//! pass bytes instead. As such MiniJinja allows a value type to carry bytes
-//! even though there is no syntax within the template language to create a byte
-//! literal.
+//! Usually one would pass strings to templates as Jinja is entirely based on string
+//! rendering.  However there are situations where it can be useful to pass bytes instead.
+//! As such MiniJinja allows a value type to carry bytes even though there is no syntax
+//! within the template language to create a byte literal.
 //!
 //! When rendering bytes as strings, MiniJinja will attempt to interpret them as
 //! lossy utf-8.  This is a bit different to Jinja2 which in Python 3 stopped
@@ -218,7 +215,9 @@ use crate::value::ops::as_f64;
 use crate::value::serialize::transform;
 use crate::vm::State;
 
-pub use crate::value::argtypes::{from_args, ArgType, FunctionArgs, FunctionResult, Kwargs, Rest};
+pub use crate::value::argtypes::{
+    from_args, ArgType, FunctionArgs, FunctionResult, Kwargs, Rest, StringInput,
+};
 pub use crate::value::merge_object::merge_maps;
 pub use crate::value::object::{DynObject, Enumerator, Object, ObjectExt, ObjectRepr};
 
@@ -266,7 +265,10 @@ pub(crate) struct ValueHandleRegistry {
 
 impl ValueHandleRegistry {
     const fn new() -> Self {
-        Self { single: None, overflow: BTreeMap::new() }
+        Self {
+            single: None,
+            overflow: BTreeMap::new(),
+        }
     }
 
     #[inline(always)]
@@ -305,10 +307,10 @@ thread_local! {
 /// Function that returns true when serialization for [`Value`] is taking place.
 ///
 /// MiniJinja internally creates [`Value`] objects from all values passed to the
-/// engine.  It does this by going through the regular serde serialization
-/// trait. In some cases users might want to customize the serialization
-/// specifically for MiniJinja because they want to tune the object for the
-/// template engine independently of what is normally serialized to disk.
+/// engine.  It does this by going through the regular serde serialization trait.
+/// In some cases users might want to customize the serialization specifically for
+/// MiniJinja because they want to tune the object for the template engine
+/// independently of what is normally serialized to disk.
 ///
 /// This function returns `true` when MiniJinja is serializing to [`Value`] and
 /// `false` otherwise.  You can call this within your own [`Serialize`]
@@ -434,7 +436,10 @@ impl SmallStr {
         if len <= SMALL_STR_CAP {
             let mut buf = [0u8; SMALL_STR_CAP];
             buf[..len].copy_from_slice(s.as_bytes());
-            Some(SmallStr { len: len as u8, buf })
+            Some(SmallStr {
+                len: len as u8,
+                buf,
+            })
         } else {
             None
         }
@@ -471,11 +476,11 @@ impl fmt::Debug for ValueRepr {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
             ValueRepr::Undefined(_) => f.write_str("undefined"),
-            ValueRepr::Bool(ref val) => fmt::Debug::fmt(val, f),
+            ValueRepr::Bool(val) => f.write_str(if val { "True" } else { "False" }),
             ValueRepr::U64(ref val) => fmt::Debug::fmt(val, f),
             ValueRepr::I64(ref val) => fmt::Debug::fmt(val, f),
             ValueRepr::F64(ref val) => fmt::Debug::fmt(val, f),
-            ValueRepr::None => f.write_str("none"),
+            ValueRepr::None => f.write_str("None"),
             ValueRepr::Invalid(ref val) => write!(f, "<invalid value: {val}>"),
             ValueRepr::U128(val) => fmt::Debug::fmt(&{ val.0 }, f),
             ValueRepr::I128(val) => fmt::Debug::fmt(&{ val.0 }, f),
@@ -662,7 +667,9 @@ fn cmp_f64_i128(left: f64, right: i128) -> Ordering {
                 Ordering::Greater
             } else {
                 let trunc = left.trunc();
-                (trunc as i128).cmp(&right).then_with(|| left.partial_cmp(&trunc).unwrap())
+                (trunc as i128)
+                    .cmp(&right)
+                    .then_with(|| left.partial_cmp(&trunc).unwrap())
             }
         }
         rv => rv,
@@ -684,7 +691,12 @@ fn cmp_f64_u128(left: f64, right: u128) -> Ordering {
     }
 }
 
-fn cmp_numbers(left: &Value, right: &Value) -> Ordering {
+// This is only needed when `coerce` cannot find a common lossless numeric
+// representation.  Keep it out of line so the rare fallback does not bloat the
+// hot comparison path.
+#[cold]
+#[inline(never)]
+fn cmp_uncoercible_numbers(left: &Value, right: &Value) -> Ordering {
     match (number(left).unwrap(), number(right).unwrap()) {
         (Number::F64(a), Number::F64(b)) => cmp_f64(a, b),
         (Number::F64(a), Number::I128(b)) => cmp_f64_i128(a, b),
@@ -712,12 +724,18 @@ impl Ord for Value {
                 a.as_str().cmp(b.as_str())
             }
             (&ValueRepr::Bytes(ref a), &ValueRepr::Bytes(ref b)) => a.cmp(b),
-            _ if self.is_number() && other.is_number() => cmp_numbers(self, other),
+            // `coerce` represents two u128 values as i128, which reverses the
+            // order if only one of them exceeds i128::MAX.
+            (&ValueRepr::U128(a), &ValueRepr::U128(b)) => { a.0 }.cmp(&{ b.0 }),
             _ => match ops::coerce(self, other, false) {
-                Some(ops::CoerceResult::F64(a, b)) => f64_total_cmp(a, b),
+                Some(ops::CoerceResult::F64(a, b)) => cmp_f64(a, b),
                 Some(ops::CoerceResult::I128(a, b)) => a.cmp(&b),
                 Some(ops::CoerceResult::Str(a, b)) => a.cmp(b),
                 None => {
+                    if self.is_number() && other.is_number() {
+                        return cmp_uncoercible_numbers(self, other);
+                    }
+
                     let a = self.as_object().unwrap();
                     let b = other.as_object().unwrap();
 
@@ -772,7 +790,7 @@ impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.0 {
             ValueRepr::Undefined(_) => Ok(()),
-            ValueRepr::Bool(val) => val.fmt(f),
+            ValueRepr::Bool(val) => f.write_str(if val { "True" } else { "False" }),
             ValueRepr::U64(val) => val.fmt(f),
             ValueRepr::I64(val) => val.fmt(f),
             ValueRepr::F64(val) => {
@@ -788,7 +806,7 @@ impl fmt::Display for Value {
                     write!(f, "{num}")
                 }
             }
-            ValueRepr::None => f.write_str("none"),
+            ValueRepr::None => f.write_str("None"),
             ValueRepr::Invalid(ref val) => write!(f, "<invalid value: {val}>"),
             ValueRepr::I128(val) => write!(f, "{}", { val.0 }),
             ValueRepr::String(ref val, _) => write!(f, "{val}"),
@@ -822,11 +840,10 @@ impl Value {
 
     /// Creates a value from something that can be serialized.
     ///
-    /// This is the method that MiniJinja will generally use whenever a
-    /// serializable object is passed to one of the APIs that internally
-    /// want to create a value. For instance this is what
-    /// [`context!`](crate::context) and [`render`](crate::Template::render)
-    /// will use.
+    /// This is the method that MiniJinja will generally use whenever a serializable
+    /// object is passed to one of the APIs that internally want to create a value.
+    /// For instance this is what [`context!`](crate::context) and
+    /// [`render`](crate::Template::render) will use.
     ///
     /// During serialization of the value, [`serializing_for_value`] will return
     /// `true` which makes it possible to customize serialization for MiniJinja.
@@ -837,24 +854,25 @@ impl Value {
     /// let val = Value::from_serialize(&vec![1, 2, 3]);
     /// ```
     ///
-    /// This method does not fail but it might return a value that is not valid.
-    /// Such values will when operated on fail in the template engine in
-    /// most situations. This for instance can happen if the underlying
-    /// implementation of [`Serialize`] fails.  There are also cases where
-    /// invalid objects are silently hidden in the engine today.  This is
-    /// for instance the case for when keys are used in hash maps
-    /// that the engine cannot deal with.  Invalid values are considered an
-    /// implementation detail.  There is currently no API to validate a
-    /// value.
+    /// This method does not fail but it might return a value that is not valid.  Such
+    /// values will when operated on fail in the template engine in most situations.
+    /// This for instance can happen if the underlying implementation of [`Serialize`]
+    /// fails.  There are also cases where invalid objects are silently hidden in the
+    /// engine today.  This is for instance the case for when keys are used in hash maps
+    /// that the engine cannot deal with.  Invalid values are considered an implementation
+    /// detail.  There is currently no API to validate a value.
     ///
-    /// If the `deserialization` feature is enabled then the inverse of this
-    /// method is to use the [`Value`] type as serializer.  You can pass a
-    /// value into the [`deserialize`](serde::Deserialize::deserialize)
-    /// method of a type that supports serde deserialization.
+    /// If the `deserialization` feature is enabled then the inverse of this method
+    /// is to use the [`Value`] type as serializer.  You can pass a value into the
+    /// [`deserialize`](serde::Deserialize::deserialize) method of a type that supports
+    /// serde deserialization.
     pub fn from_serialize<T: Serialize>(value: T) -> Value {
         INTERNAL_SERIALIZATION.with(|flag| {
             let old = flag.replace(true);
-            let _serialization_guard = InternalSerializationGuard { flag, reset_on_drop: !old };
+            let _serialization_guard = InternalSerializationGuard {
+                flag,
+                reset_on_drop: !old,
+            };
             transform(value)
         })
     }
@@ -877,10 +895,9 @@ impl Value {
 
     /// Creates a value from a safe string.
     ///
-    /// A safe string is one that will bypass auto escaping.  For instance if
-    /// you want to have the template engine render some HTML without the
-    /// user having to supply the `|safe` filter, you can use a value of
-    /// this type instead.
+    /// A safe string is one that will bypass auto escaping.  For instance if you
+    /// want to have the template engine render some HTML without the user having to
+    /// supply the `|safe` filter, you can use a value of this type instead.
     ///
     /// ```
     /// # use minijinja::value::Value;
@@ -894,10 +911,9 @@ impl Value {
     ///
     /// MiniJinja can hold on to bytes and has some limited built-in support for
     /// working with them.  They are non iterable and not particularly useful
-    /// in the context of templates.  When they are stringified, they are
-    /// assumed to contain UTF-8 and will be treated as such.  They become
-    /// more useful when a filter can do something with them (eg: base64
-    /// encode them etc.).
+    /// in the context of templates.  When they are stringified, they are assumed
+    /// to contain UTF-8 and will be treated as such.  They become more useful
+    /// when a filter can do something with them (eg: base64 encode them etc.).
     ///
     /// This method exists so that a value can be constructed as creating a
     /// value from a `Vec<u8>` would normally just create a sequence.
@@ -926,12 +942,11 @@ impl Value {
         Value::from(ValueRepr::Object(DynObject::new(Arc::new(value))))
     }
 
-    /// Like [`from_object`](Self::from_object) but for type erased dynamic
-    /// objects.
+    /// Like [`from_object`](Self::from_object) but for type erased dynamic objects.
     ///
-    /// This especially useful if you have an object that has an `Arc<T>` to
-    /// another child object that you want to return as a `Arc<T>` turns
-    /// into a [`DynObject`] automatically.
+    /// This especially useful if you have an object that has an `Arc<T>` to another
+    /// child object that you want to return as a `Arc<T>` turns into a [`DynObject`]
+    /// automatically.
     ///
     /// ```rust
     /// # use std::sync::Arc;
@@ -986,10 +1001,10 @@ impl Value {
     /// let val = Value::make_iterable(|| 0..10);
     /// ```
     ///
-    /// Iterators that implement [`ExactSizeIterator`] or have a matching lower
-    /// and upper bound on the [`Iterator::size_hint`] report a known
-    /// `loop.length`.  Iterators that do not fulfill these requirements
-    /// will not.  The same is true for `revindex` and similar properties.
+    /// Iterators that implement [`ExactSizeIterator`] or have a matching lower and upper
+    /// bound on the [`Iterator::size_hint`] report a known `loop.length`.  Iterators that
+    /// do not fulfill these requirements will not.  The same is true for `revindex` and
+    /// similar properties.
     pub fn make_iterable<I, T, F>(maker: F) -> Value
     where
         I: Iterator<Item = T> + Send + Sync + 'static,
@@ -1001,10 +1016,9 @@ impl Value {
 
     /// Creates an iterable that iterates over the given value.
     ///
-    /// This is similar to [`make_iterable`](Self::make_iterable) but it takes
-    /// an extra reference to a value it can borrow out from.  It's a bit
-    /// less generic in that it needs to return a boxed iterator of values
-    /// directly.
+    /// This is similar to [`make_iterable`](Self::make_iterable) but it takes an extra
+    /// reference to a value it can borrow out from.  It's a bit less generic in that it
+    /// needs to return a boxed iterator of values directly.
     ///
     /// ```rust
     /// # use minijinja::value::Value;
@@ -1054,10 +1068,10 @@ impl Value {
 
     /// Creates an object projection onto a map.
     ///
-    /// This is similar to [`make_object_iterable`](Self::make_object_iterable)
-    /// but it creates a map rather than an iterable.  To accomplish this,
-    /// it also requires two callbacks.  One for enumeration, and one for
-    /// looking up attributes.
+    /// This is similar to [`make_object_iterable`](Self::make_object_iterable) but
+    /// it creates a map rather than an iterable.  To accomplish this, it also
+    /// requires two callbacks.  One for enumeration, and one for looking up
+    /// attributes.
     ///
     /// # Example
     ///
@@ -1131,20 +1145,23 @@ impl Value {
             }
         }
 
-        Value::from_object(ProxyMapObject { enumerate_fn, attr_fn, object })
+        Value::from_object(ProxyMapObject {
+            enumerate_fn,
+            attr_fn,
+            object,
+        })
     }
 
     /// Creates a value from a one-shot iterator.
     ///
-    /// This takes an iterator (yielding values that can be turned into a
-    /// [`Value`]) and wraps it in a way that it turns into an iterable
-    /// value.  From the view of the template this can be iterated over
-    /// exactly once for the most part once exhausted.
+    /// This takes an iterator (yielding values that can be turned into a [`Value`])
+    /// and wraps it in a way that it turns into an iterable value.  From the view of
+    /// the template this can be iterated over exactly once for the most part once
+    /// exhausted.
     ///
-    /// Such iterators are strongly recommended against in the general sense due
-    /// to their surprising behavior, but they can be useful for more
-    /// advanced use cases where data should be streamed into the template
-    /// as it becomes available.
+    /// Such iterators are strongly recommended against in the general sense due to
+    /// their surprising behavior, but they can be useful for more advanced use
+    /// cases where data should be streamed into the template as it becomes available.
     ///
     /// Such iterators never have any size hints.
     ///
@@ -1153,8 +1170,7 @@ impl Value {
     /// let val = Value::make_one_shot_iterator(0..10);
     /// ```
     ///
-    /// Attempting to iterate over it a second time will not yield any more
-    /// items.
+    /// Attempting to iterate over it a second time will not yield any more items.
     pub fn make_one_shot_iterator<I, T>(iter: I) -> Value
     where
         I: Iterator<Item = T> + Send + Sync + 'static,
@@ -1208,8 +1224,7 @@ impl Value {
 
     /// Returns `true` if the value is a number.
     ///
-    /// To convert a value into a primitive number, use [`TryFrom`] or
-    /// [`TryInto`].
+    /// To convert a value into a primitive number, use [`TryFrom`] or [`TryInto`].
     pub fn is_number(&self) -> bool {
         matches!(
             self.0,
@@ -1301,8 +1316,7 @@ impl Value {
     #[inline]
     pub fn as_usize(&self) -> Option<usize> {
         // This is manually implemented as the engine calls as_usize a few times
-        // during execution on hotter paths.  This way we can avoid an unnecessary
-        // clone.
+        // during execution on hotter paths.  This way we can avoid an unnecessary clone.
         match self.0 {
             ValueRepr::I64(val) => TryFrom::try_from(val).ok(),
             ValueRepr::U64(val) => TryFrom::try_from(val).ok(),
@@ -1382,12 +1396,12 @@ impl Value {
         Ok(value.unwrap_or(Value::UNDEFINED))
     }
 
-    /// Alternative lookup strategy without error handling exclusively for
-    /// context resolution.
+    /// Alternative lookup strategy without error handling exclusively for context
+    /// resolution.
     ///
-    /// The main difference is that the return value will be `None` if the value
-    /// is unable to look up the key rather than returning `Undefined` and
-    /// errors will also not be created.
+    /// The main difference is that the return value will be `None` if the value is
+    /// unable to look up the key rather than returning `Undefined` and errors will
+    /// also not be created.
     pub(crate) fn get_attr_fast(&self, key: &str) -> Option<Value> {
         match self.0 {
             ValueRepr::Object(ref dy) => dy.get_value_by_str(key),
@@ -1438,8 +1452,7 @@ impl Value {
     /// has a different behavior.
     ///
     /// * [`ValueKind::Map`]: the iterator yields the keys of the map.
-    /// * [`ValueKind::Seq`] / [`ValueKind::Iterable`]: the iterator yields the
-    ///   items in the sequence.
+    /// * [`ValueKind::Seq`] / [`ValueKind::Iterable`]: the iterator yields the items in the sequence.
     /// * [`ValueKind::String`]: the iterator yields characters in a string.
     /// * [`ValueKind::None`] / [`ValueKind::Undefined`]: the iterator is empty.
     ///
@@ -1464,28 +1477,31 @@ impl Value {
             ValueRepr::String(ref s, _) => {
                 Some(ValueIterImpl::Chars(0, s.chars().count(), Arc::clone(s)))
             }
-            ValueRepr::SmallStr(ref s) => {
-                Some(ValueIterImpl::Chars(0, s.as_str().chars().count(), Arc::from(s.as_str())))
-            }
+            ValueRepr::SmallStr(ref s) => Some(ValueIterImpl::Chars(
+                0,
+                s.as_str().chars().count(),
+                Arc::from(s.as_str()),
+            )),
             ValueRepr::Object(ref obj) => obj.try_iter().map(ValueIterImpl::Dyn),
             _ => None,
         }
         .map(|imp| ValueIter { imp })
         .ok_or_else(|| {
-            Error::new(ErrorKind::InvalidOperation, format!("{} is not iterable", self.kind()))
+            Error::new(
+                ErrorKind::InvalidOperation,
+                format!("{} is not iterable", self.kind()),
+            )
         })
     }
 
     /// Returns a reversed view of this value.
     ///
-    /// This is implemented for the following types with the following
-    /// behaviors:
+    /// This is implemented for the following types with the following behaviors:
     ///
     /// * undefined or none: value returned unchanged.
     /// * string and bytes: returns a reversed version of that value
-    /// * iterables: returns a reversed version of the iterable.  If the
-    ///   iterable is not reversible itself, it consumes it and then reverses
-    ///   it.
+    /// * iterables: returns a reversed version of the iterable.  If the iterable is not
+    ///   reversible itself, it consumes it and then reverses it.
     pub fn reverse(&self) -> Result<Value, Error> {
         match self.0 {
             ValueRepr::Undefined(_) | ValueRepr::None => Some(self.clone()),
@@ -1494,9 +1510,9 @@ impl Value {
                 // TODO: add small str optimization here
                 Some(Value::from(s.as_str().chars().rev().collect::<String>()))
             }
-            ValueRepr::Bytes(ref b) => {
-                Some(Value::from_bytes(b.iter().rev().copied().collect::<Vec<_>>()))
-            }
+            ValueRepr::Bytes(ref b) => Some(Value::from_bytes(
+                b.iter().rev().copied().collect::<Vec<_>>(),
+            )),
             ValueRepr::Object(ref o) => match o.enumerate() {
                 Enumerator::NonEnumerable => None,
                 Enumerator::Empty => Some(Value::make_iterable(|| None::<Value>.into_iter())),
@@ -1512,7 +1528,9 @@ impl Value {
                 Enumerator::Iter(iter) => {
                     let mut v = iter.collect::<Vec<_>>();
                     v.reverse();
-                    Some(Value::make_object_iterable(v, move |v| Box::new(v.iter().cloned())))
+                    Some(Value::make_object_iterable(v, move |v| {
+                        Box::new(v.iter().cloned())
+                    }))
                 }
                 Enumerator::KeyValueIter(iter) => {
                     let mut v = if let ObjectRepr::Map = o.repr() {
@@ -1521,7 +1539,9 @@ impl Value {
                         iter.map(|(k, v)| [k, v].into()).collect::<Vec<_>>()
                     };
                     v.reverse();
-                    Some(Value::make_object_iterable(v, move |v| Box::new(v.iter().cloned())))
+                    Some(Value::make_object_iterable(v, move |v| {
+                        Box::new(v.iter().cloned())
+                    }))
                 }
                 Enumerator::RevIter(rev_iter) => {
                     let for_restart = self.clone();
@@ -1565,7 +1585,9 @@ impl Value {
                 Enumerator::Str(s) => Some(Value::make_iterable(move || s.iter().rev().copied())),
                 Enumerator::Values(mut v) => {
                     v.reverse();
-                    Some(Value::make_object_iterable(v, move |v| Box::new(v.iter().cloned())))
+                    Some(Value::make_object_iterable(v, move |v| {
+                        Box::new(v.iter().cloned())
+                    }))
                 }
             },
             _ => None,
@@ -1578,8 +1600,7 @@ impl Value {
         })
     }
 
-    /// Returns some reference to the boxed object if it is of type `T`, or None
-    /// if it isn’t.
+    /// Returns some reference to the boxed object if it is of type `T`, or None if it isn’t.
     ///
     /// This is basically the "reverse" of [`from_object`](Self::from_object)
     /// and [`from_dyn_object`](Self::from_dyn_object). It's also a shortcut for
@@ -1671,17 +1692,16 @@ impl Value {
     /// Calls the value directly.
     ///
     /// If the value holds a function or macro, this invokes it.  Note that in
-    /// MiniJinja there is a separate namespace for methods on objects and
-    /// callable items.  To call methods (which should be a rather rare
-    /// occurrence) you have to use [`call_method`](Self::call_method).
+    /// MiniJinja there is a separate namespace for methods on objects and callable
+    /// items.  To call methods (which should be a rather rare occurrence) you
+    /// have to use [`call_method`](Self::call_method).
     ///
     /// The `args` slice is for the arguments of the function call.  To pass
     /// keyword arguments use the [`Kwargs`] type.
     ///
-    /// Usually the state is already available when it's useful to call this
-    /// method, but when it's not available you can get a fresh template
-    /// state straight from the [`Template`](crate::Template) via
-    /// [`new_state`](crate::Template::new_state).
+    /// Usually the state is already available when it's useful to call this method,
+    /// but when it's not available you can get a fresh template state straight
+    /// from the [`Template`](crate::Template) via [`new_state`](crate::Template::new_state).
     ///
     /// ```
     /// # use minijinja::{Environment, value::{Value, Kwargs}};
@@ -1731,7 +1751,9 @@ impl Value {
     /// Calls a method on the value.
     ///
     /// The name of the method is `name`, the arguments passed are in the `args`
-    /// slice.
+    /// slice.  Method lookup first tries methods implemented by the object, then
+    /// the environment's unknown method callback, and finally a callable value
+    /// stored under `name` on the object.
     pub fn call_method(&self, state: &State, name: &str, args: &[Value]) -> Result<Value, Error> {
         match self._call_method(state, name, args) {
             Ok(rv) => Ok(rv),
@@ -1752,6 +1774,17 @@ impl Value {
                             }
                         }
                     }
+                    // Calling values stored on objects by using method syntax is
+                    // supported as a fallback.  This must happen after the unknown
+                    // method callback so that type methods take precedence over
+                    // same-named items, as they do in Jinja2.
+                    if let Some(value) = self
+                        .as_object()
+                        .and_then(|object| object.get_value(&Value::from(name)))
+                    {
+                        return value.call(state, args);
+                    }
+
                     if err.detail().is_none() {
                         err.set_detail(format!("{} has no method named {}", self.kind(), name));
                     }

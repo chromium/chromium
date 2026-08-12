@@ -13,7 +13,9 @@ pub struct MergeDict {
 
 impl MergeDict {
     pub fn new(values: Vec<Value>) -> Self {
-        Self { values: values.into_boxed_slice() }
+        Self {
+            values: values.into_boxed_slice(),
+        }
     }
 }
 

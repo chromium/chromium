@@ -88,10 +88,10 @@ use crate::vm::State;
 ///
 /// # Iterables
 ///
-/// If you have something that is not quite a sequence but is capable of
-/// yielding values over time, you can directly implement an iterable.  This is
-/// somewhat uncommon as you can normally directly use [`Value::make_iterable`].
-/// Here is how this can be done though:
+/// If you have something that is not quite a sequence but is capable of yielding
+/// values over time, you can directly implement an iterable.  This is somewhat
+/// uncommon as you can normally directly use [`Value::make_iterable`].  Here
+/// is how this can be done though:
 ///
 /// ```
 /// use std::sync::Arc;
@@ -113,11 +113,10 @@ use crate::vm::State;
 /// let value = Value::from_object(Range10);
 /// ```
 ///
-/// Iteration is encouraged to fail immediately (object is not iterable) or not
-/// at all.  However this is not always possible, but the iteration interface
-/// itself does not support fallible iteration.  It is however possible to
-/// accomplish the same thing by creating an [invalid
-/// value](index.html#invalid-values).
+/// Iteration is encouraged to fail immediately (object is not iterable) or not at
+/// all.  However this is not always possible, but the iteration interface itself
+/// does not support fallible iteration.  It is however possible to accomplish the
+/// same thing by creating an [invalid value](index.html#invalid-values).
 ///
 /// # Map As Context
 ///
@@ -126,12 +125,11 @@ use crate::vm::State;
 /// completely avoided.  This means that even if templates take hundreds of
 /// values, MiniJinja does not spend time eagerly converting them into values.
 ///
-/// Here is a very basic example of how a template can be rendered with a
-/// dynamic context.  Note that the implementation of
-/// [`enumerate`](Self::enumerate) is optional for this to work.  It's in fact
-/// not used by the engine during rendering but it is necessary for the
-/// [`debug()`](crate::functions::debug) function to be able to show which
-/// values exist in the context.
+/// Here is a very basic example of how a template can be rendered with a dynamic
+/// context.  Note that the implementation of [`enumerate`](Self::enumerate)
+/// is optional for this to work.  It's in fact not used by the engine during
+/// rendering but it is necessary for the [`debug()`](crate::functions::debug)
+/// function to be able to show which values exist in the context.
 ///
 /// ```
 /// # fn main() -> Result<(), minijinja::Error> {
@@ -168,9 +166,9 @@ use crate::vm::State;
 /// # Ok(()) }
 /// ```
 ///
-/// One thing of note here is that in the above example `env` would be
-/// re-created every time the template needs it.  A better implementation would
-/// cache the value after it was created first.
+/// One thing of note here is that in the above example `env` would be re-created every
+/// time the template needs it.  A better implementation would cache the value after it
+/// was created first.
 pub trait Object: fmt::Debug + Send + Sync {
     /// Indicates the natural representation of an object.
     ///
@@ -187,9 +185,9 @@ pub trait Object: fmt::Debug + Send + Sync {
 
     /// Given a string key, looks up the associated value.
     ///
-    /// By default this creates a temporary value and calls
-    /// [`get_value`](Self::get_value). Implementors can override this to
-    /// avoid temporary allocations for common string-key lookups.
+    /// By default this creates a temporary value and calls [`get_value`](Self::get_value).
+    /// Implementors can override this to avoid temporary allocations for common
+    /// string-key lookups.
     fn get_value_by_str(self: &Arc<Self>, key: &str) -> Option<Value> {
         self.get_value(&Value::from(key))
     }
@@ -203,8 +201,7 @@ pub trait Object: fmt::Debug + Send + Sync {
     /// default to `NonEnumerable`.
     ///
     /// When wrapping other objects you might want to consider using
-    /// [`ObjectExt::mapped_enumerator`] and
-    /// [`ObjectExt::mapped_rev_enumerator`].
+    /// [`ObjectExt::mapped_enumerator`] and [`ObjectExt::mapped_rev_enumerator`].
     fn enumerate(self: &Arc<Self>) -> Enumerator {
         match self.repr() {
             ObjectRepr::Plain => Enumerator::NonEnumerable,
@@ -214,21 +211,19 @@ pub trait Object: fmt::Debug + Send + Sync {
 
     /// Returns the length of the enumerator.
     ///
-    /// By default the length is taken by calling [`enumerate`](Self::enumerate)
-    /// and inspecting the [`Enumerator`].  This means that in order to
-    /// determine the length, an iteration is started.  If you think this is
-    /// a problem for your uses, you can manually implement this.  This
-    /// might for instance be needed if your type can only be iterated over
-    /// once.
+    /// By default the length is taken by calling [`enumerate`](Self::enumerate) and
+    /// inspecting the [`Enumerator`].  This means that in order to determine
+    /// the length, an iteration is started.  If you think this is a problem for your
+    /// uses, you can manually implement this.  This might for instance be
+    /// needed if your type can only be iterated over once.
     fn enumerator_len(self: &Arc<Self>) -> Option<usize> {
         self.enumerate().query_len()
     }
 
     /// Returns `true` if this object is considered true for if conditions.
     ///
-    /// The default implementation checks if the
-    /// [`enumerator_len`](Self::enumerator_len) is not `Some(0)` which is
-    /// the recommended behavior for objects.
+    /// The default implementation checks if the [`enumerator_len`](Self::enumerator_len)
+    /// is not `Some(0)` which is the recommended behavior for objects.
     fn is_true(self: &Arc<Self>) -> bool {
         self.enumerator_len() != Some(0)
     }
@@ -239,14 +234,17 @@ pub trait Object: fmt::Debug + Send + Sync {
     /// [`InvalidOperation`](crate::ErrorKind::InvalidOperation) error.
     fn call(self: &Arc<Self>, state: &State<'_, '_>, args: &[Value]) -> Result<Value, Error> {
         let (_, _) = (state, args);
-        Err(Error::new(ErrorKind::InvalidOperation, "object is not callable"))
+        Err(Error::new(
+            ErrorKind::InvalidOperation,
+            "object is not callable",
+        ))
     }
 
     /// The engine calls this to invoke a method on the object.
     ///
     /// The default implementation returns an
-    /// [`UnknownMethod`](crate::ErrorKind::UnknownMethod) error.  When this
-    /// error is returned the engine will invoke the
+    /// [`UnknownMethod`](crate::ErrorKind::UnknownMethod) error.  When this error
+    /// is returned the engine will invoke the
     /// [`unknown_method_callback`](crate::Environment::set_unknown_method_callback) of
     /// the environment.
     fn call_method(
@@ -255,21 +253,17 @@ pub trait Object: fmt::Debug + Send + Sync {
         method: &str,
         args: &[Value],
     ) -> Result<Value, Error> {
-        if let Some(value) = self.get_value(&Value::from(method)) {
-            return value.call(state, args);
-        }
-
+        let (_, _, _) = (state, method, args);
         Err(Error::from(ErrorKind::UnknownMethod))
     }
 
-    /// Custom comparison of this object against another object of the same
-    /// type.
+    /// Custom comparison of this object against another object of the same type.
     ///
-    /// This must return either `None` or `Some(Ordering)`.  When implemented
-    /// this must guarantee a total ordering as otherwise sort functions
-    /// will crash. This will only compare against other objects of the same
-    /// type, not anything else.  Objects of different types are given an
-    /// absolute ordering outside the scope of this method.
+    /// This must return either `None` or `Some(Ordering)`.  When implemented this
+    /// must guarantee a total ordering as otherwise sort functions will crash.
+    /// This will only compare against other objects of the same type, not
+    /// anything else.  Objects of different types are given an absolute
+    /// ordering outside the scope of this method.
     ///
     /// The requirement is that an implementer downcasts the other [`DynObject`]
     /// to itself, and it that cannot be accomplished `None` must be returned.
@@ -398,8 +392,8 @@ pub trait ObjectExt: Object + Send + Sync + 'static {
     ///
     /// It takes a method that is passed a reference to `self` and is expected
     /// to return an [`Iterator`].  This iterator is then wrapped in an
-    /// [`Enumerator::Iter`].  This allows one to create an iterator that
-    /// borrows out of the object.
+    /// [`Enumerator::Iter`].  This allows one to create an iterator that borrows
+    /// out of the object.
     ///
     /// # Example
     ///
@@ -434,13 +428,12 @@ pub trait ObjectExt: Object + Send + Sync + 'static {
         mapped_enumerator(self, maker)
     }
 
-    /// Creates a new key-value pair enumerator that projects into the given
-    /// object.
+    /// Creates a new key-value pair enumerator that projects into the given object.
     ///
-    /// It takes a method that is passed a reference to `self` and is expected
-    /// to return an [`Iterator`].  This iterator is then wrapped in an
-    /// [`Enumerator::KeyValueIter`].  This allows one to create an iterator
-    /// that borrows out of the object.
+    /// It takes a method that is passed a reference to `self` and is expected to
+    /// return an [`Iterator`].  This iterator is then wrapped in an
+    /// [`Enumerator::KeyValueIter`].  This allows one to create an iterator that
+    /// borrows out of the object.
     ///
     /// # Example
     ///
@@ -500,13 +493,12 @@ pub trait ObjectExt: Object + Send + Sync + 'static {
         Enumerator::KeyValueIter(Box::new(Iter { iter, _object }))
     }
 
-    /// Creates a new reversible iterator enumeration that projects into the
-    /// given object.
+    /// Creates a new reversible iterator enumeration that projects into the given object.
     ///
     /// It takes a method that is passed a reference to `self` and is expected
-    /// to return a [`DoubleEndedIterator`].  This iterator is then wrapped in
-    /// an [`Enumerator::RevIter`].  This allows one to create an iterator
-    /// that borrows out of the object and is reversible.
+    /// to return a [`DoubleEndedIterator`].  This iterator is then wrapped in an
+    /// [`Enumerator::RevIter`].  This allows one to create an iterator that borrows
+    /// out of the object and is reversible.
     ///
     /// # Example
     ///
@@ -578,13 +570,12 @@ pub trait ObjectExt: Object + Send + Sync + 'static {
         Enumerator::RevIter(Box::new(Iter { iter, _object }))
     }
 
-    /// Creates reversible key-value pair enumeration that projects into the
-    /// given object.
+    /// Creates reversible key-value pair enumeration that projects into the given object.
     ///
-    /// It takes a method that is passed a reference to `self` and is expected
-    /// to return a [`DoubleEndedIterator`].  This iterator is then wrapped
-    /// in an [`Enumerator::RevKeyValueIter`].  This allows one to create an
-    /// iterator that borrows out of the object and is reversible.
+    /// It takes a method that is passed a reference to `self` and is expected to
+    /// return a [`DoubleEndedIterator`].  This iterator is then wrapped in an
+    /// [`Enumerator::RevKeyValueIter`].  This allows one to create an iterator that
+    /// borrows out of the object and is reversible.
     ///
     /// # Example
     ///
@@ -724,21 +715,21 @@ pub enum Enumerator {
 
     /// A dynamic iterator over key value pairs.
     ///
-    /// This enumerator allows efficient iteration over the items of a mapping
-    /// in the contexts where both key and value are required (e.g. `|items`
-    /// and `|dictsort` filters).
+    /// This enumerator allows efficient iteration over the items of a mapping in the
+    /// contexts where both key and value are required (e.g. `|items` and `|dictsort`
+    /// filters).
     ///
-    /// Objects with [`ObjectRepr::Map`] are encouraged to return this
-    /// enumerator if their iterator naturally yields (key, value) pairs.
-    /// Note that it does NOT change the iteration behavior of the map in
-    /// the templates, which is to iterate over keys.  In the context where
-    /// a value corresponding the key is also required, the previous `Iter`
-    /// option would call [`Object::get_value`], which incurs unnecessary
-    /// cost of the map lookup.  This enumerator avoids the cost.
+    /// Objects with [`ObjectRepr::Map`] are encouraged to return this enumerator if
+    /// their iterator naturally yields (key, value) pairs.  Note that it does NOT
+    /// change the iteration behavior of the map in the templates, which is to
+    /// iterate over keys.  In the context where a value corresponding the key is
+    /// also required, the previous `Iter` option would call [`Object::get_value`],
+    /// which incurs unnecessary cost of the map lookup.  This enumerator avoids the
+    /// cost.
     ///
-    /// For [`ObjectRepr::Iter`], the iteration behavior is consistent with the
-    /// `Iter` alternative, i.e. the iteration is over the values, which in this
-    /// case is (key, value) pairs.
+    /// For [`ObjectRepr::Iterable`], the iteration behavior is consistent with the
+    /// `Iter` alternative, i.e. the iteration is over the values, which in this case
+    /// is (key, value) pairs.
     ///
     /// | Iterable | Length          |
     /// |----------|-----------------|
@@ -756,8 +747,8 @@ pub enum Enumerator {
 
     /// Like `KeyValueIter` but supports efficient reversing.
     ///
-    /// Similar to `KeyValueIter`, avoids an extra lookup while iterating over
-    /// the items of a mapping where both key and value are used.
+    /// Similar to `KeyValueIter`, avoids an extra lookup while iterating over the
+    /// items of a mapping where both key and value are used.
     ///
     /// | Iterable | Length          |
     /// |----------|-----------------|
@@ -767,8 +758,8 @@ pub enum Enumerator {
     /// Indicates sequential iteration.
     ///
     /// This instructs the engine to iterate over an object by enumerating it
-    /// from `0` to `n` by calling [`Object::get_value`].  This is essentially
-    /// the way sequences are supposed to be enumerated.
+    /// from `0` to `n` by calling [`Object::get_value`].  This is essentially the
+    /// way sequences are supposed to be enumerated.
     ///
     /// | Iterable | Length          |
     /// |----------|-----------------|
@@ -808,8 +799,7 @@ pub enum ObjectRepr {
     /// Represents a map or object.
     ///
     /// - **Default Render:** `{key: value,...}` pairs
-    /// - **Collection Behavior:** looks like a map, can be indexed by key, has
-    ///   a length
+    /// - **Collection Behavior:** looks like a map, can be indexed by key, has a length
     /// - **Iteration Behavior:** iterates over keys
     /// - **Serialize:** Serializes as map
     Map,
@@ -817,18 +807,15 @@ pub enum ObjectRepr {
     /// Represents a sequence (eg: array/list).
     ///
     /// - **Default Render:** `[value,...]`
-    /// - **Collection Behavior:** looks like a list, can be indexed by index,
-    ///   has a length
+    /// - **Collection Behavior:** looks like a list, can be indexed by index, has a length
     /// - **Iteration Behavior:** iterates over values
     /// - **Serialize:** Serializes as list
     Seq,
 
     /// Represents a non indexable, iterable object.
     ///
-    /// - **Default Render:** `[value,...]` (if length is known), `"<iterator>"`
-    ///   otherwise.
-    /// - **Collection Behavior:** looks like a list if length is known, cannot
-    ///   be indexed
+    /// - **Default Render:** `[value,...]` (if length is known), `"<iterator>"` otherwise.
+    /// - **Collection Behavior:** looks like a list if length is known, cannot be indexed
     /// - **Iteration Behavior:** iterates over values
     /// - **Serialize:** Serializes as list
     Iterable,
@@ -976,7 +963,8 @@ macro_rules! impl_value_iterable {
             }
 
             fn enumerate(self: &Arc<Self>) -> Enumerator {
-                self.clone().$enumerator(|this| Box::new(this.iter().map(|x| x.clone().into())))
+                self.clone()
+                    .$enumerator(|this| Box::new(this.iter().map(|x| x.clone().into())))
             }
         }
 
@@ -1009,7 +997,10 @@ macro_rules! impl_str_map_helper {
 
             fn enumerate(self: &Arc<Self>) -> Enumerator {
                 self.$enumerator(|this| {
-                    Box::new(this.iter().map(|(k, v)| (Value::from(k as &str), v.clone().into())))
+                    Box::new(
+                        this.iter()
+                            .map(|(k, v)| (Value::from(k as &str), v.clone().into())),
+                    )
                 })
             }
 
@@ -1044,7 +1035,10 @@ macro_rules! impl_static_str_map_helper {
 
             fn enumerate(self: &Arc<Self>) -> Enumerator {
                 self.$enumerator(|this| {
-                    Box::new(this.iter().map(|(k, v)| (Value::from(*k), v.clone().into())))
+                    Box::new(
+                        this.iter()
+                            .map(|(k, v)| (Value::from(*k), v.clone().into())),
+                    )
                 })
             }
 

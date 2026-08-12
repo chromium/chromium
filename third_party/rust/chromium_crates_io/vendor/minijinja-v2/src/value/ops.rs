@@ -4,8 +4,7 @@ use crate::value::{DynObject, ObjectRepr, Value, ValueKind, ValueRepr};
 
 const MIN_I128_AS_POS_U128: u128 = 170141183460469231731687303715884105728;
 
-/// Iterator wrapper that provides exact size hints for iterators with known
-/// length.
+/// Iterator wrapper that provides exact size hints for iterators with known length.
 pub(crate) struct LenIterWrap<I: Send + Sync>(pub(crate) usize, pub(crate) I);
 
 impl<I: Iterator<Item = Value> + Send + Sync> Iterator for LenIterWrap<I> {
@@ -32,7 +31,11 @@ pub(crate) fn as_f64(value: &Value, lossy: bool) -> Option<f64> {
     macro_rules! checked {
         ($expr:expr, $ty:ty) => {{
             let rv = $expr as f64;
-            return if lossy || rv as $ty == $expr { Some(rv) } else { None };
+            return if lossy || rv as $ty == $expr {
+                Some(rv)
+            } else {
+                None
+            };
         }};
     }
 
@@ -84,8 +87,11 @@ fn get_offset_and_len<F: FnOnce() -> usize>(
     let start = start.unwrap_or(0);
     if start < 0 || stop.map_or(true, |x| x < 0) {
         let end = end();
-        let start =
-            if start < 0 { std::cmp::max(0, end as i64 + start) as usize } else { start as usize };
+        let start = if start < 0 {
+            std::cmp::max(0, end as i64 + start) as usize
+        } else {
+            start as usize
+        };
         let stop = match stop {
             None => end,
             Some(x) if x < 0 => std::cmp::max(0, end as i64 + x) as usize,
@@ -93,7 +99,10 @@ fn get_offset_and_len<F: FnOnce() -> usize>(
         };
         (start, stop.saturating_sub(start))
     } else {
-        (start as usize, (stop.unwrap() as usize).saturating_sub(start as usize))
+        (
+            start as usize,
+            (stop.unwrap() as usize).saturating_sub(start as usize),
+        )
     }
 }
 
@@ -114,16 +123,35 @@ fn range_step_backwards(
         Some(stop) if stop < 0 => (end as i64 + stop).max(0) as usize,
         Some(stop) => stop as usize,
     };
-    let length = if stop == 0 { (start + step) / step } else { (start - stop + step - 1) / step };
+    let length = if stop == 0 {
+        (start + step) / step
+    } else {
+        (start - stop + step - 1) / step
+    };
     (stop..=start).rev().step_by(step).take(length)
 }
 
 pub fn slice(value: Value, start: Value, stop: Value, step: Value) -> Result<Value, Error> {
-    let start = if start.is_none() { None } else { Some(ok!(start.try_into())) };
-    let stop = if stop.is_none() { None } else { Some(ok!(i64::try_from(stop))) };
-    let step = if step.is_none() { 1i64 } else { ok!(i64::try_from(step)) };
+    let start = if start.is_none() {
+        None
+    } else {
+        Some(ok!(start.try_into()))
+    };
+    let stop = if stop.is_none() {
+        None
+    } else {
+        Some(ok!(i64::try_from(stop)))
+    };
+    let step = if step.is_none() {
+        1i64
+    } else {
+        ok!(i64::try_from(step))
+    };
     if step == 0 {
-        return Err(Error::new(ErrorKind::InvalidOperation, "cannot slice by step size of 0"));
+        return Err(Error::new(
+            ErrorKind::InvalidOperation,
+            "cannot slice by step size of 0",
+        ));
     }
 
     let kind = value.kind();
@@ -138,7 +166,11 @@ pub fn slice(value: Value, start: Value, stop: Value, step: Value) -> Result<Val
             if step > 0 {
                 let (start, len) = get_offset_and_len(start, stop, || s.chars().count());
                 Ok(Value::from(
-                    s.chars().skip(start).take(len).step_by(step as usize).collect::<String>(),
+                    s.chars()
+                        .skip(start)
+                        .take(len)
+                        .step_by(step as usize)
+                        .collect::<String>(),
                 ))
             } else {
                 let chars: Vec<char> = s.chars().collect();
@@ -153,7 +185,12 @@ pub fn slice(value: Value, start: Value, stop: Value, step: Value) -> Result<Val
             if step > 0 {
                 let (start, len) = get_offset_and_len(start, stop, || b.len());
                 Ok(Value::from_bytes(
-                    b.iter().skip(start).take(len).step_by(step as usize).copied().collect(),
+                    b.iter()
+                        .skip(start)
+                        .take(len)
+                        .step_by(step as usize)
+                        .copied()
+                        .collect(),
                 ))
             } else {
                 Ok(Value::from_bytes(
@@ -214,7 +251,10 @@ fn impossible_op(op: &str, lhs: &Value, rhs: &Value) -> Error {
 }
 
 fn failed_op(op: &str, lhs: &Value, rhs: &Value) -> Error {
-    Error::new(ErrorKind::InvalidOperation, format!("unable to calculate {lhs} {op} {rhs}"))
+    Error::new(
+        ErrorKind::InvalidOperation,
+        format!("unable to calculate {lhs} {op} {rhs}"),
+    )
 }
 
 macro_rules! math_binop {
@@ -265,9 +305,10 @@ pub fn add(lhs: &Value, rhs: &Value) -> Result<Value, Error> {
         return Ok(Value::from_object(MergeSeq::new_iterable(values)));
     }
     match coerce(lhs, rhs, true) {
-        Some(CoerceResult::I128(a, b)) => {
-            a.checked_add(b).ok_or_else(|| failed_op("+", lhs, rhs)).map(int_as_value)
-        }
+        Some(CoerceResult::I128(a, b)) => a
+            .checked_add(b)
+            .ok_or_else(|| failed_op("+", lhs, rhs))
+            .map(int_as_value),
         Some(CoerceResult::F64(a, b)) => Ok((a + b).into()),
         Some(CoerceResult::Str(a, b)) => Ok(Value::from([a, b].concat())),
         _ => Err(impossible_op("+", lhs, rhs)),
@@ -278,10 +319,16 @@ math_binop!(sub, checked_sub, -);
 math_binop!(rem, checked_rem_euclid, %);
 
 pub fn mul(lhs: &Value, rhs: &Value) -> Result<Value, Error> {
-    if let Some((s, n)) = lhs.as_str().map(|s| (s, rhs)).or_else(|| rhs.as_str().map(|s| (s, lhs)))
+    if let Some((s, n)) = lhs
+        .as_str()
+        .map(|s| (s, rhs))
+        .or_else(|| rhs.as_str().map(|s| (s, lhs)))
     {
         return Ok(Value::from(s.repeat(ok!(n.as_usize().ok_or_else(|| {
-            Error::new(ErrorKind::InvalidOperation, "strings can only be multiplied with integers")
+            Error::new(
+                ErrorKind::InvalidOperation,
+                "strings can only be multiplied with integers",
+            )
         })))));
     } else if let Some((seq, n)) = lhs
         .as_object()
@@ -311,7 +358,10 @@ fn repeat_iterable(n: &Value, seq: &DynObject) -> Result<Value, Error> {
     }));
 
     let len = ok!(seq.enumerator_len().ok_or_else(|| {
-        Error::new(ErrorKind::InvalidOperation, "cannot repeat unsized iterables")
+        Error::new(
+            ErrorKind::InvalidOperation,
+            "cannot repeat unsized iterables",
+        )
     }));
 
     // This is not optimal.  We only query the enumerator for the length once
@@ -350,7 +400,9 @@ pub fn int_div(lhs: &Value, rhs: &Value) -> Result<Value, Error> {
     match coerce(lhs, rhs, true) {
         Some(CoerceResult::I128(a, b)) => {
             if b != 0 {
-                a.checked_div_euclid(b).ok_or_else(|| failed_op("//", lhs, rhs)).map(int_as_value)
+                a.checked_div_euclid(b)
+                    .ok_or_else(|| failed_op("//", lhs, rhs))
+                    .map(int_as_value)
             } else {
                 Err(failed_op("//", lhs, rhs))
             }
@@ -454,8 +506,14 @@ mod tests {
             "invalid operation: tried to use + operator on unsupported types string and number"
         );
 
-        assert_eq!(add(&Value::from(1), &Value::from(2)).unwrap(), Value::from(3));
-        assert_eq!(add(&Value::from("foo"), &Value::from("bar")).unwrap(), Value::from("foobar"));
+        assert_eq!(
+            add(&Value::from(1), &Value::from(2)).unwrap(),
+            Value::from(3)
+        );
+        assert_eq!(
+            add(&Value::from("foo"), &Value::from("bar")).unwrap(),
+            Value::from("foobar")
+        );
 
         let err = add(&Value::from(i128::MAX), &Value::from(1)).unwrap_err();
         assert_eq!(
@@ -465,7 +523,10 @@ mod tests {
     }
 
     #[test]
-    #[cfg_attr(target_os = "wasi", ignore = "std::thread::Builder::spawn is unsupported on WASI")]
+    #[cfg_attr(
+        target_os = "wasi",
+        ignore = "std::thread::Builder::spawn is unsupported on WASI"
+    )]
     fn test_repeated_seq_add_does_not_overflow_stack() {
         // Regression test for repeated sequence concatenation, for example a
         // chat-template accumulator `messages = messages + [m]` applied for
@@ -519,7 +580,8 @@ mod tests {
                 }
                 let idx = self.idx;
                 self.idx += 1;
-                self.next_count.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                self.next_count
+                    .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
                 Some(Value::from(idx as i64))
             }
 
@@ -545,7 +607,11 @@ mod tests {
         assert_eq!(res.len(), Some(4));
         assert_eq!(next_count.load(std::sync::atomic::Ordering::SeqCst), 0);
 
-        let got: Vec<i64> = res.try_iter().unwrap().map(|v| i64::try_from(v).unwrap()).collect();
+        let got: Vec<i64> = res
+            .try_iter()
+            .unwrap()
+            .map(|v| i64::try_from(v).unwrap())
+            .collect();
         assert_eq!(got, vec![0, 1, 2, 3]);
         assert_eq!(next_count.load(std::sync::atomic::Ordering::SeqCst), 2);
     }
@@ -562,7 +628,11 @@ mod tests {
         assert_eq!(res.kind(), ValueKind::Iterable);
         assert_eq!(res.len(), None);
         // ...but iterates to the correct concatenated contents.
-        let got: Vec<i64> = res.try_iter().unwrap().map(|v| i64::try_from(v).unwrap()).collect();
+        let got: Vec<i64> = res
+            .try_iter()
+            .unwrap()
+            .map(|v| i64::try_from(v).unwrap())
+            .collect();
         assert_eq!(got, vec![0, 1, 2, 99]);
     }
 
@@ -580,7 +650,10 @@ mod tests {
             "invalid operation: tried to use - operator on unsupported types string and string"
         );
 
-        assert_eq!(sub(&Value::from(2), &Value::from(1)).unwrap(), Value::from(1));
+        assert_eq!(
+            sub(&Value::from(2), &Value::from(1)).unwrap(),
+            Value::from(1)
+        );
     }
 
     #[test]
@@ -597,7 +670,10 @@ mod tests {
             "invalid operation: tried to use / operator on unsupported types string and string"
         );
 
-        assert_eq!(div(&Value::from(100), &Value::from(2)).unwrap(), Value::from(50.0));
+        assert_eq!(
+            div(&Value::from(100), &Value::from(2)).unwrap(),
+            Value::from(50.0)
+        );
 
         let err = int_div(&Value::from(i128::MIN), &Value::from(-1i128)).unwrap_err();
         assert_eq!(
@@ -608,8 +684,14 @@ mod tests {
 
     #[test]
     fn test_concat() {
-        assert_eq!(string_concat(Value::from("foo"), &Value::from(42)), Value::from("foo42"));
-        assert_eq!(string_concat(Value::from(23), &Value::from(42)), Value::from("2342"));
+        assert_eq!(
+            string_concat(Value::from("foo"), &Value::from(42)),
+            Value::from("foo42")
+        );
+        assert_eq!(
+            string_concat(Value::from(23), &Value::from(42)),
+            Value::from("2342")
+        );
     }
 
     #[test]
@@ -655,14 +737,26 @@ mod tests {
         // [-11::] - from index -11 to the end, which is the same as [::]
         // because the start index is before the start of the vector
         assert_eq!(
-            slice(v.clone(), Value::from(-11), Value::from(()), Value::from(())).unwrap(),
+            slice(
+                v.clone(),
+                Value::from(-11),
+                Value::from(()),
+                Value::from(())
+            )
+            .unwrap(),
             Value::from(vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
         );
 
         // [:-11:] - from index -11 to the end, which is the same as [:0:]
         // because the end index is before the start of the vector
         assert_eq!(
-            slice(v.clone(), Value::from(()), Value::from(-11), Value::from(())).unwrap(),
+            slice(
+                v.clone(),
+                Value::from(()),
+                Value::from(-11),
+                Value::from(())
+            )
+            .unwrap(),
             Value::from(Vec::<usize>::new())
         );
 

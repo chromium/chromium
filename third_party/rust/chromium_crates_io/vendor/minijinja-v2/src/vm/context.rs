@@ -330,6 +330,19 @@ impl<'env> Context<'env> {
             .next()
     }
 
+    pub fn next_loop_item(&mut self) -> Option<Value> {
+        let frame = self
+            .stack
+            .iter_mut()
+            .rev()
+            .find(|x| x.current_loop.is_some())?;
+        let item = frame.current_loop.as_mut()?.next();
+        if item.is_some() {
+            frame.locals.clear();
+        }
+        item
+    }
+
     /// The real depth of the context.
     pub fn depth(&self) -> usize {
         self.outer_stack_depth + self.stack.len()
