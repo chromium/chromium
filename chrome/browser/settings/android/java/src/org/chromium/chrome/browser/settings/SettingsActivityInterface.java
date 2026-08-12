@@ -43,4 +43,10 @@ public interface SettingsActivityInterface {
      * fulfilled by the Activity implementing this interface.
      */
     String getString(int resId);
+
+    /**
+     * Returns a localized formatted string from the activity's resources. The implementation is
+     * usually fulfilled by the Activity implementing this interface.
+     */
+    String getString(int resId, Object... formatArgs);
 }
