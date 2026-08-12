@@ -495,6 +495,7 @@ class ChromeLabsViewControllerBrowserTest : public InProcessBrowserTest {
       bubble_widget_.ExtractAsDangling()->CloseNow();
     }
     about_flags::GetCurrentFlagsState()->Reset();
+    flags_storage_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 

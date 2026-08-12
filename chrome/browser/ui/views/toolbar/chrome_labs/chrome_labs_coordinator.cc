@@ -62,6 +62,9 @@ void ChromeLabsCoordinator::TearDown() {
         views::Widget::ClosedReason::kUnspecified);
     chrome_labs_bubble_view_tracker_.SetView(nullptr);
   }
+  controller_.reset();
+  flags_storage_.reset();
+  flags_state_ = nullptr;
   pinned_actions_observation_.Reset();
   chrome_labs_action_item_ = nullptr;
 }
@@ -188,6 +191,9 @@ ChromeLabsBubbleView* ChromeLabsCoordinator::GetChromeLabsBubbleView() {
 }
 
 void ChromeLabsCoordinator::OnChromeLabsBubbleClosing() {
+  controller_.reset();
+  flags_storage_.reset();
+  flags_state_ = nullptr;
   chrome_labs_action_item_->SetIsShowingBubble(false);
 
   browser_->GetFeatures()
