@@ -944,7 +944,10 @@ void CommandBufferProxyImpl::DisconnectChannel() {
   if (!channel_ || disconnected_)
     return;
   disconnected_ = true;
-  channel_->VerifyFlush(UINT32_MAX);
+  // This used to be a call to VerifyFlush which is a synchronous call.
+  // We changed it to EnsureFlush because DestroyCommandBuffer below is
+  // synchronous and so EnsureFlush is enough.
+  channel_->EnsureFlush(UINT32_MAX);
 
   mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
   channel_->GetGpuChannel().DestroyCommandBuffer(route_id_);
