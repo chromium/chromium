@@ -276,8 +276,6 @@ crbug.com/476389233 [ mac intel-0x3e9b asan angle-opengl graphite-disabled ] Web
 
 # EncodingError: Decoding error.
 crbug.com/487768758 [ amd-0x7480 linux ] WebCodecs_cropEncode_hw_decoder_*_prefer-software [ Failure ]
-crbug.com/537818862 [ amd-0x7480 linux ] WebCodecs_cropEncode_offscreen_*_prefer-software [ Failure ]
-crbug.com/537818862 [ amd-0x7480 linux ] WebCodecs_cropEncode_sw_decoder_*_prefer-software [ Failure ]
 
 # Linux/AMD RX 9070 XT failures
 crbug.com/515133241 [ amd-0x7550 linux mesa_ge_24.2 ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_3 [ Failure ]
