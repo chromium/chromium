@@ -432,6 +432,8 @@ class DevToolsUIBindingsDispatchHttpRequestTest : public testing::Test {
             base::Unretained(this)));
 
     web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents_, GURL("devtools://devtools/bundled/devtools_app.html"));
     bindings_ = std::make_unique<DevToolsUIBindings>(web_contents_);
 
     auto registry = std::make_unique<DevToolsHttpServiceRegistry>();
@@ -826,6 +828,8 @@ class DevToolsUIBindingsDispatchHttpRequestStreamingTest
         base::Unretained(this)));
 
     web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents_, GURL("devtools://devtools/bundled/devtools_app.html"));
     test_bindings_ = std::make_unique<TestDevToolsUIBindings>(web_contents_);
 
     auto registry = std::make_unique<DevToolsHttpServiceRegistry>();

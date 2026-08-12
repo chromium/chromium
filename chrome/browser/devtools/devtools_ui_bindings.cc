@@ -873,6 +873,8 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       ->AddObserver(this);
 #endif
   can_access_aida_ = IsAnyAidaPoweredFeatureEnabled();
+  is_local_frontend_ =
+      IsLocalDevToolsFrontendURL(web_contents_->GetLastCommittedURL());
 }
 
 DevToolsUIBindings::~DevToolsUIBindings() {
@@ -1166,6 +1168,14 @@ void DevToolsUIBindings::OnAidaResponse(
 void DevToolsUIBindings::DispatchHttpRequest(
     DispatchCallback callback,
     const DevToolsDispatchHttpRequestParams& params) {
+  if (!is_local_frontend_) {
+    base::DictValue response_dict;
+    response_dict.Set("error", "Request validation failed");
+    base::Value response = base::Value(std::move(response_dict));
+    std::move(callback).Run(&response);
+    return;
+  }
+
   if (params.stream_id.has_value()) {
     int stream_id = *params.stream_id;
     auto stream_writer = base::BindRepeating(
@@ -1308,8 +1318,7 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
 
   NetworkResourceLoader::URLLoaderFactoryHolder url_loader_factory;
   if (gurl.SchemeIsFile()) {
-    GURL frontend_url = web_contents_->GetLastCommittedURL();
-    if (!IsLocalDevToolsFrontendURL(frontend_url)) {
+    if (!is_local_frontend_) {
       if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kAllowUnsafeDevToolsRemoteFileLoading)) {
         base::DictValue response_dict;
@@ -2486,9 +2495,10 @@ void DevToolsUIBindings::MaybeStartLogging() {
 
     // Log the frontend location explicitly
     GURL frontend_url = web_contents_->GetVisibleURL();
-    DevToolsFrontendLocation location = IsLocalDevToolsFrontendURL(frontend_url)
-                                            ? DevToolsFrontendLocation::kLocal
-                                            : DevToolsFrontendLocation::kRemote;
+    DevToolsFrontendLocation location =
+        IsLocalDevToolsFrontendURL(frontend_url)
+            ? DevToolsFrontendLocation::kLocal
+            : DevToolsFrontendLocation::kRemote;
     base::UmaHistogramEnumeration("DevTools.FrontendLocation", location);
 
     metrics::structured::StructuredMetricsClient::Record(
@@ -2912,6 +2922,9 @@ void DevToolsUIBindings::CanShowSurvey(DispatchCallback callback,
 }
 
 bool DevToolsUIBindings::EnsureAidaClientAvailable() {
+  if (!is_local_frontend_) {
+    return false;
+  }
   if (!can_access_aida_ || AidaClient::CanUseAida(profile_).blocked) {
     return false;
   }
@@ -3120,6 +3133,8 @@ void DevToolsUIBindings::DocumentOnLoadCompletedInPrimaryMainFrame() {
 
 void DevToolsUIBindings::PrimaryPageChanged() {
   frontend_loaded_ = false;
+  is_local_frontend_ =
+      IsLocalDevToolsFrontendURL(web_contents_->GetLastCommittedURL());
 }
 
 void DevToolsUIBindings::FrontendLoaded() {

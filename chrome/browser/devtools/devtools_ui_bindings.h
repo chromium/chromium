@@ -479,6 +479,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   std::unique_ptr<DevToolsHttpServiceRegistry> http_service_registry_;
 
   base::UnguessableToken session_id_for_logging_;
+  bool is_local_frontend_ = false;
   base::WeakPtrFactory<DevToolsUIBindings> weak_factory_{this};
 };
 
