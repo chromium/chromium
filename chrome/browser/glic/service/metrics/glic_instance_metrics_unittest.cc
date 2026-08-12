@@ -197,9 +197,8 @@ TEST_F(GlicInstanceMetricsTest, OnFloatyClosed_WithoutOpening_LogsError) {
 }
 
 TEST_F(GlicInstanceMetricsTest, OnSidePanelClosed_WithoutOpening_LogsError) {
-  metrics_.OnSidePanelClosed(
-      static_cast<tabs::TabInterface*>(&mock_tab_),
-      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnSidePanelClosed(static_cast<tabs::TabInterface*>(&mock_tab_),
+                             AutoOpenCloseReason::kExplicitlyClosed);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error",
       GlicInstanceMetricsError::kSidePanelClosedWithoutOpen, 1);
@@ -307,8 +306,8 @@ TEST_F(GlicInstanceMetricsTest, ValidFloatyFlow_DoesNotLogError) {
 TEST_F(GlicInstanceMetricsTest, ValidSidePanelFlow_DoesNotLogError) {
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
   metrics_.OnShowInSidePanel(&mock_tab_);
-  metrics_.OnSidePanelClosed(
-      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnSidePanelClosed(&mock_tab_,
+                             AutoOpenCloseReason::kExplicitlyClosed);
   histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
 }
 
@@ -382,9 +381,8 @@ TEST_F(GlicInstanceMetricsTest, SidePanelFirstOpenDuration_LoggedOnFirstClose) {
   metrics_.OnShowInSidePanel(&mock_tab_);
   task_environment_.FastForwardBy(base::Minutes(5));
 
-  metrics_.OnSidePanelClosed(
-      static_cast<tabs::TabInterface*>(&mock_tab_),
-      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnSidePanelClosed(static_cast<tabs::TabInterface*>(&mock_tab_),
+                             AutoOpenCloseReason::kExplicitlyClosed);
 
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.InvocationSource.TopChromeButton.SidePanelFirstOpenDuration",
@@ -400,9 +398,8 @@ TEST_F(GlicInstanceMetricsTest,
   metrics_.OnShowInSidePanel(&mock_tab_);
 
   task_environment_.FastForwardBy(base::Minutes(5));
-  metrics_.OnSidePanelClosed(
-      static_cast<tabs::TabInterface*>(&mock_tab_),
-      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnSidePanelClosed(static_cast<tabs::TabInterface*>(&mock_tab_),
+                             AutoOpenCloseReason::kExplicitlyClosed);
 
   histogram_tester_.ExpectTotalCount(
       "Glic.InvocationSource.TopChromeButton.SidePanelFirstOpenDuration", 1);
@@ -410,9 +407,8 @@ TEST_F(GlicInstanceMetricsTest,
   metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
   metrics_.OnShowInSidePanel(&mock_tab_);
   task_environment_.FastForwardBy(base::Minutes(2));
-  metrics_.OnSidePanelClosed(
-      static_cast<tabs::TabInterface*>(&mock_tab_),
-      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnSidePanelClosed(static_cast<tabs::TabInterface*>(&mock_tab_),
+                             AutoOpenCloseReason::kExplicitlyClosed);
 
   histogram_tester_.ExpectTotalCount(
       "Glic.InvocationSource.TopChromeButton.SidePanelFirstOpenDuration", 1);
@@ -424,9 +420,8 @@ TEST_F(GlicInstanceMetricsTest,
        SidePanelFirstOpenDuration_ShownWithoutToggleCall) {
   metrics_.OnShowInSidePanel(&mock_tab_);
   task_environment_.FastForwardBy(base::Minutes(5));
-  metrics_.OnSidePanelClosed(
-      static_cast<tabs::TabInterface*>(&mock_tab_),
-      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnSidePanelClosed(static_cast<tabs::TabInterface*>(&mock_tab_),
+                             AutoOpenCloseReason::kExplicitlyClosed);
 
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.InvocationSource.Unsupported.SidePanelFirstOpenDuration",
@@ -790,10 +785,10 @@ TEST_F(GlicInstanceMetricsTest, Floaty_OpenCloseClose_LogsError) {
 TEST_F(GlicInstanceMetricsTest, SidePanel_OpenCloseClose_LogsError) {
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
   metrics_.OnShowInSidePanel(&mock_tab_);
-  metrics_.OnSidePanelClosed(
-      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
-  metrics_.OnSidePanelClosed(
-      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnSidePanelClosed(&mock_tab_,
+                             AutoOpenCloseReason::kExplicitlyClosed);
+  metrics_.OnSidePanelClosed(&mock_tab_,
+                             AutoOpenCloseReason::kExplicitlyClosed);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error",
       GlicInstanceMetricsError::kSidePanelClosedWithoutOpen, 1);
@@ -952,8 +947,8 @@ TEST_F(GlicInstanceMetricsTest, SidePanelFirstOpenDuration_WithPrompts) {
   metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
 
   task_environment_.FastForwardBy(base::Minutes(5));
-  metrics_.OnSidePanelClosed(
-      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnSidePanelClosed(&mock_tab_,
+                             AutoOpenCloseReason::kExplicitlyClosed);
 
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.InvocationSource.TopChromeButton.SidePanelFirstOpenDuration."
@@ -975,8 +970,7 @@ TEST_F(GlicInstanceMetricsTest, SidePanelFirstOpenDuration_NoPrompts) {
   metrics_.OnShowInSidePanel(&mock_tab_);
 
   task_environment_.FastForwardBy(base::Minutes(3));
-  metrics_.OnSidePanelClosed(&mock_tab_,
-                             GlicInstanceMetrics::CloseReason::kTabSwitched);
+  metrics_.OnSidePanelClosed(&mock_tab_, AutoOpenCloseReason::kTabSwitched);
 
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.InvocationSource.AutoOpenedForPdf.SidePanelFirstOpenDuration."
