@@ -59,7 +59,7 @@ class DesktopMediaListView
 
   DesktopMediaSourceView* GetSelectedView();
 
-  raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
+  base::WeakPtr<DesktopMediaListController> controller_;
 
   DesktopMediaSourceViewStyle single_style_;
   DesktopMediaSourceViewStyle generic_style_;

@@ -61,7 +61,7 @@ class TabListModel : public ui::TableModel,
                      public DesktopMediaListController::SourceListListener {
  public:
   explicit TabListModel(
-      DesktopMediaListController* controller,
+      base::WeakPtr<DesktopMediaListController> controller,
       base::RepeatingCallback<void(size_t)> preview_updated_callback);
 
   TabListModel(const TabListModel&) = delete;
@@ -83,13 +83,13 @@ class TabListModel : public ui::TableModel,
   void OnDelegatedSourceListSelection() override;
 
  private:
-  raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
+  base::WeakPtr<DesktopMediaListController> controller_;
   raw_ptr<ui::TableModelObserver> observer_ = nullptr;
   base::RepeatingCallback<void(size_t)> preview_updated_callback_;
 };
 
 TabListModel::TabListModel(
-    DesktopMediaListController* controller,
+    base::WeakPtr<DesktopMediaListController> controller,
     base::RepeatingCallback<void(size_t)> preview_updated_callback)
     : controller_(controller),
       preview_updated_callback_(preview_updated_callback) {
@@ -98,17 +98,19 @@ TabListModel::TabListModel(
 
 size_t TabListModel::RowCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return controller_->GetSourceCount();
+  return controller_ ? controller_->GetSourceCount() : 0;
 }
 
 std::u16string TabListModel::GetText(size_t row, int column) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return controller_->GetSource(row).name;
+  return controller_ ? controller_->GetSource(row).name : std::u16string();
 }
 
 ui::ImageModel TabListModel::GetIcon(size_t row) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ui::ImageModel::FromImageSkia(controller_->GetSource(row).thumbnail);
+  return controller_ ? ui::ImageModel::FromImageSkia(
+                           controller_->GetSource(row).thumbnail)
+                     : ui::ImageModel();
 }
 
 void TabListModel::SetObserver(ui::TableModelObserver* observer) {
@@ -158,7 +160,7 @@ void TabListModel::OnDelegatedSourceListSelection() {
 // listing tabs and the DesktopMediaTabList.
 class TabListViewObserver : public views::TableViewObserver {
  public:
-  TabListViewObserver(DesktopMediaListController* controller,
+  TabListViewObserver(base::WeakPtr<DesktopMediaListController> controller,
                       base::RepeatingClosure selection_changed_callback);
 
   TabListViewObserver(const TabListViewObserver&) = delete;
@@ -168,12 +170,12 @@ class TabListViewObserver : public views::TableViewObserver {
   void OnKeyDown(ui::KeyboardCode virtual_keycode) override;
 
  private:
-  const raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
+  base::WeakPtr<DesktopMediaListController> controller_;
   base::RepeatingClosure selection_changed_callback_;
 };
 
 TabListViewObserver::TabListViewObserver(
-    DesktopMediaListController* controller,
+    base::WeakPtr<DesktopMediaListController> controller,
     base::RepeatingClosure selection_changed_callback)
     : controller_(controller),
       selection_changed_callback_(std::move(selection_changed_callback)) {
@@ -182,13 +184,15 @@ TabListViewObserver::TabListViewObserver(
 
 void TabListViewObserver::OnSelectionChanged() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  controller_->OnSourceSelectionChanged();
+  if (controller_) {
+    controller_->OnSourceSelectionChanged();
+  }
   selection_changed_callback_.Run();
 }
 
 void TabListViewObserver::OnKeyDown(ui::KeyboardCode virtual_keycode) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (virtual_keycode == ui::VKEY_RETURN) {
+  if (virtual_keycode == ui::VKEY_RETURN && controller_) {
     controller_->AcceptSource();
   }
 }
@@ -208,7 +212,7 @@ std::unique_ptr<views::ScrollView> CreateScrollViewWithTable(
 
 DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
                                          const std::u16string& accessible_name)
-    : controller_(controller) {
+    : controller_(controller ? controller->GetWeakPtr() : nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // The thumbnail size isn't allowed to be smaller than gfx::kFaviconSize by
   // the underlying media list. TableView requires that the icon size be exactly
@@ -217,8 +221,10 @@ DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
   // list.
   DCHECK_GE(ui::TableModel::kIconSize, gfx::kFaviconSize);
 
-  controller_->SetThumbnailSize(
-      gfx::Size(ui::TableModel::kIconSize, ui::TableModel::kIconSize));
+  if (controller_) {
+    controller_->SetThumbnailSize(
+        gfx::Size(ui::TableModel::kIconSize, ui::TableModel::kIconSize));
+  }
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -343,6 +349,9 @@ void DesktopMediaTabList::OnThemeChanged() {
 
 std::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!controller_) {
+    return std::nullopt;
+  }
   std::optional<size_t> row = table_->GetFirstSelectedRow();
   if (!row.has_value()) {
     return std::nullopt;
@@ -376,7 +385,12 @@ void DesktopMediaTabList::OnSelectionChanged() {
   std::optional<size_t> row = table_->GetFirstSelectedRow();
   if (!row.has_value()) {
     ClearPreview();
-    controller_->SetPreviewedSource(std::nullopt);
+    if (controller_) {
+      controller_->SetPreviewedSource(std::nullopt);
+    }
+    return;
+  }
+  if (!controller_) {
     return;
   }
   const DesktopMediaList::Source& source = controller_->GetSource(row.value());
@@ -411,7 +425,7 @@ void DesktopMediaTabList::ClearPreviewImageIfUnchanged(
 
 void DesktopMediaTabList::OnPreviewUpdated(size_t index) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (index != table_->GetFirstSelectedRow()) {
+  if (index != table_->GetFirstSelectedRow() || !controller_) {
     return;
   }
 

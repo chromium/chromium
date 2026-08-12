@@ -73,7 +73,7 @@ DesktopMediaListView::DesktopMediaListView(
     DesktopMediaSourceViewStyle generic_style,
     DesktopMediaSourceViewStyle single_style,
     const std::u16string& accessible_name)
-    : controller_(controller),
+    : controller_(controller ? controller->GetWeakPtr() : nullptr),
       single_style_(single_style),
       generic_style_(generic_style) {
   SetBorder(views::CreateEmptyBorder(16));
@@ -87,7 +87,9 @@ DesktopMediaListView::DesktopMediaListView(
 DesktopMediaListView::~DesktopMediaListView() = default;
 
 void DesktopMediaListView::OnSelectionChanged() {
-  controller_->OnSourceSelectionChanged();
+  if (controller_) {
+    controller_->OnSourceSelectionChanged();
+  }
 }
 
 bool DesktopMediaListView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -156,6 +158,9 @@ void DesktopMediaListView::ClearSelection() {
 }
 
 void DesktopMediaListView::OnSourceAdded(size_t index) {
+  if (!controller_) {
+    return;
+  }
   const DesktopMediaList::Source& source = controller_->GetSource(index);
 
   DesktopMediaSourceView* source_view =
@@ -197,6 +202,10 @@ void DesktopMediaListView::OnSourceAdded(size_t index) {
 }
 
 void DesktopMediaListView::OnSourceRemoved(size_t index) {
+  if (!controller_) {
+    return;
+  }
+
   DesktopMediaSourceView* view = AsDesktopMediaSourceView(children()[index]);
   DCHECK(view);
 
@@ -227,6 +236,9 @@ void DesktopMediaListView::OnSourceMoved(size_t old_index, size_t new_index) {
 }
 
 void DesktopMediaListView::OnSourceNameChanged(size_t index) {
+  if (!controller_) {
+    return;
+  }
   const DesktopMediaList::Source& source = controller_->GetSource(index);
   DesktopMediaSourceView* source_view =
       AsDesktopMediaSourceView(children()[index]);
@@ -234,6 +246,9 @@ void DesktopMediaListView::OnSourceNameChanged(size_t index) {
 }
 
 void DesktopMediaListView::OnSourceThumbnailChanged(size_t index) {
+  if (!controller_) {
+    return;
+  }
   const DesktopMediaList::Source& source = controller_->GetSource(index);
   DesktopMediaSourceView* source_view =
       AsDesktopMediaSourceView(children()[index]);
@@ -252,6 +267,10 @@ void DesktopMediaListView::OnDelegatedSourceListSelection() {
 }
 
 void DesktopMediaListView::SetStyle(const DesktopMediaSourceViewStyle& style) {
+  if (!controller_) {
+    return;
+  }
+
   const size_t old_columns = active_style_.columns;
   const gfx::Size old_item_size = active_style_.item_size;
   active_style_ = style;

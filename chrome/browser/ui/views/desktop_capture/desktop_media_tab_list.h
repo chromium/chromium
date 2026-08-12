@@ -68,7 +68,7 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   friend class DesktopMediaPickerViewsTestApi;
   friend class DesktopMediaTabListTest;
 
-  raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
+  base::WeakPtr<DesktopMediaListController> controller_;
   std::unique_ptr<TabListModel> model_;
   std::unique_ptr<TabListViewObserver> view_observer_;
 
