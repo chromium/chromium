@@ -84,6 +84,8 @@ class AtMemoryHandler {
  private:
   const blink::RendererPreferences* GetRendererPreferences() const;
 
+  const std::string& GetTriggerString() const;
+
   bool ShouldTriggerAtMemorySearch(const blink::WebElement& element) const;
 
   // Finds the metadata for the last AtMemory-related AskForValuesToFill() on

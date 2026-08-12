@@ -82,8 +82,8 @@ bool AtMemoryHandler::ShouldTriggerAtMemorySearch(
     return false;
   }
 
-  const RendererPreferences* renderer_prefs = GetRendererPreferences();
-  if (!renderer_prefs || renderer_prefs->autofill_trigger_string.empty()) {
+  const WebString trigger = WebString::FromUtf8(GetTriggerString());
+  if (trigger.IsEmpty()) {
     return false;
   }
 
@@ -94,8 +94,6 @@ bool AtMemoryHandler::ShouldTriggerAtMemorySearch(
     return false;
   }
 
-  const WebString trigger =
-      WebString::FromUtf8(renderer_prefs->autofill_trigger_string);
   const int trigger_len = std::max(static_cast<int>(trigger.length()), 0);
 
   if (form_control) {
@@ -195,9 +193,9 @@ void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement& element,
   }
 
   if (info->caused_by_trigger_string && ShouldTriggerAtMemorySearch(element)) {
-    const RendererPreferences* prefs = GetRendererPreferences();
-    const WebString trigger =
-        WebString::FromUtf8(prefs ? prefs->autofill_trigger_string : "");
+    // TODO(crbug.com/538102446): Instead of adjusting the selection, eliminate
+    // the trigger string.
+    const WebString trigger = WebString::FromUtf8(GetTriggerString());
     const int trigger_len = std::max(static_cast<int>(trigger.length()), 0);
     if (auto form_control = element.DynamicTo<WebFormControlElement>()) {
       const unsigned int offset = form_control.SelectionStart();
@@ -377,6 +375,14 @@ const RendererPreferences* AtMemoryHandler::GetRendererPreferences() const {
     }
   }
   return nullptr;
+}
+
+const std::string& AtMemoryHandler::GetTriggerString() const {
+  const blink::RendererPreferences* prefs = GetRendererPreferences();
+  if (!prefs) {
+    return base::EmptyString();
+  }
+  return prefs->autofill_trigger_string;
 }
 
 }  // namespace autofill
