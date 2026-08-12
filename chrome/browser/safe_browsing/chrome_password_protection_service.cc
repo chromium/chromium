@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -1604,7 +1605,8 @@ void ChromePasswordProtectionService::UpdateSecurityState(
   const GURL url_with_empty_path = url.GetWithEmptyPath();
   if (threat_type == SBThreatType::SB_THREAT_TYPE_SAFE) {
     ui_manager_->RemoveAllowlistUrlSet(
-        url_with_empty_path, /*navigation_id=*/std::nullopt, web_contents,
+        base::PassKey<ChromePasswordProtectionService>(), url_with_empty_path,
+        /*navigation_id=*/std::nullopt, web_contents,
         /*from_pending_only=*/false);
     // Overrides cached verdicts.
     LoginReputationClientResponse verdict;
@@ -1629,7 +1631,8 @@ void ChromePasswordProtectionService::UpdateSecurityState(
       return;
     // Resets previous threat type.
     ui_manager_->RemoveAllowlistUrlSet(
-        url_with_empty_path, /*navigation_id=*/std::nullopt, web_contents,
+        base::PassKey<ChromePasswordProtectionService>(), url_with_empty_path,
+        /*navigation_id=*/std::nullopt, web_contents,
         /*from_pending_only=*/false);
   }
   ui_manager_->AddToAllowlistUrlSet(

@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -93,6 +94,7 @@ SuspiciousSiteControllerAndroid::~SuspiciousSiteControllerAndroid() {
         g_browser_process->safe_browsing_service();
     if (sb_service && sb_service->ui_manager()) {
       sb_service->ui_manager()->RemoveAllowlistUrlSetThreatType(
+          base::PassKey<SuspiciousSiteControllerAndroid>(),
           current_suspicious_url_, navigation_id_, web_contents(),
           /*from_pending_only=*/true,
           SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
@@ -240,6 +242,7 @@ void SuspiciousSiteControllerAndroid::ShowDialog() {
     // first before setting the new one.
     if (!current_suspicious_url_.is_empty()) {
       sb_service->ui_manager()->RemoveAllowlistUrlSetThreatType(
+          base::PassKey<SuspiciousSiteControllerAndroid>(),
           current_suspicious_url_, navigation_id_, web_contents(),
           /*from_pending_only=*/true,
           SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
