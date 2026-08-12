@@ -750,8 +750,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   inline bool IsStacked(const ComputedStyle& style) const {
     NOT_DESTROYED();
-    if (auto* html_element = DynamicTo<HTMLElement>(GetNode());
-        html_element && html_element->IsUnboundedElementActive()) {
+    if (style.IsUnboundedElementActive()) {
       // For unbounded elements, we treat them as stacked, so they get their own
       // paint layer by default.
       DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());

@@ -408,10 +408,11 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 
   reasons.PutAll(CompositingReasonsFor3DSceneLeaf(object));
 
-  if (auto* html_element = DynamicTo<HTMLElement>(element);
-      html_element &&
-      html_element->IsUnboundedElementActive()) {
+  if (object.StyleRef().IsUnboundedElementActive()) {
     DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+    auto* html_element = DynamicTo<HTMLElement>(element);
+    DCHECK(!html_element || object.StyleRef().IsUnboundedElementActive() ==
+                                html_element->IsUnboundedElementActive());
     reasons.Put(CompositingReason::kUnboundedElement);
   }
 

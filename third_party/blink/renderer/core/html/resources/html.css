@@ -1056,6 +1056,9 @@ input[type="hidden" i] {
   [unbounded]:not(:unbounded) {
     visibility: hidden;
   }
+  :unbounded {
+    -internal-unbounded: active;
+  }
 }
 
 area:-webkit-any-link {

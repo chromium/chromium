@@ -1985,11 +1985,14 @@ static void PopulateCanvasChildState(const LayoutObject& object,
 }
 
 static bool NeedsUnboundedWrapperNodes(const LayoutObject& object) {
-  if (!RuntimeEnabledFeatures::UnboundedElementEnabled()) {
-    return false;
+  if (object.StyleRef().IsUnboundedElementActive()) {
+    DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+    auto* html_element = DynamicTo<HTMLElement>(object.GetNode());
+    DCHECK(!html_element || object.StyleRef().IsUnboundedElementActive() ==
+                                html_element->IsUnboundedElementActive());
+    return true;
   }
-  const auto* html_element = DynamicTo<HTMLElement>(object.GetNode());
-  return html_element && html_element->IsUnboundedElementActive();
+  return false;
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateUnboundedWrapperNodes(
@@ -4160,9 +4163,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   // and effect nodes to isolate the unbounded element in its own coordinate
   // space and render surface.
   bool is_unbounded_active = false;
-  if (auto* html_element = DynamicTo<HTMLElement>(object_.GetNode());
-      html_element && html_element->IsUnboundedElementActive()) {
+  if (object_.StyleRef().IsUnboundedElementActive()) {
     DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+    auto* html_element = DynamicTo<HTMLElement>(object_.GetNode());
+    DCHECK(!html_element || object_.StyleRef().IsUnboundedElementActive() ==
+                                html_element->IsUnboundedElementActive());
     context_.current.clip = &ClipPaintPropertyNode::Root();
     is_unbounded_active = true;
   }

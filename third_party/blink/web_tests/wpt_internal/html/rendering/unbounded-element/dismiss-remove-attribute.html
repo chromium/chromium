@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/542266629">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  #clipper {
+    overflow: hidden;
+    height: 50px;
+    background: #eee;
+  }
+  #target {
+    width: 100px;
+    height: 100px;
+    background: red;
+  }
+  :unbounded {
+    background: blue;
+  }
+</style>
+
+<div id="clipper">
+  <div unbounded id="target" tabindex="0">Target</div>
+</div>
+
+<script>
+promise_test(async t => {
+  const target = document.getElementById('target');
+
+  target.addEventListener('unbounded', (e) => {
+    if (e.newState === 'closed') {
+      target.removeAttribute('unbounded');
+    }
+  });
+
+  await test_driver.bless("show");
+  await target.showUnboundedElement();
+
+  await target.hideUnboundedElement();
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+}, 'Removing unbounded attribute in closed event listener should not crash.');
+</script>

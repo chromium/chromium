@@ -1733,6 +1733,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kOverlay;
     case CSSPropertyID::kInternalOverscrollPosition:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
+    case CSSPropertyID::kInternalUnbounded:
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kActive;
     default:
       NOTREACHED();
   }
@@ -1886,6 +1888,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kInteractivity,
     CSSPropertyID::kInternalOverscrollArea,
     CSSPropertyID::kInternalOverscrollPosition,
+    CSSPropertyID::kInternalUnbounded,
 }};
 
 bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {

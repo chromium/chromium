@@ -698,9 +698,11 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
                                   *context.tree_builder_context);
     property_tree_builder->UpdateForSelf();
   }
-  if (const auto* html_element = DynamicTo<HTMLElement>(object.GetNode());
-      html_element && html_element->IsUnboundedElementActive()) {
+  if (object.StyleRef().IsUnboundedElementActive()) {
     DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+    auto* html_element = DynamicTo<HTMLElement>(object.GetNode());
+    DCHECK(!html_element || object.StyleRef().IsUnboundedElementActive() ==
+                                html_element->IsUnboundedElementActive());
     context.inside_active_unbounded = true;
     gfx::Rect current_bounds =
         object.AbsoluteBoundingBoxRectForUnboundedElement();
@@ -714,7 +716,8 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
             widget->BlinkSpaceToDIPs(gfx::RectF(current_bounds)));
       }
     }
-    if (current_bounds != html_element->LastSentUnboundedBounds()) {
+    if (html_element &&
+        current_bounds != html_element->LastSentUnboundedBounds()) {
       const_cast<HTMLElement*>(html_element)
           ->SetLastSentUnboundedBounds(current_bounds);
       if (frame) {

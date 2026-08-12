@@ -5032,6 +5032,17 @@
       runtime_flag: "OverscrollGestures",
     },
     {
+      name: "-internal-unbounded",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["none", "active"],
+      typedom_types: ["Keyword"],
+      default_value: "none",
+      runtime_flag: "UnboundedElement",
+      invalidate: ["layout", "paint"],
+    },
+    {
       name: "padding-bottom",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,

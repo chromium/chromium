@@ -393,6 +393,7 @@ static bool ExtractBucketingValues(const CSSSelector* selector,
         case CSSSelector::kPseudoSlotted:
         case CSSSelector::kPseudoRoot:
         case CSSSelector::kPseudoActiveViewTransition:
+        case CSSSelector::kPseudoUnbounded:
           // Pseudo classes.
           values.pseudo_type = selector->GetPseudoType();
           if (values.pseudo_type == CSSSelector::kPseudoSlotted) {
@@ -667,6 +668,16 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
       });
     }
     AddToBucket(active_view_transition_rules_, rule_data);
+    return;
+  }
+  if (values.pseudo_type == CSSSelector::kPseudoUnbounded) {
+    if (bucket_coverage == BucketCoverage::kCompute) {
+      MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
+        return selector.Match() == CSSSelector::kPseudoClass &&
+               selector.GetPseudoType() == CSSSelector::kPseudoUnbounded;
+      });
+    }
+    AddToBucket(unbounded_pseudo_class_rules_, rule_data);
     return;
   }
 
@@ -1417,6 +1428,9 @@ void RuleSet::AddFilteredRulesFromOtherSet(
     AddFilteredRulesFromOtherBucket(other, other.active_view_transition_rules_,
                                     only_include,
                                     &active_view_transition_rules_);
+    AddFilteredRulesFromOtherBucket(other, other.unbounded_pseudo_class_rules_,
+                                    only_include,
+                                    &unbounded_pseudo_class_rules_);
 
     AddFilteredRulesFromOtherBucket(other, other.root_element_rules_,
                                     only_include, &root_element_rules_);
@@ -1759,6 +1773,7 @@ void RuleSet::CompactRules() {
   part_pseudo_rules_.shrink_to_fit();
   slotted_pseudo_element_rules_.shrink_to_fit();
   active_view_transition_rules_.shrink_to_fit();
+  unbounded_pseudo_class_rules_.shrink_to_fit();
 
   page_rules_.shrink_to_fit();
   font_face_rules_.shrink_to_fit();
@@ -1835,6 +1850,7 @@ void RuleSet::AssertRuleListsSorted() const {
   DCHECK(IsRuleListSorted(shadow_host_rules_));
   DCHECK(IsRuleListSorted(part_pseudo_rules_));
   DCHECK(IsRuleListSorted(active_view_transition_rules_));
+  DCHECK(IsRuleListSorted(unbounded_pseudo_class_rules_));
 }
 
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
@@ -1891,6 +1907,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(part_pseudo_rules_);
   visitor->Trace(slotted_pseudo_element_rules_);
   visitor->Trace(active_view_transition_rules_);
+  visitor->Trace(unbounded_pseudo_class_rules_);
 
   visitor->Trace(page_rules_);
   visitor->Trace(font_face_rules_);

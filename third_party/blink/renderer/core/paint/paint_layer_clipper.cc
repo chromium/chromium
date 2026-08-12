@@ -58,7 +58,8 @@
 
 namespace blink {
 
-static HTMLElement* FindActiveUnboundedAncestor(const PaintLayer& layer) {
+static const LayoutObject* FindActiveUnboundedAncestor(
+    const PaintLayer& layer) {
   if (!RuntimeEnabledFeatures::UnboundedElementEnabled()) {
     return nullptr;
   }
@@ -66,10 +67,14 @@ static HTMLElement* FindActiveUnboundedAncestor(const PaintLayer& layer) {
     return nullptr;
   }
   for (const PaintLayer* curr = &layer; curr; curr = curr->Parent()) {
-    auto* element = DynamicTo<Element>(curr->GetLayoutObject().GetNode());
-    if (auto* html_element = DynamicTo<HTMLElement>(element);
-        html_element && html_element->IsUnboundedElementActive()) {
-      return html_element;
+    if (curr->GetLayoutObject().StyleRef().IsUnboundedElementActive()) {
+      DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+      auto* html_element =
+          DynamicTo<HTMLElement>(curr->GetLayoutObject().GetNode());
+      DCHECK(!html_element ||
+             curr->GetLayoutObject().StyleRef().IsUnboundedElementActive() ==
+                 html_element->IsUnboundedElementActive());
+      return &curr->GetLayoutObject();
     }
   }
   NOTREACHED();
@@ -151,13 +156,12 @@ void PaintLayerClipper::CalculateBackgroundClipRectInternal(
         context.root_fragment->ContentsClip());
   }
 
-  if (auto* unbounded_ancestor = FindActiveUnboundedAncestor(*layer_)) {
+  if (const auto* unbounded_ancestor = FindActiveUnboundedAncestor(*layer_)) {
     // For unbounded elements, we calculate the background clip rect relative to
     // the active unbounded ancestor's state, so these elements escape ancestor
     // clips.
     DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
-    const auto& unbounded_fragment =
-        unbounded_ancestor->GetLayoutObject()->FirstFragment();
+    const auto& unbounded_fragment = unbounded_ancestor->FirstFragment();
     destination_property_tree_state.SetClip(
         unbounded_fragment.LocalBorderBoxProperties().Clip());
   }
