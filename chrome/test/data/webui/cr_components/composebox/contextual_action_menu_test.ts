@@ -153,7 +153,8 @@ suite('ContextualActionMenu', () => {
         await microtasksFinished();
       });
 
-  test(
+  // TODO(crbug.com/537768276): Test is flaky.
+  test.skip(
       'Flyout scroll position retained when collapsing flyout, but reset when entire menu closes',
       async () => {
         actionMenu.remove();
