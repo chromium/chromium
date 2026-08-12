@@ -6,6 +6,9 @@ module golden;
 interface Primary {
   UseStruct(LargeStruct struct_param, uint64 id);
   GetStruct(string value) => (SimpleStruct result);
+
+  [Sync]
+  SyncGetStruct(string value) => (SimpleStruct result);
 };
 
 struct LargeStruct {

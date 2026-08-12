@@ -48,9 +48,9 @@ extension ObjectGroup {
                 .plain(.integer),
             ] => .jsPromise,
             "syncGetBools": [
-            ] => .jsPromise,
+            ] => .jsGoldenPrimary_SyncGetBoolsResponse,
             "syncGetStrings": [
-            ] => .jsPromise,
+            ] => .jsGoldenPrimary_SyncGetStringsResponse,
             "getBools": [
             ] => .jsPromise,
             "getStrings": [
@@ -79,6 +79,54 @@ extension ObjectGroup {
         name: "golden.PrimaryPendingReceiver",
         instanceType: .jsGoldenPrimaryPendingReceiver,
         properties: [:],
+        methods: [:]
+    )
+}
+
+///
+/// Structs
+///
+extension ILType {
+    fileprivate static let jsGoldenEntry: ILType = .object(
+        ofGroup: "golden.Entry",
+        withProperties: [
+        ])
+    fileprivate static let jsGoldenEntryConstructor: ILType = .constructor([
+    ] => .jsGoldenEntry)
+    fileprivate static let jsGoldenPrimary_SyncGetBoolsResponse: ILType = .object(
+        ofGroup: "golden.Primary_SyncGetBoolsResponse",
+        withProperties: [
+            "bools",
+        ])
+    fileprivate static let jsGoldenPrimary_SyncGetStringsResponse: ILType = .object(
+        ofGroup: "golden.Primary_SyncGetStringsResponse",
+        withProperties: [
+            "strings",
+        ])
+}
+
+extension ObjectGroup {
+    fileprivate static let goldenEntry = ObjectGroup(
+        name: "golden.Entry",
+        instanceType: .jsGoldenEntry,
+        properties: [
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimarySyncGetBoolsResponse = ObjectGroup(
+        name: "golden.Primary_SyncGetBoolsResponse",
+        instanceType: .jsGoldenPrimary_SyncGetBoolsResponse,
+        properties: [
+            "bools": .jsBooleanArray,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimarySyncGetStringsResponse = ObjectGroup(
+        name: "golden.Primary_SyncGetStringsResponse",
+        instanceType: .jsGoldenPrimary_SyncGetStringsResponse,
+        properties: [
+            "strings": .jsStringArray,
+        ],
         methods: [:]
     )
 }
@@ -205,6 +253,7 @@ private let mojoBuiltins: [String: ILType] = [
     /// is only called once, and (2) the remote is saved to a global variable so it
     /// can be closed at the end of the program.
     "getOrCreatePrimaryRemote": .function([] => .jsGoldenPrimaryRemote),
+    "golden.Entry": .jsGoldenEntryConstructor,
 ]
 
 private let keepGenerators = [
@@ -265,6 +314,9 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemote,
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
+        .goldenEntry,
+        .goldenPrimarySyncGetBoolsResponse,
+        .goldenPrimarySyncGetStringsResponse,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,

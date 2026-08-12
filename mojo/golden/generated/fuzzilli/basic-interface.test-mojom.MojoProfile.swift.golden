@@ -23,6 +23,7 @@ extension ILType {
         withMethods: [
             "method",
             "methodWithoutResponse",
+            "syncMethod",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
         ofGroup: "golden.PrimaryRemoteWrapper",
@@ -45,6 +46,9 @@ extension ObjectGroup {
                 .plain(.string),
                 .plain(.boolean),
             ] => .undefined,
+            "syncMethod": [
+                .plain(.boolean),
+            ] => .jsGoldenPrimary_SyncMethodResponse,
         ]
     )
 
@@ -63,6 +67,28 @@ extension ObjectGroup {
         name: "golden.PrimaryPendingReceiver",
         instanceType: .jsGoldenPrimaryPendingReceiver,
         properties: [:],
+        methods: [:]
+    )
+}
+
+///
+/// Structs
+///
+extension ILType {
+    fileprivate static let jsGoldenPrimary_SyncMethodResponse: ILType = .object(
+        ofGroup: "golden.Primary_SyncMethodResponse",
+        withProperties: [
+            "result",
+        ])
+}
+
+extension ObjectGroup {
+    fileprivate static let goldenPrimarySyncMethodResponse = ObjectGroup(
+        name: "golden.Primary_SyncMethodResponse",
+        instanceType: .jsGoldenPrimary_SyncMethodResponse,
+        properties: [
+            "result": .string,
+        ],
         methods: [:]
     )
 }
@@ -178,6 +204,7 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemote,
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
+        .goldenPrimarySyncMethodResponse,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,

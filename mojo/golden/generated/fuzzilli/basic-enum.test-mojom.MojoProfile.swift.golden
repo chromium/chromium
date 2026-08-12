@@ -23,6 +23,7 @@ extension ILType {
         withMethods: [
             "getEnum",
             "enumForEnum",
+            "syncEnumForEnum",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
         ofGroup: "golden.PrimaryRemoteWrapper",
@@ -44,6 +45,9 @@ extension ObjectGroup {
             "enumForEnum": [
                 .plain(.jsGoldenPrimary_NestedEnum),
             ] => .jsPromise,
+            "syncEnumForEnum": [
+                .plain(.jsGoldenPrimary_NestedEnum),
+            ] => .jsGoldenPrimary_SyncEnumForEnumResponse,
         ]
     )
 
@@ -62,6 +66,28 @@ extension ObjectGroup {
         name: "golden.PrimaryPendingReceiver",
         instanceType: .jsGoldenPrimaryPendingReceiver,
         properties: [:],
+        methods: [:]
+    )
+}
+
+///
+/// Structs
+///
+extension ILType {
+    fileprivate static let jsGoldenPrimary_SyncEnumForEnumResponse: ILType = .object(
+        ofGroup: "golden.Primary_SyncEnumForEnumResponse",
+        withProperties: [
+            "enumResult",
+        ])
+}
+
+extension ObjectGroup {
+    fileprivate static let goldenPrimarySyncEnumForEnumResponse = ObjectGroup(
+        name: "golden.Primary_SyncEnumForEnumResponse",
+        instanceType: .jsGoldenPrimary_SyncEnumForEnumResponse,
+        properties: [
+            "enumResult": .jsGoldenExternalEnum,
+        ],
         methods: [:]
     )
 }
@@ -189,6 +215,7 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemote,
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
+        .goldenPrimarySyncEnumForEnumResponse,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
         .jsGoldenPrimary_NestedEnum,

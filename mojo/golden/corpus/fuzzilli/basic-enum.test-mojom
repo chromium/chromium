@@ -12,6 +12,9 @@ interface Primary {
 
   GetEnum(string name) => (NestedEnum result);
   EnumForEnum(NestedEnum enum_param) => (ExternalEnum enum_result);
+
+  [Sync]
+  SyncEnumForEnum(NestedEnum enum_param) => (ExternalEnum enum_result);
 };
 
 enum ExternalEnum {

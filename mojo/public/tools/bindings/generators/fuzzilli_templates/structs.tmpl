@@ -1,0 +1,41 @@
+extension ILType {
+{%- for struct in structs %}
+    fileprivate static let {{struct|format_il_type}}: ILType = .object(
+        ofGroup: "{{struct|fully_qualified_name}}",
+        withProperties: [
+        {%- for field in struct.fields %}
+            "{{field.name}}",
+        {%- endfor %}
+        ])
+    fileprivate static let {{struct|format_il_type}}Constructor: ILType = .constructor([
+    {%- for field in struct.fields %}
+        .plain(.{{field.kind|format_il_type}}),
+    {%- endfor %}
+    ] => .{{struct|format_il_type}})
+{%- endfor %}
+
+{%- for struct in response_structs %}
+    fileprivate static let {{struct|format_il_type}}: ILType = .object(
+        ofGroup: "{{struct|fully_qualified_name}}",
+        withProperties: [
+        {%- for field in struct.fields %}
+            "{{field.name}}",
+        {%- endfor %}
+        ])
+{%- endfor %}
+}
+
+extension ObjectGroup {
+{%- for struct in structs + response_structs %}
+    fileprivate static let {{struct|format_unique_name|to_camel(True)}} = ObjectGroup(
+        name: "{{struct|fully_qualified_name}}",
+        instanceType: .{{struct|format_il_type}},
+        properties: [
+            {%- for field in struct.fields %}
+            "{{field.name}}": .{{field.kind|format_il_type}},
+            {%- endfor %}
+        ],
+        methods: [:]
+    )
+{%- endfor %}
+}

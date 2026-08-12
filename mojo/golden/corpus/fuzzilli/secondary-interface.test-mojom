@@ -8,6 +8,9 @@ interface Primary {
   SendDelegateTwo(pending_associated_receiver<DelegateTwo> remote, int32 param);
   GetDelegateOne() => (pending_associated_remote<DelegateOne> delegate);
   GetObserverTwo(float param) => (pending_associated_receiver<ObserverTwo> observer, bool flag);
+
+  [Sync]
+  SyncGetObserverTwo(float param) => (pending_associated_receiver<ObserverTwo> observer, bool flag);
 };
 
 interface ObserverOne {

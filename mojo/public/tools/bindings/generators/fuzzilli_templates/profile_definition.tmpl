@@ -8,6 +8,9 @@ private let mojoBuiltins: [String: ILType] = [
     "{{receiver|fully_qualified_name}}CallbackRouter":
        .constructor([] => .js{{receiver|format_unique_name}}CallbackRouter),
 {%- endfor %}
+{%- for struct in structs %}
+    "{{struct|fully_qualified_name}}": .{{struct|format_il_type}}Constructor,
+{%- endfor %}
 ]
 
 private let keepGenerators = [
@@ -82,6 +85,9 @@ let mojo{{primary.name}}Profile = Profile(
         {%- for method in receiver.methods %}
         .{{(method|callback_receiver_name)|to_camel(True)}},
         {%- endfor %}
+{%- endfor %}
+{%- for struct in structs + response_structs %}
+        .{{struct|format_unique_name|to_camel(True)}},
 {%- endfor %}
     ] + commonMojoObjectGroups,
     additionalEnumerations: [

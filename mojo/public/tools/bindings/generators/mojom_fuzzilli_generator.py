@@ -55,6 +55,8 @@ class Generator(generator.Generator):
     self.interface_receivers = {}
     self.arrays = {}
     self.enums = {}
+    self.structs = {}
+    self.response_structs = {}  # structs representing methods' return values
 
   def GetFilters(self):
     return {
@@ -62,6 +64,7 @@ class Generator(generator.Generator):
         "format_il_type": self._ILTypeName,
         "format_unique_name": self._FormatUniqueName,
         "fully_qualified_name": self._FullyQualifiedName,
+        "is_synchronous_method": self._IsSynchronousMethod,
         "namespace_as_array": self._NamespaceAsArray,
         "to_camel": generator.ToCamel,
     }
@@ -83,6 +86,8 @@ class Generator(generator.Generator):
         "interface_receivers": list(self.interface_receivers.values()),
         "arrays": list(self.arrays.values()),
         "enums": list(self.enums.values()),
+        "structs": list(self.structs.values()),
+        "response_structs": list(self.response_structs.values()),
     }
 
   def _IsIgnoredType(self, kind):
@@ -94,12 +99,22 @@ class Generator(generator.Generator):
     if self._IsIgnoredType(kind):
       return
 
-    if mojom.IsEnumKind(kind):
+    if mojom.IsStructKind(kind):
+      self._CollectStruct(kind, is_in_js)
+    elif mojom.IsEnumKind(kind):
       self._CollectEnum(kind)
     elif mojom.IsArrayKind(kind):
       self._CollectArray(kind, is_in_js)
     elif mojom.IsAnyInterfaceKind(kind):
       self._CollectInterface(kind, is_in_js)
+
+  def _CollectStruct(self, struct, is_in_js):
+    name = self._FormatUniqueName(struct)
+    if name in self.structs:
+      return
+    self.structs[name] = struct
+    for field in struct.fields:
+      self._CollectInterfaceAndTypes(field.kind, is_in_js)
 
   def _CollectArray(self, array, is_in_js):
     name = self._FormatUniqueName(array.kind)
@@ -152,8 +167,12 @@ class Generator(generator.Generator):
       for param in method.parameters:
         self._CollectInterfaceAndTypes(param.kind, is_in_js)
 
-      if not method.response_parameters:
+      if not method.response_parameters or not self._IsSynchronousMethod(
+          method):
         continue
+      method.res_struct = self._CreateResponseStruct(method)
+      name = self._FormatUniqueName(method.res_struct)
+      self.response_structs[name] = method.res_struct
       for param in method.response_parameters:
         self._CollectInterfaceAndTypes(param.kind, not is_in_js)
 
@@ -273,9 +292,25 @@ class Generator(generator.Generator):
     return mojom.IsStructKind(kind) or mojom.IsEnumKind(
         kind) or mojom.IsUnionKind(kind)
 
+  # Synchronous methods return JavaScript objects in the JavaScript bindings.
+  # Represent these return values as `mojom.Struct` objects, since we can then
+  # handle them the same way we handle Mojo structs in a few parts of the
+  # templates.
+  def _CreateResponseStruct(self, method):
+    res = mojom.Struct(f"{method.mojom_name}Response", method.interface.module)
+    res.parent_kind = method.interface
+    for res_param in method.response_parameters:
+      res.AddField(res_param.mojom_name, res_param.kind, res_param.ordinal,
+                   res_param.default, res_param.attributes)
+    res.Stylize(JavaScriptStylizer())
+    return res
+
   def _FormatCallbackReceiverName(self, method):
     return (f"{self._FormatUniqueName(method.interface)}"
             f"{generator.ToCamel(method.name)}CallbackReceiver")
+
+  def _IsSynchronousMethod(self, method):
+    return method.attributes and method.attributes['Sync']
 
   def _NamespaceAsArray(self, namespace):
     return namespace.split(".")

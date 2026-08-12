@@ -6,4 +6,7 @@ module golden;
 interface Primary {
   Method(bool param) => (string result);
   MethodWithoutResponse(string string_param, bool bool_param);
+
+  [Sync]
+  SyncMethod(bool param) => (string result);
 };

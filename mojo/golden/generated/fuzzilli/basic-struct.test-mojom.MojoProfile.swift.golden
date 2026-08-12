@@ -23,6 +23,7 @@ extension ILType {
         withMethods: [
             "useStruct",
             "getStruct",
+            "syncGetStruct",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
         ofGroup: "golden.PrimaryRemoteWrapper",
@@ -45,6 +46,9 @@ extension ObjectGroup {
             "getStruct": [
                 .plain(.string),
             ] => .jsPromise,
+            "syncGetStruct": [
+                .plain(.string),
+            ] => .jsGoldenPrimary_SyncGetStructResponse,
         ]
     )
 
@@ -63,6 +67,69 @@ extension ObjectGroup {
         name: "golden.PrimaryPendingReceiver",
         instanceType: .jsGoldenPrimaryPendingReceiver,
         properties: [:],
+        methods: [:]
+    )
+}
+
+///
+/// Structs
+///
+extension ILType {
+    fileprivate static let jsGoldenLargeStruct: ILType = .object(
+        ofGroup: "golden.LargeStruct",
+        withProperties: [
+            "id",
+            "value",
+            "residence",
+            "valid",
+        ])
+    fileprivate static let jsGoldenLargeStructConstructor: ILType = .constructor([
+        .plain(.integer),
+        .plain(.string),
+        .plain(.jsGoldenSimpleStruct),
+        .plain(.boolean),
+    ] => .jsGoldenLargeStruct)
+    fileprivate static let jsGoldenSimpleStruct: ILType = .object(
+        ofGroup: "golden.SimpleStruct",
+        withProperties: [
+            "field",
+        ])
+    fileprivate static let jsGoldenSimpleStructConstructor: ILType = .constructor([
+        .plain(.string),
+    ] => .jsGoldenSimpleStruct)
+    fileprivate static let jsGoldenPrimary_SyncGetStructResponse: ILType = .object(
+        ofGroup: "golden.Primary_SyncGetStructResponse",
+        withProperties: [
+            "result",
+        ])
+}
+
+extension ObjectGroup {
+    fileprivate static let goldenLargeStruct = ObjectGroup(
+        name: "golden.LargeStruct",
+        instanceType: .jsGoldenLargeStruct,
+        properties: [
+            "id": .integer,
+            "value": .string,
+            "residence": .jsGoldenSimpleStruct,
+            "valid": .boolean,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenSimpleStruct = ObjectGroup(
+        name: "golden.SimpleStruct",
+        instanceType: .jsGoldenSimpleStruct,
+        properties: [
+            "field": .string,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimarySyncGetStructResponse = ObjectGroup(
+        name: "golden.Primary_SyncGetStructResponse",
+        instanceType: .jsGoldenPrimary_SyncGetStructResponse,
+        properties: [
+            "result": .jsGoldenSimpleStruct,
+        ],
         methods: [:]
     )
 }
@@ -123,6 +190,8 @@ private let mojoBuiltins: [String: ILType] = [
     /// is only called once, and (2) the remote is saved to a global variable so it
     /// can be closed at the end of the program.
     "getOrCreatePrimaryRemote": .function([] => .jsGoldenPrimaryRemote),
+    "golden.LargeStruct": .jsGoldenLargeStructConstructor,
+    "golden.SimpleStruct": .jsGoldenSimpleStructConstructor,
 ]
 
 private let keepGenerators = [
@@ -178,6 +247,9 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemote,
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
+        .goldenLargeStruct,
+        .goldenSimpleStruct,
+        .goldenPrimarySyncGetStructResponse,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,

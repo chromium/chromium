@@ -25,6 +25,7 @@ extension ILType {
             "sendDelegateTwo",
             "getDelegateOne",
             "getObserverTwo",
+            "syncGetObserverTwo",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
         ofGroup: "golden.PrimaryRemoteWrapper",
@@ -118,6 +119,9 @@ extension ObjectGroup {
             "getObserverTwo": [
                 .plain(.float),
             ] => .jsPromise,
+            "syncGetObserverTwo": [
+                .plain(.float),
+            ] => .jsGoldenPrimary_SyncGetObserverTwoResponse,
         ]
     )
 
@@ -302,6 +306,30 @@ extension ObjectGroup {
 }
 
 ///
+/// Structs
+///
+extension ILType {
+    fileprivate static let jsGoldenPrimary_SyncGetObserverTwoResponse: ILType = .object(
+        ofGroup: "golden.Primary_SyncGetObserverTwoResponse",
+        withProperties: [
+            "observer",
+            "flag",
+        ])
+}
+
+extension ObjectGroup {
+    fileprivate static let goldenPrimarySyncGetObserverTwoResponse = ObjectGroup(
+        name: "golden.Primary_SyncGetObserverTwoResponse",
+        instanceType: .jsGoldenPrimary_SyncGetObserverTwoResponse,
+        properties: [
+            "observer": .jsGoldenObserverTwoPendingReceiver,
+            "flag": .boolean,
+        ],
+        methods: [:]
+    )
+}
+
+///
 /// Generators
 ///
 // TODO(crbug.com/500386713) Consider using mojoBuiltins or another list instead of regex
@@ -463,6 +491,7 @@ let mojoPrimaryProfile = Profile(
         .goldenObserverTwoRemote,
         .goldenObserverTwoRemoteWrapper,
         .goldenObserverTwoPendingReceiver,
+        .goldenPrimarySyncGetObserverTwoResponse,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,
