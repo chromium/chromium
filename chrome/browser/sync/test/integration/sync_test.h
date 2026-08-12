@@ -490,14 +490,13 @@ class SyncTest : public PlatformBrowserTest,
 };
 
 inline auto GetSyncTestModes() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return testing::Values(SyncTest::SetupSyncMode::kSyncTheFeature);
-#elif BUILDFLAG(IS_LINUX) && !defined(ADDRESS_SANITIZER) && \
-    !defined(THREAD_SANITIZER) && !defined(MEMORY_SANITIZER)
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) &&           \
+    !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) && \
+    !defined(MEMORY_SANITIZER)
   return testing::Values(SyncTest::SetupSyncMode::kSyncTransportOnly,
                          SyncTest::SetupSyncMode::kSyncTheFeature);
-// On non-Linux, and on expensive (ASan etc) bots, run only the single most
-// important configuration, for capacity reasons.
+// On non-Linux, non-ChromeOS, and on expensive (ASan etc) bots, run only the
+// single most important configuration, for capacity reasons.
 #else
   return testing::Values(SyncTest::SetupSyncMode::kSyncTransportOnly);
 #endif
