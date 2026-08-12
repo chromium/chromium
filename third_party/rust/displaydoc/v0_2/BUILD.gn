@@ -28,14 +28,14 @@ cargo_crate("lib") {
   cargo_pkg_name = "displaydoc"
   cargo_pkg_description = "A derive macro for implementing the display Trait via a doc comment and string interpolation"
   cargo_pkg_repository = "https://github.com/yaahc/displaydoc"
-  cargo_pkg_version = "0.2.6"
+  cargo_pkg_version = "0.2.7"
 
   allow_unsafe = false
 
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",
-    "//third_party/rust/syn/v2:lib",
+    "//third_party/rust/syn/v3:lib",
   ]
 
   # Only for usage from third-party crates. Add the crate to
