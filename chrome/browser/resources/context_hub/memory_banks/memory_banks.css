@@ -160,8 +160,9 @@ h2 {
 
 .card-checkbox {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 10px;
+  inset-inline-end: 10px;
+  right: 10px;
   z-index: 2;
   opacity: 0;
   pointer-events: none;

@@ -61,7 +61,7 @@ export function getHtml(this: MemoryBanksElement) {
                   <div class="gemini-panel-header">
                     <h3>Select an action for Gemini</h3>
                     <cr-icon-button
-                        iron-icon="cr:clear"
+                        iron-icon="cr:close"
                         title="Close"
                         @click="${this.onClosePanelClick_}">
                     </cr-icon-button>
@@ -92,7 +92,7 @@ export function getHtml(this: MemoryBanksElement) {
                       <div class="gemini-response-header">
                         <strong>Gemini:</strong>
                         <cr-icon-button
-                            iron-icon="cr:clear"
+                            iron-icon="cr:close"
                             title="Close"
                             @click="${this.onCloseResponseClick_}">
                         </cr-icon-button>

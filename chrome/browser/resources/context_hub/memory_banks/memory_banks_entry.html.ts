@@ -14,7 +14,7 @@ export function getHtml(this: MemoryBanksElement, entry: MemoryBankEntry) {
   return html`
     <a class="card ${this.isSelected(entry.id) ? 'selected' : ''}"
         href="${entry.url}" target="_blank">
-      <cr-checkbox class="card-checkbox"
+      <cr-checkbox class="card-checkbox no-label"
           data-id="${entry.id}"
           ?checked="${this.isSelected(entry.id)}"
           @change="${this.onCheckboxChange}"
