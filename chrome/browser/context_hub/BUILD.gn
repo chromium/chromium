@@ -19,6 +19,8 @@ source_set("context_hub") {
     "context_hub_service.h",
     "context_hub_service_factory.cc",
     "context_hub_service_factory.h",
+    "prefs.cc",
+    "prefs.h",
   ]
 
   public_deps = [
@@ -47,8 +49,10 @@ source_set("context_hub") {
   deps = [
     "//chrome/browser/tab_group_sync",
     "//chrome/browser/tab_group_sync:factories",
+    "//components/prefs",
     "//components/saved_tab_groups/public",
     "//components/sessions",
+    "//components/signin/public/base",
     "//sql",
   ]
 }
@@ -70,6 +74,7 @@ source_set("unit_tests") {
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/content:test_support",
     "//components/personal_context/core:test_support",
+    "//components/prefs:test_support",
     "//components/saved_tab_groups/test_support",
     "//content/test:test_support",
     "//testing/gmock",

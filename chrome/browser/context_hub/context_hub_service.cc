@@ -24,6 +24,7 @@
 #include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
+#include "chrome/browser/context_hub/prefs.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry_conversions.h"
@@ -37,10 +38,12 @@
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/signin/public/base/persistent_repeating_timer.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -135,6 +138,7 @@ ThirdPartyData::GroupType ToThirdPartyGroupType(
 }  // namespace
 
 ContextHubService::ContextHubService(
+    PrefService* pref_service,
     personal_context::PersonalContextService* personal_context_service,
     optimization_guide::RemoteModelExecutor*
         optimization_guide_remote_model_executor,
@@ -158,9 +162,18 @@ ContextHubService::ContextHubService(
       memory_bank_(std::move(memory_bank)),
       tab_group_store_(std::move(tab_group_store)),
       auto_todos_store_(std::move(auto_todos_store)) {
+  CHECK(pref_service);
   CHECK(memory_bank_);
   if (auto_todos_store_) {
     auto_todos_store_->AddObserver(this);
+    first_party_auto_todos_timer_ =
+        std::make_unique<signin::PersistentRepeatingTimer>(
+            pref_service, prefs::kContextHubLastAutoTodosGenerationTime,
+            features::kFirstPartyAutoTodosInterval.Get(),
+            base::BindRepeating(
+                &ContextHubService::OnFirstPartyAutoTodosTimerTriggered,
+                weak_factory_.GetWeakPtr()));
+    first_party_auto_todos_timer_->Start();
   }
 }
 
@@ -171,6 +184,10 @@ ContextHubService::~ContextHubService() {
   if (pending_tab_todos_callback_) {
     std::move(pending_tab_todos_callback_).Run(false);
   }
+}
+
+void ContextHubService::OnFirstPartyAutoTodosTimerTriggered() {
+  GenerateFirstPartyAutoTodos(base::DoNothing());
 }
 
 void ContextHubService::AddObserver(Observer* observer) {

@@ -65,6 +65,10 @@ ContextHubServiceFactory::ContextHubServiceFactory()
 
 ContextHubServiceFactory::~ContextHubServiceFactory() = default;
 
+bool ContextHubServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
 std::unique_ptr<KeyedService>
 ContextHubServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
@@ -134,7 +138,7 @@ ContextHubServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<context_hub::ContextHubService>(
-      personal_context_service, optimization_guide_service,
+      profile->GetPrefs(), personal_context_service, optimization_guide_service,
       tab_group_sync_service, page_content_extraction_service,
       std::move(memory_bank), std::move(tab_group_store), std::move(backend),
       std::move(auto_todos_store));

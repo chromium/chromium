@@ -5,6 +5,7 @@
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -187,12 +188,15 @@ TEST_F(ContextHubServiceFactoryTest, DeleteDatabaseWhenFeaturesDisabled) {
       /*enabled_features=*/{features::kContextHub, features::kMemoryBanks},
       /*disabled_features=*/{features::kContextHubDatabaseStorage});
 
-  TestingProfile profile;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath db_path =
-      profile.GetPath().Append(FILE_PATH_LITERAL("ContextHub.db"));
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("ContextHub.db"));
 
   ASSERT_TRUE(base::WriteFile(db_path, "dummy content"));
   ASSERT_TRUE(base::PathExists(db_path));
+
+  TestingProfile profile(temp_dir.GetPath());
 
   EXPECT_NE(nullptr, ContextHubServiceFactory::GetForProfile(&profile));
 

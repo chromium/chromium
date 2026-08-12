@@ -18,6 +18,7 @@
 #include "chrome/browser/context_hub/auto_todos/in_memory_auto_todos_store.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/in_memory_memory_bank.h"
+#include "chrome/browser/context_hub/prefs.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend.h"
 #include "chrome/browser/context_hub/tab_group_store/in_memory_tab_group_store.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
@@ -29,6 +30,7 @@
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
@@ -85,7 +87,8 @@ class MockPageContentExtractionService
 class ContextHubServiceTest : public testing::Test {
  public:
   ContextHubServiceTest()
-      : service_(&mock_personal_context_service_,
+      : service_(profile_.GetPrefs(),
+                 &mock_personal_context_service_,
                  &mock_remote_model_executor_,
                  &fake_tab_group_sync_service_,
                  &mock_page_content_extraction_service_,
@@ -831,8 +834,9 @@ TEST_F(ContextHubServiceTest, ChatHistory_LRUEviction) {
       browser::context_hub::mojom::kAutoTabGroups,
       {{features::kMaxTabGroupChatHistoryTurns.name, "3"}});
   ContextHubService service(
-      &mock_personal_context_service_, &mock_remote_model_executor_,
-      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      profile_.GetPrefs(), &mock_personal_context_service_,
+      &mock_remote_model_executor_, &fake_tab_group_sync_service_,
+      &mock_page_content_extraction_service_,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -1151,8 +1155,7 @@ TEST_F(ContextHubServiceTest, GetConfirmedTabGroups) {
   group.AddTabLocally(tab);
   fake_tab_group_sync_service_.AddGroup(group);
 
-  std::vector<TabGroupEntry> groups =
-      service_.GetConfirmedTabGroups();
+  std::vector<TabGroupEntry> groups = service_.GetConfirmedTabGroups();
   ASSERT_EQ(groups.size(), 1u);
   EXPECT_EQ(groups[0].id, group.saved_guid().AsLowercaseString());
   EXPECT_EQ(groups[0].label, "Test Group");
@@ -1229,8 +1232,9 @@ TEST_F(ContextHubServiceTest, ConfirmAllTabGroups_Success) {
 
 TEST_F(ContextHubServiceTest, TabGroupStore_Null) {
   ContextHubService service_null_store(
-      &mock_personal_context_service_, &mock_remote_model_executor_,
-      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      profile_.GetPrefs(), &mock_personal_context_service_,
+      &mock_remote_model_executor_, &fake_tab_group_sync_service_,
+      &mock_page_content_extraction_service_,
       std::make_unique<InMemoryMemoryBank>(),
       /*tab_group_store=*/nullptr,
       /*context_hub_backend=*/nullptr,
@@ -1316,6 +1320,84 @@ TEST_F(ContextHubServiceTest, ConnectLocalTabGroup) {
   ASSERT_TRUE(updated_group.has_value());
   EXPECT_EQ(service_.GetLocalGroupIdForConfirmedGroup(group.saved_guid()),
             local_id);
+}
+
+TEST_F(ContextHubServiceTest, AutoTodosTimer_TriggersOnStartup) {
+  const base::Time start_time = base::Time::Now();
+  TestingPrefServiceSimple prefs;
+  context_hub::prefs::RegisterProfilePrefs(prefs.registry());
+
+  personal_context::MockPersonalContextService mock_personal_context_service;
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _));
+
+  ContextHubService service(
+      &prefs, &mock_personal_context_service, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+
+  EXPECT_EQ(prefs.GetTime(prefs::kContextHubLastAutoTodosGenerationTime),
+            start_time);
+}
+
+TEST_F(ContextHubServiceTest, AutoTodosTimer_DoesNotRunWhenFeatureDisabled) {
+  TestingPrefServiceSimple prefs;
+  context_hub::prefs::RegisterProfilePrefs(prefs.registry());
+
+  personal_context::MockPersonalContextService mock_personal_context_service;
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .Times(0);
+
+  ContextHubService service(
+      &prefs, &mock_personal_context_service, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      /*auto_todos_store=*/nullptr);
+}
+
+TEST_F(ContextHubServiceTest, AutoTodosTimer_TriggersAfterIntervalElapsed) {
+  const base::Time start_time = base::Time::Now();
+  TestingPrefServiceSimple prefs;
+  context_hub::prefs::RegisterProfilePrefs(prefs.registry());
+  prefs.SetTime(prefs::kContextHubLastAutoTodosGenerationTime, start_time);
+
+  personal_context::MockPersonalContextService mock_personal_context_service;
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .Times(0);
+
+  ContextHubService service(
+      &prefs, &mock_personal_context_service, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+
+  // 12 hours later: should not trigger yet.
+  task_environment_.FastForwardBy(base::Hours(12));
+
+  // Next 12 hours (total 24h): should trigger.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _));
+
+  task_environment_.FastForwardBy(base::Hours(12));
+  EXPECT_EQ(prefs.GetTime(prefs::kContextHubLastAutoTodosGenerationTime),
+            start_time + base::Hours(24));
 }
 
 }  // namespace

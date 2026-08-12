@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/core/personal_context_service.h"
@@ -92,28 +93,35 @@ class MockPage : public browser::context_hub::mojom::Page {
 
 class ContextHubPageHandlerTest : public testing::Test {
  public:
-  ContextHubPageHandlerTest() {
-    feature_list_.InitWithFeatures(
-        {features::kContextHub, features::kMemoryBanks,
-         browser::context_hub::mojom::kAutoTabGroups,
-         browser::context_hub::mojom::kAutoTodos},
-        {});
+  ContextHubPageHandlerTest()
+      : feature_list_(CreateScopedFeatureList()),
+        create_services_subscription_(
+            BrowserContextDependencyManager::GetInstance()
+                ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                    &ContextHubPageHandlerTest::
+                        OnWillCreateBrowserContextKeyedServices,
+                    base::Unretained(this)))) {}
+
+  void OnWillCreateBrowserContextKeyedServices(
+      content::BrowserContext* browser_context) {
+    PersonalContextServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        browser_context,
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              personal_context::MockPersonalContextService>();
+        }));
+    OptimizationGuideKeyedServiceFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            browser_context,
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<MockOptimizationGuideKeyedService>();
+            }));
   }
 
   void SetUp() override {
     testing::Test::SetUp();
-
-    PersonalContextServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-          return std::make_unique<
-              personal_context::MockPersonalContextService>();
-        }));
-    OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-          return std::make_unique<MockOptimizationGuideKeyedService>();
-        }));
 
 #if !BUILDFLAG(IS_ANDROID)
     auto mock_tab_provider = std::make_unique<MockTabProvider>();
@@ -140,6 +148,16 @@ class ContextHubPageHandlerTest : public testing::Test {
   }
 
  protected:
+  static base::test::ScopedFeatureList CreateScopedFeatureList() {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kContextHub, features::kMemoryBanks,
+         browser::context_hub::mojom::kAutoTabGroups,
+         browser::context_hub::mojom::kAutoTodos},
+        {});
+    return feature_list;
+  }
+
   personal_context::MockPersonalContextService* GetMockService() {
     return static_cast<personal_context::MockPersonalContextService*>(
         PersonalContextServiceFactory::GetForProfile(&profile_));
@@ -150,10 +168,11 @@ class ContextHubPageHandlerTest : public testing::Test {
         OptimizationGuideKeyedServiceFactory::GetForProfile(&profile_));
   }
 
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
+  base::CallbackListSubscription create_services_subscription_;
   TestingProfile profile_;
-  base::test::ScopedFeatureList feature_list_;
 #if !BUILDFLAG(IS_ANDROID)
   raw_ptr<MockTabProvider> mock_tab_provider_ = nullptr;
 #endif

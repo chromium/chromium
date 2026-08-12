@@ -22,6 +22,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "tab_based_todos_inactivity_threshold",
                    base::Hours(1));
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFirstPartyAutoTodosInterval,
+                   &browser::context_hub::mojom::kAutoTodos,
+                   "first_party_auto_todos_interval",
+                   base::Days(1));
+
 BASE_FEATURE_PARAM(size_t,
                    kMaxTodoFeedbackCacheSize,
                    &browser::context_hub::mojom::kAutoTodos,
