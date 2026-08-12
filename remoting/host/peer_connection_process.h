@@ -49,8 +49,9 @@ class PeerConnectionProcess : public IPC::Listener,
                               public mojom::PeerConnectionProcessControl,
                               public mojom::PeerSession {
  public:
-  explicit PeerConnectionProcess(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  PeerConnectionProcess(
+      scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
   PeerConnectionProcess(const PeerConnectionProcess&) = delete;
   PeerConnectionProcess& operator=(const PeerConnectionProcess&) = delete;
@@ -111,7 +112,8 @@ class PeerConnectionProcess : public IPC::Listener,
       mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
       mojom::DesktopSessionOptionsPtr options);
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   std::unique_ptr<IPC::ChannelProxy> daemon_channel_;
 

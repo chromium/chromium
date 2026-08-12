@@ -26,8 +26,10 @@
 namespace remoting {
 
 PeerConnectionProcess::PeerConnectionProcess(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : task_runner_(task_runner) {}
+    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
+    : caller_task_runner_(caller_task_runner),
+      io_task_runner_(io_task_runner) {}
 
 PeerConnectionProcess::~PeerConnectionProcess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -38,9 +40,9 @@ bool PeerConnectionProcess::Start(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!daemon_channel_);
 
-  daemon_channel_ = IPC::ChannelProxy::Create(std::move(channel_handle),
-                                              IPC::Channel::MODE_CLIENT, this,
-                                              task_runner_, task_runner_);
+  daemon_channel_ = IPC::ChannelProxy::Create(
+      std::move(channel_handle), IPC::Channel::MODE_CLIENT, this,
+      io_task_runner_, caller_task_runner_);
 
   return true;
 }
@@ -105,7 +107,7 @@ void PeerConnectionProcess::Start(
   desktop_session_events_receiver_ = std::move(events_receiver);
 
   desktop_environment_factory_ = std::make_unique<IpcDesktopEnvironmentFactory>(
-      task_runner_, task_runner_,
+      caller_task_runner_, io_task_runner_,
       base::BindRepeating(&PeerConnectionProcess::GetDesktopSession,
                           base::Unretained(this)));
 

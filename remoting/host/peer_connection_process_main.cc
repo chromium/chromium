@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
@@ -41,12 +42,17 @@ int PeerConnectionProcessMain() {
       base::MakeRefCounted<AutoThreadTaskRunner>(
           main_task_executor.task_runner(), run_loop.QuitClosure());
 
+  // Launch the IPC I/O thread.
+  scoped_refptr<AutoThreadTaskRunner> io_task_runner =
+      AutoThread::CreateWithType("I/O thread", task_runner,
+                                 base::MessagePumpType::IO);
+
 #if BUILDFLAG(IS_POSIX)
   base::FileDescriptorWatcher fd_watcher(main_task_executor.task_runner());
 #endif
 
   mojo::core::ScopedIPCSupport ipc_support(
-      task_runner->task_runner(),
+      io_task_runner->task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
 
   mojo::PlatformChannelEndpoint endpoint =
@@ -63,7 +69,7 @@ int PeerConnectionProcessMain() {
   mojo::ScopedMessagePipeHandle message_pipe = invitation.ExtractMessagePipe(
       command_line->GetSwitchValueASCII(kMojoPipeToken));
 
-  PeerConnectionProcess peer_connection_process(task_runner);
+  PeerConnectionProcess peer_connection_process(task_runner, io_task_runner);
 
   if (!peer_connection_process.Start(std::move(message_pipe))) {
     return kInitializationFailed;
