@@ -23,6 +23,7 @@ class GetIceConfigResponse;
 
 namespace protocol {
 
+// LINT.IfChange(IceConfig)
 struct IceConfig {
   IceConfig();
   IceConfig(const IceConfig& other);
@@ -35,11 +36,11 @@ struct IceConfig {
   static IceConfig Parse(const base::DictValue& dictionary);
   static IceConfig Parse(const apis::v1::GetIceConfigResponse& config);
 
-  // Parses a |url| in the form of stun:<host>[:<port>][?transport=<udp|tcp>]
+  // Parses a `url` in the form of stun:<host>[:<port>][?transport=<udp|tcp>]
   // and adds an entry to this instance.
   bool AddStunServer(std::string_view url);
 
-  // Parses a |url| in the form of
+  // Parses a `url` in the form of
   // <stun|turn|turns>:<host>[:<port>][?transport=<udp|tcp>]
   // and adds an entry to this instance.
   bool AddServer(std::string_view url,
@@ -58,6 +59,7 @@ struct IceConfig {
   // set to this value.
   int max_bitrate_kbps = 0;
 };
+// LINT.ThenChange(//remoting/host/mojom/peer_session.mojom:IceConfig)
 
 }  // namespace protocol
 }  // namespace remoting

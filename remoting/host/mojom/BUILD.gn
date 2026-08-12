@@ -239,6 +239,19 @@ mojom("mojom") {
         mojom = "remoting.mojom.JingleTransportInfo"
         cpp = "::remoting::JingleTransportInfo"
       },
+      {
+        mojom = "remoting.mojom.WebrtcProtocolType"
+        cpp = "::webrtc::ProtocolType"
+      },
+      {
+        mojom = "remoting.mojom.WebrtcRelayServerConfig"
+        cpp = "::webrtc::RelayServerConfig"
+      },
+      {
+        mojom = "remoting.mojom.IceConfig"
+        cpp = "::remoting::protocol::IceConfig"
+        move_only = true
+      },
     ]
 
     if (is_win) {

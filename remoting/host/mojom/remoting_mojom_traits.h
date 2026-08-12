@@ -50,12 +50,16 @@
 #include "remoting/proto/file_transfer.pb.h"
 #include "remoting/protocol/audio_sample_info.h"
 #include "remoting/protocol/file_transfer_helpers.h"
+#include "remoting/protocol/ice_config.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/signaling/jingle_data_structures.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
 #include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
+#include "third_party/webrtc/p2p/base/port.h"
+#include "third_party/webrtc/p2p/base/port_allocator.h"
+#include "third_party/webrtc/rtc_base/net_helper.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
@@ -1994,6 +1998,80 @@ class StructTraits<remoting::mojom::JingleTransportInfoDataView,
 
   static bool Read(remoting::mojom::JingleTransportInfoDataView data_view,
                    ::remoting::JingleTransportInfo* out_transport_info);
+};
+
+template <>
+struct EnumTraits<remoting::mojom::WebrtcProtocolType, ::webrtc::ProtocolType> {
+  static remoting::mojom::WebrtcProtocolType ToMojom(
+      ::webrtc::ProtocolType protocol);
+  static std::optional<::webrtc::ProtocolType> FromMojom(
+      remoting::mojom::WebrtcProtocolType input);
+};
+
+template <>
+class StructTraits<remoting::mojom::WebrtcProtocolAddressDataView,
+                   ::webrtc::ProtocolAddress> {
+ public:
+  static const ::webrtc::SocketAddress& address(
+      const ::webrtc::ProtocolAddress& proto_addr) {
+    return proto_addr.address;
+  }
+
+  static ::webrtc::ProtocolType protocol(
+      const ::webrtc::ProtocolAddress& proto_addr) {
+    return proto_addr.proto;
+  }
+};
+
+template <>
+class StructTraits<remoting::mojom::WebrtcRelayServerConfigDataView,
+                   ::webrtc::RelayServerConfig> {
+ public:
+  static const std::string& username(
+      const ::webrtc::RelayServerConfig& config) {
+    return config.credentials.username;
+  }
+
+  static const std::string& password(
+      const ::webrtc::RelayServerConfig& config) {
+    return config.credentials.password;
+  }
+
+  static const std::vector<::webrtc::ProtocolAddress>& ports(
+      const ::webrtc::RelayServerConfig& config) {
+    return config.ports;
+  }
+
+  static bool Read(remoting::mojom::WebrtcRelayServerConfigDataView data_view,
+                   ::webrtc::RelayServerConfig* out);
+};
+
+template <>
+class StructTraits<remoting::mojom::IceConfigDataView,
+                   ::remoting::protocol::IceConfig> {
+ public:
+  static base::Time expiration_time(
+      const ::remoting::protocol::IceConfig& config) {
+    return config.expiration_time;
+  }
+
+  static const std::vector<::webrtc::SocketAddress>& stun_servers(
+      const ::remoting::protocol::IceConfig& config) {
+    return config.stun_servers;
+  }
+
+  static const std::vector<::webrtc::RelayServerConfig>& turn_servers(
+      const ::remoting::protocol::IceConfig& config) {
+    return config.turn_servers;
+  }
+
+  static int32_t max_bitrate_kbps(
+      const ::remoting::protocol::IceConfig& config) {
+    return config.max_bitrate_kbps;
+  }
+
+  static bool Read(remoting::mojom::IceConfigDataView data_view,
+                   ::remoting::protocol::IceConfig* out);
 };
 
 #endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)

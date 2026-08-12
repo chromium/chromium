@@ -21,6 +21,7 @@
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/peer_session.mojom.h"
 #include "remoting/host/peer_session.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/signaling/jingle_data_structures.h"
 
@@ -30,15 +31,18 @@ namespace remoting {
 // `PeerSessionImpl` in the dedicated Peer Connection process over Mojo IPC.
 class IpcPeerSession : public PeerSession,
                        public protocol::Transport,
-                       public mojom::TransportEventHandler {
+                       public mojom::TransportEventHandler,
+                       public mojom::IceConfigFetcher {
  public:
   using GetDesktopSessionCallback = base::RepeatingCallback<void(
       mojo::PendingReceiver<mojom::DesktopSession>,
       mojo::PendingRemote<mojom::DesktopSessionEvents>,
       mojom::DesktopSessionOptionsPtr)>;
 
-  IpcPeerSession(mojo::PendingRemote<mojom::PeerSession> peer_session_remote,
-                 GetDesktopSessionCallback get_desktop_session_callback);
+  IpcPeerSession(
+      mojo::PendingRemote<mojom::PeerSession> peer_session_remote,
+      GetDesktopSessionCallback get_desktop_session_callback,
+      std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher);
   IpcPeerSession(const IpcPeerSession&) = delete;
   IpcPeerSession& operator=(const IpcPeerSession&) = delete;
   ~IpcPeerSession() override;
@@ -66,6 +70,9 @@ class IpcPeerSession : public PeerSession,
   // mojom::TransportEventHandler interface:
   void SendTransportInfo(const JingleTransportInfo& transport_info) override;
 
+  // mojom::IceConfigFetcher interface:
+  void GetIceConfig(GetIceConfigCallback callback) override;
+
  private:
   void OnPeerSessionDisconnected();
   void OnEventHandlerDisconnected();
@@ -83,8 +90,10 @@ class IpcPeerSession : public PeerSession,
       event_handler_receiver_;
   mojo::Receiver<mojom::TransportEventHandler>
       transport_event_handler_receiver_{this};
+  mojo::Receiver<mojom::IceConfigFetcher> ice_config_fetcher_receiver_{this};
   raw_ptr<EventHandler> event_handler_ = nullptr;
   GetDesktopSessionCallback get_desktop_session_callback_;
+  std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher_;
   SendTransportInfoCallback send_transport_info_callback_;
 
   base::WeakPtrFactory<IpcPeerSession> weak_factory_{this};
@@ -94,11 +103,15 @@ class IpcPeerSession : public PeerSession,
 // associated Mojo interface to `PeerSessionManager` in `DaemonProcess`.
 class IpcPeerSessionFactory : public PeerSessionFactory {
  public:
+  using GetIceConfigFetcherCallback =
+      base::RepeatingCallback<std::unique_ptr<protocol::IceConfigFetcher>()>;
+
   IpcPeerSessionFactory(
       mojo::PendingAssociatedRemote<mojom::PeerSessionManager>
           peer_session_manager,
       mojo::PendingAssociatedRemote<mojom::DesktopSessionManager>
-          desktop_session_manager);
+          desktop_session_manager,
+      GetIceConfigFetcherCallback get_ice_config_fetcher_cb);
   IpcPeerSessionFactory(const IpcPeerSessionFactory&) = delete;
   IpcPeerSessionFactory& operator=(const IpcPeerSessionFactory&) = delete;
   ~IpcPeerSessionFactory() override;
@@ -130,6 +143,7 @@ class IpcPeerSessionFactory : public PeerSessionFactory {
       pending_desktop_session_manager_;
   mojo::AssociatedRemote<mojom::PeerSessionManager> peer_session_manager_;
   mojo::AssociatedRemote<mojom::DesktopSessionManager> desktop_session_manager_;
+  GetIceConfigFetcherCallback get_ice_config_fetcher_cb_;
 
   base::WeakPtrFactory<IpcPeerSessionFactory> weak_factory_{this};
 };

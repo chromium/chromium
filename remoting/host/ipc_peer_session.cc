@@ -18,9 +18,12 @@ namespace remoting {
 
 IpcPeerSession::IpcPeerSession(
     mojo::PendingRemote<mojom::PeerSession> peer_session_remote,
-    GetDesktopSessionCallback get_desktop_session_callback)
-    : get_desktop_session_callback_(std::move(get_desktop_session_callback)) {
+    GetDesktopSessionCallback get_desktop_session_callback,
+    std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher)
+    : get_desktop_session_callback_(std::move(get_desktop_session_callback)),
+      ice_config_fetcher_(std::move(ice_config_fetcher)) {
   CHECK(get_desktop_session_callback_);
+  CHECK(ice_config_fetcher_);
   if (peer_session_remote) {
     remote_.Bind(std::move(peer_session_remote));
     remote_.set_disconnect_handler(base::BindOnce(
@@ -78,10 +81,20 @@ void IpcPeerSession::Start(
         &IpcPeerSession::OnEventHandlerDisconnected, base::Unretained(this)));
   }
 
-  remote_->Start(std::move(event_handler_remote), std::string(client_jid),
+  DCHECK(!ice_config_fetcher_receiver_.is_bound());
+  mojo::PendingRemote<mojom::IceConfigFetcher> ice_config_fetcher_remote =
+      ice_config_fetcher_receiver_.BindNewPipeAndPassRemote();
+
+  remote_->Start(std::string(client_jid), std::move(event_handler_remote),
                  std::move(control_remote), std::move(events_receiver),
+                 std::move(ice_config_fetcher_remote),
                  desktop_environment_options, session_policies,
                  session_options);
+}
+
+void IpcPeerSession::GetIceConfig(GetIceConfigCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ice_config_fetcher_->GetIceConfig(std::move(callback));
 }
 
 void IpcPeerSession::DisconnectSession(protocol::ErrorCode error,
@@ -177,6 +190,7 @@ void IpcPeerSession::DoNotifySessionClosed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   event_handler_receiver_.reset();
   transport_event_handler_receiver_.reset();
+  ice_config_fetcher_receiver_.reset();
   send_transport_info_callback_.Reset();
   if (event_handler_) {
     auto* handler = event_handler_.get();
@@ -189,9 +203,12 @@ IpcPeerSessionFactory::IpcPeerSessionFactory(
     mojo::PendingAssociatedRemote<mojom::PeerSessionManager>
         peer_session_manager,
     mojo::PendingAssociatedRemote<mojom::DesktopSessionManager>
-        desktop_session_manager)
+        desktop_session_manager,
+    GetIceConfigFetcherCallback get_ice_config_fetcher_cb)
     : pending_peer_session_manager_(std::move(peer_session_manager)),
-      pending_desktop_session_manager_(std::move(desktop_session_manager)) {
+      pending_desktop_session_manager_(std::move(desktop_session_manager)),
+      get_ice_config_fetcher_cb_(std::move(get_ice_config_fetcher_cb)) {
+  CHECK(get_ice_config_fetcher_cb_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -260,6 +277,10 @@ std::unique_ptr<PeerSession> IpcPeerSessionFactory::Create() {
     return nullptr;
   }
 
+  CHECK(get_ice_config_fetcher_cb_) << "Missing Ice Config Fetcher callback.";
+  std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher =
+      get_ice_config_fetcher_cb_.Run();
+
   mojo::PendingRemote<mojom::PeerSession> pending_remote;
   peer_session_manager_->LaunchPeerSession(
       pending_remote.InitWithNewPipeAndPassReceiver());
@@ -267,7 +288,8 @@ std::unique_ptr<PeerSession> IpcPeerSessionFactory::Create() {
   return std::make_unique<IpcPeerSession>(
       std::move(pending_remote),
       base::BindRepeating(&IpcPeerSessionFactory::GetDesktopSession,
-                          weak_factory_.GetWeakPtr()));
+                          weak_factory_.GetWeakPtr()),
+      std::move(ice_config_fetcher));
 }
 
 }  // namespace remoting

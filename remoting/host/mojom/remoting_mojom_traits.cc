@@ -848,6 +848,98 @@ bool mojo::StructTraits<remoting::mojom::JingleTransportInfoDataView,
   return true;
 }
 
+// static
+remoting::mojom::WebrtcProtocolType mojo::EnumTraits<
+    remoting::mojom::WebrtcProtocolType,
+    ::webrtc::ProtocolType>::ToMojom(::webrtc::ProtocolType protocol) {
+  switch (protocol) {
+    case ::webrtc::PROTO_UDP:
+      return remoting::mojom::WebrtcProtocolType::kUdp;
+    case ::webrtc::PROTO_DTLS:
+      return remoting::mojom::WebrtcProtocolType::kDtls;
+    case ::webrtc::PROTO_TCP:
+      return remoting::mojom::WebrtcProtocolType::kTcp;
+    case ::webrtc::PROTO_SSLTCP:
+      return remoting::mojom::WebrtcProtocolType::kSslTcp;
+    case ::webrtc::PROTO_TLS:
+      return remoting::mojom::WebrtcProtocolType::kTls;
+  }
+  NOTREACHED();
+}
+
+// static
+std::optional<::webrtc::ProtocolType>
+mojo::EnumTraits<remoting::mojom::WebrtcProtocolType, ::webrtc::ProtocolType>::
+    FromMojom(remoting::mojom::WebrtcProtocolType input) {
+  switch (input) {
+    case remoting::mojom::WebrtcProtocolType::kUdp:
+      return ::webrtc::PROTO_UDP;
+    case remoting::mojom::WebrtcProtocolType::kDtls:
+      return ::webrtc::PROTO_DTLS;
+    case remoting::mojom::WebrtcProtocolType::kTcp:
+      return ::webrtc::PROTO_TCP;
+    case remoting::mojom::WebrtcProtocolType::kSslTcp:
+      return ::webrtc::PROTO_SSLTCP;
+    case remoting::mojom::WebrtcProtocolType::kTls:
+      return ::webrtc::PROTO_TLS;
+  }
+  return std::nullopt;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::WebrtcRelayServerConfigDataView,
+                        ::webrtc::RelayServerConfig>::
+    Read(remoting::mojom::WebrtcRelayServerConfigDataView data_view,
+         ::webrtc::RelayServerConfig* out_config) {
+  std::string username;
+  if (!data_view.ReadUsername(&username)) {
+    return false;
+  }
+  std::string password;
+  if (!data_view.ReadPassword(&password)) {
+    return false;
+  }
+
+  mojo::ArrayDataView<remoting::mojom::WebrtcProtocolAddressDataView>
+      ports_data;
+  data_view.GetPortsDataView(&ports_data);
+  std::vector<::webrtc::ProtocolAddress> ports;
+  ports.reserve(ports_data.size());
+  for (size_t i = 0; i < ports_data.size(); ++i) {
+    remoting::mojom::WebrtcProtocolAddressDataView port_data;
+    ports_data.GetDataView(i, &port_data);
+
+    ::webrtc::SocketAddress address;
+    if (!port_data.ReadAddress(&address)) {
+      return false;
+    }
+    ::webrtc::ProtocolType proto;
+    if (!port_data.ReadProtocol(&proto)) {
+      return false;
+    }
+    ports.emplace_back(std::move(address), proto);
+  }
+
+  out_config->credentials.username = std::move(username);
+  out_config->credentials.password = std::move(password);
+  out_config->ports = std::move(ports);
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::IceConfigDataView,
+                        ::remoting::protocol::IceConfig>::
+    Read(remoting::mojom::IceConfigDataView data_view,
+         ::remoting::protocol::IceConfig* out_config) {
+  if (!data_view.ReadExpirationTime(&out_config->expiration_time) ||
+      !data_view.ReadStunServers(&out_config->stun_servers) ||
+      !data_view.ReadTurnServers(&out_config->turn_servers)) {
+    return false;
+  }
+  out_config->max_bitrate_kbps = data_view.max_bitrate_kbps();
+  return true;
+}
+
 #endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 }  // namespace mojo

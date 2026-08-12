@@ -123,3 +123,30 @@ struct WebrtcCandidate {
   uint16 network_id;
   uint16 network_cost;
 };
+
+// Maps to C++ enum: `::webrtc::ProtocolType`
+// (defined in third_party/webrtc/rtc_base/net_helper.h).
+enum WebrtcProtocolType {
+  kUdp,
+  kDtls,
+  kTcp,
+  kSslTcp,
+  kTls,
+};
+
+// Strongly-typed representation of webrtc::ProtocolAddress.
+// Maps to C++ type: `::webrtc::ProtocolAddress`
+// (defined in third_party/webrtc/p2p/base/port.h).
+struct WebrtcProtocolAddress {
+  WebrtcSocketAddress address;
+  WebrtcProtocolType protocol;
+};
+
+// Strongly-typed representation of webrtc::RelayServerConfig.
+// Maps to C++ type: `::webrtc::RelayServerConfig`
+// (defined in third_party/webrtc/p2p/base/port_allocator.h).
+struct WebrtcRelayServerConfig {
+  string username;
+  string password;
+  array<WebrtcProtocolAddress> ports;
+};

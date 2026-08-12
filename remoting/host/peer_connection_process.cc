@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/host/crash_process.h"
 #include "remoting/host/ipc_desktop_environment.h"
@@ -24,6 +25,35 @@
 #include "remoting/signaling/jingle_data_structures.h"
 
 namespace remoting {
+
+namespace {
+
+class MojoIceConfigFetcher final : public protocol::IceConfigFetcher {
+ public:
+  explicit MojoIceConfigFetcher(
+      mojo::SharedRemote<mojom::IceConfigFetcher> remote)
+      : remote_(std::move(remote)) {}
+
+  ~MojoIceConfigFetcher() override = default;
+
+  void GetIceConfig(OnIceConfigCallback callback) override {
+    if (!remote_) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    remote_->GetIceConfig(base::BindOnce(
+        [](OnIceConfigCallback callback,
+           std::optional<protocol::IceConfig> ice_config) {
+          std::move(callback).Run(std::move(ice_config));
+        },
+        std::move(callback)));
+  }
+
+ private:
+  mojo::SharedRemote<mojom::IceConfigFetcher> remote_;
+};
+
+}  // namespace
 
 PeerConnectionProcess::PeerConnectionProcess(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
@@ -93,31 +123,50 @@ void PeerConnectionProcess::BindPeerSession(
 }
 
 void PeerConnectionProcess::Start(
-    mojo::PendingRemote<mojom::PeerSessionEventHandler> event_handler,
     const std::string& client_jid,
-    mojo::PendingRemote<mojom::DesktopSession> control_remote,
-    mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver,
+    mojo::PendingRemote<mojom::PeerSessionEventHandler> event_handler,
+    mojo::PendingRemote<mojom::DesktopSession> desktop_control,
+    mojo::PendingReceiver<mojom::DesktopSessionEvents> desktop_events_receiver,
+    mojo::PendingRemote<mojom::IceConfigFetcher> ice_config_fetcher,
     const DesktopEnvironmentOptions& desktop_environment_options,
     const SessionPolicies& session_policies,
     const SessionOptions& session_options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!peer_session_);
 
-  desktop_session_control_remote_ = std::move(control_remote);
-  desktop_session_events_receiver_ = std::move(events_receiver);
+  desktop_session_control_remote_ = std::move(desktop_control);
+  desktop_session_events_receiver_ = std::move(desktop_events_receiver);
 
   desktop_environment_factory_ = std::make_unique<IpcDesktopEnvironmentFactory>(
       caller_task_runner_, io_task_runner_,
       base::BindRepeating(&PeerConnectionProcess::GetDesktopSession,
                           base::Unretained(this)));
 
-  // TODO(crbug.com/502281489): Hook up IceConfigFetcher with the Network
-  // process over Mojo.
+  PeerSessionImplFactory::GetIceConfigFetcherCallback get_ice_config_fetcher_cb;
+  if (ice_config_fetcher) {
+    // Uses SharedRemote because `get_ice_config_fetcher_cb` is a repeating
+    // callback that creates an IceConfigFetcher for each connection, but only a
+    // single IceConfigFetcher pending remote is received from the Network
+    // process over IPC. SharedRemote allows multiple IceConfigFetcher instances
+    // to share the same underlying Mojo channel safely.
+    mojo::SharedRemote<mojom::IceConfigFetcher> shared_remote(
+        std::move(ice_config_fetcher), caller_task_runner_);
+    get_ice_config_fetcher_cb = base::BindRepeating(
+        [](mojo::SharedRemote<mojom::IceConfigFetcher> shared_remote)
+            -> std::unique_ptr<protocol::IceConfigFetcher> {
+          return std::make_unique<MojoIceConfigFetcher>(
+              std::move(shared_remote));
+        },
+        std::move(shared_remote));
+  } else {
+    get_ice_config_fetcher_cb = base::BindRepeating(
+        []() -> std::unique_ptr<protocol::IceConfigFetcher> {
+          return nullptr;
+        });
+  }
+
   PeerSessionImplFactory peer_session_factory(
-      desktop_environment_factory_.get(),
-      base::BindRepeating([]() -> std::unique_ptr<protocol::IceConfigFetcher> {
-        return nullptr;
-      }));
+      desktop_environment_factory_.get(), get_ice_config_fetcher_cb);
 
   peer_session_ = peer_session_factory.Create();
   if (!peer_session_) {

@@ -2124,7 +2124,8 @@ void HostProcess::StartHost() {
     daemon_channel_->GetRemoteAssociatedInterface(
         desktop_session_manager.InitWithNewEndpointAndPassReceiver());
     auto factory = std::make_unique<IpcPeerSessionFactory>(
-        std::move(peer_session_manager), std::move(desktop_session_manager));
+        std::move(peer_session_manager), std::move(desktop_session_manager),
+        get_ice_config_fetcher_cb);
     set_required_username_callback_ =
         base::BindRepeating(&IpcPeerSessionFactory::SetRequiredUsername,
                             base::Unretained(factory.get()));

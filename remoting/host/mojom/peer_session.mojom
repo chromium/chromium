@@ -4,6 +4,7 @@
 
 module remoting.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "remoting/host/mojom/chromoting_host_services.mojom";
 import "remoting/host/mojom/common.mojom";
 import "remoting/host/mojom/desktop_session.mojom";
@@ -108,6 +109,28 @@ interface TransportEventHandler {
   SendTransportInfo(JingleTransportInfo transport_info);
 };
 
+// LINT.IfChange(IceConfig)
+// Strongly-typed representation of remoting::protocol::IceConfig.
+// Maps to C++ type: `::remoting::protocol::IceConfig`
+// (defined in remoting/protocol/ice_config.h).
+struct IceConfig {
+  mojo_base.mojom.Time expiration_time;
+  array<WebrtcSocketAddress> stun_servers;
+  array<WebrtcRelayServerConfig> turn_servers;
+  int32 max_bitrate_kbps;
+};
+// LINT.ThenChange(//remoting/protocol/ice_config.h:IceConfig)
+
+// Interface for fetching WebRTC ICE configuration (STUN/TURN).
+// Implemented by the Network process and called by the Peer Connection process.
+interface IceConfigFetcher {
+  // Fetches ICE configuration from the remoting service.
+  // Returns the fetched ICE configuration, or null if the configuration
+  // could not be fetched (e.g. network failure, authentication error, or
+  // service unavailable).
+  GetIceConfig() => (IceConfig? ice_config);
+};
+
 // A session interface implemented by the Peer Connection process.
 // If the caller drops the remote, the disconnect handler terminates the Peer
 // Connection process.
@@ -117,10 +140,11 @@ interface TransportEventHandler {
 [EnableIf=is_win|is_linux]
 interface PeerSession {
   // Starts the peer session.
-  Start(pending_remote<PeerSessionEventHandler> event_handler,
-        string client_jid,
-        pending_remote<DesktopSession> control_remote,
-        pending_receiver<DesktopSessionEvents> events_receiver,
+  Start(string client_jid,
+        pending_remote<PeerSessionEventHandler> event_handler,
+        pending_remote<DesktopSession> desktop_control,
+        pending_receiver<DesktopSessionEvents> desktop_events_receiver,
+        pending_remote<IceConfigFetcher> ice_config_fetcher,
         DesktopEnvironmentOptions desktop_environment_options,
         SessionPolicies session_policies,
         SessionOptions session_options);

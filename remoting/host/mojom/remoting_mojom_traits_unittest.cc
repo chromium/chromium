@@ -1064,6 +1064,64 @@ TEST(RemotingMojomTraitsTest, JingleTransportInfoRoundTrip) {
   EXPECT_EQ(output.session_description->signature, sdp.signature);
 }
 
+TEST(RemotingMojomTraitsTest, WebrtcProtocolTypeRoundTrip) {
+  static constexpr webrtc::ProtocolType kTypes[] = {
+      webrtc::PROTO_UDP,    webrtc::PROTO_DTLS, webrtc::PROTO_TCP,
+      webrtc::PROTO_SSLTCP, webrtc::PROTO_TLS,
+  };
+  for (auto type : kTypes) {
+    webrtc::ProtocolType output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::WebrtcProtocolType>(
+        type, output));
+    EXPECT_EQ(type, output);
+  }
+}
+
+TEST(RemotingMojomTraitsTest, WebrtcRelayServerConfigRoundTrip) {
+  webrtc::RelayServerConfig input;
+  input.credentials.username = "test_username";
+  input.credentials.password = "test_password";
+  input.ports.emplace_back(webrtc::SocketAddress("relay.example.com", 3478),
+                           webrtc::PROTO_UDP);
+  input.ports.emplace_back(webrtc::SocketAddress("relay.example.com", 443),
+                           webrtc::PROTO_TLS);
+
+  webrtc::RelayServerConfig output;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::WebrtcRelayServerConfig>(
+          input, output));
+  EXPECT_EQ(input.credentials.username, output.credentials.username);
+  EXPECT_EQ(input.credentials.password, output.credentials.password);
+  ASSERT_EQ(output.ports.size(), 2u);
+  EXPECT_EQ(output.ports[0].address,
+            webrtc::SocketAddress("relay.example.com", 3478));
+  EXPECT_EQ(output.ports[0].proto, webrtc::PROTO_UDP);
+  EXPECT_EQ(output.ports[1].address,
+            webrtc::SocketAddress("relay.example.com", 443));
+  EXPECT_EQ(output.ports[1].proto, webrtc::PROTO_TLS);
+}
+
+TEST(RemotingMojomTraitsTest, IceConfigRoundTrip) {
+  protocol::IceConfig input;
+  input.expiration_time = base::Time::Now() + base::Hours(2);
+  input.max_bitrate_kbps = 2000;
+  input.stun_servers.emplace_back("stun.example.com", 19302);
+  input.turn_servers.emplace_back("turn.example.com", 3478, "turn_user",
+                                  "turn_pass", webrtc::PROTO_UDP, false);
+
+  protocol::IceConfig output;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::IceConfig>(input, output));
+  EXPECT_EQ(input.expiration_time, output.expiration_time);
+  EXPECT_EQ(input.max_bitrate_kbps, output.max_bitrate_kbps);
+  ASSERT_EQ(output.stun_servers.size(), 1u);
+  EXPECT_EQ(output.stun_servers[0],
+            webrtc::SocketAddress("stun.example.com", 19302));
+  ASSERT_EQ(output.turn_servers.size(), 1u);
+  EXPECT_EQ(output.turn_servers[0].credentials.username, "turn_user");
+  EXPECT_EQ(output.turn_servers[0].credentials.password, "turn_pass");
+}
+
 #endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 }  // namespace remoting
