@@ -648,96 +648,8 @@ public class WebViewChromiumAwInit {
     private StartupTasksRunner initializeStartupTasksRunner() {
         ArrayDeque<Runnable> preBrowserProcessStartTasks = new ArrayDeque<>();
         ArrayDeque<Runnable> postBrowserProcessStartTasks = new ArrayDeque<>();
-        preBrowserProcessStartTasks.addLast(
-                () -> {
-                    if (WebViewCachedFlags.get()
-                            .isCachedFeatureEnabled(
-                                    AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
-                        PostTask.postTask(
-                                TaskTraits.USER_VISIBLE,
-                                () -> {
-                                    PlatformServiceBridge.getInstance();
-                                });
-                    }
-                    if (mRunStartupTasksAsync) {
-                        // Disable java-side PostTask scheduling. The native-side task runners
-                        // are also disabled in the native code. The unscheduled prenative 9tasks
-                        // are migrated to the native task runner. The native task runner is
-                        // enabled when we are done with startup.
-                        PostTask.disablePreNativeUiTasks(true);
-                    }
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        TrackExitReasons.startTrackingStartup();
-                    }
-
-                    if (WebViewCachedFlags.get()
-                            .isCachedFeatureEnabled(
-                                    AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
-                        waitForNonUiThreadCapableStartupTasks();
-                    } else {
-                        runNonUiThreadCapableStartupTasks();
-                    }
-                    waitUntilSetUpResources();
-                    // NOTE: Finished writing Java resources. From this point on, it's safe
-                    // to use them.
-
-                    // TODO(crbug.com/400413041) : Remove this workaround.
-                    // Try to work around the resources problem.
-                    //
-                    // WebViewFactory adds WebView's asset path to the host app before any
-                    // of the code in the APK starts running, but it adds it using an old
-                    // mechanism that doesn't persist if the app's resource configuration
-                    // changes for any other reason.
-                    //
-                    // By the time we get here, it's possible it's gone missing due to
-                    // something on the UI thread having triggered a resource update. This
-                    // can happen either because WebView initialization was triggered by a
-                    // background thread (and thus this code is running inside a posted task
-                    // on the UI thread which may have taken any amount of time to actually
-                    // run), or because the app used CookieManager first, which triggers the
-                    // code being loaded and WebViewFactory doing the initial resources add,
-                    // but does not call startChromium until the app uses some other
-                    // API, an arbitrary amount of time later. So, we can try to add them
-                    // again using the "better" method in WebViewDelegate.
-                    //
-                    // However, we only want to try this if the resources are actually
-                    // missing, because in the past we've seen this cause apps that were
-                    // working to *start* crashing. The first resource that gets accessed in
-                    // startup happens during the AwBrowserProcess.start() call when trying
-                    // to determine if the device is a tablet, and that's the most common
-                    // place for us to crash. So, try calling that same method and see if it
-                    // throws - if so then we're unlikely to make the situation any worse by
-                    // trying to fix the path.
-                    //
-                    // This cannot fix the problem in all cases - if the app is using a
-                    // weird ContextWrapper or doing other unusual things with
-                    // resources/assets then even adding it with this mechanism might not
-                    // help.
-                    try {
-                        DeviceFormFactor.isTablet();
-                        RecordHistogram.recordBooleanHistogram(
-                                ASSET_PATH_WORKAROUND_HISTOGRAM_NAME, false);
-                    } catch (Resources.NotFoundException e) {
-                        RecordHistogram.recordBooleanHistogram(
-                                ASSET_PATH_WORKAROUND_HISTOGRAM_NAME, true);
-                        mFactory.addWebViewAssetPath(ContextUtils.getApplicationContext());
-                    }
-
-                    AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-                    boolean isNativeWebViewZygoteEnabled =
-                            delegate != null
-                                    && delegate.isNativeWebViewZygoteEnabled(
-                                            mFactory.getWebViewDelegate());
-                    AwBrowserProcess.configureChildProcessLauncher(isNativeWebViewZygoteEnabled);
-
-                    // finishVariationsInitLocked() must precede native initialization so
-                    // the seed is available when AwFeatureListCreator::SetUpFieldTrials()
-                    // runs.
-                    if (!FastVariationsSeedSafeModeAction.hasRun()) {
-                        finishVariationsInitLocked();
-                    }
-                });
+        preBrowserProcessStartTasks.addLast(this::preBrowserProcessStartTask);
 
         addBrowserProcessStartTasksToQueue(
                 preBrowserProcessStartTasks, postBrowserProcessStartTasks);
@@ -811,6 +723,94 @@ public class WebViewChromiumAwInit {
                 });
 
         return new StartupTasksRunner(preBrowserProcessStartTasks, postBrowserProcessStartTasks);
+    }
+
+    private void preBrowserProcessStartTask() {
+        if (WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
+            PostTask.postTask(
+                    TaskTraits.USER_VISIBLE,
+                    () -> {
+                        PlatformServiceBridge.getInstance();
+                    });
+        }
+        if (mRunStartupTasksAsync) {
+            // Disable java-side PostTask scheduling. The native-side task runners
+            // are also disabled in the native code. The unscheduled prenative tasks
+            // are migrated to the native task runner. The native task runner is
+            // enabled when we are done with startup.
+            PostTask.disablePreNativeUiTasks(true);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            TrackExitReasons.startTrackingStartup();
+        }
+
+        if (WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
+            waitForNonUiThreadCapableStartupTasks();
+        } else {
+            runNonUiThreadCapableStartupTasks();
+        }
+        waitUntilSetUpResources();
+        // NOTE: Finished writing Java resources. From this point on, it's safe
+        // to use them.
+
+        // TODO(crbug.com/400413041) : Remove this workaround.
+        // Try to work around the resources problem.
+        //
+        // WebViewFactory adds WebView's asset path to the host app before any
+        // of the code in the APK starts running, but it adds it using an old
+        // mechanism that doesn't persist if the app's resource configuration
+        // changes for any other reason.
+        //
+        // By the time we get here, it's possible it's gone missing due to
+        // something on the UI thread having triggered a resource update. This
+        // can happen either because WebView initialization was triggered by a
+        // background thread (and thus this code is running inside a posted task
+        // on the UI thread which may have taken any amount of time to actually
+        // run), or because the app used CookieManager first, which triggers the
+        // code being loaded and WebViewFactory doing the initial resources add,
+        // but does not call startChromium until the app uses some other
+        // API, an arbitrary amount of time later. So, we can try to add them
+        // again using the "better" method in WebViewDelegate.
+        //
+        // However, we only want to try this if the resources are actually
+        // missing, because in the past we've seen this cause apps that were
+        // working to *start* crashing. The first resource that gets accessed in
+        // startup happens during the AwBrowserProcess.start() call when trying
+        // to determine if the device is a tablet, and that's the most common
+        // place for us to crash. So, try calling that same method and see if it
+        // throws - if so then we're unlikely to make the situation any worse by
+        // trying to fix the path.
+        //
+        // This cannot fix the problem in all cases - if the app is using a
+        // weird ContextWrapper or doing other unusual things with
+        // resources/assets then even adding it with this mechanism might not
+        // help.
+        try {
+            DeviceFormFactor.isTablet();
+            RecordHistogram.recordBooleanHistogram(
+                    ASSET_PATH_WORKAROUND_HISTOGRAM_NAME, false);
+        } catch (Resources.NotFoundException e) {
+            RecordHistogram.recordBooleanHistogram(
+                    ASSET_PATH_WORKAROUND_HISTOGRAM_NAME, true);
+            mFactory.addWebViewAssetPath(ContextUtils.getApplicationContext());
+        }
+
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        boolean isNativeWebViewZygoteEnabled =
+                delegate != null
+                        && delegate.isNativeWebViewZygoteEnabled(
+                                mFactory.getWebViewDelegate());
+        AwBrowserProcess.configureChildProcessLauncher(isNativeWebViewZygoteEnabled);
+
+        // finishVariationsInitLocked() must precede native initialization so
+        // the seed is available when AwFeatureListCreator::SetUpFieldTrials()
+        // runs.
+        if (!FastVariationsSeedSafeModeAction.hasRun()) {
+            finishVariationsInitLocked();
+        }
     }
 
     private void addBrowserProcessStartTasksToQueue(
