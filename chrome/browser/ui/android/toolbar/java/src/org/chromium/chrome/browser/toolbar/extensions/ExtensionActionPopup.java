@@ -230,8 +230,21 @@ class ExtensionActionPopup implements Destroyable {
                         .setCanPlayMoveAnimation(false);
             }
 
-            mPopupWindow.setDesiredContentSize(
-                    ViewUtils.dpToPx(mActivity, width), ViewUtils.dpToPx(mActivity, height));
+            int targetWidthPx = ViewUtils.dpToPx(mActivity, width);
+            int targetHeightPx = ViewUtils.dpToPx(mActivity, height);
+
+            View decorView = mActivity.getWindow().getDecorView();
+            int maxAvailableWidthPx = decorView.getWidth();
+            int maxAvailableHeightPx = decorView.getHeight();
+
+            if (maxAvailableWidthPx > 0) {
+                targetWidthPx = Math.min(targetWidthPx, maxAvailableWidthPx);
+            }
+            if (maxAvailableHeightPx > 0) {
+                targetHeightPx = Math.min(targetHeightPx, maxAvailableHeightPx);
+            }
+
+            mPopupWindow.setDesiredContentSize(targetWidthPx, targetHeightPx);
         }
 
         @Override
