@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
@@ -398,7 +399,7 @@ void AlarmManager::OnAlarm(AlarmIterator it) {
                                base::Time::kMicrosecondsPerMillisecond;
     // Find out how many periods have transpired since the alarm last went off
     // (it's possible that we missed some).
-    int transpired_periods = (last_poll_time_.InMillisecondsFSinceUnixEpoch() -
+    int transpired_periods = (clock_->Now().InMillisecondsFSinceUnixEpoch() -
                               alarm.js_alarm->scheduled_time) /
                              period_in_js_time;
     // Schedule the alarm for the next period that is in-line with the original
@@ -474,49 +475,33 @@ void AlarmManager::ScheduleNextPoll() {
     return;
   }
 
-  // Find the soonest alarm that is scheduled to run and the smallest
-  // granularity of any alarm.
+  // Find the soonest that any alarm is scheduled to run (or at most
+  // kDefaultMinPollPeriod from now).
   // alarms_ guarantees that none of its contained lists are empty.
-  base::Time soonest_alarm_time = base::Time::FromMillisecondsSinceUnixEpoch(
-      alarms_.begin()->second.begin()->js_alarm->scheduled_time);
-  base::TimeDelta min_granularity = kDefaultMinPollPeriod();
-  for (AlarmMap::const_iterator m_it = alarms_.begin(), m_end = alarms_.end();
-       m_it != m_end; ++m_it) {
-    for (auto l_it = m_it->second.cbegin(); l_it != m_it->second.cend();
-         ++l_it) {
+  base::Time soonest_alarm_time = clock_->Now() + kDefaultMinPollPeriod();
+  for (const auto& [extension_id, alarm_list] : alarms_) {
+    base::Time* last_poll_time =
+        base::FindOrNull(last_poll_times_, extension_id);
+
+    for (const auto& alarm : alarm_list) {
       base::Time cur_alarm_time = base::Time::FromMillisecondsSinceUnixEpoch(
-          l_it->js_alarm->scheduled_time);
+          alarm.js_alarm->scheduled_time);
+      if (last_poll_time) {
+        cur_alarm_time = std::max(cur_alarm_time,
+                                  *last_poll_time + alarm.minimum_granularity);
+      }
       if (cur_alarm_time < soonest_alarm_time) {
         soonest_alarm_time = cur_alarm_time;
-      }
-      if (l_it->granularity < min_granularity) {
-        min_granularity = l_it->granularity;
-      }
-      base::TimeDelta cur_alarm_delta = cur_alarm_time - last_poll_time_;
-      if (cur_alarm_delta < l_it->minimum_granularity) {
-        cur_alarm_delta = l_it->minimum_granularity;
-      }
-      if (cur_alarm_delta < min_granularity) {
-        min_granularity = cur_alarm_delta;
       }
     }
   }
 
-  base::Time next_poll(last_poll_time_ + min_granularity);
-  // If the next alarm is more than min_granularity in the future, wait for it.
-  // Otherwise, only poll as often as min_granularity.
-  // As a special case, if we've never checked for an alarm before
-  // (e.g. during startup), let alarms fire asap.
-  if (last_poll_time_.is_null() || next_poll < soonest_alarm_time) {
-    next_poll = soonest_alarm_time;
-  }
-
   // Schedule the poll.
-  SetNextPollTime(next_poll);
+  SetNextPollTime(soonest_alarm_time);
 }
 
 void AlarmManager::PollAlarms() {
-  last_poll_time_ = clock_->Now();
+  base::Time now = clock_->Now();
 
   // Run any alarms scheduled in the past. OnAlarm uses vector::erase to remove
   // elements from the AlarmList, and map::erase to remove AlarmLists from the
@@ -524,14 +509,32 @@ void AlarmManager::PollAlarms() {
   for (auto m_it = alarms_.begin(), m_end = alarms_.end(); m_it != m_end;) {
     auto cur_extension = m_it++;
 
+    CHECK(!cur_extension->second.empty());
+
+    // Work out the last time this extension fired an alarm.
+    base::Time* last_poll_time =
+        base::FindOrNull(last_poll_times_, cur_extension->first);
+
+    // Minimum granularity is the same for all alarms in the extension.
+    auto min_granularity = cur_extension->second.front().minimum_granularity;
+
+    // The extension should not poll more frequently than the minimum
+    // granularity.
+    if (last_poll_time && *last_poll_time + min_granularity > now) {
+      continue;
+    }
+
     // Iterate (a) backwards so that removing elements doesn't affect
     // upcoming iterations, and (b) with indices so that if the last
     // iteration destroys the AlarmList, I'm not about to use the end
     // iterator that the destruction invalidates.
     for (size_t i = cur_extension->second.size(); i > 0; --i) {
       auto cur_alarm = cur_extension->second.begin() + i - 1;
-      if (base::Time::FromMillisecondsSinceUnixEpoch(
-              cur_alarm->js_alarm->scheduled_time) <= last_poll_time_) {
+      base::Time cur_alarm_time = base::Time::FromMillisecondsSinceUnixEpoch(
+          cur_alarm->js_alarm->scheduled_time);
+
+      if (cur_alarm_time <= now) {
+        last_poll_times_[cur_extension->first] = now;
         OnAlarm(make_pair(cur_extension, cur_alarm));
       }
     }
@@ -572,6 +575,7 @@ void AlarmManager::OnExtensionLoaded(content::BrowserContext* browser_context,
 void AlarmManager::OnExtensionUnloaded(content::BrowserContext* browser_context,
                                        const Extension* extension,
                                        UnloadedExtensionReason reason) {
+  last_poll_times_.erase(extension->id());
   RemoveAllAlarmsInternal(extension->id());
 }
 

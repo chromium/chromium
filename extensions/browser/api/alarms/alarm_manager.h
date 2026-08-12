@@ -151,6 +151,8 @@ class AlarmManager : public BrowserContextKeyedAPI,
   FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsSchedulingTest,
                            RepeatingAlarmsScheduledPredictably);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsSchedulingTest,
+                           PerExtensionLastPollTime);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsSchedulingTest,
                            PollFrequencyFromStoredAlarm);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsTest, OldPersistentAlarmFromStorage);
   friend class BrowserContextKeyedAPIFactory<AlarmManager>;
@@ -160,6 +162,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
   using ReadyAction = base::OnceCallback<void(const std::string&)>;
   using ReadyQueue = base::queue<ReadyAction>;
   using ReadyMap = std::map<ExtensionId, ReadyQueue>;
+  using LastPollTimeMap = std::map<ExtensionId, base::Time>;
 
   // Iterator used to identify a particular alarm within the Map/List pair.
   // "Not found" is represented by <alarms_.end(), invalid_iterator>.
@@ -218,7 +221,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
   void SetNextPollTime(const base::Time& time);
 
   // Schedules the next poll of alarms for when the next soonest alarm runs,
-  // but not more often than the minimum granularity of all alarms.
+  // but not more often than the minimum granularity for each extension.
   void ScheduleNextPoll();
 
   // Polls the alarms, running any that have elapsed. After running them and
@@ -262,8 +265,8 @@ class AlarmManager : public BrowserContextKeyedAPI,
   // extension.
   ReadyMap ready_actions_;
 
-  // The previous time that alarms were run.
-  base::Time last_poll_time_;
+  // The previous time that alarms were run for each extension.
+  LastPollTimeMap last_poll_times_;
 
   // Next poll's time.
   base::Time next_poll_time_;
