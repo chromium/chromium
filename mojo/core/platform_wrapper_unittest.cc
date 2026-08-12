@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -237,14 +236,15 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
   EXPECT_EQ(MOJO_RESULT_OK,
             ReadMessageRaw(MessagePipeHandle(h), &guid_bytes, nullptr,
                            MOJO_READ_MESSAGE_FLAG_NONE));
-  EXPECT_EQ(sizeof(MojoSharedBufferGuid), guid_bytes.size());
-  auto* expected_guid =
-      UNSAFE_TODO(reinterpret_cast<MojoSharedBufferGuid*>(guid_bytes.data()));
-  EXPECT_EQ(expected_guid->high, mojo_guid.high);
-  EXPECT_EQ(expected_guid->low, mojo_guid.low);
+  ASSERT_EQ(sizeof(MojoSharedBufferGuid), guid_bytes.size());
+  MojoSharedBufferGuid expected_guid;
+  base::byte_span_from_ref(expected_guid).copy_from(base::span(guid_bytes));
+  EXPECT_EQ(expected_guid.high, mojo_guid.high);
+  EXPECT_EQ(expected_guid.low, mojo_guid.low);
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
+// Tests invalid argument validation when wrapping a platform handle.
 TEST_F(PlatformWrapperTest, InvalidHandle) {
   // Wrap an invalid platform handle and expect to unwrap the same.
 
@@ -259,6 +259,7 @@ TEST_F(PlatformWrapperTest, InvalidHandle) {
   EXPECT_EQ(MOJO_PLATFORM_HANDLE_TYPE_INVALID, invalid_handle.type);
 }
 
+// Tests invalid argument validation when wrapping an invalid struct size.
 TEST_F(PlatformWrapperTest, InvalidArgument) {
   // Try to wrap an invalid MojoPlatformHandle struct and expect an error.
   MojoHandle wrapped_handle;
@@ -266,6 +267,81 @@ TEST_F(PlatformWrapperTest, InvalidArgument) {
   platform_handle.struct_size = 0;
   EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
             MojoWrapPlatformHandle(&platform_handle, nullptr, &wrapped_handle));
+}
+
+// Tests invalid argument validation when wrapping a platform shared memory
+// region.
+TEST_F(PlatformWrapperTest, WrapPlatformSharedMemoryRegionInvalidArgument) {
+  MojoPlatformHandle os_buffer;
+  os_buffer.struct_size = sizeof(MojoPlatformHandle);
+  os_buffer.type = SHARED_BUFFER_PLATFORM_HANDLE_TYPE;
+  os_buffer.value = 0;
+
+  MojoSharedBufferGuid valid_guid;
+  base::UnguessableToken guid = base::UnguessableToken::Create();
+  valid_guid.high = guid.GetHighForSerialization();
+  valid_guid.low = guid.GetLowForSerialization();
+
+  MojoHandle wrapped_handle;
+
+  // Passing null platform handles pointer must fail.
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+            MojoWrapPlatformSharedMemoryRegion(
+                nullptr, 1, 128, &valid_guid,
+                MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE,
+                nullptr, &wrapped_handle));
+
+  // Passing a zero-sized buffer must fail.
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+            MojoWrapPlatformSharedMemoryRegion(
+                &os_buffer, 1, 0, &valid_guid,
+                MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE,
+                nullptr, &wrapped_handle));
+
+  // Passing null GUID pointer must fail.
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+            MojoWrapPlatformSharedMemoryRegion(
+                &os_buffer, 1, 128, nullptr,
+                MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE,
+                nullptr, &wrapped_handle));
+
+  // Passing an invalid (all-zero) GUID must fail.
+  MojoSharedBufferGuid invalid_guid{0, 0};
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+            MojoWrapPlatformSharedMemoryRegion(
+                &os_buffer, 1, 128, &invalid_guid,
+                MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE,
+                nullptr, &wrapped_handle));
+
+  // Passing null output handle pointer must fail.
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+            MojoWrapPlatformSharedMemoryRegion(
+                &os_buffer, 1, 128, &valid_guid,
+                MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE,
+                nullptr, nullptr));
+
+  // Passing zero platform handles must fail.
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+            MojoWrapPlatformSharedMemoryRegion(
+                &os_buffer, 0, 128, &valid_guid,
+                MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE,
+                nullptr, &wrapped_handle));
+
+  // Passing more than two platform handles must fail.
+  std::array<MojoPlatformHandle, 3> three_buffers = {os_buffer, os_buffer,
+                                                     os_buffer};
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+            MojoWrapPlatformSharedMemoryRegion(
+                three_buffers.data(), three_buffers.size(), 128, &valid_guid,
+                MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE,
+                nullptr, &wrapped_handle));
+
+  // Passing an invalid access mode enum value must fail.
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+            MojoWrapPlatformSharedMemoryRegion(
+                &os_buffer, 1, 128, &valid_guid,
+                static_cast<MojoPlatformSharedMemoryRegionAccessMode>(999),
+                nullptr, &wrapped_handle));
 }
 
 }  // namespace

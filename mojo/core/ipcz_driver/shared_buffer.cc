@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -158,7 +158,7 @@ scoped_refptr<SharedBuffer> SharedBuffer::CreateForMojoWrapper(
   }
 
   auto handle = CreateRegionHandleFromPlatformHandles(
-      UNSAFE_TODO({&handles[0], mojo_platform_handles.size()}), mode);
+      base::span(handles).first(mojo_platform_handles.size()), mode);
   auto region = base::subtle::PlatformSharedMemoryRegion::Take(
       std::move(handle), mode, size, guid.value());
   if (!region.IsValid()) {
