@@ -1222,9 +1222,6 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
-    DCHECK_EQ(old_path_it->second->GetActivePermissionStatus(),
-              PermissionStatus::GRANTED);
-
     auto* const grant_to_move = old_path_it->second.get();
 
     if (allow_overwrite) {
@@ -2654,6 +2651,7 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
       features::kFileSystemAccessMoveWithOverwrite);
 
   bool updated = false;
+  bool old_path_was_downgraded = false;
   auto it = active_permissions_map_.find(origin);
   if (it != active_permissions_map_.end()) {
     // TODO(crbug.com/40245144): Consolidate superfluous child grants.
@@ -2661,6 +2659,14 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
                                          new_path, allow_overwrite);
     PermissionGrantImpl::UpdateGrantPath(it->second.read_grants, old_path,
                                          new_path, allow_overwrite);
+    if (base::FeatureList::IsEnabled(
+            blink::features::kFileSystemAccessRevokeReadOnRemove) &&
+        it->second.downgraded_read_paths.erase(old_path.path)) {
+      // The downgraded read grant moved along with the entry; carry the
+      // downgraded state to `new_path` so a later write there can restore it.
+      it->second.downgraded_read_paths.insert(new_path.path);
+      old_path_was_downgraded = true;
+    }
     updated = true;
   }
   if (base::FeatureList::IsEnabled(
@@ -2691,7 +2697,10 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
   }
 
   if (base::FeatureList::IsEnabled(
-          blink::features::kFileSystemAccessRevokeReadOnRemove)) {
+          blink::features::kFileSystemAccessRevokeReadOnRemove) &&
+      !old_path_was_downgraded) {
+    // Only restore if the moved entry was readable at `old_path`; otherwise
+    // the origin has not authored the content now at `new_path`.
     MaybeRestoreReadPermission(origin, new_path.path);
   }
 }
