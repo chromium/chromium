@@ -67,9 +67,9 @@ class PartialCircularBufferTest : public testing::Test {
   }
 
  protected:
+  base::HeapArray<uint8_t> buffer_;
   std::unique_ptr<PartialCircularBuffer> pcb_write_;
   std::unique_ptr<PartialCircularBuffer> pcb_read_;
-  base::HeapArray<uint8_t> buffer_;
   uint32_t buffer_header_size_;
 };
 

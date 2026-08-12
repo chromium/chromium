@@ -59,8 +59,8 @@ class PartialCircularBuffer {
   void DoWrite(base::span<const uint8_t> input);
 
   // Used for reading and writing.
-  raw_ptr<BufferData, DanglingUntriaged> buffer_data_;
-  base::raw_span<uint8_t, DanglingUntriaged> buffer_data_span_;
+  raw_ptr<BufferData> buffer_data_;
+  base::raw_span<uint8_t> buffer_data_span_;
   uint32_t position_;
 
   // Used for reading.
