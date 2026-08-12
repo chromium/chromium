@@ -16,8 +16,9 @@
 
 namespace webnn {
 
-// Identifies an execution provider device by EP name, device type, and hardware
-// device ID. This is the C++ counterpart of webnn.mojom.EpDeviceInfo.
+// Identifies an execution provider device by EP name, device type, hardware
+// device ID and vendor ID. This is the C++ counterpart of
+// webnn.mojom.EpDeviceInfo.
 struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN) EpDeviceInfo {
   std::string ep_name;
   mojom::Device device_type = mojom::Device::kCpu;

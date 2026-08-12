@@ -1013,15 +1013,16 @@ std::optional<EpDeviceInfo> Environment::SelectEpDeviceForCompiler(
   uint32_t selected_vendor_id =
       ort_api->HardwareDevice_VendorId(selected_hardware_device);
 
-  VLOG(1) << "[WebNN] Selected EP device for compiler: " << selected_ep_name
-          << ", device type: " << DeviceTypeToString(selected_device_type)
-          << ", device ID: 0x" << std::hex << selected_device_id
-          << ", vendor ID: 0x" << selected_vendor_id;
+  EpDeviceInfo selected_device_info = {
+      .ep_name = std::string(selected_ep_name),
+      .device_type = selected_device_type,
+      .device_id = selected_device_id,
+      .vendor_id = selected_vendor_id,
+  };
+  VLOG(1) << "[WebNN] Selected EP device for compiler: "
+          << selected_device_info.ToSwitchValue();
 
-  return EpDeviceInfo{.ep_name = std::string(selected_ep_name),
-                      .device_type = selected_device_type,
-                      .device_id = selected_device_id,
-                      .vendor_id = selected_vendor_id};
+  return selected_device_info;
 }
 
 // static
