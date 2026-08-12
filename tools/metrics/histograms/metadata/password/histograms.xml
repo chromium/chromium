@@ -2627,6 +2627,51 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChange.LoginCheckAttempts"
+    units="attempts" expires_after="2027-08-01">
+  <owner>talitahalboth@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the number of attempts (login state checks) performed during the
+    LOGIN_CHECK step of the password change flow. Recorded when the login check
+    step finishes (either successfully or with a failure).
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordChange.LoginCheckDuration" units="ms"
+    expires_after="2027-08-01">
+  <owner>talitahalboth@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the duration of the LOGIN_CHECK step of the password change flow in
+    ms.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordChange.LoginCheckError"
+    enum="LoginCheckError" expires_after="2027-08-01">
+  <owner>talitahalboth@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the exact failure reason when the LOGIN_CHECK step in the password
+    change flow fails. Recorded when the login check step fails.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordChange.LoginCheckResult"
+    enum="LoginCheckResult" expires_after="2027-08-01">
+  <owner>talitahalboth@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the outcome of the LOGIN_CHECK step in the password change flow
+    (Success, Failure, or Error). Recorded when the login check step finishes.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChange.NoPasswordForm"
     enum="PasswordChangeDialogAction" expires_after="2026-12-20">
   <owner>rgod@google.com</owner>

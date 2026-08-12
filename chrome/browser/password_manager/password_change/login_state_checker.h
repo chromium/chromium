@@ -32,11 +32,32 @@ class PasswordManagerClient;
 }  // namespace password_manager
 
 struct LoginCheckResult {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(LoginCheckResult)
   enum class Status {
     kLoggedIn = 0,
     kLoggedOut = 1,
     kError = 2,
+    kMaxValue = kError,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:LoginCheckResult)
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(LoginCheckError)
+  enum class LoginCheckError {
+    kLoginFailed = 0,
+    kForgotPasswordPage = 1,
+    kServerError = 2,
+    kFailedToParseResponse = 3,
+    kTimeout = 4,
+    kUnknown = 5,
+    kMaxValue = kUnknown,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:LoginCheckError)
 
   LoginCheckResult();
   LoginCheckResult(
@@ -45,7 +66,8 @@ struct LoginCheckResult {
       base::TimeDelta duration,
       std::unique_ptr<
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
-          logging_data);
+          logging_data,
+      std::optional<LoginCheckError> error = std::nullopt);
   ~LoginCheckResult();
   LoginCheckResult(LoginCheckResult&&);
   LoginCheckResult& operator=(LoginCheckResult&&);
@@ -56,6 +78,7 @@ struct LoginCheckResult {
   std::unique_ptr<
       optimization_guide::proto::PasswordChangeSubmissionLoggingData>
       logging_data;
+  std::optional<LoginCheckError> error;
 };
 
 // Helper class which checks if the user is fully signed in on the main tab
@@ -104,6 +127,7 @@ class LoginStateChecker : public content::WebContentsObserver {
   // To be called when the login checks should be terminated due
   // to max retries or an unexpected state.
   void TerminateLoginChecks(
+      LoginCheckResult::LoginCheckError error,
       std::unique_ptr<
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
           logging_data = nullptr);

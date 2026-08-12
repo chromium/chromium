@@ -574,6 +574,29 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User typed or autofilled values"/>
 </enum>
 
+<!-- LINT.IfChange(LoginCheckError) -->
+
+<enum name="LoginCheckError">
+  <int value="0" label="Login failed (credential error)"/>
+  <int value="1" label="Forgot password page detected"/>
+  <int value="2" label="Server error (model execution failed)"/>
+  <int value="3" label="Failed to parse response"/>
+  <int value="4" label="Timeout"/>
+  <int value="5" label="Unknown error"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/password_manager/password_change/login_state_checker.h:LoginCheckError) -->
+
+<!-- LINT.IfChange(LoginCheckResult) -->
+
+<enum name="LoginCheckResult">
+  <int value="0" label="Success (User is logged in)"/>
+  <int value="1" label="Logged out (Maximum attempts reached)"/>
+  <int value="2" label="Error (Server error / timeout / parsing error)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/password_manager/password_change/login_state_checker.h:LoginCheckResult) -->
+
 <enum name="LoginDatabaseEncryptionStatus">
   <int value="0" label="No issues"/>
   <int value="1"
