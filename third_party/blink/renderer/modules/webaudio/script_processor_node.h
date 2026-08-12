@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_SCRIPT_PROCESSOR_NODE_H_
 
 #include "base/synchronization/waitable_event.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/script_processor_handler.h"
@@ -75,7 +76,8 @@ class ScriptProcessorNode final
                                      uint32_t number_of_output_channels,
                                      ExceptionState&);
 
-  ScriptProcessorNode(BaseAudioContext&,
+  ScriptProcessorNode(base::PassKey<ScriptProcessorNode>,
+                      BaseAudioContext&,
                       float sample_rate,
                       uint32_t buffer_size,
                       uint32_t number_of_input_channels,

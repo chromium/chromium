@@ -91,17 +91,15 @@ uint32_t ChooseBufferSize(uint32_t callback_buffer_size) {
 
 }  // namespace
 
-ScriptProcessorNode::ScriptProcessorNode(BaseAudioContext& context,
+ScriptProcessorNode::ScriptProcessorNode(base::PassKey<ScriptProcessorNode>,
+                                         BaseAudioContext& context,
                                          float sample_rate,
                                          uint32_t buffer_size,
                                          uint32_t number_of_input_channels,
                                          uint32_t number_of_output_channels)
     : AudioNode(context), ActiveScriptWrappable<ScriptProcessorNode>({}) {
-  // Regardless of the allowed buffer sizes, we still need to process at the
-  // granularity of the AudioNode.
-  if (buffer_size < context.renderQuantumSize()) {
-    buffer_size = context.renderQuantumSize();
-  }
+  CHECK_GE(buffer_size, context.renderQuantumSize());
+  CHECK_EQ(buffer_size % context.renderQuantumSize(), 0u);
 
   // Create double buffers on both the input and output sides.
   // These AudioBuffers will be directly accessed in the main thread by
@@ -255,8 +253,8 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
   }
 
   ScriptProcessorNode* node = MakeGarbageCollected<ScriptProcessorNode>(
-      context, context.sampleRate(), buffer_size, number_of_input_channels,
-      number_of_output_channels);
+      base::PassKey<ScriptProcessorNode>(), context, context.sampleRate(),
+      buffer_size, number_of_input_channels, number_of_output_channels);
 
   if (!node) {
     return nullptr;
