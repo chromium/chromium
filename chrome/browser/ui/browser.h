@@ -67,7 +67,6 @@ class FindBarController;
 class Profile;
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
-class StatusBubble;
 class TabStripModelDelegate;
 
 namespace tabs {
@@ -132,8 +131,6 @@ class Browser : public TabStripModelObserver,
   void OnTabGroupFocusChanged(
       std::optional<tab_groups::TabGroupId> new_focused_group,
       std::optional<tab_groups::TabGroupId> old_focused_group) override;
-
-  std::vector<StatusBubble*> GetStatusBubblesForTesting();
 
   // BrowserWindowInterface overrides:
   Profile* GetProfile() override;
@@ -258,17 +255,6 @@ class Browser : public TabStripModelObserver,
 
   // Handle changes to kDevToolsAvailability preference.
   void OnDevToolsAvailabilityChanged();
-
-  // Getters for UI ///////////////////////////////////////////////////////////
-
-  // Returns the list of StatusBubbles from the current toolbar. It is possible
-  // for this to be empty if called before the toolbar has initialized. In a
-  // split view, there will be multiple status bubbles with the active one
-  // listed first.
-  // TODO(beng): remove this.
-  std::vector<StatusBubble*> GetStatusBubbles();
-
-
 
   // In-progress download termination handling /////////////////////////////////
 

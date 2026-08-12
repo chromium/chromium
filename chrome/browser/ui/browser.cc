@@ -37,7 +37,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"          // nogncheck
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"  // nogncheck
-#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -412,13 +411,6 @@ base::WeakPtr<Browser> Browser::AsWeakPtr() {
 
 base::WeakPtr<const Browser> Browser::AsWeakPtr() const {
   return weak_factory_.GetWeakPtr();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Browser, OnBeforeUnload handling:
-
-std::vector<StatusBubble*> Browser::GetStatusBubblesForTesting() {
-  return GetStatusBubbles();
 }
 
 Profile* Browser::GetProfile() {
@@ -860,7 +852,8 @@ void Browser::OnActiveTabChanged(const TabStripModelChange& change,
   browser_command_controller->TabStateChanged();
 
   // Reset the status bubble.
-  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
+  std::vector<StatusBubble*> status_bubbles =
+      BrowserUiController::From(this)->GetStatusBubbles();
   for (StatusBubble* status_bubble : status_bubbles) {
     status_bubble->Hide();
 
@@ -910,33 +903,6 @@ void Browser::OnDevToolsAvailabilityChanged() {
     }
   }
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// Browser, Getters for UI (private):
-
-std::vector<StatusBubble*> Browser::GetStatusBubbles() {
-  // For kiosk and exclusive app mode we want to always hide the status bubble.
-  if (IsRunningInAppMode()) {
-    return {};
-  }
-
-  // We hide the status bar for web apps windows as this matches native
-  // experience. However, we include the status bar for 'minimal-ui' display
-  // mode, as the minimal browser UI includes the status bar.
-  auto* const app_browser_controller =
-      web_app::AppBrowserController::From(this);
-  if (app_browser_controller &&
-      !app_browser_controller->HasMinimalUiButtons()) {
-    return {};
-  }
-
-  if (window_) {
-    return window_->GetStatusBubbles();
-  } else {
-    return {};
-  }
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, Assorted utility functions (private):
@@ -998,7 +964,8 @@ void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
     chrome::BrowserCommandController::From(this)->LoadingStateChanged(
         is_loading, false);
 
-    std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
+    std::vector<StatusBubble*> status_bubbles =
+        BrowserUiController::From(this)->GetStatusBubbles();
     if (status_bubbles.size() > 0) {
       status_bubbles.front()->SetStatus(
           CoreTabHelper::FromWebContents(selected_contents)->GetStatusText());

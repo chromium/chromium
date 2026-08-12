@@ -671,7 +671,7 @@ void BrowserWebContentsDelegate::SetContentsBounds(content::WebContents* source,
 void BrowserWebContentsDelegate::UpdateTargetURL(content::WebContents* source,
                                                  const GURL& url) {
   std::vector<StatusBubble*> status_bubbles =
-      browser_->GetBrowserForMigrationOnly()->GetStatusBubbles();
+      browser_ui_controller_->GetStatusBubbles();
   for (StatusBubble* status_bubble : status_bubbles) {
     StatusBubbleViews* status_bubble_views =
         static_cast<StatusBubbleViews*>(status_bubble);
@@ -698,7 +698,7 @@ void BrowserWebContentsDelegate::ContentsMouseEvent(
 
   // Mouse motion events update the status bubble, if it exists.
   std::vector<StatusBubble*> status_bubbles =
-      browser_->GetBrowserForMigrationOnly()->GetStatusBubbles();
+      browser_ui_controller_->GetStatusBubbles();
   for (StatusBubble* status_bubble : status_bubbles) {
     StatusBubbleViews* status_bubble_views =
         static_cast<StatusBubbleViews*>(status_bubble);

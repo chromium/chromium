@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BROWSER_UI_CONTROLLER_BROWSER_UI_CONTROLLER_H_
 
 #include <map>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +18,7 @@
 class BookmarkBarController;
 class BrowserWindow;
 class BrowserWindowInterface;
+class StatusBubble;
 class TabStripModel;
 
 namespace content {
@@ -80,6 +82,12 @@ class BrowserUiController {
   // Notifies the tab UI that it should update when the browser schedule or
   // process UI updates.
   void NotifyTabUIChanged(tabs::TabInterface* tab, TabChangeType change_type);
+
+  // Returns the list of StatusBubbles from the current toolbar. It is possible
+  // for this to be empty if called before the toolbar has initialized. In a
+  // split view, there will be multiple status bubbles with the active one
+  // listed first.
+  std::vector<StatusBubble*> GetStatusBubbles();
 
   void set_update_ui_immediately_for_testing(bool immediate = true) {
     update_ui_immediately_for_testing_ = immediate;

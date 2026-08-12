@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents.h"
@@ -78,7 +80,7 @@ void BrowserUiController::UpdateUIForNavigationInTab(
     window_->GetLocationBar()->Revert();
   }
 
-  std::vector<StatusBubble*> status_bubbles = window_->GetStatusBubbles();
+  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
   for (StatusBubble* status_bubble : status_bubbles) {
     status_bubble->Hide();
   }
@@ -186,7 +188,7 @@ void BrowserUiController::ProcessPendingUIUpdates() {
       // Updates that only matter when the tab is selected go here.
 
       // Updating the URL happens synchronously in ScheduleUIUpdate.
-      std::vector<StatusBubble*> status_bubbles = window_->GetStatusBubbles();
+      std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
       if (flags & content::INVALIDATE_TYPE_LOAD && !status_bubbles.empty()) {
         status_bubbles.front()->SetStatus(
             CoreTabHelper::FromWebContents(tab->GetContents())
@@ -251,4 +253,23 @@ void BrowserUiController::NotifyTabUIChanged(tabs::TabInterface* tab,
   tab_strip_model_->NotifyTabChanged(tab, change_type);
   TabUIHelper::From(tab)->NotifyTabUIChanged(
       base::PassKey<BrowserUiController>());
+}
+
+std::vector<StatusBubble*> BrowserUiController::GetStatusBubbles() {
+  // For kiosk and exclusive app mode we want to always hide the status bubble.
+  if (IsRunningInAppMode()) {
+    return {};
+  }
+
+  // We hide the status bar for web apps windows as this matches native
+  // experience. However, we include the status bar for 'minimal-ui' display
+  // mode, as the minimal browser UI includes the status bar.
+  auto* const app_browser_controller =
+      web_app::AppBrowserController::From(&*browser_);
+  if (app_browser_controller &&
+      !app_browser_controller->HasMinimalUiButtons()) {
+    return {};
+  }
+
+  return window_->GetStatusBubbles();
 }
