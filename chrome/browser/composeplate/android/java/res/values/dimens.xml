@@ -14,4 +14,5 @@ found in the LICENSE file.
     <dimen name="composeplate_view_lateral_margin">16dp</dimen>
     <dimen name="composeplate_view_margin_top">8dp</dimen>
     <dimen name="composeplate_view_legacy_margin_top">4dp</dimen>
+    <dimen name="composeplate_view_search_icon_size">22dp</dimen>
 </resources>
