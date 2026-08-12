@@ -152,8 +152,7 @@ class ASH_EXPORT SplitViewDragIndicators {
   // Both the widget and view are lazily constructed for performance reasons.
   std::unique_ptr<views::Widget> widget_;
   // The root content view of |widget_|.
-  raw_ptr<SplitViewDragIndicatorsView, DanglingUntriaged> indicators_view_ =
-      nullptr;
+  raw_ptr<SplitViewDragIndicatorsView> indicators_view_ = nullptr;
 };
 
 }  // namespace ash
