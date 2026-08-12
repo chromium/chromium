@@ -53,8 +53,6 @@ class TabsFromOtherDevicesSidePanelMetrics : public SidePanelEntryObserver {
   base::WeakPtr<TabsFromOtherDevicesSidePanelMetrics> GetWeakPtr();
 
  private:
-  const std::string histogram_prefix_;
-
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver> observation_{
       this};
 

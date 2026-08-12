@@ -5,10 +5,7 @@
 assert(!is_android)
 
 source_set("tabs_from_other_devices") {
-  public = [
-    "synced_screenshot_data_source.h",
-    "tabs_from_other_devices_side_panel_ui.h",
-  ]
+  public = [ "tabs_from_other_devices_side_panel_ui.h" ]
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/top_chrome",
@@ -19,10 +16,7 @@ source_set("tabs_from_other_devices") {
 }
 
 source_set("impl") {
-  sources = [
-    "synced_screenshot_data_source.cc",
-    "tabs_from_other_devices_side_panel_ui.cc",
-  ]
+  sources = [ "tabs_from_other_devices_side_panel_ui.cc" ]
   public_deps = [ ":tabs_from_other_devices" ]
   deps = [
     "//chrome/app:command_ids",
@@ -42,19 +36,5 @@ source_set("impl") {
     "//components/strings:components_strings",
     "//components/sync_sessions",
     "//ui/webui",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "synced_screenshot_data_source_unittest.cc" ]
-  deps = [
-    ":impl",
-    "//base/test:test_support",
-    "//chrome/browser/sync",
-    "//chrome/test:test_support",
-    "//components/sync_sessions:test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
   ]
 }

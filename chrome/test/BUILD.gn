@@ -7364,7 +7364,6 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar:unit_tests",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search:unit_tests",
       "//chrome/browser/ui/webui/side_panel/reading_list:unit_tests",
-      "//chrome/browser/ui/webui/side_panel/tabs_from_other_devices:unit_tests",
       "//components/invalidation:test_support",
       "//components/webauthn/core/browser:test_support",
       "//ui/webui/resources/cr_components/history:mojo_bindings",

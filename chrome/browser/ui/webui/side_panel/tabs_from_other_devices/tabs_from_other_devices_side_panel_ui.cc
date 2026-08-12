@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/webui/cr_components/history/history_util.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
-#include "chrome/browser/ui/webui/side_panel/tabs_from_other_devices/synced_screenshot_data_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -25,7 +24,6 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/sessions/core/session_types.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync_sessions/features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
@@ -56,9 +54,8 @@ TabsFromOtherDevicesSidePanelUI::TabsFromOtherDevicesSidePanelUI(
 
   HistoryUtil::PopulateCommonSourceForHistory(source, profile);
 
-  source->AddBoolean(
-      "showScreenshots",
-      base::FeatureList::IsEnabled(sync_sessions::kSyncTabScreenshots));
+  // TODO(crbug.com/488242420): Remove the screenshot layout from the html/ts.
+  source->AddBoolean("showScreenshots", false);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"noSyncedResults", IDS_HISTORY_NO_SYNCED_RESULTS},
@@ -71,22 +68,12 @@ TabsFromOtherDevicesSidePanelUI::TabsFromOtherDevicesSidePanelUI(
       source, kSidePanelTabsFromOtherDevicesResources,
       IDR_SIDE_PANEL_TABS_FROM_OTHER_DEVICES_TABS_FROM_OTHER_DEVICES_HTML);
 
-  // Set up the Content Security Policy to allow images from
-  // `SyncedScreenshotDataSource` (plus a bunch of standard sources that are
-  // also enabled by default).
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ImgSrc,
-      "img-src chrome://resources chrome://theme chrome://favicon2 "
-      "chrome://synced-screenshot 'self';");
-
   source->AddResourcePaths(kSidePanelSharedResources);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
-  content::URLDataSource::Add(profile,
-                              std::make_unique<SyncedScreenshotDataSource>());
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
