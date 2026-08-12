@@ -117,32 +117,4 @@ TEST_F(TabContentManagerTest, UpdateTabIdsForStaticLayerCache) {
       { EXPECT_FALSE(tab_content_manager().GetStaticLayer(kTabId2)); }, "");
 }
 
-TEST_F(TabContentManagerTest, CompressScreenshotForSyncSmall) {
-  // Small bitmap: Should not be downscaled, just compressed.
-  SkBitmap small_bitmap;
-  small_bitmap.allocN32Pixels(100, 100);
-  small_bitmap.eraseColor(SK_ColorRED);
-
-  base::test::TestFuture<std::string> future;
-  TabContentManager::CompressScreenshotForSyncForTesting(small_bitmap,
-                                                         future.GetCallback());
-  std::string data = future.Get();
-  EXPECT_FALSE(data.empty());
-  EXPECT_LE(data.size(), 8000u);
-}
-
-TEST_F(TabContentManagerTest, CompressScreenshotForSyncLarge) {
-  // Large bitmap: Should be downscaled, and then compressed.
-  SkBitmap large_bitmap;
-  large_bitmap.allocN32Pixels(1000, 1000);
-  large_bitmap.eraseColor(SK_ColorBLUE);
-
-  base::test::TestFuture<std::string> future;
-  TabContentManager::CompressScreenshotForSyncForTesting(large_bitmap,
-                                                         future.GetCallback());
-  std::string data = future.Get();
-  EXPECT_FALSE(data.empty());
-  EXPECT_LE(data.size(), 8000u);
-}
-
 }  // namespace android

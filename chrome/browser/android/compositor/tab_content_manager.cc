@@ -32,11 +32,7 @@
 #include "chrome/browser/android/compositor/retryable_task.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
-#include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
-#include "components/sync_sessions/features.h"
-#include "components/sync_sessions/session_sync_service.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -83,59 +79,6 @@ content::RenderWidgetHostView* GetRwhv(content::WebContents* web_contents) {
   }
   content::RenderWidgetHost* rwh = rvh->GetWidget();
   return rwh ? rwh->GetView() : nullptr;
-}
-
-// Compresses `bitmap` to a jpg of a size (in both pixels and bytes) appropriate
-// for syncing, and runs `callback` with the result. In case of compression
-// failure, does not run the `callback`.
-void CompressScreenshotForSync(const SkBitmap& bitmap,
-                               base::OnceCallback<void(std::string)> callback) {
-  // Resize to roughly 500x500.
-  float scale = 500.0f / std::max(bitmap.width(), bitmap.height());
-  // Only downscale.
-  SkBitmap resized = bitmap;
-  if (scale < 1.0f) {
-    int new_width = std::round(bitmap.width() * scale);
-    int new_height = std::round(bitmap.height() * scale);
-    resized = skia::ImageOperations::Resize(
-        bitmap, skia::ImageOperations::RESIZE_BETTER, new_width, new_height);
-  }
-
-  // Compress to JPG, quality adjusted to be < 8kB.
-  // Use binary search with up to 4 steps between 1 and 50 to find a good
-  // quality that fits in the size limit.
-  int low = 1;
-  int high = 50;
-  std::optional<std::vector<uint8_t>> best_encoded_data;
-
-  const size_t kMaxSize = 8000;
-  const size_t kMinGoodEnoughSize = 7000;
-
-  for (int i = 0; i < 4; ++i) {
-    int quality = low + (high - low) / 2;
-    std::optional<std::vector<uint8_t>> data =
-        gfx::JPEGCodec::Encode(resized, quality);
-    if (data && data->size() <= kMaxSize) {
-      best_encoded_data = std::move(data);
-      low = quality + 1;
-
-      // Optimization: If the current attempt is close enough to the target
-      // size, stop searching.
-      if (best_encoded_data->size() > kMinGoodEnoughSize) {
-        break;
-      }
-    } else {
-      high = quality - 1;
-    }
-  }
-
-  // If compression failed or all attempts were > 8 kB, give up.
-  if (!best_encoded_data) {
-    return;
-  }
-
-  std::move(callback).Run(
-      std::string(best_encoded_data->begin(), best_encoded_data->end()));
 }
 
 }  // namespace
@@ -535,23 +478,6 @@ void TabContentManager::OnTabReadback(int tab_id,
   } else if (tracker) {
     tracker->MarkCaptureFailed();
   }
-
-  if (!bitmap.empty() &&
-      base::FeatureList::IsEnabled(sync_sessions::kSyncTabScreenshots)) {
-    // Check that tabs sync is active (in which case
-    // `service->GetOpenTabsUIDelegate()` returns non-null) before bothering to
-    // compress the screenshot.
-    sync_sessions::SessionSyncService* service = GetSessionSyncService(tab_id);
-    if (service && service->GetOpenTabsUIDelegate()) {
-      auto compression_done_callback = base::BindPostTaskToCurrentDefault(
-          base::BindOnce(&TabContentManager::AddTabScreenshotToSync,
-                         weak_factory_.GetWeakPtr(), tab_id));
-      base::ThreadPool::PostTask(
-          FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-          base::BindOnce(&CompressScreenshotForSync, bitmap,
-                         std::move(compression_done_callback)));
-    }
-  }
 }
 
 void TabContentManager::SendThumbnailToJava(JavaBitmapCallback callback,
@@ -576,48 +502,6 @@ void TabContentManager::SendThumbnailToJava(JavaBitmapCallback callback,
   std::move(callback).Run(j_bitmap);
 }
 
-void TabContentManager::AddTabScreenshotToSync(int tab_id,
-                                               std::string compressed_data) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jtab = Java_TabContentManager_getTabById(
-      env, weak_java_tab_content_manager_.get(env), tab_id);
-  if (!jtab) {
-    return;
-  }
-  TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
-  if (!tab || !tab->web_contents()) {
-    return;
-  }
-  sync_sessions::SessionSyncService* service = GetSessionSyncService(tab_id);
-  if (!service) {
-    return;
-  }
-  SessionID session_id =
-      browser_sync::SyncedTabDelegateAndroid::SessionIdFromAndroidId(tab_id);
-  service->AddTabScreenshot(session_id, std::move(compressed_data),
-                            tab->web_contents()->GetLastCommittedURL());
-}
-
-sync_sessions::SessionSyncService* TabContentManager::GetSessionSyncService(
-    int tab_id) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jtab = Java_TabContentManager_getTabById(
-      env, weak_java_tab_content_manager_.get(env), tab_id);
-  if (!jtab) {
-    return nullptr;
-  }
-  TabAndroid* tab_android = TabAndroid::GetNativeTab(env, jtab);
-  if (!tab_android || !tab_android->web_contents()) {
-    return nullptr;
-  }
-  Profile* profile = Profile::FromBrowserContext(
-      tab_android->web_contents()->GetBrowserContext());
-  if (!profile) {
-    return nullptr;
-  }
-  return SessionSyncServiceFactory::GetForProfile(profile);
-}
-
 void TabContentManager::SetCaptureMinRequestTimeForTesting(JNIEnv* env,
                                                            int32_t time_ms) {
   thumbnail_cache_.SetCaptureMinRequestTimeForTesting(time_ms);
@@ -626,13 +510,6 @@ void TabContentManager::SetCaptureMinRequestTimeForTesting(JNIEnv* env,
 bool TabContentManager::IsTabCaptureInFlightForTesting(JNIEnv* env,
                                                        int32_t tab_id) {
   return in_flight_captures_.find(tab_id) != in_flight_captures_.end();
-}
-
-// static
-void TabContentManager::CompressScreenshotForSyncForTesting(  // IN-TEST
-    const SkBitmap& bitmap,
-    base::OnceCallback<void(std::string)> callback) {
-  CompressScreenshotForSync(bitmap, std::move(callback));
 }
 
 // ----------------------------------------------------------------------------

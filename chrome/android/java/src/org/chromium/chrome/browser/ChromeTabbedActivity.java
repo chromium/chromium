@@ -281,7 +281,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabGridIphDialogCoordinator;
-import org.chromium.chrome.browser.tab_ui.TabScreenshotSyncHelper;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
@@ -640,7 +639,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private TabModelSelectorObserver mTabModelSelectorObserver;
     private TabModelSelectorTabObserver mNavigationFinishedObserver;
     private TabModelSelectorTabModelObserver mTabModelObserver;
-    private @Nullable TabScreenshotSyncHelper mTabScreenshotSyncHelper;
     private HistoricalTabModelObserver mHistoricalTabModelObserver;
     private UndoRefocusHelper mUndoRefocusHelper;
     private BrowserControlsVisibilityDelegate mVrBrowserControlsVisibilityDelegate;
@@ -1719,11 +1717,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                     getSnackbarManager(),
                                     findsService);
                 }
-            }
-
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_TAB_SCREENSHOTS)) {
-                mTabScreenshotSyncHelper =
-                        new TabScreenshotSyncHelper(getTabModelSelector(), getTabContentManager());
             }
         }
     }
@@ -5242,11 +5235,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (mNavigationFinishedObserver != null) {
             mNavigationFinishedObserver.destroy();
             mNavigationFinishedObserver = null;
-        }
-
-        if (mTabScreenshotSyncHelper != null) {
-            mTabScreenshotSyncHelper.destroy();
-            mTabScreenshotSyncHelper = null;
         }
 
         mTabModelNotificationDotManager.destroy();

@@ -684,7 +684,6 @@ public abstract class ChromeFeatureList {
     public static final String SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE =
             "SyncEnablePasswordsSyncErrorMessageAlternative";
     public static final String SYNC_RESTORE_ON_STARTUP_PREF = "SyncRestoreOnStartupPref";
-    public static final String SYNC_TAB_SCREENSHOTS = "SyncTabScreenshots";
     public static final String SYNC_TRUSTED_VAULT_ERROR_MESSAGE_DURATION =
             "SyncTrustedVaultErrorMessageDuration";
     public static final String TAB_ANDROID_GRACEFUL_SHUTDOWN = "TabAndroidGracefulShutdown";
