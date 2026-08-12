@@ -3103,8 +3103,9 @@ void RenderProcessHostImpl::RegisterRenderFrameHost(
 void RenderProcessHostImpl::UnregisterRenderFrameHost(
     const GlobalRenderFrameHostId& render_frame_host_id,
     bool is_outermost_main_frame) {
-  CHECK(render_frame_host_id_set_.contains(render_frame_host_id),
-        base::NotFatalUntil::M152);
+  // TODO(crbug.com/544783227): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(render_frame_host_id_set_.contains(render_frame_host_id));
   render_frame_host_id_set_.erase(render_frame_host_id);
   prerendering_frame_host_id_set_.erase(render_frame_host_id);
   if (is_outermost_main_frame) {
