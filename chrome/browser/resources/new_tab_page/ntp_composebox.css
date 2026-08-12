@@ -128,6 +128,10 @@ cr-composebox-submit::part(submit) {
   padding-block-end: var(--ntp-composebox-carousel-padding-block-end);
 }
 
+:host([show-file-carousel]:not([in-tool-mode])) #carousel {
+  --context-non-top-carousel-bottom-margin: 0px;
+}
+
 .carousel-container-inner {
   margin-block-end: var(--ntp-composebox-carousel-inner-margin-block-end);
 }

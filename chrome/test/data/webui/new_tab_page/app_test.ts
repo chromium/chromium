@@ -11,8 +11,9 @@ import type {ActionChipsPageRemote, CustomizeButtonsDocumentRemote, TabInfo} fro
 import {$$, BackgroundManager, BrowserCommandProxy, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeButtonsProxy, CustomizeChromeSection, CustomizeDialogPage, GlifAnimationState, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, SidePanelOpenTrigger, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, CustomizeButtonsElement, NtpSearchboxElement, PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
+import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {WindowProxy as ComposeboxWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -1795,7 +1796,6 @@ suite('NewTabPageAppTest', () => {
         const composebox = $$(app, '#composebox') as NtpComposeboxElement;
         assertTrue(!!composebox);
         composebox.inToolMode = true;
-        composebox.submitEnabled = true;
         await microtasksFinished();
 
         const toolChipsContainer = $$(composebox, '#toolChipsContainer');
@@ -1842,7 +1842,6 @@ suite('NewTabPageAppTest', () => {
             assertTrue(!!composebox);
             composebox.smartTabSharingVisible = true;
             composebox.smartTabSharingActive = true;
-            composebox.submitEnabled = true;
             await microtasksFinished();
 
             const composeboxEntrypointMenu =
@@ -1862,9 +1861,54 @@ suite('NewTabPageAppTest', () => {
                 submitIcon.getBoundingClientRect().bottom,
                 '+ button and submit button should be bottom aligned');
           });
+
+      test(
+          'attachment chip is bottom aligned with submit button when only ' +
+              'attachments are present',
+          async () => {
+            await recreateApp();
+            await microtasksFinished();
+
+            const searchbox = $$(app, '#searchbox');
+            assertTrue(!!searchbox);
+
+            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+              detail: {
+                text: 'test query',
+                files: [],
+              },
+            }));
+            await microtasksFinished();
+
+            const composebox = $$(app, '#composebox') as NtpComposeboxElement;
+            assertTrue(!!composebox);
+            const file = ComposeboxFile.createFromFile(
+                'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
+                ContextUploadStatus.kUploadSuccessful);
+            composebox.files = new Map([[file.uuid, file]]);
+            composebox.contextMenuEnabled = false;
+            await microtasksFinished();
+
+            const fileCarousel = $$(composebox, '#carousel');
+            assertTrue(!!fileCarousel, 'File carousel should exist');
+            const fileThumbnail =
+                $$(fileCarousel, 'cr-composebox-file-thumbnail');
+            assertTrue(!!fileThumbnail, 'File thumbnail should exist');
+            const chip = $$(fileThumbnail, '#documentChip');
+            assertTrue(!!chip, 'Document chip should exist');
+
+            const submitElement = $$(composebox, 'cr-composebox-submit');
+            assertTrue(!!submitElement, 'Submit button should be rendered');
+            const submitIcon = $$(submitElement, '#submitContainer');
+            assertTrue(!!submitIcon, 'Submit icon should exist');
+
+            assertEquals(
+                chip.getBoundingClientRect().bottom,
+                submitIcon.getBoundingClientRect().bottom,
+                'Attachment chip and submit button should be bottom aligned');
+          });
     });
   });
-
 
   suite('WallpaperSearch', () => {
     setup(async () => {
