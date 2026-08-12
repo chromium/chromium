@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -265,6 +266,10 @@ class ExecutionEngine : public ToolDelegate,
       content::NavigationHandle& navigation_handle,
       NavigationDecisionCallback callback);
 
+  // Cancels all pending navigation gating checks, resolving their callbacks
+  // with a negative decision (e.g., false or kTaskWentAway).
+  void CancelPendingNavigations();
+
   static std::string StateToString(State state);
 
   void UserTakeover(mojom::ActionResultCode takeover_response_code,
@@ -512,6 +517,9 @@ class ExecutionEngine : public ToolDelegate,
   base::OnceClosure deferred_finish_tool_invoke_;
 
   base::OnceClosure tool_invoke_complete_callback_for_testing_;
+
+  // Stores cancellation closures for all currently deferred navigations.
+  base::OnceCallbackList<void()> pending_navigation_cancellations_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

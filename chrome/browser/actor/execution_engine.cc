@@ -19,7 +19,9 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -137,6 +139,44 @@ constexpr char kTabSafeBrowsingObserverPredicateName[] =
 
 constexpr GateableEventSet kRequestsAndPageActions = {
     GateableEvent::kNavigationRequest, GateableEvent::kPageAction};
+
+// Splits a navigation gating callback, storing one split in
+// `pending_cancellations` (to invoke `arg_for_cancel_callback` when pending
+// navigations are cancelled) and another in a ScopedClosureRunner (to invoke
+// `arg_for_cancel_callback` if the callback is dropped before execution).
+// Returns a wrapped callback that disarms both upon normal invocation.
+ExecutionEngine::NavigationDecisionCallback TrackPendingNavigation(
+    base::OnceCallbackList<void()>& pending_cancellations,
+    ExecutionEngine::NavigationDecisionCallback callback,
+    bool arg_for_cancel_callback) {
+  auto [cancel_1, temp] = base::SplitOnceCallback(std::move(callback));
+  auto [cancel_2, wrapped] = base::SplitOnceCallback(std::move(temp));
+
+  auto runner =
+      base::MakeRefCounted<base::RefCountedData<base::ScopedClosureRunner>>(
+          base::ScopedClosureRunner(
+              base::BindOnce(std::move(cancel_2), arg_for_cancel_callback)));
+
+  base::CallbackListSubscription subscription =
+      pending_cancellations.Add(base::BindOnce(
+          [](scoped_refptr<base::RefCountedData<base::ScopedClosureRunner>>
+                 runner,
+             base::OnceCallback<void(bool)> cancel_cb, bool arg) {
+            runner->data.ReplaceClosure(base::DoNothing());
+            std::move(cancel_cb).Run(arg);
+          },
+          runner, std::move(cancel_1), arg_for_cancel_callback));
+
+  return base::BindOnce(
+             [](scoped_refptr<base::RefCountedData<base::ScopedClosureRunner>>
+                    runner,
+                base::CallbackListSubscription sub, bool arg) {
+               runner->data.ReplaceClosure(base::DoNothing());
+               return arg;
+             },
+             std::move(runner), std::move(subscription))
+      .Then(std::move(wrapped));
+}
 
 struct NavigationResponseContext : public origin_gating::GatingDecisionContext {
   NavigationResponseContext(ukm::SourceId ukm_id,
@@ -720,6 +760,7 @@ ExecutionEngine::~ExecutionEngine() {
                                       metrics.confirmed_list_size);
 
   RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
+  CancelPendingNavigations();
 }
 
 void ExecutionEngine::SetState(State state) {
@@ -791,14 +832,22 @@ ExecutionEngine::ShouldDeferNavigation(
       GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
       navigation_handle.IsInPrerenderedMainFrame(), std::move(timer));
   auto event = GateableEvent::kNavigationResponse;
+  auto wrapped_callback = TrackPendingNavigation(
+      pending_navigation_cancellations_, std::move(callback),
+      /*arg_for_cancel_callback=*/false);
   origin_gating_checker_.ComputeGatingDecision(
       std::move(context), event, source_origin.GetURL(),
       navigation_handle.GetURL(),
       base::BindOnce(&ExecutionEngine::OnComputedGatingDecision, GetWeakPtr(),
-                     std::move(callback), source_origin,
+                     std::move(wrapped_callback), source_origin,
                      url::Origin::Create(navigation_handle.GetURL()), state_,
                      navigation_handle.GetInitiatorOrigin(), event));
   return content::NavigationThrottle::DEFER;
+}
+
+void ExecutionEngine::CancelPendingNavigations() {
+  TRACE_EVENT0("actor", "ExecutionEngine::CancelPendingNavigations");
+  pending_navigation_cancellations_.Notify();
 }
 
 void ExecutionEngine::OnComputedGatingDecision(
