@@ -1017,12 +1017,40 @@ LayoutObject* LayoutObject::PreviousInPreOrder(
   return PreviousInPreOrder();
 }
 
-wtf_size_t LayoutObject::Depth() const {
+unsigned LayoutObject::DepthSlow() const {
   NOT_DESTROYED();
-  wtf_size_t depth = 0;
-  for (const LayoutObject* object = this; object; object = object->Parent())
-    ++depth;
-  return depth;
+  DCHECK_EQ(depth_, kMaxLayoutObjectDepth);
+
+  // Walk up the ancestor chain to determine our depth.
+  unsigned extra = 0;
+  for (const LayoutObject* object = this; object; object = object->Parent()) {
+    if (object->depth_ < kMaxLayoutObjectDepth) {
+      return object->depth_ + extra;
+    }
+    ++extra;
+  }
+
+  NOTREACHED();
+}
+
+void LayoutObject::SetDepthIncludingDescendants(unsigned depth) {
+  NOT_DESTROYED();
+  unsigned clamped_depth = std::min(depth, kMaxLayoutObjectDepth);
+  if (depth_ == clamped_depth) {
+    return;
+  }
+  depth_ = clamped_depth;
+
+  // This appears to be slow, but is fine in practice. The loop is very rare.
+  // Typically the layout-object tree is built from the root, e.g. when setting
+  // the depth there typically aren't any children.
+  //
+  // We only really hit this when performing a reinsert or shifting objects
+  // to/from anonymous objects.
+  for (LayoutObject* child = SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    child->SetDepthIncludingDescendants(clamped_depth + 1);
+  }
 }
 
 LayoutObject* LayoutObject::CommonAncestor(const LayoutObject& other,

@@ -2171,4 +2171,37 @@ TEST_F(LayoutObjectTest, InCanvasSubtree) {
   EXPECT_TRUE(subframe_span->SlowFirstChild()->IsInCanvasSubtree());
 }
 
+// This test uses a lot of stack. Not all platforms behave the same, just run as
+// linux only.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Depth Depth
+#else
+#define MAYBE_Depth DISABLED_Depth
+#endif
+TEST_F(LayoutObjectTest, MAYBE_Depth) {
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(0u, GetDocument().GetLayoutView()->Depth());
+
+  {
+    Element* curr = GetDocument().body();
+    for (unsigned i = 0; i < LayoutObject::kMaxLayoutObjectDepth + 5; ++i) {
+      Element* next =
+          MakeGarbageCollected<Element>(html_names::kDivTag, &GetDocument());
+      curr->AppendChild(next);
+      curr = next;
+    }
+  }
+  UpdateAllLifecyclePhasesForTest();
+
+  // Start at the <body> and go through all the layout objects.
+  LayoutObject* object = GetDocument().body()->GetLayoutObject();
+  unsigned depth = object->Depth();
+  while (object) {
+    EXPECT_EQ(object->Depth(), depth);
+    object = object->SlowFirstChild();
+    ++depth;
+  }
+}
+
 }  // namespace blink
