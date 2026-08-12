@@ -47,12 +47,13 @@ public class ActorKeyedService {
      * Java side.
      */
     public List<ActorTask> getActiveTasks() {
-        if (mNativePtr == 0) return new ArrayList<>();
+        // Fast-path early out to avoid JNI array allocation overhead if there are no tasks,
+        // effectively suppressing GC pressure for idle clients.
+        if (mNativePtr == 0 || getActiveTasksCount() == 0) return Collections.emptyList();
         ActorTask[] tasks = ActorKeyedServiceJni.get().getActiveTasks(mNativePtr);
-        List<ActorTask> taskList = new ArrayList<>();
-        if (tasks != null) {
-            Collections.addAll(taskList, tasks);
-        }
+        if (tasks == null) return Collections.emptyList();
+        List<ActorTask> taskList = new ArrayList<>(tasks.length);
+        Collections.addAll(taskList, tasks);
         return taskList;
     }
 
@@ -73,7 +74,7 @@ public class ActorKeyedService {
     public @Nullable ActorTask getCurrentActiveTask() {
         if (mNativePtr == 0) return null;
         List<ActorTask> tasks = getActiveTasks();
-        return (tasks != null && !tasks.isEmpty()) ? tasks.get(0) : null;
+        return !tasks.isEmpty() ? tasks.get(0) : null;
     }
 
     /** Allows the UI to stop a running task. */
@@ -129,8 +130,7 @@ public class ActorKeyedService {
      */
     public void setPreparedBackgroundTab(Tab tab, String glicTriggerMessageId) {
         if (mNativePtr == 0) return;
-        ActorKeyedServiceJni.get().setPreparedBackgroundTab(
-                mNativePtr, tab, glicTriggerMessageId);
+        ActorKeyedServiceJni.get().setPreparedBackgroundTab(mNativePtr, tab, glicTriggerMessageId);
     }
 
     /**
