@@ -333,10 +333,10 @@ void LocalBookmarkToAccountMerger::MoveOrMergeDescendants(
   }
 
   // Remove the local nodes that were flagged for removal above.
-  RemoveChildrenAt(
-      local_subtree_root,
-      base::flat_set<size_t>(base::sorted_unique, local_indices_to_remove),
-      FROM_HERE);
+  RemoveChildrenAt(local_subtree_root,
+                   base::flat_set<size_t>(base::sorted_unique,
+                                          std::move(local_indices_to_remove)),
+                   FROM_HERE);
 }
 
 void LocalBookmarkToAccountMerger::MergeAndDeleteDescendantsThatMatchByUuid(
@@ -369,7 +369,7 @@ void LocalBookmarkToAccountMerger::MergeAndDeleteDescendantsThatMatchByUuid(
 
   RemoveChildrenAt(
       local_subtree_root,
-      base::flat_set<size_t>(base::sorted_unique, indices_to_remove),
+      base::flat_set<size_t>(base::sorted_unique, std::move(indices_to_remove)),
       FROM_HERE);
 }
 

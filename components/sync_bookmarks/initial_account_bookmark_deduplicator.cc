@@ -58,9 +58,9 @@ void InitialAccountBookmarkDeduplicator::Deduplicate() {
         indices_to_remove.push_back(i);
       }
     }
-    RemoveChildrenAt(
-        local_permanent_node,
-        base::flat_set<size_t>(base::sorted_unique, indices_to_remove));
+    RemoveChildrenAt(local_permanent_node,
+                     base::flat_set<size_t>(base::sorted_unique,
+                                            std::move(indices_to_remove)));
   }
 }
 
