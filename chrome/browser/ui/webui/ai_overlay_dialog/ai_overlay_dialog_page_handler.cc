@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -330,5 +332,47 @@ void AiOverlayDialogPageHandler::GetRememberedNotes(
     result.push_back(std::move(note));
   }
   std::move(callback).Run(std::move(result));
+}
+
+void AiOverlayDialogPageHandler::SaveDebugFile(
+    ai_overlay_dialog::mojom::DebugFileType type,
+    const std::string& content) {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch("enable-ttc-debug-logs")) {
+    return;
+  }
+
+  base::FilePath filename;
+  bool is_image = false;
+  switch (type) {
+    case ai_overlay_dialog::mojom::DebugFileType::kPrimingTurnMarkdown:
+      filename = base::FilePath(FILE_PATH_LITERAL("priming_turn.md"));
+      break;
+    case ai_overlay_dialog::mojom::DebugFileType::kImage:
+      filename = base::FilePath(FILE_PATH_LITERAL("image.jpg"));
+      is_image = true;
+      break;
+  }
+
+  base::FilePath dir_path(FILE_PATH_LITERAL("/tmp/ttc"));
+  base::CreateDirectory(dir_path);
+  base::FilePath file_path = dir_path.Append(filename);
+
+  std::string data_to_write = content;
+  std::string base64_prefix = "data:image/jpeg;base64,";
+  if (base::StartsWith(content, base64_prefix)) {
+    std::string decoded;
+    if (base::Base64Decode(content.substr(base64_prefix.size()), &decoded)) {
+      data_to_write = decoded;
+    }
+  } else if (is_image) {
+    std::string decoded;
+    if (base::Base64Decode(content, &decoded)) {
+      data_to_write = decoded;
+    }
+  }
+
+  base::WriteFile(file_path, data_to_write);
 }
 }  // namespace ttc

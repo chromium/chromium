@@ -49,6 +49,8 @@ class AiOverlayDialogPageHandler
   void SetRememberedNote(ai_overlay_dialog::mojom::RememberedNotePtr note,
                          SetRememberedNoteCallback callback) override;
   void GetRememberedNotes(GetRememberedNotesCallback callback) override;
+  void SaveDebugFile(ai_overlay_dialog::mojom::DebugFileType type,
+                     const std::string& content) override;
 
   void DidChangePage(const GURL& url,
                      const std::optional<std::u16string>& title,
