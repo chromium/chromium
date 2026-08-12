@@ -228,6 +228,9 @@ crbug.com/1416920 [ win debug ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 # Flaky Timed out while waiting 10s for IsJavaScriptExpressionTrue
 crbug.com/384605105 [ angle-metal debug graphite-enabled intel mac no-asan no-clang-coverage ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 
+# Flakily fails on mac intel debug.
+crbug.com/545524962 [ mac intel-0x3e9b debug ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
+
 # Flaky Timed out while waiting 60s for IsJavaScriptExpressionTrue
 crbug.com/365565140 [ amd-0x7340 debug arch-x86_64 no-asan no-clang-coverage sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 
