@@ -13,7 +13,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Objects;
 
 /**
  * Holder class for a {@link TabActionListener} with a {@link TabActionButtonType} describing what
@@ -49,16 +48,5 @@ public class TabActionButtonData {
             @TabActionButtonType int type, @Nullable TabActionListener tabActionListener) {
         this.type = type;
         this.tabActionListener = tabActionListener;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof TabActionButtonData other)) return false;
-        return type == other.type && Objects.equals(tabActionListener, other.tabActionListener);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.type, this.tabActionListener);
     }
 }

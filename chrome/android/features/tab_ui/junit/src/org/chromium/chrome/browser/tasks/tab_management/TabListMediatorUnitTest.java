@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -3567,7 +3568,8 @@ public class TabListMediatorUnitTest {
                 new ShoppingPersistedTabDataFetcher(mTab1, () -> mPriceWelcomeMessageController);
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mPriceWelcomeMessageController, times(1)).showPriceWelcomeMessage(mPriceTabData);
+        verify(mPriceWelcomeMessageController, times(1))
+                .showPriceWelcomeMessage(refEq(mPriceTabData));
     }
 
     @Test
@@ -3582,7 +3584,8 @@ public class TabListMediatorUnitTest {
                 PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile), equalTo(false));
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
+        verify(mPriceWelcomeMessageController, times(0))
+                .showPriceWelcomeMessage(refEq(mPriceTabData));
     }
 
     @Test
@@ -3591,7 +3594,8 @@ public class TabListMediatorUnitTest {
 
         new ShoppingPersistedTabDataFetcher(mTab1, null)
                 .maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
-        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
+        verify(mPriceWelcomeMessageController, times(0))
+                .showPriceWelcomeMessage(refEq(mPriceTabData));
     }
 
     @Test
@@ -3601,7 +3605,8 @@ public class TabListMediatorUnitTest {
         Supplier<PriceWelcomeMessageController> supplier = () -> null;
         new ShoppingPersistedTabDataFetcher(mTab1, supplier)
                 .maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
-        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
+        verify(mPriceWelcomeMessageController, times(0))
+                .showPriceWelcomeMessage(refEq(mPriceTabData));
     }
 
     @Test
@@ -3611,12 +3616,14 @@ public class TabListMediatorUnitTest {
                 new ShoppingPersistedTabDataFetcher(mTab1, () -> mPriceWelcomeMessageController);
 
         fetcher.maybeShowPriceWelcomeMessage(null);
-        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
+        verify(mPriceWelcomeMessageController, times(0))
+                .showPriceWelcomeMessage(refEq(mPriceTabData));
 
         doReturn(null).when(mShoppingPersistedTabData).getPriceDrop();
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
+        verify(mPriceWelcomeMessageController, times(0))
+                .showPriceWelcomeMessage(refEq(mPriceTabData));
     }
 
     @Test

@@ -26,7 +26,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -76,18 +75,6 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
         PriceTabData(int bindingTabId, PriceDrop priceDrop) {
             this.bindingTabId = bindingTabId;
             this.priceDrop = priceDrop;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return (obj instanceof PriceTabData other)
-                    && bindingTabId == other.bindingTabId
-                    && Objects.equals(priceDrop, other.priceDrop);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(bindingTabId, priceDrop);
         }
     }
 

@@ -38,7 +38,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.Clock;
-import java.util.Objects;
 
 /** Displays a horizontal row for a single tab group. */
 @NullMarked
@@ -61,20 +60,6 @@ public class TabGroupRowView extends LinearLayout {
             this.title = title;
             this.numTabs = numTabs;
             this.rowAccessibilityTextResId = rowAccessibilityTextResId;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof TabGroupRowViewTitleData that)) return false;
-            return numTabs == that.numTabs
-                    && rowAccessibilityTextResId == that.rowAccessibilityTextResId
-                    && Objects.equals(title, that.title);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(title, numTabs, rowAccessibilityTextResId);
         }
     }
 

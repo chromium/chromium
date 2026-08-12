@@ -21,7 +21,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 @NullMarked
@@ -115,25 +114,6 @@ class TabListContainerProperties {
                 boolean shouldShowSearchBox, boolean forced) {
             this.shouldShowSearchBox = shouldShowSearchBox;
             this.forced = forced;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            // 1. Reference check.
-            if (this == o) return true;
-
-            // 2. Type and field comparison.
-            if (o instanceof SupplementaryContainerAnimationMetadata that) {
-                return this.shouldShowSearchBox == that.shouldShowSearchBox
-                        && this.forced == that.forced;
-            }
-
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(shouldShowSearchBox, forced);
         }
     }
 
