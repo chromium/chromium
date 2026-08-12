@@ -173,12 +173,10 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
 
   SetPreDelayTime(kPreDelay);
 
-  constexpr int kNumberOfDivisionFrames = 32;
-
-  const int number_of_divisions = frames_to_process / kNumberOfDivisionFrames;
+  constexpr unsigned kNumberOfDivisionFrames = 32;
 
   unsigned frame_index = 0;
-  for (int i = 0; i < number_of_divisions; ++i) {
+  while (frame_index < frames_to_process) {
     // Calculate desired gain
 
     detector_average_ = EnsureFinite(detector_average_, 1);
@@ -260,8 +258,10 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
     float detector_average = detector_average_;
     float compressor_gain = compressor_gain_;
 
-    int loop_frames = kNumberOfDivisionFrames;
-    while (loop_frames--) {
+    const unsigned loop_frames =
+        std::min(kNumberOfDivisionFrames, frames_to_process - frame_index);
+    for (unsigned division_frame = 0; division_frame < loop_frames;
+         ++division_frame) {
       float compressor_input = 0;
 
       // Predelay signal, computing compression amount from un-delayed
