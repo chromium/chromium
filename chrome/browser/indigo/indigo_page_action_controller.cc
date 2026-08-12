@@ -311,63 +311,89 @@ void IndigoPageActionController::ContinueInvoke(
     return;
   }
 
-  if (!skip_glic_invoke &&
-      base::FeatureList::IsEnabled(features::kIndigoOpenGlic) &&
-      !glic::GlicSidePanelCoordinator::IsShowing(&tab())) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    if (auto* glic_keyed_service = glic::GlicKeyedService::Get(profile)) {
-      glic::GlicInvokeOptions options(
-          glic::Target(tab()),
-          glic::mojom::InvocationSource::kIndigoPageAction);
+  const bool invoked_glic = !skip_glic_invoke && MaybeInvokeGlic();
+  if (!invoked_glic) {
+    // The glic invocation path will trigger the Indigo agent after the panel is opened.
+    // Otherwise, do so now.
+    TriggerIndigoAgent();
+  }
+}
 
-      std::string skill_id = features::kIndigoGlicSkillId.Get();
-      const skills::Skill* skill = nullptr;
-      if (!skill_id.empty()) {
-        if (auto* skills_service =
-                skills::SkillsServiceFactory::GetForProfile(profile)) {
-          skill = skills_service->GetSkillById(skill_id);
+bool IndigoPageActionController::MaybeInvokeGlic() {
+  if (!base::FeatureList::IsEnabled(features::kIndigoOpenGlic)) {
+    return false;
+  }
+
+  if (glic::GlicSidePanelCoordinator::IsShowing(&tab())) {
+    return false;
+  }
+
+  content::WebContents* web_contents = tab().GetContents();
+  if (!web_contents) {
+    return false;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto* glic_keyed_service = glic::GlicKeyedService::Get(profile);
+  if (!glic_keyed_service) {
+    return false;
+  }
+
+  if (auto* instance = glic_keyed_service->GetInstanceForTab(&tab())) {
+    if (instance->conversation_id().has_value()) {
+      return false;
+    }
+  }
+
+  glic::GlicInvokeOptions options(
+      glic::Target(tab()), glic::mojom::InvocationSource::kIndigoPageAction);
+
+  std::string skill_id = features::kIndigoGlicSkillId.Get();
+  const skills::Skill* skill = nullptr;
+  if (!skill_id.empty()) {
+    if (auto* skills_service =
+            skills::SkillsServiceFactory::GetForProfile(profile)) {
+      skill = skills_service->GetSkillById(skill_id);
+    }
+  }
+
+  std::string prompt;
+  if (skill) {
+    prompt = skill->prompt;
+    options.skill_id = skill_id;
+  } else {
+    prompt = features::kIndigoGlicPrompt.Get();
+    if (prompt.empty()) {
+      std::string prompt_key = features::kIndigoGlicPromptKey.Get();
+      if (!prompt_key.empty() && indigo_service_) {
+        std::optional<std::string> proto_prompt =
+            indigo_service_->GetPrompt(prompt_key);
+        if (proto_prompt.has_value()) {
+          prompt = *proto_prompt;
         }
-      }
-
-      std::string prompt;
-      if (skill) {
-        prompt = skill->prompt;
-        options.skill_id = skill_id;
-      } else {
-        prompt = features::kIndigoGlicPrompt.Get();
-        if (prompt.empty()) {
-          std::string prompt_key = features::kIndigoGlicPromptKey.Get();
-          if (!prompt_key.empty() && indigo_service_) {
-            std::optional<std::string> proto_prompt =
-                indigo_service_->GetPrompt(prompt_key);
-            if (proto_prompt.has_value()) {
-              prompt = *proto_prompt;
-            }
-          }
-        }
-      }
-
-      options.wait_for_panel_open = true;
-      // We introduce a delay here to give the page some time to process the
-      // viewport size change after the side panel opens. Some sites can
-      // significantly alter the page on resize, removing and re-inserting new
-      // image elements in the process.
-      options.on_panel_opened = base::BindOnce(
-          &IndigoPageActionController::TriggerIndigoAgentWithDelay,
-          invoke_weak_ptr_factory_.GetWeakPtr());
-
-      if (!prompt.empty()) {
-        options.prompts.push_back(std::move(prompt));
-        glic_keyed_service->InvokeWithAutoSubmit(
-            glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-            std::move(options));
-        return;
       }
     }
   }
 
-  TriggerIndigoAgent();
+  if (prompt.empty()) {
+    return false;
+  }
+
+  options.wait_for_panel_open = true;
+  // We introduce a delay here to give the page some time to process the
+  // viewport size change after the side panel opens. Some sites can
+  // significantly alter the page on resize, removing and re-inserting new
+  // image elements in the process.
+  options.on_panel_opened =
+      base::BindOnce(&IndigoPageActionController::TriggerIndigoAgentWithDelay,
+                     invoke_weak_ptr_factory_.GetWeakPtr());
+
+  options.prompts.push_back(std::move(prompt));
+  glic_keyed_service->InvokeWithAutoSubmit(
+      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+      std::move(options));
+  return true;
 }
 
 void IndigoPageActionController::TriggerIndigoAgent() {
