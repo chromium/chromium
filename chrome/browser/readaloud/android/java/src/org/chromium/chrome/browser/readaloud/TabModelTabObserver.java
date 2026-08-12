@@ -11,6 +11,8 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 
+import java.util.List;
+
 /** Observer of tab changes for tabs selected within and owned by a {@link TabModel}. */
 @NullMarked
 public class TabModelTabObserver extends EmptyTabObserver {
@@ -51,6 +53,12 @@ public class TabModelTabObserver extends EmptyTabObserver {
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         TabModelTabObserver.this.willCloseTab(tab);
                     }
+
+                    @Override
+                    public void willCloseTabs(
+                            List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                        TabModelTabObserver.this.willCloseTabs(tabs, isAllTabs, allowUndo);
+                    }
                 };
 
         mTabModel.addObserver(mTabModelObserver);
@@ -66,8 +74,28 @@ public class TabModelTabObserver extends EmptyTabObserver {
         }
     }
 
-    /* Called when a tab starts closing. */
+    /**
+     * Called when a tab starts closing.
+     *
+     * @param tab The tab to close.
+     * @deprecated Use {@link #willCloseTabs(List, boolean, boolean)} instead. During the migration
+     *     phase, continue implementing this method but also implement {@link #willCloseTabs(List,
+     *     boolean, boolean)}.
+     */
+    @Deprecated
     public void willCloseTab(Tab tab) {}
+
+    /**
+     * Called before one or more tabs are removed from the {@link TabModel} for closure.
+     *
+     * <p>TODO(crbug.com/381471263): Method in development. This replaces {@link #willCloseTab}. It
+     * is called once per closure operation while the tabs are still present in the tab model.
+     *
+     * @param tabs The list of {@link Tab}s about to be closed.
+     * @param isAllTabs Whether this closure operation will leave 0 tabs in the model.
+     * @param allowUndo Whether undo is allowed for this tab closure operation.
+     */
+    public void willCloseTabs(List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {}
 
     /* Called when tabs are restored. */
     public void onRestoreCompleted(Tab tab) {}
