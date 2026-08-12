@@ -10,10 +10,9 @@
 #include <algorithm>
 #include <string>
 
-#include "base/containers/flat_map.h"
-#include "base/functional/bind.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -41,62 +40,72 @@ constexpr int kPlane = 0;
 // Total number of pixels per character.
 constexpr int kPixelsPerChar = (kCharacterWidth + kCharacterSpacing) * kScale;
 
+constexpr gfx::Rect kExclamation[] = {gfx::Rect(1, 0, 1, 3),
+                                      gfx::Rect(1, 4, 1, 1)};
+constexpr gfx::Rect kPercent[] = {gfx::Rect(0, 0, 1, 1), gfx::Rect(2, 1, 1, 1),
+                                  gfx::Rect(1, 2, 1, 1), gfx::Rect(0, 3, 1, 1),
+                                  gfx::Rect(2, 4, 1, 1)};
+constexpr gfx::Rect kPlus[] = {gfx::Rect(1, 1, 1, 1), gfx::Rect(1, 3, 1, 1),
+                               gfx::Rect(0, 2, 3, 1)};
+constexpr gfx::Rect kMinus[] = {gfx::Rect(0, 2, 3, 1)};
+constexpr gfx::Rect kPeriod[] = {gfx::Rect(1, 4, 1, 1)};
+constexpr gfx::Rect kZero[] = {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 3),
+                               gfx::Rect(2, 1, 1, 3), gfx::Rect(0, 4, 3, 1)};
+constexpr gfx::Rect kOne[] = {gfx::Rect(1, 0, 1, 5)};
+constexpr gfx::Rect kTwo[] = {gfx::Rect(0, 0, 3, 1), gfx::Rect(2, 1, 1, 1),
+                              gfx::Rect(0, 2, 3, 1), gfx::Rect(0, 3, 1, 1),
+                              gfx::Rect(0, 4, 3, 1)};
+constexpr gfx::Rect kThree[] = {gfx::Rect(0, 0, 3, 1), gfx::Rect(2, 1, 1, 1),
+                                gfx::Rect(0, 2, 3, 1), gfx::Rect(2, 3, 1, 1),
+                                gfx::Rect(0, 4, 3, 1)};
+constexpr gfx::Rect kFour[] = {gfx::Rect(0, 0, 1, 2), gfx::Rect(2, 0, 1, 5),
+                               gfx::Rect(0, 2, 2, 1)};
+constexpr gfx::Rect kFive[] = {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1),
+                               gfx::Rect(0, 2, 3, 1), gfx::Rect(2, 3, 1, 1),
+                               gfx::Rect(0, 4, 3, 1)};
+constexpr gfx::Rect kSix[] = {gfx::Rect(1, 0, 2, 1), gfx::Rect(0, 1, 1, 1),
+                              gfx::Rect(0, 2, 3, 1), gfx::Rect(0, 3, 1, 1),
+                              gfx::Rect(2, 3, 1, 1), gfx::Rect(0, 4, 3, 1)};
+constexpr gfx::Rect kSeven[] = {gfx::Rect(0, 0, 3, 1), gfx::Rect(2, 1, 1, 2),
+                                gfx::Rect(1, 3, 1, 2)};
+constexpr gfx::Rect kEight[] = {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1),
+                                gfx::Rect(2, 1, 1, 1), gfx::Rect(0, 2, 3, 1),
+                                gfx::Rect(0, 3, 1, 1), gfx::Rect(2, 3, 1, 1),
+                                gfx::Rect(0, 4, 3, 1)};
+constexpr gfx::Rect kNine[] = {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1),
+                               gfx::Rect(2, 1, 1, 1), gfx::Rect(0, 2, 3, 1),
+                               gfx::Rect(2, 3, 1, 1), gfx::Rect(0, 4, 2, 1)};
+constexpr gfx::Rect kColon[] = {gfx::Rect(1, 1, 1, 1), gfx::Rect(1, 3, 1, 1)};
+constexpr gfx::Rect kE[] = {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1),
+                            gfx::Rect(0, 2, 2, 1), gfx::Rect(0, 3, 1, 1),
+                            gfx::Rect(0, 4, 3, 1)};
+constexpr gfx::Rect kX[] = {gfx::Rect(0, 1, 1, 1), gfx::Rect(2, 1, 1, 1),
+                            gfx::Rect(1, 2, 1, 1), gfx::Rect(0, 3, 1, 1),
+                            gfx::Rect(2, 3, 1, 1)};
+
 // A map from an ASCII character to the set of rectangles corresponding to how
 // it should be rendered on the frame.
-const auto& GetCharacterRenderMap() {
-  static const base::NoDestructor<base::flat_map<char, std::vector<gfx::Rect>>>
-      kCharacterRenderMap({
-          {'!', {gfx::Rect(1, 0, 1, 3), gfx::Rect(1, 4, 1, 1)}},
-          {'%',
-           {gfx::Rect(0, 0, 1, 1), gfx::Rect(2, 1, 1, 1), gfx::Rect(1, 2, 1, 1),
-            gfx::Rect(0, 3, 1, 1), gfx::Rect(2, 4, 1, 1)}},
-          {'+',
-           {gfx::Rect(1, 1, 1, 1), gfx::Rect(1, 3, 1, 1),
-            gfx::Rect(0, 2, 3, 1)}},
-          {'-', {gfx::Rect(0, 2, 3, 1)}},
-          {'.', {gfx::Rect(1, 4, 1, 1)}},
-          {'0',
-           {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 3), gfx::Rect(2, 1, 1, 3),
-            gfx::Rect(0, 4, 3, 1)}},
-          {'1', {gfx::Rect(1, 0, 1, 5)}},
-          {'2',
-           {gfx::Rect(0, 0, 3, 1), gfx::Rect(2, 1, 1, 1), gfx::Rect(0, 2, 3, 1),
-            gfx::Rect(0, 3, 1, 1), gfx::Rect(0, 4, 3, 1)}},
-          {'3',
-           {gfx::Rect(0, 0, 3, 1), gfx::Rect(2, 1, 1, 1), gfx::Rect(0, 2, 3, 1),
-            gfx::Rect(2, 3, 1, 1), gfx::Rect(0, 4, 3, 1)}},
-          {'4',
-           {gfx::Rect(0, 0, 1, 2), gfx::Rect(2, 0, 1, 5),
-            gfx::Rect(0, 2, 2, 1)}},
-          {'5',
-           {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1), gfx::Rect(0, 2, 3, 1),
-            gfx::Rect(2, 3, 1, 1), gfx::Rect(0, 4, 3, 1)}},
-          {'6',
-           {gfx::Rect(1, 0, 2, 1), gfx::Rect(0, 1, 1, 1), gfx::Rect(0, 2, 3, 1),
-            gfx::Rect(0, 3, 1, 1), gfx::Rect(2, 3, 1, 1),
-            gfx::Rect(0, 4, 3, 1)}},
-          {'7',
-           {gfx::Rect(0, 0, 3, 1), gfx::Rect(2, 1, 1, 2),
-            gfx::Rect(1, 3, 1, 2)}},
-          {'8',
-           {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1), gfx::Rect(2, 1, 1, 1),
-            gfx::Rect(0, 2, 3, 1), gfx::Rect(0, 3, 1, 1), gfx::Rect(2, 3, 1, 1),
-            gfx::Rect(0, 4, 3, 1)}},
-          {'9',
-           {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1), gfx::Rect(2, 1, 1, 1),
-            gfx::Rect(0, 2, 3, 1), gfx::Rect(2, 3, 1, 1),
-            gfx::Rect(0, 4, 2, 1)}},
-          {':', {gfx::Rect(1, 1, 1, 1), gfx::Rect(1, 3, 1, 1)}},
-          {'e',
-           {gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 1, 1, 1), gfx::Rect(0, 2, 2, 1),
-            gfx::Rect(0, 3, 1, 1), gfx::Rect(0, 4, 3, 1)}},
-          {'x',
-           {gfx::Rect(0, 1, 1, 1), gfx::Rect(2, 1, 1, 1), gfx::Rect(1, 2, 1, 1),
-            gfx::Rect(0, 3, 1, 1), gfx::Rect(2, 3, 1, 1)}},
-      });
-
-  return *kCharacterRenderMap;
-}
+constexpr auto kCharacterRenderMap =
+    base::MakeFixedFlatMap<char, base::span<const gfx::Rect>>({
+        {'!', kExclamation},
+        {'%', kPercent},
+        {'+', kPlus},
+        {'-', kMinus},
+        {'.', kPeriod},
+        {'0', kZero},
+        {'1', kOne},
+        {'2', kTwo},
+        {'3', kThree},
+        {'4', kFour},
+        {'5', kFive},
+        {'6', kSix},
+        {'7', kSeven},
+        {'8', kEight},
+        {'9', kNine},
+        {':', kColon},
+        {'e', kE},
+        {'x', kX},
+    });
 
 scoped_refptr<VideoFrame> CopyVideoFrame(scoped_refptr<VideoFrame> source) {
   // Currently Cast only supports I420, and converts NV12 frames before passing
@@ -218,7 +227,6 @@ void RenderLineOfText(const std::string& line, int top, VideoFrame& frame) {
           + first_idx * kPixelsPerChar);
 
   // Render each character.
-  static const auto& kCharacterRenderMap = GetCharacterRenderMap();
   for (size_t i = first_idx; i < line.size(); ++i) {
     p_ul = p_ul.subspan(static_cast<size_t>(kPixelsPerChar));
     auto it = kCharacterRenderMap.find(base::ToLowerASCII(line[i]));
