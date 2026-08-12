@@ -183,7 +183,8 @@ bool AtMemoryHandler::DidReceiveKeyDownForAtMemoryShortcut(
   if (auto control = element.DynamicTo<WebFormControlElement>();
       control && form_util::IsTextAreaElementOrTextInput(control) &&
       control.FormControlTypeForAutofill() !=
-          blink::mojom::FormControlType::kInputPassword) {
+          blink::mojom::FormControlType::kInputPassword &&
+      control.IsEnabled() && !control.IsReadOnly()) {
     if (!actual_accelerator.IsRepeat()) {
       agent_->ShowSuggestions(
           control, AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
