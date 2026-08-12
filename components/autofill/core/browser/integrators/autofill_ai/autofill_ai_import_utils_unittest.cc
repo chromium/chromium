@@ -221,9 +221,9 @@ TEST_F(AutofillAiImportUtilsTest,
 
   std::vector<EntityInstance> possible_entities =
       GetPossibleEntitiesFromSubmittedForm(fields, autofill_client());
-  ASSERT_EQ(possible_entities.size(), 1u);
-  EXPECT_EQ(possible_entities[0].record_type(),
-            EntityInstance::RecordType::kLocal);
+  EXPECT_THAT(possible_entities,
+              ElementsAre(Property(&EntityInstance::record_type,
+                                   EntityInstance::RecordType::kLocal)));
 }
 
 // Tests that walletable entities, such as vehicles are saved on the Google
@@ -237,9 +237,9 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromInput_RecordType_Server) {
 
   std::vector<EntityInstance> possible_entities =
       GetPossibleEntitiesFromSubmittedForm(fields, autofill_client());
-  ASSERT_EQ(possible_entities.size(), 1u);
-  EXPECT_EQ(possible_entities[0].record_type(),
-            EntityInstance::RecordType::kServerWallet);
+  EXPECT_THAT(possible_entities,
+              ElementsAre(Property(&EntityInstance::record_type,
+                                   EntityInstance::RecordType::kServerWallet)));
 }
 
 // Tests that walletable entities are not saved on the Google Wallet servers if
@@ -255,9 +255,9 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromInput_RecordType_SyncOff_Local) {
 
   std::vector<EntityInstance> possible_entities =
       GetPossibleEntitiesFromSubmittedForm(fields, autofill_client());
-  ASSERT_EQ(possible_entities.size(), 1u);
-  EXPECT_EQ(possible_entities[0].record_type(),
-            EntityInstance::RecordType::kLocal);
+  EXPECT_THAT(possible_entities,
+              ElementsAre(Property(&EntityInstance::record_type,
+                                   EntityInstance::RecordType::kLocal)));
 }
 
 // Tests that walletable entities are not saved on the Google Wallet server if
@@ -274,9 +274,9 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromInput_RecordType_FeatureOff_Local) {
 
   std::vector<EntityInstance> possible_entities =
       GetPossibleEntitiesFromSubmittedForm(fields, autofill_client());
-  ASSERT_EQ(possible_entities.size(), 1u);
-  EXPECT_EQ(possible_entities[0].record_type(),
-            EntityInstance::RecordType::kLocal);
+  EXPECT_THAT(possible_entities,
+              ElementsAre(Property(&EntityInstance::record_type,
+                                   EntityInstance::RecordType::kLocal)));
 }
 
 // Tests that we do not import any attribute whose value has a value email
