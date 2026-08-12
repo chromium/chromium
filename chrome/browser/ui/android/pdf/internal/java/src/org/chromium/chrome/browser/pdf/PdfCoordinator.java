@@ -1502,7 +1502,7 @@ public class PdfCoordinator
 
         Context appContext = mActivity.getApplicationContext();
         Uri uri = mUri;
-        String title = mTitle;
+        String fallbackFileName = mTitle;
         String pdfFilePath = mPdfFilePath;
         WeakReference<PdfCoordinator> weakSelf = new WeakReference<>(this);
 
@@ -1515,7 +1515,11 @@ public class PdfCoordinator
                             () -> {
                                 PdfDocumentPropertiesFetcher.DocProperties fileProps =
                                         PdfDocumentPropertiesFetcher.getDocProperties(
-                                                appContext, uri, title, pdfFilePath, mIsIncognito);
+                                                appContext,
+                                                uri,
+                                                fallbackFileName,
+                                                pdfFilePath,
+                                                mIsIncognito);
                                 // Post back to UI thread to show dialog
                                 ThreadUtils.postOnUiThread(
                                         () -> {
@@ -1535,7 +1539,6 @@ public class PdfCoordinator
 
         String fileName = fileProps.mFileName;
         String fileSize = formatFileSize(fileProps.mFileSize);
-        String title = mTitle;
         String created = formatTimestamp(fileProps.mCreationTime);
         String modified = formatTimestamp(fileProps.mLastModified);
 
@@ -1557,7 +1560,6 @@ public class PdfCoordinator
 
         ((TextView) dialogView.findViewById(R.id.file_name_value)).setText(fileName);
         ((TextView) dialogView.findViewById(R.id.file_size_value)).setText(fileSize);
-        ((TextView) dialogView.findViewById(R.id.title_value)).setText(title);
         ((TextView) dialogView.findViewById(R.id.created_value)).setText(created);
         ((TextView) dialogView.findViewById(R.id.modified_value)).setText(modified);
         ((TextView) dialogView.findViewById(R.id.page_count_value)).setText(pageCountStr);

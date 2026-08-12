@@ -52,25 +52,6 @@ found in the LICENSE file.
         android:layout_marginBottom="16dp"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
-    <!-- Title -->
-    <TextView
-        android:id="@+id/title_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_columnWeight="1"
-        android:layout_gravity="fill_horizontal"
-        android:layout_marginBottom="16dp"
-        android:text="@string/pdf_properties_title"
-        android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
-    <TextView
-        android:id="@+id/title_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_columnWeight="4"
-        android:layout_gravity="fill_horizontal"
-        android:layout_marginBottom="16dp"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-
     <!-- Created -->
     <TextView
         android:id="@+id/created_label"

@@ -1134,18 +1134,15 @@ public class PdfCoordinatorUnitTest {
 
         TextView fileNameValue = latestDialog.findViewById(R.id.file_name_value);
         TextView fileSizeValue = latestDialog.findViewById(R.id.file_size_value);
-        TextView titleValue = latestDialog.findViewById(R.id.title_value);
         TextView pageCountValue = latestDialog.findViewById(R.id.page_count_value);
         TextView pageSizeValue = latestDialog.findViewById(R.id.page_size_value);
 
         assertNotNull(fileNameValue);
         assertNotNull(fileSizeValue);
-        assertNotNull(titleValue);
         assertNotNull(pageCountValue);
         assertNotNull(pageSizeValue);
 
         assertEquals(tempFile.getName(), fileNameValue.getText().toString());
-        assertEquals(PDF_TITLE, titleValue.getText().toString());
         assertEquals("5", pageCountValue.getText().toString());
         assertEquals("17 B", fileSizeValue.getText().toString());
         assertEquals("2.78 × 5.56 in (71 × 141 mm)", pageSizeValue.getText().toString());
@@ -1239,18 +1236,15 @@ public class PdfCoordinatorUnitTest {
 
             TextView fileNameValue = dialogCustomView.findViewById(R.id.file_name_value);
             TextView fileSizeValue = dialogCustomView.findViewById(R.id.file_size_value);
-            TextView titleValue = dialogCustomView.findViewById(R.id.title_value);
             TextView pageCountValue = dialogCustomView.findViewById(R.id.page_count_value);
             TextView pageSizeValue = dialogCustomView.findViewById(R.id.page_size_value);
 
             assertNotNull(fileNameValue);
             assertNotNull(fileSizeValue);
-            assertNotNull(titleValue);
             assertNotNull(pageCountValue);
             assertNotNull(pageSizeValue);
 
             assertEquals(tempFile.getName(), fileNameValue.getText().toString());
-            assertEquals(PDF_TITLE, titleValue.getText().toString());
             assertEquals("5", pageCountValue.getText().toString());
             assertEquals("17 B", fileSizeValue.getText().toString());
             assertEquals("2.78 × 5.56 in (71 × 141 mm)", pageSizeValue.getText().toString());

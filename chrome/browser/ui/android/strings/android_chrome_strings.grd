@@ -4929,9 +4929,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PDF_PROPERTIES_FILE_SIZE" desc="Label for file size in PDF document properties">
         File size
       </message>
-      <message name="IDS_PDF_PROPERTIES_TITLE" desc="Label for title in PDF document properties">
-        Title
-      </message>
       <message name="IDS_PDF_PROPERTIES_CREATED" desc="Label for creation date and time in PDF document properties">
         Created
       </message>
