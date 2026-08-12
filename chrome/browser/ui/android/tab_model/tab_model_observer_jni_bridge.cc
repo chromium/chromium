@@ -59,6 +59,11 @@ void TabModelObserverJniBridge::WillCloseTabs(
   for (auto& observer : model_observers_) {
     observer.WillCloseTabs(tabs, is_all_tabs, allow_undo);
   }
+  if (is_all_tabs) {
+    for (auto& observer : interface_observers_) {
+      observer.OnAllTabsAreClosing(*tab_model_);
+    }
+  }
 }
 
 void TabModelObserverJniBridge::WillCloseTab(JNIEnv* env, TabAndroid* tab) {
