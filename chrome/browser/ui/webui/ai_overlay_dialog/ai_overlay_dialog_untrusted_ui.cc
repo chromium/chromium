@@ -93,6 +93,10 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
     html_source->AddString("ttcBundleUrl", ttc_bundle_url.spec());
   }
 
+  bool enable_debug_logs =
+      command_line->HasSwitch(switches::kEnableTtcDebugLogs);
+  html_source->AddBoolean("enableDebugLogs", enable_debug_logs);
+
   html_source->AddString("apiKey", features::kAiOverlayDialogApiKey.Get());
 }
 

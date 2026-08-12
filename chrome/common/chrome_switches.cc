@@ -312,6 +312,9 @@ const char kEnableNetBenchmarking[] = "enable-net-benchmarking";
 const char kEnablePotentiallyAnnoyingSecurityFeatures[] =
     "enable-potentially-annoying-security-features";
 
+// Enables verbose debug logs for Talk to Chrome (TTC).
+const char kEnableTtcDebugLogs[] = "enable-ttc-debug-logs";
+
 // Allows experimental ai extension APIs to be used in stable channel.
 // This disables chrome sign-in if set, regardless of channel.
 const char kExperimentalAiStableChannel[] = "experimental-ai-stable-channel";

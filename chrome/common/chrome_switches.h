@@ -109,6 +109,7 @@ extern const char kEnableExtensionActivityLogTesting[];
 extern const char kEnableHangoutServicesExtensionForTesting[];
 extern const char kEnableNetBenchmarking[];
 extern const char kEnablePotentiallyAnnoyingSecurityFeatures[];
+extern const char kEnableTtcDebugLogs[];
 extern const char kExperimentalAiStableChannel[];
 extern const char kExplicitlyAllowedPorts[];
 extern const char kExtensionAiDataCollection[];
