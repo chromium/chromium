@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/test/bind.h"
@@ -617,6 +618,73 @@ TEST(CallStackProfileBuilderTest,
 
   for (const CallStackProfile::StackSample& sample : profile.stack_sample())
     EXPECT_EQ(0, sample.metadata_size());
+}
+
+TEST(CallStackProfileBuilderTest, ResidencyMetadata) {
+  base::TestModule module;
+  base::Frame frame = {0x10, &module};
+  std::vector<base::Frame> frames = {frame};
+
+  // Test with resident_bytes not set (std::nullopt).
+  {
+    auto profile_builder =
+        std::make_unique<TestingCallStackProfileBuilder>(kProfileParams);
+    profile_builder->OnSampleCompleted(frames, base::TimeTicks(), 1, 1,
+                                       /*resident_bytes=*/std::nullopt);
+    profile_builder->OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
+
+    const SampledProfile& proto = profile_builder->test_sampled_profile();
+    ASSERT_TRUE(proto.has_call_stack_profile());
+    const CallStackProfile& profile = proto.call_stack_profile();
+
+    // Verify "resident_bytes" hash is not in metadata_name_hash.
+    uint64_t expected_hash = base::HashMetricName("resident_bytes");
+    bool hash_found = false;
+    for (uint64_t hash : profile.metadata_name_hash()) {
+      if (hash == expected_hash) {
+        hash_found = true;
+        break;
+      }
+    }
+    EXPECT_FALSE(hash_found);
+  }
+
+  // Test with resident_bytes set to 1024.
+  {
+    auto profile_builder =
+        std::make_unique<TestingCallStackProfileBuilder>(kProfileParams);
+    profile_builder->OnSampleCompleted(frames, base::TimeTicks(), 1, 1,
+                                       /*resident_bytes=*/1024);
+    profile_builder->OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
+
+    const SampledProfile& proto = profile_builder->test_sampled_profile();
+    ASSERT_TRUE(proto.has_call_stack_profile());
+    const CallStackProfile& profile = proto.call_stack_profile();
+
+    // Verify "resident_bytes" hash is in metadata_name_hash.
+    uint64_t expected_hash = base::HashMetricName("resident_bytes");
+    int hash_index = -1;
+    for (int i = 0; i < profile.metadata_name_hash_size(); ++i) {
+      if (profile.metadata_name_hash(i) == expected_hash) {
+        hash_index = i;
+        break;
+      }
+    }
+    ASSERT_NE(-1, hash_index);
+
+    // Verify the sample has the metadata item with correct value (1024).
+    ASSERT_EQ(1, profile.stack_sample_size());
+    const CallStackProfile::StackSample& sample = profile.stack_sample(0);
+    bool metadata_found = false;
+    for (const CallStackProfile::MetadataItem& item : sample.metadata()) {
+      if (item.name_hash_index() == hash_index) {
+        metadata_found = true;
+        EXPECT_EQ(1024, item.value());
+        break;
+      }
+    }
+    EXPECT_TRUE(metadata_found);
+  }
 }
 
 }  // namespace metrics

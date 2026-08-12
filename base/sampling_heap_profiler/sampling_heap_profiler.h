@@ -55,6 +55,9 @@ class BASE_EXPORT SamplingHeapProfiler
     // Call stack of PC addresses responsible for the allocation.
     // RAW_PTR_EXCLUSION: executable addresses are never in PA partitions
     RAW_PTR_EXCLUSION std::vector<const void*> stack;
+    // Total resident bytes attributed to the sample in physical memory.
+    // Set to std::nullopt if the residency checks are disabled or unavailable.
+    std::optional<size_t> resident_total;
   };
 
   enum class StackUnwinder {

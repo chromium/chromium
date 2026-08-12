@@ -155,14 +155,15 @@ void CallStackProfileBuilder::AddProfileMetadata(
 void CallStackProfileBuilder::OnSampleCompleted(
     std::vector<base::Frame> frames,
     base::TimeTicks sample_timestamp) {
-  OnSampleCompleted(std::move(frames), sample_timestamp, 1, 1);
+  OnSampleCompleted(std::move(frames), sample_timestamp, 1, 1, std::nullopt);
 }
 
 void CallStackProfileBuilder::OnSampleCompleted(
     std::vector<base::Frame> frames,
     base::TimeTicks sample_timestamp,
     size_t weight,
-    size_t count) {
+    size_t count,
+    std::optional<size_t> resident_bytes) {
   // Write CallStackProfile::Stack protobuf message.
   CallStackProfile::Stack stack;
 
@@ -235,6 +236,17 @@ void CallStackProfileBuilder::OnSampleCompleted(
 
   *stack_sample_proto->mutable_metadata() = metadata_.CreateSampleMetadata(
       call_stack_profile->mutable_metadata_name_hash());
+
+  if (resident_bytes.has_value()) {
+    // Initialize on first call since HashMetricName isn't constexpr.
+    static const uint64_t kResidentBytesHash =
+        base::HashMetricName("resident_bytes");
+    metadata_.SetMetadata(base::MetadataRecorder::Item(
+                              kResidentBytesHash, std::nullopt, std::nullopt,
+                              static_cast<int64_t>(*resident_bytes)),
+                          stack_sample_proto->mutable_metadata()->Add(),
+                          call_stack_profile->mutable_metadata_name_hash());
+  }
 
   if (profile_start_time_.is_null())
     profile_start_time_ = sample_timestamp;

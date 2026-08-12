@@ -34,6 +34,11 @@ SampleMap MergeSamples(const std::vector<Sample>& samples) {
     SampleValue& value = results[sample];
     value.total += sample.total;
     value.count += count;
+    if (sample.resident_total.has_value() && value.resident_total.has_value()) {
+      *value.resident_total += *sample.resident_total;
+    } else {
+      value.resident_total = std::nullopt;
+    }
   }
   return results;
 }

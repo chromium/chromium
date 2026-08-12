@@ -94,35 +94,60 @@ size_t ProcessMemoryDump::GetSystemPageSize() {
 std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     void* start_address,
     size_t mapped_size) {
+  if (mapped_size == 0) {
+    return 0;
+  }
+
   const size_t page_size = GetSystemPageSize();
   const uintptr_t start_pointer = reinterpret_cast<uintptr_t>(start_address);
-  DCHECK_EQ(0u, start_pointer % page_size);
+  const uintptr_t aligned_start =
+      base::bits::AlignDown(start_pointer, page_size);
+  const uintptr_t aligned_end =
+      base::bits::AlignUp(start_pointer + mapped_size, page_size);
+  const size_t mapped_size_aligned = aligned_end - aligned_start;
 
-  size_t offset = 0;
-  size_t total_resident_pages = 0;
   bool failure = false;
 
   // An array as large as number of pages in memory segment needs to be passed
   // to the query function. To avoid allocating a large array, the given block
   // of memory is split into chunks of size |kMaxChunkSize|.
   const size_t kMaxChunkSize = 8 * 1024 * 1024;
-  size_t max_vec_size =
-      GetSystemPageCount(std::min(mapped_size, kMaxChunkSize), page_size);
+  CHECK_EQ(kMaxChunkSize % page_size, 0u);
+  size_t max_page_count = GetSystemPageCount(
+      std::min(mapped_size_aligned, kMaxChunkSize), page_size);
 
 #if BUILDFLAG(IS_WIN)
-  auto vec =
-      base::HeapArray<PSAPI_WORKING_SET_EX_INFORMATION>::WithSize(max_vec_size);
+  auto vec = base::HeapArray<PSAPI_WORKING_SET_EX_INFORMATION>::WithSize(
+      max_page_count);
 #elif BUILDFLAG(IS_APPLE)
-  auto vec = base::HeapArray<char>::WithSize(max_vec_size);
+  auto vec = base::HeapArray<char>::WithSize(max_page_count);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  auto vec = base::HeapArray<unsigned char>::WithSize(max_vec_size);
+  auto vec = base::HeapArray<unsigned char>::WithSize(max_page_count);
 #endif
 
-  while (offset < mapped_size) {
-    uintptr_t chunk_start = (start_pointer + offset);
-    const size_t chunk_size = std::min(mapped_size - offset, kMaxChunkSize);
+  size_t offset = 0;
+  size_t total_resident_bytes = 0;
+
+  while (offset < mapped_size_aligned) {
+    uintptr_t chunk_start = aligned_start + offset;
+    const size_t chunk_size =
+        std::min(mapped_size_aligned - offset, kMaxChunkSize);
     const size_t page_count = GetSystemPageCount(chunk_size, page_size);
-    size_t resident_page_count = 0;
+    failure = false;
+
+    auto accumulate_page_if_resident = [&](size_t i, bool is_resident) {
+      if (!is_resident) {
+        return;
+      }
+      uintptr_t page_addr = chunk_start + i * page_size;
+      uintptr_t overlap_start = std::max(start_pointer, page_addr);
+      uintptr_t overlap_end =
+          std::min(start_pointer + mapped_size, page_addr + page_size);
+      if (overlap_end > overlap_start) {
+        total_resident_bytes += overlap_end - overlap_start;
+      }
+    };
+
 #if BUILDFLAG(IS_WIN)
     for (size_t i = 0; i < page_count; i++) {
       vec[i].VirtualAddress =
@@ -130,11 +155,11 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     }
 
     auto span = vec.first(page_count);
-    failure = !QueryWorkingSetEx(GetCurrentProcess(), span.data(),
-                                 static_cast<DWORD>(span.size_bytes()));
+    failure = !::QueryWorkingSetEx(::GetCurrentProcess(), span.data(),
+                                   static_cast<DWORD>(span.size_bytes()));
 
     for (size_t i = 0; i < page_count; i++) {
-      resident_page_count += vec[i].VirtualAttributes.Valid;
+      accumulate_page_if_resident(i, vec[i].VirtualAttributes.Valid);
     }
 #elif BUILDFLAG(IS_FUCHSIA)
     // TODO(crbug.com/42050620): Implement counting resident bytes.
@@ -142,12 +167,13 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     NOTIMPLEMENTED_LOG_ONCE();
     std::ignore = chunk_start;
     std::ignore = page_count;
+    std::ignore = accumulate_page_if_resident;
 #elif BUILDFLAG(IS_APPLE)
     // mincore in MAC does not fail with EAGAIN.
     failure =
         !!mincore(reinterpret_cast<void*>(chunk_start), chunk_size, vec.data());
     for (size_t i = 0; i < page_count; i++) {
-      resident_page_count += vec[i] & MINCORE_INCORE ? 1 : 0;
+      accumulate_page_if_resident(i, (vec[i] & MINCORE_INCORE) != 0);
     }
 #elif BUILDFLAG(IS_POSIX)
     int error_counter = 0;
@@ -165,7 +191,7 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     failure = !!result;
 
     for (size_t i = 0; i < page_count; i++) {
-      resident_page_count += vec[i] & 1;
+      accumulate_page_if_resident(i, (vec[i] & 1) != 0);
     }
 #endif
 
@@ -173,7 +199,6 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
       break;
     }
 
-    total_resident_pages += resident_page_count * page_size;
     offset += kMaxChunkSize;
   }
 
@@ -181,7 +206,8 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     PLOG(ERROR) << "CountResidentBytes";
     return std::nullopt;
   }
-  return total_resident_pages;
+
+  return total_resident_bytes;
 }
 
 // static

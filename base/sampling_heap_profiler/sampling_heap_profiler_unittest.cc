@@ -11,11 +11,14 @@
 #include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/notification_data.h"
 #include "base/allocator/dispatcher/subsystem.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/alias.h"
+#include "base/features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "partition_alloc/shim/allocator_shim.h"
@@ -416,6 +419,45 @@ TEST_F(SamplingHeapProfilerTest, HookedAllocatorMuted) {
   sampler->RemoveSamplesObserver(&collector);
   EXPECT_TRUE(collector.sample_added);
   EXPECT_TRUE(collector.sample_removed);
+}
+
+// Counting resident bytes is not implemented on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_GetSamplesWithResidency DISABLED_GetSamplesWithResidency
+#else
+#define MAYBE_GetSamplesWithResidency GetSamplesWithResidency
+#endif
+TEST_F(SamplingHeapProfilerTest, MAYBE_GetSamplesWithResidency) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kHeapProfilerIncludeResidency);
+
+  ScopedSuppressRandomnessForTesting suppress;
+  auto* profiler = SamplingHeapProfiler::Get();
+  auto session = profiler->Start(base::ByteSize(1024),
+                                 SamplingHeapProfiler::Priority::kBackground);
+  ASSERT_TRUE(session.has_value());
+
+  auto buffer = base::HeapArray<uint8_t>::WithSize(10000);
+  std::ranges::fill(buffer, 0u);
+  base::debug::Alias(buffer.data());
+
+  std::vector<SamplingHeapProfiler::Sample> samples =
+      profiler->GetSamples(session);
+  profiler->Stop(*session);
+  buffer = base::HeapArray<uint8_t>();
+
+  ASSERT_FALSE(samples.empty());
+  bool found = false;
+  for (const auto& sample : samples) {
+    if (sample.size == 10000) {
+      found = true;
+      ASSERT_TRUE(sample.resident_total.has_value());
+      EXPECT_GT(*sample.resident_total, 0u);
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
 }
 
 }  // namespace base

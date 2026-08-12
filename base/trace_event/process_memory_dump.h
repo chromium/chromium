@@ -69,12 +69,15 @@ class BASE_EXPORT ProcessMemoryDump {
   // Returns the total bytes resident for a virtual address range, with given
   // |start_address| and |mapped_size|. |mapped_size| is specified in bytes. The
   // value returned is valid only if the given range is currently mmapped by the
-  // process. The |start_address| must be page-aligned.
+  // process. Works with exact non-page-aligned boundaries, but precisely
+  // page-aligned boundaries are performance-ideal. The returned value will
+  // never exceed |mapped_size|.
   static std::optional<size_t> CountResidentBytes(void* start_address,
                                                   size_t mapped_size);
 
   // The same as above, but the given mapped range should belong to the
-  // shared_memory's mapped region.
+  // shared_memory's mapped region. The |start_address| must be page-aligned.
+  // TODO: let CountResidentBytesInSharedMemory support unaligned addresses
   static std::optional<size_t> CountResidentBytesInSharedMemory(
       void* start_address,
       size_t mapped_size);

@@ -23,6 +23,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kFastFilePathIsParent);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                        kUseRustJsonParserInCurrentSequence);
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kHeapProfilerIncludeResidency);
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kLowEndMemoryExperiment);
 
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kLowMemoryDeviceThresholdMB);

@@ -550,10 +550,16 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
       frames.emplace_back(address, module);
     }
 
+    std::optional<size_t> merged_resident_bytes;
+    if (value.total > 0) {
+      merged_resident_bytes = value.resident_total;
+    }
+
     // Heap "samples" represent allocation stacks aggregated over time so
     // do not have a meaningful timestamp.
     profile_builder.OnSampleCompleted(std::move(frames), base::TimeTicks(),
-                                      value.total, value.count);
+                                      value.total, value.count,
+                                      merged_resident_bytes);
 
     total_sampled_bytes += value.total;
   }

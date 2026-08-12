@@ -10,17 +10,20 @@
 
 #include "base/allocator/dispatcher/tls.h"
 #include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/threading/thread_local_storage.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"  // no-presubmit-check
+#include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "partition_alloc/shim/allocator_shim.h"
 
@@ -329,13 +332,39 @@ std::vector<SamplingHeapProfiler::Sample> SamplingHeapProfiler::GetSamples(
   PoissonAllocationSampler::ScopedMuteThreadSamples no_samples_scope;
   uint32_t start_ordinal = session ? session->start_ordinal : 0;
 
-  AutoLock lock(mutex_);
-  std::vector<Sample> samples;
-  samples.reserve(samples_.size());
-  for (const auto& [address, ordered_sample] : samples_) {
-    if (ordered_sample.ordinal > start_ordinal) {
-      samples.push_back(ordered_sample.sample);
+  std::vector<std::pair<void*, Sample>> active_samples;
+  {
+    AutoLock lock(mutex_);
+    active_samples.reserve(samples_.size());
+    for (const auto& [address, ordered_sample] : samples_) {
+      if (ordered_sample.ordinal > start_ordinal) {
+        active_samples.push_back({address, ordered_sample.sample});
+      }
     }
+  }
+  std::vector<Sample> samples;
+  samples.reserve(active_samples.size());
+  for (auto& pair : active_samples) {
+    Sample& sample = pair.second;
+    if (base::FeatureList::IsEnabled(features::kHeapProfilerIncludeResidency)) {
+      if (sample.size != 0) {
+        std::optional<size_t> resident_bytes =
+            trace_event::ProcessMemoryDump::CountResidentBytes(pair.first,
+                                                               sample.size);
+        if (resident_bytes.has_value()) {
+          // For each page in the virtual address range, it may entirely be
+          // resident (`mincore`), but only the parts of the allocation that
+          // overlap with that page are included.  The statistical `total`
+          // attributed to the stack (scaled by downsampling factor) is scaled
+          // by the ratio of the actual sample's residency to statistically
+          // approximate residency.
+          sample.resident_total = base::checked_cast<size_t>(
+              std::llround(static_cast<double>(sample.total) * *resident_bytes /
+                           sample.size));
+        }
+      }
+    }
+    samples.push_back(std::move(sample));
   }
   return samples;
 }

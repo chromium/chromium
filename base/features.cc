@@ -63,6 +63,9 @@ BASE_FEATURE(kFeatureParamWithCache, FEATURE_ENABLED_BY_DEFAULT);
 // issues are found with it.
 BASE_FEATURE(kFastFilePathIsParent, FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables residency tagging in the heap profiler.
+BASE_FEATURE(kHeapProfilerIncludeResidency, FEATURE_DISABLED_BY_DEFAULT);
+
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
 #if BUILDFLAG(IS_ANDROID)

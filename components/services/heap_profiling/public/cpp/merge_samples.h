@@ -22,6 +22,9 @@ struct SampleValue {
   size_t total = 0;
   // Count of all allocations attributed to this Sample's stack trace.
   size_t count = 0;
+  // Sum of resident bytes across all allocations attributed to this stack.
+  // Set to std::nullopt if any merged sample lacked residency checks.
+  std::optional<size_t> resident_total = 0;
 };
 
 // The value of the map tracks total size and count of all Samples associated
