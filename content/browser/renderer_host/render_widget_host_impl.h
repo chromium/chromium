@@ -250,10 +250,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetExternallySourcedComposition(
       const std::u16string& text,
       const std::vector<ui::ImeTextSpan>& ime_text_spans,
-      const GlobalDOMNodeId& target_dom_node_id) override;
+      const GlobalDOMNodeId& target_dom_node_id,
+      base::OnceClosure on_complete) override;
   void CommitExternallySourcedComposition(
       const std::u16string& text,
-      const GlobalDOMNodeId& target_dom_node_id) override;
+      const GlobalDOMNodeId& target_dom_node_id,
+      base::OnceClosure on_complete) override;
   void PasteIntoNode(const std::u16string& text,
                      const GlobalDOMNodeId& target_dom_node_id) override;
   void Focus() override;

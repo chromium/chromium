@@ -35,10 +35,30 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/common/switches.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/views/controls/button/label_button.h"
 #include "url/gurl.h"
 
 namespace dictation {
+
+class SessionStateObserver : public ui::test::StateObserver<SessionState> {
+ public:
+  explicit SessionStateObserver(SessionController* controller) {
+    subscription_ = controller->AddSessionStateChangedCallback(
+        base::BindRepeating(&SessionStateObserver::OnStateObserverStateChanged,
+                            base::Unretained(this)));
+  }
+
+  SessionState GetStateObserverInitialState() const override {
+    return SessionState::kInactive;
+  }
+
+ private:
+  base::CallbackListSubscription subscription_;
+};
+
+DECLARE_STATE_IDENTIFIER_VALUE(SessionStateObserver, kSessionStateIdentifier);
+DEFINE_STATE_IDENTIFIER_VALUE(SessionStateObserver, kSessionStateIdentifier);
 
 class DictationSessionUiImplBrowserTest
     : public DictationInteractiveBrowserTestBase {
@@ -64,6 +84,16 @@ class DictationSessionUiImplBrowserTest
     return [this]() {
       return dictation_service().session_controller()->GetState();
     };
+  }
+
+  auto ObserveSessionStateChanges() {
+    return ObserveState(kSessionStateIdentifier, [this]() {
+      return dictation_service().session_controller();
+    });
+  }
+
+  auto WaitForSessionState(SessionState state) {
+    return WaitForState(kSessionStateIdentifier, state);
   }
 
   auto HasAttachedStreamProvider() {
@@ -114,6 +144,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format off
   RunTestSequence(
     StartSession(),
+    ObserveSessionStateChanges(),
     WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
     WaitForShow(DictationBubbleUi::kWaveformElementIdForTesting),
 
@@ -144,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
 
     // kInactive
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    CheckResult(GetSessionState(), SessionState::kInactive),
+    WaitForSessionState(SessionState::kInactive),
     CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
                       &views::LabelButton::GetText, u"Start"),
     CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
@@ -235,6 +266,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   RunTestSequence(
     // Open the session ui.
     StartSession(),
+    ObserveSessionStateChanges(),
     WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
 
     // Move to transcribing state
@@ -248,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting),
     CheckResult(GetSessionState(), SessionState::kFinalizing),
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    CheckResult(GetSessionState(), SessionState::kInactive),
+    WaitForSessionState(SessionState::kInactive),
 
     // The button should become "Start"; click it.
     CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
@@ -346,6 +378,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format off
   RunTestSequence(
     StartSession(),
+    ObserveSessionStateChanges(),
     WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
 
     // Switch to the second tab. The session should be ended but only after
@@ -357,6 +390,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
 
     // Once the finalization completes the sesison should be ended.
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
+    WaitForSessionState(SessionState::kInactive),
     CheckHasSession(false),
 
     // Switch back to the first tab and ensure the UI does not reappear.
@@ -590,6 +624,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     InstrumentTab(kWebContentsElementId),
     NavigateWebContents(kWebContentsElementId, url),
     StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    ObserveSessionStateChanges(),
     InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
 
     // Initial state (kStreamInitializing): Mic icon button present, others absent.
@@ -625,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
 
     // Transition to kInactive: Mic icon button shown again, others absent.
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    CheckResult(GetSessionState(), SessionState::kInactive),
+    WaitForSessionState(SessionState::kInactive),
     InAnyContext(WaitForShow(
         DictationOverlayView::kMicButtonElementIdForTesting)),
     InAnyContext(EnsureNotPresent(
@@ -672,6 +707,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     InstrumentTab(kWebContentsElementId),
     NavigateWebContents(kWebContentsElementId, url),
     StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    ObserveSessionStateChanges(),
     InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
 
     CheckResult(GetSessionState(), SessionState::kStreamInitializing),
@@ -684,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     CheckResult(GetSessionState(), SessionState::kFinalizing),
 
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    CheckResult(GetSessionState(), SessionState::kInactive),
+    WaitForSessionState(SessionState::kInactive),
 
     // Pressing the mic button while inactive starts a stream.
     InAnyContext(WaitForShow(

@@ -362,15 +362,18 @@ class CONTENT_EXPORT RenderWidgetHost {
   // identified node. This adjusts focus if necessary, then restores it, in
   // order to target the node. For comparison, a regular IME would simply
   // compose in whatever node is focused.
+  // `on_complete` is invoked when the operation completes, if it is not null.
   virtual void SetExternallySourcedComposition(
       const std::u16string& text,
       const std::vector<ui::ImeTextSpan>& ime_text_spans,
-      const GlobalDOMNodeId& target_dom_node_id) = 0;
+      const GlobalDOMNodeId& target_dom_node_id,
+      base::OnceClosure on_complete) = 0;
 
   // Commits composition text. See `SetExternallySourcedComposition`.
   virtual void CommitExternallySourcedComposition(
       const std::u16string& text,
-      const GlobalDOMNodeId& target_dom_node_id) = 0;
+      const GlobalDOMNodeId& target_dom_node_id,
+      base::OnceClosure on_complete) = 0;
 
   // Pastes text into the target node.
   // Unlike the `*ExternallySourcedComposition` methods above, this does not

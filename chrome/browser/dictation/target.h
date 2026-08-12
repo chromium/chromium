@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_DICTATION_TARGET_H_
 #define CHROME_BROWSER_DICTATION_TARGET_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "ui/base/ime/ime_text_span.h"
 
@@ -62,22 +65,64 @@ class Target {
   void SetComposition(const std::u16string& text, bool is_final);
 
   // Commits the text in the target.
-  void CommitComposition(const std::u16string& text);
+  void CommitComposition(const std::u16string& text,
+                         base::OnceClosure on_commit_complete);
 
  protected:
   virtual void SetExternallySourcedComposition(
       const std::u16string& text,
-      const std::vector<ui::ImeTextSpan>& spans);
-  virtual void CommitExternallySourcedComposition(const std::u16string& text);
+      const std::vector<ui::ImeTextSpan>& spans,
+      base::OnceClosure on_complete);
+  virtual void CommitExternallySourcedComposition(
+      const std::u16string& text,
+      base::OnceClosure on_complete);
   virtual void PasteIntoNode(const std::u16string& text);
 
  private:
+  // The stream may produce multiple updates while the last composition we sent
+  // to the renderer is in progress. We sequence our calls to the renderer so
+  // that we only have one in progress at a time. This avoids sending parameters
+  // to the renderer that are based on stale information. Only one operation is
+  // queued. If multiple updates from the stream come in while waiting for the
+  // renderer, the most recent one supersedes the previous ones.
+  struct QueuedOperation {
+    enum class Type {
+      kSetPartialComposition,
+      kSetFinalComposition,
+      kCommitComposition,
+    };
+
+    Type type;
+    // The text to compose/commit.
+    std::u16string text;
+    // To be called when a commit completes.
+    base::OnceClosure on_commit_complete;
+  };
+
+  // These execute methods perform the actions associated with the public
+  // SetComposition and CommitComposition methods, after the action has been
+  // sequenced.
+  void ExecuteSetComposition(const std::u16string& text,
+                             bool is_final,
+                             base::OnceClosure operation_complete);
+  void ExecuteCommitComposition(const std::u16string& text,
+                                base::OnceClosure operation_complete);
+  // Dispatches the given operation based on its type.
+  void ExecuteOperation(QueuedOperation op);
+  // Called when the currently executing operations completes.
+  void OnOperationComplete(base::OnceClosure on_commit_complete);
+
   content::RenderWidgetHost* GetRenderWidgetHost() const;
 
   TargetDetails target_details_;
   std::u16string last_sent_composition_;
   bool has_lost_focus_during_composition_ = false;
   bool paste_fallback_required_ = false;
+
+  bool is_waiting_on_operation_completion_ = false;
+  std::optional<QueuedOperation> queued_operation_;
+
+  base::WeakPtrFactory<Target> weak_factory_{this};
 };
 
 }  // namespace dictation

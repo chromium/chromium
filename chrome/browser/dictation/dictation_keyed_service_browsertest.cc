@@ -320,7 +320,8 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   provider->Stop();
   ExtensionSendStreamStateUpdate(profile(), provider->stream_id_for_testing(),
                                  ExtensionStreamState::kComplete);
-  EXPECT_EQ(controller->GetState(), SessionState::kInactive);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetState() == SessionState::kInactive; }));
 }
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
@@ -577,6 +578,9 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "Hello");
   ASSERT_FALSE(attached_stream());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return session_controller()->GetState() == SessionState::kInactive;
+  }));
 
   // Start a second stream simulating a click on the "Start" button.
   {
@@ -676,7 +680,8 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, BasicStreamFunctions) {
   ExtensionSendStreamStateUpdate(GetProfile(),
                                  provider->stream_id_for_testing(),
                                  ExtensionStreamState::kComplete);
-  EXPECT_EQ(controller->GetState(), SessionState::kInactive);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetState() == SessionState::kInactive; }));
 
   dictation_service().EndSession();
 }

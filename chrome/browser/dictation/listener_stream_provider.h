@@ -45,7 +45,6 @@ class ListenerStreamProvider : public StreamProvider {
   Target* GetTarget() override;
   const Target* GetTarget() const override;
 
-  void SetOnUpdateForTesting(base::RepeatingClosure callback);
   const std::string& GetLatestTranscriptionForTesting() const;
   bool IsTranscriptionFinalForTesting() const;
   DictationMultiplexer::StreamId stream_id_for_testing() const {
@@ -58,6 +57,7 @@ class ListenerStreamProvider : public StreamProvider {
   void StartStream(std::optional<DictationContext> context);
   void OnStartContextCaptured(DictationContext result);
   void OnAsyncContextCaptured(DictationContext result);
+  void OnPendingInsertionsComplete();
 
   // Owns this
   const base::raw_ref<StreamProviderDelegate> delegate_;
@@ -70,7 +70,6 @@ class ListenerStreamProvider : public StreamProvider {
   StreamState state_ = StreamState::kInitializing;
 
   bool is_final_for_testing_ = false;
-  base::RepeatingClosure update_callback_for_testing_;
 
   std::unique_ptr<DictationContextFetcher> context_fetcher_;
 
