@@ -2,6 +2,41 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("groups") {
+  sources = [
+    "avatar_container_view.cc",
+    "avatar_container_view.h",
+    "manage_sharing_row.cc",
+    "manage_sharing_row.h",
+    "tab_group_editor_bubble_tracker.cc",
+    "tab_group_editor_bubble_tracker.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/saved_tab_groups/public",
+  ]
+
+  deps = [
+    "//chrome/app/vector_icons",
+    "//chrome/browser/data_sharing",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/data_sharing/public",
+    "//components/image_fetcher/core",
+    "//components/signin/public/base",
+    "//components/tab_groups",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

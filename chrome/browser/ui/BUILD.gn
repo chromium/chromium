@@ -2868,18 +2868,12 @@ static_library("ui") {
       "views/tabs/dragging/tab_drag_controller.h",
       "views/tabs/dragging/window_finder.cc",
       "views/tabs/dragging/window_finder.h",
-      "views/tabs/groups/avatar_container_view.cc",
-      "views/tabs/groups/avatar_container_view.h",
       "views/tabs/groups/color_picker_view.cc",
       "views/tabs/groups/color_picker_view.h",
-      "views/tabs/groups/manage_sharing_row.cc",
-      "views/tabs/groups/manage_sharing_row.h",
       "views/tabs/groups/recent_activity_bubble_dialog_view.cc",
       "views/tabs/groups/recent_activity_bubble_dialog_view.h",
       "views/tabs/groups/tab_group_accessibility.cc",
       "views/tabs/groups/tab_group_accessibility.h",
-      "views/tabs/groups/tab_group_editor_bubble_tracker.cc",
-      "views/tabs/groups/tab_group_editor_bubble_tracker.h",
       "views/tabs/groups/tab_group_editor_bubble_view.cc",
       "views/tabs/groups/tab_group_editor_bubble_view.h",
       "views/tabs/hovercard/fade_footer_view.cc",
@@ -3156,6 +3150,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/tab_sharing",
       "//chrome/browser/ui/views/tabs/common",
       "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
+      "//chrome/browser/ui/views/tabs/groups",
       "//chrome/browser/ui/views/tabs/organizer",
       "//chrome/browser/ui/views/tabs/shared",
       "//chrome/browser/ui/views/tabs/shared:impl",
@@ -3422,7 +3417,6 @@ static_library("ui") {
       # - c/b/ui/views/tabs/dragging/tab_drag_context.h
       # - c/b/ui/views/tabs/dragging/tab_drag_controller.h
       # - c/b/ui/views/tabs/groups/tab_group_accessibility.h
-      # - c/b/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h
       # - c/b/ui/views/tabs/hovercard/hover_card_anchor_target.h
       # - c/b/ui/views/tabs/hovercard/tab_hover_card_controller.h
       # - c/b/ui/views/tabs/new_tab_button.h
