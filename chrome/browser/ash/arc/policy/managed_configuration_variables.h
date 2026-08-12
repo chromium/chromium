@@ -7,7 +7,10 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
-#include "chrome/browser/profiles/profile.h"
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace arc {
 
@@ -44,7 +47,7 @@ extern const char kDeviceAnnotatedLocation[];
 // Note chains containing unknown variables are considered malformed and will
 // not be processed.
 void RecursivelyReplaceManagedConfigurationVariables(
-    const Profile* profile,
+    const user_manager::User& user,
     const policy::DeviceAttributes& attributes,
     base::DictValue& managedConfiguration);
 

@@ -17,11 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -53,13 +49,8 @@ std::string EmailDomain(const std::string& email) {
   return email.substr(at_sign_pos + 1);
 }
 
-std::string SignedInUserEmail(const Profile* profile) {
-  DCHECK(profile);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfileIfExists(profile);
-  CoreAccountInfo info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  return info.email;
+std::string Identity(const std::string& email) {
+  return email;
 }
 
 std::string DeviceSerialNumber() {
@@ -73,40 +64,24 @@ std::string DeviceSerialNumber() {
 typedef base::flat_map<std::string, base::RepeatingCallback<std::string()>>
     VariableResolver;
 
-bool IsAffiliatedUser(const Profile* profile) {
-  const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  return user && user->IsAffiliated();
-}
-
 // Builds a `VariableResolver` from all known variables.
 // `attributes` must not be null and must outlive the returned
 // `VariableResolver`.
 const VariableResolver BuildVariableResolver(
-    const Profile* profile,
+    const user_manager::User& user,
     const policy::DeviceAttributes* attributes) {
   CHECK(attributes);
 
   // Use |empty_string_getter| for device attributes if user is not affiliated.
-  const bool is_affiliated = IsAffiliatedUser(profile);
+  const bool is_affiliated = user.IsAffiliated();
+  const std::string user_email = user.GetAccountId().GetUserEmail();
   const auto empty_string_getter =
       base::BindRepeating([]() { return std::string(); });
 
   return VariableResolver{
-      {kUserEmail,
-       base::BindRepeating(
-           [](const Profile* profile) { return SignedInUserEmail(profile); },
-           profile)},
-      {kUserEmailName, base::BindRepeating(
-                           [](const Profile* profile) {
-                             return EmailName(SignedInUserEmail(profile));
-                           },
-                           profile)},
-      {kUserEmailDomain, base::BindRepeating(
-                             [](const Profile* profile) {
-                               return EmailDomain(SignedInUserEmail(profile));
-                             },
-                             profile)},
+      {kUserEmail, base::BindRepeating(&Identity, user_email)},
+      {kUserEmailName, base::BindRepeating(&EmailName, user_email)},
+      {kUserEmailDomain, base::BindRepeating(&EmailDomain, user_email)},
       {kDeviceDirectoryId,
        is_affiliated
            // The safety of Unretained is upheld by the caller.
@@ -272,11 +247,11 @@ const char kDeviceAssetId[] = "DEVICE_ASSET_ID";
 const char kDeviceAnnotatedLocation[] = "DEVICE_ANNOTATED_LOCATION";
 
 void RecursivelyReplaceManagedConfigurationVariables(
-    const Profile* profile,
+    const user_manager::User& user,
     const policy::DeviceAttributes& device_attributes,
     base::DictValue& managedConfiguration) {
   const VariableResolver resolver =
-      BuildVariableResolver(profile, &device_attributes);
+      BuildVariableResolver(user, &device_attributes);
   ReplaceVariables(resolver, managedConfiguration);
 }
 

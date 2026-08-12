@@ -16,11 +16,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
@@ -207,19 +202,9 @@ class ManagedConfigurationVariablesBase {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId));
-    fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ = profile_manager_->CreateTestingProfile(
-        kTestEmail, IdentityTestEnvironmentProfileAdaptor::
-                        GetIdentityTestEnvironmentFactories());
-    ASSERT_TRUE(profile_);
-
-    const auto adaptor =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
-    adaptor->identity_test_env()->SetPrimaryAccount(
-        kTestEmail, signin::ConsentLevel::kSignin);
+    user_ =
+        fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
+    ASSERT_TRUE(user_);
 
     // Set up fake device attributes.
     fake_device_attributes_ = std::make_unique<policy::FakeDeviceAttributes>();
@@ -231,11 +216,11 @@ class ManagedConfigurationVariablesBase {
 
   void DoTearDown() {
     fake_device_attributes_.reset();
-    profile_manager_.reset();
+    user_ = nullptr;
     fake_user_manager_.Reset();
   }
 
-  const Profile* profile() { return profile_; }
+  const user_manager::User& user() { return CHECK_DEREF(user_); }
 
   policy::FakeDeviceAttributes& device_attributes() {
     return CHECK_DEREF(fake_device_attributes_.get());
@@ -246,10 +231,7 @@ class ManagedConfigurationVariablesBase {
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-
-  std::unique_ptr<TestingProfileManager> profile_manager_;
-
-  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
+  raw_ptr<user_manager::User> user_ = nullptr;
 
   ash::system::FakeStatisticsProvider statistics_provider_;
 
@@ -301,29 +283,29 @@ TEST_F(ManagedConfigurationVariablesTest, VariableChains) {
 
   // Initially all values in the chain are set, expect annotated location will
   // be returned.
-  RecursivelyReplaceManagedConfigurationVariables(profile(),
-                                                  device_attributes(), dict);
+  RecursivelyReplaceManagedConfigurationVariables(user(), device_attributes(),
+                                                  dict);
   EXPECT_EQ(*dict.FindString(kKey), kTestDeviceAnnotatedLocation);
 
   // Clear location and expect chain resolves to asset ID.
   device_attributes().SetFakeDeviceAnnotatedLocation("");
   dict.Set(kKey, kChain);
-  RecursivelyReplaceManagedConfigurationVariables(profile(),
-                                                  device_attributes(), dict);
+  RecursivelyReplaceManagedConfigurationVariables(user(), device_attributes(),
+                                                  dict);
   EXPECT_EQ(*dict.FindString(kKey), kTestDeviceAssetId);
 
   // Clear asset ID and expect chain resolves to directory ID.
   device_attributes().SetFakeDeviceAssetId("");
   dict.Set(kKey, kChain);
-  RecursivelyReplaceManagedConfigurationVariables(profile(),
-                                                  device_attributes(), dict);
+  RecursivelyReplaceManagedConfigurationVariables(user(), device_attributes(),
+                                                  dict);
   EXPECT_EQ(*dict.FindString(kKey), kTestDeviceDirectoryId);
 
   // Clear directory ID and expect chain resolves to the empty string.
   device_attributes().SetFakeDirectoryApiId("");
   dict.Set(kKey, kChain);
-  RecursivelyReplaceManagedConfigurationVariables(profile(),
-                                                  device_attributes(), dict);
+  RecursivelyReplaceManagedConfigurationVariables(user(), device_attributes(),
+                                                  dict);
   EXPECT_EQ(*dict.FindString(kKey), "");
 }
 
@@ -353,8 +335,8 @@ TEST_F(ManagedConfigurationVariablesTest, IgnoresInvalidVariables) {
 
   // Clear location, valid chain should resolve to asset ID.
   device_attributes().SetFakeDeviceAnnotatedLocation("");
-  RecursivelyReplaceManagedConfigurationVariables(profile(),
-                                                  device_attributes(), dict);
+  RecursivelyReplaceManagedConfigurationVariables(user(), device_attributes(),
+                                                  dict);
   // Expect the valid chain was replaced.
   EXPECT_EQ(*dict.FindString(kValidKey), kTestDeviceAssetId);
   // Expect none of the invalid chains were replaced.
@@ -375,8 +357,8 @@ TEST_F(ManagedConfigurationVariablesTest, RespectsSpecialCharacters) {
   constexpr char kSpecialCharacters[] =
       "`~!@#$%^&*(),_-+={[}}|\\\\:,;\"'<,>.?/{}\",";
   device_attributes().SetFakeDeviceAssetId(kSpecialCharacters);
-  RecursivelyReplaceManagedConfigurationVariables(profile(),
-                                                  device_attributes(), dict);
+  RecursivelyReplaceManagedConfigurationVariables(user(), device_attributes(),
+                                                  dict);
   // Expect special characters were replaced correctly.
   EXPECT_EQ(*dict.FindString(kKey1), kSpecialCharacters);
 }
@@ -396,8 +378,8 @@ TEST_F(ManagedConfigurationVariablesTest,
   // Setup fake asset ID and location that are also valid variables.
   device_attributes().SetFakeDeviceAssetId(kVariable2);
   device_attributes().SetFakeDeviceAnnotatedLocation(kVariable1);
-  RecursivelyReplaceManagedConfigurationVariables(profile(),
-                                                  device_attributes(), dict);
+  RecursivelyReplaceManagedConfigurationVariables(user(), device_attributes(),
+                                                  dict);
   // Expect variables are replaced only once without an infinite loop.
   EXPECT_EQ(*dict.FindString(kKey1), kVariable2);
   EXPECT_EQ(*dict.FindString(kKey2), kVariable1);
@@ -413,8 +395,8 @@ TEST_F(ManagedConfigurationVariablesTest, ReplacesVariablesInLists) {
 
   device_attributes().SetFakeDeviceAssetId(kTestDeviceAssetId);
 
-  RecursivelyReplaceManagedConfigurationVariables(profile(),
-                                                  device_attributes(), dict);
+  RecursivelyReplaceManagedConfigurationVariables(user(), device_attributes(),
+                                                  dict);
 
   ASSERT_EQ(1U, dict.size());
   base::ListValue* nestedList = dict.FindList(kKey1);
@@ -425,8 +407,8 @@ TEST_F(ManagedConfigurationVariablesTest, ReplacesVariablesInLists) {
 }
 
 TEST_P(ManagedConfigurationVariablesAffiliatedTest, ReplacesVariables) {
-  RecursivelyReplaceManagedConfigurationVariables(
-      profile(), device_attributes(), mutable_input());
+  RecursivelyReplaceManagedConfigurationVariables(user(), device_attributes(),
+                                                  mutable_input());
   EXPECT_EQ(mutable_input(), expected_output());
 }
 
