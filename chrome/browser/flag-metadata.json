@@ -9280,6 +9280,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "suppress-appkit-frame-adjustments-during-move-loop",
+    "owners": [ "dpenning@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "suspicious-site-warnings",
     "owners": ["awado@google.com", "chrome-counter-abuse-alerts@google.com"],
     "expiry_milestone": 155

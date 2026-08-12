@@ -123,6 +123,11 @@ void OrderChildWindow(NSWindow* child_window,
 - (BOOL)_isConsideredOpenForPersistentState;
 - (void)_zoomToScreenEdge:(NSUInteger)edge;
 - (void)_removeFromGroups:(NSWindow*)window;
+- (void)_setFrame:(NSRect)frameRect
+    fromAdjustmentToScreen:(NSScreen*)screen
+            anchorIfNeeded:(BOOL)anchor
+                   animate:(BOOL)animate;
+- (void)_setFrameAfterMove:(NSRect)frameRect;
 - (BOOL)_isNonactivatingPanel;
 @end
 
@@ -428,17 +433,53 @@ struct NSEdgeAndCornerThicknesses {
   return [super frameViewClassForStyleMask:windowStyle];
 }
 
+// AppKit calls constrainFrameRect:toScreen: to clamp window frames to screen
+// boundaries. When a window move loop is active, suppress this clamping so that
+// CocoaWindowMoveLoop can smoothly drag windows across display boundaries
+// without AppKit snapping the window to screen edges.
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
-  if (self.isHeadless || self.parentWindow) {
-    // AppKit's default implementation moves child windows down to avoid
-    // the menu bar. We don't want that behavior, because widgets like the
-    // Omnibox may have a big shadow that could cause invisible menu bar
-    // collision in fullscreen/maximized state. We override it here to
-    // return the original frameRect before the adjustment.
+  if (self.isHeadless || self.parentWindow ||
+      (base::FeatureList::IsEnabled(
+           remote_cocoa::features::
+               kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
+       _bridge && _bridge->window_move_loop())) {
     return frameRect;
   }
 
   return [super constrainFrameRect:frameRect toScreen:screen];
+}
+
+// AppKit's internal screen layout manager invokes
+// _setFrame:fromAdjustmentToScreen: and _setFrameAfterMove: asynchronously
+// during screen layout changes or display boundary transitions to adjust the
+// window origin. Since CocoaWindowMoveLoop manually drives window positioning
+// during a tab drag, these stale AppKit callbacks would overwrite the move
+// loop's calculated position and cause the window to bounce back or lock to the
+// display edge. Suppress them while the move loop is active.
+- (void)_setFrame:(NSRect)frameRect
+    fromAdjustmentToScreen:(NSScreen*)screen
+            anchorIfNeeded:(BOOL)anchor
+                   animate:(BOOL)animate {
+  if (base::FeatureList::IsEnabled(
+          remote_cocoa::features::
+              kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
+      _bridge && _bridge->window_move_loop()) {
+    return;
+  }
+  [super _setFrame:frameRect
+      fromAdjustmentToScreen:screen
+              anchorIfNeeded:anchor
+                     animate:animate];
+}
+
+- (void)_setFrameAfterMove:(NSRect)frameRect {
+  if (base::FeatureList::IsEnabled(
+          remote_cocoa::features::
+              kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
+      _bridge && _bridge->window_move_loop()) {
+    return;
+  }
+  [super _setFrameAfterMove:frameRect];
 }
 
 - (NSWindow*)topmostVisibleChildModalWindow {

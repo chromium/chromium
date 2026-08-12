@@ -1178,6 +1178,11 @@ void NativeWidgetNSWindowBridge::EndMoveLoop() {
   window_move_loop_.reset();
 }
 
+void NativeWidgetNSWindowBridge::SetWindowMoveLoopForTesting(
+    std::unique_ptr<CocoaWindowMoveLoop> move_loop) {
+  window_move_loop_ = std::move(move_loop);
+}
+
 void NativeWidgetNSWindowBridge::SetCursor(NSCursor* cursor) {
   [window_delegate_ setCursor:cursor];
 }

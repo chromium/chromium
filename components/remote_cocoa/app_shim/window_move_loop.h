@@ -10,13 +10,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #include "ui/gfx/mac/scoped_cocoa_disable_screen_updates.h"
 
 namespace remote_cocoa {
 class NativeWidgetNSWindowBridge;
 
 // Used by NativeWidgetNSWindowBridge when dragging detached tabs.
-class CocoaWindowMoveLoop {
+class REMOTE_COCOA_APP_SHIM_EXPORT CocoaWindowMoveLoop {
  public:
   CocoaWindowMoveLoop(NativeWidgetNSWindowBridge* owner,
                       const NSPoint& initial_mouse_in_screen);

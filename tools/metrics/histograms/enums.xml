@@ -8594,6 +8594,8 @@ from previous Chrome versions.
   <int value="-1882330924" label="NTPArticleSuggestions:enabled"/>
   <int value="-1882201059" label="TabBottomSheet:enabled"/>
   <int value="-1881210399" label="AccessibilityManifestV3ChromeVox:disabled"/>
+  <int value="-1881064344"
+      label="SuppressAppKitFrameAdjustmentsDuringMoveLoop:disabled"/>
   <int value="-1880683127" label="UnrestrictedUsb:disabled"/>
   <int value="-1880633355" label="CaptureModeAudioMixing:disabled"/>
   <int value="-1880355454" label="disable-topchrome-md"/>
@@ -10187,6 +10189,8 @@ from previous Chrome versions.
   <int value="-1391693054"
       label="ContentSuggestionsFaviconsFromNewServer:disabled"/>
   <int value="-1391645613" label="ImeMozcProto:enabled"/>
+  <int value="-1391053391"
+      label="SuppressAppKitFrameAdjustmentsDuringMoveLoop:enabled"/>
   <int value="-1390331361"
       label="SyncPseudoUSSHistoryDeleteDirectives:enabled"/>
   <int value="-1390005994" label="AppCache:disabled"/>

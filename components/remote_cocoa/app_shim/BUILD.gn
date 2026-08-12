@@ -125,9 +125,13 @@ source_set("unit_tests") {
   ]
   deps = [
     ":app_shim",
+    ":features",
     "//base",
+    "//base/test:test_support",
+    "//components/remote_cocoa/common:mojo",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
+    "//ui/accelerated_widget_mac",
     "//ui/base",
     "//ui/display:test_support",
   ]
