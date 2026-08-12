@@ -88,7 +88,6 @@ base::Value ParseJsonAndCheck(const std::string& json) {
   return parsed.has_value() ? std::move(*parsed) : base::Value();
 }
 
-
 base::Value GenerateOnlyAgeOpenid4VpRequestWithDCQL() {
   constexpr char kJson[] = R"({
   "response_type": "vp_token",
@@ -217,6 +216,263 @@ base::Value GenerateGetPhoneNumberOpenid4VpRequest() {
   }
 })";
 
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GenerateVerifyPhoneNumberWithDisallowedCarriersOpenid4VpRequest() {
+  constexpr char kJson[] = R"({
+  "response_type": "vp_token",
+  "response_mode": "dc_api",
+  "client_id": "web-origin:https://www.digital-credentials.dev",
+  "nonce": "y9f67H0Kb2QF7nSbYh-XxBKkvGTCHk5MQo9OLBkKWD0",
+  "dcql_query": {
+    "credentials": [
+      {
+        "claims": [
+          {
+            "path": [
+              "subscription_hint"
+            ],
+            "values": [
+              1
+            ]
+          },
+          {
+            "path": [
+              "carrier_hint"
+            ],
+            "values": [
+              "310250"
+            ]
+          },
+          {
+            "path": [
+              "android_carrier_hint"
+            ],
+            "values": [
+              7
+            ]
+          },
+          {
+            "path": [
+              "disallowed_carriers"
+            ],
+            "values": [
+              "310260"
+            ]
+          }
+        ],
+        "format": "dc-authorization+sd-jwt",
+        "id": "aggregator1",
+        "meta": {
+          "vct_values": [
+            "number-verification/verify/ts43"
+          ]
+        }
+      }
+    ]
+  }
+})";
+
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GenerateSdJwtWithSubscriptionHint() {
+  constexpr char kJson[] = R"({
+    "dcql_query": {
+      "credentials": [
+        {
+          "id": "cred1",
+          "format": "dc+sd-jwt",
+          "meta": {
+            "vct_values": [
+              "eu.europa.ec.eudiw.pid.1"
+            ]
+          },
+          "claims": [
+            {
+              "path": [
+                "subscription_hint"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  })";
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GeneratePhoneNumberBundledWithMdlAge() {
+  constexpr char kJson[] = R"({
+    "dcql_query": {
+      "credentials": [
+        {
+          "id": "pnv_token",
+          "format": "dc-authorization+sd-jwt",
+          "meta": {
+            "vct_values": [
+              "number-verification/verify/ts43"
+            ]
+          },
+          "claims": [
+            {
+              "path": [
+                "disallowed_carriers"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mdl_token",
+          "format": "mso_mdoc",
+          "meta": {
+            "doctype_value": "org.iso.18013.5.1.mDL"
+          },
+          "claims": [
+            {
+              "path": [
+                "org.iso.18013.5.1",
+                "age_over_21"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  })";
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GeneratePhoneNumberBundledWithMdlSensitive() {
+  constexpr char kJson[] = R"({
+    "dcql_query": {
+      "credentials": [
+        {
+          "id": "pnv_token",
+          "format": "dc-authorization+sd-jwt",
+          "meta": {
+            "vct_values": [
+              "number-verification/verify/ts43"
+            ]
+          },
+          "claims": [
+            {
+              "path": [
+                "disallowed_carriers"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mdl_token",
+          "format": "mso_mdoc",
+          "meta": {
+            "doctype_value": "org.iso.18013.5.1.mDL"
+          },
+          "claims": [
+            {
+              "path": [
+                "org.iso.18013.5.1",
+                "given_name"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  })";
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GenerateMdlWithSpoofedPhoneVct() {
+  constexpr char kJson[] = R"({
+    "dcql_query": {
+      "credentials": [
+        {
+          "id": "mdl_token",
+          "format": "mso_mdoc",
+          "meta": {
+            "doctype_value": "org.iso.18013.5.1.mDL",
+            "vct_values": [
+              "number-verification/verify/ts43"
+            ]
+          },
+          "claims": [
+            {
+              "path": [
+                "org.iso.18013.5.1",
+                "given_name"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  })";
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GeneratePhoneNumberWithMalformedVct() {
+  constexpr char kJson[] = R"({
+    "dcql_query": {
+      "credentials": [
+        {
+          "id": "pnv_token",
+          "format": "dc-authorization+sd-jwt",
+          "meta": {
+            "vct_values": [
+              "number-verification/verify/ts43",
+              12345
+            ]
+          },
+          "claims": [
+            {
+              "path": [
+                "disallowed_carriers"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  })";
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GeneratePhoneNumberWithDoctype() {
+  constexpr char kJson[] = R"({
+    "dcql_query": {
+      "credentials": [
+        {
+          "id": "pnv_token",
+          "format": "dc-authorization+sd-jwt",
+          "meta": {
+            "doctype_value": "org.iso.18013.5.1.mDL",
+            "vct_values": [
+              "number-verification/verify/ts43"
+            ]
+          },
+          "claims": [
+            {
+              "path": [
+                "disallowed_carriers"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  })";
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GenerateEmptyCredentialsOpenid4VpRequest() {
+  constexpr char kJson[] = R"({
+    "dcql_query": {
+      "credentials": []
+    }
+  })";
   return ParseJsonAndCheck(kJson);
 }
 
@@ -718,8 +974,6 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             InterstitialType::kLowRisk);
 }
 
-
-
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocolDCQL_ComputeInterstitialType_MalformedRequest) {
   // Malformed request that's missing the claim_name entry.
@@ -847,6 +1101,110 @@ TEST_F(
     Openid4VpProtocolDCQL_ComputeInterstitialType_SdJwtSensitiveBundledWithDpc) {
   EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
                                     GenerateSdJwtSensitiveBundledWithDpc()),
+            InterstitialType::kLowRisk);
+}
+
+// Verifies that a Phone Number Verification (PNV) OpenID4VP request containing
+// the `disallowed_carriers` claim bypasses the safety interstitial. PNV claims
+// act as operational hints/parameters rather than user PII requests.
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolDCQL_ComputeInterstitialType_VerifyPhoneNumberWithDisallowedCarriers) {
+  EXPECT_EQ(
+      ComputeInterstitialType(
+          kOpenid4vpProtocol,
+          GenerateVerifyPhoneNumberWithDisallowedCarriersOpenid4VpRequest()),
+      std::nullopt);
+}
+
+// Verifies that PNV requests bypass the safety interstitial regardless of what
+// custom/arbitrary claim names are requested, because the PNV provider does not
+// return arbitrary user PII.
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolDCQL_ComputeInterstitialType_VerifyPhoneNumberWithArbitraryClaims) {
+  base::Value request =
+      GenerateVerifyPhoneNumberWithDisallowedCarriersOpenid4VpRequest();
+  ASSERT_TRUE(SetDCQLPathItem(request, "arbitrary_custom_claim"));
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
+            std::nullopt);
+}
+
+// Verifies that carrier hint claims (like `subscription_hint`) do NOT bypass
+// the safety interstitial when requested on generic non-PNV SD-JWT credentials,
+// ensuring strict claim filtering is maintained for other credential types.
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolDCQL_ComputeInterstitialType_SdJwtSubscriptionHint_RequiresInterstitial) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
+                                    GenerateSdJwtWithSubscriptionHint()),
+            InterstitialType::kLowRisk);
+}
+
+// Verifies that a multi-credential DCQL query bundling a PNV credential with a
+// valid mDL age credential bypasses the interstitial (both sub-credentials are
+// permitted).
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolDCQL_ComputeInterstitialType_PhoneNumberBundledWithMdlAge) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
+                                    GeneratePhoneNumberBundledWithMdlAge()),
+            std::nullopt);
+}
+
+// Verifies that bundling a PNV credential with an mDL credential requesting
+// unapproved/sensitive attributes (e.g. `given_name`) correctly triggers the
+// safety interstitial.
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolDCQL_ComputeInterstitialType_PhoneNumberBundledWithMdlSensitive) {
+  EXPECT_EQ(
+      ComputeInterstitialType(kOpenid4vpProtocol,
+                              GeneratePhoneNumberBundledWithMdlSensitive()),
+      InterstitialType::kLowRisk);
+}
+
+// Verifies anti-spoofing protection: an mDL (`mso_mdoc`) credential that
+// attempts to spoof a PNV bypass by adding PNV `vct_values` to `meta` is
+// rejected from PNV bypass and triggers the interstitial when sensitive claims
+// are present.
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolDCQL_ComputeInterstitialType_MdlWithSpoofedPhoneVct_RequiresInterstitial) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
+                                    GenerateMdlWithSpoofedPhoneVct()),
+            InterstitialType::kLowRisk);
+}
+
+// Verifies that malformed VCT values (e.g. non-string entries in `vct_values`)
+// fail gracefully and enforce the safety interstitial.
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolDCQL_ComputeInterstitialType_PhoneNumberWithMalformedVct_RequiresInterstitial) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
+                                    GeneratePhoneNumberWithMalformedVct()),
+            InterstitialType::kLowRisk);
+}
+
+// Verifies anti-spoofing / cross-format type confusion: an SD-JWT PNV
+// credential carrying an mDL `doctype_value` is rejected from PNV bypass to
+// prevent evading mDL claim validation.
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolDCQL_ComputeInterstitialType_PhoneNumberWithDoctype_RequiresInterstitial) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
+                                    GeneratePhoneNumberWithDoctype()),
+            InterstitialType::kLowRisk);
+}
+
+// Verifies fail-closed behavior: a DCQL query with an empty `credentials: []`
+// list requests zero identifiable credentials and must trigger the safety
+// interstitial.
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolDCQL_ComputeInterstitialType_EmptyCredentialsList_RequiresInterstitial) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
+                                    GenerateEmptyCredentialsOpenid4VpRequest()),
             InterstitialType::kLowRisk);
 }
 

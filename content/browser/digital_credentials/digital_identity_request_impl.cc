@@ -56,10 +56,6 @@ constexpr char kMdocAgeInYearsDataElement[] = "age_in_years";
 constexpr char kMdocAgeBirthYearDataElement[] = "age_birth_year";
 constexpr char kMdocBirthDateDataElement[] = "birth_date";
 
-constexpr char kSubscriptionHint[] = "subscription_hint";
-constexpr char kCarrierHint[] = "carrier_hint";
-constexpr char kAndroidCarrierHint[] = "android_carrier_hint";
-
 constexpr char kGetPhoneNumberVctValue[] =
     "number-verification/device-phone-number/ts43";
 constexpr char kVerifyPhoneNumberVctValue[] = "number-verification/verify/ts43";
@@ -90,9 +86,6 @@ bool CanClaimBypassInterstitial(const std::string& claim) {
       kMdocAgeInYearsDataElement,
       kMdocAgeBirthYearDataElement,
       kMdocBirthDateDataElement,
-      kSubscriptionHint,
-      kCarrierHint,
-      kAndroidCarrierHint,
   };
   return std::find(std::begin(kClaimsCanBypassInterstitial),
                    std::end(kClaimsCanBypassInterstitial),
@@ -113,8 +106,6 @@ bool CanVctValueBypassInterstitial(const std::string& vct_value) {
   return vct_value == kGetPhoneNumberVctValue ||
          vct_value == kVerifyPhoneNumberVctValue;
 }
-
-
 
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
     const base::DictValue& request) {
@@ -190,9 +181,10 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
     }
     std::vector<std::string> vct_values;
     for (const base::Value& vct_value : *vct_values_list) {
-      if (vct_value.is_string()) {
-        vct_values.push_back(vct_value.GetString());
+      if (!vct_value.is_string()) {
+        return {};
       }
+      vct_values.push_back(vct_value.GetString());
     }
     return vct_values;
   };
@@ -203,7 +195,9 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
   };
 
   const base::ListValue* credentials = query_dict->FindList("credentials");
-  if (!credentials) {
+  // Default-deny / fail-closed: A query with an empty credentials list requests
+  // no recognizable credential and must not bypass the safety interstitial.
+  if (!credentials || credentials->empty()) {
     return false;
   }
 
@@ -213,12 +207,6 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
       return false;
     }
 
-    std::vector<std::string> claims = credential_to_claims(*credential_dict);
-    if (!std::ranges::all_of(claims, CanClaimBypassInterstitial)) {
-      return false;
-    }
-
-    const std::string* format = credential_dict->FindString("format");
     const base::DictValue* meta_dict = credential_dict->FindDict(kMeta);
     std::vector<std::string> vct_values;
     std::string doctype_value;
@@ -227,15 +215,34 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
       doctype_value = meta_to_doctype_value(*meta_dict);
     }
 
-    bool is_dpc = std::ranges::any_of(vct_values, IsDpcVctValue) ||
-                  IsDpcDocTypeValue(doctype_value);
-    if (is_dpc) {
+    const std::string* format = credential_dict->FindString("format");
+    bool is_sdjwt = format && (*format == "dc+sd-jwt" ||
+                               *format == "dc-authorization+sd-jwt");
+
+    // Phone Number Verification (PNV) requests via Digital Credentials API do
+    // not return user PII in response to requested claims; claims serve solely
+    // as operational hints/parameters (e.g. `disallowed_carriers`). Therefore,
+    // PNV credentials bypass the safety interstitial based on their VCT values
+    // without inspecting the requested claims.
+    //
+    // Requiring `doctype_value.empty()` and `is_sdjwt` ensures that mDL or
+    // hybrid cross-format requests cannot evade claim inspection by attaching
+    // PNV VCT values.
+    bool is_phone =
+        is_sdjwt && doctype_value.empty() && !vct_values.empty() &&
+        std::ranges::all_of(vct_values, CanVctValueBypassInterstitial);
+    if (is_phone) {
       continue;
     }
 
-    bool is_phone =
-        std::ranges::all_of(vct_values, CanVctValueBypassInterstitial);
-    if (is_phone && !vct_values.empty()) {
+    std::vector<std::string> claims = credential_to_claims(*credential_dict);
+    if (!std::ranges::all_of(claims, CanClaimBypassInterstitial)) {
+      return false;
+    }
+
+    bool is_dpc = std::ranges::any_of(vct_values, IsDpcVctValue) ||
+                  IsDpcDocTypeValue(doctype_value);
+    if (is_dpc) {
       continue;
     }
 
@@ -248,8 +255,6 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
       continue;
     }
 
-    bool is_sdjwt = format && (*format == "dc+sd-jwt" ||
-                               *format == "dc-authorization+sd-jwt");
     if (is_sdjwt) {
       if (claims.empty()) {
         return false;
