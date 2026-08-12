@@ -13,14 +13,12 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_metadata.mojom";
 import "skia/public/mojom/image_info.mojom";
-import "skia/public/mojom/surface_origin.mojom";
 
 // See viz::TransferableResource::MetadataOverride in
 // components/viz/common/resources/transferable_resource.h
 struct MetadataOverride {
   bool? is_overlay_candidate;
   gfx.mojom.ColorSpace? color_space;
-  skia.mojom.SurfaceOrigin? origin;
   skia.mojom.AlphaType? alpha_type;
 };
 

@@ -10,6 +10,8 @@
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/shared_image_metadata.mojom-shared.h"
 #include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
+#include "skia/public/mojom/image_info_mojom_traits.h"
+#include "skia/public/mojom/surface_origin_mojom_traits.h"
 
 namespace mojo {
 
