@@ -30,6 +30,8 @@
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "mojo/public/mojom/base/empty.mojom.h"
+#include "mojo/public/mojom/base/error.mojom.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
@@ -167,13 +169,17 @@ class IwaDevHandlerBrowserTest
     return future.Get();
   }
 
-  std::optional<std::string> CallInstallAppFromDevProxy(const GURL& url) {
-    base::test::TestFuture<const std::optional<std::string>&> future;
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+  CallInstallAppFromDevProxy(const GURL& url) {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
     GetHandler()->InstallAppFromDevProxy(url, future.GetCallback());
     return future.Take();
   }
 
-  std::optional<std::string> CallSelectAndInstallAppFromLocalWebBundle(
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+  CallSelectAndInstallAppFromLocalWebBundle(
       std::optional<base::FilePath> path) {
     ui::FakeSelectFileDialog::Factory* factory =
         ui::FakeSelectFileDialog::RegisterFactory();
@@ -181,18 +187,23 @@ class IwaDevHandlerBrowserTest
     base::test::TestFuture<void> dialog_opened_future;
     factory->SetOpenCallback(dialog_opened_future.GetRepeatingCallback());
 
-    base::test::TestFuture<const std::optional<std::string>&> future;
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
     GetHandler()->SelectAndInstallAppFromLocalWebBundle(future.GetCallback());
 
     if (!dialog_opened_future.Wait()) {
       ADD_FAILURE() << "Timed out waiting for file dialog to open.";
-      return "Timed out waiting for file dialog to open.";
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument,
+          "Timed out waiting for file dialog to open."));
     }
 
     ui::FakeSelectFileDialog* fake_dialog = factory->GetLastDialog();
     if (!fake_dialog) {
       ADD_FAILURE() << "fake_dialog is nullptr.";
-      return "fake_dialog is nullptr.";
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument, "fake_dialog is nullptr."));
     }
     if (path.has_value()) {
       EXPECT_TRUE(fake_dialog->CallFileSelected(*path, "swbn"));
@@ -246,8 +257,8 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
   auto server =
       CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
 
-  auto error = CallInstallAppFromDevProxy(server->GetURL("/"));
-  EXPECT_FALSE(error.has_value());
+  auto result = CallInstallAppFromDevProxy(server->GetURL("/"));
+  EXPECT_TRUE(result.has_value());
 
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);
@@ -261,10 +272,11 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
   auto server =
       CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
 
-  auto error = CallInstallAppFromDevProxy(server->GetURL("/invalid_path"));
+  auto result = CallInstallAppFromDevProxy(server->GetURL("/invalid_path"));
 
-  ASSERT_TRUE(error.has_value());
-  EXPECT_THAT(*error, testing::HasSubstr("Non-origin URL provided"));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_THAT(result.error()->message,
+              testing::HasSubstr("Non-origin URL provided"));
 }
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
@@ -273,10 +285,10 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
   auto empty_server =
       CreateAndStartServer(FILE_PATH_LITERAL("web_apps/empty_dir"));
 
-  auto error = CallInstallAppFromDevProxy(empty_server->GetURL("/"));
+  auto result = CallInstallAppFromDevProxy(empty_server->GetURL("/"));
 
-  ASSERT_TRUE(error.has_value());
-  EXPECT_THAT(*error,
+  ASSERT_FALSE(result.has_value());
+  EXPECT_THAT(result.error()->message,
               testing::HasSubstr(
                   "App is not installable: The manifest could not be fetched"));
 }
@@ -289,8 +301,8 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
                                          .SetVersion(kAppBaseVersion))
           .BuildBundle(web_package::test::Ed25519KeyPair::CreateRandom());
 
-  auto error = CallSelectAndInstallAppFromLocalWebBundle(app->path());
-  EXPECT_FALSE(error.has_value());
+  auto result = CallSelectAndInstallAppFromLocalWebBundle(app->path());
+  EXPECT_TRUE(result.has_value());
 
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);
@@ -302,9 +314,9 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     IwaDevHandlerBrowserTest,
     SelectAndInstallAppFromLocalWebBundle_Error_NoFileSelected) {
-  auto error = CallSelectAndInstallAppFromLocalWebBundle(std::nullopt);
-  ASSERT_TRUE(error.has_value());
-  EXPECT_EQ(*error, "No file selected");
+  auto result = CallSelectAndInstallAppFromLocalWebBundle(std::nullopt);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error()->message, "No file selected");
 }
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
@@ -397,19 +409,21 @@ class IwaDevHandlerUpdateManifestBrowserTest : public IwaDevHandlerBrowserTest {
     return ServeData(path, json_content, "application/json");
   }
 
-  std::optional<std::string> CallInstallAppFromUpdateManifest(
-      const GURL& web_bundle_url,
-      iwa_dev::mojom::UpdateInfoPtr update_info) {
-    base::test::TestFuture<const std::optional<std::string>&> future;
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+  CallInstallAppFromUpdateManifest(const GURL& web_bundle_url,
+                                   iwa_dev::mojom::UpdateInfoPtr update_info) {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
     GetHandler()->InstallAppFromUpdateManifest(
         web_bundle_url, std::move(update_info), future.GetCallback());
     return future.Take();
   }
 
-  base::expected<iwa_dev::mojom::UpdateManifestPtr, std::string>
+  base::expected<iwa_dev::mojom::UpdateManifestPtr, mojo_base::mojom::ErrorPtr>
   CallParseUpdateManifestFromUrl(const GURL& url) {
-    base::test::TestFuture<
-        base::expected<iwa_dev::mojom::UpdateManifestPtr, std::string>>
+    base::test::TestFuture<base::expected<iwa_dev::mojom::UpdateManifestPtr,
+                                          mojo_base::mojom::ErrorPtr>>
         future;
     GetHandler()->ParseUpdateManifestFromUrl(url, future.GetCallback());
     return future.Take();
@@ -474,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
   auto result =
       CallParseUpdateManifestFromUrl(GURL("https://127.0.0.1:0/missing.json"));
   ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error(),
+  EXPECT_THAT(result.error()->message,
               testing::HasSubstr(web_app::UpdateManifestFetcher::ErrorToString(
                   web_app::UpdateManifestFetcher::Error::kDownloadFailed)));
 }
@@ -485,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
 
   auto result = CallParseUpdateManifestFromUrl(server->GetURL("/invalid.json"));
   ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error(),
+  EXPECT_THAT(result.error()->message,
               testing::HasSubstr(web_app::UpdateManifestFetcher::ErrorToString(
                   web_app::UpdateManifestFetcher::Error::kInvalidJson)));
 }
@@ -497,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
   auto result =
       CallParseUpdateManifestFromUrl(server->GetURL("/invalid_manifest.json"));
   ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error(),
+  EXPECT_THAT(result.error()->message,
               testing::HasSubstr(web_app::UpdateManifestFetcher::ErrorToString(
                   web_app::UpdateManifestFetcher::Error::kInvalidManifest)));
 }
@@ -513,9 +527,9 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
 
   auto update_info =
       iwa_dev::mojom::UpdateInfo::New(GURL(kUpdateManifestUrl), "default");
-  auto error = CallInstallAppFromUpdateManifest(server->GetURL("/app.swbn"),
-                                                std::move(update_info));
-  EXPECT_FALSE(error.has_value()) << *error;
+  auto result = CallInstallAppFromUpdateManifest(server->GetURL("/app.swbn"),
+                                                 std::move(update_info));
+  EXPECT_TRUE(result.has_value());
 
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);
@@ -538,9 +552,9 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
 
   auto update_info =
       iwa_dev::mojom::UpdateInfo::New(GURL(kUpdateManifestUrl), "beta");
-  auto error = CallInstallAppFromUpdateManifest(server->GetURL("/app.swbn"),
-                                                std::move(update_info));
-  EXPECT_FALSE(error.has_value()) << *error;
+  auto result = CallInstallAppFromUpdateManifest(server->GetURL("/app.swbn"),
+                                                 std::move(update_info));
+  EXPECT_TRUE(result.has_value());
 
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);
@@ -557,19 +571,19 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
   // Non-HTTP/HTTPS bundle URL
   auto update_info1 = iwa_dev::mojom::UpdateInfo::New(
       GURL("https://example.com/update.json"), "default");
-  auto error1 = CallInstallAppFromUpdateManifest(GURL("chrome://settings"),
-                                                 std::move(update_info1));
-  ASSERT_TRUE(error1.has_value());
-  EXPECT_EQ(*error1, "Invalid Web Bundle URL provided.");
+  auto result1 = CallInstallAppFromUpdateManifest(GURL("chrome://settings"),
+                                                  std::move(update_info1));
+  ASSERT_FALSE(result1.has_value());
+  EXPECT_EQ(result1.error()->message, "Invalid Web Bundle URL provided.");
   EXPECT_TRUE(GetInstalledAppsInfo().empty());
 
   // Non-HTTP/HTTPS manifest URL
   auto update_info2 =
       iwa_dev::mojom::UpdateInfo::New(GURL("chrome://settings"), "default");
-  auto error2 = CallInstallAppFromUpdateManifest(
+  auto result2 = CallInstallAppFromUpdateManifest(
       GURL("https://example.com/app.swbn"), std::move(update_info2));
-  ASSERT_TRUE(error2.has_value());
-  EXPECT_EQ(*error2, "Invalid Update Manifest URL provided.");
+  ASSERT_FALSE(result2.has_value());
+  EXPECT_EQ(result2.error()->message, "Invalid Update Manifest URL provided.");
   EXPECT_TRUE(GetInstalledAppsInfo().empty());
 }
 
@@ -584,10 +598,10 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
 
   auto update_info =
       iwa_dev::mojom::UpdateInfo::New(GURL(kUpdateManifestUrl), "");
-  auto error = CallInstallAppFromUpdateManifest(server->GetURL("/app.swbn"),
-                                                std::move(update_info));
-  ASSERT_TRUE(error.has_value());
-  EXPECT_EQ(*error, "Invalid update channel provided.");
+  auto result = CallInstallAppFromUpdateManifest(server->GetURL("/app.swbn"),
+                                                 std::move(update_info));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error()->message, "Invalid update channel provided.");
   EXPECT_TRUE(GetInstalledAppsInfo().empty());
 }
 
@@ -595,11 +609,12 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
                        InstallAppFromUpdateManifest_BundleDownloadError) {
   auto update_info =
       iwa_dev::mojom::UpdateInfo::New(GURL(kUpdateManifestUrl), "default");
-  auto error = CallInstallAppFromUpdateManifest(
+  auto result = CallInstallAppFromUpdateManifest(
       GURL("https://127.0.0.1:0/missing.swbn"), std::move(update_info));
-  ASSERT_TRUE(error.has_value());
-  EXPECT_THAT(*error, testing::HasSubstr(
-                          "Network error while downloading bundle file"));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_THAT(
+      result.error()->message,
+      testing::HasSubstr("Network error while downloading bundle file"));
   EXPECT_TRUE(GetInstalledAppsInfo().empty());
 }
 

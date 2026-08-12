@@ -12,6 +12,7 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {Empty} from '//resources/mojo/mojo/public/mojom/base/empty.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
@@ -85,7 +86,7 @@ export class IwaDevAppElement extends CrLitElement {
         .then(success => e.detail.callback({success}))
         .catch(
             err => e.detail.callback(
-                {error: (err as Error)?.message || String(err)}));
+                {error: (err as {message?: string})?.message || String(err)}));
   }
 
   protected async onRequestInstallFromUpdateManifest_(e: CustomEvent<{
@@ -97,18 +98,21 @@ export class IwaDevAppElement extends CrLitElement {
             e.detail.webBundleUrl, e.detail.updateInfo));
   }
 
-  private async processInstallRequest_(
-      installPromise: Promise<{error: string | null}>) {
+  private processInstallRequest_(installPromise: Promise<Empty>) {
     const dialog = this.$.installDialog;
     dialog.startInstallation();
 
-    const {error} = await installPromise;
-
-    dialog.onInstallationFinished(error);
-    if (!error) {
-      this.toastMessage_ = 'Installation successful!';
-      this.$.toast.show();
-    }
+    return installPromise
+        .then(() => {
+          dialog.onInstallationFinished(null);
+          this.toastMessage_ = 'Installation successful!';
+          this.$.toast.show();
+        })
+        .catch(err => {
+          const errorMessage =
+              (err as {message?: string})?.message || String(err);
+          dialog.onInstallationFinished(errorMessage);
+        });
   }
 
   override async connectedCallback() {

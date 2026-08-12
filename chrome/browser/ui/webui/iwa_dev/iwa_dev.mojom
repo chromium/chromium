@@ -4,6 +4,8 @@
 
 module iwa_dev.mojom;
 
+import "mojo/public/mojom/base/empty.mojom";
+import "mojo/public/mojom/base/error.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -54,21 +56,21 @@ interface PageHandler {
   GetInstalledAppsInfo() => (array<IwaDevModeAppInfo> apps);
 
   // Installs an IWA from a local proxy server.
-  // Returns an error message if installation failed, or null on success.
-  InstallAppFromDevProxy(url.mojom.Url url) => (string? error);
+  InstallAppFromDevProxy(url.mojom.Url url)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Installs an IWA from an update manifest URL.
-  // Returns an error message if installation failed, or null on success.
   InstallAppFromUpdateManifest(url.mojom.Url web_bundle_url,
                                UpdateInfo update_info)
-      => (string? error);
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Attempts to fetch and parse an IWA update manifest from the provided url.
   ParseUpdateManifestFromUrl(url.mojom.Url update_manifest_url)
-    => result<UpdateManifest, string>;
+      => result<UpdateManifest, mojo_base.mojom.Error>;
 
   // Opens a file picker for the user to select a Web Bundle and installs it.
-  SelectAndInstallAppFromLocalWebBundle() => (string? error);
+  SelectAndInstallAppFromLocalWebBundle()
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Uninstalls an IWA with a given ID.
   UninstallApp(string app_id) => (bool success);

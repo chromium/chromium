@@ -42,6 +42,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/mojom/base/empty.mojom.h"
+#include "mojo/public/mojom/base/error.mojom.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -118,10 +120,14 @@ iwa_dev::mojom::IwaDevModeAppInfoPtr MapToMojomIwaDevModeAppInfo(
       isolation_data.version().GetString());
 }
 
-std::optional<std::string> MapToInstallError(
-    web_app::IsolatedWebAppDevInstallManager::
-        MaybeInstallIsolatedWebAppCommandSuccess result) {
-  return result.has_value() ? std::nullopt : std::make_optional(result.error());
+template <typename T>
+base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+MapToMojomEmptyResult(base::expected<T, std::string> result) {
+  if (!result.has_value()) {
+    return base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, result.error()));
+  }
+  return std::monostate();
 }
 
 iwa_dev::mojom::UpdateManifestPtr MapToMojomUpdateManifest(
@@ -239,7 +245,9 @@ void IwaDevPageHandler::InstallAppFromDevProxy(
   provider_->isolated_web_app_dev_install_manager()
       .InstallIsolatedWebAppFromDevModeProxy(
           url, web_app::IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
-          base::BindOnce(&MapToInstallError).Then(std::move(callback)));
+          base::BindOnce(&MapToMojomEmptyResult<
+                             web_app::InstallIsolatedWebAppCommandSuccess>)
+              .Then(std::move(callback)));
 }
 
 void IwaDevPageHandler::InstallAppFromUpdateManifest(
@@ -247,24 +255,32 @@ void IwaDevPageHandler::InstallAppFromUpdateManifest(
     iwa_dev::mojom::UpdateInfoPtr update_info,
     InstallAppFromUpdateManifestCallback callback) {
   if (!web_bundle_url.SchemeIsHTTPOrHTTPS()) {
-    std::move(callback).Run("Invalid Web Bundle URL provided.");
+    std::move(callback).Run(base::unexpected(
+        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                     "Invalid Web Bundle URL provided.")));
     return;
   }
   if (!update_info->update_manifest_url.SchemeIsHTTPOrHTTPS()) {
-    std::move(callback).Run("Invalid Update Manifest URL provided.");
+    std::move(callback).Run(base::unexpected(
+        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                     "Invalid Update Manifest URL provided.")));
     return;
   }
   ASSIGN_OR_RETURN(
       web_app::UpdateChannel update_channel,
       web_app::UpdateChannel::Create(update_info->update_channel), [&](auto) {
-        std::move(callback).Run("Invalid update channel provided.");
+        std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+            mojo_base::mojom::Code::kInvalidArgument,
+            "Invalid update channel provided.")));
       });
 
   provider_->isolated_web_app_dev_install_manager()
       .DownloadAndInstallIsolatedWebAppFromDevModeBundle(
           web_bundle_url,
           web_app::IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
-          base::BindOnce(&MapToInstallError).Then(std::move(callback)),
+          base::BindOnce(&MapToMojomEmptyResult<
+                             web_app::InstallIsolatedWebAppCommandSuccess>)
+              .Then(std::move(callback)),
           /*expected_bundle_id=*/std::nullopt,
           web_app::IwaUpdateInfo(update_info->update_manifest_url,
                                  std::move(update_channel)));
@@ -285,16 +301,17 @@ void IwaDevPageHandler::ParseUpdateManifestFromUrl(
   fetcher_ptr->FetchUpdateManifest(
       base::BindOnce(
           [](base::expected<web_app::UpdateManifest,
-                            web_app::UpdateManifestFetcher::Error> result) {
-            return std::move(result)
-                .transform(&MapToMojomUpdateManifest)
-                .transform_error(
-                    [](web_app::UpdateManifestFetcher::Error error) {
-                      return base::StrCat(
-                          {"Manifest fetch failed: ",
-                           web_app::UpdateManifestFetcher::ErrorToString(
-                               error)});
-                    });
+                            web_app::UpdateManifestFetcher::Error> result)
+              -> base::expected<iwa_dev::mojom::UpdateManifestPtr,
+                                mojo_base::mojom::ErrorPtr> {
+            if (!result.has_value()) {
+              return base::unexpected(mojo_base::mojom::Error::New(
+                  mojo_base::mojom::Code::kInvalidArgument,
+                  base::StrCat({"Manifest fetch failed: ",
+                                web_app::UpdateManifestFetcher::ErrorToString(
+                                    result.error())})));
+            }
+            return MapToMojomUpdateManifest(result.value());
           })
           .Then(std::move(callback))
           .Then(std::move(fetcher_keep_alive)));
@@ -315,7 +332,8 @@ void IwaDevPageHandler::OnLocalBundleSelected(
     SelectAndInstallAppFromLocalWebBundleCallback callback,
     std::optional<base::FilePath> path) {
   if (!path) {
-    std::move(callback).Run("No file selected");
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "No file selected")));
     return;
   }
 
@@ -323,7 +341,9 @@ void IwaDevPageHandler::OnLocalBundleSelected(
       .InstallIsolatedWebAppFromDevModeBundle(
           *path,
           web_app::IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
-          base::BindOnce(&MapToInstallError).Then(std::move(callback)));
+          base::BindOnce(&MapToMojomEmptyResult<
+                             web_app::InstallIsolatedWebAppCommandSuccess>)
+              .Then(std::move(callback)));
 }
 
 void IwaDevPageHandler::OnWebAppInstalled(const webapps::AppId& app_id) {

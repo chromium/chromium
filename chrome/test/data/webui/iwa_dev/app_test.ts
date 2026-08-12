@@ -274,8 +274,7 @@ suite('<iwa-dev-app>', () => {
       async () => {
         handler.setResultFor(
             'getInstalledAppsInfo', Promise.resolve({apps: []}));
-        handler.setResultFor(
-            'installAppFromDevProxy', Promise.resolve({error: null}));
+        handler.setResultFor('installAppFromDevProxy', Promise.resolve());
 
         createApp(/*devModeEnabled=*/ true);
         await handler.whenCalled('getInstalledAppsInfo');
@@ -304,8 +303,7 @@ suite('<iwa-dev-app>', () => {
         handler.setResultFor(
             'getInstalledAppsInfo', Promise.resolve({apps: []}));
         handler.setResultFor(
-            'selectAndInstallAppFromLocalWebBundle',
-            Promise.resolve({error: null}));
+            'selectAndInstallAppFromLocalWebBundle', Promise.resolve());
 
         createApp(/*devModeEnabled=*/ true);
         await handler.whenCalled('getInstalledAppsInfo');
@@ -334,7 +332,7 @@ suite('<iwa-dev-app>', () => {
             'getInstalledAppsInfo', Promise.resolve({apps: []}));
         handler.setResultFor(
             'selectAndInstallAppFromLocalWebBundle',
-            Promise.resolve({error: 'No file selected'}));
+            Promise.reject({message: 'No file selected'}));
 
         createApp(/*devModeEnabled=*/ true);
         await handler.whenCalled('getInstalledAppsInfo');
@@ -418,8 +416,7 @@ suite('<iwa-dev-app>', () => {
       async () => {
         handler.setResultFor(
             'getInstalledAppsInfo', Promise.resolve({apps: []}));
-        handler.setResultFor(
-            'installAppFromUpdateManifest', Promise.resolve({error: null}));
+        handler.setResultFor('installAppFromUpdateManifest', Promise.resolve());
 
         createApp(/*devModeEnabled=*/ true);
         await handler.whenCalled('getInstalledAppsInfo');
