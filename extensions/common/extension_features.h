@@ -73,6 +73,11 @@ BASE_DECLARE_FEATURE(kApiGlicPrivate);
 // `enterprise.reportingPrivate.onDataMaskingRulesTriggered` API.
 BASE_DECLARE_FEATURE(kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered);
 
+// Controls the availability of the
+// `enterprise.reportingPrivate.reportForceSaveToCloudEventHandled` API.
+BASE_DECLARE_FEATURE(
+    kApiEnterpriseReportingPrivateReportForceSaveToCloudEventHandled);
+
 // Controls the availability of Glic access from Google webpages.
 BASE_DECLARE_FEATURE(kApiGlicAccessFromGoogleWebpage);
 

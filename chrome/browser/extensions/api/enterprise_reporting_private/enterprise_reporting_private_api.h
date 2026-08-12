@@ -345,6 +345,30 @@ class EnterpriseReportingPrivateReportDataMaskingEventFunction
   ExtensionFunction::ResponseAction Run() override;
 };
 
+class EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "enterprise.reportingPrivate.reportForceSaveToCloudEventHandled",
+      ENTERPRISEREPORTINGPRIVATE_REPORTFORCESAVETOCLOUDEVENTHANDLED)
+
+  EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction();
+  EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction(
+      const EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction&) =
+      delete;
+  EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction&
+  operator=(
+      const EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction&) =
+      delete;
+
+ private:
+  ~EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction()
+      override;
+
+  // ExtensionFunction:
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_ENTERPRISE_REPORTING_PRIVATE_API_H_

@@ -36,6 +36,8 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiDesktopAndroidNativeMessaging,
     &extensions_features::
         kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered,
+    &extensions_features::
+        kApiEnterpriseReportingPrivateReportForceSaveToCloudEventHandled,
 #if BUILDFLAG(IS_CHROMEOS)
     &blink::features::kSmartCard,
 #endif

@@ -285,6 +285,23 @@ dictionary DataMaskingEvent {
   required sequence<TriggeredRuleInfo> triggeredRuleInfo;
 };
 
+// Event outcome status reported by the extension after handling Force Save to
+// Cloud event.
+enum ForceSaveToCloudEventType {
+  "savedToCloud"
+};
+
+// Event representing that a Force Save to Cloud operation was handled
+// by an enterprise companion extension.
+dictionary ForceSaveToCloudEvent {
+  // The unique identifier for the download operation matching chrome.downloads
+  // ID.
+  required DOMString downloadId;
+
+  // The event type.
+  required ForceSaveToCloudEventType event;
+};
+
 dictionary DataMaskingRules {
   // The URL being navigated to that triggered the rules.
   required DOMString url;
@@ -411,6 +428,11 @@ interface ReportingPrivate {
   // upload is finished. Also Invoked by <code>setDeviceData</code> when data is
   // stored.
   static Promise<undefined> reportDataMaskingEvent(DataMaskingEvent event);
+
+  // Reports that a Force Save to Cloud download operation has been handled
+  // by the enterprise extension.
+  static Promise<undefined> reportForceSaveToCloudEventHandled(
+      ForceSaveToCloudEvent event);
 
   static attribute OnDataMaskingRulesTriggeredEvent onDataMaskingRulesTriggered;
 };

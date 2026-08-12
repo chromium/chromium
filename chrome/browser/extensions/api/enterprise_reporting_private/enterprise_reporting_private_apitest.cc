@@ -1207,4 +1207,58 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest, WithRules) {
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
+                       ReportForceSaveToCloudFeatureDisabled) {
+  static constexpr char kTestJS[] = R"(
+    chrome.test.assertEq(
+        'undefined',
+        typeof chrome.enterprise.reportingPrivate
+            .reportForceSaveToCloudEventHandled);
+    chrome.test.succeed();
+  )";
+
+  RunTest(kTestJS);
+}
+
+class EnterpriseReportForceSaveToCloudEventHandledTest
+    : public EnterpriseReportingPrivateApiTest {
+ public:
+  EnterpriseReportForceSaveToCloudEventHandledTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_{
+      extensions_features::
+          kApiEnterpriseReportingPrivateReportForceSaveToCloudEventHandled};
+};
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportForceSaveToCloudEventHandledTest,
+                       Success) {
+  static constexpr char kTestJS[] = R"(
+    await chrome.enterprise.reportingPrivate.reportForceSaveToCloudEventHandled(
+        {
+          "downloadId": "12345",
+          "event": "savedToCloud"
+        });
+    chrome.test.succeed();
+  )";
+
+  RunTest(kTestJS);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportForceSaveToCloudEventHandledTest,
+                       EmptyDownloadIdFails) {
+  static constexpr char kTestJS[] = R"(
+    await chrome.test.assertPromiseRejects(
+        chrome.enterprise.reportingPrivate.reportForceSaveToCloudEventHandled(
+            {
+              "downloadId": "",
+              "event": "savedToCloud"
+            }),
+        'Error: Download ID cannot be empty.');
+    chrome.test.succeed();
+  )";
+
+  RunTest(kTestJS);
+}
+
 }  // namespace extensions

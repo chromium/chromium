@@ -916,4 +916,30 @@ EnterpriseReportingPrivateReportDataMaskingEventFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+// reportForceSaveToCloudEventHandled
+
+EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction::
+    EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction() =
+        default;
+EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction::
+    ~EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction() =
+        default;
+
+ExtensionFunction::ResponseAction
+EnterpriseReportingPrivateReportForceSaveToCloudEventHandledFunction::Run() {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  auto params = api::enterprise_reporting_private::
+      ReportForceSaveToCloudEventHandled::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (params->event.download_id.empty()) {
+    return RespondNow(Error("Download ID cannot be empty."));
+  }
+
+  // TODO(krashi): Implement handling of the Force Save to Cloud event.
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

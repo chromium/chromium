@@ -487,6 +487,9 @@
   "enterprise.reportingPrivate.onDataMaskingRulesTriggered": {
     "feature_flag": "ApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered"
   },
+  "enterprise.reportingPrivate.reportForceSaveToCloudEventHandled": {
+    "feature_flag": "ApiEnterpriseReportingPrivateReportForceSaveToCloudEventHandled"
+  },
   "proxyOverrideRulesPrivate": {
     "dependencies": ["permission:proxyOverrideRulesPrivate"],
     "contexts": ["privileged_extension"],
