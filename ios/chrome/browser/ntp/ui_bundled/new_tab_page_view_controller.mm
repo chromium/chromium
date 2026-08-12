@@ -61,11 +61,6 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
 // overscroll.
 const CGFloat kFeedContainerExtraHeight = 500;
 
-// The spacing for the quick actions buttons.
-const CGFloat kQuickActionSpacingTop = 3.0;
-const CGFloat kQuickActionSpacingBottom = 19.0;
-const CGFloat kSpaceBetweenModules = 14.0;
-
 // Duration of animation to, from, and between different background images.
 const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
@@ -639,16 +634,19 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     if (obj == self.magicStackCollectionView ||
         obj == self.contentSuggestionsViewController ||
         obj == self.feedHeaderViewController) {
-      heightAboveFeed += kSpaceBetweenModules;
+      heightAboveFeed +=
+          content_suggestions::ReducedModuleSpacing(self.traitCollection);
     }
 
     if (obj == _quickActionsViewController) {
       // First, subtract off the "standard" space that was added in the
       // previous iteration of the loop because this module uses custom
       // top and bottom spacing.
-      heightAboveFeed -= kSpaceBetweenModules;
+      heightAboveFeed -=
+          content_suggestions::ReducedModuleSpacing(self.traitCollection);
       // Then add in the custom spacing used for this module.
-      heightAboveFeed += kQuickActionSpacingTop + kQuickActionSpacingBottom;
+      heightAboveFeed += content_suggestions::QuickActionsTopPadding() +
+                         [self quickActionsBottomSpacing];
     }
   }
   return heightAboveFeed;
@@ -1375,8 +1373,11 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
         [viewBelowHeader.topAnchor
             constraintEqualToAnchor:self.headerView.bottomAnchor
                            constant:self.quickActionsVisible
-                                        ? kQuickActionSpacingTop
-                                        : kSpaceBetweenModules],
+                                        ? content_suggestions::
+                                              QuickActionsTopPadding()
+                                        : content_suggestions::
+                                              ReducedModuleSpacing(
+                                                  self.traitCollection)],
       ];
     }
   }
@@ -1638,8 +1639,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
         UIView* viewAbove =
             [self viewForAboveFeedObject:self.objectsAboveFeed[index - 1]];
 
-        CGFloat spacingToUse =
-            isQuickActions ? kQuickActionSpacingBottom : kSpaceBetweenModules;
+        CGFloat spacingToUse = isQuickActions
+                                   ? [self quickActionsBottomSpacing]
+                                   : content_suggestions::ReducedModuleSpacing(
+                                         self.traitCollection);
         [NSLayoutConstraint activateConstraints:@[
           [view.topAnchor constraintEqualToAnchor:viewAbove.bottomAnchor
                                          constant:spacingToUse],
@@ -1817,6 +1820,14 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 }
 
 #pragma mark - Helpers
+
+// Bottom spacing below the Quick Actions module, depending on whether Most
+// Visited is visible.
+- (CGFloat)quickActionsBottomSpacing {
+  return self.mostVisitedVisible
+             ? content_suggestions::MostVisitedTopPadding()
+             : content_suggestions::ReducedModuleSpacing(self.traitCollection);
+}
 
 - (CGFloat)minimumNTPHeight {
   CGFloat collectionViewHeight = self.collectionView.bounds.size.height;

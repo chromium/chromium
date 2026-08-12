@@ -20,18 +20,24 @@ extern const CGFloat kReturnToRecentTabSectionBottomMargin;
 // Tight Padding Arm.
 extern const CGFloat kLogoTopPaddingTight;
 extern const CGFloat kLogoToFakeboxPaddingTight;
+extern const CGFloat kDoodleTopPaddingTight;
+extern const CGFloat kDoodleToFakeboxPaddingTight;
 extern const CGFloat kQuickActionsTopPaddingTight;
 extern const CGFloat kMostVisitedTopPaddingTight;
 
 // Medium Padding Arm.
 extern const CGFloat kLogoTopPaddingMedium;
 extern const CGFloat kLogoToFakeboxPaddingMedium;
+extern const CGFloat kDoodleTopPaddingMedium;
+extern const CGFloat kDoodleToFakeboxPaddingMedium;
 extern const CGFloat kQuickActionsTopPaddingMedium;
 extern const CGFloat kMostVisitedTopPaddingMedium;
 
 // Preferred Padding Arm.
 extern const CGFloat kLogoTopPaddingPreferred;
 extern const CGFloat kLogoToFakeboxPaddingPreferred;
+extern const CGFloat kDoodleTopPaddingPreferred;
+extern const CGFloat kDoodleToFakeboxPaddingPreferred;
 extern const CGFloat kQuickActionsTopPaddingPreferred;
 extern const CGFloat kMostVisitedTopPaddingPreferred;
 
