@@ -43,6 +43,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -69,8 +71,8 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
@@ -85,24 +87,22 @@ import java.util.concurrent.BlockingQueue;
 /** View tests for the keyboard accessory sheet component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class AccessorySheetViewTest {
     private WebPageStation mPage;
     private PropertyModel mModel;
     private BlockingQueue<AccessorySheetView> mViewPager;
 
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Before
     public void setUp() throws InterruptedException {
         mPage = mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AsyncViewStub viewStub =
-                            mActivityTestRule
-                                    .getActivity()
-                                    .findViewById(R.id.keyboard_accessory_sheet_stub);
+                    AsyncViewStub viewStub = getOrResetSheetStub();
                     int height =
                             mActivityTestRule
                                     .getActivity()
@@ -119,6 +119,37 @@ public class AccessorySheetViewTest {
                             mModel, VISIBLE, provider, AccessorySheetViewBinder::bind);
                     provider.whenLoaded(mViewPager::add);
                 });
+    }
+
+    private AsyncViewStub getOrResetSheetStub() {
+        AsyncViewStub viewStub =
+                mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory_sheet_stub);
+        if (viewStub != null) {
+            return viewStub;
+        }
+
+        View container =
+                mActivityTestRule
+                        .getActivity()
+                        .findViewById(R.id.keyboard_accessory_sheet_container);
+        assertNotNull(
+                "Neither keyboard_accessory_sheet_stub nor"
+                        + " keyboard_accessory_sheet_container was found in layout",
+                container);
+        ViewGroup parent = (ViewGroup) container.getParent();
+        int index = parent.indexOfChild(container);
+        parent.removeView(container);
+
+        ViewGroup testLayout =
+                (ViewGroup)
+                        LayoutInflater.from(mActivityTestRule.getActivity())
+                                .inflate(R.layout.test_main, null);
+        viewStub = testLayout.findViewById(R.id.keyboard_accessory_sheet_stub);
+        testLayout.removeView(viewStub);
+        viewStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
+        viewStub.setShouldInflateOnBackgroundThread(true);
+        parent.addView(viewStub, index);
+        return viewStub;
     }
 
     @Test
