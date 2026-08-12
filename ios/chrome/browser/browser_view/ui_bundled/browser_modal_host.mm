@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
+#import "ios/chrome/browser/enterprise/enterprise_dialog/coordinator/enterprise_dialog_coordinator.h"
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
@@ -54,6 +55,8 @@
 #import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/add_contacts_coordinator.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_coordinator.h"
+#import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_coordinator.h"
+#import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_view_coordinator.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h"
@@ -61,6 +64,8 @@
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -78,6 +83,7 @@
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
@@ -89,6 +95,7 @@
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
@@ -141,6 +148,7 @@ const char kChromeAppStoreUrl[] =
                                 DownloadListCommands,
                                 DriveFilePickerCommands,
                                 EnhancedCalendarCommands,
+                                EnterpriseCommands,
                                 FileUploadPanelCommands,
                                 GoogleOneCommands,
                                 IOSPasskeyClientCommands,
@@ -153,6 +161,7 @@ const char kChromeAppStoreUrl[] =
                                 PasswordBreachCommands,
                                 PasswordProtectionCommands,
                                 PasswordProtectionCoordinatorDelegate,
+                                PictureInPictureCommands,
                                 PriceTrackedItemsCommands,
                                 ReminderNotificationsCommands,
                                 ReminderNotificationsCoordinatorDelegate,
@@ -200,6 +209,7 @@ const char kChromeAppStoreUrl[] =
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
   InfobarAutofillEditProfileBottomSheetHandler* _editProfileBottomSheetHandler;
   EnhancedCalendarCoordinator* _enhancedCalendarCoordinator;
+  EnterpriseDialogCoordinator* _enterpriseDialogCoordinator;
   API_AVAILABLE(ios(18.4))
   FileUploadPanelCoordinator* _fileUploadPanelCoordinator;
   GoogleOneCoordinator* _googleOneCoordinator;
@@ -216,6 +226,7 @@ const char kChromeAppStoreUrl[] =
   PaymentsScanSaveAndFillOfferBottomSheetCoordinator* _paymentsScanCoordinator;
   PaymentsSuggestionBottomSheetCoordinator*
       _paymentsSuggestionBottomSheetCoordinator;
+  PictureInPictureCoordinator* _pictureInPictureCoordinator;
   PriceNotificationsViewCoordinator* _priceNotificationsViewCoordinator;
   ReminderNotificationsCoordinator* _reminderNotificationsCoordinator;
   SaveCardBottomSheetCoordinator* _saveCardBottomSheetCoordinator;
@@ -288,17 +299,19 @@ const char kChromeAppStoreUrl[] =
   }
   [self hideDriveFilePicker];
   [self hideEnhancedCalendarBottomSheet];
+  [self dismissEnterpriseWarningDialog];
   if (@available(iOS 18.4, *)) {
     [self hideFileUploadPanel];
   }
   [self hideGoogleOne];
+  [self dismissLevelUp];
   [self dismissPasskeyCreation];
   [self dismissPasskeySuggestions];
   [self stopPasskeyWelcomeScreenCoordinator];
   [self dismissPasskeyIncognitoInterstitial];
   [self stopPasswordBreach];
   [self stopPasswordProtectionCoordinator];
-  [self dismissLevelUp];
+  [self dismissPictureInPicture];
   [self hideMiniMap];
   [self hidePageInfo];
   [self dismissPageActionMenuWithCompletion:nil];
@@ -401,6 +414,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(DownloadListCommands),
     @protocol(DriveFilePickerCommands),
     @protocol(EnhancedCalendarCommands),
+    @protocol(EnterpriseCommands),
     @protocol(FileUploadPanelCommands),
     @protocol(GoogleOneCommands),
     @protocol(IOSPasskeyClientCommands),
@@ -411,6 +425,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(ParentAccessCommands),
     @protocol(PasswordBreachCommands),
     @protocol(PasswordProtectionCommands),
+    @protocol(PictureInPictureCommands),
     @protocol(PriceTrackedItemsCommands),
     @protocol(ReminderNotificationsCommands),
     @protocol(SaveToDriveCommands),
@@ -1070,6 +1085,27 @@ const char kChromeAppStoreUrl[] =
   _enhancedCalendarCoordinator = nil;
 }
 
+#pragma mark - EnterpriseCommands
+
+- (void)showEnterpriseWarningDialog:(enterprise::DialogType)dialogType
+                 organizationDomain:(std::string_view)organizationDomain
+                           callback:(base::OnceCallback<void(bool)>)callback {
+  [_enterpriseDialogCoordinator stop];
+
+  _enterpriseDialogCoordinator = [[EnterpriseDialogCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser
+                      dialogType:dialogType
+              organizationDomain:organizationDomain
+                        callback:std::move(callback)];
+  [_enterpriseDialogCoordinator start];
+}
+
+- (void)dismissEnterpriseWarningDialog {
+  [_enterpriseDialogCoordinator stop];
+  _enterpriseDialogCoordinator = nil;
+}
+
 #pragma mark - FileUploadPanelCommands
 
 - (void)showFileUploadPanel API_AVAILABLE(ios(18.4)) {
@@ -1426,6 +1462,37 @@ const char kChromeAppStoreUrl[] =
   // TODO(crbug.com/543366924): Remove this.
   CHECK_EQ(_passwordProtectionCoordinator, coordinator);
   [self stopPasswordProtectionCoordinator];
+}
+
+#pragma mark - PictureInPictureCommands
+
+- (void)showPictureInPictureWithConfig:(PictureInPictureConfiguration*)config {
+  [_pictureInPictureCoordinator stop];
+
+  // Use the scene's active view controller if available (e.g., when in
+  // Incognito mode) so that presentation is performed on a view controller
+  // that is currently in the window hierarchy. Fall back to the coordinator's
+  // default view controller if the active scene UI is not fully initialized
+  // (e.g., in unit testing environments or early startup).
+  // TODO(crbug.com/545522613): Don't do a cast here.
+  id<SceneUIProvider> sceneUIProvider =
+      (id<SceneUIProvider>)_browser->GetSceneState().controller;
+  UIViewController* baseViewController =
+      sceneUIProvider.activeViewController ?: _baseViewController;
+  _pictureInPictureCoordinator = [[PictureInPictureCoordinator alloc]
+      initWithConfiguration:config
+         baseViewController:baseViewController
+                    browser:_browser];
+  [_pictureInPictureCoordinator start];
+}
+
+- (void)dismissPictureInPicture {
+  [_pictureInPictureCoordinator stop];
+  _pictureInPictureCoordinator = nil;
+}
+
+- (void)dismissPictureInPictureIfNotPipRestore {
+  [_pictureInPictureCoordinator dismissIfNotPipRestore];
 }
 
 #pragma mark - PriceTrackedItemsCommands

@@ -116,7 +116,6 @@
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/ui/features.h"
-#import "ios/chrome/browser/enterprise/enterprise_dialog/coordinator/enterprise_dialog_coordinator.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
@@ -150,8 +149,6 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/passwords/password_suggestion/coordinator/password_suggestion_coordinator.h"
-#import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_coordinator.h"
-#import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/popup_menu/coordinator/popup_menu_coordinator.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/features.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
@@ -216,7 +213,6 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
-#import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
@@ -227,7 +223,6 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
-#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
@@ -345,7 +340,6 @@
     DefaultBrowserPromoNonModalCommands,
     DefaultPromoNonModalPresentationDelegate,
     EditMenuBuilder,
-    EnterpriseCommands,
     EnterprisePromptCoordinatorDelegate,
     FindInPageCommands,
     NetExportTabHelperDelegate,
@@ -358,7 +352,6 @@
     PasswordSettingsCoordinatorDelegate,
     PasswordSuggestionCommands,
     PasswordSuggestionCoordinatorDelegate,
-    PictureInPictureCommands,
     PolicyChangeCommands,
     PrerenderBrowserAgentDelegate,
     PromosManagerCommands,
@@ -608,12 +601,6 @@
 
   // The coordinator for the notifications opt-in screen.
   NotificationsOptInCoordinator* _notificationsOptInCoordinator;
-
-  // The coordinator for displaying Enterprise dialogs.
-  EnterpriseDialogCoordinator* _enterpriseDialogCoordinator;
-
-  // The coordinator for the Picture-in-Picture promo.
-  PictureInPictureCoordinator* _pictureInPictureCoordinator;
 
   // The coordinator showing the multimodal composebox menu.
   ComposeboxMenuCoordinator* _composeboxMenuCoordinator;
@@ -1088,8 +1075,6 @@
     @protocol(TextZoomCommands),
     @protocol(WebContentCommands),
     @protocol(DefaultBrowserGenericPromoCommands),
-    @protocol(EnterpriseCommands),
-    @protocol(PictureInPictureCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -1564,9 +1549,6 @@
 
   [self stopSendTabToSelf];
 
-  [_pictureInPictureCoordinator stop];
-  _pictureInPictureCoordinator = nil;
-
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
@@ -1589,9 +1571,6 @@
 
   [_lastTabClosingAlert stop];
   _lastTabClosingAlert = nil;
-
-  [_enterpriseDialogCoordinator stop];
-  _enterpriseDialogCoordinator = nil;
 
   [self hideContextualSheet];
   [self dismissLensPromo];
@@ -2361,9 +2340,6 @@
 
   [_lastTabClosingAlert stop];
   _lastTabClosingAlert = nil;
-
-  [_enterpriseDialogCoordinator stop];
-  _enterpriseDialogCoordinator = nil;
 
   [self updateLensUIForBackground];
 
@@ -4093,34 +4069,6 @@
 }
 
 
-#pragma mark - PictureInPictureCommands
-
-- (void)showPictureInPictureWithConfig:(PictureInPictureConfiguration*)config {
-  // Use the scene's active view controller if available (e.g., when in
-  // Incognito mode) so that presentation is performed on a view controller
-  // that is currently in the window hierarchy. Fall back to the coordinator's
-  // default view controller if the active scene UI is not fully initialized
-  // (e.g., in unit testing environments or early startup).
-  id<SceneUIProvider> sceneUIProvider =
-      (id<SceneUIProvider>)self.browser->GetSceneState().controller;
-  UIViewController* baseViewController =
-      sceneUIProvider.activeViewController ?: self.viewController;
-  _pictureInPictureCoordinator = [[PictureInPictureCoordinator alloc]
-      initWithConfiguration:config
-         baseViewController:baseViewController
-                    browser:self.browser];
-  [_pictureInPictureCoordinator start];
-}
-
-- (void)dismissPictureInPicture {
-  [_pictureInPictureCoordinator stop];
-  _pictureInPictureCoordinator = nil;
-}
-
-- (void)dismissPictureInPictureIfNotPipRestore {
-  [_pictureInPictureCoordinator dismissIfNotPipRestore];
-}
-
 #pragma mark - NotificationsOptInCoordinatorDelegate
 
 - (void)notificationsOptInScreenDidFinish:
@@ -4181,30 +4129,6 @@
     (TrustedVaultReauthenticationCoordinator*)coordinator {
   CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
   [self stopTrustedVaultReauthentication];
-}
-
-#pragma mark - EnterpriseCommands
-
-- (void)showEnterpriseWarningDialog:(enterprise::DialogType)dialogType
-                 organizationDomain:(std::string_view)organizationDomain
-                           callback:(base::OnceCallback<void(bool)>)callback {
-  // If a dialog is already shown, dismiss it before showing a new one.
-  if (_enterpriseDialogCoordinator) {
-    [_enterpriseDialogCoordinator stop];
-  }
-
-  _enterpriseDialogCoordinator = [[EnterpriseDialogCoordinator alloc]
-      initWithBaseViewController:self.browserContentCoordinator.viewController
-                         browser:self.browser
-                      dialogType:dialogType
-              organizationDomain:organizationDomain
-                        callback:std::move(callback)];
-  [_enterpriseDialogCoordinator start];
-}
-
-- (void)dismissEnterpriseWarningDialog {
-  [_enterpriseDialogCoordinator stop];
-  _enterpriseDialogCoordinator = nil;
 }
 
 @end
