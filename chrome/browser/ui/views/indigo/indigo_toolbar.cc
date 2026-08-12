@@ -521,6 +521,8 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                                                  : vector_icons::kCloseOldIcon,
                                              ui::kColorSysOnSurface, kIconSize))
                           .SetTooltipText(l10n_util::GetStringUTF16(IDS_CLOSE))
+                          .SetAccessibleName(l10n_util::GetStringUTF16(
+                              IDS_INDIGO_TOOLBAR_CLOSE_ACCESSIBLE_NAME))
                           .SetFocusBehavior(
                               views::View::FocusBehavior::ACCESSIBLE_ONLY)
                           .CustomConfigure(

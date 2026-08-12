@@ -137,6 +137,9 @@
       <message name="IDS_INDIGO_TOOLBAR_COLLAPSE" desc="Tooltip for collapsing the Indigo toolbar." translateable="false">
         Collapse
       </message>
+      <message name="IDS_INDIGO_TOOLBAR_CLOSE_ACCESSIBLE_NAME" desc="Accessible name for a button which, when clicked, closes the indigo toolbar and generated image." translateable="false">
+        Close generated image
+      </message>
       <message name="IDS_INDIGO_TOOLBAR_REGENERATE" desc="Button label to regenerate the Indigo content." translateable="false">
         Regenerate
       </message>
