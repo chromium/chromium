@@ -205,3 +205,43 @@ TEST_F(OmniboxEverywhereControllerTest, ControllerInitWithDisabledHotkeyPref) {
   // disabled.
   EXPECT_FALSE(fake_listener.IsRegistered(hotkey));
 }
+
+TEST_F(OmniboxEverywhereControllerTest,
+       IgnoresOffTheRecordProfileInSetTargetProfile) {
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  // Off-the-record / Incognito profile is ignored when calling
+  // SetTargetProfile.
+  Profile* otr_profile =
+      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(otr_profile);
+  controller.SetTargetProfile(otr_profile);
+
+  // Invoking for off-the-record profile should not show UI.
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      otr_profile, GetContext());
+  EXPECT_FALSE(controller.IsVisible());
+}
+
+TEST_F(OmniboxEverywhereControllerTest,
+       IgnoresOffTheRecordProfileOnProfileAdded) {
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  Profile* otr_profile =
+      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(otr_profile);
+
+  // OnProfileAdded ignores off-the-record profile.
+  controller.OnProfileAdded(otr_profile);
+
+  // Normal regular profile is accepted when added.
+  controller.OnProfileAdded(&profile_);
+}

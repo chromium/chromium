@@ -64,7 +64,7 @@ OmniboxEverywhereController::~OmniboxEverywhereController() {
 }
 
 void OmniboxEverywhereController::SetTargetProfile(Profile* profile) {
-  if (profile && profile->IsOffTheRecord()) {
+  if (!IsProfileEligible(profile)) {
     profile = nullptr;
   }
   if (target_profile_ == profile) {
@@ -76,13 +76,22 @@ void OmniboxEverywhereController::SetTargetProfile(Profile* profile) {
 }
 
 void OmniboxEverywhereController::OnProfileAdded(Profile* profile) {
-  if (!target_profile_) {
-    SetTargetProfile(profile);
+  if (!IsProfileEligible(profile) || target_profile_) {
+    return;
   }
+  // TODO(crbug.com/532190282): Handle locked profiles (e.g. show profile picker
+  // if locked).
+  SetTargetProfile(profile);
 }
 
 void OmniboxEverywhereController::OnProfileManagerDestroying() {
   profile_manager_observation_.Reset();
+}
+
+bool OmniboxEverywhereController::IsProfileEligible(Profile* profile) const {
+  return profile && !profile->IsOffTheRecord() &&
+         omnibox::IsOmniboxEverywhereEnabled(profile) &&
+         OmniboxEverywhereServiceFactory::GetForProfile(profile);
 }
 
 void OmniboxEverywhereController::UpdateHotkeyRegistration() {
@@ -105,7 +114,7 @@ void OmniboxEverywhereController::UpdateHotkeyRegistration() {
 void OmniboxEverywhereController::OnInvoke(InvocationSource source,
                                            Profile* profile,
                                            gfx::NativeWindow context) {
-  if (!omnibox::IsOmniboxEverywhereEnabled(profile)) {
+  if (!IsProfileEligible(profile)) {
     return;
   }
 
@@ -185,9 +194,8 @@ Profile* OmniboxEverywhereController::GetTargetProfile() {
 
   // Only use the profile of the last active browser window. If no browser
   // window is active (e.g. on the profile selection screen), return nullptr.
-  // Also check that the profile has the required service.
-  if (target_profile &&
-      !OmniboxEverywhereServiceFactory::GetForProfile(target_profile)) {
+  // Also check that the profile is eligible.
+  if (!IsProfileEligible(target_profile)) {
     target_profile = nullptr;
   }
   if (target_profile) {

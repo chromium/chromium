@@ -93,6 +93,9 @@ class OmniboxEverywhereController
   // TODO(crbug.com/527183107): Implement a better profile selection heuristic.
   Profile* GetTargetProfile();
 
+  // Returns true if `profile` is eligible to be set as the target profile.
+  bool IsProfileEligible(Profile* profile) const;
+
   // Registers or unregisters the global hotkey accelerator according to feature
   // flag and preference settings.
   void UpdateHotkeyRegistration();
