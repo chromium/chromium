@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_OVERLAY_VIEWS_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_OVERLAY_VIEWS_MAC_H_
 
+#include <memory>
 #include <set>
 
 #include "base/memory/raw_ptr.h"
@@ -28,8 +29,8 @@ class OverlayWidgetMac : public ThemeCopyingWidget {
   ~OverlayWidgetMac() override;
 
   // Create an overlay widget for `browser_view`.
-  static OverlayWidgetMac* Create(BrowserView* browser_view,
-                                  views::Widget* parent);
+  static std::unique_ptr<OverlayWidgetMac> Create(BrowserView* browser_view,
+                                                  views::Widget* parent);
 
   // views::Widget:
   void OnNativeWidgetMove() override;

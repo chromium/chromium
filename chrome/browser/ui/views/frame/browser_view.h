@@ -1165,17 +1165,17 @@ class BrowserView : public BrowserWindow,
   // Used when calling CreateMacOverlayView(). This widget owns `overlay_view_`.
   // Its content NSView will be reparented to a NSToolbarFullScreenWindow
   // during fullscreen.
-  raw_ptr<views::Widget, DanglingUntriaged> overlay_widget_ = nullptr;
+  std::unique_ptr<views::Widget> overlay_widget_;
 
   // Also used when calling CreateMacOverlayView(). This widget will host the
   // tabstrip contents. Its content NSView will be reparented to a separate
   // section of the NSToolbarFullScreenWindow allowing for the tabs to live in
   // the Titlebar.
-  raw_ptr<views::Widget, DanglingUntriaged> tab_overlay_widget_ = nullptr;
+  std::unique_ptr<views::Widget> tab_overlay_widget_;
 
   // The hosting view of HorizontalTabStripRegionView during immersive
   // fullscreen.
-  raw_ptr<views::View, DanglingUntriaged> tab_overlay_view_ = nullptr;
+  raw_ptr<views::View> tab_overlay_view_ = nullptr;
 
 #endif
 

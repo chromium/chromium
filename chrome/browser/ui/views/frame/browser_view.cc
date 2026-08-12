@@ -1130,6 +1130,13 @@ BrowserView::~BrowserView() {
   organizer_panel_container_ = nullptr;
   side_panel_ = nullptr;
 
+#if BUILDFLAG(IS_MAC)
+  tab_overlay_view_ = nullptr;
+
+  overlay_widget_.reset();
+  tab_overlay_widget_.reset();
+#endif
+
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
   RemoveAllChildViews();
@@ -4087,7 +4094,7 @@ views::View* BrowserView::CreateMacOverlayView() {
   if (WindowFeatureController::From(browser())
           ->UsesImmersiveFullscreenTabbedMode()) {
     // Create the tab overlay widget as a child of overlay_widget_.
-    tab_overlay_widget_ = OverlayWidgetMac::Create(this, overlay_widget_);
+    tab_overlay_widget_ = OverlayWidgetMac::Create(this, overlay_widget_.get());
     auto tab_overlay_view = std::make_unique<TabContainerOverlayViewMac>(
         weak_ptr_factory_.GetWeakPtr());
     tab_overlay_view->set_context_menu_controller(browser_widget());

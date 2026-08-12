@@ -6,8 +6,10 @@
 
 #import <AppKit/AppKit.h>
 
+#include <memory>
 #include <set>
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_mac.h"
@@ -19,10 +21,11 @@
 #include "ui/views/widget/sublevel_manager.h"
 
 // static
-OverlayWidgetMac* OverlayWidgetMac::Create(BrowserView* browser_view,
-                                           views::Widget* parent) {
+std::unique_ptr<OverlayWidgetMac> OverlayWidgetMac::Create(
+    BrowserView* browser_view,
+    views::Widget* parent) {
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.child = true;
   params.parent = parent->GetNativeView();
@@ -38,8 +41,8 @@ OverlayWidgetMac* OverlayWidgetMac::Create(BrowserView* browser_view,
   BrowserWindowModalDialogDelegate* modal_dialog_delegate =
       BrowserWindowModalDialogDelegate::From(browser_view->browser());
   CHECK(modal_dialog_delegate);
-  OverlayWidgetMac* overlay_widget =
-      new OverlayWidgetMac(*modal_dialog_delegate, browser_view->GetWidget());
+  std::unique_ptr<OverlayWidgetMac> overlay_widget = base::WrapUnique(
+      new OverlayWidgetMac(*modal_dialog_delegate, browser_view->GetWidget()));
 
   // When the overlay is used some Views are moved to the overlay_widget. When
   // this happens we want the fullscreen state of the overlay_widget to match
@@ -66,7 +69,7 @@ OverlayWidgetMac* OverlayWidgetMac::Create(BrowserView* browser_view,
   // which operates at the Widget level.
   if (overlay_widget->GetSublevelManager()) {
     overlay_widget->parent()->GetSublevelManager()->OnWidgetChildRemoved(
-        overlay_widget->parent(), overlay_widget);
+        overlay_widget->parent(), overlay_widget.get());
   }
 
   return overlay_widget;
