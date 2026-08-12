@@ -605,9 +605,35 @@ TEST_F(NodeTest, moveBefore_DetachAfterSlotReassignment) {
 
   host->moveBefore(span, nullptr, ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(span->GetComputedStyle());
+  EXPECT_TRUE(span->NeedsStyleRecalc());
 
   GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
   EXPECT_FALSE(span->GetComputedStyle());
+  EXPECT_FALSE(span->NeedsStyleRecalc());
+}
+
+TEST_F(NodeTest, moveBefore_PreserveComputedStyleBetweenTrees) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <!DOCTYPE html>
+    <div id="host">
+      <template shadowRootMode="open"><slot name="foo"></slot></template>
+    </div>
+    <span id="span" slot="foo"></span>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* span = GetDocument().getElementById(AtomicString("span"));
+
+  const ComputedStyle* old_computed_style = span->GetComputedStyle();
+
+  host->moveBefore(span, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(span->GetComputedStyle(), old_computed_style);
+
+  GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
+  EXPECT_EQ(span->GetComputedStyle(), old_computed_style);
+  EXPECT_TRUE(span->NeedsStyleRecalc());
 }
 
 #if DCHECK_IS_ON()
