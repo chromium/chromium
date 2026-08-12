@@ -1754,12 +1754,18 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
         removeObserver:scroll_observer_];
 
     web::WebStateID old_active_id = old_active->GetUniqueIdentifier();
-    if (HasSharedTabs() && GetAttachedPageContext(old_active_id)) {
-      // We are switching tabs and there is more than one tab attached to the
-      // conversation. Refetch the old active tab's page context to ensure it
-      // reflects its most recent state (instead of the state when the Floaty
-      // was last invoked).
-      UpdateAttachedTabContexts({old_active_id});
+    if (GeminiPageContext* old_context =
+            GetAttachedPageContext(old_active_id)) {
+      if (old_context.geminiPageContextAttachmentState !=
+          ios::provider::GeminiPageContextAttachmentState::kAttached) {
+        RemoveAttachedPageContext(old_active_id);
+      } else if (HasSharedTabs()) {
+        // We are switching tabs and there is more than one tab attached to the
+        // conversation. Refetch the old active tab's page context to ensure it
+        // reflects its most recent state (instead of the state when the Floaty
+        // was last invoked).
+        UpdateAttachedTabContexts({old_active_id});
+      }
     }
   }
 
