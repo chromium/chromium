@@ -35,7 +35,7 @@
 //  - 3: UTF-8 strings.
 //  - 4: Definite-length arrays.
 //  - 5: Definite-length maps.
-//  - 7: Simple values or floating point values.
+//  - 7: Simple values.
 //
 //  * Note: For simplicity, this implementation represents both signed and
 //    unsigned integers with signed int64_t. This reduces the effective range
@@ -136,13 +136,6 @@ class CBOR_EXPORT Reader {
     // correctly.)
     bool allow_invalid_utf8 = false;
 
-    // Causes floating point in CBOR to be decoded. This is an option as
-    // several users of this library do not want to accept floats in CBOR. When
-    // this option is set to `false` any floating point values encountered
-    // during decoding will set raise the `UNSUPPORTED_FLOATING_POINT_VALUE`
-    // error.
-    bool allow_floating_point = false;
-
     // Uses the rust parser instead of the C++ parser.
     bool use_rust;
   };
@@ -206,10 +199,8 @@ class CBOR_EXPORT Reader {
                                               int max_nesting_level);
   std::optional<Value> DecodeValueToNegative(uint64_t value);
   std::optional<Value> DecodeValueToUnsigned(uint64_t value);
-  std::optional<Value> DecodeToSimpleValueOrFloat(const DataItemHeader& header,
-                                                  const Config& config);
-  std::optional<uint64_t> ReadVariadicLengthInteger(Value::Type type,
-                                                    uint8_t additional_info);
+  std::optional<Value> DecodeToSimpleValue(const DataItemHeader& header);
+  std::optional<uint64_t> ReadVariadicLengthInteger(uint8_t additional_info);
   std::optional<Value> ReadByteStringContent(const DataItemHeader& header);
   std::optional<Value> ReadStringContent(const DataItemHeader& header,
                                          const Config& config);

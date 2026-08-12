@@ -83,16 +83,6 @@ bool MatchCborValue(const Value& actual,
         return false;
       }
       return true;
-    case Value::Type::FLOAT_VALUE:
-      if (actual.GetDouble() != expected.GetDouble() &&
-          !(std::isnan(actual.GetDouble()) &&
-            std::isnan(expected.GetDouble()))) {
-        *listener << path_prefix() << "float value mismatch: actual is "
-                  << actual.GetDouble() << ", expected is "
-                  << expected.GetDouble();
-        return false;
-      }
-      return true;
     case Value::Type::ARRAY: {
       const auto& actual_arr = actual.GetArray();
       const auto& expected_arr = expected.GetArray();
@@ -169,7 +159,6 @@ std::optional<Value> ParseAndCompare(
                                Reader::DecoderError* error_out) {
     if (config_ptr) {
       cfg.allow_invalid_utf8 = config_ptr->allow_invalid_utf8;
-      cfg.allow_floating_point = config_ptr->allow_floating_point;
       cfg.max_nesting_level = config_ptr->max_nesting_level;
     }
     cfg.use_rust = use_rust;
@@ -239,12 +228,12 @@ std::vector<std::tuple<std::vector<uint8_t>>> GetCborCorpus() {
   return *seeds;
 }
 
-std::vector<std::tuple<std::vector<uint8_t>, bool, bool, int>>
+std::vector<std::tuple<std::vector<uint8_t>, bool, int>>
 GetCborCorpusWithConfig() {
   return base::ToVector(GetCborCorpus(), [](const auto& seed) {
     // Provide default valid values for the config parameters alongside the
     // seed.
-    return std::tuple(std::get<0>(seed), false, false,
+    return std::tuple(std::get<0>(seed), false,
                       int{cbor::Reader::kCBORMaxDepth});
   });
 }
@@ -352,11 +341,9 @@ FUZZ_TEST(CBORReaderFuzzTest, ReadAndWriteIsIdempotentAndDoesNotCrash)
 
 void ReadWithConfigDoesNotCrash(const std::vector<uint8_t>& input,
                                 bool allow_invalid_utf8,
-                                bool allow_floating_point,
                                 int max_nesting_level) {
   Reader::Config config;
   config.allow_invalid_utf8 = allow_invalid_utf8;
-  config.allow_floating_point = allow_floating_point;
   config.max_nesting_level = max_nesting_level;
 
   ParseAndCompare(input, &config);
@@ -367,23 +354,19 @@ void ReadWithConfigDoesNotCrash(const std::vector<uint8_t>& input,
 FUZZ_TEST(CBORReaderFuzzTest, ReadWithConfigDoesNotCrash)
     .WithDomains(fuzztest::Arbitrary<std::vector<uint8_t>>(),
                  fuzztest::Arbitrary<bool>(),
-                 fuzztest::Arbitrary<bool>(),
                  fuzztest::InRange(0, int{cbor::Reader::kCBORMaxDepth}))
     .WithSeeds(GetCborCorpusWithConfig);
 
 void ReadValidCBORWithConfigDoesNotCrash(const std::vector<uint8_t>& input,
                                          bool allow_invalid_utf8,
-                                         bool allow_floating_point,
                                          int max_nesting_level) {
-  ReadWithConfigDoesNotCrash(input, allow_invalid_utf8, allow_floating_point,
-                             max_nesting_level);
+  ReadWithConfigDoesNotCrash(input, allow_invalid_utf8, max_nesting_level);
 }
 
 // Similar to ParseWithConfigDoesNotCrash, but instead of mutating predefined
 // seeds feeds always valid CBOR.
 FUZZ_TEST(CBORReaderFuzzTest, ReadValidCBORWithConfigDoesNotCrash)
     .WithDomains(ArbitrarySerializedCbor(),
-                 fuzztest::Arbitrary<bool>(),
                  fuzztest::Arbitrary<bool>(),
                  fuzztest::InRange(0, int{cbor::Reader::kCBORMaxDepth}));
 

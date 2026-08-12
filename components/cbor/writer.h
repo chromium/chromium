@@ -13,7 +13,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/cbor/cbor_export.h"
-#include "components/cbor/float_conversions.h"
 #include "components/cbor/values.h"
 
 // A basic Concise Binary Object Representation (CBOR) encoder as defined by

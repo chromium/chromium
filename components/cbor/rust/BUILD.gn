@@ -11,7 +11,6 @@ if (!is_cronet_build) {
     crate_root = "lib.rs"
     sources = [
       "constants.rs",
-      "float_conversions.rs",
       "reader.rs",
       "values.rs",
       "writer.rs",

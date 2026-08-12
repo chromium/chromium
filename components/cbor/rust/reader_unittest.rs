@@ -126,39 +126,6 @@ fn test_inputs() {
     }
 }
 
-#[gtest(CBORReaderRustTest, TestFloats)]
-fn test_floats() {
-    let config = Config { allow_floating_point: true, ..Config::default() };
-    let test_cases = [
-        ("f93c00", Ok(Value::Float(1.0))),
-        ("fa3f801000", Ok(Value::Float(1.00048828125))),
-        ("fb3ff0000000000001", Ok(Value::Float(f64::from_bits(0x3ff0000000000001)))),
-        ("f97e00", Ok(Value::Float(f64::NAN))),      // f16 NaN
-        ("f97c00", Ok(Value::Float(f64::INFINITY))), // f16 Infinity
-        ("f9fc00", Ok(Value::Float(f64::NEG_INFINITY))), // f16 -Infinity
-        ("fa3f800000", Err(Error::NonMinimalCborEncoding)), // 1.0 in f32
-        ("fb3ff0000000000000", Err(Error::NonMinimalCborEncoding)), // 1.0 in f64
-        ("fb3ff0020000000000", Err(Error::NonMinimalCborEncoding)), /* 1.00048828125 in f64
-                                                      * (fits in f32) */
-        ("fa7fc00000", Err(Error::NonMinimalCborEncoding)), // f32 NaN
-        ("fb7ff8000000000000", Err(Error::NonMinimalCborEncoding)), // f64 NaN
-        ("fa7f800000", Err(Error::NonMinimalCborEncoding)), // f32 Infinity
-        ("fb7ff0000000000000", Err(Error::NonMinimalCborEncoding)), // f64 Infinity
-        ("faff800000", Err(Error::NonMinimalCborEncoding)), // f32 -Infinity
-        ("fbfff0000000000000", Err(Error::NonMinimalCborEncoding)), // f64 -Infinity
-    ];
-
-    for test in test_cases {
-        let bytes = hex::decode(test.0).unwrap();
-        let result = parse_with_config(&bytes, config).map(|result| result.value);
-
-        match (&result, &test.1) {
-            (Ok(Value::Float(a)), Ok(Value::Float(b))) if a.is_nan() && b.is_nan() => {}
-            _ => assert_eq!(result, test.1, "{}", test.0),
-        }
-    }
-}
-
 #[gtest(CBORReaderRustTest, TestCornerCases)]
 fn test_corner_cases() {
     let test_cases = [

@@ -129,31 +129,6 @@ fn test_write_simple_values() {
     }
 }
 
-#[gtest(CBORWriterRustTest, TestWriteFloats)]
-fn test_write_floats() {
-    let test_cases = [
-        (Value::Float(1.0), "fb3ff0000000000000"),
-        (Value::Float(1.00048828125), "fb3ff0020000000000"),
-        (Value::Float(f64::from_bits(0x3ff0000000000001)), "fb3ff0000000000001"),
-        (Value::Float(f64::NAN), "fb7ff8000000000000"),
-        (Value::Float(f64::INFINITY), "fb7ff0000000000000"),
-        (Value::Float(f64::NEG_INFINITY), "fbfff0000000000000"),
-    ];
-
-    for test in test_cases {
-        let expected = hex::decode(test.1).unwrap();
-        let bytes = write(&test.0);
-        if test.1 == "fb7ff8000000000000" {
-            // NaN payloads might differ, just check the length and that it parses back as
-            // NaN
-            assert_eq!(bytes.len(), 9);
-            assert_eq!(bytes[0], 0xfb);
-        } else {
-            assert_eq!(bytes, expected, "Failed encoding {}", test.1);
-        }
-    }
-}
-
 #[gtest(CBORWriterRustTest, TestWriteMapKeyCanonicalization)]
 fn test_write_map_key_canonicalization() {
     let map = vec![

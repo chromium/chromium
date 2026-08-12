@@ -44,9 +44,6 @@ Value::Value(bool boolean_value)
       simple_value_(boolean_value ? SimpleValue::TRUE_VALUE
                                   : SimpleValue::FALSE_VALUE) {}
 
-Value::Value(double float_value)
-    : type_(Type::FLOAT_VALUE), float_value_(float_value) {}
-
 Value::Value(int integer_value)
     : Value(base::checked_cast<int64_t>(integer_value)) {}
 
@@ -150,8 +147,6 @@ Value Value::Clone() const {
       NOTREACHED() << constants::kUnsupportedMajorType;
     case Type::SIMPLE_VALUE:
       return Value(simple_value_);
-    case Type::FLOAT_VALUE:
-      return Value(float_value_);
   }
 
   NOTREACHED();
@@ -165,11 +160,6 @@ Value::SimpleValue Value::GetSimpleValue() const {
 bool Value::GetBool() const {
   CHECK(is_bool());
   return simple_value_ == SimpleValue::TRUE_VALUE;
-}
-
-double Value::GetDouble() const {
-  CHECK(is_double());
-  return float_value_;
 }
 
 const int64_t& Value::GetInteger() const {
@@ -244,9 +234,6 @@ void Value::InternalMoveConstructFrom(Value&& that) {
     case Type::SIMPLE_VALUE:
       simple_value_ = that.simple_value_;
       return;
-    case Type::FLOAT_VALUE:
-      float_value_ = that.float_value_;
-      return;
     case Type::NONE:
       return;
   }
@@ -274,7 +261,6 @@ void Value::InternalCleanup() {
     case Type::UNSIGNED:
     case Type::NEGATIVE:
     case Type::SIMPLE_VALUE:
-    case Type::FLOAT_VALUE:
       break;
   }
   type_ = Type::NONE;

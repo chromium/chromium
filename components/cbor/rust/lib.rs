@@ -43,7 +43,6 @@
 extern crate alloc;
 
 mod constants;
-mod float_conversions;
 mod reader;
 mod values;
 mod writer;

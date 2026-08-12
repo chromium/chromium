@@ -22,7 +22,7 @@ pub enum ValueKind {
     Array = 3,
     Map = 4,
     Boolean = 5,
-    Float = 6,
+    // Obsolete: Float = 6,
     Null = 7,
     Undefined = 8,
     InvalidUtf8 = 9,
@@ -41,7 +41,6 @@ pub enum Value<'a> {
     Array(Vec<Value<'a>>),
     Map(Map<'a>),
     Boolean(bool),
-    Float(f64),
     Null,
     Undefined,
     InvalidUtf8(&'a [u8]),
@@ -68,7 +67,6 @@ impl<'a> Value<'a> {
             Value::Array(_) => ValueKind::Array,
             Value::Map(_) => ValueKind::Map,
             Value::Boolean(_) => ValueKind::Boolean,
-            Value::Float(_) => ValueKind::Float,
             Value::Null => ValueKind::Null,
             Value::Undefined => ValueKind::Undefined,
             Value::InvalidUtf8(_) => ValueKind::InvalidUtf8,
@@ -85,13 +83,6 @@ impl<'a> Value<'a> {
     pub fn as_bool(&self) -> Option<bool> {
         match self {
             Value::Boolean(v) => Some(*v),
-            _ => None,
-        }
-    }
-
-    pub fn as_float(&self) -> Option<f64> {
-        match self {
-            Value::Float(v) => Some(*v),
             _ => None,
         }
     }

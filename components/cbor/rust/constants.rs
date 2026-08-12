@@ -26,7 +26,6 @@ pub(crate) const SIMPLE_VALUE_TRUE: u8 = 21;
 pub(crate) const SIMPLE_VALUE_NULL: u8 = 22;
 pub(crate) const SIMPLE_VALUE_UNDEFINED: u8 = 23;
 pub(crate) const SIMPLE_VALUE_FLOAT_16: u8 = 25;
-pub(crate) const SIMPLE_VALUE_FLOAT_32: u8 = 26;
 pub(crate) const SIMPLE_VALUE_FLOAT_64: u8 = 27;
 
 /// MAX_DEPTH is the maximum "depth" of a structure that will be parsed.

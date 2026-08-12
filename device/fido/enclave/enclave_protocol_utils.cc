@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -129,7 +130,10 @@ cbor::Value toCbor(const base::Value& json) {
     case base::Value::Type::INTEGER:
       return cbor::Value(json.GetInt());
     case base::Value::Type::DOUBLE:
-      return cbor::Value(json.GetDouble());
+      // CBOR doesn't support floating-point values, and no inputs to this
+      // function currently contain them:
+      // http://crrev.com/c/8249404/comment/2632dca4_e363144e/.
+      NOTREACHED();
     case base::Value::Type::STRING:
       return cbor::Value(json.GetString());
     case base::Value::Type::BINARY:

@@ -34,7 +34,6 @@
 #include "base/strings/string_view_util.h"
 #include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/constants.h"
-#include "components/cbor/float_conversions.h"
 
 #if BUILDFLAG(USE_CBOR_RUST)
 #include "components/cbor/rust/cbor_rust.h"
@@ -106,8 +105,7 @@ const char kNonMinimalCBOREncoding[] =
 const char kUnsupportedSimpleValue[] =
     "Unsupported or unassigned simple value.";
 const char kUnsupportedFloatingPointValue[] =
-    "Floating point numbers are not supported unless the "
-    "`allow_floating_point` configuration option is set.";
+    "Floating point numbers are not supported.";
 const char kOutOfRangeIntegerValue[] =
     "Integer values must be between INT64_MIN and INT64_MAX.";
 const char kMapKeyDuplicate[] = "Duplicate map keys are not allowed.";
@@ -146,8 +144,6 @@ Value Reader::ConvertRustValueToCpp(const cbor::rust::Value& rust_val) {
       return Value(CHECK_DEREF(rust_val.as_int()));
     case cbor::rust::ValueKind::Tag::Boolean:
       return Value(CHECK_DEREF(rust_val.as_bool()));
-    case cbor::rust::ValueKind::Tag::Float:
-      return Value(CHECK_DEREF(rust_val.as_float()));
     case cbor::rust::ValueKind::Tag::Null:
       return Value(Value::SimpleValue::NULL_VALUE);
     case cbor::rust::ValueKind::Tag::Undefined:
@@ -212,7 +208,6 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
   if (config.use_rust) {
     cbor::rust::Config rust_config;
     rust_config.allow_invalid_utf8 = config.allow_invalid_utf8;
-    rust_config.allow_floating_point = config.allow_floating_point;
     rust_config.max_nesting_level = config.max_nesting_level;
 
     size_t ignored_num_bytes_consumed;
@@ -298,9 +293,7 @@ std::optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
     case Value::Type::MAP:
       return ReadMapContent(*header, config, max_nesting_level);
     case Value::Type::SIMPLE_VALUE:
-    case Value::Type::FLOAT_VALUE:
-      // Floating point values also go here since they are also type 7.
-      return DecodeToSimpleValueOrFloat(*header, config);
+      return DecodeToSimpleValue(*header);
     case Value::Type::TAG:  // We explicitly don't support TAG.
     case Value::Type::NONE:
     case Value::Type::INVALID_UTF8:
@@ -320,15 +313,13 @@ std::optional<Reader::DataItemHeader> Reader::DecodeDataItemHeader() {
   const auto major_type = GetMajorType(initial_byte.value());
   const uint8_t additional_info = GetAdditionalInfo(initial_byte.value());
 
-  std::optional<uint64_t> value =
-      ReadVariadicLengthInteger(major_type, additional_info);
+  std::optional<uint64_t> value = ReadVariadicLengthInteger(additional_info);
   return value ? std::make_optional(
                      DataItemHeader{major_type, additional_info, value.value()})
                : std::nullopt;
 }
 
 std::optional<uint64_t> Reader::ReadVariadicLengthInteger(
-    Value::Type type,
     uint8_t additional_info) {
   uint8_t additional_bytes = 0;
   if (additional_info < 24) {
@@ -358,13 +349,6 @@ std::optional<uint64_t> Reader::ReadVariadicLengthInteger(
     int_data |= b;
   }
 
-  if (type == Value::Type::SIMPLE_VALUE && additional_info >= 25 &&
-      additional_info <= 27) {
-    // This is a floating point value and so `additional_bytes` should not be
-    // treated as an integer by minimality checking.
-    return std::make_optional(int_data);
-  }
-
   return IsEncodingMinimal(additional_bytes, int_data)
              ? std::make_optional(int_data)
              : std::nullopt;
@@ -388,52 +372,13 @@ std::optional<Value> Reader::DecodeValueToUnsigned(uint64_t value) {
   return Value(static_cast<int64_t>(unsigned_value.ValueOrDie()));
 }
 
-std::optional<Value> Reader::DecodeToSimpleValueOrFloat(
-    const DataItemHeader& header,
-    const Config& config) {
+std::optional<Value> Reader::DecodeToSimpleValue(const DataItemHeader& header) {
   // ReadVariadicLengthInteger provides this bound.
   CHECK_LE(header.additional_info, 27);
   // Floating point numbers.
   if (header.additional_info > 24) {
-    if (!config.allow_floating_point) {
-      error_code_ = DecoderError::UNSUPPORTED_FLOATING_POINT_VALUE;
-      return std::nullopt;
-    }
-
-    switch (header.additional_info) {
-      case 25:
-        return Value(DecodeHalfPrecisionFloat(header.value));
-      case 26: {
-        double result =
-            base::bit_cast<float>(static_cast<uint32_t>(header.value));
-        if (!std::isfinite(result) ||
-            result ==
-                DecodeHalfPrecisionFloat(EncodeHalfPrecisionFloat(result))) {
-          // This could have been encoded as a 16 bit float.
-          // Note that we use `isfinite()` here to handle NaN since infinity
-          // and NaN can both be encoded in 16 bits but NaN doesn't compare
-          // with equality.
-          error_code_ = DecoderError::NON_MINIMAL_CBOR_ENCODING;
-          return std::nullopt;
-        }
-        return Value(result);
-      }
-      case 27: {
-        double result = base::bit_cast<double>(header.value);
-        float result_32 = result;
-        if (!std::isfinite(result) || result == result_32) {
-          // This could have been encoded as a 16 or 32 bit float.
-          // Note that we use `isfinite()` here to handle NaN since infinity
-          // and NaN can both be encoded in 16 bits but NaN doesn't compare
-          // with equality.
-          error_code_ = DecoderError::NON_MINIMAL_CBOR_ENCODING;
-          return std::nullopt;
-        }
-        return Value(result);
-      }
-      default:
-        NOTREACHED();
-    }
+    error_code_ = DecoderError::UNSUPPORTED_FLOATING_POINT_VALUE;
+    return std::nullopt;
   }
 
   // Since |header.additional_info| <= 24, ReadVariadicLengthInteger also
