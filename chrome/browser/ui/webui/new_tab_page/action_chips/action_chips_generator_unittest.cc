@@ -96,6 +96,9 @@ struct CreateSuggestionOptions {
   omnibox::ToolMode preselected_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
   omnibox::SuggestInventory preferred_inventory =
       omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT;
+  omnibox::SuggestTemplateInfo_FuseboxAction_QueryActionOverride
+      query_action_override =
+          omnibox::SuggestTemplateInfo_FuseboxAction::QUERY_ACTION_DEFAULT;
 };
 
 SearchSuggestionParser::SuggestResult CreateSuggestion(
@@ -136,6 +139,11 @@ SearchSuggestionParser::SuggestResult CreateSuggestion(
         omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT) {
       suggest_template_info.mutable_fusebox_action()->set_preferred_inventory(
           options.preferred_inventory);
+    }
+    if (options.query_action_override !=
+        omnibox::SuggestTemplateInfo_FuseboxAction::QUERY_ACTION_DEFAULT) {
+      suggest_template_info.mutable_fusebox_action()->set_query_action_override(
+          options.query_action_override);
     }
     result.SetSuggestTemplateInfo(std::move(suggest_template_info));
   }
@@ -1374,4 +1382,51 @@ TEST(ActionChipGeneratorTest, GenerateDynamicChipsWithSmallActionChipsEnabled) {
   // Capped at 6 by default kNtpMaxSmallChips limit.
   EXPECT_EQ(actual.size(), 6u);
 }
+
+TEST(ActionChipGeneratorTest, ParsesAimActionCorrectly) {
+  EnvironmentFixture env;
+  const GURL page_url("https://www.google.com/");
+  const std::u16string page_title(u"Some Title");
+  TabFixture tab_fixture(page_url, page_title);
+  GeneratorFixture generator_fixture;
+
+  EXPECT_CALL(generator_fixture.mock_service(),
+              GetActionChipSuggestions(Eq(page_title), Eq(page_url), _, _, _))
+      .WillOnce(WithArg<4>(
+          [&](base::OnceCallback<void(RemoteSuggestionsServiceSimple::
+                                          ActionChipSuggestionsResult&&)>
+                  callback) {
+            std::move(callback).Run(
+                SearchSuggestionParser::SuggestResults{CreateSuggestion(
+                    {.group_id =
+                         omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION,
+                     .icon_type = omnibox::SuggestTemplateInfo::FAVICON,
+                     .match_contents = "aim action",
+                     .annotation = "aim action subtitle",
+                     .suggestion = u"aim action suggestion",
+                     .query_action_override =
+                         omnibox::SuggestTemplateInfo_FuseboxAction::
+                             QUERY_ACTION_PASTE})});
+            return nullptr;
+          }));
+
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpNextFeatures,
+      {{ntp_features::kNtpNextShowStaticTextParam.name, "false"}});
+
+  base::RunLoop run_loop;
+  std::vector<ActionChipPtr> actual;
+  generator_fixture.GenerateActionChips(&tab_fixture.mock_tab(), run_loop,
+                                        actual);
+  run_loop.Run();
+
+  ASSERT_EQ(actual.size(), 1u);
+  ASSERT_TRUE(actual[0]->suggest_template_info);
+  ASSERT_TRUE(actual[0]->suggest_template_info->fusebox_action);
+  EXPECT_EQ(
+      actual[0]->suggest_template_info->fusebox_action->query_action_override,
+      fusebox_action::mojom::QueryActionOverride::kPaste);
+}
+
 }  // namespace
