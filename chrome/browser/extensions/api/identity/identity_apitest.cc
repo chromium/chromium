@@ -3689,7 +3689,13 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
 
 // Checks that when a page fails to fully load before timeout in silent mode,
 // `launchWebAuthFlow()` terminates with an error after a specific timeout.
-IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, LoadTimedOut) {
+// TODO(crbug.com/545344228): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LoadTimedOut DISABLED_LoadTimedOut
+#else
+#define MAYBE_LoadTimedOut LoadTimedOut
+#endif
+IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, MAYBE_LoadTimedOut) {
   std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
   GURL auth_url(https_server->GetURL("/interaction_required.html"));
 
