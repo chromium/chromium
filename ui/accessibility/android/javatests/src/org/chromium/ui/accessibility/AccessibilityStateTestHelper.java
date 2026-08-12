@@ -7,55 +7,77 @@ package org.chromium.ui.accessibility;
 /** Helper for tests to interact with stubbed out {@link AccessibilityState}. */
 public class AccessibilityStateTestHelper {
     public static void setIsComplexUserInteractionServiceEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting()
-                .setIsComplexUserInteractionServiceEnabledForTesting(enabled);
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setIsComplexUserInteractionServiceEnabled(enabled);
+        delegate.notifyStateChange();
     }
 
     public static void setIsTouchExplorationEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsTouchExplorationEnabledForTesting(enabled);
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setIsTouchExplorationEnabled(enabled);
+        delegate.notifyStateChange();
     }
 
     public static void setIsPerformGesturesEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsPerformGesturesEnabledForTesting(enabled);
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setIsPerformGesturesEnabled(enabled);
+        delegate.notifyStateChange();
     }
 
     public static void setIsAnyAccessibilityServiceEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsAnyAccessibilityServiceEnabledForTesting(enabled);
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setIsAnyAccessibilityServiceEnabled(enabled);
+        delegate.notifyStateChange();
     }
 
     public static void setIsAccessibilityToolPresentForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsAccessibilityToolPresentForTesting(enabled);
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setIsAccessibilityToolPresent(enabled);
+        delegate.notifyStateChange();
     }
 
     public static void setIsTextShowPasswordEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsTextShowPasswordEnabledForTesting(enabled);
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setIsTextShowPasswordEnabled(enabled);
+        delegate.notifyStateChange();
     }
 
     public static void setIsOnlyAutofillRunningForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsOnlyAutofillRunningForTesting(enabled);
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setIsOnlyAutofillRunning(enabled);
+        delegate.notifyStateChange();
     }
 
     public static void setIsOnlyPasswordManagersEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsOnlyPasswordManagersEnabledForTesting(enabled);
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setIsOnlyPasswordManagersEnabled(enabled);
+        delegate.notifyStateChange();
     }
 
     public static void setIsKnownScreenReaderEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsKnownScreenReaderEnabledForTesting(enabled);
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setIsKnownScreenReaderEnabled(enabled);
+        delegate.notifyStateChange();
     }
 
     public static void setEventMaskForTesting(int eventMask) {
-        getOrCreateDelegateForTesting().setEventMaskForTesting(eventMask);
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setEventMask(eventMask);
+        delegate.notifyStateChange();
     }
 
     public static void setServiceIdsForTesting(String newServiceId, boolean isAccessibilityTool) {
-        getOrCreateDelegateForTesting().setServiceIdsForTesting(newServiceId, isAccessibilityTool);
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setServiceIds(newServiceId, isAccessibilityTool);
+        delegate.notifyStateChange();
     }
 
     private static FakeAccessibilityStateDelegate getOrCreateDelegateForTesting() {
-        AccessibilityStateDelegateImpl delegate = AccessibilityState.getDelegate();
+        AccessibilityStateDelegate delegate = AccessibilityState.getDelegate();
         if (!(delegate instanceof FakeAccessibilityStateDelegate)) {
             delegate = new FakeAccessibilityStateDelegate(() -> AccessibilityState.getListeners());
             AccessibilityState.setDelegateForTesting(delegate);
+            ((FakeAccessibilityStateDelegate) delegate).notifyStateChange();
         }
         return (FakeAccessibilityStateDelegate) delegate;
     }

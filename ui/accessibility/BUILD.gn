@@ -575,6 +575,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/ui/accessibility/AccessibilityAutofillHelper.java",
       "android/java/src/org/chromium/ui/accessibility/AccessibilityState.java",
+      "android/java/src/org/chromium/ui/accessibility/AccessibilityStateDelegate.java",
       "android/java/src/org/chromium/ui/accessibility/AccessibilityStateDelegateImpl.java",
     ]
     deps = [

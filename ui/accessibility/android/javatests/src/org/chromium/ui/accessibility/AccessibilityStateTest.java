@@ -80,7 +80,7 @@ public class AccessibilityStateTest {
         mCloseableMocks = MockitoAnnotations.openMocks(this);
         AccessibilityStateJni.setInstanceForTesting(mAccessibilityStateNatives);
         mContext = RuntimeEnvironment.getApplication();
-        mDelegate = AccessibilityState.getDelegate();
+        mDelegate = (AccessibilityStateDelegateImpl) AccessibilityState.getDelegate();
 
         // Reset all flags to empty/default state.
         AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(

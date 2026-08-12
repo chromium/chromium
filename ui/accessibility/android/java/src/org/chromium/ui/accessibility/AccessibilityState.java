@@ -60,89 +60,6 @@ public class AccessibilityState {
         void onAccessibilityStateChanged(State oldAccessibilityState, State newAccessibilityState);
     }
 
-    /** Builder for {@link State} used in tests. */
-    public static class StateBuilderForTests {
-        private boolean mIsComplexUserInteractionServiceEnabled;
-        private boolean mIsTouchExplorationEnabled;
-        private boolean mIsPerformGesturesEnabled;
-        private boolean mIsAnyAccessibilityServiceEnabled;
-        private boolean mIsAccessibilityToolPresent;
-        private boolean mIsTextShowPasswordEnabled;
-        private boolean mIsOnlyAutofillRunning;
-        private boolean mIsOnlyPasswordManagersEnabled;
-        private boolean mIsKnownScreenReaderEnabled;
-
-        public StateBuilderForTests(AccessibilityState.State state) {
-            mIsComplexUserInteractionServiceEnabled = state.isComplexUserInteractionServiceEnabled;
-            mIsTouchExplorationEnabled = state.isTouchExplorationEnabled;
-            mIsPerformGesturesEnabled = state.isPerformGesturesEnabled;
-            mIsAnyAccessibilityServiceEnabled = state.isAnyAccessibilityServiceEnabled;
-            mIsAccessibilityToolPresent = state.isAccessibilityToolPresent;
-            mIsTextShowPasswordEnabled = state.isTextShowPasswordEnabled;
-            mIsOnlyAutofillRunning = state.isOnlyAutofillRunning;
-            mIsOnlyPasswordManagersEnabled = state.isOnlyPasswordManagersEnabled;
-            mIsKnownScreenReaderEnabled = state.isKnownScreenReaderEnabled;
-        }
-
-        public StateBuilderForTests setIsComplexUserInteractionServiceEnabled(boolean isEnabled) {
-            mIsComplexUserInteractionServiceEnabled = isEnabled;
-            return this;
-        }
-
-        public StateBuilderForTests setIsTouchExplorationEnabled(boolean isEnabled) {
-            mIsTouchExplorationEnabled = isEnabled;
-            return this;
-        }
-
-        public StateBuilderForTests setIsPerformGesturesEnabled(boolean isEnabled) {
-            mIsPerformGesturesEnabled = isEnabled;
-            return this;
-        }
-
-        public StateBuilderForTests setIsAnyAccessibilityServiceEnabled(boolean isEnabled) {
-            mIsAnyAccessibilityServiceEnabled = isEnabled;
-            return this;
-        }
-
-        public StateBuilderForTests setIsAccessibilityToolPresent(boolean isPresent) {
-            mIsAccessibilityToolPresent = isPresent;
-            return this;
-        }
-
-        public StateBuilderForTests setIsTextShowPasswordEnabled(boolean isEnabled) {
-            mIsTextShowPasswordEnabled = isEnabled;
-            return this;
-        }
-
-        public StateBuilderForTests setIsOnlyAutofillRunning(boolean isOnlyAutofillRunning) {
-            mIsOnlyAutofillRunning = isOnlyAutofillRunning;
-            return this;
-        }
-
-        public StateBuilderForTests setIsOnlyPasswordManagersEnabled(boolean isEnabled) {
-            mIsOnlyPasswordManagersEnabled = isEnabled;
-            return this;
-        }
-
-        public StateBuilderForTests setIsKnownScreenReaderEnabled(boolean isEnabled) {
-            mIsKnownScreenReaderEnabled = isEnabled;
-            return this;
-        }
-
-        public AccessibilityState.State build() {
-            return new AccessibilityState.State(
-                    mIsComplexUserInteractionServiceEnabled,
-                    mIsTouchExplorationEnabled,
-                    mIsPerformGesturesEnabled,
-                    mIsAnyAccessibilityServiceEnabled,
-                    mIsAccessibilityToolPresent,
-                    mIsTextShowPasswordEnabled,
-                    mIsOnlyAutofillRunning,
-                    mIsOnlyPasswordManagersEnabled,
-                    mIsKnownScreenReaderEnabled);
-        }
-    }
-
     /** A representation of the current accessibility state. */
     public static class State {
         // True when we determine that an assistive technology that performs complex user
@@ -245,7 +162,7 @@ public class AccessibilityState {
         }
     }
 
-    private static @Nullable AccessibilityStateDelegateImpl sDelegate;
+    private static @Nullable AccessibilityStateDelegate sDelegate;
 
     // The set of listeners of AccessibilityState, implemented using
     // a WeakHashSet behind the scenes so that listeners can be garbage-collected
@@ -256,7 +173,7 @@ public class AccessibilityState {
     private static final Set<Listener> sListeners =
             Collections.newSetFromMap(new WeakHashMap<Listener, Boolean>());
 
-    static AccessibilityStateDelegateImpl getDelegate() {
+    static AccessibilityStateDelegate getDelegate() {
         if (sDelegate == null) {
             sDelegate = new AccessibilityStateDelegateImpl(() -> sListeners);
         }
@@ -285,25 +202,10 @@ public class AccessibilityState {
         return getDelegate().isPerformGesturesEnabled();
     }
 
-    /**
-     * True when at least one accessibility service is enabled on the system. Since a client can
-     * call this after observers are registered, but before the State has been queried for the first
-     * time, we allow for an early return. This is a lighter weight query than the other State
-     * booleans, which require manual calculation and heuristics. In this case we return the value
-     * directly from AccessibilityManager.
-     *
-     * @return true if any service is enabled (includes pseudo-accessibility services).
-     */
     public static boolean isAnyAccessibilityServiceEnabled() {
         return getDelegate().isAnyAccessibilityServiceEnabled();
     }
 
-    /**
-     * Returns the value of AccessibilityManager.isEnabled(). This indicates whether the
-     * accessibility manager is currently enabled.
-     *
-     * @return true if the accessibility manager is enabled.
-     */
     public static boolean isAccessibilityManagerEnabled() {
         return getDelegate().isAccessibilityManagerEnabled();
     }
@@ -340,13 +242,6 @@ public class AccessibilityState {
         return getDelegate().getNumberOfRunningServices();
     }
 
-    /**
-     * The current font weight adjustment set at the Android-OS level. Initialized to be 0, the
-     * default font weight. If a user has the bold text setting enabled, this will be 300. This is
-     * not included as a part of the {State} object since it is only needed for the web contents
-     * rendering (native widgets have font weight adjusted by the framework). This is only available
-     * on Android S+, on previous versions of Android this is always 0.
-     */
     public static int getFontWeightAdjustment() {
         return getDelegate().getFontWeightAdjustment();
     }
@@ -370,48 +265,19 @@ public class AccessibilityState {
                 || AccessibilityState.isPerformGesturesEnabled();
     }
 
-    /**
-     * Convenience method to get a recommended timeout on all versions of Android. The method that
-     * is part of AccessibilityManager is only available on Android >= Q. For earlier versions of
-     * Android, we will multiply by an arbitrary constant.
-     *
-     * <p>This method will query the AccessibilityManager, which considers the currently running
-     * services, to provide a suggested timeout. On Android >= Q, the returned value may not be
-     * either of the provided timeouts, and for versions < Q this will return the maximum of the two
-     * timeouts.
-     *
-     * @param minimumTimeout - minimum allowed timeout for the calling feature.
-     * @param nonA11yTimeout - the timeout if no a11y services are running for the feature.
-     * @return Suggested timeout given the currently running services (in milliseconds).
-     */
     public static int getRecommendedTimeoutMillis(int minimumTimeout, int nonA11yTimeout) {
         return getDelegate().getRecommendedTimeoutMillis(minimumTimeout, nonA11yTimeout);
     }
 
-    /**
-     * Convenience method to send an AccessibilityEvent to the system's AccessibilityManager without
-     * requiring a hard dependency on AccessibilityManager or an instance of a View. If this method
-     * is called when accessibility has been disabled (e.g. stale state after calling off the main
-     * thread), then the event will be ignored. If an event is sent, this does not guarantee a
-     * correct user experience for downstream AT.
-     *
-     * <p>Note: This should only be used in exceptional situations. Apps can generally achieve the
-     * correct behavior for accessibility with a semantically correct UI. Deprecated to prompt dev
-     * to reconsider their approach.
-     *
-     * @param event AccessibilityEvent to send to the AccessibilityManager
-     */
     @Deprecated
     public static void sendAccessibilityEvent(AccessibilityEvent event) {
         getDelegate().sendAccessibilityEvent(event);
     }
 
-    /** Returns the current ANIMATOR_DURATION_SCALE from the users OS accessibility settings. */
     public static float getAnimatorDurationScale() {
         return getDelegate().getAnimatorDurationScale();
     }
 
-    /** Returns the current TEXT_CURSOR_BLINK_INTERVAL from the users OS accessibility settings. */
     @CalledByNative
     public static int getTextCursorBlinkInterval() {
         return getDelegate().getTextCursorBlinkInterval();
@@ -436,62 +302,36 @@ public class AccessibilityState {
         return relevantEventTypes;
     }
 
-    /**
-     * Return a bitmask containing the union of all event types that running accessibility services
-     * listen to.
-     */
     @CalledByNative
     private static int getAccessibilityServiceEventTypeMask() {
         return getDelegate().getAccessibilityServiceEventTypeMask();
     }
 
-    /**
-     * Return a bitmask containing the union of all feedback types that running accessibility
-     * services provide.
-     */
     @CalledByNative
     private static int getAccessibilityServiceFeedbackTypeMask() {
         return getDelegate().getAccessibilityServiceFeedbackTypeMask();
     }
 
-    /** Return a bitmask containing the union of all flags from running accessibility services. */
     @CalledByNative
     private static int getAccessibilityServiceFlagsMask() {
         return getDelegate().getAccessibilityServiceFlagsMask();
     }
 
-    /**
-     * Return a bitmask containing the union of all service capabilities from running accessibility
-     * services.
-     */
     @CalledByNative
     private static int getAccessibilityServiceCapabilitiesMask() {
         return getDelegate().getAccessibilityServiceCapabilitiesMask();
     }
 
-    /** Return a list of ids of all running accessibility services. */
     @CalledByNative
     private static String[] getAccessibilityServiceIds() {
         return getDelegate().getAccessibilityServiceIds();
     }
 
-    /**
-     * Return a list of whether running accessibility services have {@code isAccessibilityTool=true}
-     * declared in their manifest. Note that {@code isAccessibilityTool} was introduced in Android
-     * S; on earlier Android versions this will return all {@code false}. The returned array will
-     * have the same length as the array returned by {@link #getAccessibilityServiceIds()}.
-     */
     @CalledByNative
     private static boolean[] getAccessibilityToolFlags() {
         return getDelegate().getAccessibilityToolFlags();
     }
 
-    /**
-     * Register observers of various system properties and initialize a state for clients.
-     *
-     * <p>Note: This should only be called once, and before any client queries of accessibility
-     * state. The first time any client queries the state, |this| will be initialized.
-     */
     public static void registerObservers() {
         getDelegate().registerObservers();
     }
@@ -513,7 +353,7 @@ public class AccessibilityState {
         void recordAccessibilityServiceInfoHistograms();
     }
 
-    public static void setDelegateForTesting(@Nullable AccessibilityStateDelegateImpl delegate) {
+    public static void setDelegateForTesting(@Nullable AccessibilityStateDelegate delegate) {
         if (sDelegate != null) {
             sDelegate.uninitializeForTesting();
         }
