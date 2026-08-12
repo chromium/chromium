@@ -8,6 +8,10 @@ import("//tools/grit/repack.gni")
 
 grit_strings("strings") {
   source = "../chromeos_strings.grd"
+  inputs =
+      [ "//chromeos/recorder_strings.grdp" ] +
+      process_file_template(xtb_locales,
+                            [ "chromeos_strings_{{source_name_part}}.xtb" ])
   outputs = [ "grit/chromeos_strings.h" ]
   output_prefix = "chromeos_strings_"
 }
