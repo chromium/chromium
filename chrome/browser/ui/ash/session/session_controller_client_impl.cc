@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
@@ -230,10 +229,6 @@ void SessionControllerClientImpl::ShowTeleportWarningDialog(
 
 void SessionControllerClientImpl::RequestLockScreen() {
   DoLockScreen();
-}
-
-void SessionControllerClientImpl::RequestHideLockScreen() {
-  ash::ScreenLocker::Hide();
 }
 
 void SessionControllerClientImpl::RequestSignOut() {

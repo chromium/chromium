@@ -62,9 +62,6 @@ class TestSessionControllerClient final : public SessionControllerClient {
   int attempt_restart_chrome_count() const {
     return attempt_restart_chrome_count_;
   }
-  int request_hide_lock_screen_count() const {
-    return request_hide_lock_screen_count_;
-  }
   int request_sign_out_count() const { return request_sign_out_count_; }
   int request_restart_for_update_count() const {
     return request_restart_for_update_count_;
@@ -114,7 +111,6 @@ class TestSessionControllerClient final : public SessionControllerClient {
 
   // ash::SessionControllerClient:
   void RequestLockScreen() override;
-  void RequestHideLockScreen() override;
   void RequestSignOut() override;
   void RequestRestartForUpdate() override;
   void AttemptRestartChrome() override;
@@ -167,7 +163,6 @@ class TestSessionControllerClient final : public SessionControllerClient {
   // If true, pref service must exist when adding a session, or fail with CHECK.
   bool pref_service_must_exist_ = false;
 
-  int request_hide_lock_screen_count_ = 0;
   int request_sign_out_count_ = 0;
   int request_restart_for_update_count_ = 0;
   int attempt_restart_chrome_count_ = 0;

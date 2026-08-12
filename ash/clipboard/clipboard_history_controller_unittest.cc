@@ -825,7 +825,7 @@ TEST_P(ClipboardHistoryControllerShowSourceTest, ShowMenuReturnsSuccess) {
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ContextMenu.ShowMenu",
                                     /*expected_count=*/0);
 
-  session_controller->HideLockScreen();
+  GetSessionControllerClient()->UnlockScreen();
   GetSessionControllerClient()->FlushForTest();
   EXPECT_FALSE(session_controller->IsScreenLocked());
 

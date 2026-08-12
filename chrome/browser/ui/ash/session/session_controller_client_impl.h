@@ -88,7 +88,6 @@ class SessionControllerClientImpl
 
   // ash::SessionControllerClient:
   void RequestLockScreen() override;
-  void RequestHideLockScreen() override;
   void RequestSignOut() override;
   void RequestRestartForUpdate() override;
   void AttemptRestartChrome() override;

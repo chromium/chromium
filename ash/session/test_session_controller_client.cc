@@ -168,7 +168,7 @@ void TestSessionControllerClient::LockScreen() {
 }
 
 void TestSessionControllerClient::UnlockScreen() {
-  RequestHideLockScreen();
+  SetSessionState(session_manager::SessionState::ACTIVE);
 }
 
 void TestSessionControllerClient::FlushForTest() {
@@ -202,11 +202,6 @@ void TestSessionControllerClient::RequestLockScreen() {
       FROM_HERE, base::BindOnce(&TestSessionControllerClient::SetSessionState,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 session_manager::SessionState::LOCKED));
-}
-
-void TestSessionControllerClient::RequestHideLockScreen() {
-  ++request_hide_lock_screen_count_;
-  SetSessionState(session_manager::SessionState::ACTIVE);
 }
 
 void TestSessionControllerClient::RequestSignOut() {
