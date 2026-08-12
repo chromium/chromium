@@ -182,6 +182,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
     builder = "chromeos-betty-chrome-gtest-and-tast",
 )
 
