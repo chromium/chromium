@@ -87,7 +87,11 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     private final List<Integer> mSelectedGroupTabIds = new ArrayList<>();
     private final List<RecyclerView.ViewHolder> mDraggedChildViewHolders = new ArrayList<>();
     private final @Nullable UndoBarThrottle mUndoBarThrottle;
-    private @DragDropResult int mDragResult = DragDropResult.ABORTED_NO_CHANGE;
+    // State snapshot captured at drag start to diff against the final state on drop.
+    private int mDragStartTabId = Tab.INVALID_TAB_ID;
+    private int mDragStartTabModelIndex = TabModel.INVALID_TAB_INDEX;
+    private @Nullable Token mDragStartGroupId;
+    private boolean mIsOSNewWindowDrop;
     private RecyclerView.@Nullable ViewHolder mSelectedViewHolder;
     private @Nullable OnDragOutListener mOnDragOutListener;
     private int mUndoBarThrottleToken = TokenHolder.INVALID_TOKEN;
@@ -465,7 +469,6 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                                 destinationTab,
                                 indexInGroup,
                                 TabGroupMergeNotificationType.NOTIFY_ALWAYS);
-                        mDragResult = DragDropResult.GROUPED;
                         return true;
                     }
                 }
@@ -514,9 +517,6 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         } else {
             tabModel.moveTab(currentTabId, destinationIndex);
         }
-        if (mDragResult == DragDropResult.ABORTED_NO_CHANGE) {
-            mDragResult = DragDropResult.REORDERED;
-        }
         return true;
     }
 
@@ -558,23 +558,30 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         }
 
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+            TabModel tabModel = mCurrentTabModelSupplier.get();
+            if (tabModel == null || !hasTabPropertiesModel(viewHolder)) return;
+
             // TODO(crbug.com/544185227): Support batch drag and drop of multi-selected tabs.
             // Currently, we fallback to a standard single-tab drag by clearing
             // the multi-selection state if the user drags a highlighted item.
-            TabModel tabModel = mCurrentTabModelSupplier.get();
-            if (tabModel != null
-                    && VerticalTabUtils.isMultiSelectEnabled()
+            if (VerticalTabUtils.isMultiSelectEnabled()
                     && TabMultiSelectHelper.hasMultipleTabsSelected(tabModel)) {
                 tabModel.clearMultiSelection(/* notifyObservers= */ true);
             }
 
             // Pause undo snackbars while dragging.
             startThrottling();
-            mDragResult = DragDropResult.ABORTED_NO_CHANGE;
+            mIsOSNewWindowDrop = false;
             mSelectedViewHolder = viewHolder;
             mSelectedGroupTabIds.clear();
-            if (!hasTabPropertiesModel(viewHolder)) return;
+
+            // Capture initial snapshot to evaluate the final drag result upon release.
             assumeNonNull(viewHolder);
+            mDragStartTabId = getTabId(viewHolder);
+            mDragStartGroupId = getTabGroupId(viewHolder);
+            Tab startTab = tabModel.getTabById(mDragStartTabId);
+            mDragStartTabModelIndex =
+                    startTab != null ? tabModel.indexOf(startTab) : TabModel.INVALID_TAB_INDEX;
             mSelectedTabIndex = viewHolder.getBindingAdapterPosition();
             mModel.updateSelectedCardForSelection(mSelectedTabIndex, true);
 
@@ -845,12 +852,15 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 }
             }
         }
-        if (viewHolder.getBindingAdapterPosition() == RecyclerView.NO_POSITION) {
-            mDragResult = DragDropResult.DRAGGED_OUT;
+        if (mDragStartTabId != Tab.INVALID_TAB_ID) {
+            @DragDropResult int dragResult = computeDragDropResult(viewHolder);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.VerticalTabs.DragDropResult", dragResult, DragDropResult.COUNT);
+            mDragStartTabId = Tab.INVALID_TAB_ID;
+            mDragStartGroupId = null;
+            mDragStartTabModelIndex = TabModel.INVALID_TAB_INDEX;
+            mIsOSNewWindowDrop = false;
         }
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.VerticalTabs.DragDropResult", mDragResult, DragDropResult.COUNT);
-        mDragResult = DragDropResult.ABORTED_NO_CHANGE;
         mDraggedChildTabIds.clear();
     }
 
@@ -1065,6 +1075,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
      *     is restored instantly to protect the RecyclerView pool.
      */
     public void restoreDraggedItem(boolean isOSNewWindowDrop) {
+        mIsOSNewWindowDrop = isOSNewWindowDrop;
         RecyclerView.ViewHolder targetHolder = getLiveViewHolder();
         final CollapsedItemState collapsedState = mCollapsedItemState;
         final float targetAlpha =
@@ -1247,7 +1258,6 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
 
     private void ungroupTab(TabModel tabModel, Tab tab, boolean trailing) {
         tabModel.getTabUngrouper().ungroupTabs(List.of(tab), trailing, false);
-        mDragResult = DragDropResult.UNGROUPED;
     }
 
     /**
@@ -1479,6 +1489,38 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             mUndoBarThrottle.stopThrottling(mUndoBarThrottleToken);
             mUndoBarThrottleToken = TokenHolder.INVALID_TOKEN;
         }
+    }
+
+    /**
+     * Evaluates the drag outcome by diffing the drop state against the snapshot from drag start.
+     */
+    private @DragDropResult int computeDragDropResult(RecyclerView.ViewHolder viewHolder) {
+        if (mIsOSNewWindowDrop
+                || viewHolder.getBindingAdapterPosition() == RecyclerView.NO_POSITION) {
+            return DragDropResult.DRAGGED_OUT;
+        }
+
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        if (tabModel == null) return DragDropResult.ABORTED_NO_CHANGE;
+
+        Tab currentTab = tabModel.getTabById(mDragStartTabId);
+        if (currentTab == null) {
+            return DragDropResult.DRAGGED_OUT;
+        }
+
+        Token currentGroupId = currentTab.getTabGroupId();
+        int currentModelIndex = tabModel.indexOf(currentTab);
+
+        if (currentGroupId != null && !Objects.equals(mDragStartGroupId, currentGroupId)) {
+            return DragDropResult.GROUPED;
+        }
+        if (mDragStartGroupId != null && currentGroupId == null) {
+            return DragDropResult.UNGROUPED;
+        }
+        if (currentModelIndex != mDragStartTabModelIndex) {
+            return DragDropResult.REORDERED;
+        }
+        return DragDropResult.ABORTED_NO_CHANGE;
     }
 
     /** Sets the tab grid item long press orchestrator for testing. */
