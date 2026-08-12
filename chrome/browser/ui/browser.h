@@ -179,24 +179,10 @@ class Browser : public TabStripModelObserver,
   const DesktopBrowserWindowCapabilities* capabilities() const override;
 
  private:
-  friend class BrowserTest;
-  friend class BrowserWebContentsDelegate;
-  friend class ExclusiveAccessTest;
-  friend class FullscreenControllerInteractiveTest;
   friend BrowserWindowInterface* CreateBrowserWindow(
       BrowserWindowCreateParams create_params);
   friend std::unique_ptr<Browser> DeprecatedCreateOwnedBrowserWindowForTesting(
       BrowserWindowCreateParams create_params);
-  FRIEND_TEST_ALL_PREFIXES(AppModeTest, EnableAppModeTest);
-  FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastIncognito);
-  FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastRegular);
-  FRIEND_TEST_ALL_PREFIXES(BrowserTest, OpenAppWindowLikeNtp);
-  FRIEND_TEST_ALL_PREFIXES(BrowserTest, AppIdSwitch);
-  FRIEND_TEST_ALL_PREFIXES(ExclusiveAccessBubbleWindowControllerTest,
-                           DenyExitsFullscreen);
-  FRIEND_TEST_ALL_PREFIXES(ExclusiveAccessTest,
-                           TabEntersPresentationModeFromWindowed);
-  FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastGuest);
 
   // Used to describe why a tab is being detached. This is used by
   // TabDetachedAtImpl.
