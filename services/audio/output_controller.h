@@ -242,7 +242,9 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
    private:
     void WedgeCheck();
 
-    void LogGlitchStats(const char* call_name, base::TimeTicks now);
+    void LogGlitchStats(const char* call_name,
+                        base::TimeTicks now,
+                        bool post_to_task_runner);
     void DoLogGlitchStats(const char* call_name,
                           base::TimeDelta total_duration,
                           media::AudioGlitchInfo glitch_info,

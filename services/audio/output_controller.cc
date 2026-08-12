@@ -106,7 +106,7 @@ OutputController::ErrorStatisticsTracker::~ErrorStatisticsTracker() {
   UMA_HISTOGRAM_BOOLEAN("Media.AudioOutputController.CallbackError",
                         error_during_callback_);
   if (controller_) {
-    LogGlitchStats("StopStream", now);
+    LogGlitchStats("StopStream", now, /*post_to_task_runner=*/false);
     controller_->SendLogMessage(
         base::StringPrintf("StopStream => (error_during_callback=%s)",
                            base::ToString(error_during_callback_).c_str()));
@@ -130,7 +130,7 @@ void OutputController::ErrorStatisticsTracker::OnMoreDataCalled(
   base::TimeTicks now = base::TimeTicks::Now();
   if (controller_ && now - last_periodic_log_time_ >= kGlitchStatsLogInterval) {
     last_periodic_log_time_ = now;
-    LogGlitchStats("OnMoreData", now);
+    LogGlitchStats("OnMoreData", now, /*post_to_task_runner=*/true);
   }
 }
 
@@ -144,12 +144,19 @@ void OutputController::ErrorStatisticsTracker::WedgeCheck() {
 }
 void OutputController::ErrorStatisticsTracker::LogGlitchStats(
     const char* call_name,
-    base::TimeTicks now) {
+    base::TimeTicks now,
+    bool post_to_task_runner) {
   const base::TimeDelta total_duration = now - start_time_;
   const double glitch_percentage =
       total_duration.is_zero()
           ? 0
           : glitch_info_.duration.InSecondsF() / total_duration.InSecondsF();
+  if (!post_to_task_runner) {
+    DCHECK(task_runner_->BelongsToCurrentThread());
+    DoLogGlitchStats(call_name, total_duration, glitch_info_,
+                     glitch_percentage);
+    return;
+  }
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ErrorStatisticsTracker::DoLogGlitchStats,
                                 weak_this_, call_name, total_duration,
