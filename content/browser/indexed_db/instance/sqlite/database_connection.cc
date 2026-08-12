@@ -91,6 +91,11 @@
 
 namespace content::indexed_db::sqlite {
 
+#define FSA_HANDLE_TYPE " 2 "
+static_assert(
+    2 == static_cast<int>(
+             IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle));
+
 #if BUILDFLAG(IS_WIN)
 // This exists as an escape hatch and/or to experiment with its impact on
 // reliability metrics.
@@ -2014,14 +2019,11 @@ StatusOr<IndexedDBValue> DatabaseConnection::AddExternalObjectMetadataToValue(
         "FROM blobs INNER JOIN blob_references"
         "  ON blob_references.blob_row_id = blobs.row_id "
         "WHERE"
-        "  blob_references.record_row_id = ? AND object_type != ? "
+        "  blob_references.record_row_id = ? AND object_type !=" FSA_HANDLE_TYPE
         // The order is important because the serialized data uses indexes to
         // refer to embedded external objects.
         "ORDER BY blob_references.blob_row_id"));
     statement.BindInt64(0, record_row_id);
-    statement.BindInt64(
-        1, static_cast<int>(
-               IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle));
     while (statement.Step()) {
       const int64_t blob_row_id = statement.ColumnInt64(0);
       if (auto it = blobs_staged_for_commit_.find(blob_row_id);
@@ -2068,12 +2070,9 @@ StatusOr<IndexedDBValue> DatabaseConnection::AddExternalObjectMetadataToValue(
         "FROM blobs INNER JOIN blob_references"
         "  ON blob_references.blob_row_id = blobs.row_id "
         "WHERE"
-        "  blob_references.record_row_id = ? AND object_type = ? "
+        "  blob_references.record_row_id = ? AND object_type =" FSA_HANDLE_TYPE
         "ORDER BY blob_references.blob_row_id"));
     statement.BindInt64(0, record_row_id);
-    statement.BindInt64(
-        1, static_cast<int>(
-               IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle));
     while (statement.Step()) {
       const int64_t blob_row_id = statement.ColumnInt64(0);
       if (auto it = blobs_staged_for_commit_.find(blob_row_id);
@@ -2838,13 +2837,10 @@ StatusOr<mojo_base::BigBuffer> DatabaseConnection::Decompress(
 }
 
 std::set<int64_t> DatabaseConnection::SnapshotLegacyBlobFiles() {
-  sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE,
-                              "SELECT row_id FROM blobs "
-                              "WHERE object_type != ? AND bytes IS NULL"));
-  statement.BindInt64(
-      0, static_cast<int>(
-             IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle));
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT row_id FROM blobs "
+      "WHERE object_type !=" FSA_HANDLE_TYPE "AND bytes IS NULL"));
 
   std::set<int64_t> result;
   while (statement.Step()) {
