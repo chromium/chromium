@@ -1782,6 +1782,14 @@ public class StripLayoutHelperTest {
 
         TintedCompositorButton button = mStripLayoutHelper.getTabSearchButton();
 
+        // Verify tab search button default background tint.
+        int defaultBackgroundTint =
+                mContext.getColorStateList(R.color.tab_strip_tsb_bg_tint_list).getDefaultColor();
+        assertEquals(
+                "Tab Search button default background tint is not as expected",
+                defaultBackgroundTint,
+                button.getBackgroundTint());
+
         // Verify tab search button hover highlight default tint.
         button.setHovered(true);
         int defaultHoverBackgroundTint = mActivity.getColor(R.color.tab_strip_button_bg_hover_tint);
@@ -1810,6 +1818,15 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         TintedCompositorButton button = mStripLayoutHelper.getTabSearchButton();
+
+        // Verify tab search button default background tint.
+        int defaultBackgroundTint =
+                mContext.getColorStateList(R.color.tab_strip_tsb_bg_incognito_tint_list)
+                        .getDefaultColor();
+        assertEquals(
+                "Tab Search button default background tint is not as expected",
+                defaultBackgroundTint,
+                button.getBackgroundTint());
 
         // Verify tab search button incognito hover highlight default tint.
         button.setHovered(true);
