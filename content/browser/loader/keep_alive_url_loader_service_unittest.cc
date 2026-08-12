@@ -144,6 +144,10 @@ class FakeRemoteURLLoaderFactory {
     return remote_url_loader.is_connected();
   }
   void reset_remote_url_loader() { remote_url_loader.reset(); }
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
+    remote_url_loader_factory->Clone(std::move(receiver));
+  }
+  void FlushForTesting() { remote_url_loader_factory.FlushForTesting(); }
 
  private:
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -182,6 +186,18 @@ class FakeRemoteFetchLaterLoaderFactory {
     return remote_fetch_later_loader_.is_connected();
   }
   void reset_remote_fetch_later_loader() { remote_fetch_later_loader_.reset(); }
+  mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
+  BindNewEndpointAndPassReceiver() {
+    return remote_fetch_later_loader_factory_.BindNewEndpointAndPassReceiver();
+  }
+  void Clone(
+      mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
+          receiver) {
+    remote_fetch_later_loader_factory_->Clone(std::move(receiver));
+  }
+  void FlushForTesting() {
+    remote_fetch_later_loader_factory_.FlushForTesting();
+  }
 
  private:
   mojo::AssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
@@ -565,6 +581,77 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterPageIsUnloaded) {
   EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
 }
 
+// Verifies that keepalive requests initiated via a cloned `URLLoaderFactory`
+// after the initiating document has been unloaded will start the network
+// load, but will not forward response data back to the renderer
+// `URLLoaderClient`.
+TEST_F(KeepAliveURLLoaderServiceTest,
+       LoadRequestFromClonedFactoryAfterPageIsUnloaded) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  FakeRemoteURLLoaderFactory cloned_factory;
+  renderer_loader_factory.Clone(cloned_factory.BindNewPipeAndPassReceiver());
+  renderer_loader_factory.FlushForTesting();
+
+  // Deletes the current RenderFrameHost and then loads a keepalive request
+  // from the cloned factory.
+  DeleteContents();
+  cloned_factory.CreateLoaderAndStart(
+      CreateResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote(),
+      /*expect_success=*/true);
+
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  // When a response is received, it should not be forwarded to the client
+  // since the initiator document has been unloaded.
+  EXPECT_CALL(renderer_loader_client, OnReceiveResponse(_, _, _)).Times(0);
+  GetLastPendingRequest()->client->OnReceiveResponse(
+      CreateResponseHead({{kTestResponseHeaderName, kTestResponseHeaderValue}}),
+      /*body=*/{}, std::nullopt);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return loader_service().NumLoadersForTesting() == 0u; }));
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+}
+
+// Verifies that cloning a `URLLoaderFactory` after the initiating document
+// has been unloaded correctly binds the new factory receiver to the shared
+// `FactoryContext`.
+TEST_F(KeepAliveURLLoaderServiceTest, CloneFactoryAfterPageIsUnloaded) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Deletes the current RenderFrameHost first before cloning the factory.
+  DeleteContents();
+
+  FakeRemoteURLLoaderFactory cloned_factory;
+  renderer_loader_factory.Clone(cloned_factory.BindNewPipeAndPassReceiver());
+  renderer_loader_factory.FlushForTesting();
+
+  cloned_factory.CreateLoaderAndStart(
+      CreateResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote(),
+      /*expect_success=*/true);
+
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  // When a response is received, it should not be forwarded to the client
+  // since the initiator document has been unloaded.
+  EXPECT_CALL(renderer_loader_client, OnReceiveResponse(_, _, _)).Times(0);
+  GetLastPendingRequest()->client->OnReceiveResponse(
+      CreateResponseHead({{kTestResponseHeaderName, kTestResponseHeaderValue}}),
+      /*body=*/{}, std::nullopt);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return loader_service().NumLoadersForTesting() == 0u; }));
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+}
+
+
 // This test initially provides an unbind factory to KeepAliveURLLoaderService.
 // After that, provides a bound factory via UpdateFactory.
 TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterUpdateFactory) {
@@ -611,6 +698,52 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterUpdateFactory) {
   {
     MockReceiverURLLoaderClient renderer_loader_client;
     renderer_loader_factory.CreateLoaderAndStart(
+        CreateResourceRequest(GURL(kTestRequestUrl)),
+        renderer_loader_client.BindNewPipeAndPassRemote(),
+        /*expect_success=*/true);
+    EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
+  }
+}
+
+// Verifies that a cloned `URLLoaderFactory` shares its `FactoryContext` with
+// the original receiver, ensuring that updates via `UpdateFactory()` apply to
+// requests initiated from cloned factory handles.
+TEST_F(KeepAliveURLLoaderServiceTest,
+       LoadRequestWithClonedFactoryAfterUpdateFactory) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+
+  auto unbound_factory =
+      std::make_unique<network::WrapperPendingSharedURLLoaderFactory>();
+  scoped_refptr<PolicyContainerHost> policy_container_host =
+      static_cast<RenderFrameHostImpl*>(main_rfh())
+          ->policy_container_host()
+          ->Clone();
+  auto context = loader_service().BindFactory(
+      renderer_loader_factory.BindNewPipeAndPassReceiver(),
+      network::SharedURLLoaderFactory::Create(std::move(unbound_factory)),
+      policy_container_host);
+  GetNavigationRequest()->SetKeepAliveURLLoaderFactoryContextForTesting(
+      context);
+  pending_navigation_->Commit();
+
+  FakeRemoteURLLoaderFactory cloned_factory;
+  renderer_loader_factory.Clone(cloned_factory.BindNewPipeAndPassReceiver());
+  renderer_loader_factory.FlushForTesting();
+
+  renderer_loader_factory.reset_remote_url_loader();
+  mojo::Remote<network::mojom::URLLoaderFactory> factory;
+  network_url_loader_factory().Clone(factory.BindNewPipeAndPassReceiver());
+  auto pending_factory = std::make_unique<blink::PendingURLLoaderFactoryBundle>(
+      factory.Unbind(), blink::PendingURLLoaderFactoryBundle::SchemeMap(),
+      blink::PendingURLLoaderFactoryBundle::OriginMap(),
+      /*local_resource_loader_config=*/nullptr,
+      /*bypass_redirect_checks=*/false);
+  context->UpdateFactory(
+      network::SharedURLLoaderFactory::Create(std::move(pending_factory)));
+
+  {
+    MockReceiverURLLoaderClient renderer_loader_client;
+    cloned_factory.CreateLoaderAndStart(
         CreateResourceRequest(GURL(kTestRequestUrl)),
         renderer_loader_client.BindNewPipeAndPassRemote(),
         /*expect_success=*/true);
@@ -1377,6 +1510,58 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest, Shutdown) {
   // The network should now have created pending URLLoader.
   EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
 }
+
+// Verifies that FetchLater requests initiated from a cloned
+// `FetchLaterLoaderFactory` after the initiating document has been unloaded
+// correctly inherit the document lifecycle state from the shared
+// `FactoryContext`.
+TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
+       LoadFetchLaterRequestFromClonedFactoryAfterPageIsUnloaded) {
+  FakeRemoteFetchLaterLoaderFactory renderer_loader_factory;
+  BindFetchLaterLoaderFactory(renderer_loader_factory);
+
+  FakeRemoteFetchLaterLoaderFactory cloned_factory;
+  renderer_loader_factory.Clone(
+      cloned_factory.BindNewEndpointAndPassReceiver());
+  renderer_loader_factory.FlushForTesting();
+
+  // Deletes the current RenderFrameHost and then loads a request via the cloned
+  // factory.
+  DeleteContents();
+  cloned_factory.CreateLoader(
+      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
+      /*expect_success=*/true);
+
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+}
+
+// Verifies that cloning a `FetchLaterLoaderFactory` after the initiating
+// document has been unloaded correctly binds the new factory receiver to the
+// shared `FactoryContext`, allowing requests to be created with the unloaded
+// document state.
+TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
+       CloneFetchLaterFactoryAfterPageIsUnloaded) {
+  FakeRemoteFetchLaterLoaderFactory renderer_loader_factory;
+  BindFetchLaterLoaderFactory(renderer_loader_factory);
+
+  // Deletes the current RenderFrameHost first before cloning the factory.
+  DeleteContents();
+
+  FakeRemoteFetchLaterLoaderFactory cloned_factory;
+  renderer_loader_factory.Clone(
+      cloned_factory.BindNewEndpointAndPassReceiver());
+  renderer_loader_factory.FlushForTesting();
+
+  // Loads a request via the cloned factory.
+  cloned_factory.CreateLoader(
+      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
+      /*expect_success=*/true);
+
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+}
+
 
 class KeepAliveURLLoaderServiceRetryTest
     : public KeepAliveURLLoaderServiceTestBase {

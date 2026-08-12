@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/containers/lru_cache.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/loader/keep_alive_url_loader.h"
 #include "content/common/content_export.h"
@@ -58,23 +59,26 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   //
   // A FactoryContext is created whenever `BindFactory()` or
   // `BindFetchLaterLoaderFactory()` is called by
-  // RenderFrameHostImpl::CommitNavigation(). It can also be cloned by the same
-  // corresponding renderer, or when new window or new child frame is created.
+  // RenderFrameHostImpl::CommitNavigation(). It can also be "cloned" using an
+  // additional reference by the same corresponding renderer, or when new window
+  // or new child frame is created.
   //
   // See `mojo::ReceiverSetBase` for more details.
-  struct CONTENT_EXPORT FactoryContext {
+  struct CONTENT_EXPORT FactoryContext
+      : public base::RefCounted<FactoryContext> {
     FactoryContext(
         scoped_refptr<network::SharedURLLoaderFactory> factory,
         scoped_refptr<PolicyContainerHost> frame_policy_container_host);
-    // Called when a factory is cloned by URLLoaderFactory::Clone().
-    explicit FactoryContext(const std::unique_ptr<FactoryContext>& other);
-    ~FactoryContext();
     // Not Copyable.
     FactoryContext(const FactoryContext&) = delete;
     FactoryContext& operator=(const FactoryContext&) = delete;
 
     // Updates `weak_document_ptr` and other document-related fields.
     void OnDidCommitNavigation(NavigationHandle* navigation_handle);
+
+    // Returns true if `OnDidCommitNavigation()` was called for this context but
+    // the document it referenced has since been navigated away or destroyed.
+    bool WasInitiatorDocumentDestroyed() const;
 
     // Called when a `KeepAliveURLLoader` is about to create.
     // This updates RenderFrameHostImpl via `weak_document_ptr` about the
@@ -132,8 +136,17 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     // network isolation key of the committed RenderFrameHostImpl.
     net::NetworkIsolationKey network_isolation_key;
 
+    // Whether `OnDidCommitNavigation()` has been called for this context. Used
+    // to distinguish `weak_document_ptr` never having been set from it having
+    // been invalidated.
+    bool did_commit_navigation = false;
+
     // This must be the last member.
     base::WeakPtrFactory<FactoryContext> weak_ptr_factory{this};
+
+   private:
+    friend class base::RefCounted<FactoryContext>;
+    ~FactoryContext();
   };
 
   // `storage_partition` creates and owns the instance of this service. It
