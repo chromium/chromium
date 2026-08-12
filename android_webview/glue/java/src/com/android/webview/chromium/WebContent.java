@@ -22,6 +22,10 @@ public class WebContent {
     @Nullable private WebViewChromium mCurrentWebViewChromium;
     private boolean mIsDestroyed;
 
+    public boolean isInitialized() {
+        return mAwContents != null;
+    }
+
     public AwContents adopt(
             WebViewChromium webViewChromium,
             AwBrowserContext browserContext,

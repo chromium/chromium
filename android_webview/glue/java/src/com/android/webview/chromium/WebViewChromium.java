@@ -1399,6 +1399,7 @@ class WebViewChromium
             if (webContent == null) {
                 webContent = new WebContent();
             }
+            boolean isTransfer = webContent.isInitialized();
 
             mAwContents =
                     webContent.adopt(
@@ -1413,6 +1414,13 @@ class WebViewChromium
                                             awContents, mFactory.getWebViewDelegate()),
                             new AwContents.DependencyFactory());
             mContentsClientAdapter = (WebViewContentsClientAdapter) mAwContents.getContentsClient();
+
+            if (isTransfer) {
+                mSharedWebViewChromium.setWebViewClient(mContentsClientAdapter.getWebViewClient());
+                mSharedWebViewChromium.setWebChromeClient(
+                        mContentsClientAdapter.getWebChromeClient());
+            }
+
             try (ScopedSysTraceEvent e2 =
                     ScopedSysTraceEvent.scoped("WebViewChromium.ContentSettingsAdapter")) {
                 mWebSettings = mFactory.createContentSettingsAdapter(mAwContents.getSettings());
