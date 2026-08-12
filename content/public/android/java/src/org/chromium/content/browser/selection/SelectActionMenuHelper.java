@@ -203,7 +203,7 @@ public class SelectActionMenuHelper {
             } else if (item == DefaultItem.PASTE_AS_PLAIN_TEXT) {
                 if (delegate.canPasteAsPlainText()) menuItems.add(pasteAsPlainText(context, pos));
             } else if (item == DefaultItem.SHARE) {
-                if (delegate.canShare()) menuItems.add(share(context, pos));
+                if (delegate.canShare()) menuItems.add(share(context, pos, menuType));
             } else if (item == DefaultItem.SELECT_ALL) {
                 if (delegate.canSelectAll()) menuItems.add(selectAll(pos));
             } else if (item == DefaultItem.WEB_SEARCH) {
@@ -388,20 +388,28 @@ public class SelectActionMenuHelper {
                 .build();
     }
 
-    private static SelectionMenuItem share(@Nullable Context context, int order) {
+    // Note: For dropdown menus, Share uses Menu.CATEGORY_ALTERNATIVE + 1 to stably appear
+    // below alternative items (such as Ask Gemini).
+    private static SelectionMenuItem share(
+            @Nullable Context context, int order, @MenuType int menuType) {
         if (context == null) {
             context = ContextUtils.getApplicationContext();
         }
-        return new SelectionMenuItem.Builder(context.getString(R.string.actionbar_share))
-                .setId(R.id.select_action_menu_share)
-                .setGroupId(R.id.select_action_menu_default_items)
-                .setIconAttr(android.R.attr.actionModeShareDrawable)
-                .setOrderAndCategory(order, ItemGroupOffset.DEFAULT_ITEMS)
-                .setShowAsActionFlags(
-                        MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
-                .setIsEnabled(true)
-                .setIsIconTintable(true)
-                .build();
+        SelectionMenuItem.Builder builder =
+                new SelectionMenuItem.Builder(context.getString(R.string.actionbar_share))
+                        .setId(R.id.select_action_menu_share)
+                        .setGroupId(R.id.select_action_menu_default_items)
+                        .setIconAttr(android.R.attr.actionModeShareDrawable)
+                        .setShowAsActionFlags(
+                                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
+                        .setIsEnabled(true)
+                        .setIsIconTintable(true);
+        if (menuType == MenuType.DROPDOWN) {
+            builder.setOrder(Menu.CATEGORY_ALTERNATIVE + 1);
+        } else {
+            builder.setOrderAndCategory(order, ItemGroupOffset.DEFAULT_ITEMS);
+        }
+        return builder.build();
     }
 
     private static SelectionMenuItem selectAll(int order) {

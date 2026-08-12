@@ -232,7 +232,11 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
             return this;
         }
 
-        /** Should not be used directly unless constructing from an existing SelectionMenuItem. */
+        /**
+         * Sets a raw order without applying an {@link ItemGroupOffset} category. Prefer {@link
+         * #setOrderAndCategory} unless the item must be placed outside the predefined sections
+         * (e.g. below {@code Menu.CATEGORY_ALTERNATIVE}) or when copying an existing item.
+         */
         public Builder setOrder(int order) {
             if (order < 0) {
                 throw new IllegalArgumentException("Invalid order. Must be >= 0");

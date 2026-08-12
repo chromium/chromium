@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyChar;
 import static org.mockito.ArgumentMatchers.anyInt;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.RemoteAction;
 import android.content.ClipData;
@@ -537,17 +538,17 @@ public class ContentTextSelectionTest {
                 mSelectionPopupController.isSelectActionModeAllowed(
                         ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH);
 
-        // Map | Copy [Share] Select All [Web Search] | testTextProcessingItem
+        // Map | Copy Select All [Web Search] | testTextProcessingItem [Share]
         ArrayList<ItemMatcher> matchers = new ArrayList<>();
         matchers.add(hasTitle("Map"));
         matchers.add(isDivider());
         matchers.add(hasId(R.id.select_action_menu_copy));
-        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
         matchers.add(hasId(R.id.select_action_menu_select_all));
         if (webSearchAllowed) matchers.add(hasId(R.id.select_action_menu_web_search));
         matchers.add(isDivider());
         // The text processing menu item we created is added to the menu.
         matchers.add(hasTitle("testTextProcessingItem"));
+        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
 
         TestSelectionDropdownMenuDelegate dropdownDelegate =
                 new TestSelectionDropdownMenuDelegate();
@@ -555,11 +556,18 @@ public class ContentTextSelectionTest {
         verifyMenu(items, matchers, dropdownDelegate);
 
         // Check correct processText intent state is sent to 3rd party apps.
+        Activity activityDropdown = mActivityTestRule.getActivity();
+        SelectionMenuItem textProcessingItemDropdown = null;
+        for (SelectionMenuItem item : menu.getMenuItemsForTesting()) {
+            if ("testTextProcessingItem".equals(item.getTitle(activityDropdown))) {
+                textProcessingItemDropdown = item;
+                break;
+            }
+        }
+        Assert.assertNotNull(textProcessingItemDropdown);
         Assert.assertTrue(
-                menu.getMenuItemsForTesting()
-                        .get(menu.getMenuItemsForTesting().size() - 1)
-                        .intent
-                        .getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false));
+                textProcessingItemDropdown.intent.getBooleanExtra(
+                        Intent.EXTRA_PROCESS_TEXT_READONLY, false));
     }
 
     @Test
@@ -596,11 +604,18 @@ public class ContentTextSelectionTest {
         verifyMenu(actualItems, matchers);
 
         // Check correct processText intent state is sent to 3rd party apps.
+        Activity activityFloating = mActivityTestRule.getActivity();
+        SelectionMenuItem textProcessingItemFloating = null;
+        for (SelectionMenuItem item : menu.getMenuItemsForTesting()) {
+            if ("testTextProcessingItem".equals(item.getTitle(activityFloating))) {
+                textProcessingItemFloating = item;
+                break;
+            }
+        }
+        Assert.assertNotNull(textProcessingItemFloating);
         Assert.assertTrue(
-                menu.getMenuItemsForTesting()
-                        .get(menu.getMenuItemsForTesting().size() - 1)
-                        .intent
-                        .getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false));
+                textProcessingItemFloating.intent.getBooleanExtra(
+                        Intent.EXTRA_PROCESS_TEXT_READONLY, false));
     }
 
     @Test
