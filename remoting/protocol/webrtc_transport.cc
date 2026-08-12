@@ -824,6 +824,13 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   session_description.signature.assign(digest.begin(), digest.end());
   transport_info->session_description = std::move(session_description);
 
+  if (pending_transport_info_message_) {
+    transport_info->candidates =
+        std::move(pending_transport_info_message_->candidates);
+    pending_transport_info_message_.reset();
+    transport_info_timer_.Stop();
+  }
+
   send_transport_info_callback_.Run(std::move(transport_info));
 
   {
@@ -1165,6 +1172,10 @@ void WebrtcTransport::SetSenderBitrates(
 void WebrtcTransport::RequestNegotiation() {
   DCHECK(transport_context_->role() == TransportRole::SERVER);
 
+  if (send_transport_info_callback_.is_null()) {
+    return;
+  }
+
   if (!negotiation_pending_) {
     negotiation_pending_ = true;
     auto send_offer_cb =
@@ -1206,16 +1217,14 @@ void WebrtcTransport::SendOffer() {
 void WebrtcTransport::EnsurePendingTransportInfoMessage() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // |transport_info_timer_| must be running iff
-  // |pending_transport_info_message_| exists.
-  DCHECK_EQ(pending_transport_info_message_ != nullptr,
-            transport_info_timer_.IsRunning());
-
   if (!pending_transport_info_message_) {
     pending_transport_info_message_ = std::make_unique<JingleTransportInfo>();
+  }
 
-    // Delay sending the new candidates in case we get more candidates
-    // that we can send in one message.
+  // Delay sending the new candidates in case we get more candidates
+  // that we can send in one message.
+  if (!send_transport_info_callback_.is_null() &&
+      !transport_info_timer_.IsRunning()) {
     transport_info_timer_.Start(FROM_HERE,
                                 base::Milliseconds(kTransportInfoSendDelayMs),
                                 this, &WebrtcTransport::SendTransportInfo);
@@ -1225,6 +1234,7 @@ void WebrtcTransport::EnsurePendingTransportInfoMessage() {
 void WebrtcTransport::SendTransportInfo() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(pending_transport_info_message_);
+  DCHECK(!send_transport_info_callback_.is_null());
 
   send_transport_info_callback_.Run(std::move(pending_transport_info_message_));
 }
