@@ -95,6 +95,14 @@ public class TabModelNotificationDotManager implements Destroyable {
                 }
 
                 @Override
+                public void willCloseTabs(
+                        List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                    for (Tab tab : tabs) {
+                        maybeUpdateForTab(tab, /* mayAddDot= */ false);
+                    }
+                }
+
+                @Override
                 public void onFinishingTabClosure(Tab tab, @TabClosingSource int closingSource) {
                     maybeUpdateForTab(tab, /* mayAddDot= */ false);
                 }

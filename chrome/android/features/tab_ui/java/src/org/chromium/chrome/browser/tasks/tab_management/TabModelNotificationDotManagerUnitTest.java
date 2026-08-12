@@ -30,8 +30,11 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -222,6 +225,7 @@ public class TabModelNotificationDotManagerUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testComputeUpdateTabModelObserver() {
         initializeBothBackends();
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
@@ -265,6 +269,57 @@ public class TabModelNotificationDotManagerUnitTest {
 
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(null);
         mTabModelObserverCaptor.getValue().willCloseTab(mTab, true);
+        verifyHidden();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testComputeUpdateTabModelObserver_WillCloseTabs() {
+        initializeBothBackends();
+        createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
+
+        when(mTab.getTabGroupId()).thenReturn(null);
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        mTab,
+                        TabLaunchType.FROM_SYNC_BACKGROUND,
+                        TabCreationState.LIVE_IN_BACKGROUND,
+                        /* markedForSelection= */ false);
+        verifyHidden();
+
+        when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        mTab,
+                        TabLaunchType.FROM_SYNC_BACKGROUND,
+                        TabCreationState.LIVE_IN_BACKGROUND,
+                        /* markedForSelection= */ false);
+        verifyShown();
+
+        when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(null);
+        mTabModelObserverCaptor.getValue().tabRemoved(mTab);
+        verifyHidden();
+
+        when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(mTab);
+        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab);
+        verifyShown();
+
+        when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(null);
+        mTabModelObserverCaptor.getValue().onFinishingTabClosure(mTab, TabClosingSource.UNKNOWN);
+        verifyHidden();
+
+        when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(mTab);
+        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab);
+        verifyShown();
+
+        when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(null);
+        mTabModelObserverCaptor
+                .getValue()
+                .willCloseTabs(
+                        List.of(mTab), /* isAllTabs= */ false, /* allowUndo= */ true);
         verifyHidden();
     }
 
