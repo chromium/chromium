@@ -14,8 +14,16 @@ namespace tabs {
 class TabInterface;
 class TabCollection;
 
-using Child =
-    std::variant<std::unique_ptr<TabCollection>, std::unique_ptr<TabInterface>>;
+// Custom deleter for TabInterface in tab collections that delegates destruction
+// to TabInterface::DeleteSelf().
+struct TabDeleter {
+  constexpr TabDeleter() = default;
+  void operator()(TabInterface* tab) const;
+};
+
+using ScopedTab = std::unique_ptr<TabInterface, TabDeleter>;
+
+using Child = std::variant<std::unique_ptr<TabCollection>, ScopedTab>;
 using ChildrenVector = std::vector<Child>;
 
 using ChildPtr = std::variant<tabs::TabInterface*, tabs::TabCollection*>;

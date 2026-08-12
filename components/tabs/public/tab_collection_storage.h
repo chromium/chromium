@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TABS_PUBLIC_TAB_COLLECTION_STORAGE_H_
 #define COMPONENTS_TABS_PUBLIC_TAB_COLLECTION_STORAGE_H_
 
+#include <concepts>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -34,7 +35,12 @@ class TabCollectionStorage final {
 
   // Inserts a Tab into the TabCollectionStorage. The `index` represents the
   // position in the direct children vector (non-recursive).
-  TabInterface* AddTab(std::unique_ptr<TabInterface> tab, size_t index);
+  TabInterface* AddTab(ScopedTab tab, size_t index);
+  template <typename T>
+    requires std::derived_from<T, TabInterface>
+  TabInterface* AddTab(std::unique_ptr<T> tab, size_t index) {
+    return AddTab(ScopedTab(tab.release()), index);
+  }
 
   // Moves a tab already within this TabCollectionStorage to `dst_index`. Shifts
   // other tabs and collections in the collection as needed. Will check if index
@@ -42,7 +48,7 @@ class TabCollectionStorage final {
   void MoveTab(TabInterface* tab, size_t dst_index);
 
   // Removes `tab` from storage and returns it to the caller.
-  [[nodiscard]] std::unique_ptr<TabInterface> RemoveTab(TabInterface* tab);
+  [[nodiscard]] ScopedTab RemoveTab(TabInterface* tab);
 
   // Inserts a TabCollection into the TabCollectionStorage. The `index`
   // represents the position in the direct children vector (non-recursive).

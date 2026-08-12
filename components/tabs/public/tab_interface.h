@@ -79,6 +79,13 @@ class TabLookupFromWebContents
 // in TabFeatures.
 class TabInterface : public SupportsTabHandles {
  public:
+  ~TabInterface() override = default;
+
+  // Called when a tab collection drops ownership of this tab.
+  // Defaults to `delete this;`. Implementations with external lifecycles (such
+  // as Android's Java-owned TabAndroid) can override this method to no-op.
+  virtual void DeleteSelf();
+
   // This method exists to ease the transition from WebContents to TabInterface.
   // This method should only be called on instances of WebContents that are
   // known to be tabs. Calling this on a non-tab will crash.

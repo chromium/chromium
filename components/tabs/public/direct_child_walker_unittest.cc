@@ -52,15 +52,15 @@ TEST_F(DirectChildWalkerTest, WalksEmptyCollection) {
 
 TEST_F(DirectChildWalkerTest, WalksMixedCollectionInOrder) {
   ChildrenVector children;
-  children.emplace_back(std::make_unique<MockTabInterface>());
-  auto* tab1_ptr =
-      std::get<std::unique_ptr<TabInterface>>(children.back()).get();
+  children.emplace_back(
+      ScopedTab(std::make_unique<MockTabInterface>().release()));
+  auto* tab1_ptr = std::get<ScopedTab>(children.back()).get();
   children.emplace_back(std::make_unique<MockTabCollection>());
   auto* collection_ptr =
       std::get<std::unique_ptr<TabCollection>>(children.back()).get();
-  children.emplace_back(std::make_unique<MockTabInterface>());
-  auto* tab2_ptr =
-      std::get<std::unique_ptr<TabInterface>>(children.back()).get();
+  children.emplace_back(
+      ScopedTab(std::make_unique<MockTabInterface>().release()));
+  auto* tab2_ptr = std::get<ScopedTab>(children.back()).get();
 
   EXPECT_CALL(collection_, GetChildren(testing::_))
       .WillOnce(testing::ReturnRef(children));

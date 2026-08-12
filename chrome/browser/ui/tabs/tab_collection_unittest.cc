@@ -50,8 +50,7 @@ class TabCollectionBaseTest : public ::testing::Test {
       tabs::TabCollectionStorage* storage,
       size_t index) {
     const auto& child = storage->GetChildren().at(index);
-    const auto tab_ptr =
-        std::get_if<std::unique_ptr<tabs::TabInterface>>(&child);
+    const auto tab_ptr = std::get_if<tabs::ScopedTab>(&child);
     return tab_ptr ? tab_ptr->get() : nullptr;
   }
 
@@ -71,7 +70,14 @@ class TabCollectionBaseTest : public ::testing::Test {
 
   // Adds a tab to the end of a collection.
   tabs::TabInterface* AppendTab(tabs::TabCollection* collection,
-                                std::unique_ptr<tabs::TabInterface> tab) {
+                                tabs::ScopedTab tab) {
+    return collection->AddTab(std::move(tab), collection->ChildCount());
+  }
+
+  template <typename T>
+    requires std::derived_from<T, tabs::TabInterface>
+  tabs::TabInterface* AppendTab(tabs::TabCollection* collection,
+                                std::unique_ptr<T> tab) {
     return collection->AddTab(std::move(tab), collection->ChildCount());
   }
 
@@ -594,7 +600,7 @@ TEST_F(UnpinnedTabCollectionTest, RemoveOperation) {
 
   // Remove the tab
   tab_model_one_ptr->set_will_be_detaching_for_testing(true);
-  std::unique_ptr<tabs::TabInterface> removed_tab =
+  tabs::ScopedTab removed_tab =
       unpinned_collection->MaybeRemoveTab(tab_model_one_ptr);
   EXPECT_EQ(removed_tab.get(), tab_model_one_ptr);
   EXPECT_EQ(unpinned_collection->ChildCount(), 6ul);

@@ -49,7 +49,7 @@ TabCollection::TabIterator::TabIterator(TabInterface* tab)
     for (; it != frame_children.cend(); ++it) {
       const Child& p = *it;
       if (std::holds_alternative<TabInterface*>(last_child_ptr)) {
-        if (auto* tab_ptr = std::get_if<std::unique_ptr<TabInterface>>(&p)) {
+        if (auto* tab_ptr = std::get_if<ScopedTab>(&p)) {
           if (tab_ptr->get() == std::get<TabInterface*>(last_child_ptr)) {
             break;
           }
@@ -107,8 +107,8 @@ void TabCollection::TabIterator::Next() {
 
     if (frame.index < children.size()) {
       auto& child = children[frame.index++];
-      if (std::holds_alternative<std::unique_ptr<TabInterface>>(child)) {
-        cur_ = std::get<std::unique_ptr<TabInterface>>(child).get();
+      if (std::holds_alternative<ScopedTab>(child)) {
+        cur_ = std::get<ScopedTab>(child).get();
         return;
       } else {
         TabCollection* child_collection =
@@ -174,8 +174,8 @@ std::optional<size_t> TabCollection::GetIndexOfTabRecursive(
   // result. Otherwise, update the `current_index` by the number of tabs in the
   // collection.
   for (const auto& child : impl_->GetChildren()) {
-    if (std::holds_alternative<std::unique_ptr<TabInterface>>(child)) {
-      if (std::get<std::unique_ptr<TabInterface>>(child).get() == tab) {
+    if (std::holds_alternative<ScopedTab>(child)) {
+      if (std::get<ScopedTab>(child).get() == tab) {
         return current_index;
       }
       current_index++;
@@ -200,9 +200,9 @@ TabInterface* TabCollection::GetTabAtIndexRecursive(size_t index) const {
   size_t curr_index = 0;
 
   for (auto& child : impl_->GetChildren()) {
-    if (std::holds_alternative<std::unique_ptr<TabInterface>>(child)) {
+    if (std::holds_alternative<ScopedTab>(child)) {
       if (curr_index == index) {
-        return std::get<std::unique_ptr<TabInterface>>(child).get();
+        return std::get<ScopedTab>(child).get();
       } else {
         curr_index++;
       }
@@ -263,7 +263,7 @@ size_t TabCollection::ToDirectIndex(size_t index) {
     if (curr_index == index) {
       return direct_child_index;
     }
-    if (std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(child)) {
+    if (std::holds_alternative<ScopedTab>(child)) {
       curr_index++;
     } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
                    child)) {
@@ -299,9 +299,8 @@ std::optional<TabCollection::Position> TabCollection::FindMovePositionRecursive(
     if (curr_insertion_index == destination_index && this == dst_collection) {
       return TabCollection::Position(this->GetHandle(), direct_child_index);
     }
-    if (std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(child)) {
-      tabs::TabInterface* tab =
-          std::get<std::unique_ptr<tabs::TabInterface>>(child).get();
+    if (std::holds_alternative<ScopedTab>(child)) {
+      tabs::TabInterface* tab = std::get<ScopedTab>(child).get();
       if (!tabs_moved.contains(tab)) {
         curr_insertion_index++;
       }
@@ -468,8 +467,7 @@ void TabCollection::DispatchPendingNotifications() {
   pending_notifications_.clear();
 }
 
-TabInterface* TabCollection::AddTab(std::unique_ptr<TabInterface> tab,
-                                    size_t index) {
+TabInterface* TabCollection::AddTab(ScopedTab tab, size_t index) {
   CHECK(tab);
   CHECK(supports_tabs_);
 
@@ -478,10 +476,10 @@ TabInterface* TabCollection::AddTab(std::unique_ptr<TabInterface> tab,
   return inserted_tab;
 }
 
-std::unique_ptr<TabInterface> TabCollection::MaybeRemoveTab(TabInterface* tab) {
+ScopedTab TabCollection::MaybeRemoveTab(TabInterface* tab) {
   CHECK(tab);
 
-  std::unique_ptr<TabInterface> removed_tab = impl_->RemoveTab(tab);
+  ScopedTab removed_tab = impl_->RemoveTab(tab);
   removed_tab->OnReparented(nullptr, GetPassKey());
   return removed_tab;
 }

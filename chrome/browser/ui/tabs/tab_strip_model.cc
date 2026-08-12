@@ -4664,7 +4664,8 @@ void TabStripModel::InsertTabAtIndexImpl(
   }
 
   tabs::TabInterface* old_active_tab = GetActiveTab();
-  contents_data_->AddTabRecursive(std::move(tab_model), index, group, pin);
+  contents_data_->AddTabRecursive(tabs::ScopedTab(tab_model.release()), index,
+                                  group, pin);
   selection_model_.InvalidateListSelectionModel(base::PassKey<TabStripModel>());
 
   // Start computing selection change after updating the indices in

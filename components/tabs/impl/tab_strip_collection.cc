@@ -74,7 +74,7 @@ size_t TabStripCollection::IndexOfFirstNonPinnedTab() const {
 }
 
 void TabStripCollection::AddTabRecursive(
-    std::unique_ptr<TabInterface> tab,
+    ScopedTab tab,
     size_t index,
     std::optional<tab_groups::TabGroupId> new_group_id,
     bool new_pinned_state) {
@@ -308,8 +308,7 @@ ChildrenPtrs TabStripCollection::GetTabsAndCollectionsForMove(
   return move_datas;
 }
 
-std::unique_ptr<TabInterface> TabStripCollection::RemoveTabAtIndexRecursive(
-    size_t index) {
+ScopedTab TabStripCollection::RemoveTabAtIndexRecursive(size_t index) {
   TabInterface* tab_to_be_removed = GetTabAtIndexRecursive(index);
   TabCollection* parent_collection =
       tab_to_be_removed->GetParentCollection(GetPassKey());
@@ -326,8 +325,7 @@ std::unique_ptr<TabInterface> TabStripCollection::RemoveTabAtIndexRecursive(
   }
 }
 
-std::unique_ptr<TabInterface> TabStripCollection::MaybeRemoveTab(
-    TabInterface* tab) {
+ScopedTab TabStripCollection::MaybeRemoveTab(TabInterface* tab) {
   CHECK(tab);
   return nullptr;
 }
@@ -575,7 +573,7 @@ void TabStripCollection::RemoveCollectionMapping(
   }
 }
 
-void TabStripCollection::AddTabImpl(std::unique_ptr<TabInterface> tab,
+void TabStripCollection::AddTabImpl(ScopedTab tab,
                                     const TabCollection::Position& position) {
   auto [tab_collection_handle, insert_index] = position;
   TabCollection* tab_collection_ptr = tab_collection_handle.Get();
@@ -611,8 +609,7 @@ void TabStripCollection::AddTabCollectionImpl(
       collection_ptr->TabCountRecursive() > 0);
 }
 
-std::unique_ptr<TabInterface> TabStripCollection::RemoveTabImpl(
-    TabInterface* tab) {
+ScopedTab TabStripCollection::RemoveTabImpl(TabInterface* tab) {
   CHECK(tab);
 
   TabCollection* parent_collection = tab->GetParentCollection(GetPassKey());
@@ -620,8 +617,7 @@ std::unique_ptr<TabInterface> TabStripCollection::RemoveTabImpl(
       parent_collection->GetHandle(),
       parent_collection->GetIndexOfTab(tab).value()};
 
-  std::unique_ptr<TabInterface> removed_tab =
-      parent_collection->MaybeRemoveTab(tab);
+  ScopedTab removed_tab = parent_collection->MaybeRemoveTab(tab);
 
   CHECK(removed_tab);
 
@@ -678,8 +674,7 @@ void TabStripCollection::MoveTabImpl(TabInterface* tab_ptr,
     position.index -= 1;
   }
 
-  std::unique_ptr<TabInterface> removed_tab =
-      src_parent_collection->MaybeRemoveTab(tab_ptr);
+  ScopedTab removed_tab = src_parent_collection->MaybeRemoveTab(tab_ptr);
 
   dst_parent_collection->AddTab(std::move(removed_tab), position.index);
 

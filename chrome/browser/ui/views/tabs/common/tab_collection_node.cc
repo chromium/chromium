@@ -138,10 +138,8 @@ std::unique_ptr<views::View> TabCollectionNode::Initialize() {
         child_ptr =
             std::get<std::unique_ptr<tabs::TabCollection>>(child_data).get();
       } else {
-        CHECK(std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(
-            child_data));
-        child_ptr =
-            std::get<std::unique_ptr<tabs::TabInterface>>(child_data).get();
+        CHECK(std::holds_alternative<tabs::ScopedTab>(child_data));
+        child_ptr = std::get<tabs::ScopedTab>(child_data).get();
       }
       AddNewChild(GetPassKey(), child_ptr, children_.size(),
                   /*perform_initialization=*/true);
@@ -165,10 +163,8 @@ void TabCollectionNode::Deinitialize() {
             std::get<std::unique_ptr<tabs::TabCollection>>(child_data)
                 ->GetHandle();
       } else {
-        CHECK(std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(
-            child_data));
-        child_handle = std::get<std::unique_ptr<tabs::TabInterface>>(child_data)
-                           ->GetHandle();
+        CHECK(std::holds_alternative<tabs::ScopedTab>(child_data));
+        child_handle = std::get<tabs::ScopedTab>(child_data)->GetHandle();
       }
       RemoveChild(GetPassKey(), child_handle,
                   /*perform_deinitialization=*/true);

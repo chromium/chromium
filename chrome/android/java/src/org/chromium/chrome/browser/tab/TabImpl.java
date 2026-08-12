@@ -3162,13 +3162,6 @@ class TabImpl implements Tab, TabInternal {
     }
 
     @Override
-    public boolean hasTabInterfaceAndroid() {
-        if (mNativeTabAndroid == 0) return false;
-
-        return TabImplJni.get().hasTabInterfaceAndroid(mNativeTabAndroid);
-    }
-
-    @Override
     public NonNullObservableSupplier<Boolean> getIsOffscreenRenderingSupplier() {
         return mIsOffscreenRenderingSupplier;
     }
@@ -3347,8 +3340,6 @@ class TabImpl implements Tab, TabInternal {
                 @JniType("std::optional<base::Token>") @Nullable Token tabGroupId);
 
         void onDraggingStateChanged(long nativeTabAndroid, boolean isDragging);
-
-        boolean hasTabInterfaceAndroid(long nativeTabAndroid);
 
         void sendDidActivateUpdate(long nativeTabAndroid);
 

@@ -519,9 +519,6 @@ public interface Tab extends TabLifecycle {
      */
     boolean isDragging();
 
-    /** Returns whether the tab has a TabInterfaceAndroid object. */
-    boolean hasTabInterfaceAndroid();
-
     /** Returns the supplier for whether the tab is currently being used for offscreen rendering. */
     NonNullObservableSupplier<Boolean> getIsOffscreenRenderingSupplier();
 

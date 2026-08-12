@@ -30,9 +30,8 @@ class DirectChildWalker {
   void Walk() {
     for (const auto& child :
          collection_->GetChildren(base::PassKey<DirectChildWalker>())) {
-      if (std::holds_alternative<std::unique_ptr<TabInterface>>(child)) {
-        const TabInterface* tab =
-            std::get<std::unique_ptr<TabInterface>>(child).get();
+      if (std::holds_alternative<ScopedTab>(child)) {
+        const TabInterface* tab = std::get<ScopedTab>(child).get();
         processor_->ProcessTab(tab);
       } else if (std::holds_alternative<std::unique_ptr<TabCollection>>(
                      child)) {

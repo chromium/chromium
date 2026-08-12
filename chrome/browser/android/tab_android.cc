@@ -165,6 +165,8 @@ TabAndroid::TabAndroid(JNIEnv* env,
 }
 
 TabAndroid::~TabAndroid() {
+  CHECK(!parent_collection_)
+      << "TabAndroid destroyed while still in a TabCollection!";
   JNIEnv* env = AttachCurrentThread();
   GetContentLayer()->RemoveAllChildren();
   const jni_zero::JavaRef<jobject>& obj = GetJavaObject(env);
@@ -320,18 +322,8 @@ void TabAndroid::SetMediaState(int media_state) {
   Java_TabImpl_setMediaState(env, GetJavaObject(env), media_state);
 }
 
-void TabAndroid::SetTabInterfaceAndroid(
-    TabInterfaceAndroid* tab_interface_android,
-    base::PassKey<TabInterfaceAndroid>) {
-  last_tab_interface_android_ = tab_interface_android;
-}
-
-void TabAndroid::ResetTabInterfaceAndroid(
-    TabInterfaceAndroid* tab_interface_android,
-    base::PassKey<TabInterfaceAndroid>) {
-  if (last_tab_interface_android_ == tab_interface_android) {
-    last_tab_interface_android_ = nullptr;
-  }
+void TabAndroid::DeleteSelf() {
+  // No-op: Java TabImpl owns the lifetime of TabAndroid.
 }
 
 void TabAndroid::AddObserver(Observer* observer) {
@@ -866,10 +858,6 @@ void TabAndroid::OnDraggingStateChanged(bool is_dragging) {
 base::CallbackListSubscription TabAndroid::RegisterDraggingChanged(
     DraggingChangedCallback callback) {
   return dragging_changed_callback_list_.Add(std::move(callback));
-}
-
-bool TabAndroid::HasTabInterfaceAndroid() const {
-  return last_tab_interface_android_ != nullptr;
 }
 
 scoped_refptr<content::DevToolsAgentHost> TabAndroid::GetDevToolsAgentHost() {

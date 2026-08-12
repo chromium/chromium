@@ -179,16 +179,6 @@ class TabAndroid : public tabs::TabInterface,
   // Set the media state of the tab. This is called by MediaStateObserver.
   void SetMediaState(int media_state);
 
-  // Sets and resets the TabInterfaceAndroid object for this TabAndroid. There
-  // should only ever be one TabInterfaceAndroid object for each TabAndroid.
-  // However, based on experience with crbug.com/488398095, there have been
-  // cases where there are multiple TabInterfaceAndroid objects for a single
-  // TabAndroid. Investigation is ongoing.
-  void SetTabInterfaceAndroid(TabInterfaceAndroid* tab_interface_android,
-                              base::PassKey<TabInterfaceAndroid>);
-  void ResetTabInterfaceAndroid(TabInterfaceAndroid* tab_interface_android,
-                                base::PassKey<TabInterfaceAndroid>);
-
   // Observers -----------------------------------------------------------------
 
   // Adds/Removes an Observer.
@@ -248,7 +238,6 @@ class TabAndroid : public tabs::TabInterface,
       base::RepeatingCallback<void(TabInterface*, bool)>;
   base::CallbackListSubscription RegisterDraggingChanged(
       DraggingChangedCallback callback);
-  bool HasTabInterfaceAndroid() const;
 
   scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost();
 
@@ -257,6 +246,7 @@ class TabAndroid : public tabs::TabInterface,
   base::WeakPtr<TabAndroid> GetTabAndroidWeakPtr();
 
   // TabInterface overrides:
+  void DeleteSelf() override;
   base::WeakPtr<tabs::TabInterface> GetWeakPtr() override;
   content::WebContents* GetContents() const override;
   void LoadIfNeeded() override;
@@ -351,7 +341,6 @@ class TabAndroid : public tabs::TabInterface,
   // Holds tab-scoped state. Constructed after tab_helpers.
   std::unique_ptr<tabs::TabFeatures> tab_features_;
 
-  raw_ptr<TabInterfaceAndroid> last_tab_interface_android_ = nullptr;
   raw_ptr<tabs::TabCollection> parent_collection_ = nullptr;
 
   base::ObserverList<Observer> observers_;

@@ -392,8 +392,6 @@ if (is_android) {
       "tab_group_collection_data_android.h",
       "tab_group_features.cc",
       "tab_group_features.h",
-      "tab_interface_android.cc",
-      "tab_interface_android.h",
       "tab_state_storage_service_android.cc",
       "tab_state_storage_service_android.h",
       "tab_state_storage_service_factory.cc",

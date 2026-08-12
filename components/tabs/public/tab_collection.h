@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TABS_PUBLIC_TAB_COLLECTION_H_
 #define COMPONENTS_TABS_PUBLIC_TAB_COLLECTION_H_
 
+#include <concepts>
 #include <cstddef>
 #include <list>
 #include <memory>
@@ -199,13 +200,18 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   void OnTabRemovedFromTree();
 
   // Manipulate direct child tabs.
-  TabInterface* AddTab(std::unique_ptr<TabInterface> tab, size_t index);
+  TabInterface* AddTab(ScopedTab tab, size_t index);
+  template <typename T>
+    requires std::derived_from<T, TabInterface>
+  TabInterface* AddTab(std::unique_ptr<T> tab, size_t index) {
+    return AddTab(ScopedTab(tab.release()), index);
+  }
+
   // Removes the tab if it is a direct child of this collection. This is then
-  // returned to the caller as an unique_ptr. If the tab is not present it will
+  // returned to the caller as a ScopedTab. If the tab is not present it will
   // crash. This may overridden to return nullptr if the collection does not
   // support removing tabs.
-  [[nodiscard]] virtual std::unique_ptr<TabInterface> MaybeRemoveTab(
-      TabInterface* tab);
+  [[nodiscard]] virtual ScopedTab MaybeRemoveTab(TabInterface* tab);
 
   // Manipulate direct child collections.
   // Adds a collection as a direct child of this collection. If this succeeds it
@@ -322,6 +328,8 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
 
   // Underlying implementation for the storage of children.
   std::unique_ptr<TabCollectionStorage> impl_;
+
+  friend class TabCollectionStorage;
 };
 
 using TabCollectionHandle = TabCollection::Handle;

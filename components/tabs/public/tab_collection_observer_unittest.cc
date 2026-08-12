@@ -62,8 +62,7 @@ class TabCollectionObserverTest : public ::testing::Test {
   }
 
   std::unique_ptr<MockTabInterface> CreateMockTab() {
-    auto tab = std::make_unique<MockTabInterface>();
-    return tab;
+    return std::make_unique<MockTabInterface>();
   }
 
   TabStripCollection* GetTabstripCollection() {
@@ -277,14 +276,14 @@ TEST_F(TabCollectionObserverTest, OnTabRemoved) {
         return std::make_unique<MockTabGroup>(collection, id, visual_data);
       });
 
-  std::unique_ptr<tabs::MockTabInterface> pinned_tab = CreateMockTab();
-  std::unique_ptr<tabs::MockTabInterface> unpinned_tab = CreateMockTab();
-  std::unique_ptr<tabs::MockTabInterface> group_tab_0 = CreateMockTab();
-  std::unique_ptr<tabs::MockTabInterface> group_tab_1 = CreateMockTab();
-  tabs::MockTabInterface* pinned_tab_ptr = pinned_tab.get();
-  tabs::MockTabInterface* unpinned_tab_ptr = unpinned_tab.get();
-  tabs::MockTabInterface* group_tab_0_ptr = group_tab_0.get();
-  tabs::MockTabInterface* group_tab_1_ptr = group_tab_1.get();
+  std::unique_ptr<MockTabInterface> pinned_tab = CreateMockTab();
+  std::unique_ptr<MockTabInterface> unpinned_tab = CreateMockTab();
+  std::unique_ptr<MockTabInterface> group_tab_0 = CreateMockTab();
+  std::unique_ptr<MockTabInterface> group_tab_1 = CreateMockTab();
+  MockTabInterface* pinned_tab_ptr = pinned_tab.get();
+  MockTabInterface* unpinned_tab_ptr = unpinned_tab.get();
+  MockTabInterface* group_tab_0_ptr = group_tab_0.get();
+  MockTabInterface* group_tab_1_ptr = group_tab_1.get();
   TabHandle pinned_tab_handle = pinned_tab->GetHandle();
   TabHandle unpinned_tab_handle = unpinned_tab->GetHandle();
   TabHandle group_tab_1_handle = group_tab_1->GetHandle();
@@ -681,7 +680,7 @@ TEST_F(TabCollectionObserverTest, MoveTab) {
 
   std::unique_ptr<MockTabInterface> grouped_tab = CreateMockTab();
   MockTabInterface* mock_tab_to_move = grouped_tab.get();
-  EXPECT_CALL(*grouped_tab, GetParentCollection(testing::_))
+  EXPECT_CALL(*mock_tab_to_move, GetParentCollection(testing::_))
       .WillRepeatedly(testing::Return(grouped_collection.get()));
 
   grouped_collection->AddTab(std::move(grouped_tab), 0);
@@ -981,9 +980,10 @@ TEST_F(TabCollectionObserverTest, MoveTabToPinnedOnlyNotifiesMoveInTabstrip) {
 
   // 1. Setup: Add one unpinned tab.
   std::unique_ptr<MockTabInterface> unpinned_tab = CreateMockTab();
-  MockTabInterface* unpinned_tab_ptr = unpinned_tab.get();
+  TabInterface* unpinned_tab_ptr = unpinned_tab.get();
 
-  EXPECT_CALL(*unpinned_tab_ptr, GetParentCollection(testing::_))
+  EXPECT_CALL(*static_cast<MockTabInterface*>(unpinned_tab_ptr),
+              GetParentCollection(testing::_))
       .WillRepeatedly(
           [&collection, unpinned_tab_ptr]() -> tabs::TabCollection* {
             if (collection->unpinned_collection()

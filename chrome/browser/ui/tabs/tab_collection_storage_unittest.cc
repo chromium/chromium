@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
@@ -77,9 +77,8 @@ class TabCollectionStorageTest : public ::testing::Test {
     int collection_i = 0;
     const auto& children = GetTabCollectionStorage()->GetChildren();
     for (const auto& child : children) {
-      if (std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(child)) {
-        SetTabID(std::get<std::unique_ptr<tabs::TabInterface>>(child).get(),
-                 start + tab_i);
+      if (std::holds_alternative<tabs::ScopedTab>(child)) {
+        SetTabID(std::get<tabs::ScopedTab>(child).get(), start + tab_i);
         tab_i += 1;
       } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
                      child)) {
@@ -96,9 +95,8 @@ class TabCollectionStorageTest : public ::testing::Test {
     const auto& children = GetTabCollectionStorage()->GetChildren();
     for (const auto& child : children) {
       std::string identifier;
-      if (std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(child)) {
-        tabs::TabInterface* tab =
-            std::get<std::unique_ptr<tabs::TabInterface>>(child).get();
+      if (std::holds_alternative<tabs::ScopedTab>(child)) {
+        tabs::TabInterface* tab = std::get<tabs::ScopedTab>(child).get();
         identifier =
             "T" + base::NumberToString(reinterpret_cast<uintptr_t>(tab));
       } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
@@ -232,16 +230,12 @@ TEST_F(TabCollectionStorageTest, DISABLED_InvalidArgumentsTabOperations) {
 
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        std::unique_ptr<tabs::TabInterface> tab =
+        tabs::ScopedTab tab =
             collection_storage->RemoveTab(tab_model_one.get());
       },
       "");
   EXPECT_DEATH_IF_SUPPORTED(
-      {
-        std::unique_ptr<tabs::TabInterface> tab =
-            collection_storage->RemoveTab(nullptr);
-      },
-      "");
+      { tabs::ScopedTab tab = collection_storage->RemoveTab(nullptr); }, "");
 
   EXPECT_DEATH_IF_SUPPORTED(
       collection_storage->MoveTab(tab_model_one.get(), 0ul), "");
@@ -361,4 +355,50 @@ TEST_F(TabCollectionStorageTest, MoveMixedTabAndCollectionOperation) {
   EXPECT_EQ(
       StorageCollectionChildrenString(),
       (std::vector<std::string>{"C0", "T1", "T2", "T3", "T4", "C1", "T0"}));
+}
+
+namespace {
+
+class NonOwningTestTab : public tabs::MockTabInterface {
+ public:
+  NonOwningTestTab() {
+    ON_CALL(*this, OnReparented)
+        .WillByDefault([this](tabs::TabCollection* parent,
+                              base::PassKey<tabs::TabCollection>) {
+          parent_collection_ = parent;
+        });
+    ON_CALL(*this, GetParentCollection(
+                       testing::An<base::PassKey<tabs::TabCollection>>()))
+        .WillByDefault([this] { return parent_collection_; });
+    ON_CALL(*this, GetParentCollection())
+        .WillByDefault([this] { return parent_collection_; });
+  }
+  ~NonOwningTestTab() override = default;
+
+  void DeleteSelf() override {
+    // Mimic TabAndroid where lifetime is managed externally (e.g. by Java).
+  }
+
+ private:
+  raw_ptr<tabs::TabCollection> parent_collection_ = nullptr;
+};
+
+}  // namespace
+
+TEST_F(TabCollectionStorageTest,
+       DestructionClearsParentPointerOnSurvivingTabs) {
+  NonOwningTestTab tab;
+  EXPECT_EQ(tab.GetParentCollection(), nullptr);
+
+  auto pinned_collection = std::make_unique<tabs::PinnedTabCollection>();
+  tabs::TabCollection* pinned_collection_ptr = pinned_collection.get();
+  pinned_collection->AddTab(tabs::ScopedTab(&tab), 0);
+  EXPECT_EQ(tab.GetParentCollection(), pinned_collection_ptr);
+
+  // Destroy the collection holding the tab.
+  pinned_collection.reset();
+
+  // TabInterface's parent pointer should be cleanly cleared to nullptr so that
+  // surviving tabs (e.g. TabAndroid on Android) do not hold dangling pointers.
+  EXPECT_EQ(tab.GetParentCollection(), nullptr);
 }

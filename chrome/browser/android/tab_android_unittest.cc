@@ -21,7 +21,6 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/android/tab_group_android.h"
-#include "chrome/browser/android/tab_interface_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -124,10 +123,12 @@ TEST_F(TabAndroidTest, PinnedCollectionParent) {
 
   std::unique_ptr<tabs::PinnedTabCollection> pinned_collection =
       std::make_unique<tabs::PinnedTabCollection>();
-  pinned_collection->AddTab(std::make_unique<TabInterfaceAndroid>(tab_android_),
-                            0);
+  pinned_collection->AddTab(tabs::ScopedTab(tab_android_), 0);
 
   EXPECT_TRUE(tab_android_->IsPinned());
+  tabs::ScopedTab removed_pinned_tab =
+      pinned_collection->MaybeRemoveTab(tab_android_);
+  EXPECT_EQ(removed_pinned_tab.get(), tab_android_);
 }
 
 TEST_F(TabAndroidTest, TabGroupTabCollectionParent) {
@@ -139,10 +140,12 @@ TEST_F(TabAndroidTest, TabGroupTabCollectionParent) {
   std::unique_ptr<tabs::TabGroupTabCollection> tab_group_collection =
       std::make_unique<tabs::TabGroupTabCollection>(factory, tab_group_id,
                                                     visual_data);
-  tab_group_collection->AddTab(
-      std::make_unique<TabInterfaceAndroid>(tab_android_), 0);
+  tab_group_collection->AddTab(tabs::ScopedTab(tab_android_), 0);
 
   EXPECT_EQ(tab_group_id, *(tab_android_->GetGroup()));
+  tabs::ScopedTab removed_group_tab =
+      tab_group_collection->MaybeRemoveTab(tab_android_);
+  EXPECT_EQ(removed_group_tab.get(), tab_android_);
 }
 
 TEST_F(TabAndroidTest, WebUIEmbeddingContext) {
@@ -259,10 +262,9 @@ TEST_F(GlicTabAndroidTest, IsWebContentsCreationOverridden_GlicSandboxCheck) {
 }
 
 TEST_F(TabAndroidTest, Getters) {
-  TabInterfaceAndroid tab_interface(tab_android_);
-  EXPECT_EQ(u"about:blank", tab_interface.GetTitle());
-  EXPECT_EQ(GURL("about:blank"), tab_interface.GetURL());
-  base::Time last_active_time = tab_interface.GetLastActiveTime();
+  EXPECT_EQ(u"about:blank", tab_android_->GetTitle());
+  EXPECT_EQ(GURL("about:blank"), tab_android_->GetURL());
+  base::Time last_active_time = tab_android_->GetLastActiveTime();
   EXPECT_LT(base::Time::UnixEpoch(), last_active_time);
 }
 
@@ -398,6 +400,23 @@ TEST_F(TabAndroidTest,
   // immediately destroy the WebContents without advancing mock time.
   profile_->DestroyOffTheRecordProfile(otr_profile);
   EXPECT_TRUE(watcher.IsDestroyed());
+}
+
+TEST_F(TabAndroidTest, CollectionDestructionClearsParentPointer) {
+  EXPECT_EQ(tab_android_->GetParentCollection(), nullptr);
+
+  auto pinned_collection = std::make_unique<tabs::PinnedTabCollection>();
+  tabs::TabCollection* pinned_collection_ptr = pinned_collection.get();
+  pinned_collection->AddTab(tabs::ScopedTab(tab_android_), 0);
+  EXPECT_EQ(tab_android_->GetParentCollection(), pinned_collection_ptr);
+
+  // Destroy the collection holding the tab.
+  pinned_collection.reset();
+
+  // The TabAndroid parent pointer should be cleanly cleared to nullptr,
+  // and subsequent destruction in TearDown() will not hit
+  // CHECK(!parent_collection_).
+  EXPECT_EQ(tab_android_->GetParentCollection(), nullptr);
 }
 
 DEFINE_JNI(TabAndroidTestHelper)

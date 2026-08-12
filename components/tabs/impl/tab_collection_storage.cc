@@ -15,7 +15,16 @@ namespace tabs {
 TabCollectionStorage::TabCollectionStorage(TabCollection& owner)
     : owning_collection_(owner) {}
 
-TabCollectionStorage::~TabCollectionStorage() = default;
+TabCollectionStorage::~TabCollectionStorage() {
+  for (auto& child : children_) {
+    if (std::holds_alternative<ScopedTab>(child)) {
+      TabInterface* tab = std::get<ScopedTab>(child).get();
+      if (tab) {
+        tab->OnReparented(nullptr, owning_collection_->GetPassKey());
+      }
+    }
+  }
+}
 
 bool TabCollectionStorage::ContainsTab(const TabInterface* tab) const {
   CHECK(tab);
@@ -24,10 +33,8 @@ bool TabCollectionStorage::ContainsTab(const TabInterface* tab) const {
 
 TabInterface* TabCollectionStorage::GetTabAtIndex(size_t index) const {
   CHECK(index < GetChildrenCount() && index >= 0);
-  CHECK(std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(
-      children_[index]));
-  const std::unique_ptr<tabs::TabInterface>& tab =
-      std::get<std::unique_ptr<tabs::TabInterface>>(children_[index]);
+  CHECK(std::holds_alternative<ScopedTab>(children_[index]));
+  const ScopedTab& tab = std::get<ScopedTab>(children_[index]);
   return tab.get();
 }
 
@@ -37,8 +44,7 @@ bool TabCollectionStorage::ContainsCollection(
   return GetIndexOfCollection(tab_collection).has_value();
 }
 
-TabInterface* TabCollectionStorage::AddTab(std::unique_ptr<TabInterface> tab,
-                                           size_t index) {
+TabInterface* TabCollectionStorage::AddTab(ScopedTab tab, size_t index) {
   CHECK(index <= GetChildrenCount() && index >= 0);
   CHECK(tab);
 
@@ -51,18 +57,16 @@ TabInterface* TabCollectionStorage::AddTab(std::unique_ptr<TabInterface> tab,
 void TabCollectionStorage::MoveTab(TabInterface* tab, size_t dst_index) {
   CHECK(tab);
   CHECK(dst_index < GetChildrenCount() && dst_index >= 0);
-  std::unique_ptr<TabInterface> tab_to_move = RemoveTab(tab);
+  ScopedTab tab_to_move = RemoveTab(tab);
   CHECK(tab_to_move);
   AddTab(std::move(tab_to_move), dst_index);
 }
 
-std::unique_ptr<TabInterface> TabCollectionStorage::RemoveTab(
-    TabInterface* tab) {
+ScopedTab TabCollectionStorage::RemoveTab(TabInterface* tab) {
   CHECK(tab);
   for (size_t i = 0; i < children_.size(); ++i) {
-    if (std::holds_alternative<std::unique_ptr<TabInterface>>(children_[i])) {
-      std::unique_ptr<TabInterface>& stored_tab =
-          std::get<std::unique_ptr<TabInterface>>(children_[i]);
+    if (std::holds_alternative<ScopedTab>(children_[i])) {
+      ScopedTab& stored_tab = std::get<ScopedTab>(children_[i]);
       if (stored_tab.get() == tab) {
         auto removed_tab = std::move(stored_tab);
         children_.erase(children_.begin() + i);
@@ -120,8 +124,8 @@ std::optional<size_t> TabCollectionStorage::GetIndexOfTab(
   CHECK(tab);
   const auto it = std::find_if(
       children_.begin(), children_.end(), [tab](const auto& child) {
-        return std::holds_alternative<std::unique_ptr<TabInterface>>(child) &&
-               std::get<std::unique_ptr<TabInterface>>(child).get() == tab;
+        return std::holds_alternative<ScopedTab>(child) &&
+               std::get<ScopedTab>(child).get() == tab;
       });
   return it == children_.end() ? std::nullopt
                                : std::optional<size_t>(it - children_.begin());

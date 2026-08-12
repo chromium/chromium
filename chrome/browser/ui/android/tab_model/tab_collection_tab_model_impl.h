@@ -11,7 +11,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class Profile;
 class TabAndroid;
@@ -185,8 +184,6 @@ class TabCollectionTabModelImpl {
 
   // Always valid until destroyed.
   std::unique_ptr<tabs::TabStripCollection> tab_strip_collection_;
-
-  absl::flat_hash_map<TabAndroid*, tabs::TabInterface*> tab_map_;
 };
 
 }  // namespace tabs
