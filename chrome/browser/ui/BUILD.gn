@@ -3509,13 +3509,10 @@ static_library("ui") {
 
     if (is_win || is_linux || is_chromeos) {
       sources += [
-        "views/bluetooth_device_credentials_view.cc",
-        "views/bluetooth_device_credentials_view.h",
-        "views/bluetooth_device_pair_confirm_view.cc",
-        "views/bluetooth_device_pair_confirm_view.h",
         "views/native_widget_factory.cc",
         "views/native_widget_factory.h",
       ]
+      deps += [ "//chrome/browser/ui/views:bluetooth_dialogs" ]
     }
 
     if (is_mac) {

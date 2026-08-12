@@ -270,3 +270,31 @@ source_set("device_chooser_content_view") {
     "//ui/resources",
   ]
 }
+
+if (is_win || is_linux || is_chromeos) {
+  source_set("bluetooth_dialogs") {
+    public = [
+      "bluetooth_device_credentials_view.h",
+      "bluetooth_device_pair_confirm_view.h",
+    ]
+    sources = [
+      "bluetooth_device_credentials_view.cc",
+      "bluetooth_device_pair_confirm_view.cc",
+    ]
+    public_deps = [
+      "//content/public/browser",
+      "//ui/views",
+    ]
+    deps = [
+      ":layout_provider",
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/ui/bluetooth",
+      "//components/constrained_window",
+      "//components/vector_icons",
+      "//device/bluetooth/strings",
+      "//ui/base",
+      "//ui/color",
+    ]
+  }
+}
