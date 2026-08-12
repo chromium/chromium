@@ -22,6 +22,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -43,7 +45,21 @@ public class WebappActivity extends BaseCustomTabActivity {
             return sIntentDataProviderForTesting;
         }
 
-        return TextUtils.isEmpty(WebappIntentUtils.getWebApkPackageName(intent))
+        String webApkPackageName = WebappIntentUtils.getWebApkPackageName(intent);
+        if (TextUtils.isEmpty(webApkPackageName) && getIntentDataProvider() != null) {
+            WebApkExtras webApkExtras = getIntentDataProvider().getWebApkExtras();
+            if (webApkExtras != null && !TextUtils.isEmpty(webApkExtras.webApkPackageName)) {
+                webApkPackageName = webApkExtras.webApkPackageName;
+                intent.putExtra(EXTRA_WEBAPK_PACKAGE_NAME, webApkPackageName);
+            }
+        }
+
+        if (TextUtils.isEmpty(IntentUtils.safeGetStringExtra(intent, WebappConstants.EXTRA_URL))
+                && intent.getData() != null) {
+            intent.putExtra(WebappConstants.EXTRA_URL, intent.getDataString());
+        }
+
+        return TextUtils.isEmpty(webApkPackageName)
                 ? WebappIntentDataProviderFactory.create(intent)
                 : WebApkIntentDataProviderFactory.create(intent);
     }
