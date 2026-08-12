@@ -3260,4 +3260,73 @@ TEST_F(HeapTest, ContainerAnnotationOnTinyBacking) {
   vector.reserve(2);
 }
 
+namespace {
+struct alignas(8) AlignedElement {
+  DISALLOW_NEW();
+
+ public:
+  uint64_t value = 0;
+};
+}  // namespace
+
+TEST_F(HeapTest, HeapVectorBackingAlignment) {
+  // Regression test: https://crbug.com/540446275
+  // Verify that Oilpan allocates properly aligned backing stores for elements
+  // requiring 8-byte alignment (even on 32-bit platforms where default
+  // alignment might otherwise be 4 bytes).
+  HeapVector<AlignedElement> vector;
+  vector.reserve(10);
+  EXPECT_LE(10u, vector.capacity());
+  EXPECT_TRUE(vector.data());
+  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(vector.data()) % 8u);
+}
+
+TEST_F(HeapTest, NestedHeapVectorAlignment) {
+  // Regression test: https://crbug.com/540446275
+  // Verify that nested HeapVectors maintain runtime memory alignment matching
+  // alignof(HeapVector<T>), preventing libc++ hardening alignment aborts.
+  HeapVector<HeapVector<Member<IntWrapper>>> nested_vector;
+  nested_vector.reserve(5);
+  EXPECT_LE(5u, nested_vector.capacity());
+  EXPECT_TRUE(nested_vector.data());
+  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(nested_vector.data()) %
+                    alignof(HeapVector<Member<IntWrapper>>));
+}
+
+#if defined(ARCH_CPU_64_BITS)
+struct alignas(16) OverAlignedElement {
+  DISALLOW_NEW();
+
+ public:
+  OverAlignedElement() = default;
+  explicit OverAlignedElement(IntWrapper* w) : wrapper(w) {}
+
+  Member<IntWrapper> wrapper;
+  void Trace(Visitor* visitor) const { visitor->Trace(wrapper); }
+};
+
+template <>
+struct VectorTraits<OverAlignedElement> : VectorTraitsBase<OverAlignedElement> {
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+  static constexpr bool kCanMoveWithMemcpy = true;
+};
+
+class OverAlignedVectorHolder
+    : public GarbageCollected<OverAlignedVectorHolder> {
+ public:
+  void Trace(Visitor* visitor) const { visitor->Trace(vector); }
+  HeapVector<OverAlignedElement> vector;
+};
+
+TEST_F(HeapTest, OverAlignedHeapVectorTracingAndGC) {
+  Persistent<OverAlignedVectorHolder> holder =
+      MakeGarbageCollected<OverAlignedVectorHolder>();
+  holder->vector.push_back(
+      OverAlignedElement(MakeGarbageCollected<IntWrapper>(42)));
+  TestSupportingGC::PreciselyCollectGarbage();
+  EXPECT_EQ(1u, holder->vector.size());
+  EXPECT_EQ(42, holder->vector[0].wrapper->Value());
+}
+#endif  // defined(ARCH_CPU_64_BITS)
+
 }  // namespace blink

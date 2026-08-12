@@ -36,7 +36,7 @@ inline bool VTableInitialized(const void* object_payload) {
 }  // namespace internal
 
 template <typename T, typename Traits = VectorTraits<T>>
-class HeapVectorBacking final
+class alignas(T) HeapVectorBacking final
     : public GarbageCollected<HeapVectorBacking<T, Traits>> {
  public:
   using ClassType = HeapVectorBacking<T, Traits>;
@@ -71,9 +71,12 @@ class HeapVectorBacking final
 
  private:
   static cppgc::AdditionalBytes GetAdditionalBytes(size_t wanted_array_size) {
-    // HVB is an empty class that's purely used with inline storage. Since its
-    // sizeof(HVB) == 1, we need to subtract its size to avoid wasting storage.
-    static_assert(sizeof(ClassType) == 1, "Class declaration changed");
+    // HVB is an empty class that's purely used with inline storage. Since it
+    // has no fields, its size is solely determined by its alignment
+    // requirement. We subtract its size to avoid wasting storage during
+    // allocation.
+    static_assert(sizeof(ClassType) == alignof(ClassType),
+                  "Class declaration changed");
     DCHECK_GE(wanted_array_size, sizeof(ClassType));
     return cppgc::AdditionalBytes{wanted_array_size - sizeof(ClassType)};
   }
@@ -125,7 +128,8 @@ namespace internal {
 template <typename T>
 struct CompactionTraits<blink::HeapVectorBacking<T>> {
   static constexpr bool SupportsCompaction() {
-    return blink::HeapVectorBacking<T>::TraitsType::kCanMoveWithMemcpy;
+    return blink::HeapVectorBacking<T>::TraitsType::kCanMoveWithMemcpy &&
+           alignof(blink::HeapVectorBacking<T>) <= sizeof(void*);
   }
 };
 }  // namespace internal
@@ -191,7 +195,9 @@ struct TraceInCollectionTrait<kNoWeakHandling,
 namespace cppgc {
 
 // The space trait rewires allocations for HeapVector with `kCanMoveWithMemcpy`
-// into a space supporting compaction.
+// and default (word-sized) alignment into a space supporting compaction.
+// Objects requiring larger alignment cannot be placed in compactable spaces and
+// must fall back to default non-compacting spaces.
 template <typename T>
   requires(blink::internal::CompactionTraits<
            blink::HeapVectorBacking<T>>::SupportsCompaction())
