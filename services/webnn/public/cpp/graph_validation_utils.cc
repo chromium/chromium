@@ -2474,9 +2474,9 @@ base::expected<OperandDescriptor, std::string> ValidateReduceAndInferOutput(
                                    output_shape, label);
 }
 
-// The current WebNN spec doesn't define the calculation formula of the output
-// size for resample2d. An issue has been filed to track it -
-// https://github.com/webmachinelearning/webnn/issues/360.
+// Per the WebNN spec, the output size for resample2d is
+// floor(input size * scale):
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d-method
 base::expected<uint32_t, std::string> CalculateResample2dOutputSize(
     const uint32_t input_size,
     const float scale,

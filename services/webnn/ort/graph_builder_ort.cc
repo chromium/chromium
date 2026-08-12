@@ -2777,21 +2777,15 @@ void GraphBuilderOrt::AddResample2dOperation(
   CHECK(context_properties_.data_type_limits.resample2d_input.Supports(
       input_descriptor));
 
-  std::string scales;
-  std::string sizes;
-  if (resample2d.scales) {
-    // Each element of scales applies to a dimension of the input.
-    CHECK_EQ(input_descriptor.Rank(), 4u);
-    std::array<float, 4> scales_data = {1.f, 1.f, 1.f, 1.f};
-    CHECK_EQ(resample2d.axes.size(), 2u);
-    CHECK_EQ(resample2d.scales->size(), 2u);
-    scales_data.at(resample2d.axes[0]) = resample2d.scales->at(0);
-    scales_data.at(resample2d.axes[1]) = resample2d.scales->at(1);
-    scales = Create1DInitializer<float>(scales_data);
-  } else {
-    sizes = CreateInt64InitializerForUint32Array(
-        GetOperand(resample2d.output_operand_id).descriptor.shape());
-  }
+  // Always emit `sizes` (never `scales`) so the backend uses exactly the
+  // double-precision output shape WebNN already validated in
+  // graph_validation_utils.cc:CalculateResample2dOutputSize(). Emitting
+  // `scales` instead lets the backend recompute the output dim in float32,
+  // which diverges from WebNN's dim for input dims > 2^24 and desynchronizes
+  // the clamp bounds baked into downstream indexing ops (Gather family) from
+  // the tensor the backend actually allocates.
+  const std::string sizes = CreateInt64InitializerForUint32Array(
+      GetOperand(resample2d.output_operand_id).descriptor.shape());
 
   std::string mode;
   switch (resample2d.mode) {
@@ -2803,7 +2797,7 @@ void GraphBuilderOrt::AddResample2dOperation(
       break;
   }
 
-  AddResizeNode(node_name, input, scales, sizes, mode, output);
+  AddResizeNode(node_name, input, /*scales=*/"", sizes, mode, output);
 }
 
 void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
