@@ -5,9 +5,7 @@
 #ifndef CONTENT_BROWSER_SECURITY_CPSP_CHILD_PROCESS_SECURITY_POLICY_IMPL_H_
 #define CONTENT_BROWSER_SECURITY_CPSP_CHILD_PROCESS_SECURITY_POLICY_IMPL_H_
 
-#include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -34,6 +32,7 @@
 #include "content/public/common/child_process_id.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
 
 class GURL;
@@ -807,8 +806,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   class ProcessState;
 
-  typedef std::set<std::string> SchemeSet;
-  typedef std::map<storage::FileSystemType, int> FileSystemPermissionPolicyMap;
+  using SchemeSet = absl::flat_hash_set<std::string>;
+  using FileSystemPermissionPolicyMap =
+      absl::flat_hash_map<storage::FileSystemType, int>;
 
   // Data structure that tracks ProcessState for each RenderProcessHost based
   // on ChildProcessId. A registered ProcessState is guaranteed to exist both
@@ -906,7 +906,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
    private:
     using ProcessStateMap =
-        std::map<ChildProcessId, std::unique_ptr<ProcessState>>;
+        absl::flat_hash_map<ChildProcessId, std::unique_ptr<ProcessState>>;
 
     // This map holds a ProcessState for each child process, while its
     // RenderProcessHost exists. The key for the map is the ID of the
@@ -931,7 +931,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // ChildProcessSecurityPolicy and the Handles that it creates increment and
     // decrement the counts in this map. A ProcessState object for a process is
     // only destroyed when its count goes to zero.
-    std::map<ChildProcessId, int> process_reference_counts_;
+    absl::flat_hash_map<ChildProcessId, int> process_reference_counts_;
   };
 
   // This class holds an isolated origin along with information such as which

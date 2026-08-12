@@ -593,8 +593,8 @@ bool ChildProcessSecurityPolicyImpl::Handle::CanAccessDataForOrigin(
 // information.
 class ChildProcessSecurityPolicyImpl::ProcessState {
  public:
-  typedef std::map<BrowsingInstanceId, OriginAgentClusterIsolationState>
-      BrowsingInstanceDefaultIsolationStatesMap;
+  using BrowsingInstanceDefaultIsolationStatesMap =
+      absl::flat_hash_map<BrowsingInstanceId, OriginAgentClusterIsolationState>;
 
   explicit ProcessState(BrowserContext* browser_context)
       : can_send_midi_(false),
@@ -1027,15 +1027,15 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     return origin_map_.contains(origin);
   }
 
-  typedef std::map<std::string, CommitRequestPolicy> SchemeMap;
-  typedef std::map<url::Origin, CommitRequestPolicy> OriginMap;
+  using SchemeMap = absl::flat_hash_map<std::string, CommitRequestPolicy>;
+  using OriginMap = absl::flat_hash_map<url::Origin, CommitRequestPolicy>;
 
-  typedef int FilePermissionFlags;  // bit-set of base::File::Flags
-  typedef std::map<base::FilePath, FilePermissionFlags> FileMap;
-  typedef std::map<std::string, FilePermissionFlags> FileSystemMap;
-  typedef std::set<base::FilePath> FileSet;
+  using FilePermissionFlags = int;  // bit-set of base::File::Flags
+  using FileMap = absl::flat_hash_map<base::FilePath, FilePermissionFlags>;
+  using FileSystemMap = absl::flat_hash_map<std::string, FilePermissionFlags>;
+  using FileSet = absl::flat_hash_set<base::FilePath>;
   using URLSet = absl::flat_hash_set<GURL>;
-  typedef std::set<url::Origin> OriginSet;
+  using OriginSet = absl::flat_hash_set<url::Origin>;
 
   // Maps URL schemes to commit/request policies the child process has been
   // granted. There is no provision for revoking.

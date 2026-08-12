@@ -530,7 +530,7 @@ pub struct ChildProcessSecurityPolicyImpl {
     /// A map of FileSystemTypes to bitwise-or'd combinations of permission
     /// policies allowed for those types. See
     /// storage::FileSystemContext::GetPermissionPolicy.
-    file_system_policy_map: BTreeMap<FileSystemType, i32>,
+    file_system_policy_map: HashMap<FileSystemType, i32>,
 
     // The set of all origins that have ever explicitly requested an
     // Origin-Agent-Cluster state (either opting in or opting out), organized by
@@ -598,7 +598,7 @@ impl ChildProcessSecurityPolicyImpl {
             process_states: ProcessStateMaps::new(),
             known_schemes: HashMap::new(),
             v8_optimization_verdict_map: BTreeMap::new(),
-            file_system_policy_map: BTreeMap::new(),
+            file_system_policy_map: HashMap::new(),
             origin_agent_cluster_opt_ins_and_outs: BTreeMap::new(),
             origin_agent_cluster_states_by_browsing_instance: BTreeMap::new(),
             browser_granted_files: HashMap::new(),
