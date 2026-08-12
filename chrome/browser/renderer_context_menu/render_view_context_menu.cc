@@ -478,7 +478,9 @@ enum class UmaEnumIdLookupType {
   ContextSpecificEnumId,
 };
 
-const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
+// Returns the UMA enum value for `key` in the map for `type`, or -1 if not
+// found.
+int UmaEnumForCommand(int key, UmaEnumIdLookupType type) {
   // These maps are from IDC_* -> UMA value. Never alter UMA ids. You may remove
   // items, but add a line to keep the old value from being reused.
 
@@ -704,12 +706,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {kUmaMaxValueKey, 35}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:ContextMenuOptionDesktop)
 
-  return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
-                                                      : kSpecificMap);
+  const auto& map = *(
+      type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap : kSpecificMap);
+  auto it = map.find(key);
+  return it != map.end() ? it->second : -1;
 }
 
 int GetUmaValueMax(UmaEnumIdLookupType type) {
-  return GetIdcToUmaMap(type).find(kUmaMaxValueKey)->second;
+  return UmaEnumForCommand(kUmaMaxValueKey, type);
 }
 
 // Collapses large ranges of ids before looking for UMA enum.
@@ -740,7 +744,7 @@ int CollapseCommandsForUMA(int id) {
   return id;
 }
 
-// Returns UMA enum value for command specified by |id| or -1 if not found.
+// Returns UMA enum value for command specified by `id` or -1 if not found.
 int FindUMAEnumValueForCommand(int id, UmaEnumIdLookupType type) {
   if (RenderViewContextMenu::IsContentCustomCommandId(id)) {
     return 0;
@@ -751,13 +755,7 @@ int FindUMAEnumValueForCommand(int id, UmaEnumIdLookupType type) {
   }
 
   id = CollapseCommandsForUMA(id);
-  const auto& map = GetIdcToUmaMap(type);
-  auto it = map.find(id);
-  if (it == map.end()) {
-    return -1;
-  }
-
-  return it->second;
+  return UmaEnumForCommand(id, type);
 }
 
 // Returns true if the command id is for opening a link.
@@ -1619,7 +1617,7 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
   int enum_id =
       FindUMAEnumValueForCommand(id, UmaEnumIdLookupType::GeneralEnumId);
   if (enum_id == -1) {
-    NOTREACHED() << "Update GetIdcToUmaMap. Unhandled IDC: " << id;
+    NOTREACHED() << "Update UmaEnumForCommand(). Unhandled IDC: " << id;
   }
 
   UMA_HISTOGRAM_EXACT_LINEAR(
@@ -1739,7 +1737,7 @@ void RenderViewContextMenu::RecordShownItem(int id, bool is_submenu) {
   if (enum_id == -1) {
     // Just warning here. It's harder to maintain list of all possibly
     // visible items than executable items.
-    DLOG(ERROR) << "Update GetIdcToUmaMap. Unhandled IDC: " << id;
+    DLOG(ERROR) << "Update UmaEnumForCommand(). Unhandled IDC: " << id;
     return;
   }
 
