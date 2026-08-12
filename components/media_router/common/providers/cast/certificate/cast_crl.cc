@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "components/media_router/common/providers/cast/certificate/cast_fallback_crl.h"
 #include "crypto/evp.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -365,7 +365,7 @@ bool CastCRLImpl::CheckRevocation(
 
     // Calculate the public key's hash to check for revocation.
     std::string spki_hash =
-        crypto::SHA256HashString(base::as_string_view(spki_tlv));
+        std::string(base::as_string_view(crypto::hash::Sha256(spki_tlv)));
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     // Revocation data (if any) was saved in the constructor using this fake
     // hash code.
