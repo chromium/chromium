@@ -94,7 +94,8 @@ const char kKioskNewBrowserWindowHistogram[] = "Kiosk.NewBrowserWindow";
 class NavigationWaiter : public content::WebContentsObserver,
                          public views::WidgetObserver {
  public:
-  NavigationWaiter(Browser* browser, base::OnceClosure callback)
+  NavigationWaiter(Browser* browser,
+                   base::OnceCallback<void(const std::string&)> callback)
       : browser_(browser), callback_(std::move(callback)) {
     content::WebContents* web_contents = GetActiveWebContents(browser);
     if (!web_contents) {
@@ -103,7 +104,7 @@ class NavigationWaiter : public content::WebContentsObserver,
       // being closed.
       // One known case of this is a picture-in-picture browser.
       LOG(WARNING) << "New browser without WebContents detected.";
-      RunCallback();
+      RunCallback(std::string());
       return;
     }
 
@@ -117,25 +118,26 @@ class NavigationWaiter : public content::WebContentsObserver,
           CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser))
               .GetWidget());
     } else {
-      RunCallback();
+      RunCallback(web_contents->GetVisibleURL().spec());
     }
   }
 
   NavigationWaiter(const NavigationWaiter&) = delete;
   NavigationWaiter& operator=(const NavigationWaiter&) = delete;
+
  private:
-  // content::WebContentsObserver
+  // content::WebContentsObserver:
   void DidStartNavigation(content::NavigationHandle* navigation) override {
-    RunCallback();
+    RunCallback(navigation->GetURL().spec());
   }
 
-  void RunCallback() {
+  void RunCallback(std::string url) {
     // The callback should be called only once.
     if (callback_.is_null()) {
       return;
     }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback_));
+        FROM_HERE, base::BindOnce(std::move(callback_), std::move(url)));
   }
 
   // views::WidgetObserver:
@@ -147,7 +149,7 @@ class NavigationWaiter : public content::WebContentsObserver,
     // This prevents other non-navigation events, such as
     // subsequent tabs, from showing the window before a URL-based
     // decision can be made.
-    RunCallback();
+    RunCallback(std::string());
   }
 
   void OnWidgetDestroying(views::Widget* widget) override {
@@ -157,7 +159,7 @@ class NavigationWaiter : public content::WebContentsObserver,
   raw_ptr<Browser> browser_;
   base::ScopedObservation<views::Widget, WidgetObserver> widget_observation_{
       this};
-  base::OnceClosure callback_;
+  base::OnceCallback<void(const std::string&)> callback_;
 };
 
 KioskBrowserWindowHandler::KioskBrowserWindowHandler(
@@ -187,12 +189,13 @@ KioskBrowserWindowHandler::KioskBrowserWindowHandler(
 KioskBrowserWindowHandler::~KioskBrowserWindowHandler() = default;
 
 bool KioskBrowserWindowHandler::TriageNewSettingsBrowserWindow(
-    Browser* browser) {
+    Browser* browser,
+    const std::string& url) {
   url_waiters_.erase(browser);
   // It is safe to assume that no other tabs are present in `browser`, because
   // creating a second tab causes the browser window to be shown, which would
   // have caused the window to be closed before getting here.
-  std::string url_string = GetUrlOfActiveTab(browser);
+  std::string url_string = url.empty() ? GetUrlOfActiveTab(browser) : url;
 
   if (KioskSettingsNavigationThrottle::IsSettingsPage(url_string)) {
     base::UmaHistogramEnumeration(kKioskNewBrowserWindowHistogram,
@@ -334,8 +337,9 @@ void KioskBrowserWindowHandler::OnCompleteBrowserAdded(Browser* browser) {
 }
 
 void KioskBrowserWindowHandler::OnBrowserNavigationWatchEnded(
-    Browser* browser) {
-  if (TriageNewSettingsBrowserWindow(browser)) {
+    Browser* browser,
+    const std::string& url) {
+  if (TriageNewSettingsBrowserWindow(browser, url)) {
     browser->GetWindow()->Show();
   }
 }

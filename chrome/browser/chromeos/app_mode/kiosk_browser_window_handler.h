@@ -76,7 +76,8 @@ class KioskBrowserWindowHandler : public BrowserCollectionObserver {
   // 1. The browser navigation has successfully started.
   // 2. An unexpected event changed the window visibility (e.g. new tab being
   // opened).
-  void OnBrowserNavigationWatchEnded(Browser* browser);
+  void OnBrowserNavigationWatchEnded(Browser* browser,
+                                     const std::string& url = std::string());
   // Returns true if the browser window is allowed to be opened in kiosk mode
   // independent of the navigation URL with no need to wait for navigation to
   // happen.
@@ -86,7 +87,8 @@ class KioskBrowserWindowHandler : public BrowserCollectionObserver {
   // Once the navigation has started or is considered not necessary to wait for,
   // triage the settings browser window, since all other cases have been triaged
   // in scope of `PreTriageNewBrowserWindowWithoutUrl`.
-  bool TriageNewSettingsBrowserWindow(Browser* browser);
+  bool TriageNewSettingsBrowserWindow(Browser* browser,
+                                      const std::string& url = std::string());
   void HandleNewSettingsWindow(Browser* browser, const std::string& url_string);
 
   void CloseBrowserWindowsIf(
