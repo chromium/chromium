@@ -43,6 +43,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -407,7 +408,7 @@ public class ToolbarManagerUnitTest {
         OneshotSupplierImpl<Boolean> promoShownOneshotSupplier = new OneshotSupplierImpl<>();
         OneshotSupplierImpl<ChromeAndroidTask> chromeAndroidTaskSupplier =
                 new OneshotSupplierImpl<>();
-        Supplier<Boolean> isInOverviewModeSupplier = () -> false;
+        Supplier<Boolean> isInOverviewModeSupplier = SupplierUtils.alwaysFalse();
         SettableNonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
                 ObservableSuppliers.createNonNull(mModalDialogManager);
         SettableMonotonicObservableSupplier<MerchantTrustSignalsCoordinator>

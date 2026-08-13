@@ -26,6 +26,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -233,7 +234,7 @@ public class SettingsHostFragment extends Fragment
                 snackbarSupplier,
                 bottomSheetSupplier,
                 modalDialogSupplier,
-                () -> null);
+                SupplierUtils.ofNull());
     }
 
     @Override

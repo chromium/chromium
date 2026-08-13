@@ -39,6 +39,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -138,7 +139,7 @@ class ManualFillingMediator
     private ActionConfirmationDialog mActionConfirmationDialog;
     private @Nullable DialogHandle mConfirmationDialogDismissHandler;
     private BackPressManager mBackPressManager;
-    private Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier = () -> null;
+    private Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier = SupplierUtils.ofNull();
     private BooleanSupplier mIsContextualSearchOpened;
     private final Callback<ViewportInsets> mViewportInsetsObserver = this::onViewportInsetChanged;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =

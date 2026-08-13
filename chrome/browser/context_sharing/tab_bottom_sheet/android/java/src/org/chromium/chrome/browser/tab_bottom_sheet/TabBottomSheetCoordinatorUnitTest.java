@@ -59,6 +59,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ActivityState;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -175,7 +176,7 @@ public class TabBottomSheetCoordinatorUnitTest {
                                 mMockWebUi,
                                 0,
                                 mMockContentProvider,
-                                () -> null));
+                                SupplierUtils.ofNull()));
         mView = containerViewSpy;
         assertNotNull(
                 "peek_view_container should be found in CoBrowseViews",
@@ -1151,7 +1152,7 @@ public class TabBottomSheetCoordinatorUnitTest {
                         mMockWebUi,
                         0,
                         mMockContentProvider,
-                        () -> null);
+                        SupplierUtils.ofNull());
         mCoordinator =
                 new TabBottomSheetCoordinator(
                         mContext,

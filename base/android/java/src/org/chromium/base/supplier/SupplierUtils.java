@@ -15,6 +15,7 @@ import org.chromium.build.annotations.NonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** Utilities for interactions with Suppliers. */
@@ -22,6 +23,13 @@ import java.util.function.Supplier;
 public class SupplierUtils {
     @SuppressWarnings("NullAway") // Might be fixed by https://github.com/uber/NullAway/issues/1455
     private static final Supplier<?> NULL_SUPPLIER = () -> null;
+
+    private static final Supplier<Boolean> TRUE_SUPPLIER = () -> true;
+    private static final Supplier<Boolean> FALSE_SUPPLIER = () -> false;
+    @SuppressWarnings("UnusedVariable")
+    private static final BooleanSupplier TRUE_BOOLEAN_SUPPLIER = () -> true;
+    @SuppressWarnings("UnusedVariable")
+    private static final BooleanSupplier FALSE_BOOLEAN_SUPPLIER = () -> false;
 
     private SupplierUtils() {}
 
@@ -124,6 +132,32 @@ public class SupplierUtils {
         return ret == null ? value : ret;
     }
 
+    /** Returns a singleton {@link Supplier} that always supplies true. */
+    public static Supplier<Boolean> alwaysTrue() {
+        return TRUE_SUPPLIER;
+    }
+
+    /** Returns a singleton {@link Supplier} that always supplies false. */
+    public static Supplier<Boolean> alwaysFalse() {
+        return FALSE_SUPPLIER;
+    }
+
+    /** Returns a singleton {@link BooleanSupplier} that always supplies true. */
+    public static BooleanSupplier alwaysTrueBooleanSupplier() {
+        return TRUE_BOOLEAN_SUPPLIER;
+    }
+
+    /** Returns a singleton {@link BooleanSupplier} that always supplies false. */
+    public static BooleanSupplier alwaysFalseBooleanSupplier() {
+        return FALSE_BOOLEAN_SUPPLIER;
+    }
+
+    /** Returns a singleton {@link Supplier} for the given boolean without allocation. */
+    public static Supplier<Boolean> of(boolean value) {
+        return value ? alwaysTrue() : alwaysFalse();
+    }
+
+    @SuppressWarnings("unchecked")
     public static <T extends @Nullable Object> Supplier<T> of(T value) {
         return value == null ? ofNull() : () -> value;
     }

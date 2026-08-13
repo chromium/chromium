@@ -45,6 +45,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -264,7 +265,7 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
     public void testAccessibilityStrings() {
         // Verifies the expected content description and accessibility string when the current
         // bottom sheet type is null.
-        mBottomSheetContent.setCurrentBottomSheetTypeSupplierForTesting(() -> null);
+        mBottomSheetContent.setCurrentBottomSheetTypeSupplierForTesting(SupplierUtils.ofNull());
         assertEquals(
                 "Customize your new tab page bottom sheet",
                 mBottomSheetContent.getSheetContentDescription(mContext));

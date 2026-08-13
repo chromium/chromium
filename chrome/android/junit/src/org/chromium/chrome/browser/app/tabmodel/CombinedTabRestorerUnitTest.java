@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -47,7 +48,7 @@ public class CombinedTabRestorerUnitTest {
                 restoreRegularTabs,
                 mDelegate,
                 mTabCreatorManager,
-                () -> null,
+                SupplierUtils.ofNull(),
                 mTabModelSelector,
                 /* logRestoreDuration= */ false,
                 /* isFromRecreating= */ false);

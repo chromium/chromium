@@ -106,6 +106,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -3582,7 +3583,7 @@ public class TabListMediatorUnitTest {
     public void testMaybeShowPriceWelcomeMessage_SupplierContainsNull() {
         prepareTestMaybeShowPriceWelcomeMessage();
 
-        Supplier<PriceWelcomeMessageController> supplier = () -> null;
+        Supplier<PriceWelcomeMessageController> supplier = SupplierUtils.ofNull();
         new ShoppingPersistedTabDataFetcher(mTab1, supplier)
                 .maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         verify(mPriceWelcomeMessageController, times(0))

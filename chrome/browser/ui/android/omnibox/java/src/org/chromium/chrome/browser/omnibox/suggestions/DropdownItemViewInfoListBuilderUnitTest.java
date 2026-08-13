@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -79,7 +80,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 new OmniboxResourceProvider(mContext, BrandedColorScheme.LIGHT_BRANDED_THEME);
         mBuilder =
                 new DropdownItemViewInfoListBuilder(
-                        () -> null,
+                        SupplierUtils.ofNull(),
                         (url) -> false,
                         ObservableSuppliers.createNonNull(ControlsPosition.TOP),
                         resourceProvider);

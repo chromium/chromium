@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -61,7 +62,7 @@ public class ScreenshotInvocationStateUnitTest {
 
     @Test
     public void testCreateFailure_NullTab() {
-        assertNull(ScreenshotInvocationState.create(() -> null));
+        assertNull(ScreenshotInvocationState.create(SupplierUtils.ofNull()));
     }
 
     @Test

@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -151,7 +152,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
-                        /* contextualPageActionControllerSupplier= */ () -> null,
+                        /* contextualPageActionControllerSupplier= */ SupplierUtils.ofNull(),
                         /* hasClientPackage= */ false,
                         /* pageZoomManager= */ null,
                         /* openInAppMenuItemProvider= */ null);
@@ -222,7 +223,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
-                        /* contextualPageActionControllerSupplier= */ () -> null,
+                        /* contextualPageActionControllerSupplier= */ SupplierUtils.ofNull(),
                         /* hasClientPackage= */ false,
                         /* pageZoomManager= */ null,
                         /* openInAppMenuItemProvider= */ null);
@@ -263,7 +264,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isOffTheRecord= */ false,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
-                        /* contextualPageActionControllerSupplier= */ () -> null,
+                        /* contextualPageActionControllerSupplier= */ SupplierUtils.ofNull(),
                         /* hasClientPackage= */ false,
                         /* pageZoomManager= */ null,
                         /* openInAppMenuItemProvider= */ null);

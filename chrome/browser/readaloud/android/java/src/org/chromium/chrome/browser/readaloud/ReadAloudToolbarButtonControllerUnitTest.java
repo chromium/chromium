@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
@@ -89,7 +90,7 @@ public class ReadAloudToolbarButtonControllerUnitTest {
     public void shouldShowButton_noReadAloudController() {
         mButtonController =
                 new ReadAloudToolbarButtonController(
-                        mContext, () -> mTab, mDrawable, () -> null, () -> mTracker);
+                        mContext, () -> mTab, mDrawable, SupplierUtils.ofNull(), () -> mTracker);
 
         Assert.assertFalse(mButtonController.shouldShowButton(mTab));
     }
@@ -121,7 +122,7 @@ public class ReadAloudToolbarButtonControllerUnitTest {
     public void onClick_readAloudControllerMissing() {
         mButtonController =
                 new ReadAloudToolbarButtonController(
-                        mContext, () -> mTab, mDrawable, () -> null, () -> mTracker);
+                        mContext, () -> mTab, mDrawable, SupplierUtils.ofNull(), () -> mTracker);
         mButtonController.onClick(null);
 
         Assert.assertEquals(0, mActionTester.getActionCount("MobileTopToolbarReadAloudButton"));
@@ -133,7 +134,11 @@ public class ReadAloudToolbarButtonControllerUnitTest {
     public void onClick_trackerMissing() {
         mButtonController =
                 new ReadAloudToolbarButtonController(
-                        mContext, () -> mTab, mDrawable, () -> mReadAloudController, () -> null);
+                        mContext,
+                        () -> mTab,
+                        mDrawable,
+                        () -> mReadAloudController,
+                        SupplierUtils.ofNull());
         mButtonController.onClick(null);
 
         Assert.assertEquals(1, mActionTester.getActionCount("MobileTopToolbarReadAloudButton"));

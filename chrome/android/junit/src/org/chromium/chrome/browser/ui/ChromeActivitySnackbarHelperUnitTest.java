@@ -31,6 +31,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
@@ -178,7 +179,7 @@ public class ChromeActivitySnackbarHelperUnitTest {
                         mActivity,
                         mEdgeToEdgeControllerSupplier,
                         mBottomSheetController,
-                        () -> null);
+                        SupplierUtils.ofNull());
 
         reset(mEdgeToEdgeController1);
         when(mEdgeToEdgeController1.getBottomInsetPx()).thenReturn(100);

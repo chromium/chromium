@@ -37,6 +37,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -302,7 +303,7 @@ public class BottomSheetControllerImplUnitTest {
     @Test
     public void testRequestShowContent_FailsIfRootViewIsNull() {
         // Create a new supplier that returns null to simulate a destroyed activity.
-        Supplier<ViewGroup> nullRootSupplier = () -> null;
+        Supplier<ViewGroup> nullRootSupplier = SupplierUtils.ofNull();
         BottomSheetControllerImpl controllerWithNullRoot =
                 new BottomSheetControllerImpl(
                         mScrimManagerSupplier,

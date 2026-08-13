@@ -42,6 +42,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.ViewFocusChangeSuppression;
@@ -93,7 +94,7 @@ public class ContentViewTest {
     @Test
     @SmallTest
     public void testOnResolvePointerIconCallsParentWhenNotOverridden() {
-        mContentView.setStylusWritingIconSupplier(() -> null);
+        mContentView.setStylusWritingIconSupplier(SupplierUtils.ofNull());
         MotionEvent motionEvent = mock(MotionEvent.class);
         assertNull(mContentView.onResolvePointerIcon(motionEvent, 0));
         // Parent implementation gets location of motion event.

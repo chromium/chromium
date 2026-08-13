@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory
 import org.chromium.base.ContextUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -141,7 +142,7 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         assumeNonNull(tabGroupSyncService);
         PrefService prefs = UserPrefs.get(profile);
-        Supplier<Boolean> isActive = () -> false;
+        Supplier<Boolean> isActive = SupplierUtils.alwaysFalse();
         mTabGroupSyncController =
                 new TabGroupSyncControllerImpl(
                         mTabModelSelector, tabGroupSyncService, prefs, isActive);

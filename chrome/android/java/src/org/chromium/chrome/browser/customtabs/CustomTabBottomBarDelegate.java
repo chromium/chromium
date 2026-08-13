@@ -29,6 +29,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -636,7 +637,7 @@ public class CustomTabBottomBarDelegate
                 mSwipeUpPendingIntent,
                 null,
                 mActivity,
-                () -> null,
+                SupplierUtils.ofNull(),
                 mDataProvider,
                 /* viewId= */ null);
     }

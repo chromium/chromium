@@ -28,6 +28,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -235,7 +236,11 @@ public class ImmersivePlaybackMessageControllerTest {
     public void testShow_NullModalDialogManager_FailsImmediately() {
         mController =
                 new ImmersivePlaybackMessageController(
-                        mContext, () -> mMessageDispatcher, () -> null, mTab, mFullscreenManager);
+                        mContext,
+                        () -> mMessageDispatcher,
+                        SupplierUtils.ofNull(),
+                        mTab,
+                        mFullscreenManager);
 
         mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
 

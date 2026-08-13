@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.mockito.Mockito;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.MethodStrings;
@@ -320,7 +321,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
                         mClient,
                         mOnClosedListener,
                         /* delegate= */ this,
-                        () -> null);
+                        SupplierUtils.ofNull());
         boolean success = service.init(mMethodData, mDetails, mOptions);
         return success ? service : null;
     }

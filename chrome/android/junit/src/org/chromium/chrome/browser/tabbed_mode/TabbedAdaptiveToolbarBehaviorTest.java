@@ -29,6 +29,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -132,7 +133,8 @@ public class TabbedAdaptiveToolbarBehaviorTest {
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(mActorTask);
         when(mActorKeyedService.getActiveTasks()).thenReturn(List.of(mActorTask));
-        mBehavior.registerPerSurfaceButtons(mAdaptiveToolbarButtonController, () -> null);
+        mBehavior.registerPerSurfaceButtons(
+                mAdaptiveToolbarButtonController, SupplierUtils.ofNull());
         assertTopResult(
                 /* segmentationResults= */ List.of(
                         AdaptiveToolbarButtonVariant.SHARE, AdaptiveToolbarButtonVariant.GLIC),
@@ -151,7 +153,8 @@ public class TabbedAdaptiveToolbarBehaviorTest {
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(mActorTask);
         when(mActorKeyedService.getActiveTasks()).thenReturn(List.of(mActorTask));
-        mBehavior.registerPerSurfaceButtons(mAdaptiveToolbarButtonController, () -> null);
+        mBehavior.registerPerSurfaceButtons(
+                mAdaptiveToolbarButtonController, SupplierUtils.ofNull());
 
         List<Integer> segmentationResultsGlicShare =
                 List.of(AdaptiveToolbarButtonVariant.GLIC, AdaptiveToolbarButtonVariant.SHARE);
@@ -257,7 +260,8 @@ public class TabbedAdaptiveToolbarBehaviorTest {
     @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.ANDROID_BOTTOM_BAR})
     @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testRegisterPerSurfaceButtons_BottomBarEnabled() {
-        mBehavior.registerPerSurfaceButtons(mAdaptiveToolbarButtonController, () -> null);
+        mBehavior.registerPerSurfaceButtons(
+                mAdaptiveToolbarButtonController, SupplierUtils.ofNull());
         verify(mAdaptiveToolbarButtonController, never())
                 .addButtonVariant(eq(AdaptiveToolbarButtonVariant.NEW_TAB), any());
         verify(mAdaptiveToolbarButtonController, never())
@@ -274,7 +278,8 @@ public class TabbedAdaptiveToolbarBehaviorTest {
         ChromeFeatureList.ANDROID_BOTTOM_BAR
     })
     public void testRegisterPerSurfaceButtons_BottomBarDisabled() {
-        mBehavior.registerPerSurfaceButtons(mAdaptiveToolbarButtonController, () -> null);
+        mBehavior.registerPerSurfaceButtons(
+                mAdaptiveToolbarButtonController, SupplierUtils.ofNull());
         verify(mAdaptiveToolbarButtonController)
                 .addButtonVariant(eq(AdaptiveToolbarButtonVariant.NEW_TAB), any());
         verify(mAdaptiveToolbarButtonController)

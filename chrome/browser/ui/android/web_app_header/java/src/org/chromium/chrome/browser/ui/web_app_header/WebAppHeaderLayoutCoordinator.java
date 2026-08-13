@@ -31,6 +31,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -411,7 +412,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                             /* clearOmniboxFocus= */ CallbackUtils.emptyRunnable(),
                             mRequestRenderRunnable,
                             /* canShowAppUpdateBadge= */ false,
-                            /* isInOverviewModeSupplier= */ () -> false,
+                            /* isInOverviewModeSupplier= */ SupplierUtils.alwaysFalse(),
                             mThemeColorProvider,
                             mIncognitoStateProvider,
                             (Supplier<@Nullable MenuButtonState>) mMenuButtonStateSupplier,

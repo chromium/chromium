@@ -30,6 +30,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.IntentHandler;
@@ -160,8 +161,8 @@ public class ChromeTabCreatorJUnitTest {
                 profileProviderSupplier,
                 incognito,
                 AsyncTabParamsManagerSingleton.getInstance(),
-                () -> null,
-                () -> null);
+                SupplierUtils.ofNull(),
+                SupplierUtils.ofNull());
     }
 
     private void runTestAsyncParamsRemovedAfterAddTab(boolean incognito) {

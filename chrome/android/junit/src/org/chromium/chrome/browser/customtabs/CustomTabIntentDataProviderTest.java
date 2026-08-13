@@ -70,6 +70,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -2635,7 +2636,7 @@ public class CustomTabIntentDataProviderTest {
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
         Intent outboundIntent = new Intent();
-        Supplier<Tab> tabProvider = () -> null;
+        Supplier<Tab> tabProvider = SupplierUtils.ofNull();
         int viewId = 123;
 
         dataProvider.maybeAddAdditionalContentExtrasToOutboundIntent(

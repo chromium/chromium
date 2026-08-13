@@ -32,6 +32,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.context_sharing.R;
@@ -69,7 +70,7 @@ public class CoBrowseViewsUnitTest {
                         mWebUi,
                         Color.WHITE,
                         null,
-                        () -> null);
+                        SupplierUtils.ofNull());
     }
 
     @Test
@@ -98,7 +99,7 @@ public class CoBrowseViewsUnitTest {
                         mWebUi,
                         Color.WHITE,
                         mMockContentProvider,
-                        () -> null);
+                        SupplierUtils.ofNull());
 
         View view = coBrowseViews.getView();
         View handleBar = view.findViewById(R.id.handle_bar);
@@ -166,7 +167,7 @@ public class CoBrowseViewsUnitTest {
                         mWebUi,
                         Color.WHITE,
                         mMockContentProvider,
-                        () -> null);
+                        SupplierUtils.ofNull());
         assertEquals(mMockContentProvider, coBrowseViews.getContentProvider());
     }
 
@@ -195,7 +196,7 @@ public class CoBrowseViewsUnitTest {
                         mWebUi,
                         Color.WHITE,
                         mMockContentProvider,
-                        () -> null);
+                        SupplierUtils.ofNull());
         assertTrue(coBrowseViews.isPlaceholderSetUp());
         verify(mMockContentProvider).setupPlaceholderView(any());
     }
@@ -212,7 +213,7 @@ public class CoBrowseViewsUnitTest {
                         mWebUi,
                         Color.WHITE,
                         mMockContentProvider,
-                        () -> null);
+                        SupplierUtils.ofNull());
         assertTrue(!coBrowseViews.isPlaceholderSetUp());
         verify(mMockContentProvider).setupPlaceholderView(any());
     }
@@ -230,7 +231,7 @@ public class CoBrowseViewsUnitTest {
                         mWebUi,
                         Color.WHITE,
                         mMockContentProvider,
-                        () -> null);
+                        SupplierUtils.ofNull());
 
         View placeholderView = rootView.findViewById(R.id.empty_placeholder_container);
         assertEquals(View.VISIBLE, placeholderView.getVisibility());

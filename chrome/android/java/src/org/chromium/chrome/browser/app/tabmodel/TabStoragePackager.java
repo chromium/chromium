@@ -14,6 +14,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -106,7 +107,7 @@ public class TabStoragePackager {
                     ARCHIVED_WINDOW_TAG,
                     /* isOffTheRecord= */ false,
                     TabModelType.ARCHIVED,
-                    /* activeTabSupplier= */ () -> null);
+                    /* activeTabSupplier= */ SupplierUtils.ofNull());
         }
     }
 

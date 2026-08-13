@@ -61,6 +61,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -912,7 +913,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         assertNull(
                 clickHandler.getTabGroupActionButtonData(
-                        tab, model, /* defaultOverflowListenerSupplier= */ () -> null));
+                        tab, model, /* defaultOverflowListenerSupplier= */ SupplierUtils.ofNull()));
     }
 
     @Test

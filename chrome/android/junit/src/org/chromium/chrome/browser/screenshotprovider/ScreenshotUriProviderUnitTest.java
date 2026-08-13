@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
@@ -167,7 +168,7 @@ public class ScreenshotUriProviderUnitTest {
                         "Android.ScreenshotUriProvider.Events",
                         ScreenshotContentProviderMetrics.ScreenshotUriProviderEvent
                                 .GET_CONTENT_URI_FAILED);
-        ScreenshotUriProvider.getScreenshotUriForCurrentTab(() -> null, TARGET_PACKAGE);
+        ScreenshotUriProvider.getScreenshotUriForCurrentTab(SupplierUtils.ofNull(), TARGET_PACKAGE);
         watcher.assertExpected();
     }
 }

@@ -47,6 +47,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -179,8 +180,8 @@ public class CustomTabToolbarUnitTest {
                         mToolbar.createLocationBar(
                                 mLocationBarModel,
                                 mActionModeCallback,
-                                () -> null,
-                                () -> null,
+                                SupplierUtils.ofNull(),
+                                SupplierUtils.ofNull(),
                                 mControlsVisibleDelegate,
                                 null);
         mUrlBar = mToolbar.findViewById(R.id.url_bar);
