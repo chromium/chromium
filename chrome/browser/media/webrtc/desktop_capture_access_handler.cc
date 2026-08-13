@@ -45,6 +45,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/switches.h"
+#include "media/base/media_switches.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -166,6 +167,14 @@ bool ShouldCaptureAudio(const content::DesktopMediaID& media_id,
       media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS;
 
   return audio_permitted && audio_requested && audio_supported;
+}
+
+bool ShouldCaptureSystemAudioForGumRequest(
+    const content::MediaStreamRequest& request) {
+  return request.audio_type ==
+             blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE &&
+         DesktopMediaPickerController::IsSystemAudioCaptureSupported(
+             DesktopMediaPicker::Params::RequestSource::kExtension);
 }
 
 // Checks whether the request is approved.
@@ -301,10 +310,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
   }
 
   const bool capture_audio =
-      pending_request->request.audio_type ==
-          blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE &&
-      DesktopMediaPickerController::IsSystemAudioCaptureSupported(
-          DesktopMediaPicker::Params::RequestSource::kExtension);
+      ShouldCaptureSystemAudioForGumRequest(pending_request->request);
 
 #if BUILDFLAG(IS_CHROMEOS)
   const content::DesktopMediaID screen_id =
@@ -412,6 +418,10 @@ void DesktopCaptureAccessHandler::HandleRequest(
                /*ui=*/nullptr);
       return;
     }
+    if (IsFeedbackRequestWithSckPicker(request.security_origin)) {
+      ProcessChangeSourceRequest(web_contents, std::move(pending_request));
+      return;
+    }
 #endif
     ProcessScreenCaptureAccessRequest(web_contents, extension,
                                       std::move(pending_request));
@@ -513,6 +523,18 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
   DCHECK_EQ(pending_request->request.video_type,
             blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE);
 
+#if BUILDFLAG(IS_MAC)
+  if (request_approved_for_test_) {
+    const content::DesktopMediaID screen_id = content::DesktopMediaID(
+        content::DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId);
+    const bool capture_audio =
+        ShouldCaptureSystemAudioForGumRequest(pending_request->request);
+    AcceptRequest(web_contents, std::move(pending_request), screen_id,
+                  capture_audio);
+    return;
+  }
+#endif
+
   if (pending_request->request.requested_video_device_ids.empty() ||
       pending_request->request.requested_video_device_ids.front().empty()) {
     // Passing nullptr selects the default picker (DesktopMediaPickerImpl).
@@ -606,9 +628,17 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
       capture_policy::GetIncludableWebContentsFilter(request_origin,
                                                      capture_level);
 
+  std::vector<DesktopMediaList::Type> media_types;
+  if (IsFeedbackRequestWithSckPicker(request_origin)) {
+    media_types = {DesktopMediaList::Type::kWebContents,
+                   DesktopMediaList::Type::kWindow,
+                   DesktopMediaList::Type::kScreen};
+  } else {
+    media_types = {DesktopMediaList::Type::kWebContents};
+  }
+
   auto source_lists = picker_factory_->CreateMediaList(
-      {DesktopMediaList::Type::kWebContents}, web_contents,
-      includable_web_contents_filter);
+      media_types, web_contents, includable_web_contents_filter);
 
   // base::Unretained(this) is safe because DesktopCaptureAccessHandler is owned
   // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
@@ -619,6 +649,10 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
                      pending_request.application_title);
   DesktopMediaPicker::Params picker_params(
       DesktopMediaPicker::Params::RequestSource::kExtension);
+  if (IsFeedbackRequestWithSckPicker(request_origin)) {
+    picker_params.preferred_display_surface =
+        blink::mojom::PreferredDisplaySurface::MONITOR;
+  }
   picker_params.web_contents = web_contents;
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   picker_params.context = parent_window;
@@ -851,4 +885,14 @@ void DesktopCaptureAccessHandler::OnDlpRestrictionChecked(
 
 void DesktopCaptureAccessHandler::SetRequestApprovedForTest(bool approved) {
   request_approved_for_test_ = approved;
+}
+
+bool DesktopCaptureAccessHandler::IsFeedbackRequestWithSckPicker(
+    const GURL& origin) const {
+#if BUILDFLAG(IS_MAC)
+  return IsBuiltInFeedbackUI(origin) &&
+         base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker);
+#else
+  return false;
+#endif
 }
