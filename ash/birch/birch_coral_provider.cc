@@ -35,7 +35,6 @@
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
@@ -340,17 +339,6 @@ void BirchCoralProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 const coral::mojom::GroupPtr& BirchCoralProvider::GetGroupById(
     const base::Token& group_id) const {
-  // Add crash keys here to track the crash of crbug.com/395130742.
-  SCOPED_CRASH_KEY_BOOL("395130742", "response_", !!response_);
-  if (response_) {
-    SCOPED_CRASH_KEY_NUMBER("395130742", "group num",
-                            response_->groups().size());
-    if (!response_->groups().empty()) {
-      SCOPED_CRASH_KEY_BOOL("395130742", "first group",
-                            !!(*response_->groups().begin()));
-    }
-  }
-
   std::vector<coral::mojom::GroupPtr>& groups = response_->groups();
   auto iter = std::find_if(
       groups.begin(), groups.end(),
