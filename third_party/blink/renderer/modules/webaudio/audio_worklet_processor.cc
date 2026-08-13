@@ -238,6 +238,9 @@ void CopyArrayBuffersToPort(v8::Isolate* isolate,
 
   for (uint32_t bus_index = 0; bus_index < audio_port.size(); ++bus_index) {
     const scoped_refptr<AudioBus>& audio_bus = audio_port[bus_index];
+    if (!audio_bus) {
+      continue;
+    }
     for (uint32_t channel_index = 0;
          channel_index < audio_bus->NumberOfChannels(); ++channel_index) {
       auto backing_store = array_buffers[bus_index][channel_index]

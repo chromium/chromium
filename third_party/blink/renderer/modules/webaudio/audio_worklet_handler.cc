@@ -139,6 +139,7 @@ void AudioWorkletHandler::Process(uint32_t frames_to_process) {
   for (unsigned i = 0; i < NumberOfInputs(); ++i) {
     inputs_[i] = Input(i).IsConnected() ? Input(i).Bus() : nullptr;
   }
+  bool allocation_failed = false;
   for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
     if (!Output(i).IsConnectedDuringRendering()) {
       // If the output does not have an active outgoing connection, the handler
@@ -146,8 +147,12 @@ void AudioWorkletHandler::Process(uint32_t frames_to_process) {
       if (!unconnected_outputs_[i] ||
           !unconnected_outputs_[i]->TopologyMatches(*Output(i).Bus())) {
         unconnected_outputs_[i] =
-            AudioBus::Create(Output(i).Bus()->NumberOfChannels(),
-                             GetDeferredTaskHandler().RenderQuantumFrames());
+            AudioBus::TryCreate(Output(i).Bus()->NumberOfChannels(),
+                                GetDeferredTaskHandler().RenderQuantumFrames());
+        if (!unconnected_outputs_[i]) {
+          allocation_failed = true;
+          break;
+        }
       }
       outputs_[i] = unconnected_outputs_[i];
     } else {
@@ -155,6 +160,24 @@ void AudioWorkletHandler::Process(uint32_t frames_to_process) {
       // output object.
       outputs_[i] = WrapRefCounted(Output(i).Bus());
     }
+  }
+
+  if (allocation_failed) {
+    AudioWorkletProcessorErrorDetails error_details(
+        AudioWorkletProcessorErrorState::kProcessError,
+        StrCat({name_,
+                " process(): Memory allocation failed for unconnected output "
+                "buffer."}),
+        /*source_url=*/"",
+        /*line_number=*/0,
+        /*column_number=*/0,
+        /*char_position=*/0);
+    PostCrossThreadTask(
+        *main_thread_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&AudioWorkletHandler::NotifyProcessorError,
+                            weak_this_, error_details));
+    FinishProcessorOnRenderThread();
+    return;
   }
 
   for (auto& entry : param_value_map_) {
