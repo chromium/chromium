@@ -6,7 +6,6 @@ include_rules = [
   "+chrome/browser/ash/browser_delegate/browser_controller.h",
   "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/birch",
   "+chrome/browser/ui/ash/desks",
