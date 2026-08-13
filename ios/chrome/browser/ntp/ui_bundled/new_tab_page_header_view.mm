@@ -94,6 +94,7 @@ constexpr CGFloat kFakeboxMinimumFontScaleFactor = 0.57;
 // The constants for the constraints affecting the end button; either Lens or
 // Voice Search, depending on if Lens is enabled.
 constexpr CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
+constexpr CGFloat kEndButtonFakeboxTrailingSpaceUICleanup = 20.0;
 constexpr CGFloat kEndButtonFakeboxIPadTrailingSpace = 18.0;
 constexpr CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0;
 constexpr CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
@@ -104,19 +105,23 @@ constexpr CGFloat kHintLabelFakeboxTrailingSpace = 12.0f;
 // The constants for the constraints the leading-edge aligned UI elements.
 constexpr CGFloat kHintLabelFakeboxLeadingSpaceWithIcon = 42.0;
 constexpr CGFloat kHintLabelFakeboxLeadingSpaceWithPlus = 46.0;
+constexpr CGFloat kHintLabelFakeboxLeadingSpaceUICleanup = 52.0;
 constexpr CGFloat kHintLabelOmniboxLeadingSpaceWithIcon = 42.0;
 constexpr CGFloat kHintLabelOmniboxLeadingSpaceWithWithPlus = 52.0;
 
 // The constants for the search engine image.
 constexpr CGFloat kFakeboxIPadExtraLeadingSpace = 5.0;
 constexpr CGFloat kFakeboxImageLeadingSpace = 13.0;
+constexpr CGFloat kFakeboxLeadingSpaceUICleanup = 20.0;
 constexpr CGFloat kFakeboxPlusLeadingSpace = 18.0;
 constexpr CGFloat kOmniboxImageLeadingSpace = 22.0;
 constexpr CGFloat kOmniboxPlusLeadingSpace = 26.0;
 constexpr CGFloat kFakeboxImageSize = 20.0;
+constexpr CGFloat kFakeboxImageSizeUICleanup = 24.0;
 
 // The spacing between the items in the button stack.
 constexpr CGFloat kButtonSpacing = 9.0;
+constexpr CGFloat kButtonSpacingUICleanup = 16.0;
 
 // The height of the divider between the mic and lens icons.
 constexpr CGFloat kIconDividerHeight = 13.0;
@@ -596,7 +601,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _buttonStack = [[TouchAreaOverflowStackView alloc] init];
   _buttonStack.translatesAutoresizingMaskIntoConstraints = NO;
   _buttonStack.alignment = UIStackViewAlignmentCenter;
-  _buttonStack.spacing = kButtonSpacing;
+  _buttonStack.spacing =
+      IsNewTabPageUICleanupEnabled() ? kButtonSpacingUICleanup : kButtonSpacing;
   _buttonStack.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
       0, 0, 0, [self endButtonFakeboxTrailingSpace]);
   _buttonStack.layoutMarginsRelativeArrangement = true;
@@ -646,6 +652,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // The leading padding to add in the search field when the fakebox is displayed
 // in the middle of the screen.
 - (CGFloat)fakeboxLeadingSpace {
+  if (IsNewTabPageUICleanupEnabled()) {
+    return kFakeboxLeadingSpaceUICleanup;
+  }
   if ([self shouldShowPlusButton]) {
     return kFakeboxPlusLeadingSpace;
   } else if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
@@ -676,7 +685,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   leadingView.translatesAutoresizingMaskIntoConstraints = NO;
   [searchField addSubview:leadingView];
-  AddSquareConstraints(leadingView, kFakeboxImageSize);
+
+  CGFloat imageSize = IsNewTabPageUICleanupEnabled()
+                          ? kFakeboxImageSizeUICleanup
+                          : kFakeboxImageSize;
+  AddSquareConstraints(leadingView, imageSize);
 
   CGFloat leadingViewConstraintConstant;
   if (IsChromeNextIaEnabled()) {
@@ -774,9 +787,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   }
 
   if (IsNTPHeaderTransformsForAnimationsEnabled()) {
-    self.leadingViewConstraint.constant = kFakeboxImageLeadingSpace;
+    self.leadingViewConstraint.constant = [self fakeboxLeadingSpace];
     CGFloat translationX =
-        (kOmniboxImageLeadingSpace - kFakeboxImageLeadingSpace) * progress;
+        ([self omniboxLeadingSpace] - [self fakeboxLeadingSpace]) * progress;
     _logoView.transform = CGAffineTransformMakeTranslation(translationX, 0);
   } else {
     self.leadingViewConstraint.constant = Interpolate(
@@ -1371,9 +1384,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   self.plusButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL);
-  [self.plusButton
-      setImage:SymbolWithPointSize(SymbolPlus, kSymbolActionPointSize)
-      forState:UIControlStateNormal];
+  CGFloat symbolPointSize = IsNewTabPageUICleanupEnabled()
+                                ? kFakeboxImageSizeUICleanup
+                                : kSymbolActionPointSize;
+  [self.plusButton setImage:SymbolWithPointSize(SymbolPlus, symbolPointSize)
+                   forState:UIControlStateNormal];
   [self.plusButton addTarget:self.NTPShortcutsHandler
                       action:@selector(openMultimodalActionsMenu)
             forControlEvents:UIControlEventTouchUpInside];
@@ -1415,7 +1430,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
           LensEntrypoint::NewTabPage, _isGoogleDefaultSearchEngine);
   if (useLens) {
-    [self addVoiceAndLensDivider];
+    if (IsNewTabPageUICleanupEnabled()) {
+      self.voiceAndLensDivider = nil;
+    } else {
+      [self addVoiceAndLensDivider];
+    }
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
     [_buttonStack addArrangedSubview:self.lensButton];
@@ -1656,6 +1675,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // Returns end button fakebox trailing space depending on fakebox size and
 // whether the new badge is displayed.
 - (CGFloat)endButtonFakeboxTrailingSpace {
+  if (IsNewTabPageUICleanupEnabled()) {
+    return kEndButtonFakeboxTrailingSpaceUICleanup;
+  }
   // If normal sized fakebox and new bade is showing, reduce trailing space.
   if (_useNewBadgeForLensButton && !IsAimEnabledInNtp()) {
     return kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace;
@@ -1716,6 +1738,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 #pragma mark - helpers
 
 - (CGFloat)hintLabelFakeboxLeadingSpace {
+  if (IsNewTabPageUICleanupEnabled()) {
+    return kHintLabelFakeboxLeadingSpaceUICleanup;
+  }
   if ([self shouldShowPlusButton]) {
     return kHintLabelFakeboxLeadingSpaceWithPlus;
   } else if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {

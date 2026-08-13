@@ -92,6 +92,7 @@ const CGFloat kNewBadgeOffsetFromButtonCenter = 14.0;
 // The height of the Fakebox.
 const CGFloat kFakeboxHeight = 64;
 const CGFloat kFakeboxHeightNonDynamic = 45;
+const CGFloat kFakeboxHeightUICleanup = 72;
 
 // The height of the Fakebox when it is pinned to the top.
 const CGFloat kPinnedFakeboxHeight = 48;
@@ -274,6 +275,12 @@ CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
 }
 
 CGFloat FakeOmniboxHeight() {
+  if (IsNewTabPageUICleanupEnabled()) {
+    CGFloat multiplier = ui_util::SystemSuggestedFontSizeMultiplier();
+    return AlignValueToLowerPixel(
+        (kFakeboxHeightUICleanup - kFakeboxHeightNonDynamic) * multiplier +
+        kFakeboxHeightNonDynamic);
+  }
   if (IsAimEnabledInNtp()) {
     CGFloat multiplier = ui_util::SystemSuggestedFontSizeMultiplier();
     return AlignValueToLowerPixel((kFakeboxHeight - kFakeboxHeightNonDynamic) *
@@ -539,6 +546,9 @@ UIView* NearestAncestor(UIView* view, Class of_class) {
 }
 
 UIColor* SearchHintLabelColor() {
+  if (IsNewTabPageUICleanupEnabled()) {
+    return [UIColor colorNamed:kTextTertiaryColor];
+  }
   return [UIColor colorNamed:kGrey800Color];
 }
 

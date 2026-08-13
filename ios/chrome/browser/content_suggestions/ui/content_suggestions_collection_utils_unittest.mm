@@ -250,8 +250,25 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NearestAncestor) {
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, fakeOmniboxHeight) {
-  CGFloat expectedHeight = IsAimEnabledInNtp() ? 64 : 50;
-  EXPECT_EQ(expectedHeight, FakeOmniboxHeight());
+  ScopedBlockSwizzler preferredContentSizeSwizzler(
+      [UIApplication class], @selector(preferredContentSizeCategory), ^{
+        return UIContentSizeCategoryLarge;
+      });
+
+  // Control (Disabled).
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kNewTabPageUICleanup);
+    CGFloat expectedHeight = IsAimEnabledInNtp() ? 64 : 50;
+    EXPECT_EQ(expectedHeight, FakeOmniboxHeight());
+  }
+
+  // Enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(kNewTabPageUICleanup);
+    EXPECT_EQ(72.0, FakeOmniboxHeight());
+  }
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, pinnedFakeOmniboxHeight) {

@@ -22,18 +22,28 @@ constexpr CGFloat kFakeboxHighlightDuration = 0.4;
 // Fakebox highlight background alpha.
 constexpr CGFloat kFakeboxHighlightAlpha = 0.06;
 
+// Helper function to resolve dynamic fakebox background color. The fakebox
+// background color is dependent on if kNewTabPageUICleanup is enabled.
+UIColor* DynamicFakeboxColor(NSString* solid_color_name,
+                             NSString* gradient_color_name) {
+  if (IsNewTabPageUICleanupEnabled()) {
+    return [UIColor colorNamed:kPrimaryBackgroundColor];
+  }
+  return UIAccessibilityIsReduceTransparencyEnabled()
+             ? [UIColor colorNamed:solid_color_name]
+             : [UIColor colorNamed:gradient_color_name];
+}
+
 // Returns the top color of the Fakebox's gradient background.
 UIColor* FakeboxTopColor() {
-  return UIAccessibilityIsReduceTransparencyEnabled()
-             ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-             : [UIColor colorNamed:@"fake_omnibox_top_gradient_color"];
+  return DynamicFakeboxColor(@"fake_omnibox_solid_background_color",
+                             @"fake_omnibox_top_gradient_color");
 }
 
 // Returns the bottom color of the Fakebox's gradient background.
 UIColor* FakeboxBottomColor() {
-  return UIAccessibilityIsReduceTransparencyEnabled()
-             ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-             : [UIColor colorNamed:@"fake_omnibox_bottom_gradient_color"];
+  return DynamicFakeboxColor(@"fake_omnibox_solid_background_color",
+                             @"fake_omnibox_bottom_gradient_color");
 }
 
 }  // namespace
