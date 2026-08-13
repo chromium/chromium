@@ -53,6 +53,8 @@ constexpr char16_t kTestTitle[] = u"Test Title";
 constexpr char16_t kTestContext[] = u"Test Context";
 constexpr char16_t kTestLink[] = u"Test Link";
 constexpr char16_t kTestAcceptButton[] = u"Test Accept Button";
+constexpr char16_t kTestAcceptButtonA11yLabel[] =
+    u"Test Accept Button A11y Label";
 constexpr char kTestHistogram[] = "Test.NoticeInteractions";
 
 class PopupNoticeViewTest : public ChromeViewsTestBase {
@@ -74,8 +76,8 @@ class PopupNoticeViewTest : public ChromeViewsTestBase {
     view_ = widget_->SetContentsView(std::make_unique<PopupNoticeView>(
         mock_a11y_selection_delegate_, mock_announce_callback_.Get(),
         controller().GetWeakPtr(), kNoticePosition, kTestTitle, kTestContext,
-        kTestLink, kTestAcceptButton, mock_on_link_clicked_.Get(),
-        kTestHistogram));
+        kTestLink, kTestAcceptButton, kTestAcceptButtonA11yLabel,
+        mock_on_link_clicked_.Get(), kTestHistogram));
 
     // Assign manual bounds so the widget has a physical size.
     // In test env, this is required to position child views
@@ -533,7 +535,7 @@ TEST_F(PopupNoticeViewTest, AccessibilitySelectionAndAnnouncements) {
   EXPECT_CALL(mock_a11y_selection_delegate(),
               NotifyAXSelection(testing::Ref(view())));
   EXPECT_CALL(mock_announce_callback(),
-              Run(std::u16string(kTestAcceptButton), false));
+              Run(std::u16string(kTestAcceptButtonA11yLabel), false));
 
   EXPECT_TRUE(view().HandleKeyPressEvent(right_event));
   EXPECT_TRUE(IsViewSelected());
