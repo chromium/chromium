@@ -5588,8 +5588,14 @@ class CheckAndroidTestAnnotations(unittest.TestCase):
 """
         mock_input = MockInputApi()
         mock_input.files = [
-            MockFile('path/OneTest.java', ['public class OneTest']),
-            MockFile('path/TwoTest.java', ['public class TwoTest']),
+            MockFile('path/OneTest.java', [
+                '@RunWith(ChromeJUnit4ClassRunner.class)',
+                'public class OneTest {'
+            ]),
+            MockFile('path/TwoTest.java', [
+                '@RunWith(BaseJUnit4ClassRunner.class)',
+                'public class TwoTest {'
+            ]),
             MockFile('path/ThreeTest.java', [
                 '@Batch(Batch.PER_CLASS)',
                 '@RunWith(BaseRobolectricTestRunner.class)',
@@ -5608,6 +5614,7 @@ class CheckAndroidTestAnnotations(unittest.TestCase):
         self.assertEqual(2, len(errors[0].items))
         self.assertIn('OneTest.java', errors[0].items[0])
         self.assertIn('TwoTest.java', errors[0].items[1])
+        self.assertEqual('error', errors[1].type)
         self.assertEqual(2, len(errors[1].items))
         self.assertIn('ThreeTest.java', errors[1].items[0])
         self.assertIn('FourTest.java', errors[1].items[1])
@@ -5636,12 +5643,12 @@ class CheckAndroidTestAnnotations(unittest.TestCase):
                 '@DoNotBatch(reason = "placeholder reason 2")',
                 'public class Four extends BaseTestB {'
             ]),
+            # Standalone UiAutomator smoke test with ChromeUiAutomatorTestRule (exempt from batch)
             MockFile('path/FiveTest.java', [
-                'import androidx.test.uiautomator.UiDevice;',
-                'public class Five extends BaseTestA {'
-            ], [
-                'import androidx.test.uiautomator.UiDevice;',
-                'public class Five extends BaseTestB {'
+                '@RunWith(AndroidJUnit4ClassRunner.class)',
+                'public class Five extends BaseTestA {',
+                '    public ChromeUiAutomatorTestRule mRule = new ChromeUiAutomatorTestRule();',
+                '}'
             ]),
             MockFile('path/SixTest.java', [
                 '@RunWith(BaseRobolectricTestRunner.class)',
@@ -5673,6 +5680,53 @@ class CheckAndroidTestAnnotations(unittest.TestCase):
         errors = PRESUBMIT.CheckAndroidTestAnnotations(mock_input,
                                                        MockOutputApi())
         self.assertEqual(0, len(errors))
+
+    def testRobolectricBatchErrors(self):
+        """Tests that Robolectric tests with @Batch or @DoNotBatch are rejected."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            # @RunWith before @Batch
+            MockFile('path/RunnerFirstTest.java', [
+                '@RunWith(BaseRobolectricTestRunner.class)',
+                '@Batch(Batch.UNIT_TESTS)',
+                'public class RunnerFirstTest {'
+            ]),
+            # @RunWith before @DoNotBatch
+            MockFile('path/RunnerFirstDoNotBatchTest.java', [
+                '@RunWith(BaseRobolectricTestRunner.class)',
+                '@DoNotBatch(reason = "placeholder")',
+                'public class RunnerFirstDoNotBatchTest {'
+            ]),
+            # ParameterizedRobolectricTestRunner with @Batch
+            MockFile('path/ParameterizedRoboTest.java', [
+                '@RunWith(ParameterizedRobolectricTestRunner.class)',
+                '@Batch(Batch.UNIT_TESTS)',
+                'public class ParameterizedRoboTest {'
+            ]),
+            # Modified Robolectric test with @Batch
+            MockFile('path/ModifiedRoboTest.java', [
+                '@RunWith(BaseRobolectricTestRunner.class)',
+                '@Batch(Batch.UNIT_TESTS)',
+                'public class ModifiedRoboTest {'
+            ], action='M'),
+            # BaseRobolectricTestRule with @Batch
+            MockFile('path/RuleTest.java', [
+                '@Batch(Batch.UNIT_TESTS)',
+                'public class RuleTest {',
+                '    @Rule public BaseRobolectricTestRule mRule = new BaseRobolectricTestRule();',
+                '}'
+            ]),
+        ]
+        errors = PRESUBMIT.CheckAndroidTestAnnotations(mock_input,
+                                                       MockOutputApi())
+        self.assertEqual(1, len(errors))
+        self.assertEqual('error', errors[0].type)
+        self.assertEqual(5, len(errors[0].items))
+        self.assertIn('RunnerFirstTest.java', errors[0].items[0])
+        self.assertIn('RunnerFirstDoNotBatchTest.java', errors[0].items[1])
+        self.assertIn('ParameterizedRoboTest.java', errors[0].items[2])
+        self.assertIn('ModifiedRoboTest.java', errors[0].items[3])
+        self.assertIn('RuleTest.java', errors[0].items[4])
 
     def testWrongRobolectricTestRunner(self):
         mock_input = MockInputApi()
