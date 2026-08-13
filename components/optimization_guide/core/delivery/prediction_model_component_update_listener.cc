@@ -119,7 +119,7 @@ void PredictionModelComponentUpdateListener::MaybeUpdateModel(
   // Load the model in the background.
   GetTaskRunner(target)->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&LoadAndVerifyModelInfoOffThread, target, install_dir),
+      base::BindOnce(&LoadAndVerifyModelOffThread, target, install_dir),
       base::BindOnce(&PredictionModelComponentUpdateListener::OnModelLoaded,
                      GetWeakPtr(), target, version));
 }

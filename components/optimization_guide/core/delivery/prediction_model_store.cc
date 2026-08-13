@@ -256,19 +256,33 @@ void PredictionModelStore::OnModelLoaded(
     proto::OptimizationTarget optimization_target,
     const ClientCacheKey& model_cache_key,
     PredictionModelLoadedCallback callback,
-    std::unique_ptr<proto::PredictionModel> model) {
+    std::optional<ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   TRACE_EVENT("optimization_guide", "PredictionModelStore::OnModelLoaded",
               "target",
               GetStringNameForOptimizationTarget(optimization_target));
 
-  if (!model) {
+  if (!model_info) {
     RemoveModel(optimization_target, model_cache_key,
                 PredictionModelStoreModelRemovalReason::kModelLoadFailed);
     std::move(callback).Run(nullptr);
     return;
   }
+  auto model = std::make_unique<proto::PredictionModel>();
+  model->mutable_model_info()->set_optimization_target(optimization_target);
+  model->mutable_model_info()->set_version(model_info->version);
+  if (model_info->model_metadata) {
+    *model->mutable_model_info()->mutable_model_metadata() =
+        *model_info->model_metadata;
+  }
+  for (const auto& additional_file : model_info->additional_files) {
+    model->mutable_model_info()->add_additional_files()->set_file_path(
+        FilePathToString(additional_file));
+  }
+  model->mutable_model()->set_download_url(
+      FilePathToString(model_info->model_file_path));
+
   std::move(callback).Run(std::move(model));
 }
 
