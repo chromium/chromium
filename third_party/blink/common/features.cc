@@ -1887,9 +1887,6 @@ BASE_FEATURE(kForceProduceCompileHints, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLocalCompileHints, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Reduce the amount of information in the default 'referer' header for
 // cross-origin requests.
 BASE_FEATURE(kReducedReferrerGranularity, base::FEATURE_ENABLED_BY_DEFAULT);

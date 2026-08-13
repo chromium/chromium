@@ -1462,12 +1462,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceProduceCompileHints);
 // compiling those functions when the same script is loaded again.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLocalCompileHints);
 
-// Whether Sec-CH-UA headers on subresource fetches that contain an empty
-// string should be quoted (`""`) as they are for navigation fetches. See
-// https://crbug.com/1416925.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kQuoteEmptySecChUaStringHeadersConsistently);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

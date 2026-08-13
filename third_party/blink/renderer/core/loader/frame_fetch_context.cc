@@ -148,16 +148,7 @@ namespace {
 // structured headers as described in
 // https://www.rfc-editor.org/rfc/rfc8941.html.
 const AtomicString SerializeStringHeader(const std::string& str) {
-  std::string output;
-
-  // See https://crbug.com/1416925.
-  if (str.empty() &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kQuoteEmptySecChUaStringHeadersConsistently)) {
-    return AtomicString(output.c_str());
-  }
-
-  output =
+  std::string output =
       net::structured_headers::SerializeItem(net::structured_headers::Item(str))
           .value_or(std::string());
 
