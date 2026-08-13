@@ -6679,7 +6679,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TopToolbar.AllowCaptureReason"
-    enum="TopToolbarAllowCaptureReason" expires_after="2025-12-21">
+    enum="TopToolbarAllowCaptureReason" expires_after="2027-08-13">
   <owner>skym@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -6688,7 +6688,10 @@ chromium-metrics-reviews@google.com.
     the capture was allowed. Note that there there's an assert that calls into
     #isDirty() from #getBitmap(), which can cause these to be double counted. If
     Canary starts running assert code, this will cause this metric to double in
-    report volume. Was expired from 2024-01 to 2024-10.
+    report volume.
+
+    Warning: this histogram was expired from 2024-01 to 2024-10 and from
+    2025-12-21 to 2026-08-13; data may be missing.
   </summary>
 </histogram>
 
@@ -6740,14 +6743,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TopToolbar.SnapshotDifference"
-    enum="ToolbarSnapshotDifference" expires_after="2025-12-21">
+    enum="ToolbarSnapshotDifference" expires_after="2027-08-13">
   <owner>skym@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
     When the allow reason for a bitmap capture was that the snapshots were
     different, then this histogram is recorded with the reason that the
     snapshots were different. Often there may be multiple differences but one is
-    arbitrarily and consistently picked. Was expired from 2024-01 to 2024-10.
+    arbitrarily and consistently picked.
+
+    Warning: this histogram was expired from 2024-01 to 2024-10 and from
+    2025-12-21 to 2026-08-13; data may be missing.
   </summary>
 </histogram>
 
