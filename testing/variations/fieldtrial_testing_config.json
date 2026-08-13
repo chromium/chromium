@@ -18771,7 +18771,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AiModePageActionOptimization"
+                        "AiModePageActionOptimization",
+                        "LensOverlayHomeworkPageActionFocusOptimization"
                     ]
                 }
             ]

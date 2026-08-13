@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/buildflags.h"
 #include "components/lens/lens_features.h"
@@ -129,8 +130,19 @@ bool LensOverlayHomeworkPageActionController::ShouldShow() {
     return false;
   }
 
-  const LocationBar* location_bar =
-      lens_overlay_entry_point_controller->location_bar();
+  const LocationBar* location_bar = nullptr;
+  // Legacy lookup path; only still around for performance experiment reasons.
+  if (!base::FeatureList::IsEnabled(
+          features::kLensOverlayHomeworkPageActionFocusOptimization)) {
+    location_bar = static_cast<LocationBarView*>(
+        BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
+            ->GetView(kLocationBarElementId));
+  }
+
+  if (!location_bar) {
+    location_bar = lens_overlay_entry_point_controller->location_bar();
+  }
+
   if (!location_bar) {
     return false;
   }

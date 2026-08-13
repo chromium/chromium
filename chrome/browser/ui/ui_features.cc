@@ -317,6 +317,9 @@ BASE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection,
 BASE_FEATURE(kEnableManagementPromotionBanner,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayHomeworkPageActionFocusOptimization,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPageActionAnchoredMessageEasyDismiss,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
