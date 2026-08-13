@@ -7,108 +7,7 @@ This script enforces structural integrity and formatting for the skill creator.
 """
 
 import os
-import re
-import urllib.parse
-
-# Regex to find relative links: [text](link)
-# Handles standard links, angle brackets <link>, and titles "title"
-MARKDOWN_LINK_RE = re.compile(
-    r"""\[([^\]]+)\]\(\s*"""
-    r"""(?:\<((?!https?://|mailto:)[^>]+)\>|((?!https?://|mailto:)[^\s)]+))"""
-    r"""\s*(?:\s+["'].*?["'])?\s*\)"""
-)
-
-
-def CheckMarkdownLinks(input_api, output_api):
-    results = []
-    skill_dir = input_api.PresubmitLocalPath()
-    repo_root = input_api.change.RepositoryRoot()
-
-    def FileFilter(affected_file):
-        return input_api.FilterSourceFile(
-            affected_file,
-            files_to_check=(r'.*\.md$',),
-        )
-
-    # Precompute affected files map for O(1) lookups
-    affected_md_files = {
-        f.AbsoluteLocalPath(): f
-        for f in input_api.AffectedSourceFiles(FileFilter)
-    }
-
-    # We check all markdown files in the directory
-    all_md_files = []
-    for root, dirs, files in os.walk(skill_dir):
-        # Prune unwanted directories in-place
-        dirs[:] = [d for d in dirs if d not in ('.temp', '__pycache__')]
-        for file in files:
-            if file.endswith('.md'):
-                all_md_files.append(os.path.join(root, file))
-
-    for md_file in all_md_files:
-        affected_file = affected_md_files.get(md_file)
-        is_modified = affected_file is not None
-        content = None
-        if is_modified:
-            content = input_api.ReadFile(affected_file)
-        else:
-            try:
-                with open(md_file, 'r', encoding='utf-8') as f:
-                    content = f.read()
-            except (OSError, ValueError):
-                continue
-
-        if not content:
-            continue
-
-        for line_num, line in enumerate(content.splitlines(), start=1):
-            for match in MARKDOWN_LINK_RE.finditer(line):
-                link_text = match.group(1)
-                link_target = match.group(2) or match.group(3)
-
-                # Parse link to strip queries/anchors and check scheme
-                parsed = urllib.parse.urlparse(link_target)
-                if parsed.scheme:
-                    # External link, skip
-                    continue
-
-                if link_target.startswith('//'):
-                    # Reconstruct path relative to repo root (netloc + path)
-                    repo_relative_path = parsed.netloc + parsed.path
-                    unquoted_path = urllib.parse.unquote(repo_relative_path)
-                    target_path = os.path.normpath(
-                        os.path.join(repo_root, unquoted_path)
-                    )
-                elif parsed.path:
-                    unquoted_path = urllib.parse.unquote(parsed.path)
-                    if unquoted_path.startswith('/'):
-                        # Relative to repo root
-                        target_path = os.path.normpath(
-                            os.path.join(repo_root, unquoted_path[1:])
-                        )
-                    else:
-                        # Relative to current file
-                        target_path = os.path.normpath(
-                            os.path.join(
-                                os.path.dirname(md_file), unquoted_path
-                            )
-                        )
-                else:
-                    # Internal anchor link (e.g., #foo), skip
-                    continue
-
-                if not os.path.exists(target_path):
-                    msg = (
-                        f"Broken link in "
-                        f"{os.path.relpath(md_file, skill_dir)}:{line_num}: "
-                        f"[{link_text}]({link_target}) -> "
-                        f"Target does not exist: {target_path}"
-                    )
-                    if is_modified:
-                        results.append(output_api.PresubmitError(msg))
-                    else:
-                        results.append(output_api.PresubmitPromptWarning(msg))
-    return results
+import sys
 
 
 def CheckTemplateSyntax(input_api, output_api):
@@ -157,22 +56,36 @@ def CheckTemplateSyntax(input_api, output_api):
                 except Exception as e:
                     results.append(
                         output_api.PresubmitError(
-                            f"Template syntax error in "
-                            f"{os.path.relpath(template_path, skill_dir)}: {e}"
+                            f'Template syntax error in'
+                            f' {os.path.relpath(template_path, skill_dir)}: {e}'
                         )
                     )
     return results
 
 
+def _CommonChecks(input_api, output_api):
+    repo_root = input_api.change.RepositoryRoot()
+    sys_path_added = False
+    if repo_root not in sys.path:
+        sys.path.insert(0, repo_root)
+        sys_path_added = True
+    try:
+        # pylint: disable=import-outside-toplevel
+        from agents.presubmit_support import CheckSkillPresubmit
+
+        # pylint: enable=import-outside-toplevel
+        results = []
+        results.extend(CheckSkillPresubmit(input_api, output_api))
+        results.extend(CheckTemplateSyntax(input_api, output_api))
+        return results
+    finally:
+        if sys_path_added:
+            sys.path.remove(repo_root)
+
+
 def CheckChangeOnUpload(input_api, output_api):
-    results = []
-    results.extend(CheckMarkdownLinks(input_api, output_api))
-    results.extend(CheckTemplateSyntax(input_api, output_api))
-    return results
+    return _CommonChecks(input_api, output_api)
 
 
 def CheckChangeOnCommit(input_api, output_api):
-    results = []
-    results.extend(CheckMarkdownLinks(input_api, output_api))
-    results.extend(CheckTemplateSyntax(input_api, output_api))
-    return results
+    return _CommonChecks(input_api, output_api)
