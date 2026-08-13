@@ -31,8 +31,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/search/ntp_user_data_types.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
@@ -41,7 +39,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -56,9 +53,7 @@
 #include "components/themes/ntp_custom_background_service_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_web_contents_factory.h"
-#include "content/public/test/web_ui_browsertest_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -319,13 +314,6 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     EXPECT_EQ(handler_.get(), ntp_background_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
 
-    auto browser_window = std::make_unique<TestBrowserWindow>();
-    BrowserWindowCreateParams browser_params(profile_.get(), true);
-    browser_params.type = BrowserWindowInterface::Type::TYPE_NORMAL;
-    browser_params.window = browser_window.release();
-    browser_ =
-        DeprecatedCreateOwnedBrowserWindowForTesting(std::move(browser_params));
-
     application_locale_storage_->Set("foo");
 
     scoped_feature_list_.Reset();
@@ -333,8 +321,6 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
-    browser_->tab_strip_model()->CloseAllTabs();
-    browser_.reset();
     test_url_loader_factory_.ClearResponses();
   }
 
@@ -405,7 +391,6 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     return *ntp_background_service_observer_;
   }
   MockThemeService& mock_theme_service() { return *mock_theme_service_; }
-  Browser& browser() { return *browser_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
   base::UserActionTester& user_action_tester() { return user_action_tester_; }
 
@@ -423,7 +408,6 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   testing::NiceMock<MockPage> mock_page_;
   raw_ptr<MockThemeService> mock_theme_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<Browser> browser_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
   base::MockRepeatingCallback<void(const GURL& gurl)> mock_open_url_callback_;
