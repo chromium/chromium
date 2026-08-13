@@ -414,11 +414,11 @@ void DictValue::clear() {
 }
 
 DictValue::iterator DictValue::erase(iterator pos) {
-  return iterator(storage_.erase(pos.GetUnderlyingIteratorDoNotUse()));
+  return iterator(storage_.erase(pos.dict_iter_));
 }
 
 DictValue::iterator DictValue::erase(const_iterator pos) {
-  return iterator(storage_.erase(pos.GetUnderlyingIteratorDoNotUse()));
+  return iterator(storage_.erase(pos.dict_iter_));
 }
 
 DictValue DictValue::Clone() const {

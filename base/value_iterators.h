@@ -10,11 +10,11 @@
 #include <utility>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 
 namespace base {
 
+class DictValue;
 class Value;
 
 namespace detail {
@@ -61,16 +61,9 @@ class BASE_EXPORT dict_iterator {
   BASE_EXPORT friend bool operator==(const dict_iterator& lhs,
                                      const dict_iterator& rhs);
 
-  // Currently, there is no easy way to friend DictValue. Once dictionary
-  // storage is updated to not require a proxy iterator, the implementation can
-  // be folded into //base/values.h and a standard friend declaration can be
-  // used instead.
-  const DictStorage::iterator& GetUnderlyingIteratorDoNotUse() const
-      LIFETIME_BOUND {
-    return dict_iter_;
-  }
-
  private:
+  friend DictValue;
+
   DictStorage::iterator dict_iter_;
 };
 
@@ -114,15 +107,9 @@ class BASE_EXPORT const_dict_iterator {
   BASE_EXPORT friend bool operator==(const const_dict_iterator& lhs,
                                      const const_dict_iterator& rhs);
 
-  // Currently, there is no easy way to friend DictValue. Once dictionary
-  // storage is updated to not require a proxy iterator, the implementation can
-  // be folded into //base/values.h and a standard friend declaration can be
-  // used instead.
-  const DictStorage::const_iterator& GetUnderlyingIteratorDoNotUse() {
-    return dict_iter_;
-  }
-
  private:
+  friend DictValue;
+
   DictStorage::const_iterator dict_iter_;
 };
 
