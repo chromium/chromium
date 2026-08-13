@@ -21,7 +21,6 @@ source_set("named_message_port_connector") {
 
 grit("resources") {
   source = "named_message_port_connector_resources.grd"
-  inputs = [ "named_message_port_connector.js" ]
   outputs = [
     "grit/named_message_port_connector_resources.h",
     "named_message_port_connector_resources.pak",

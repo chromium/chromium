@@ -7,28 +7,5 @@ import("//tools/grit/grit_rule.gni")
 
 grit_strings("omnibox_pedal_synonyms") {
   source = "omnibox_pedal_synonyms.grd"
-  _locales =
-      all_chrome_locales - extended_locales - pseudolocales + [ "en" ] - [
-        "af",
-        "en-US",
-        "ur",
-        "nb",
-      ]
-  if (is_android) {
-    _locales -= [ "cy" ]
-  }
-  if (is_ios) {
-    _locales -= [
-      "es-MX",
-      "pt",
-    ]
-    _locales += [
-      "es-419",
-      "pt-BR",
-    ]
-  }
-  inputs = process_file_template(
-          _locales,
-          [ "translations/omnibox_pedal_synonyms_{{source_name_part}}.xtb" ])
   outputs = [ "grit/omnibox_pedal_synonyms.h" ]
 }

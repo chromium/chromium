@@ -6,8 +6,4 @@ import("//tools/grit/grit_rule.gni")
 
 java_strings_grd("browser_ui_strings_grd") {
   grd_file = "browser_ui_strings.grd"
-  inputs = [ "site_settings.grdp" ] +
-           process_file_template(
-               xtb_locales,
-               [ "translations/browser_ui_strings_{{source_name_part}}.xtb" ])
 }

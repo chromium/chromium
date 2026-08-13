@@ -69,9 +69,6 @@ mojom("mojo_bindings") {
 
 grit_strings("strings") {
   source = "strings/slim_web_view_strings.grd"
-  inputs = process_file_template(
-          xtb_locales,
-          [ "strings/slim_web_view_strings_{{source_name_part}}.xtb" ])
   outputs = [ "grit/slim_web_view_strings.h" ]
   output_prefix = "slim_web_view_strings_"
 }

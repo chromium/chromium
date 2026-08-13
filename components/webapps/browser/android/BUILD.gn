@@ -156,9 +156,6 @@ android_resources("java_resources") {
 
 java_strings_grd("webapps_strings_grd") {
   grd_file = "android_webapps_strings.grd"
-  inputs = process_file_template(
-          xtb_locales,
-          [ "translations/android_webapps_strings_{{source_name_part}}.xtb" ])
 }
 
 source_set("unit_tests") {
