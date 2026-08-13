@@ -34,12 +34,18 @@ namespace media {
 class VideoCaptureDevice;
 }  // namespace media
 
+class SkBitmap;
+
 namespace content {
 
 class NativeScreenCapturePicker;
 
 CONTENT_EXPORT std::unique_ptr<NativeScreenCapturePicker>
 CreateNativeScreenCapturePickerMac();
+
+CONTENT_EXPORT void CaptureScreenshotFromMacNativePicker(
+    DesktopMediaID::Id session_id,
+    base::OnceCallback<void(const ::SkBitmap&)> callback);
 
 #if defined(__OBJC__)
 
@@ -52,8 +58,14 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
   using GetWindowOwnerPidCallback =
       base::RepeatingCallback<pid_t(DesktopMediaID::Id)>;
 
+  // Must be called on the UI thread.
+  static NativeScreenCapturePickerMac* GetInstance();
+
   NativeScreenCapturePickerMac();
   ~NativeScreenCapturePickerMac() override;
+
+  void CaptureScreenshot(DesktopMediaID::Id session_id,
+                         base::OnceCallback<void(const SkBitmap&)> callback);
 
   void Open(
       DesktopMediaID::Type type,
@@ -110,6 +122,10 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
 
   // Callback called by `ScreenCaptureKitDeviceMac` on creating a new stream.
   void UpdateStreamMap(DesktopMediaID::Id id, SCStream* stream);
+
+  void CaptureScreenshotInternal(
+      DesktopMediaID::Id session_id,
+      base::OnceCallback<void(const SkBitmap&)> callback);
 
   // Get the capture session or create it if it doesn't exist.
   CaptureSession& GetOrCreateCaptureSession(DesktopMediaID::Id id);

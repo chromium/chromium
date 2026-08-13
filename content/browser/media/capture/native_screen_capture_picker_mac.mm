@@ -5,13 +5,17 @@
 #include "content/browser/media/capture/native_screen_capture_picker_mac.h"
 
 #import <AppKit/AppKit.h>
+#import <CoreVideo/CoreVideo.h>
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
+#include <atomic>
 #include <unordered_map>
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/features.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -20,10 +24,13 @@
 #include "content/browser/media/capture/desktop_capture_util_mac.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
+#include "skia/ext/skia_utils_mac.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/mac/window_list_utils.h"
 
 // Enables the allowsChangingSelectedContent property on the native macOS
@@ -166,7 +173,49 @@ pid_t GetWindowOwnerPid(DesktopMediaID::Id id) {
   }
   return webrtc::GetWindowOwnerPid(id);
 }
+
+// Returns the backing scale factor of the NSScreen that contains the majority
+// of the given `rect` (specified in ScreenCaptureKit's logical coordinates).
+CGFloat GetBackingScaleFactorForRect(CGRect rect) {
+  NSRect flipped_rect;
+  flipped_rect.origin.x = rect.origin.x;
+  flipped_rect.size = rect.size;
+
+  // Convert ScreenCaptureKit coordinates (y=0 at the top-left of primary
+  // screen) to AppKit coordinates (y=0 at the bottom-left of primary screen).
+  NSArray<NSScreen*>* screens = [NSScreen screens];
+  if (screens.count == 0) {
+    return 1.0;
+  }
+
+  CGFloat primary_height = screens[0].frame.size.height;
+  flipped_rect.origin.y = primary_height - (rect.origin.y + rect.size.height);
+
+  // We find the screen with the largest overlapping intersection area with our
+  // rect. We do not use a simple contains check because the window might span
+  // multiple monitors or be partially offscreen.
+  NSScreen* best_screen = screens[0];
+  CGFloat max_area = 0;
+  for (NSScreen* screen in screens) {
+    const NSRect intersection = NSIntersectionRect(screen.frame, flipped_rect);
+    const CGFloat area = intersection.size.width * intersection.size.height;
+    if (area > max_area) {
+      max_area = area;
+      best_screen = screen;
+    }
+  }
+  return best_screen.backingScaleFactor;
+}
+
+API_AVAILABLE(macos(14.0))
+std::atomic<NativeScreenCapturePickerMac*> g_instance{nullptr};
 }  // namespace
+
+// static
+NativeScreenCapturePickerMac* NativeScreenCapturePickerMac::GetInstance() {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  return g_instance.load();
+}
 
 void API_AVAILABLE(macos(14.0))
     NativeScreenCapturePickerMac::SetGetWindowOwnerPidForTesting(  // IN-TEST
@@ -178,9 +227,16 @@ NativeScreenCapturePickerMac::CaptureSession::CaptureSession() = default;
 NativeScreenCapturePickerMac::CaptureSession::~CaptureSession() = default;
 
 NativeScreenCapturePickerMac::NativeScreenCapturePickerMac()
-    : device_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+    : device_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!g_instance.load())
+      << "Only one instance of NativeScreenCapturePickerMac is allowed.";
+  g_instance.store(this);
+}
 
-NativeScreenCapturePickerMac::~NativeScreenCapturePickerMac() = default;
+NativeScreenCapturePickerMac::~NativeScreenCapturePickerMac() {
+  g_instance.store(nullptr);
+}
 
 void NativeScreenCapturePickerMac::Open(
     DesktopMediaID::Type type,
@@ -526,6 +582,105 @@ NativeScreenCapturePickerMac::GetOrCreateCaptureSession(DesktopMediaID::Id id) {
 base::WeakPtr<NativeScreenCapturePicker>
 NativeScreenCapturePickerMac::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void NativeScreenCapturePickerMac::CaptureScreenshot(
+    DesktopMediaID::Id session_id,
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  CHECK(device_task_runner_->RunsTasksInCurrentSequence());
+  // The system picker requires a short delay to fully close and fade out,
+  // otherwise the picker UI itself is captured in the screenshot.
+  device_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&NativeScreenCapturePickerMac::CaptureScreenshotInternal,
+                     weak_ptr_factory_.GetWeakPtr(), session_id,
+                     std::move(callback)),
+      base::Milliseconds(250));
+}
+
+void NativeScreenCapturePickerMac::CaptureScreenshotInternal(
+    DesktopMediaID::Id session_id,
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  CHECK(device_task_runner_->RunsTasksInCurrentSequence());
+
+  auto it = sessions_.find(session_id);
+  // If the session was closed or does not contain a valid capture filter
+  // (e.g., if the user cancelled the picker or the window became invalid),
+  // we cannot take a screenshot. Return a null bitmap.
+  if (it == sessions_.end() || !it->second->filter) {
+    std::move(callback).Run(SkBitmap());
+    return;
+  }
+
+  SCContentFilter* filter = it->second->filter;
+  SCStreamConfiguration* config = [[SCStreamConfiguration alloc] init];
+
+  config.ignoreShadowsSingleWindow = YES;
+  config.backgroundColor = CGColorGetConstantColor(kCGColorClear);
+  config.scalesToFit = YES;
+  // Request 32BGRA format to match SkBitmap's expected color type.
+  config.pixelFormat = kCVPixelFormatType_32BGRA;
+  config.showsCursor = NO;
+
+  const CGRect rect = filter.contentRect;
+
+  // ScreenCaptureKit's output dimensions (config.width/height) are specified in
+  // physical pixels, while filter.contentRect is in logical points. We must
+  // explicitly scale the dimensions by the backing scale factor to capture the
+  // window at its native Retina resolution (otherwise it will be downscaled and
+  // look blurry).
+  //
+  // If the content rect is empty (e.g., if the window is invalid or closed), we
+  // fall back to a default size (1920x1080) to prevent passing 0 dimensions to
+  // ScreenCaptureKit, which would cause a crash.
+  if (!CGRectIsEmpty(rect)) {
+    const CGFloat scale = GetBackingScaleFactorForRect(rect);
+    config.width = rect.size.width * scale;
+    config.height = rect.size.height * scale;
+  } else {
+    config.width = 1920;
+    config.height = 1080;
+  }
+
+  [SCScreenshotManager
+      captureImageWithFilter:filter
+               configuration:config
+           completionHandler:base::CallbackToBlock(base::BindOnce(
+                                 [](base::OnceCallback<void(const SkBitmap&)>
+                                        cb,
+                                    CGImageRef image, NSError* error) {
+                                   if (error || !image) {
+                                     std::move(cb).Run(SkBitmap());
+                                     return;
+                                   }
+                                   std::move(cb).Run(
+                                       skia::CGImageToSkBitmap(image));
+                                 },
+                                 std::move(callback)))];
+}
+
+void CaptureScreenshotFromMacNativePicker(
+    DesktopMediaID::Id session_id,
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  if (@available(macOS 14.0, *)) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](DesktopMediaID::Id session_id,
+               base::OnceCallback<void(const SkBitmap&)> callback) {
+              if (auto* picker = NativeScreenCapturePickerMac::GetInstance()) {
+                picker->CaptureScreenshot(session_id, std::move(callback));
+              } else {
+                std::move(callback).Run(SkBitmap());
+              }
+            },
+            session_id,
+            base::BindPostTask(
+                base::SingleThreadTaskRunner::GetCurrentDefault(),
+                std::move(callback))));
+    return;
+  }
+  std::move(callback).Run(SkBitmap());
 }
 
 std::unique_ptr<NativeScreenCapturePicker>

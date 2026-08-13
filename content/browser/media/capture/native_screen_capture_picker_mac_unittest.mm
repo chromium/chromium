@@ -24,6 +24,7 @@
 #include "media/capture/video/video_capture_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 using Source = webrtc::DesktopCapturer::Source;
 
@@ -127,11 +128,56 @@ API_AVAILABLE(macos(14.0))
 
 @interface FakeSCContentFilter : NSObject
 @property(strong) NSArray* includedWindows;
+@property(assign, readonly) CGRect contentRect;
 @end
 
 @implementation FakeSCContentFilter
 @synthesize includedWindows = _includedWindows;
+- (CGRect)contentRect {
+  return CGRectMake(0, 0, 100, 100);
+}
 @end
+
+API_AVAILABLE(macos(14.0))
+static CGImageRef g_fake_captured_image = nil;
+API_AVAILABLE(macos(14.0))
+static NSError* g_fake_capture_error = nil;
+
+API_AVAILABLE(macos(14.0))
+@interface FakeSCScreenshotManager : NSObject
++ (void)captureImageWithFilter:(SCContentFilter*)contentFilter
+                 configuration:(SCStreamConfiguration*)config
+             completionHandler:
+                 (void (^)(CGImageRef _Nullable sampleBuffer,
+                           NSError* _Nullable error))completionHandler;
+@end
+
+@implementation FakeSCScreenshotManager
++ (void)captureImageWithFilter:(SCContentFilter*)contentFilter
+                 configuration:(SCStreamConfiguration*)config
+             completionHandler:
+                 (void (^)(CGImageRef _Nullable sampleBuffer,
+                           NSError* _Nullable error))completionHandler {
+  completionHandler(g_fake_captured_image, g_fake_capture_error);
+}
+@end
+
+static CGImageRef CreateTestCGImage(int width, int height) {
+  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+  CGContextRef context = CGBitmapContextCreate(
+      nullptr, width, height, 8, width * 4, colorSpace,
+      static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedLast) |
+          kCGBitmapByteOrder32Big);
+  CGColorSpaceRelease(colorSpace);
+  if (!context) {
+    return nullptr;
+  }
+  CGContextSetRGBFillColor(context, 1.0, 0.0, 0.0, 1.0);
+  CGContextFillRect(context, CGRectMake(0, 0, width, height));
+  CGImageRef image = CGBitmapContextCreateImage(context);
+  CGContextRelease(context);
+  return image;
+}
 
 namespace content {
 
@@ -153,6 +199,14 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
               @selector(runningApplicationWithProcessIdentifier:));
       NativeScreenCapturePickerMac::SetGetWindowOwnerPidForTesting(
           base::BindRepeating(&GetWindowOwnerPidFake));
+      g_fake_captured_image = nil;
+      g_fake_capture_error = nil;
+      SEL capture_sel =
+          @selector(captureImageWithFilter:configuration:completionHandler:);
+      screenshot_swizzler_ =
+          std::make_unique<base::apple::ScopedObjCClassSwizzler>(
+              [SCScreenshotManager class], [FakeSCScreenshotManager class],
+              capture_sel);
       picker_ = CreateNativeScreenCapturePickerMac();
     } else {
       GTEST_SKIP() << "Skipping tests on macOS < 14.0";
@@ -163,10 +217,16 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
     picker_.reset();
     picker_swizzler_.reset();
     ns_running_app_swizzler_.reset();
+    screenshot_swizzler_.reset();
     if (@available(macOS 14.0, *)) {
       g_fake_picker = nil;
       NativeScreenCapturePickerMac::SetGetWindowOwnerPidForTesting(
           base::NullCallback());
+      if (g_fake_captured_image) {
+        CGImageRelease(g_fake_captured_image);
+        g_fake_captured_image = nil;
+      }
+      g_fake_capture_error = nil;
     }
   }
 
@@ -242,6 +302,7 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler> picker_swizzler_;
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
       ns_running_app_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> screenshot_swizzler_;
 };
 
 TEST_F(NativeScreenCapturePickerMacTest, OpenCallsSystemPickerForScreen) {
@@ -421,6 +482,73 @@ TEST_F(NativeScreenCapturePickerMacTest, SequentialOpenCalls) {
     OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW, kWindow2);
     ASSERT_NO_FATAL_FAILURE(VerifyApplicationAudioCaptureId(1, kBundle1));
     ASSERT_NO_FATAL_FAILURE(VerifyApplicationAudioCaptureId(2, kBundle2));
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest, CaptureScreenshotSuccess) {
+  if (@available(macOS 14.0, *)) {
+    // 1. Create a fake session.
+    const CGWindowID kWindowId = 101;
+    DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW, kWindowId);
+
+    // 2. Set up fake CGImage.
+    g_fake_captured_image = CreateTestCGImage(100, 100);
+    ASSERT_TRUE(g_fake_captured_image != nil);
+
+    // 3. Trigger CaptureScreenshot.
+    base::test::TestFuture<const SkBitmap&> future;
+    NativeScreenCapturePickerMac::GetInstance()->CaptureScreenshot(
+        session_id, future.GetCallback());
+
+    // 4. Fast forward 250ms (delayed capture trigger).
+    task_environment_.FastForwardBy(base::Milliseconds(250));
+
+    // 5. Verify screenshot was captured and has correct size.
+    const SkBitmap& bitmap = future.Get();
+    EXPECT_FALSE(bitmap.drawsNothing());
+    EXPECT_EQ(bitmap.width(), 100);
+    EXPECT_EQ(bitmap.height(), 100);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest, CaptureScreenshotError) {
+  if (@available(macOS 14.0, *)) {
+    // 1. Create a fake session.
+    const CGWindowID kWindowId = 101;
+    DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW, kWindowId);
+
+    // 2. Set up error.
+    g_fake_captured_image = nil;
+    g_fake_capture_error = [NSError errorWithDomain:@"TestDomain"
+                                               code:-1
+                                           userInfo:nil];
+
+    // 3. Trigger CaptureScreenshot.
+    base::test::TestFuture<const SkBitmap&> future;
+    NativeScreenCapturePickerMac::GetInstance()->CaptureScreenshot(
+        session_id, future.GetCallback());
+
+    // 4. Fast forward 250ms.
+    task_environment_.FastForwardBy(base::Milliseconds(250));
+
+    // 5. Verify it returns an empty bitmap.
+    const SkBitmap& bitmap = future.Get();
+    EXPECT_TRUE(bitmap.drawsNothing());
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest, CaptureScreenshotInvalidSession) {
+  if (@available(macOS 14.0, *)) {
+    // Trigger CaptureScreenshot on a non-existent session.
+    base::test::TestFuture<const SkBitmap&> future;
+    NativeScreenCapturePickerMac::GetInstance()->CaptureScreenshot(
+        999, future.GetCallback());
+
+    // Should return immediately with empty bitmap (no task delay).
+    const SkBitmap& bitmap = future.Get();
+    EXPECT_TRUE(bitmap.drawsNothing());
   }
 }
 
