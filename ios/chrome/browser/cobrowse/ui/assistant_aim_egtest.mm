@@ -8,6 +8,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_constants.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
@@ -258,6 +259,49 @@ id<GREYMatcher> CloseButton() {
   id<GREYMatcher> composeboxMatcher =
       grey_accessibilityID(kComposeboxAccessibilityIdentifier);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:composeboxMatcher];
+}
+
+// Tests that allowing the undo snackbar to dismiss naturally does not crash the
+// app. This is a regression test for crbug.com/539891492.
+- (void)testCloseAssistantAndLetUndoSnackbarDismissDoesNotCrash {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+  OpenCoBrowse(_defaultURL);
+
+  // Wait for the assistant to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  // Tap the close button.
+  [[EarlGrey selectElementWithMatcher:CloseButton()] performAction:grey_tap()];
+
+  // Verify the assistant is dismissed.
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
+
+  NSString* snackbarTitle =
+      l10n_util::GetNSString(IDS_IOS_AIM_CLOSE_SNACKBAR_TITLE);
+  id<GREYMatcher> snackbarMatcher =
+      grey_allOf(chrome_test_util::SnackbarViewMatcher(),
+                 grey_descendant(grey_accessibilityLabel(snackbarTitle)), nil);
+  // Verify the undo snackbar is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:snackbarMatcher];
+
+  // Trigger a full dismissal of all snackbars by showing a new snackbar.
+  // We use the "Added to Bookmarks" snackbar to overwrite the current one.
+  // Without the fix, dismissing the Undo snackbar triggers `closeAssistant`,
+  // which transitively calls `dismissAllSnackbars` again, causing an infinite
+  // recursion stack overflow.
+  [ChromeEarlGreyUI openToolsMenu];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          @"kToolsMenuAddToBookmarks")]
+      performAction:grey_tap()];
+
+  // The snackbar dismissal is animated, so the completion handler (and crash)
+  // occurs slightly after the UI action. Wait a moment to ensure the
+  // crash happens during the test execution, causing the test to fail.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
 }
 
 // Tests that opening an external URL from the launcher while the app is in the

@@ -450,8 +450,12 @@ class AssistantAIMUIStateProvider
   };
   message.completionHandler = ^(BOOL success) {
     if (weakSelf.undoSnackbarDismissCompletion) {
-      weakSelf.undoSnackbarDismissCompletion();
+      // Capture the block locally and set the property to nil before executing
+      // it. This prevents the completion block from being recursively called or
+      // executing after teardown if another snackbar forces dismissal.
+      ProceduralBlock completion = weakSelf.undoSnackbarDismissCompletion;
       weakSelf.undoSnackbarDismissCompletion = nil;
+      completion();
     }
   };
 
