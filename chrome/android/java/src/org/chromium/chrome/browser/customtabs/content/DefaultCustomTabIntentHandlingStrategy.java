@@ -69,10 +69,9 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
         CustomTabAuthUrlHeuristics.setFirstCctPageLoadForMetrics(tab);
 
+        WebContents webContents = tab.getWebContents();
         Long twaLaunchToken = null;
-        if (intentDataProvider.isTrustedWebActivity()) {
-            WebContents webContents = tab.getWebContents();
-            assumeNonNull(webContents);
+        if (intentDataProvider.isTrustedWebActivity() && webContents != null) {
             WebAppLaunchHandler launchHandler =
                     WebAppLaunchHandler.create(
                             mVerifier,
@@ -111,9 +110,14 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         String speculatedUrl = mTabProvider.getSpeculatedUrl();
 
         boolean useSpeculation = TextUtils.equals(speculatedUrl, url);
-        boolean hasCommitted = !assumeNonNull(tab.getWebContents()).getLastCommittedUrl().isEmpty();
+        // The WebContents of a speculative hidden tab can be discarded/destroyed under
+        // memory pressure before the TWA launch intent is processed.
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return;
+
+        boolean hasCommitted = !webContents.getLastCommittedUrl().isEmpty();
         mCustomTabObserver.trackNextPageLoadForHiddenTab(
-                tab.getWebContents(),
+                webContents,
                 useSpeculation,
                 hasCommitted,
                 assumeNonNull(intentDataProvider.getIntent()));
@@ -152,11 +156,9 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
     @Override
     public void handleNewIntent(BrowserServicesIntentDataProvider intentDataProvider) {
-        if (intentDataProvider.isTrustedWebActivity()) {
-            Tab tab = mTabProvider.getTab();
-            assumeNonNull(tab);
-            WebContents webContents = tab.getWebContents();
-            assumeNonNull(webContents);
+        Tab tab = mTabProvider.getTab();
+        WebContents webContents = tab != null ? tab.getWebContents() : null;
+        if (intentDataProvider.isTrustedWebActivity() && webContents != null) {
             WebAppLaunchHandler launchHandler =
                     WebAppLaunchHandler.create(
                             mVerifier,

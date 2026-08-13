@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/android/webapps/twa_launch_navigation_handle_user_data.h"
 #include "chrome/browser/android/webapps/twa_launch_queue_tab_helper.h"
@@ -23,6 +24,8 @@ static void JNI_WebAppLaunchHandler_PrepareForLaunch(
     const std::vector<bool>& can_write,
     const std::string& scope_url,
     bool has_speculative_navigation) {
+  // The caller must ensure web_contents is not null.
+  CHECK(web_contents);
   // Validate URLs at the JNI boundary. If they are invalid (e.g. from a
   // malformed external intent), we ignore the launch gracefully rather than
   // crashing downstream via CHECKs.
@@ -55,6 +58,8 @@ static void JNI_WebAppLaunchHandler_OnLaunchVerified(
     content::WebContents* web_contents,
     int64_t launch_token,
     bool success) {
+  // The caller must ensure web_contents is not null.
+  CHECK(web_contents);
   auto* helper =
       TwaLaunchQueueTabHelper::GetOrCreateForWebContents(web_contents);
   helper->OnLaunchVerified(launch_token, success);
@@ -68,6 +73,8 @@ static void JNI_WebAppLaunchHandler_EnqueueNonNavigating(
     const std::vector<std::string>& file_uris,
     const std::vector<bool>& can_write,
     const std::string& scope_url) {
+  // The caller must ensure web_contents is not null.
+  CHECK(web_contents);
   // Validate URLs at the JNI boundary. If they are invalid (e.g. from a
   // malformed external intent), we ignore the launch gracefully rather than
   // crashing downstream via CHECKs.
