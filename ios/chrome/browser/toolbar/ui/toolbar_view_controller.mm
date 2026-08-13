@@ -833,6 +833,113 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   _collapsedToolbarButton.hidden = progress > kFullscreenCollapsedThreshold;
 }
 
+#pragma mark - Fullscreen private helpers
+
+// Returns the height of the promo banner for `progress`.
+- (CGFloat)bannerPromoBackgroundHeightForFullscreenProgress:(CGFloat)progress {
+  if (!_bannerPromoVisible) {
+    return 0;
+  }
+
+  if (![self isBannerBelowToolbar]) {
+    return kToolbarPromoBannerHeight + self.view.safeAreaInsets.top;
+  }
+
+  return kToolbarPromoBannerHeight * progress;
+}
+
+// Updates the vertical position of the elements for fullscreen `progress`.
+- (void)updateVerticalPositionForFullscreenProgress:(CGFloat)progress {
+  if (_topPosition) {
+    if (IsGlassToolbarEnabled()) {
+      _glassBackgroundBottomConstraint.constant =
+          -[self glassBackgroundBottomPaddingForFullscreenProgress:progress];
+    } else {
+      _locationBarBottomPaddingConstraint.constant =
+          -[self locationBarBottomPaddingForFullscreenProgress:progress];
+    }
+  } else {
+    if (IsGlassToolbarEnabled()) {
+      _glassBackgroundTopConstraint.constant =
+          [self glassBackgroundTopPaddingForFullscreenProgress:progress];
+    } else {
+      _locationBarTopConstraint.constant =
+          [self locationBarTopPaddingForFullscreenProgress:progress];
+    }
+  }
+}
+
+// Returns the location bar bottom padding for `progress`.
+- (CGFloat)locationBarBottomPaddingForFullscreenProgress:(CGFloat)progress {
+  CHECK(!IsGlassToolbarEnabled());
+  CGFloat locationBarBottomPadding =
+      ShouldHaveCompactLocationBar(self.traitCollection)
+          ? kToolbarPadding
+          : kToolbarCompactLocationBarPadding;
+  if ([self isBannerBelowToolbar]) {
+    // When the banner is below the toolbar, always use its height for a
+    // progress of 1 as progress is used below.
+    locationBarBottomPadding +=
+        [self bannerPromoBackgroundHeightForFullscreenProgress:1];
+  }
+  return progress * locationBarBottomPadding +
+         (1 - progress) * kToolbarPaddingFullscreen;
+}
+
+// Returns the location bar top padding for the given Fullscreen
+// `progress`.
+- (CGFloat)locationBarTopPaddingForFullscreenProgress:(CGFloat)progress {
+  CHECK(!IsGlassToolbarEnabled());
+  CGFloat locationBarTopPadding =
+      ShouldHaveCompactLocationBar(self.traitCollection)
+          ? kToolbarPadding
+          : kToolbarCompactLocationBarPadding;
+  return progress * locationBarTopPadding +
+         (1 - progress) * kToolbarPaddingFullscreen;
+}
+
+// Returns the glass background bottom padding for `progress`.
+- (CGFloat)glassBackgroundBottomPaddingForFullscreenProgress:(CGFloat)progress {
+  CHECK(IsGlassToolbarEnabled());
+  CGFloat glassBackgroundBottomPadding = kGlassToolbarMargin;
+  if ([self isBannerBelowToolbar]) {
+    // When the banner is below the toolbar, always use its height for a
+    // progress of 1 as progress is used below.
+    glassBackgroundBottomPadding +=
+        [self bannerPromoBackgroundHeightForFullscreenProgress:1];
+  }
+  return progress * glassBackgroundBottomPadding +
+         (1 - progress) * kGlassFullscreenMargin;
+}
+
+// Returns the glass background top padding for `progress`.
+- (CGFloat)glassBackgroundTopPaddingForFullscreenProgress:(CGFloat)progress {
+  CHECK(IsGlassToolbarEnabled());
+  return progress * kGlassToolbarMargin +
+         (1 - progress) * kGlassFullscreenMargin;
+}
+
+// Updates all the `buttons` according to the fullscreen `progress`.
+- (void)updateButtons:(NSArray<UIView*>*)buttons
+    forFullscreenProgress:(CGFloat)progress {
+  for (UIView* button in buttons) {
+    if (button.hidden) {
+      button.alpha = 0;
+      button.transform = CGAffineTransformMakeScale(0.01, 0.01);
+      continue;
+    }
+    if (progress > kFullscreenProgressThreshold) {
+      button.alpha = 1;
+      button.transform = CGAffineTransformIdentity;
+    } else {
+      button.alpha = progress;
+      // Linearly interpolates the scale between kButtonMinScale and 1.0.
+      CGFloat scale = progress + (1.0 - progress) * kButtonMinScale;
+      button.transform = CGAffineTransformMakeScale(scale, scale);
+    }
+  }
+}
+
 #pragma mark - TabGroupIndicatorViewDelegate
 
 - (void)tabGroupIndicatorViewVisibilityUpdated:(BOOL)visible {
@@ -956,87 +1063,6 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   return !IsSplitToolbarMode(self);
 }
 
-// Returns the height of the promo banner for `progress`.
-- (CGFloat)bannerPromoBackgroundHeightForFullscreenProgress:(CGFloat)progress {
-  if (!_bannerPromoVisible) {
-    return 0;
-  }
-
-  if (![self isBannerBelowToolbar]) {
-    return kToolbarPromoBannerHeight + self.view.safeAreaInsets.top;
-  }
-
-  return kToolbarPromoBannerHeight * progress;
-}
-
-- (void)updateVerticalPositionForFullscreenProgress:(CGFloat)progress {
-  if (_topPosition) {
-    if (IsGlassToolbarEnabled()) {
-      _glassBackgroundBottomConstraint.constant =
-          -[self glassBackgroundBottomPaddingForFullscreenProgress:progress];
-    } else {
-      _locationBarBottomPaddingConstraint.constant =
-          -[self locationBarBottomPaddingForFullscreenProgress:progress];
-    }
-  } else {
-    if (IsGlassToolbarEnabled()) {
-      _glassBackgroundTopConstraint.constant =
-          [self glassBackgroundTopPaddingForFullscreenProgress:progress];
-    } else {
-      _locationBarTopConstraint.constant =
-          [self locationBarTopPaddingForFullscreenProgress:progress];
-    }
-  }
-}
-
-// Returns the location bar bottom padding for `progress`.
-- (CGFloat)locationBarBottomPaddingForFullscreenProgress:(CGFloat)progress {
-  CHECK(!IsGlassToolbarEnabled());
-  CGFloat locationBarBottomPadding =
-      ShouldHaveCompactLocationBar(self.traitCollection)
-          ? kToolbarPadding
-          : kToolbarCompactLocationBarPadding;
-  if ([self isBannerBelowToolbar]) {
-    // When the banner is below the toolbar, always use its height for a
-    // progress of 1 as progress is used below.
-    locationBarBottomPadding +=
-        [self bannerPromoBackgroundHeightForFullscreenProgress:1];
-  }
-  return progress * locationBarBottomPadding +
-         (1 - progress) * kToolbarPaddingFullscreen;
-}
-
-// Returns the location bar top padding for the given Fullscreen
-// `progress`.
-- (CGFloat)locationBarTopPaddingForFullscreenProgress:(CGFloat)progress {
-  CHECK(!IsGlassToolbarEnabled());
-  CGFloat locationBarTopPadding =
-      ShouldHaveCompactLocationBar(self.traitCollection)
-          ? kToolbarPadding
-          : kToolbarCompactLocationBarPadding;
-  return progress * locationBarTopPadding +
-         (1 - progress) * kToolbarPaddingFullscreen;
-}
-
-- (CGFloat)glassBackgroundBottomPaddingForFullscreenProgress:(CGFloat)progress {
-  CHECK(IsGlassToolbarEnabled());
-  CGFloat glassBackgroundBottomPadding = kGlassToolbarMargin;
-  if ([self isBannerBelowToolbar]) {
-    // When the banner is below the toolbar, always use its height for a
-    // progress of 1 as progress is used below.
-    glassBackgroundBottomPadding +=
-        [self bannerPromoBackgroundHeightForFullscreenProgress:1];
-  }
-  return progress * glassBackgroundBottomPadding +
-         (1 - progress) * kGlassFullscreenMargin;
-}
-
-- (CGFloat)glassBackgroundTopPaddingForFullscreenProgress:(CGFloat)progress {
-  CHECK(IsGlassToolbarEnabled());
-  return progress * kGlassToolbarMargin +
-         (1 - progress) * kGlassFullscreenMargin;
-}
-
 // Updates the banner-related constraints.
 - (void)updateBannerConstraints {
   if (!_bannerPromoVisible) {
@@ -1065,27 +1091,6 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   BOOL canShowTabStrip = CanShowTabStrip(self);
   BOOL isAvailable = !IsCompactHeight(self) && !canShowTabStrip;
   _tabGroupIndicatorView.available = isAvailable;
-}
-
-// Updates all the `buttons` according to the fullscreen `progress`.
-- (void)updateButtons:(NSArray<UIView*>*)buttons
-    forFullscreenProgress:(CGFloat)progress {
-  for (UIView* button in buttons) {
-    if (button.hidden) {
-      button.alpha = 0;
-      button.transform = CGAffineTransformMakeScale(0.01, 0.01);
-      continue;
-    }
-    if (progress > kFullscreenProgressThreshold) {
-      button.alpha = 1;
-      button.transform = CGAffineTransformIdentity;
-    } else {
-      button.alpha = progress;
-      // Linearly interpolates the scale between kButtonMinScale and 1.0.
-      CGFloat scale = progress + (1.0 - progress) * kButtonMinScale;
-      button.transform = CGAffineTransformMakeScale(scale, scale);
-    }
-  }
 }
 
 // Sets the NTP scroll progress for the toolbar. The toolbar is revealed as the
