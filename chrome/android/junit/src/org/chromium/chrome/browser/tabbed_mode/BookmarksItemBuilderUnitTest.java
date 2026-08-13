@@ -40,6 +40,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -84,7 +85,6 @@ public class BookmarksItemBuilderUnitTest {
     @Mock private Tab mTab;
 
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
-    private boolean mIsXrFullSpaceMode;
 
     @Mock
     @SuppressWarnings("MockNotUsedInProduction")
@@ -131,7 +131,8 @@ public class BookmarksItemBuilderUnitTest {
                         mTabModelSelector,
                         /* isMenuIconAtStart= */ false,
                         /* shouldShowIconBeforeItem= */ true,
-                        /* isXrFullSpaceModeSupplier= */ () -> false);
+                        /* xrSpaceModeObservableSupplier= */ ObservableSuppliers.createNonNull(
+                                false));
         mBookmarksItemBuilder.setImageFetcherForTesting(mBookmarkImageFetcher);
 
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);

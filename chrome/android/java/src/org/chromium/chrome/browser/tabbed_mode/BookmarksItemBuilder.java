@@ -17,6 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -56,7 +57,7 @@ public class BookmarksItemBuilder implements Destroyable {
     private final TabModelSelector mTabModelSelector;
     private final boolean mIsMenuIconAtStart;
     private final boolean mShouldShowIconBeforeItem;
-    private final Supplier<Boolean> mIsXrFullSpaceModeSupplier;
+    private final NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     private @Nullable BookmarkImageFetcher mImageFetcher;
 
@@ -70,8 +71,7 @@ public class BookmarksItemBuilder implements Destroyable {
      * @param tabModelSelector The selector used to query tab state.
      * @param isMenuIconAtStart Whether the menu icon is displayed at the start.
      * @param shouldShowIconBeforeItem Whether an icon should be shown before the item text.
-     * @param isXrFullSpaceModeSupplier The supplier for whether the device is XR in full space
-     *     mode.
+     * @param xrSpaceModeObservableSupplier The supplier for the XR space mode state.
      */
     public BookmarksItemBuilder(
             Context context,
@@ -80,14 +80,14 @@ public class BookmarksItemBuilder implements Destroyable {
             TabModelSelector tabModelSelector,
             boolean isMenuIconAtStart,
             boolean shouldShowIconBeforeItem,
-            Supplier<Boolean> isXrFullSpaceModeSupplier) {
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mContext = context;
         mAppMenuItemTheme = appMenuItemTheme;
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mTabModelSelector = tabModelSelector;
         mIsMenuIconAtStart = isMenuIconAtStart;
         mShouldShowIconBeforeItem = shouldShowIconBeforeItem;
-        mIsXrFullSpaceModeSupplier = isXrFullSpaceModeSupplier;
+        mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
     }
 
     /** Cleans up resources used by this builder, specifically the image fetcher. */
@@ -289,7 +289,7 @@ public class BookmarksItemBuilder implements Destroyable {
                         BookmarkBarUtils.isBookmarkBarVisible(
                                         mContext,
                                         mTabModelSelector.getCurrentModel().getProfile(),
-                                        mIsXrFullSpaceModeSupplier.get())
+                                        mXrSpaceModeObservableSupplier.get())
                                 ? R.string.menu_hide_bookmarks_bar
                                 : R.string.menu_show_bookmarks_bar,
                         Resources.ID_NULL,
@@ -419,9 +419,7 @@ public class BookmarksItemBuilder implements Destroyable {
                             BookmarkBarUtils.isBookmarkBarVisible(
                                     mContext,
                                     getProfileFromTabModel(),
-                                    mIsXrFullSpaceModeSupplier != null
-                                            && Boolean.TRUE.equals(
-                                                    mIsXrFullSpaceModeSupplier.get()));
+                                    mXrSpaceModeObservableSupplier.get());
                     List<ListItem> items = new ArrayList<>(2);
                     items.add(
                             buildBookmarkBarStateItem(

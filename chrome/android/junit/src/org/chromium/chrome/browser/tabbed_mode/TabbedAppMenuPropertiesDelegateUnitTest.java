@@ -441,7 +441,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         /* recentlyClosedEntriesManagerSupplier= */ () ->
                                 mRecentlyClosedEntriesManager,
                         () -> mSideUiStateProvider,
-                        /* isXrFullSpaceModeSupplier= */ () -> false,
+                        /* xrSpaceModeObservableSupplier= */ ObservableSuppliers.createNonNull(
+                                false),
                         /* canActivateTabLayoutToggleMenu= */ () ->
                                 mCanActivateTabLayoutToggleMenu);
         RobolectricUtil.runAllBackgroundAndUi();

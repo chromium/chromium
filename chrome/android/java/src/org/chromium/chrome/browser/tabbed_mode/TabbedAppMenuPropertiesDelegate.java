@@ -23,6 +23,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Contract;
@@ -180,7 +181,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider,
             Supplier<RecentlyClosedEntriesManager> recentlyClosedEntriesManagerSupplier,
             Supplier<SideUiStateProvider> sideUiStateProviderSupplier,
-            Supplier<Boolean> isXrFullSpaceModeSupplier,
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             BooleanSupplier canActivateTabLayoutToggleMenu) {
         super(
                 context,
@@ -240,7 +241,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         tabModelSelector,
                         isMenuIconAtStart(),
                         shouldShowIconBeforeItem(),
-                        isXrFullSpaceModeSupplier);
+                        xrSpaceModeObservableSupplier);
 
         mSaveAndShareItemBuilder =
                 new SaveAndShareItemBuilder(
