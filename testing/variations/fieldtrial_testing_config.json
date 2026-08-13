@@ -20638,24 +20638,6 @@
             ]
         }
     ],
-    "PreventPasswordUiOnFederatedLogin": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PreventAPC",
-                    "enable_features": [
-                        "PreventAPCOnFederatedLogin"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreventSaveUpdatePasswordOnFederatedLogin": [
         {
             "platforms": [
