@@ -152,7 +152,13 @@ TEST_F(PersistentHistogramAllocatorTest, CreateAndIterate) {
 // Tests that persistent histograms can be recovered from a file mapped strictly
 // as OS READ_ONLY memory, similar to what `FileMetricsProvider` does on
 // startup.
-TEST_F(PersistentHistogramAllocatorTest, FileReadonlyRecovery) {
+// TODO(crbug.com/544382629): Failing on TSAN bot.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_FileReadonlyRecovery DISABLED_FileReadonlyRecovery
+#else
+#define MAYBE_FileReadonlyRecovery FileReadonlyRecovery
+#endif
+TEST_F(PersistentHistogramAllocatorTest, MAYBE_FileReadonlyRecovery) {
   constexpr char kHistogramName[] = "ReadOnlyTestHistogram";
   constexpr char kLinearHistogramName[] = "ReadOnlyTestLinearHistogram";
   constexpr char kBooleanHistogramName[] = "ReadOnlyTestBooleanHistogram";
