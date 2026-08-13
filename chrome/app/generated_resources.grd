@@ -9917,6 +9917,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_TURN_HIGHLIGHT_ON" desc="Tooltip label for button that turns on highlighting in Read Aloud.">
         Turn on highlight
       </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_TURN_ON" desc="Tooltip label for button that turns on AI Playback in Read Aloud.">
+        Turn on AI Playback
+      </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_TURN_OFF" desc="Tooltip label for button that turns off AI Playback in Read Aloud.">
+        Turn off AI Playback
+      </message>
       <message name="IDS_READING_MODE_PLAY_DESCRIPTION" desc="Accessibility description for button that plays speech in Read Aloud.">
         Listen to the text with natural voice
       </message>
