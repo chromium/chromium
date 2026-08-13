@@ -1054,7 +1054,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     }
 
       // Initialize default window bounds according to window type.
-      // TODO(https://crbug.com/431004500): Properly initialize window bounds.
+      // TODO(https://crbug.com/545671279): Properly initialize window bounds.
 #if !BUILDFLAG(IS_ANDROID)
     ui::mojom::WindowShowState ignored_show_state =
         ui::mojom::WindowShowState::kDefault;
@@ -1114,7 +1114,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
         BrowserWindowInterface::TYPE_APP_POPUP;
 #endif
 
-    // TODO(https://crbug.com/431004500): Initialize app name on android, or
+    // TODO(https://crbug.com/545671279): Initialize app name on android, or
     // verify this is unnecessary.
 #if !BUILDFLAG(IS_ANDROID)
     create_params.app_name =
@@ -1307,7 +1307,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
 
   // Create a new tab if the created window is still empty. Don't create a new
   // tab when it is intended to create an empty popup.
-  // TODO(https://crbug.com/431004500): Port to desktop android.
+  // TODO(https://crbug.com/545671279): Port to desktop android.
 #if !BUILDFLAG(IS_ANDROID)
   if (!moved_tab && urls_.empty() &&
       new_window->GetType() == Browser::TYPE_NORMAL) {
@@ -1338,7 +1338,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   if (focused) {
     weak_window->GetWindow()->Show();
   } else {
-    // TODO(https://crbug.com/431004500): Port to desktop android.
+    // TODO(https://crbug.com/545671279): Port to desktop android.
 #if !BUILDFLAG(IS_ANDROID)
     // Show an unfocused new window.
     BrowserWindowInterface* const last_active_bwi =
