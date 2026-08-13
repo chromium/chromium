@@ -37,6 +37,7 @@ public class AuthenticatorFactory implements InterfaceFactory<@Nullable Authenti
         }
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
         if (webContents == null
+                || webContents.isDestroyed()
                 || WebauthnModeProvider.getInstance().getWebauthnMode(webContents)
                         == WebauthnMode.NONE) {
             return null;
