@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridD
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Arrays;
+import java.util.List;
 
 /** Unit tests for {@link FlatLayoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -250,7 +250,7 @@ public class FlatLayoutDelegateUnitTest {
     @Test
     public void testGetInsertionIndexOfTab() {
         addTabsToModelList(TAB1_ID);
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(Arrays.asList(mTab1, mTab2));
+        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
 
         int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab2);
 

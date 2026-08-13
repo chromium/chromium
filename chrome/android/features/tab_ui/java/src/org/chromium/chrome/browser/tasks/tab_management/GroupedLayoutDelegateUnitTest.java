@@ -38,7 +38,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for {@link GroupedLayoutDelegate}. */
@@ -212,8 +211,7 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
 
-        // Add to mModelList so indexFromTabId finds it.
-        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
+        createAndAddPropertyModel(TAB1_ID);
 
         mDelegate.didMoveTabOutOfGroup(mTab1, 1);
 
@@ -241,7 +239,7 @@ public class GroupedLayoutDelegateUnitTest {
     public void testDidMergeTabToGroup() {
         setupTabsInModel(mTab1, mTab2);
         setupRepresentativeTab(mTab1, mTab1, 0);
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(Arrays.asList(mTab1, mTab2));
+        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
 
         PropertyModel model1 = createAndAddPropertyModel(TAB1_ID);
         model1.set(TabProperties.TITLE, "Tab 1");
@@ -260,14 +258,14 @@ public class GroupedLayoutDelegateUnitTest {
     public void testDidMergeTabToGroup_UpdatesCards() {
         setupTabsInModel(mTab1, mTab2);
         setupRepresentativeTab(mTab2, mTab2, 0);
-        when(mMediator.getRelatedTabsForId(TAB2_ID)).thenReturn(Arrays.asList(mTab1, mTab2));
+        when(mMediator.getRelatedTabsForId(TAB2_ID)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB2_ID);
         when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
 
-        // Only mTab1 is in the model list
-        PropertyModel model1 = createAndAddPropertyModel(TAB1_ID);
+        // Only TAB1_ID is in the model list
+        createAndAddPropertyModel(TAB1_ID);
 
         mDelegate.didMergeTabToGroup(mTab2, false);
 
@@ -279,13 +277,13 @@ public class GroupedLayoutDelegateUnitTest {
 
     @Test
     public void testDidMoveTabGroup() {
-        // Setup mModelList: [TAB2, TAB1].
-        PropertyModel model2 = createAndAddPropertyModel(TAB2_ID);
-        PropertyModel model1 = createAndAddPropertyModel(TAB1_ID);
+        // Setup mModelList: [TAB2_ID, TAB1_ID].
+        createAndAddPropertyModel(TAB2_ID);
+        createAndAddPropertyModel(TAB1_ID);
 
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(Arrays.asList(mTab1));
-        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(Arrays.asList(mTab1));
-        when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(Arrays.asList(mTab2));
+        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1));
+        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
+        when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(List.of(mTab2));
 
         // After move, mTab1 is at 0, mTab2 is at 1. We mock the destination tab for calculating new
         // position.
@@ -306,8 +304,8 @@ public class GroupedLayoutDelegateUnitTest {
         when(newTab.getId()).thenReturn(999);
         when(newTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
 
-        when(mMediator.getRelatedTabsForId(999)).thenReturn(Arrays.asList(newTab));
-        when(mTabModel.getRelatedTabList(999)).thenReturn(Arrays.asList(newTab));
+        when(mMediator.getRelatedTabsForId(999)).thenReturn(List.of(newTab));
+        when(mTabModel.getRelatedTabList(999)).thenReturn(List.of(newTab));
         when(mTabModel.getTabAt(2)).thenReturn(newTab);
 
         setupRepresentativeTab(newTab, newTab, 1);
