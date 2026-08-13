@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,9 +76,6 @@ class OmniboxPopupFullPresenterTest : public views::ViewsTestBase {
 };
 
 TEST_F(OmniboxPopupFullPresenterTest, ResetsContentHeightOnHide) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      omnibox::kOmniboxAimDetachWebContentsOnHide);
   presenter_->set_content_height(400);
   EXPECT_EQ(presenter_->content_height(), 400);
 
