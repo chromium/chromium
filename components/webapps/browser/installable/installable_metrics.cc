@@ -254,6 +254,8 @@ bool InstallableMetrics::IsInstallSurfaceConsideredTrusted(
     case WebappInstallSource::EXTERNAL_POLICY:
     case WebappInstallSource::SUB_APP:
     case WebappInstallSource::MICROSOFT_365_SETUP:
+    case WebappInstallSource::EXTERNAL_LOCK_SCREEN:
+    case WebappInstallSource::KIOSK:
       return true;
     case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
     case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
@@ -264,8 +266,6 @@ bool InstallableMetrics::IsInstallSurfaceConsideredTrusted(
     case WebappInstallSource::AUTOMATIC_PROMPT_CUSTOM_TAB:
     case WebappInstallSource::CHROME_SERVICE:
     case WebappInstallSource::DEVTOOLS:
-    case WebappInstallSource::EXTERNAL_LOCK_SCREEN:
-    case WebappInstallSource::KIOSK:
     case WebappInstallSource::MENU_BROWSER_TAB:
     case WebappInstallSource::MENU_CREATE_SHORTCUT:
     case WebappInstallSource::MENU_CUSTOM_TAB:
