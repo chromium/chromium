@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/feature.h"
 
 namespace base32 {
 
+// LINT.IfChange(Base32EncodePolicy)
 enum class Base32EncodePolicy {
   // Include the trailing padding in the output, when necessary.
   INCLUDE_PADDING,
@@ -21,6 +23,25 @@ enum class Base32EncodePolicy {
   // |ceil(input.size() * 8.0 / 5.0)|.
   OMIT_PADDING
 };
+// LINT.ThenChange(//components/base32/base32.rs:Base32EncodePolicy)
+
+// Separate implementations exposed for testing.
+// TODO(crbug.com/536936880): Migrate to Rust implementation.
+namespace internal {
+// Legacy C++ implementation.
+std::string Base32EncodeCpp(base::span<const uint8_t> input,
+                            Base32EncodePolicy policy);
+std::vector<uint8_t> Base32DecodeCpp(std::string_view input);
+
+// Rust implementation.
+std::string Base32EncodeRust(base::span<const uint8_t> input,
+                             Base32EncodePolicy policy);
+std::vector<uint8_t> Base32DecodeRust(std::string_view input);
+}  // namespace internal
+
+// Enable the Rust implementation of the functions below.
+// TODO(crbug.com/536936880): Migrate to Rust implementation.
+BASE_DECLARE_FEATURE(kComponentsBase32InRust);
 
 // Encodes the |input| string in base32, defined in RFC 4648:
 // https://tools.ietf.org/html/rfc4648#section-5
@@ -33,6 +54,8 @@ std::string Base32Encode(
 
 // Decodes the |input| string piece from base32. Returns an empty vector on
 // error, including if |input| is empty.
+// This function only decodes exactly if the preimage was an integer number of
+// bytes.
 std::vector<uint8_t> Base32Decode(std::string_view input);
 
 }  // namespace base32

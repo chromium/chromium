@@ -11,7 +11,13 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/span_rust.h"
+#include "base/feature.h"
+#include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_math.h"
+#include "base/strings/string_view_rust.h"
+#include "components/base32/base32.rs.h"
 
 namespace base32 {
 
@@ -32,10 +38,22 @@ uint8_t ReverseMapping(char input_char) {
   return 0xff;
 }
 
+rust::Base32EncodePolicy ToRustEncodePolicy(Base32EncodePolicy policy) {
+  switch (policy) {
+    case Base32EncodePolicy::INCLUDE_PADDING:
+      return rust::Base32EncodePolicy::IncludePadding;
+    case Base32EncodePolicy::OMIT_PADDING:
+      return rust::Base32EncodePolicy::OmitPadding;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
-std::string Base32Encode(base::span<const uint8_t> input,
-                         Base32EncodePolicy policy) {
+namespace internal {
+
+std::string Base32EncodeCpp(base::span<const uint8_t> input,
+                            Base32EncodePolicy policy) {
   if (input.empty())
     return std::string();
 
@@ -86,7 +104,7 @@ std::string Base32Encode(base::span<const uint8_t> input,
   return output;
 }
 
-std::vector<uint8_t> Base32Decode(std::string_view input) {
+std::vector<uint8_t> Base32DecodeCpp(std::string_view input) {
   // Remove padding, if any
   const size_t padding_index = input.find(kPaddingChar);
   if (padding_index != std::string_view::npos) {
@@ -127,6 +145,47 @@ std::vector<uint8_t> Base32Decode(std::string_view input) {
 
   DCHECK_EQ(decoded_length, output.size());
   return output;
+}
+
+std::string Base32EncodeRust(base::span<const uint8_t> input,
+                             Base32EncodePolicy policy) {
+  std::string ret;
+  rust::base32_encode(base::SpanToRustSlice(input), ToRustEncodePolicy(policy),
+                      ret);
+  return ret;
+}
+
+std::vector<uint8_t> Base32DecodeRust(std::string_view input) {
+  std::vector<uint8_t> ret;
+  if (!rust::base32_decode(base::StringViewToRustSlice(input), ret)) {
+    return {};
+  }
+  return ret;
+}
+
+}  // namespace internal
+
+BASE_FEATURE(kComponentsBase32InRust, base::FEATURE_DISABLED_BY_DEFAULT);
+
+std::string Base32Encode(base::span<const uint8_t> input,
+                         Base32EncodePolicy policy) {
+  // This function may be called early enough that FeatureList is not set up
+  // yet, in which case default to the legacy C++ implementation.
+  if (base::FeatureList::GetInstance() != nullptr &&
+      base::FeatureList::IsEnabled(kComponentsBase32InRust)) {
+    return internal::Base32EncodeRust(input, policy);
+  }
+  return internal::Base32EncodeCpp(input, policy);
+}
+
+std::vector<uint8_t> Base32Decode(std::string_view input) {
+  // This function may be called early enough that FeatureList is not set up
+  // yet, in which case default to the legacy C++ implementation.
+  if (base::FeatureList::GetInstance() != nullptr &&
+      base::FeatureList::IsEnabled(kComponentsBase32InRust)) {
+    return internal::Base32DecodeRust(input);
+  }
+  return internal::Base32DecodeCpp(input);
 }
 
 }  // namespace base32
