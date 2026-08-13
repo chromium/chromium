@@ -55,6 +55,7 @@
 .project
 .projectile
 .pydevproject
+.ruff_cache
 /.scratch
 .siso_failed_targets
 *.class
