@@ -155,7 +155,8 @@ public class BookmarkBarContextMenuMediatorTest {
                 enabled(R.string.contextmenu_open_bookmarks_manager),
                 divider(),
                 enabled(R.string.contextmenu_always_hide_bookmarks_bar),
-                enabled(R.string.contextmenu_always_show_bookmarks_bar));
+                enabled(R.string.contextmenu_always_show_bookmarks_bar),
+                enabled(R.string.contextmenu_only_show_bookmarks_bar_on_ntp));
     }
 
     @Test
@@ -224,7 +225,8 @@ public class BookmarkBarContextMenuMediatorTest {
                 enabled(R.string.contextmenu_open_bookmarks_manager),
                 divider(),
                 enabled(R.string.contextmenu_always_hide_bookmarks_bar),
-                enabled(R.string.contextmenu_always_show_bookmarks_bar));
+                enabled(R.string.contextmenu_always_show_bookmarks_bar),
+                enabled(R.string.contextmenu_only_show_bookmarks_bar_on_ntp));
     }
 
     @Test
@@ -295,7 +297,8 @@ public class BookmarkBarContextMenuMediatorTest {
                 enabled(R.string.contextmenu_open_bookmarks_manager),
                 divider(),
                 enabled(R.string.contextmenu_always_hide_bookmarks_bar),
-                enabled(R.string.contextmenu_always_show_bookmarks_bar));
+                enabled(R.string.contextmenu_always_show_bookmarks_bar),
+                enabled(R.string.contextmenu_only_show_bookmarks_bar_on_ntp));
     }
 
     @Test
@@ -368,7 +371,8 @@ public class BookmarkBarContextMenuMediatorTest {
                 enabled(R.string.contextmenu_open_bookmarks_manager),
                 divider(),
                 enabled(R.string.contextmenu_always_hide_bookmarks_bar),
-                enabled(R.string.contextmenu_always_show_bookmarks_bar));
+                enabled(R.string.contextmenu_always_show_bookmarks_bar),
+                enabled(R.string.contextmenu_only_show_bookmarks_bar_on_ntp));
     }
 
     @Test
@@ -435,7 +439,8 @@ public class BookmarkBarContextMenuMediatorTest {
                 enabled(R.string.contextmenu_open_bookmarks_manager),
                 divider(),
                 enabled(R.string.contextmenu_always_hide_bookmarks_bar),
-                enabled(R.string.contextmenu_always_show_bookmarks_bar));
+                enabled(R.string.contextmenu_always_show_bookmarks_bar),
+                enabled(R.string.contextmenu_only_show_bookmarks_bar_on_ntp));
     }
 
     @Test
@@ -480,7 +485,8 @@ public class BookmarkBarContextMenuMediatorTest {
                 enabled(R.string.contextmenu_open_bookmarks_manager),
                 divider(),
                 enabled(R.string.contextmenu_always_hide_bookmarks_bar),
-                enabled(R.string.contextmenu_always_show_bookmarks_bar));
+                enabled(R.string.contextmenu_always_show_bookmarks_bar),
+                enabled(R.string.contextmenu_only_show_bookmarks_bar_on_ntp));
     }
 
     // Tests for actions of the items in the context menu.
@@ -742,12 +748,24 @@ public class BookmarkBarContextMenuMediatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    public void testClickOnlyShowBookmarkBarOnNTP() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+        ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
+
+        click(list, R.string.contextmenu_only_show_bookmarks_bar_on_ntp);
+        verify(mContextMenuDelegate).setBookmarksBarVisibilityToOnlyShowOnNTP();
+        verify(mDismissRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testClickAlwaysHideBookmarksBar() {
         doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
         ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
 
         click(list, R.string.contextmenu_always_hide_bookmarks_bar);
-        verify(mContextMenuDelegate).alwaysHide();
+        verify(mContextMenuDelegate).setBookmarksBarVisibilityToAlwaysHide();
         verify(mDismissRunnable).run();
     }
 
@@ -759,7 +777,7 @@ public class BookmarkBarContextMenuMediatorTest {
         ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
 
         click(list, R.string.contextmenu_always_show_bookmarks_bar);
-        verify(mContextMenuDelegate).alwaysShow();
+        verify(mContextMenuDelegate).setBookmarksBarVisibilityToAlwaysShow();
         verify(mDismissRunnable).run();
     }
 

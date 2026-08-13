@@ -390,6 +390,15 @@ class BookmarkBarContextMenuMediator {
                         isIncognito,
                         /* enabled= */ true,
                         v -> alwaysShow()));
+        listItems.add(
+                buildContextMenuItem(
+                        mContext.getString(R.string.contextmenu_only_show_bookmarks_bar_on_ntp),
+                        currentState == BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP
+                                ? R.drawable.material_ic_check_24dp
+                                : 0,
+                        isIncognito,
+                        /* enabled= */ true,
+                        v -> onlyShowOnNTP()));
     }
 
     private void openInNewTab(BookmarkId id) {
@@ -502,14 +511,21 @@ class BookmarkBarContextMenuMediator {
     private void alwaysHide() {
         // TODO(crbug.com/542276874): Record metrics for context menu visibility toggles (e.g.
         // Always Show, Always Hide) once NTP tri-state feature options are finalized.
-        mContextMenuDelegate.alwaysHide();
+        mContextMenuDelegate.setBookmarksBarVisibilityToAlwaysHide();
         mDismissRunnable.run();
     }
 
     private void alwaysShow() {
         // TODO(crbug.com/542276874): Record metrics for context menu visibility toggles (e.g.
         // Always Show, Always Hide) once NTP tri-state feature options are finalized.
-        mContextMenuDelegate.alwaysShow();
+        mContextMenuDelegate.setBookmarksBarVisibilityToAlwaysShow();
+        mDismissRunnable.run();
+    }
+
+    private void onlyShowOnNTP() {
+        // TODO(crbug.com/542276874): Record metrics for context menu visibility toggles (e.g.
+        // Always Show, Always Hide) once NTP tri-state feature options are finalized.
+        mContextMenuDelegate.setBookmarksBarVisibilityToOnlyShowOnNTP();
         mDismissRunnable.run();
     }
 

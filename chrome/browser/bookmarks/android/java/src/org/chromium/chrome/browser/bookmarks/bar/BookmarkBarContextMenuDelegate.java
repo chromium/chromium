@@ -139,8 +139,11 @@ public interface BookmarkBarContextMenuDelegate {
     void toggleBookmarksBar();
 
     /** Sets the visibility state of the bookmarks bar to always hide. */
-    void alwaysHide();
+    void setBookmarksBarVisibilityToAlwaysHide();
 
     /** Sets the visibility state of the bookmarks bar to always show. */
-    void alwaysShow();
+    void setBookmarksBarVisibilityToAlwaysShow();
+
+    /** Sets the visibility state of the bookmarks bar to only show on the NTP. */
+    void setBookmarksBarVisibilityToOnlyShowOnNTP();
 }

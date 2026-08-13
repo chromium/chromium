@@ -727,7 +727,7 @@ class BookmarkBarMediator
     }
 
     @Override
-    public void alwaysHide() {
+    public void setBookmarksBarVisibilityToAlwaysHide() {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (Profile profile, BookmarkModel _) ->
                         BookmarkBarUtils.setBookmarkBarVisibilityState(
@@ -737,12 +737,22 @@ class BookmarkBarMediator
     }
 
     @Override
-    public void alwaysShow() {
+    public void setBookmarksBarVisibilityToAlwaysShow() {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (Profile profile, BookmarkModel _) ->
                         BookmarkBarUtils.setBookmarkBarVisibilityState(
                                 profile,
                                 BookmarkBarVisibilityState.ALWAYS_SHOW,
+                                /* fromKeyboardShortcut= */ false));
+    }
+
+    @Override
+    public void setBookmarksBarVisibilityToOnlyShowOnNTP() {
+        runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                (Profile profile, BookmarkModel _) ->
+                        BookmarkBarUtils.setBookmarkBarVisibilityState(
+                                profile,
+                                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
                                 /* fromKeyboardShortcut= */ false));
     }
 
