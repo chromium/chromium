@@ -44,7 +44,9 @@
                      tileType:ContentSuggestionsTileType::kMostVisited];
   if (self) {
     self.imageContainerView.layer.cornerRadius =
-        kMagicStackImageContainerWidth / 2;
+        IsNewTabPageUICleanupEnabled()
+            ? kMostVisitedTileImageContainerSquareCornerRadius
+            : kMagicStackImageContainerWidth / 2;
     self.imageContainerView.layer.masksToBounds = NO;
     self.imageContainerView.clipsToBounds = YES;
     if (IsNewTabPageUICleanupEnabled()) {

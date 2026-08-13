@@ -18,11 +18,6 @@ enum class ContentSuggestionsTileType {
 // places.
 @interface ContentSuggestionsTileView : UIView <UIPointerInteractionDelegate>
 
-// Initializes view with tile `type` to allow for different layout
-// configurations.
-- (instancetype)initWithFrame:(CGRect)frame
-                     tileType:(ContentSuggestionsTileType)type;
-
 // Container for the image view. Used in subclasses.
 @property(nonatomic, strong, readonly) UIView* imageContainerView;
 
@@ -31,6 +26,14 @@ enum class ContentSuggestionsTileType {
 
 // The view displaying the background image (squircle) for the tile image.
 @property(nonatomic, strong, readonly) UIImageView* imageBackgroundView;
+
+// Initializes view with tile `type` to allow for different layout
+// configurations.
+- (instancetype)initWithFrame:(CGRect)frame
+                     tileType:(ContentSuggestionsTileType)type;
+
+// Sets the height and width of the tile view's image background.
+- (void)setImageBackgroundSize:(CGFloat)size;
 
 @end
 

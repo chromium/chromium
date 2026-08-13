@@ -28,6 +28,7 @@ const CGFloat kCornerRadius = 8.0;
 
 @implementation ContentSuggestionsTileView {
   ContentSuggestionsTileType _type;
+  NSLayoutConstraint* _imageBackgroundWidthConstraint;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -64,14 +65,16 @@ const CGFloat kCornerRadius = 8.0;
       [self addSubview:backgroundView];
       [self addSubview:_imageContainerView];
 
+      _imageBackgroundWidthConstraint = [backgroundView.widthAnchor
+          constraintEqualToConstant:kMagicStackIconSize];
       [NSLayoutConstraint activateConstraints:@[
-        [backgroundView.widthAnchor
-            constraintEqualToConstant:kMagicStackIconSize],
+        _imageBackgroundWidthConstraint,
         [backgroundView.heightAnchor
             constraintEqualToAnchor:backgroundView.widthAnchor],
         [backgroundView.centerXAnchor
-            constraintEqualToAnchor:_titleLabel.centerXAnchor],
+            constraintEqualToAnchor:_titleLabel.centerXAnchor]
       ]];
+
       AddSameCenterConstraints(_imageContainerView, backgroundView);
       UIView* containerView = backgroundView;
 
@@ -103,6 +106,13 @@ const CGFloat kCornerRadius = 8.0;
       UIFontTextStyleCaption1,
       self.traitCollection.preferredContentSizeCategory,
       UIContentSizeCategoryAccessibilityLarge);
+}
+
+- (void)setImageBackgroundSize:(CGFloat)size {
+  if (size == _imageBackgroundWidthConstraint.constant) {
+    return;
+  }
+  _imageBackgroundWidthConstraint.constant = size;
 }
 
 #pragma mark - UIPointerInteractionDelegate

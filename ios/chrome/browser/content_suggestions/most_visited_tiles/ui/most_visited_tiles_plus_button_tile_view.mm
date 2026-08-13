@@ -19,11 +19,15 @@
 - (instancetype)initWithConfiguration:(ContentSuggestionsActionItem*)config {
   self = [super initWithConfiguration:config];
   if (self) {
-    self.imageBackgroundView.layer.cornerRadius =
-        kMagicStackImageContainerWidth / 2;
     self.imageBackgroundView.clipsToBounds = YES;
     if (IsNewTabPageUICleanupEnabled()) {
       self.titleLabel.numberOfLines = 1;
+      self.imageBackgroundView.layer.cornerRadius =
+          kMostVisitedTileImageContainerSquareCornerRadius;
+      [self setImageBackgroundSize:kMagicStackImageContainerWidth];
+    } else {
+      self.imageBackgroundView.layer.cornerRadius =
+          kMagicStackImageContainerWidth / 2;
     }
     [self addGestureRecognizer:[[UITapGestureRecognizer alloc]
                                    initWithTarget:self

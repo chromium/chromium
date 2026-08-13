@@ -18,4 +18,6 @@ NSString* const kQuerySuggestionViewA11yIdentifierPrefix =
 
 const CGFloat kMagicStackImageContainerWidth = 50;
 
+const CGFloat kMostVisitedTileImageContainerSquareCornerRadius = 16.0;
+
 const CGFloat kMostVisitedTileIconSize = 56;
