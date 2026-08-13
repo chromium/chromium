@@ -111,9 +111,11 @@ class COMPONENT_EXPORT(VULKAN) VulkanFenceHelper {
   // Processes CleanupTasks for which a fence has passed.
   void ProcessCleanupTasks(uint64_t retired_generation_id = 0);
   // Helpers for common types:
-  void EnqueueSemaphoreCleanupForSubmittedWork(VkSemaphore semaphore);
+  void EnqueueSemaphoreCleanupForSubmittedWork(
+      base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged> semaphore);
   void EnqueueSemaphoresCleanupForSubmittedWork(
-      std::vector<VkSemaphore> semaphores);
+      std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>
+          semaphores);
   void EnqueueImageCleanupForSubmittedWork(VkImage image,
                                            VkDeviceMemory memory);
   void EnqueueBufferCleanupForSubmittedWork(VkBuffer buffer,

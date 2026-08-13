@@ -264,7 +264,7 @@ void SkiaVkAndroidImageRepresentation::EndAccess(bool readonly) {
     android_backing()->EndWrite(std::move(sync_fd));
   }
 
-  std::vector<VkSemaphore> semaphores;
+  std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>> semaphores;
   semaphores.reserve(2);
   if (begin_access_semaphore_ != VK_NULL_HANDLE) {
     semaphores.emplace_back(begin_access_semaphore_);

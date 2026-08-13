@@ -1263,7 +1263,7 @@ VulkanImageRepresentation::ScopedAccess::ScopedAccess(
     AccessMode access_mode,
     std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>
         begin_semaphores,
-    VkSemaphore end_semaphore)
+    base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged> end_semaphore)
     : ScopedAccessBase(representation, access_mode),
       is_read_only_(access_mode == AccessMode::kRead),
       begin_semaphores_(std::move(begin_semaphores)),
@@ -1273,13 +1273,8 @@ VulkanImageRepresentation::ScopedAccess::~ScopedAccess() {
   representation()->EndAccess(is_read_only_, end_semaphore_);
 
   auto* fence_helper = representation()->vulkan_device_queue_->GetFenceHelper();
-  std::vector<VkSemaphore> semaphores_to_cleanup;
-  semaphores_to_cleanup.reserve(begin_semaphores_.size());
-  for (const auto& sem : begin_semaphores_) {
-    semaphores_to_cleanup.push_back(sem);
-  }
   fence_helper->EnqueueSemaphoresCleanupForSubmittedWork(
-      std::move(semaphores_to_cleanup));
+      std::move(begin_semaphores_));
   fence_helper->EnqueueSemaphoreCleanupForSubmittedWork(end_semaphore_);
 }
 
@@ -1311,7 +1306,8 @@ VulkanImageRepresentation::BeginScopedAccess(
     end_semaphores.push_back(sem);
   }
 
-  VkSemaphore end_semaphore = VK_NULL_HANDLE;
+  base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged> end_semaphore =
+      VK_NULL_HANDLE;
   if (!local_end_semaphores.empty()) {
     end_semaphore = local_end_semaphores.back();
   }

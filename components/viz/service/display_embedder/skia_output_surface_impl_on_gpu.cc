@@ -2331,7 +2331,7 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
   overlay_pass_accesses_.clear();
 
 #if BUILDFLAG(ENABLE_VULKAN)
-  std::vector<VkSemaphore> semaphores;
+  std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>> semaphores;
   semaphores.reserve(pending_release_fence_cbs_.size());
 
   while (!pending_release_fence_cbs_.empty()) {

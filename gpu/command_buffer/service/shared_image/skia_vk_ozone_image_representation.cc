@@ -246,8 +246,8 @@ void SkiaVkOzoneImageRepresentation::EndAccess(bool readonly) {
   ozone_backing()->EndAccess(readonly, OzoneImageBacking::AccessStream::kVulkan,
                              std::move(fence));
 
-  std::vector<VkSemaphore> semaphores =
-      base::ToVector<VkSemaphore>(begin_access_semaphores_);
+  std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>> semaphores =
+      std::move(begin_access_semaphores_);
   begin_access_semaphores_.clear();
   if (end_access_semaphore_ != VK_NULL_HANDLE) {
     semaphores.emplace_back(end_access_semaphore_);

@@ -86,7 +86,8 @@ class SkiaVkOzoneImageRepresentation : public SkiaGaneshImageRepresentation {
   scoped_refptr<SharedContextState> context_state_;
   std::vector<base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged>>
       begin_access_semaphores_;
-  VkSemaphore end_access_semaphore_ = VK_NULL_HANDLE;
+  base::RawPtrIfPtrT<VkSemaphore, DanglingUntriaged> end_access_semaphore_ =
+      VK_NULL_HANDLE;
   bool need_end_fence_;
 };
 
