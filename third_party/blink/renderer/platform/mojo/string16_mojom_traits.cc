@@ -5,17 +5,18 @@
 #include "third_party/blink/renderer/platform/mojo/string16_mojom_traits.h"
 
 #include <cstring>
+#include <limits>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 
 namespace mojo {
 
 MaybeOwnedString16::MaybeOwnedString16(std::u16string owned_storage)
-    : owned_storage_(owned_storage),
+    : owned_storage_(std::move(owned_storage)),
       UNSAFE_TODO(
           unowned_(reinterpret_cast<const uint16_t*>(owned_storage_.data()),
                    owned_storage_.size())) {}
