@@ -149,6 +149,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1243027604378859286">Awdur:</translation>
 <translation id="1246424317317450637">Trwm</translation>
 <translation id="1247030632403369975">Alwminiwm</translation>
+<translation id="1249643768796040660">Tynnu'r wybodaeth hon</translation>
 <translation id="1253846494229886276">Wrthi'n cadw sgrinlun</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (wedi'u cysoni)</translation>
 <translation id="1255931290436977164">Pasbort</translation>
@@ -610,8 +611,10 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2045871135676061132">Amlen Personal</translation>
 <translation id="2048261947532620704">Wrthi'n cyfieithu'r dudalen</translation>
 <translation id="2055016614992422886">Sgwrs</translation>
+<translation id="2058468041496756763">Gallwch newid eich peiriant chwilio ar unrhyw adeg yng ngosodiadau Chrome. Os na welwch eich peiriant chwilio dewisol, gallwch berfformio chwiliad o'u gwefan. Fe welwch ef wedi'i restru fel peiriant chwilio yr ymwelwyd ag ef yn ddiweddar yng ngosodiadau Chrome, a gallwch ei wneud yn beiriant chwilio diofyn.</translation>
 <translation id="2059166748188874810">Bwrdeistref</translation>
 <translation id="2059202684901022309">22 x 34 modfedd</translation>
+<translation id="2063929825539050431">I anfon y dudalen hon yn gyflym i ddyfais arall, pwyswch a daliwch y bar cyfeiriad</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 awgrym}zero{# awgrym}two{# awgrym}few{# awgrym}many{# awgrym}other{# awgrym}}</translation>
 <translation id="2066969741541525119">Mae'r wefan o'ch blaen wedi'i rhwystro gan eich sefydliad</translation>
 <translation id="2071156619270205202">Nid yw'r cerdyn hwn yn gymwys i gael rhif cerdyn rhithwir.</translation>
@@ -4190,6 +4193,7 @@ Manylion ychwanegol:
 <translation id="8175796834047840627">Mae Chrome yn cynnig cadw eich cardiau yn eich Cyfrif Google oherwydd eich bod wedi mewngofnodi. Gallwch newid yr ymddygiad hwn yn y gosodiadau.</translation>
 <translation id="8176440868214972690">Mae gweinyddwr y ddyfais hon wedi anfon rhywfaint o wybodaeth at y gwefannau canlynol, megis gosodiadau neu bolisïau.</translation>
 <translation id="818254048113802060">{0,plural, =1{Cafodd <ph name="FILE_NAME" /> ei rhwystro oherwydd y cynnwys}zero{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}two{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}few{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}many{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}other{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}}</translation>
+<translation id="8186171296341598122">Gallwch newid eich peiriant chwilio ar unrhyw adeg yng ngosodiadau Chromium. Os na welwch eich peiriant chwilio dewisol, gallwch berfformio chwiliad o'u gwefan. Fe welwch ef wedi'i restru fel peiriant chwilio yr ymwelwyd ag ef yn ddiweddar yng ngosodiadau Chromium, a gallwch ei wneud yn beiriant chwilio diofyn.</translation>
 <translation id="8188830160449823068">Mae'r IBAN wedi'i gadw i ddyfais yn unig</translation>
 <translation id="8189557652711717875">Bydd y peiriant chwilio a ddewiswch yn cael ei ddefnyddio ar gyfer nodweddion fel chwilio o'r bar cyfeiriad ac o luniau ar dudalennau gwe.</translation>
 <translation id="8190193880870196235">Rheolir gan estyniad</translation>

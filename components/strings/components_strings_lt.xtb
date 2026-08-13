@@ -610,8 +610,10 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2045871135676061132">Asmeninis vokas</translation>
 <translation id="2048261947532620704">Verčiamas puslapis</translation>
 <translation id="2055016614992422886">Pokalbis</translation>
+<translation id="2058468041496756763">Paieškos variklį galite bet kada pakeisti „Chrome“ nustatymuose. Jei nematote pageidaujamo paieškos variklio, galite atlikti paiešką jo svetainėje. Jis bus rodomas kaip neseniai lankytas paieškos variklis „Chrome“ nustatymuose ir galėsite jį nustatyti kaip numatytąjį.</translation>
 <translation id="2059166748188874810">Savivaldybė</translation>
 <translation id="2059202684901022309">22 x 34 col.</translation>
+<translation id="2063929825539050431">Jei norite greitai išsiųsti šį puslapį į kitą įrenginį, palieskite ir palaikykite adreso juostą</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 pasiūlymas}one{# pasiūlymas}few{# pasiūlymai}many{# pasiūlymo}other{# pasiūlymų}}</translation>
 <translation id="2066969741541525119">Svetainę, kurioje ketinate apsilankyti, užblokavo jūsų organizacija</translation>
 <translation id="2071156619270205202">Šiai kortelei negali būti suteiktas virtualios kortelės numeris.</translation>
@@ -4192,6 +4194,7 @@ Papildoma išsami informacija:
 <translation id="8175796834047840627">„Chrome“ siūlo išsaugoti korteles „Google“ paskyroje, nes esate prisijungę. Šią elgseną galite pakeisti nustatymuose.</translation>
 <translation id="8176440868214972690">Šio įrenginio administratorius nusiuntė tam tikros informacijos, pvz., informacijos apie nustatymus ar politikos nuostatas, toliau nurodytoms svetainėms.</translation>
 <translation id="818254048113802060">{0,plural, =1{Failas „<ph name="FILE_NAME" />“ užblokuotas dėl turinio}one{<ph name="FILE_COUNT" /> failas užblokuotas dėl turinio}few{<ph name="FILE_COUNT" /> failai užblokuoti dėl turinio}many{<ph name="FILE_COUNT" /> failo užblokuota dėl turinio}other{<ph name="FILE_COUNT" /> failų užblokuota dėl turinio}}</translation>
+<translation id="8186171296341598122">Paieškos variklį galite bet kada pakeisti „Chromium“ nustatymuose. Jei nematote pageidaujamo paieškos variklio, galite atlikti paiešką jo svetainėje. Jis bus rodomas kaip neseniai lankytas paieškos variklis „Chromium“ nustatymuose ir galėsite jį nustatyti kaip numatytąjį.</translation>
 <translation id="8188830160449823068">IBAN išsaugotas tik įrenginyje</translation>
 <translation id="8189557652711717875">Pasirinktas paieškos variklis bus naudojamas tokioms funkcijoms kaip paieška iš adreso juostos ir pagal vaizdus tinklalapiuose.</translation>
 <translation id="8190193880870196235">Tvarkoma naudojant plėtinį</translation>

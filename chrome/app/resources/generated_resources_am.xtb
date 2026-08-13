@@ -234,7 +234,6 @@
 <translation id="1164891049599601209">በአታላይ ጣቢያ ላይ ገብቷል</translation>
 <translation id="1165039591588034296">ስህተት</translation>
 <translation id="1166212789817575481">በቀኝ በኩል ያሉ ትሮችን ዝጋ</translation>
-<translation id="1166457390969131095">ከእርስዎ Google መለያ የይለፍ ቃላት እና የይለፍ ቁልፎችን ይጠቀሙ እና ያስቀምጡ</translation>
 <translation id="1166583374608765787">የግምገማ ስም ዝማኔ</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> የዴስክ <ph name="DESK_TITLE" /> ነው</translation>
 <translation id="1167008614036441342">በቅርቡ ስላልተጠቀሙበት ካርድ ተወግዷል</translation>
@@ -3104,7 +3103,6 @@
 <translation id="3385916046075724800">የእርስዎ የትር ቡድኖች አሁን በራስ-ሰር ያስቀምጣሉ።</translation>
 <translation id="3387023983419383865">፣</translation>
 <translation id="3387412523265061481">የተከፋፈለ ዕይታ ውስጥ ይክፈቱ</translation>
-<translation id="3387588771342841525">ሲበራ፣ የይለፍ ቃላት በ<ph name="EMAIL" /> ውስጥ ይቀመጣሉ። ሲጠፋ፣ የይለፍ ቃላት በዚህ መሣሪያ ላይ ብቻ ይቀመጣሉ።</translation>
 <translation id="3387614642886316601">የበለጸገ ፊደል አራሚን ተጠቀም</translation>
 <translation id="3387829698079331264">የእርስዎን መሣሪያ በንቃት በሚጠቀሙበት ጊዜ ለማወቅ አይፈቀድም</translation>
 <translation id="3388094447051599208">የውጽዓት ትሪ ሊሞላ ትንሽ ነው የቀረው</translation>
@@ -4222,6 +4220,7 @@
 <translation id="4232375817808480934">Kerberosን ያዋቅሩ</translation>
 <translation id="4232376164796433044">የይለፍ ቃላት እና ራስ-ሙላ</translation>
 <translation id="4233739489690259993">የእርስዎ Chromebook ከእንግዲህ የደህንነት እና የሶፍትዌር ዝማኔዎችን አይቀበልም። የቅርብ ጊዜውን የደህንነት ጥበቃ እና አዲስ ባህሪያትን ለማግኘት መሣሪያዎን ያልቁ። የቅናሽ ደንቦች ተፈጻሚ ናቸው።</translation>
+<translation id="4235200303672858594">መላው የማያ ገፅ</translation>
 <translation id="4235965441080806197">መግባትን ሰርዝ</translation>
 <translation id="4235976607074422892">የማሸብለል ፍጥነት</translation>
 <translation id="4236163961381003811">ተጨማሪ ቅጥያዎችን ያግኙ</translation>

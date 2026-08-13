@@ -1107,6 +1107,7 @@
 <translation id="2905107382358353958">새 결제 설정에 대한 알림</translation>
 <translation id="2909946352844186028">네트워크 변경이 감지되었습니다.</translation>
 <translation id="2910062169995917863">세션 시간이 초과되었습니다.</translation>
+<translation id="2911224142899421774">Google 월렛 설정은 Chrome에서 저장된 정보에 적용됩니다</translation>
 <translation id="2911973620368911614">작업 계정 사용자 ID</translation>
 <translation id="2914160345369867329"><ph name="SITE" />에서는 사용자 정보를 보호하기 위해 일반적으로 암호화를 사용합니다. 이번에 Chrome에서 <ph name="SITE" />에 연결을 시도했을 때 웹사이트에서 비정상적이고 잘못된 사용자 인증 정보를 반환했습니다. 이는 공격자가 <ph name="SITE" />인 것처럼 가장하려고 하거나 Wi-Fi 로그인 화면이 연결을 방해했기 때문일 수 있습니다. 데이터 교환이 발생하기 전에 Chrome에서 연결을 중단했으므로 사용자 정보는 안전합니다.</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" />에 비정상 종료 발생</translation>

@@ -234,7 +234,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1164891049599601209">Uneto je na obmanjujućem sajtu</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1166212789817575481">Zatvori kartice sa desne strane</translation>
-<translation id="1166457390969131095">Koristite i čuvajte lozinke i pristupne ključeve sa Google naloga</translation>
 <translation id="1166583374608765787">Pregledajte ažuriranje naziva</translation>
 <translation id="1166596238782048887">Kartica <ph name="TAB_TITLE" /> pripada radnoj površini <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Kartica je uklonjena jer je niste skoro koristili</translation>
@@ -3095,7 +3094,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3385916046075724800">Grupe kartica se sada automatski čuvaju.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Otvori u &amp;podeljenom prikazu</translation>
-<translation id="3387588771342841525">Kada je uključeno, lozinke se čuvaju na nalogu <ph name="EMAIL" />. Kada je isključeno, lozinke se čuvaju samo na ovom uređaju.</translation>
 <translation id="3387614642886316601">Koristite poboljšanu proveru pravopisa</translation>
 <translation id="3387829698079331264">Nemaju dozvolu da znaju kada aktivno koristite uređaj</translation>
 <translation id="3388094447051599208">Posuda za odštampani materijal je skoro puna</translation>
@@ -4215,6 +4213,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4232375817808480934">Konfigurišite Kerberos</translation>
 <translation id="4232376164796433044">Lozinke i automatsko popunjavanje</translation>
 <translation id="4233739489690259993">Chromebook više ne prima bezbednosna i softverska ažuriranja. Nadogradite uređaj radi najnovijih bezbednosnih i novih funkcija. Važe uslovi ponude.</translation>
+<translation id="4235200303672858594">Ceo ekran</translation>
 <translation id="4235965441080806197">Otkaži prijavljivanje</translation>
 <translation id="4235976607074422892">Brzina skrolovanja</translation>
 <translation id="4236163961381003811">Otkrijte još dodataka</translation>

@@ -234,7 +234,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1164891049599601209">Uneseno na obmanjujućoj web-lokaciji</translation>
 <translation id="1165039591588034296">Pogreška</translation>
 <translation id="1166212789817575481">Zatvori kartice s desne strane</translation>
-<translation id="1166457390969131095">Koristite i spremajte zaporke i pristupne ključeve sa svojeg Google računa</translation>
 <translation id="1166583374608765787">Pregled ažuriranja naziva</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pripada radnoj površini <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Kartica je uklonjena jer je niste upotrebljavali u posljednje vrijeme</translation>
@@ -3096,7 +3095,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3385916046075724800">Grupe kartica sada se automatski spremaju.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Otvori u &amp;podijeljenom prikazu</translation>
-<translation id="3387588771342841525">Kada je uključeno, zaporke se spremaju na <ph name="EMAIL" />. Kad je isključeno, zaporke se spremaju samo na ovaj uređaj.</translation>
 <translation id="3387614642886316601">Koristi poboljšanu provjeru pravopisa</translation>
 <translation id="3387829698079331264">Web-lokacije kojima nije dopušteno znati kad aktivno koristite uređaj</translation>
 <translation id="3388094447051599208">Izlazna je ladica gotovo puna</translation>
@@ -4216,6 +4214,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4232375817808480934">Konfigurirajte Kerberos</translation>
 <translation id="4232376164796433044">Zaporke i autom. popunjavanje</translation>
 <translation id="4233739489690259993">Chromebook više ne prima sigurnosna i softverska ažuriranja. Nadogradite uređaj kako biste dobili najnovije sigurnosne zaštite i nove značajke. Primjenjuju se uvjeti ponude.</translation>
+<translation id="4235200303672858594">Cijeli zaslon</translation>
 <translation id="4235965441080806197">Otkaži prijavu</translation>
 <translation id="4235976607074422892">Brzina pomicanja</translation>
 <translation id="4236163961381003811">Otkrijte više proširenja</translation>

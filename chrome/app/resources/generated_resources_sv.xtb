@@ -234,7 +234,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1164891049599601209">Har angetts på en bedräglig webbplats</translation>
 <translation id="1165039591588034296">Fel</translation>
 <translation id="1166212789817575481">Stäng flikar till höger</translation>
-<translation id="1166457390969131095">Använd och spara lösenord och nycklar från Google-kontot</translation>
 <translation id="1166583374608765787">Granska uppdaterat namn</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> hör till skrivbordet <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Kortet har tagits bort eftersom du inte har använt det på ett tag</translation>
@@ -3109,7 +3108,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3385916046075724800">Dina flikgrupper sparas nu automatiskt.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Öppna i &amp;delad vy</translation>
-<translation id="3387588771342841525">När funktionen är aktiverad sparas lösenord i <ph name="EMAIL" />. När funktionen är inaktiverad sparas lösenorden endast på den här enheten.</translation>
 <translation id="3387614642886316601">Använd förbättrad stavningskontroll</translation>
 <translation id="3387829698079331264">Har inte tillåtelse att veta om du använder enheten aktivt</translation>
 <translation id="3388094447051599208">Utmatningsfacket är nästan fullt</translation>
@@ -4229,6 +4227,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4232375817808480934">Konfigurera Kerberos</translation>
 <translation id="4232376164796433044">Lösenord och autofyll</translation>
 <translation id="4233739489690259993">Din Chromebook får inte längre säkerhets- och mjukvaruuppdateringar. Uppgradera enheten för den senaste säkerheten och nya funktioner. Villkor för erbjudandet gäller.</translation>
+<translation id="4235200303672858594">Helskärm</translation>
 <translation id="4235965441080806197">Avbryt inloggningen</translation>
 <translation id="4235976607074422892">Scrollningshastighet</translation>
 <translation id="4236163961381003811">Upptäck fler tillägg</translation>

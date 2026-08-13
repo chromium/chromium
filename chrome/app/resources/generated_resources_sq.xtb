@@ -234,7 +234,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1164891049599601209">Ka hyrë në një sajt mashtrues</translation>
 <translation id="1165039591588034296">Gabim</translation>
 <translation id="1166212789817575481">Mbylli skedat në të djathtë</translation>
-<translation id="1166457390969131095">Përdor dhe ruaj fjalëkalimet dhe çelësat e kalimit nga "Llogaria jote e Google"</translation>
 <translation id="1166583374608765787">Shqyrto përditësimin e emrit</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> i përket tavolinës së punës <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Karta u hoq sepse nuk e ke përdorur së fundi</translation>
@@ -3096,7 +3095,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3385916046075724800">Grupet e tua të skedave tani ruhen automatikisht</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Hape në "&amp;Pamjen e ndarë"</translation>
-<translation id="3387588771342841525">Kur kjo është aktive, fjalëkalimet ruhen te <ph name="EMAIL" />. Kur kjo është joaktive, fjalëkalimet ruhen vetëm në këtë pajisje.</translation>
 <translation id="3387614642886316601">Përdor kontrollin drejtshkrimor të përmirësuar</translation>
 <translation id="3387829698079331264">Nuk lejohen të dinë kur ti e përdor pajisjen tënde në mënyrë aktive</translation>
 <translation id="3388094447051599208">Tabakaja e daljes është pothuajse plot</translation>
@@ -4216,6 +4214,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4232375817808480934">Konfiguro Kerberos</translation>
 <translation id="4232376164796433044">Fjalëkalimet dhe plotësimi automatik</translation>
 <translation id="4233739489690259993">Pajisja jote Chromebook nuk merr më përditësime të sigurisë dhe të softuerit. Përmirësoje pajisjen tënde për veçori të reja dhe veçoritë më të fundit të sigurisë. Zbatohen kushtet e ofertës.</translation>
+<translation id="4235200303672858594">Ekrani i plotë</translation>
 <translation id="4235965441080806197">Anulo identifikimin</translation>
 <translation id="4235976607074422892">Shpejtësia e lëvizjes</translation>
 <translation id="4236163961381003811">Zbulo më shumë shtesa</translation>

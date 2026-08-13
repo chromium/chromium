@@ -1107,6 +1107,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2905107382358353958">Opozorilo o novi nastavitvi plačil</translation>
 <translation id="2909946352844186028">Zaznana je bila sprememba omrežja.</translation>
 <translation id="2910062169995917863">Seja je potekla</translation>
+<translation id="2911224142899421774">Nastavitve Google Denarnice veljajo za podatke, shranjene iz Chroma</translation>
 <translation id="2911973620368911614">ID uporabnika za računovodstvo glede opravil</translation>
 <translation id="2914160345369867329">Spletno mesto <ph name="SITE" /> za zaščito vaših podatkov običajno uporablja šifriranje. Ko se je Chrome tokrat poskusil povezati s spletnim mestom <ph name="SITE" />, je to vrnilo nenavadne in nepravilne poverilnice. Do tega lahko pride, če se napadalec lažno predstavlja za spletno mesto <ph name="SITE" /> ali če je povezavo prekinil zaslon za prijavo v omrežje Wi-Fi. Vaši podatki so še vedno varni, saj je Chrome pred izmenjavo podatkov prekinil povezavo.</translation>
 <translation id="2915068235268646559">Zrušitev: <ph name="CRASH_TIME" /></translation>
@@ -4473,7 +4474,7 @@ Dodatne podrobnosti:
 <translation id="8708134712139312373">Lahko zahteva vzpostavitev povezave z napravami Bluetooth.</translation>
 <translation id="8710842507289500830">Slog pisave</translation>
 <translation id="8712637175834984815">Razumem</translation>
-<translation id="8715198179991802709">Chrome je pravkar označil spletno mesto, ki ste ga poskušali obiskati. Izpolnite enominutno anketo in nam pomagajte izboljšati ta opozorila.</translation>
+<translation id="8715198179991802709">Chrome je pravkar izdal opozorilo za spletno mesto, ki ste ga poskušali obiskati. Izpolnite enominutno anketo in nam pomagajte izboljšati ta opozorila.</translation>
 <translation id="8716983145825913456">Varno shranite vozilo</translation>
 <translation id="8717177139469452440">Varno shranite potni list v Google Denarnico</translation>
 <translation id="8718314106902482036">Plačilo ni končano</translation>

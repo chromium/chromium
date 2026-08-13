@@ -1107,6 +1107,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2905107382358353958">Uuest makseseadest teavitamine</translation>
 <translation id="2909946352844186028">Tuvastati võrgumuudatus.</translation>
 <translation id="2910062169995917863">Saabus seansi ajalõpp</translation>
+<translation id="2911224142899421774">Teie Google Walleti seaded rakenduvad Chrome'ist salvestatud teabele</translation>
 <translation id="2911973620368911614">Kasutaja ID tööde arvestuse jaoks</translation>
 <translation id="2914160345369867329">Sait <ph name="SITE" /> kasutab teie teabe kaitsmiseks tavaliselt krüpteerimist. Kui Chrome püüdis seekord saidiga <ph name="SITE" /> ühendust luua, tagastas veebisait ebatavalised ja valed mandaadid. See võib juhtuda siis, kui ründaja proovib teeselda, et on sait <ph name="SITE" />, või WiFi sisselogimiskuva on ühenduse katkestanud. Teie teave on endiselt kaitstud, sest Chrome peatas ühenduse enne andmevahetust.</translation>
 <translation id="2915068235268646559">Kokkujooksmine – <ph name="CRASH_TIME" /></translation>

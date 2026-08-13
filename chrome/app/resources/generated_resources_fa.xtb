@@ -234,7 +234,6 @@
 <translation id="1164891049599601209">در سایت فریب‌دهنده وارد شده است</translation>
 <translation id="1165039591588034296">خطا</translation>
 <translation id="1166212789817575481">بستن برگه‌های سمت راست</translation>
-<translation id="1166457390969131095">‏استفاده و ذخیره گذرواژه‌ها و گذرکلیدهای موجود در «حساب Google»</translation>
 <translation id="1166583374608765787">مرور به‌روزرسانی نام</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> به میز کار <ph name="DESK_TITLE" /> تعلق دارد</translation>
 <translation id="1167008614036441342">کارت برداشته شد، زیرا اخیراً از آن استفاده نکرده‌اید</translation>
@@ -3108,7 +3107,6 @@
 <translation id="3385916046075724800">اکنون گروه‌های زبانه شما به‌طور خودکار ذخیره می‌شوند.</translation>
 <translation id="3387023983419383865">،</translation>
 <translation id="3387412523265061481">باز کردن در «نمای تقسیم‌شده»</translation>
-<translation id="3387588771342841525">وقتی روشن باشد، گذرواژه‌ها در <ph name="EMAIL" /> ذخیره می‌شوند. وقتی خاموش باشد، گذرواژه‌ها فقط در این دستگاه ذخیره می‌شوند.</translation>
 <translation id="3387614642886316601">استفاده از غلط‌یاب املایی بهبودیافته</translation>
 <translation id="3387829698079331264">اجازه ندارد وقتی شما به‌طور فعال از دستگاه استفاده می‌کنید مطلع شود</translation>
 <translation id="3388094447051599208">سینی خروجی تقریباً پر است</translation>
@@ -4228,6 +4226,7 @@
 <translation id="4232375817808480934">‏پیکربندی Kerberos</translation>
 <translation id="4232376164796433044">گذرواژه‌ها و تکمیل خودکار</translation>
 <translation id="4233739489690259993">‏Chromebook شما دیگر به‌روزرسانی‌های امنیتی و نرم‌افزاری را دریافت نمی‌کند. برای دریافت آخرین نسخه امنیتی و ویژگی‌های جدید، دستگاهتان را ارتقا دهید. شرایط پیشنهاد اعمال می‌شود.</translation>
+<translation id="4235200303672858594">کل صفحه‌نمایش</translation>
 <translation id="4235965441080806197">لغو ورود به سیستم</translation>
 <translation id="4235976607074422892">سرعت پیمایش</translation>
 <translation id="4236163961381003811">کاوش افزونه‌های بیشتر</translation>

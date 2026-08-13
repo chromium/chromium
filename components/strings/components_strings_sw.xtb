@@ -610,8 +610,10 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2045871135676061132">Bahasha ya barua Binafsi</translation>
 <translation id="2048261947532620704">Inatafsiri ukurasa</translation>
 <translation id="2055016614992422886">Mazungumzo</translation>
+<translation id="2058468041496756763">Unaweza kubadilisha mtambo wako wa kutafuta wakati wowote kwenye mipangilio ya Chrome. Ikiwa huoni mtambo wa kutafuta unaopendelea, unaweza kutafuta kwenye tovuti yao. Utauona ukiwa umeorodheshwa kama mtambo wa kutafuta uliotembelea hivi majuzi katika mipangilio ya Chrome na unaweza kuufanya chaguomsingi.</translation>
 <translation id="2059166748188874810">Manispaa</translation>
 <translation id="2059202684901022309">Inchi 22 x 34</translation>
+<translation id="2063929825539050431">Ili utume ukurasa huu kwa haraka kwenye kifaa kingine, gusa na ushikilie sehemu ya anwani</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Pendekezo 1}other{Mapendekezo #}}</translation>
 <translation id="2066969741541525119">Tovuti unayoelekea kuifungua imezuiwa na shirika lako</translation>
 <translation id="2071156619270205202">Huwezi kupata namba ya kadi pepe kwa kutumia kadi hii.</translation>
@@ -1107,6 +1109,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2905107382358353958">Arifa kuhusu mipangilio mipya ya malipo</translation>
 <translation id="2909946352844186028">Mabadiliko ya mtandao yamegunduliwa.</translation>
 <translation id="2910062169995917863">Kipindi kimeisha</translation>
+<translation id="2911224142899421774">Mipangilio yako ya Pochi ya Google inatumika kwenye taarifa zilizohifadhiwa kutoka Chrome</translation>
 <translation id="2911973620368911614">Kitambulisho cha mtumiaji cha akaunti ya kazi</translation>
 <translation id="2914160345369867329">Kwa kawaida <ph name="SITE" /> hutumia usimbaji fiche kulinda maelezo yako. Chrome ilipojaribu kuunganisha kwenye <ph name="SITE" /> wakati huu, tovuti ilirudisha kitambulisho batili kisicho cha kawaida. Hali hii inaweza kutokea mvamizi anapojaribu kuiga <ph name="SITE" /> au skrini ya kuingia katika akaunti kwenye Wi-Fi inapokatiza muunganisho. Maelezo yako yangali salama kwa sababu Chrome ilisimamisha muunganisho huo kabla ya data yoyote kutumwa.</translation>
 <translation id="2915068235268646559">Ripoti ya programu kuacha kufanya kazi kuanzia <ph name="CRASH_TIME" /></translation>
@@ -4188,6 +4191,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8175796834047840627">Chrome ina huduma ya kuhifadhi kadi zako kwenye Akaunti yako ya Google kwa sababu umeingia katika akaunti. Unaweza kubadilisha hali hii katika mipangilio.</translation>
 <translation id="8176440868214972690">Msimamizi wa kifaa hiki ametuma maelezo fulani kwenye tovuti zifuatazo, kama vile mipangilio au sera.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> ilizuiwa kwa sababu ya maudhui}other{Faili <ph name="FILE_COUNT" /> zilizuiwa kwa sababu ya maudhui}}</translation>
+<translation id="8186171296341598122">Unaweza kubadilisha mtambo wako wa kutafuta wakati wowote kwenye mipangilio ya Chromium. Ikiwa huoni mtambo wa kutafuta unaopendelea, unaweza kutafuta kwenye tovuti yao. Utauona ukiwa umeorodheshwa kama mtambo wa kutafuta uliotembelea hivi majuzi katika mipangilio ya Chromium na unaweza kuufanya chaguomsingi.</translation>
 <translation id="8188830160449823068">IBAN imehifadhiwa kwenye kifaa tu</translation>
 <translation id="8189557652711717875">Mtambo wa kutafuta utakaochagua utatumika katika vipengele kama vile kutafuta kwenye sehemu ya anwani na kwenye picha katika kurasa za wavuti.</translation>
 <translation id="8190193880870196235">Inadhibitiwa na kiendelezi</translation>

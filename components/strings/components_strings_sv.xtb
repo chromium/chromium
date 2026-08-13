@@ -1107,6 +1107,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2905107382358353958">Varning om ny betalningsinställning</translation>
 <translation id="2909946352844186028">En nätverksförändring upptäcktes.</translation>
 <translation id="2910062169995917863">Tidsgränsen har nåtts för sessionen</translation>
+<translation id="2911224142899421774">Dina Google Wallet-inställningar gäller information som har sparats från Chrome</translation>
 <translation id="2911973620368911614">Användar-id för jobbkonto</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> använder normalt kryptering (SSL) för att skydda din information. När Chrome försökte ansluta till <ph name="SITE" /> den här gången skickade webbplatsen tillbaka ovanliga och felaktiga uppgifter. Sådant kan hända när en angripare utger sig för att vara <ph name="SITE" /> eller när anslutningen har avbrutits av en wifi-inloggningsskärm. Din information är fortfarande säker eftersom Chrome avbröt anslutningen innan någon data utbyttes.</translation>
 <translation id="2915068235268646559">Krasch från <ph name="CRASH_TIME" /></translation>

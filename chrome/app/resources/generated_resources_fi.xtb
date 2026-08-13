@@ -234,7 +234,6 @@
 <translation id="1164891049599601209">Käytetty petollisella sivustolla</translation>
 <translation id="1165039591588034296">Virhe</translation>
 <translation id="1166212789817575481">Sulje oikealla olevat välilehdet</translation>
-<translation id="1166457390969131095">Käytä ja tallenna Google-tilisi salasanoja ja avainkoodeja</translation>
 <translation id="1166583374608765787">Katso nimen muutos</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> kuuluu tälle työpöydälle: <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Kortti poistettu, koska et ole vähään aikaan käyttänyt sitä</translation>
@@ -3108,7 +3107,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3385916046075724800">Välilehtiryhmäsi tallentuvat nyt automaattisesti.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Avaa jaetu&amp;ssa näkymässä</translation>
-<translation id="3387588771342841525">Kun asetus on päällä, salasanat tallennetaan tänne: <ph name="EMAIL" />. Kun asetus on pois päältä, salasanat tallennetaan vain tälle laitteelle.</translation>
 <translation id="3387614642886316601">Käytä parannettua oikeinkirjoituksen tarkistusta</translation>
 <translation id="3387829698079331264">Laitteesi aktiivisen käytön havaitseminen kielletty</translation>
 <translation id="3388094447051599208">Tulostuslokero on melkein täynnä</translation>
@@ -4225,6 +4223,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4232375817808480934">Määritä Kerberos</translation>
 <translation id="4232376164796433044">Salasanat ja autom. täyttö</translation>
 <translation id="4233739489690259993">Chromebook ei enää saa tietoturva- ja ohjelmistopäivityksiä. Päivitä laitteesi, niin saat uusimman tietoturvan ja uudet ominaisuudet. Huomioi tarjousehdot.</translation>
+<translation id="4235200303672858594">Koko ruutu</translation>
 <translation id="4235965441080806197">Peru sisäänkirjautuminen</translation>
 <translation id="4235976607074422892">Vieritysnopeus</translation>
 <translation id="4236163961381003811">Tutustu muihin laajennuksiin</translation>

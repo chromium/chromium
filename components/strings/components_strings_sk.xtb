@@ -1107,6 +1107,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2905107382358353958">Upozornenie na nové nastavenie platieb</translation>
 <translation id="2909946352844186028">Zistila sa zmena siete.</translation>
 <translation id="2910062169995917863">Čas relácie vypršal</translation>
+<translation id="2911224142899421774">Nastavenia Peňaženky Google sa vzťahujú na informácie uložené z Chromu</translation>
 <translation id="2911973620368911614">Číslo používateľa účtovania úlohy</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> zvyčajne chráni vaše informácie šifrovaním. Keď sa Chrome tentokrát pokúsil pripojiť k webu <ph name="SITE" />, odoslal späť nezvyčajné a nesprávne poverenia. Môže sa to stať vtedy, keď sa za web <ph name="SITE" /> vydáva útočník alebo pripojenie preruší prihlasovacia obrazovka siete Wi‑Fi. Vaše informácie sú stále zabezpečené, pretože Chrome zastavil pripojenie ešte pred výmenou dát.</translation>
 <translation id="2915068235268646559">Zrútenie v čase <ph name="CRASH_TIME" /></translation>

@@ -234,7 +234,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1164891049599601209">Skrevet inn på et villedende nettsted</translation>
 <translation id="1165039591588034296">Feil</translation>
 <translation id="1166212789817575481">Lukk fanene til høyre</translation>
-<translation id="1166457390969131095">Bruk og lagre passord og passnøkler fra Google-kontoen din</translation>
 <translation id="1166583374608765787">Gjennomgå navneoppdatering</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> tilhører skrivebordet <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Kortet er fjernet fordi du ikke har brukt det i det siste</translation>
@@ -3106,7 +3105,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3385916046075724800">Fanegruppene dine lagres nå automatisk.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Åpne i &amp;delt visning</translation>
-<translation id="3387588771342841525">Når dette er på, lagres passord i <ph name="EMAIL" />. Når dette er av, lagres passord bare på denne enheten.</translation>
 <translation id="3387614642886316601">Bruk forbedret stavekontroll</translation>
 <translation id="3387829698079331264">Får ikke vite når du bruker enheten aktivt</translation>
 <translation id="3388094447051599208">Utskriftsskuffen er nesten full</translation>
@@ -4224,6 +4222,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4232375817808480934">Konfigurer Kerberos</translation>
 <translation id="4232376164796433044">Passord og autofyll</translation>
 <translation id="4233739489690259993">Chromebooken din får ikke sikkerhets- eller programvareoppdateringer lenger. Oppgrader enheten din for å få de nyeste sikkerhetsfunksjonene og nye funksjoner. Tilbudsvilkår gjelder.</translation>
+<translation id="4235200303672858594">Hele skjermen</translation>
 <translation id="4235965441080806197">Avbryt påloggingen</translation>
 <translation id="4235976607074422892">Rullehastighet</translation>
 <translation id="4236163961381003811">Oppdag flere utvidelser</translation>

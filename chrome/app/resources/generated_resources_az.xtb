@@ -234,7 +234,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1164891049599601209">Aldadıcı saytda daxil edilib</translation>
 <translation id="1165039591588034296">Xəta</translation>
 <translation id="1166212789817575481">Sağ panelləri bağlayın</translation>
-<translation id="1166457390969131095">Google Hesabının parol və giriş açarlarını istifadə edib, yadda saxlayın</translation>
 <translation id="1166583374608765787">Ad güncəlləməsini nəzərdən keçirin</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> masasına aiddir</translation>
 <translation id="1167008614036441342">Son vaxtlar istifadə etmədiyiniz üçün kart silindi</translation>
@@ -3099,7 +3098,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3385916046075724800">Tab qrupları artıq avtomatik yadda saxlanılır.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Bölünmüş görünüşdə açın</translation>
-<translation id="3387588771342841525">Aktiv olduqda parollar <ph name="EMAIL" /> hesabında yadda saxlanır. Deaktiv olduqda parollar yalnız bu cihazda yadda saxlanır.</translation>
 <translation id="3387614642886316601">Qabaqcıl orfoqrafik yoxlama istifadə edin</translation>
 <translation id="3387829698079331264">Cihazınızdan nə zaman aktiv şəkildə istifadə etdiyinizi bilməyə icazə verilmir</translation>
 <translation id="3388094447051599208">Çıxış bölməsi dolmaq üzrədir</translation>
@@ -4217,6 +4215,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4232375817808480934">Kerberos'u konfiqurasiya edin</translation>
 <translation id="4232376164796433044">Parollar və avto-doldurma</translation>
 <translation id="4233739489690259993">Chromebook artıq təhlükəsizlik və proqram təminatı güncəllənmələri qəbul etmir. Ən son təhlükəsizlik və yeni funksiyalar üçün cihazı təkmilləşdirin. Təklif şərtləri tətbiq edilir.</translation>
+<translation id="4235200303672858594">Bütün ekran</translation>
 <translation id="4235965441080806197">Daxilolmanı ləğv edin</translation>
 <translation id="4235976607074422892">Sürüşdürmə sürəti</translation>
 <translation id="4236163961381003811">Digər artırmaları kəşf edin</translation>

@@ -479,6 +479,7 @@
 <translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="2496626742194544812">最初のタブに移動</translation>
 <translation id="2499505845365628575"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> からすべての閲覧履歴を確認できます。</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />データとプライバシーの設定<ph name="END_LINK" />を管理するには、Google ウォレットにアクセスしてください。</translation>
 <translation id="2511117522375201202">不正使用されたパスワード <ph name="NUMBER_OF_PASSWORDS" /> 件: セキュリティが危険にさらされる可能性があります。</translation>
 <translation id="2512709994717613803">レベル <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">タブグループがここに表示されます</translation>

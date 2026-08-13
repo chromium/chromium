@@ -234,7 +234,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1164891049599601209">Fært inn á villandi vefsvæði</translation>
 <translation id="1165039591588034296">Villa</translation>
 <translation id="1166212789817575481">Loka flipum hægra megin</translation>
-<translation id="1166457390969131095">Nota og vista aðgangsorð og aðgangslykla á Google-reikningnum þínum</translation>
 <translation id="1166583374608765787">Fara yfir uppfærslu heitis</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> tilheyrir skrifborðinu <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Kort var fjarlægt vegna þess að þú hefur ekki notað það nýlega</translation>
@@ -3109,7 +3108,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3385916046075724800">Flipahóparnir þínir vistast nú sjálfkrafa.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Opna í &amp;skjáskiptingu</translation>
-<translation id="3387588771342841525">Þegar kveikt er á þessu eru aðgangsorð vistuð á <ph name="EMAIL" />. Þegar slökkt er á þessu eru aðgangsorð aðeins vistuð í þessu tæki.</translation>
 <translation id="3387614642886316601">Nota endurbætta ritvilluleit</translation>
 <translation id="3387829698079331264">Mega ekki vita hvenær þú notar tækið þitt</translation>
 <translation id="3388094447051599208">Prentbakkinn er næstum fullur</translation>
@@ -4229,6 +4227,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4232375817808480934">Stilla Kerberos</translation>
 <translation id="4232376164796433044">Aðgangsorð og sjálfvirk útfylling</translation>
 <translation id="4233739489690259993">Chromebook-tölvan þín fær ekki öryggis- og hugbúnaðaruppfærslur lengur. Uppfærðu tækið til að fá nýjustu öryggisúrræðin og nýja eiginleika. Skilmálar tilboðs gilda.</translation>
+<translation id="4235200303672858594">Allur skjárinn</translation>
 <translation id="4235965441080806197">Hætta við innskráningu</translation>
 <translation id="4235976607074422892">Flettihraði</translation>
 <translation id="4236163961381003811">Sjá fleiri viðbætur</translation>

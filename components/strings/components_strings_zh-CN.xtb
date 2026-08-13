@@ -1107,6 +1107,7 @@
 <translation id="2905107382358353958">关于新付款设置的提醒</translation>
 <translation id="2909946352844186028">检测到了网络变化。</translation>
 <translation id="2910062169995917863">会话超时</translation>
+<translation id="2911224142899421774">您的 Google 钱包设置适用于从 Chrome 保存的信息</translation>
 <translation id="2911973620368911614">工作账号用户 ID</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> 通常会使用加密技术来保护您的信息。Chrome 此次尝试连接到 <ph name="SITE" /> 时，该网站发回了异常的错误凭证。这可能是因为有攻击者在试图冒充 <ph name="SITE" />，或者 Wi-Fi 登录屏幕中断了此次连接。请放心，您的信息仍然是安全的，因为 Chrome 尚未进行任何数据交换便停止了连接。</translation>
 <translation id="2915068235268646559">崩溃时间：<ph name="CRASH_TIME" /></translation>

@@ -234,7 +234,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1164891049599601209">Webgune engainagarri batean idatzi duzu</translation>
 <translation id="1165039591588034296">Errorea</translation>
 <translation id="1166212789817575481">Itxi eskuineko fitxak</translation>
-<translation id="1166457390969131095">Erabili eta gorde Google-ko kontuko pasahitzak eta sarbide-gakoak</translation>
 <translation id="1166583374608765787">Berrikusi aldatutako izena</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> lan-eremukoa da</translation>
 <translation id="1167008614036441342">Kendu egin da txartela, azkenaldian erabili ez duzulako</translation>
@@ -3093,7 +3092,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3385916046075724800">Fitxa taldeak automatikoki gordetzen dira orain.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Ireki ikuspegi zatituan</translation>
-<translation id="3387588771342841525">Aktibatuta badago, pasahitzak <ph name="EMAIL" /> kontuan gordetzen dira. Desaktibatuta badago, pasahitzak gailu honetan soilik gordetzen dira.</translation>
 <translation id="3387614642886316601">Erabili ortografia-zuzentzaile hobetua</translation>
 <translation id="3387829698079331264">Ezin dute jakin gailua noiz ari zaren erabiltzen</translation>
 <translation id="3388094447051599208">Irteerako erretilua ia beteta dago</translation>
@@ -4213,6 +4211,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4232375817808480934">Konfiguratu Kerberos</translation>
 <translation id="4232376164796433044">Pasahitzak eta Betetze automatikoa</translation>
 <translation id="4233739489690259993">Chromebook honek jadanik ez du jasotzen segurtasun- eta software-eguneratzerik. Bertsio-berritu gailua segurtasun eta eginbide berrienak lortzeko. Eskaintzaren baldintzak aplikatzen dira.</translation>
+<translation id="4235200303672858594">Pantaila osoa</translation>
 <translation id="4235965441080806197">Utzi bertan behera saio-hasiera</translation>
 <translation id="4235976607074422892">Gora/Behera egiteko abiadura</translation>
 <translation id="4236163961381003811">Ezagutu luzapen gehiago</translation>

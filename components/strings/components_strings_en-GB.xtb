@@ -1107,6 +1107,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2905107382358353958">Alert about new payment setting</translation>
 <translation id="2909946352844186028">A network change was detected.</translation>
 <translation id="2910062169995917863">Session timed out</translation>
+<translation id="2911224142899421774">Your Google Wallet settings apply to info saved from Chrome</translation>
 <translation id="2911973620368911614">Job accounting user ID</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> normally uses encryption to protect your information. When Chrome tried to connect to <ph name="SITE" /> this time, the website sent back unusual and incorrect credentials. This may happen when an attacker is trying to pretend to be <ph name="SITE" /> or a Wi-Fi sign-in screen has interrupted the connection. Your information is still secure because Chrome stopped the connection before any data was exchanged.</translation>
 <translation id="2915068235268646559">Crash from <ph name="CRASH_TIME" /></translation>

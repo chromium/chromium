@@ -149,6 +149,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negrito</translation>
 <translation id="1247030632403369975">Alumínio</translation>
+<translation id="1249643768796040660">Remover estas informações</translation>
 <translation id="1253846494229886276">A guardar captura de ecrã</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
 <translation id="1255931290436977164">Passaporte</translation>
@@ -610,8 +611,10 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2048261947532620704">A traduzir a página</translation>
 <translation id="2055016614992422886">Conversa</translation>
+<translation id="2058468041496756763">Pode alterar o seu motor de pesquisa em qualquer altura nas definições do Chrome. Se não vir o seu motor de pesquisa preferido, pode fazer uma pesquisa a partir do respetivo site. Vai ser apresentado como um motor de pesquisa visitado recentemente nas definições do Chrome e pode torná-lo o seu motor de pesquisa predefinido.</translation>
 <translation id="2059166748188874810">Município</translation>
 <translation id="2059202684901022309">22 x 34 pol.</translation>
+<translation id="2063929825539050431">Para enviar rapidamente esta página para outro dispositivo, toque sem soltar na barra de endereço</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}other{# sugestões}}</translation>
 <translation id="2066969741541525119">O site seguinte foi bloqueado pela sua organização</translation>
 <translation id="2071156619270205202">Este cartão não é elegível para um número de cartão virtual.</translation>
@@ -4190,6 +4193,7 @@ Detalhes adicionais:
 <translation id="8175796834047840627">O Chrome está a disponibilizar a opção de guardar os seus cartões na sua Conta Google porque tem sessão iniciada. Pode alterar este comportamento nas definições.</translation>
 <translation id="8176440868214972690">O administrador deste serviço enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
 <translation id="818254048113802060">{0,plural, =1{O ficheiro <ph name="FILE_NAME" /> foi bloqueado devido ao conteúdo}other{<ph name="FILE_COUNT" /> ficheiros foram bloqueados devido ao conteúdo}}</translation>
+<translation id="8186171296341598122">Pode alterar o seu motor de pesquisa em qualquer altura nas definições do Chromium. Se não vir o seu motor de pesquisa preferido, pode fazer uma pesquisa a partir do respetivo site. Vai ser apresentado como um motor de pesquisa visitado recentemente nas definições do Chromium e pode torná-lo o seu motor de pesquisa predefinido.</translation>
 <translation id="8188830160449823068">IBAN guardado apenas no dispositivo</translation>
 <translation id="8189557652711717875">O motor de pesquisa que escolher vai ser usado para funcionalidades como pesquisar a partir da barra de endereço e de imagens em páginas Web.</translation>
 <translation id="8190193880870196235">Gerida por uma extensão</translation>

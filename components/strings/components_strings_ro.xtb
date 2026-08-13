@@ -1107,6 +1107,7 @@
 <translation id="2905107382358353958">Alertă cu privire la noua setare pentru plăți</translation>
 <translation id="2909946352844186028">A fost detectată o schimbare a rețelei.</translation>
 <translation id="2910062169995917863">Sesiunea a expirat</translation>
+<translation id="2911224142899421774">Setările Portofelului Google se aplică informațiilor salvate din Chrome</translation>
 <translation id="2911973620368911614">ID-ul de utilizator al contului sarcinii</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> folosește de obicei criptarea pentru a-ți proteja informațiile. Când Chrome a încercat să se conecteze la <ph name="SITE" /> de data aceasta, site-ul a returnat date de conectare neobișnuite și incorecte. Acest lucru s-a întâmplat fie pentru că un atacator încearcă să falsifice site-ul <ph name="SITE" />, fie pentru că un ecran de conectare la Wi-Fi a întrerupt conexiunea. Securitatea informațiilor tale nu a fost afectată, deoarece Chrome a oprit conexiunea înainte să fie transferate date.</translation>
 <translation id="2915068235268646559">Blocare survenită <ph name="CRASH_TIME" /></translation>

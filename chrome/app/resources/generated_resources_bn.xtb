@@ -234,7 +234,6 @@
 <translation id="1164891049599601209">প্রতারণামূলক সাইটে পাসওয়ার্ডটি লিখেছেন</translation>
 <translation id="1165039591588034296">ত্রুটি</translation>
 <translation id="1166212789817575481">ডানদিকের ট্যাবগুলি বন্ধ করুন</translation>
-<translation id="1166457390969131095">আপনার Google অ্যাকাউন্ট থেকে পাসওয়ার্ড ও পাসকী ব্যবহার ও সেভ করুন</translation>
 <translation id="1166583374608765787">নামের আপডেট দেখে নিন</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" />, <ph name="DESK_TITLE" />-এ আছে</translation>
 <translation id="1167008614036441342">কার্ড সরানো হয়েছে কারণ আপনি এটি সম্প্রতি ব্যবহার করেননি</translation>
@@ -3109,7 +3108,6 @@
 <translation id="3385916046075724800">আপনার ট্যাব গ্রুপ অটোমেটিক সেভ হয়।</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">&amp;স্প্লিট ভিউতে খুলুন</translation>
-<translation id="3387588771342841525">চালু থাকলে, <ph name="EMAIL" />-এ পাসওয়ার্ড সেভ হয়। বন্ধ থাকলে, শুধুমাত্র এই ডিভাইসে পাসওয়ার্ড সেভ হয়।</translation>
 <translation id="3387614642886316601">উন্নত বানান পরীক্ষা ব্যবহার করুন</translation>
 <translation id="3387829698079331264">আপনি ডিভাইস কখন সক্রিয়ভাবে ব্যবহার করছেন, তা জানতে দেয় না</translation>
 <translation id="3388094447051599208">আউটপুট ট্রে প্রায় ভর্তি হয়ে গেছে</translation>
@@ -4229,6 +4227,7 @@
 <translation id="4232375817808480934">Kerberos কনফিগার করুন</translation>
 <translation id="4232376164796433044">পাসওয়ার্ড ও অটোফিল</translation>
 <translation id="4233739489690259993">আপনার Chromebook আর নিরাপত্তা এবং সফ্টওয়্যার সংক্রান্ত আপডেট পাচ্ছে না। সর্বশেষ নিরাপত্তা এবং নতুন ফিচারের জন্য আপনার ডিভাইস আপগ্রেড করুন। অফার সংক্রান্ত শর্তাবলী প্রযোজ্য।</translation>
+<translation id="4235200303672858594">সম্পূর্ণ স্ক্রিন</translation>
 <translation id="4235965441080806197">সাইন-ইন বাতিল করুন</translation>
 <translation id="4235976607074422892">স্ক্রল করার স্পিড</translation>
 <translation id="4236163961381003811">আরও এক্সটেনশন খুঁজুন</translation>

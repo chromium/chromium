@@ -234,7 +234,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1164891049599601209">Đã được nhập trên trang web lừa đảo</translation>
 <translation id="1165039591588034296">Lỗi</translation>
 <translation id="1166212789817575481">Đóng các thẻ bên phải</translation>
-<translation id="1166457390969131095">Sử dụng và lưu mật khẩu cũng như khoá truy cập từ Tài khoản Google của bạn</translation>
 <translation id="1166583374608765787">Xem lại bản cập nhật tên</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> thuộc không gian làm việc <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Thẻ đã bị xoá vì gần đây bạn không dùng đến</translation>
@@ -3109,7 +3108,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3385916046075724800">Các nhóm thẻ của bạn giờ đây sẽ tự động lưu.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Mở ở &amp;Chế độ xem phân tách</translation>
-<translation id="3387588771342841525">Khi tính năng này bật, mật khẩu sẽ được lưu trong <ph name="EMAIL" />. Khi tính năng này tắt, mật khẩu chỉ được lưu trên thiết bị này.</translation>
 <translation id="3387614642886316601">Sử dụng tính năng kiểm tra lỗi chính tả nâng cao</translation>
 <translation id="3387829698079331264">Trang web không biết khi bạn đang dùng thiết bị của mình</translation>
 <translation id="3388094447051599208">Khay giấy ra sắp đầy</translation>
@@ -4229,6 +4227,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4232375817808480934">Định cấu hình Kerberos</translation>
 <translation id="4232376164796433044">Mật khẩu và tính năng tự động điền</translation>
 <translation id="4233739489690259993">Chromebook của bạn sẽ không nhận được các bản cập nhật bảo mật và phần mềm nữa. Nâng cấp thiết bị của bạn để nhận bản cập nhật bảo mật mới nhất và các tính năng mới. Có áp dụng điều khoản của ưu đãi.</translation>
+<translation id="4235200303672858594">Toàn màn hình</translation>
 <translation id="4235965441080806197">Hủy đăng nhập</translation>
 <translation id="4235976607074422892">Tốc độ cuộn</translation>
 <translation id="4236163961381003811">Khám phá tiện ích khác</translation>

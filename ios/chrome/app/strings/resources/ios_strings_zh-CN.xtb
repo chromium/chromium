@@ -479,6 +479,7 @@
 <translation id="2496180316473517155">浏览记录</translation>
 <translation id="2496626742194544812">转到第一个标签页</translation>
 <translation id="2499505845365628575">您可在“<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />”中找到您的所有浏览记录。</translation>
+<translation id="251033673027346551">请前往 Google 钱包管理<ph name="BEGIN_LINK" />数据和隐私偏好设置<ph name="END_LINK" />。</translation>
 <translation id="2511117522375201202">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个已泄露的密码，这可能会给您带来安全风险。</translation>
 <translation id="2512709994717613803"><ph name="LEVEL_NUMBER" /> 级</translation>
 <translation id="2513103768503127042">您的标签页分组会显示在此处</translation>
@@ -519,7 +520,7 @@
 <translation id="2640733327287333451">无用户名 ••••••</translation>
 <translation id="264215785133931186">刚刚检查过</translation>
 <translation id="2647434099613338025">添加语言</translation>
-<translation id="2648812801228676606">您已以 <ph name="NAME_OR_EMAIL" /> 的身份保持登录状态</translation>
+<translation id="2648812801228676606">您已使用 <ph name="NAME_OR_EMAIL" /> 的身份登录</translation>
 <translation id="2649592894792404568">您即将删除 Google 密码管理工具数据</translation>
 <translation id="2652129567809778422">选择密码</translation>
 <translation id="2658056020748144467">无法打开文件</translation>
@@ -1515,7 +1516,7 @@
 <translation id="6006672969046233841">打开新的标签页</translation>
 <translation id="6011308810877101166">改进搜索建议</translation>
 <translation id="6012140227487808125">正在加密…</translation>
-<translation id="6027619584715411062">登录后即可在任何设备上使用您的书签、密码等信息。</translation>
+<translation id="6027619584715411062">登录后即可跨设备同步您的书签、密码等信息。</translation>
 <translation id="6027945736510816438">您是想访问 <ph name="WEBSITE" /> 吧？</translation>
 <translation id="6032845897905314562">新功能</translation>
 <translation id="6038823991892265570">管理 Google 存储空间</translation>
@@ -1795,7 +1796,7 @@
 <translation id="6859944681507688231">要扫描二维码或信用卡，请在设置中允许该应用使用相机。</translation>
 <translation id="6862212368460840758">您目前登录的账号为：<ph name="SIGNED_EMAIL" />。
 
-如需在电脑上继续操作，请切换到 <ph name="OTHER_EMAIL" />。您将获得此账号的密码、书签等信息。</translation>
+如需在电脑上继续操作，请切换到 <ph name="OTHER_EMAIL" />。切换完成后，系统会同步此账号的密码、书签等信息。</translation>
 <translation id="6867369562105931222">密码</translation>
 <translation id="6867400383614725881">打开新的无痕式标签页</translation>
 <translation id="686831807558000905">不登录</translation>
@@ -2502,7 +2503,7 @@
 <translation id="9124387962554796433">Google 可能会使用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务。</translation>
 <translation id="9124978074365039456">打开相机和图库，轻松购物、实时翻译、拍照识物</translation>
 <translation id="9130317582644834675">隐藏“缩放文字”</translation>
-<translation id="913036870884277353">轻松打开其他应用中的链接。</translation>
+<translation id="913036870884277353">轻松在其他应用中打开链接。</translation>
 <translation id="9137013805542155359">显示原始网页</translation>
 <translation id="9140888637198815199">A</translation>
 <translation id="9144152097013965297">开启阅读模式</translation>
@@ -2517,7 +2518,7 @@
 <translation id="9162432979321511934">开启“自动填充密码”</translation>
 <translation id="9165320910061267720">若要接收降价提醒通知，您需在 iOS 设置中开启通知功能。</translation>
 <translation id="9179151630575358778">隐藏此内容</translation>
-<translation id="9183563643084679152">您已通过扫描二维码登录 Chrome。您将获得此账号的密码、书签等信息。</translation>
+<translation id="9183563643084679152">您已通过扫描二维码登录 Chrome。系统将同步此账号的密码、书签等信息。</translation>
 <translation id="9183733013282108610">无痕搜索</translation>
 <translation id="9186762474139509529">开始日志记录</translation>
 <translation id="9191031968346938109">添加到…</translation>

@@ -234,7 +234,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1164891049599601209">Megtévesztő webhelyen lett megadva</translation>
 <translation id="1165039591588034296">Hiba</translation>
 <translation id="1166212789817575481">A jobbra eső lapok bezárása</translation>
-<translation id="1166457390969131095">A Google-fiókjában lévő jelszavak és azonosítókulcsok használata és mentése</translation>
 <translation id="1166583374608765787">Névvel módosításának áttekintése</translation>
 <translation id="1166596238782048887">A(z) <ph name="TAB_TITLE" /> a következő számítógéphez tartozik: <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">A kártyát eltávolította a rendszer, mert mostanában nem használta</translation>
@@ -3107,7 +3106,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3385916046075724800">A lapcsoportokat mostantól automatikusan menti a rendszer.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Megnyitá&amp;s osztott nézetben</translation>
-<translation id="3387588771342841525">Ha be van kapcsolva, a jelszavakat a rendszer a következő fiókba menti: <ph name="EMAIL" />. Ha ki van kapcsolva, a rendszer csak ezen az eszközön menti a jelszavakat.</translation>
 <translation id="3387614642886316601">Továbbfejlesztett helyesírás-ellenőrzés használata</translation>
 <translation id="3387829698079331264">Nem tudhatják, hogy Ön mikor használja aktívan az eszközt</translation>
 <translation id="3388094447051599208">A kimeneti tálca majdnem tele van</translation>
@@ -4226,6 +4224,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4232375817808480934">A Kerberos konfigurálása</translation>
 <translation id="4232376164796433044">Jelszavak és automatikus kitöltés</translation>
 <translation id="4233739489690259993">Chromebookja a továbbiakban nem kap biztonsági és szoftverfrissítéseket. Frissítse eszközét, hogy megkapja a legújabb biztonsági és egyéb új funkciókat. Az ajánlatra feltételek vonatkoznak.</translation>
+<translation id="4235200303672858594">Teljes képernyő</translation>
 <translation id="4235965441080806197">Bejelentkezés megszakítása</translation>
 <translation id="4235976607074422892">Görgetési sebesség</translation>
 <translation id="4236163961381003811">További bővítmények felfedezése</translation>

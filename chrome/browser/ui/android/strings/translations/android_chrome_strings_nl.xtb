@@ -85,7 +85,6 @@
 <translation id="1310482092992808703">Tabbladen groeperen</translation>
 <translation id="1318262688555255786">Link delen naar webpagina <ph name="PAGE_TITLE" />. Bron: <ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">Navigatiegeschiedenis is geopend</translation>
-<translation id="1330043879670259913">Je organisatie kan bepaalde informatie bekijken of beheren als je bent ingelogd bij Chrome om je werk in Chrome te beveiligen. Meer informatie</translation>
 <translation id="1331212799747679585">Chrome kan niet updaten. Meer opties</translation>
 <translation id="1332501820983677155">Functiesneltoetsen in Google Chrome</translation>
 <translation id="1333491156693005331">Recent gecheckt</translation>
@@ -602,7 +601,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3513704683820682405">Augmented reality</translation>
 <translation id="3516053221628030540">Naar Google Play</translation>
 <translation id="3518985090088779359">Accepteren en doorgaan</translation>
-<translation id="3519014757432845220">Help de beveiliging tegen spam te verbeteren door content van meldingen en de URL van de site met Google te delen. Content kan door mensen worden beoordeeld.</translation>
+<translation id="3519014757432845220">Help de spambeveiliging te verbeteren door content van meldingen en de URL van de site met Google te delen. Content kan door mensen worden beoordeeld.</translation>
 <translation id="3521388823983121502">Kan niet doorgaan met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Update beschikbaar. Meer opties</translation>
 <translation id="3523789730715594198">Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>

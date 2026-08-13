@@ -234,7 +234,6 @@
 <translation id="1164891049599601209">Yanıltıcı bir sitede girildi</translation>
 <translation id="1165039591588034296">Hata</translation>
 <translation id="1166212789817575481">Sağdaki Sekmeleri Kapat</translation>
-<translation id="1166457390969131095">Google Hesabınızdaki şifreler ile geçiş anahtarları kullanılsın ve kaydedilsin</translation>
 <translation id="1166583374608765787">Ad güncellemesini inceleyin</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> sekmesi, <ph name="DESK_TITLE" /> masasına ait</translation>
 <translation id="1167008614036441342">Yakın zamanda kullanmadığınız için kart kaldırıldı</translation>
@@ -3094,7 +3093,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3385916046075724800">Sekme gruplarınız artık otomatik olarak kaydedilir.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">&amp;Bölünmüş Görünüm'de aç</translation>
-<translation id="3387588771342841525">Bu ayar etkinken şifreler <ph name="EMAIL" /> hesabına kaydedilir. Devre dışı bırakıldığında şifreler yalnızca bu cihaza kaydedilir.</translation>
 <translation id="3387614642886316601">Gelişmiş yazım denetimini kullan</translation>
 <translation id="3387829698079331264">Cihazınızı etkin olarak kullandığınızı bilmesine izin verilmeyenler</translation>
 <translation id="3388094447051599208">Çıkış tepsisi neredeyse dolu</translation>
@@ -4214,6 +4212,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4232375817808480934">Kerberos'u yapılandırın</translation>
 <translation id="4232376164796433044">Şifreler ve Otomatik Doldurma</translation>
 <translation id="4233739489690259993">Chromebook'unuz artık güvenlik ve yazılım güncellemeleri almıyor. En son güvenlik özelliklerini ve yeni özellikleri kullanmak için cihazınızı yeni sürüme geçirin. Teklif koşulları geçerlidir.</translation>
+<translation id="4235200303672858594">Tüm ekran</translation>
 <translation id="4235965441080806197">Oturum açmayı iptal et</translation>
 <translation id="4235976607074422892">Kaydırma hızı</translation>
 <translation id="4236163961381003811">Daha fazla uzantı keşfedin</translation>

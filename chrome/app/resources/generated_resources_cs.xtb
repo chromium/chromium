@@ -234,7 +234,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1164891049599601209">Zadáno na klamavém webu</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1166212789817575481">Zavřít karty napravo</translation>
-<translation id="1166457390969131095">Používat hesla a přístupové klíče z účtu Google a ukládat je do něj</translation>
 <translation id="1166583374608765787">Zkontrolujte změnu názvu</translation>
 <translation id="1166596238782048887">Karta <ph name="TAB_TITLE" /> patří k ploše <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Karta byla odstraněna, protože jste ji v poslední době nepoužívali</translation>
@@ -3094,7 +3093,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3385916046075724800">Skupiny karet se teď automaticky ukládají.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Otevřít v &amp;rozděleném zobrazení</translation>
-<translation id="3387588771342841525">Když je tato funkce zapnutá, hesla se ukládají do účtu <ph name="EMAIL" />. Když je tato funkce vypnutá, hesla se ukládají pouze do tohoto zařízení.</translation>
 <translation id="3387614642886316601">Použít vylepšenou kontrolu pravopisu</translation>
 <translation id="3387829698079331264">Nemohou zjistit, kdy aktivně používáte své zařízení</translation>
 <translation id="3388094447051599208">Výstupní zásobník je téměř plný</translation>
@@ -4213,6 +4211,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4232375817808480934">Nakonfigurovat Kerberos</translation>
 <translation id="4232376164796433044">Hesla a automatické vyplňování</translation>
 <translation id="4233739489690259993">Váš Chromebook již nedostává aktualizace zabezpečení a softwaru. Pokud chcete mít nejnovější zabezpečení a nové funkce, upgradujte na nové zařízení. Platí podmínky nabídky.</translation>
+<translation id="4235200303672858594">Celá obrazovka</translation>
 <translation id="4235965441080806197">Zrušit přihlášení</translation>
 <translation id="4235976607074422892">Rychlost posouvání</translation>
 <translation id="4236163961381003811">Objevit další rozšíření</translation>

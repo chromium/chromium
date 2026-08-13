@@ -234,7 +234,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1164891049599601209">Dimasukkan pada situs yang tidak jujur</translation>
 <translation id="1165039591588034296">Kesalahan</translation>
 <translation id="1166212789817575481">Tutup Tab di Sebelah Kanan</translation>
-<translation id="1166457390969131095">Gunakan dan simpan sandi serta kunci sandi dari Akun Google Anda</translation>
 <translation id="1166583374608765787">Tinjau pembaruan nama</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> milik desktop <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Kartu dihapus karena Anda tidak menggunakannya baru-baru ini</translation>
@@ -3108,7 +3107,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3385916046075724800">Grup tab Anda kini disimpan secara otomatis.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Buka dalam &amp;Tampilan Terpisah</translation>
-<translation id="3387588771342841525">Jika diaktifkan, sandi akan disimpan di <ph name="EMAIL" />. Jika dinonaktifkan, sandi hanya akan disimpan ke perangkat ini.</translation>
 <translation id="3387614642886316601">Gunakan fitur periksa ejaan lanjutan</translation>
 <translation id="3387829698079331264">Tidak diizinkan mengetahui saat Anda aktif menggunakan perangkat</translation>
 <translation id="3388094447051599208">Baki hasil cetak hampir penuh</translation>
@@ -4228,6 +4226,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4232375817808480934">Konfigurasikan Kerberos</translation>
 <translation id="4232376164796433044">Sandi dan Isi Otomatis</translation>
 <translation id="4233739489690259993">Chromebook Anda tidak lagi menerima update keamanan dan software. Upgrade perangkat Anda untuk mendapatkan fitur dan keamanan terbaru. Persyaratan penawaran berlaku.</translation>
+<translation id="4235200303672858594">Seluruh layar</translation>
 <translation id="4235965441080806197">Batalkan proses masuk</translation>
 <translation id="4235976607074422892">Kecepatan scroll</translation>
 <translation id="4236163961381003811">Temukan lebih banyak ekstensi</translation>

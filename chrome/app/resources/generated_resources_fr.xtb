@@ -234,7 +234,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1164891049599601209">Saisi sur un site trompeur</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1166212789817575481">Fermer les onglets sur la droite</translation>
-<translation id="1166457390969131095">Utiliser et enregistrer les mots de passe et clés d'accès de votre compte Google</translation>
 <translation id="1166583374608765787">Examiner la modification du nom</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> fait partie du bureau <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Carte supprimée, car vous ne l'avez pas utilisée récemment</translation>
@@ -3094,7 +3093,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3385916046075724800">Vos groupes d'onglets sont désormais enregistrés automatiquement.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Ouvrir en vue &amp;fractionnée</translation>
-<translation id="3387588771342841525">Lorsque cette option est activée, les mots de passe sont enregistrés dans <ph name="EMAIL" />. Lorsqu'elle est désactivée, ils ne sont enregistrés que sur cet appareil.</translation>
 <translation id="3387614642886316601">Utiliser le correcteur orthographique amélioré</translation>
 <translation id="3387829698079331264">Non autorisés à savoir quand vous utilisez activement votre appareil</translation>
 <translation id="3388094447051599208">Bac de sortie presque plein</translation>
@@ -4214,6 +4212,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
 <translation id="4232376164796433044">Mots de passe et saisie automatique</translation>
 <translation id="4233739489690259993">Votre Chromebook ne reçoit plus de mises à jour logicielles ni de sécurité. Mettez-le à niveau pour bénéficier des dernières mises à jour de sécurité et de nouvelles fonctionnalités. Offre soumise à conditions.</translation>
+<translation id="4235200303672858594">Plein écran</translation>
 <translation id="4235965441080806197">Annuler la connexion</translation>
 <translation id="4235976607074422892">Vitesse du défilement</translation>
 <translation id="4236163961381003811">Découvrir plus d'extensions</translation>

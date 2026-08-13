@@ -234,7 +234,6 @@
 <translation id="1164891049599601209">사기성 사이트에서 입력됨</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1166212789817575481">오른쪽 탭 닫기</translation>
-<translation id="1166457390969131095">Google 계정에서 비밀번호와 패스키 사용 및 저장</translation>
 <translation id="1166583374608765787">이름 업데이트 검토</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> 탭이 <ph name="DESK_TITLE" /> 데스크로 이동했습니다</translation>
 <translation id="1167008614036441342">최근에 사용하지 않은 카드가 삭제되었습니다.</translation>
@@ -3110,7 +3109,6 @@
 <translation id="3385916046075724800">이제 탭 그룹이 자동으로 저장됩니다.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">분할 보기에서 열기</translation>
-<translation id="3387588771342841525">사용 설정하면 비밀번호가 <ph name="EMAIL" />에 저장됩니다. 사용 중지하면 비밀번호가 이 기기에만 저장됩니다.</translation>
 <translation id="3387614642886316601">향상된 맞춤법 검사 기능 사용</translation>
 <translation id="3387829698079331264">현재 기기를 사용 중인지 알 수 없음</translation>
 <translation id="3388094447051599208">배지대가 거의 가득 찼습니다.</translation>
@@ -4228,6 +4226,7 @@
 <translation id="4232375817808480934">Kerberos 설정</translation>
 <translation id="4232376164796433044">비밀번호 및 자동 완성</translation>
 <translation id="4233739489690259993">더 이상 Chromebook에 보안 및 소프트웨어 업데이트가 적용되지 않습니다. 최신 보안과 새로운 기능을 이용하려면 기기를 업그레이드하세요. 혜택 약관이 적용됩니다.</translation>
+<translation id="4235200303672858594">전체 화면</translation>
 <translation id="4235965441080806197">로그인 취소</translation>
 <translation id="4235976607074422892">스크롤 속도</translation>
 <translation id="4236163961381003811">더 많은 확장 프로그램 찾아보기</translation>

@@ -234,7 +234,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1164891049599601209">Auf betrügerischer Website eingegeben</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1166212789817575481">Tabs rechts schließen</translation>
-<translation id="1166457390969131095">Passwörter und Passkeys aus deinem Google-Konto verwenden und speichern</translation>
 <translation id="1166583374608765787">Namensaktualisierung prüfen</translation>
 <translation id="1166596238782048887">„<ph name="TAB_TITLE" />“ gehört zum Desktop „<ph name="DESK_TITLE" />“</translation>
 <translation id="1167008614036441342">Die Karte wurde entfernt, weil du sie in letzter Zeit nicht verwendet hast</translation>
@@ -3094,7 +3093,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3385916046075724800">Deine Tabgruppen werden jetzt automatisch gespeichert.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">In &amp;geteilter Ansicht öffnen</translation>
-<translation id="3387588771342841525">Wenn diese Option aktiviert ist, werden Passwörter in <ph name="EMAIL" /> gespeichert. Ist sie deaktiviert, werden Passwörter nur auf diesem Gerät gespeichert.</translation>
 <translation id="3387614642886316601">Erweiterte Rechtschreibprüfung verwenden</translation>
 <translation id="3387829698079331264">Darf keine Informationen zu deiner aktiven Nutzung dieses Geräts abrufen</translation>
 <translation id="3388094447051599208">Ausgabefach fast voll</translation>
@@ -4214,6 +4212,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4232375817808480934">Kerberos konfigurieren</translation>
 <translation id="4232376164796433044">Passwörter und Autofill</translation>
 <translation id="4233739489690259993">Dein Chromebook erhält keine Sicherheits- und Softwareupdates mehr. Aktualisiere dein Gerät, um die neuesten Sicherheitsupdates und Funktionen zu erhalten. Es gelten die Angebotsbedingungen.</translation>
+<translation id="4235200303672858594">Gesamten Bildschirm</translation>
 <translation id="4235965441080806197">Anmeldung abbrechen</translation>
 <translation id="4235976607074422892">Scrollgeschwindigkeit</translation>
 <translation id="4236163961381003811">Mehr Erweiterungen entdecken</translation>

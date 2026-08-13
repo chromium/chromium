@@ -234,7 +234,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1164891049599601209">Inserita in un sito ingannevole</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1166212789817575481">Chiudi schede a destra</translation>
-<translation id="1166457390969131095">Usa e salva password e passkey del tuo Account Google</translation>
 <translation id="1166583374608765787">Controlla l'aggiornamento del nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> appartiene alla scrivania <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Carta rimossa perché non utilizzata di recente</translation>
@@ -3095,7 +3094,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3385916046075724800">I gruppi di schede vengono salvati automaticamente.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Apri in visualizzazione divisa</translation>
-<translation id="3387588771342841525">Quando l'opzione è attiva, le password vengono salvate in <ph name="EMAIL" />. Quando non è attiva, le password vengono salvate solo su questo dispositivo</translation>
 <translation id="3387614642886316601">Usa il controllo ortografico avanzato</translation>
 <translation id="3387829698079331264">Non autorizzati a sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
 <translation id="3388094447051599208">Il vassoio di uscita è quasi pieno</translation>
@@ -4215,6 +4213,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4232375817808480934">Configura Kerberos</translation>
 <translation id="4232376164796433044">Password e compilazione automatica</translation>
 <translation id="4233739489690259993">Il tuo Chromebook non riceve più aggiornamenti della sicurezza e del software. Esegui l'upgrade del tuo dispositivo per avere le funzionalità di sicurezza nuove e più recenti. Si applicano i termini dell'offerta.</translation>
+<translation id="4235200303672858594">Schermo intero</translation>
 <translation id="4235965441080806197">Annulla accesso</translation>
 <translation id="4235976607074422892">Velocità di scorrimento</translation>
 <translation id="4236163961381003811">Scopri altre estensioni</translation>

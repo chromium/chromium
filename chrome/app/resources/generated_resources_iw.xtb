@@ -234,7 +234,6 @@
 <translation id="1164891049599601209">הוזנה באתר מטעה</translation>
 <translation id="1165039591588034296">שגיאה</translation>
 <translation id="1166212789817575481">סגירת הכרטיסיות מימין</translation>
-<translation id="1166457390969131095">‏שימוש בסיסמאות ובמפתחות גישה בחשבון Google ושמירה שלהם</translation>
 <translation id="1166583374608765787">בדיקת עדכון השם</translation>
 <translation id="1166596238782048887">הכרטיסייה <ph name="TAB_TITLE" /> שייכת לשולחן העבודה הווירטואלי <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">הכרטיס הוסר כי לא השתמשת בו לאחרונה</translation>
@@ -3108,7 +3107,6 @@
 <translation id="3385916046075724800">קבוצות הכרטיסיות נשמרות עכשיו באופן אוטומטי.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">פתיחה בתצוגה מפוצלת</translation>
-<translation id="3387588771342841525">כשההגדרה מופעלת, הסיסמאות נשמרות בחשבון <ph name="EMAIL" />. כשההגדרה מושבתת, הסיסמאות נשמרות רק במכשיר הזה.</translation>
 <translation id="3387614642886316601">שימוש בבדיקת איות משופרת</translation>
 <translation id="3387829698079331264">אין הרשאה לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="3388094447051599208">מגש הפלט כמעט מלא</translation>
@@ -4228,6 +4226,7 @@
 <translation id="4232375817808480934">‏הגדרת Kerberos</translation>
 <translation id="4232376164796433044">סיסמאות ומילוי אוטומטי</translation>
 <translation id="4233739489690259993">‏לא יתקבלו יותר עדכוני אבטחה ותוכנה במכשיר Chromebook שלך. צריך לשדרג את המכשיר כדי לקבל את עדכוני האבטחה האחרונים והתכונות החדשות. בכפוף לתנאי המבצע.</translation>
+<translation id="4235200303672858594">כל המסך</translation>
 <translation id="4235965441080806197">ביטול כניסה</translation>
 <translation id="4235976607074422892">מהירות הגלילה</translation>
 <translation id="4236163961381003811">תוספים נוספים</translation>

@@ -1107,6 +1107,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2905107382358353958">Alerte concernant le nouveau paramètre de paiement</translation>
 <translation id="2909946352844186028">Un changement de réseau a été détecté.</translation>
 <translation id="2910062169995917863">La session a expiré</translation>
+<translation id="2911224142899421774">Vos paramètres Google Wallet s'appliquent aux informations enregistrées depuis Chrome</translation>
 <translation id="2911973620368911614">ID utilisateur pour la comptabilisation de travaux</translation>
 <translation id="2914160345369867329">Un chiffrement est normalement utilisé sur le site <ph name="SITE" /> pour protéger vos informations. Lors de la dernière tentative de connexion de Chrome au site <ph name="SITE" />, des identifiants inhabituels et incorrects ont été retournés. Il est possible qu'un individu malveillant tente de se faire passer pour <ph name="SITE" /> ou qu'un écran de connexion Wi-Fi ait interrompu la connexion. Vos informations restent sécurisées, car nous avons arrêté la connexion avant l'échange des données.</translation>
 <translation id="2915068235268646559">Date et heure du plantage : <ph name="CRASH_TIME" /></translation>

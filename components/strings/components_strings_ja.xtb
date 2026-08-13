@@ -1107,6 +1107,7 @@
 <translation id="2905107382358353958">新しいお支払い設定に関するアラート</translation>
 <translation id="2909946352844186028">ネットワークの変更が検出されました。</translation>
 <translation id="2910062169995917863">セッションがタイムアウトしました</translation>
+<translation id="2911224142899421774">Chrome で保存した情報には Google ウォレットの設定が適用されます</translation>
 <translation id="2911973620368911614">ジョブ管理ユーザー ID</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> では通常、暗号化して情報を保護しています。今回、Chrome から <ph name="SITE" /> への接続試行時に、このウェブサイトからいつもとは異なる誤った認証情報が返されました。悪意のあるユーザーが <ph name="SITE" /> になりすまそうとしているか、Wi-Fi ログイン画面で接続が中断された可能性があります。データのやり取りが行われる前に Chrome によって接続が停止されたため、情報は引き続き保護されています。</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> のクラッシュ</translation>

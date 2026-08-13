@@ -234,7 +234,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1164891049599601209">Inilagay sa mapanlinlang na site</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Isara ang Mga Tab na nasa Kanan</translation>
-<translation id="1166457390969131095">Gumamit at mag-save ng mga password at passkey mula sa iyong Google Account</translation>
 <translation id="1166583374608765787">Suriin ang update sa pangalan</translation>
 <translation id="1166596238782048887">Kabilang ang <ph name="TAB_TITLE" /> sa desk na <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Inalis ang card dahil hindi mo ito ginamit kamakailan</translation>
@@ -3109,7 +3108,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3385916046075724800">Awtomatiko na ngayong nase-save ang iyong mga grupo ng tab.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Buksan sa &amp;Split View</translation>
-<translation id="3387588771342841525">Kapag naka-on, mase-save ang mga password sa <ph name="EMAIL" />. Kapag naka-off, mase-save lang ang mga password sa device na ito.</translation>
 <translation id="3387614642886316601">Gumamit ng pinahusay na pang-check ng pagbabaybay</translation>
 <translation id="3387829698079331264">Hindi pinapayagang makaalam kung aktibo mong ginagamit ang iyong device</translation>
 <translation id="3388094447051599208">Malapit nang mapuno ang tray para sa output</translation>
@@ -4229,6 +4227,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4232375817808480934">I-configure ang Kerberos</translation>
 <translation id="4232376164796433044">Mga Password at Autofill</translation>
 <translation id="4233739489690259993">Hindi na nakakatanggap ang iyong Chromebook ng mga update sa seguridad at software. I-upgrade ang iyong device para sa pinakabagong seguridad at mga bagong feature. May mga nalalapat na tuntunin ng alok.</translation>
+<translation id="4235200303672858594">Buong screen</translation>
 <translation id="4235965441080806197">Kanselahin ang pag-sign in</translation>
 <translation id="4235976607074422892">Bilis ng pag-scroll</translation>
 <translation id="4236163961381003811">Tumuklas ng higit pang extension</translation>

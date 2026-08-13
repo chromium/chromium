@@ -234,7 +234,6 @@
 <translation id="1164891049599601209">فریب والی سائٹ پر درج کیا گیا</translation>
 <translation id="1165039591588034296">خرابی</translation>
 <translation id="1166212789817575481">دائیں جانب والے ٹیبز بند کریں</translation>
-<translation id="1166457390969131095">‏اپنے Google اکاؤنٹ سے پاس ورڈز اور پاس کیز کا استعمال کریں اور انہیں محفوظ کریں</translation>
 <translation id="1166583374608765787">نام میں ہوئی اپ ڈیٹ کا جائزہ لیں</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> ڈیسک سے تعلق رکھتی ہے</translation>
 <translation id="1167008614036441342">کارڈ ہٹا دیا گیا ہے کیونکہ آپ نے اسے حال ہی میں استعمال نہیں کیا ہے</translation>
@@ -3094,7 +3093,6 @@
 <translation id="3385916046075724800">آپ کے ٹیب گروپس اب خودکار طور پر محفوظ ہو جاتے ہیں۔</translation>
 <translation id="3387023983419383865">،</translation>
 <translation id="3387412523265061481">‫&amp;اسپلٹ ویو میں کھولیں</translation>
-<translation id="3387588771342841525">آن ہونے پر پاس ورڈز <ph name="EMAIL" /> میں محفوظ ہوتے ہیں- آف ہونے پر پاس ورڈز صرف اس آلے پر محفوظ ہوتے ہیں۔</translation>
 <translation id="3387614642886316601">املا کی بہتر جانچ استعمال کریں</translation>
 <translation id="3387829698079331264">آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں یہ جاننے کی اجازت نہیں ہے</translation>
 <translation id="3388094447051599208">آؤٹ پٹ ٹرے تقریباً بھر گیا ہے</translation>
@@ -4214,6 +4212,7 @@
 <translation id="4232375817808480934">‏Kerberos کنفیگر کریں</translation>
 <translation id="4232376164796433044">پاس ورڈز اور آٹو فل</translation>
 <translation id="4233739489690259993">‏اب آپ کے Chromebook کو سیکیورٹی اور سافٹ ویئر اپ ڈیٹس موصول نہیں ہو رہی ہیں۔ تازہ ترین سیکیورٹی اور نئی خصوصیات کے لیے اپنے آلے کو اپ گریڈ کریں۔ پیشکش کی شرائط لاگو ہوتی ہیں۔</translation>
+<translation id="4235200303672858594">پوری اسکرین</translation>
 <translation id="4235965441080806197">سائن ان کو منسوخ کریں</translation>
 <translation id="4235976607074422892">سکرول کرنے کی رفتار</translation>
 <translation id="4236163961381003811">مزید ایکسٹینشنز دریافت کریں</translation>

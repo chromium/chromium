@@ -1107,6 +1107,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2905107382358353958">Varsel om ny betalingsinnstilling</translation>
 <translation id="2909946352844186028">En nettverksendring ble oppdaget.</translation>
 <translation id="2910062169995917863">Økten er tidsavbrutt</translation>
+<translation id="2911224142899421774">Google Wallet-innstillingene dine gjelder for informasjon som er lagret fra Chrome</translation>
 <translation id="2911973620368911614">Bruker-ID for jobbregnskap</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> bruker vanligvis kryptering for å beskytte informasjonen din. Da Chrome prøvde å koble til <ph name="SITE" /> denne gangen, sendte nettstedet uvanlig og feil legitimasjon tilbake. Dette kan skje når en angriper prøver å utgi seg for å være <ph name="SITE" />, eller hvis en Wifi-påloggingsskjerm har avbrutt tilkoblingen. Informasjonen din er likevel sikker, ettersom Chrome stoppet tilkoblingen før det ble utvekslet data.</translation>
 <translation id="2915068235268646559">Krasj fra <ph name="CRASH_TIME" /></translation>

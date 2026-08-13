@@ -1107,6 +1107,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2905107382358353958">Ilmoitus uudesta maksuasetuksesta</translation>
 <translation id="2909946352844186028">Verkossa havaittiin muutos.</translation>
 <translation id="2910062169995917863">Istunto aikakatkaistu</translation>
+<translation id="2911224142899421774">Google Walletin asetukset koskevat Chromesta tallennettuja tietoja</translation>
 <translation id="2911973620368911614">Työpaikan kirjanpitokäyttäjän tunnus</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> suojaa tietosi normaalisti salauksen avulla. Kun Chrome yritti yhdistää sivustoon (<ph name="SITE" />) tällä kertaa, sivusto palautti epätavalliset ja virheelliset tiedot. Joko hyökkääjä yrittää esittää olevansa <ph name="SITE" /> tai Wi-Fi-kirjautumisnäyttö on keskeyttänyt yhteyden. Tietosi ovat edelleen turvassa, sillä Chrome katkaisi yhteyden, ennen kuin mitään dataa vaihdettiin.</translation>
 <translation id="2915068235268646559">Kaatuminen <ph name="CRASH_TIME" /></translation>

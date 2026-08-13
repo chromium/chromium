@@ -234,7 +234,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1164891049599601209">O contrasinal utilizouse nun sitio enganoso</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1166212789817575481">Pechar as pestanas situadas á dereita</translation>
-<translation id="1166457390969131095">Usar e gardar contrasinais e claves de acceso da túa Conta de Google</translation>
 <translation id="1166583374608765787">Revisa o cambio do nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> é do escritorio <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Quitouse a tarxeta porque non a usaches recentemente</translation>
@@ -3096,7 +3095,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3385916046075724800">Agora os teus grupos de pestanas gárdanse automaticamente.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Abrir nunha &amp;vista dividida</translation>
-<translation id="3387588771342841525">Cando a opción estea activada, os contrasinais gardaranse en <ph name="EMAIL" />. Se está desactivada, gardaranse só neste dispositivo.</translation>
 <translation id="3387614642886316601">Utilizar corrector ortográfico mellorado</translation>
 <translation id="3387829698079331264">Permiso denegado para saber cando estás utilizando o dispositivo de maneira activa</translation>
 <translation id="3388094447051599208">A bandexa de saída case está chea</translation>
@@ -4219,6 +4217,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4232375817808480934">Configurar Kerberos</translation>
 <translation id="4232376164796433044">Contrasinais e autocompletado</translation>
 <translation id="4233739489690259993">O teu Chromebook xa non vai recibir máis actualizacións de seguranza e software. Cámbiao por un dispositivo que conte coa seguranza e as funcións máis recentes. Oferta suxeita a condicións.</translation>
+<translation id="4235200303672858594">Pantalla completa</translation>
 <translation id="4235965441080806197">Cancelar inicio de sesión</translation>
 <translation id="4235976607074422892">Velocidade do desprazamento</translation>
 <translation id="4236163961381003811">Descubrir máis extensións</translation>

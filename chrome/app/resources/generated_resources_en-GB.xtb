@@ -234,7 +234,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1164891049599601209">Entered on deceptive site</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Close Tabs to the Right</translation>
-<translation id="1166457390969131095">Use and save passwords and passkeys from your Google Account</translation>
 <translation id="1166583374608765787">Review name update</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> belongs to desk <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Card removed because you haven't used it recently</translation>
@@ -3109,7 +3108,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3385916046075724800">Your tab groups now automatically save.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Open in &amp;split view</translation>
-<translation id="3387588771342841525">When on, passwords are saved in <ph name="EMAIL" />. When off, passwords are saved only to this device.</translation>
 <translation id="3387614642886316601">Use enhanced spell check</translation>
 <translation id="3387829698079331264">Not allowed to know when you're actively using your device</translation>
 <translation id="3388094447051599208">Output tray is almost full</translation>
@@ -4229,6 +4227,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4232375817808480934">Configure Kerberos</translation>
 <translation id="4232376164796433044">Passwords and autofill</translation>
 <translation id="4233739489690259993">Your Chromebook is no longer receiving security and software updates. Upgrade your device for the latest security features and new features. Offer terms apply.</translation>
+<translation id="4235200303672858594">Entire screen</translation>
 <translation id="4235965441080806197">Cancel sign in</translation>
 <translation id="4235976607074422892">Scrolling speed</translation>
 <translation id="4236163961381003811">Discover more extensions</translation>

@@ -1107,6 +1107,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2905107382358353958">Avviso relativo a nuova impostazione di pagamento</translation>
 <translation id="2909946352844186028">È stato rilevato un cambio di rete.</translation>
 <translation id="2910062169995917863">Sessione scaduta</translation>
+<translation id="2911224142899421774">Le impostazioni di Google Wallet si applicano alle informazioni salvate da Chrome</translation>
 <translation id="2911973620368911614">ID utente Job Accounting</translation>
 <translation id="2914160345369867329">In genere <ph name="SITE" /> utilizza la crittografia per proteggere le tue informazioni. Questa volta, quando Chrome ha provato a connettersi a <ph name="SITE" />, il sito web ha restituito credenziali insolite e non corrette. È possibile che un attaccante stia cercando di spacciarsi per il sito <ph name="SITE" /> oppure che una schermata di accesso alla rete Wi-Fi abbia interrotto la connessione. Le tue informazioni sono ancora al sicuro perché Chrome ha interrotto la connessione prima che avvenissero scambi di dati.</translation>
 <translation id="2915068235268646559">Arresto anomalo dalle ore <ph name="CRASH_TIME" /></translation>

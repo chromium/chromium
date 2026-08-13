@@ -85,7 +85,6 @@
 <translation id="1310482092992808703">将标签页分组</translation>
 <translation id="1318262688555255786">分享指向“<ph name="PAGE_TITLE" />”网页的链接。来源：<ph name="PAGE_URL" /></translation>
 <translation id="1327257854815634930">导航历史记录已打开</translation>
-<translation id="1330043879670259913">为了保障您在 Chrome 上的工作安全，当您登录 Chrome 后，您的组织将能够查看或管理某些信息。了解详情</translation>
 <translation id="1331212799747679585">Chrome 无法更新。更多选项</translation>
 <translation id="1332501820983677155">Google Chrome 功能快捷键</translation>
 <translation id="1333491156693005331">近期检查过</translation>
@@ -856,7 +855,7 @@
 <translation id="4532845899244822526">选择文件夹</translation>
 <translation id="4535755320005483982">共享“<ph name="GROUP_TITLE" />”标签页分组</translation>
 <translation id="4537137366307982887">提示通知选择启用底部动作条已以最大高度显示</translation>
-<translation id="4537987892902330164">您已以 <ph name="NAME_OR_EMAIL" /> 的身份保持登录状态。</translation>
+<translation id="4537987892902330164">您已使用 <ph name="NAME_OR_EMAIL" /> 的身份登录。</translation>
 <translation id="4543131175509360848">无通行密钥表格</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页}other{<ph name="TAB_COUNT_MANY" /> 个标签页，<ph name="TAB_COUNT_INCOGNITO" /> 个无痕式标签页}}</translation>
 <translation id="4558311620361989323">网页快捷键</translation>

@@ -1107,6 +1107,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2905107382358353958">Alert o nowych ustawieniach płatności</translation>
 <translation id="2909946352844186028">Wykryto zmianę sieci.</translation>
 <translation id="2910062169995917863">Sesja przekroczyła limit czasu</translation>
+<translation id="2911224142899421774">Ustawienia Portfela Google mają zastosowanie do zapisywanych informacji z Chrome</translation>
 <translation id="2911973620368911614">Identyfikator użytkownika konta zadania</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> zazwyczaj chroni Twoje informacje za pomocą szyfrowania. Tym razem podczas próby połączenia się ze stroną <ph name="SITE" /> w Chrome strona odesłała nietypowe i nieprawidłowe dane logowania. Może się tak zdarzyć, gdy pod stronę <ph name="SITE" /> podszywa się atakująca osoba albo gdy ekran logowania do sieci Wi-Fi przerwie połączenie. Twoje informacje są nadal bezpieczne, bo połączenie w Chrome zakończyło się przed wymianą jakichkolwiek danych.</translation>
 <translation id="2915068235268646559">Awaria od <ph name="CRASH_TIME" /></translation>

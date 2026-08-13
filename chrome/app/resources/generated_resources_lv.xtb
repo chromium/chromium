@@ -234,7 +234,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1164891049599601209">Ievadīta maldinošā vietnē</translation>
 <translation id="1165039591588034296">Kļūda</translation>
 <translation id="1166212789817575481">Aizvērt cilnes pa labi</translation>
-<translation id="1166457390969131095">Izmantot un saglabāt paroles un piekļuves atslēgas no Google konta</translation>
 <translation id="1166583374608765787">Pārskatiet nosaukuma izmaiņas</translation>
 <translation id="1166596238782048887">“<ph name="TAB_TITLE" />” ir cilne no darbvietas “<ph name="DESK_TITLE" />”</translation>
 <translation id="1167008614036441342">Karte tika noņemta, jo pēdējā laikā to neizmantojāt.</translation>
@@ -3094,7 +3093,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3385916046075724800">Ciļņu grupas tagad tiek saglabātas automātiski.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Atvērt &amp;dalītajā skatā</translation>
-<translation id="3387588771342841525">Ja šis iestatījums ir ieslēgts, paroles tiek saglabātas kontā <ph name="EMAIL" />. Ja šis iestatījums ir izslēgts, paroles tiek saglabātas tikai šajā ierīcē.</translation>
 <translation id="3387614642886316601">Izmantot uzlaboto pareizrakstības pārbaudi</translation>
 <translation id="3387829698079331264">Nav atļauts rādīt, kad jūs aktīvi lietojat savu ierīci</translation>
 <translation id="3388094447051599208">Izvades paliktnis ir gandrīz pilns</translation>
@@ -4214,6 +4212,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4232375817808480934">Kerberos konfigurēšana</translation>
 <translation id="4232376164796433044">Paroles un automātiskā aizpilde</translation>
 <translation id="4233739489690259993">Jūsu Chromebook datorā vairs netiek saņemti drošības un programmatūras atjauninājumi. Jauniniet savu ierīci, lai iegūtu jaunākās drošības funkcijas un jaunas funkcijas. Ir spēkā piedāvājuma noteikumi.</translation>
+<translation id="4235200303672858594">Viss ekrāns</translation>
 <translation id="4235965441080806197">Atcelt pierakstīšanos</translation>
 <translation id="4235976607074422892">Ritināšanas ātrums</translation>
 <translation id="4236163961381003811">Atklāt vairāk paplašinājumu</translation>

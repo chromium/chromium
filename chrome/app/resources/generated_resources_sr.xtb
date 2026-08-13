@@ -234,7 +234,6 @@
 <translation id="1164891049599601209">Унето је на обмањујућем сајту</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1166212789817575481">Затвори картице са десне стране</translation>
-<translation id="1166457390969131095">Користите и чувајте лозинке и приступне кључеве са Google налога</translation>
 <translation id="1166583374608765787">Прегледајте ажурирање назива</translation>
 <translation id="1166596238782048887">Картица <ph name="TAB_TITLE" /> припада радној површини <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Картица је уклоњена јер је нисте скоро користили</translation>
@@ -3095,7 +3094,6 @@
 <translation id="3385916046075724800">Групе картица се сада аутоматски чувају.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Отвори у &amp;подељеном приказу</translation>
-<translation id="3387588771342841525">Када је укључено, лозинке се чувају на налогу <ph name="EMAIL" />. Када је искључено, лозинке се чувају само на овом уређају.</translation>
 <translation id="3387614642886316601">Користите побољшану проверу правописа</translation>
 <translation id="3387829698079331264">Немају дозволу да знају када активно користите уређај</translation>
 <translation id="3388094447051599208">Посуда за одштампани материјал је скоро пуна</translation>
@@ -4215,6 +4213,7 @@
 <translation id="4232375817808480934">Конфигуришите Kerberos</translation>
 <translation id="4232376164796433044">Лозинке и аутоматско попуњавање</translation>
 <translation id="4233739489690259993">Chromebook више не прима безбедносна и софтверска ажурирања. Надоградите уређај ради најновијих безбедносних и нових функција. Важе услови понуде.</translation>
+<translation id="4235200303672858594">Цео екран</translation>
 <translation id="4235965441080806197">Откажи пријављивање</translation>
 <translation id="4235976607074422892">Брзина скроловања</translation>
 <translation id="4236163961381003811">Откријте још додатака</translation>

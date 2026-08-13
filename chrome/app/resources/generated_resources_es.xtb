@@ -234,7 +234,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1164891049599601209">Introducida en un sitio web engañoso</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Cerrar pestañas a la derecha</translation>
-<translation id="1166457390969131095">Usar y guardar contraseñas y llaves de acceso en tu cuenta de Google</translation>
 <translation id="1166583374608765787">Revisa la actualización del nombre</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertenece al escritorio <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Se ha quitado la tarjeta porque no la has usado recientemente</translation>
@@ -3097,7 +3096,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3385916046075724800">Ahora tus grupos de pestañas se guardan automáticamente.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Abrir en &amp;Vista dividida</translation>
-<translation id="3387588771342841525">Si esta opción está activada, las contraseñas se guardan en <ph name="EMAIL" />. Si está desactivada, las contraseñas se guardan solo en este dispositivo.</translation>
 <translation id="3387614642886316601">Usar el corrector ortográfico mejorado</translation>
 <translation id="3387829698079331264">No permitir que sepan cuándo usas activamente tu dispositivo</translation>
 <translation id="3388094447051599208">La bandeja de salida está casi llena</translation>
@@ -4216,6 +4214,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4232375817808480934">Configurar Kerberos</translation>
 <translation id="4232376164796433044">Contraseñas y Autocompletar</translation>
 <translation id="4233739489690259993">Tu Chromebook ya no recibe actualizaciones de seguridad ni de software. Cambia de dispositivo para disfrutar de las últimas novedades en seguridad y de nuevas funciones. Oferta sujeta a condiciones.</translation>
+<translation id="4235200303672858594">Toda la pantalla</translation>
 <translation id="4235965441080806197">Cancelar inicio de sesión</translation>
 <translation id="4235976607074422892">Velocidad de desplazamiento</translation>
 <translation id="4236163961381003811">Descubrir más extensiones</translation>

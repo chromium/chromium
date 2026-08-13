@@ -1107,6 +1107,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2905107382358353958">Upozorenje o novoj postavci plaćanja</translation>
 <translation id="2909946352844186028">Otkrivena je promjena mreže.</translation>
 <translation id="2910062169995917863">Sesija je istekla</translation>
+<translation id="2911224142899421774">Postavke Google Walleta primjenjuju se na podatke spremljene iz Chromea</translation>
 <translation id="2911973620368911614">ID korisnika poslovnog računa</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> obično upotrebljava enkripciju radi zaštite vaših podataka. Prilikom ovog pokušaja povezivanja Chromea s web-lokacijom <ph name="SITE" /> ta je web-lokacija vratila neuobičajene i netočne vjerodajnice. To može značiti da se neki napadač pokušava predstaviti kao <ph name="SITE" /> ili je zaslon za prijavu na Wi-Fi prekinuo vezu. Vaši su podaci još uvijek sigurni jer je Chrome zaustavio povezivanje prije razmjene podataka.</translation>
 <translation id="2915068235268646559">Rušenje: <ph name="CRASH_TIME" /></translation>

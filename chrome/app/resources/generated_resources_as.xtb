@@ -234,7 +234,6 @@
 <translation id="1164891049599601209">বিভ্ৰান্তিকৰ ছাইটত দিছে</translation>
 <translation id="1165039591588034296">আসোঁৱাহ</translation>
 <translation id="1166212789817575481">সোঁফালৰ টেববোৰ বন্ধ কৰক</translation>
-<translation id="1166457390969131095">আপোনাৰ Google একাউণ্টৰ পৰা পাছৱৰ্ড আৰু পাছকী ব্যৱহাৰ আৰু ছেভ কৰক</translation>
 <translation id="1166583374608765787">নামৰ আপডে’ট পৰ্যালোচনা কৰক</translation>
 <translation id="1166596238782048887">ডেস্ক <ph name="DESK_TITLE" />ত <ph name="TAB_TITLE" /> আছে</translation>
 <translation id="1167008614036441342">কাৰ্ডখন আঁতৰোৱা হৈছে কাৰণ আপুনি সেইখন শেহতীয়াকৈ ব্যৱহাৰ কৰা নাই</translation>
@@ -3109,7 +3108,6 @@
 <translation id="3385916046075724800">আপোনাৰ টেবৰ গোটসমূহ এতিয়া স্বয়ংক্ৰিয়ভাৱে ছেভ কৰা হয়।</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">&amp;বিভাজিত ভিউত খোলক</translation>
-<translation id="3387588771342841525">অন থাকিলে, পাছৱৰ্ডসমূহ <ph name="EMAIL" />ত ছেভ কৰা হয়। অফ থাকিলে, পাছৱৰ্ডসমূহ কেৱল এই ডিভাইচটোত ছেভ কৰা হয়।</translation>
 <translation id="3387614642886316601">উন্নত বানান পৰীক্ষক ব্যৱহাৰ কৰক</translation>
 <translation id="3387829698079331264">আপুনি নিজৰ ডিভাইচটো কেতিয়া সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থাকে সেয়া জানিবলৈ দিয়া নহয়</translation>
 <translation id="3388094447051599208">আউটপুট ট্ৰে’খন প্ৰায় ভৰি পৰিছে</translation>
@@ -4228,6 +4226,7 @@
 <translation id="4232375817808480934">Kerberos কনফিগাৰ কৰক</translation>
 <translation id="4232376164796433044">পাছৱৰ্ড, স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱা</translation>
 <translation id="4233739489690259993">আপোনাৰ Chromebookএ আৰু সুৰক্ষা আৰু ছফ্টৱেৰ সম্পৰ্কীয় আপডে’ট লাভ কৰি থকা নাই। শেহতীয়া সুৰক্ষা আৰু নতুন সুবিধাসমূহৰ বাবে আপোনাৰ ডিভাইচ আপগ্ৰে’ড কৰক। অফাৰৰ চৰ্তাৱলী প্ৰযোজ্য।</translation>
+<translation id="4235200303672858594">সম্পূৰ্ণ স্ক্ৰীন</translation>
 <translation id="4235965441080806197">ছাইন ইন বাতিল কৰক</translation>
 <translation id="4235976607074422892">স্ক্ৰ’ল কৰাৰ গতিবেগ</translation>
 <translation id="4236163961381003811">অধিক এক্সটেনশ্বন বিচাৰি পাওক</translation>

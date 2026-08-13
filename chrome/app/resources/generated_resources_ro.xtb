@@ -234,7 +234,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1164891049599601209">A fost introdusă pe un site înșelător</translation>
 <translation id="1165039591588034296">Eroare</translation>
 <translation id="1166212789817575481">Închide filele de la dreapta</translation>
-<translation id="1166457390969131095">Folosește și salvează parole și chei de acces din Contul Google</translation>
 <translation id="1166583374608765787">Examinează actualizarea numelui</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> aparține desktopului <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Cardul a fost eliminat deoarece nu l-ai folosit recent</translation>
@@ -3095,7 +3094,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3385916046075724800">Grupurile de file se salvează acum automat.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Deschide în &amp;Afișarea împărțită</translation>
-<translation id="3387588771342841525">Când opțiunea este activată, parolele se salvează în <ph name="EMAIL" />. Când opțiunea este dezactivată, parolele se salvează numai pe acest dispozitiv.</translation>
 <translation id="3387614642886316601">Folosește verificarea îmbunătățită a ortografiei</translation>
 <translation id="3387829698079331264">Nu au permisiunea de a afla când folosești activ dispozitivul</translation>
 <translation id="3388094447051599208">Tava de ieșire este aproape plină</translation>
@@ -4215,6 +4213,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4232375817808480934">Configurează Kerberos</translation>
 <translation id="4232376164796433044">Parole și completare automată</translation>
 <translation id="4233739489690259993">Chromebookul nu mai primește actualizări de securitate și de software. Fă upgrade dispozitivului pentru cea mai recentă securitate și funcții noi. Se aplică toate condițiile ofertei.</translation>
+<translation id="4235200303672858594">Întregul ecran</translation>
 <translation id="4235965441080806197">Anulează conectarea</translation>
 <translation id="4235976607074422892">Viteza de derulare</translation>
 <translation id="4236163961381003811">Descoperă mai multe extensii</translation>

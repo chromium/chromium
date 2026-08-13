@@ -1107,6 +1107,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2905107382358353958">Underretning om en ny betalingsindstilling</translation>
 <translation id="2909946352844186028">Der blev registreret en netværksændring.</translation>
 <translation id="2910062169995917863">Der opstod timeout for din session</translation>
+<translation id="2911224142899421774">Dine Google Wallet-indstillinger gælder for oplysninger, der er gemt fra Chrome</translation>
 <translation id="2911973620368911614">Bruger-id for jobkonto</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> bruger normalt kryptering til at beskytte dine oplysninger. Da Chrome forsøgte at oprette forbindelse til <ph name="SITE" /> denne gang, returnerede websitet usædvanlige og forkerte loginoplysninger. Dette kan skyldes, at en hacker har forsøgt at udgive sig for at være <ph name="SITE" />, eller at en Wi-Fi-loginskærm har forstyrret forbindelsen. Dine oplysninger er stadig sikre, idet Chrome afbrød forbindelsen, inden der blev udvekslet data.</translation>
 <translation id="2915068235268646559">Nedbrud fra <ph name="CRASH_TIME" /></translation>

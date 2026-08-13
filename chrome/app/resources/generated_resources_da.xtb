@@ -234,7 +234,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1164891049599601209">Angivet på vildledende website</translation>
 <translation id="1165039591588034296">Fejl</translation>
 <translation id="1166212789817575481">Luk fanerne til højre</translation>
-<translation id="1166457390969131095">Brug og gem adgangskoder samt adgangsnøgler på din Google-konto</translation>
 <translation id="1166583374608765787">Gennemgå navneopdateringen</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> tilhører skrivebordet <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Kortet er fjernet, fordi du ikke har brugt det for nylig</translation>
@@ -3110,7 +3109,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3385916046075724800">Dine fanegrupper gemmes nu automatisk.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Åbn i Opdelt visning</translation>
-<translation id="3387588771342841525">Når denne indstilling er aktiveret, gemmes adgangskoder på <ph name="EMAIL" />. Når indstillingen er deaktiveret, gemmes adgangskoder kun på denne enhed.</translation>
 <translation id="3387614642886316601">Brug forbedret stavekontrol</translation>
 <translation id="3387829698079331264">Har ikke tilladelse til at vide, hvornår du aktivt bruger din enhed</translation>
 <translation id="3388094447051599208">Papirbakken er næsten fuld</translation>
@@ -4230,6 +4228,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4232375817808480934">Konfigurer Kerberos</translation>
 <translation id="4232376164796433044">Adgangskoder og autofyld</translation>
 <translation id="4233739489690259993">Din Chromebook modtager ikke længere sikkerheds- og softwareopdateringer. Opgrader din enhed for at få de nyeste sikkerhedsfunktioner og nye funktioner. Vilkårene for tilbuddet er gældende.</translation>
+<translation id="4235200303672858594">Hele skærmen</translation>
 <translation id="4235965441080806197">Annuller login</translation>
 <translation id="4235976607074422892">Hastighed ved rulning</translation>
 <translation id="4236163961381003811">Se flere udvidelser</translation>

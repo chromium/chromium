@@ -1107,6 +1107,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2905107382358353958">Alerta sobre la nueva configuración de pagos</translation>
 <translation id="2909946352844186028">Se detectó un cambio de red.</translation>
 <translation id="2910062169995917863">Se agotó el tiempo de espera de la sesión</translation>
+<translation id="2911224142899421774">La configuración de la Billetera de Google se aplica a la información guardada de Chrome</translation>
 <translation id="2911973620368911614">ID de usuario para cuentas de trabajo</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> suele utilizar la encriptación para proteger la información. Cuando Chrome intentó conectarse a <ph name="SITE" />, el sitio web devolvió credenciales incorrectas y poco usuales. Es posible que un atacante quiera suplantar a <ph name="SITE" /> o que una pantalla de acceso Wi-Fi haya interrumpido la conexión. Tu información permanece segura porque Chrome detuvo la conexión para evitar el intercambio de datos.</translation>
 <translation id="2915068235268646559">Falla desde el <ph name="CRASH_TIME" /></translation>

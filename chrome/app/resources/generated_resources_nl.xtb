@@ -234,7 +234,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1164891049599601209">Ingevoerd op misleidende site</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1166212789817575481">Tabbladen aan de rechterkant sluiten</translation>
-<translation id="1166457390969131095">Wachtwoorden en toegangssleutels uit je Google-account gebruiken en opslaan</translation>
 <translation id="1166583374608765787">Naamupdate bekijken</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> hoort bij bureau <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Kaart verwijderd omdat je deze niet recent hebt gebruikt</translation>
@@ -3094,7 +3093,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3385916046075724800">Je tabbladgroepen worden nu automatisch opgeslagen.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Openen in ge&amp;splitste weergave</translation>
-<translation id="3387588771342841525">Als dit aanstaat, worden wachtwoorden opgeslagen in <ph name="EMAIL" />. Als dit uitstaat, worden wachtwoorden alleen opgeslagen op dit apparaat.</translation>
 <translation id="3387614642886316601">Verbeterde spellingcontrole gebruiken</translation>
 <translation id="3387829698079331264">Mogen niet weten wanneer je je apparaat actief gebruikt</translation>
 <translation id="3388094447051599208">Uitvoervak is bijna vol</translation>
@@ -3268,7 +3266,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3515783508789430906">Er is een nieuwe versie (<ph name="VERSION" />) beschikbaar. Start de app opnieuw op om de update toe te passen. Niet-opgeslagen gegevens kunnen verloren gaan.</translation>
 <translation id="3515983984924808886">Tik opnieuw op de beveiligingssleutel om het resetten te bevestigen. Alle informatie die is opgeslagen op de beveiligingssleutel, inclusief de pincode, wordt verwijderd.</translation>
 <translation id="3518866566087677312">Bookmark items die je later wilt bekijken</translation>
-<translation id="3519014757432845220">Help de beveiliging tegen spam te verbeteren door content van meldingen en de URL van de site met Google te delen. Content kan door mensen worden beoordeeld.</translation>
+<translation id="3519014757432845220">Help de spambeveiliging te verbeteren door content van meldingen en de URL van de site met Google te delen. Content kan door mensen worden beoordeeld.</translation>
 <translation id="3519382402703204668">Een tabblad kiezen</translation>
 <translation id="3519564332031442870">Backend-service voor afdrukken</translation>
 <translation id="3519938335881974273">Pagina opslaan als...</translation>
@@ -4213,6 +4211,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4232375817808480934">Kerberos configureren</translation>
 <translation id="4232376164796433044">Wachtwoorden en automatisch invullen</translation>
 <translation id="4233739489690259993">Je Chromebook krijgt geen beveiligings- en software-updates meer. Upgrade je apparaat voor de nieuwste beveiliging en nieuwe functies. Er zijn voorwaarden van toepassing.</translation>
+<translation id="4235200303672858594">Volledig scherm</translation>
 <translation id="4235965441080806197">Inloggen annuleren</translation>
 <translation id="4235976607074422892">Scrollsnelheid</translation>
 <translation id="4236163961381003811">Meer extensies bekijken</translation>

@@ -234,7 +234,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1164891049599601209">Vneseno na zavajajočem spletnem mestu</translation>
 <translation id="1165039591588034296">Napaka</translation>
 <translation id="1166212789817575481">Zapri zavihke na desni</translation>
-<translation id="1166457390969131095">Uporaba in shranjevanje gesel in ključev za dostop iz računa Google</translation>
 <translation id="1166583374608765787">Pregled posodobitve imena</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pripada namizju <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Kartica je bila odstranjena, ker je nedavno niste uporabljali</translation>
@@ -3108,7 +3107,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3385916046075724800">Skupine zavihkov se zdaj samodejno shranjujejo.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Odpri v &amp;razdeljenem pogledu</translation>
-<translation id="3387588771342841525">Če je vklopljeno, se gesla shranjujejo v računu <ph name="EMAIL" />. Če je izklopljeno, se gesla shranjujejo samo v tej napravi.</translation>
 <translation id="3387614642886316601">Uporaba izboljšanega preverjanja črkovanja</translation>
 <translation id="3387829698079331264">Ni dovoljeno vedeti, kdaj aktivno uporabljate napravo</translation>
 <translation id="3388094447051599208">Izhodni pladenj je skoraj poln</translation>
@@ -4228,6 +4226,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4232375817808480934">Konfiguriranje storitve Kerberos</translation>
 <translation id="4232376164796433044">Gesla in samodejno izpolnjevanje</translation>
 <translation id="4233739489690259993">Vaš Chromebook ne prejema več varnostnih posodobitev in posodobitev programske opreme. Nadgradite napravo za najnovejše varnostne in nove funkcije. Veljajo pogoji ponudbe.</translation>
+<translation id="4235200303672858594">Celoten zaslon</translation>
 <translation id="4235965441080806197">Prekliči prijavo</translation>
 <translation id="4235976607074422892">Hitrost pomikanja</translation>
 <translation id="4236163961381003811">Odkrijte več razširitev</translation>

@@ -234,7 +234,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1164891049599601209">Wpisano na stronie wprowadzającej w błąd</translation>
 <translation id="1165039591588034296">Błąd</translation>
 <translation id="1166212789817575481">Zamknij karty po prawej</translation>
-<translation id="1166457390969131095">Używaj haseł i kluczy dostępu z konta Google i zapisuj je</translation>
 <translation id="1166583374608765787">Sprawdź zmienioną nazwę</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> należy do biurka <ph name="DESK_TITLE" /></translation>
 <translation id="1167008614036441342">Karta została usunięta, ponieważ nie była ostatnio używana</translation>
@@ -3086,7 +3085,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3385916046075724800">Grupy kart są teraz zapisywane automatycznie.</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387412523265061481">Otwórz w &amp;widoku dzielonym</translation>
-<translation id="3387588771342841525">Gdy to ustawienie jest włączone, hasła są zapisywane na koncie <ph name="EMAIL" />. Gdy jest wyłączone, hasła są zapisywane tylko na tym urządzeniu.</translation>
 <translation id="3387614642886316601">Używaj ulepszonego sprawdzania pisowni</translation>
 <translation id="3387829698079331264">Nie mogą sprawdzić, kiedy używasz urządzenia</translation>
 <translation id="3388094447051599208">Zasobnik wyjściowy jest prawie pełny</translation>
@@ -4204,6 +4202,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4232375817808480934">Konfigurowanie Kerberos</translation>
 <translation id="4232376164796433044">Hasła i autouzupełnianie</translation>
 <translation id="4233739489690259993">Twój Chromebook nie otrzymuje już aktualizacji zabezpieczeń ani oprogramowania. Aby mieć dostęp do najnowszych zabezpieczeń i nowych funkcji, zmień go na nowszy model. Obowiązują warunki oferty.</translation>
+<translation id="4235200303672858594">Cały ekran</translation>
 <translation id="4235965441080806197">Anuluj logowanie</translation>
 <translation id="4235976607074422892">Szybkość przewijania</translation>
 <translation id="4236163961381003811">Znajdź więcej rozszerzeń</translation>
