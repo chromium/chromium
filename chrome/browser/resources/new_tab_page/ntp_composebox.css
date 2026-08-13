@@ -133,6 +133,13 @@ cr-composebox-submit::part(submit) {
   --context-non-top-carousel-bottom-margin: 0px;
 }
 
+/* When both attachment and tool chip are present, spacing between carousel
+ * and tool chip container is 18px (12px carousel margin-bottom + 6px tool chip
+ * container padding-top). */
+:host([searchbox-next-enabled][show-file-carousel][in-tool-mode]) #carousel {
+  --context-non-top-carousel-bottom-margin: 12px;
+}
+
 .carousel-container-inner {
   margin-block-end: var(--ntp-composebox-carousel-inner-margin-block-end);
 }
@@ -140,6 +147,12 @@ cr-composebox-submit::part(submit) {
 #toolChipsContainer,
 #voiceToolChipsContainer {
   padding-block-end: var(--ntp-composebox-tool-chip-padding-block-end);
+}
+
+:host([searchbox-next-enabled]) #toolChipsContainer,
+:host([searchbox-next-enabled]) #voiceToolChipsContainer {
+  padding-block-end: 0;
+  padding-block-start: 6px;
 }
 
 :host([submit-enabled][searchbox-next-enabled]) cr-composebox-submit::part(submit) {

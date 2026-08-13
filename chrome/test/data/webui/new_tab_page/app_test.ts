@@ -1786,44 +1786,111 @@ suite('NewTabPageAppTest', () => {
         });
       });
 
-      test('tool chip is bottom aligned with submit button', async () => {
-        await recreateApp();
-        await microtasksFinished();
+      test(
+          'spacing and bottom alignment when both attachments and tool chip ' +
+              'are present without dropdown',
+          async () => {
+            await recreateApp();
+            await microtasksFinished();
 
-        const searchbox = $$(app, '#searchbox');
-        assertTrue(!!searchbox);
+            const searchbox = $$(app, '#searchbox');
+            assertTrue(!!searchbox);
 
-        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-          detail: {
-            text: 'test query',
-            files: [],
-          },
-        }));
-        await microtasksFinished();
+            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+              detail: {
+                text: 'test query',
+                files: [],
+              },
+            }));
+            await microtasksFinished();
 
-        const composebox = $$(app, '#composebox') as NtpComposeboxElement;
-        assertTrue(!!composebox);
-        composebox.inToolMode = true;
-        await microtasksFinished();
+            const composebox = $$(app, '#composebox') as NtpComposeboxElement;
+            assertTrue(!!composebox);
+            const file = ComposeboxFile.createFromFile(
+                'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
+                ContextUploadStatus.kUploadSuccessful);
+            composebox.files = new Map([[file.uuid, file]]);
+            composebox.inToolMode = true;
+            composebox.contextMenuEnabled = false;
+            composebox.requestUpdate();
+            await composebox.updateComplete;
 
-        const toolChipsContainer = $$(composebox, '#toolChipsContainer');
-        assertTrue(!!toolChipsContainer, 'Tool chips container should exist');
-        const toolChip =
-            toolChipsContainer.querySelector('cr-composebox-tool-chip');
-        assertTrue(!!toolChip, 'Tool chip should exist');
-        const toolChipButton = $$(toolChip, '#toolEnabledButton');
-        assertTrue(!!toolChipButton, 'Tool chip button should exist');
+            const fileCarousel = $$(composebox, '#carousel');
+            assertTrue(!!fileCarousel);
+            const toolChipsContainer = $$(composebox, '#toolChipsContainer');
+            assertTrue(!!toolChipsContainer);
+            const toolChip =
+                toolChipsContainer.querySelector('cr-composebox-tool-chip');
+            assertTrue(!!toolChip);
+            const toolChipButton = $$(toolChip, '#toolEnabledButton');
+            assertTrue(!!toolChipButton);
 
-        const submitElement = $$(composebox, 'cr-composebox-submit');
-        assertTrue(!!submitElement, 'Submit button should be rendered');
-        const submitIcon = $$(submitElement, '#submitContainer');
-        assertTrue(!!submitIcon, 'Submit icon should exist');
+            const carouselContainer = $$(composebox, '#carouselContainer');
+            assertTrue(!!carouselContainer);
+            const submitElement =
+                carouselContainer.querySelector('cr-composebox-submit')!;
+            assertTrue(!!submitElement);
+            const submitIcon = $$(submitElement, '#submitContainer');
+            assertTrue(!!submitIcon);
 
-        assertEquals(
-            toolChipButton.getBoundingClientRect().bottom,
-            submitIcon.getBoundingClientRect().bottom,
-            'Tool chip button and submit button should be bottom aligned');
-      });
+            assertEquals(
+                18,
+                toolChipButton.getBoundingClientRect().top -
+                    fileCarousel.getBoundingClientRect().bottom,
+                'Vertical distance between carousel and tool chip should be ' +
+                    '18px');
+            assertEquals(
+                toolChipButton.getBoundingClientRect().bottom,
+                submitIcon.getBoundingClientRect().bottom,
+                'Tool chip button and submit button should be bottom aligned');
+          });
+
+      test(
+          'spacing and bottom alignment when only tool chip is present ' +
+              'without dropdown',
+          async () => {
+            await recreateApp();
+            await microtasksFinished();
+
+            const searchbox = $$(app, '#searchbox');
+            assertTrue(!!searchbox);
+
+            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+              detail: {
+                text: 'test query',
+                files: [],
+              },
+            }));
+            await microtasksFinished();
+
+            const composebox = $$(app, '#composebox') as NtpComposeboxElement;
+            assertTrue(!!composebox);
+            composebox.inToolMode = true;
+            composebox.contextMenuEnabled = false;
+            composebox.requestUpdate();
+            await composebox.updateComplete;
+
+            const toolChipsContainer = $$(composebox, '#toolChipsContainer');
+            assertTrue(!!toolChipsContainer);
+            const toolChip =
+                toolChipsContainer.querySelector('cr-composebox-tool-chip');
+            assertTrue(!!toolChip);
+            const toolChipButton = $$(toolChip, '#toolEnabledButton');
+            assertTrue(!!toolChipButton);
+
+            const carouselContainer = $$(composebox, '#carouselContainer');
+            assertTrue(!!carouselContainer);
+            const submitElement =
+                carouselContainer.querySelector('cr-composebox-submit')!;
+            assertTrue(!!submitElement);
+            const submitIcon = $$(submitElement, '#submitContainer');
+            assertTrue(!!submitIcon);
+
+            assertEquals(
+                toolChipButton.getBoundingClientRect().bottom,
+                submitIcon.getBoundingClientRect().bottom,
+                'Tool chip button and submit button should be bottom aligned');
+          });
 
       test(
           '+ button is bottom aligned with submit button with tab context',
