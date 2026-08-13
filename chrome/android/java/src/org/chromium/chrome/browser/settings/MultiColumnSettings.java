@@ -19,6 +19,7 @@ import android.view.ViewGroup.LayoutParams;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.DialogFragment;
@@ -153,11 +154,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
     // Fragment data passed as extras of Intent via SettingsNavigation.
     private static class FragmentData {
-        public final Fragment fragment;
+        public final @Nullable Fragment fragment;
         public final boolean addToBackStack;
         public final @Nullable String tag;
 
-        FragmentData(Fragment fragment, boolean addToBackStack, @Nullable String tag) {
+        FragmentData(@Nullable Fragment fragment, boolean addToBackStack, @Nullable String tag) {
             this.fragment = fragment;
             this.addToBackStack = addToBackStack;
             this.tag = tag;
@@ -171,12 +172,39 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         FragmentData processed = processPendingFragmentIntent();
         if (processed != null) {
             // Sliding panel layout can be null in tests.
-            if (getSlidingPaneLayout() != null && !(processed.fragment instanceof MainSettings)) {
+            if (getSlidingPaneLayout() != null
+                    && processed.fragment != null
+                    && !(processed.fragment instanceof MainSettings)) {
                 getSlidingPaneLayout().openPane();
             }
             return processed.fragment;
         }
+        // When SettingsInTab is enabled in single-column mode, do not instantiate an initial detail
+        // fragment if no sub-fragment intent was specified. Returning null prevents
+        // PreferenceHeaderFragmentCompat from calling openPane() on SlidingPaneLayout, keeping
+        // MainSettings displayed as the top-level root settings page, with no detail fragment. In
+        // two-column mode, fallback to super.onCreateInitialDetailFragment() to populate the
+        // default detail pane.
+        if (SettingsInTab.isEnabled() && !isTwoColumn()) {
+            return null;
+        }
         return super.onCreateInitialDetailFragment();
+    }
+
+    /**
+     * Ensures an initial detail fragment is populated when transitioning from one-column mode,
+     * which does not have a detail fragment, to two-column mode, which does. See
+     * onCreateInitialDetailFragment() above.
+     */
+    public void ensureInitialDetailFragment() {
+        if (!isTwoColumn()) return;
+
+        if (getChildFragmentManager().findFragmentById(R.id.preferences_detail) != null) return;
+
+        Fragment initialDetail = super.onCreateInitialDetailFragment();
+        if (initialDetail == null) return;
+
+        showDetailFragment(initialDetail, /* addToBackStack= */ false, /* tag= */ null);
     }
 
     void setPendingFragmentIntent(Intent intent) {
@@ -293,7 +321,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     public void onResume() {
         // Update the detail pane, if the intent is specified.
         FragmentData processed = processPendingFragmentIntent();
-        if (processed != null) {
+        if (processed != null && processed.fragment != null) {
             showDetailFragment(processed.fragment, processed.addToBackStack, processed.tag);
         }
 
@@ -378,9 +406,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         if (fragmentName == null) {
             return null;
         }
-        // MainSettings is explicitly created, don't create a second instance.
+        // Use a null fragment to indicate MainSettings.
         if (SettingsInTab.isEnabled() && MainSettings.class.getName().equals(fragmentName)) {
-            return null;
+            return new FragmentData(null, addToBackStack, tag);
         }
         // Use requireContext() instead of requireActivity() to include themed contexts used by
         // SettingsInTab.
@@ -473,7 +501,38 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
     /** Returns whether the current layout is in two-column mode. */
     boolean isTwoColumn() {
-        return !getSlidingPaneLayout().isSlideable();
+        SlidingPaneLayout slidingPane = getSlidingPaneLayout();
+        // If SlidingPaneLayout has already completed layout, use its computed slideable state.
+        if (slidingPane != null
+                && ViewCompat.isLaidOut(slidingPane)
+                && slidingPane.getWidth() > 0) {
+            return !slidingPane.isSlideable();
+        }
+        // Before the initial layout pass, isSlideable() defaults to false. Fall back to comparing
+        // available container/window width to prevent incorrectly assuming two-column mode before
+        // measurement.
+        int minMultiColumnWidth =
+                getResources()
+                        .getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
+        int availableWidth = getAvailableWidth(slidingPane);
+        return availableWidth >= minMultiColumnWidth;
+    }
+
+    /** Returns the available width for the sliding pane. */
+    private int getAvailableWidth(@Nullable SlidingPaneLayout slidingPane) {
+        // If the sliding pane is laid out, use its width
+        if (slidingPane != null && slidingPane.getWidth() > 0) {
+            return slidingPane.getWidth();
+        }
+        // Otherwise, use the activity's window width.
+        if (getActivity() != null && getActivity().getWindow() != null) {
+            View decorView = getActivity().getWindow().getDecorView();
+            if (decorView.getWidth() > 0) {
+                return decorView.getWidth();
+            }
+        }
+        // Fall back to display width.
+        return getResources().getDisplayMetrics().widthPixels;
     }
 
     private class SlideStateTracker
@@ -502,6 +561,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             boolean prevSlideable = mSlideable;
             mSlideable = getSlidingPaneLayout().isSlideable();
             if (prevSlideable != mSlideable) {
+                // Transitioning from one-column to two-column mode, or vice versa.
+                ensureInitialDetailFragment();
                 for (Observer o : mObservers) {
                     o.onHeaderLayoutUpdated();
                 }

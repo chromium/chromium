@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.settings;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewTreeObserver;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -59,18 +58,9 @@ public class WideDisplayPaddingApplier extends FragmentManager.FragmentLifecycle
             return;
         }
 
-        // TODO(crbug.com/439911511): Have this logic in the same place as other layout
-        // updates.
-        var listener =
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        if (fragment.getView() == null) return;
-                        fragment.getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        WideDisplayPadding.apply(
-                                fragment, mIsTwoColumnSettingsVisibleSupplier, paddingPx);
-                    }
-                };
-        view.getViewTreeObserver().addOnGlobalLayoutListener(listener);
+        // Apply wide display padding exactly once synchronously when view is created so initial
+        // frame renders with correct padding. Updates are handled by WideDisplayPadding, which
+        // has an OnLayoutChangeListener.
+        WideDisplayPadding.apply(fragment, mIsTwoColumnSettingsVisibleSupplier, paddingPx);
     }
 }

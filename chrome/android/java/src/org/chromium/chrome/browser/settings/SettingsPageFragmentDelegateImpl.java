@@ -256,6 +256,9 @@ public class SettingsPageFragmentDelegateImpl
                     SettingsBreadcrumbUtil.getInitialBreadcrumbPath(savedInstanceState);
         }
 
+        // Set initial navigation icon early to prevent delayed appearance on slow devices.
+        updateNavigationIcon();
+
         // During activity recreation savedInstanceState may be non-null but MultiColumnSettings may
         // not be attached yet. Check for the existing of MultiColumnSettings to decide whether to
         // create the title updater and search coordinator now vs. later.
@@ -535,7 +538,15 @@ public class SettingsPageFragmentDelegateImpl
 
     private boolean isMainSettingsVisible() {
         MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
-        return multiColumnSettings != null && !multiColumnSettings.isLayoutOpen();
+        // If MultiColumnSettings is attached, use it.
+        if (multiColumnSettings != null) {
+            return !multiColumnSettings.isLayoutOpen();
+        }
+        // Before MultiColumnSettings is created or attached, check if an initial deep-link
+        // breadcrumb path exists. If not (or size <= 1), top-level main settings is being shown.
+        return mInitialBreadcrumbPath == null
+                || mInitialBreadcrumbPath.isEmpty()
+                || mInitialBreadcrumbPath.size() <= 1;
     }
 
     @Override

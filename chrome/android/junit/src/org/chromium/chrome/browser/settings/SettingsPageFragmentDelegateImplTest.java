@@ -643,6 +643,20 @@ public class SettingsPageFragmentDelegateImplTest {
     }
 
     @Test
+    public void testInitSettings_setsNavigationIconSynchronously() {
+        mDelegate.initSettings(mContainerView, "");
+
+        Toolbar toolbar = mInflatedSettingsView.findViewById(R.id.action_bar);
+        assertNotNull(toolbar);
+
+        // Verify navigation icon is immediately set when top-level main settings is initialized.
+        // It doesn't wait for async tasks.
+        assertEquals(
+                ApplicationProvider.getApplicationContext().getString(R.string.app_name),
+                toolbar.getNavigationContentDescription());
+    }
+
+    @Test
     public void testInitSettings_registersSelfAsMultiColumnSettingsObserver() {
         mDelegate.initSettings(mContainerView, "");
 

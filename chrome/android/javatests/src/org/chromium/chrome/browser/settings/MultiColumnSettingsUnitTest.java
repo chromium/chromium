@@ -20,6 +20,7 @@ import android.util.TypedValue;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
@@ -330,13 +331,34 @@ public class MultiColumnSettingsUnitTest {
         @Override
         public void onCreatePreferences(
                 @Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-            setPreferenceScreen(getPreferenceManager().createPreferenceScreen(requireContext()));
+            // Populate screen with a placeholder preference header targeting TestFragment.
+            // PreferenceHeaderFragmentCompat.onCreateInitialDetailFragment() inspects category 0
+            // in this screen to determine and instantiate the default detail pane fragment.
+            var screen = getPreferenceManager().createPreferenceScreen(requireContext());
+            var pref = new Preference(requireContext());
+            pref.setFragment(TestFragment.class.getName());
+            screen.addPreference(pref);
+            setPreferenceScreen(screen);
         }
     }
 
     public static class TestMultiColumnSettings extends MultiColumnSettings {
         private final MainSettings mMainSettings = new TestMainSettings();
         private Fragment mInitialDetailFragment;
+        private boolean mInitialDetailFragmentCreated;
+        private @Nullable Boolean mIsTwoColumnForTesting;
+
+        void setIsTwoColumnForTesting(@Nullable Boolean isTwoColumn) {
+            mIsTwoColumnForTesting = isTwoColumn;
+        }
+
+        @Override
+        boolean isTwoColumn() {
+            if (mIsTwoColumnForTesting != null) {
+                return mIsTwoColumnForTesting;
+            }
+            return super.isTwoColumn();
+        }
 
         @Override
         public PreferenceFragmentCompat onCreatePreferenceHeader() {
@@ -345,8 +367,10 @@ public class MultiColumnSettingsUnitTest {
 
         @Override
         public Fragment onCreateInitialDetailFragment() {
-            if (mInitialDetailFragment == null) {
+            if (!mInitialDetailFragmentCreated) {
+                // Note that this may legitimately return null.
                 mInitialDetailFragment = super.onCreateInitialDetailFragment();
+                mInitialDetailFragmentCreated = true;
             }
             return mInitialDetailFragment;
         }
@@ -464,6 +488,56 @@ public class MultiColumnSettingsUnitTest {
                             "Theme should resolve preferenceTheme attribute from"
                                     + " Theme_Chromium_Settings",
                             context.getTheme().resolveAttribute(R.attr.preferenceTheme, tv, true));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testOnCreateInitialDetailFragment_SettingsInTab_TwoColumnMode() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TestMultiColumnSettings settings = new TestMultiColumnSettings();
+                    settings.setIsTwoColumnForTesting(true);
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    assertNotNull(
+                            "In two-column mode, onCreateInitialDetailFragment should return"
+                                    + " default detail fragment",
+                            settings.onCreateInitialDetailFragment());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testOnCreateInitialDetailFragment_SettingsInTab_SingleColumnMode() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TestMultiColumnSettings settings = new TestMultiColumnSettings();
+                    settings.setIsTwoColumnForTesting(false);
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    assertNull(
+                            "In single-column mode, onCreateInitialDetailFragment should return"
+                                    + " null",
+                            settings.onCreateInitialDetailFragment());
                 });
     }
 
