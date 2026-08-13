@@ -3886,10 +3886,7 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest,
   EXPECT_FALSE(plugin_->HasInkInputsSnapshotForTesting());
 }
 
-class PdfViewWebPluginInk2SaveTest : public PdfViewWebPluginSaveTest {
- private:
-  base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
-};
+using PdfViewWebPluginInk2SaveTest = PdfViewWebPluginSaveTest;
 
 TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInNonEditMode) {
   // Modify the document with an Ink stroke.
@@ -4028,11 +4025,8 @@ TEST_P(PdfViewWebPluginInkMetricTest, LoadedWithV2InkAnnotationsTimeout) {
                                 PDFLoadedWithV2InkAnnotations::kUnknown, 1);
 }
 
-class PdfViewWebPluginPrintPreviewInkMetricTest
-    : public PdfViewWebPluginPrintPreviewTest {
- private:
-  base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
-};
+using PdfViewWebPluginPrintPreviewInkMetricTest =
+    PdfViewWebPluginPrintPreviewTest;
 
 TEST_F(PdfViewWebPluginPrintPreviewInkMetricTest,
        LoadedWithInkAnnotationsDoesNotCountPrintPreview) {
