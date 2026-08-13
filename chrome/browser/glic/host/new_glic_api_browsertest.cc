@@ -1379,6 +1379,11 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabs) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsFailsWhenDoesNotExist) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class NewGlicApiTestWithFileUploadPolicyEnabled : public NewGlicApiTest {
  public:

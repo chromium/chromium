@@ -582,24 +582,6 @@ class ApiTests extends ApiTestFixtureBase {
         (tabs) => tabs.some(t => t.tabId === tabId));
     return tabId;
   }
-  async testPinTabsFailsWhenDoesnotExist() {
-    assertDefined(this.host.pinTabs);
-    assertDefined(this.host.getPinnedTabs);
-    assertDefined(this.host.unpinTabs);
-
-    const tabId = this.getFocusedTabId();
-    const nonExistTabId = 'not-exist';
-    // Pinning a non existing tab id should fail.
-    assertFalse(await this.host.pinTabs([tabId, nonExistTabId]));
-
-    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
-    await pinnedTabsUpdates.waitFor(
-        (tabs) => tabs.length === 1 && tabs.some(t => t.tabId === tabId));
-
-    // Un-pinning a non existing tab id should fail.
-    assertFalse(await this.host.unpinTabs([tabId, nonExistTabId]));
-    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
-  }
 
   async testPinTabsStatePersistWhenClosePanelAndReopen() {
     assertDefined(this.host.closePanel);

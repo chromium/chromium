@@ -1513,11 +1513,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
 
 
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testPinTabsFailsWhenDoesnotExist) {
-  // Pinning a non existing tab id should fail.
-  ExecuteJsTest();
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest,
                        testPinTabsStatePersistWhenClosePanelAndReopen) {
