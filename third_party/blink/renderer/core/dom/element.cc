@@ -4508,9 +4508,25 @@ bool Element::HasCanvasTransform() const {
   return GetCanvasTransformInternal() != nullptr;
 }
 
+const gfx::Transform* Element::GetUsedCanvasTransform() const {
+  if (IsInCanvasSubtree() &&
+      RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
+          GetExecutionContext())) {
+    return GetCanvasTransformInternal();
+  }
+  return nullptr;
+}
+
 void Element::SetCanvasTransformInternal(const gfx::Transform& transform) {
   data_ = EnsureRareData().SetWrappedField<gfx::Transform>(
       NodeRareData::FieldId::kCanvasTransform, transform);
+  if (LayoutObject* layout_object = GetLayoutObject()) {
+    layout_object->SetNeedsPaintPropertyUpdate();
+    // Layout is needed to update the PaintLayer transform (which is updated
+    // during layout in LayoutBox::UpdateLayout). We cannot rely on style recalc
+    // because canvas transform is not stored in ComputedStyle.
+    layout_object->SetNeedsLayout(layout_invalidation_reason::kDomChanged);
+  }
 }
 
 void Element::RemovedFrom(ContainerNode& insertion_point) {

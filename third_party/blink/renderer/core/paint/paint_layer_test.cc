@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix_init.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -16,6 +18,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -2623,6 +2626,52 @@ TEST_P(PaintLayerTest, HitTestScrollMarkerPseudoElement) {
   event.SetTarget(second_scroll_marker);
   second_scroll_marker->DefaultEventHandler(event);
   EXPECT_EQ(scroller->scrollTop(), 100);
+}
+
+TEST_P(PaintLayerTest, PaintLayerCanvasTransformUpdated) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  ScopedElementCanvasTransformForTest forced_canvas_transform_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <canvas id='canvas' width='200' height='200' layoutsubtree>
+      <div id='target' style='width: 100px; height: 100px;'></div>
+    </canvas>
+  )HTML");
+
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target_layer = GetPaintLayerByElementId("target");
+  EXPECT_EQ(nullptr, target_layer->Transform());
+
+  // Setting canvas transform allocates PaintLayer::Transform() and updates
+  // rect.
+  NonThrowableExceptionState exception_state;
+  auto* matrix_init = DOMMatrixInit::Create();
+  matrix_init->setE(20);
+  matrix_init->setM41(20);
+  matrix_init->setF(30);
+  matrix_init->setM42(30);
+  target->setCanvasTransform(matrix_init, exception_state);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(gfx::Transform::MakeTranslation(20, 30),
+            *target_layer->Transform());
+  EXPECT_EQ(gfx::RectF(28, 38, 100, 100),
+            target->GetBoundingClientRectNoLifecycleUpdate());
+
+  // Basic invalidation: updating canvas transform.
+  matrix_init->setE(50);
+  matrix_init->setM41(50);
+  matrix_init->setF(60);
+  matrix_init->setM42(60);
+  target->setCanvasTransform(matrix_init, exception_state);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(gfx::Transform::MakeTranslation(50, 60),
+            *target_layer->Transform());
+  EXPECT_EQ(gfx::RectF(58, 68, 100, 100),
+            target->GetBoundingClientRectNoLifecycleUpdate());
 }
 
 }  // namespace blink

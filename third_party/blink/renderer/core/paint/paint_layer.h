@@ -829,6 +829,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                            DescendantDependentFlagsStopsAtThrottledFrames);
   FRIEND_TEST_ALL_PREFIXES(PaintLayerTest,
                            PaintLayerTransformUpdatedOnStyleTransformAnimation);
+  FRIEND_TEST_ALL_PREFIXES(PaintLayerTest, PaintLayerCanvasTransformUpdated);
   FRIEND_TEST_ALL_PREFIXES(
       PaintLayerOverlapTest,
       FixedUnderTransformDoesNotExpandBoundingBoxForOverlap);

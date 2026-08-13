@@ -1180,6 +1180,13 @@ class CORE_EXPORT Element : public ContainerNode {
   void setCanvasTransform(DOMMatrixInit* matrix,
                           ExceptionState& exception_state);
   bool HasCanvasTransform() const;
+  // Returns the transform that should be used for mapping the border-box,
+  // before CSS transforms, to the canvas coordinate space. When the element is
+  // in a canvas subtree, this affects the geometry of the element (e.g., for
+  // hit-testing, `getBoundingClientRect()`) and can be used to make the
+  // element's geometry match its drawn position in a canvas. Returns nullptr
+  // if the element is not in a canvas subtree.
+  const gfx::Transform* GetUsedCanvasTransform() const;
   const gfx::Transform* GetCanvasTransformInternal() const;
   void SetCanvasTransformInternal(const gfx::Transform& transform);
 

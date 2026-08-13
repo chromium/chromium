@@ -291,18 +291,29 @@ const PaintLayer* PaintLayer::ContainingScrollContainerLayer(
 }
 
 void PaintLayer::UpdateTransform() {
-  if (gfx::Transform* transform = Transform()) {
-    const LayoutBox* box = GetLayoutBox();
-    DCHECK(box);
-    transform->MakeIdentity();
-    const PhysicalRect reference_box = ComputeReferenceBox(*box);
-    box->StyleRef().ApplyTransform(
-        *transform, box, reference_box,
-        ComputedStyle::kIncludeTransformOperations,
-        ComputedStyle::kIncludeTransformOrigin,
-        ComputedStyle::kIncludeMotionPath,
-        ComputedStyle::kIncludeIndependentTransformProperties);
+  if (!GetLayoutObject().HasTransform()) {
+    transform_.reset();
+    return;
   }
+
+  if (!transform_) {
+    transform_ = std::make_unique<gfx::Transform>();
+  } else {
+    transform_->MakeIdentity();
+  }
+  const LayoutBox* box = GetLayoutBox();
+  DCHECK(box);
+  if (const auto* element = DynamicTo<Element>(box->GetNode())) {
+    if (const auto* canvas_transform = element->GetUsedCanvasTransform()) {
+      transform_->PreConcat(*canvas_transform);
+    }
+  }
+  const PhysicalRect reference_box = ComputeReferenceBox(*box);
+  box->StyleRef().ApplyTransform(
+      *transform_, box, reference_box,
+      ComputedStyle::kIncludeTransformOperations,
+      ComputedStyle::kIncludeTransformOrigin, ComputedStyle::kIncludeMotionPath,
+      ComputedStyle::kIncludeIndependentTransformProperties);
 }
 
 void PaintLayer::UpdateTransformAfterStyleChange(
@@ -319,13 +330,6 @@ void PaintLayer::UpdateTransformAfterStyleChange(
     return;
   }
   bool had_3d_transform = Has3DTransform();
-
-  if (has_transform != had_transform) {
-    if (has_transform)
-      transform_ = std::make_unique<gfx::Transform>();
-    else
-      transform_.reset();
-  }
 
   UpdateTransform();
 
