@@ -33,7 +33,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -52,6 +54,11 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUt
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 @Batch(Batch.PER_CLASS)
 public class AutofillSettingsSearchTest {
+
+    private final HistogramWatcher mSettingsSearchHistogramWatcher =
+            HistogramWatcher.newSingleRecordWatcher(
+                    "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+                    AutofillSettingsReferrer.SETTINGS_SEARCH);
 
     @Rule
     public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
@@ -181,10 +188,7 @@ public class AutofillSettingsSearchTest {
                 .perform(click());
 
         assertAutofillAndPasswordsOpened();
-        onView(
-                        allOf(
-                                hasDescendant(withText(R.string.autofill_settings_title)),
-                                isHighlighted()))
+        onView(allOf(hasDescendant(withText(R.string.autofill_settings_title)), isHighlighted()))
                 .check(matches(isDisplayed()));
     }
 
@@ -201,6 +205,8 @@ public class AutofillSettingsSearchTest {
                                 withText(R.string.autofill_and_passwords_settings_title),
                                 withParent(withId(R.id.action_bar))))
                 .check(matches(isDisplayed()));
+
+        mSettingsSearchHistogramWatcher.assertExpected();
     }
 
     private static Matcher<View> isHighlighted() {

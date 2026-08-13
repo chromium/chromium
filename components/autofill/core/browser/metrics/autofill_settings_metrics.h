@@ -72,7 +72,9 @@ enum class AutofillSettingsReferrer {
   kAutofillAndPasswordsPage = 2,
   // Corresponds to the dropdown shown when clicking into a form field.
   kFillingFlowDropdown = 3,
-  kMaxValue = kFillingFlowDropdown,
+  // Corresponds to opening Autofill and Passwords from Settings search.
+  kSettingsSearch = 4,
+  kMaxValue = kSettingsSearch,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSettingsReferrer)
 
