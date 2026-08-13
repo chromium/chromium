@@ -32,7 +32,7 @@ export function getHtml(this: GroupedActionMenuElement) {
       ${group.items.map((item, itemIndex) => html`
         <button
             id="group-${groupIndex}-item-${itemIndex}"
-            class="${this.getItemClass_(item)}"
+            class="dropdown-item"
             style="${item.style}"
             role="${this.getItemRole_(item)}"
             aria-label="${item.ariaLabel}"
@@ -41,7 +41,7 @@ export function getHtml(this: GroupedActionMenuElement) {
             data-group-index="${groupIndex}"
             data-item-index="${itemIndex}">
           <cr-icon
-              class="${this.getItemIconClass_(item)}"
+              class="button-image check-mark check-mark-showing-${item.selected}"
               icon="${this.getItemIcon_(item)}">
           </cr-icon>
           <cr-icon

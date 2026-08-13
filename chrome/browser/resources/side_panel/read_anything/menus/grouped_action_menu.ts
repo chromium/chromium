@@ -95,49 +95,29 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
         .join(' ');
   }
 
-  protected getItemClass_(item: MenuStateItem<unknown>): string {
-    return item.itemType === SettingsItemType.EXPAND ?
-        'dropdown-item expand-item' :
-        'dropdown-item';
-  }
-
   protected getItemRole_(item: MenuStateItem<unknown>): string {
-    return (item.itemType === SettingsItemType.EXPAND ||
-            item.itemType === SettingsItemType.ACTION) ?
-        'menuitem' :
-        'menuitemradio';
+    return item.itemType === SettingsItemType.ACTION ? 'menuitem' :
+                                                       'menuitemradio';
   }
 
   // Returns the aria-checked attribute for the menuitemradio role (radio item
-  // type). Returns nothing for menuitem roles (expand and action item types)
-  // since those don't require the attribute.
+  // type). Returns nothing for menuitem roles (action item) since those don't
+  // require the attribute.
   protected getItemAriaChecked_(item: MenuStateItem<unknown>): boolean|
       typeof nothing {
-    if (item.itemType === SettingsItemType.EXPAND ||
-        item.itemType === SettingsItemType.ACTION) {
+    if (item.itemType === SettingsItemType.ACTION) {
       return nothing;
     }
     return item.selected ?? false;
   }
 
   protected getItemIcon_(item: MenuStateItem<unknown>): string|null {
-    if (item.itemType === SettingsItemType.EXPAND) {
-      return 'cr:expand-more';
-    }
-
     if (item.itemType === SettingsItemType.ACTION) {
       return null;
     }
 
     return this.webuiRoundedIconsEnabled_ ? 'read-anything-20:check-small' :
                                             'read-anything-20:check-mark-old';
-  }
-
-  protected getItemIconClass_(item: MenuStateItem<unknown>): string {
-    if (item.itemType === SettingsItemType.EXPAND) {
-      return 'button-image expand-icon';
-    }
-    return `button-image check-mark check-mark-showing-${item.selected}`;
   }
 }
 
