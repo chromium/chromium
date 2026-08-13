@@ -10318,6 +10318,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripLayoutTransitionDebounceFix)},
 
+    {"tab-opener-tracking", flag_descriptions::kTabOpenerTrackingName,
+     flag_descriptions::kTabOpenerTrackingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabOpenerTracking)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"data-sharing-debug-logs", flag_descriptions::kDataSharingDebugLogsName,

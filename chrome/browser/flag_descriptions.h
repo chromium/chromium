@@ -6510,6 +6510,11 @@ inline constexpr char kTabClosureMethodRefactorDescription[] =
     "Enables the refactored changes for tab closure methods where existing "
     "methods usages are switched off and newly introduced are made active.";
 
+inline constexpr char kTabOpenerTrackingName[] = "Tab Opener Tracking";
+inline constexpr char kTabOpenerTrackingDescription[] =
+    "Enables tracking opener and sibling relationships between tabs to select "
+    "hierarchical next tabs when closing tabs.";
+
 inline constexpr char kTabSearchForDesktopName[] = "Tab Search for Desktop";
 inline constexpr char kTabSearchForDesktopDescription[] =
     "Enable the Tab Search for Desktop feature.";

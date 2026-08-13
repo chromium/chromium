@@ -14801,6 +14801,7 @@ from previous Chrome versions.
   <int value="58679195" label="BluetoothDisconnectWarning:disabled"/>
   <int value="58695502" label="NTPButton:disabled"/>
   <int value="58727839" label="WebAssemblyLazyCompilation:enabled"/>
+  <int value="58971155" label="TabOpenerTracking:disabled"/>
   <int value="59784035" label="ImeThread:disabled"/>
   <int value="59964519" label="OmniboxEnableClipboardProvider:disabled"/>
   <int value="59992411" label="ChangePasswordAffiliationInfo:enabled"/>
@@ -18616,6 +18617,7 @@ from previous Chrome versions.
   <int value="1257742852" label="ForceShowWebSigninLoadingDialog:enabled"/>
   <int value="1257980502" label="disable-accelerated-video-decode"/>
   <int value="1258043820" label="AudioFocusEnforcement:enabled"/>
+  <int value="1258692380" label="TabOpenerTracking:enabled"/>
   <int value="1258747457"
       label="SyncPseudoUSSHistoryDeleteDirectives:disabled"/>
   <int value="1259760596" label="ByDateHistoryInSidePanel:enabled"/>

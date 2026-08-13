@@ -9498,6 +9498,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "tab-opener-tracking",
+    "owners": [ "nemco@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "tab-search-for-desktop",
     "owners": [
       "bjfong@google.com",

@@ -298,6 +298,7 @@ BASE_DECLARE_FEATURE(kTabBottomSheetFullHeight);
 BASE_DECLARE_FEATURE(kTabBottomSheetHalfHeight);
 BASE_DECLARE_FEATURE(kTabBottomSheetResizeWebview);
 BASE_DECLARE_FEATURE(kTabClosureMethodRefactor);
+BASE_DECLARE_FEATURE(kTabOpenerTracking);
 BASE_DECLARE_FEATURE(kTabSearchForDesktop);
 BASE_DECLARE_FEATURE(kTabSharingToolbarAndroid);
 BASE_DECLARE_FEATURE(kTabStorageSqlitePrototype);
