@@ -24,9 +24,49 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
       value: true,
     },
     {
+      key: 'import_dialog_autofill_form_data',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
       key: 'import_dialog_bookmarks',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
+    },
+    {
+      key: 'import_dialog_history',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'import_dialog_saved_passwords',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'import_dialog_search_engine',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'bookmark_bar.show_on_all_tabs',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'search.suggest_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'url_keyed_anonymized_data_collection.enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'spellcheck.use_spelling_service',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
     },
     {
       key: 'spellcheck.dictionaries',
