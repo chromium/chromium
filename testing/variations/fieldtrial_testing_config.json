@@ -11788,6 +11788,23 @@
             ]
         }
     ],
+    "FirstRunFeatureShowcaseGeminiStep": [
+        {
+            "platforms": [
+                "windows",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FirstRunFeatureShowcaseGeminiStep"
+                    ]
+                }
+            ]
+        }
+    ],
     "FixStaticIpForTwoManagedEthPorts": [
         {
             "platforms": [
