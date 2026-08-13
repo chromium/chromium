@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/orb/orb_api.h"
@@ -45,7 +45,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
       std::unique_ptr<WebBundleMemoryQuotaConsumer>
           web_bundle_memory_quota_consumer,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-      mojom::CrossOriginEmbedderPolicyReporter* coep_reporter);
+      mojo::PendingRemote<mojom::CrossOriginEmbedderPolicyReporter>
+          coep_reporter);
   ~WebBundleURLLoaderFactory();
   WebBundleURLLoaderFactory(const WebBundleURLLoaderFactory&) = delete;
   WebBundleURLLoaderFactory& operator=(const WebBundleURLLoaderFactory&) =
@@ -115,8 +116,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
       web_bundle_memory_quota_consumer_;
 
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
-  raw_ptr<mojom::CrossOriginEmbedderPolicyReporter, FlakyDanglingUntriaged>
-      coep_reporter_;
+  mojo::Remote<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
   std::unique_ptr<BundleDataSource> source_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   web_package::mojom::BundleMetadataPtr metadata_;

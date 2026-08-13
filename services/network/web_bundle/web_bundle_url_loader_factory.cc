@@ -547,14 +547,14 @@ WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
     std::unique_ptr<WebBundleMemoryQuotaConsumer>
         web_bundle_memory_quota_consumer,
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-    mojom::CrossOriginEmbedderPolicyReporter* coep_reporter)
+    mojo::PendingRemote<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter)
     : bundle_url_(bundle_url),
       web_bundle_handle_(std::move(web_bundle_handle)),
       web_bundle_memory_quota_consumer_(
           std::move(web_bundle_memory_quota_consumer)),
 
       cross_origin_embedder_policy_(cross_origin_embedder_policy),
-      coep_reporter_(coep_reporter) {
+      coep_reporter_(std::move(coep_reporter)) {
   if (bundle_url != web_bundle_token_params.bundle_url) {
     // This happens when WebBundle request is redirected by WebRequest extension
     // API.
@@ -859,7 +859,8 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
               loader->url(), loader->url(), loader->request_initiator(),
               *response_head, loader->request_mode(),
               loader->request_destination(), cross_origin_embedder_policy_,
-              coep_reporter_, DocumentIsolationPolicy(), nullptr)) {
+              coep_reporter_ ? coep_reporter_.get() : nullptr,
+              DocumentIsolationPolicy(), nullptr)) {
     loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
                                     blocked_reason);
     return;

@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -99,8 +100,7 @@ CreateWebBundleLoaderFactory(WebBundleManager& manager, int32_t process_id) {
   base::WeakPtr<WebBundleURLLoaderFactory> factory =
       manager.CreateWebBundleURLLoaderFactory(
           GURL(kBundleUrl), create_params, process_id,
-          CrossOriginEmbedderPolicy(),
-          /*coep_reporter=*/nullptr);
+          CrossOriginEmbedderPolicy(), mojo::NullRemote());
 
   return std::forward_as_tuple(std::move(factory), std::move(handle));
 }
@@ -172,9 +172,8 @@ TEST_F(WebBundleManagerTest, NoFactoryExistsForDifferentProcessId) {
                                                       std::move(handle));
 
   auto factory = manager.CreateWebBundleURLLoaderFactory(
-      GURL(kBundleUrl), create_params, process_id1,
-      CrossOriginEmbedderPolicy(),
-      /*coep_reporter=*/nullptr);
+      GURL(kBundleUrl), create_params, process_id1, CrossOriginEmbedderPolicy(),
+      mojo::NullRemote());
   ASSERT_TRUE(factory);
 
   ResourceRequest::WebBundleTokenParams find_params(GURL(kBundleUrl), token,
@@ -193,9 +192,8 @@ TEST_F(WebBundleManagerTest, UseProcesIdInTokenParamsForRequestsFromBrowser) {
                                                       std::move(handle));
 
   auto factory = manager.CreateWebBundleURLLoaderFactory(
-      GURL(kBundleUrl), create_params, process_id1,
-      CrossOriginEmbedderPolicy(),
-      /*coep_reporter=*/nullptr);
+      GURL(kBundleUrl), create_params, process_id1, CrossOriginEmbedderPolicy(),
+      mojo::NullRemote());
   ASSERT_TRUE(factory);
 
   ResourceRequest::WebBundleTokenParams find_params1(GURL(kBundleUrl), token,
@@ -224,8 +222,7 @@ TEST_F(WebBundleManagerTest, RemoveFactoryWhenDisconnected) {
 
     auto factory = manager.CreateWebBundleURLLoaderFactory(
         GURL(kBundleUrl), create_params, process_id1,
-        CrossOriginEmbedderPolicy(),
-        /*coep_reporter=*/nullptr);
+        CrossOriginEmbedderPolicy(), mojo::NullRemote());
     ASSERT_TRUE(factory);
     ASSERT_TRUE(
         GetWebBundleURLLoaderFactory(manager, find_params, process_id1));
@@ -311,9 +308,8 @@ TEST_F(WebBundleManagerTest,
       token_params.handle.InitWithNewPipeAndPassReceiver();
 
   auto factory = manager.CreateWebBundleURLLoaderFactory(
-      GURL(kBundleUrl), token_params, process_id1,
-      CrossOriginEmbedderPolicy(),
-      /*coep_reporter=*/nullptr);
+      GURL(kBundleUrl), token_params, process_id1, CrossOriginEmbedderPolicy(),
+      mojo::NullRemote());
 
   // Then, simulate that the bundle is loaded from the network, calling
   // SetBundleStream manually.
@@ -678,10 +674,9 @@ TEST_F(WebBundleManagerTest, WebBundleURLRedirection) {
   // is readirected by WebRequest extension API.
   GURL redirected_bundle_url("https://redirected.example.com/bundle.wbn");
   base::WeakPtr<WebBundleURLLoaderFactory> factory =
-      manager.CreateWebBundleURLLoaderFactory(redirected_bundle_url,
-                                              create_params, process_id1,
-                                              CrossOriginEmbedderPolicy(),
-                                              /*coep_reporter=*/nullptr);
+      manager.CreateWebBundleURLLoaderFactory(
+          redirected_bundle_url, create_params, process_id1,
+          CrossOriginEmbedderPolicy(), mojo::NullRemote());
 
   // TestWebBundleHandle must receive an error.
   handle->RunUntilBundleError();
@@ -758,7 +753,7 @@ TEST_F(WebBundleManagerTest, WebBundleURLRedirectionEarlySubresourceRequest) {
   base::WeakPtr<WebBundleURLLoaderFactory> factory =
       manager.CreateWebBundleURLLoaderFactory(
           redirected_bundle_url, create_params, process_id1,
-          CrossOriginEmbedderPolicy(), /*coep_reporter=*/nullptr);
+          CrossOriginEmbedderPolicy(), mojo::NullRemote());
 
   handle->RunUntilBundleError();
   ASSERT_TRUE(handle->last_bundle_error().has_value());

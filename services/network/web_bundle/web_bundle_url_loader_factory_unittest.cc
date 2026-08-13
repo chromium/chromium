@@ -8,11 +8,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -155,10 +158,62 @@ class BadMessageTestHelper {
   mojo::internal::MessageDispatchContext context_;
 };
 
+// Test implementation of mojom::CrossOriginEmbedderPolicyReporter that records
+// reported blocked URLs from CORP violations.
+class TestCoepReporter : public mojom::CrossOriginEmbedderPolicyReporter {
+ public:
+  TestCoepReporter() = default;
+  ~TestCoepReporter() override = default;
+
+  void QueueCorpViolationReport(const GURL& blocked_url,
+                                mojom::RequestDestination destination,
+                                bool report_only) override {
+    reports_.push_back(blocked_url);
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  void Clone(mojo::PendingReceiver<mojom::CrossOriginEmbedderPolicyReporter>
+                 receiver) override {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  mojo::PendingRemote<mojom::CrossOriginEmbedderPolicyReporter>
+  CreatePendingRemote() {
+    mojo::PendingRemote<mojom::CrossOriginEmbedderPolicyReporter> remote;
+    receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+    return remote;
+  }
+
+  void RunUntilReport() {
+    if (!reports_.empty()) {
+      return;
+    }
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  const std::vector<GURL>& reports() const { return reports_; }
+
+ private:
+  std::vector<GURL> reports_;
+  base::OnceClosure quit_closure_;
+  mojo::ReceiverSet<mojom::CrossOriginEmbedderPolicyReporter> receivers_;
+};
+
 }  // namespace
 
 class WebBundleURLLoaderFactoryTest : public ::testing::Test {
  public:
+  WebBundleURLLoaderFactoryTest()
+      : WebBundleURLLoaderFactoryTest(CrossOriginEmbedderPolicy()) {}
+
+  explicit WebBundleURLLoaderFactoryTest(
+      const CrossOriginEmbedderPolicy& cross_origin_embedder_policy)
+      : cross_origin_embedder_policy_(cross_origin_embedder_policy) {}
+
   void SetUp() override {
     mojo::ScopedDataPipeConsumerHandle consumer;
     ASSERT_EQ(CreateDataPipe(nullptr, bundle_data_destination_, consumer),
@@ -167,14 +222,23 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     handle_ = std::make_unique<TestWebBundleHandle>(
         handle.BindNewPipeAndPassReceiver());
 
+    // In production, CorsURLLoaderFactory owns the COEP reporter remote and
+    // clones it for WebBundleURLLoaderFactory. We mirror that ownership here.
+    mojo::PendingRemote<mojom::CrossOriginEmbedderPolicyReporter> cloned_remote;
+    original_coep_reporter_.Bind(coep_reporter_.CreatePendingRemote());
+    original_coep_reporter_->Clone(
+        cloned_remote.InitWithNewPipeAndPassReceiver());
+
     const ResourceRequest::WebBundleTokenParams create_params(
         GURL(kBundleUrl), {} /* token */, {} /* handle */);
     factory_ = std::make_unique<WebBundleURLLoaderFactory>(
         GURL(kBundleUrl), create_params, std::move(handle),
         std::make_unique<MockMemoryQuotaConsumer>(),
-        CrossOriginEmbedderPolicy(), nullptr /* coep_reporter */);
+        cross_origin_embedder_policy_, std::move(cloned_remote));
     factory_->SetBundleStream(std::move(consumer));
   }
+
+  void ResetOriginalCoepReporter() { original_coep_reporter_.reset(); }
 
   void WriteBundle(base::span<const uint8_t> data) {
     mojo::BlockingCopyFromString(
@@ -225,13 +289,25 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     return handle_->last_bundle_error();
   }
 
+  void RunUntilCoepReport() { coep_reporter_.RunUntilReport(); }
+
+  const std::vector<GURL>& coep_reports() const {
+    return coep_reporter_.reports();
+  }
+
  protected:
   std::unique_ptr<WebBundleURLLoaderFactory> factory_;
 
  private:
+  base::test::TaskEnvironment task_environment;
+
   std::unique_ptr<TestWebBundleHandle> handle_;
   mojo::ScopedDataPipeProducerHandle bundle_data_destination_;
-  base::test::TaskEnvironment task_environment;
+
+  const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
+  mojo::Remote<mojom::CrossOriginEmbedderPolicyReporter>
+      original_coep_reporter_;
+  TestCoepReporter coep_reporter_;
 };
 
 TEST_F(WebBundleURLLoaderFactoryTest, Basic) {
@@ -532,6 +608,62 @@ TEST_F(WebBundleURLLoaderFactoryTest, WrongBundleURL) {
   EXPECT_THAT(bad_message_helper.bad_message_reports(),
               ::testing::ElementsAre(
                   "WebBundleURLLoaderFactory: Bundle URL does not match"));
+}
+
+// Test fixture configured with CrossOriginEmbedderPolicy: require-corp.
+class WebBundleURLLoaderFactoryRequireCorpTest
+    : public WebBundleURLLoaderFactoryTest {
+ public:
+  WebBundleURLLoaderFactoryRequireCorpTest()
+      : WebBundleURLLoaderFactoryTest(RequireCorpPolicy()) {}
+
+ private:
+  static CrossOriginEmbedderPolicy RequireCorpPolicy() {
+    CrossOriginEmbedderPolicy coep;
+    coep.value = mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+    return coep;
+  }
+};
+
+// Regression test for crbug.com/349994197.
+//
+// Previously, WebBundleURLLoaderFactory held a raw pointer to
+// mojom::CrossOriginEmbedderPolicyReporter borrowed from CorsURLLoaderFactory.
+// If CorsURLLoaderFactory was destroyed before WebBundleURLLoaderFactory,
+// attempting to report a CORP violation via the dangling pointer resulted in a
+// Use-After-Free (UAF).
+//
+// This test verifies that WebBundleURLLoaderFactory safely retains its own
+// cloned reporter remote even after the original reporter remote (owned by
+// CorsURLLoaderFactory) is destroyed:
+// 1. Simulate CorsURLLoaderFactory destruction via ResetOriginalCoepReporter().
+// 2. Issue a cross-origin subresource request that violates CORP.
+// 3. Verify that the request is blocked and the CORP violation report is
+//    safely delivered through the cloned remote without crashing.
+TEST_F(WebBundleURLLoaderFactoryRequireCorpTest, ClonedReporterDestruction) {
+  // Step 1: Simulate CorsURLLoaderFactory being destroyed while
+  // WebBundleURLLoaderFactory is still alive.
+  ResetOriginalCoepReporter();
+
+  WriteBundle(CreateCrossOriginBundle());
+  FinishWritingBundle();
+
+  // Step 2: Issue a cross-origin subresource request that lacks a CORP header.
+  // Under COEP: require-corp, this request will be blocked by CORP, which
+  // invokes coep_reporter_->QueueCorpViolationReport().
+  network::ResourceRequest request =
+      CreateRequest(GURL(kCrossOriginJsUrl), kResourceRequestId);
+  request.mode = mojom::RequestMode::kNoCors;
+  request.destination = mojom::RequestDestination::kScript;
+
+  auto result = StartRequest(request);
+  result.client->RunUntilComplete();
+  RunUntilCoepReport();
+
+  // Step 3: Verify the request is blocked and the report is safely delivered.
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+            result.client->completion_status().error_code);
+  EXPECT_THAT(coep_reports(), ::testing::ElementsAre(GURL(kCrossOriginJsUrl)));
 }
 
 }  // namespace network
