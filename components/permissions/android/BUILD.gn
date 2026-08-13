@@ -124,6 +124,9 @@ android_resources("java_resources") {
 
 java_strings_grd("permissions_strings_grd") {
   grd_file = "permissions_android_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "translations/permissions_android_strings_{{source_name_part}}.xtb" ])
 }
 
 android_library("content_settings_enums_java") {

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//build/config/locales.gni")
 import("//content/public/common/features.gni")
@@ -27,6 +28,80 @@ group("strings") {
 
 grit_strings("components_strings") {
   source = "../components_strings.grd"
+  inputs = [
+    "../android_system_error_page_strings.grdp",
+    "../arc_strings.grdp",
+    "../autofill_payments_strings.grdp",
+    "../autofill_strings.grdp",
+    "../blocked_content_strings.grdp",
+    "../bookmark_bar_strings.grdp",
+    "../bookmark_component_strings.grdp",
+    "../browsing_data_strings.grdp",
+    "../collaboration_strings.grdp",
+    "../commerce_strings.grdp",
+    "../components_settings_strings.grdp",
+    "../compose_strings.grdp",
+    "../contextual_cueing_strings.grdp",
+    "../contextual_tasks_strings.grdp",
+    "../crash_strings.grdp",
+    "../dialog_strings.grdp",
+    "../dom_distiller_strings.grdp",
+    "../enterprise_strings.grdp",
+    "../error_page_strings.grdp",
+    "../external_intents_strings.grdp",
+    "../facilitated_payments_strings.grdp",
+    "../find_in_page_strings.grdp",
+    "../flags_strings.grdp",
+    "../fullscreen_control_strings.grdp",
+    "../global_media_controls_strings.grdp",
+    "../heavy_ad_intervention_strings.grdp",
+    "../history_clusters_strings.grdp",
+    "../history_strings.grdp",
+    "../javascript_dialogs_strings.grdp",
+    "../live_caption_strings.grdp",
+    "../login_dialog_strings.grdp",
+    "../management_strings.grdp",
+    "../media_message_center_strings.grdp",
+    "../new_or_sad_tab_strings.grdp",
+    "../omnibox_pedal_ui_strings.grdp",
+    "../omnibox_strings.grdp",
+    "../page_info_strings.grdp",
+    "../paint_preview_strings.grdp",
+    "../password_manager_strings.grdp",
+    "../payments_strings.grdp",
+    "../pdf_strings.grdp",
+    "../permissions_strings.grdp",
+    "../personal_context_strings.grdp",
+    "../policy_strings.grdp",
+    "../print_media_strings.grdp",
+    "../printing_component_strings.grdp",
+    "../protocol_handler_strings.grdp",
+    "../reset_password_strings.grdp",
+    "../saved_tab_groups_strings.grdp",
+    "../search_engine_choice_strings.grdp",
+    "../security_interstitials_strings.grdp",
+    "../send_tab_to_self_strings.grdp",
+    "../site_settings_strings.grdp",
+    "../smart_tab_sharing.grdp",
+    "../ssl_errors_strings.grdp",
+    "../subresource_filter_strings.grdp",
+    "../supervised_user_strings.grdp",
+    "../sync_ui_strings.grdp",
+    "../tab_groups_strings.grdp",
+    "../tab_resume_strings.grdp",
+    "../translate_strings.grdp",
+    "../undo_strings.grdp",
+    "../user_data_importer_strings.grdp",
+    "../user_education_strings.grdp",
+    "../version_ui_strings.grdp",
+    "../wallet_strings.grdp",
+    "../webapps_strings.grdp",
+    "../webxr_strings.grdp",
+  ]
+  inputs +=
+      process_file_template(xtb_locales,
+                            [ "components_strings_{{source_name_part}}.xtb" ])
+
   defines = [
     "enable_arcore=$enable_arcore",
     "enable_cardboard=$enable_cardboard",
@@ -55,11 +130,61 @@ if (is_android) {
 
 grit_strings("components_branded_strings") {
   source = "../components_${branding_path_product}_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "components_${branding_path_product}_strings_{{source_name_part}}.xtb" ])
   outputs = [ "grit/components_branded_strings.h" ]
 }
 
 grit_strings("components_locale_settings") {
   source = "../components_locale_settings.grd"
+
+  _xtb_locales = all_chrome_locales - extended_locales - [
+                   "af",
+                   "en-US",
+                   "en-XA",
+                   "ur",
+                 ]
+  if (is_android) {
+    _xtb_locales -= [ "cy" ]
+  }
+  if (is_ios) {
+    _xtb_locales -= [
+      "es-MX",
+      "pt",
+    ]
+    _xtb_locales += [
+      "es-419",
+      "pt-BR",
+    ]
+  }
+  inputs = process_file_template(
+          _xtb_locales,
+          [ "components_locale_settings_{{source_name_part}}.xtb" ])
+  _terms_locales = _xtb_locales + [ "en" ] - [
+                     "ar-XB",
+                     "ms",
+                   ]
+  if (!is_android && !is_ios) {
+    if (is_chrome_branded) {
+      inputs += process_file_template(
+              _terms_locales,
+              [ "../resources/terms/terms_{{source_name_part}}.html" ])
+    } else {
+      inputs += [ "../resources/terms/terms_chromium.html" ]
+    }
+  }
+
+  if (is_linux) {
+    if (is_chrome_branded) {
+      inputs += process_file_template(
+              _terms_locales,
+              [ "../resources/terms/terms_{{source_name_part}}.txt" ])
+    } else {
+      inputs += [ "../resources/terms/terms_chromium.txt" ]
+    }
+  }
+
   outputs = [ "grit/components_locale_settings.h" ]
 
   if (is_android) {
@@ -94,6 +219,9 @@ if (is_android) {
 
 grit_strings("privacy_sandbox_strings") {
   source = "../privacy_sandbox_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "privacy_sandbox_strings_{{source_name_part}}.xtb" ])
   outputs = [ "grit/privacy_sandbox_strings.h" ]
 
   if (is_android) {
