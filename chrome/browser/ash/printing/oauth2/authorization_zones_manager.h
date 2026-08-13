@@ -15,6 +15,7 @@
 #include "components/sync/model/data_type_sync_bridge.h"
 
 class GURL;
+class PrefService;
 class Profile;
 
 namespace chromeos {
@@ -76,8 +77,11 @@ class AuthorizationZonesManager : public KeyedService {
           const GURL& url,
           ClientIdsDatabase* client_ids_database)>;
 
+  // `local_state` must be non-null and must outlive the returned object.
   // `profile` must not be nullptr.
-  static std::unique_ptr<AuthorizationZonesManager> Create(Profile* profile);
+  static std::unique_ptr<AuthorizationZonesManager> Create(
+      PrefService* local_state,
+      Profile* profile);
   static std::unique_ptr<AuthorizationZonesManager> CreateForTesting(
       Profile* profile,
       CreateAuthZoneCallback auth_zone_creator,

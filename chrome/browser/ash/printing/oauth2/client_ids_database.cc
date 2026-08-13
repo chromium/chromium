@@ -8,10 +8,10 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
-#include "chrome/browser/browser_process.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
@@ -20,9 +20,11 @@ namespace ash::printing::oauth2 {
 
 class ClientIdsDatabaseImpl : public ClientIdsDatabase {
  public:
-  ClientIdsDatabaseImpl()
-      : pref_(g_browser_process->local_state()),
-        data_(pref_->GetDict(ash::prefs::kPrintingOAuth2AuthorizationServers)
+  // `local_state` must be non-null and must outlive `this`.
+  explicit ClientIdsDatabaseImpl(PrefService* local_state)
+      : local_state_(CHECK_DEREF(local_state)),
+        data_(local_state
+                  ->GetDict(ash::prefs::kPrintingOAuth2AuthorizationServers)
                   .Clone()) {}
 
   ClientIdsDatabaseImpl(const ClientIdsDatabaseImpl&) = delete;
@@ -39,17 +41,18 @@ class ClientIdsDatabaseImpl : public ClientIdsDatabase {
     DCHECK(!data_.FindString(key));
     DCHECK(!client_id.empty());
     data_.Set(key, client_id);
-    pref_->SetDict(ash::prefs::kPrintingOAuth2AuthorizationServers,
-                   data_.Clone());
+    local_state_->SetDict(ash::prefs::kPrintingOAuth2AuthorizationServers,
+                          data_.Clone());
   }
 
  private:
-  raw_ptr<PrefService> pref_;
+  const raw_ref<PrefService> local_state_;
   base::DictValue data_;
 };
 
-std::unique_ptr<ClientIdsDatabase> ClientIdsDatabase::Create() {
-  return std::make_unique<ClientIdsDatabaseImpl>();
+std::unique_ptr<ClientIdsDatabase> ClientIdsDatabase::Create(
+    PrefService* local_state) {
+  return std::make_unique<ClientIdsDatabaseImpl>(local_state);
 }
 
 void ClientIdsDatabase::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace ash {
@@ -46,7 +47,7 @@ std::unique_ptr<KeyedService>
 AuthorizationZonesManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return AuthorizationZonesManager::Create(
-      Profile::FromBrowserContext(context));
+      g_browser_process->local_state(), Profile::FromBrowserContext(context));
 }
 
 }  // namespace oauth2

@@ -10,8 +10,9 @@
 
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 
-class PrefRegistrySimple;
 class GURL;
+class PrefRegistrySimple;
+class PrefService;
 
 namespace ash::printing::oauth2 {
 
@@ -21,7 +22,8 @@ namespace ash::printing::oauth2 {
 // Authorization Server.
 class ClientIdsDatabase {
  public:
-  static std::unique_ptr<ClientIdsDatabase> Create();
+  // `local_state` must be non-null and must outlive the returned object.
+  static std::unique_ptr<ClientIdsDatabase> Create(PrefService* local_state);
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
