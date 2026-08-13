@@ -6,6 +6,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -23,6 +24,7 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
@@ -125,6 +127,23 @@ class FullWebUIOmniboxInteractiveTest
                el.dispatchEvent(new Event('input'));
              })")),
                  InAnyContext(WaitForWebUIInputValue("")));
+  }
+
+  auto SelectAllWebUIInput() {
+    return InAnyContext(
+        ExecuteJsAt(kPopupWebView, kWebUIInput, "el => el.select()"));
+  }
+
+  auto CheckWebUIInputSelection(int expected_start, int expected_end) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWebUIInputSelectionChanged);
+    StateChange selection_changed;
+    selection_changed.event = kWebUIInputSelectionChanged;
+    selection_changed.where = kWebUIInput;
+    selection_changed.test_function = base::StringPrintf(
+        "(el) => el && el.selectionStart === %d && el.selectionEnd === %d",
+        expected_start, expected_end);
+    selection_changed.continue_across_navigation = true;
+    return WaitForStateChange(kPopupWebView, selection_changed);
   }
 
   auto CheckWebUIInputFocus(bool expected_focus) {
@@ -646,3 +665,30 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
           InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
       CheckWebUIInputFocus(true));
 }
+
+#if !BUILDFLAG(IS_MAC)
+// Verifies that pressing Shift+Arrow keys after Select All adjusts the
+// selection character-by-character on Windows and Linux rather than collapsing
+// all text at once. On macOS, selections created by Select All are undirected
+// by OS convention and do not adjust character-by-character.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       ShiftArrowSelectionModification) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("hello"), CheckWebUIInputFocus(true),
+      SelectAllWebUIInput(), CheckWebUIInputSelection(0, 5),
+      // Shift+ArrowRight at the end of selection should stay at [0, 5].
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_RIGHT, ui::EF_SHIFT_DOWN)),
+      CheckWebUIInputSelection(0, 5),
+      // Shift+ArrowLeft should unselect the last character [0, 4].
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_LEFT, ui::EF_SHIFT_DOWN)),
+      CheckWebUIInputSelection(0, 4),
+      // Without Shift, ArrowLeft should collapse selection to the beginning
+      // [0, 0].
+      SelectAllWebUIInput(), CheckWebUIInputSelection(0, 5),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_LEFT, ui::EF_NONE)),
+      CheckWebUIInputSelection(0, 0));
+}
+#endif  // !BUILDFLAG(IS_MAC)
