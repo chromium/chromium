@@ -162,6 +162,7 @@ public abstract class ChromeFeatureList {
             "AbortNavigationsFromTabClosures";
     public static final String ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS =
             "AccountForSuppressedKeyboardInsets";
+    public static final String ACCOUNT_PICKER_DIALOG = "AccountPickerDialog";
     public static final String ACTIVATE_HISTORY_NAVIGATION_COORDINATOR_IN_GESTURE_NAV_MODE =
             "ActivateHistoryNavigationCoordinatorInGestureNavMode";
     public static final String ACTOR_LOGIN_PERMISSIONS_UI = "ActorLoginPermissionsUi";
@@ -778,6 +779,11 @@ public abstract class ChromeFeatureList {
     // keep-sorted start group_prefixes=["public static final CachedFlag"]
     public static final CachedFlag sAccountForSuppressedKeyboardInsets =
             newCachedFlag(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, /* defaultValue= */ true);
+    public static final CachedFlag sAccountPickerDialog =
+            newCachedFlag(
+                    ACCOUNT_PICKER_DIALOG,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sActivateHistoryNavigationCoordinatorInGestureNavMode =
             newCachedFlag(
                     ACTIVATE_HISTORY_NAVIGATION_COORDINATOR_IN_GESTURE_NAV_MODE,
@@ -1330,6 +1336,7 @@ public abstract class ChromeFeatureList {
             List.of(
                     // keep-sorted start
                     sAccountForSuppressedKeyboardInsets,
+                    sAccountPickerDialog,
                     sActivateHistoryNavigationCoordinatorInGestureNavMode,
                     sAllocInstanceIdIncreasedDefaultRange,
                     sAndroidAnimatedProgressBarInBrowser,

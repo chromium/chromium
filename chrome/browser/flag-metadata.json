@@ -38,6 +38,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "account-picker-dialog",
+    "owners": [ "adelm@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "actor-observe-page-content-default",
     "owners": [
       "mfoltz@chromium.org",

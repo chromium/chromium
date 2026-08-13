@@ -8745,6 +8745,7 @@ from previous Chrome versions.
   <int value="-1838992280" label="FeedCloseRefresh:disabled"/>
   <int value="-1838482444" label="disable-settings-window"/>
   <int value="-1838155843" label="PrivacyGuide3:enabled"/>
+  <int value="-1837591928" label="AccountPickerDialog:disabled"/>
   <int value="-1837401779" label="EnableFileManagerFormatDialog:enabled"/>
   <int value="-1837359971" label="kEnterOverviewFromWallpaper:enabled"/>
   <int value="-1837329460" label="NewEncodeCpuLoadEstimator:enabled"/>
@@ -19466,6 +19467,7 @@ from previous Chrome versions.
   <int value="1520754417" label="ConfirmationChip:enabled"/>
   <int value="1521290440" label="ModalMemorySaver:disabled"/>
   <int value="1523918941" label="SingleCaCertVerificationPhase1:disabled"/>
+  <int value="1523941134" label="AccountPickerDialog:enabled"/>
   <int value="1524016321" label="QuickAppAccessTestUI:disabled"/>
   <int value="1524178643" label="AppServiceExternalProtocol:enabled"/>
   <int value="1524631783" label="CrOSLateBootCrasSplitAlsaUSBInternal:enabled"/>

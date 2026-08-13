@@ -1414,6 +1414,10 @@ inline constexpr char kSettingsInTabUrlNavDescription[] =
     "of the Android navigation stack, as well as maps settings pages to "
     "distinct URLs. Requires SettingsInTab to be enabled.";
 
+inline constexpr char kAccountPickerDialogName[] = "Account Picker Dialog";
+inline constexpr char kAccountPickerDialogDescription[] =
+    "Enables the account picker dialog on large form factors.";
+
 inline constexpr char kBottomSheetOnDesktopWindowingName[] =
     "Bottom Sheet on Desktop Windowing";
 inline constexpr char kBottomSheetOnDesktopWindowingDescription[] =

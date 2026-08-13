@@ -10229,6 +10229,10 @@ const FeatureEntry kFeatureEntries[] = {
          kDisablePartnerHomepageAndroidVariations,
          "DisablePartnerHomepageAndroid")},
 
+    {"account-picker-dialog", flag_descriptions::kAccountPickerDialogName,
+     flag_descriptions::kAccountPickerDialogDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAccountPickerDialog)},
+
     {"bottom-sheet-on-desktop-windowing",
      flag_descriptions::kBottomSheetOnDesktopWindowingName,
      flag_descriptions::kBottomSheetOnDesktopWindowingDescription, kOsAndroid,

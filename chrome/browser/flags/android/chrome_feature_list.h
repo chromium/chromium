@@ -27,6 +27,7 @@ namespace chrome::android {
 // BASE_DECLARE_FEATURE_START
 // go/keep-sorted start
 BASE_DECLARE_FEATURE(kAccountForSuppressedKeyboardInsets);
+BASE_DECLARE_FEATURE(kAccountPickerDialog);
 BASE_DECLARE_FEATURE(kActivateHistoryNavigationCoordinatorInGestureNavMode);
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2);
 BASE_DECLARE_FEATURE(kAllocInstanceIdIncreasedDefaultRange);
