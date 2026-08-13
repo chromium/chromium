@@ -13,9 +13,13 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/views_export.h"
 
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
+
 namespace ui {
 class Shadow;
-}
+}  // namespace ui
 
 namespace views {
 
@@ -33,6 +37,7 @@ class VIEWS_EXPORT ViewShadow : public ViewObserver,
 
   // Update the corner radius of the view along with the shadow.
   void SetRoundedCornerRadius(int corner_radius);
+  void SetRoundedCorners(const gfx::RoundedCornersF& radii);
 
   // ui::LayerOwner::Observer:
   void OnLayerRecreated(ui::Layer* old_layer) override;
