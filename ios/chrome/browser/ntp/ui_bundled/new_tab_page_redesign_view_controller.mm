@@ -53,6 +53,7 @@ constexpr CGFloat kRestingSheetMVTTopMargin = 12.0;
 
 // Top margin of the Google logo view.
 constexpr CGFloat kLogoTopMargin = 40.0;
+constexpr CGFloat kLandscapeLogoTopMargin = 8.0;
 
 // Width dimensions for Doodle and Google logo layouts.
 constexpr CGFloat kDoodleLogoWidth = 320.0;
@@ -74,6 +75,8 @@ constexpr CGFloat kFakeboxPlusLeadingSpace = 18.0;
 // Vertical visual alignment nudges for fakebox elements.
 constexpr CGFloat kLogoViewYOffset = 1.0;
 constexpr CGFloat kHintLabelYOffset = -1.0;
+
+const CGFloat kMinDragHandleHeight = 24.0;
 }  // namespace
 
 @interface NTPRedesignTouchAreaOverflowStackView : UIStackView
@@ -391,6 +394,10 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
 - (void)handleTraitChanges {
   [self updateLogoConstraints];
   [self refreshFakeboxContent];
+  _fakeLocationBarTopConstraint.constant = [self centeredFakeOmniboxTop];
+  if (_bottomSheetViewController) {
+    [_bottomSheetViewController updateBottomSheetPositionAnimated:NO];
+  }
 }
 
 - (void)setUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton {
@@ -439,13 +446,23 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
   if (!IsMVTInBottomSheetEnabled()) {
     offset += kRestingSheetMVTTopMargin;
   }
-  return offset;
+
+  // Safety guard: guarantee the drag handle is always visible and reachable
+  CGFloat screenHeight = self.view.bounds.size.height;
+  CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
+  CGFloat maxAllowedOffset =
+      screenHeight - safeAreaBottom - kMinDragHandleHeight;
+
+  return MIN(offset, maxAllowedOffset);
 }
 
 - (CGFloat)collapsedOffsetForBottomSheetViewController:
     (NewTabPageBottomSheetViewController*)viewController {
   UIView* superview = self.view;
   CGFloat safeAreaBottom = superview.safeAreaInsets.bottom;
+  if ([self isCompactHeight]) {
+    return superview.bounds.size.height - safeAreaBottom - kMinDragHandleHeight;
+  }
   CGFloat collapsedHeight = safeAreaBottom + 80.0;
   return superview.bounds.size.height - collapsedHeight;
 }
@@ -697,19 +714,29 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
 
   return height;
 }
+- (BOOL)isCompactHeight {
+  return self.traitCollection.verticalSizeClass ==
+         UIUserInterfaceSizeClassCompact;
+}
+
+- (CGFloat)logoTopPaddingForCurrentOrientation {
+  if ([self isCompactHeight]) {
+    return kLandscapeLogoTopMargin;
+  }
+  if (base::FeatureList::IsEnabled(kNewTabPageUICleanup)) {
+    return content_suggestions::LogoTopPadding(_logoState,
+                                               self.traitCollection);
+  }
+  return kLogoTopMargin;
+}
+
 - (CGFloat)centeredFakeOmniboxTop {
-    CGFloat safeAreaTop = self.view.safeAreaInsets.top;
-    CGFloat logoHeight =
-        content_suggestions::DoodleHeight(_logoState, self.traitCollection);
-    CGFloat logoTopMargin;
-    if (IsNewTabPageUICleanupEnabled()) {
-      logoTopMargin =
-          content_suggestions::LogoTopPadding(_logoState, self.traitCollection);
-    } else {
-      logoTopMargin = kLogoTopMargin;
-    }
-    return safeAreaTop + logoTopMargin + logoHeight +
-           content_suggestions::LogoToFakeboxPadding(_logoState);
+  CGFloat safeAreaTop = self.view.safeAreaInsets.top;
+  CGFloat logoHeight =
+      content_suggestions::DoodleHeight(_logoState, self.traitCollection);
+  CGFloat logoTopMargin = [self logoTopPaddingForCurrentOrientation];
+  return safeAreaTop + logoTopMargin + logoHeight +
+         content_suggestions::LogoToFakeboxPadding(_logoState);
 }
 
 
