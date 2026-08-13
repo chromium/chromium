@@ -11,12 +11,13 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/features.h"
+#include "media/audio/audio_features.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
@@ -48,10 +49,10 @@
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
+#include "third_party/blink/renderer/modules/webaudio/testing/fake_audio_thread.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
-#include "third_party/blink/renderer/modules/webaudio/testing/fake_audio_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
@@ -2029,6 +2030,31 @@ TEST_F(AudioContextTest, RenderSizeHint) {
   context = AudioContext::Create(GetFrame().DomWindow(), options,
                                  ASSERT_NO_EXCEPTION);
   EXPECT_EQ(context->renderQuantumSize(), 256u);
+
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "WebAudioConfigurableRenderQuantum", false);
+}
+
+TEST_F(AudioContextTest, RenderSizeHintWithResampler) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ::features::kWebAudioRemoveAudioDestinationResampler);
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "WebAudioConfigurableRenderQuantum", true);
+  V8TestingScope scope;
+
+  for (unsigned quantum : {1u, 16u, 32u, 48u, 64u}) {
+    AudioContextOptions* options = AudioContextOptions::Create();
+    // Pick an unusual context sample rate to force resampling regardless of
+    // platform-default hardware sample rate.
+    options->setSampleRate(40000.0);
+    options->setRenderSizeHint(
+        MakeGarbageCollected<
+            V8UnionAudioContextRenderSizeCategoryOrUnsignedLong>(quantum));
+    AudioContext* context = AudioContext::Create(GetFrame().DomWindow(),
+                                                 options, ASSERT_NO_EXCEPTION);
+    EXPECT_EQ(context->renderQuantumSize(), quantum);
+  }
 
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "WebAudioConfigurableRenderQuantum", false);

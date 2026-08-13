@@ -43,6 +43,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/sinc_resampler.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -572,8 +573,21 @@ AudioDestination::AudioDestination(
                                   context_sample_rate.value(),
                                   web_audio_device_->SampleRate()));
 
+    // SincResampler requires at least `kMinRequestSize` input samples to
+    // perform interpolation. For smaller render quanta this creates an
+    // algorithmic latency floor because the graph must buffer at least
+    // `resampler_request_frames` before producing resampled output.
+    const size_t resampler_request_frames = audio_utilities::RoundUpToMultiple(
+        media::SincResampler::kMinRequestSize, render_quantum_frames);
+    const size_t num_quanta = resampler_request_frames / render_quantum_frames;
+
+    if (num_quanta > 1) {
+      resampler_render_bus_ = AudioBus::Create(number_of_output_channels,
+                                               render_quantum_frames, false);
+    }
+
     resampler_ = std::make_unique<MediaMultiChannelResampler>(
-        number_of_output_channels, scale_factor, render_quantum_frames,
+        number_of_output_channels, scale_factor, resampler_request_frames,
         CrossThreadBindRepeating(&AudioDestination::ProvideResamplerInput,
                                  CrossThreadUnretained(this)));
     resampler_bus_ =
@@ -775,10 +789,34 @@ void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
   // resampling.
   TRACE_EVENT("webaudio", "AudioDestination::ProvideResamplerInput",
               "delay (frames)", resampler_frame_delay);
-  auto adjusted_delay =
-      delay_to_report_ + media::AudioTimestampHelper::FramesToTime(
-                             resampler_frame_delay, context_sample_rate_);
-  PullFromCallback(dest, adjusted_delay);
+
+  if (dest->length() == render_quantum_frames_) {
+    auto adjusted_delay =
+        delay_to_report_ + media::AudioTimestampHelper::FramesToTime(
+                               resampler_frame_delay, context_sample_rate_);
+    PullFromCallback(dest, adjusted_delay);
+    return;
+  }
+
+  const unsigned total_frames = dest->length();
+  CHECK_EQ(total_frames % render_quantum_frames_, 0u);
+  for (unsigned offset = 0; offset < total_frames;
+       offset += render_quantum_frames_) {
+    for (unsigned c = 0; c < dest->NumberOfChannels(); ++c) {
+      resampler_render_bus_->SetChannelMemory(
+          c, dest->Channel(c)->MutableSpan().subspan(offset,
+                                                     render_quantum_frames_));
+    }
+    auto adjusted_delay =
+        delay_to_report_ +
+        media::AudioTimestampHelper::FramesToTime(
+            resampler_frame_delay + offset, context_sample_rate_);
+    PullFromCallback(resampler_render_bus_.get(), adjusted_delay);
+  }
+  // Reset channel pointers to prevent holding dangling references to `dest`.
+  for (unsigned c = 0; c < dest->NumberOfChannels(); ++c) {
+    resampler_render_bus_->SetChannelMemory(c, base::span<float>());
+  }
 }
 
 void AudioDestination::PullFromCallback(AudioBus* destination_bus,

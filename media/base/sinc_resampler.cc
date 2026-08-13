@@ -178,7 +178,7 @@ SincResampler::SincResampler(double io_sample_rate_ratio,
       input_buffer_(base::AlignedUninit<float>(input_buffer_size_, kAlignment)),
       r1_(input_buffer_),
       r2_(input_buffer_.subspan(kernel_size_ / 2)) {
-  CHECK_GT(request_frames, static_cast<int>(kernel_size_) * 3 / 2)
+  CHECK_GE(request_frames, static_cast<int>(kMinRequestSize))
       << "request_frames must be greater than 1.5 kernels to allow sufficient "
          "data for resampling";
   // This means that after the first call to Flush we will have

@@ -12,6 +12,7 @@ include_rules = [
     "+media/base/audio_renderer_sink.h",
     "+media/base/audio_timestamp_helper.h",
     "+media/base/multi_channel_resampler.h",
+    "+media/base/sinc_resampler.h",
     "+third_party/blink/renderer/platform/wtf/cross_thread_functional.h",
     "+third_party/blink/renderer/platform/geometry/float_point_3d.h",
     "+third_party/blink/renderer/platform/heap",

@@ -754,6 +754,45 @@ TEST_F(AudioDestinationTest, DestructOnMainThread) {
   run_loop.Run();
 }
 
+class AudioDestinationSmallRenderQuantumTest
+    : public ::testing::TestWithParam<unsigned> {};
+
+TEST_P(AudioDestinationSmallRenderQuantumTest, Resampling) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kWebAudioRemoveAudioDestinationResampler);
+  ScopedTestingPlatformSupport<TestPlatform> platform;
+  platform->CreateMockWebAudioDevice(kDefaultHardwareSampleRate,
+                                     kDefaultHardwareBufferSize);
+  EXPECT_CALL(platform->web_audio_device(), Start).Times(1);
+  EXPECT_CALL(platform->web_audio_device(), Stop).Times(1);
+
+  WebAudioSinkDescriptor sink_descriptor(WebString(""), kFrameToken);
+  const int channel_count = Platform::Current()->AudioHardwareOutputChannels();
+
+  AudioCallback callback;
+  const unsigned quantum = GetParam();
+  scoped_refptr<AudioDestination> destination = AudioDestination::Create(
+      callback, sink_descriptor, channel_count,
+      // Pick an unusual context sample rate to force resampling regardless of
+      // platform-default hardware sample rate.
+      WebAudioLatencyHint(WebAudioLatencyHint::kCategoryInteractive), 40000.0f,
+      quantum);
+  ASSERT_NE(destination, nullptr);
+  EXPECT_NE(destination->GetResamplerForTesting(), nullptr);
+
+  destination->Start();
+  auto audio_bus =
+      media::AudioBus::Create(channel_count, destination->FramesPerBuffer());
+  destination->Render(base::TimeDelta::Min(), base::TimeTicks::Now(), {},
+                      audio_bus.get());
+  destination->Stop();
+}
+
+INSTANTIATE_TEST_SUITE_P(AudioDestinationSmallRenderQuantumTest,
+                         AudioDestinationSmallRenderQuantumTest,
+                         ::testing::Values(1u, 16u, 32u, 48u, 64u));
+
 }  // namespace
 
 }  // namespace blink

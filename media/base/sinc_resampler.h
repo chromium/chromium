@@ -28,6 +28,10 @@ class MEDIA_EXPORT SincResampler {
   static constexpr size_t kMaxKernelSize = 64;
   static constexpr size_t kMinKernelSize = 32;
 
+  // Minimum request size. SincResampler requires request_frames > 1.5 *
+  // `kernel_size_`, where the minimum kernel size is `kMinKernelSize`.
+  static constexpr size_t kMinRequestSize = kMinKernelSize * 3 / 2 + 1;
+
   // Default request size.  Affects how often and for how much SincResampler
   // calls back for input.  Must be greater than 1.5 * `kernel_size_`.
   static constexpr int kDefaultRequestSize = 512;

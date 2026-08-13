@@ -259,6 +259,10 @@ class PLATFORM_EXPORT AudioDestination final
   // one.
   std::unique_ptr<MediaMultiChannelResampler> resampler_;
   std::unique_ptr<media::AudioBus> resampler_bus_;
+  // Non-allocating wrapper used to pull individual render quanta from the Web
+  // Audio graph when `render_quantum_frames_` is smaller than the minimum
+  // request size required by `media::SincResampler` (`kMinRequestSize`).
+  scoped_refptr<AudioBus> resampler_render_bus_;
 
   // Required for RequestRender and also in the resampling callback (if used).
   AudioIOPosition output_position_;

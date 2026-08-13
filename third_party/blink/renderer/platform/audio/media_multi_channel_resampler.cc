@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
+#include "media/base/sinc_resampler.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 
 namespace blink {
@@ -22,6 +23,8 @@ MediaMultiChannelResampler::MediaMultiChannelResampler(
       resampler_output_bus_wrapper_(
           AudioBus::Create(channels, request_frames, false)),
       read_cb_(std::move(read_cb)) {
+  CHECK_GE(request_frames,
+           static_cast<uint32_t>(media::SincResampler::kMinRequestSize));
   resampler_ = std::make_unique<media::MultiChannelResampler>(
       channels, io_sample_rate_ratio, request_frames,
       base::BindRepeating(&MediaMultiChannelResampler::ProvideResamplerInput,
