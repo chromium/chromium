@@ -87,9 +87,15 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
   // These subresource requests arrived earlier than the request for the bundle.
   auto it = pending_loaders_.find(key);
   if (it != pending_loaders_.end()) {
-    for (auto& loader : it->second)
-      factory->StartLoader(loader);
+    // Detach the vector and erase the map entry before invoking StartLoader(),
+    // because a synchronous failure inside StartLoader() can reentrantly
+    // call CleanUpWillBeDeletedURLLoader() and modify pending_loaders_.
+    std::vector<base::WeakPtr<WebBundleURLLoaderFactory::URLLoader>>
+        pending_loaders = std::move(it->second);
     pending_loaders_.erase(it);
+    for (auto& loader : pending_loaders) {
+      factory->StartLoader(loader);
+    }
   }
 
   auto weak_factory = factory->GetWeakPtr();
