@@ -15,6 +15,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureMap;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
@@ -236,6 +238,66 @@ public class BookmarkBarUtils {
             toggleUserPrefsShowBookmarksBar(profile, fromKeyboardShortcut);
         } else {
             toggleDevicePrefShowBookmarksBar(profile, fromKeyboardShortcut);
+        }
+    }
+
+    // [v2] (Tri-state) Using the Pref.BOOKMARK_BAR_VISIBILITY_STATE preference or
+    // BookmarkBarConstants.BOOKMARK_BAR_BOOKMARK_BAR_VISIBILITY_STATE.
+
+    /**
+     * Returns the current visibility state of the Bookmark Bar. The feature is visible when it is
+     * allowed in the given context, and the bookmark bar visibility state UserPref is set to a
+     * value that allows it to be enabled in the current context (determined by the caller). When on
+     * tablets, we do not use the UserPref and instead use the device preference.
+     *
+     * @param context The context in which compatibility should be assessed.
+     * @param profile The profile for which the user UserPref should be assessed.
+     * @param isXrFullSpaceMode Supplier for whether the device is in XR full space mode.
+     * @return Whether the Bookmark Bar is currently visible.
+     */
+    public static @BookmarkBarVisibilityState int getBookmarkBarVisibilityState(
+            Context context, @Nullable Profile profile, boolean isXrFullSpaceMode) {
+        // This should only be called if the tri-state feature flag is enabled.
+        assert ChromeFeatureMap.isEnabled(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+                : "Tri-state visibility preference should not be used without feature flag.";
+
+        if (sBookmarkBarVisibleForTesting != null) {
+            return sBookmarkBarVisibleForTesting
+                    ? BookmarkBarVisibilityState.ALWAYS_SHOW
+                    : BookmarkBarVisibilityState.ALWAYS_HIDE;
+        }
+
+        // The bookmark bar is never visible in XR, so return a force hide value here.
+        if (isXrFullSpaceMode || !isActivityStateBookmarkBarCompatible(context)) {
+            return BookmarkBarVisibilityState.ALWAYS_HIDE;
+        }
+
+        // On Desktop, we sync with the UserPrefs.
+        // On tablets we use the device preference logic (policy (pref service)  > local pref
+        // (shared pref)).
+        return shouldUseProfileUserPrefs()
+                ? getUserPrefsBookmarkBarVisibilityState(profile)
+                : getDevicePrefBookmarkBarVisibilityState(profile);
+    }
+
+    /**
+     * Sets the visibility state of the bookmarks bar, automatically choosing between UserPrefs
+     * (Desktop) and Device preferences (Tablet) based on the device type.
+     *
+     * @param profile The profile for which the bookmarks bar visibility should be toggled.
+     * @param state The new visibility state for the bookmark bar.
+     * @param fromKeyboardShortcut True if the change was triggered by a keyboard shortcut.
+     */
+    public static void setBookmarkBarVisibilityState(
+            Profile profile, @BookmarkBarVisibilityState int state, boolean fromKeyboardShortcut) {
+        // This should only be called if the tri-state feature flag is enabled.
+        assert ChromeFeatureMap.isEnabled(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+                : "Tri-state visibility preference should not be used without feature flag.";
+
+        if (shouldUseProfileUserPrefs()) {
+            setUserPrefsBookmarkBarVisibilityState(profile, state, fromKeyboardShortcut);
+        } else {
+            setDevicePrefBookmarkBarVisibilityState(state, fromKeyboardShortcut);
         }
     }
 

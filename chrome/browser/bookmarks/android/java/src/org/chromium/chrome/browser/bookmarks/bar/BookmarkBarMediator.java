@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
@@ -138,6 +139,7 @@ class BookmarkBarMediator
      *     bookmark_bar view.
      * @param bookmarkBarView The bookmark_bar view that contains the entire bookmarks bar.
      * @param popupCoordinator The coordinator for displaying popups.
+     * @param xrSpaceModeObservableSupplier Used to check if currently in XR full space mode.
      */
     BookmarkBarMediator(
             Activity activity,
@@ -153,7 +155,8 @@ class BookmarkBarMediator
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             RecyclerView itemsRecyclerView,
             BookmarkBar bookmarkBarView,
-            BookmarkBarPopupCoordinator popupCoordinator) {
+            BookmarkBarPopupCoordinator popupCoordinator,
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mActivity = activity;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -209,7 +212,8 @@ class BookmarkBarMediator
                         profileSupplier,
                         currentTabSupplier,
                         this,
-                        popupCoordinator::dismiss);
+                        popupCoordinator::dismiss,
+                        xrSpaceModeObservableSupplier);
     }
 
     /** Destroys the bookmark bar mediator. */
@@ -720,6 +724,26 @@ class BookmarkBarMediator
                 (Profile profile, BookmarkModel _) ->
                         BookmarkBarUtils.toggleShowBookmarksBar(
                                 profile, /* fromKeyboardShortcut= */ false));
+    }
+
+    @Override
+    public void alwaysHide() {
+        runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                (Profile profile, BookmarkModel _) ->
+                        BookmarkBarUtils.setBookmarkBarVisibilityState(
+                                profile,
+                                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                                /* fromKeyboardShortcut= */ false));
+    }
+
+    @Override
+    public void alwaysShow() {
+        runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                (Profile profile, BookmarkModel _) ->
+                        BookmarkBarUtils.setBookmarkBarVisibilityState(
+                                profile,
+                                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                                /* fromKeyboardShortcut= */ false));
     }
 
     public void setVisibility(boolean isVisible) {

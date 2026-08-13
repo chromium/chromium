@@ -83,7 +83,8 @@ public class BookmarkBarContextMenuMediatorTest {
                         ObservableSuppliers.createMonotonic(mProfile),
                         () -> mCurrentTab,
                         mContextMenuDelegate,
-                        mDismissRunnable);
+                        mDismissRunnable,
+                        ObservableSuppliers.createNonNull(false));
     }
 
     // Tests for the layout of the context menu.
@@ -746,7 +747,7 @@ public class BookmarkBarContextMenuMediatorTest {
         ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
 
         click(list, R.string.contextmenu_always_hide_bookmarks_bar);
-        verify(mContextMenuDelegate).toggleBookmarksBar();
+        verify(mContextMenuDelegate).alwaysHide();
         verify(mDismissRunnable).run();
     }
 
@@ -758,7 +759,7 @@ public class BookmarkBarContextMenuMediatorTest {
         ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
 
         click(list, R.string.contextmenu_always_show_bookmarks_bar);
-        verify(mContextMenuDelegate).toggleBookmarksBar();
+        verify(mContextMenuDelegate).alwaysShow();
         verify(mDismissRunnable).run();
     }
 

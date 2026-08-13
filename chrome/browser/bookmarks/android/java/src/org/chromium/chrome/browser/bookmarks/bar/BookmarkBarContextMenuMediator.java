@@ -14,6 +14,7 @@ import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarContextMenuMetrics.B
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -44,6 +46,7 @@ class BookmarkBarContextMenuMediator {
     private final Supplier<@Nullable Tab> mCurrentTabSupplier;
     private final BookmarkBarContextMenuDelegate mContextMenuDelegate;
     private final Runnable mDismissRunnable;
+    private final NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     private @BookmarkBarContextMenuEntrypoint int mCurrentEntrypoint;
 
@@ -55,18 +58,21 @@ class BookmarkBarContextMenuMediator {
      * @param currentTabSupplier Used to observe or retrieve the active tab.
      * @param contextMenuDelegate Delegate handling context menu actions.
      * @param dismissRunnable Runnable invoked to dismiss the popup menu.
+     * @param xrSpaceModeObservableSupplier Used to check if currently in XR full space mode.
      */
     BookmarkBarContextMenuMediator(
             Context context,
             MonotonicObservableSupplier<Profile> profileSupplier,
             Supplier<@Nullable Tab> currentTabSupplier,
             BookmarkBarContextMenuDelegate contextMenuDelegate,
-            Runnable dismissRunnable) {
+            Runnable dismissRunnable,
+            NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mContext = context;
         mProfileSupplier = profileSupplier;
         mCurrentTabSupplier = currentTabSupplier;
         mContextMenuDelegate = contextMenuDelegate;
         mDismissRunnable = dismissRunnable;
+        mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
     }
 
     ModelList buildContextMenuModelList(
@@ -358,21 +364,32 @@ class BookmarkBarContextMenuMediator {
         }
 
         // If the tri-state feature flag is enabled, we will use multiple options.
+        boolean isXrFullSpaceMode =
+                mXrSpaceModeObservableSupplier.get() != null
+                        && mXrSpaceModeObservableSupplier.get();
+        @BookmarkBarVisibilityState
+        int currentState =
+                BookmarkBarUtils.getBookmarkBarVisibilityState(
+                        mContext, mProfileSupplier.get(), isXrFullSpaceMode);
         listItems.add(BasicListMenu.buildMenuDivider(isIncognito));
         listItems.add(
                 buildContextMenuItem(
                         mContext.getString(R.string.contextmenu_always_hide_bookmarks_bar),
-                        /* iconResId= */ 0,
+                        currentState == BookmarkBarVisibilityState.ALWAYS_HIDE
+                                ? R.drawable.material_ic_check_24dp
+                                : 0,
                         isIncognito,
                         /* enabled= */ true,
-                        v -> toggleBookmarksBar()));
+                        v -> alwaysHide()));
         listItems.add(
                 buildContextMenuItem(
                         mContext.getString(R.string.contextmenu_always_show_bookmarks_bar),
-                        R.drawable.material_ic_check_24dp,
+                        currentState == BookmarkBarVisibilityState.ALWAYS_SHOW
+                                ? R.drawable.material_ic_check_24dp
+                                : 0,
                         isIncognito,
                         /* enabled= */ true,
-                        v -> toggleBookmarksBar()));
+                        v -> alwaysShow()));
     }
 
     private void openInNewTab(BookmarkId id) {
@@ -478,9 +495,21 @@ class BookmarkBarContextMenuMediator {
     }
 
     private void toggleBookmarksBar() {
+        mContextMenuDelegate.toggleBookmarksBar();
+        mDismissRunnable.run();
+    }
+
+    private void alwaysHide() {
         // TODO(crbug.com/542276874): Record metrics for context menu visibility toggles (e.g.
         // Always Show, Always Hide) once NTP tri-state feature options are finalized.
-        mContextMenuDelegate.toggleBookmarksBar();
+        mContextMenuDelegate.alwaysHide();
+        mDismissRunnable.run();
+    }
+
+    private void alwaysShow() {
+        // TODO(crbug.com/542276874): Record metrics for context menu visibility toggles (e.g.
+        // Always Show, Always Hide) once NTP tri-state feature options are finalized.
+        mContextMenuDelegate.alwaysShow();
         mDismissRunnable.run();
     }
 

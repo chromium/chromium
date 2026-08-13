@@ -155,7 +155,8 @@ public class BookmarkBarMediatorTest {
                         () -> mModalDialogManager,
                         mItemsRecyclerView,
                         mBookmarkBarView,
-                        mPopupCoordinator);
+                        mPopupCoordinator,
+                        ObservableSuppliers.createNonNull(false));
     }
 
     @After

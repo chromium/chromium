@@ -2834,7 +2834,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mSideUiStateProviderSupplier,
                             mTabObscuringHandlerSupplier.get(),
                             mModalDialogManagerSupplier,
-                            mSnackbarManagerSupplier);
+                            mSnackbarManagerSupplier,
+                            mXrSpaceModeObservableSupplier);
             if (mBookmarkBarVisibilityProvider != null) {
                 mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarCoordinator);
             }
