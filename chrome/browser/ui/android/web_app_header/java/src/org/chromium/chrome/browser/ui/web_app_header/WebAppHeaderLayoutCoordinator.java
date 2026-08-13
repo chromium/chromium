@@ -25,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -407,7 +408,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                             mAppMenuCoordinatorSupplier,
                             mBrowserStateBrowserControlsVisibilityDelegate,
                             mActivityWindowAndroid,
-                            /* clearOmniboxFocus= */ () -> {},
+                            /* clearOmniboxFocus= */ CallbackUtils.emptyRunnable(),
                             mRequestRenderRunnable,
                             /* canShowAppUpdateBadge= */ false,
                             /* isInOverviewModeSupplier= */ () -> false,

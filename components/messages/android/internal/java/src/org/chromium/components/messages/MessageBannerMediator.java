@@ -22,6 +22,7 @@ import android.view.MotionEvent;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
@@ -277,7 +278,7 @@ class MessageBannerMediator implements SwipeHandler {
                         isShow,
                         translateTo,
                         mDefaultMarginTop,
-                        isShow ? () -> {} : mMessageDismissed));
+                        isShow ? CallbackUtils.emptyRunnable() : mMessageDismissed));
     }
 
     @Override
@@ -315,7 +316,7 @@ class MessageBannerMediator implements SwipeHandler {
                         isShow,
                         translateTo,
                         mDefaultMarginTop,
-                        isShow ? () -> {} : mMessageDismissed));
+                        isShow ? CallbackUtils.emptyRunnable() : mMessageDismissed));
     }
 
     @Override

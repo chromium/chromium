@@ -18,6 +18,7 @@ import android.widget.ScrollView;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
@@ -345,7 +346,7 @@ public class TabUiUtils {
         if (localTabGroupId == null) return;
 
         dataSharingTabManager.createOrManageFlow(
-                EitherGroupId.createLocalId(localTabGroupId), entry, (ignored) -> {});
+                EitherGroupId.createLocalId(localTabGroupId), entry, CallbackUtils.emptyCallback());
     }
 
     /**

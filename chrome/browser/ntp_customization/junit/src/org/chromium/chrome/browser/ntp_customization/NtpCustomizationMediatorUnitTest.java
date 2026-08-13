@@ -83,6 +83,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -325,7 +326,7 @@ public class NtpCustomizationMediatorUnitTest {
         // Verifies mTypeToListenerMap is cleared.
         Map<Integer, View.OnClickListener> typeToListenerMap =
                 mMediator.getTypeToListenersForTesting();
-        typeToListenerMap.put(BottomSheetType.NTP_CARDS, view -> {});
+        typeToListenerMap.put(BottomSheetType.NTP_CARDS, ViewUtils.emptyClickListener());
         assertEquals(1, typeToListenerMap.size());
 
         // Verifies mListContent is cleared.

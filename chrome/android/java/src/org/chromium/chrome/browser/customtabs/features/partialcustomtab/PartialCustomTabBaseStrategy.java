@@ -36,6 +36,7 @@ import androidx.annotation.StringRes;
 import androidx.browser.customtabs.CustomTabsCallback;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
@@ -102,7 +103,7 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
             this::onToolbarContainerVisibilityChange;
 
     private final ValueAnimator mAnimator = new ValueAnimator();
-    private Runnable mPostAnimationRunnable = () -> {};
+    private Runnable mPostAnimationRunnable = CallbackUtils.emptyRunnable();
 
     private @Nullable BooleanSupplier mIsFullscreenForTesting;
 

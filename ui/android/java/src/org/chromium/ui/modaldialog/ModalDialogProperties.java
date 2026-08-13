@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -156,7 +157,7 @@ public class ModalDialogProperties {
         private final Runnable mCallback;
 
         public ModalDialogMenuItem(Drawable icon, String text) {
-            this(icon, text, () -> {});
+            this(icon, text, CallbackUtils.emptyRunnable());
         }
 
         public ModalDialogMenuItem(Drawable icon, String text, Runnable callback) {

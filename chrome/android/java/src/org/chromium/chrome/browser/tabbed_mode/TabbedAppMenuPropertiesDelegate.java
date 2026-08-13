@@ -19,6 +19,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -1797,7 +1798,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             // HeadlessTabModel}.
             BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
             if (bookmarkModel != null && !bookmarkModel.isBookmarkModelLoaded()) {
-                bookmarkModel.finishLoadingBookmarkModel(() -> {});
+                bookmarkModel.finishLoadingBookmarkModel(CallbackUtils.emptyRunnable());
             }
             RecentlyClosedEntriesManager manager = mRecentlyClosedEntriesManagerSupplier.get();
             if (manager != null) {

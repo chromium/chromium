@@ -17,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -98,7 +99,7 @@ public class CustomTabToolbarButtonsProperties {
 
         /** Default constructor to hide the button. */
         MinimizeButtonData() {
-            this(false, v -> {});
+            this(false, ViewUtils.emptyClickListener());
         }
     }
 
@@ -132,7 +133,7 @@ public class CustomTabToolbarButtonsProperties {
         }
 
         CloseButtonData() {
-            this(false, null, CLOSE_BUTTON_POSITION_DEFAULT, v -> {});
+            this(false, null, CLOSE_BUTTON_POSITION_DEFAULT, ViewUtils.emptyClickListener());
         }
     }
 

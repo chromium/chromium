@@ -13,6 +13,7 @@ import android.view.View;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -145,7 +146,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                     mSnackbarManager,
                     view.getResources(),
                     profile,
-                    (success) -> {},
+                    CallbackUtils.emptyCallback(),
                     PriceDropNotificationManagerFactory.create(profile));
         } else {
             mTabBookmarkerSupplier.get().startOrModifyPriceTracking(mActiveTabSupplier.get());

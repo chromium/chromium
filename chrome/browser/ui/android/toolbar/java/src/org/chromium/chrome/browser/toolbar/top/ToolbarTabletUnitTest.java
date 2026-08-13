@@ -121,6 +121,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ToastManager;
@@ -1357,7 +1358,8 @@ public final class ToolbarTabletUnitTest {
         assertNotNull(consumer);
 
         doReturn(1200).when(mToolbarTablet).getWidth();
-        mToolbarTablet.setGlicActionChipVisibility(true, v -> {}, v -> false);
+        mToolbarTablet.setGlicActionChipVisibility(
+                true, ViewUtils.emptyClickListener(), ViewUtils.emptyLongClickListener());
         View glicChip = mToolbarTablet.getGlicActionChipForTesting();
         assertNotNull(glicChip);
         assertEquals(View.VISIBLE, glicChip.getVisibility());
@@ -1383,7 +1385,8 @@ public final class ToolbarTabletUnitTest {
 
         // Re-triggering visibility update while no space is available must keep chip GONE.
         doReturn(300).when(mToolbarTablet).getWidth();
-        mToolbarTablet.setGlicActionChipVisibility(true, v -> {}, v -> false);
+        mToolbarTablet.setGlicActionChipVisibility(
+                true, ViewUtils.emptyClickListener(), ViewUtils.emptyLongClickListener());
         assertEquals(View.GONE, glicChip.getVisibility());
     }
 

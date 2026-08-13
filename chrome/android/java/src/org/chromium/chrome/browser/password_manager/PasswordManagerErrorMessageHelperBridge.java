@@ -102,7 +102,8 @@ public class PasswordManagerErrorMessageHelperBridge {
         final Activity activity = windowAndroid.getActivity().get();
         assert activity != null : "Activity should not be null";
         AccountManagerFacadeProvider.getInstance()
-                .updateCredentials(primaryAccountInfo.getId(), activity, (success) -> {});
+                .updateCredentials(
+                        primaryAccountInfo.getId(), activity, CallbackUtils.emptyCallback());
     }
 
     /**

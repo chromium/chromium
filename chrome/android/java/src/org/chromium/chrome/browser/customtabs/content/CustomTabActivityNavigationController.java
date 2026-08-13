@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.core.app.ActivityOptionsCompat;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -427,7 +428,8 @@ public class CustomTabActivityNavigationController
             } else {
                 // Move the in-app browser tab to the browser; the tab model swaps back to
                 // the web app's own tab, keeping the app and its state alive.
-                mTabController.detachAndStartReparenting(intent, startActivityOptions, () -> {});
+                mTabController.detachAndStartReparenting(
+                        intent, startActivityOptions, CallbackUtils.emptyRunnable());
             }
         } else {
             if (mIntentDataProvider.isInfoPage()) {

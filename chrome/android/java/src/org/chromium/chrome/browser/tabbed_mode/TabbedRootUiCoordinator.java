@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -1818,7 +1819,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 .writeBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, false);
 
         Runnable onAccepted = this::enableGlicButton;
-        Runnable onDismissed = () -> {};
+        Runnable onDismissed = CallbackUtils.emptyRunnable();
 
         var bottomSheetController = getBottomSheetController();
         assert bottomSheetController != null;

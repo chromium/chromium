@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.JUnitTestGURLs;
@@ -160,7 +161,7 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBackToTabClickListener() {
-        View.OnClickListener listener = v -> {};
+        View.OnClickListener listener = ViewUtils.emptyClickListener();
         mModel.set(
                 DocumentPictureInPictureHeaderProperties.ON_BACK_TO_TAB_CLICK_LISTENER, listener);
         verify(mBackToTabButton).setOnClickListener(listener);
@@ -187,7 +188,7 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSecurityIconClickListener() {
-        View.OnClickListener listener = v -> {};
+        View.OnClickListener listener = ViewUtils.emptyClickListener();
         mModel.set(
                 DocumentPictureInPictureHeaderProperties.ON_SECURITY_ICON_CLICK_LISTENER, listener);
         verify(mSecurityIcon).setOnClickListener(listener);

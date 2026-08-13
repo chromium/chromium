@@ -46,6 +46,7 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -91,7 +92,7 @@ public class HubToolbarView extends LinearLayout {
         super(context, attributeSet);
         mHubSearchAnimatorHandler = new AnimationHandler();
         mHandler = new Handler();
-        mToolbarOverviewColorSetter = (color) -> {};
+        mToolbarOverviewColorSetter = CallbackUtils.emptyCallback();
         mSearchBoxHeightPx = getResources().getDimensionPixelSize(R.dimen.hub_search_box_height);
     }
 

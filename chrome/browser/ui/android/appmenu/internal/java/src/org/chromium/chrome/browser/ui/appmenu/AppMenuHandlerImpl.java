@@ -29,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -352,7 +353,7 @@ class AppMenuHandlerImpl
         }
 
         mHierarchicalMenuController.setupCallbacks(
-                /* headerModelList= */ null, mModelList, () -> {});
+                /* headerModelList= */ null, mModelList, CallbackUtils.emptyRunnable());
 
         if (mAppMenu == null) {
             mAppMenu =

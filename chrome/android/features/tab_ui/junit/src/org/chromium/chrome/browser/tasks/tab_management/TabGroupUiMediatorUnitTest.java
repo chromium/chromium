@@ -102,6 +102,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -1061,7 +1062,7 @@ public class TabGroupUiMediatorUnitTest {
     @Test
     public void testSetShowGroupDialogButtonOnClickListener() {
         initAndAssertProperties(mTab3);
-        View.OnClickListener listener = v -> {};
+        View.OnClickListener listener = ViewUtils.emptyClickListener();
 
         mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER, null);
 

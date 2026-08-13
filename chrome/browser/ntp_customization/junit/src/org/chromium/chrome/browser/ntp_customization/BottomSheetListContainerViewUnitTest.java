@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.base.ViewUtils;
 
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class BottomSheetListContainerViewUnitTest {
 
     @Test
     public void testRenderAllListItems() {
-        View.OnClickListener listener = view -> {};
+        View.OnClickListener listener = ViewUtils.emptyClickListener();
         for (int type : mListContent) {
             when(mDelegate.getListener(type)).thenReturn(listener);
         }

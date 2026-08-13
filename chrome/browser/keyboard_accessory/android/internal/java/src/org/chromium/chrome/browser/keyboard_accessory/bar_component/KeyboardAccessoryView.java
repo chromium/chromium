@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryStyle.NotchPosition;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -241,7 +242,7 @@ class KeyboardAccessoryView extends LinearLayout {
                     // Return that the motionEvent was consumed and needs no further handling.
                     return true;
                 });
-        setOnClickListener(view -> {});
+        setOnClickListener(ViewUtils.emptyClickListener());
         setClickable(false); // Disables the "Double-tap to activate" Talkback reading.
         setSoundEffectsEnabled(false);
 

@@ -24,6 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
@@ -69,7 +70,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
     public static final int MAX_RECENT_ENGINE_NUM = 3;
     public static final long MAX_DISPLAY_TIME_SPAN_MS = DateUtils.DAY_IN_MILLIS * 2;
-    private static final Runnable NO_OP = () -> {};
+    private static final Runnable NO_OP = CallbackUtils.emptyRunnable();
 
     private static final int VIEW_TYPE_COUNT = 3;
 

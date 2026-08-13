@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin.services;
 import androidx.annotation.MainThread;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -153,7 +154,7 @@ public interface SigninManager {
 
     /** Invokes signOut with no callback. */
     default void signOut(@SignoutReason int signoutSource) {
-        signOut(signoutSource, () -> {});
+        signOut(signoutSource, CallbackUtils.emptyRunnable());
     }
 
     /**

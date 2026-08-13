@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
+import org.chromium.ui.base.ViewUtils;
 
 /**
  * View for a generic two-cell educational tip module. Contains UI elements to display two tip items
@@ -80,7 +81,7 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
 
     public void setItem1OnClickListener(OnClickListener listener) {
         mItem1Layout.setOnClickListener(listener);
-        mItem1Layout.setOnLongClickListener(_ -> false);
+        mItem1Layout.setOnLongClickListener(ViewUtils.emptyLongClickListener());
     }
 
     public void setItem2Title(String title) {
@@ -102,7 +103,7 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
 
     public void setItem2OnClickListener(OnClickListener listener) {
         mItem2Layout.setOnClickListener(listener);
-        mItem2Layout.setOnLongClickListener(_ -> false);
+        mItem2Layout.setOnLongClickListener(ViewUtils.emptyLongClickListener());
     }
 
     private void applyCompletedStyle(

@@ -17,6 +17,7 @@ import android.text.TextUtils;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
@@ -457,7 +458,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                         || mActivityType == ActivityType.CUSTOM_TAB,
                 /* shouldHaveContextMenu= */ true,
                 initiatorOrigin,
-                () -> {});
+                CallbackUtils.emptyRunnable());
     }
 
     /**

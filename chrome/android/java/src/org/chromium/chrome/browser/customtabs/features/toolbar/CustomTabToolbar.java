@@ -53,6 +53,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
@@ -1227,7 +1228,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             getContext(),
                             (UrlBar) mUrlBar,
                             actionModeCallback,
-                            /* focusChangeCallback= */ _ -> {},
+                            /* focusChangeCallback= */ CallbackUtils.emptyCallback(),
                             this,
                             new NoOpkeyboardVisibilityDelegate(),
                             isIncognitoBranded(),

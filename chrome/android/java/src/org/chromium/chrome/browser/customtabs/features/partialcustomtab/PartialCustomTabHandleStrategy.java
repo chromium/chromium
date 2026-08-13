@@ -11,6 +11,7 @@ import android.view.VelocityTracker;
 
 import androidx.core.view.MotionEventCompat;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -39,7 +40,7 @@ class PartialCustomTabHandleStrategy extends GestureDetector.SimpleOnGestureList
     private float mDeltaY;
     private boolean mSeenFirstMoveOrDown;
     private final VelocityTracker mVelocityTracker;
-    private Runnable mCloseHandler = () -> {};
+    private Runnable mCloseHandler = CallbackUtils.emptyRunnable();
 
     private final BooleanSupplier mIsFullHeight;
     private final Supplier<Integer> mStatus;

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin.signin_promo;
 
 import androidx.annotation.StringDef;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -102,9 +103,9 @@ final class SigninPromoMediator
         mModel =
                 SigninPromoProperties.createModel(
                         /* profileData= */ visibleAccount,
-                        /* onPrimaryButtonClicked= */ () -> {},
-                        /* onSecondaryButtonClicked= */ () -> {},
-                        /* onDismissButtonClicked= */ () -> {},
+                        /* onPrimaryButtonClicked= */ CallbackUtils.emptyRunnable(),
+                        /* onSecondaryButtonClicked= */ CallbackUtils.emptyRunnable(),
+                        /* onDismissButtonClicked= */ CallbackUtils.emptyRunnable(),
                         /* titleString= */ "",
                         /* descriptionString= */ "",
                         /* primaryButtonString= */ "",

@@ -662,7 +662,8 @@ public class SettingsSearchCoordinator
             mHandler.post(() -> showUiInSingleColumn(searchBox, show));
             return;
         }
-        searchBox.setOnClickListener(v -> {}); // Temporary disables search during the animation
+        searchBox.setOnClickListener(
+                ViewUtils.emptyClickListener()); // Temporary disables search during the animation
         Transition transition =
                 new TransitionSet()
                         .addTransition(new Fade(show ? Fade.IN : Fade.OUT))

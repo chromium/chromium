@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -147,7 +148,7 @@ public class DiscountsBottomSheetContentRenderTest {
                 .with(DESCRIPTION_DETAIL, descriptionDetail)
                 .with(EXPIRY_TIME, expiryTime)
                 .with(COPY_BUTTON_TEXT, "Copy")
-                .with(COPY_BUTTON_ON_CLICK_LISTENER, (v) -> {})
+                .with(COPY_BUTTON_ON_CLICK_LISTENER, ViewUtils.emptyClickListener())
                 .build();
     }
 }

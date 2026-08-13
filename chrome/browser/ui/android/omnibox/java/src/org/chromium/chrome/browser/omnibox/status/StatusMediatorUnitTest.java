@@ -93,6 +93,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -442,7 +443,7 @@ public final class StatusMediatorUnitTest {
                 mContext.getColor(R.color.locationbar_status_preview_color_dark),
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR));
 
-        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, (v) -> {});
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, ViewUtils.emptyClickListener());
         mMediator.setBackground();
         assertNotNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
 
@@ -621,7 +622,7 @@ public final class StatusMediatorUnitTest {
         // If there is no registered click listener, the tooltip text should be null.
         assertEquals(Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
 
-        mMediator.setStatusClickListener((v) -> {});
+        mMediator.setStatusClickListener(ViewUtils.emptyClickListener());
         mMediator.setTooltipText(Resources.ID_NULL);
         assertEquals(
                 R.string.accessibility_menu_info,
@@ -653,7 +654,7 @@ public final class StatusMediatorUnitTest {
         assertNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
 
         // When a click listener is set, background is set.
-        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, (v) -> {});
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, ViewUtils.emptyClickListener());
         mMediator.setBackground();
         assertNotNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
     }

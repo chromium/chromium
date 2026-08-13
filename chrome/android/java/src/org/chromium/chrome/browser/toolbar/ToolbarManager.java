@@ -40,6 +40,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.TimeUtils;
@@ -1143,7 +1144,7 @@ public class ToolbarManager
                             mIncognitoStateProvider,
                             mActivityTabProvider.asObservable(),
                             mToolbarNavControlsEnabledSupplier,
-                            /* onNavigationPopupShown= */ () -> {},
+                            /* onNavigationPopupShown= */ CallbackUtils.emptyRunnable(),
                             historyDelegate,
                             /* isWebApp= */ false);
         }

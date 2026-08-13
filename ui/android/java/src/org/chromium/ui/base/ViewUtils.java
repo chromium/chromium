@@ -34,9 +34,32 @@ import java.util.Set;
 @NullMarked
 public final class ViewUtils {
     private static final int[] sLocationTmp = new int[2];
+    private static final View.OnClickListener DO_NOTHING_CLICK_LISTENER = _ -> {};
+    private static final View.OnLongClickListener DO_NOTHING_LONG_CLICK_LISTENER = _ -> false;
 
     // Prevent instantiation.
     private ViewUtils() {}
+
+    /**
+     * Returns a Singleton {@link View.OnClickListener} to be used where you need no action to be
+     * taken.
+     *
+     * <p><b>Note:</b> Setting this on a View marks the View as clickable (consuming touches and
+     * announcing clickability to accessibility services). Do not use this to disable clicks; use
+     * {@code setOnClickListener(null)} instead.
+     */
+    public static View.OnClickListener emptyClickListener() {
+        return DO_NOTHING_CLICK_LISTENER;
+    }
+
+    /**
+     * Returns a Singleton {@link View.OnLongClickListener} to be used where you need no action to
+     * be taken and returns {@code false} (indicating the event was not consumed, allowing context
+     * menus or parent handlers to process it).
+     */
+    public static View.OnLongClickListener emptyLongClickListener() {
+        return DO_NOTHING_LONG_CLICK_LISTENER;
+    }
 
     /**
      * @return {@code true} if the given view has a focus.

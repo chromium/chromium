@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.NtpThemeSyncHist
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -158,7 +159,7 @@ public class NtpCustomizationCoordinator {
 
         // This empty OnClickListener is added to the ViewFlipper to prevent TalkBack from
         // unexpectedly triggering the click listeners of its child list items.
-        mViewFlipperView.setOnClickListener(v -> {});
+        mViewFlipperView.setOnClickListener(ViewUtils.emptyClickListener());
         mIsNtpCustomizationSyncEnabled = NtpCustomizationUtils.isNTPCustomizationSyncEnabled();
 
         NtpCustomizationBottomSheetContent bottomSheetContent = initBottomSheetContent(contentView);

@@ -48,6 +48,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsAdapter.ThemeCollectionViewHolder;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -81,7 +82,7 @@ public class NtpThemeCollectionsAdapterUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         mParent = new FrameLayout(mContext);
-        mOnClickListener = view -> {};
+        mOnClickListener = ViewUtils.emptyClickListener();
 
         mCollectionItems = new ArrayList<>();
         mCollectionItems.add(

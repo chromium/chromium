@@ -9,6 +9,7 @@ import static java.util.Comparator.comparingInt;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -442,7 +443,7 @@ public class TabSwitcherGroupSuggestionService {
                         /* suggestedName= */ "",
                         /* promoHeader= */ "",
                         /* promoContents= */ "");
-        showSuggestion(groupSuggestion, tabIds, ignored -> {});
+        showSuggestion(groupSuggestion, tabIds, CallbackUtils.emptyCallback());
     }
 
     /**
