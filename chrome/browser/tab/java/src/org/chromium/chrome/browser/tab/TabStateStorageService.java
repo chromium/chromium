@@ -62,7 +62,7 @@ public class TabStateStorageService {
      * @param tab The tab to save to storage.
      */
     public void saveTabData(Tab tab) {
-        TabStateStorageServiceJni.get().saveTabData(mNativeTabStateStorageService, tab);
+        TabStateStorageServiceJni.get().save(mNativeTabStateStorageService, tab);
     }
 
     /**
@@ -71,14 +71,12 @@ public class TabStateStorageService {
      *
      * @param windowTag The window tag to save under.
      * @param isOffTheRecord true if off the record.
-     * @param storageId The permanent storage ID for the tab.
      * @param tab The tab to save.
      */
-    public void saveTabData(String windowTag, boolean isOffTheRecord, int storageId, Tab tab) {
+    public void saveTabData(String windowTag, boolean isOffTheRecord, Tab tab) {
         assert !windowTag.isEmpty();
         TabStateStorageServiceJni.get()
-                .saveTabDataWithMetadata(
-                        mNativeTabStateStorageService, windowTag, isOffTheRecord, storageId, tab);
+                .saveWithMetadata(mNativeTabStateStorageService, windowTag, isOffTheRecord, tab);
     }
 
     /**
@@ -206,13 +204,12 @@ public class TabStateStorageService {
     interface Natives {
         void boostPriority(long nativeTabStateStorageServiceAndroid);
 
-        void saveTabData(long nativeTabStateStorageServiceAndroid, @JniType("TabAndroid*") Tab tab);
+        void save(long nativeTabStateStorageServiceAndroid, @JniType("TabAndroid*") Tab tab);
 
-        void saveTabDataWithMetadata(
+        void saveWithMetadata(
                 long nativeTabStateStorageServiceAndroid,
                 @JniType("std::string") String windowTag,
                 boolean isOffTheRecord,
-                int storageId,
                 @JniType("TabAndroid*") Tab tab);
 
         void loadAllData(

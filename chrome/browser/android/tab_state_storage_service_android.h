@@ -35,13 +35,12 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
 
   void BoostPriority(JNIEnv* env);
 
-  void SaveTabData(JNIEnv* env, TabAndroid* tab);
+  void Save(JNIEnv* env, TabAndroid* tab);
 
-  void SaveTabDataWithMetadata(JNIEnv* env,
-                               const std::string& window_tag,
-                               bool is_off_the_record,
-                               int storage_id,
-                               TabAndroid* tab);
+  void SaveWithMetadata(JNIEnv* env,
+                        const std::string& window_tag,
+                        bool is_off_the_record,
+                        TabAndroid* tab);
 
   void LoadAllData(JNIEnv* env,
                    const std::string& window_tag,

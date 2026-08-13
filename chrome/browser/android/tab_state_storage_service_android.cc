@@ -112,15 +112,14 @@ void TabStateStorageServiceAndroid::BoostPriority(JNIEnv* env) {
   tab_state_storage_service_->BoostPriority();
 }
 
-void TabStateStorageServiceAndroid::SaveTabData(JNIEnv* env, TabAndroid* tab) {
+void TabStateStorageServiceAndroid::Save(JNIEnv* env, TabAndroid* tab) {
   tab_state_storage_service_->Save(tab);
 }
 
-void TabStateStorageServiceAndroid::SaveTabDataWithMetadata(
+void TabStateStorageServiceAndroid::SaveWithMetadata(
     JNIEnv* env,
     const std::string& window_tag,
     bool is_off_the_record,
-    int storage_id,
     TabAndroid* tab) {
   tab_state_storage_service_->Save(window_tag, is_off_the_record, tab);
 }
