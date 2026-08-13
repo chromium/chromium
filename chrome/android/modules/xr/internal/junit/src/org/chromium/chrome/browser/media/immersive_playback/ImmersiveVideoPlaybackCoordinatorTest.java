@@ -58,6 +58,7 @@ import org.chromium.ui.xr.scenecore.XrEntityHolder;
 import org.chromium.ui.xr.scenecore.XrInteractableComponent;
 import org.chromium.ui.xr.scenecore.XrMovableComponent;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
+import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrResizableComponent;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
@@ -322,6 +323,30 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         verify(mControlPanelHolder, never()).setEntityEnabled(false);
 
         // 4. Warp time forward the final 100 milliseconds (should autohide)
+        ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
+        verify(mControlPanelHolder).setEntityEnabled(false);
+    }
+
+    /** Tests that moving or dragging the player panel resets/pauses the autohide timer. */
+    @Test
+    @UiThreadTest
+    public void testPlayerPanelMovingPreventsAutoHide() {
+        clearInvocations(mControlPanelHolder);
+        mCoordinator.updatePlaybackState(true);
+
+        // 1. Move start
+        mCoordinator.onPlayerPanelPoseChangeStart(XrPose.getIdentity());
+        ShadowLooper.idleMainLooper(
+                ImmersiveVideoControlAutoHideManager.AUTO_HIDE_DELAY_MS, TimeUnit.MILLISECONDS);
+        verify(mControlPanelHolder, never()).setEntityEnabled(false);
+
+        // 2. Move end - timer starts counting down again
+        mCoordinator.onPlayerPanelPoseChangeEnd(XrPose.getIdentity());
+        ShadowLooper.idleMainLooper(
+                ImmersiveVideoControlAutoHideManager.AUTO_HIDE_DELAY_MS - 100,
+                TimeUnit.MILLISECONDS);
+        verify(mControlPanelHolder, never()).setEntityEnabled(false);
+
         ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
         verify(mControlPanelHolder).setEntityEnabled(false);
     }

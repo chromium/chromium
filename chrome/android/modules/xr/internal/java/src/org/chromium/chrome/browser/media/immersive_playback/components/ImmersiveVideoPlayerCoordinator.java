@@ -43,7 +43,11 @@ public class ImmersiveVideoPlayerCoordinator {
     public interface Delegate {
         void onPlayerPanelClicked();
 
-        void onPlayerPanelPoseChanged(XrPose pose);
+        void onPlayerPanelPoseChangeStart(XrPose pose);
+
+        void onPlayerPanelPoseChangeUpdate(XrPose pose);
+
+        void onPlayerPanelPoseChangeEnd(XrPose pose);
 
         void onPlayerPanelResized(XrFloatSize3d size);
 
@@ -75,16 +79,18 @@ public class ImmersiveVideoPlayerCoordinator {
     private final XrMovableComponent.OnMoveListener mOnMoveListener =
             new XrMovableComponent.OnMoveListener() {
                 @Override
-                public void onMoveStart(XrPose pose, float scale) {}
+                public void onMoveStart(XrPose pose, float scale) {
+                    mDelegate.onPlayerPanelPoseChangeStart(pose);
+                }
 
                 @Override
                 public void onMoveUpdate(XrPose pose, float scale) {
-                    mDelegate.onPlayerPanelPoseChanged(pose);
+                    mDelegate.onPlayerPanelPoseChangeUpdate(pose);
                 }
 
                 @Override
                 public void onMoveEnd(XrPose pose, float scale) {
-                    mDelegate.onPlayerPanelPoseChanged(pose);
+                    mDelegate.onPlayerPanelPoseChangeEnd(pose);
                 }
             };
 

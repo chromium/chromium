@@ -24,6 +24,7 @@ public class ImmersiveVideoControlAutoHideManager {
     private boolean mControlPanelMoving;
     private boolean mControlPanelAccessibilityFocused;
     private boolean mFormatPanelAccessibilityFocused;
+    private boolean mPlayerPanelMoving;
 
     /**
      * Creates a new {@link ImmersiveVideoControlAutoHideManager} with default delay.
@@ -75,6 +76,12 @@ public class ImmersiveVideoControlAutoHideManager {
         updateTimer();
     }
 
+    /** Called when player panel moving or dragging state changes. */
+    public void onPlayerPanelMovingChanged(boolean moving) {
+        mPlayerPanelMoving = moving;
+        updateTimer();
+    }
+
     /** Starts or restarts the inactivity timer. */
     public void startTimer() {
         mControlPanelHovered = false;
@@ -82,6 +89,7 @@ public class ImmersiveVideoControlAutoHideManager {
         mControlPanelMoving = false;
         mControlPanelAccessibilityFocused = false;
         mFormatPanelAccessibilityFocused = false;
+        mPlayerPanelMoving = false;
         updateTimer();
     }
 
@@ -95,7 +103,8 @@ public class ImmersiveVideoControlAutoHideManager {
                 || mFormatPanelHovered
                 || mControlPanelMoving
                 || mControlPanelAccessibilityFocused
-                || mFormatPanelAccessibilityFocused) {
+                || mFormatPanelAccessibilityFocused
+                || mPlayerPanelMoving) {
             stopTimer();
         } else {
             mHandler.removeCallbacks(mAutoHideRunnable);

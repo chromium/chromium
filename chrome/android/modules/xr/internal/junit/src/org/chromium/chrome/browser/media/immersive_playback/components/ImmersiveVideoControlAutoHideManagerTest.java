@@ -120,4 +120,17 @@ public class ImmersiveVideoControlAutoHideManagerTest {
         ShadowLooper.idleMainLooper(TEST_DELAY_MS, TimeUnit.MILLISECONDS);
         verify(mMockRunnable).run();
     }
+
+    @Test
+    public void testPlayerPanelMoving_PreventsTimerFromFiring() {
+        mManager.startTimer();
+        mManager.onPlayerPanelMovingChanged(true);
+
+        ShadowLooper.idleMainLooper(TEST_DELAY_MS, TimeUnit.MILLISECONDS);
+        verify(mMockRunnable, never()).run();
+
+        mManager.onPlayerPanelMovingChanged(false);
+        ShadowLooper.idleMainLooper(TEST_DELAY_MS, TimeUnit.MILLISECONDS);
+        verify(mMockRunnable).run();
+    }
 }
