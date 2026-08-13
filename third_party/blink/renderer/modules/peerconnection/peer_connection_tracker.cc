@@ -33,10 +33,8 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_track_event.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
@@ -224,26 +222,6 @@ std::unique_ptr<JSONObject> SerializeTransceiver(
     json->SetValue("currentDirection", JSONValue::Null());
   }
   return json;
-}
-
-// Serializes the parts of the "track" event that are of interest, i.e. the
-// kind, id and label of the remote track that was added and the ids of the
-// streams it belongs to.
-String SerializeTrackEvent(const RTCTrackEvent& event) {
-  const MediaStreamTrack& track = *event.track();
-  auto json = std::make_unique<JSONObject>();
-  json->SetString("kind", track.kind());
-  json->SetString("id", track.id());
-  json->SetString("label", track.label());
-  auto stream_ids = std::make_unique<JSONArray>();
-  for (const auto& stream : event.streams()) {
-    stream_ids->PushString(stream->id());
-  }
-  json->SetArray("streams", std::move(stream_ids));
-
-  StringBuilder value;
-  json->WriteJSON(&value);
-  return value.ToString();
 }
 
 // Serializes things that are of interest from the RTCConfiguration.
@@ -883,16 +861,6 @@ void PeerConnectionTracker::TrackTransceiver(
   StringBuilder value;
   json->WriteJSON(&value);
   SendPeerConnectionUpdate(id, callback_type, value.ToString());
-}
-
-void PeerConnectionTracker::TrackOnTrack(RTCPeerConnectionHandler* pc_handler,
-                                         const RTCTrackEvent& event) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  int id = GetLocalIDForHandler(pc_handler);
-  if (id == -1) {
-    return;
-  }
-  SendPeerConnectionUpdate(id, "ontrack", SerializeTrackEvent(event));
 }
 
 void PeerConnectionTracker::TrackCreateDataChannel(
