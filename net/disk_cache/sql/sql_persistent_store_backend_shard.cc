@@ -492,13 +492,6 @@ SqlPersistentStore::BackendShard::GetInMemoryEntryDataHints(
                             : std::nullopt;
 }
 
-std::optional<SqlPersistentStore::ResId>
-SqlPersistentStore::BackendShard::TryGetSingleResIdFromInMemoryIndex(
-    CacheEntryKey::Hash key_hash) const {
-  return index_.has_value() ? index_->TryGetSingleResId(key_hash)
-                            : std::nullopt;
-}
-
 // Like `WrapCallback`, but also updates the `store_status_`.
 base::OnceCallback<void(SqlPersistentStore::ErrorAndStoreStatus)>
 SqlPersistentStore::BackendShard::WrapCallbackWithStoreStatus(

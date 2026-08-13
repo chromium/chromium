@@ -2572,12 +2572,12 @@ TEST_F(SqlBackendImplTest, DoomEntryWithInMemoryIndex) {
   net::TestCompletionCallback cb_doom;
   int rv_doom = backend->DoomEntry(kKey, net::HIGHEST, cb_doom.callback());
 
-  // 5. Verify that the entry is removed from the in-memory index synchronously.
+  EXPECT_THAT(cb_doom.GetResult(rv_doom), IsOk());
+
+  // 5. Verify that the entry is removed from the in-memory index.
   EXPECT_EQ(
       backend->GetSqlStoreForTest()->GetIndexStateForHash(kEntryKey.hash()),
       SqlPersistentStore::IndexState::kHashNotFound);
-
-  EXPECT_THAT(cb_doom.GetResult(rv_doom), IsOk());
 
   // 6. Verify that the entry is gone.
   TestEntryResultCompletionCallback cb_open;
@@ -2687,10 +2687,11 @@ TEST_F(SqlBackendImplTest, SetDataHintsAndDoomAndWriteOptimistically) {
       backend->DoomEntry(kKey, net::HIGHEST, doom_future.GetCallback());
   EXPECT_EQ(doom_rv, net::ERR_IO_PENDING);
 
-  // 7. OpenOrCreateEntry should complete synchronously and create a new entry.
+  // 7. OpenOrCreateEntry should create a new entry.
   TestEntryResultCompletionCallback cb_open_or_create;
-  EntryResult open_or_create_result = backend->OpenOrCreateEntry(
-      kKey, net::HIGHEST, cb_open_or_create.callback());
+  EntryResult open_or_create_result =
+      cb_open_or_create.GetResult(backend->OpenOrCreateEntry(
+          kKey, net::HIGHEST, cb_open_or_create.callback()));
   ASSERT_THAT(open_or_create_result.net_error(), IsOk());
   EXPECT_FALSE(open_or_create_result.opened());
 

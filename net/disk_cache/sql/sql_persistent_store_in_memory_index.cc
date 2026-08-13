@@ -73,25 +73,6 @@ void SqlPersistentStoreInMemoryIndex::Clear() {
   is_entry_metadata_ready_ = false;
 }
 
-std::optional<SqlPersistentStoreResId>
-SqlPersistentStoreInMemoryIndex::TryGetSingleResId(
-    CacheEntryKeyHash hash) const {
-  const auto res_id_32 = std::visit(
-      [&](const auto& impl) { return impl.TryGetSingleResId(hash); }, impl32_);
-  const auto res_id_64 =
-      impl64_
-          ? std::visit(
-                [&](const auto& impl) { return impl.TryGetSingleResId(hash); },
-                *impl64_)
-          : std::nullopt;
-  if (res_id_32.has_value() && !res_id_64.has_value()) {
-    return ResId(res_id_32->value());
-  } else if (!res_id_32.has_value() && res_id_64.has_value()) {
-    return *res_id_64;
-  }
-  return std::nullopt;
-}
-
 void SqlPersistentStoreInMemoryIndex::SetEntryDataHints(
     Hash hash,
     ResId res_id,

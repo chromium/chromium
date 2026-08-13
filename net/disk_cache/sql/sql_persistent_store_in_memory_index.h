@@ -58,11 +58,6 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
   bool Remove(CacheEntryKeyHash hash, SqlPersistentStoreResId res_id);
   void Clear();
 
-  // Tries to retrieve a single resource ID for the given hash.
-  // Returns std::nullopt if the entry is not found or if there are collisions.
-  std::optional<SqlPersistentStoreResId> TryGetSingleResId(
-      CacheEntryKeyHash hash) const;
-
   // Updates the in-memory hints for the entry identified by `hash` and
   // `res_id`.
   void SetEntryDataHints(CacheEntryKeyHash hash,
@@ -173,11 +168,6 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
       res_id_to_hints_map_.clear();
     }
 
-    // Tries to retrieve a single resource ID for the given hash.
-    std::optional<ResIdType> TryGetSingleResId(CacheEntryKeyHash hash) const {
-      return hash_res_id_set_.TryGetSingleSubKey(hash);
-    }
-
     // Updates the in-memory hints for the entry identified by `hash` and
     // `res_id`.
     void SetEntryDataHints(CacheEntryKeyHash hash,
@@ -271,11 +261,6 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
     }
 
     void Clear() { hash_res_id_map_.Clear(); }
-
-    // Tries to retrieve a single resource ID for the given hash.
-    std::optional<ResIdType> TryGetSingleResId(CacheEntryKeyHash hash) const {
-      return hash_res_id_map_.TryGetSingleSubKey(hash);
-    }
 
     // Updates the in-memory hints for the entry identified by `hash` and
     // `res_id`.

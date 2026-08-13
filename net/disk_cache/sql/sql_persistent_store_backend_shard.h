@@ -154,12 +154,6 @@ class SqlPersistentStore::BackendShard {
   std::optional<MemoryEntryDataHints> GetInMemoryEntryDataHints(
       CacheEntryKey::Hash key_hash) const;
 
-  // Tries to find a single resource ID for the given key hash in the in-memory
-  // index of this shard. Returns the resource ID if the index is available and
-  // contains a unique entry for the hash.
-  std::optional<ResId> TryGetSingleResIdFromInMemoryIndex(
-      CacheEntryKey::Hash key_hash) const;
-
   void LoadInMemoryIndex(ErrorCallback callback);
 
   // If there are entries that were doomed in a previous session, this method

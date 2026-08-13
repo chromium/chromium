@@ -771,19 +771,8 @@ void SqlBackendImpl::HandleDoomEntryOperation(
       },
       std::move(callback));
 
-  // If there is a unique entry in the in-memory index, call DoomEntry using its
-  // res_id.
-  if (auto res_id = store_->TryGetSingleResIdFromInMemoryIndex(key.hash())) {
-    store_->DoomEntry(key, *res_id, /*accept_index_mismatch=*/false,
-                      std::move(store_callback));
-    // The handle for this operation is released upon returning, allowing the
-    // next queued operation to run.
-    return;
-  }
-
-  // If the entry is not active and a single entry could not be found in the
-  // in-memory index, we can directly ask the store to delete the "live" (not
-  // yet doomed) entry from the database.
+  // If the entry is not active, we can directly ask the store to delete the
+  // "live" (not yet doomed) entry from the database.
   store_->DeleteLiveEntry(
       key, std::move(store_callback)
                .Then(OnceClosureWithBoundArgs(std::move(handle))));
