@@ -46,14 +46,6 @@ ToJniType<AuxiliarySearchDonationService::HistoryData>(
 
 }  // namespace jni_zero
 
-// static
-AuxiliarySearchDonationService::DonateCallback
-AuxiliarySearchDonationServiceBridge::CreateDonationCallback() {
-  return base::BindRepeating(
-      &AuxiliarySearchDonationServiceBridge::DonateHistoryEntries,
-      base::Owned(new AuxiliarySearchDonationServiceBridge()));
-}
-
 AuxiliarySearchDonationServiceBridge::AuxiliarySearchDonationServiceBridge()
     : bridge_(AuxiliarySearchDonationServiceBridgeJni::New(
           base::android::AttachCurrentThread())) {}
@@ -65,7 +57,7 @@ AuxiliarySearchDonationServiceBridge::~AuxiliarySearchDonationServiceBridge() {
 
 void AuxiliarySearchDonationServiceBridge::DonateHistoryEntries(
     std::vector<AuxiliarySearchDonationService::HistoryData> entries,
-    CoreAccountInfo account_info) const {
+    CoreAccountInfo account_info) {
   // As of writing, `jni_zero` generated functions take in arguments as
   // `const&`, so the following `std::move` is a no-op.
   // If `jni_zero` ever changes its behaviour to allow passing in arguments by

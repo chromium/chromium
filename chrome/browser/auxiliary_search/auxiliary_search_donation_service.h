@@ -69,8 +69,12 @@ class AuxiliarySearchDonationService
 
     ~HistoryData();
   };
-  using DonateCallback =
-      base::RepeatingCallback<void(std::vector<HistoryData>, CoreAccountInfo)>;
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void DonateHistoryEntries(std::vector<HistoryData> entries,
+                                      CoreAccountInfo account_info) = 0;
+  };
 
   explicit AuxiliarySearchDonationService(
       page_content_annotations::PageContentAnnotationsService*
@@ -78,7 +82,7 @@ class AuxiliarySearchDonationService
       visited_url_ranking::VisitedURLRankingService* ranking_service,
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,
-      DonateCallback donate_callback);
+      std::unique_ptr<Delegate> delegate);
   ~AuxiliarySearchDonationService() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -114,7 +118,7 @@ class AuxiliarySearchDonationService
   const raw_ref<visited_url_ranking::VisitedURLRankingService> ranking_service_;
   const raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<PrefService> pref_service_;
-  const DonateCallback donate_callback_;
+  const std::unique_ptr<Delegate> delegate_;
   std::unique_ptr<base::android::ApplicationStatusListener>
       application_status_listener_;
   base::OneShotTimer donation_timer_;

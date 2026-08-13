@@ -15,20 +15,17 @@
 
 struct CoreAccountInfo;
 
-class AuxiliarySearchDonationServiceBridge {
+class AuxiliarySearchDonationServiceBridge
+    : public AuxiliarySearchDonationService::Delegate {
  public:
-  static AuxiliarySearchDonationService::DonateCallback
-  CreateDonationCallback();
-
-  ~AuxiliarySearchDonationServiceBridge();
-
- private:
   AuxiliarySearchDonationServiceBridge();
+  ~AuxiliarySearchDonationServiceBridge() override;
 
   void DonateHistoryEntries(
       std::vector<AuxiliarySearchDonationService::HistoryData> entries,
-      CoreAccountInfo account_info) const;
+      CoreAccountInfo account_info) override;
 
+ private:
   jni_zero::ScopedJavaGlobalRef<JAuxiliarySearchDonationServiceBridge> bridge_;
 };
 
