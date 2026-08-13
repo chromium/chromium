@@ -28,9 +28,9 @@ class PrefService;
 //   never trigger intervention on the site.
 // - If len(blocklist) > kMaxBlocklistSize, the user is permanently opted out.
 //
-// An instance of this class is associated with BrowserContext when the
-// BrowserContext isn't incognito. You can obtain it via GetForBrowserContext().
-// GetForBrowserContext() will return nullptr when in incognito mode.
+// An instance of this class is associated with a BrowserContext. Incognito
+// instances use session-only preferences that are discarded with the
+// off-the-record BrowserContext.
 class OomInterventionDecider : public base::SupportsUserData::Data {
  public:
   // This delegate is a testing seam.

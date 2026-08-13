@@ -6,10 +6,12 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/metrics/metrics_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace {
@@ -25,6 +27,12 @@ const char kDeclinedHostList[] = "oom_intervention.declined_host_list";
 // Pref path for OOM detected host list. When an OOM crash is observed on
 // a host the hostname is added to the list.
 const char kOomDetectedHostList[] = "oom_intervention.oom_detected_host_list";
+
+void InitializeIncognitoPrefs(PrefService* prefs) {
+  prefs->SetList(kBlocklist, base::ListValue());
+  prefs->SetList(kDeclinedHostList, base::ListValue());
+  prefs->SetList(kOomDetectedHostList, base::ListValue());
+}
 
 class DelegateImpl : public OomInterventionDecider::Delegate {
  public:
@@ -51,14 +59,11 @@ void OomInterventionDecider::RegisterProfilePrefs(
 // static
 OomInterventionDecider* OomInterventionDecider::GetForBrowserContext(
     content::BrowserContext* context) {
-  // The OomInterventionDecider is disabled in incognito mode because it is
-  // written in such a way that hostnames would be persisted in preferences on
-  // disk which is not acceptable for incognito mode.
-  if (context->IsOffTheRecord())
-    return nullptr;
-
   if (!context->GetUserData(kOomInterventionDecider)) {
     PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
+    if (context->IsOffTheRecord()) {
+      InitializeIncognitoPrefs(prefs);
+    }
     context->SetUserData(kOomInterventionDecider,
                          base::WrapUnique(new OomInterventionDecider(
                              std::make_unique<DelegateImpl>(), prefs)));

@@ -5,7 +5,10 @@
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class MockInterventionDeciderDelegate
@@ -25,6 +28,7 @@ class OomInterventionDeciderTest : public testing::Test {
     OomInterventionDecider::RegisterProfilePrefs(prefs_.registry());
   }
 
+  content::BrowserTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
 
@@ -100,4 +104,35 @@ TEST_F(OomInterventionDeciderTest, WasLastShutdownClean) {
     EXPECT_FALSE(decider.CanTriggerIntervention(host));
     EXPECT_TRUE(decider.IsOptedOut(host));
   }
+}
+
+TEST_F(OomInterventionDeciderTest, IncognitoOptOutIsSessionOnly) {
+  const std::string regular_host = "regular.example.com";
+  const std::string incognito_host = "incognito.example.com";
+  TestingProfile profile;
+
+  OomInterventionDecider* regular_decider =
+      OomInterventionDecider::GetForBrowserContext(&profile);
+  regular_decider->OnInterventionDeclined(regular_host);
+
+  Profile* incognito_profile =
+      profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  OomInterventionDecider* incognito_decider =
+      OomInterventionDecider::GetForBrowserContext(incognito_profile);
+
+  EXPECT_TRUE(incognito_decider->CanTriggerIntervention(regular_host));
+  incognito_decider->OnInterventionDeclined(regular_host);
+  incognito_decider->OnInterventionDeclined(incognito_host);
+  EXPECT_FALSE(incognito_decider->CanTriggerIntervention(regular_host));
+  EXPECT_FALSE(incognito_decider->CanTriggerIntervention(incognito_host));
+  EXPECT_FALSE(regular_decider->CanTriggerIntervention(regular_host));
+  EXPECT_TRUE(regular_decider->CanTriggerIntervention(incognito_host));
+
+  profile.DestroyOffTheRecordProfile(incognito_profile);
+  incognito_profile = profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  incognito_decider =
+      OomInterventionDecider::GetForBrowserContext(incognito_profile);
+
+  EXPECT_TRUE(incognito_decider->CanTriggerIntervention(regular_host));
+  EXPECT_TRUE(incognito_decider->CanTriggerIntervention(incognito_host));
 }

@@ -92,7 +92,7 @@ class OomInterventionTabHelper
   base::CallbackListSubscription subscription_;
   base::OneShotTimer renderer_detection_timer_;
 
-  // Not owned. This will be nullptr in incognito mode.
+  // Not owned.
   raw_ptr<OomInterventionDecider> decider_;
 
   mojo::Remote<blink::mojom::OomIntervention> intervention_;
