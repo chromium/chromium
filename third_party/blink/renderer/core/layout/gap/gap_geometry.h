@@ -283,13 +283,14 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // capacity is preserved through loop iterations. This makes reuse across a
   // gap loop allocation-free after the first call.
   //
-  // `main_gap_index` is the index of the main gap (flex line) that owns the
-  // cross gap being processed.
+  // `cross_gap_owner_index` is the forward-only cursor identifying the owner of
+  // the cross gap being processed: the flex line (main gap) for flex, or the
+  // lane for grid-lanes.
   void GenerateIntersectionListForGap(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
       Vector<GapIntersection>& intersections,
-      std::optional<wtf_size_t> main_gap_index) const;
+      std::optional<wtf_size_t> cross_gap_owner_index) const;
 
   // Determines whether the intersection at `intersection_index` within
   // `gap_index` lies on the container boundary. Typically, the first and last
@@ -473,13 +474,13 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // Fills `intersections` for a cross gap at `gap_index`. For grid containers,
   // this includes the container content edges and every main gap offset. For
   // flex containers, it includes the cross-gap start offset and its computed
-  // end offset. `main_gap_index` is the index of the main gap that owns the
-  // cross gap being processed, when there is one.
+  // end offset. `cross_gap_owner_index` is the owner of the cross gap being
+  // processed (flex line or grid lane), when there is one.
   void GenerateCrossIntersectionList(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
       Vector<GapIntersection>& intersections,
-      std::optional<wtf_size_t> main_gap_index) const;
+      std::optional<wtf_size_t> cross_gap_owner_index) const;
 
   // Fills `intersections` for a grid cross gap at `gap_index`, which includes:
   // 1. The content-start edge
@@ -489,6 +490,15 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       GridTrackSizingDirection direction,
       Vector<GapIntersection>& intersections,
       GapSegmentStateCursor& cursor) const;
+
+  // Fills `intersections` for a grid-lanes `CrossGap` at `lane`, which
+  // includes:
+  // 1. The gap's start offset
+  // 2. Its computed end offset at the end of `lane` (which could be a
+  // `MainGap`)
+  void GenerateCrossIntersectionListForGridLanes(
+      wtf_size_t lane,
+      Vector<GapIntersection>& intersections) const;
 
   // Fills `intersections` for a flex cross gap at `gap_index`, which includes:
   // 1. The gap's start offset

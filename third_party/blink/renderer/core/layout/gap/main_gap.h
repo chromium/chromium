@@ -105,11 +105,11 @@ class CORE_EXPORT MainGap {
 
   // In Grid, because rows and columns neatly align, we can avoid duplication by
   // storing cross gaps once and share them across all main gaps. As a result,
-  // each main gap can be mapped to all cross gaps. Unlike Grid, each flex line
-  // will have independent intersections introduced by the item flow. As such,
-  // we cannot share cross axis gap intersections across gaps in the main axis.
-  // As a result, each main gap is mapped to cross gaps that intersect it (i.e.
-  // falling either before or after that main gap).
+  // each main gap can be mapped to all cross gaps.
+  // For Flex and grid-lanes, these ranges contain the contiguous `CrossGap`
+  // runs on each side of this `MainGap`. A grid-lanes `CrossGap` belongs to one
+  // lane, so it appears in the "before" range of the following main gap and the
+  // "after" range of the preceding `MainGap`.
   CrossGapRange range_of_cross_gaps_before_;
   CrossGapRange range_of_cross_gaps_after_;
 
