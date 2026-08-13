@@ -26,7 +26,6 @@ enum class SystemShadowType {
                                   // `SystemViewShadowOnNinePatchLayer`.
   kWindowShadowOnNinePatchLayer,  // Instance of
                                   // `SystemWindowShadowOnNinePatchLayer`.
-  kShadowOnTextureLayer,          // Instance of `SystemShadowOnTextureLayer`.
 };
 
 // Gets the key and ambient shadow colors from a shadow.
@@ -87,8 +86,6 @@ class SystemShadowColorTest
         return MakeViewShadowOnNinePatchLayer(type);
       case SystemShadowType::kWindowShadowOnNinePatchLayer:
         return MakeWindowShadowOnNinePatchLayer(type);
-      case SystemShadowType::kShadowOnTextureLayer:
-        return MakeShadowOnTextureLayer(type);
     }
   }
 
@@ -118,14 +115,6 @@ class SystemShadowColorTest
     return shadow;
   }
 
-  // Creates an instance of `SystemShadowOnTextureLayer`.
-  std::unique_ptr<SystemShadow> MakeShadowOnTextureLayer(
-      SystemShadow::Type type) {
-    auto shadow = SystemShadow::CreateShadowOnTextureLayer(type);
-    AddShadowToWidget(shadow.get(), widget_.get());
-    return shadow;
-  }
-
   // The test widget used as a shadow owner.
   std::unique_ptr<views::Widget> widget_;
 };
@@ -135,8 +124,7 @@ INSTANTIATE_TEST_SUITE_P(
     SystemShadowColorTest,
     testing::Values(SystemShadowType::kShadowOnNinePatchLayer,
                     SystemShadowType::kViewShadowOnNinePatchLayer,
-                    SystemShadowType::kWindowShadowOnNinePatchLayer,
-                    SystemShadowType::kShadowOnTextureLayer),
+                    SystemShadowType::kWindowShadowOnNinePatchLayer),
     [](const testing::TestParamInfo<SystemShadowColorTest::ParamType>& info) {
       switch (info.param) {
         case SystemShadowType::kShadowOnNinePatchLayer:
@@ -145,8 +133,6 @@ INSTANTIATE_TEST_SUITE_P(
           return "ViewShadowOnNinePatchLayer";
         case SystemShadowType::kWindowShadowOnNinePatchLayer:
           return "WindowShadowOnNinePatcherLayer";
-        case SystemShadowType::kShadowOnTextureLayer:
-          return "ShadowOnTextureLayer";
       }
     });
 

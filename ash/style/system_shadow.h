@@ -77,12 +77,6 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
       aura::Window* window,
       Type shadow_type);
 
-  // Create a system shadow painted on a texture layer. Painting shadow on a
-  // texture layer is expensive so only use it when necessary. See
-  // `SystemShadowOnTextureLayer` for more details.
-  static std::unique_ptr<SystemShadow> CreateShadowOnTextureLayer(
-      Type shadow_type);
-
   // Get shadow elevation according to the given type.
   static int GetElevationFromType(Type type);
 
@@ -97,10 +91,6 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
   // implementations use `gfx::RoundedCornersF`.
   virtual void SetRoundedCornerRadius(int corner_radius) = 0;
 
-  // TODO(http://b/307326019): This is only used for
-  // `SystemShadowOnTextureLayer` for now. Should be applied to
-  // `SystemShadowOnNinePatchLayer` when `ui::Shadow` is able to use
-  // `gfx::RoundedCornersF`.
   virtual void SetRoundedCorners(
       const gfx::RoundedCornersF& rounded_corners) = 0;
 

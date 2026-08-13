@@ -5,7 +5,6 @@
 #include "ash/style/system_shadow.h"
 
 #include "ash/style/system_shadow_on_nine_patch_layer.h"
-#include "ash/style/system_shadow_on_texture_layer.h"
 #include "base/memory/ptr_util.h"
 #include "ui/color/color_provider.h"
 
@@ -37,12 +36,6 @@ SystemShadow::CreateShadowOnNinePatchLayerForWindow(aura::Window* window,
   DCHECK(window);
   return base::WrapUnique(
       new SystemWindowShadowOnNinePatchLayer(window, shadow_type));
-}
-
-// static
-std::unique_ptr<SystemShadow> SystemShadow::CreateShadowOnTextureLayer(
-    Type shadow_type) {
-  return base::WrapUnique(new SystemShadowOnTextureLayer(shadow_type));
 }
 
 // static
