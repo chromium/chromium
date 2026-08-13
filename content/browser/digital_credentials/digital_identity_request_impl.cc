@@ -59,6 +59,10 @@ constexpr char kMdocBirthDateDataElement[] = "birth_date";
 constexpr char kGetPhoneNumberVctValue[] =
     "number-verification/device-phone-number/ts43";
 constexpr char kVerifyPhoneNumberVctValue[] = "number-verification/verify/ts43";
+constexpr char kGetPhoneNumberTestSingleSimVctValue[] =
+    "number-verification/device-phone-number/test-ts43-single-sim";
+constexpr char kGetPhoneNumberTestMultiSimVctValue[] =
+    "number-verification/device-phone-number/test-ts43-multi-sim";
 
 constexpr char kDpcVctValue[] = "com.emvco.dpc";
 constexpr char kDpcCredCardVctValue[] = "dpc.cred.card";
@@ -104,7 +108,9 @@ bool IsDpcDocTypeValue(const std::string& doctype_value) {
 
 bool CanVctValueBypassInterstitial(const std::string& vct_value) {
   return vct_value == kGetPhoneNumberVctValue ||
-         vct_value == kVerifyPhoneNumberVctValue;
+         vct_value == kVerifyPhoneNumberVctValue ||
+         vct_value == kGetPhoneNumberTestSingleSimVctValue ||
+         vct_value == kGetPhoneNumberTestMultiSimVctValue;
 }
 
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(

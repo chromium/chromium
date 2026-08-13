@@ -219,6 +219,54 @@ base::Value GenerateGetPhoneNumberOpenid4VpRequest() {
   return ParseJsonAndCheck(kJson);
 }
 
+base::Value GenerateGetPhoneNumberTestSingleSimOpenid4VpRequest() {
+  constexpr char kJson[] = R"({
+  "response_type": "vp_token",
+  "response_mode": "dc_api",
+  "client_id": "web-origin:https://www.digital-credentials.dev",
+  "nonce": "y9f67H0Kb2QF7nSbYh-XxBKkvGTCHk5MQo9OLBkKWD0",
+  "dcql_query": {
+    "credentials": [
+      {
+        "format": "dc-authorization+sd-jwt",
+        "id": "aggregator1",
+        "meta": {
+          "vct_values": [
+            "number-verification/device-phone-number/test-ts43-single-sim"
+          ]
+        }
+      }
+    ]
+  }
+})";
+
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GenerateGetPhoneNumberTestMultiSimOpenid4VpRequest() {
+  constexpr char kJson[] = R"({
+  "response_type": "vp_token",
+  "response_mode": "dc_api",
+  "client_id": "web-origin:https://www.digital-credentials.dev",
+  "nonce": "y9f67H0Kb2QF7nSbYh-XxBKkvGTCHk5MQo9OLBkKWD0",
+  "dcql_query": {
+    "credentials": [
+      {
+        "format": "dc-authorization+sd-jwt",
+        "id": "aggregator1",
+        "meta": {
+          "vct_values": [
+            "number-verification/device-phone-number/test-ts43-multi-sim"
+          ]
+        }
+      }
+    ]
+  }
+})";
+
+  return ParseJsonAndCheck(kJson);
+}
+
 base::Value GenerateVerifyPhoneNumberWithDisallowedCarriersOpenid4VpRequest() {
   constexpr char kJson[] = R"({
   "response_type": "vp_token",
@@ -1016,6 +1064,24 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocolDCQL_ComputeInterstitialType_GetPhoneNumber) {
   EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
                                     GenerateGetPhoneNumberOpenid4VpRequest()),
+            std::nullopt);
+}
+
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolDCQL_ComputeInterstitialType_GetPhoneNumberTestSingleSim) {
+  EXPECT_EQ(ComputeInterstitialType(
+                kOpenid4vpProtocol,
+                GenerateGetPhoneNumberTestSingleSimOpenid4VpRequest()),
+            std::nullopt);
+}
+
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolDCQL_ComputeInterstitialType_GetPhoneNumberTestMultiSim) {
+  EXPECT_EQ(ComputeInterstitialType(
+                kOpenid4vpProtocol,
+                GenerateGetPhoneNumberTestMultiSimOpenid4VpRequest()),
             std::nullopt);
 }
 
