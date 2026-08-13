@@ -9,12 +9,10 @@
 
 class ExtensionsToolbarDesktop;
 class ExtensionsToolbarDesktopViewController;
-class Browser;
 
 class ExtensionsToolbarCoordinator final {
  public:
   explicit ExtensionsToolbarCoordinator(
-      Browser* browser,
       ExtensionsToolbarDesktop* extensions_container);
   ExtensionsToolbarCoordinator(const ExtensionsToolbarCoordinator&) = delete;
   const ExtensionsToolbarCoordinator& operator=(

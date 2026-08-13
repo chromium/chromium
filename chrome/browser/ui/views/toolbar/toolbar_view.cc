@@ -487,8 +487,7 @@ void ToolbarView::Init() {
   if (extensions_container) {
     extensions_container_ = AddChildView(std::move(extensions_container));
     extensions_toolbar_coordinator_ =
-        std::make_unique<ExtensionsToolbarCoordinator>(browser_,
-                                                       extensions_container_);
+        std::make_unique<ExtensionsToolbarCoordinator>(extensions_container_);
   }
 
   if (toolbar_divider) {

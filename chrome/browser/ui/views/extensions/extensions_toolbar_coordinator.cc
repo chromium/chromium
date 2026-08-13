@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop_view_controller.h"
 
 ExtensionsToolbarCoordinator::ExtensionsToolbarCoordinator(
-    Browser* browser,
     ExtensionsToolbarDesktop* extensions_container) {
   extensions_container_tracker_.SetView(extensions_container);
   // Safe to use base::Unretained() because `this` owns / outlives
@@ -20,7 +19,7 @@ ExtensionsToolbarCoordinator::ExtensionsToolbarCoordinator(
 
   extensions_container_controller_ =
       std::make_unique<ExtensionsToolbarDesktopViewController>(
-          browser, extensions_container);
+          extensions_container);
 }
 
 ExtensionsToolbarCoordinator::~ExtensionsToolbarCoordinator() = default;
