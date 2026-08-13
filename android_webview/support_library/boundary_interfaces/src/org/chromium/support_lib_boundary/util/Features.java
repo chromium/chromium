@@ -492,6 +492,9 @@ public class Features {
     // WebViewCompat.navigate
     public static final String WEBVIEW_NAVIGATE_V1 = "WEBVIEW_NAVIGATE_V1";
 
+    // Prefetch queue is drained prior to loading the URL in the WebView Navigate method.
+    public static final String WEBVIEW_NAVIGATE_DRAIN_PREFETCH = "WEBVIEW_NAVIGATE_DRAIN_PREFETCH";
+
     // WebSettingsCompat.setDownloadFaviconsEnabled
     // WebSettingsCompat.getDownloadFaviconsEnabled
     public static final String DOWNLOAD_FAVICONS_ENABLED = "DOWNLOAD_FAVICONS_ENABLED";
