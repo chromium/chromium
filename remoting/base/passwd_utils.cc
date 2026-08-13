@@ -4,16 +4,20 @@
 
 #include "remoting/base/passwd_utils.h"
 
+#include <grp.h>
 #include <pwd.h>
 #include <unistd.h>
 
 #include <cerrno>
 #include <cstring>
+#include <utility>
+#include <vector>
 
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "remoting/base/loggable.h"
 
 namespace remoting {
@@ -44,6 +48,30 @@ base::expected<PasswdUserInfo, Loggable> GetPasswdUserInfo(
   user_info.uid = result->pw_uid;
   user_info.gid = result->pw_gid;
   user_info.home_dir = base::FilePath(result->pw_dir);
+
+#if BUILDFLAG(IS_LINUX)
+  long max_groups = sysconf(_SC_NGROUPS_MAX);
+  constexpr int kDefaultNgroups = 64;
+  int ngroups =
+      (max_groups > 0) ? static_cast<int>(max_groups) : kDefaultNgroups;
+  std::vector<gid_t> groups(ngroups);
+  if (getgrouplist(result->pw_name, result->pw_gid, groups.data(), &ngroups) ==
+      -1) {
+    if (ngroups > 0) {
+      groups.resize(ngroups);
+      if (getgrouplist(result->pw_name, result->pw_gid, groups.data(),
+                       &ngroups) == -1) {
+        return base::unexpected(Loggable(
+            FROM_HERE, base::StringPrintf("getgrouplist failed: %s (%d)",
+                                          strerror(errno), errno)));
+      }
+    }
+  }
+  if (ngroups >= 0) {
+    groups.resize(ngroups);
+  }
+  user_info.supplementary_gids = std::move(groups);
+#endif
   return user_info;
 }
 

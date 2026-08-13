@@ -506,6 +506,10 @@ source_set("unit_tests") {
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
+  if (is_posix) {
+    sources += [ "passwd_utils_unittest.cc" ]
+  }
+
   if (is_win || is_chromeos) {
     deps += [ "//third_party/breakpad:client" ]
   }

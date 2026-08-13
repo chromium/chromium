@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/environment.h"
@@ -56,6 +57,10 @@ class LinuxWorkerProcessLauncherDelegate
     // The effective group ID of the process to be launched. `std::nullopt`
     // indicates no change of the effective group ID.
     std::optional<gid_t> gid;
+
+    // The supplementary group IDs to set on the process to be launched. If
+    // empty and `uid`/`gid` is set, supplementary groups will be cleared.
+    std::vector<gid_t> supplementary_gids;
 
     // The working directory of the process to be launched. An empty value
     // indicates no change of the working directory.

@@ -221,6 +221,7 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::
   options.new_session = true;
   options.uid = info.user_info->uid;
   options.gid = info.user_info->gid;
+  options.supplementary_gids = info.user_info->supplementary_gids;
   options.working_dir = info.user_info->home_dir;
 
   // Launch the desktop process. If there is a desktop process running for the

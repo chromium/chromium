@@ -53,8 +53,12 @@ class RunAsUserPreExecDelegate : public base::LaunchOptions::PreExecDelegate {
  public:
   RunAsUserPreExecDelegate(bool new_session,
                            std::optional<uid_t> uid,
-                           std::optional<gid_t> gid)
-      : new_session_(new_session), uid_(uid), gid_(gid) {
+                           std::optional<gid_t> gid,
+                           std::vector<gid_t> supplementary_gids)
+      : new_session_(new_session),
+        uid_(uid),
+        gid_(gid),
+        supplementary_gids_(std::move(supplementary_gids)) {
     CHECK(uid_.has_value() == gid_.has_value());
   }
   ~RunAsUserPreExecDelegate() override = default;
@@ -69,7 +73,12 @@ class RunAsUserPreExecDelegate : public base::LaunchOptions::PreExecDelegate {
         RAW_LOG(FATAL, "Failed to create a new session.");
       }
     }
-    if (uid_.has_value() || gid_.has_value()) {
+    if (!supplementary_gids_.empty()) {
+      if (setgroups(supplementary_gids_.size(), supplementary_gids_.data()) !=
+          0) {
+        RAW_LOG(FATAL, "Failed to set supplementary groups");
+      }
+    } else if (uid_.has_value() || gid_.has_value()) {
       if (setgroups(0, nullptr) != 0) {
         RAW_LOG(FATAL, "Failed to clear supplementary groups");
       }
@@ -92,6 +101,7 @@ class RunAsUserPreExecDelegate : public base::LaunchOptions::PreExecDelegate {
   bool new_session_;
   std::optional<uid_t> uid_;
   std::optional<gid_t> gid_;
+  std::vector<gid_t> supplementary_gids_;
 };
 
 }  // namespace
@@ -190,7 +200,8 @@ void LinuxWorkerProcessLauncherDelegate::LaunchProcess(
   launch_options.environment = std::move(options_.environment_variables);
 
   RunAsUserPreExecDelegate pre_exec_delegate(options_.new_session, options_.uid,
-                                             options_.gid);
+                                             options_.gid,
+                                             options_.supplementary_gids);
   launch_options.pre_exec_delegate = &pre_exec_delegate;
 
   mojo::OutgoingInvitation invitation;
