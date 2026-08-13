@@ -3,7 +3,7 @@
 [![crate](https://img.shields.io/crates/v/num-integer.svg)](https://crates.io/crates/num-integer)
 [![documentation](https://docs.rs/num-integer/badge.svg)](https://docs.rs/num-integer)
 [![minimum rustc 1.31](https://img.shields.io/badge/rustc-1.31+-red.svg)](https://rust-lang.github.io/rfcs/2495-min-rust-version.html)
-[![build status](https://github.com/rust-num/num-integer/workflows/master/badge.svg)](https://github.com/rust-num/num-integer/actions)
+[![build status](https://github.com/rust-num/num-integer/actions/workflows/main.yaml/badge.svg)](https://github.com/rust-num/num-integer/actions/workflows/main.yaml)
 
 `Integer` trait and functions for Rust.
 

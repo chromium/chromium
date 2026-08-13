@@ -100,6 +100,8 @@ pub trait Integer: Sized + Num + PartialOrd + Ord + Eq {
 
     /// Greatest Common Divisor (GCD).
     ///
+    /// The result should always be non-negative.
+    ///
     /// # Examples
     ///
     /// ~~~
@@ -1018,14 +1020,14 @@ macro_rules! impl_integer_for_usize {
 
             #[test]
             fn test_is_multiple_of() {
-                assert!((0 as $T).is_multiple_of(&(0 as $T)));
-                assert!((6 as $T).is_multiple_of(&(6 as $T)));
-                assert!((6 as $T).is_multiple_of(&(3 as $T)));
-                assert!((6 as $T).is_multiple_of(&(1 as $T)));
+                assert!(<$T as Integer>::is_multiple_of(&(0 as $T), &(0 as $T)));
+                assert!(<$T as Integer>::is_multiple_of(&(6 as $T), &(6 as $T)));
+                assert!(<$T as Integer>::is_multiple_of(&(6 as $T), &(3 as $T)));
+                assert!(<$T as Integer>::is_multiple_of(&(6 as $T), &(1 as $T)));
 
-                assert!(!(42 as $T).is_multiple_of(&(5 as $T)));
-                assert!(!(5 as $T).is_multiple_of(&(3 as $T)));
-                assert!(!(42 as $T).is_multiple_of(&(0 as $T)));
+                assert!(!<$T as Integer>::is_multiple_of(&(42 as $T), &(5 as $T)));
+                assert!(!<$T as Integer>::is_multiple_of(&(5 as $T), &(3 as $T)));
+                assert!(!<$T as Integer>::is_multiple_of(&(42 as $T), &(0 as $T)));
             }
 
             #[test]

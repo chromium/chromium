@@ -27,7 +27,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "num-integer"
   cargo_pkg_description = "Integer traits and functions"
   cargo_pkg_repository = "https://github.com/rust-num/num-integer"
-  cargo_pkg_version = "0.1.46"
+  cargo_pkg_version = "0.1.47"
 
   allow_unsafe = false
 

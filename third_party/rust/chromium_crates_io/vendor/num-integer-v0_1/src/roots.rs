@@ -196,6 +196,44 @@ fn log2<T: PrimInt>(x: T) -> u32 {
     bits::<T>() - 1 - x.leading_zeros()
 }
 
+/// 128-bit Karatsuba Square Root, using b = 2³²
+///
+/// Reference:
+/// Paul Zimmermann. Karatsuba Square Root. [Research Report] RR-3805, INRIA. 1999, pp.8.
+/// <https://inria.hal.science/inria-00072854/en/>
+#[inline]
+fn karatsuba_sqrt(n: u128) -> u128 {
+    // Algorithm SqrtRem(n = a₃b³ + a₂b² + a₁b + a₀)
+    // Input: 0 ≤ aᵢ < b with a₃ ≥ b/4
+    // Output: (s,r) such that s² ≤ n = s² + r < (s+1)²
+    debug_assert!(n.leading_zeros() < 2);
+    let a0 = n as u32 as u128;
+    let a1 = (n >> 32) as u32 as u128;
+    let a23 = n >> 64;
+
+    // (s',r') ← SqrtRem(a₃b + a₂)
+    let s1 = (a23 as u64).sqrt() as u128;
+    let r1 = a23 - s1 * s1;
+
+    // (q,u) ← DivRem(r'b + a₁, 2s')
+    let (q, u) = ((r1 << 32) | a1).div_rem(&(2 * s1));
+
+    // s ← s'b + q
+    let mut s = (s1 << 32) + q;
+
+    // r ← ub + a₀ - q²
+    // if r < 0 then
+    //   r ← r + 2s - 1
+    //   s ← s - 1
+    //
+    // but to avoid negatives, we compare and adjust before subtraction,
+    // and in this case we don't care about the actual remainder.
+    if ((u << 32) | a0) < q * q {
+        s -= 1;
+    }
+    s
+}
+
 macro_rules! unsigned_roots {
     ($T:ident) => {
         impl Roots for $T {
@@ -275,17 +313,14 @@ macro_rules! unsigned_roots {
             fn sqrt(&self) -> Self {
                 fn go(a: $T) -> $T {
                     if bits::<$T>() > 64 {
-                        // 128-bit division is slow, so do a bitwise `sqrt` until it's small enough.
+                        // 128-bit division is slow in the Babylonian method,
+                        // so use 64-bit sqrt and Karatsuba if needed.
                         return if a <= core::u64::MAX as $T {
                             (a as u64).sqrt() as $T
                         } else {
-                            let lo = (a >> 2u32).sqrt() << 1;
-                            let hi = lo + 1;
-                            if hi * hi <= a {
-                                hi
-                            } else {
-                                lo
-                            }
+                            let shift = a.leading_zeros() / 2;
+                            let n = a << (shift * 2);
+                            (karatsuba_sqrt(n as u128) >> shift) as $T
                         };
                     }
 

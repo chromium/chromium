@@ -1,3 +1,12 @@
+# Release 0.1.47 (2026-08-11)
+
+- [Implement Karatsuba Square Root for 128-bit `Roots::sqrt`][80]
+- Miscellaneous other improvements to docs and testing.
+
+**Contributors**: @durin42, @cuviper, @mikem8891
+
+[80]: https://github.com/rust-num/num-integer/pull/80
+
 # Release 0.1.46 (2024-02-07)
 
 - [Upgrade to 2018 edition, **MSRV 1.31**][51]

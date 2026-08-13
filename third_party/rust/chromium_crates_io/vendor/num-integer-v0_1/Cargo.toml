@@ -13,12 +13,18 @@
 edition = "2018"
 rust-version = "1.31"
 name = "num-integer"
-version = "0.1.46"
+version = "0.1.47"
 authors = ["The Rust Project Developers"]
+build = false
 exclude = [
     "/ci/*",
     "/.github/*",
 ]
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Integer traits and functions"
 homepage = "https://github.com/rust-num/num-integer"
 documentation = "https://docs.rs/num-integer"
@@ -38,12 +44,36 @@ repository = "https://github.com/rust-num/num-integer"
 [package.metadata.docs.rs]
 features = ["std"]
 
-[dependencies.num-traits]
-version = "0.2.11"
-features = ["i128"]
-default-features = false
-
 [features]
 default = ["std"]
 i128 = []
 std = ["num-traits/std"]
+
+[lib]
+name = "num_integer"
+path = "src/lib.rs"
+
+[[test]]
+name = "average"
+path = "tests/average.rs"
+
+[[test]]
+name = "roots"
+path = "tests/roots.rs"
+
+[[bench]]
+name = "average"
+path = "benches/average.rs"
+
+[[bench]]
+name = "gcd"
+path = "benches/gcd.rs"
+
+[[bench]]
+name = "roots"
+path = "benches/roots.rs"
+
+[dependencies.num-traits]
+version = "0.2.11"
+features = ["i128"]
+default-features = false
