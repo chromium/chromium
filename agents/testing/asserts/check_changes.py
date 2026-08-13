@@ -49,15 +49,16 @@ def _check_files_status(context, expected_statuses, verb):
         actual_files = '\n'.join(files_with_status)
         return {
             'pass': False,
-            'reason':
-            f'Expected {verb} files were not {verb}:\n{unexected_files}'
-            f'\nActual {verb} files:\n{actual_files}',
-            'score': 0
+            'reason': (
+                f'Expected {verb} files were not {verb}:\n{unexected_files}'
+                f'\nActual {verb} files:\n{actual_files}'
+            ),
+            'score': 0,
         }
     return {
         'pass': True,
         'reason': f'All expected {verb} files were {verb}.',
-        'score': 1
+        'score': 1,
     }
 
 
@@ -82,7 +83,7 @@ def check_files_exist(_: str, context):
         return {
             'pass': False,
             'reason': f'Expected files do not exist:\n{non_existent_files}',
-            'score': 0
+            'score': 0,
         }
     return {'pass': True, 'reason': 'All expected files exist.', 'score': 1}
 
@@ -111,13 +112,15 @@ def check_file_content(_: str, context):
             if s not in content:
                 errors.append(
                     f'Expected to find "{s}" in {file_path}, but it was not '
-                    'found.')
+                    'found.'
+                )
 
         for s in config.get('absent', []):
             if s in content:
                 errors.append(
                     f'Expected to not find "{s}" in {file_path}, but it was '
-                    'found.')
+                    'found.'
+                )
 
     if errors:
         return {'pass': False, 'reason': '\n'.join(errors), 'score': 0}
@@ -125,5 +128,5 @@ def check_file_content(_: str, context):
     return {
         'pass': True,
         'reason': 'All file content checks passed.',
-        'score': 1
+        'score': 1,
     }

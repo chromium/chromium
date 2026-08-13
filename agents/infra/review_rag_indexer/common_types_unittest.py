@@ -11,7 +11,6 @@ from common_types import CommonArgs, PreviousRunInfo
 
 
 class CommonArgsTest(unittest.TestCase):
-
     def test_clobber_true_when_no_previous_run(self):
         args = CommonArgs(
             project='proj',

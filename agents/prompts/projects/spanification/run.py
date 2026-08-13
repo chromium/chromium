@@ -84,7 +84,8 @@ def ensure_gn_build_dir():
 def ensure_docs():
     # Copy ../../../../docs/unsafe_buffers.md to the script directory.
     src_docs_path = os.path.abspath(
-        os.path.join(SCRIPT_DIR, '../../../../docs/unsafe_buffers.md'))
+        os.path.join(SCRIPT_DIR, '../../../../docs/unsafe_buffers.md')
+    )
     dest_docs_path = os.path.join(SCRIPT_DIR, 'unsafe_buffers.md')
     if not os.path.exists(dest_docs_path):
         shutil.copy2(src_docs_path, dest_docs_path)
@@ -101,15 +102,18 @@ def setup_gemini_context_md(context_files):
             with open(GEMINI_MD_PATH, 'r', encoding='utf-8') as f:
                 content = f.read()
         else:
-            print("Error: the script is expected to be run from the src/ "
-                  "directory where GEMINI.md is located.")
+            print(
+                "Error: the script is expected to be run from the src/ "
+                "directory where GEMINI.md is located."
+            )
             sys.exit(1)
 
         # Use regex to remove the block between the start and end markers.
         # re.DOTALL allows '.' to match newlines.
         pattern = re.compile(
-            f"# {SPANIFICATION_GEMINI_MD}.*?"
-            f"# /{SPANIFICATION_GEMINI_MD}\n", re.DOTALL)
+            f"# {SPANIFICATION_GEMINI_MD}.*?# /{SPANIFICATION_GEMINI_MD}\n",
+            re.DOTALL,
+        )
         cleaned_content = pattern.sub("", content)
 
         final_content = cleaned_content
@@ -181,8 +185,12 @@ def run_gemini(prompt, clear_out_dir=True):
     # a bug in headless mode. So we need to specify both until the bug
     # is fixed. See https://github.com/google-gemini/gemini-cli/issues/20058
     ALLOWED_TOOLS = [
-        "read_file", "replace", "write_file", "run_shell_command",
-        "remote_code_search", "run_debugging_agent"
+        "read_file",
+        "replace",
+        "write_file",
+        "run_shell_command",
+        "remote_code_search",
+        "run_debugging_agent",
     ]
     cmd.extend(['--allowed-tools', ','.join(ALLOWED_TOOLS)])
 
@@ -190,16 +198,18 @@ def run_gemini(prompt, clear_out_dir=True):
     process = None
     try:
         with subprocess.Popen(
-                cmd,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,  # Merge stdout and stderr
-                text=True,
-                encoding='utf-8',
-                bufsize=1) as process:
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,  # Merge stdout and stderr
+            text=True,
+            encoding='utf-8',
+            bufsize=1,
+        ) as process:
             # stdout
-            reader_thread = threading.Thread(target=stream_reader,
-                                             args=(process, output))
+            reader_thread = threading.Thread(
+                target=stream_reader, args=(process, output)
+            )
             reader_thread.daemon = True
             reader_thread.start()
 
@@ -235,10 +245,9 @@ def run_deterministic_check(file_path):
     for build_dir in REQUIRED_BUILD_DIRS:
         print(f"Checking compilation for {build_dir}...")
         cmd = ['autoninja', '-C', f'out/{build_dir}', '--quiet']
-        result = subprocess.run(cmd,
-                                capture_output=True,
-                                text=True,
-                                check=False)
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, check=False
+        )
         if result.returncode != 0:
             print(f"Compilation failed for {build_dir}")
             return [
@@ -254,21 +263,27 @@ def run_deterministic_check(file_path):
         print(f"Running tests for {file_path}...")
         # Use linux-rel for testing as a representative platform.
         cmd = [
-            './tools/autotest.py', '--quiet', '--run-all', '-C',
-            'out/linux-rel', file_path
+            './tools/autotest.py',
+            '--quiet',
+            '--run-all',
+            '-C',
+            'out/linux-rel',
+            file_path,
         ]
-        result = subprocess.run(cmd,
-                                capture_output=True,
-                                text=True,
-                                check=False)
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, check=False
+        )
         if result.returncode != 0:
-            if ("doesn't look like a test file" in result.stderr
-                    or "doesn't look like a test file" in result.stdout):
+            if (
+                "doesn't look like a test file" in result.stderr
+                or "doesn't look like a test file" in result.stdout
+            ):
                 print(f"No tests found for {file_path}.")
             else:
                 print(f"Tests failed for {file_path}")
                 errors.append(
-                    f"Tests failed:\n{result.stdout}\n{result.stderr}")
+                    f"Tests failed:\n{result.stdout}\n{result.stderr}"
+                )
         else:
             print("Tests passed!")
 
@@ -279,10 +294,12 @@ def run_reviewer(file_path):
     """Entity 3: Run reviewer agent on the specific file changes."""
     print(f"Running Reviewer Agent on {file_path}...")
     # Get the diff for the specific file since we started (HEAD)
-    diff_result = subprocess.run(['git', 'diff', 'HEAD', '--', file_path],
-                                 capture_output=True,
-                                 text=True,
-                                 check=False)
+    diff_result = subprocess.run(
+        ['git', 'diff', 'HEAD', '--', file_path],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     patch = diff_result.stdout
     if not patch:
         return "SUCCESS", "No changes to review."
@@ -291,10 +308,9 @@ def run_reviewer(file_path):
         reviewer_prompt_tmpl = f.read()
 
     # Create a temporary reviewer prompt with the actual patch.
-    with tempfile.NamedTemporaryFile(mode='w',
-                                     suffix='.md',
-                                     delete=False,
-                                     encoding='utf-8') as temp_f:
+    with tempfile.NamedTemporaryFile(
+        mode='w', suffix='.md', delete=False, encoding='utf-8'
+    ) as temp_f:
         temp_f.write(reviewer_prompt_tmpl.replace('{{patch}}', patch))
         temp_reviewer_prompt_path = temp_f.name
 
@@ -305,7 +321,8 @@ def run_reviewer(file_path):
                 "Review the provided patch. Ensure it uses base::span, follows "
                 "Chromium idioms, is easy to read, and includes safety "
                 "comments.",
-                clear_out_dir=False)
+                clear_out_dir=False,
+            )
     finally:
         os.remove(temp_reviewer_prompt_path)
 
@@ -322,7 +339,8 @@ def run_reviewer(file_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Run Gemini to fix unsafe buffer usage in a file.')
+        description='Run Gemini to fix unsafe buffer usage in a file.'
+    )
     parser.add_argument('file', type=str, help='Path to the file to process.')
     args = parser.parse_args()
     print(f"Processing {args.file}...")
@@ -343,17 +361,17 @@ def main():
         if feedback:
             prompt_content += f"\n\nPrevious feedback:\n{feedback}"
 
-        with tempfile.NamedTemporaryFile(mode='w',
-                                         suffix='.md',
-                                         delete=False,
-                                         encoding='utf-8') as temp_f:
+        with tempfile.NamedTemporaryFile(
+            mode='w', suffix='.md', delete=False, encoding='utf-8'
+        ) as temp_f:
             temp_f.write(prompt_content)
             temp_prompt_path = temp_f.name
 
         print("Running Generator Agent...")
         try:
             with setup_gemini_context_md(
-                [FIX_PROMPT_MD, args.file, temp_prompt_path]):
+                [FIX_PROMPT_MD, args.file, temp_prompt_path]
+            ):
                 exit_code, _ = run_gemini(prompt_content)
                 if exit_code != 0:
                     feedback = (
@@ -367,10 +385,9 @@ def main():
         # After the generator finishes, format the code to ensure a clean diff
         # and to catch basic syntax errors before Entity 2.
         print("Formatting changes with git cl format...")
-        format_result = subprocess.run(['git', 'cl', 'format'],
-                                       capture_output=True,
-                                       text=True,
-                                       check=False)
+        format_result = subprocess.run(
+            ['git', 'cl', 'format'], capture_output=True, text=True, check=False
+        )
         if format_result.returncode != 0:
             feedback = (
                 "git cl format failed (likely a syntax error):\n"
@@ -382,7 +399,8 @@ def main():
         compile_errors = run_deterministic_check(args.file)
         if compile_errors:
             feedback = "CQ (Compilation/Tests) failed:\n" + "\n".join(
-                compile_errors)
+                compile_errors
+            )
             continue
 
         # Entity 3: Reviewer
@@ -404,10 +422,12 @@ def main():
         with open(SUMMARY_PATH, 'r', encoding='utf-8') as f:
             summary = json.load(f)
 
-    diff_result = subprocess.run(['git', 'diff', 'HEAD', '--', args.file],
-                                 capture_output=True,
-                                 text=True,
-                                 check=False)
+    diff_result = subprocess.run(
+        ['git', 'diff', 'HEAD', '--', args.file],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
 
     # The commit message is written by gemini to a file.
     commit_message = None

@@ -41,8 +41,9 @@ def find_candidates(search_root=None):
         except (ValueError, IndexError):
             pass
 
-    pattern = os.path.join("tools", "metrics", "histograms", "metadata", "*",
-                           "histograms.xml")
+    pattern = os.path.join(
+        "tools", "metrics", "histograms", "metadata", "*", "histograms.xml"
+    )
     for f in glob.iglob(pattern):
         try:
             for hist in ET.parse(f).iter("histogram"):
@@ -68,10 +69,14 @@ def find_candidates(search_root=None):
 
 if __name__ == "__main__":
     import sys
-    print("ERROR: This script is a plugin and cannot be run directly.",
-          file=sys.stderr)
+
+    print(
+        "ERROR: This script is a plugin and cannot be run directly.",
+        file=sys.stderr,
+    )
     print("Please run the central hub runner instead:", file=sys.stderr)
     print(
         f"  python3 agents/projects/code-health/hub/scripts/candidate_finder.py find --plugin {__file__}",
-        file=sys.stderr)
+        file=sys.stderr,
+    )
     sys.exit(1)

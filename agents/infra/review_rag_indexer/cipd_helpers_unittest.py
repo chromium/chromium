@@ -15,7 +15,6 @@ import cipd_helpers
 
 
 class CipdHelpersTest(fake_filesystem_unittest.TestCase):
-
     def setUp(self):
         self.setUpPyfakefs()
 
@@ -37,8 +36,9 @@ class CipdHelpersTest(fake_filesystem_unittest.TestCase):
         cipd_root = pathlib.Path('/fake/tmp/dir')
         self.fs.create_dir(str(cipd_root))
 
-        result = cipd_helpers.install_package('fake/package', 'latest',
-                                              cipd_root)
+        result = cipd_helpers.install_package(
+            'fake/package', 'latest', cipd_root
+        )
 
         self.assertTrue(result)
         self.mock_run.assert_called_once_with(
@@ -62,10 +62,12 @@ class CipdHelpersTest(fake_filesystem_unittest.TestCase):
         cipd_root = pathlib.Path('/fake/tmp/dir')
         self.fs.create_dir(str(cipd_root))
         self.mock_run.side_effect = subprocess.CalledProcessError(
-            returncode=1, cmd='cipd install', output='Failed')
+            returncode=1, cmd='cipd install', output='Failed'
+        )
 
-        result = cipd_helpers.install_package('fake/package', 'latest',
-                                              cipd_root)
+        result = cipd_helpers.install_package(
+            'fake/package', 'latest', cipd_root
+        )
 
         self.assertFalse(result)
         self.mock_run.assert_called_once()

@@ -21,11 +21,11 @@ EV_KEY = 1
 def send_key(fd: BinaryIO, *, code: int, value: int) -> None:
     """Sends a raw evdev input event to the provided file descriptor.
 
-  Args:
-      fd: Open binary file object/descriptor for the input node.
-      code: The integer evdev key code (e.g., 28 for ENTER).
-      value: 1 for key press, 0 for key release.
-  """
+    Args:
+        fd: Open binary file object/descriptor for the input node.
+        code: The integer evdev key code (e.g., 28 for ENTER).
+        value: 1 for key press, 0 for key release.
+    """
     # struct input_event: time (2 longs), type (short), code (short),
     # value (int)
     # On 64-bit Linux, time is usually 2 64-bit longs.
@@ -40,7 +40,8 @@ def send_key(fd: BinaryIO, *, code: int, value: int) -> None:
 def main() -> None:
     """Parses command-line arguments and sends the key event."""
     parser = argparse.ArgumentParser(
-        description="Send a raw key event to an evdev input node.")
+        description="Send a raw key event to an evdev input node."
+    )
     parser.add_argument(
         "device_node",
         type=str,

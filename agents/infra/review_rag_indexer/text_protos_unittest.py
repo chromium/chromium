@@ -10,17 +10,16 @@ import text_protos
 
 
 class TextProtoParserTest(unittest.TestCase):
-
     def test_parse_simple(self):
         content = """
         component: "Blink"
         team_email: "blink-dev@chromium.org"
         """
         result = text_protos.parse_text_proto(content)
-        self.assertEqual(result, {
-            'component': 'Blink',
-            'team_email': 'blink-dev@chromium.org'
-        })
+        self.assertEqual(
+            result,
+            {'component': 'Blink', 'team_email': 'blink-dev@chromium.org'},
+        )
 
     def test_parse_nested(self):
         content = """
@@ -32,18 +31,17 @@ class TextProtoParserTest(unittest.TestCase):
         result = text_protos.parse_text_proto(content)
         self.assertEqual(
             result,
-            {'monorail': {
-                'project': 'chromium',
-                'component': 'Blink>Layout'
-            }})
+            {'monorail': {'project': 'chromium', 'component': 'Blink>Layout'}},
+        )
 
     def test_parse_list(self):
         content = """
         mixins: ["//pdf/pdf.mixin", "//v8/v8.mixin"]
         """
         result = text_protos.parse_text_proto(content)
-        self.assertEqual(result,
-                         {'mixins': ['//pdf/pdf.mixin', '//v8/v8.mixin']})
+        self.assertEqual(
+            result, {'mixins': ['//pdf/pdf.mixin', '//v8/v8.mixin']}
+        )
 
     def test_parse_comments(self):
         content = """

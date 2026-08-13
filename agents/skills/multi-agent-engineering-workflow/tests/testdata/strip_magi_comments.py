@@ -11,7 +11,8 @@ import sys
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Strip MAGI comments from files")
+        description="Strip MAGI comments from files"
+    )
     parser.add_argument("--input", required=True, help="Input file")
     parser.add_argument("--output", required=True, help="Output file")
     args = parser.parse_args()

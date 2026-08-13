@@ -22,6 +22,7 @@ MetricsMapping: TypeAlias = dict[str, Union['MetricsMapping', float]]
 @dataclasses.dataclass
 class IterationMetrics:
     """Represents metrics from a single test iteration."""
+
     # The test config the metrics originated from.
     config: eval_config.TestConfig
     # Metrics collected from the iteration.
@@ -29,7 +30,7 @@ class IterationMetrics:
 
 
 def merge_metrics(
-    iteration_metrics: Iterable[IterationMetrics]
+    iteration_metrics: Iterable[IterationMetrics],
 ) -> dict[str, dict[str, list[float]]]:
     """Merges data for the same tests/metric names into a single list.
 
@@ -54,13 +55,15 @@ def merge_metrics(
     for im in iteration_metrics:
         config_file = str(im.config.src_relative_test_file)
         for k, v in iterate_over_nested_metrics(im.metrics):
-            merged_metrics.setdefault(config_file, {}).setdefault(k,
-                                                                  []).append(v)
+            merged_metrics.setdefault(config_file, {}).setdefault(k, []).append(
+                v
+            )
     return merged_metrics
 
 
 def iterate_over_nested_metrics(
-        metrics: MetricsMapping) -> Generator[tuple[str, float], None, None]:
+    metrics: MetricsMapping,
+) -> Generator[tuple[str, float], None, None]:
     """Iterates over all potentially nested elements of a MetricsMapping.
 
     If a particular value is a nested MetricsMapping, this is called

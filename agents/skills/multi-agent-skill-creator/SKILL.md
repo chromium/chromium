@@ -208,7 +208,7 @@ templates in the [`templates/`](./templates/) directory:
 3. **Generate `run_presubmit.py`**: A helper script to run the presubmit checks
    locally (you can adapt the [`run_presubmit.py`](./run_presubmit.py) from this
    skill creator).
-4. **Generate Style Configurations**: Include [`.style.yapf`](./.style.yapf) and
+4. **Generate Style Configurations**: Include [`.ruff.toml`](./.ruff.toml) and
    [`.style.mdformat`](./.style.mdformat) (copied from this skill creator) to
    ensure formatting consistency.
 

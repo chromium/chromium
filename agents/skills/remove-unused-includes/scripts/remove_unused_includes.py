@@ -11,11 +11,9 @@ import sys
 
 
 def run_command(cmd, cwd=None):
-    result = subprocess.run(cmd,
-                            capture_output=True,
-                            text=True,
-                            cwd=cwd,
-                            check=False)
+    result = subprocess.run(
+        cmd, capture_output=True, text=True, cwd=cwd, check=False
+    )
     return result.returncode == 0, result.stdout.strip(), result.stderr.strip()
 
 
@@ -27,32 +25,38 @@ def get_targets_for_file(src_root, file_path, build_dir):
     if not success:
         return []
     targets = [
-        line.strip().lstrip('/') for line in stdout.splitlines()
-        if line.strip()
+        line.strip().lstrip('/') for line in stdout.splitlines() if line.strip()
     ]
     return targets
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Clean unused includes safely in Chromium.")
-    parser.add_argument("--src-root",
-                        required=True,
-                        help="Chromium src root directory")
+        description="Clean unused includes safely in Chromium."
+    )
+    parser.add_argument(
+        "--src-root", required=True, help="Chromium src root directory"
+    )
     parser.add_argument(
         "--folder",
         required=True,
-        help="Folder to look through (absolute or relative to src-root)")
-    parser.add_argument("--dry-run",
-                        action="store_true",
-                        help="Print changes without applying them")
-    parser.add_argument("--non-recursive",
-                        action="store_true",
-                        help="Do not walk subdirectories")
+        help="Folder to look through (absolute or relative to src-root)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print changes without applying them",
+    )
+    parser.add_argument(
+        "--non-recursive",
+        action="store_true",
+        help="Do not walk subdirectories",
+    )
     parser.add_argument(
         "--build-dir",
         default="out/Default",
-        help="Build directory relative to src-root (default: out/Default)")
+        help="Build directory relative to src-root (default: out/Default)",
+    )
     args = parser.parse_args()
 
     src_root = os.path.abspath(args.src_root)
@@ -64,7 +68,8 @@ def main():
 
     clang_cleaner = os.path.join(
         src_root,
-        "third_party/llvm-build/Release+Asserts/bin/clang-include-cleaner")
+        "third_party/llvm-build/Release+Asserts/bin/clang-include-cleaner",
+    )
     if not os.path.exists(clang_cleaner):
         print(f"Error: clang-include-cleaner not found at {clang_cleaner}")
         sys.exit(1)
@@ -85,8 +90,12 @@ def main():
 
         # Run preview first
         cmd = [
-            clang_cleaner, "-p", ".", "--print=changes", "--disable-insert",
-            file_path
+            clang_cleaner,
+            "-p",
+            ".",
+            "--print=changes",
+            "--disable-insert",
+            file_path,
         ]
         success, stdout, stderr = run_command(cmd, cwd=src_root)
         if not success:
@@ -103,8 +112,10 @@ def main():
         # Get targets using gn refs
         targets = get_targets_for_file(src_root, file_path, args.build_dir)
         if not targets:
-            print(f"  [Warning] No GN targets found referencing "
-                  f"{rel_file_path}. Skipping safety check and edit!")
+            print(
+                f"  [Warning] No GN targets found referencing "
+                f"{rel_file_path}. Skipping safety check and edit!"
+            )
             continue
 
         print(f"  Referencing targets: {', '.join(targets)}")
@@ -115,7 +126,12 @@ def main():
 
         # Apply edits
         edit_cmd = [
-            clang_cleaner, "-p", ".", "--edit", "--disable-insert", file_path
+            clang_cleaner,
+            "-p",
+            ".",
+            "--edit",
+            "--disable-insert",
+            file_path,
         ]
         success, _, edit_err = run_command(edit_cmd, cwd=src_root)
         if not success:
@@ -127,10 +143,13 @@ def main():
         for target in targets:
             print(f"  Compiling target {target}...")
             compile_cmd = ["autoninja", "-C", args.build_dir, target]
-            success, compile_out, compile_err = run_command(compile_cmd,
-                                                            cwd=src_root)
-            if (not success
-                    or "The build has finished with an error" in compile_out):
+            success, compile_out, compile_err = run_command(
+                compile_cmd, cwd=src_root
+            )
+            if (
+                not success
+                or "The build has finished with an error" in compile_out
+            ):
                 print(f"  [Error] Compilation failed for target {target}!")
                 # Print output to help diagnosis
                 print(compile_out or compile_err)
@@ -142,8 +161,10 @@ def main():
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(original_content)
         else:
-            print(f"  [Success] Unused includes successfully removed "
-                  f"from {rel_file_path}!")
+            print(
+                f"  [Success] Unused includes successfully removed "
+                f"from {rel_file_path}!"
+            )
 
 
 if __name__ == "__main__":

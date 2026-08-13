@@ -26,11 +26,11 @@ KEY_Z = 44
 def send_key(fd: BinaryIO, *, code: int, value: int) -> None:
     """Sends a raw evdev input event to the provided file descriptor.
 
-  Args:
-      fd: Open binary file object/descriptor for the keyboard input node.
-      code: The integer evdev key code.
-      value: 1 for key press, 0 for key release.
-  """
+    Args:
+        fd: Open binary file object/descriptor for the keyboard input node.
+        code: The integer evdev key code.
+        value: 1 for key press, 0 for key release.
+    """
     # struct input_event: time (2 longs), type (short), code (short),
     # value (int)
     # On 64-bit Linux, time is usually 2 64-bit longs.
@@ -46,9 +46,9 @@ def send_key(fd: BinaryIO, *, code: int, value: int) -> None:
 def toggle_chromevox(fd: BinaryIO) -> None:
     """Injects the Ctrl+Alt+Z key sequence to toggle ChromeVox.
 
-  Args:
-      fd: Open binary file object/descriptor for the keyboard input node.
-  """
+    Args:
+        fd: Open binary file object/descriptor for the keyboard input node.
+    """
     # Press Ctrl+Alt+Z
     send_key(fd, code=KEY_LEFTCTRL, value=1)
     send_key(fd, code=KEY_LEFTALT, value=1)

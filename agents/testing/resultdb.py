@@ -33,12 +33,16 @@ class ResultDBReporter:
             return
 
         relative_path = test_result.config.test_file.relative_to(
-            constants.CHROMIUM_SRC)
+            constants.CHROMIUM_SRC
+        )
         posix_path = relative_path.as_posix()
         for iteration_result in test_result.iteration_results:
-            tags = [(name.replace('.', '_').lower(), str(value))
-                    for name, value in metrics.iterate_over_nested_metrics(
-                        iteration_result.metrics)]
+            tags = [
+                (name.replace('.', '_').lower(), str(value))
+                for name, value in metrics.iterate_over_nested_metrics(
+                    iteration_result.metrics
+                )
+            ]
             tags.extend([('tag', tag) for tag in test_result.config.tags])
 
             owner = test_result.config.owner
@@ -49,27 +53,34 @@ class ResultDBReporter:
             prompt = iteration_result.prompt
             if prompt:
                 b64_prompt = base64.b64encode(prompt.encode()).decode()
-                artifacts.update({
-                    'Prompt': {
-                        'contents': b64_prompt,
-                        'content_type': 'text/plain',
+                artifacts.update(
+                    {
+                        'Prompt': {
+                            'contents': b64_prompt,
+                            'content_type': 'text/plain',
+                        }
                     }
-                })
+                )
 
             response = iteration_result.response
             if response:
                 b64_response = base64.b64encode(response.encode()).decode()
-                artifacts.update({
-                    'Response': {
-                        'contents': b64_response,
-                        'content_type': 'text/plain',
+                artifacts.update(
+                    {
+                        'Response': {
+                            'contents': b64_response,
+                            'content_type': 'text/plain',
+                        }
                     }
-                })
+                )
 
             self._result_sink_client.Post(
                 test_id=str(posix_path),
-                status=(result_types.PASS
-                        if iteration_result.success else result_types.FAIL),
+                status=(
+                    result_types.PASS
+                    if iteration_result.success
+                    else result_types.FAIL
+                ),
                 duration=iteration_result.duration * 1000,
                 test_log=iteration_result.test_log,
                 test_id_structured={

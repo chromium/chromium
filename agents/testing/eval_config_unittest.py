@@ -40,8 +40,9 @@ class TestConfigFromFileTest(fake_filesystem_unittest.TestCase):
     def test_empty_tests_list(self):
         """Tests that a ValueError is raised for an empty 'tests' list."""
         self.fs.create_file('test.yaml', contents='tests: []')
-        with self.assertRaisesRegex(ValueError,
-                                    '"tests" list in .* must not be empty.'):
+        with self.assertRaisesRegex(
+            ValueError, '"tests" list in .* must not be empty.'
+        ):
             eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
 
     def test_no_metadata(self):
@@ -161,16 +162,17 @@ tests:
       pass_k_threshold: 3.5
 """
         self.fs.create_file('test.yaml', contents=yaml_invalid_threshold)
-        with self.assertRaisesRegex(ValueError,
-                                    'must be a non-negative integer'):
+        with self.assertRaisesRegex(
+            ValueError, 'must be a non-negative integer'
+        ):
             eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
 
 
 class TestConfigSrcRelativeTestFileTest(unittest.TestCase):
-
     def setUp(self):
-        self.src_patcher = mock.patch('eval_config.constants.CHROMIUM_SRC',
-                                      pathlib.Path('/src'))
+        self.src_patcher = mock.patch(
+            'eval_config.constants.CHROMIUM_SRC', pathlib.Path('/src')
+        )
         self.src_patcher.start()
         self.addCleanup(self.src_patcher.stop)
 
@@ -178,16 +180,18 @@ class TestConfigSrcRelativeTestFileTest(unittest.TestCase):
         config = eval_config.TestConfig(
             test_file=pathlib.Path('/src/path/to/test.yaml'),
             runs_per_test=1,
-            pass_k_threshold=1)
-        self.assertEqual(config.src_relative_test_file,
-                         pathlib.Path('path/to/test.yaml'))
+            pass_k_threshold=1,
+        )
+        self.assertEqual(
+            config.src_relative_test_file, pathlib.Path('path/to/test.yaml')
+        )
 
 
 class TestConfigMatchesFilterTest(unittest.TestCase):
-
     def setUp(self):
-        self.src_patcher = mock.patch('eval_config.constants.CHROMIUM_SRC',
-                                      pathlib.Path('/src'))
+        self.src_patcher = mock.patch(
+            'eval_config.constants.CHROMIUM_SRC', pathlib.Path('/src')
+        )
         self.src_patcher.start()
         self.addCleanup(self.src_patcher.stop)
 
@@ -195,61 +199,69 @@ class TestConfigMatchesFilterTest(unittest.TestCase):
         config = eval_config.TestConfig(
             test_file=pathlib.Path('/src/test.yaml'),
             runs_per_test=1,
-            pass_k_threshold=1)
+            pass_k_threshold=1,
+        )
         self.assertFalse(config.matches_filter([]))
 
     def test_exact_match(self):
         config = eval_config.TestConfig(
             test_file=pathlib.Path('/src/test.yaml'),
             runs_per_test=1,
-            pass_k_threshold=1)
+            pass_k_threshold=1,
+        )
         self.assertTrue(config.matches_filter(['test.yaml']))
 
     def test_no_match(self):
         config = eval_config.TestConfig(
             test_file=pathlib.Path('/src/test.yaml'),
             runs_per_test=1,
-            pass_k_threshold=1)
+            pass_k_threshold=1,
+        )
         self.assertFalse(config.matches_filter(['other.yaml']))
 
     def test_wildcard_match(self):
         config = eval_config.TestConfig(
             test_file=pathlib.Path('/src/test.yaml'),
             runs_per_test=1,
-            pass_k_threshold=1)
+            pass_k_threshold=1,
+        )
         self.assertTrue(config.matches_filter(['*.yaml']))
 
     def test_multiple_filters_one_match(self):
         config = eval_config.TestConfig(
             test_file=pathlib.Path('/src/test.yaml'),
             runs_per_test=1,
-            pass_k_threshold=1)
+            pass_k_threshold=1,
+        )
         self.assertTrue(
-            config.matches_filter(['other.yaml', 'test.yaml', 'another.yaml']))
+            config.matches_filter(['other.yaml', 'test.yaml', 'another.yaml'])
+        )
 
     def test_multiple_filters_no_match(self):
         config = eval_config.TestConfig(
             test_file=pathlib.Path('/src/test.yaml'),
             runs_per_test=1,
-            pass_k_threshold=1)
+            pass_k_threshold=1,
+        )
         self.assertFalse(config.matches_filter(['other.yaml', 'another.yaml']))
 
     def test_directory_match(self):
         config = eval_config.TestConfig(
             test_file=pathlib.Path('/src/agents/test.yaml'),
             runs_per_test=1,
-            pass_k_threshold=1)
+            pass_k_threshold=1,
+        )
         self.assertTrue(config.matches_filter(['agents/*']))
 
 
 class TestConfigValidationTest(unittest.TestCase):
-
     def test_invalid_runs_per_test_type(self):
         with self.assertRaisesRegex(ValueError, 'must be a positive integer'):
             config = eval_config.TestConfig(
                 test_file=pathlib.Path('/src/test.yaml'),
                 runs_per_test='1',
-                pass_k_threshold=1)
+                pass_k_threshold=1,
+            )
             config.validate()
 
     def test_zero_runs_per_test(self):
@@ -257,25 +269,30 @@ class TestConfigValidationTest(unittest.TestCase):
             config = eval_config.TestConfig(
                 test_file=pathlib.Path('/src/test.yaml'),
                 runs_per_test=0,
-                pass_k_threshold=0)
+                pass_k_threshold=0,
+            )
             config.validate()
 
     def test_invalid_pass_k_threshold_type(self):
-        with self.assertRaisesRegex(ValueError,
-                                    'must be a non-negative integer'):
+        with self.assertRaisesRegex(
+            ValueError, 'must be a non-negative integer'
+        ):
             config = eval_config.TestConfig(
                 test_file=pathlib.Path('/src/test.yaml'),
                 runs_per_test=1,
-                pass_k_threshold='1')
+                pass_k_threshold='1',
+            )
             config.validate()
 
     def test_negative_pass_k_threshold(self):
-        with self.assertRaisesRegex(ValueError,
-                                    'must be a non-negative integer'):
+        with self.assertRaisesRegex(
+            ValueError, 'must be a non-negative integer'
+        ):
             config = eval_config.TestConfig(
                 test_file=pathlib.Path('/src/test.yaml'),
                 runs_per_test=1,
-                pass_k_threshold=-1)
+                pass_k_threshold=-1,
+            )
             config.validate()
 
     def test_runs_less_than_threshold(self):
@@ -283,13 +300,15 @@ class TestConfigValidationTest(unittest.TestCase):
             config = eval_config.TestConfig(
                 test_file=pathlib.Path('/src/test.yaml'),
                 runs_per_test=1,
-                pass_k_threshold=2)
+                pass_k_threshold=2,
+            )
             config.validate()
 
     def test_invalid_tags_type(self):
         with self.assertRaisesRegex(ValueError, 'must be a list of strings'):
             config = eval_config.TestConfig(
-                test_file=pathlib.Path('/src/test.yaml'), tags=['valid', 123])
+                test_file=pathlib.Path('/src/test.yaml'), tags=['valid', 123]
+            )
             config.validate()
 
 

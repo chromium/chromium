@@ -21,19 +21,20 @@ from lib.results import result_types
 
 
 class ResultDBReporterTest(unittest.TestCase):
-
     def setUp(self):
         self.mock_client = mock.Mock(spec=result_sink.ResultSinkClient)
         self.try_init_client_patcher = mock.patch(
             'lib.results.result_sink.TryInitClient',
-            return_value=self.mock_client)
+            return_value=self.mock_client,
+        )
         self.mock_try_init_client = self.try_init_client_patcher.start()
         self.addCleanup(self.try_init_client_patcher.stop)
 
     def test_report_result(self):
         reporter = resultdb.ResultDBReporter()
-        config = eval_config.TestConfig(test_file=CHROMIUM_SRC /
-                                        'some_test.yaml')
+        config = eval_config.TestConfig(
+            test_file=CHROMIUM_SRC / 'some_test.yaml'
+        )
         test_result = results.TestResult(
             config=config,
             success=True,
@@ -42,13 +43,12 @@ class ResultDBReporterTest(unittest.TestCase):
                     success=True,
                     duration=1.23,
                     test_log='log',
-                    metrics={'Foo': {
-                        'bar': 3.21
-                    }},
+                    metrics={'Foo': {'bar': 3.21}},
                     prompt='foo?',
                     response='bar!',
                 )
-            ])
+            ],
+        )
         reporter.report_result(test_result)
         self.mock_client.Post.assert_called_once_with(
             test_id='some_test.yaml',
@@ -59,7 +59,7 @@ class ResultDBReporterTest(unittest.TestCase):
             test_id_structured={
                 'coarseName': '',
                 'fineName': '',
-                'caseNameComponents': ['some_test.yaml']
+                'caseNameComponents': ['some_test.yaml'],
             },
             tags=[('foo_bar', '3.21')],
             artifacts={
@@ -76,9 +76,9 @@ class ResultDBReporterTest(unittest.TestCase):
 
     def test_report_result_with_owner(self):
         reporter = resultdb.ResultDBReporter()
-        config = eval_config.TestConfig(test_file=CHROMIUM_SRC /
-                                        'some_test.yaml',
-                                        owner='foo')
+        config = eval_config.TestConfig(
+            test_file=CHROMIUM_SRC / 'some_test.yaml', owner='foo'
+        )
         test_result = results.TestResult(
             config=config,
             success=True,
@@ -103,7 +103,7 @@ class ResultDBReporterTest(unittest.TestCase):
             test_id_structured={
                 'coarseName': '',
                 'fineName': '',
-                'caseNameComponents': ['some_test.yaml']
+                'caseNameComponents': ['some_test.yaml'],
             },
             tags=[('owner', 'foo')],
             artifacts={},
@@ -111,8 +111,9 @@ class ResultDBReporterTest(unittest.TestCase):
 
     def test_report_result_failure(self):
         reporter = resultdb.ResultDBReporter()
-        config = eval_config.TestConfig(test_file=CHROMIUM_SRC /
-                                        'some_test.yaml')
+        config = eval_config.TestConfig(
+            test_file=CHROMIUM_SRC / 'some_test.yaml'
+        )
         test_result = results.TestResult(
             config=config,
             success=False,
@@ -137,7 +138,7 @@ class ResultDBReporterTest(unittest.TestCase):
             test_id_structured={
                 'coarseName': '',
                 'fineName': '',
-                'caseNameComponents': ['some_test.yaml']
+                'caseNameComponents': ['some_test.yaml'],
             },
             tags=[],
             artifacts={},

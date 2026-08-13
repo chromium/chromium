@@ -20,7 +20,8 @@ import re
 EXEMPT_TOKENS_RE = re.compile(
     r'(src/[a-zA-Z0-9_/\.\-]+)|'
     r'(https?://[^\s()<>\[\]]+[^\s()<>\[\].:;?])|'
-    r'\[[^\]]+\]\((?!(?:https?://|src/))([^)#\s]+\.(?:md|yaml))[^)]*\)')
+    r'\[[^\]]+\]\((?!(?:https?://|src/))([^)#\s]+\.(?:md|yaml))[^)]*\)'
+)
 
 # Maximum size for a markdown file to prevent DoS via OOM.
 MAX_MD_FILE_SIZE = 1 * 1024 * 1024  # 1MB
@@ -37,13 +38,15 @@ def _IsSafePath(input_api, path, root):
 def _FileError(output_api, affected_file, message):
     """Returns a PresubmitError prefixed with the file path."""
     return output_api.PresubmitError(
-        f'File {affected_file.LocalPath()} {message}')
+        f'File {affected_file.LocalPath()} {message}'
+    )
 
 
 def _FileWarning(output_api, affected_file, message):
     """Returns a PresubmitPromptWarning prefixed with the file path."""
     return output_api.PresubmitPromptWarning(
-        f'File {affected_file.LocalPath()} {message}')
+        f'File {affected_file.LocalPath()} {message}'
+    )
 
 
 def _ValidateSchema(output_api, f, content, active_schema):
@@ -56,48 +59,62 @@ def _ValidateSchema(output_api, f, content, active_schema):
     if missing_keys:
         results.append(
             _FileError(
-                output_api, f,
-                f"is missing required keys: {', '.join(sorted(missing_keys))}")
+                output_api,
+                f,
+                f"is missing required keys: {', '.join(sorted(missing_keys))}",
+            )
         )
 
     for key, value in content.items():
         if key in properties:
             expected_type = properties[key].get('type')
-            if expected_type == 'integer' and (isinstance(value, bool)
-                                               or not isinstance(value, int)):
+            if expected_type == 'integer' and (
+                isinstance(value, bool) or not isinstance(value, int)
+            ):
                 results.append(
-                    _FileError(output_api, f,
-                               f"key '{key}' should be integer."))
+                    _FileError(output_api, f, f"key '{key}' should be integer.")
+                )
             elif expected_type == 'boolean' and not isinstance(value, bool):
                 results.append(
-                    _FileError(output_api, f,
-                               f"key '{key}' should be boolean."))
+                    _FileError(output_api, f, f"key '{key}' should be boolean.")
+                )
             elif expected_type == 'array':
                 if not isinstance(value, list):
                     results.append(
-                        _FileError(output_api, f,
-                                   f"key '{key}' should be array."))
+                        _FileError(
+                            output_api, f, f"key '{key}' should be array."
+                        )
+                    )
                 else:
                     items_schema = properties[key].get('items', {})
-                    if (isinstance(items_schema, dict)
-                            and items_schema.get('type') == 'string'):
+                    if (
+                        isinstance(items_schema, dict)
+                        and items_schema.get('type') == 'string'
+                    ):
                         for item in value:
                             if not isinstance(item, str):
                                 results.append(
                                     _FileError(
-                                        output_api, f,
+                                        output_api,
+                                        f,
                                         f"key '{key}' list contains a "
-                                        f"non-string element: {item}"))
+                                        f"non-string element: {item}",
+                                    )
+                                )
             elif expected_type == 'string' and not isinstance(value, str):
                 results.append(
-                    _FileError(output_api, f,
-                               f"key '{key}' should be string."))
+                    _FileError(output_api, f, f"key '{key}' should be string.")
+                )
 
             expected_enum = properties[key].get('enum')
             if expected_enum and value not in expected_enum:
                 results.append(
-                    _FileError(output_api, f,
-                               f"key '{key}' must be one of {expected_enum}."))
+                    _FileError(
+                        output_api,
+                        f,
+                        f"key '{key}' must be one of {expected_enum}.",
+                    )
+                )
     return results
 
 
@@ -109,14 +126,15 @@ def CheckMarkdownFiles(input_api, output_api):
     def FileFilter(affected_file):
         return input_api.FilterSourceFile(
             affected_file,
-            files_to_check=(r'.*\.md$', ),
+            files_to_check=(r'.*\.md$',),
         )
 
     # 1. Map affected files by absolute path for O(1) lookups.
     affected_files_map = {
         f.AbsoluteLocalPath(): f
-        for f in input_api.AffectedFiles(file_filter=FileFilter,
-                                         include_deletes=True)
+        for f in input_api.AffectedFiles(
+            file_filter=FileFilter, include_deletes=True
+        )
     }
 
     if not affected_files_map:
@@ -130,10 +148,13 @@ def CheckMarkdownFiles(input_api, output_api):
             # agent's operational graph.
             if file.endswith('.md') and file != 'README.md':
                 abs_path = input_api.os_path.normpath(
-                    input_api.os_path.join(root, file))
+                    input_api.os_path.join(root, file)
+                )
                 # Skip files that are currently being deleted.
-                if (abs_path in affected_files_map
-                        and affected_files_map[abs_path].Action() == 'D'):
+                if (
+                    abs_path in affected_files_map
+                    and affected_files_map[abs_path].Action() == 'D'
+                ):
                     continue
                 all_markdown_files.add(abs_path)
 
@@ -146,7 +167,9 @@ def CheckMarkdownFiles(input_api, output_api):
         if input_api.os_path.getsize(md_file) > MAX_MD_FILE_SIZE:
             results.append(
                 output_api.PresubmitError(
-                    f'File {md_file} exceeds max size 1MB (DoS mitigation).'))
+                    f'File {md_file} exceeds max size 1MB (DoS mitigation).'
+                )
+            )
             continue
 
         is_modified = md_file in affected_files_map
@@ -166,13 +189,18 @@ def CheckMarkdownFiles(input_api, output_api):
 
         # Scenario 2: Trailing Newlines (Modified files only)
         if is_modified:
-            if (not content.endswith('\n') or content.endswith(
-                ('\n\n', '\r\n\r\n')) or '\r' in content):
+            if (
+                not content.endswith('\n')
+                or content.endswith(('\n\n', '\r\n\r\n'))
+                or '\r' in content
+            ):
                 results.append(
                     output_api.PresubmitError(
                         f'File {affected_files_map[md_file].LocalPath()} '
                         'must use Unix line endings (\\n) and end with '
-                        'exactly one newline.'))
+                        'exactly one newline.'
+                    )
+                )
 
         lines = content.splitlines(True)
         in_fenced_block = False
@@ -192,8 +220,9 @@ def CheckMarkdownFiles(input_api, output_api):
                 prev_line_empty = True
                 continue
 
-            if prev_line_empty and (line.startswith('    ')
-                                    or line.startswith('\t')):
+            if prev_line_empty and (
+                line.startswith('    ') or line.startswith('\t')
+            ):
                 in_indented_block = True
             elif not (line.startswith('    ') or line.startswith('\t')):
                 in_indented_block = False
@@ -215,7 +244,9 @@ def CheckMarkdownFiles(input_api, output_api):
                             f'{affected_files_map[md_file].LocalPath()} '
                             f'exceeds 80 characters '
                             f'({len(line_stripped)} chars):\n'
-                            f'{line_stripped[:40]}... (truncated)'))
+                            f'{line_stripped[:40]}... (truncated)'
+                        )
+                    )
 
             # Scenario 3: Link Extraction & Validation
             for match in EXEMPT_TOKENS_RE.finditer(line):
@@ -226,22 +257,27 @@ def CheckMarkdownFiles(input_api, output_api):
                 if match.group(1):
                     token = match.group(1).rstrip('.')
                     full_path = input_api.os_path.normpath(
-                        input_api.os_path.join(repo_root, token[4:]))
+                        input_api.os_path.join(repo_root, token[4:])
+                    )
                 # Group 3: Relative link
                 elif match.group(3):
                     token = match.group(3)
                     full_path = input_api.os_path.normpath(
                         input_api.os_path.join(
-                            input_api.os_path.dirname(md_file), token))
+                            input_api.os_path.dirname(md_file), token
+                        )
+                    )
 
                 if not full_path:
                     continue
 
                 # Security: Prevent path traversal
                 if not _IsSafePath(input_api, full_path, repo_root):
-                    msg = (f'Line {line_num} in '
-                           f'{input_api.os_path.relpath(md_file, repo_root)} '
-                           f'attempts path traversal: {token}')
+                    msg = (
+                        f'Line {line_num} in '
+                        f'{input_api.os_path.relpath(md_file, repo_root)} '
+                        f'attempts path traversal: {token}'
+                    )
                     if is_modified:
                         results.append(output_api.PresubmitError(msg))
                     else:
@@ -250,20 +286,24 @@ def CheckMarkdownFiles(input_api, output_api):
 
                 # Add to reachability graph (only for local markdown files)
                 if full_path.endswith('.md') and _IsSafePath(
-                        input_api, full_path, magi_dir):
+                    input_api, full_path, magi_dir
+                ):
                     graph[md_file].append(full_path)
 
                 # Existence Check (Validate EVERY link in graph to catch
                 # deletion-breaks)
                 if full_path not in checked_existence:
                     checked_existence[full_path] = input_api.os_path.exists(
-                        full_path)
+                        full_path
+                    )
 
                 if not checked_existence[full_path]:
                     is_active = is_modified or full_path in affected_files_map
-                    msg = (f'Line {line_num} in '
-                           f'{input_api.os_path.relpath(md_file, repo_root)} '
-                           f'references a non-existent file: {token}')
+                    msg = (
+                        f'Line {line_num} in '
+                        f'{input_api.os_path.relpath(md_file, repo_root)} '
+                        f'references a non-existent file: {token}'
+                    )
                     if is_active:
                         results.append(output_api.PresubmitError(msg))
                     else:
@@ -271,11 +311,14 @@ def CheckMarkdownFiles(input_api, output_api):
 
     # Scenario 4: Reachability (BFS from SKILL.md)
     skill_md_path = input_api.os_path.normpath(
-        input_api.os_path.join(magi_dir, 'SKILL.md'))
+        input_api.os_path.join(magi_dir, 'SKILL.md')
+    )
     if skill_md_path not in graph:
         results.append(
             output_api.PresubmitError(
-                f'Critical Error: Entry point {skill_md_path} is missing.'))
+                f'Critical Error: Entry point {skill_md_path} is missing.'
+            )
+        )
         return results
 
     visited = set()
@@ -293,10 +336,12 @@ def CheckMarkdownFiles(input_api, output_api):
             rel_path = input_api.os_path.relpath(md_file, repo_root)
             is_active_violation = md_file in affected_files_map
 
-            msg = (f'Unreachable Markdown File: {rel_path} cannot be reached '
-                   'from SKILL.md. Even if it links to another file, it is '
-                   'part of an isolated cycle. Please add a link to it in '
-                   'ROUTING.md or another connected document.')
+            msg = (
+                f'Unreachable Markdown File: {rel_path} cannot be reached '
+                'from SKILL.md. Even if it links to another file, it is '
+                'part of an isolated cycle. Please add a link to it in '
+                'ROUTING.md or another connected document.'
+            )
 
             if is_active_violation:
                 results.append(output_api.PresubmitError(msg))
@@ -310,13 +355,19 @@ def CheckMarkdownFiles(input_api, output_api):
             results.append(
                 output_api.PresubmitError(
                     'File SKILL.md must contain the "Tone Mandate '
-                    '(Signal-to-Noise)" section.'))
-        elif ('Zero Preamble/Postamble' not in skill_content
-              or 'Artifacts Only' not in skill_content):
+                    '(Signal-to-Noise)" section.'
+                )
+            )
+        elif (
+            'Zero Preamble/Postamble' not in skill_content
+            or 'Artifacts Only' not in skill_content
+        ):
             results.append(
                 output_api.PresubmitError(
                     'File SKILL.md Tone Mandate must explicitly enforce '
-                    '"Zero Preamble/Postamble" and "Artifacts Only".'))
+                    '"Zero Preamble/Postamble" and "Artifacts Only".'
+                )
+            )
 
     return results
 
@@ -334,8 +385,7 @@ def CheckJsonFiles(input_api, output_api):
 
     schema_content_str = None
     if schema_path in affected_files_map:
-        schema_content_str = input_api.ReadFile(
-            affected_files_map[schema_path])
+        schema_content_str = input_api.ReadFile(affected_files_map[schema_path])
 
     if schema_content_str is None:
         try:
@@ -351,19 +401,21 @@ def CheckJsonFiles(input_api, output_api):
         schema = json.loads(schema_content_str)
     except ValueError as e:
         results.append(
-            output_api.PresubmitError(f'Invalid magi_schema.json: {e}'))
+            output_api.PresubmitError(f'Invalid magi_schema.json: {e}')
+        )
         return results
 
     if not isinstance(schema, dict):
         results.append(
-            output_api.PresubmitError(
-                'magi_schema.json must be a JSON object.'))
+            output_api.PresubmitError('magi_schema.json must be a JSON object.')
+        )
         return results
 
     state_block_schema = schema.get('definitions', {}).get('StateBlock', {})
     project_spec_schema = schema.get('definitions', {}).get('ProjectSpec', {})
-    review_feedback_schema = schema.get('definitions',
-                                        {}).get('ReviewFeedback', {})
+    review_feedback_schema = schema.get('definitions', {}).get(
+        'ReviewFeedback', {}
+    )
     constraints_schema = schema.get('definitions', {}).get('Constraints', {})
     persona_def_schema = schema.get('definitions', {}).get('PersonaDef', {})
 
@@ -371,11 +423,13 @@ def CheckJsonFiles(input_api, output_api):
     check_json_format = None
     if not getattr(input_api, 'is_test', False):
         this_dir = input_api.PresubmitLocalPath()
-        check_json_script = input_api.os_path.join(this_dir,
-                                                   'check_json_format.py')
+        check_json_script = input_api.os_path.join(
+            this_dir, 'check_json_format.py'
+        )
         try:
             spec = importlib.util.spec_from_file_location(
-                'check_json_format', check_json_script)
+                'check_json_format', check_json_script
+            )
             if spec:
                 mod = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(mod)
@@ -393,8 +447,9 @@ def CheckJsonFiles(input_api, output_api):
             ),
         )
 
-    for f in input_api.AffectedFiles(file_filter=FileFilter,
-                                     include_deletes=False):
+    for f in input_api.AffectedFiles(
+        file_filter=FileFilter, include_deletes=False
+    ):
         content_str = input_api.ReadFile(f)
         if not content_str.strip():
             continue
@@ -403,13 +458,17 @@ def CheckJsonFiles(input_api, output_api):
         except ValueError as e:
             results.append(
                 output_api.PresubmitError(
-                    f'File {f.LocalPath()} is not valid JSON: {e}'))
+                    f'File {f.LocalPath()} is not valid JSON: {e}'
+                )
+            )
             continue
 
         if not isinstance(content, dict):
             results.append(
                 output_api.PresubmitError(
-                    f'File {f.LocalPath()} must be a JSON object.'))
+                    f'File {f.LocalPath()} must be a JSON object.'
+                )
+            )
             continue
 
         filename = input_api.os_path.basename(f.LocalPath())
@@ -431,7 +490,9 @@ def CheckJsonFiles(input_api, output_api):
                         f'Persona file {f.LocalPath()} uses the redundant '
                         '"_expert" suffix. Please use a concise name '
                         '(e.g., "security.json" instead of '
-                        '"security_expert.json").'))
+                        '"security_expert.json").'
+                    )
+                )
             # Enforce directory depth limit (max 5 from /personas)
             # Depth is exactly the index of 'personas' in the reversed list
             depth = parts[::-1].index('personas')
@@ -439,7 +500,9 @@ def CheckJsonFiles(input_api, output_api):
                 results.append(
                     output_api.PresubmitError(
                         f'File {f.LocalPath()} exceeds maximum persona '
-                        f'directory depth of 5 (current depth: {depth})'))
+                        f'directory depth of 5 (current depth: {depth})'
+                    )
+                )
 
             # Cold Logic Static Analysis: Enforce imperative mandates
             mandate = content.get('mandate')
@@ -449,12 +512,19 @@ def CheckJsonFiles(input_api, output_api):
                     results.append(
                         output_api.PresubmitError(
                             f'File {f.LocalPath()} mandate must start with '
-                            '"MANDATE:" in accordance with Cold Logic.'))
+                            '"MANDATE:" in accordance with Cold Logic.'
+                        )
+                    )
 
                 # Check for conversational filler or role-playing
                 filler_patterns = [
-                    r'\bI am\b', r'\bAs a\b', r'\bMy role\b', r'\bYour goal\b',
-                    r'\bYou are\b', r'\bPlease\b', r'\bThank you\b'
+                    r'\bI am\b',
+                    r'\bAs a\b',
+                    r'\bMy role\b',
+                    r'\bYour goal\b',
+                    r'\bYou are\b',
+                    r'\bPlease\b',
+                    r'\bThank you\b',
                 ]
                 combined_mandate = " ".join(mandate)
                 for pattern in filler_patterns:
@@ -463,7 +533,9 @@ def CheckJsonFiles(input_api, output_api):
                             output_api.PresubmitError(
                                 f'File {f.LocalPath()} contains '
                                 'conversational filler or role-playing '
-                                f'vestige: "{pattern}"'))
+                                f'vestige: "{pattern}"'
+                            )
+                        )
         else:
             continue
 
@@ -472,15 +544,19 @@ def CheckJsonFiles(input_api, output_api):
         # 2.5 Formatting & Joining Rule Validation
         if check_json_format:
             fmt_ok, lint_errs = check_json_format.CheckFormatting(
-                f.AbsoluteLocalPath(), fix=False)
+                f.AbsoluteLocalPath(), fix=False
+            )
             if not fmt_ok:
                 local_check_script = input_api.os_path.join(
-                    input_api.PresubmitLocalPath(), 'check_json_format.py')
+                    input_api.PresubmitLocalPath(), 'check_json_format.py'
+                )
                 results.append(
                     output_api.PresubmitError(
                         f'File {f.LocalPath()} has incorrect JSON '
                         f'formatting. Please run: python3 {local_check_script} '
-                        '--fix'))
+                        '--fix'
+                    )
+                )
             for err in lint_errs:
                 results.append(output_api.PresubmitError(f'LINT: {err}'))
 
@@ -491,7 +567,9 @@ def CheckJsonFiles(input_api, output_api):
                 results.append(
                     output_api.PresubmitError(
                         f'File {f.LocalPath()} key "checklist" '
-                        'must be an object.'))
+                        'must be an object.'
+                    )
+                )
             else:
                 is_persona = active_schema is persona_def_schema
                 for k, v in checklist.items():
@@ -502,7 +580,9 @@ def CheckJsonFiles(input_api, output_api):
                                     f'File {f.LocalPath()} persona '
                                     f'checklist key "{k}" must have a '
                                     f'string or list description, got '
-                                    f'{type(v).__name__}'))
+                                    f'{type(v).__name__}'
+                                )
+                            )
                         elif isinstance(v, list):
                             for i, item in enumerate(v):
                                 if not isinstance(item, str):
@@ -512,26 +592,34 @@ def CheckJsonFiles(input_api, output_api):
                                             f'checklist key "{k}" list '
                                             f'item at index {i} must be a '
                                             f'string, got '
-                                            f'{type(item).__name__}'))
+                                            f'{type(item).__name__}'
+                                        )
+                                    )
                             # Token Merging Check: ensure joining won't create
                             # semantic errors.
-                            if any(not v[j].endswith(tuple(".,!?;:")) and
-                                   not v[j].endswith(" ") and j < len(v) - 1
-                                   for j in range(len(v))):
+                            if any(
+                                not v[j].endswith(tuple(".,!?;:"))
+                                and not v[j].endswith(" ")
+                                and j < len(v) - 1
+                                for j in range(len(v))
+                            ):
                                 results.append(
                                     output_api.PresubmitPromptWarning(
                                         f'File {f.LocalPath()} persona key '
                                         f'"{k}" uses an array but some items '
                                         'lack trailing spaces. Ensure your '
                                         'Orchestrator uses a space-join '
-                                        'strategy to prevent token merging.'))
+                                        'strategy to prevent token merging.'
+                                    )
+                                )
                     else:
                         if not isinstance(v, bool):
                             results.append(
                                 output_api.PresubmitError(
                                     f'File {f.LocalPath()} checklist key "{k}" '
                                     f'must be a boolean, got {type(v).__name__}'
-                                ))
+                                )
+                            )
 
         # 4. Decision Graph Validation
         next_p = content.get('next_stage')
@@ -545,22 +633,27 @@ def CheckJsonFiles(input_api, output_api):
                     results.append(
                         output_api.PresubmitError(
                             f'File {f.LocalPath()} has oscillation_detected: '
-                            'true but conflict_report is empty.'))
+                            'true but conflict_report is empty.'
+                        )
+                    )
                 if next_p != 'ESCALATION':
                     results.append(
                         output_api.PresubmitError(
                             f'File {f.LocalPath()} has oscillation_detected: '
-                            'true but next_stage is not ESCALATION.'))
+                            'true but next_stage is not ESCALATION.'
+                        )
+                    )
 
         elif filename.startswith('project'):
-
             if 'environment' in content:
                 environment = content['environment']
                 if not isinstance(environment, dict):
                     results.append(
                         output_api.PresubmitError(
                             f'File {f.LocalPath()} key "environment" '
-                            'must be an object.'))
+                            'must be an object.'
+                        )
+                    )
                 else:
                     vcs = environment.get('vcs')
                     harness = environment.get('harness')
@@ -568,13 +661,17 @@ def CheckJsonFiles(input_api, output_api):
                         results.append(
                             output_api.PresubmitError(
                                 f'File {f.LocalPath()} environment.vcs '
-                                f'must be GIT or JJ, got {vcs}'))
+                                f'must be GIT or JJ, got {vcs}'
+                            )
+                        )
                     if harness not in ('JETSKI', 'GENERIC_CLI'):
                         results.append(
                             output_api.PresubmitError(
                                 f'File {f.LocalPath()} environment.harness '
                                 f'must be JETSKI or GENERIC_CLI, '
-                                f'got {harness}'))
+                                f'got {harness}'
+                            )
+                        )
                     repo_type = environment.get('repo_type')
                     output_directory = environment.get('output_directory')
 
@@ -582,49 +679,65 @@ def CheckJsonFiles(input_api, output_api):
                         results.append(
                             output_api.PresubmitError(
                                 f'File {f.LocalPath()} environment is '
-                                'missing required key "repo_type".'))
+                                'missing required key "repo_type".'
+                            )
+                        )
                     elif repo_type not in ('CHROMIUM', 'GOOGLE_INTERNAL'):
                         results.append(
                             output_api.PresubmitError(
                                 f'File {f.LocalPath()} environment.repo_type '
                                 'must be CHROMIUM or GOOGLE_INTERNAL, '
-                                f'got {repo_type}'))
+                                f'got {repo_type}'
+                            )
+                        )
 
                     if 'output_directory' not in environment:
                         results.append(
                             output_api.PresubmitError(
                                 f'File {f.LocalPath()} environment is '
-                                'missing required key "output_directory".'))
+                                'missing required key "output_directory".'
+                            )
+                        )
                     elif not isinstance(output_directory, str):
                         results.append(
                             output_api.PresubmitError(
                                 f'File {f.LocalPath()} '
                                 'environment.output_directory must be '
                                 f'a string, got '
-                                f'{type(output_directory).__name__}'))
+                                f'{type(output_directory).__name__}'
+                            )
+                        )
 
                     temp_directory = environment.get('temp_directory')
                     if 'temp_directory' not in environment:
                         results.append(
                             output_api.PresubmitError(
                                 f'File {f.LocalPath()} environment is '
-                                'missing required key "temp_directory".'))
+                                'missing required key "temp_directory".'
+                            )
+                        )
                     elif not isinstance(temp_directory, str):
                         results.append(
                             output_api.PresubmitError(
                                 f'File {f.LocalPath()} '
                                 'environment.temp_directory must be '
                                 f'a string, got '
-                                f'{type(temp_directory).__name__}'))
+                                f'{type(temp_directory).__name__}'
+                            )
+                        )
 
         elif filename.startswith('constraints'):
             if next_p and next_p not in [
-                    'SYNTHESIS', 'VALIDATION', 'ESCALATION'
+                'SYNTHESIS',
+                'VALIDATION',
+                'ESCALATION',
             ]:
                 results.append(
                     output_api.PresubmitError(
                         f'File {f.LocalPath()} must signal '
-                        f'SYNTHESIS, VALIDATION, or ESCALATION, not {next_p}'))
+                        f'SYNTHESIS, VALIDATION, or ESCALATION, not {next_p}'
+                    )
+                )
 
     return results
 
@@ -638,11 +751,14 @@ def CheckTestJsonFiles(input_api, output_api):
         expected_dir = input_api.os_path.join(magi_dir, 'tests')
         filename = input_api.os_path.basename(absolute_path)
         return input_api.os_path.dirname(
-            absolute_path) == expected_dir and bool(
-                re.match(r'^magi_stage_.*_tests\.json$', filename))
+            absolute_path
+        ) == expected_dir and bool(
+            re.match(r'^magi_stage_.*_tests\.json$', filename)
+        )
 
-    for f in input_api.AffectedFiles(file_filter=FileFilter,
-                                     include_deletes=False):
+    for f in input_api.AffectedFiles(
+        file_filter=FileFilter, include_deletes=False
+    ):
         filename = input_api.os_path.basename(f.LocalPath())
         if filename == "magi_test_schemas.json":
             continue
@@ -656,13 +772,17 @@ def CheckTestJsonFiles(input_api, output_api):
         except ValueError as e:
             results.append(
                 output_api.PresubmitError(
-                    f"File {f.LocalPath()} is not valid JSON: {e}"))
+                    f"File {f.LocalPath()} is not valid JSON: {e}"
+                )
+            )
             continue
 
         if not isinstance(content, dict):
             results.append(
                 output_api.PresubmitError(
-                    f"File {f.LocalPath()} must be a JSON object."))
+                    f"File {f.LocalPath()} must be a JSON object."
+                )
+            )
             continue
 
         required_scenario_keys = ["name", "base_inputs", "cases"]
@@ -670,14 +790,17 @@ def CheckTestJsonFiles(input_api, output_api):
             if key not in content:
                 results.append(
                     output_api.PresubmitError(
-                        f"File {f.LocalPath()} is missing required key: {key}")
+                        f"File {f.LocalPath()} is missing required key: {key}"
+                    )
                 )
 
         cases = content.get("cases", [])
         if not isinstance(cases, list):
             results.append(
                 output_api.PresubmitError(
-                    f"File {f.LocalPath()} key 'cases' must be an array."))
+                    f"File {f.LocalPath()} key 'cases' must be an array."
+                )
+            )
             continue
 
         for idx, case in enumerate(cases):
@@ -685,7 +808,9 @@ def CheckTestJsonFiles(input_api, output_api):
                 results.append(
                     output_api.PresubmitError(
                         f"File {f.LocalPath()} case at index {idx} "
-                        "must be an object."))
+                        "must be an object."
+                    )
+                )
                 continue
 
             required_case_keys = ["name", "expected_outputs"]
@@ -695,14 +820,18 @@ def CheckTestJsonFiles(input_api, output_api):
                         output_api.PresubmitError(
                             f"File {f.LocalPath()} case "
                             f"'{case.get('name', idx)}' "
-                            f"is missing required key: {key}"))
+                            f"is missing required key: {key}"
+                        )
+                    )
 
             override_inputs = case.get("override_inputs", {})
             if not isinstance(override_inputs, dict):
                 results.append(
                     output_api.PresubmitError(
                         f"File {f.LocalPath()} case '{case.get('name', idx)}' "
-                        f"key 'override_inputs' must be an object."))
+                        f"key 'override_inputs' must be an object."
+                    )
+                )
                 continue
 
             allowed_overrides = [
@@ -720,7 +849,9 @@ def CheckTestJsonFiles(input_api, output_api):
                             f"key 'override_inputs' contains invalid "
                             f"property: {key}. "
                             f"Allowed properties are: "
-                            f"{', '.join(allowed_overrides)}"))
+                            f"{', '.join(allowed_overrides)}"
+                        )
+                    )
 
     return results
 
@@ -732,7 +863,9 @@ def CheckTempDirectory(input_api, output_api):
             results.append(
                 output_api.PresubmitError(
                     f'File {f.LocalPath()} is in the .temp/ directory, '
-                    f'which must be excluded from all CLs.'))
+                    f'which must be excluded from all CLs.'
+                )
+            )
     return results
 
 

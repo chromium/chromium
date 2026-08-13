@@ -7,5 +7,6 @@ import pathlib
 
 CHROMIUM_SRC = pathlib.Path(__file__).resolve().parents[2]
 GEMINI_SANDBOX_IMAGE_URL = (
-    'us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox')
+    'us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox'
+)
 GEMINI_CLI_TOKEN_USAGE = 'gemini_cli_token_usage'

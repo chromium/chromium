@@ -14,7 +14,6 @@ import PRESUBMIT
 
 
 class MockAffectedFile:
-
     def __init__(self, local_path, action='M'):
         self._path = local_path
         self._action = action
@@ -24,14 +23,14 @@ class MockAffectedFile:
 
     def AbsoluteLocalPath(self):
         return os.path.normpath(
-            os.path.join(os.path.abspath('fake_repo'), self._path))
+            os.path.join(os.path.abspath('fake_repo'), self._path)
+        )
 
     def Action(self):
         return self._action
 
 
 class MockInputApi:
-
     def __init__(self):
         self.is_test = True
         self.change = MagicMock()
@@ -52,19 +51,22 @@ class MockInputApi:
 
     def PresubmitLocalPath(self):
         return os.path.normpath(
-            os.path.join(os.path.abspath('fake_repo'),
-                         'agents/skills/multi-agent-engineering-workflow'))
+            os.path.join(
+                os.path.abspath('fake_repo'),
+                'agents/skills/multi-agent-engineering-workflow',
+            )
+        )
 
     def FilterSourceFile(self, affected_file, files_to_check=None):
         if not files_to_check:
             return True
         return any(
             re.match(pattern, affected_file.LocalPath())
-            for pattern in files_to_check)
+            for pattern in files_to_check
+        )
 
 
 class MagiPresubmitTest(unittest.TestCase):
-
     def setUp(self):
         self.mock_input = MockInputApi()
         self.mock_output = MagicMock()
@@ -77,34 +79,44 @@ class MagiPresubmitTest(unittest.TestCase):
     def testReachability(self, mock_walk, mock_getsize, mock_exists):
         # Setup filesystem: SKILL.md -> LINKED.md, ORPHAN.md
         magi_dir = os.path.normpath(
-            os.path.join(os.path.abspath('fake_repo'),
-                         'agents/skills/multi-agent-engineering-workflow'))
-        mock_walk.return_value = [(magi_dir, [],
-                                   ['SKILL.md', 'LINKED.md', 'ORPHAN.md'])]
+            os.path.join(
+                os.path.abspath('fake_repo'),
+                'agents/skills/multi-agent-engineering-workflow',
+            )
+        )
+        mock_walk.return_value = [
+            (magi_dir, [], ['SKILL.md', 'LINKED.md', 'ORPHAN.md'])
+        ]
         mock_getsize.return_value = 100
         mock_exists.return_value = True
 
         self.mock_input.affected_files = [
             MockAffectedFile(
-                'agents/skills/multi-agent-engineering-workflow/SKILL.md')
+                'agents/skills/multi-agent-engineering-workflow/SKILL.md'
+            )
         ]
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/SKILL.md':
-            ('[link](LINKED.md)\n'
-             'Tone Mandate (Signal-to-Noise)\n'
-             'Zero Preamble/Postamble\n'
-             'Artifacts Only\n'),
-            'agents/skills/multi-agent-engineering-workflow/LINKED.md':
-            'content\n',
-            'agents/skills/multi-agent-engineering-workflow/ORPHAN.md':
-            'content\n',
+            'agents/skills/multi-agent-engineering-workflow/SKILL.md': (
+                '[link](LINKED.md)\n'
+                'Tone Mandate (Signal-to-Noise)\n'
+                'Zero Preamble/Postamble\n'
+                'Artifacts Only\n'
+            ),
+            'agents/skills/multi-agent-engineering-workflow/LINKED.md': (
+                'content\n'
+            ),
+            'agents/skills/multi-agent-engineering-workflow/ORPHAN.md': (
+                'content\n'
+            ),
         }
 
         # We need to mock 'open' for unmodified files (LINKED and ORPHAN)
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data='content\n')):
-            results = PRESUBMIT.CheckMarkdownFiles(self.mock_input,
-                                                   self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data='content\n')
+        ):
+            results = PRESUBMIT.CheckMarkdownFiles(
+                self.mock_input, self.mock_output
+            )
 
         # Expect 1 warning for ORPHAN.md (it's unmodified debt)
         orphans = [r for r in results if 'Unreachable' in r]
@@ -116,43 +128,61 @@ class MagiPresubmitTest(unittest.TestCase):
         long_line = '```\n' + 'A' * 100 + '\n```\n'
         self.mock_input.affected_files = [
             MockAffectedFile(
-                'agents/skills/multi-agent-engineering-workflow/SKILL.md')
+                'agents/skills/multi-agent-engineering-workflow/SKILL.md'
+            )
         ]
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/SKILL.md':
-            long_line
+            'agents/skills/multi-agent-engineering-workflow/SKILL.md': long_line
         }
 
         magi_dir = os.path.normpath(
-            os.path.join(os.path.abspath('fake_repo'),
-                         'agents/skills/multi-agent-engineering-workflow'))
-        with patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]), \
-                patch('os.path.getsize', return_value=100):
-            results = PRESUBMIT.CheckMarkdownFiles(self.mock_input,
-                                                   self.mock_output)
+            os.path.join(
+                os.path.abspath('fake_repo'),
+                'agents/skills/multi-agent-engineering-workflow',
+            )
+        )
+        with (
+            patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]),
+            patch('os.path.getsize', return_value=100),
+        ):
+            results = PRESUBMIT.CheckMarkdownFiles(
+                self.mock_input, self.mock_output
+            )
 
         warnings = [r for r in results if 'exceeds 80 characters' in r]
         self.assertEqual(len(warnings), 0)
 
     def testIndentedBlockRobustness(self):
         # Multiple indented lines after an empty line should be ignored
-        content = ('\n\n    Line 1 is long ' + 'A' * 70 +
-                   '\n    Line 2 is also long ' + 'B' * 70 + '\n\nText')
+        content = (
+            '\n\n    Line 1 is long '
+            + 'A' * 70
+            + '\n    Line 2 is also long '
+            + 'B' * 70
+            + '\n\nText'
+        )
         self.mock_input.affected_files = [
             MockAffectedFile(
-                'agents/skills/multi-agent-engineering-workflow/SKILL.md')
+                'agents/skills/multi-agent-engineering-workflow/SKILL.md'
+            )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/SKILL.md': content
         }
 
         magi_dir = os.path.normpath(
-            os.path.join(os.path.abspath('fake_repo'),
-                         'agents/skills/multi-agent-engineering-workflow'))
-        with patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]), \
-                patch('os.path.getsize', return_value=100):
-            results = PRESUBMIT.CheckMarkdownFiles(self.mock_input,
-                                                   self.mock_output)
+            os.path.join(
+                os.path.abspath('fake_repo'),
+                'agents/skills/multi-agent-engineering-workflow',
+            )
+        )
+        with (
+            patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]),
+            patch('os.path.getsize', return_value=100),
+        ):
+            results = PRESUBMIT.CheckMarkdownFiles(
+                self.mock_input, self.mock_output
+            )
 
         warnings = [r for r in results if 'exceeds 80 characters' in r]
         self.assertEqual(len(warnings), 0)
@@ -162,96 +192,131 @@ class MagiPresubmitTest(unittest.TestCase):
         content_missing = 'Some text\n'
         self.mock_input.affected_files = [
             MockAffectedFile(
-                'agents/skills/multi-agent-engineering-workflow/SKILL.md')
+                'agents/skills/multi-agent-engineering-workflow/SKILL.md'
+            )
         ]
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/SKILL.md':
-            content_missing
+            'agents/skills/multi-agent-engineering-workflow/SKILL.md': (
+                content_missing
+            )
         }
 
         magi_dir = os.path.normpath(
-            os.path.join(os.path.abspath('fake_repo'),
-                         'agents/skills/multi-agent-engineering-workflow'))
-        with patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]), \
-                patch('os.path.getsize', return_value=100):
-            results = PRESUBMIT.CheckMarkdownFiles(self.mock_input,
-                                                   self.mock_output)
+            os.path.join(
+                os.path.abspath('fake_repo'),
+                'agents/skills/multi-agent-engineering-workflow',
+            )
+        )
+        with (
+            patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]),
+            patch('os.path.getsize', return_value=100),
+        ):
+            results = PRESUBMIT.CheckMarkdownFiles(
+                self.mock_input, self.mock_output
+            )
 
         self.assertTrue(
-            any('must contain the "Tone Mandate '
-                '(Signal-to-Noise)" section' in r for r in results))
+            any(
+                'must contain the "Tone Mandate (Signal-to-Noise)" section' in r
+                for r in results
+            )
+        )
 
         # Missing Artifacts Only
-        content_partial = ('Tone Mandate (Signal-to-Noise)\n'
-                           'Zero Preamble/Postamble\n')
+        content_partial = (
+            'Tone Mandate (Signal-to-Noise)\nZero Preamble/Postamble\n'
+        )
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/SKILL.md':
-            content_partial
+            'agents/skills/multi-agent-engineering-workflow/SKILL.md': (
+                content_partial
+            )
         }
-        with patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]), \
-                patch('os.path.getsize', return_value=100):
-            results = PRESUBMIT.CheckMarkdownFiles(self.mock_input,
-                                                   self.mock_output)
+        with (
+            patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]),
+            patch('os.path.getsize', return_value=100),
+        ):
+            results = PRESUBMIT.CheckMarkdownFiles(
+                self.mock_input, self.mock_output
+            )
 
         self.assertTrue(
-            any('must explicitly enforce "Zero Preamble/'
-                'Postamble" and "Artifacts Only"' in r for r in results))
+            any(
+                'must explicitly enforce "Zero Preamble/'
+                'Postamble" and "Artifacts Only"' in r
+                for r in results
+            )
+        )
 
         # Valid Tone Mandate
-        content_valid = ('Tone Mandate (Signal-to-Noise)\n'
-                         'Zero Preamble/Postamble\nArtifacts Only\n')
+        content_valid = (
+            'Tone Mandate (Signal-to-Noise)\n'
+            'Zero Preamble/Postamble\nArtifacts Only\n'
+        )
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/SKILL.md':
-            content_valid
+            'agents/skills/multi-agent-engineering-workflow/SKILL.md': (
+                content_valid
+            )
         }
-        with patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]), \
-                patch('os.path.getsize', return_value=100):
-            results = PRESUBMIT.CheckMarkdownFiles(self.mock_input,
-                                                   self.mock_output)
+        with (
+            patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]),
+            patch('os.path.getsize', return_value=100),
+        ):
+            results = PRESUBMIT.CheckMarkdownFiles(
+                self.mock_input, self.mock_output
+            )
 
         self.assertFalse(
-            any('must contain the "Tone Mandate '
-                '(Signal-to-Noise)" section' in r for r in results))
+            any(
+                'must contain the "Tone Mandate (Signal-to-Noise)" section' in r
+                for r in results
+            )
+        )
         self.assertFalse(any('must explicitly enforce' in r for r in results))
 
     def testPersonaNamingConvention(self):
         # Invalid persona name (with _expert suffix)
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'personas/core/security_expert.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'personas/core/security_expert.json'
+            )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'personas/core/security_expert.json':
-            '{"checklist": {}}'
+            'personas/core/security_expert.json': '{"checklist": {}}'
         }
         schema_json = '{"definitions": {"PersonaDef": {"required": []}}}'
 
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('uses the redundant "_expert" suffix' in r
-                    for r in results))
+                any('uses the redundant "_expert" suffix' in r for r in results)
+            )
 
         # Valid persona name
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'personas/core/security.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'personas/core/security.json'
+            )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'personas/core/security.json':
-            '{"checklist": {}}'
+            'personas/core/security.json': '{"checklist": {}}'
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertFalse(
-                any('uses the redundant "_expert" suffix' in r
-                    for r in results))
+                any('uses the redundant "_expert" suffix' in r for r in results)
+            )
 
     def testJsonStateBlockValidation(self):
         # Valid state block
@@ -261,20 +326,25 @@ class MagiPresubmitTest(unittest.TestCase):
             '"active_constraints": [], "resolved_constraints": [], '
             '"conflict_report": [], '
             '"state_transport": "EPHEMERAL_WITH_LOGS", '
-            '"next_stage": "CRITIQUE"}')
+            '"next_stage": "CRITIQUE"}'
+        )
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'state_block.magi.json'),
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'personas/core/security.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'state_block.magi.json'
+            ),
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'personas/core/security.json'
+            ),
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json':
-            valid_json,
+            'state_block.magi.json': valid_json,
             'agents/skills/multi-agent-engineering-workflow/'
-            'personas/core/security.json':
-            ('{"checklist": {"checked_xyz": "Desc"}}')
+            'personas/core/security.json': (
+                '{"checklist": {"checked_xyz": "Desc"}}'
+            ),
         }
 
         # We need to mock the schema file
@@ -297,25 +367,29 @@ class MagiPresubmitTest(unittest.TestCase):
             '"TEST_FILLING", "TRAINING", '
             '"VALIDATION", "DEPLOYMENT", "ESCALATION"]}, '
             '"state_transport": {"type": "string", "enum": '
-            '["FILE_IO", "EPHEMERAL_WITH_LOGS"]}}}}}')
+            '["FILE_IO", "EPHEMERAL_WITH_LOGS"]}}}}}'
+        )
 
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertEqual(len(results), 0)
 
         # Missing required key
         invalid_json = '{"iteration": 1, "active_constraints": []}'
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json':
-            invalid_json
+            'state_block.magi.json': invalid_json
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(any('missing required keys' in r for r in results))
 
         # Invalid next_stage for state block
@@ -325,18 +399,21 @@ class MagiPresubmitTest(unittest.TestCase):
             '"active_constraints": [], "resolved_constraints": [], '
             '"conflict_report": [], '
             '"state_transport": "EPHEMERAL_WITH_LOGS", '
-            '"next_stage": "INVALID_STAGE"}')
+            '"next_stage": "INVALID_STAGE"}'
+        )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json':
-            invalid_stage_json
+            'state_block.magi.json': invalid_stage_json
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any("key 'next_stage' must be one of" in r for r in results))
+                any("key 'next_stage' must be one of" in r for r in results)
+            )
 
         # Wrong type
         wrong_type_json = (
@@ -344,18 +421,21 @@ class MagiPresubmitTest(unittest.TestCase):
             '"active_constraints": [], "resolved_constraints": [], '
             '"conflict_report": [], '
             '"state_transport": "EPHEMERAL_WITH_LOGS", '
-            '"next_stage": "CRITIQUE"}')
+            '"next_stage": "CRITIQUE"}'
+        )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json':
-            wrong_type_json
+            'state_block.magi.json': wrong_type_json
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any("key 'iteration' should be integer" in r for r in results))
+                any("key 'iteration' should be integer" in r for r in results)
+            )
 
     def testJsonStateBlockInvalidChecklistValue(self):
         # Non-boolean value in checklist ("checked_xyz": "not_a_boolean")
@@ -365,19 +445,25 @@ class MagiPresubmitTest(unittest.TestCase):
             '"oscillation_detected": false, "active_constraints": [], '
             '"resolved_constraints": [], "conflict_report": [], '
             '"state_transport": "EPHEMERAL_WITH_LOGS", '
-            '"next_stage": "CRITIQUE"}')
+            '"next_stage": "CRITIQUE"}'
+        )
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'state_block.magi.json'),
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'personas/core/security.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'state_block.magi.json'
+            ),
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'personas/core/security.json'
+            ),
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
             'state_block.magi.json': (invalid_checklist_json),
             'agents/skills/multi-agent-engineering-workflow/'
-            'personas/core/security.json':
-            ('{"checklist": {"checked_xyz": "Desc"}}')
+            'personas/core/security.json': (
+                '{"checklist": {"checked_xyz": "Desc"}}'
+            ),
         }
         schema_json = (
             '{"definitions": {"ChecklistObject": {"type": "object", '
@@ -395,15 +481,21 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"type": "array"}, "conflict_report": {"type": "array"}, '
             '"next_stage": {"type": "string"}, '
             '"state_transport": {"type": "string", "enum": '
-            '["FILE_IO", "EPHEMERAL_WITH_LOGS"]}}}}}')
+            '["FILE_IO", "EPHEMERAL_WITH_LOGS"]}}}}}'
+        )
 
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('checklist key "checked_xyz" must be a boolean' in r
-                    for r in results))
+                any(
+                    'checklist key "checked_xyz" must be a boolean' in r
+                    for r in results
+                )
+            )
 
     def testJsonProjectSpecValidation(self):
         # Valid project spec
@@ -417,14 +509,17 @@ class MagiPresubmitTest(unittest.TestCase):
             '"environment": {"repo_type": "CHROMIUM", "vcs": "JJ", '
             '"harness": "JETSKI", "output_directory": "out/Default", '
             '"temp_directory": '
-            '"agents/skills/multi-agent-engineering-workflow/.temp"}}')
+            '"agents/skills/multi-agent-engineering-workflow/.temp"}}'
+        )
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'project.magi.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'project.magi.json'
+            )
         ]
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/project.magi.json':
-            valid_json
+            'agents/skills/multi-agent-engineering-workflow/'
+            'project.magi.json': valid_json
         }
 
         # We need to mock the schema file
@@ -443,24 +538,29 @@ class MagiPresubmitTest(unittest.TestCase):
             '"ambiguity_level": {"type": "string", "enum": ["LOW", "HIGH"]}, '
             '"execution_path": {"type": "string"}, '
             '"complexity_level": {"type": "string"}, '
-            '"environment": {"type": "object"}}}}}')
+            '"environment": {"type": "object"}}}}}'
+        )
 
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertEqual(len(results), 0)
 
         # Missing required key
         invalid_json = '{"goal": "Test"}'
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/project.magi.json':
-            invalid_json
+            'agents/skills/multi-agent-engineering-workflow/'
+            'project.magi.json': invalid_json
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(any('missing required keys' in r for r in results))
 
     def testJsonReviewFeedbackValidation(self):
@@ -468,15 +568,17 @@ class MagiPresubmitTest(unittest.TestCase):
         valid_json = (
             '{"checklist": {}, "verdict": "REJECT", "reasoning": ["Bad"], '
             '"comments": [{"file": "foo.cc", "line": 10, '
-            '"comment": "Fix this"}]}')
+            '"comment": "Fix this"}]}'
+        )
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'review.security.magi.1.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'review.security.magi.1.json'
+            )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'review.security.magi.1.json':
-            valid_json
+            'review.security.magi.1.json': valid_json
         }
 
         schema_json = (
@@ -485,42 +587,50 @@ class MagiPresubmitTest(unittest.TestCase):
             '"checklist": {"type": "object"}, '
             '"verdict": {"type": "string", "enum": ["ACCEPT", "REJECT"]}, '
             '"reasoning": {"type": "array"}, '
-            '"comments": {"type": "array"}}}} }')
+            '"comments": {"type": "array"}}}} }'
+        )
 
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertEqual(len(results), 0)
 
         # Invalid verdict
         invalid_verdict_json = (
             '{"checklist": {}, "unlisted_issues_found": [], '
-            '"verdict": "MAYBE", "reasoning": []}')
+            '"verdict": "MAYBE", "reasoning": []}'
+        )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'review.security.magi.1.json':
-            invalid_verdict_json
+            'review.security.magi.1.json': invalid_verdict_json
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(any('must be one of' in r for r in results))
 
     def testJsonConstraintsValidation(self):
         # Valid constraints
-        valid_json = ('{"iteration": 2, "constraints": ["Rule 1", "Rule 2"], '
-                      '"oscillation_detected": false, "conflict_report": [], '
-                      '"next_stage": "SYNTHESIS"}')
+        valid_json = (
+            '{"iteration": 2, "constraints": ["Rule 1", "Rule 2"], '
+            '"oscillation_detected": false, "conflict_report": [], '
+            '"next_stage": "SYNTHESIS"}'
+        )
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'constraints.magi.2.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'constraints.magi.2.json'
+            )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'constraints.magi.2.json':
-            valid_json
+            'constraints.magi.2.json': valid_json
         }
 
         schema_json = (
@@ -532,12 +642,15 @@ class MagiPresubmitTest(unittest.TestCase):
             '"oscillation_detected": {"type": "boolean"}, '
             '"conflict_report": {"type": "array"}, '
             '"next_stage": {"type": "string", "enum": ["SYNTHESIS", '
-            '"VALIDATION", "ESCALATION"]}}}}}')
+            '"VALIDATION", "ESCALATION"]}}}}}'
+        )
 
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertEqual(len(results), 0)
 
     def testDecisionGraphValidation(self):
@@ -545,15 +658,17 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_constraints = (
             '{"iteration": 1, "constraints": [], '
             '"oscillation_detected": false, "conflict_report": [], '
-            '"next_stage": "CRITIQUE"}')
+            '"next_stage": "CRITIQUE"}'
+        )
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'constraints.magi.1.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'constraints.magi.1.json'
+            )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'constraints.magi.1.json':
-            invalid_constraints
+            'constraints.magi.1.json': invalid_constraints
         }
         schema_json = (
             '{"definitions": {"Constraints": {"required": ["iteration", '
@@ -562,51 +677,66 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"type": "integer"}, "constraints": {"type": "array"}, '
             '"oscillation_detected": {"type": "boolean"}, '
             '"conflict_report": {"type": "array"}, '
-            '"next_stage": {"type": "string"}}}}}')
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+            '"next_stage": {"type": "string"}}}}}'
+        )
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('must signal SYNTHESIS, VALIDATION, or ESCALATION' in r
-                    for r in results))
+                any(
+                    'must signal SYNTHESIS, VALIDATION, or ESCALATION' in r
+                    for r in results
+                )
+            )
 
     def testJsonPersonaDefValidation(self):
         valid_json = (
             '{"role": "Test Role", "mandate": "Test Mandate", '
-            '"checklist": {"check_1": "Desc 1", "check_2": "Desc 2"}}')
+            '"checklist": {"check_1": "Desc 1", "check_2": "Desc 2"}}'
+        )
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'personas/test.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'personas/test.json'
+            )
         ]
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/personas/test.json':
-            valid_json
+            'agents/skills/multi-agent-engineering-workflow/'
+            'personas/test.json': valid_json
         }
 
-        schema_json = ('{"definitions": {"PersonaDef": {"required": ["role", '
-                       '"mandate", "checklist"], "properties": {"role": '
-                       '{"type": "string"}, "mandate": {"type": "string"}, '
-                       '"checklist": {"type": "object", "patternProperties": '
-                       '{"^.*$": {"type": "string"}}}}}}}')
+        schema_json = (
+            '{"definitions": {"PersonaDef": {"required": ["role", '
+            '"mandate", "checklist"], "properties": {"role": '
+            '{"type": "string"}, "mandate": {"type": "string"}, '
+            '"checklist": {"type": "object", "patternProperties": '
+            '{"^.*$": {"type": "string"}}}}}}}'
+        )
 
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertEqual(len(results), 0)
 
         # Missing required key
         invalid_json = '{"role": "Test Role", "mandate": "Test Mandate"}'
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/personas/test.json':
-            invalid_json
+            'agents/skills/multi-agent-engineering-workflow/'
+            'personas/test.json': invalid_json
         }
 
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(any('missing required keys' in r for r in results))
 
     def testJsonPersonaDirectoryDepth(self):
@@ -615,157 +745,203 @@ class MagiPresubmitTest(unittest.TestCase):
 
         # Depth 5 (valid)
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'personas/1/2/3/4/5.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'personas/1/2/3/4/5.json'
+            )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'personas/1/2/3/4/5.json':
-            valid_json
+            'personas/1/2/3/4/5.json': valid_json
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertEqual(len(results), 0)
 
         # Depth 6 (invalid)
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'personas/1/2/3/4/5/6.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'personas/1/2/3/4/5/6.json'
+            )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'personas/1/2/3/4/5/6.json':
-            valid_json
+            'personas/1/2/3/4/5/6.json': valid_json
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('exceeds maximum persona directory depth of 5' in r
-                    for r in results))
+                any(
+                    'exceeds maximum persona directory depth of 5' in r
+                    for r in results
+                )
+            )
 
     def testJsonProjectSpecBuildTargets(self):
         # Invalid build_targets type (string instead of array)
         invalid_type_json = (
             '{"checklist": {}, "goal": "Test", "target_files": [], '
             '"anti_goals": [], "edge_cases": [], '
-            '"build_targets": "//remoting/host:host"}')
+            '"build_targets": "//remoting/host:host"}'
+        )
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'project.magi.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'project.magi.json'
+            )
         ]
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/project.magi.json':
-            invalid_type_json
+            'agents/skills/multi-agent-engineering-workflow/'
+            'project.magi.json': invalid_type_json
         }
-        schema_json = ('{"definitions": {"ProjectSpec": {"required": [], '
-                       '"properties": {"build_targets": {"type": "array", '
-                       '"items": {"type": "string"}}}}}}')
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        schema_json = (
+            '{"definitions": {"ProjectSpec": {"required": [], '
+            '"properties": {"build_targets": {"type": "array", '
+            '"items": {"type": "string"}}}}}}'
+        )
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any("key 'build_targets' should be array" in r
-                    for r in results))
+                any("key 'build_targets' should be array" in r for r in results)
+            )
 
         # Invalid element in build_targets (integer instead of string)
         invalid_elem_json = (
             '{"task_type": "IMPLEMENTATION", "goal": "Test", '
             '"target_files": [], "anti_goals": [], "edge_cases": [], '
-            '"build_targets": [123]}')
+            '"build_targets": [123]}'
+        )
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/project.magi.json':
-            invalid_elem_json
+            'agents/skills/multi-agent-engineering-workflow/'
+            'project.magi.json': invalid_elem_json
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any("list contains a non-string element" in r
-                    for r in results))
+                any("list contains a non-string element" in r for r in results)
+            )
 
     def testJsonProjectSpecEnvironment(self):
         # Missing repo_type
         invalid_env_1 = (
             '{"task_type": "IMPLEMENTATION", "goal": "Test", '
             '"target_files": [], "anti_goals": [], "edge_cases": [], '
-            '"environment": {"vcs": "JJ", "harness": "JETSKI"}}')
+            '"environment": {"vcs": "JJ", "harness": "JETSKI"}}'
+        )
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'project.magi.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'project.magi.json'
+            )
         ]
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/project.magi.json':
-            invalid_env_1
+            'agents/skills/multi-agent-engineering-workflow/'
+            'project.magi.json': invalid_env_1
         }
         schema_json = '{"definitions": {"ProjectSpec": {"required": []}}}'
 
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('environment is missing required key "repo_type"' in r
-                    for r in results))
+                any(
+                    'environment is missing required key "repo_type"' in r
+                    for r in results
+                )
+            )
 
         # Invalid repo_type
         invalid_env_2 = (
             '{"task_type": "IMPLEMENTATION", "goal": "Test", '
             '"target_files": [], "anti_goals": [], "edge_cases": [], '
             '"environment": {"vcs": "JJ", "harness": "JETSKI", '
-            '"repo_type": "INVALID"}}')
+            '"repo_type": "INVALID"}}'
+        )
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/project.magi.json':
-            invalid_env_2
+            'agents/skills/multi-agent-engineering-workflow/'
+            'project.magi.json': invalid_env_2
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('environment.repo_type must be CHROMIUM or GOOGLE_INTERNAL'
-                    in r for r in results))
+                any(
+                    'environment.repo_type must be CHROMIUM or GOOGLE_INTERNAL'
+                    in r
+                    for r in results
+                )
+            )
 
         # Invalid output_directory type
         invalid_env_3 = (
             '{"task_type": "IMPLEMENTATION", "goal": "Test", '
             '"target_files": [], "anti_goals": [], "edge_cases": [], '
             '"environment": {"vcs": "JJ", "harness": "JETSKI", '
-            '"repo_type": "CHROMIUM", "output_directory": 123}}')
+            '"repo_type": "CHROMIUM", "output_directory": 123}}'
+        )
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/project.magi.json':
-            invalid_env_3
+            'agents/skills/multi-agent-engineering-workflow/'
+            'project.magi.json': invalid_env_3
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('environment.output_directory must be a string' in r
-                    for r in results))
+                any(
+                    'environment.output_directory must be a string' in r
+                    for r in results
+                )
+            )
 
         # Missing temp_directory
         invalid_env_4 = (
             '{"task_type": "IMPLEMENTATION", "goal": "Test", '
             '"target_files": [], "anti_goals": [], "edge_cases": [], '
             '"environment": {"vcs": "JJ", "harness": "JETSKI", '
-            '"repo_type": "CHROMIUM", "output_directory": "out/Default"}}')
+            '"repo_type": "CHROMIUM", "output_directory": "out/Default"}}'
+        )
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/project.magi.json':
-            invalid_env_4
+            'agents/skills/multi-agent-engineering-workflow/'
+            'project.magi.json': invalid_env_4
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('environment is missing required key "temp_directory"' in r
-                    for r in results))
+                any(
+                    'environment is missing required key "temp_directory"' in r
+                    for r in results
+                )
+            )
 
         # Invalid temp_directory type
         invalid_env_5 = (
@@ -773,59 +949,70 @@ class MagiPresubmitTest(unittest.TestCase):
             '"target_files": [], "anti_goals": [], "edge_cases": [], '
             '"environment": {"vcs": "JJ", "harness": "JETSKI", '
             '"repo_type": "CHROMIUM", "output_directory": "out/Default", '
-            '"temp_directory": 123}}')
+            '"temp_directory": 123}}'
+        )
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/project.magi.json':
-            invalid_env_5
+            'agents/skills/multi-agent-engineering-workflow/'
+            'project.magi.json': invalid_env_5
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('environment.temp_directory must be a string' in r
-                    for r in results))
+                any(
+                    'environment.temp_directory must be a string' in r
+                    for r in results
+                )
+            )
 
     def testCheckTestJsonFiles(self):
         # Valid test JSON
-        valid_json = ('{"name": "Test", "base_inputs": {}, "cases": ['
-                      '{"name": "Case 1", "expected_outputs": {}}]}')
+        valid_json = (
+            '{"name": "Test", "base_inputs": {}, "cases": ['
+            '{"name": "Case 1", "expected_outputs": {}}]}'
+        )
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'tests/magi_stage_generate_tests.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'tests/magi_stage_generate_tests.json'
+            )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'tests/magi_stage_generate_tests.json':
-            valid_json
+            'tests/magi_stage_generate_tests.json': valid_json
         }
-        results = PRESUBMIT.CheckTestJsonFiles(self.mock_input,
-                                               self.mock_output)
+        results = PRESUBMIT.CheckTestJsonFiles(
+            self.mock_input, self.mock_output
+        )
         self.assertEqual(len(results), 0)
 
         # Missing required key in scenario
         invalid_json = '{"name": "Test", "cases": []}'
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'tests/magi_stage_generate_tests.json':
-            invalid_json
+            'tests/magi_stage_generate_tests.json': invalid_json
         }
-        results = PRESUBMIT.CheckTestJsonFiles(self.mock_input,
-                                               self.mock_output)
+        results = PRESUBMIT.CheckTestJsonFiles(
+            self.mock_input, self.mock_output
+        )
         self.assertTrue(any('missing required key' in r for r in results))
 
         # Invalid override_inputs
         invalid_override_json = (
             '{"name": "Test", "base_inputs": {}, "cases": [{'
             '"name": "Case 1", "expected_outputs": {}, '
-            '"override_inputs": {"invalid_key": {}}}]}')
+            '"override_inputs": {"invalid_key": {}}}]}'
+        )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'tests/magi_stage_generate_tests.json':
-            invalid_override_json
+            'tests/magi_stage_generate_tests.json': invalid_override_json
         }
-        results = PRESUBMIT.CheckTestJsonFiles(self.mock_input,
-                                               self.mock_output)
+        results = PRESUBMIT.CheckTestJsonFiles(
+            self.mock_input, self.mock_output
+        )
         self.assertTrue(any('contains invalid property' in r for r in results))
 
     def testJsonTempDirectory(self):
@@ -834,15 +1021,16 @@ class MagiPresubmitTest(unittest.TestCase):
                 'agents/skills/multi-agent-engineering-workflow/.temp/log.json'
             )
         ]
-        results = PRESUBMIT.CheckTempDirectory(self.mock_input,
-                                               self.mock_output)
-        self.assertTrue(any('is in the .temp/ directory' in r
-                            for r in results))
+        results = PRESUBMIT.CheckTempDirectory(
+            self.mock_input, self.mock_output
+        )
+        self.assertTrue(any('is in the .temp/ directory' in r for r in results))
 
     def testSchemaHealth(self):
         # Validate that the actual magi_schema.json on disk is valid.
-        schema_path = os.path.join(os.path.dirname(__file__),
-                                   'magi_schema.json')
+        schema_path = os.path.join(
+            os.path.dirname(__file__), 'magi_schema.json'
+        )
         with open(schema_path, 'r', encoding='utf-8') as f:
             schema = json.load(f)
 
@@ -856,8 +1044,9 @@ class MagiPresubmitTest(unittest.TestCase):
         # schema.
         magi_dir = os.path.dirname(__file__)
         schema_path = os.path.join(magi_dir, 'magi_schema.json')
-        project_path = os.path.join(magi_dir, 'tests', 'testdata',
-                                    'project.magi.json')
+        project_path = os.path.join(
+            magi_dir, 'tests', 'testdata', 'project.magi.json'
+        )
 
         with open(schema_path, 'r', encoding='utf-8') as f:
             schema = json.load(f)
@@ -866,59 +1055,74 @@ class MagiPresubmitTest(unittest.TestCase):
 
         # Mock the InputApi to use the real files
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'tests/testdata/project.magi.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'tests/testdata/project.magi.json'
+            )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'tests/testdata/project.magi.json':
-            json.dumps(project)
+            'tests/testdata/project.magi.json': json.dumps(project)
         }
 
         # We need to mock 'builtins.open' because PRESUBMIT.py reads the
         # schema from disk.
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=json.dumps(schema))):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open',
+            unittest.mock.mock_open(read_data=json.dumps(schema)),
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
 
         self.assertEqual(
-            len(results), 0,
-            f"Test data is inconsistent with real schema: {results}")
+            len(results),
+            0,
+            f"Test data is inconsistent with real schema: {results}",
+        )
 
     def testColdLogicStaticAnalysis(self):
         # Missing MANDATE: prefix
         invalid_mandate = '{"role": "R", "mandate": ["Bad"], "checklist": {}}'
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'personas/test.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'personas/test.json'
+            )
         ]
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/personas/test.json':
-            invalid_mandate
+            'agents/skills/multi-agent-engineering-workflow/'
+            'personas/test.json': invalid_mandate
         }
         schema_json = '{"definitions": {"PersonaDef": {"required": []}}}'
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('must start with "MANDATE:"' in r for r in results))
+                any('must start with "MANDATE:"' in r for r in results)
+            )
 
         # Conversational filler
         filler_json = (
             '{"role": "R", "mandate": ["MANDATE: X", "Please do Y"], '
-            '"checklist": {}}')
+            '"checklist": {}}'
+        )
         self.mock_input.files_content = {
-            'agents/skills/multi-agent-engineering-workflow/personas/test.json':
-            filler_json
+            'agents/skills/multi-agent-engineering-workflow/'
+            'personas/test.json': filler_json
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('contains conversational filler' in r for r in results))
+                any('contains conversational filler' in r for r in results)
+            )
 
     def testOscillationDetection(self):
         # Oscillation but no report
@@ -926,41 +1130,49 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"checklist": {}, "iteration": 1, '
             '"oscillation_detected": true, "conflict_report": [], '
             '"active_constraints": [], "resolved_constraints": [], '
-            '"state_transport": "FILE_IO", "next_stage": "ESCALATION"}')
+            '"state_transport": "FILE_IO", "next_stage": "ESCALATION"}'
+        )
         self.mock_input.affected_files = [
-            MockAffectedFile('agents/skills/multi-agent-engineering-workflow/'
-                             'state_block.magi.json')
+            MockAffectedFile(
+                'agents/skills/multi-agent-engineering-workflow/'
+                'state_block.magi.json'
+            )
         ]
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json':
-            invalid_json
+            'state_block.magi.json': invalid_json
         }
         schema_json = '{"definitions": {"StateBlock": {"required": []}}}'
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('conflict_report is empty' in r for r in results))
+                any('conflict_report is empty' in r for r in results)
+            )
 
         # Oscillation but wrong stage
         wrong_stage_json = (
             '{"checklist": {}, "iteration": 1, '
             '"oscillation_detected": true, "conflict_report": ["Conflict"], '
             '"active_constraints": [], "resolved_constraints": [], '
-            '"state_transport": "FILE_IO", "next_stage": "SYNTHESIS"}')
+            '"state_transport": "FILE_IO", "next_stage": "SYNTHESIS"}'
+        )
         self.mock_input.files_content = {
             'agents/skills/multi-agent-engineering-workflow/'
-            'state_block.magi.json':
-            wrong_stage_json
+            'state_block.magi.json': wrong_stage_json
         }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
+        with patch(
+            'builtins.open', unittest.mock.mock_open(read_data=schema_json)
+        ):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output
+            )
             self.assertTrue(
-                any('next_stage is not ESCALATION' in r for r in results))
+                any('next_stage is not ESCALATION' in r for r in results)
+            )
 
 
 if __name__ == '__main__':

@@ -56,16 +56,23 @@ def find_candidates():
             if keywords_re.search(content):
                 interesting = []
                 for line_num, line_text in matches:
-                    is_dynamic = ("+" in line_text
-                                  or "String.format" in line_text
-                                  or "getString" in line_text)
-                    if (keywords_re.search(line_text)
-                            or "R.string.accessibility_" in line_text
-                            or is_dynamic):
-                        interesting.append((
-                            line_num,
-                            f"[Rule 1: ContentDesc State] {line_text.strip()}",
-                        ))
+                    is_dynamic = (
+                        "+" in line_text
+                        or "String.format" in line_text
+                        or "getString" in line_text
+                    )
+                    if (
+                        keywords_re.search(line_text)
+                        or "R.string.accessibility_" in line_text
+                        or is_dynamic
+                    ):
+                        interesting.append(
+                            (
+                                line_num,
+                                "[Rule 1: ContentDesc State] "
+                                + f"{line_text.strip()}",
+                            )
+                        )
                 if interesting:
                     candidates.append((path, interesting))
         except IOError:
@@ -78,10 +85,12 @@ def find_candidates():
         for line_num, line_text in matches:
             # Flags announceForAccessibility for manual inspection (should use
             # paneTitle/liveRegion)
-            interesting.append((
-                line_num,
-                f"[Rule 2: announceForAccessibility] {line_text.strip()}",
-            ))
+            interesting.append(
+                (
+                    line_num,
+                    f"[Rule 2: announceForAccessibility] {line_text.strip()}",
+                )
+            )
         if interesting:
             candidates.append((path, interesting))
 
@@ -101,11 +110,13 @@ def find_candidates():
             interesting = []
             for match in custom_label_re.finditer(content):
                 line_num = content.count('\n', 0, match.start()) + 1
-                statement = content[match.start():match.end()]
-                interesting.append((
-                    line_num,
-                    f"[Rule 3: Custom Action Label] {statement.strip()}",
-                ))
+                statement = content[match.start() : match.end()]
+                interesting.append(
+                    (
+                        line_num,
+                        f"[Rule 3: Custom Action Label] {statement.strip()}",
+                    )
+                )
             if interesting:
                 candidates.append((path, interesting))
         except IOError:
@@ -116,10 +127,12 @@ def find_candidates():
     for path, matches in assertive_matches.items():
         interesting = []
         for line_num, line_text in matches:
-            interesting.append((
-                line_num,
-                f"[Rule 4: Assertive Live Region] {line_text.strip()}",
-            ))
+            interesting.append(
+                (
+                    line_num,
+                    f"[Rule 4: Assertive Live Region] {line_text.strip()}",
+                )
+            )
         if interesting:
             candidates.append((path, interesting))
 

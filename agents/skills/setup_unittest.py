@@ -26,8 +26,7 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
     def setUp(self):
         self.setUpPyfakefs()
         self.mock_run = unittest.mock.patch('subprocess.run').start()
-        self.mock_get_cmd = unittest.mock.patch(
-            'setup._get_gemini_cmd').start()
+        self.mock_get_cmd = unittest.mock.patch('setup._get_gemini_cmd').start()
         self.mock_get_cmd.return_value = ['/path/to/gemini']
         self.addCleanup(unittest.mock.patch.stopall)
 
@@ -36,13 +35,16 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
 
     def test_get_installed_skills(self):
         self.mock_run.return_value = unittest.mock.MagicMock(
-            stdout=("skill-1 [Enabled]\n"
-                    "  Description: desc 1\n"
-                    "  Location: loc1/SKILL.md\n"
-                    "skill-2 [Disabled]\n"
-                    "  Description: desc 2\n"
-                    "  Location: loc2/SKILL.md\n"),
-            returncode=0)
+            stdout=(
+                "skill-1 [Enabled]\n"
+                "  Description: desc 1\n"
+                "  Location: loc1/SKILL.md\n"
+                "skill-2 [Disabled]\n"
+                "  Description: desc 2\n"
+                "  Location: loc2/SKILL.md\n"
+            ),
+            returncode=0,
+        )
         skills = setup.get_installed_skills()
         self.assertEqual(len(skills), 2)
         self.assertTrue(skills['skill-1'].enabled)
@@ -54,7 +56,8 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
-            check=True)
+            check=True,
+        )
 
     def test_get_available_skills(self):
         project_root = Path('/root')
@@ -69,10 +72,13 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         # Not a skill (no SKILL.md)
         self.fs.create_dir(project_root / 'agents' / 'skills' / 'not-a-skill')
 
-        with unittest.mock.patch('setup.SKILL_DIRS', [
+        with unittest.mock.patch(
+            'setup.SKILL_DIRS',
+            [
                 project_root / 'agents' / 'skills',
-                project_root / 'internal' / 'agents' / 'skills'
-        ]):
+                project_root / 'internal' / 'agents' / 'skills',
+            ],
+        ):
             available = setup.get_available_skills()
 
         self.assertEqual(len(available), 2)
@@ -87,14 +93,17 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         # Mock _PROJECT_ROOT to a fixed path for testing.
         with unittest.mock.patch('setup._PROJECT_ROOT', Path('/root/src')):
             # Case 1: Under project root
-            self.assertEqual(setup._shorten_path('/root/src/foo/bar'),
-                             '//foo/bar')
+            self.assertEqual(
+                setup._shorten_path('/root/src/foo/bar'), '//foo/bar'
+            )
 
             # Case 2: Under user home
-            with unittest.mock.patch('pathlib.Path.home',
-                                     return_value=Path('/home/user')):
-                self.assertEqual(setup._shorten_path('/home/user/docs'),
-                                 '~/docs')
+            with unittest.mock.patch(
+                'pathlib.Path.home', return_value=Path('/home/user')
+            ):
+                self.assertEqual(
+                    setup._shorten_path('/home/user/docs'), '~/docs'
+                )
 
             # Case 3: Absolute path elsewhere
             self.assertEqual(setup._shorten_path('/other/path'), '/other/path')
@@ -103,34 +112,40 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
             self.assertEqual(setup._shorten_path(None), '-')
 
             # Case 5: Path.home() failure
-            with unittest.mock.patch('pathlib.Path.home',
-                                     side_effect=RuntimeError('No home')):
+            with unittest.mock.patch(
+                'pathlib.Path.home', side_effect=RuntimeError('No home')
+            ):
                 # Should return original path instead of crashing
-                self.assertEqual(setup._shorten_path('/home/user/docs'),
-                                 '/home/user/docs')
+                self.assertEqual(
+                    setup._shorten_path('/home/user/docs'), '/home/user/docs'
+                )
 
     def test_print_skills_table(self):
         """Tests the formatting of the skills table."""
         skills = {
-            'skill1':
-            setup.SkillInfo(name='skill1',
-                            available=True,
-                            installed=True,
-                            enabled=True,
-                            location='/root/src/loc1'),
-            'skill2':
-            setup.SkillInfo(name='skill2', available=True, installed=False),
-            'skill3':
-            setup.SkillInfo(name='skill3',
-                            available=False,
-                            installed=True,
-                            location='/other/loc'),
-            'skill4':
-            setup.SkillInfo(name='skill4',
-                            available=True,
-                            installed=True,
-                            enabled=True,
-                            location='/home/user/loc4'),
+            'skill1': setup.SkillInfo(
+                name='skill1',
+                available=True,
+                installed=True,
+                enabled=True,
+                location='/root/src/loc1',
+            ),
+            'skill2': setup.SkillInfo(
+                name='skill2', available=True, installed=False
+            ),
+            'skill3': setup.SkillInfo(
+                name='skill3',
+                available=False,
+                installed=True,
+                location='/other/loc',
+            ),
+            'skill4': setup.SkillInfo(
+                name='skill4',
+                available=True,
+                installed=True,
+                enabled=True,
+                location='/home/user/loc4',
+            ),
         }
 
         expected_output = (
@@ -139,14 +154,18 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
             'skill1  yes        yes        yes      //loc1    \n'
             'skill2  yes        no         no       -         \n'
             'skill3  no         yes        no       /other/loc\n'
-            'skill4  yes        yes        yes      ~/loc4    \n')
+            'skill4  yes        yes        yes      ~/loc4    \n'
+        )
 
-        with unittest.mock.patch('sys.stdout',
-                                 new_callable=io.StringIO) as mock_stdout:
-            with (unittest.mock.patch('setup._PROJECT_ROOT',
-                                      Path('/root/src')),
-                  unittest.mock.patch('pathlib.Path.home',
-                                      return_value=Path('/home/user'))):
+        with unittest.mock.patch(
+            'sys.stdout', new_callable=io.StringIO
+        ) as mock_stdout:
+            with (
+                unittest.mock.patch('setup._PROJECT_ROOT', Path('/root/src')),
+                unittest.mock.patch(
+                    'pathlib.Path.home', return_value=Path('/home/user')
+                ),
+            ):
                 setup._print_skills_table(skills)
             self.assertEqual(mock_stdout.getvalue(), expected_output)
 
@@ -156,7 +175,8 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
             ['/path/to/gemini', 'skills', 'enable', 'test-skill'],
             check=True,
             capture_output=True,
-            text=True)
+            text=True,
+        )
 
     def test_run_skill_command_disable(self):
         setup._run_skill_command('disable', 'test-skill')
@@ -164,7 +184,8 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
             ['/path/to/gemini', 'skills', 'disable', 'test-skill'],
             check=True,
             capture_output=True,
-            text=True)
+            text=True,
+        )
 
     @unittest.mock.patch('setup.get_available_skills')
     @unittest.mock.patch('setup.get_installed_skills')
@@ -172,14 +193,12 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         project_root = Path('/root/src')
         self.fs.create_dir(project_root / '.agents' / 'skills')
         mock_avail.return_value = {
-            'skill1':
-            setup.SkillInfo(name='skill1',
-                            available=True,
-                            path=project_root / 'skill1'),
-            'skill2':
-            setup.SkillInfo(name='skill2',
-                            available=True,
-                            path=project_root / 'skill2')
+            'skill1': setup.SkillInfo(
+                name='skill1', available=True, path=project_root / 'skill1'
+            ),
+            'skill2': setup.SkillInfo(
+                name='skill2', available=True, path=project_root / 'skill2'
+            ),
         }
 
         with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
@@ -194,22 +213,25 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
 
     def test_handle_list(self):
         # Mock get_installed_skills and get_available_skills
-        with (unittest.mock.patch('setup.get_installed_skills') as mock_inst,
-              unittest.mock.patch('setup.get_available_skills') as mock_avail,
-              unittest.mock.patch('setup._print_skills_table') as mock_print):
-
+        with (
+            unittest.mock.patch('setup.get_installed_skills') as mock_inst,
+            unittest.mock.patch('setup.get_available_skills') as mock_avail,
+            unittest.mock.patch('setup._print_skills_table') as mock_print,
+        ):
             mock_inst.return_value = {
-                'skill1':
-                setup.SkillInfo(name='skill1',
-                                enabled=True,
-                                installed=True,
-                                location='/path/to/skill1')
+                'skill1': setup.SkillInfo(
+                    name='skill1',
+                    enabled=True,
+                    installed=True,
+                    location='/path/to/skill1',
+                )
             }
             mock_avail.return_value = {
-                'skill1':
-                setup.SkillInfo(name='skill1',
-                                available=True,
-                                path=Path('agents/skills/skill1'))
+                'skill1': setup.SkillInfo(
+                    name='skill1',
+                    available=True,
+                    path=Path('agents/skills/skill1'),
+                )
             }
 
             args = argparse.Namespace()
@@ -238,10 +260,9 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         os.symlink(project_root / 'skill1_src', skill_loc)
 
         mock_inst.return_value = {
-            'skill1':
-            setup.SkillInfo(name='skill1',
-                            installed=True,
-                            location=str(skill_loc))
+            'skill1': setup.SkillInfo(
+                name='skill1', installed=True, location=str(skill_loc)
+            )
         }
         with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
             args = argparse.Namespace(names=['skill1'])
@@ -258,10 +279,9 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         self.fs.create_dir(skill_loc)
 
         mock_inst.return_value = {
-            'skill1':
-            setup.SkillInfo(name='skill1',
-                            installed=True,
-                            location=str(skill_loc))
+            'skill1': setup.SkillInfo(
+                name='skill1', installed=True, location=str(skill_loc)
+            )
         }
         with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
             args = argparse.Namespace(names=['skill1'])
@@ -275,15 +295,15 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
             self.gemini_cmd + ['skills', 'uninstall', 'skill1'],
             check=True,
             capture_output=True,
-            text=True)
+            text=True,
+        )
 
     @unittest.mock.patch('setup.get_installed_skills')
     def test_handle_enable(self, mock_inst):
         mock_inst.return_value = {
-            'skill1':
-            setup.SkillInfo(name='skill1',
-                            location='/path/to/skill',
-                            installed=True)
+            'skill1': setup.SkillInfo(
+                name='skill1', location='/path/to/skill', installed=True
+            )
         }
         args = argparse.Namespace(names=['skill1'])
         success = setup._handle_enable(args)
@@ -292,15 +312,15 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
             ['/path/to/gemini', 'skills', 'enable', 'skill1'],
             check=True,
             capture_output=True,
-            text=True)
+            text=True,
+        )
 
     @unittest.mock.patch('setup.get_installed_skills')
     def test_handle_disable(self, mock_inst):
         mock_inst.return_value = {
-            'skill1':
-            setup.SkillInfo(name='skill1',
-                            location='/path/to/skill',
-                            installed=True)
+            'skill1': setup.SkillInfo(
+                name='skill1', location='/path/to/skill', installed=True
+            )
         }
         args = argparse.Namespace(names=['skill1'])
         success = setup._handle_disable(args)
@@ -309,7 +329,8 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
             ['/path/to/gemini', 'skills', 'disable', 'skill1'],
             check=True,
             capture_output=True,
-            text=True)
+            text=True,
+        )
 
     @unittest.mock.patch('setup.get_installed_skills')
     def test_handle_enable_skill_not_found(self, mock_inst):
@@ -322,10 +343,13 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
     def test_get_installed_skills_regex_robustness(self):
         # Test with CRLF and trailing spaces
         self.mock_run.return_value = unittest.mock.MagicMock(
-            stdout=("skill-1 [Enabled]  \n"
-                    "  Description: desc 1 \n"
-                    "  Location: loc1/SKILL.md \n"),
-            returncode=0)
+            stdout=(
+                "skill-1 [Enabled]  \n"
+                "  Description: desc 1 \n"
+                "  Location: loc1/SKILL.md \n"
+            ),
+            returncode=0,
+        )
         skills = setup.get_installed_skills()
         self.assertEqual(len(skills), 1)
         # Verify it was stripped
@@ -339,10 +363,10 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         self.fs.create_file(skill1_dir / 'SKILL.md')
 
         # Mock SKILL_DIRS to include a non-existent directory
-        with unittest.mock.patch('setup.SKILL_DIRS', [
-                project_root / 'agents' / 'skills',
-                project_root / 'non-existent'
-        ]):
+        with unittest.mock.patch(
+            'setup.SKILL_DIRS',
+            [project_root / 'agents' / 'skills', project_root / 'non-existent'],
+        ):
             available = setup.get_available_skills()
 
         self.assertEqual(len(available), 1)
@@ -377,10 +401,9 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         self.fs.create_file(link_path)  # File already exists
 
         mock_avail.return_value = {
-            'skill1':
-            setup.SkillInfo(name='skill1',
-                            available=True,
-                            path=project_root / 'skill1')
+            'skill1': setup.SkillInfo(
+                name='skill1', available=True, path=project_root / 'skill1'
+            )
         }
 
         with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
@@ -395,10 +418,9 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         # Reported as installed, but loc doesn't exist on disk
 
         mock_inst.return_value = {
-            'skill1':
-            setup.SkillInfo(name='skill1',
-                            installed=True,
-                            location=str(skill_loc))
+            'skill1': setup.SkillInfo(
+                name='skill1', installed=True, location=str(skill_loc)
+            )
         }
         with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
             args = argparse.Namespace(names=['skill1'])
@@ -411,10 +433,9 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         # .agents/skills does NOT exist
 
         mock_avail.return_value = {
-            'skill1':
-            setup.SkillInfo(name='skill1',
-                            available=True,
-                            path=project_root / 'skill1')
+            'skill1': setup.SkillInfo(
+                name='skill1', available=True, path=project_root / 'skill1'
+            )
         }
 
         with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
@@ -424,23 +445,28 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         self.assertTrue(success)
         self.assertTrue((project_root / '.agents' / 'skills').is_dir())
         self.assertTrue(
-            (project_root / '.agents' / 'skills' / 'skill1').is_symlink())
+            (project_root / '.agents' / 'skills' / 'skill1').is_symlink()
+        )
 
     def test_get_installed_skills_malformed_output(self):
         # Output that doesn't match the regex
         self.mock_run.return_value = unittest.mock.MagicMock(
             stdout="Some unrelated debugging output\n"
             "Totally not a skill block\n",
-            returncode=0)
+            returncode=0,
+        )
         skills = setup.get_installed_skills()
         self.assertEqual(len(skills), 0)
 
     def test_get_installed_skills_empty_description(self):
         self.mock_run.return_value = unittest.mock.MagicMock(
-            stdout=("skill-1 [Enabled]\n"
-                    "  Description: \n"
-                    "  Location: loc1/SKILL.md\n"),
-            returncode=0)
+            stdout=(
+                "skill-1 [Enabled]\n"
+                "  Description: \n"
+                "  Location: loc1/SKILL.md\n"
+            ),
+            returncode=0,
+        )
         skills = setup.get_installed_skills()
         self.assertEqual(len(skills), 1)
         self.assertEqual(skills['skill-1'].location, 'loc1')

@@ -10,8 +10,10 @@ import sys
 
 # Add general hub utilities to path
 sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                 "../../hub/scripts"))
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "../../hub/scripts"
+    )
+)
 from hub_utils import (
     strip_comments,
     strip_strings,
@@ -33,8 +35,9 @@ ANON_SAM_RE = re.compile(
 def check_file(file_path, search_root):
     """Checks a single file and returns metadata if it has anonymous class candidates."""
     if any(
-            file_path.endswith(suffix)
-            for suffix in ['Test.java', 'UnitTest.java', 'RenderTest.java']):
+        file_path.endswith(suffix)
+        for suffix in ['Test.java', 'UnitTest.java', 'RenderTest.java']
+    ):
         return None
 
     if os.path.isabs(file_path):
@@ -53,8 +56,7 @@ def check_file(file_path, search_root):
 
             if ANON_SAM_RE.search(syntax_content):
                 return {
-                    "issues":
-                    "replace-anonymous-runnables-candidates: anonymous-classes"
+                    "issues": "replace-anonymous-runnables-candidates: anonymous-classes"
                 }
     except Exception:
         pass
@@ -62,10 +64,13 @@ def check_file(file_path, search_root):
 
 
 if __name__ == "__main__":
-    print("ERROR: This script is a plugin and cannot be run directly.",
-          file=sys.stderr)
+    print(
+        "ERROR: This script is a plugin and cannot be run directly.",
+        file=sys.stderr,
+    )
     print("Please run the central hub runner instead:", file=sys.stderr)
     print(
         f"  python3 agents/projects/code-health/hub/scripts/candidate_finder.py find --plugin {__file__}",
-        file=sys.stderr)
+        file=sys.stderr,
+    )
     sys.exit(1)

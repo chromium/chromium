@@ -103,6 +103,7 @@ class WorkDir(contextlib.AbstractContextManager):
 @dataclasses.dataclass
 class WorkerOptions:
     """Options for configuring a single worker."""
+
     # Whether to clean the workdir after a test.
     clean: bool
     # Whether to log verbosely.
@@ -120,10 +121,13 @@ class WorkerOptions:
 class WorkerPool:
     """Abstracts away one or more WorkerThreads and a ResultThread."""
 
-    def __init__(self, num_workers: int,
-                 promptfoo: promptfoo_installation.PromptfooInstallation,
-                 worker_options: WorkerOptions,
-                 result_options: results.ResultOptions):
+    def __init__(
+        self,
+        num_workers: int,
+        promptfoo: promptfoo_installation.PromptfooInstallation,
+        worker_options: WorkerOptions,
+        result_options: results.ResultOptions,
+    ):
         """
         Args:
             num_workers: The number of workers to use to run tests.
@@ -142,7 +146,8 @@ class WorkerPool:
         worker_options = copy.deepcopy(worker_options)
 
         self._result_thread = results.ResultThread(
-            result_options=result_options)
+            result_options=result_options
+        )
         self._result_thread.start()
 
         self._total_tests_queued = 0
@@ -163,8 +168,8 @@ class WorkerPool:
         self.shutdown_blocking(2)
 
     def queue_tests(
-            self,
-            tests: collections.abc.Collection[eval_config.TestConfig]) -> None:
+        self, tests: collections.abc.Collection[eval_config.TestConfig]
+    ) -> None:
         """Queues the provided tests to be run.
 
         Args:
@@ -181,8 +186,10 @@ class WorkerPool:
             A list of failed TestResults that were produced since the last time
             this method was called.
         """
-        while (self._result_thread.total_results_reported.get()
-               != self._total_tests_queued):
+        while (
+            self._result_thread.total_results_reported.get()
+            != self._total_tests_queued
+        ):
             self._result_thread.maybe_reraise_fatal_exception()
             for w in self._workers:
                 w.maybe_reraise_fatal_exception()
@@ -209,7 +216,8 @@ class WorkerPool:
             if t.is_alive():
                 logging.error(
                     'Failed to gracefully shut down thread %s in a WorkerPool',
-                    t.native_id)
+                    t.native_id,
+                )
 
 
 def _parse_test_log_results(results_json) -> str:
@@ -233,17 +241,22 @@ def _parse_test_log_results(results_json) -> str:
     grading_result = run_result.get('gradingResult')
     if grading_result:
         for componentResult in grading_result.get('componentResults', []):
-            assert_results.append(f"pass: {componentResult['pass']}\n"
-                                  f"reason: {componentResult['reason']}\n"
-                                  f"score: {componentResult['score']}\n\n")
+            assert_results.append(
+                f"pass: {componentResult['pass']}\n"
+                f"reason: {componentResult['reason']}\n"
+                f"score: {componentResult['score']}\n\n"
+            )
     response = run_result.get('response', {})
-    return (f"Input prompt: {response.get('metrics', {}).get('user_prompt')}\n"
-            f"Response: {response.get('metrics', {}).get('full_output')}\n"
-            "Assertion results:\n" + ''.join(assert_results))
+    return (
+        f"Input prompt: {response.get('metrics', {}).get('user_prompt')}\n"
+        f"Response: {response.get('metrics', {}).get('full_output')}\n"
+        "Assertion results:\n" + ''.join(assert_results)
+    )
 
 
 def _extract_metrics_from_promptfoo_results(
-        results_json: dict) -> dict[str, dict | float]:
+    results_json: dict,
+) -> dict[str, dict | float]:
     """Extracts relevant metrics from promptfoo results.
 
     Args:
@@ -256,8 +269,9 @@ def _extract_metrics_from_promptfoo_results(
         return {}
 
     extracted_metrics = {
-        'token_usage':
-        _extract_token_usage_from_promptfoo_results(results_json),
+        'token_usage': _extract_token_usage_from_promptfoo_results(
+            results_json
+        ),
     }
     score = _extract_score_from_promptfoo_results(results_json)
     if score is not None:
@@ -303,12 +317,15 @@ def _load_promptfoo_results(results_file: pathlib.Path) -> dict[str, any]:
         except (json.JSONDecodeError, UnicodeDecodeError) as e:
             logging.error(
                 'Error when parsing promptfoo results. This is expected if '
-                'promptfoo failed catastrophically: %s', e)
+                'promptfoo failed catastrophically: %s',
+                e,
+            )
             return {}
 
 
 def _extract_token_usage_from_promptfoo_results(
-        results_json: dict[str, any]) -> dict[str, int]:
+    results_json: dict[str, any],
+) -> dict[str, int]:
     """Extracts gemini-cli token usage from promptfoo JSON results.
 
     Args:
@@ -323,26 +340,33 @@ def _extract_token_usage_from_promptfoo_results(
     if not results_list:
         logging.error(
             'Did not find promptfoo result information, cannot extract token '
-            'usage. This is not expected to ever happen.')
+            'usage. This is not expected to ever happen.'
+        )
         return token_usage
 
     if len(results_list) > 1:
         logging.warning(
             'Unexpectedly got %d results from promptfoo when 1 is expected. '
-            'Only using the first result for token usage.', len(results_list))
+            'Only using the first result for token usage.',
+            len(results_list),
+        )
     r = results_list[0]
-    token_usage = r.get('response',
-                        {}).get('metrics',
-                                {}).get(constants.GEMINI_CLI_TOKEN_USAGE, {})
+    token_usage = (
+        r.get('response', {})
+        .get('metrics', {})
+        .get(constants.GEMINI_CLI_TOKEN_USAGE, {})
+    )
     if not token_usage:
         logging.warning(
             'Did not find gemini-cli token usage. This is not expected to '
-            'ever happen')
+            'ever happen'
+        )
     return token_usage
 
 
 def _extract_score_from_promptfoo_results(
-        results_json: dict[str, any]) -> float | None:
+    results_json: dict[str, any],
+) -> float | None:
     """Extracts the test score from promptfoo JSON results.
 
     Args:
@@ -357,29 +381,37 @@ def _extract_score_from_promptfoo_results(
     if not results_list:
         logging.error(
             'Did not find promptfoo result information, cannot extract score. '
-            'This is not expected to ever happen.')
+            'This is not expected to ever happen.'
+        )
         return None
 
     if len(results_list) > 1:
         logging.warning(
             'Unexpectedly got %d results from promptfoo when 1 is expected. '
-            'Only using the first result for score.', len(results_list))
+            'Only using the first result for score.',
+            len(results_list),
+        )
     r = results_list[0]
     score = r.get('score')
     if score is None:
         logging.warning(
-            'Did not find reported score. This is not expected to ever happen')
+            'Did not find reported score. This is not expected to ever happen'
+        )
     return score
 
 
 class WorkerThread(threading.Thread):
     """Class for running tests from a queue in an isolated environment."""
 
-    def __init__(self, worker_index: int,
-                 promptfoo: promptfoo_installation.PromptfooInstallation,
-                 worker_options: WorkerOptions,
-                 test_input_queue: queue.Queue[eval_config.TestConfig],
-                 test_result_queue: queue.Queue[results.TestResult], **kwargs):
+    def __init__(
+        self,
+        worker_index: int,
+        promptfoo: promptfoo_installation.PromptfooInstallation,
+        worker_options: WorkerOptions,
+        test_input_queue: queue.Queue[eval_config.TestConfig],
+        test_result_queue: queue.Queue[results.TestResult],
+        **kwargs,
+    ):
         """
         Args:
             worker_index: The unique index of this thread.
@@ -412,7 +444,8 @@ class WorkerThread(threading.Thread):
         while not self._shutdown_event.is_set():
             try:
                 config = self._test_input_queue.get(
-                    timeout=_AVAILABLE_TEST_POLLING_SLEEP_DURATION)
+                    timeout=_AVAILABLE_TEST_POLLING_SLEEP_DURATION
+                )
             except queue.Empty:
                 continue
             self._run_one_config(config)
@@ -427,8 +460,12 @@ class WorkerThread(threading.Thread):
         all_iteration_results = []
 
         for i in range(config.runs_per_test):
-            logging.info('Running test %s (iteration %d of up to %d)',
-                         config.test_file, i + 1, config.runs_per_test)
+            logging.info(
+                'Running test %s (iteration %d of up to %d)',
+                config.test_file,
+                i + 1,
+                config.runs_per_test,
+            )
             iteration_result = self._run_single_iteration(config)
             all_iteration_results.append(iteration_result)
 
@@ -441,35 +478,38 @@ class WorkerThread(threading.Thread):
 
             # Exit early if the test can no longer pass.
             num_failures = (i + 1) - successful_runs
-            max_failures_allowed = (config.runs_per_test -
-                                    config.pass_k_threshold)
+            max_failures_allowed = (
+                config.runs_per_test - config.pass_k_threshold
+            )
             if num_failures > max_failures_allowed:
                 break
 
         success = successful_runs >= config.pass_k_threshold
-        r = results.TestResult(config=config,
-                               success=success,
-                               iteration_results=all_iteration_results)
+        r = results.TestResult(
+            config=config,
+            success=success,
+            iteration_results=all_iteration_results,
+        )
         self._test_result_queue.put(r)
 
     def _run_single_iteration(
-            self, config: eval_config.TestConfig) -> results.IterationResult:
+        self, config: eval_config.TestConfig
+    ) -> results.IterationResult:
         """Runs a single iteration of a test and returns an IterationResult.
 
         Args:
             config: The TestConfig object for the test to run.
         """
         with (
-                WorkDir(
-                    f'workdir-{self._worker_index}',
-                    checkout_helpers.get_gclient_root(),
-                    self._worker_options.clean,
-                    self._worker_options.verbose,
-                    self._worker_options.force,
-                ) as workdir,
-                tempfile.TemporaryDirectory() as home_dir,
-                tempfile_ext.mkstemp_closed(suffix='.json') as
-                promptfoo_output,
+            WorkDir(
+                f'workdir-{self._worker_index}',
+                checkout_helpers.get_gclient_root(),
+                self._worker_options.clean,
+                self._worker_options.verbose,
+                self._worker_options.force,
+            ) as workdir,
+            tempfile.TemporaryDirectory() as home_dir,
+            tempfile_ext.mkstemp_closed(suffix='.json') as promptfoo_output,
         ):
             command = [
                 'eval',
@@ -493,13 +533,16 @@ class WorkerThread(threading.Thread):
             if self._worker_options.verbose:
                 command.extend(['--var', 'verbose=True'])
             if self._worker_options.gemini_cli_bin:
-                command.extend([
-                    '--var',
-                    f'gemini_cli_bin={self._worker_options.gemini_cli_bin}'
-                ])
+                command.extend(
+                    [
+                        '--var',
+                        f'gemini_cli_bin={self._worker_options.gemini_cli_bin}',
+                    ]
+                )
             if self._worker_options.node_bin:
                 command.extend(
-                    ['--var', f'node_bin={self._worker_options.node_bin}'])
+                    ['--var', f'node_bin={self._worker_options.node_bin}']
+                )
 
             start_time = time.time()
             proc = self._promptfoo.run(command, cwd=workdir.path / 'src')

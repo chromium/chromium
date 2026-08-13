@@ -20,6 +20,7 @@ class TestConfig:
     Note that `runs_per_test` and `pass_k_threshold` may not match the values
     in `test_file` unless this object is constructed with `from_file`.
     """
+
     test_file: pathlib.Path
     description: str = ""
     owner: str = None
@@ -36,18 +37,25 @@ class TestConfig:
             raise ValueError(
                 f'runs_per_test in {self.test_file} must be a positive integer.'
             )
-        if (not isinstance(self.pass_k_threshold, int)
-                or self.pass_k_threshold < 0):
+        if (
+            not isinstance(self.pass_k_threshold, int)
+            or self.pass_k_threshold < 0
+        ):
             raise ValueError(
                 f'pass_k_threshold in {self.test_file} must be a non-negative '
-                'integer.')
+                'integer.'
+            )
         if self.runs_per_test < self.pass_k_threshold:
-            raise ValueError(f'runs_per_test in {self.test_file} must be >= '
-                             'pass_k_threshold.')
-        if not isinstance(self.tags, list) or not all(
-                isinstance(t, str) for t in self.tags):
             raise ValueError(
-                f'tags in {self.test_file} must be a list of strings.')
+                f'runs_per_test in {self.test_file} must be >= '
+                'pass_k_threshold.'
+            )
+        if not isinstance(self.tags, list) or not all(
+            isinstance(t, str) for t in self.tags
+        ):
+            raise ValueError(
+                f'tags in {self.test_file} must be a list of strings.'
+            )
 
     @property
     def src_relative_test_file(self) -> pathlib.Path:
@@ -65,12 +73,12 @@ class TestConfig:
             raise ValueError(f'Error parsing YAML file: {test_file}') from e
 
         if config is None:
-            raise ValueError(
-                f'Test config file must not be empty: {test_file}')
+            raise ValueError(f'Test config file must not be empty: {test_file}')
 
         if 'tests' not in config:
-            raise ValueError(f'Test config file must have a "tests" key: '
-                             f'{test_file}')
+            raise ValueError(
+                f'Test config file must have a "tests" key: {test_file}'
+            )
 
         if not config['tests']:
             raise ValueError(f'"tests" list in {test_file} must not be empty.')
@@ -82,7 +90,8 @@ class TestConfig:
         if len(config['tests']) > 1:
             logging.warning(
                 'Test settings can only be specified on the first test in a '
-                'promptfoo config. Settings on other tests will be ignored.')
+                'promptfoo config. Settings on other tests will be ignored.'
+            )
 
         test = config['tests'][0]
         metadata = test.get('metadata')
@@ -94,13 +103,15 @@ class TestConfig:
         owner = config.get('owner')
         description = config.get('description', '')
 
-        instance = cls(test_file=test_file,
-                       description=description,
-                       runs_per_test=runs_per_test,
-                       pass_k_threshold=pass_k_threshold,
-                       precompile_targets=precompile_targets,
-                       owner=owner,
-                       tags=tags)
+        instance = cls(
+            test_file=test_file,
+            description=description,
+            runs_per_test=runs_per_test,
+            pass_k_threshold=pass_k_threshold,
+            precompile_targets=precompile_targets,
+            owner=owner,
+            tags=tags,
+        )
         instance.validate()
         return instance
 

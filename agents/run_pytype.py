@@ -33,12 +33,14 @@ def main() -> int:
         str(AGENTS_DIR / 'infra' / 'review_rag_indexer'),
     ]
 
-    return pytype_runner.run_pytype(test_name='agents_pytype',
-                                    test_location='//agents/run_pytype.py',
-                                    files_to_check=[str(AGENTS_DIR)],
-                                    files_to_exclude=files_to_exclude,
-                                    python_paths=extra_paths,
-                                    cwd=str(AGENTS_DIR))
+    return pytype_runner.run_pytype(
+        test_name='agents_pytype',
+        test_location='//agents/run_pytype.py',
+        files_to_check=[str(AGENTS_DIR)],
+        files_to_exclude=files_to_exclude,
+        python_paths=extra_paths,
+        cwd=str(AGENTS_DIR),
+    )
 
 
 if __name__ == '__main__':

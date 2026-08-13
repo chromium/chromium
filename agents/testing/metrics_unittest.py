@@ -14,7 +14,6 @@ import metrics
 
 
 class MergeMetricsUnittest(unittest.TestCase):
-
     def test_empty_list(self):
         self.assertEqual(metrics.merge_metrics([]), {})
 
@@ -85,19 +84,11 @@ class MergeMetricsUnittest(unittest.TestCase):
         ]
         self.assertEqual(
             metrics.merge_metrics(iteration_metrics),
-            {
-                'test1.yaml': {
-                    'a': [1.0]
-                },
-                'test2.yaml': {
-                    'b': [2.0]
-                }
-            },
+            {'test1.yaml': {'a': [1.0]}, 'test2.yaml': {'b': [2.0]}},
         )
 
 
 class IterateOverNestedMetricsUnittest(unittest.TestCase):
-
     def test_empty_dict(self):
         self.assertEqual(list(metrics.iterate_over_nested_metrics({})), [])
 
@@ -107,10 +98,12 @@ class IterateOverNestedMetricsUnittest(unittest.TestCase):
             'b': 2.0,
         }
         self.assertCountEqual(
-            list(metrics.iterate_over_nested_metrics(flat_dict)), [
+            list(metrics.iterate_over_nested_metrics(flat_dict)),
+            [
                 ('a', 1.0),
                 ('b', 2.0),
-            ])
+            ],
+        )
 
     def test_nested_dict(self):
         nested_dict = {
@@ -120,10 +113,12 @@ class IterateOverNestedMetricsUnittest(unittest.TestCase):
             'c': 2.0,
         }
         self.assertCountEqual(
-            list(metrics.iterate_over_nested_metrics(nested_dict)), [
+            list(metrics.iterate_over_nested_metrics(nested_dict)),
+            [
                 ('a.b', 1.0),
                 ('c', 2.0),
-            ])
+            ],
+        )
 
     def test_deeply_nested_dict(self):
         deeply_nested_dict = {
@@ -135,10 +130,12 @@ class IterateOverNestedMetricsUnittest(unittest.TestCase):
             'd': 2.0,
         }
         self.assertCountEqual(
-            list(metrics.iterate_over_nested_metrics(deeply_nested_dict)), [
+            list(metrics.iterate_over_nested_metrics(deeply_nested_dict)),
+            [
                 ('a.b.c', 1.0),
                 ('d', 2.0),
-            ])
+            ],
+        )
 
 
 if __name__ == '__main__':

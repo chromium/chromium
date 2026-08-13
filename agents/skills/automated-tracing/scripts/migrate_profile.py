@@ -41,8 +41,11 @@ def clean_profile(profile_dir, delete_state=False):
     # 2. Delete active tabs and sessions (always required to prevent DevTools
     # WebSocket hangs)
     to_delete_patterns = [
-        "app_active_tabs", "app_tabs", "Sessions", "Session Storage",
-        "SessionStorage"
+        "app_active_tabs",
+        "app_tabs",
+        "Sessions",
+        "Session Storage",
+        "SessionStorage",
     ]
 
     # 3. Optional: Delete user state, history, cookies, and LocalStorage
@@ -68,20 +71,27 @@ def clean_profile(profile_dir, delete_state=False):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Migrate and clean Chrome profile for Telemetry.")
-    parser.add_argument("--output-dir",
-                        required=True,
-                        help="Local directory to save the cleaned profile.")
+        description="Migrate and clean Chrome profile for Telemetry."
+    )
+    parser.add_argument(
+        "--output-dir",
+        required=True,
+        help="Local directory to save the cleaned profile.",
+    )
     parser.add_argument("--device", help="Device serial (Android only).")
-    parser.add_argument("--package",
-                        default="org.chromium.chrome",
-                        help="App package name (Android only).")
-    parser.add_argument("--input-dir",
-                        help="Input profile directory (Desktop only).")
+    parser.add_argument(
+        "--package",
+        default="org.chromium.chrome",
+        help="App package name (Android only).",
+    )
+    parser.add_argument(
+        "--input-dir", help="Input profile directory (Desktop only)."
+    )
     parser.add_argument(
         "--delete-state",
         action="store_true",
-        help="Delete user state (history, cookies, LocalStorage).")
+        help="Delete user state (history, cookies, LocalStorage).",
+    )
 
     args = parser.parse_args()
 
@@ -93,8 +103,10 @@ def main():
 
     if is_android:
         if args.input_dir:
-            print("Error: --input-dir should not be used when --device is "
-                  "specified.")
+            print(
+                "Error: --input-dir should not be used when --device is "
+                "specified."
+            )
             sys.exit(1)
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -102,10 +114,16 @@ def main():
             run_cmd(["adb", "-s", args.device, "root"])
 
             device_profile_path = f"/data/data/{args.package}"
-            run_cmd([
-                "adb", "-s", args.device, "pull", f"{device_profile_path}/",
-                temp_dir
-            ])
+            run_cmd(
+                [
+                    "adb",
+                    "-s",
+                    args.device,
+                    "pull",
+                    f"{device_profile_path}/",
+                    temp_dir,
+                ]
+            )
 
             pulled_profile_path = os.path.join(temp_dir, args.package)
             if not os.path.exists(pulled_profile_path):

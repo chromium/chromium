@@ -30,8 +30,9 @@ def get_xml_candidates(repo_root):
                 if data["type"] == "match":
                     path = data["data"]["path"]["text"]
                     line_num = data["data"]["line_number"]
-                    match = re.search(r'<enum name="([^"]+)">',
-                                      data["data"]["lines"]["text"])
+                    match = re.search(
+                        r'<enum name="([^"]+)">', data["data"]["lines"]["text"]
+                    )
                     if match:
                         candidates.append((match.group(1), path, line_num))
             except (json.JSONDecodeError, KeyError):
@@ -45,7 +46,7 @@ def is_xml_unguarded(path, line_num):
         with open(path, "r", encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
             start = max(0, line_num - 4)
-            context = "".join(lines[start:line_num - 1])
+            context = "".join(lines[start : line_num - 1])
             return "LINT.IfChange" not in context
     except Exception:
         return False
@@ -63,18 +64,22 @@ def find_source_files_batch(enum_names, repo_root):
     # Chunk enum names to avoid excessively long regex patterns
     chunk_size = 500
     for i in range(0, len(enum_names), chunk_size):
-        chunk = enum_names[i:i + chunk_size]
+        chunk = enum_names[i : i + chunk_size]
         escaped_names = [re.escape(name) for name in chunk]
         pattern = r"\benum\s+(class\s+)?(" + "|".join(escaped_names) + r")\b"
 
         cmd = [
-            "rg", "-n", "-H", "--no-heading", pattern, chrome_path,
-            components_path
+            "rg",
+            "-n",
+            "-H",
+            "--no-heading",
+            pattern,
+            chrome_path,
+            components_path,
         ]
-        result = subprocess.run(cmd,
-                                capture_output=True,
-                                text=True,
-                                check=False)
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, check=False
+        )
 
         if result.returncode == 0 and result.stdout:
             for line in result.stdout.splitlines():
@@ -88,8 +93,9 @@ def find_source_files_batch(enum_names, repo_root):
 
                     line_content = ":".join(parts[2:])
                     for name in chunk:
-                        if re.search(r"\b" + re.escape(name) + r"\b",
-                                     line_content):
+                        if re.search(
+                            r"\b" + re.escape(name) + r"\b", line_content
+                        ):
                             if name not in enum_to_source:
                                 enum_to_source[name] = (filepath, line_num)
                             break
@@ -128,13 +134,12 @@ def find_candidates(repo_root):
 
                 # Verify source file enum is unguarded (native Python check)
                 try:
-                    with open(source_path,
-                              "r",
-                              encoding="utf-8",
-                              errors="ignore") as f:
+                    with open(
+                        source_path, "r", encoding="utf-8", errors="ignore"
+                    ) as f:
                         lines = f.readlines()
                         start = max(0, line_num - 4)
-                        context = "".join(lines[start:line_num - 1])
+                        context = "".join(lines[start : line_num - 1])
                         if "LINT.IfChange" in context:
                             continue
                 except Exception:
@@ -155,9 +160,11 @@ def find_candidates(repo_root):
                         if other_name not in enums:
                             is_in_source = (
                                 f"enum class {other_name}" in source_content
-                                or f"enum {other_name}" in source_content)
+                                or f"enum {other_name}" in source_content
+                            )
                             if is_in_source and is_xml_unguarded(
-                                    xml_path, other_line):
+                                xml_path, other_line
+                            ):
                                 enums.add(other_name)
                 except IOError:
                     continue
@@ -168,15 +175,18 @@ def find_candidates(repo_root):
                     yield {
                         "file": rel_source,
                         "xml": rel_xml,
-                        "enums": sorted(list(enums))
+                        "enums": sorted(list(enums)),
                     }
 
 
 if __name__ == "__main__":
-    print("ERROR: This script is a plugin and cannot be run directly.",
-          file=sys.stderr)
+    print(
+        "ERROR: This script is a plugin and cannot be run directly.",
+        file=sys.stderr,
+    )
     print("Please run the central hub runner instead:", file=sys.stderr)
     print(
         f"  python3 agents/projects/code-health/hub/scripts/candidate_finder.py find --plugin {__file__}",
-        file=sys.stderr)
+        file=sys.stderr,
+    )
     sys.exit(1)

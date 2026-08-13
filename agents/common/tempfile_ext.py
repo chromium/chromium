@@ -11,9 +11,9 @@ from typing import Generator
 
 
 @contextlib.contextmanager
-def mkstemp_closed(suffix=None,
-                   prefix=None,
-                   directory=None) -> Generator[pathlib.Path, None, None]:
+def mkstemp_closed(
+    suffix=None, prefix=None, directory=None
+) -> Generator[pathlib.Path, None, None]:
     """Yields a filepath to a closed temporary file on disk.
 
     When the context manager goes out of scope, the temporary file is removed.
@@ -33,9 +33,9 @@ def mkstemp_closed(suffix=None,
     Args:
         See tempfile.mkstemp().
     """
-    file_handle, file_path = tempfile.mkstemp(suffix=suffix,
-                                              prefix=prefix,
-                                              dir=directory)
+    file_handle, file_path = tempfile.mkstemp(
+        suffix=suffix, prefix=prefix, dir=directory
+    )
     try:
         os.close(file_handle)
         yield pathlib.Path(file_path)

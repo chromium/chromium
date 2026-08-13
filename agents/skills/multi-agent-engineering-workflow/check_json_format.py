@@ -24,25 +24,27 @@ INDENT_OVERRIDES = {
 def _ValidateMultilineStrings(data, file_path):
     """Ensures multiline string arrays follow the 'Joining Rule'.
 
-  The Joining Rule (defined in SKILL.md) requires that each element in an
-  array (except the last) must end with a trailing space or punctuation to
-  prevent token merging during concatenation.
+    The Joining Rule (defined in SKILL.md) requires that each element in an
+    array (except the last) must end with a trailing space or punctuation to
+    prevent token merging during concatenation.
 
-  Returns:
-    A list of error messages.
-  """
+    Returns:
+      A list of error messages.
+    """
     errors = []
 
     def _CheckValue(val, path):
         if isinstance(val, list):
             for i, item in enumerate(val):
                 if isinstance(item, str) and i < len(val) - 1:
-                    if not (item.endswith(' ')
-                            or item.endswith(tuple('.,!?;:'))):
+                    if not (
+                        item.endswith(' ') or item.endswith(tuple('.,!?;:'))
+                    ):
                         errors.append(
                             f"Joining Rule violation in {file_path} "
                             f"at {path}[{i}]: "
-                            "String lacks trailing space or punctuation.")
+                            "String lacks trailing space or punctuation."
+                        )
                 elif isinstance(item, (dict, list)):
                     _CheckValue(item, f"{path}[{i}]")
         elif isinstance(val, dict):
@@ -51,8 +53,7 @@ def _ValidateMultilineStrings(data, file_path):
 
     # Only personas are expected to have these multiline arrays for mandates
     # and checklists.
-    if isinstance(data, dict) and 'personas/' in file_path.replace(
-            os.sep, '/'):
+    if isinstance(data, dict) and 'personas/' in file_path.replace(os.sep, '/'):
         _CheckValue(data.get('mandate', []), 'mandate')
         _CheckValue(data.get('checklist', {}), 'checklist')
 
@@ -62,16 +63,16 @@ def _ValidateMultilineStrings(data, file_path):
 def CheckFormatting(file_path, fix=False):
     """Checks or fixes the formatting of a JSON file.
 
-  Args:
-    file_path: Path to the JSON file.
-    fix: If True, overwrites the file with the correct formatting.
+    Args:
+      file_path: Path to the JSON file.
+      fix: If True, overwrites the file with the correct formatting.
 
-  Returns:
-    A tuple (formatting_ok, lint_errors).
-    formatting_ok is True if the file matches the expected format (or
-    was fixed).
-    lint_errors is a list of strings describing Joining Rule violations.
-  """
+    Returns:
+      A tuple (formatting_ok, lint_errors).
+      formatting_ok is True if the file matches the expected format (or
+      was fixed).
+      lint_errors is a list of strings describing Joining Rule violations.
+    """
     magi_dir = os.path.dirname(os.path.abspath(__file__))
     rel_path = os.path.relpath(file_path, magi_dir)
     # Use Unix-style slashes for the override check.
@@ -90,9 +91,15 @@ def CheckFormatting(file_path, fix=False):
 
         # 2. Enforce indentation and trailing newline.
         # ensure_ascii=False prevents escaping unicode characters.
-        formatted_content = json.dumps(
-            data, indent=expected_indent, sort_keys=False,
-            ensure_ascii=False) + '\n'
+        formatted_content = (
+            json.dumps(
+                data,
+                indent=expected_indent,
+                sort_keys=False,
+                ensure_ascii=False,
+            )
+            + '\n'
+        )
 
         formatting_ok = original_content == formatted_content
 
@@ -112,9 +119,9 @@ def CheckFormatting(file_path, fix=False):
 def main():
     parser = argparse.ArgumentParser(description="MAGI JSON Formatter")
     parser.add_argument('files', nargs='*', help="Files to check/fix")
-    parser.add_argument('--fix',
-                        action='store_true',
-                        help="Fix formatting errors")
+    parser.add_argument(
+        '--fix', action='store_true', help="Fix formatting errors"
+    )
     args = parser.parse_args()
 
     magi_dir = os.path.dirname(os.path.abspath(__file__))

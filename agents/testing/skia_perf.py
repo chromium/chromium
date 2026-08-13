@@ -28,8 +28,15 @@ BUCKET_SUBDIR = 'ingest'
 class SkiaPerfMetricReporter:
     """Encapsulates state to upload to a Skia Perf-based dashboard."""
 
-    def __init__(self, git_revision: str, bucket: str, build_id: str,
-                 builder: str, builder_group: str, build_number: int):
+    def __init__(
+        self,
+        git_revision: str,
+        bucket: str,
+        build_id: str,
+        builder: str,
+        builder_group: str,
+        build_number: int,
+    ):
         """
         Args:
             git_revision: The current Chromium git revision being tested.
@@ -56,11 +63,14 @@ class SkiaPerfMetricReporter:
             test_result: A TestResult instance containing the result to queue.
         """
         for ir in test_result.iteration_results:
-            logging.debug('Queueing metrics: %s',
-                          self._pprinter.pformat(ir.metrics))
+            logging.debug(
+                'Queueing metrics: %s', self._pprinter.pformat(ir.metrics)
+            )
             self._metrics_to_upload.put(
-                metrics.IterationMetrics(config=test_result.config,
-                                         metrics=ir.metrics))
+                metrics.IterationMetrics(
+                    config=test_result.config, metrics=ir.metrics
+                )
+            )
 
     def upload_queued_metrics(self) -> None:
         """Merges and uploads all queued metric data."""
@@ -74,11 +84,15 @@ class SkiaPerfMetricReporter:
         except Exception as e:
             # These tests are primarily meant to be functional tests, so make
             # a failure to upload non-fatal.
-            logging.error('Error occurred while uploading to bucket %s: %s',
-                          self._bucket, e)
+            logging.error(
+                'Error occurred while uploading to bucket %s: %s',
+                self._bucket,
+                e,
+            )
 
     def _create_dashboard_json(
-            self, metrics_to_upload: list[metrics.IterationMetrics]) -> dict:
+        self, metrics_to_upload: list[metrics.IterationMetrics]
+    ) -> dict:
         """Converts |metrics_to_upload| into dashboard-compatible JSON.
 
         See
@@ -107,13 +121,11 @@ class SkiaPerfMetricReporter:
         for test_name, metrics_mapping in merged_metrics.items():
             for metric_name, metric_values in metrics_mapping.items():
                 result = {
-                    'key': {
-                        'test': test_name,
-                        'metric': metric_name
-                    },
+                    'key': {'test': test_name, 'metric': metric_name},
                     'measurements': {
-                        'stat':
-                        _generate_stats_for_metric_values(metric_values),
+                        'stat': _generate_stats_for_metric_values(
+                            metric_values
+                        ),
                     },
                 }
                 dashboard_json['results'].append(result)
@@ -130,7 +142,8 @@ class SkiaPerfMetricReporter:
         gsutil = shutil.which('gsutil.py')
         if not gsutil:
             raise RuntimeError(
-                'Unable to find gsutil.py. Is depot_tools in PATH?')
+                'Unable to find gsutil.py. Is depot_tools in PATH?'
+            )
 
         # Ensure that the filename is unique in GCS.
         json_contents = json.dumps(dashboard_json, sort_keys=True)
@@ -165,7 +178,8 @@ class SkiaPerfMetricReporter:
 
 
 def _generate_stats_for_metric_values(
-        metric_values: list[float]) -> list[dict[str, str | float]]:
+    metric_values: list[float],
+) -> list[dict[str, str | float]]:
     """Generates statistics for a list of metric values.
 
     Args:

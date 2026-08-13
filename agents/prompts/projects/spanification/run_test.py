@@ -9,33 +9,36 @@ from unittest import mock
 
 # Add the script's directory to the Python path to allow importing it.
 import sys
+
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 
 import run
 
-class RunScriptTest(unittest.TestCase):
 
-    @mock.patch('builtins.open',
-                new_callable=mock.mock_open,
-                read_data='initial content')
+class RunScriptTest(unittest.TestCase):
+    @mock.patch(
+        'builtins.open',
+        new_callable=mock.mock_open,
+        read_data='initial content',
+    )
     @mock.patch('os.path.exists', return_value=True)
     def test_setup_gemini_context_md(self, _mock_exists, mock_open):
         """Tests the setup_gemini_context_md context manager."""
         context_files = ['file1.md', 'file2.cc']
-        entry = (f"# {run.SPANIFICATION_GEMINI_MD}\n"
-                 f"@file1.md\n@file2.cc\n# /{run.SPANIFICATION_GEMINI_MD}\n")
+        entry = (
+            f"# {run.SPANIFICATION_GEMINI_MD}\n"
+            f"@file1.md\n@file2.cc\n# /{run.SPANIFICATION_GEMINI_MD}\n"
+        )
 
         with run.setup_gemini_context_md(context_files):
             # Check if the entry was added
-            mock_open.assert_called_with(run.GEMINI_MD_PATH,
-                                         'w',
-                                         encoding='utf-8')
+            mock_open.assert_called_with(
+                run.GEMINI_MD_PATH, 'w', encoding='utf-8'
+            )
             mock_open().write.assert_called_with('initial content' + entry)
 
         # Check if the entry was removed
-        mock_open.assert_called_with(run.GEMINI_MD_PATH,
-                                     'w',
-                                     encoding='utf-8')
+        mock_open.assert_called_with(run.GEMINI_MD_PATH, 'w', encoding='utf-8')
         mock_open().write.assert_called_with('initial content')
 
     @mock.patch('subprocess.run')
@@ -71,9 +74,9 @@ class RunScriptTest(unittest.TestCase):
 
     @mock.patch('run.run_gemini')
     @mock.patch('subprocess.run')
-    @mock.patch('builtins.open',
-                new_callable=mock.mock_open,
-                read_data='patch content')
+    @mock.patch(
+        'builtins.open', new_callable=mock.mock_open, read_data='patch content'
+    )
     def test_run_reviewer_success(self, _mock_open, mock_run, mock_gemini):
         """Tests run_reviewer with a successful review."""
         mock_run.return_value.stdout = "patch content"
@@ -84,17 +87,20 @@ class RunScriptTest(unittest.TestCase):
 
     @mock.patch('run.run_gemini')
     @mock.patch('subprocess.run')
-    @mock.patch('builtins.open',
-                new_callable=mock.mock_open,
-                read_data='patch content')
+    @mock.patch(
+        'builtins.open', new_callable=mock.mock_open, read_data='patch content'
+    )
     def test_run_reviewer_failure(self, _mock_open, mock_run, mock_gemini):
         """Tests run_reviewer with changes requested."""
         mock_run.return_value.stdout = "patch content"
-        mock_gemini.return_value = (0,
-                                    [{'output': 'CHANGES_REQUESTED: fix this'}])
+        mock_gemini.return_value = (
+            0,
+            [{'output': 'CHANGES_REQUESTED: fix this'}],
+        )
         status, feedback = run.run_reviewer('file.cc')
         self.assertEqual(status, "FAILURE")
         self.assertIn("CHANGES_REQUESTED", feedback)
+
 
 if __name__ == '__main__':
     unittest.main()

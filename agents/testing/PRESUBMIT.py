@@ -25,4 +25,6 @@ def CheckPythonUnittests(input_api, output_api):
             input_api.PresubmitLocalPath(),
             files_to_skip=[r'.*/cipd/.*'],
             files_to_check=[r'.+_(?:unit)?test\.py$'],
-            env=presubmit_support.get_agents_env(input_api)))
+            env=presubmit_support.get_agents_env(input_api),
+        )
+    )

@@ -32,21 +32,21 @@ def assert_test_count(_output: str, context):
         return _failure(f'File not found: {file_path}')
     content = file_path.read_text(encoding='utf-8')
 
-    test_macros = [
-        'TEST', 'TEST_F', 'TEST_P', 'TYPED_TEST', 'TYPED_TEST_SUITE'
-    ]
+    test_macros = ['TEST', 'TEST_F', 'TEST_P', 'TYPED_TEST', 'TYPED_TEST_SUITE']
     regex = r'^\s*(?:' + '|'.join(test_macros) + r')\('
     test_count = len(re.findall(regex, content, re.MULTILINE))
     match = re.search(r'["\']test_count["\']\s*:\s*(\d+)', _output)
     if not match:
         return _failure(
-                'Could not find `"test_count": <number>` in model output.')
+            'Could not find `"test_count": <number>` in model output.'
+        )
 
     reported_count = int(match.group(1))
 
     if test_count != reported_count:
-        return _failure(f'Expected {test_count} tests, but model reported '
-                        f'{reported_count}')
+        return _failure(
+            f'Expected {test_count} tests, but model reported {reported_count}'
+        )
 
     return True
 
@@ -74,23 +74,25 @@ def _evaluate_result(test_process: subprocess.CompletedProcess, summary):
     statuses_by_test = collections.defaultdict(set)
     for tests_for_iteration in summary.get('per_iteration_data', []):
         for test, data_for_repeats in tests_for_iteration.items():
-            statuses_by_test[test].update(data['status']
-                                          for data in data_for_repeats)
+            statuses_by_test[test].update(
+                data['status'] for data in data_for_repeats
+            )
 
     if not statuses_by_test:
         return _failure('No tests ran. Did the agent add the expected tests?')
 
     if failed_tests := {
-            test
-            for test, statuses in statuses_by_test.items()
-            if not statuses.issubset({'SUCCESS'})
+        test
+        for test, statuses in statuses_by_test.items()
+        if not statuses.issubset({'SUCCESS'})
     }:
-        return _failure('Some tests failed: ' +
-                        ', '.join(sorted(failed_tests)))
+        return _failure('Some tests failed: ' + ', '.join(sorted(failed_tests)))
 
     if test_process.returncode != 0:
-        return _failure(f'Test process exited with {test_process.returncode}, '
-                        'but no failures were detected in the summary')
+        return _failure(
+            f'Test process exited with {test_process.returncode}, '
+            'but no failures were detected in the summary'
+        )
     return True
 
 

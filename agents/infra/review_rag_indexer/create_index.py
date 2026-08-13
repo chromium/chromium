@@ -28,7 +28,8 @@ MANIFEST_NAME = 'manifest.json'
 
 
 def _calculate_time_window(
-        window_str: str) -> tuple[datetime.timedelta, datetime.datetime]:
+    window_str: str,
+) -> tuple[datetime.timedelta, datetime.datetime]:
     """Parses `window` into a timedelta.
 
     Args:
@@ -77,16 +78,21 @@ def _retrieve_previous_run_info(common_args: CommonArgs) -> None:
             modified in place depending on the state of the previous run's
             manifest.
     """
-    manifest_cipd_path = posixpath.join(cipd_helpers.CIPD_INDEX_BASE,
-                                        common_args.project, common_args.repo,
-                                        'manifest')
+    manifest_cipd_path = posixpath.join(
+        cipd_helpers.CIPD_INDEX_BASE,
+        common_args.project,
+        common_args.repo,
+        'manifest',
+    )
     with cipd_helpers.initialize_cipd_root() as cipd_root:
         fetched_manifest = cipd_helpers.install_package(
-            manifest_cipd_path, 'latest', cipd_root)
+            manifest_cipd_path, 'latest', cipd_root
+        )
         if not fetched_manifest:
             logging.info(
                 'Failed to retrieve manifest, proceeding with full index '
-                'creation')
+                'creation'
+            )
             return
 
         manifest_path = cipd_root / MANIFEST_NAME
@@ -96,49 +102,60 @@ def _retrieve_previous_run_info(common_args: CommonArgs) -> None:
     if (v := manifest.get('script_version')) != SCRIPT_VERSION:
         logging.info(
             "Last run's manifest reported version %s, does not match %s. "
-            'Proceeding with full index creation', v, SCRIPT_VERSION)
+            'Proceeding with full index creation',
+            v,
+            SCRIPT_VERSION,
+        )
         return
 
     pr_window_seconds = manifest.get('window_seconds')
     if not pr_window_seconds:
         logging.info(
             "Last run's manifest did not report a window. Proceeding with "
-            'full index creation')
+            'full index creation'
+        )
         return
 
     if pr_window_seconds != common_args.window.total_seconds():
         logging.info(
             "Last run's manifest reported a window of %s seconds while the "
             'current run is using a window of %s seconds. Proceeding with '
-            'full index creation', pr_window_seconds,
-            common_args.window.total_seconds())
+            'full index creation',
+            pr_window_seconds,
+            common_args.window.total_seconds(),
+        )
         return
 
     pr_start_time_ts = manifest.get('start_time')
     if not pr_start_time_ts:
         logging.info(
             "Last run's manifest did not report a start time. Proceeding "
-            'with full index creation')
+            'with full index creation'
+        )
         return
 
-    pr_start_time = datetime.datetime.fromtimestamp(pr_start_time_ts,
-                                                    tz=datetime.timezone.utc)
+    pr_start_time = datetime.datetime.fromtimestamp(
+        pr_start_time_ts, tz=datetime.timezone.utc
+    )
     if common_args.window_base - pr_start_time > common_args.window:
         logging.info(
             "Last run's manifest was created with no overlap with the "
-            'current window. Proceeding with full index creation')
+            'current window. Proceeding with full index creation'
+        )
         return
 
     pr_revision = manifest.get('revision')
     if not pr_revision:
         logging.info(
             "Last run's manifest did not contain a revision. Proceeding with "
-            'full index creation')
+            'full index creation'
+        )
         return
 
     logging.info(
         "Last run's manifest appears to be valid and relevant. Proceeding "
-        'with incremental index creation')
+        'with incremental index creation'
+    )
     common_args.previous_run = PreviousRunInfo(
         revision=pr_revision,
         start_time=pr_start_time,
@@ -147,55 +164,75 @@ def _retrieve_previous_run_info(common_args: CommonArgs) -> None:
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description='Create an index for the Review RAG service')
+        description='Create an index for the Review RAG service'
+    )
     parser.add_argument(
         '--since',
         default='1 year ago',
-        help=('A string to parse to determine the window to create the index '
-              'over. Most human-readable strings such as "1 year ago" should '
-              'work.'))
+        help=(
+            'A string to parse to determine the window to create the index '
+            'over. Most human-readable strings such as "1 year ago" should '
+            'work.'
+        ),
+    )
     parser.add_argument(
         '--project',
         default='chromium',
-        help=('The Git-on-Borg project that the repository of interest lives '
-              'in.'))
+        help=(
+            'The Git-on-Borg project that the repository of interest lives in.'
+        ),
+    )
     parser.add_argument(
         '--repo',
         default='chromium/src',
-        help=('The repository within the Git-on-Borg project that the index '
-              'will be created for.'))
+        help=(
+            'The repository within the Git-on-Borg project that the index '
+            'will be created for.'
+        ),
+    )
     parser.add_argument(
         '--working-directory',
         type=pathlib.Path,
-        help=('A directory to switch to before creating the index. Can be '
-              'used to create indexes for submodules.'))
+        help=(
+            'A directory to switch to before creating the index. Can be '
+            'used to create indexes for submodules.'
+        ),
+    )
     parser.add_argument(
         '--dryrun',
         action='store_true',
-        help=('Run through all index creation steps, but do not upload any '
-              'index data.'))
+        help=(
+            'Run through all index creation steps, but do not upload any '
+            'index data.'
+        ),
+    )
     parser.add_argument(
         '--head-git-revision',
         default='HEAD',
-        help=('An git revision to treat as HEAD. Commits after this revision '
-              'will be ignored. This is primarily intended to support local '
-              'runs with WIP changes committed.'))
-    parser.add_argument('--verbose',
-                        action='store_true',
-                        help='Log more verbosely')
+        help=(
+            'An git revision to treat as HEAD. Commits after this revision '
+            'will be ignored. This is primarily intended to support local '
+            'runs with WIP changes committed.'
+        ),
+    )
+    parser.add_argument(
+        '--verbose', action='store_true', help='Log more verbosely'
+    )
     parser.add_argument(
         '--num-network-workers',
         type=int,
         default=20,
-        help='The number of workers to use for network operations.')
+        help='The number of workers to use for network operations.',
+    )
 
     args = parser.parse_args()
     _validate_args(args, parser)
     return args
 
 
-def _validate_args(args: argparse.Namespace,
-                   parser: argparse.ArgumentParser) -> None:
+def _validate_args(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> None:
     """Validates arguments immediately after parsing.
 
     Args:
@@ -207,8 +244,7 @@ def _validate_args(args: argparse.Namespace,
 
     if args.head_git_revision != 'HEAD':
         if not git_utils.revision_exists(args.head_git_revision):
-            parser.error(
-                f'Invalid head git revision: {args.head_git_revision}')
+            parser.error(f'Invalid head git revision: {args.head_git_revision}')
 
 
 def main() -> None:
@@ -219,16 +255,19 @@ def main() -> None:
     if window.total_seconds() < 0:
         raise ValueError(
             f'Parsing window "{args.since}" resulted in a time window in the '
-            f'future.')
+            f'future.'
+        )
 
-    common_args = CommonArgs(project=args.project,
-                             repo=args.repo,
-                             window=window,
-                             window_base=base,
-                             dryrun=args.dryrun,
-                             previous_run=None,
-                             head_git_revision=args.head_git_revision,
-                             num_network_workers=args.num_network_workers)
+    common_args = CommonArgs(
+        project=args.project,
+        repo=args.repo,
+        window=window,
+        window_base=base,
+        dryrun=args.dryrun,
+        previous_run=None,
+        head_git_revision=args.head_git_revision,
+        num_network_workers=args.num_network_workers,
+    )
     _retrieve_previous_run_info(common_args)
 
     cl_info = local_git_steps.process_local_git_data(common_args)
@@ -239,7 +278,6 @@ def main() -> None:
     gerrit_steps.retrieve_comments(common_args, cl_info)
     total_comments = sum(len(cl.comments) for cl in cl_info)
     logging.info('Retrieved %d comment threads.', total_comments)
-
 
 
 if __name__ == '__main__':

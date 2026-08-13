@@ -24,8 +24,9 @@ def is_expired(exp, date_limit, m_limit):
 
 def find_expired_histograms(date_limit, m_limit):
     """Generator yielding expired histograms from the metadata directory."""
-    pattern = os.path.join("tools", "metrics", "histograms", "metadata", "*",
-                           "histograms.xml")
+    pattern = os.path.join(
+        "tools", "metrics", "histograms", "metadata", "*", "histograms.xml"
+    )
     for f in glob.iglob(pattern):
         try:
             for hist in ET.parse(f).iter("histogram"):
@@ -42,7 +43,7 @@ def find_expired_histograms(date_limit, m_limit):
                     "name": hist.attrib.get("name", ""),
                     "expires_after": exp,
                     "summary": summary,
-                    "owners": owners
+                    "owners": owners,
                 }
         except Exception:
             continue
@@ -74,8 +75,9 @@ def main():
         return
 
     # Randomly sample candidates to reduce duplicate effort between users.
-    sampled = random.sample(all_histograms,
-                            k=min(len(all_histograms), args.count))
+    sampled = random.sample(
+        all_histograms, k=min(len(all_histograms), args.count)
+    )
 
     for h in sampled:
         summary = h["summary"][:150] + "..." if h["summary"] else "No summary."

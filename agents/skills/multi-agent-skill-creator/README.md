@@ -60,7 +60,7 @@ ______________________________________________________________________
 - [PRESUBMIT.py](./PRESUBMIT.py): Static checks for link integrity and template
   syntax.
 - [run_presubmit.py](./run_presubmit.py): Local runner for presubmit checks.
-- [.style.yapf](./.style.yapf): Python style configuration (PEP8).
+- [.ruff.toml](./.ruff.toml): Python style configuration (Ruff).
 - [.style.mdformat](./.style.mdformat): Markdown style marker.
 - [templates/](./templates/): Templates used by the skill to generate new
   workflows.

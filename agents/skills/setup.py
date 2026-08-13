@@ -22,7 +22,7 @@ SKILL_DIRS = [
     _PROJECT_ROOT / 'agents' / 'shared' / 'skills',
     _PROJECT_ROOT / 'agents' / 'skills',
     _PROJECT_ROOT / 'internal' / 'agents' / 'skills',
-    _PROJECT_ROOT / 'third_party' / 'depot_tools' / 'agents' / 'skills'
+    _PROJECT_ROOT / 'third_party' / 'depot_tools' / 'agents' / 'skills',
 ]
 sys.path.append(str(_PROJECT_ROOT))
 from agents.common import gemini_helpers
@@ -31,6 +31,7 @@ from agents.common import gemini_helpers
 @dataclass
 class SkillInfo:
     """Holds information about a skill."""
+
     name: str
     enabled: bool = False
     location: str | None = None
@@ -53,11 +54,13 @@ def get_installed_skills() -> dict[str, SkillInfo]:
     gemini_cmd = _get_gemini_cmd()
     output = ''
     try:
-        res = subprocess.run(gemini_cmd + ['skills', 'list', '--debug'],
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT,
-                             text=True,
-                             check=True)
+        res = subprocess.run(
+            gemini_cmd + ['skills', 'list', '--debug'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            check=True,
+        )
         output = res.stdout
     except subprocess.CalledProcessError as e:
         logging.info(' list error, %s', e)
@@ -68,15 +71,19 @@ def get_installed_skills() -> dict[str, SkillInfo]:
     skill_pattern = re.compile(
         r'^\s*([a-zA-Z0-9_-]+)\s+\[(Enabled|Disabled)\]\s*\n'
         r'\s*Description:\s+(.*?)\s*\n'
-        r'\s*Location:\s+(.*)', re.MULTILINE)
+        r'\s*Location:\s+(.*)',
+        re.MULTILINE,
+    )
     for match in skill_pattern.finditer(output):
         name, status, _, location = match.groups()
         # Strip the SKILLS.md file from the location
         location = Path(location).parent
-        skills[name] = SkillInfo(name=name,
-                                 enabled=(status == 'Enabled'),
-                                 location=location.as_posix(),
-                                 installed=True)
+        skills[name] = SkillInfo(
+            name=name,
+            enabled=(status == 'Enabled'),
+            location=location.as_posix(),
+            installed=True,
+        )
     return skills
 
 
@@ -92,9 +99,9 @@ def get_available_skills() -> dict[str, SkillInfo]:
         if d.exists():
             for skill in sorted(d.iterdir()):
                 if skill.is_dir() and (skill / 'SKILL.md').exists():
-                    available_skills[skill.name] = SkillInfo(name=skill.name,
-                                                             available=True,
-                                                             path=skill)
+                    available_skills[skill.name] = SkillInfo(
+                        name=skill.name, available=True, path=skill
+                    )
     return available_skills
 
 
@@ -146,7 +153,7 @@ def _print_skills_table(data: dict[str, SkillInfo]) -> None:
             'available': 'yes' if skill_data.available else 'no',
             'installed': 'yes' if skill_data.installed else 'no',
             'enabled': 'yes' if skill_data.enabled else 'no',
-            'location': location
+            'location': location,
         }
         col_widths['SKILL'] = max(col_widths['SKILL'], len(name))
         col_widths['LOCATION'] = max(col_widths['LOCATION'], len(location))
@@ -185,8 +192,11 @@ def _run_skill_command(action: str, name_or_path: str | Path) -> None:
         'enable': 'Enabling',
         'disable': 'Disabling',
     }
-    logging.info('  %s skill: %s',
-                 action_labels.get(action, action.capitalize()), display_name)
+    logging.info(
+        '  %s skill: %s',
+        action_labels.get(action, action.capitalize()),
+        display_name,
+    )
     subprocess.run(cmd, capture_output=True, text=True, check=True)
 
 
@@ -231,8 +241,11 @@ def link_skills(names: list[str]) -> bool:
         target_dir = _PROJECT_ROOT / '.agents' / 'skills'
         target_dir.mkdir(parents=True, exist_ok=True)
         try:
-            os.symlink(skill.path,
-                       _PROJECT_ROOT / '.agents' / 'skills' / skill.name, True)
+            os.symlink(
+                skill.path,
+                _PROJECT_ROOT / '.agents' / 'skills' / skill.name,
+                True,
+            )
         except FileExistsError:
             logging.info('Skill "%s" is already linked.', name)
     return success
@@ -259,8 +272,11 @@ def uninstall_skills(names: list[str]) -> bool:
             try:
                 _run_skill_command('uninstall', name)
             except subprocess.CalledProcessError as e:
-                logging.error('Error: Failed to uninstall "%s": %s', name,
-                              e.stderr.strip() if e.stderr else str(e))
+                logging.error(
+                    'Error: Failed to uninstall "%s": %s',
+                    name,
+                    e.stderr.strip() if e.stderr else str(e),
+                )
                 success = False
             except FileNotFoundError:
                 success = False
@@ -287,8 +303,12 @@ def enable_disable_skills(action: str, names: list[str]) -> bool:
         try:
             _run_skill_command(action, name)
         except subprocess.CalledProcessError as e:
-            logging.error('Error: Failed to %s "%s": %s', action, name,
-                          e.stderr.strip() if e.stderr else str(e))
+            logging.error(
+                'Error: Failed to %s "%s": %s',
+                action,
+                name,
+                e.stderr.strip() if e.stderr else str(e),
+            )
             success = False
         except FileNotFoundError:
             success = False

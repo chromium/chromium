@@ -31,12 +31,14 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         self.install_script_path = self.source_extensions_dir / 'install.py'
         self.fs.create_file(self.install_script_path)
 
-        self.testing_extensions_dir = (self.project_root / 'agents' /
-                                       'testing' / 'extensions')
+        self.testing_extensions_dir = (
+            self.project_root / 'agents' / 'testing' / 'extensions'
+        )
         self.fs.create_dir(self.testing_extensions_dir)
 
-        self.internal_extensions_dir = (self.project_root / 'internal' /
-                                        'agents' / 'extensions')
+        self.internal_extensions_dir = (
+            self.project_root / 'internal' / 'agents' / 'extensions'
+        )
         self.fs.create_dir(self.internal_extensions_dir)
 
         # Create sample extensions
@@ -55,24 +57,26 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         )
 
         self.mock_run_command_patcher = unittest.mock.patch(
-            'install._run_command')
+            'install._run_command'
+        )
         self.mock_run_command = self.mock_run_command_patcher.start()
         self.addCleanup(self.mock_run_command_patcher.stop)
 
         self.mock_get_version_patcher = unittest.mock.patch(
-            'agents.common.gemini_helpers.get_gemini_version')
+            'agents.common.gemini_helpers.get_gemini_version'
+        )
         self.mock_get_version = self.mock_get_version_patcher.start()
         self.addCleanup(self.mock_get_version_patcher.stop)
         self.mock_get_version.return_value = '0.9.0'
 
         self.mock_get_project_root_patcher = unittest.mock.patch(
-            'install.get_project_root')
+            'install.get_project_root'
+        )
         self.mock_get_project_root = self.mock_get_project_root_patcher.start()
         self.addCleanup(self.mock_get_project_root_patcher.stop)
         self.mock_get_project_root.return_value = self.project_root
 
-        self.mock_subprocess_run_patcher = unittest.mock.patch(
-            'subprocess.run')
+        self.mock_subprocess_run_patcher = unittest.mock.patch('subprocess.run')
         self.mock_subprocess_run = self.mock_subprocess_run_patcher.start()
         self.addCleanup(self.mock_subprocess_run_patcher.stop)
 
@@ -81,7 +85,8 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         extensions_dirs = install.get_extensions_dirs(self.project_root)
         # Extension in source directory
         ext_dir = install.find_extensions_dir_for_extension(
-            'sample_1', extensions_dirs)
+            'sample_1', extensions_dirs
+        )
         self.assertEqual(ext_dir, self.source_extensions_dir)
 
         # Extension in internal directory
@@ -93,15 +98,18 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         )
         extensions_dirs = install.get_extensions_dirs(self.project_root)
         ext_dir = install.find_extensions_dir_for_extension(
-            'internal_ext', extensions_dirs)
+            'internal_ext', extensions_dirs
+        )
         self.assertEqual(ext_dir, self.internal_extensions_dir)
 
         # Extension in testing directory
         extensions_dirs = install.get_extensions_dirs(
             self.project_root,
-            extra_extensions_dirs=[self.testing_extensions_dir])
+            extra_extensions_dirs=[self.testing_extensions_dir],
+        )
         ext_dir = install.find_extensions_dir_for_extension(
-            'test_sample', extensions_dirs)
+            'test_sample', extensions_dirs
+        )
         self.assertEqual(ext_dir, self.testing_extensions_dir)
 
     def test_get_extensions_dirs(self):
@@ -114,7 +122,8 @@ class InstallTest(fake_filesystem_unittest.TestCase):
 
         dirs = install.get_extensions_dirs(
             self.project_root,
-            extra_extensions_dirs=[self.testing_extensions_dir])
+            extra_extensions_dirs=[self.testing_extensions_dir],
+        )
         self.assertIn(self.source_extensions_dir, dirs)
         self.assertIn(self.internal_extensions_dir, dirs)
         self.assertIn(self.testing_extensions_dir, dirs)
@@ -128,133 +137,168 @@ class InstallTest(fake_filesystem_unittest.TestCase):
     def test_add_extension_copy(self, mock_find_dir):
         """Tests add command with copy."""
         mock_find_dir.return_value = self.source_extensions_dir
-        with unittest.mock.patch('sys.argv',
-                                 ['install.py', 'add', '--copy', 'sample_1']):
+        with unittest.mock.patch(
+            'sys.argv', ['install.py', 'add', '--copy', 'sample_1']
+        ):
             install.main()
-        self.mock_run_command.assert_called_once_with([
-            'gemini', 'extensions', 'install',
-            str(self.source_extensions_dir / 'sample_1')
-        ],
-                                                      skip_prompt=False)
+        self.mock_run_command.assert_called_once_with(
+            [
+                'gemini',
+                'extensions',
+                'install',
+                str(self.source_extensions_dir / 'sample_1'),
+            ],
+            skip_prompt=False,
+        )
 
     @unittest.mock.patch('install.find_extensions_dir_for_extension')
     def test_add_extension_link(self, mock_find_dir):
         """Tests add command."""
         mock_find_dir.return_value = self.source_extensions_dir
-        with unittest.mock.patch('sys.argv',
-                                 ['install.py', 'add', 'sample_1']):
+        with unittest.mock.patch('sys.argv', ['install.py', 'add', 'sample_1']):
             install.main()
-        self.mock_run_command.assert_called_once_with([
-            'gemini', 'extensions', 'link',
-            str(self.source_extensions_dir / 'sample_1')
-        ],
-                                                      skip_prompt=False)
+        self.mock_run_command.assert_called_once_with(
+            [
+                'gemini',
+                'extensions',
+                'link',
+                str(self.source_extensions_dir / 'sample_1'),
+            ],
+            skip_prompt=False,
+        )
 
     @unittest.mock.patch('install.find_extensions_dir_for_extension')
     def test_add_extension_skip_prompt(self, mock_find_dir):
         """Tests that the skip_prompt flag is accepted."""
         mock_find_dir.return_value = self.source_extensions_dir
         with unittest.mock.patch(
-                'sys.argv',
-            ['install.py', 'add', '--skip-prompt', 'sample_1']):
+            'sys.argv', ['install.py', 'add', '--skip-prompt', 'sample_1']
+        ):
             install.main()
-        self.mock_run_command.assert_called_once_with([
-            'gemini', 'extensions', 'link',
-            str(self.source_extensions_dir / 'sample_1')
-        ],
-                                                      skip_prompt=True)
+        self.mock_run_command.assert_called_once_with(
+            [
+                'gemini',
+                'extensions',
+                'link',
+                str(self.source_extensions_dir / 'sample_1'),
+            ],
+            skip_prompt=True,
+        )
 
     def test_add_test_extension(self):
         """Tests add command with a test extension."""
-        with unittest.mock.patch('sys.argv', [
-                'install.py', '--extra-extensions-dir',
-                str(self.testing_extensions_dir), 'add', 'test_sample'
-        ]):
+        with unittest.mock.patch(
+            'sys.argv',
+            [
+                'install.py',
+                '--extra-extensions-dir',
+                str(self.testing_extensions_dir),
+                'add',
+                'test_sample',
+            ],
+        ):
             install.main()
-        self.mock_run_command.assert_called_once_with([
-            'gemini', 'extensions', 'link',
-            str(self.testing_extensions_dir / 'test_sample')
-        ],
-                                                      skip_prompt=False)
+        self.mock_run_command.assert_called_once_with(
+            [
+                'gemini',
+                'extensions',
+                'link',
+                str(self.testing_extensions_dir / 'test_sample'),
+            ],
+            skip_prompt=False,
+        )
 
     def test_add_test_extension_without_flag_fails(self):
         """Tests add command with a test extension."""
-        with unittest.mock.patch('sys.argv',
-                                 ['install.py', 'add', 'test_sample']):
+        with unittest.mock.patch(
+            'sys.argv', ['install.py', 'add', 'test_sample']
+        ):
             with self.assertRaises(SystemExit):
                 install.main()
 
     def test_add_invalid_extension(self):
         """Tests add command with an invalid extension."""
-        with unittest.mock.patch('sys.argv',
-                                 ['install.py', 'add', 'nonexistent']):
-            with unittest.mock.patch('sys.stderr',
-                                     new_callable=io.StringIO) as mock_stderr:
+        with unittest.mock.patch(
+            'sys.argv', ['install.py', 'add', 'nonexistent']
+        ):
+            with unittest.mock.patch(
+                'sys.stderr', new_callable=io.StringIO
+            ) as mock_stderr:
                 with self.assertRaises(SystemExit) as e:
                     install.main()
                 self.assertEqual(e.exception.code, 1)
-                self.assertIn("Extension 'nonexistent' not found.",
-                              mock_stderr.getvalue())
+                self.assertIn(
+                    "Extension 'nonexistent' not found.", mock_stderr.getvalue()
+                )
         self.mock_run_command.assert_not_called()
 
     def test_update_extension(self):
         """Tests update command."""
-        with unittest.mock.patch('sys.argv',
-                                 ['install.py', 'update', 'sample_1']):
+        with unittest.mock.patch(
+            'sys.argv', ['install.py', 'update', 'sample_1']
+        ):
             install.main()
         self.mock_run_command.assert_called_once_with(
-            ['gemini', 'extensions', 'update', 'sample_1'], skip_prompt=False)
+            ['gemini', 'extensions', 'update', 'sample_1'], skip_prompt=False
+        )
 
     def test_update_all_extensions(self):
         """Tests update command with no extension specified."""
         with unittest.mock.patch('sys.argv', ['install.py', 'update']):
             install.main()
         self.mock_run_command.assert_called_once_with(
-            ['gemini', 'extensions', 'update', '--all'])
+            ['gemini', 'extensions', 'update', '--all']
+        )
 
     def test_remove_extension(self):
         """Tests remove command."""
-        with unittest.mock.patch('sys.argv',
-                                 ['install.py', 'remove', 'sample-1']):
+        with unittest.mock.patch(
+            'sys.argv', ['install.py', 'remove', 'sample-1']
+        ):
             install.main()
         self.mock_run_command.assert_called_once_with(
-            ['gemini', 'extensions', 'uninstall', 'sample-1'])
+            ['gemini', 'extensions', 'uninstall', 'sample-1']
+        )
 
     def test_enable_extension(self):
         """Tests enable command."""
-        with unittest.mock.patch('sys.argv',
-                                 ['install.py', 'enable', 'sample_1']):
+        with unittest.mock.patch(
+            'sys.argv', ['install.py', 'enable', 'sample_1']
+        ):
             install.main()
-        self.mock_run_command.assert_called_once_with([
-            'gemini', 'extensions', 'enable', 'sample_1', '--scope=Workspace'
-        ])
+        self.mock_run_command.assert_called_once_with(
+            ['gemini', 'extensions', 'enable', 'sample_1', '--scope=Workspace']
+        )
 
     def test_enable_extension_user_scope(self):
         """Tests enable command with user scope."""
         with unittest.mock.patch(
-                'sys.argv',
-            ['install.py', 'enable', '--scope=User', 'sample_1']):
+            'sys.argv', ['install.py', 'enable', '--scope=User', 'sample_1']
+        ):
             install.main()
         self.mock_run_command.assert_called_once_with(
-            ['gemini', 'extensions', 'enable', 'sample_1', '--scope=User'])
+            ['gemini', 'extensions', 'enable', 'sample_1', '--scope=User']
+        )
 
     def test_disable_extension(self):
         """Tests disable command."""
-        with unittest.mock.patch('sys.argv',
-                                 ['install.py', 'disable', 'sample_1']):
+        with unittest.mock.patch(
+            'sys.argv', ['install.py', 'disable', 'sample_1']
+        ):
             install.main()
-        self.mock_run_command.assert_called_once_with([
-            'gemini', 'extensions', 'disable', 'sample_1', '--scope=Workspace'
-        ])
+        self.mock_run_command.assert_called_once_with(
+            ['gemini', 'extensions', 'disable', 'sample_1', '--scope=Workspace']
+        )
 
     def test_disable_extension_user_scope(self):
         """Tests disable command with user scope."""
         with unittest.mock.patch(
-                'sys.argv',
-            ['install.py', 'disable', '--scope=User', 'sample_1']):
+            'sys.argv', ['install.py', 'disable', '--scope=User', 'sample_1']
+        ):
             install.main()
         self.mock_run_command.assert_called_once_with(
-            ['gemini', 'extensions', 'disable', 'sample_1', '--scope=User'])
+            ['gemini', 'extensions', 'disable', 'sample_1', '--scope=User']
+        )
 
     @unittest.mock.patch('pathlib.Path.home')
     def test_remove_legacy_extension(self, mock_home):
@@ -263,13 +307,15 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         mock_home.return_value = fake_home
 
         # Set up a legacy extension
-        legacy_extension_dir = (install.get_global_extension_dir() /
-                                'my_legacy_ext')
+        legacy_extension_dir = (
+            install.get_global_extension_dir() / 'my_legacy_ext'
+        )
         self.fs.create_dir(legacy_extension_dir)
         self.assertTrue(legacy_extension_dir.exists())
 
-        with unittest.mock.patch('sys.argv',
-                                 ['install.py', 'remove', 'my_legacy_ext']):
+        with unittest.mock.patch(
+            'sys.argv', ['install.py', 'remove', 'my_legacy_ext']
+        ):
             install.main()
 
         self.mock_run_command.assert_not_called()
@@ -303,35 +349,41 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         self.mock_subprocess_run.return_value.returncode = 0
 
         with unittest.mock.patch('sys.argv', ['install.py', 'list']):
-            with unittest.mock.patch('sys.stdout',
-                                     new_callable=io.StringIO) as mock_stdout:
+            with unittest.mock.patch(
+                'sys.stdout', new_callable=io.StringIO
+            ) as mock_stdout:
                 install.main()
                 output = mock_stdout.getvalue()
 
         expected_extensions = {
-            'workspace-enabled':
-            install.ExtensionInfo(name='workspace-enabled',
-                                  installed='2.0.0',
-                                  linked=False,
-                                  enabled_for_workspace=True,
-                                  enabled_for_user=False),
-            'user-enabled':
-            install.ExtensionInfo(name='user-enabled',
-                                  installed='1.0.0',
-                                  linked=True,
-                                  enabled_for_workspace=False,
-                                  enabled_for_user=True),
-            'both-enabled':
-            install.ExtensionInfo(name='both-enabled',
-                                  installed='3.0.0',
-                                  linked=False,
-                                  enabled_for_workspace=True,
-                                  enabled_for_user=True),
-            'sample_1':
-            install.ExtensionInfo(name='sample_1', available='1.0.0'),
+            'workspace-enabled': install.ExtensionInfo(
+                name='workspace-enabled',
+                installed='2.0.0',
+                linked=False,
+                enabled_for_workspace=True,
+                enabled_for_user=False,
+            ),
+            'user-enabled': install.ExtensionInfo(
+                name='user-enabled',
+                installed='1.0.0',
+                linked=True,
+                enabled_for_workspace=False,
+                enabled_for_user=True,
+            ),
+            'both-enabled': install.ExtensionInfo(
+                name='both-enabled',
+                installed='3.0.0',
+                linked=False,
+                enabled_for_workspace=True,
+                enabled_for_user=True,
+            ),
+            'sample_1': install.ExtensionInfo(
+                name='sample_1', available='1.0.0'
+            ),
         }
-        with unittest.mock.patch('sys.stdout',
-                                 new_callable=io.StringIO) as expected_stdout:
+        with unittest.mock.patch(
+            'sys.stdout', new_callable=io.StringIO
+        ) as expected_stdout:
             install._print_extensions_table(expected_extensions)
             expected_output = expected_stdout.getvalue()
 
@@ -343,17 +395,20 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         self.mock_subprocess_run.return_value.returncode = 0
 
         with unittest.mock.patch('sys.argv', ['install.py', 'list']):
-            with unittest.mock.patch('sys.stdout',
-                                     new_callable=io.StringIO) as mock_stdout:
+            with unittest.mock.patch(
+                'sys.stdout', new_callable=io.StringIO
+            ) as mock_stdout:
                 install.main()
                 output = mock_stdout.getvalue()
 
         expected_extensions = {
-            'sample_1': install.ExtensionInfo(name='sample_1',
-                                              available='1.0.0'),
+            'sample_1': install.ExtensionInfo(
+                name='sample_1', available='1.0.0'
+            ),
         }
-        with unittest.mock.patch('sys.stdout',
-                                 new_callable=io.StringIO) as expected_stdout:
+        with unittest.mock.patch(
+            'sys.stdout', new_callable=io.StringIO
+        ) as expected_stdout:
             install._print_extensions_table(expected_extensions)
             expected_output = expected_stdout.getvalue()
 
@@ -368,8 +423,9 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         self.fs.remove_object(str(self.extension1_dir))
 
         with unittest.mock.patch('sys.argv', ['install.py', 'list']):
-            with unittest.mock.patch('sys.stdout',
-                                     new_callable=io.StringIO) as mock_stdout:
+            with unittest.mock.patch(
+                'sys.stdout', new_callable=io.StringIO
+            ) as mock_stdout:
                 install.main()
                 output = mock_stdout.getvalue()
                 expected_output = (
@@ -381,25 +437,28 @@ class InstallTest(fake_filesystem_unittest.TestCase):
     def test_print_extensions_table_formatting(self):
         """Tests the formatting of the extensions table."""
         extensions_data = {
-            'ext_a':
-            install.ExtensionInfo(name='ext_a',
-                                  available='1.0.0',
-                                  installed='1.0.0',
-                                  linked=True,
-                                  enabled_for_workspace=True,
-                                  enabled_for_user=True),
-            'another_extension':
-            install.ExtensionInfo(name='another_extension',
-                                  available='2.0.0',
-                                  installed='-',
-                                  linked=False,
-                                  enabled_for_workspace=False),
-            'third_ext':
-            install.ExtensionInfo(name='third_ext',
-                                  available='-',
-                                  installed='3.0.0',
-                                  linked=False,
-                                  enabled_for_workspace=True),
+            'ext_a': install.ExtensionInfo(
+                name='ext_a',
+                available='1.0.0',
+                installed='1.0.0',
+                linked=True,
+                enabled_for_workspace=True,
+                enabled_for_user=True,
+            ),
+            'another_extension': install.ExtensionInfo(
+                name='another_extension',
+                available='2.0.0',
+                installed='-',
+                linked=False,
+                enabled_for_workspace=False,
+            ),
+            'third_ext': install.ExtensionInfo(
+                name='third_ext',
+                available='-',
+                installed='3.0.0',
+                linked=False,
+                enabled_for_workspace=True,
+            ),
         }
         expected_output = (
             'EXTENSION          AVAILABLE  INSTALLED  LINKED  WORKSPACE  '
@@ -411,9 +470,11 @@ class InstallTest(fake_filesystem_unittest.TestCase):
             'ext_a              1.0.0      1.0.0      yes     enabled    '
             'enabled\n'
             'third_ext          -          3.0.0      no      enabled    '
-            '-      \n')
-        with unittest.mock.patch('sys.stdout',
-                                 new_callable=io.StringIO) as mock_stdout:
+            '-      \n'
+        )
+        with unittest.mock.patch(
+            'sys.stdout', new_callable=io.StringIO
+        ) as mock_stdout:
             install._print_extensions_table(extensions_data)
             self.assertEqual(mock_stdout.getvalue(), expected_output)
 
@@ -421,7 +482,8 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         """Tests finding a non-existent extension."""
         extensions_dirs = install.get_extensions_dirs(self.project_root)
         ext_dir = install.find_extensions_dir_for_extension(
-            'nonexistent', extensions_dirs)
+            'nonexistent', extensions_dirs
+        )
         self.assertIsNone(ext_dir)
 
     @unittest.mock.patch('install.find_extensions_dir_for_extension')
@@ -439,29 +501,41 @@ class InstallTest(fake_filesystem_unittest.TestCase):
             install.main()
 
         calls = [
-            unittest.mock.call([
-                'gemini', 'extensions', 'link',
-                str(self.source_extensions_dir / 'sample_1')
-            ]),
-            unittest.mock.call([
-                'gemini', 'extensions', 'disable', 'sample_1', '--scope=User'
-            ]),
-            unittest.mock.call([
-                'gemini', 'extensions', 'enable', 'sample_1',
-                '--scope=Workspace'
-            ]),
+            unittest.mock.call(
+                [
+                    'gemini',
+                    'extensions',
+                    'link',
+                    str(self.source_extensions_dir / 'sample_1'),
+                ]
+            ),
+            unittest.mock.call(
+                ['gemini', 'extensions', 'disable', 'sample_1', '--scope=User']
+            ),
+            unittest.mock.call(
+                [
+                    'gemini',
+                    'extensions',
+                    'enable',
+                    'sample_1',
+                    '--scope=Workspace',
+                ]
+            ),
         ]
         self.mock_run_command.assert_has_calls(calls)
         self.assertFalse(project_extensions_dir.exists())
 
     def test_fix_extensions_no_project_dir(self):
         """Tests fix command when no project-level directory exists."""
-        with unittest.mock.patch('sys.stdout',
-                                 new_callable=io.StringIO) as mock_stdout:
+        with unittest.mock.patch(
+            'sys.stdout', new_callable=io.StringIO
+        ) as mock_stdout:
             with unittest.mock.patch('sys.argv', ['install.py', 'fix']):
                 install.main()
-            self.assertIn('No project-level extensions found to fix.',
-                          mock_stdout.getvalue())
+            self.assertIn(
+                'No project-level extensions found to fix.',
+                mock_stdout.getvalue(),
+            )
 
         self.mock_run_command.assert_not_called()
 
@@ -470,8 +544,9 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         project_extensions_dir = self.project_root / '.gemini' / 'extensions'
         self.fs.create_dir(project_extensions_dir)
 
-        with unittest.mock.patch('sys.stdout',
-                                 new_callable=io.StringIO) as mock_stdout:
+        with unittest.mock.patch(
+            'sys.stdout', new_callable=io.StringIO
+        ) as mock_stdout:
             with unittest.mock.patch('sys.argv', ['install.py', 'fix']):
                 install.main()
             self.assertIn(
@@ -499,8 +574,9 @@ class InstallTest(fake_filesystem_unittest.TestCase):
             contents='{"name": "sample_1", "version": "1.0.0"}',
         )
 
-        with unittest.mock.patch('sys.stderr',
-                                 new_callable=io.StringIO) as mock_stderr:
+        with unittest.mock.patch(
+            'sys.stderr', new_callable=io.StringIO
+        ) as mock_stderr:
             with unittest.mock.patch('sys.argv', ['install.py', 'fix']):
                 install.main()
             self.assertIn(
@@ -515,12 +591,15 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         """Tests that the user is prompted to run fix."""
         project_extensions_dir = self.project_root / '.gemini' / 'extensions'
         self.fs.create_dir(project_extensions_dir)
-        with unittest.mock.patch('sys.stderr',
-                                 new_callable=io.StringIO) as mock_stderr:
+        with unittest.mock.patch(
+            'sys.stderr', new_callable=io.StringIO
+        ) as mock_stderr:
             with unittest.mock.patch('sys.argv', ['install.py', 'list']):
                 install.main()
-            self.assertIn('WARNING: Project-level extensions are deprecated.',
-                          mock_stderr.getvalue())
+            self.assertIn(
+                'WARNING: Project-level extensions are deprecated.',
+                mock_stderr.getvalue(),
+            )
 
     def test_get_project_root(self):
         """Tests the get_project_root function."""
@@ -530,24 +609,27 @@ class InstallTest(fake_filesystem_unittest.TestCase):
 
     def test_error_raised_and_handled(self):
         """Tests that install.Error is raised and handled in main."""
-        with unittest.mock.patch('install.get_project_root',
-                                 return_value=None):
-            with unittest.mock.patch('sys.stderr',
-                                     new_callable=io.StringIO) as mock_stderr:
+        with unittest.mock.patch('install.get_project_root', return_value=None):
+            with unittest.mock.patch(
+                'sys.stderr', new_callable=io.StringIO
+            ) as mock_stderr:
                 with unittest.mock.patch('sys.argv', ['install.py', 'fix']):
                     with self.assertRaises(SystemExit) as e:
                         install.main()
                     self.assertEqual(e.exception.code, 1)
-                    self.assertIn("Error: Could not determine project root.",
-                                  mock_stderr.getvalue())
+                    self.assertIn(
+                        "Error: Could not determine project root.",
+                        mock_stderr.getvalue(),
+                    )
 
     def test_check_gemini_version_raises_error(self):
         """Tests that check_gemini_version raises install.Error."""
         self.mock_get_version.return_value = None
         with self.assertRaises(install.Error) as cm:
             install.check_gemini_version(gemini_cli_cmd=None)
-        self.assertIn("Could not determine Gemini CLI version",
-                      str(cm.exception))
+        self.assertIn(
+            "Could not determine Gemini CLI version", str(cm.exception)
+        )
 
         self.mock_get_version.return_value = "0.7.0"
         with self.assertRaises(install.Error) as cm:

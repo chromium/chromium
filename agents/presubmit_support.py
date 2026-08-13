@@ -19,10 +19,19 @@ def get_agents_python_path_entries() -> list[pathlib.Path]:
         # Needed so that the code in this directory can import neighboring code
         # while maintaining compatibility with pytype. The hyphens in skill
         # names affect pytype's ability to resolve paths for relative imports.
-        (CHROMIUM_SRC_DIR / 'agents' / 'skills' / 'analyzing-sql-traces' /
-         'scripts'),
-        (CHROMIUM_SRC_DIR / 'agents' / 'skills' /
-         'multi-agent-engineering-workflow'),
+        (
+            CHROMIUM_SRC_DIR
+            / 'agents'
+            / 'skills'
+            / 'analyzing-sql-traces'
+            / 'scripts'
+        ),
+        (
+            CHROMIUM_SRC_DIR
+            / 'agents'
+            / 'skills'
+            / 'multi-agent-engineering-workflow'
+        ),
         # Python code under //agents uses (or should use) fully qualified
         # imports relative to the Chromium src directory wherever possible.
         CHROMIUM_SRC_DIR,
@@ -33,7 +42,8 @@ def get_agents_python_path_entries() -> list[pathlib.Path]:
 MARKDOWN_LINK_RE = re.compile(
     r"""\[([^\]]+)\]\(\s*"""
     r"""(?:\<((?!https?://|mailto:)[^>]+)\>|((?!https?://|mailto:)[^\s)]+))"""
-    r"""\s*(?:\s+["'].*?["'])?\s*\)""")
+    r"""\s*(?:\s+["'].*?["'])?\s*\)"""
+)
 
 
 def CheckSkillMarkdownLinks(input_api, output_api):
@@ -45,7 +55,7 @@ def CheckSkillMarkdownLinks(input_api, output_api):
     def file_filter(affected_file):
         return input_api.FilterSourceFile(
             affected_file,
-            files_to_check=(r'.*\.md$', ),
+            files_to_check=(r'.*\.md$',),
         )
 
     affected_md_files = {
@@ -83,23 +93,28 @@ def CheckSkillMarkdownLinks(input_api, output_api):
 
                 parsed = urllib.parse.urlparse(link_target)
                 if parsed.scheme or link_target.startswith(
-                    ('path/to/', 'example/')):
+                    ('path/to/', 'example/')
+                ):
                     continue
 
                 if link_target.startswith('//'):
                     repo_relative_path = parsed.netloc + parsed.path
                     unquoted_path = urllib.parse.unquote(repo_relative_path)
                     target_path = os.path.normpath(
-                        os.path.join(repo_root, unquoted_path))
+                        os.path.join(repo_root, unquoted_path)
+                    )
                 elif parsed.path:
                     unquoted_path = urllib.parse.unquote(parsed.path)
                     if unquoted_path.startswith('/'):
                         target_path = os.path.normpath(
-                            os.path.join(repo_root, unquoted_path[1:]))
+                            os.path.join(repo_root, unquoted_path[1:])
+                        )
                     else:
                         target_path = os.path.normpath(
-                            os.path.join(os.path.dirname(md_file),
-                                         unquoted_path))
+                            os.path.join(
+                                os.path.dirname(md_file), unquoted_path
+                            )
+                        )
                 else:
                     continue
 
@@ -107,7 +122,8 @@ def CheckSkillMarkdownLinks(input_api, output_api):
                     msg = (
                         f'Broken link in {os.path.relpath(md_file, skill_dir)}:'
                         f'{line_num}: [{link_text}]({link_target}) -> '
-                        f'Target does not exist: {target_path}')
+                        f'Target does not exist: {target_path}'
+                    )
                     if is_modified:
                         results.append(output_api.PresubmitError(msg))
                     else:
@@ -123,7 +139,7 @@ def CheckSkillJsonFiles(input_api, output_api, check_personas=False):
     def file_filter(affected_file):
         return input_api.FilterSourceFile(
             affected_file,
-            files_to_check=(r'.*\.json$', ),
+            files_to_check=(r'.*\.json$',),
         )
 
     affected_json_files = {
@@ -169,8 +185,10 @@ def CheckSkillJsonFiles(input_api, output_api, check_personas=False):
                 required_keys = {'role', 'mandate', 'checklist'}
                 missing = required_keys - data.keys()
                 if missing:
-                    msg = (f"Persona JSON {rel_path} is missing required keys:"
-                           f" {', '.join(sorted(missing))}")
+                    msg = (
+                        f"Persona JSON {rel_path} is missing required keys:"
+                        f" {', '.join(sorted(missing))}"
+                    )
                     if is_modified:
                         results.append(output_api.PresubmitError(msg))
                     else:
@@ -190,9 +208,10 @@ def CheckSkillPresubmit(input_api, output_api, check_personas=False):
     results = []
     results.extend(CheckSkillMarkdownLinks(input_api, output_api))
     results.extend(
-        CheckSkillJsonFiles(input_api,
-                            output_api,
-                            check_personas=check_personas))
+        CheckSkillJsonFiles(
+            input_api, output_api, check_personas=check_personas
+        )
+    )
     return results
 
 
@@ -203,8 +222,10 @@ def get_agents_env(input_api):
     if existing_python_path:
         python_path.append(existing_python_path)
     env = dict(input_api.environ)
-    env.update({
-        'PYTHONPATH': input_api.os_path.pathsep.join(python_path),
-        'PYTHONDONTWRITEBYTECODE': '1',
-    })
+    env.update(
+        {
+            'PYTHONPATH': input_api.os_path.pathsep.join(python_path),
+            'PYTHONDONTWRITEBYTECODE': '1',
+        }
+    )
     return env

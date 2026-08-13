@@ -28,13 +28,13 @@ def count_recording_sites(name):
         # Search globally using cs for the last segment (to catch split strings)
         # Exclude matches in the metadata files themselves.
         cmd = [
-            "cs", "-c",
-            f"{search_term} -file:tools/metrics/histograms/metadata"
+            "cs",
+            "-c",
+            f"{search_term} -file:tools/metrics/histograms/metadata",
         ]
-        result = subprocess.run(cmd,
-                                capture_output=True,
-                                text=True,
-                                check=False)
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, check=False
+        )
         if result.returncode == 0:
             lines = result.stdout.strip().split('\n')
             for line in reversed(lines):
@@ -66,7 +66,7 @@ def get_expired_from_file(file_path, date_limit, m_limit):
                 "name": name,
                 "expires_after": exp,
                 "summary": summary,
-                "owners": owners
+                "owners": owners,
             }
     except Exception:
         pass
@@ -74,11 +74,14 @@ def get_expired_from_file(file_path, date_limit, m_limit):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Find expired histograms in a file.")
+        description="Find expired histograms in a file."
+    )
     parser.add_argument("file", type=str, help="Specific XML file to scan.")
-    parser.add_argument("--names-only",
-                        action="store_true",
-                        help="Output only the names of the histograms.")
+    parser.add_argument(
+        "--names-only",
+        action="store_true",
+        help="Output only the names of the histograms.",
+    )
     args = parser.parse_args()
 
     # Thresholds: 1 year ago or milestone - 12 (approx 1 year of milestones)

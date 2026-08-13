@@ -18,15 +18,18 @@ import requests
 from urllib3 import util
 
 # depot_tools is DEPSed in at //third_party/depot_tools.
-_DEPOT_TOOLS_DIR = (pathlib.Path(__file__).resolve().parents[3] /
-                    'third_party' / 'depot_tools')
+_DEPOT_TOOLS_DIR = (
+    pathlib.Path(__file__).resolve().parents[3] / 'third_party' / 'depot_tools'
+)
 if _DEPOT_TOOLS_DIR.exists():
     _DEPOT_TOOLS_DIR_STR = str(_DEPOT_TOOLS_DIR)
     if _DEPOT_TOOLS_DIR_STR not in sys.path:
         sys.path.append(_DEPOT_TOOLS_DIR_STR)
 else:
-    logging.warning('depot_tools not found at %s, gerrit_util import may fail',
-                    _DEPOT_TOOLS_DIR)
+    logging.warning(
+        'depot_tools not found at %s, gerrit_util import may fail',
+        _DEPOT_TOOLS_DIR,
+    )
 
 import gerrit_util  # pylint: disable=import-error
 
@@ -95,8 +98,9 @@ class _SessionManager:
                 allowed_methods={'GET'},
                 status_forcelist={500, 502, 503, 504},
             )
-            s.mount('https://',
-                    requests.adapters.HTTPAdapter(max_retries=retry))
+            s.mount(
+                'https://', requests.adapters.HTTPAdapter(max_retries=retry)
+            )
             self._configure_session_auth(s)
             self._sessions[thread_name] = s
 
@@ -107,7 +111,8 @@ class _SessionManager:
             session: The requests.Session object to add authentication to.
         """
         gerrit_adapter = GerritUtilHttpConnAdapter(
-            self._gerrit_host, f'https://{self._gerrit_host}/a/')
+            self._gerrit_host, f'https://{self._gerrit_host}/a/'
+        )
 
         try:
             # pylint: disable=protected-access
@@ -116,7 +121,8 @@ class _SessionManager:
             authenticator.authenticate(gerrit_adapter)
         except Exception as e:
             raise RuntimeError(
-                f'Failed to authenticate for {self._gerrit_host}: {e}') from e
+                f'Failed to authenticate for {self._gerrit_host}: {e}'
+            ) from e
 
         session.headers.update(gerrit_adapter.req_headers)
 
@@ -124,7 +130,8 @@ class _SessionManager:
         if gerrit_adapter.proxy_info:
             proxy_url = (
                 f'http://{gerrit_adapter.proxy_info.proxy_host.decode()}'
-                f':{gerrit_adapter.proxy_info.proxy_port}')
+                f':{gerrit_adapter.proxy_info.proxy_port}'
+            )
             session.proxies = {
                 'http': proxy_url,
                 'https': proxy_url,
@@ -141,8 +148,9 @@ class _SessionManager:
             return self._sessions[thread_name]
 
 
-def _fetch_hashtags_for_cl(session_manager: _SessionManager,
-                           cl_info: ClInfo) -> bool:
+def _fetch_hashtags_for_cl(
+    session_manager: _SessionManager, cl_info: ClInfo
+) -> bool:
     """Fetches hashtags for a single CL and updates it in place.
 
     Retries up to 2 additional times on network failure with exponential
@@ -161,12 +169,14 @@ def _fetch_hashtags_for_cl(session_manager: _SessionManager,
         ValueError: If the response from Gerrit is not a JSON list.
     """
     session = session_manager.get_session_for_current_thread()
-    url = posixpath.join(session.gerrit_base_url, 'changes',
-                         str(cl_info.cl_number), 'hashtags')
+    url = posixpath.join(
+        session.gerrit_base_url, 'changes', str(cl_info.cl_number), 'hashtags'
+    )
 
     try:
-        logging.debug('Fetching hashtags for CL %d from %s', cl_info.cl_number,
-                      url)
+        logging.debug(
+            'Fetching hashtags for CL %d from %s', cl_info.cl_number, url
+        )
         response = session.get(url, timeout=REQUEST_TIMEOUT_SECONDS)
         response.raise_for_status()
 
@@ -177,15 +187,18 @@ def _fetch_hashtags_for_cl(session_manager: _SessionManager,
         if not isinstance(hashtags, list):
             raise ValueError(
                 f'Expected list of hashtags for CL {cl_info.cl_number}, '
-                f'got {type(hashtags)}')
+                f'got {type(hashtags)}'
+            )
 
         cl_info.hashtags.update(str(h) for h in hashtags)
-        logging.debug('Found hashtags for CL %d: %s', cl_info.cl_number,
-                      cl_info.hashtags)
+        logging.debug(
+            'Found hashtags for CL %d: %s', cl_info.cl_number, cl_info.hashtags
+        )
         return True
     except requests.exceptions.RequestException as e:
-        logging.warning('Failed to fetch hashtags for CL %d: %s',
-                        cl_info.cl_number, e)
+        logging.warning(
+            'Failed to fetch hashtags for CL %d: %s', cl_info.cl_number, e
+        )
         return False
 
 
@@ -203,8 +216,8 @@ def retrieve_hashtags(common_args: CommonArgs, cl_infos: list[ClInfo]) -> None:
 
     manager = _SessionManager(f'{common_args.project}-review.googlesource.com')
     with concurrent.futures.ThreadPoolExecutor(
-            max_workers=common_args.num_network_workers,
-            initializer=manager.register_session_for_current_thread
+        max_workers=common_args.num_network_workers,
+        initializer=manager.register_session_for_current_thread,
     ) as executor:
         func = functools.partial(_fetch_hashtags_for_cl, manager)
         results = list(executor.map(func, cl_infos))
@@ -212,18 +225,24 @@ def retrieve_hashtags(common_args: CommonArgs, cl_infos: list[ClInfo]) -> None:
     failures = results.count(False)
     if failures > 0:
         failure_rate = failures / len(cl_infos)
-        logging.warning('%d/%d CLs failed to retrieve hashtags (%.1f%%)',
-                        failures, len(cl_infos), failure_rate * 100)
+        logging.warning(
+            '%d/%d CLs failed to retrieve hashtags (%.1f%%)',
+            failures,
+            len(cl_infos),
+            failure_rate * 100,
+        )
         if failure_rate > 0.01:
             raise RuntimeError(
                 f'Hashtag retrieval failure rate ({failure_rate:.1%}) '
-                f'exceeded threshold (1.0%). Aborting.')
+                f'exceeded threshold (1.0%). Aborting.'
+            )
     else:
         logging.info('Successfully retrieved hashtags for all CLs.')
 
 
-def _traverse_comment_thread(node: dict, replies: dict[str, list[dict]],
-                             thread_comments: list[dict]) -> None:
+def _traverse_comment_thread(
+    node: dict, replies: dict[str, list[dict]], thread_comments: list[dict]
+) -> None:
     """Helper to recursively traverse a comment thread (DFS).
 
     Args:
@@ -237,8 +256,9 @@ def _traverse_comment_thread(node: dict, replies: dict[str, list[dict]],
         _traverse_comment_thread(reply, replies, thread_comments)
 
 
-def _reconstruct_threads_for_file(file_path: str,
-                                  comments: list[dict]) -> list[CommentThread]:
+def _reconstruct_threads_for_file(
+    file_path: str, comments: list[dict]
+) -> list[CommentThread]:
     """Reconstructs comment threads for a single file.
 
     Omits threads that contain only a single comment, as they are likely
@@ -288,15 +308,19 @@ def _reconstruct_threads_for_file(file_path: str,
         thread_markdown = '\n\n'.join(markdown_parts)
 
         thread_dataclasses.append(
-            CommentThread(file_path=file_path,
-                          patch_set=root.get('patch_set', 1),
-                          thread_markdown=thread_markdown))
+            CommentThread(
+                file_path=file_path,
+                patch_set=root.get('patch_set', 1),
+                thread_markdown=thread_markdown,
+            )
+        )
 
     return thread_dataclasses
 
 
-def _fetch_comments_for_cl(session_manager: _SessionManager,
-                           cl_info: ClInfo) -> bool:
+def _fetch_comments_for_cl(
+    session_manager: _SessionManager, cl_info: ClInfo
+) -> bool:
     """Fetches/reconstructs comments for a single CL and updates in place.
 
     Args:
@@ -311,12 +335,14 @@ def _fetch_comments_for_cl(session_manager: _SessionManager,
         ValueError: If the response from Gerrit is not a JSON dict.
     """
     session = session_manager.get_session_for_current_thread()
-    url = posixpath.join(session.gerrit_base_url, 'changes',
-                         str(cl_info.cl_number), 'comments')
+    url = posixpath.join(
+        session.gerrit_base_url, 'changes', str(cl_info.cl_number), 'comments'
+    )
 
     try:
-        logging.debug('Fetching comments for CL %d from %s', cl_info.cl_number,
-                      url)
+        logging.debug(
+            'Fetching comments for CL %d from %s', cl_info.cl_number, url
+        )
         response = session.get(url, timeout=REQUEST_TIMEOUT_SECONDS)
         response.raise_for_status()
 
@@ -326,7 +352,8 @@ def _fetch_comments_for_cl(session_manager: _SessionManager,
         if not isinstance(comments_map, dict):
             raise ValueError(
                 f'Expected dict of comments for CL {cl_info.cl_number}, '
-                f'got {type(comments_map)}')
+                f'got {type(comments_map)}'
+            )
 
         threads = []
         for file_path, comments in comments_map.items():
@@ -335,8 +362,9 @@ def _fetch_comments_for_cl(session_manager: _SessionManager,
         cl_info.comments = threads
         return True
     except requests.exceptions.RequestException as e:
-        logging.warning('Failed to fetch comments for CL %d: %s',
-                        cl_info.cl_number, e)
+        logging.warning(
+            'Failed to fetch comments for CL %d: %s', cl_info.cl_number, e
+        )
         return False
 
 
@@ -356,8 +384,8 @@ def retrieve_comments(common_args: CommonArgs, cl_infos: list[ClInfo]) -> None:
 
     manager = _SessionManager(f'{common_args.project}-review.googlesource.com')
     with concurrent.futures.ThreadPoolExecutor(
-            max_workers=common_args.num_network_workers,
-            initializer=manager.register_session_for_current_thread
+        max_workers=common_args.num_network_workers,
+        initializer=manager.register_session_for_current_thread,
     ) as executor:
         func = functools.partial(_fetch_comments_for_cl, manager)
         results = list(executor.map(func, cl_infos))
@@ -365,11 +393,16 @@ def retrieve_comments(common_args: CommonArgs, cl_infos: list[ClInfo]) -> None:
     failures = results.count(False)
     if failures > 0:
         failure_rate = failures / len(cl_infos)
-        logging.warning('%d/%d CLs failed to retrieve comments (%.1f%%)',
-                        failures, len(cl_infos), failure_rate * 100)
+        logging.warning(
+            '%d/%d CLs failed to retrieve comments (%.1f%%)',
+            failures,
+            len(cl_infos),
+            failure_rate * 100,
+        )
         if failure_rate > 0.01:
             raise RuntimeError(
                 f'Comment retrieval failure rate ({failure_rate:.1%}) '
-                f'exceeded threshold (1.0%). Aborting.')
+                f'exceeded threshold (1.0%). Aborting.'
+            )
     else:
         logging.info('Successfully retrieved comments for all CLs.')

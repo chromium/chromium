@@ -27,8 +27,9 @@ def powershell_path_context():
         # Prefer .PS1 over .JS if .JS is present.
         start = original_pathext.upper().find('.JS')
         if start >= 0:
-            os.environ['PATHEXT'] = (original_pathext[:start] + '.PS1;' +
-                                     original_pathext[start:])
+            os.environ['PATHEXT'] = (
+                original_pathext[:start] + '.PS1;' + original_pathext[start:]
+            )
         else:
             os.environ['PATHEXT'] = original_pathext + ';.PS1'
 
@@ -52,17 +53,20 @@ def get_gemini_command(use_alias=False) -> list[str]:
         shell_exe = os.environ.get('SHELL', '/bin/bash')
         try:
             # Use shell -i to ensure aliases are loaded from interactive config
-            result = subprocess.run([shell_exe, '-i', '-c', 'alias gemini'],
-                                    capture_output=True,
-                                    text=True,
-                                    check=False)
+            result = subprocess.run(
+                [shell_exe, '-i', '-c', 'alias gemini'],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
             if result.returncode == 0:
                 output = result.stdout.strip()
                 # Parse output like:
                 # bash: alias gemini='/path/to/exe'
                 # zsh:  gemini='/path/to/exe' OR gemini=/path/to/exe
-                match = re.search(r'(?:alias )?gemini=[\'"]?([^\'"]+)[\'"]?',
-                                  output)
+                match = re.search(
+                    r'(?:alias )?gemini=[\'"]?([^\'"]+)[\'"]?', output
+                )
                 if match:
                     return [match.group(1).strip()]
         except Exception:
@@ -71,13 +75,16 @@ def get_gemini_command(use_alias=False) -> list[str]:
     with powershell_path_context():
         gemini_cmd = shutil.which('gemini')
         if gemini_cmd:
-            if sys.platform == 'win32' and gemini_cmd.strip()[-4:].lower(
-            ) == '.ps1':
+            if (
+                sys.platform == 'win32'
+                and gemini_cmd.strip()[-4:].lower() == '.ps1'
+            ):
                 return ['powershell', '-File', gemini_cmd]
             return [gemini_cmd]
 
     gemini_cmd_path = pathlib.Path(
-        '/google/bin/releases/gemini-cli/tools/gemini')
+        '/google/bin/releases/gemini-cli/tools/gemini'
+    )
     if gemini_cmd_path.exists():
         return [str(gemini_cmd_path)]
 
@@ -85,8 +92,9 @@ def get_gemini_command(use_alias=False) -> list[str]:
 
 
 @functools.cache
-def get_gemini_version(use_alias=False,
-                       gemini_cli_cmd: tuple[str] | None = None) -> str | None:
+def get_gemini_version(
+    use_alias=False, gemini_cli_cmd: tuple[str] | None = None
+) -> str | None:
     """Gets the version of Gemini CLI.
 
     Args:
@@ -95,8 +103,11 @@ def get_gemini_version(use_alias=False,
         gemini_cli_cmd: If provided, used as the command to run Gemini CLI
             instead of finding an existing installation.
     """
-    gemini_cli_cmd = (list(gemini_cli_cmd) if gemini_cli_cmd else
-                      get_gemini_command(use_alias=use_alias))
+    gemini_cli_cmd = (
+        list(gemini_cli_cmd)
+        if gemini_cli_cmd
+        else get_gemini_command(use_alias=use_alias)
+    )
     try:
         result = subprocess.run(
             gemini_cli_cmd + ['--version'],

@@ -34,9 +34,9 @@ class MkstempClosedUnittest(fake_filesystem_unittest.TestCase):
         """Tests that mkstemp_closed() works with arguments."""
         with tempfile.TemporaryDirectory() as temp_dir:
             file_path = None
-            with tempfile_ext.mkstemp_closed(suffix='.txt',
-                                             prefix='test_',
-                                             directory=temp_dir) as f:
+            with tempfile_ext.mkstemp_closed(
+                suffix='.txt', prefix='test_', directory=temp_dir
+            ) as f:
                 self.assertIsInstance(f, pathlib.Path)
                 self.assertTrue(os.path.exists(f))
                 self.assertEqual(f.suffix, '.txt')

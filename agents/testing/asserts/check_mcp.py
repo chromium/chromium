@@ -8,14 +8,14 @@ import os
 import subprocess
 
 
-class McpClient():
-
+class McpClient:
     def __init__(self, server_path):
         self.process = subprocess.Popen(  # pylint: disable=R1732
             [server_path],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            text=True)
+            text=True,
+        )
         # Initialize the server
         initialize_request = {
             'jsonrpc': '2.0',
@@ -23,13 +23,10 @@ class McpClient():
             'params': {
                 'protocolVersion': '2.0',
                 'processId': os.getpid(),
-                'clientInfo': {
-                    'name': 'mcp_client.py',
-                    'version': '0.1'
-                },
-                'capabilities': {}
+                'clientInfo': {'name': 'mcp_client.py', 'version': '0.1'},
+                'capabilities': {},
             },
-            'id': 1
+            'id': 1,
         }
         self.process.stdin.write(json.dumps(initialize_request) + '\n')
         self.process.stdin.flush()
@@ -39,7 +36,7 @@ class McpClient():
         initialized_notification = {
             'jsonrpc': '2.0',
             'method': 'notifications/initialized',
-            'params': {}
+            'params': {},
         }
         self.process.stdin.write(json.dumps(initialized_notification) + '\n')
         self.process.stdin.flush()
@@ -55,7 +52,7 @@ class McpClient():
                 'name': method,
                 'params': params or {},
             },
-            'id': 1
+            'id': 1,
         }
 
         self.process.stdin.write(json.dumps(request) + '\n')
@@ -79,7 +76,8 @@ class McpClient():
         content_type = contents[0]['type']
         if content_type != 'text':
             raise RuntimeError(
-                f'The MCP responded with an unexpected type: {content_type}')
+                f'The MCP responded with an unexpected type: {content_type}'
+            )
         content_text = contents[0]['text']
         return content_text
 
@@ -90,7 +88,8 @@ def check_response_contains_mcp_response(agent_response: str, context):
     if 'server_path' not in config or 'tool' not in config:
         raise RuntimeError(
             'The assertion is not correctly configured. Please provide '
-            'both a server_path and tool.')
+            'both a server_path and tool.'
+        )
     server_path = config.get('server_path')
     tool = config.get('tool')
     server = McpClient(server_path)
@@ -102,5 +101,5 @@ def check_response_contains_mcp_response(agent_response: str, context):
     return {
         'pass': content_text in agent_response,
         'reason': f'"{content_text}" was in the response: "{agent_response}".',
-        'score': 1 if content_text in agent_response else 0
+        'score': 1 if content_text in agent_response else 0,
     }

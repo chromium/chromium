@@ -18,12 +18,14 @@ def fetch_cipd_gemini_cli(verbose):
     # Note this cannot be in the same cipd root as promptfoo due to
     # node_modules folder conflicting
     logging.debug('Cipd root not initialized. Creating.')
-    subprocess.check_call([
-        'cipd',
-        'init',
-        '-force',
-        str(CIPD_ROOT),
-    ])
+    subprocess.check_call(
+        [
+            'cipd',
+            'init',
+            '-force',
+            str(CIPD_ROOT),
+        ]
+    )
     for package, version in CIPD_PACKAGES:
         logging.debug('install %s@%s', package, version)
         subprocess.check_call(
@@ -39,5 +41,7 @@ def fetch_cipd_gemini_cli(verbose):
             ],
             stdout=subprocess.DEVNULL,
         )
-    return (CIPD_ROOT / 'node_modules' / '.bin' / 'gemini',
-            CIPD_ROOT / 'bin' / 'node')
+    return (
+        CIPD_ROOT / 'node_modules' / '.bin' / 'gemini',
+        CIPD_ROOT / 'bin' / 'node',
+    )

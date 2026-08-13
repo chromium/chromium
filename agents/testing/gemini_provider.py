@@ -42,6 +42,7 @@ MODEL = 'gemini-3-flash-preview'
 @dataclasses.dataclass
 class GeminiCliArguments:
     """Information that is relevant to starting gemini-cli for a test."""
+
     # The command to run gemini-cli.
     base_gemini_cli_cmd: list[str]
     # Additional arguments to pass to gemini-cli when running a test.
@@ -73,7 +74,8 @@ def _stream_reader(stream, output_list: list[str], width):
         for line in iter(stream.readline, ''):
             output_list.append(line)
             wrapped_text = '\n'.join(
-                textwrap.wrap(line.rstrip('\r\n'), width=width))
+                textwrap.wrap(line.rstrip('\r\n'), width=width)
+            )
             sys.stderr.write(wrapped_text + '\n')
     except OSError:
         # Stream may be closed unexpectedly
@@ -89,7 +91,8 @@ def _get_sandbox_image_tag(gemini_cli_cmd: list[str]) -> str | None:
         gemini_cli_cmd: The command to run Gemini CLI.
     """
     gemini_version = gemini_helpers.get_gemini_version(
-        gemini_cli_cmd=tuple(gemini_cli_cmd))
+        gemini_cli_cmd=tuple(gemini_cli_cmd)
+    )
     if not gemini_version:
         logging.error('Failed to get gemini version.')
         return None
@@ -105,16 +108,19 @@ def _get_container_path(sandbox_image: str | None) -> str | None:
     # This is a Go template that iterates over all environment variables in the
     # image's configuration and prints each one on a new line.
     command = [
-        'docker', 'inspect',
+        'docker',
+        'inspect',
         r'--format={{range .Config.Env}}{{printf "%s\n" .}}{{end}}',
-        sandbox_image
+        sandbox_image,
     ]
     try:
-        result = subprocess.run(command,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                text=True,
-                                check=True)
+        result = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True,
+        )
         logging.debug('docker inspect output:\n%s', result.stdout)
         for line in result.stdout.splitlines():
             if line.startswith('PATH='):
@@ -131,9 +137,10 @@ def _get_container_path(sandbox_image: str | None) -> str | None:
 
 
 def _get_env_with_overrides(
-        home: pathlib.Path | None = None,
-        sandbox_flags: list[str] | None = None,
-        sandbox_image: str | None = None) -> dict[str, str]:
+    home: pathlib.Path | None = None,
+    sandbox_flags: list[str] | None = None,
+    sandbox_image: str | None = None,
+) -> dict[str, str]:
     """Returns a copy of the environment with the given overrides."""
     env = os.environ.copy()
     if home:
@@ -147,14 +154,17 @@ def _get_env_with_overrides(
         logging.debug('SANDBOX_FLAGS: %s', env.get('SANDBOX_FLAGS'))
     if sandbox_image:
         env['GEMINI_SANDBOX_IMAGE'] = sandbox_image
-        logging.debug('GEMINI_SANDBOX_IMAGE: %s',
-                      env.get('GEMINI_SANDBOX_IMAGE'))
+        logging.debug(
+            'GEMINI_SANDBOX_IMAGE: %s', env.get('GEMINI_SANDBOX_IMAGE')
+        )
     return env
 
 
-def _install_extensions(gemini_cli_cmd: list[str],
-                        extensions: Collection[str] | None = None,
-                        home_dir: pathlib.Path | None = None) -> None:
+def _install_extensions(
+    gemini_cli_cmd: list[str],
+    extensions: Collection[str] | None = None,
+    home_dir: pathlib.Path | None = None,
+) -> None:
     """Installs the provided extensions.
 
     Args:
@@ -170,11 +180,13 @@ def _install_extensions(gemini_cli_cmd: list[str],
         return
 
     if len(gemini_cli_cmd) != 1:
-        raise RuntimeError(f'Gemini CLI command {gemini_cli_cmd} cannot be '
-                           f'used when installing extensions since only a '
-                           f'single path can be passed to the install script. '
-                           f'If this is actually needed, the install and test '
-                           f'scripts will need to be refactored.')
+        raise RuntimeError(
+            f'Gemini CLI command {gemini_cli_cmd} cannot be '
+            f'used when installing extensions since only a '
+            f'single path can be passed to the install script. '
+            f'If this is actually needed, the install and test '
+            f'scripts will need to be refactored.'
+        )
 
     logging.info('Installing extensions: %s', extensions)
     command = [
@@ -189,20 +201,25 @@ def _install_extensions(gemini_cli_cmd: list[str],
         '--skip-prompt',
         *extensions,
     ]
-    result = subprocess.run(command,
-                            env=_get_env_with_overrides(home=home_dir),
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT,
-                            text=True,
-                            check=False)
+    result = subprocess.run(
+        command,
+        env=_get_env_with_overrides(home=home_dir),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        check=False,
+    )
     logging.debug('Extension install output:\n%s', result.stdout)
     result.check_returncode()
-    logging.debug('Installed extensions:\n%s',
-                  _get_installed_extensions(gemini_cli_cmd, home_dir))
+    logging.debug(
+        'Installed extensions:\n%s',
+        _get_installed_extensions(gemini_cli_cmd, home_dir),
+    )
 
 
-def _install_skills(skills: Collection[str] | None = None,
-                    home_dir: pathlib.Path | None = None) -> None:
+def _install_skills(
+    skills: Collection[str] | None = None, home_dir: pathlib.Path | None = None
+) -> None:
     """Installs skills into the home directory.
 
     Args:
@@ -255,7 +272,8 @@ def _apply_changes(changes: list[dict[str, str]]) -> None:
     for change in changes:
         if len(change) != 1:
             raise ValueError(
-                'Invalid change object: must have exactly one key.')
+                'Invalid change object: must have exactly one key.'
+            )
 
         if 'apply' in change:
             subprocess.check_call(['git', 'apply', change['apply']])
@@ -263,11 +281,13 @@ def _apply_changes(changes: list[dict[str, str]]) -> None:
             subprocess.check_call(['git', 'add', change['stage']])
         else:
             raise ValueError(
-                'Invalid change object: key must be "apply" or "stage".')
+                'Invalid change object: key must be "apply" or "stage".'
+            )
 
 
-def _get_installed_extensions(gemini_cli_cmd: list[str],
-                              home_dir: pathlib.Path | None) -> str:
+def _get_installed_extensions(
+    gemini_cli_cmd: list[str], home_dir: pathlib.Path | None
+) -> str:
     """Check installed Gemini CLI extensions.
 
     Args:
@@ -280,11 +300,13 @@ def _get_installed_extensions(gemini_cli_cmd: list[str],
     """
 
     if len(gemini_cli_cmd) != 1:
-        raise RuntimeError(f'Gemini CLI command {gemini_cli_cmd} cannot be '
-                           f'used when installing extensions since only a '
-                           f'single path can be passed to the install script. '
-                           f'If this is actually needed, the install and test '
-                           f'scripts will need to be refactored.')
+        raise RuntimeError(
+            f'Gemini CLI command {gemini_cli_cmd} cannot be '
+            f'used when installing extensions since only a '
+            f'single path can be passed to the install script. '
+            f'If this is actually needed, the install and test '
+            f'scripts will need to be refactored.'
+        )
 
     return subprocess.check_output(
         [
@@ -300,8 +322,8 @@ def _get_installed_extensions(gemini_cli_cmd: list[str],
 
 
 def _get_sandbox_flags(
-        gemini_cli_cmd: list[str],
-        home_dir: pathlib.Path | None = None) -> tuple[list[str], str]:
+    gemini_cli_cmd: list[str], home_dir: pathlib.Path | None = None
+) -> tuple[list[str], str]:
     """Gets flags for the gemini-cli sandbox.
 
     Returns:
@@ -312,8 +334,10 @@ def _get_sandbox_flags(
     sandbox_flags = []
     depot_tools_path = checkout_helpers.get_depot_tools_path()
     if not depot_tools_path:
-        return ([],
-                'Sandbox requires depot_tools, but it could not be located.')
+        return (
+            [],
+            'Sandbox requires depot_tools, but it could not be located.',
+        )
     sandbox_flags.append(f'-v {depot_tools_path.as_posix()}:/depot_tools')
 
     if home_dir:
@@ -321,22 +345,27 @@ def _get_sandbox_flags(
         sandbox_flags.append(f'-v {mock_bin_path.as_posix()}:/mock_bin')
 
     container_path = _get_container_path(
-        _get_sandbox_image_tag(gemini_cli_cmd=gemini_cli_cmd))
+        _get_sandbox_image_tag(gemini_cli_cmd=gemini_cli_cmd)
+    )
     if container_path:
         if home_dir:
             sandbox_flags.append(
-                f'-e PATH=/mock_bin:/depot_tools:{container_path}')
+                f'-e PATH=/mock_bin:/depot_tools:{container_path}'
+            )
         else:
             sandbox_flags.append(f'-e PATH=/depot_tools:{container_path}')
     else:
-        return ([], 'Could not determine container PATH. PATH will not be '
-                'overridden.')
+        return (
+            [],
+            'Could not determine container PATH. PATH will not be overridden.',
+        )
 
     return sandbox_flags, ''
 
 
-def _configure_gemini_cli(home_dir: pathlib.Path,
-                          telemetry_outfile: pathlib.Path) -> None:
+def _configure_gemini_cli(
+    home_dir: pathlib.Path, telemetry_outfile: pathlib.Path
+) -> None:
     """Configures gemini-cli via its settings files.
 
     Args:
@@ -381,13 +410,18 @@ def _configure_gemini_cli(home_dir: pathlib.Path,
 
     with open(trusted_folders_file, 'w', encoding='utf-8') as outfile:
         json.dump(trusted_folders_json, outfile)
-    logging.debug('Wrote trusted folder %s: %s', trusted_folders_file,
-                  trusted_folders_json)
+    logging.debug(
+        'Wrote trusted folder %s: %s',
+        trusted_folders_file,
+        trusted_folders_json,
+    )
 
 
 def _get_gemini_cli_arguments(
-        provider_vars: dict[str, Any], provider_config: dict[str, Any],
-        user_prompt: str) -> tuple[GeminiCliArguments | None, str]:
+    provider_vars: dict[str, Any],
+    provider_config: dict[str, Any],
+    user_prompt: str,
+) -> tuple[GeminiCliArguments | None, str]:
     """Collects arguments relevant to starting/running gemini-cli.
 
     Args:
@@ -402,8 +436,9 @@ def _get_gemini_cli_arguments(
         be a non-empty string containing the error message.
     """
     try:
-        unparsed_timeout = provider_config.get('timeoutSeconds',
-                                               DEFAULT_TIMEOUT_SECONDS)
+        unparsed_timeout = provider_config.get(
+            'timeoutSeconds', DEFAULT_TIMEOUT_SECONDS
+        )
         timeout_seconds = int(unparsed_timeout)
     except (ValueError, TypeError):
         return None, f'Failed to parse timeout from {unparsed_timeout}'
@@ -426,8 +461,7 @@ def _get_gemini_cli_arguments(
     sandbox_flags = []
     if provider_vars.get('sandbox', False):
         gemini_cli_args.append('--sandbox')
-        sandbox_flags, error = _get_sandbox_flags(base_gemini_cli_cmd,
-                                                  home_dir)
+        sandbox_flags, error = _get_sandbox_flags(base_gemini_cli_cmd, home_dir)
         if error:
             return None, error
 
@@ -439,7 +473,8 @@ def _get_gemini_cli_arguments(
             home=home_dir,
             sandbox_flags=sandbox_flags,
             sandbox_image=_get_sandbox_image_tag(
-                gemini_cli_cmd=base_gemini_cli_cmd),
+                gemini_cli_cmd=base_gemini_cli_cmd
+            ),
         ),
         timeout_seconds=timeout_seconds,
         system_prompt=_get_system_prompt(provider_config),
@@ -462,7 +497,8 @@ def _get_system_prompt(provider_config: dict[str, Any]) -> str:
 
 
 def _run_gemini_cli_with_output_streaming(
-        arguments: GeminiCliArguments) -> tuple[subprocess.Popen, list[str]]:
+    arguments: GeminiCliArguments,
+) -> tuple[subprocess.Popen, list[str]]:
     """Runs gemini-cli and with output streamed to console.
 
     The caller is responsible for handling any exceptions that may arise from
@@ -481,16 +517,17 @@ def _run_gemini_cli_with_output_streaming(
     process = None
     combined_output = []
     try:
-        pathlib.Path('GEMINI.md').write_text(arguments.template_prompt,
-                                             encoding='utf-8')
+        pathlib.Path('GEMINI.md').write_text(
+            arguments.template_prompt, encoding='utf-8'
+        )
         with tempfile_ext.mkstemp_closed(suffix='.md') as system_prompt_path:
-
             # If a system prompt is included in the test it should replace the
             # gemini cli system prompt and is not just another user prompt.
             env = arguments.env
             if arguments.system_prompt:
-                system_prompt_path.write_text(arguments.system_prompt,
-                                              encoding='utf-8')
+                system_prompt_path.write_text(
+                    arguments.system_prompt, encoding='utf-8'
+                )
                 env['GEMINI_SYSTEM_MD'] = str(system_prompt_path)
 
             process = subprocess.Popen(  # pylint: disable=consider-using-with
@@ -504,12 +541,13 @@ def _run_gemini_cli_with_output_streaming(
             )
             process.stdin.write(arguments.user_prompt)
             process.stdin.close()
-            logging.info('--- Streaming Output (Timeout: %ss) ---',
-                         arguments.timeout_seconds)
+            logging.info(
+                '--- Streaming Output (Timeout: %ss) ---',
+                arguments.timeout_seconds,
+            )
             output_thread = threading.Thread(
                 target=_stream_reader,
-                args=(process.stdout, combined_output,
-                      arguments.console_width),
+                args=(process.stdout, combined_output, arguments.console_width),
                 daemon=True,
             )
             output_thread.start()
@@ -526,8 +564,7 @@ def _run_gemini_cli_with_output_streaming(
                 logging.warning('Output thread did not cleanly terminate.')
 
 
-def _parse_telemetry_data(
-        telemetry_file: pathlib.Path) -> list[dict[str, Any]]:
+def _parse_telemetry_data(telemetry_file: pathlib.Path) -> list[dict[str, Any]]:
     """Parses gemini-cli telemetry into a list of JSON objects.
 
     Args:
@@ -558,7 +595,8 @@ def _parse_telemetry_data(
 
 
 def _extract_token_usage(
-        telemetry_data: list[dict[str, Any]]) -> dict[str, int]:
+    telemetry_data: list[dict[str, Any]],
+) -> dict[str, int]:
     """Extracts token usage data from gemini-cli telemetry.
 
     Args:
@@ -585,8 +623,10 @@ def _extract_token_usage(
                 if sm.get('scope', {}).get('name') != 'gemini-cli':
                     continue
                 for metric in sm.get('metrics', []):
-                    if (metric.get('descriptor', {}).get('name')
-                            != 'gemini_cli.token.usage'):
+                    if (
+                        metric.get('descriptor', {}).get('name')
+                        != 'gemini_cli.token.usage'
+                    ):
                         continue
                     for dp in metric.get('dataPoints', []):
                         token_type = dp['attributes']['type']
@@ -599,7 +639,8 @@ def _extract_token_usage(
 
 
 def _extract_tool_calls(
-        telemetry_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    telemetry_data: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
     """Extracts tool call data from gemini-cli telemetry.
 
     Args:
@@ -620,27 +661,25 @@ def _extract_tool_calls(
         if attributes.get('event.name') == 'gemini_cli.tool_call':
             function_name = attributes.get('function_name')
             if function_name:
-                tool_calls.append({
-                    'function_name':
-                    function_name,
-                    'function_args':
-                    attributes.get('function_args', ''),
-                    'success':
-                    attributes.get('success', False),
-                    'duration_ms':
-                    attributes.get('duration_ms', 0),
-                    'tool_type':
-                    attributes.get('tool_type', ''),
-                    'mcp_server_name':
-                    attributes.get('mcp_server_name', ''),
-                    'extension_name':
-                    attributes.get('extension_name', ''),
-                })
+                tool_calls.append(
+                    {
+                        'function_name': function_name,
+                        'function_args': attributes.get('function_args', ''),
+                        'success': attributes.get('success', False),
+                        'duration_ms': attributes.get('duration_ms', 0),
+                        'tool_type': attributes.get('tool_type', ''),
+                        'mcp_server_name': attributes.get(
+                            'mcp_server_name', ''
+                        ),
+                        'extension_name': attributes.get('extension_name', ''),
+                    }
+                )
     return tool_calls
 
 
-def call_api(prompt: str, options: dict[str, Any],
-             context: dict[str, Any]) -> dict[str, Any]:
+def call_api(
+    prompt: str, options: dict[str, Any], context: dict[str, Any]
+) -> dict[str, Any]:
     """A flexible promptfoo provider that runs a command-line tool.
 
     This provider streams the tool's output and captures artifacts with a
@@ -650,20 +689,22 @@ def call_api(prompt: str, options: dict[str, Any],
     provider_vars = context.get('vars', {}) if context else {}
     logging.basicConfig(
         level=logging.DEBUG
-        if provider_vars.get('verbose', False) else logging.INFO,
+        if provider_vars.get('verbose', False)
+        else logging.INFO,
         format='%(message)s',
     )
     logging.debug('options: %s', json.dumps(options, indent=2))
     logging.debug('context: %s', json.dumps(context, indent=2))
 
     with tempfile_ext.mkstemp_closed() as telemetry_outfile:
-        return _run_gemini_cli_with_telemetry_output(provider_config,
-                                                     provider_vars, prompt,
-                                                     telemetry_outfile)
+        return _run_gemini_cli_with_telemetry_output(
+            provider_config, provider_vars, prompt, telemetry_outfile
+        )
 
 
-def _install_mock_commands(provider_config: dict[str, Any],
-                           home_dir: pathlib.Path) -> None:
+def _install_mock_commands(
+    provider_config: dict[str, Any], home_dir: pathlib.Path
+) -> None:
     """Installs generic mock executables in home_dir/mock_bin."""
     mocks = provider_config.get('mocks', [])
     if not mocks:
@@ -723,8 +764,11 @@ def _install_mock_commands(provider_config: dict[str, Any],
 
 
 def _run_gemini_cli_with_telemetry_output(
-        provider_config: dict[str, Any], provider_vars: dict[str, Any],
-        user_prompt: str, telemetry_outfile: pathlib.Path) -> dict[str, Any]:
+    provider_config: dict[str, Any],
+    provider_vars: dict[str, Any],
+    user_prompt: str,
+    telemetry_outfile: pathlib.Path,
+) -> dict[str, Any]:
     """Runs gemini-cli using the provided information.
 
     Args:
@@ -737,9 +781,9 @@ def _run_gemini_cli_with_telemetry_output(
         A promptfoo result dict.
     """
 
-    gcli_arguments, error = _get_gemini_cli_arguments(provider_vars,
-                                                      provider_config,
-                                                      user_prompt)
+    gcli_arguments, error = _get_gemini_cli_arguments(
+        provider_vars, provider_config, user_prompt
+    )
     if error:
         return {'error': error}
 
@@ -748,11 +792,14 @@ def _run_gemini_cli_with_telemetry_output(
     if gcli_arguments.home_dir:
         _install_mock_commands(provider_config, gcli_arguments.home_dir)
         _configure_gemini_cli(gcli_arguments.home_dir, telemetry_outfile)
-        _install_extensions(provider_config.get('extensions',
-                                                DEFAULT_EXTENSIONS),
-                            home_dir=gcli_arguments.home_dir)
-        _install_skills(provider_config.get('skills', DEFAULT_SKILLS),
-                        home_dir=gcli_arguments.home_dir)
+        _install_extensions(
+            provider_config.get('extensions', DEFAULT_EXTENSIONS),
+            home_dir=gcli_arguments.home_dir,
+        )
+        _install_skills(
+            provider_config.get('skills', DEFAULT_SKILLS),
+            home_dir=gcli_arguments.home_dir,
+        )
         _apply_changes(provider_config.get('changes', []))
 
     process = None
@@ -765,7 +812,8 @@ def _run_gemini_cli_with_telemetry_output(
     try:
         start_time = time.time()
         process, combined_output = _run_gemini_cli_with_output_streaming(
-            gcli_arguments)
+            gcli_arguments
+        )
         elapsed_time = time.time() - start_time
 
         full_output = ''.join(combined_output)
@@ -776,13 +824,15 @@ def _run_gemini_cli_with_telemetry_output(
         # a clear mapping from gemini-cli's data to what promptfoo wants.
         telemetry_data = _parse_telemetry_data(telemetry_outfile)
         metrics[constants.GEMINI_CLI_TOKEN_USAGE] = _extract_token_usage(
-            telemetry_data)
+            telemetry_data
+        )
         metrics['tool_calls'] = _extract_tool_calls(telemetry_data)
         if process.returncode != 0:
             error_message = (
                 f"Command '{' '.join(gcli_arguments.command)}' failed with "
                 f'return code {process.returncode}.\n'
-                f'Output:\n{full_output}')
+                f'Output:\n{full_output}'
+            )
             return {'error': error_message, 'metrics': metrics}
         git_diff = ''
         if diff_files := provider_vars.get('diff_files'):
@@ -806,17 +856,19 @@ def _run_gemini_cli_with_telemetry_output(
     except subprocess.TimeoutExpired:
         metrics['full_output'] = ''.join(combined_output)
         return {
-            'error': (f'Command timed out after '
-                      f'{gcli_arguments.timeout_seconds} seconds.'),
-            'metrics':
-            metrics,
+            'error': (
+                f'Command timed out after '
+                f'{gcli_arguments.timeout_seconds} seconds.'
+            ),
+            'metrics': metrics,
         }
     except FileNotFoundError:
         return {
-            'error': (f"Command not found: '{gcli_arguments.command[0]}'. "
-                      f'Please ensure it is in your PATH.'),
-            'metrics':
-            metrics,
+            'error': (
+                f"Command not found: '{gcli_arguments.command[0]}'. "
+                f'Please ensure it is in your PATH.'
+            ),
+            'metrics': metrics,
         }
     except Exception as e:
         metrics['full_output'] = ''.join(combined_output)

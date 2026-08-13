@@ -15,7 +15,8 @@ import urllib.parse
 MARKDOWN_LINK_RE = re.compile(
     r"""\[([^\]]+)\]\(\s*"""
     r"""(?:\<((?!https?://|mailto:)[^>]+)\>|((?!https?://|mailto:)[^\s)]+))"""
-    r"""\s*(?:\s+["'].*?["'])?\s*\)""")
+    r"""\s*(?:\s+["'].*?["'])?\s*\)"""
+)
 
 
 def CheckMarkdownLinks(input_api, output_api):
@@ -26,7 +27,7 @@ def CheckMarkdownLinks(input_api, output_api):
     def FileFilter(affected_file):
         return input_api.FilterSourceFile(
             affected_file,
-            files_to_check=(r'.*\.md$', ),
+            files_to_check=(r'.*\.md$',),
         )
 
     # Precompute affected files map for O(1) lookups
@@ -76,18 +77,22 @@ def CheckMarkdownLinks(input_api, output_api):
                     repo_relative_path = parsed.netloc + parsed.path
                     unquoted_path = urllib.parse.unquote(repo_relative_path)
                     target_path = os.path.normpath(
-                        os.path.join(repo_root, unquoted_path))
+                        os.path.join(repo_root, unquoted_path)
+                    )
                 elif parsed.path:
                     unquoted_path = urllib.parse.unquote(parsed.path)
                     if unquoted_path.startswith('/'):
                         # Relative to repo root
                         target_path = os.path.normpath(
-                            os.path.join(repo_root, unquoted_path[1:]))
+                            os.path.join(repo_root, unquoted_path[1:])
+                        )
                     else:
                         # Relative to current file
                         target_path = os.path.normpath(
-                            os.path.join(os.path.dirname(md_file),
-                                         unquoted_path))
+                            os.path.join(
+                                os.path.dirname(md_file), unquoted_path
+                            )
+                        )
                 else:
                     # Internal anchor link (e.g., #foo), skip
                     continue
@@ -97,7 +102,8 @@ def CheckMarkdownLinks(input_api, output_api):
                         f"Broken link in "
                         f"{os.path.relpath(md_file, skill_dir)}:{line_num}: "
                         f"[{link_text}]({link_target}) -> "
-                        f"Target does not exist: {target_path}")
+                        f"Target does not exist: {target_path}"
+                    )
                     if is_modified:
                         results.append(output_api.PresubmitError(msg))
                     else:
@@ -116,7 +122,7 @@ def CheckTemplateSyntax(input_api, output_api):
     def FileFilter(affected_file):
         return input_api.FilterSourceFile(
             affected_file,
-            files_to_check=(r'.*\.py\.template$', ),
+            files_to_check=(r'.*\.py\.template$',),
         )
 
     # Precompute affected files map for O(1) lookups
@@ -153,7 +159,8 @@ def CheckTemplateSyntax(input_api, output_api):
                         output_api.PresubmitError(
                             f"Template syntax error in "
                             f"{os.path.relpath(template_path, skill_dir)}: {e}"
-                        ))
+                        )
+                    )
     return results
 
 

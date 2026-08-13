@@ -8,4 +8,5 @@ import sys
 
 # Add the Chromium root to sys.path to allow for fully qualified imports.
 sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
+    os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+)

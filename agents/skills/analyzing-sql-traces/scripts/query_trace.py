@@ -19,10 +19,11 @@ except ImportError:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Run an arbitrary SQL query on a Perfetto trace.")
-    parser.add_argument("--trace",
-                        required=True,
-                        help="Path to the Perfetto trace file (.pb).")
+        description="Run an arbitrary SQL query on a Perfetto trace."
+    )
+    parser.add_argument(
+        "--trace", required=True, help="Path to the Perfetto trace file (.pb)."
+    )
     parser.add_argument("--query", required=True, help="SQL query to run.")
     args = parser.parse_args()
 

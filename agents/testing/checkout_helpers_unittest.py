@@ -27,7 +27,8 @@ class CheckBtrfsUnittest(fake_filesystem_unittest.TestCase):
     def test_check_btrfs_is_btrfs(self, mock_run):
         """Tests that btrfs is detected correctly."""
         mock_run.return_value = subprocess.CompletedProcess(
-            args=['stat', '-c', '%i', '/tmp'], returncode=0, stdout='256\n')
+            args=['stat', '-c', '%i', '/tmp'], returncode=0, stdout='256\n'
+        )
         with self.assertNoLogs():
             self.assertTrue(checkout_helpers.check_btrfs('/tmp'))
 
@@ -35,12 +36,14 @@ class CheckBtrfsUnittest(fake_filesystem_unittest.TestCase):
     def test_check_btrfs_is_not_btrfs(self, mock_run):
         """Tests that non-btrfs is detected correctly."""
         mock_run.return_value = subprocess.CompletedProcess(
-            args=['stat', '-c', '%i', '/tmp'], returncode=0, stdout='123\n')
+            args=['stat', '-c', '%i', '/tmp'], returncode=0, stdout='123\n'
+        )
         with self.assertLogs(level='WARNING') as cm:
             self.assertFalse(checkout_helpers.check_btrfs('/tmp'))
             self.assertIn(
                 'Warning: This is not running in a btrfs environment',
-                cm.output[0])
+                cm.output[0],
+            )
 
     @mock.patch('subprocess.run')
     def test_check_btrfs_stat_fails(self, mock_run):
@@ -53,12 +56,11 @@ class CheckBtrfsUnittest(fake_filesystem_unittest.TestCase):
     def test_check_btrfs_is_cached(self, mock_run):
         """Tests that the result of check_btrfs is cached."""
         mock_run.return_value = subprocess.CompletedProcess(
-            args=['stat', '-c', '%i', '/tmp'], returncode=0, stdout='256\n')
+            args=['stat', '-c', '%i', '/tmp'], returncode=0, stdout='256\n'
+        )
         checkout_helpers.check_btrfs('/tmp')
         checkout_helpers.check_btrfs('/tmp')
         mock_run.assert_called_once()
-
-
 
 
 class GetGclientRootUnittest(unittest.TestCase):
@@ -71,7 +73,8 @@ class GetGclientRootUnittest(unittest.TestCase):
     def test_get_gclient_root_success(self, mock_run):
         """Tests that the gclient root is returned on success."""
         mock_run.return_value = subprocess.CompletedProcess(
-            args=['gclient', 'root'], returncode=0, stdout='/path/to/root\n')
+            args=['gclient', 'root'], returncode=0, stdout='/path/to/root\n'
+        )
         result = checkout_helpers.get_gclient_root()
         self.assertEqual(result, pathlib.Path('/path/to/root'))
 
@@ -86,7 +89,8 @@ class GetGclientRootUnittest(unittest.TestCase):
     def test_get_gclient_root_is_cached(self, mock_run):
         """Tests that the result of get_gclient_root is cached."""
         mock_run.return_value = subprocess.CompletedProcess(
-            args=['gclient', 'root'], returncode=0, stdout='/path/to/root\n')
+            args=['gclient', 'root'], returncode=0, stdout='/path/to/root\n'
+        )
         checkout_helpers.get_gclient_root()
         checkout_helpers.get_gclient_root()
         mock_run.assert_called_once()
@@ -117,7 +121,8 @@ class GetDepotToolsPathUnittest(unittest.TestCase):
     def test_get_depot_tools_path_is_cached(self, mock_which):
         """Tests that the result of get_depot_tools_path is cached."""
         mock_which.return_value = str(
-            pathlib.Path('/path/to/depot_tools/gclient'))
+            pathlib.Path('/path/to/depot_tools/gclient')
+        )
         checkout_helpers.get_depot_tools_path()
         checkout_helpers.get_depot_tools_path()
         mock_which.assert_called_once()

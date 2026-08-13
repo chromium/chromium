@@ -12,9 +12,13 @@ from typing import Any, NamedTuple
 
 import git_utils
 from common_types import ClInfo, CommonArgs
-from metadata_tree import (MetadataTree, initialize_metadata_tree,
-                           parse_and_get_mixins, load_mixins_recursive,
-                           build_metadata_tree)
+from metadata_tree import (
+    MetadataTree,
+    initialize_metadata_tree,
+    parse_and_get_mixins,
+    load_mixins_recursive,
+    build_metadata_tree,
+)
 
 
 class _RevisionAndChangedFiles(NamedTuple):
@@ -46,10 +50,12 @@ def process_local_git_data(common_args: CommonArgs) -> list[ClInfo]:
     first_revision = commits[0].revision
 
     initial_tree, parsed_files, dir_metadata_paths = initialize_metadata_tree(
-        first_revision)
+        first_revision
+    )
 
-    cl_objects = _process_commits(commits, initial_tree, parsed_files,
-                                  dir_metadata_paths)
+    cl_objects = _process_commits(
+        commits, initial_tree, parsed_files, dir_metadata_paths
+    )
 
     logging.info('Successfully processed %d CLs', len(cl_objects))
     return cl_objects
@@ -73,19 +79,25 @@ def _extract_cl_info(revision: str) -> ClInfo:
     try:
         timestamp = int(lines[0])
     except ValueError as e:
-        raise ValueError(f'Failed to parse timestamp from git show output for '
-                         f'{revision}: {lines[0]}') from e
-    commit_time = datetime.datetime.fromtimestamp(timestamp,
-                                                  tz=datetime.timezone.utc)
+        raise ValueError(
+            f'Failed to parse timestamp from git show output for '
+            f'{revision}: {lines[0]}'
+        ) from e
+    commit_time = datetime.datetime.fromtimestamp(
+        timestamp, tz=datetime.timezone.utc
+    )
     body = '\n'.join(lines[1:])
-    cl_numbers = re.findall(r'^Reviewed-on:\s*https://\S+/\+/(\d+)', body,
-                            re.MULTILINE)
+    cl_numbers = re.findall(
+        r'^Reviewed-on:\s*https://\S+/\+/(\d+)', body, re.MULTILINE
+    )
     if not cl_numbers:
         raise ValueError(
-            f'Reviewed-on URL not found in commit description for {revision}')
+            f'Reviewed-on URL not found in commit description for {revision}'
+        )
     cl_number = int(cl_numbers[-1])
-    cp_match = re.search(r'^Cr-Commit-Position:\s*[^@]+@\{#(\d+)\}', body,
-                         re.MULTILINE)
+    cp_match = re.search(
+        r'^Cr-Commit-Position:\s*[^@]+@\{#(\d+)\}', body, re.MULTILINE
+    )
     if not cp_match:
         raise ValueError(
             f'Cr-Commit-Position not found in commit description for {revision}'
@@ -137,8 +149,10 @@ def _parse_git_log_output(output: str) -> list[_RevisionAndChangedFiles]:
         if re.match(r'^[0-9a-f]{40}$', line):
             if current_commit:
                 commits.append(
-                    _RevisionAndChangedFiles(revision=current_commit,
-                                             changed_files=current_files))
+                    _RevisionAndChangedFiles(
+                        revision=current_commit, changed_files=current_files
+                    )
+                )
             current_commit = line
             current_files = []
         else:
@@ -148,13 +162,16 @@ def _parse_git_log_output(output: str) -> list[_RevisionAndChangedFiles]:
                 logging.warning('File line before any commit: %s', line)
     if current_commit:
         commits.append(
-            _RevisionAndChangedFiles(revision=current_commit,
-                                     changed_files=current_files))
+            _RevisionAndChangedFiles(
+                revision=current_commit, changed_files=current_files
+            )
+        )
     return commits
 
 
 def _get_commits_to_process(
-        common_args: CommonArgs) -> list[_RevisionAndChangedFiles]:
+    common_args: CommonArgs,
+) -> list[_RevisionAndChangedFiles]:
     """Gets a list of commits from local git history to process.
 
     The window of returned commits matches whatever window was determined in
@@ -172,14 +189,23 @@ def _get_commits_to_process(
         since_time = common_args.window_base - common_args.window
         since_str = since_time.isoformat()
         cmd = [
-            'git', 'log', '--format=%H', '--name-only', '--reverse',
-            f'--since={since_str}', common_args.head_git_revision
+            'git',
+            'log',
+            '--format=%H',
+            '--name-only',
+            '--reverse',
+            f'--since={since_str}',
+            common_args.head_git_revision,
         ]
     else:
         last_rev = common_args.previous_run.revision
         cmd = [
-            'git', 'log', '--format=%H', '--name-only', '--reverse',
-            f'{last_rev}..{common_args.head_git_revision}'
+            'git',
+            'log',
+            '--format=%H',
+            '--name-only',
+            '--reverse',
+            f'{last_rev}..{common_args.head_git_revision}',
         ]
     logging.info('Running git log: %s', ' '.join(cmd))
     # TODO(b/517156708): Stream output from the subprocess and process it
@@ -231,11 +257,17 @@ def _process_commits(
                 cl_info.hashtags.add('ipc_review')
 
         if metadata_changes:
-            logging.debug('Commit %s changed metadata files: %s',
-                          commit.revision, metadata_changes)
+            logging.debug(
+                'Commit %s changed metadata files: %s',
+                commit.revision,
+                metadata_changes,
+            )
             current_tree = _create_updated_metadata_tree(
-                commit.revision, metadata_changes, parsed_files,
-                dir_metadata_paths)
+                commit.revision,
+                metadata_changes,
+                parsed_files,
+                dir_metadata_paths,
+            )
 
         cl_info.dir_metadata = current_tree
         cl_objects.append(cl_info)

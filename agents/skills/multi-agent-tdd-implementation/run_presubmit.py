@@ -13,7 +13,6 @@ from PRESUBMIT import CheckChangeOnUpload
 
 
 class MockFile:
-
     def __init__(self, absolute_path, repo_root):
         self._absolute_path = absolute_path
         self._repo_root = repo_root
@@ -29,7 +28,6 @@ class MockFile:
 
 
 class MockChange:
-
     def __init__(self, repo_root):
         self._repo_root = repo_root
 
@@ -38,7 +36,6 @@ class MockChange:
 
 
 class MockInputApi:
-
     def __init__(self, files, repo_root):
         self._files = [MockFile(f, repo_root) for f in files]
         self.change = MockChange(repo_root)
@@ -55,17 +52,17 @@ class MockInputApi:
         return self.AffectedFiles(file_filter=file_filter)
 
     def ReadFile(self, affected_file):
-        with open(affected_file.AbsoluteLocalPath(), 'r',
-                  encoding='utf-8') as f:
+        with open(
+            affected_file.AbsoluteLocalPath(), 'r', encoding='utf-8'
+        ) as f:
             return f.read()
 
     def PresubmitLocalPath(self):
         return os.path.dirname(os.path.abspath(__file__))
 
-    def FilterSourceFile(self,
-                         affected_file,
-                         files_to_check=None,
-                         files_to_skip=None):
+    def FilterSourceFile(
+        self, affected_file, files_to_check=None, files_to_skip=None
+    ):
         files_to_check = files_to_check or []
         files_to_skip = files_to_skip or []
         path = affected_file.LocalPath()
@@ -79,9 +76,7 @@ class MockInputApi:
 
 
 class MockOutputApi:
-
     class PresubmitError:
-
         def __init__(self, message, *args, **kwargs):
             del args, kwargs
             self.message = message
@@ -90,7 +85,6 @@ class MockOutputApi:
             return f"ERROR: {self.message}"
 
     class PresubmitPromptWarning:
-
         def __init__(self, message, *args, **kwargs):
             del args, kwargs
             self.message = message
@@ -103,7 +97,8 @@ def find_repo_root(start_dir):
     current = start_dir
     while True:
         if os.path.exists(os.path.join(current, '.git')) or os.path.exists(
-                os.path.join(current, '.jj')):
+            os.path.join(current, '.jj')
+        ):
             return current
         parent = os.path.dirname(current)
         if parent == current:
@@ -128,11 +123,10 @@ def main():
     print(f"Running checks on {len(files)} files...")
     results = CheckChangeOnUpload(input_api, output_api)
 
-    errors = [
-        r for r in results if isinstance(r, MockOutputApi.PresubmitError)
-    ]
+    errors = [r for r in results if isinstance(r, MockOutputApi.PresubmitError)]
     warnings = [
-        r for r in results
+        r
+        for r in results
         if isinstance(r, MockOutputApi.PresubmitPromptWarning)
     ]
 

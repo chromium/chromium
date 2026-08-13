@@ -39,21 +39,26 @@ class AgentInvoker:
         elif self.harness_type == 'GENERIC_CLI':
             return self._invoke_generic_cli(prompt, expected_files)
         elif self.harness_type == 'MOCK':
-            return self._invoke_mock(prompt, expected_files, expected_outputs,
-                                     cwd)
+            return self._invoke_mock(
+                prompt, expected_files, expected_outputs, cwd
+            )
         else:
             raise ValueError(f"Unknown harness type: {self.harness_type}")
 
     def _invoke_jetski(self, prompt, cwd=None):
         print(f"[JETSKI] Invoking agent with prompt: {prompt[:50]}...")
         try:
-            result = subprocess.run(['agentapi', 'new-conversation', prompt],
-                                    capture_output=True,
-                                    text=True,
-                                    check=True,
-                                    cwd=cwd)
-            print(f"[JETSKI] Agent invoked successfully. Output: "
-                  f"{result.stdout[:100]}...")
+            result = subprocess.run(
+                ['agentapi', 'new-conversation', prompt],
+                capture_output=True,
+                text=True,
+                check=True,
+                cwd=cwd,
+            )
+            print(
+                f"[JETSKI] Agent invoked successfully. Output: "
+                f"{result.stdout[:100]}..."
+            )
             return True
         except subprocess.CalledProcessError as e:
             print(f"[JETSKI] Error invoking agent: {e.stderr}")
@@ -64,17 +69,22 @@ class AgentInvoker:
 
     def _invoke_generic_cli(self, prompt, expected_files):
         print("\n" + "=" * 60)
-        print("GENERIC_CLI MODE: Please invoke an agent with the following "
-              "prompt:")
+        print(
+            "GENERIC_CLI MODE: Please invoke an agent with the following "
+            "prompt:"
+        )
         print("-" * 60)
         print(prompt)
         print("-" * 60)
         print(
-            f"Please place the result file(s) at: {', '.join(expected_files)}")
+            f"Please place the result file(s) at: {', '.join(expected_files)}"
+        )
         print("=" * 60 + "\n")
 
-        input("Press Enter once you have placed the file(s) to continue "
-              "verification...")
+        input(
+            "Press Enter once you have placed the file(s) to continue "
+            "verification..."
+        )
         return all(os.path.exists(f) for f in expected_files)
 
     def _invoke_mock(self, prompt, expected_files, expected_outputs, cwd=None):
@@ -137,9 +147,11 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
         inputs.update(overrides)
 
         # Construct prompt based on inputs (Simplified for prototype)
-        prompt = (f"Execute MAGI stage {case.get('stage', 'unknown')} "
-                  f"step {case.get('step', 'unknown')} with inputs: "
-                  f"{json.dumps(inputs)}")
+        prompt = (
+            f"Execute MAGI stage {case.get('stage', 'unknown')} "
+            f"step {case.get('step', 'unknown')} with inputs: "
+            f"{json.dumps(inputs)}"
+        )
 
         if invoker.harness_type == 'JETSKI':
             skill_path = os.path.join(original_test_dir, '..', 'SKILL.md')
@@ -165,18 +177,16 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
         files_before = get_tracked_files(os.path.join(original_test_dir, ".."))
 
         # Invoke agent
-        success = invoker.invoke(prompt,
-                                 expected_files,
-                                 expected_outputs,
-                                 cwd=temp_dir)
+        success = invoker.invoke(
+            prompt, expected_files, expected_outputs, cwd=temp_dir
+        )
 
         # Record files after
         files_after = get_tracked_files(os.path.join(original_test_dir, ".."))
 
         leaked_files = files_after - files_before
         if leaked_files:
-            print(
-                f"FAIL: Leaked files detected outside .temp/: {leaked_files}")
+            print(f"FAIL: Leaked files detected outside .temp/: {leaked_files}")
             return False
 
         if not success:
@@ -196,12 +206,16 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
                 with open(full_path, 'r', encoding='utf-8') as file_handle:
                     content = file_handle.read()
                     if not re.search(pattern, content):
-                        print(f"FAIL: Content of {full_path} did not match "
-                              f"pattern '{pattern}'")
+                        print(
+                            f"FAIL: Content of {full_path} did not match "
+                            f"pattern '{pattern}'"
+                        )
                         return False
             else:
-                print(f"FAIL: File {full_path} specified in content_patterns "
-                      f"does not exist.")
+                print(
+                    f"FAIL: File {full_path} specified in content_patterns "
+                    f"does not exist."
+                )
                 return False
 
         valid_json = expected_outputs.get('valid_json', False)
@@ -209,15 +223,18 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
             for f in expected_files:
                 if f.endswith('.json'):
                     if not os.path.exists(f):
-                        print(f"FAIL: Expected output file {f} does not exist "
-                              f"for JSON validation.")
+                        print(
+                            f"FAIL: Expected output file {f} does not exist "
+                            f"for JSON validation."
+                        )
                         return False
                     with open(f, 'r', encoding='utf-8') as file_handle:
                         try:
                             json.load(file_handle)
                         except ValueError as e:
-                            print(f"FAIL: Output file {f} is not valid JSON: "
-                                  f"{e}")
+                            print(
+                                f"FAIL: Output file {f} is not valid JSON: {e}"
+                            )
                             return False
 
         buildable = expected_outputs.get('buildable', False)
@@ -233,9 +250,7 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
 
 def main():
     parser = argparse.ArgumentParser(description="MAGI Test Runner")
-    parser.add_argument('--tests',
-                        required=True,
-                        help="Path to test JSON file")
+    parser.add_argument('--tests', required=True, help="Path to test JSON file")
     parser.add_argument(
         '--harness',
         default='JETSKI',
@@ -262,8 +277,9 @@ def main():
     original_test_dir = os.path.dirname(test_file)
 
     for case in scenario['cases']:
-        if run_test_case(case, scenario.get("base_inputs", {}), invoker,
-                         original_test_dir):
+        if run_test_case(
+            case, scenario.get("base_inputs", {}), invoker, original_test_dir
+        ):
             passed += 1
         else:
             failed += 1

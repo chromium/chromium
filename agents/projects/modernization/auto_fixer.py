@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class FixStatus(enum.StrEnum):
     """Result of an auto-fix attempt."""
+
     SUCCESS = enum.auto()
     AGENT_FAILURE = enum.auto()
     VERIFICATION_FAILURE = enum.auto()
@@ -57,8 +58,8 @@ class AutoFixer:
         )
 
     def _verify_fix(
-            self,
-            verification_command: list[str]) -> subprocess.CompletedProcess:
+        self, verification_command: list[str]
+    ) -> subprocess.CompletedProcess:
         """Runs the verification command and returns the result.
 
         Args:
@@ -95,11 +96,14 @@ class AutoFixer:
         last_error = error_content
         last_status = FixStatus.AGENT_FAILURE
         for attempt in range(self.max_attempts):
-            logger.info('Starting fix attempt %d/%d', attempt + 1,
-                        self.max_attempts)
-            prompt = (f'The following error failed for my changes:\n\n'
-                      f'{last_error}\n\n'
-                      'Please fix the code to resolve these errors.')
+            logger.info(
+                'Starting fix attempt %d/%d', attempt + 1, self.max_attempts
+            )
+            prompt = (
+                f'The following error failed for my changes:\n\n'
+                f'{last_error}\n\n'
+                'Please fix the code to resolve these errors.'
+            )
 
             # Pass -y to authorize tool execution
             result = self._query_gemini(prompt, extra_args=['-y'])
@@ -115,17 +119,21 @@ class AutoFixer:
                     return FixStatus.SUCCESS
 
                 logger.warning(
-                    'Verification failed after agent finished. '
-                    'Output: %s', v_result.stdout)
+                    'Verification failed after agent finished. Output: %s',
+                    v_result.stdout,
+                )
                 last_error = v_result.stdout
                 last_status = FixStatus.VERIFICATION_FAILURE
             else:
-                logger.warning('Gemini fix attempt failed. Output: %s',
-                               result.stdout)
+                logger.warning(
+                    'Gemini fix attempt failed. Output: %s', result.stdout
+                )
                 last_error = result.stdout
                 last_status = FixStatus.AGENT_FAILURE
 
         logger.error(
             'Gemini execution failed after %d attempts. Last status: %s',
-            self.max_attempts, last_status)
+            self.max_attempts,
+            last_status,
+        )
         return last_status

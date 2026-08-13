@@ -84,8 +84,8 @@ class TextProtoParser:
         return None
 
     def consume(
-            self,
-            expected_kind: TokenKind | None = None) -> tuple[TokenKind, str]:
+        self, expected_kind: TokenKind | None = None
+    ) -> tuple[TokenKind, str]:
         """Consumes and returns the next token.
 
         Args:
@@ -105,7 +105,8 @@ class TextProtoParser:
             raise SyntaxError('Unexpected EOF')
         if expected_kind and tok[0] != expected_kind:
             raise SyntaxError(
-                f"Expected {expected_kind}, got {tok[0]} ({tok[1]})")
+                f"Expected {expected_kind}, got {tok[0]} ({tok[1]})"
+            )
         self.pos += 1
         return tok
 
@@ -161,8 +162,7 @@ class TextProtoParser:
             elif val == 'false':
                 val = False
         else:
-            raise SyntaxError(
-                f"Unexpected token {next_tok[0]} ({next_tok[1]})")
+            raise SyntaxError(f"Unexpected token {next_tok[0]} ({next_tok[1]})")
         return key, val
 
     def parse_message(self) -> dict[str, Any]:
@@ -232,7 +232,8 @@ class TextProtoParser:
                 self.consume(TokenKind.COMMA)
             elif next_tok and next_tok[0] != TokenKind.RBRACKET:
                 raise SyntaxError(
-                    f"Expected COMMA or RBRACKET, got {next_tok[0]}")
+                    f"Expected COMMA or RBRACKET, got {next_tok[0]}"
+                )
         return result
 
 

@@ -19,6 +19,7 @@ _RESULT_THREAD_POLLING_SLEEP_DURATION = 0.5
 @dataclasses.dataclass
 class IterationResult:
     """Stores per-iteration data for a single pass@k iteration."""
+
     # Whether this iteration ran successfully.
     success: bool
     # The duration of the iteration in seconds.
@@ -40,6 +41,7 @@ class TestResult:
     This encapsulates data from one or more underlying iterations used for
     pass@k functionality.
     """
+
     # The config used for this test.
     config: eval_config.TestConfig
     # Whether the test ran successfully.
@@ -55,7 +57,8 @@ class TestResult:
         if len(self.iteration_results) > 1:
             return '\n'.join(
                 f'Iteration #{i}:\n{result.test_log}'
-                for i, result in enumerate(self.iteration_results))
+                for i, result in enumerate(self.iteration_results)
+            )
         return '\n'.join(result.test_log for result in self.iteration_results)
 
     @property
@@ -74,6 +77,7 @@ class TestResult:
 @dataclasses.dataclass
 class ResultOptions:
     """Options for configuring result reporting."""
+
     # Always print test logs to stdout instead of only for failed tests.
     print_output_on_success: bool
     # The handlers that will process test results. Handlers are called on the
@@ -129,21 +133,28 @@ class ResultThread(threading.Thread):
         while not self._shutdown_event.is_set():
             try:
                 test_result = self.result_input_queue.get(
-                    timeout=_RESULT_THREAD_POLLING_SLEEP_DURATION)
+                    timeout=_RESULT_THREAD_POLLING_SLEEP_DURATION
+                )
             except queue.Empty:
                 continue
 
-            if (not test_result.success
-                    or self._result_options.print_output_on_success):
+            if (
+                not test_result.success
+                or self._result_options.print_output_on_success
+            ):
                 sys.stdout.write(test_result.combined_logs)
             if test_result.success:
-                logging.info('Test passed in %.2f seconds: %s',
-                             test_result.total_duration,
-                             str(test_result.config.test_file))
+                logging.info(
+                    'Test passed in %.2f seconds: %s',
+                    test_result.total_duration,
+                    str(test_result.config.test_file),
+                )
             else:
-                logging.warning('Test failed in %.2f seconds: %s',
-                                test_result.total_duration,
-                                str(test_result.config.test_file))
+                logging.warning(
+                    'Test failed in %.2f seconds: %s',
+                    test_result.total_duration,
+                    str(test_result.config.test_file),
+                )
                 self.failed_result_output_queue.put(test_result)
 
             for result_handler in self._result_options.result_handlers:

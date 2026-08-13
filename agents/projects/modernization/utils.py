@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 class TaskType(enum.StrEnum):
     """Types of modernization tasks."""
+
     UNDEFINED = 'undefined'
     NULL_TO_NULLPTR = 'null_to_nullptr'
 
@@ -24,6 +25,7 @@ TIMEOUT_EXIT_CODE = 124
 @dataclasses.dataclass
 class Task:
     """Represents a modernization task."""
+
     task_id: str
     owners_directory: str
     files: list[str]
@@ -46,20 +48,23 @@ class Task:
     def from_dict(cls, data: dict) -> 'Task':
         """Creates a Task instance from a dictionary."""
         task_type_str = data.get('task_type', '')
-        task_type = TaskType(
-            task_type_str) if task_type_str else TaskType.UNDEFINED
+        task_type = (
+            TaskType(task_type_str) if task_type_str else TaskType.UNDEFINED
+        )
         default_id = f'{task_type}:{data["owners_directory"]}'
-        return cls(task_id=data.get('task_id', default_id),
-                   owners_directory=data['owners_directory'],
-                   files=data['files'],
-                   task_type=task_type,
-                   cl_link=data.get('cl_link'),
-                   local_branch=data.get('local_branch'))
+        return cls(
+            task_id=data.get('task_id', default_id),
+            owners_directory=data['owners_directory'],
+            files=data['files'],
+            task_type=task_type,
+            cl_link=data.get('cl_link'),
+            local_branch=data.get('local_branch'),
+        )
 
 
-def run_command(command: list[str],
-                capture_output: bool = False,
-                **kwargs) -> subprocess.CompletedProcess:
+def run_command(
+    command: list[str], capture_output: bool = False, **kwargs
+) -> subprocess.CompletedProcess:
     """Runs a shell command and returns a CompletedProcess.
 
     If capture_output is True, stdout and stderr are captured and merged into
@@ -69,15 +74,16 @@ def run_command(command: list[str],
     stdout_arg = subprocess.PIPE if capture_output else None
     stderr_arg = subprocess.STDOUT if capture_output else None
     try:
-        return subprocess.run(command,
-                              stdout=stdout_arg,
-                              stderr=stderr_arg,
-                              text=True,
-                              check=False,
-                              **kwargs)
+        return subprocess.run(
+            command,
+            stdout=stdout_arg,
+            stderr=stderr_arg,
+            text=True,
+            check=False,
+            **kwargs,
+        )
     except subprocess.TimeoutExpired as e:
         logger.error('Command timed out: %s', e)
-        return subprocess.CompletedProcess(e.cmd,
-                                           TIMEOUT_EXIT_CODE,
-                                           stdout=e.stdout,
-                                           stderr=e.stderr)
+        return subprocess.CompletedProcess(
+            e.cmd, TIMEOUT_EXIT_CODE, stdout=e.stdout, stderr=e.stderr
+        )

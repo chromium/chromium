@@ -24,8 +24,7 @@ def initialize_cipd_root():
         cipd_root = pathlib.Path(temp_dir)
         logging.debug('Using %s as the CIPD root', cipd_root)
         subprocess.run(
-            ['cipd', 'init', '-force',
-             str(cipd_root)],
+            ['cipd', 'init', '-force', str(cipd_root)],
             check=True,
             capture_output=True,
             text=True,
@@ -33,8 +32,9 @@ def initialize_cipd_root():
         yield cipd_root
 
 
-def install_package(package: str, version: str,
-                    cipd_root: pathlib.Path) -> bool:
+def install_package(
+    package: str, version: str, cipd_root: pathlib.Path
+) -> bool:
     """Install a package into the CIPD root.
 
     Args:
@@ -71,6 +71,9 @@ def install_package(package: str, version: str,
     except subprocess.CalledProcessError as e:
         logging.warning(
             'Failed to install CIPD package %s@%s. This may be expected '
-            'depending on the package. Output:\n%s', package, version,
-            e.stdout)
+            'depending on the package. Output:\n%s',
+            package,
+            version,
+            e.stdout,
+        )
         return False

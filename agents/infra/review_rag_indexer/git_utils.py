@@ -10,8 +10,8 @@ import subprocess
 
 
 def read_files_at_revision(
-        revision: str,
-        paths: collections.abc.Iterable[str]) -> dict[str, str | None]:
+    revision: str, paths: collections.abc.Iterable[str]
+) -> dict[str, str | None]:
     """Read one or more files at a given revision.
 
     Args;
@@ -27,12 +27,14 @@ def read_files_at_revision(
         return {}
     input_lines = [f'{revision}:{path}' for path in paths]
     input_data = '\n'.join(input_lines) + '\n'
-    result = subprocess.run(['git', 'cat-file', '--batch'],
-                            input=input_data.encode('utf-8'),
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            check=True,
-                            text=False)
+    result = subprocess.run(
+        ['git', 'cat-file', '--batch'],
+        input=input_data.encode('utf-8'),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+        text=False,
+    )
     stdout = result.stdout
 
     results = {}
@@ -56,8 +58,9 @@ def read_files_at_revision(
         try:
             results[path] = content.decode('utf-8')
         except UnicodeDecodeError:
-            logging.warning('Failed to decode content of %s at %s', path,
-                            revision)
+            logging.warning(
+                'Failed to decode content of %s at %s', path, revision
+            )
             results[path] = None
     return results
 
@@ -72,10 +75,12 @@ def revision_exists(revision: str) -> bool:
         True if the given revision exists in the repo, otherwise False.
     """
     try:
-        subprocess.run(['git', 'rev-parse', '--verify', revision],
-                       stdout=subprocess.DEVNULL,
-                       stderr=subprocess.DEVNULL,
-                       check=True)
+        subprocess.run(
+            ['git', 'rev-parse', '--verify', revision],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
         return True
     except (subprocess.CalledProcessError, OSError):
         return False

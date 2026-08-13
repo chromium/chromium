@@ -12,6 +12,7 @@ def CheckChangeOnUpload(input_api, output_api):
         sys.path.insert(0, repo_root)
     # pylint: disable=import-outside-toplevel
     from agents.presubmit_support import CheckSkillPresubmit
+
     # pylint: enable=import-outside-toplevel
     return CheckSkillPresubmit(input_api, output_api, check_personas=True)
 
@@ -22,5 +23,6 @@ def CheckChangeOnCommit(input_api, output_api):
         sys.path.insert(0, repo_root)
     # pylint: disable=import-outside-toplevel
     from agents.presubmit_support import CheckSkillPresubmit
+
     # pylint: enable=import-outside-toplevel
     return CheckSkillPresubmit(input_api, output_api, check_personas=True)

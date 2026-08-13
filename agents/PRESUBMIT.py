@@ -19,7 +19,8 @@ PYLINT_EXTRA_PATHS_COMPONENTS = [
 def _GetChromiumSrcPath(input_api):
     """Returns the path to the Chromium src directory."""
     return input_api.os_path.realpath(
-        input_api.os_path.join(input_api.PresubmitLocalPath(), '..'))
+        input_api.os_path.join(input_api.PresubmitLocalPath(), '..')
+    )
 
 
 def CheckPylint(input_api, output_api):
@@ -40,7 +41,8 @@ def CheckPylint(input_api, output_api):
                 'duplicate-code',
             ],
             files_to_skip=[r'.*/cipd/.*'],
-        ))
+        )
+    )
 
 
 def CheckPromptfooTestCases(input_api, output_api):
@@ -54,28 +56,36 @@ def CheckPromptfooTestCases(input_api, output_api):
     if not promptfoo_files:
         return []
 
-    linter_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                         'testing',
-                                         'lint_promptfoo_testcases.py')
+    linter_path = input_api.os_path.join(
+        input_api.PresubmitLocalPath(), 'testing', 'lint_promptfoo_testcases.py'
+    )
     # The linter uses third-party libraries, so it must be run with vpython3.
     cmd = ['vpython3', linter_path] + promptfoo_files
     try:
-        p = input_api.subprocess.Popen(cmd,
-                                       stdout=input_api.subprocess.PIPE,
-                                       stderr=input_api.subprocess.PIPE)
+        p = input_api.subprocess.Popen(
+            cmd,
+            stdout=input_api.subprocess.PIPE,
+            stderr=input_api.subprocess.PIPE,
+        )
         stdout, stderr = p.communicate()
     except OSError as e:
         return [
-            output_api.PresubmitError(f'Failed to run promptfoo linter: {e}.\n'
-                                      'Is vpython3 in your PATH?')
+            output_api.PresubmitError(
+                f'Failed to run promptfoo linter: {e}.\n'
+                'Is vpython3 in your PATH?'
+            )
         ]
 
     if p.returncode != 0:
         # The linter script prints errors to stderr.
-        message = (f'Promptfoo linter ({linter_path}) failed with exit code '
-                   f'{p.returncode}.')
-        long_text = (f'STDOUT:\n{stdout.decode("utf-8", "replace")}\n'
-                     f'STDERR:\n{stderr.decode("utf-8", "replace")}\n')
+        message = (
+            f'Promptfoo linter ({linter_path}) failed with exit code '
+            f'{p.returncode}.'
+        )
+        long_text = (
+            f'STDOUT:\n{stdout.decode("utf-8", "replace")}\n'
+            f'STDERR:\n{stderr.decode("utf-8", "replace")}\n'
+        )
         return [output_api.PresubmitError(message, long_text=long_text)]
 
     return []
@@ -105,6 +115,15 @@ def CheckPromptfooEvalAssociation(input_api, output_api):
             )
         )
     return warning
+
+
+def CheckPatchFormatted(input_api, output_api):
+    return input_api.canned_checks.CheckPatchFormatted(
+        input_api,
+        output_api,
+        result_factory=output_api.PresubmitError,
+        bypass_warnings=False,
+    )
 
 
 def CheckSkillFiles(input_api, output_api):

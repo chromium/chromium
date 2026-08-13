@@ -20,8 +20,9 @@ class PowerShellPathContextUnittest(unittest.TestCase):
     @unittest.skipIf(sys.platform != 'win32', 'Windows only test')
     def test_powershell_path_context_adds_ps1(self):
         """Tests that .PS1 is added to PATHEXT on Windows."""
-        with unittest.mock.patch.dict(os.environ,
-                                      {'PATHEXT': '.COM;.EXE;.BAT'}):
+        with unittest.mock.patch.dict(
+            os.environ, {'PATHEXT': '.COM;.EXE;.BAT'}
+        ):
             with gemini_helpers.powershell_path_context():
                 self.assertEqual(os.environ['PATHEXT'], '.COM;.EXE;.BAT;.PS1')
             self.assertEqual(os.environ['PATHEXT'], '.COM;.EXE;.BAT')
@@ -30,17 +31,16 @@ class PowerShellPathContextUnittest(unittest.TestCase):
     def test_powershell_path_context_prefers_ps1_over_js(self):
         """Tests that .PS1 is inserted before .JS if .JS exists."""
         # Case 1: .JS is uppercase
-        with unittest.mock.patch.dict(os.environ,
-                                      {'PATHEXT': '.EXE;.JS;.CMD'}):
+        with unittest.mock.patch.dict(os.environ, {'PATHEXT': '.EXE;.JS;.CMD'}):
             with gemini_helpers.powershell_path_context():
                 pathext = os.environ['PATHEXT']
                 self.assertIn('.PS1', pathext.upper())
-                self.assertLess(pathext.upper().find('.PS1'),
-                                pathext.upper().find('.JS'))
+                self.assertLess(
+                    pathext.upper().find('.PS1'), pathext.upper().find('.JS')
+                )
 
         # Case 2: .js is lowercase (testing case sensitivity fix)
-        with unittest.mock.patch.dict(os.environ,
-                                      {'PATHEXT': '.exe;.js;.cmd'}):
+        with unittest.mock.patch.dict(os.environ, {'PATHEXT': '.exe;.js;.cmd'}):
             with gemini_helpers.powershell_path_context():
                 pathext = os.environ['PATHEXT']
                 self.assertIn('.PS1', pathext.upper())
@@ -49,14 +49,16 @@ class PowerShellPathContextUnittest(unittest.TestCase):
                 self.assertIn('.cmd', pathext)
                 self.assertIn('.js', pathext)
                 # Ensure .PS1 is before .js
-                self.assertLess(pathext.upper().find('.PS1'),
-                                pathext.upper().find('.JS'))
+                self.assertLess(
+                    pathext.upper().find('.PS1'), pathext.upper().find('.JS')
+                )
 
     @unittest.skipIf(sys.platform != 'win32', 'Windows only test')
     def test_powershell_path_context_does_nothing_if_ps1_exists(self):
         """Tests that PATHEXT is unchanged if .PS1 is already there."""
-        with unittest.mock.patch.dict(os.environ,
-                                      {'PATHEXT': '.EXE;.PS1;.BAT'}):
+        with unittest.mock.patch.dict(
+            os.environ, {'PATHEXT': '.EXE;.PS1;.BAT'}
+        ):
             with gemini_helpers.powershell_path_context():
                 self.assertEqual(os.environ['PATHEXT'], '.EXE;.PS1;.BAT')
 
@@ -100,8 +102,9 @@ class GetGeminiCommandUnittest(unittest.TestCase):
         """Tests that the gemini command is found in the PATH."""
         self.mock_exists.return_value = False
         self.mock_which.return_value = '/usr/bin/gemini'
-        self.assertEqual(gemini_helpers.get_gemini_command(),
-                         ['/usr/bin/gemini'])
+        self.assertEqual(
+            gemini_helpers.get_gemini_command(), ['/usr/bin/gemini']
+        )
 
     def test_get_gemini_command_not_found(self):
         """Tests the default gemini command is returned when not found."""
@@ -113,43 +116,58 @@ class GetGeminiCommandUnittest(unittest.TestCase):
     def test_get_gemini_command_from_alias(self):
         """Tests that the gemini command is found from a shell alias."""
         self.mock_run.return_value = unittest.mock.MagicMock(
-            stdout='alias gemini=\'/custom/path/gemini\'\n', returncode=0)
-        self.assertEqual(gemini_helpers.get_gemini_command(use_alias=True),
-                         ['/custom/path/gemini'])
+            stdout='alias gemini=\'/custom/path/gemini\'\n', returncode=0
+        )
+        self.assertEqual(
+            gemini_helpers.get_gemini_command(use_alias=True),
+            ['/custom/path/gemini'],
+        )
 
     @unittest.skipIf(sys.platform == 'win32', 'Unix only test')
     def test_get_gemini_command_from_alias_zsh_style(self):
         """Tests that the gemini command is found from a zsh alias."""
         # zsh style: gemini=/path/to/exe
         self.mock_run.return_value = unittest.mock.MagicMock(
-            stdout='gemini=/custom/path/gemini\n', returncode=0)
-        self.assertEqual(gemini_helpers.get_gemini_command(use_alias=True),
-                         ['/custom/path/gemini'])
+            stdout='gemini=/custom/path/gemini\n', returncode=0
+        )
+        self.assertEqual(
+            gemini_helpers.get_gemini_command(use_alias=True),
+            ['/custom/path/gemini'],
+        )
 
     @unittest.skipIf(sys.platform == 'win32', 'Unix only test')
     def test_get_gemini_command_from_alias_zsh_style_quoted(self):
         """Tests that the gemini command is found from a quoted zsh alias."""
         # zsh style quoted: gemini='/path/to/exe'
         self.mock_run.return_value = unittest.mock.MagicMock(
-            stdout='gemini=\'/custom/path/gemini\'\n', returncode=0)
-        self.assertEqual(gemini_helpers.get_gemini_command(use_alias=True),
-                         ['/custom/path/gemini'])
+            stdout='gemini=\'/custom/path/gemini\'\n', returncode=0
+        )
+        self.assertEqual(
+            gemini_helpers.get_gemini_command(use_alias=True),
+            ['/custom/path/gemini'],
+        )
 
     def test_get_gemini_command_ignores_alias_if_not_requested(self):
         """Tests that aliases are ignored if `use_alias` is False."""
         self.mock_run.return_value = unittest.mock.MagicMock(
-            stdout='alias gemini=\'/custom/path/gemini\'\n', returncode=0)
+            stdout='alias gemini=\'/custom/path/gemini\'\n', returncode=0
+        )
         self.mock_which.return_value = '/usr/bin/gemini'
-        self.assertEqual(gemini_helpers.get_gemini_command(use_alias=False),
-                         ['/usr/bin/gemini'])
+        self.assertEqual(
+            gemini_helpers.get_gemini_command(use_alias=False),
+            ['/usr/bin/gemini'],
+        )
 
     def test_get_gemini_command_handles_alias_failure(self):
         """Tests fallback if alias command fails or is not found."""
         # Mock alias command failing
         self.mock_run.return_value = unittest.mock.MagicMock(returncode=1)
         self.mock_which.return_value = '/usr/bin/gemini'
-        self.assertEqual(gemini_helpers.get_gemini_command(use_alias=True),
-                         ['/usr/bin/gemini'])
+        self.assertEqual(
+            gemini_helpers.get_gemini_command(use_alias=True),
+            ['/usr/bin/gemini'],
+        )
+
 
 class GetGeminiVersionUnittest(unittest.TestCase):
     """Unit tests for the `get_gemini_version` function."""
@@ -164,7 +182,8 @@ class GetGeminiVersionUnittest(unittest.TestCase):
     def test_get_gemini_version_succeeds(self):
         """Tests that the gemini version is correctly parsed."""
         self.mock_run.return_value = unittest.mock.MagicMock(
-            stdout='gemini version 0.1.2\n', returncode=0)
+            stdout='gemini version 0.1.2\n', returncode=0
+        )
         self.assertEqual(gemini_helpers.get_gemini_version(), '0.1.2')
 
     def test_get_gemini_version_fails_on_error(self):
@@ -180,7 +199,8 @@ class GetGeminiVersionUnittest(unittest.TestCase):
     def test_get_gemini_version_fails_on_no_match(self):
         """Tests for None when the version is not in the output."""
         self.mock_run.return_value = unittest.mock.MagicMock(
-            stdout='some other output\n', returncode=0)
+            stdout='some other output\n', returncode=0
+        )
         self.assertIsNone(gemini_helpers.get_gemini_version())
 
 

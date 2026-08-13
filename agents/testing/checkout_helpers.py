@@ -33,7 +33,8 @@ def check_btrfs(root_path) -> bool:
         logging.warning(
             'Warning: This is not running in a btrfs environment which will '
             'lead to a much slower runtime. Please see the README.md for '
-            'btrfs setup instructions.')
+            'btrfs setup instructions.'
+        )
     return btrfs
 
 

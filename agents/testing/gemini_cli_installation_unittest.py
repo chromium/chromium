@@ -13,24 +13,25 @@ import gemini_cli_installation
 
 
 class GeminiCliInstallationTest(unittest.TestCase):
-
     @mock.patch('subprocess.check_call')
-    @mock.patch('gemini_cli_installation.CIPD_ROOT',
-                pathlib.Path('/fake/cipd/root'))
+    @mock.patch(
+        'gemini_cli_installation.CIPD_ROOT', pathlib.Path('/fake/cipd/root')
+    )
     def test_fetch_cipd_gemini_cli_not_verbose(self, mock_check_call):
         gemini_path, node_path = gemini_cli_installation.fetch_cipd_gemini_cli(
-            verbose=False)
+            verbose=False
+        )
 
         self.assertEqual(
             gemini_path,
-            pathlib.Path('/fake/cipd/root/node_modules/.bin/gemini'))
+            pathlib.Path('/fake/cipd/root/node_modules/.bin/gemini'),
+        )
         self.assertEqual(node_path, pathlib.Path('/fake/cipd/root/bin/node'))
 
         expected_calls = [
-            mock.call([
-                'cipd', 'init', '-force',
-                str(pathlib.Path('/fake/cipd/root'))
-            ]),
+            mock.call(
+                ['cipd', 'init', '-force', str(pathlib.Path('/fake/cipd/root'))]
+            ),
             mock.call(
                 [
                     'cipd',
@@ -62,16 +63,16 @@ class GeminiCliInstallationTest(unittest.TestCase):
         self.assertEqual(mock_check_call.call_count, len(expected_calls))
 
     @mock.patch('subprocess.check_call')
-    @mock.patch('gemini_cli_installation.CIPD_ROOT',
-                pathlib.Path('/fake/cipd/root'))
+    @mock.patch(
+        'gemini_cli_installation.CIPD_ROOT', pathlib.Path('/fake/cipd/root')
+    )
     def test_fetch_cipd_gemini_cli_verbose(self, mock_check_call):
         gemini_cli_installation.fetch_cipd_gemini_cli(verbose=True)
 
         expected_calls = [
-            mock.call([
-                'cipd', 'init', '-force',
-                str(pathlib.Path('/fake/cipd/root'))
-            ]),
+            mock.call(
+                ['cipd', 'init', '-force', str(pathlib.Path('/fake/cipd/root'))]
+            ),
             mock.call(
                 [
                     'cipd',

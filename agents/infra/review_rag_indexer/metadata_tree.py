@@ -112,8 +112,9 @@ def _deep_merge(dict1: dict, dict2: dict) -> dict:
     return dict1
 
 
-def resolve_metadata(path: str, parsed_files: dict[str, Any],
-                     resolved_cache: dict[str, Any]) -> dict[str, Any]:
+def resolve_metadata(
+    path: str, parsed_files: dict[str, Any], resolved_cache: dict[str, Any]
+) -> dict[str, Any]:
     """Resolves metadata for a path, applying mixins recursively.
 
     Args:
@@ -137,8 +138,9 @@ def resolve_metadata(path: str, parsed_files: dict[str, Any],
     for mixin in mixins:
         if mixin.startswith('//'):
             mixin_path = mixin[2:]
-            mixin_resolved = resolve_metadata(mixin_path, parsed_files,
-                                              resolved_cache)
+            mixin_resolved = resolve_metadata(
+                mixin_path, parsed_files, resolved_cache
+            )
             _deep_merge(resolved, copy.deepcopy(mixin_resolved))
     local_copy = copy.deepcopy(parsed)
     local_copy.pop('mixins', None)
@@ -190,8 +192,7 @@ def load_mixins_recursive(
             parsed, mixin_paths = parse_and_get_mixins(content)
             parsed_files[path] = parsed
             for mixin_path in mixin_paths:
-                if (mixin_path not in parsed_files
-                        and mixin_path not in pending):
+                if mixin_path not in parsed_files and mixin_path not in pending:
                     new_pending.add(mixin_path)
         pending = new_pending
 
@@ -222,7 +223,8 @@ def build_metadata_tree(
 
 
 def initialize_metadata_tree(
-        first_rev: str) -> tuple[MetadataTree, dict[str, Any], set[str]]:
+    first_rev: str,
+) -> tuple[MetadataTree, dict[str, Any], set[str]]:
     """Initializes the metadata tree to the state before `first_rev`.
 
     If a revision is not available before `first_rev` (i.e. `first_rev` is the
@@ -243,8 +245,11 @@ def initialize_metadata_tree(
     """
     init_rev = f"{first_rev}~1"
     if not revision_exists(init_rev):
-        logging.warning('Failed to verify %s, using %s for initialization',
-                        init_rev, first_rev)
+        logging.warning(
+            'Failed to verify %s, using %s for initialization',
+            init_rev,
+            first_rev,
+        )
         init_rev = first_rev
 
     cmd = ['git', 'ls-tree', '-r', '--name-only', init_rev]

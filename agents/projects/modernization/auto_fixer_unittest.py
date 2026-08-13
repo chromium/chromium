@@ -12,7 +12,8 @@ import unittest.mock
 
 # Add the Chromium root to sys.path to allow for fully qualified imports.
 sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
+    os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+)
 
 from agents.projects.modernization import auto_fixer
 
@@ -25,7 +26,8 @@ class AutoFixerUnittest(unittest.TestCase):
         self.mock_run = self.mock_run_patcher.start()
 
         self.mock_get_cmd_patcher = unittest.mock.patch(
-            'agents.common.gemini_helpers.get_gemini_command')
+            'agents.common.gemini_helpers.get_gemini_command'
+        )
         self.mock_get_cmd = self.mock_get_cmd_patcher.start()
         self.mock_get_cmd.return_value = ['/path/to/gemini']
 
@@ -69,8 +71,9 @@ class AutoFixerUnittest(unittest.TestCase):
         self.mock_run.side_effect = [mock_ret, mock_ret]
 
         fixer = auto_fixer.AutoFixer(verification_timeout=123)
-        result = fixer.fix('Some error occurred',
-                           verification_command=self.verify_cmd)
+        result = fixer.fix(
+            'Some error occurred', verification_command=self.verify_cmd
+        )
 
         self.assertEqual(result, auto_fixer.FixStatus.SUCCESS)
         # Gemini call + Verification call
@@ -86,13 +89,13 @@ class AutoFixerUnittest(unittest.TestCase):
         initial_error = 'Initial error'
         self.mock_run.side_effect = [
             # Gemini fails
-            subprocess.CompletedProcess(args=['gemini'],
-                                        returncode=1,
-                                        stdout=failure_output),
+            subprocess.CompletedProcess(
+                args=['gemini'], returncode=1, stdout=failure_output
+            ),
             # Gemini succeeds
-            subprocess.CompletedProcess(args=['gemini'],
-                                        returncode=0,
-                                        stdout='Success'),
+            subprocess.CompletedProcess(
+                args=['gemini'], returncode=0, stdout='Success'
+            ),
         ]
 
         fixer = auto_fixer.AutoFixer(max_attempts=2)
@@ -103,14 +106,16 @@ class AutoFixerUnittest(unittest.TestCase):
         # Verify second call prompt includes 'First failure'
         kwargs = self.mock_run.call_args_list[1][1]
         self.assertIn(failure_output, kwargs['input'])
-        self.assertNotIn(initial_error,
-                         kwargs['input'])  # Replaced by failure_output
+        self.assertNotIn(
+            initial_error, kwargs['input']
+        )  # Replaced by failure_output
 
     def test_fix_failure(self):
         """Test that fix returns AGENT_FAILURE when gemini fails."""
         # Simulate failure by returning non-zero return code
         self.mock_run.return_value = subprocess.CompletedProcess(
-            args=['gemini'], returncode=1, stdout='Error')
+            args=['gemini'], returncode=1, stdout='Error'
+        )
 
         fixer = auto_fixer.AutoFixer()
         result = fixer.fix('Error', verification_command=self.verify_cmd)
@@ -123,8 +128,9 @@ class AutoFixerUnittest(unittest.TestCase):
         """Test that fix retries on timeout and fails with AGENT_FAILURE."""
         # run_command catches TimeoutExpired and returns CompletedProcess with
         # TIMEOUT_EXIT_CODE.
-        self.mock_run.side_effect = subprocess.TimeoutExpired(cmd=['gemini'],
-                                                              timeout=300)
+        self.mock_run.side_effect = subprocess.TimeoutExpired(
+            cmd=['gemini'], timeout=300
+        )
 
         fixer = auto_fixer.AutoFixer()
         result = fixer.fix('Error', verification_command=self.verify_cmd)
@@ -147,9 +153,9 @@ class AutoFixerUnittest(unittest.TestCase):
             # Timeout on first Gemini call
             subprocess.TimeoutExpired(cmd=['gemini'], timeout=300),
             # Failure on second Gemini call
-            subprocess.CompletedProcess(args=['gemini'],
-                                        returncode=1,
-                                        stdout='Fail'),
+            subprocess.CompletedProcess(
+                args=['gemini'], returncode=1, stdout='Fail'
+            ),
             # Success on third Gemini call
             success_ret,
             # Success on verification
@@ -165,13 +171,13 @@ class AutoFixerUnittest(unittest.TestCase):
         """Test that fix runs verification command and returns SUCCESS."""
         self.mock_run.side_effect = [
             # Gemini succeeds
-            subprocess.CompletedProcess(args=['gemini'],
-                                        returncode=0,
-                                        stdout='Agent finished'),
+            subprocess.CompletedProcess(
+                args=['gemini'], returncode=0, stdout='Agent finished'
+            ),
             # Verification succeeds
-            subprocess.CompletedProcess(args=self.verify_cmd,
-                                        returncode=0,
-                                        stdout='Tests passed')
+            subprocess.CompletedProcess(
+                args=self.verify_cmd, returncode=0, stdout='Tests passed'
+            ),
         ]
 
         fixer = auto_fixer.AutoFixer()
@@ -180,29 +186,28 @@ class AutoFixerUnittest(unittest.TestCase):
         self.assertEqual(result, auto_fixer.FixStatus.SUCCESS)
         self.assertEqual(self.mock_run.call_count, 2)
         # Verify verification command was called correctly
-        self.assertEqual(self.mock_run.call_args_list[1][0][0],
-                         self.verify_cmd)
+        self.assertEqual(self.mock_run.call_args_list[1][0][0], self.verify_cmd)
 
     def test_fix_verification_command_failure_then_success(self):
         """Test that fix retries if verification fails."""
         verify_failure = 'Tests failed 1'
         self.mock_run.side_effect = [
             # Agent success
-            subprocess.CompletedProcess(args=['gemini'],
-                                        returncode=0,
-                                        stdout='Agent finished 1'),
+            subprocess.CompletedProcess(
+                args=['gemini'], returncode=0, stdout='Agent finished 1'
+            ),
             # Verification failure
-            subprocess.CompletedProcess(args=self.verify_cmd,
-                                        returncode=1,
-                                        stdout=verify_failure),
+            subprocess.CompletedProcess(
+                args=self.verify_cmd, returncode=1, stdout=verify_failure
+            ),
             # Agent success
-            subprocess.CompletedProcess(args=['gemini'],
-                                        returncode=0,
-                                        stdout='Agent finished 2'),
+            subprocess.CompletedProcess(
+                args=['gemini'], returncode=0, stdout='Agent finished 2'
+            ),
             # Verification success
-            subprocess.CompletedProcess(args=self.verify_cmd,
-                                        returncode=0,
-                                        stdout='Tests passed 2')
+            subprocess.CompletedProcess(
+                args=self.verify_cmd, returncode=0, stdout='Tests passed 2'
+            ),
         ]
 
         fixer = auto_fixer.AutoFixer()
@@ -222,9 +227,11 @@ class AutoFixerUnittest(unittest.TestCase):
         # Agent always succeeds, but verification always fails
         self.mock_run.side_effect = [
             subprocess.CompletedProcess(
-                args=['gemini'], returncode=0, stdout='Agent finished'),
+                args=['gemini'], returncode=0, stdout='Agent finished'
+            ),
             subprocess.CompletedProcess(
-                args=self.verify_cmd, returncode=1, stdout='Tests failed')
+                args=self.verify_cmd, returncode=1, stdout='Tests failed'
+            ),
         ] * 3
 
         fixer = auto_fixer.AutoFixer()

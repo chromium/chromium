@@ -12,7 +12,6 @@ import git_utils
 
 
 class ReadFilesAtRevisionTest(unittest.TestCase):
-
     def setUp(self):
         self.patcher = mock.patch('subprocess.run')
         self.mock_run = self.patcher.start()
@@ -22,8 +21,10 @@ class ReadFilesAtRevisionTest(unittest.TestCase):
         mock_result = mock.Mock()
         self.mock_run.return_value = mock_result
 
-        stdout_content = (b'filename1 blob 12\nfile1content\n'
-                          b'filename2 blob 12\nfile2content\n')
+        stdout_content = (
+            b'filename1 blob 12\nfile1content\n'
+            b'filename2 blob 12\nfile2content\n'
+        )
         mock_result.stdout = stdout_content
         mock_result.stderr = b''
         mock_result.returncode = 0
@@ -31,10 +32,10 @@ class ReadFilesAtRevisionTest(unittest.TestCase):
         paths = ['path/to/file1', 'path/to/file2']
         results = git_utils.read_files_at_revision('rev1', paths)
 
-        self.assertEqual(results, {
-            'path/to/file1': 'file1content',
-            'path/to/file2': 'file2content'
-        })
+        self.assertEqual(
+            results,
+            {'path/to/file1': 'file1content', 'path/to/file2': 'file2content'},
+        )
         self.mock_run.assert_called_once_with(
             ['git', 'cat-file', '--batch'],
             input=b'rev1:path/to/file1\nrev1:path/to/file2\n',
@@ -72,14 +73,14 @@ class ReadFilesAtRevisionTest(unittest.TestCase):
 
     def test_read_files_nonzero_exit(self):
         self.mock_run.side_effect = subprocess.CalledProcessError(
-            returncode=1, cmd=['git', 'cat-file', '--batch'])
+            returncode=1, cmd=['git', 'cat-file', '--batch']
+        )
 
         with self.assertRaises(subprocess.CalledProcessError):
             git_utils.read_files_at_revision('rev1', ['path/to/file1'])
 
 
 class RevisionExistsTest(unittest.TestCase):
-
     def setUp(self):
         self.patcher = mock.patch('subprocess.run')
         self.mock_run = self.patcher.start()
@@ -97,7 +98,8 @@ class RevisionExistsTest(unittest.TestCase):
 
     def test_revision_exists_false(self):
         self.mock_run.side_effect = subprocess.CalledProcessError(
-            returncode=1, cmd=['git', 'rev-parse', '--verify'])
+            returncode=1, cmd=['git', 'rev-parse', '--verify']
+        )
         self.assertFalse(git_utils.revision_exists('invalid_rev'))
 
     def test_revision_exists_oserror(self):

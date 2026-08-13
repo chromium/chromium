@@ -21,7 +21,6 @@ import create_index
 
 
 class CreateIndexTest(fake_filesystem_unittest.TestCase):
-
     def setUp(self):
         self.setUpPyfakefs()
         self.mock_chdir = mock.patch('os.chdir').start()
@@ -54,35 +53,57 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
             mock_logging_config.assert_called_once_with(level=logging.DEBUG)
         self.mock_chdir.assert_called_once_with('/fake/wdir')
 
-    @mock.patch('sys.argv', [
-        'create_index.py', '--since', 'in 1 hour', '--project', 'proj',
-        '--repo', 'repo'
-    ])
+    @mock.patch(
+        'sys.argv',
+        [
+            'create_index.py',
+            '--since',
+            'in 1 hour',
+            '--project',
+            'proj',
+            '--repo',
+            'repo',
+        ],
+    )
     @mock.patch('create_index._perform_initial_setup')
     def test_main_negative_window_raises_value_error(self, mock_setup):
         with self.assertRaises(ValueError) as cm:
             create_index.main()
 
-        self.assertIn('resulted in a time window in the future',
-                      str(cm.exception))
+        self.assertIn(
+            'resulted in a time window in the future', str(cm.exception)
+        )
         mock_setup.assert_called_once()
         called_args = mock_setup.call_args[0][0]
         self.assertEqual(called_args.since, 'in 1 hour')
         self.assertEqual(called_args.project, 'proj')
         self.assertEqual(called_args.repo, 'repo')
 
-    @mock.patch('sys.argv', [
-        'create_index.py', '--since', '1 hour ago', '--project', 'proj',
-        '--repo', 'repo'
-    ])
+    @mock.patch(
+        'sys.argv',
+        [
+            'create_index.py',
+            '--since',
+            '1 hour ago',
+            '--project',
+            'proj',
+            '--repo',
+            'repo',
+        ],
+    )
     @mock.patch('create_index._perform_initial_setup')
     @mock.patch('create_index._retrieve_previous_run_info')
     @mock.patch('create_index.local_git_steps.process_local_git_data')
     @mock.patch('create_index.gerrit_steps.retrieve_comments')
     @mock.patch('create_index.gerrit_steps.retrieve_hashtags')
-    def test_main_success(self, mock_retrieve_hashtags, mock_retrieve_comments,
-                          mock_process_local_git_data, mock_retrieve,
-                          mock_setup):
+    def test_main_success(
+        self,
+        mock_retrieve_hashtags,
+        mock_retrieve_comments,
+        mock_process_local_git_data,
+        mock_retrieve,
+        mock_setup,
+    ):
         mock_process_local_git_data.return_value = []
         approximate_base = datetime.datetime.now(tz=datetime.timezone.utc)
 
@@ -102,8 +123,8 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
         self.assertEqual(called_args.repo, 'repo')
         self.assertEqual(called_args.window, datetime.timedelta(hours=1))
         self.assertLess(
-            abs((approximate_base - called_args.window_base).total_seconds()),
-            5)
+            abs((approximate_base - called_args.window_base).total_seconds()), 5
+        )
         self.assertTrue(called_args.clobber)
         self.assertFalse(called_args.dryrun)
         self.assertIsNone(called_args.previous_run)
@@ -114,21 +135,35 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
         mock_retrieve_hashtags.assert_not_called()
         mock_retrieve_comments.assert_not_called()
 
-    @mock.patch('sys.argv', [
-        'create_index.py', '--since', '1 hour ago', '--project', 'proj',
-        '--repo', 'repo', '--head-git-revision', 'my_head_rev'
-    ])
+    @mock.patch(
+        'sys.argv',
+        [
+            'create_index.py',
+            '--since',
+            '1 hour ago',
+            '--project',
+            'proj',
+            '--repo',
+            'repo',
+            '--head-git-revision',
+            'my_head_rev',
+        ],
+    )
     @mock.patch('create_index._perform_initial_setup')
     @mock.patch('create_index._retrieve_previous_run_info')
     @mock.patch('create_index.local_git_steps.process_local_git_data')
     @mock.patch('create_index.git_utils.revision_exists')
     @mock.patch('create_index.gerrit_steps.retrieve_comments')
     @mock.patch('create_index.gerrit_steps.retrieve_hashtags')
-    def test_main_success_with_head_git_revision(self, mock_retrieve_hashtags,
-                                                 mock_retrieve_comments,
-                                                 mock_revision_exists,
-                                                 mock_process_local_git_data,
-                                                 mock_retrieve, mock_setup):
+    def test_main_success_with_head_git_revision(
+        self,
+        mock_retrieve_hashtags,
+        mock_retrieve_comments,
+        mock_revision_exists,
+        mock_process_local_git_data,
+        mock_retrieve,
+        mock_setup,
+    ):
         mock_revision_exists.return_value = True
         mock_process_local_git_data.return_value = []
 
@@ -143,57 +178,97 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
         mock_retrieve_hashtags.assert_not_called()
         mock_retrieve_comments.assert_not_called()
 
-    @mock.patch('sys.argv', [
-        'create_index.py', '--since', '1 hour ago', '--project', 'proj',
-        '--repo', 'repo', '--head-git-revision', 'invalid_rev'
-    ])
+    @mock.patch(
+        'sys.argv',
+        [
+            'create_index.py',
+            '--since',
+            '1 hour ago',
+            '--project',
+            'proj',
+            '--repo',
+            'repo',
+            '--head-git-revision',
+            'invalid_rev',
+        ],
+    )
     @mock.patch('create_index._perform_initial_setup')
     @mock.patch('create_index.git_utils.revision_exists')
     def test_main_invalid_head_git_revision_fails_validation(
-            self, mock_revision_exists, mock_setup):
+        self, mock_revision_exists, mock_setup
+    ):
         mock_revision_exists.return_value = False
 
-        with (self.assertRaises(SystemExit),
-              contextlib.redirect_stderr(io.StringIO()) as stderr):
+        with (
+            self.assertRaises(SystemExit),
+            contextlib.redirect_stderr(io.StringIO()) as stderr,
+        ):
             create_index.main()
 
         self.assertTrue(
-            'Invalid head git revision: invalid_rev' in stderr.getvalue())
+            'Invalid head git revision: invalid_rev' in stderr.getvalue()
+        )
         mock_setup.assert_not_called()
         mock_revision_exists.assert_called_once_with('invalid_rev')
 
-    @mock.patch('sys.argv', [
-        'create_index.py', '--since', '1 hour ago', '--project', 'proj',
-        '--repo', 'repo', '--num-network-workers', '42'
-    ])
+    @mock.patch(
+        'sys.argv',
+        [
+            'create_index.py',
+            '--since',
+            '1 hour ago',
+            '--project',
+            'proj',
+            '--repo',
+            'repo',
+            '--num-network-workers',
+            '42',
+        ],
+    )
     @mock.patch('create_index._perform_initial_setup')
     @mock.patch('create_index._retrieve_previous_run_info')
     @mock.patch('create_index.local_git_steps.process_local_git_data')
     @mock.patch('create_index.gerrit_steps.retrieve_comments')
     @mock.patch('create_index.gerrit_steps.retrieve_hashtags')
-    def test_main_success_custom_workers(self, _mock_retrieve_hashtags,
-                                         _mock_retrieve_comments,
-                                         mock_process_local_git_data,
-                                         mock_retrieve, _mock_setup):
+    def test_main_success_custom_workers(
+        self,
+        _mock_retrieve_hashtags,
+        _mock_retrieve_comments,
+        mock_process_local_git_data,
+        mock_retrieve,
+        _mock_setup,
+    ):
         mock_process_local_git_data.return_value = []
         create_index.main()
 
         called_args = mock_retrieve.call_args[0][0]
         self.assertEqual(called_args.num_network_workers, 42)
 
-    @mock.patch('sys.argv', [
-        'create_index.py', '--since', '1 hour ago', '--project', 'proj',
-        '--repo', 'repo'
-    ])
+    @mock.patch(
+        'sys.argv',
+        [
+            'create_index.py',
+            '--since',
+            '1 hour ago',
+            '--project',
+            'proj',
+            '--repo',
+            'repo',
+        ],
+    )
     @mock.patch('create_index._perform_initial_setup')
     @mock.patch('create_index._retrieve_previous_run_info')
     @mock.patch('create_index.local_git_steps.process_local_git_data')
     @mock.patch('create_index.gerrit_steps.retrieve_comments')
     @mock.patch('create_index.gerrit_steps.retrieve_hashtags')
-    def test_main_success_with_cls(self, mock_retrieve_hashtags,
-                                   mock_retrieve_comments,
-                                   mock_process_local_git_data, mock_retrieve,
-                                   mock_setup):
+    def test_main_success_with_cls(
+        self,
+        mock_retrieve_hashtags,
+        mock_retrieve_comments,
+        mock_process_local_git_data,
+        mock_retrieve,
+        mock_setup,
+    ):
         fake_cl = mock.Mock()
         fake_cl.comments = []
         mock_process_local_git_data.return_value = [fake_cl]
@@ -203,35 +278,49 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
         mock_setup.assert_called_once()
         called_common_args = mock_retrieve.call_args[0][0]
         mock_process_local_git_data.assert_called_once_with(called_common_args)
-        mock_retrieve_hashtags.assert_called_once_with(called_common_args,
-                                                       [fake_cl])
-        mock_retrieve_comments.assert_called_once_with(called_common_args,
-                                                       [fake_cl])
+        mock_retrieve_hashtags.assert_called_once_with(
+            called_common_args, [fake_cl]
+        )
+        mock_retrieve_comments.assert_called_once_with(
+            called_common_args, [fake_cl]
+        )
 
-    @mock.patch('sys.argv', [
-        'create_index.py', '--since', '1 hour ago', '--project', 'proj',
-        '--repo', 'repo', '--num-network-workers', '0'
-    ])
+    @mock.patch(
+        'sys.argv',
+        [
+            'create_index.py',
+            '--since',
+            '1 hour ago',
+            '--project',
+            'proj',
+            '--repo',
+            'repo',
+            '--num-network-workers',
+            '0',
+        ],
+    )
     @mock.patch('create_index._perform_initial_setup')
     def test_main_invalid_workers_fails_validation(self, mock_setup):
-        with (self.assertRaises(SystemExit),
-              contextlib.redirect_stderr(io.StringIO()) as stderr):
+        with (
+            self.assertRaises(SystemExit),
+            contextlib.redirect_stderr(io.StringIO()) as stderr,
+        ):
             create_index.main()
 
         self.assertTrue(
-            '--num-network-workers must be positive' in stderr.getvalue())
+            '--num-network-workers must be positive' in stderr.getvalue()
+        )
         mock_setup.assert_not_called()
 
 
-class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
-                                             ):
-
+class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase):
     def setUp(self):
         self.setUpPyfakefs()
 
         self.mock_run = mock.patch('subprocess.run').start()
-        self.mock_install = mock.patch('create_index.cipd_helpers'
-                                       '.install_package').start()
+        self.mock_install = mock.patch(
+            'create_index.cipd_helpers.install_package'
+        ).start()
         self.mock_install.side_effect = self._fake_install
 
         self.manifest_content = None
@@ -241,27 +330,20 @@ class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
     def _fake_install(self, _package, _version, cipd_root):
         if self.manifest_content is not None:
             manifest_path = cipd_root / 'manifest.json'
-            manifest_path.write_text(json.dumps(self.manifest_content),
-                                     encoding='utf-8')
+            manifest_path.write_text(
+                json.dumps(self.manifest_content), encoding='utf-8'
+            )
             return True
         return False
 
     def _get_good_manifest_content(self):
         return {
-            'script_version':
-            1,
-            'window_seconds':
-            86400,
-            'start_time':
-            datetime.datetime(2026,
-                              6,
-                              1,
-                              12,
-                              0,
-                              0,
-                              tzinfo=datetime.timezone.utc).timestamp(),
-            'revision':
-            'deadbeef'
+            'script_version': 1,
+            'window_seconds': 86400,
+            'start_time': datetime.datetime(
+                2026, 6, 1, 12, 0, 0, tzinfo=datetime.timezone.utc
+            ).timestamp(),
+            'revision': 'deadbeef',
         }
 
     def test_retrieve_previous_run_info_install_failed(self):
@@ -269,22 +351,20 @@ class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
             project='proj',
             repo='repo',
             window=datetime.timedelta(days=1),
-            window_base=datetime.datetime(2026,
-                                          6,
-                                          2,
-                                          12,
-                                          0,
-                                          0,
-                                          tzinfo=datetime.timezone.utc),
+            window_base=datetime.datetime(
+                2026, 6, 2, 12, 0, 0, tzinfo=datetime.timezone.utc
+            ),
             dryrun=False,
-            previous_run=None)
+            previous_run=None,
+        )
 
         with self.assertLogs(level='INFO') as log:
             create_index._retrieve_previous_run_info(common_args)
 
         self.assertTrue(common_args.clobber)
         self.assertTrue(
-            any('Failed to retrieve manifest' in line for line in log.output))
+            any('Failed to retrieve manifest' in line for line in log.output)
+        )
         self.assertIsNone(common_args.previous_run)
 
         self.mock_install.assert_called_once()
@@ -301,15 +381,12 @@ class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
             project='proj',
             repo='repo',
             window=datetime.timedelta(days=1),
-            window_base=datetime.datetime(2026,
-                                          6,
-                                          2,
-                                          12,
-                                          0,
-                                          0,
-                                          tzinfo=datetime.timezone.utc),
+            window_base=datetime.datetime(
+                2026, 6, 2, 12, 0, 0, tzinfo=datetime.timezone.utc
+            ),
             dryrun=False,
-            previous_run=None)
+            previous_run=None,
+        )
 
         with self.assertLogs(level='INFO') as log:
             create_index._retrieve_previous_run_info(common_args)
@@ -329,21 +406,19 @@ class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
             project='proj',
             repo='repo',
             window=datetime.timedelta(days=1),
-            window_base=datetime.datetime(2026,
-                                          6,
-                                          2,
-                                          12,
-                                          0,
-                                          0,
-                                          tzinfo=datetime.timezone.utc),
+            window_base=datetime.datetime(
+                2026, 6, 2, 12, 0, 0, tzinfo=datetime.timezone.utc
+            ),
             dryrun=False,
-            previous_run=None)
+            previous_run=None,
+        )
 
         with self.assertLogs(level='INFO') as log:
             create_index._retrieve_previous_run_info(common_args)
         self.assertTrue(common_args.clobber)
         self.assertTrue(
-            any('did not report a window' in line for line in log.output))
+            any('did not report a window' in line for line in log.output)
+        )
 
     def test_retrieve_previous_run_info_window_seconds_mismatch(self):
         self.manifest_content = self._get_good_manifest_content()
@@ -353,21 +428,19 @@ class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
             project='proj',
             repo='repo',
             window=datetime.timedelta(days=1),
-            window_base=datetime.datetime(2026,
-                                          6,
-                                          2,
-                                          12,
-                                          0,
-                                          0,
-                                          tzinfo=datetime.timezone.utc),
+            window_base=datetime.datetime(
+                2026, 6, 2, 12, 0, 0, tzinfo=datetime.timezone.utc
+            ),
             dryrun=False,
-            previous_run=None)
+            previous_run=None,
+        )
 
         with self.assertLogs(level='INFO') as log:
             create_index._retrieve_previous_run_info(common_args)
         self.assertTrue(common_args.clobber)
         self.assertTrue(
-            any('reported a window of' in line for line in log.output))
+            any('reported a window of' in line for line in log.output)
+        )
 
     def test_retrieve_previous_run_info_start_time_missing(self):
         self.manifest_content = self._get_good_manifest_content()
@@ -377,54 +450,48 @@ class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
             project='proj',
             repo='repo',
             window=datetime.timedelta(days=1),
-            window_base=datetime.datetime(2026,
-                                          6,
-                                          2,
-                                          12,
-                                          0,
-                                          0,
-                                          tzinfo=datetime.timezone.utc),
+            window_base=datetime.datetime(
+                2026, 6, 2, 12, 0, 0, tzinfo=datetime.timezone.utc
+            ),
             dryrun=False,
-            previous_run=None)
+            previous_run=None,
+        )
 
         with self.assertLogs(level='INFO') as log:
             create_index._retrieve_previous_run_info(common_args)
         self.assertTrue(common_args.clobber)
         self.assertTrue(
-            any('did not report a start time' in line for line in log.output))
+            any('did not report a start time' in line for line in log.output)
+        )
 
     def test_retrieve_previous_run_info_no_overlap(self):
         self.manifest_content = self._get_good_manifest_content()
         # Set start_time to 2026-05-31T12:00:00Z (2 days before base)
-        start_time = datetime.datetime(2026,
-                                       5,
-                                       31,
-                                       12,
-                                       0,
-                                       0,
-                                       tzinfo=datetime.timezone.utc)
+        start_time = datetime.datetime(
+            2026, 5, 31, 12, 0, 0, tzinfo=datetime.timezone.utc
+        )
         self.manifest_content['start_time'] = start_time.timestamp()
 
         common_args = create_index.CommonArgs(
             project='proj',
             repo='repo',
             window=datetime.timedelta(days=1),
-            window_base=datetime.datetime(2026,
-                                          6,
-                                          2,
-                                          12,
-                                          0,
-                                          0,
-                                          tzinfo=datetime.timezone.utc),
+            window_base=datetime.datetime(
+                2026, 6, 2, 12, 0, 0, tzinfo=datetime.timezone.utc
+            ),
             dryrun=False,
-            previous_run=None)
+            previous_run=None,
+        )
 
         with self.assertLogs(level='INFO') as log:
             create_index._retrieve_previous_run_info(common_args)
         self.assertTrue(common_args.clobber)
         self.assertTrue(
-            any('no overlap with the current window' in line
-                for line in log.output))
+            any(
+                'no overlap with the current window' in line
+                for line in log.output
+            )
+        )
 
     def test_retrieve_previous_run_info_revision_missing(self):
         self.manifest_content = self._get_good_manifest_content()
@@ -434,21 +501,19 @@ class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
             project='proj',
             repo='repo',
             window=datetime.timedelta(days=1),
-            window_base=datetime.datetime(2026,
-                                          6,
-                                          2,
-                                          12,
-                                          0,
-                                          0,
-                                          tzinfo=datetime.timezone.utc),
+            window_base=datetime.datetime(
+                2026, 6, 2, 12, 0, 0, tzinfo=datetime.timezone.utc
+            ),
             dryrun=False,
-            previous_run=None)
+            previous_run=None,
+        )
 
         with self.assertLogs(level='INFO') as log:
             create_index._retrieve_previous_run_info(common_args)
         self.assertTrue(common_args.clobber)
         self.assertTrue(
-            any('did not contain a revision' in line for line in log.output))
+            any('did not contain a revision' in line for line in log.output)
+        )
 
     def test_retrieve_previous_run_info_valid(self):
         self.manifest_content = self._get_good_manifest_content()
@@ -457,35 +522,31 @@ class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
             project='proj',
             repo='repo',
             window=datetime.timedelta(days=1),
-            window_base=datetime.datetime(2026,
-                                          6,
-                                          2,
-                                          12,
-                                          0,
-                                          0,
-                                          tzinfo=datetime.timezone.utc),
+            window_base=datetime.datetime(
+                2026, 6, 2, 12, 0, 0, tzinfo=datetime.timezone.utc
+            ),
             dryrun=False,
-            previous_run=None)
+            previous_run=None,
+        )
 
         with self.assertLogs(level='INFO') as log:
             create_index._retrieve_previous_run_info(common_args)
 
         self.assertIn(
             "INFO:root:Last run's manifest appears to be valid and relevant. "
-            'Proceeding with incremental index creation', log.output)
+            'Proceeding with incremental index creation',
+            log.output,
+        )
 
         self.assertFalse(common_args.clobber)
         self.assertIsNotNone(common_args.previous_run)
         self.assertEqual(common_args.previous_run.revision, 'deadbeef')
-        expected_start_time = datetime.datetime(2026,
-                                                6,
-                                                1,
-                                                12,
-                                                0,
-                                                0,
-                                                tzinfo=datetime.timezone.utc)
-        self.assertEqual(common_args.previous_run.start_time,
-                         expected_start_time)
+        expected_start_time = datetime.datetime(
+            2026, 6, 1, 12, 0, 0, tzinfo=datetime.timezone.utc
+        )
+        self.assertEqual(
+            common_args.previous_run.start_time, expected_start_time
+        )
 
         self.mock_install.assert_called_once()
         self.assertIsInstance(self.mock_install.call_args[0][2], pathlib.Path)

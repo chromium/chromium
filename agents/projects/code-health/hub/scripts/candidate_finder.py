@@ -34,10 +34,12 @@ GLOBAL_SKIP_DIRS = {
 def get_repo_root() -> str:
     """Finds the root of the git repository."""
     try:
-        res = subprocess.run(["git", "rev-parse", "--show-toplevel"],
-                             capture_output=True,
-                             text=True,
-                             check=True)
+        res = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
         return res.stdout.strip()
     except Exception:
         return os.getcwd()
@@ -46,12 +48,18 @@ def get_repo_root() -> str:
 def normalize_path(filepath: str) -> str:
     """Translates legacy Java test paths to production paths for grouping."""
     replacements = [
-        ("chrome/android/javatests/src/org/chromium/chrome/browser/",
-         "chrome/browser/"),
-        ("chrome/android/junit/src/org/chromium/chrome/browser/",
-         "chrome/browser/"),
-        ("chrome/android/java/src/org/chromium/chrome/browser/",
-         "chrome/browser/"),
+        (
+            "chrome/android/javatests/src/org/chromium/chrome/browser/",
+            "chrome/browser/",
+        ),
+        (
+            "chrome/android/junit/src/org/chromium/chrome/browser/",
+            "chrome/browser/",
+        ),
+        (
+            "chrome/android/java/src/org/chromium/chrome/browser/",
+            "chrome/browser/",
+        ),
     ]
     norm_path = filepath
     for src, dst in replacements:
@@ -67,8 +75,11 @@ def get_subsystem_prefix(filepath: str) -> str:
     parts = norm_path.split(os.sep)
 
     # Large monolithic folders that need deeper nesting
-    if len(parts) >= 3 and parts[0] == "chrome" and parts[1] in ("browser",
-                                                                 "android"):
+    if (
+        len(parts) >= 3
+        and parts[0] == "chrome"
+        and parts[1] in ("browser", "android")
+    ):
         depth = 3
     else:
         depth = 2
@@ -90,11 +101,13 @@ def get_files(search_root, extensions, plugin_skip_dirs=None):
 
     try:
         # Use git ls-files for speed
-        result = subprocess.run(['git', 'ls-files'],
-                                stdout=subprocess.PIPE,
-                                text=True,
-                                check=True,
-                                cwd=abs_search_root)
+        result = subprocess.run(
+            ['git', 'ls-files'],
+            stdout=subprocess.PIPE,
+            text=True,
+            check=True,
+            cwd=abs_search_root,
+        )
         for line in result.stdout.splitlines():
             raw_files.append(os.path.join(search_root, line.strip()))
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -141,12 +154,14 @@ def get_files(search_root, extensions, plugin_skip_dirs=None):
 def load_plugin_from_path(file_path: str):
     """Loads a Python module dynamically from a file path."""
     if not os.path.exists(file_path):
-        print(f"Error: Plugin file '{file_path}' does not exist.",
-              file=sys.stderr)
+        print(
+            f"Error: Plugin file '{file_path}' does not exist.", file=sys.stderr
+        )
         sys.exit(1)
 
-    spec = importlib.util.spec_from_file_location("code_health_plugin",
-                                                  file_path)
+    spec = importlib.util.spec_from_file_location(
+        "code_health_plugin", file_path
+    )
     module = importlib.util.module_from_spec(spec)
     sys.modules["code_health_plugin"] = module
     spec.loader.exec_module(module)
@@ -178,7 +193,8 @@ def handle_grouped_mode(candidates, batch_size: int):
         # Fall back to picking the absolute maximum if nothing meets the threshold
         max_count = max(len(files) for files in subsystem_map.values())
         top_subsystems = [
-            sub for sub, files in subsystem_map.items()
+            sub
+            for sub, files in subsystem_map.items()
             if len(files) == max_count
         ]
         selected_subsystem = random.choice(top_subsystems)
@@ -197,8 +213,9 @@ def handle_grouped_mode(candidates, batch_size: int):
 
     metadata_keys = set()
     for c in batch:
-        metadata_keys.update(k for k in c.keys()
-                             if k not in ("file", "subsystem"))
+        metadata_keys.update(
+            k for k in c.keys() if k not in ("file", "subsystem")
+        )
 
     if metadata_keys:
         print("\nBatch Metadata:")
@@ -232,8 +249,7 @@ def handle_atomic_mode(plugin, count: int, repo_root: str):
         print("No candidates found.")
         return
 
-    sampled = random.sample(candidates_list,
-                            k=min(len(candidates_list), count))
+    sampled = random.sample(candidates_list, k=min(len(candidates_list), count))
 
     for h in sampled:
         print("Candidate Found:")
@@ -247,23 +263,24 @@ def handle_atomic_mode(plugin, count: int, repo_root: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Chromium Code Health Hub CLI")
+    parser = argparse.ArgumentParser(description="Chromium Code Health Hub CLI")
     parser.add_argument("subcommand", choices=["find"], help="Command to run")
-    parser.add_argument("--plugin",
-                        required=True,
-                        help="Path to the Python plugin file")
-    parser.add_argument("--count",
-                        type=int,
-                        default=1,
-                        help="Number of atomic candidates to return")
-    parser.add_argument("--batch-size",
-                        type=int,
-                        default=10,
-                        help="Batch size for grouped cleanups")
-    parser.add_argument("--search-root",
-                        default=None,
-                        help="Directory to scan")
+    parser.add_argument(
+        "--plugin", required=True, help="Path to the Python plugin file"
+    )
+    parser.add_argument(
+        "--count",
+        type=int,
+        default=1,
+        help="Number of atomic candidates to return",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=10,
+        help="Batch size for grouped cleanups",
+    )
+    parser.add_argument("--search-root", default=None, help="Directory to scan")
 
     args = parser.parse_args()
 
@@ -275,8 +292,9 @@ def main():
     if mode == "grouped":
         # Get files using the shared, optimized walker
         plugin_skip_dirs = getattr(plugin, "SKIP_DIRS", None)
-        dirs_with_files = get_files(search_root, plugin.FILE_EXTENSIONS,
-                                    plugin_skip_dirs)
+        dirs_with_files = get_files(
+            search_root, plugin.FILE_EXTENSIONS, plugin_skip_dirs
+        )
 
         if hasattr(plugin, "initialize"):
             all_files = []
@@ -293,8 +311,9 @@ def main():
 
         for directory, files_in_dir in dirs_with_files:
             if has_check_directory:
-                results = plugin.check_directory(directory, files_in_dir,
-                                                 abs_search_root)
+                results = plugin.check_directory(
+                    directory, files_in_dir, abs_search_root
+                )
                 if results:
                     candidates_list.extend(results)
             else:
@@ -319,7 +338,8 @@ def main():
 
                 # Tier 2: Scanned >= 1000 files and found a decent batch (>= 50% of target)
                 if scanned >= 1000 and max_count >= max(
-                        3, args.batch_size // 2):
+                    3, args.batch_size // 2
+                ):
                     break
 
                 # Tier 3: Scanned >= 2500 files and found a small batch (>= 3)
