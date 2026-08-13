@@ -68,6 +68,45 @@ base::DictValue CreateSetAnnotationBrushMessageForTesting(
 base::DictValue CreateSetAnnotationUndoRedoMessageForTesting(
     TestAnnotationUndoRedoMessageType type);
 
+base::DictValue CreateEditTextAnnotationMessage(int frontend_id);
+
+base::DictValue CreateFinishTextAnnotationMessage(base::DictValue data);
+
+base::DictValue SampleTextAttributesDict();
+
+base::DictValue SampleTextBoxRectDict();
+
+// Matches `SampleTextAttributesDict()`, `SampleTextBoxRectDict()`, and
+// `SampleFinishTextAnnotationData()`.
+testing::Matcher<const InkTextBoxAttributes&>
+SampleInkTextBoxAttributesMatcher();
+
+testing::Matcher<const InkTextBoxAttributes&>
+SampleInkTextBoxAttributesMatcherWith(const std::string& text,
+                                      PageOrientation viewport_orientation);
+
+// Returns a serialized `pdf::mojom::InkTextInfo` blob for testing.
+base::BlobStorage SampleInkTextInfoBlob(FontId typeface_id);
+
+// Matches `SampleInkTextInfoBlob()`.
+testing::Matcher<const InkTextInfo&> SampleInkTextInfoMatcher(
+    FontId typeface_id);
+
+base::DictValue SampleSerializedTypeface(FontId font_id,
+                                         base::span<const uint8_t> font_data);
+
+base::DictValue SampleFinishTextAnnotationData(int frontend_id,
+                                               FontId font_id,
+                                               int page_index,
+                                               double pdf_zoom);
+
+base::DictValue SampleFinishTextAnnotationDataWithSource(
+    int frontend_id,
+    FontId font_id,
+    int page_index,
+    double pdf_zoom,
+    std::string_view source);
+
 MATCHER_P6(InkAffineTransformEq,
            expected_a,
            expected_b,

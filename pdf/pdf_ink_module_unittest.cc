@@ -16,17 +16,13 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/files/file_path.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "pdf/mojom/pdf.mojom.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_caret.h"
 #include "pdf/pdf_features.h"
@@ -1050,140 +1046,6 @@ class PdfInkModuleTextTest : public testing::Test {
     EXPECT_TRUE(ink_module().OnMessage(message));
     testing::Mock::VerifyAndClearExpectations(this);
   }
-
-  static base::DictValue SampleTextAttributesDict() {
-    base::DictValue text_attributes;
-    // Color components values for `kYellow`.
-    text_attributes.Set(
-        "color", base::DictValue().Set("r", 253).Set("g", 214).Set("b", 99));
-    text_attributes.Set("size", 12.0f);
-    text_attributes.Set("typeface", "serif");
-    text_attributes.Set("alignment", "center");
-    text_attributes.Set(
-        "styles", base::DictValue().Set("bold", true).Set("italic", true));
-    return text_attributes;
-  }
-
-  static base::DictValue SampleTextBoxRectDict() {
-    base::DictValue textbox_rect;
-    textbox_rect.Set("locationX", 10.0f);
-    textbox_rect.Set("locationY", 20.0f);
-    textbox_rect.Set("width", 100.0f);
-    textbox_rect.Set("height", 15.0f);
-    return textbox_rect;
-  }
-
-  // Matches `SampleTextAttributesDict()`, `SampleTextBoxRectDict()`, and
-  // `SampleFinishTextAnnotationData()`.
-  static Matcher<const InkTextBoxAttributes&>
-  SampleInkTextBoxAttributesMatcher() {
-    return InkTextBoxAttributesEq(
-        /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f),
-        /*color=*/kYellow,
-        /*css_font_size=*/12.0f,
-        /*typeface=*/TextTypeface::kSerif,
-        /*alignment=*/TextAlignment::kCenter,
-        /*orientation=*/1,
-        /*viewport_orientation=*/PageOrientation::kOriginal,
-        /*is_bold=*/true,
-        /*is_italic=*/true,
-        /*text=*/"hi");
-  }
-
-  static Matcher<const InkTextBoxAttributes&>
-  SampleInkTextBoxAttributesMatcherWith(const std::string& text,
-                                        PageOrientation viewport_orientation) {
-    return InkTextBoxAttributesEq(
-        /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f),
-        /*color=*/kYellow,
-        /*css_font_size=*/12.0f,
-        /*typeface=*/TextTypeface::kSerif,
-        /*alignment=*/TextAlignment::kCenter,
-        /*orientation=*/1, viewport_orientation,
-        /*is_bold=*/true,
-        /*is_italic=*/true, text);
-  }
-
-  static base::BlobStorage SampleInkTextInfoBlob(FontId typeface_id) {
-    auto mojo_text_info = pdf::mojom::InkTextInfo::New();
-    mojo_text_info->effective_zoom = 10.0f;
-    mojo_text_info->primary_ascent = 5.0f;
-    auto mojo_text_run = pdf::mojom::InkTextRun::New();
-    mojo_text_run->location = gfx::RectF(100.0f, 200.0f, 300.0f, 400.0f);
-    auto mojo_typeface_run = pdf::mojom::InkTypefaceRun::New();
-    mojo_typeface_run->is_horizontal = true;
-    mojo_typeface_run->typeface_id = typeface_id.value();
-    auto mojo_glyph1 = pdf::mojom::InkGlyphInfo::New();
-    mojo_glyph1->glyph = 4;
-    auto mojo_glyph2 = pdf::mojom::InkGlyphInfo::New();
-    mojo_glyph2->glyph = 5;
-    mojo_typeface_run->glyphs.push_back(std::move(mojo_glyph1));
-    mojo_typeface_run->glyphs.push_back(std::move(mojo_glyph2));
-    mojo_text_run->typeface_runs.push_back(std::move(mojo_typeface_run));
-    mojo_text_info->text_runs.push_back(std::move(mojo_text_run));
-    return pdf::mojom::InkTextInfo::Serialize(&mojo_text_info);
-  }
-
-  // Matches `SampleInkTextInfoBlob()`.
-  static Matcher<const InkTextInfo&> SampleInkTextInfoMatcher(
-      FontId typeface_id) {
-    return InkTextInfoEq(typeface_id, /*glyphs=*/std::vector<uint32_t>{4, 5},
-                         /*glyph_positions=*/std::vector<float>(2),
-                         /*location=*/gfx::RectF(10.0f, 20.0f, 30.0f, 40.0f),
-                         /*is_horizontal=*/true);
-  }
-
-  static base::DictValue SampleSerializedTypeface(
-      FontId font_id,
-      base::span<const uint8_t> font_data) {
-    return base::DictValue()
-        .Set("uniqueId", font_id.value())
-        .Set("serializedTypeface", base::Value(font_data))
-        .Set("name", base::StringPrintf("sample font_id: %d", *font_id));
-  }
-
-  static base::DictValue SampleFinishTextAnnotationData(int frontend_id,
-                                                        FontId font_id,
-                                                        int page_index,
-                                                        double pdf_zoom) {
-    return SampleFinishTextAnnotationDataWithSource(
-        frontend_id, font_id, page_index, pdf_zoom, "user");
-  }
-
-  static base::DictValue SampleFinishTextAnnotationDataWithSource(
-      int frontend_id,
-      FontId font_id,
-      int page_index,
-      double pdf_zoom,
-      std::string_view source) {
-    return base::DictValue()
-        .Set("id", frontend_id)
-        .Set("isEdited", true)
-        .Set("mojoTextInfo", SampleInkTextInfoBlob(font_id))
-        .Set("newTypefaces", base::ListValue())
-        .Set("pageIndex", page_index)
-        .Set("pdfZoom", pdf_zoom)
-        .Set("source", source)
-        .Set("text", "hi")
-        .Set("textAttributes", SampleTextAttributesDict())
-        .Set("textBoxRect", SampleTextBoxRectDict())
-        .Set("textOrientation", 1)
-        .Set("viewportOrientation", 0);
-  }
-
-  static base::DictValue CreateEditTextAnnotationMessage(int frontend_id) {
-    return base::DictValue()
-        .Set("type", "editTextAnnotation")
-        .Set("data", frontend_id);
-  }
-
-  static base::DictValue CreateFinishTextAnnotationMessage(
-      base::DictValue data) {
-    return base::DictValue()
-        .Set("type", "finishTextAnnotation")
-        .Set("data", std::move(data));
-  }
-
   void PerformUndo() {
     EXPECT_TRUE(
         ink_module().OnMessage(CreateSetAnnotationUndoRedoMessageForTesting(
