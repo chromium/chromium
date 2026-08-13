@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] e.style['view-transition-name'] = "ident(rgb(1, 2, 3))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['view-transition-name'] = "ident(5px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['view-transition-name'] = "ident( myident)" should set the property value
+  assert_equals: serialization should be canonical expected "ident( myident)" but got "ident(myident)"
+[FAIL] e.style['view-transition-name'] = "ident(myident )" should set the property value
+  assert_equals: serialization should be canonical expected "ident(myident )" but got "ident(myident)"
+Harness: the test ran to completion.
+

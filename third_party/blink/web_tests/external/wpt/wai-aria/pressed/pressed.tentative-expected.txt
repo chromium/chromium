@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] button with missing aria-pressed
-  assert_equals: pressed: <div data-testname="button with missing aria-pressed" role="button" data-expectedproperties="{ &quot;pressed&quot;: &quot;undefined&quot; }" class="ex-props"></div> expected (string) "undefined" but got (undefined) undefined
-Harness: the test ran to completion.
-

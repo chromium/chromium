@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] attr()-tainted name argument does not invalidate values that are not URLs
+  assert_equals: expected "10px" but got "784px"
+[FAIL] attr()-tainted name argument substitutes normally into a custom property
+  assert_equals: expected "url(\\"https://does-not-exist.test/404.png\\")" but got ""
+[FAIL] untainted substituted name argument does not taint the value
+  assert_equals: expected "image-set(url(\\"https://does-not-exist.test/404.png\\") 1dppx)" but got "none"
+Harness: the test ran to completion.
+

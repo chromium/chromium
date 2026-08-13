@@ -9,10 +9,6 @@ This is a testharness.js-based test.
   assert_equals: expected "color(srgb 1 0 0 / 0.5)" but got "rgba(255, 0, 0, 0.5)"
 [FAIL] Property color value 'alpha(from red / 0%)'
   assert_equals: expected "color(srgb 1 0 0 / 0)" but got "rgba(255, 0, 0, 0)"
-[FAIL] Property color value 'alpha(from red)'
-  assert_equals: expected "color(srgb 1 0 0)" but got "rgb(255, 0, 0)"
-[FAIL] Property color value 'alpha(from rgba(255, 0, 0, 0.3))'
-  assert_equals: expected "color(srgb 1 0 0 / 0.3)" but got "rgba(255, 0, 0, 0.3)"
 [FAIL] Property color value 'alpha(from red / 2)'
   assert_equals: expected "color(srgb 1 0 0)" but got "rgb(255, 0, 0)"
 [FAIL] Property color value 'alpha(from red / -1)'

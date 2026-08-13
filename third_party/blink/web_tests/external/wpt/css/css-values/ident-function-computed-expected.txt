@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Property view-transition-name value 'ident(5px)'
+  assert_true: 'ident(5px)' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident(rgb(1, 2, 3))'
+  assert_true: 'ident(rgb(1, 2, 3))' is a supported value for view-transition-name. expected true got false
+Harness: the test ran to completion.
+

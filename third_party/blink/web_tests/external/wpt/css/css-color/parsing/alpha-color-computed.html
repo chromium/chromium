@@ -21,10 +21,6 @@ test_computed_value("color", "alpha(from rebeccapurple / 1)", "color(srgb 0.4 0.
 test_computed_value("color", "alpha(from red / 50%)", "color(srgb 1 0 0 / 0.5)");
 test_computed_value("color", "alpha(from red / 0%)", "color(srgb 1 0 0 / 0)");
 
-// Omitted alpha defaults to origin's alpha.
-test_computed_value("color", "alpha(from red)", "color(srgb 1 0 0)");
-test_computed_value("color", "alpha(from rgba(255, 0, 0, 0.3))", "color(srgb 1 0 0 / 0.3)");
-
 // None alpha.
 test_computed_value("color", "alpha(from red / none)", "color(srgb 1 0 0 / none)");
 test_computed_value("color", "color-mix(in srgb, rgb(255 0 0 / 0.5), alpha(from red / none))", "color(srgb 1 0 0 / 0.5)")
@@ -70,8 +66,6 @@ function test_currentcolor_alpha(specified, expected, current) {
 
 // Explicit alpha replaces origin alpha.
 test_currentcolor_alpha("alpha(from currentcolor / 0.5)", "color(srgb 1 0 0 / 0.5)", "red");
-// Omitted alpha defaults to origin's alpha.
-test_currentcolor_alpha("alpha(from currentcolor)", "color(srgb 0 0 1)", "blue");
 // Alpha keyword references origin's alpha.
 test_currentcolor_alpha("alpha(from currentcolor / alpha)", "color(srgb 1 0 0 / 0.8)", "rgba(255, 0, 0, 0.8)");
 // None alpha.

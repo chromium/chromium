@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] e.style['width'] = "var(--x ())" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['width'] = "var(--x () )" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['width'] = "var(--x() )" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['width'] = "var(--x (),)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['width'] = "var(--x(),)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['width'] = "var({--x})" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['width'] = "var({--x}, 10px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['width'] = "var({--x, --y})" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

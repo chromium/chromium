@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] var() in the ident() argument
+  assert_equals: expected "myname" but got "ident(\\"my\\" \\"name\\")"
+[FAIL] attr() in the ident() argument
+  assert_equals: expected "mymyname" but got "ident(\\"my\\" myname)"
+[FAIL] ident() in the ident() argument
+  assert_equals: expected "myname" but got "ident(ident(\\"my\\") ident(\\"name\\"))"
+[FAIL] ident() building the var() name argument from an attribute
+  assert_equals: expected "PASS" but got ""
+[FAIL] an argument that is not <ident-arg>+ makes ident() invalid at computed-value time
+  assert_equals: expected "" but got "ident(5px)"
+[FAIL] ident() substituting a value the property does not accept
+  assert_equals: expected "784px" but got "10px"
+Harness: the test ran to completion.
+

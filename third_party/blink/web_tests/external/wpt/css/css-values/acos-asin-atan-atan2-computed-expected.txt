@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] calc(1px * pow(tan(atan2(50%, 1px)), 1)) should be computed-value-equivalent to calc(1px * pow(tan(atan2(50%, 1px)), 1))
+  assert_not_equals: calc(1px * pow(tan(atan2(50%, 1px)), 1)) isn't valid in 'flex-basis'; got the default value instead. got disallowed value "auto"
+Harness: the test ran to completion.
+

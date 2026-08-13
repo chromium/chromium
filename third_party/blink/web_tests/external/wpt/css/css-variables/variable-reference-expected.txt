@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] width: var(prop);
+  assert_equals: expected "var(prop)" but got ""
+[FAIL] width: var(-prop);
+  assert_equals: expected "var(-prop)" but got ""
+[FAIL] width: var(--prop 20px);
+  assert_equals: expected "var(--prop 20px)" but got ""
+[FAIL] width: var(--prop, var(prop));
+  assert_equals: expected "var(--prop, var(prop))" but got ""
+[FAIL] width: var(--prop, var(-prop));
+  assert_equals: expected "var(--prop, var(-prop))" but got ""
+[FAIL] width: var(20px);
+  assert_equals: expected "var(20px)" but got ""
+[FAIL] width: var(var(--prop));
+  assert_equals: expected "var(var(--prop))" but got ""
+Harness: the test ran to completion.
+
