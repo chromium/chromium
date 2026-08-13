@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "at_memory_granular_fill_cell_content_configuration.h",
+    "at_memory_granular_fill_cell_content_configuration.mm",
     "at_memory_granular_fill_consumer.h",
     "at_memory_granular_fill_item.h",
     "at_memory_granular_fill_item.mm",
@@ -18,7 +20,6 @@ source_set("ui") {
     "at_memory_search_view_controller.mm",
   ]
   deps = [
-    "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/atmemory/public",
@@ -36,7 +37,10 @@ source_set("ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "at_memory_search_view_controller_unittest.mm" ]
+  sources = [
+    "at_memory_granular_fill_cell_content_configuration_unittest.mm",
+    "at_memory_search_view_controller_unittest.mm",
+  ]
   deps = [
     ":ui",
     "//components/strings",
