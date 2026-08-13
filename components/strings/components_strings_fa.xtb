@@ -2440,7 +2440,7 @@
 <translation id="4780366598804516005">صندوق پست ۱</translation>
 <translation id="4785273477715803444">فیلتر کردن گزارش‌ها</translation>
 <translation id="4785376858512657294">‏مدیریت «حساب Google»</translation>
-<translation id="4785689107224900852">جابجا شدن به این برگه</translation>
+<translation id="4785689107224900852">عوض کردن به این زبانه</translation>
 <translation id="4785998536350006000">درحال جستجوی «<ph name="SEARCH_QUERY" />»</translation>
 <translation id="4786804728079074733">والیبال</translation>
 <translation id="4787182171088676626">پاکت (مرغوب)</translation>
@@ -4623,7 +4623,7 @@
 <translation id="8148608574971654810">‏نسخه PDF:</translation>
 <translation id="8149426793427495338">رایانه‌تان به خواب رفته است.</translation>
 <translation id="815036624016370447">‏اطلاعات «حساب Google»‏ (<ph name="ACCOUNT" />) می‌تواند به شما کمک کند فرم‌ها را در Chrome سریع‌تر تکمیل کنید</translation>
-<translation id="8150722005171944719">این فایل در <ph name="URL" /> قابل خواندن نیست. ممکن است حذف شده، جابجا شده باشد و یا مجوزهای فایل از دسترسی جلوگیری می‌کنند.</translation>
+<translation id="8150722005171944719">این فایل در <ph name="URL" /> قابل خواندن نیست. ممکن است حذف شده، جابه‌جا شده باشد و یا مجوزهای فایل از دسترسی جلوگیری می‌کنند.</translation>
 <translation id="8151185429379586178">ابزارهای برنامه‌نویس</translation>
 <translation id="8153865548451212769">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگیری کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگیری کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> بارگیری کنید}}</translation>
 <translation id="8155253549374198915">آخرین برگه‌های باز</translation>
