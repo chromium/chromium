@@ -619,4 +619,106 @@ TEST_F(FocusgroupFlagsTest, CaseInsensitiveParsing) {
   EXPECT_EQ(result2.flags, FocusgroupFlags::kNone);
 }
 
+TEST_F(FocusgroupFlagsTest, FeedDefaultsToBlockItemControls) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(true);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  FocusgroupData result = ParseFocusgroup(element, AtomicString("feed"));
+
+  EXPECT_EQ(result.behavior, FocusgroupBehavior::kFeed);
+  EXPECT_EQ(result.flags,
+            FocusgroupFlags::kBlock | FocusgroupFlags::kItemControls);
+}
+
+TEST_F(FocusgroupFlagsTest, FeedNoItemControlsSuppressesDefault) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(true);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  FocusgroupData result =
+      ParseFocusgroup(element, AtomicString("feed noitemcontrols"));
+
+  EXPECT_EQ(result.behavior, FocusgroupBehavior::kFeed);
+  EXPECT_EQ(result.flags, FocusgroupFlags::kBlock);
+}
+
+TEST_F(FocusgroupFlagsTest, ItemControlsAppliesToLinearBehavior) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(true);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  FocusgroupData result =
+      ParseFocusgroup(element, AtomicString("toolbar itemcontrols"));
+
+  EXPECT_EQ(result.behavior, FocusgroupBehavior::kToolbar);
+  EXPECT_EQ(result.flags,
+            FocusgroupFlags::kInline | FocusgroupFlags::kItemControls);
+}
+
+TEST_F(FocusgroupFlagsTest, NoItemControlsTakesPrecedence) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(true);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+  ClearConsoleMessages();
+
+  FocusgroupData result = ParseFocusgroup(
+      element, AtomicString("feed itemcontrols noitemcontrols"));
+
+  EXPECT_EQ(result.behavior, FocusgroupBehavior::kFeed);
+  EXPECT_EQ(result.flags, FocusgroupFlags::kBlock);
+  auto messages = CopyConsoleMessages();
+  ASSERT_EQ(messages.size(), 1u);
+  EXPECT_TRUE(messages[0].contains("author error"));
+  EXPECT_TRUE(messages[0].contains("noitemcontrols takes precedence"));
+}
+
+TEST_F(FocusgroupFlagsTest, V2TokensAreUnsupportedWhenDisabled) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(false);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  EXPECT_EQ(ParseFocusgroup(element, AtomicString("feed")), FocusgroupData());
+  EXPECT_EQ(
+      ParseFocusgroup(element,
+                      AtomicString("toolbar itemcontrols noitemcontrols")),
+      FocusgroupData(FocusgroupBehavior::kToolbar, FocusgroupFlags::kInline));
+  EXPECT_FALSE(IsValidFocusgroupToken(AtomicString("feed")));
+  EXPECT_FALSE(IsValidFocusgroupToken(AtomicString("itemcontrols")));
+  EXPECT_FALSE(IsValidFocusgroupToken(AtomicString("noitemcontrols")));
+}
+
+TEST_F(FocusgroupFlagsTest, DisabledFeedDoesNotMaskValidBehavior) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(false);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  FocusgroupData result =
+      ParseFocusgroup(element, AtomicString("feed toolbar"));
+
+  EXPECT_EQ(result, FocusgroupData(FocusgroupBehavior::kToolbar,
+                                   FocusgroupFlags::kInline));
+}
+
+TEST_F(FocusgroupFlagsTest, V2TokenSupport) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+  ScopedFocusgroupV2ForTest v2_scope(true);
+
+  EXPECT_TRUE(IsValidFocusgroupToken(AtomicString("feed")));
+  EXPECT_TRUE(IsValidFocusgroupToken(AtomicString("itemcontrols")));
+  EXPECT_TRUE(IsValidFocusgroupToken(AtomicString("noitemcontrols")));
+}
+
 }  // namespace blink::focusgroup

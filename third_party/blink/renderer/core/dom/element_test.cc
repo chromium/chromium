@@ -1087,6 +1087,27 @@ TEST_F(ElementTest, ParseFocusgroupAttrNoMemoryToken) {
   EXPECT_TRUE(focusgroup::IsActualFocusgroup(b->GetFocusgroupData()));
 }
 
+TEST_F(ElementTest, ParseFocusgroupAttrFeed) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id=a focusgroup="feed"></div>
+    <div id=b focusgroup="feed noitemcontrols"></div>
+  )HTML");
+
+  auto* a = document.getElementById(AtomicString("a"));
+  auto* b = document.getElementById(AtomicString("b"));
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+
+  EXPECT_EQ(
+      a->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kFeed,
+                     FocusgroupFlags::kBlock | FocusgroupFlags::kItemControls));
+  EXPECT_EQ(b->GetFocusgroupData(),
+            FocusgroupData(FocusgroupBehavior::kFeed, FocusgroupFlags::kBlock));
+}
+
 TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
@@ -1234,6 +1255,12 @@ TEST_F(ElementTest, FocusgroupFlagsToString) {
   EXPECT_EQ(
       "toolbar:(block|nomemory)",
       focusgroup::FocusgroupDataToStringForTesting(toolbar_no_memory_data));
+
+  FocusgroupData feed_data{
+      FocusgroupBehavior::kFeed,
+      FocusgroupFlags::kBlock | FocusgroupFlags::kItemControls};
+  EXPECT_EQ("feed:(block|itemcontrols)",
+            focusgroup::FocusgroupDataToStringForTesting(feed_data));
 }
 
 TEST_F(ElementTest, FocusgroupMinimumAriaRole) {
