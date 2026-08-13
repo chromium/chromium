@@ -21,6 +21,12 @@ searchbox::mojom::SuggestInventory EnumTraits<
       return searchbox::mojom::SuggestInventory::kImageGenTakeover;
     case omnibox::SuggestInventory::SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS:
       return searchbox::mojom::SuggestInventory::kConversationStarters;
+    case omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM:
+      return searchbox::mojom::SuggestInventory::kBrainstorm;
+    case omnibox::SuggestInventory::SUGGEST_INVENTORY_HELP_ME_LEARN:
+      return searchbox::mojom::SuggestInventory::kHelpMeLearn;
+    case omnibox::SuggestInventory::SUGGEST_INVENTORY_WRITE_OR_EDIT:
+      return searchbox::mojom::SuggestInventory::kWriteOrEdit;
     default:
       return searchbox::mojom::SuggestInventory::kDefault;
   }
@@ -43,6 +49,12 @@ EnumTraits<searchbox::mojom::SuggestInventory, omnibox::SuggestInventory>::
     case searchbox::mojom::SuggestInventory::kConversationStarters:
       return omnibox::SuggestInventory::
           SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS;
+    case searchbox::mojom::SuggestInventory::kBrainstorm:
+      return omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM;
+    case searchbox::mojom::SuggestInventory::kHelpMeLearn:
+      return omnibox::SuggestInventory::SUGGEST_INVENTORY_HELP_ME_LEARN;
+    case searchbox::mojom::SuggestInventory::kWriteOrEdit:
+      return omnibox::SuggestInventory::SUGGEST_INVENTORY_WRITE_OR_EDIT;
     default:
       return omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT;
   }

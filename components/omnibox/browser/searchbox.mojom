@@ -324,6 +324,9 @@ enum SuggestInventory {
   kAimTakeover = 2,
   kImageGenTakeover = 3,
   kConversationStarters = 4,
+  kBrainstorm = 5,
+  kHelpMeLearn = 6,
+  kWriteOrEdit = 7,
 };
 
 // LINT.IfChange(InputMethod)
