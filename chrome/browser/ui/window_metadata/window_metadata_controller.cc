@@ -11,7 +11,6 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -57,7 +56,7 @@ const WindowMetadataController* WindowMetadataController::From(
 WindowMetadataController::WindowMetadataController(
     BrowserWindowInterface& browser,
     const std::string& initial_user_title)
-    : browser_(browser.GetBrowserForMigrationOnly()),
+    : browser_(&browser),
       user_title_(initial_user_title),
       scoped_unowned_user_data_(browser.GetUnownedUserDataHost(), *this) {}
 
