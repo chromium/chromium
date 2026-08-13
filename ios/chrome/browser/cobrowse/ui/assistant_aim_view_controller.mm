@@ -443,12 +443,18 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
     AddSameConstraintsToSides(_zeroStateViewController.view, self.view,
                               LayoutSides::kLeading | LayoutSides::kTrailing);
 
+    // Lowering the layout priority prevents a conflict with the header size
+    // when minimizing.
+    // This is safe because the zero state isn't visible when the assistant is
+    // minimized.
+    NSLayoutConstraint* zeroStateTopToHeader =
+        [_zeroStateViewController.view.topAnchor
+            constraintEqualToAnchor:_headerView.bottomAnchor
+                           constant:kTitleVerticalMargin];
+    zeroStateTopToHeader.priority = UILayoutPriorityRequired - 1;
     [NSLayoutConstraint activateConstraints:@[
-      [_zeroStateViewController.view.topAnchor
-          constraintEqualToAnchor:_headerView.bottomAnchor
-                         constant:kTitleVerticalMargin],
-      [_zeroStateViewController.view.bottomAnchor
-          constraintEqualToAnchor:bottomAnchor]
+      zeroStateTopToHeader, [_zeroStateViewController.view.bottomAnchor
+                                constraintEqualToAnchor:bottomAnchor]
     ]];
 
     _zeroStateViewController.view.hidden =
