@@ -32,12 +32,12 @@
     {
         "name": "appcompat",
         "group": "androidx.appcompat",
-        "version": "1.8.0-SNAPSHOT"
+        "version": "1.8.0"
     },
     {
         "name": "appcompat-resources",
         "group": "androidx.appcompat",
-        "version": "1.8.0-SNAPSHOT"
+        "version": "1.8.0"
     },
     {
         "name": "appsearch",
@@ -507,12 +507,12 @@
     {
         "name": "emoji2",
         "group": "androidx.emoji2",
-        "version": "1.6.0"
+        "version": "1.7.0-SNAPSHOT"
     },
     {
         "name": "emoji2-views-helper",
         "group": "androidx.emoji2",
-        "version": "1.6.0"
+        "version": "1.7.0-SNAPSHOT"
     },
     {
         "name": "emoji",

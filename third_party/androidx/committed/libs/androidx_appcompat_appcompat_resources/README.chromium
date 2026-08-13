@@ -1,7 +1,7 @@
 Name: AppCompat Resources
 Short Name: appcompat-resources
-URL: https://androidx.dev/snapshots/builds/16071800/artifacts/repository/androidx/appcompat/appcompat-resources/1.8.0-SNAPSHOT/appcompat-resources-1.8.0-20260812.211225-1.aar
-Version: 1.8.0-SNAPSHOT
+URL: https://dl.google.com/dl/android/maven2/androidx/appcompat/appcompat-resources/1.8.0/appcompat-resources-1.8.0.aar
+Version: 1.8.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Provides backward-compatible implementations of resource-related Android SDKfunctionality, including color state list theming.
 
-See also: https://developer.android.com/jetpack/androidx/releases/appcompat#1.8.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/appcompat#1.8.0
 
 
 Local Modifications:

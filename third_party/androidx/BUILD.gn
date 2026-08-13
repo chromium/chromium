@@ -2963,6 +2963,7 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_process_java",
       ":androidx_startup_startup_runtime_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -2983,6 +2984,7 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_emoji2_emoji2_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
