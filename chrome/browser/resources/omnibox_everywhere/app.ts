@@ -90,8 +90,6 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   protected accessor callbackRouter_: PageCallbackRouter =
       SearchboxBrowserProxy.getInstance().callbackRouter;
 
-  private isDebug_: boolean =
-      new URLSearchParams(window.location.search).has('debug');
   private eventTracker_ = new EventTracker();
 
   override connectedCallback() {
@@ -100,12 +98,6 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
         document.documentElement, 'visibilitychange',
         this.onVisibilitychange_.bind(this));
     this.onVisibilitychange_();
-    if (!this.isDebug_) {
-      this.eventTracker_.add(
-          document.documentElement, 'contextmenu', (e: Event) => {
-            e.preventDefault();
-          });
-    }
   }
 
   override disconnectedCallback() {

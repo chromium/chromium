@@ -59,6 +59,8 @@ source_set("impl") {
     "//ui/base",
     "//ui/base/accelerators/global_accelerator_listener",
     "//ui/gfx",
+    "//ui/menus",
+    "//ui/strings:ui_strings",
     "//ui/views",
     "//ui/views/controls/webview",
   ]
@@ -102,6 +104,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/display:test_support",
     "//ui/views",
+    "//ui/views:test_support",
   ]
 }
 
