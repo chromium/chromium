@@ -28,5 +28,24 @@ static_library("universal_optout") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/user_prefs",
+    "//components/variations/service",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "universal_optout_service_unittest.cc" ]
+
+  deps = [
+    ":features",
+    ":universal_optout",
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics:test_support",
+    "//components/prefs:test_support",
+    "//components/variations:test_support",
+    "//components/variations/service",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

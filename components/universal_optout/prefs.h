@@ -14,8 +14,8 @@ class PrefRegistrySyncable;
 namespace universal_optout::prefs {
 
 // Dictionary pref storing historical eligibility data per profile.
-// The key is the day identifier (days since epoch in local time) and the value
-// is a boolean (true if the user is eligible, false otherwise).
+// The key is a serialized base::Time (UTC midnight) and the value is a boolean
+// (true if the user is eligible, false otherwise).
 inline constexpr char kUniversalOptOutEligibilityHistory[] =
     "universal_optout.eligibility_history";
 

@@ -4,10 +4,14 @@
 
 #include "chrome/browser/universal_optout/universal_optout_service_factory.h"
 
+#include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/universal_optout/features.h"
 #include "components/universal_optout/universal_optout_service.h"
+#include "components/variations/service/variations_service.h"
 
 namespace universal_optout {
 
@@ -40,8 +44,17 @@ UniversalOptOutServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!base::FeatureList::IsEnabled(features::kUniversalOptOut)) {
     return nullptr;
   }
+
+  variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  if (!variations_service) {
+    CHECK_IS_TEST();
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<UniversalOptOutService>(profile->GetPrefs());
+  return std::make_unique<UniversalOptOutService>(
+      CHECK_DEREF(profile->GetPrefs()), *variations_service);
 }
 
 bool UniversalOptOutServiceFactory::ServiceIsCreatedWithBrowserContext() const {

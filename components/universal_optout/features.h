@@ -24,8 +24,8 @@ extern const base::FeatureParam<std::string> kTargetLocations;
 // Number of days in the sliding window used to determine eligibility.
 extern const base::FeatureParam<base::TimeDelta> kEligibilityWindow;
 
-// Number of days in the sliding window used to determine ineligibility.
-extern const base::FeatureParam<base::TimeDelta> kIneligibilityWindow;
+// Number of days in the sliding window used to determine trailing eligibility.
+extern const base::FeatureParam<base::TimeDelta> kTrailingEligibilityWindow;
 
 // Returns the list of target locations parsed from `kTargetLocations`.
 std::vector<std::string> GetTargetLocations();

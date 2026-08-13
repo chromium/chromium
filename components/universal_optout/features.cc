@@ -24,8 +24,8 @@ const base::FeatureParam<std::string> kTargetLocations{&kUniversalOptOut,
 const base::FeatureParam<base::TimeDelta> kEligibilityWindow{
     &kUniversalOptOut, "eligibility_window", base::Days(30)};
 
-const base::FeatureParam<base::TimeDelta> kIneligibilityWindow{
-    &kUniversalOptOut, "ineligibility_window", base::Days(90)};
+const base::FeatureParam<base::TimeDelta> kTrailingEligibilityWindow{
+    &kUniversalOptOut, "trailing_eligibility_window", base::Days(90)};
 
 std::vector<std::string> GetTargetLocations() {
   return base::SplitString(kTargetLocations.Get(), ",", base::TRIM_WHITESPACE,
