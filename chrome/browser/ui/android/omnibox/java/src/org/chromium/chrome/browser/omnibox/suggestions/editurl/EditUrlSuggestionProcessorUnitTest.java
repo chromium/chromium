@@ -229,8 +229,11 @@ public final class EditUrlSuggestionProcessorUnitTest {
     }
 
     @Test
-    public void doesProcessSuggestion_rejectMatchForNativeTab() {
-        doReturn(true).when(mTab).isNativePage();
+    public void doesProcessSuggestion_rejectMatchForUnacceptableUrl() {
+        mMatch =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
+                        .setUrl(new GURL("content://12345"))
+                        .build();
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }

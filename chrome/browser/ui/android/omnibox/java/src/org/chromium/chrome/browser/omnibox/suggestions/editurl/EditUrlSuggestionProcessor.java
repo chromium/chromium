@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -66,11 +67,10 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         // show mobile-optimized actions in a desktop-like context.
         if (OmniboxCapabilities.hasDesktopExperience(mContext)) return false;
 
+        if (!UrlUtilities.isAcceptedScheme(suggestion.getUrl())) return false;
+
         Tab activeTab = mTabSupplier.get();
-        if (activeTab == null
-                || !activeTab.isInitialized()
-                || activeTab.isNativePage()
-                || SadTab.isShowing(activeTab)) {
+        if (activeTab == null || !activeTab.isInitialized() || SadTab.isShowing(activeTab)) {
             return false;
         }
 
