@@ -100,6 +100,12 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     void UpdateFactory(
         scoped_refptr<network::SharedURLLoaderFactory> new_factory);
 
+    // Returns true if the `FetchRetry` feature is enabled for the document
+    // associated with this context (or was enabled before the document
+    // unloaded) and the global feature flag is enabled. Lazily computes and
+    // caches the result.
+    bool IsFetchRetryEnabled() const;
+
     // The factory to use for the requests initiated from this context.
     scoped_refptr<network::SharedURLLoaderFactory> factory;
 
@@ -140,6 +146,12 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     // to distinguish `weak_document_ptr` never having been set from it having
     // been invalidated.
     bool did_commit_navigation = false;
+
+    // Caches whether the FetchRetry feature is enabled for the initiator
+    // document. Lazily computed by `IsFetchRetryEnabled()` while the document's
+    // `RenderFrameHostImpl` is active, preserving feature state if the document
+    // unloads before keepalive request IPCs arrive.
+    mutable std::optional<bool> cached_is_fetch_retry_enabled;
 
     // This must be the last member.
     base::WeakPtrFactory<FactoryContext> weak_ptr_factory{this};
