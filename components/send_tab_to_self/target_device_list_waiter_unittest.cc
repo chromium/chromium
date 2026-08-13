@@ -176,35 +176,6 @@ TEST_F(TargetDeviceListWaiterTest, DestroyingWaiterCancelsCallback) {
   EXPECT_FALSE(future.IsReady());
 }
 
-// Verifies that null SyncService pointers are handled gracefully without
-// crashing when display reason is pending.
-TEST_F(TargetDeviceListWaiterTest, HandlesNullSyncServiceGracefully) {
-  TestFuture<void> future;
-  SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
-
-  TargetDeviceListWaiter waiter(
-      /*sync_service=*/nullptr, send_tab_to_self_service(), GURL(kTestUrl),
-      future.GetCallback());
-
-  EXPECT_FALSE(future.IsReady());
-}
-
-// Verifies that null SendTabToSelfSyncService pointers are handled gracefully
-// without crashing.
-TEST_F(TargetDeviceListWaiterTest, HandlesNullSendTabToSelfServiceGracefully) {
-  TestFuture<void> future;
-
-  TargetDeviceListWaiter waiter(
-      sync_service(), /*send_tab_to_self_service=*/nullptr, GURL(kTestUrl),
-      future.GetCallback());
-
-  EXPECT_FALSE(future.IsReady());
-
-  // Subsequent sync state changes should not crash when service is null.
-  sync_service()->FireStateChanged();
-  EXPECT_FALSE(future.IsReady());
-}
-
 // Verifies that deleting the waiter inside its own completion callback is safe
 // and does not cause a crash or use-after-free.
 TEST_F(TargetDeviceListWaiterTest, HandlesSelfDestructionInCompletionCallback) {

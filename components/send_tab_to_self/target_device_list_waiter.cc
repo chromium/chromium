@@ -23,10 +23,10 @@ TargetDeviceListWaiter::TargetDeviceListWaiter(
     : send_tab_to_self_service_(send_tab_to_self_service),
       url_to_share_(url_to_share),
       on_list_known_callback_(std::move(on_list_known_callback)) {
+  CHECK(sync_service);
+  CHECK(send_tab_to_self_service_);
   CHECK(on_list_known_callback_);
-  if (sync_service) {
-    sync_observation_.Observe(sync_service);
-  }
+  sync_observation_.Observe(sync_service);
   OnStateChanged(nullptr);
 }
 

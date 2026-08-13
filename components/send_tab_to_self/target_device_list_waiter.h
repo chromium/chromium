@@ -28,6 +28,8 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
   // known (i.e. until it returns kOfferFeature or kInformNoTargetDevice), then
   // asynchronously calls `on_list_known_callback`. Destroying the object
   // aborts the waiting and cancels callback execution.
+  // `sync_service`, `send_tab_to_self_service`, and `on_list_known_callback`
+  // must all be non-null.
   TargetDeviceListWaiter(
       syncer::SyncService* sync_service,
       SendTabToSelfSyncService* send_tab_to_self_service,
