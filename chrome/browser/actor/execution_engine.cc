@@ -664,9 +664,6 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
-                  {DecisionSource::kActorContainerConfig,
-                   {GateableEvent::kPageAction}},
-                  {CreateSafetyListPredicate(), {GateableEvent::kPageAction}},
                   {CustomPredicate(
                        base::BindRepeating(&EvaluateTabErrorDocument),
                        kTabErrorDocumentPredicateName),
@@ -705,9 +702,11 @@ ExecutionEngine::ExecutionEngine(
                                    kLookalikeUrlPredicateName),
                    kRequestsAndPageActions},
                   {DecisionSource::kActorContainerConfig,
-                   {GateableEvent::kNavigationResponse}},
+                   {GateableEvent::kNavigationResponse,
+                    GateableEvent::kPageAction}},
                   {CreateSafetyListPredicate(),
-                   {GateableEvent::kNavigationResponse}},
+                   {GateableEvent::kNavigationResponse,
+                    GateableEvent::kPageAction}},
                   {DecisionSource::kCacheWithUserConfirmation,
                    GateableEventSet::All()},
                   {DecisionSource::kAllowSameOrigin,
