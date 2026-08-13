@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_WINDOWS_D3D11_H264_ACCELERATOR_H_
-#define MEDIA_GPU_WINDOWS_D3D11_H264_ACCELERATOR_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D_H264_ACCELERATOR_H_
+#define MEDIA_GPU_WINDOWS_D3D_H264_ACCELERATOR_H_
 
 #include <d3d11_1.h>
 #include <d3d9.h>
@@ -24,14 +24,14 @@ constexpr int kRefFrameMaxCount = 16;
 
 class MediaLog;
 
-class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
+class D3DH264Accelerator : public H264Decoder::H264Accelerator {
  public:
-  D3D11H264Accelerator(D3D11VideoDecoderClient* client, MediaLog* media_log);
+  D3DH264Accelerator(D3D11VideoDecoderClient* client, MediaLog* media_log);
 
-  D3D11H264Accelerator(const D3D11H264Accelerator&) = delete;
-  D3D11H264Accelerator& operator=(const D3D11H264Accelerator&) = delete;
+  D3DH264Accelerator(const D3DH264Accelerator&) = delete;
+  D3DH264Accelerator& operator=(const D3DH264Accelerator&) = delete;
 
-  ~D3D11H264Accelerator() override;
+  ~D3DH264Accelerator() override;
 
   // H264Decoder::H264Accelerator implementation.
   scoped_refptr<H264Picture> CreateH264Picture() override;
@@ -91,4 +91,4 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_WINDOWS_D3D11_H264_ACCELERATOR_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D_H264_ACCELERATOR_H_

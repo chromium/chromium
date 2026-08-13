@@ -27,13 +27,13 @@
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_decoder_configurator.h"
-#include "media/gpu/windows/d3d11_h264_accelerator.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_selector.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
 #include "media/gpu/windows/d3d11_video_decoder_wrapper.h"
 #include "media/gpu/windows/d3d11_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/d3d_com_defs.h"
+#include "media/gpu/windows/d3d_h264_accelerator.h"
 #include "media/gpu/windows/d3d_vp9_accelerator.h"
 
 namespace gpu {

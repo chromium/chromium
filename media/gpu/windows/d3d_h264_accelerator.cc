@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
-#include "media/gpu/windows/d3d11_h264_accelerator.h"
+#include "media/gpu/windows/d3d_h264_accelerator.h"
 
 #include <tuple>
 #include <type_traits>
@@ -53,15 +52,15 @@ D3D11H264Picture::~D3D11H264Picture() {
   picture->set_in_picture_use(false);
 }
 
-D3D11H264Accelerator::D3D11H264Accelerator(D3D11VideoDecoderClient* client,
-                                           MediaLog* media_log)
+D3DH264Accelerator::D3DH264Accelerator(D3D11VideoDecoderClient* client,
+                                       MediaLog* media_log)
     : media_log_(media_log->Clone()), client_(client) {
   DCHECK(client_);
 }
 
-D3D11H264Accelerator::~D3D11H264Accelerator() {}
+D3DH264Accelerator::~D3DH264Accelerator() {}
 
-scoped_refptr<H264Picture> D3D11H264Accelerator::CreateH264Picture() {
+scoped_refptr<H264Picture> D3DH264Accelerator::CreateH264Picture() {
   D3D11PictureBuffer* picture = client_->GetPicture();
   if (!picture) {
     return nullptr;
@@ -69,7 +68,7 @@ scoped_refptr<H264Picture> D3D11H264Accelerator::CreateH264Picture() {
   return base::MakeRefCounted<D3D11H264Picture>(picture);
 }
 
-H264DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
+H264DecoderStatus D3DH264Accelerator::SubmitFrameMetadata(
     const H264SPS* sps,
     const H264PPS* pps,
     const H264DPB& dpb,
@@ -104,16 +103,18 @@ H264DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
     // nothing actually stopping it from having more. If we run into this case,
     // something is clearly wrong, and we should just fail decoding rather than
     // try to sort out which pictures really shouldn't be included.
-    if (i >= media::kRefFrameMaxCount)
+    if (i >= media::kRefFrameMaxCount) {
       return H264DecoderStatus::kFail;
+    }
 
     D3D11H264Picture* our_ref_pic = it->get()->AsD3D11H264Picture();
     // How does a non-d3d11 picture get here you might ask? The decoder
     // inserts blank H264Picture objects that we can't use as part of filling
     // gaps in frame numbers. If we see one, it's not a reference picture
     // anyway, so skip it.
-    if (!our_ref_pic || !our_ref_pic->ref)
+    if (!our_ref_pic || !our_ref_pic->ref) {
       continue;
+    }
     UNSAFE_TODO(ref_frame_list_[i].Index7Bits) = our_ref_pic->picture_index_;
     UNSAFE_TODO(ref_frame_list_[i].AssociatedFlag) = our_ref_pic->long_term;
     UNSAFE_TODO(field_order_cnt_list_[i][0]) = our_ref_pic->top_field_order_cnt;
@@ -130,8 +131,7 @@ H264DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
   return H264DecoderStatus::kOk;
 }
 
-void D3D11H264Accelerator::FillPicParamsWithConstants(
-    DXVA_PicParams_H264* pic) {
+void D3DH264Accelerator::FillPicParamsWithConstants(DXVA_PicParams_H264* pic) {
   // From "DirectX Video Acceleration Specification for H.264/AVC Decoding":
   // "The value shall be 1 unless the restricted-mode profile in use
   // explicitly supports the value 0."
@@ -162,9 +162,9 @@ void D3D11H264Accelerator::FillPicParamsWithConstants(
 #define SPS_TO_PP1(a) pic_param->a = sps->a;
 #define SPS_TO_PP2(a, b) pic_param->a = sps->b;
 #define SPS_TO_PP(...) ARG_SEL(__VA_ARGS__, SPS_TO_PP2, SPS_TO_PP1)(__VA_ARGS__)
-void D3D11H264Accelerator::PicParamsFromSPS(DXVA_PicParams_H264* pic_param,
-                                            const H264SPS* sps,
-                                            bool field_pic) {
+void D3DH264Accelerator::PicParamsFromSPS(DXVA_PicParams_H264* pic_param,
+                                          const H264SPS* sps,
+                                          bool field_pic) {
   // The H.264 specification now calls this |max_num_ref_frames|, while
   // DXVA_PicParams_H264 continues to use the old name, |num_ref_frames|.
   // See DirectX Video Acceleration for H.264/MPEG-4 AVC Decoding (4.2).
@@ -194,8 +194,8 @@ void D3D11H264Accelerator::PicParamsFromSPS(DXVA_PicParams_H264* pic_param,
 #define PPS_TO_PP1(a) pic_param->a = pps->a;
 #define PPS_TO_PP2(a, b) pic_param->a = pps->b;
 #define PPS_TO_PP(...) ARG_SEL(__VA_ARGS__, PPS_TO_PP2, PPS_TO_PP1)(__VA_ARGS__)
-bool D3D11H264Accelerator::PicParamsFromPPS(DXVA_PicParams_H264* pic_param,
-                                            const H264PPS* pps) {
+bool D3DH264Accelerator::PicParamsFromPPS(DXVA_PicParams_H264* pic_param,
+                                          const H264PPS* pps) {
   PPS_TO_PP(constrained_intra_pred_flag);
   PPS_TO_PP(weighted_pred_flag);
   PPS_TO_PP(weighted_bipred_idc);
@@ -229,7 +229,7 @@ bool D3D11H264Accelerator::PicParamsFromPPS(DXVA_PicParams_H264* pic_param,
 
 #undef ARG_SEL
 
-void D3D11H264Accelerator::PicParamsFromSliceHeader(
+void D3DH264Accelerator::PicParamsFromSliceHeader(
     DXVA_PicParams_H264* pic_param,
     const H264SliceHeader* slice_hdr) {
   pic_param->sp_for_switch_flag = slice_hdr->sp_for_switch_flag;
@@ -238,8 +238,8 @@ void D3D11H264Accelerator::PicParamsFromSliceHeader(
   pic_param->IntraPicFlag = slice_hdr->IsISlice();
 }
 
-void D3D11H264Accelerator::PicParamsFromPic(DXVA_PicParams_H264* pic_param,
-                                            D3D11H264Picture* pic) {
+void D3DH264Accelerator::PicParamsFromPic(DXVA_PicParams_H264* pic_param,
+                                          D3D11H264Picture* pic) {
   pic_param->CurrPic.Index7Bits = pic->picture_index_;
   pic_param->RefPicFlag = pic->ref;
   pic_param->frame_num = pic->frame_num;
@@ -256,7 +256,7 @@ void D3D11H264Accelerator::PicParamsFromPic(DXVA_PicParams_H264* pic_param,
   }
 }
 
-H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
+H264DecoderStatus D3DH264Accelerator::SubmitSlice(
     const H264PPS* pps,
     const H264SliceHeader* slice_hdr,
     const H264Picture::Vector& ref_pic_list0,
@@ -387,7 +387,7 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
   return ok ? H264DecoderStatus::kOk : H264DecoderStatus::kFail;
 }
 
-H264DecoderStatus D3D11H264Accelerator::SubmitDecode(
+H264DecoderStatus D3DH264Accelerator::SubmitDecode(
     scoped_refptr<H264Picture> pic) {
   return client_->GetWrapper()->SubmitSlice() &&
                  client_->GetWrapper()->SubmitDecode()
@@ -395,19 +395,19 @@ H264DecoderStatus D3D11H264Accelerator::SubmitDecode(
              : H264DecoderStatus::kFail;
 }
 
-void D3D11H264Accelerator::Reset() {
+void D3DH264Accelerator::Reset() {
   current_frame_size_ = 0;
   if (client_->GetWrapper()) {
     client_->GetWrapper()->Reset();
   }
 }
 
-bool D3D11H264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
+bool D3DH264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
   D3D11H264Picture* our_pic = pic->AsD3D11H264Picture();
   return our_pic && client_->OutputResult(our_pic, our_pic->picture);
 }
 
-H264Decoder::H264Accelerator::Status D3D11H264Accelerator::SetStream(
+H264Decoder::H264Accelerator::Status D3DH264Accelerator::SetStream(
     base::span<const uint8_t> stream,
     const DecryptConfig* decrypt_config) {
   current_frame_size_ = stream.size();
