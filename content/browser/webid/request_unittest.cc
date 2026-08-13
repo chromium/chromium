@@ -2185,6 +2185,7 @@ TEST_F(RequestTest, WellKnownNotInListButRegistered) {
   config.idp_info[idp_config_url].well_known = {
       {kWellKnownMismatchConfigUrl}, {ParseStatus::kSuccess, net::HTTP_OK}};
   RequestParameters requestParameters = kDefaultRequestParameters;
+  requestParameters.identity_providers[0].provider = "";
   requestParameters.identity_providers[0].from_idp_registration_api = true;
 
   // Need to simulate there is actually a registered IdP, or the call will fail.

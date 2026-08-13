@@ -197,6 +197,24 @@ void RequestService::StartTokenRequest(
     return;
   }
 
+  for (auto& provider : idp_get_params[0]->providers) {
+    if (provider->config->from_idp_registration_api) {
+      if (!IsIdPRegistrationEnabled()) {
+        // In layout and web platform tests, features with "status: test" (like
+        // FedCmIdPRegistration) are enabled by default on the renderer-side,
+        // but the corresponding browser-side base::Feature may be disabled.
+        // To prevent mismatches in benign test configurations from terminating
+        // the renderer, we sanitize/reset from_idp_registration_api to false
+        // instead of reporting a bad message.
+        provider->config->from_idp_registration_api = false;
+      } else if (!provider->config->config_url.is_empty()) {
+        receivers_.ReportBadMessage(
+            "config_url must be empty for registered providers.");
+        return;
+      }
+    }
+  }
+
   RenderFrameHost& rfh = render_frame_host();
   auto new_request = std::make_unique<Request>(&rfh, *this);
   new_request->BindReceiver(std::move(request_receiver));

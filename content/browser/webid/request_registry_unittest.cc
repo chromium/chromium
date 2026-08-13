@@ -39,6 +39,8 @@
 
 namespace content::webid {
 
+namespace {
+
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -46,8 +48,7 @@ using ::testing::StrictMock;
 using ApiPermissionStatus =
     FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 using blink::mojom::RegisterIdpStatus;
-
-namespace {
+using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 
 constexpr char kIdpUrl[] = "https://idp.example/";
 
@@ -487,6 +488,63 @@ TEST_F(RequestRegistryTest, RequestServiceCloseModalDialogView) {
   request_service_remote_->CloseModalDialogView();
 
   run_loop.Run();
+}
+
+// Test that calling StartTokenRequest with from_idp_registration_api as true
+// when the feature is disabled resolves with a normal error instead of a bad
+// message.
+TEST_F(RequestRegistryTest, StartTokenRequestFromIdpRegistrationDisabled) {
+  // Feature is disabled by default.
+  std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params;
+  auto get_params = blink::mojom::IdentityProviderGetParameters::New();
+  auto provider = blink::mojom::IdentityProviderRequestOptions::New();
+  provider->config = blink::mojom::IdentityProviderConfig::New();
+  provider->config->from_idp_registration_api = true;
+  get_params->providers.push_back(std::move(provider));
+  idp_get_params.push_back(std::move(get_params));
+
+  EXPECT_CALL(*mock_permission_delegate_, RemoveIdpSigninStatusObserver(_))
+      .WillOnce(Return());
+
+  mojo::Remote<blink::mojom::FederatedRequest> request_remote;
+  base::RunLoop run_loop;
+  request_service_remote_->StartTokenRequest(
+      std::move(idp_get_params), MediationRequirement::kOptional,
+      request_remote.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting(
+          [&run_loop](
+              blink::mojom::FederatedRequestService::StartTokenRequestResult
+                  result) {
+            EXPECT_FALSE(result.has_value());
+            EXPECT_EQ(blink::mojom::RequestTokenStatus::kError,
+                      result.error()->status);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+// Test that calling StartTokenRequest with from_idp_registration_api as true
+// and a non-empty config_url triggers a Bad Message.
+TEST_F(RequestRegistryTest, StartTokenRequestFromIdpRegistrationNonEmptyUrl) {
+  feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
+
+  std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params;
+  auto get_params = blink::mojom::IdentityProviderGetParameters::New();
+  auto provider = blink::mojom::IdentityProviderRequestOptions::New();
+  provider->config = blink::mojom::IdentityProviderConfig::New();
+  provider->config->from_idp_registration_api = true;
+  provider->config->config_url = GURL(kIdpUrl);
+  get_params->providers.push_back(std::move(provider));
+  idp_get_params.push_back(std::move(get_params));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::Remote<blink::mojom::FederatedRequest> request_remote;
+  request_service_remote_->StartTokenRequest(
+      std::move(idp_get_params), MediationRequirement::kOptional,
+      request_remote.BindNewPipeAndPassReceiver(), base::DoNothing());
+
+  EXPECT_EQ("config_url must be empty for registered providers.",
+            bad_message_observer.WaitForBadMessage());
 }
 
 }  // namespace content::webid

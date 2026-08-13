@@ -1156,7 +1156,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=FedCmIdPregistration"
+      "--enable-features=FedCmIdPRegistration"
     ],
     "owners": [
       "npm@chromium.org",
