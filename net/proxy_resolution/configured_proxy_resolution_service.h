@@ -190,8 +190,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
   void ForceReloadProxyConfig();
 
   // Returns true if the service is fully ready to handle proxy resolution
-  // requests and is not, e.g., currently fetching and resolving a new
-  // configuration.
+  // requests (both PAC resolution and dynamic proxy routes are ready).
   bool IsReady() const;
 
   // ProxyResolutionService
@@ -294,14 +293,19 @@ class NET_EXPORT ConfiguredProxyResolutionService
   typedef std::set<raw_ptr<ConfiguredProxyResolutionRequest, SetExperimental>>
       PendingRequests;
 
-  enum State {
-    STATE_NONE,
-    STATE_WAITING_FOR_PROXY_CONFIG,
-    STATE_WAITING_FOR_INIT_PROXY_RESOLVER,
-    STATE_READY,
+  enum class PacResolverState {
+    kNone,
+    kWaitingForProxyConfig,
+    kWaitingForInitProxyResolver,
+    kReady,
   };
 
+  // Returns true if the PAC resolver is ready (i.e. not fetching PAC/WPAD).
+  bool IsPacReady() const;
 
+  // Returns true if dynamic routing rules (e.g. from enterprise Provisioning
+  // Domains) are ready and not currently updating.
+  bool IsDynamicRoutesReady() const;
 
   // We won't always be able to return a good LoadState. For example, the
   // ConfiguredProxyResolutionService can only get this information from the
@@ -313,16 +317,16 @@ class NET_EXPORT ConfiguredProxyResolutionService
   HostResolver* GetHostResolverForOverrideRules() const;
 
   // Resets all the variables associated with the current proxy configuration,
-  // and rewinds the current state to |STATE_NONE|. Returns the previous value
-  // of |current_state_|. If |reset_fetched_config| is true then
-  // |fetched_config_| will also be reset, otherwise it will be left as-is.
+  // and rewinds the current state to |PacResolverState::kNone|. Returns the
+  // previous value of |pac_resolver_state_|. If |reset_fetched_config| is true
+  // then |fetched_config_| will also be reset, otherwise it will be left as-is.
   // Resetting it means that we will have to re-fetch the configuration from
   // the ProxyConfigService later.
   // If |reset_pac_retry_state| is false, the PAC runtime backoff throttler is
   // left unchanged (used when a forced reload was already scheduled by the
   // throttler itself).
-  State ResetProxyConfig(bool reset_fetched_config,
-                         bool reset_pac_retry_state = true);
+  PacResolverState ResetProxyConfig(bool reset_fetched_config,
+                                    bool reset_pac_retry_state = true);
 
   // Retrieves the current proxy configuration from the ProxyConfigService, and
   // starts initializing for it.
@@ -349,8 +353,9 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // restarted when calling SetReady().
   void SuspendAllPendingRequests();
 
-  // Advances the current state to |STATE_READY|, and resumes any pending
-  // requests which had been stalled waiting for initialization to complete.
+  // Advances the current state to |PacResolverState::kReady|, and resumes any
+  // pending requests which had been stalled waiting for initialization to
+  // complete.
   void SetReady();
 
   // Returns true if |pending_requests_| contains |req|.
@@ -469,7 +474,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // Helper to poll the PAC script for changes.
   std::unique_ptr<PacFileDeciderPoller> script_poller_;
 
-  State current_state_ = STATE_NONE;
+  PacResolverState pac_resolver_state_ = PacResolverState::kNone;
 
   // Set holding all pending DNS resolution requests started while evaluating
   // proxy override rules' DNS conditions.

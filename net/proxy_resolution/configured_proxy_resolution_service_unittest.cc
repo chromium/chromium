@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -137,6 +138,30 @@ class ImmediateAfterActivityPollPolicy
     return MODE_START_AFTER_ACTIVITY;
   }
 };
+
+ProxyConfig::DynamicRoutingRule CreateDynamicRoutingRule(
+    std::string_view destination_pattern,
+    std::string_view proxy_uri,
+    ProxyServer::Scheme scheme = ProxyServer::SCHEME_HTTP) {
+  ProxyConfig::DynamicRoutingRule rule;
+  rule.destination_matchers.AddRuleFromString(destination_pattern);
+  rule.proxy_list.AddProxyChain(ProxyUriToProxyChain(proxy_uri, scheme));
+  return rule;
+}
+
+ProxyInfo ResolveProxySynchronously(ConfiguredProxyResolutionService* service,
+                                    const GURL& url) {
+  std::unique_ptr<ProxyResolutionRequest> request;
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  int rv = service->ResolveProxy(url, std::string(), NetworkAnonymizationKey(),
+                                 handles::kInvalidNetworkHandle, &info,
+                                 callback.callback(), &request,
+                                 NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_FALSE(request);
+  return info;
+}
 
 // This test fixture is used to partially disable the background polling done by
 // the ConfiguredProxyResolutionService (which it uses to detect whenever its
@@ -6891,5 +6916,235 @@ INSTANTIATE_TEST_SUITE_P(,
                                               .completes_synchronously = true},
 
                          }));
+
+TEST_F(ConfiguredProxyResolutionServiceTest, DynamicRoutingRuleApplied) {
+  ProxyConfig config = ProxyConfig::CreateDirect();
+  ProxyConfig::DynamicRoutingConfig dynamic_config;
+  dynamic_config.routing_rules.push_back(
+      CreateDynamicRoutingRule("www.google.com", "proxy1:80"));
+  config.set_dynamic_routing_config(dynamic_config);
+
+  auto service =
+      ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
+          std::make_unique<MockProxyConfigService>(config),
+          /*host_resolver_for_override_rules=*/nullptr,
+          /*net_log=*/nullptr,
+          /*quick_check_enabled=*/true);
+
+  // Matching URL gets routed.
+  EXPECT_EQ("[proxy1:80]", ResolveProxySynchronously(
+                               service.get(), GURL("http://www.google.com"))
+                               .proxy_chain()
+                               .ToDebugString());
+
+  // Non-matching URL should go DIRECT.
+  EXPECT_TRUE(
+      ResolveProxySynchronously(service.get(), GURL("http://www.yahoo.com"))
+          .is_direct());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRulesPrecedesDynamicRoutingRules) {
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  ProxyConfig config = ProxyConfig::CreateDirect();
+
+  // Add ProxyOverrideRule for www.google.com -> override_proxy:80
+  ProxyConfig::ProxyOverrideRule override_rule;
+  override_rule.destination_matchers.AddRuleFromString("www.google.com");
+  override_rule.proxy_list.AddProxyChain(
+      ProxyUriToProxyChain("override_proxy:80", ProxyServer::SCHEME_HTTP));
+  config.set_proxy_override_rules({override_rule});
+
+  // Add DynamicRoutingRule for www.google.com -> dynamic_proxy:80
+  ProxyConfig::DynamicRoutingConfig dynamic_config;
+  dynamic_config.routing_rules.push_back(
+      CreateDynamicRoutingRule("www.google.com", "dynamic_proxy:80"));
+  config.set_dynamic_routing_config(dynamic_config);
+
+  auto service =
+      ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
+          std::make_unique<MockProxyConfigService>(config),
+          mock_host_resolver_.get(),
+          /*net_log=*/nullptr,
+          /*quick_check_enabled=*/true);
+
+  // OverrideRule has higher priority than DynamicRoutingRule.
+  EXPECT_EQ(
+      "[override_proxy:80]",
+      ResolveProxySynchronously(service.get(), GURL("http://www.google.com"))
+          .proxy_chain()
+          .ToDebugString());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       DynamicRoutingPvdOnlyUpdateDoesNotResetPac) {
+  ProxyConfig config = ProxyConfig::CreateDirect();
+  auto mock_config_service = std::make_unique<MockProxyConfigService>(config);
+  auto* mock_config_service_ptr = mock_config_service.get();
+
+  auto service =
+      ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
+          std::move(mock_config_service),
+          /*host_resolver_for_override_rules=*/nullptr,
+          /*net_log=*/nullptr,
+          /*quick_check_enabled=*/true);
+
+  // Initial resolve: DIRECT.
+  EXPECT_TRUE(
+      ResolveProxySynchronously(service.get(), GURL("http://www.google.com"))
+          .is_direct());
+
+  // Update ProxyConfig with dynamic routing rule only (PvD update).
+  ProxyConfig::DynamicRoutingConfig dynamic_config;
+  dynamic_config.routing_rules.push_back(CreateDynamicRoutingRule(
+      "www.google.com", "pvd_proxy:443", ProxyServer::SCHEME_HTTPS));
+  config.set_dynamic_routing_config(dynamic_config);
+
+  mock_config_service_ptr->SetConfig(
+      ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Resolve again: should immediately use pvd_proxy:443 without resetting.
+  EXPECT_EQ(
+      "[https://pvd_proxy:443]",
+      ResolveProxySynchronously(service.get(), GURL("http://www.google.com"))
+          .proxy_chain()
+          .ToDebugString());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       DynamicRoutingUpdateInProgressPausesNetworkRequests) {
+  ProxyConfig config = ProxyConfig::CreateDirect();
+  auto mock_config_service = std::make_unique<MockProxyConfigService>(config);
+  auto* mock_config_service_ptr = mock_config_service.get();
+
+  auto service =
+      ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
+          std::move(mock_config_service),
+          /*host_resolver_for_override_rules=*/nullptr,
+          /*net_log=*/nullptr,
+          /*quick_check_enabled=*/true);
+
+  // Set dynamic routing config with is_update_in_progress = true.
+  ProxyConfig::DynamicRoutingConfig dynamic_config;
+  dynamic_config.is_update_in_progress = true;
+  config.set_dynamic_routing_config(dynamic_config);
+
+  mock_config_service_ptr->SetConfig(
+      ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  RecordingNetLogObserver net_log_observer;
+  NetLogWithSource net_log_with_source =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
+
+  // Resolve request should return ERR_IO_PENDING while update is in progress.
+  std::unique_ptr<ProxyResolutionRequest> request;
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  int rv = service->ResolveProxy(
+      GURL("http://www.google.com"), std::string(), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &info, callback.callback(), &request,
+      net_log_with_source, DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Clear is_update_in_progress and supply dynamic routing rule.
+  dynamic_config.is_update_in_progress = false;
+  ProxyConfig::DynamicRoutingRule dynamic_rule = CreateDynamicRoutingRule(
+      "www.google.com", "pvd_proxy:443", ProxyServer::SCHEME_HTTPS);
+  dynamic_config.routing_rules.push_back(dynamic_rule);
+  config.set_dynamic_routing_config(dynamic_config);
+
+  mock_config_service_ptr->SetConfig(
+      ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Now callback should finish and return OK with pvd_proxy:443.
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_EQ("[https://pvd_proxy:443]", info.proxy_chain().ToDebugString());
+
+  auto entries = net_log_observer.GetEntries();
+  EXPECT_TRUE(LogContainsBeginEvent(entries, 0,
+                                    NetLogEventType::PROXY_RESOLUTION_SERVICE));
+  EXPECT_TRUE(LogContainsBeginEvent(
+      entries, 1,
+      NetLogEventType::
+          PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS));
+  EXPECT_TRUE(LogContainsEndEvent(
+      entries, 2,
+      NetLogEventType::
+          PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS));
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 3, NetLogEventType::PROXY_RESOLUTION_DYNAMIC_RULE_APPLIED,
+      NetLogEventPhase::NONE));
+  EXPECT_EQ(entries[3].params, dynamic_rule.ToDict());
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 4, NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(entries, 5,
+                                  NetLogEventType::PROXY_RESOLUTION_SERVICE));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       DynamicRoutingConfigUpdate_PendingRequestCancelledInCallback) {
+  ProxyConfig config = ProxyConfig::CreateDirect();
+  auto mock_config_service = std::make_unique<MockProxyConfigService>(config);
+  MockProxyConfigService* mock_config_service_ptr = mock_config_service.get();
+
+  auto service =
+      ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
+          std::move(mock_config_service),
+          /*host_resolver_for_override_rules=*/nullptr,
+          /*net_log=*/nullptr,
+          /*quick_check_enabled=*/true);
+
+  // Set dynamic routing config with is_update_in_progress = true.
+  ProxyConfig::DynamicRoutingConfig dynamic_config;
+  dynamic_config.is_update_in_progress = true;
+  config.set_dynamic_routing_config(dynamic_config);
+
+  mock_config_service_ptr->SetConfig(
+      ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  ProxyInfo info1;
+  std::unique_ptr<ProxyResolutionRequest> req1;
+  ProxyInfo info2;
+  std::unique_ptr<ProxyResolutionRequest> req2;
+
+  int number_of_callbacks_run = 0;
+
+  auto cb1 = base::BindLambdaForTesting([&](int result) {
+    number_of_callbacks_run++;
+    if (req2) {
+      req2.reset();
+    }
+  });
+
+  auto cb2 = base::BindLambdaForTesting([&](int result) {
+    number_of_callbacks_run++;
+    if (req1) {
+      req1.reset();
+    }
+  });
+
+  int rv1 = service->ResolveProxy(GURL("http://www.google.com"), std::string(),
+                                  NetworkAnonymizationKey(),
+                                  handles::kInvalidNetworkHandle, &info1, cb1,
+                                  &req1, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_EQ(rv1, ERR_IO_PENDING);
+
+  int rv2 = service->ResolveProxy(GURL("http://www.yahoo.com"), std::string(),
+                                  NetworkAnonymizationKey(),
+                                  handles::kInvalidNetworkHandle, &info2, cb2,
+                                  &req2, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_EQ(rv2, ERR_IO_PENDING);
+
+  dynamic_config.is_update_in_progress = false;
+  config.set_dynamic_routing_config(dynamic_config);
+
+  mock_config_service_ptr->SetConfig(
+      ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Exactly one callback ran, and it cancelled the other request before it
+  // could be processed.
+  EXPECT_EQ(number_of_callbacks_run, 1);
+}
 
 }  // namespace net

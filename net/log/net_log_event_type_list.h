@@ -359,6 +359,10 @@ EVENT_TYPE(PROXY_RESOLUTION_SERVICE)
 // are found from ConfiguredProxyResolutionService::init_proxy_resolver_log().
 EVENT_TYPE(PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC)
 
+// The time while a request is waiting on dynamic proxy routing rules (e.g. from
+// an enterprise Provisioning Domain) to be updated/fetched.
+EVENT_TYPE(PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS)
+
 // This event is emitted to show what the PAC script returned. It can contain
 // extra parameters that are either:
 //   {
@@ -5241,6 +5245,14 @@ EVENT_TYPE(PROXY_OVERRIDE_END_HOST_RESOLUTION)
 //       }]
 //   }
 EVENT_TYPE(PROXY_RESOLUTION_OVERRIDE_RULE_APPLIED)
+
+// This event is logged when a dynamic proxy routing rule (e.g. from an
+// enterprise Provisioning Domain) was applied for a request.
+//   {
+//     "destination_matchers": <string>,
+//     "proxy_list": <List of proxy servers>
+//   }
+EVENT_TYPE(PROXY_RESOLUTION_DYNAMIC_RULE_APPLIED)
 
 // This event is logged by a TrustedHeaderClient when it modifies headers
 // during OnBeforeSendHeaders. The event can be logged by multiple clients,

@@ -986,8 +986,9 @@ int ConfiguredProxyResolutionService::ResolveProxy(
   if (script_poller_.get())
     script_poller_->OnLazyPoll();
 
-  if (current_state_ == STATE_NONE)
+  if (pac_resolver_state_ == PacResolverState::kNone) {
     ApplyProxyConfigIfAvailable();
+  }
 
   // Sanitize the URL before passing it on to the proxy resolver (i.e. PAC
   // script). The goal is to remove sensitive data (like embedded user names
@@ -1020,9 +1021,13 @@ int ConfiguredProxyResolutionService::ResolveProxy(
     rv = req->Start();
     if (rv != ERR_IO_PENDING)
       return req->QueryDidCompleteSynchronously(rv);
-  } else {
+  } else if (!IsPacReady()) {
     req->net_log()->BeginEvent(
         NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC);
+  } else {
+    req->net_log()->BeginEvent(
+        NetLogEventType::
+            PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS);
   }
 
   DCHECK_EQ(ERR_IO_PENDING, rv);
@@ -1040,10 +1045,11 @@ int ConfiguredProxyResolutionService::TryToCompleteSynchronously(
     bool bypass_override_rules,
     const NetLogWithSource& net_log,
     ProxyInfo* result) {
-  DCHECK_NE(STATE_NONE, current_state_);
+  DCHECK_NE(PacResolverState::kNone, pac_resolver_state_);
 
   if (!IsReady()) {
-    return ERR_IO_PENDING;  // Still initializing.
+    // Still initializing (PAC fetch or PvD fetch in progress).
+    return ERR_IO_PENDING;
   }
 
   DCHECK(config_);
@@ -1068,6 +1074,21 @@ int ConfiguredProxyResolutionService::TryToCompleteSynchronously(
         // asynchronous path.
         return ERR_IO_PENDING;
       }
+    }
+  }
+
+  // Next, evaluate dynamic routing rules (e.g. from enterprise Provisioning
+  // Domains).
+  for (const auto& rule :
+       config_->value().dynamic_routing_config().routing_rules) {
+    if (rule.MatchesDestination(url)) {
+      net_log.AddEvent(NetLogEventType::PROXY_RESOLUTION_DYNAMIC_RULE_APPLIED,
+                       [&] { return rule.ToDict(); });
+
+      result->UseProxyList(rule.proxy_list);
+      result->set_traffic_annotation(
+          MutableNetworkTrafficAnnotationTag(config_->traffic_annotation()));
+      return OK;
     }
   }
 
@@ -1142,7 +1163,7 @@ void ConfiguredProxyResolutionService::SuspendAllPendingRequests() {
 
 void ConfiguredProxyResolutionService::SetReady() {
   DCHECK(!init_proxy_resolver_.get());
-  current_state_ = STATE_READY;
+  pac_resolver_state_ = PacResolverState::kReady;
 
   // TODO(lilyhoughton): This is necessary because a callback invoked by
   // |StartAndCompleteCheckingForSynchronous()| might delete |this|.  A better
@@ -1169,7 +1190,7 @@ void ConfiguredProxyResolutionService::SetReady() {
 }
 
 void ConfiguredProxyResolutionService::ApplyProxyConfigIfAvailable() {
-  DCHECK_EQ(STATE_NONE, current_state_);
+  DCHECK_EQ(PacResolverState::kNone, pac_resolver_state_);
 
   config_service_->OnLazyPoll();
 
@@ -1180,7 +1201,7 @@ void ConfiguredProxyResolutionService::ApplyProxyConfigIfAvailable() {
   }
 
   // Otherwise we need to first fetch the configuration.
-  current_state_ = STATE_WAITING_FOR_PROXY_CONFIG;
+  pac_resolver_state_ = PacResolverState::kWaitingForProxyConfig;
 
   // Retrieve the current proxy configuration from the ProxyConfigService.
   // If a configuration is not available yet, we will get called back later
@@ -1193,11 +1214,21 @@ void ConfiguredProxyResolutionService::ApplyProxyConfigIfAvailable() {
 }
 
 void ConfiguredProxyResolutionService::OnInitProxyResolverComplete(int result) {
-  DCHECK_EQ(STATE_WAITING_FOR_INIT_PROXY_RESOLVER, current_state_);
+  DCHECK_EQ(PacResolverState::kWaitingForInitProxyResolver,
+            pac_resolver_state_);
   DCHECK(init_proxy_resolver_.get());
   DCHECK(fetched_config_);
   DCHECK(fetched_config_->value().HasAutomaticSettings());
   config_ = init_proxy_resolver_->effective_config();
+
+  // We will need to include the newest dynamic routing rules as well when PAC
+  // resolver is completed, to prevent outdated rules from being applied.
+  if (config_ && fetched_config_) {
+    ProxyConfig value = config_->value();
+    value.set_dynamic_routing_config(
+        fetched_config_->value().dynamic_routing_config());
+    config_ = ProxyConfigWithAnnotation(value, config_->traffic_annotation());
+  }
 
   // At this point we have decided which proxy settings to use (i.e. which PAC
   // script if any). We start up a background poller to periodically revisit
@@ -1353,12 +1384,13 @@ void ConfiguredProxyResolutionService::SetPacFileFetchers(
     std::unique_ptr<PacFileFetcher> pac_file_fetcher,
     std::unique_ptr<DhcpPacFileFetcher> dhcp_pac_file_fetcher) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  State previous_state =
+  PacResolverState previous_state =
       ResetProxyConfig(false, ShouldResetPacRetryStateForNextReset());
   pac_file_fetcher_ = std::move(pac_file_fetcher);
   dhcp_pac_file_fetcher_ = std::move(dhcp_pac_file_fetcher);
-  if (previous_state != STATE_NONE)
+  if (previous_state != PacResolverState::kNone) {
     ApplyProxyConfigIfAvailable();
+  }
 }
 
 void ConfiguredProxyResolutionService::SetProxyDelegate(
@@ -1396,7 +1428,7 @@ PacFileFetcher* ConfiguredProxyResolutionService::GetPacFileFetcher() const {
 
 bool ConfiguredProxyResolutionService::GetLoadStateIfAvailable(
     LoadState* load_state) const {
-  if (current_state_ == STATE_WAITING_FOR_INIT_PROXY_RESOLVER) {
+  if (pac_resolver_state_ == PacResolverState::kWaitingForInitProxyResolver) {
     *load_state = init_proxy_resolver_->GetLoadState();
     return true;
   }
@@ -1413,11 +1445,11 @@ ConfiguredProxyResolutionService::GetHostResolverForOverrideRules() const {
   return host_resolver_for_override_rules_.get();
 }
 
-ConfiguredProxyResolutionService::State
+ConfiguredProxyResolutionService::PacResolverState
 ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config,
                                                    bool reset_pac_retry_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  State previous_state = current_state_;
+  PacResolverState previous_state = pac_resolver_state_;
 
   permanent_error_ = OK;
   proxy_retry_info_.clear();
@@ -1434,7 +1466,7 @@ ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config,
   }
   if (reset_fetched_config)
     fetched_config_ = std::nullopt;
-  current_state_ = STATE_NONE;
+  pac_resolver_state_ = PacResolverState::kNone;
 
   return previous_state;
 }
@@ -1506,7 +1538,16 @@ void ConfiguredProxyResolutionService::ForceReloadProxyConfig() {
 }
 
 bool ConfiguredProxyResolutionService::IsReady() const {
-  return current_state_ == STATE_READY;
+  return IsPacReady() && IsDynamicRoutesReady();
+}
+
+bool ConfiguredProxyResolutionService::IsPacReady() const {
+  return pac_resolver_state_ == PacResolverState::kReady;
+}
+
+bool ConfiguredProxyResolutionService::IsDynamicRoutesReady() const {
+  return !config_ ||
+         !config_->value().dynamic_routing_config().is_update_in_progress;
 }
 
 base::DictValue ConfiguredProxyResolutionService::GetProxyNetLogValues() {
@@ -1578,6 +1619,29 @@ void ConfiguredProxyResolutionService::OnProxyConfigChanged(
   // Set the new configuration as the most recently fetched one.
   fetched_config_ = effective_config;
 
+  // If this update is PvD-only (only dynamic_routing_config changed while all
+  // other settings match active config_), update config_ in-place without
+  // resetting PAC deciders or restarting PAC file fetching.
+  if (config_ &&
+      effective_config.value().EqualsIgnoringDynamicRouting(config_->value())) {
+    config_ = effective_config;
+    if (IsReady()) {
+      auto pending_requests_copy = pending_requests_;
+      for (ConfiguredProxyResolutionRequest* req : pending_requests_copy) {
+        if (!ContainsPendingRequest(req)) {
+          continue;
+        }
+        if (!req->is_started()) {
+          req->net_log()->EndEvent(
+              NetLogEventType::
+                  PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS);
+        }
+        req->StartAndCompleteCheckingForSynchronous();
+      }
+    }
+    return;
+  }
+
   InitializeUsingLastFetchedConfig();
 }
 
@@ -1604,7 +1668,7 @@ void ConfiguredProxyResolutionService::InitializeUsingLastFetchedConfig() {
   }
 
   // Start downloading + testing the PAC scripts for this new configuration.
-  current_state_ = STATE_WAITING_FOR_INIT_PROXY_RESOLVER;
+  pac_resolver_state_ = PacResolverState::kWaitingForInitProxyResolver;
 
   // If we changed networks recently, we should delay running proxy auto-config.
   base::TimeDelta wait_delay = stall_proxy_autoconfig_until_ - TimeTicks::Now();
@@ -1632,7 +1696,7 @@ void ConfiguredProxyResolutionService::InitializeUsingDecidedConfig(
 
   ResetProxyConfig(false, ShouldResetPacRetryStateForNextReset());
 
-  current_state_ = STATE_WAITING_FOR_INIT_PROXY_RESOLVER;
+  pac_resolver_state_ = PacResolverState::kWaitingForInitProxyResolver;
 
   init_proxy_resolver_ = std::make_unique<InitProxyResolver>();
   int rv = init_proxy_resolver_->StartSkipDecider(
@@ -1726,10 +1790,11 @@ void ConfiguredProxyResolutionService::OnIPAddressChanged(
   // new connection may be essential for URL requests to work properly. Reset
   // the config to ensure new URL requests are blocked until the potential new
   // proxy configuration is loaded.
-  State previous_state =
+  PacResolverState previous_state =
       ResetProxyConfig(false, ShouldResetPacRetryStateForNextReset());
-  if (previous_state != STATE_NONE)
+  if (previous_state != PacResolverState::kNone) {
     ApplyProxyConfigIfAvailable();
+  }
 }
 
 void ConfiguredProxyResolutionService::OnDNSChanged() {
