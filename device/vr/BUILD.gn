@@ -329,7 +329,6 @@ if (enable_vr) {
     defines = [ "IS_VR_TEST_HOOK_IMPL" ]
 
     sources = [
-      "test/test_hook.cc",
       "test/test_hook.h",
       "test/webxr_test_gamepad_utils.cc",
       "test/webxr_test_gamepad_utils.h",

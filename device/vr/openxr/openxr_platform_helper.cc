@@ -26,12 +26,27 @@
 
 namespace device {
 
+namespace {
+OpenXrPlatformHelper::InitializeOpenXrMockTrampolineFn
+    g_initialize_openxr_mock_trampoline_fn = nullptr;
+}  // namespace
+
+// static
+void OpenXrPlatformHelper::RegisterInitializeOpenXrMockTrampolineFn(
+    InitializeOpenXrMockTrampolineFn fn) {
+  g_initialize_openxr_mock_trampoline_fn = fn;
+}
+
 OpenXrPlatformHelper::OpenXrPlatformHelper() = default;
 OpenXrPlatformHelper::~OpenXrPlatformHelper() = default;
 
 bool OpenXrPlatformHelper::EnsureInitialized() {
   if (initialized_) {
     return true;
+  }
+
+  if (g_initialize_openxr_mock_trampoline_fn) {
+    g_initialize_openxr_mock_trampoline_fn();
   }
 
   if (!Initialize()) {

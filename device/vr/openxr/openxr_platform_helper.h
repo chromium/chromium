@@ -54,6 +54,10 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // e.g. specific controllers.
   static std::vector<const char*> GetOptionalExtensions();
 
+  using InitializeOpenXrMockTrampolineFn = bool (*)();
+  static void RegisterInitializeOpenXrMockTrampolineFn(
+      InitializeOpenXrMockTrampolineFn fn);
+
   virtual ~OpenXrPlatformHelper();
 
   // Attempt to perform any platform-specific initialization that needs to
