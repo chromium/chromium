@@ -2408,6 +2408,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.PrewarmResult.{PrewarmType}"
+    enum="DeviceBoundSessionRefreshResult" expires_after="2027-04-12">
+  <owner>santosls@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the outcome of a prewarm operation per DBSC session. This is logged
+    to {PrewarmType} track. Startup represents the first prewarm when started,
+    and Scheduled represents the prewarms that are scheduled based on the Mojo
+    response.
+  </summary>
+  <token key="PrewarmType">
+    <variant name="Scheduled" summary="a scheduled prewarm"/>
+    <variant name="Startup" summary="the startup prewarm"/>
+  </token>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.ProactiveRefreshAttempt"
     enum="DeviceBoundSessionProactiveRefreshAttempt" expires_after="2026-12-27">
   <owner>drubery@chromium.org</owner>

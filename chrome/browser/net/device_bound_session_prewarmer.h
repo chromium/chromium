@@ -54,7 +54,7 @@ class DeviceBoundSessionPrewarmer {
 
   // Starts the pre-warmer. The first execution will be immediate.
   // If the pre-warmer is already running, it will be stopped and restarted.
-  void Start(PrewarmUrlProvider url_provider_callback);
+  void Start(PrewarmUrlProvider url_provider_callback, bool is_startup_prewarm);
 
   // Stops the pre-warmer.
   void Stop();
@@ -76,6 +76,10 @@ class DeviceBoundSessionPrewarmer {
   base::OneShotTimer timer_;
   PrewarmUrlProvider url_provider_callback_;
   int invalid_url_consecutive_retries_ = 0;
+
+  // Whether the current pre-warming is the startup pre-warming (from Start())
+  // or a subsequent scheduled pre-warming.
+  bool is_startup_prewarm_ = true;
 
   base::WeakPtrFactory<DeviceBoundSessionPrewarmer> weak_ptr_factory_{this};
 };

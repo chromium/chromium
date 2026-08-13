@@ -5,6 +5,7 @@
 #include "chrome/browser/net/device_bound_session_prewarmer.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -37,10 +38,12 @@ DeviceBoundSessionPrewarmer::~DeviceBoundSessionPrewarmer() {
 }
 
 void DeviceBoundSessionPrewarmer::Start(
-    PrewarmUrlProvider url_provider_callback) {
+    PrewarmUrlProvider url_provider_callback,
+    bool is_startup_prewarm) {
   CHECK(url_provider_callback);
   url_provider_callback_ = std::move(url_provider_callback);
   invalid_url_consecutive_retries_ = 0;
+  is_startup_prewarm_ = is_startup_prewarm;
 
   Stop();
 
@@ -109,6 +112,17 @@ bool DeviceBoundSessionPrewarmer::IsTransientError(
 void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
     const std::vector<net::device_bound_sessions::RefreshResult>& results,
     std::optional<base::Time> earliest_next_refresh_time) {
+  bool is_startup = std::exchange(is_startup_prewarm_, false);
+  for (const auto& result : results) {
+    if (is_startup) {
+      base::UmaHistogramEnumeration(
+          "Net.DeviceBoundSessions.PrewarmResult.Startup", result);
+    } else {
+      base::UmaHistogramEnumeration(
+          "Net.DeviceBoundSessions.PrewarmResult.Scheduled", result);
+    }
+  }
+
   if (!earliest_next_refresh_time) {
     if (std::ranges::none_of(results,
                              &DeviceBoundSessionPrewarmer::IsTransientError)) {

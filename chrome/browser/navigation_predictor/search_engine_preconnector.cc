@@ -227,12 +227,15 @@ void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
                   ->GetDeviceBoundSessionManager();
             },
             browser_context_));
-    device_bound_session_prewarmer_->Start(base::BindRepeating(
-        [](base::WeakPtr<SearchEnginePreconnector> preconnector) {
-          return preconnector ? preconnector->GetDefaultSearchEngineOriginURL()
-                              : GURL();
-        },
-        GetWeakPtr()));
+    device_bound_session_prewarmer_->Start(
+        base::BindRepeating(
+            [](base::WeakPtr<SearchEnginePreconnector> preconnector) {
+              return preconnector
+                         ? preconnector->GetDefaultSearchEngineOriginURL()
+                         : GURL();
+            },
+            GetWeakPtr()),
+        /*is_startup_prewarm=*/true);
   }
 #endif
 
