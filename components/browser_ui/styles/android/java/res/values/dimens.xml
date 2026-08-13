@@ -8,9 +8,11 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Standard menu dimensions -->
     <dimen name="menu_width">258dp</dimen>
-    <dimen name="menu_width_min">188dp</dimen>
+    <dimen name="menu_width_min">200dp</dimen>
     <dimen name="menu_width_max">800dp</dimen>
     <dimen name="menu_horizontal_margin">16dp</dimen>
+    <dimen name="menu_vertical_margin">@dimen/min_touch_target_size</dimen>
+    <dimen name="flyout_menu_max_width">300dp</dimen>
     <dimen name="tab_group_menu_with_icons_width">225dp</dimen>
     <dimen name="overflow_menu_item_lateral_padding">16dp</dimen>
 

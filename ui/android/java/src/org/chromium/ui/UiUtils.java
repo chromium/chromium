@@ -49,7 +49,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.StyleableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.Insets;
@@ -66,6 +65,7 @@ import org.chromium.ui.base.UiAndroidFeatures;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -289,7 +289,7 @@ public class UiUtils {
 
     /**
      * Computes the max width of the widest list item & the total height of all of the items. The
-     * height returned in unbounded and may be larger than the available window space.
+     * height returned is unbounded and may be larger than the available window space.
      *
      * <p>WARNING: do not call this on a ListAdapter with more than a handful of items, the
      * performance will be terrible since it measures every single item.
@@ -301,6 +301,28 @@ public class UiUtils {
      */
     public static int[] computeListAdapterContentDimensions(
             ListAdapter adapter, @Nullable ViewGroup parentView) {
+        return computeListAdapterContentDimensions(adapter, parentView, Collections.emptySet());
+    }
+
+    /**
+     * Computes the max width of the widest list item & the total height of all the items, excluding
+     * specified item types from the width calculation, e.g. the context menu header can be ignored
+     * while computing the width. The height returned is unbounded and may be larger than the
+     * available window space.
+     *
+     * <p>WARNING: do not call this on a ListAdapter with more than a handful of items, the
+     * performance will be terrible since it measures every single item.
+     *
+     * @param adapter The adapter for the list.
+     * @param parentView The parent view for the list.
+     * @param excludedTypesForWidth Set of item view types to exclude from width calculation.
+     * @return int array representing the max width of the menu items stored at index 0 & the total
+     *     height of all items stored at index 1.
+     */
+    public static int[] computeListAdapterContentDimensions(
+            ListAdapter adapter,
+            @Nullable ViewGroup parentView,
+            Set<Integer> excludedTypesForWidth) {
         final int widthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         final int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         AbsListView.LayoutParams params =
@@ -324,7 +346,9 @@ public class UiUtils {
 
             itemView.setLayoutParams(params);
             itemView.measure(widthMeasureSpec, heightMeasureSpec);
-            result[0] = Math.max(result[0], itemView.getMeasuredWidth());
+            if (!excludedTypesForWidth.contains(type)) {
+                result[0] = Math.max(result[0], itemView.getMeasuredWidth());
+            }
             result[1] += itemView.getMeasuredHeight();
         }
 
@@ -332,7 +356,33 @@ public class UiUtils {
     }
 
     /**
+     * Calculates the width for a menu bounded by minimum and maximum constraints as well as
+     * available width space.
+     *
+     * @param contentWidth The measured width of the menu content.
+     * @param minWidth The minimum allowable menu width (e.g. 188dp).
+     * @param maxAllowedWidth The maximum allowable menu width (e.g. 800dp for root menus, 300dp for
+     *     flyouts).
+     * @param horizontalMargin The horizontal margin on each side of the available area (e.g. 16dp).
+     * @param availableWidth The available space width (e.g. window width or container width).
+     * @return The bounded menu width.
+     */
+    public static int computeMenuWidth(
+            int contentWidth,
+            int minWidth,
+            int maxAllowedWidth,
+            int horizontalMargin,
+            int availableWidth) {
+        int availableSpaceWidth = availableWidth - 2 * horizontalMargin;
+        int maxWidth = Math.min(maxAllowedWidth, availableSpaceWidth);
+        // Deliberately avoid Math.clamp because maxWidth might be smaller than minWidth in very
+        // narrow windows.
+        return Math.min(Math.max(contentWidth, minWidth), maxWidth);
+    }
+
+    /**
      * Get the index of a child {@link View} in a {@link ViewGroup}.
+     *
      * @param child The child to find the index of.
      * @return The index of the child in its parent. -1 if the child has no parent.
      */
@@ -624,7 +674,7 @@ public class UiUtils {
      *
      * @param textView The TextView which might set a link movement method.
      */
-    public static void maybeSetLinkMovementMethod(@NonNull TextView textView) {
+    public static void maybeSetLinkMovementMethod(TextView textView) {
         CharSequence text = textView.getText();
         if (TextUtils.isEmpty(text)) return;
         if (text instanceof Spanned spanned) {

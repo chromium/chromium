@@ -17,8 +17,8 @@ found in the LICENSE file.
         android:layout="@layout/context_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/context_menu_lateral_margin"
-        android:layout_marginVertical="@dimen/context_menu_vertical_margin"
+        android:layout_marginHorizontal="@dimen/menu_horizontal_margin"
+        android:layout_marginVertical="@dimen/menu_vertical_margin"
         android:layout_gravity="center"/>
 
     <!-- Anchor point for AnchoredPopupWindow displaying optional chip. -->

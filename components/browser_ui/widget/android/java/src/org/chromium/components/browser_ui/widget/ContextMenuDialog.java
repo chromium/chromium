@@ -93,7 +93,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private final int mBottomMarginPx;
 
     private final @Nullable Integer mPopupMargin;
-    private final @Nullable Integer mDesiredPopupContentWidth;
 
     private final @Nullable Runnable mOnDismissCallback;
 
@@ -127,7 +126,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * @param shouldRemoveScrim Whether the context menu should removes the scrim behind the dialog
      *     visually.
      * @param popupMargin The margin for the context menu.
-     * @param desiredPopupContentWidth The desired width for the content of the context menu.
      * @param touchEventDelegateView View View that is showing behind the context menu. If menu is
      *     shown as a popup without scrim, and this view is provided, the context menu will dispatch
      *     touch events other than ACTION_DOWN.
@@ -150,7 +148,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             boolean isFlyout,
             boolean shouldRemoveScrim,
             @Nullable Integer popupMargin,
-            @Nullable Integer desiredPopupContentWidth,
             @Nullable View touchEventDelegateView,
             Rect rect,
             boolean shouldPadForWindowInsets,
@@ -167,7 +164,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mIsFlyout = isFlyout;
         mShouldRemoveScrim = shouldRemoveScrim;
         mPopupMargin = popupMargin;
-        mDesiredPopupContentWidth = desiredPopupContentWidth;
         mTouchEventDelegateView = touchEventDelegateView;
         mRect = rect;
         mOnDismissCallback = onDismissCallback;
@@ -331,9 +327,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
 
                             if (mPopupMargin != null) {
                                 builder.setMargin(mPopupMargin);
-                            }
-                            if (mDesiredPopupContentWidth != null) {
-                                builder.setDesiredContentWidth(mDesiredPopupContentWidth);
                             }
                             if (mIsFlyout) {
                                 builder.setSpecCalculator(

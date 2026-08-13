@@ -224,9 +224,12 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                             assumeNonNull(mChipController).showChip(chipRenderParams);
                         }
                     });
-            dialogBottomMarginPx = mChipController.getVerticalPxNeededForChip();
+            int minVerticalMarginPx =
+                    mActivity.getResources().getDimensionPixelSize(R.dimen.menu_vertical_margin);
+            dialogBottomMarginPx =
+                    Math.max(mChipController.getVerticalPxNeededForChip(), minVerticalMarginPx);
             // Allow dialog to get close to the top of the screen.
-            dialogTopMarginPx = dialogBottomMarginPx / 2;
+            dialogTopMarginPx = Math.max(dialogBottomMarginPx / 2, minVerticalMarginPx);
         }
 
         final View menu =
@@ -237,15 +240,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                 params.getOpenedFromHighlight()
                         ? mActivity
                                 .getResources()
-                                .getDimensionPixelSize(R.dimen.context_menu_small_lateral_margin)
+                                .getDimensionPixelSize(R.dimen.menu_horizontal_margin)
                         : null;
-        Integer desiredPopupContentWidth = null;
-        if (!isDragDropEnabled) {
-            desiredPopupContentWidth =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.context_menu_small_width);
-        }
 
         // When drag and drop is enabled, context menu will be dismissed by web content when drag
         // moves beyond certain threshold. ContentView will need to receive drag events dispatched
@@ -264,7 +260,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         dialogTopMarginPx,
                         dialogBottomMarginPx,
                         popupMargin,
-                        desiredPopupContentWidth,
                         dragDispatchingTargetView,
                         contextMenuRect,
                         /* onDismissCallback= */ null,
@@ -391,6 +386,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         ModelListAdapter adapter = createAdapter(listItems);
 
         ContextMenuListView listView = menu.findViewById(R.id.context_menu_list_view);
+        listView.setIsFlyout(true);
         listView.setAdapter(adapter);
         listView.setItemsCanFocus(true);
         mListViews.add(listView);
@@ -407,7 +403,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         ContextMenuDialog.NO_CUSTOM_MARGIN,
                         ContextMenuDialog.NO_CUSTOM_MARGIN,
                         /* popupMargin= */ null,
-                        /* desiredPopupContentWidth= */ null,
                         /* dragDispatchingTargetView= */ null,
                         calculateFlyoutAnchorRect(mActivity, view),
                         () -> {
@@ -455,7 +450,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
      * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default defined
      *     in XML.
      * @param popupMargin The margin for the popup window.
-     * @param desiredPopupContentWidth The desired width for the content of the context menu.
      * @param dragDispatchingTargetView The view presented behind the context menu. If provided,
      *     drag event happened outside of ContextMenu will be dispatched into this View.
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
@@ -477,7 +471,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
             int topMarginPx,
             int bottomMarginPx,
             @Nullable Integer popupMargin,
-            @Nullable Integer desiredPopupContentWidth,
             @Nullable View dragDispatchingTargetView,
             Rect rect,
             @Nullable Runnable onDismissCallback,
@@ -496,7 +489,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         isFlyout,
                         shouldRemoveScrim,
                         popupMargin,
-                        desiredPopupContentWidth,
                         dragDispatchingTargetView,
                         rect,
                         /* shouldPadForWindowInsets= */ EdgeToEdgeUtils

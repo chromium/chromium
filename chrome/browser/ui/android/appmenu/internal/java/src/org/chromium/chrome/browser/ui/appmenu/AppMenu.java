@@ -420,11 +420,9 @@ class AppMenu implements OnKeyListener {
         int minWidth = context.getResources().getDimensionPixelSize(R.dimen.menu_width_min);
         int menuMaxWidth = context.getResources().getDimensionPixelSize(R.dimen.menu_width_max);
         int margin = context.getResources().getDimensionPixelSize(R.dimen.menu_horizontal_margin);
-        int windowSpaceWidth = visibleDisplayFrame.width() - 2 * margin;
-        int maxWidth = Math.min(menuMaxWidth, windowSpaceWidth);
-        // We deliberately don't use Math.clamp because maxWidth might end up being smaller than
-        // minWidth because of a very narrow window.
-        int menuWidth = Math.min(Math.max(contentWidth, minWidth), maxWidth);
+        int menuWidth =
+                UiUtils.computeMenuWidth(
+                        contentWidth, minWidth, menuMaxWidth, margin, visibleDisplayFrame.width());
 
         int popupWidth = menuWidth + bgPadding.left + bgPadding.right;
 
@@ -610,7 +608,8 @@ class AppMenu implements OnKeyListener {
 
         final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
         int maxWidth =
-                mContext.getResources().getDimensionPixelSize(R.dimen.menu_width) + lateralPadding;
+                mContext.getResources().getDimensionPixelSize(R.dimen.flyout_menu_max_width)
+                        + lateralPadding;
         int menuWidth =
                 UiUtils.computeListAdapterContentDimensions(adapter, listView)[0] + lateralPadding;
 

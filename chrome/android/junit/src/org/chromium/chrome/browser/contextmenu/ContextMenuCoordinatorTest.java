@@ -357,7 +357,6 @@ public class ContextMenuCoordinatorTest {
                 0,
                 0,
                 null,
-                null,
                 webContentView,
                 new Rect(0, 0, 0, 0),
                 /* onDismissCallback= */ null,
