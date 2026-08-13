@@ -9,6 +9,8 @@
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
+#include "base/i18n/icubridge/calendar.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
@@ -208,8 +210,7 @@ base::Time DateHelper::GetLocalMidnight(base::Time date) {
 }
 
 DateHelper::DateHelper()
-    : day_of_week_formatter_(CreateSimpleDateFormatter("ee")),
-      week_title_formatter_(CreateSimpleDateFormatter("EEEEE")),
+    : week_title_formatter_(CreateSimpleDateFormatter("EEEEE")),
       // Note: "yyyy" represents a four-digit calendar year (e.g. "2023"),
       // while "YYYY" represents a so called 'week year' (which might be "2022"
       // if the first day is on the last week of 2022).
@@ -244,7 +245,6 @@ DateHelper::~DateHelper() {
 }
 
 void DateHelper::ResetFormatters() {
-  day_of_week_formatter_ = CreateSimpleDateFormatter("ee");
   week_title_formatter_ = CreateSimpleDateFormatter("EEEEE");
   year_formatter_ = CreateSimpleDateFormatter("yyyy");
   twelve_hour_clock_hours_formatter_ = CreateHoursFormatter("h:mm a");
@@ -272,37 +272,31 @@ void DateHelper::CalculateLocalWeekTitles() {
   bool result = base::Time::FromString("15 Jun 2021 10:00 GMT", &start_date);
   DCHECK(result);
   start_date = GetLocalMidnight(start_date);
-  std::u16string day_of_week =
-      GetFormattedTime(&day_of_week_formatter_, start_date);
 
-  // For a few special locales the day of week is not in a number. In these
-  // cases, use the default week titles.
-  int day_int;
-  if (!base::StringToInt(day_of_week, &day_int)) {
-    week_titles_ = kDefaultWeekTitle;
-    return;
-  }
+  // Explode the local midnight start_date to determine its local weekday.
+  base::Time::Exploded exploded;
+  (start_date + GetTimeDifference(start_date)).UTCExplode(&exploded);
 
-  int safe_index = 0;
-  // Find a first day of a week.
-  while (day_int != 1) {
-    start_date += base::Hours(25);
-    day_of_week = GetFormattedTime(&day_of_week_formatter_, start_date);
-    result = base::StringToInt(day_of_week, &day_int);
-    DCHECK(result);
-    ++safe_index;
-    if (safe_index == calendar_utils::kDateInOneWeek) {
-      NOTREACHED() << "Should already find the first day within 7 times, since "
-                      "there are only 7 days in a week";
-    }
-  }
+  // Both exploded.day_of_week (0-based: 0 = Sunday, 1 = Monday, etc.) and
+  // IcuBridge::Calendar::Weekday (1 = Sunday, 2 = Monday, etc.) use the same
+  // standard day mapping. We convert the exploded day of week to 1-based
+  // to match.
+  const int current_day_of_week = exploded.day_of_week + 1;
+  const int first_day_of_week =
+      static_cast<int>(base::i18n::IcuBridge::GetInstance()
+                           .calendar()
+                           .GetWeekInformation()
+                           .first_weekday);
 
-  int day_index = 0;
-  while (day_index < calendar_utils::kDateInOneWeek) {
+  // Calculate the difference in days to reach the first day of the week,
+  // and shift our start_date accordingly.
+  const int diff_days = (first_day_of_week - current_day_of_week + 7) % 7;
+  start_date += base::Days(diff_days);
+
+  for (int i = 0; i < calendar_utils::kDateInOneWeek; ++i) {
     week_titles_.push_back(
         GetFormattedTime(&week_title_formatter_, start_date));
-    start_date += base::Hours(25);
-    ++day_index;
+    start_date += base::Days(1);
   }
 }
 

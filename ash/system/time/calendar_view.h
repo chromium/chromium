@@ -44,6 +44,17 @@ class GlanceablesProgressBarView;
 class IconButton;
 class TriView;
 
+// The month view header which contains the title of each week day.
+class ASH_EXPORT MonthHeaderView : public views::View {
+  METADATA_HEADER(MonthHeaderView, views::View)
+
+ public:
+  MonthHeaderView();
+  MonthHeaderView(const MonthHeaderView& other) = delete;
+  MonthHeaderView& operator=(const MonthHeaderView& other) = delete;
+  ~MonthHeaderView() override;
+};
+
 // The header of the calendar view, which shows the current month and year.
 class CalendarHeaderView : public views::View {
   METADATA_HEADER(CalendarHeaderView, views::View)

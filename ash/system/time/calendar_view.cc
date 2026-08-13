@@ -291,51 +291,43 @@ class CalendarLabel : public views::Label {
   }
 };
 
-// The month view header which contains the title of each week day.
-class MonthHeaderView : public views::View {
-  METADATA_HEADER(MonthHeaderView, views::View)
-
- public:
-  MonthHeaderView() {
-    views::TableLayout* layout =
-        SetLayoutManager(std::make_unique<views::TableLayout>());
-    calendar_utils::SetUpWeekColumns(layout);
-    layout->AddRows(1, views::TableLayout::kFixedSize);
-
-    for (const std::u16string& week_day :
-         DateHelper::GetInstance()->week_titles()) {
-      auto label =
-          views::Builder<views::Label>(
-              bubble_utils::CreateLabel(TypographyToken::kCrosButton1, week_day,
-                                        cros_tokens::kCrosSysOnSurface))
-              .Build();
-      label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-      label->SetBorder((views::CreateEmptyBorder(
-          features::AreAnyGlanceablesTimeManagementViewsEnabled()
-              ? kMonthHeaderBorder
-              : gfx::Insets::VH(calendar_utils::kDateVerticalPadding, 0))));
-      label->SetElideBehavior(gfx::NO_ELIDE);
-      label->SetSubpixelRenderingEnabled(false);
-
-      AddChildView(std::move(label));
-    }
-  }
-
-  MonthHeaderView(const MonthHeaderView& other) = delete;
-  MonthHeaderView& operator=(const MonthHeaderView& other) = delete;
-  ~MonthHeaderView() override = default;
-};
-
 // Resets the `view`'s opacity and position.
 void ResetLayer(views::View* view) {
   view->layer()->SetOpacity(1.0f);
   view->layer()->SetTransform(gfx::Transform());
 }
 
+}  // namespace
+
+MonthHeaderView::MonthHeaderView() {
+  views::TableLayout* layout =
+      SetLayoutManager(std::make_unique<views::TableLayout>());
+  calendar_utils::SetUpWeekColumns(layout);
+  layout->AddRows(1, views::TableLayout::kFixedSize);
+
+  for (const std::u16string& week_day :
+       DateHelper::GetInstance()->week_titles()) {
+    auto label =
+        views::Builder<views::Label>(
+            bubble_utils::CreateLabel(TypographyToken::kCrosButton1, week_day,
+                                      cros_tokens::kCrosSysOnSurface))
+            .Build();
+    label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+    label->SetBorder((views::CreateEmptyBorder(
+        features::AreAnyGlanceablesTimeManagementViewsEnabled()
+            ? kMonthHeaderBorder
+            : gfx::Insets::VH(calendar_utils::kDateVerticalPadding, 0))));
+    label->SetElideBehavior(gfx::NO_ELIDE);
+    label->SetSubpixelRenderingEnabled(false);
+
+    AddChildView(std::move(label));
+  }
+}
+
+MonthHeaderView::~MonthHeaderView() = default;
+
 BEGIN_METADATA(MonthHeaderView)
 END_METADATA
-
-}  // namespace
 
 // The label for each month that's within the scroll view.
 class CalendarView::MonthHeaderLabelView : public views::View {

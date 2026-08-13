@@ -94,6 +94,45 @@ TEST_F(CalendarUtilsUnitTest, DateFormatter) {
   EXPECT_EQ(u"August 2021", calendar_utils::GetMonthNameAndYear(date));
 }
 
+TEST_F(CalendarUtilsUnitTest, GetDayOfWeekInt) {
+  // Create a date: Aug 1, 2021 (Sunday).
+  base::Time sunday_date;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &sunday_date));
+
+  // Create a date: Aug 4, 2021 (Wednesday).
+  base::Time wednesday_date;
+  ASSERT_TRUE(base::Time::FromString("4 Aug 2021 10:00 GMT", &wednesday_date));
+
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+
+  // English (First day of week is Sunday)
+  SetDefaultLocale("en");
+  EXPECT_EQ(1, calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 1st
+  EXPECT_EQ(
+      4, calendar_utils::GetDayOfWeekInt(wednesday_date));  // Wednesday is 4th
+
+  // German (First day of week is Monday)
+  SetDefaultLocale("de");
+  EXPECT_EQ(7, calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 7th
+  EXPECT_EQ(
+      3, calendar_utils::GetDayOfWeekInt(wednesday_date));  // Wednesday is 3rd
+
+  // Spanish (First day of week is Monday)
+  SetDefaultLocale("es");
+  EXPECT_EQ(7, calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 7th
+  EXPECT_EQ(
+      3, calendar_utils::GetDayOfWeekInt(wednesday_date));  // Wednesday is 3rd
+
+  // Farsi (First day of week is Saturday)
+  SetDefaultLocale("fa");
+  EXPECT_EQ(2, calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 2nd
+  EXPECT_EQ(
+      5, calendar_utils::GetDayOfWeekInt(wednesday_date));  // Wednesday is 5th
+
+  // Reset default locale to English for subsequent tests.
+  SetDefaultLocale("en");
+}
+
 TEST_F(CalendarUtilsUnitTest, DateFormatterClockTimes) {
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 

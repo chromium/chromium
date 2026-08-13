@@ -156,10 +156,6 @@ ASH_EXPORT std::u16string GetTwentyFourHourClockTime(const base::Time date);
 // (e.g. Greenwich Mean Time)
 ASH_EXPORT std::u16string GetTimeZone(const base::Time date);
 
-// Gets the index of this day in the week, starts from 1. This number is
-// different for different languages.
-ASH_EXPORT std::u16string GetDayOfWeek(const base::Time date);
-
 // Gets the `date`'s year.
 // (e.g. 2022)
 ASH_EXPORT std::u16string GetYear(const base::Time date);
