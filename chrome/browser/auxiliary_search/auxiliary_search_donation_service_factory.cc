@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service.h"
-#include "chrome/browser/auxiliary_search/auxiliary_search_donation_service_bridge.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,8 +62,7 @@ AuxiliarySearchDonationServiceFactory::BuildServiceInstanceForBrowserContext(
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
           profile),
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-      std::make_unique<AuxiliarySearchDonationServiceBridge>());
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
 }
 
 bool AuxiliarySearchDonationServiceFactory::ServiceIsCreatedWithBrowserContext()

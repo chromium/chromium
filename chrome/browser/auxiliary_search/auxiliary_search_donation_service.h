@@ -82,7 +82,7 @@ class AuxiliarySearchDonationService
       visited_url_ranking::VisitedURLRankingService* ranking_service,
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,
-      std::unique_ptr<Delegate> delegate);
+      std::unique_ptr<Delegate> testing_delegate = nullptr);
   ~AuxiliarySearchDonationService() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -118,7 +118,7 @@ class AuxiliarySearchDonationService
   const raw_ref<visited_url_ranking::VisitedURLRankingService> ranking_service_;
   const raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<PrefService> pref_service_;
-  const std::unique_ptr<Delegate> delegate_;
+  std::unique_ptr<Delegate> delegate_;
   std::unique_ptr<base::android::ApplicationStatusListener>
       application_status_listener_;
   base::OneShotTimer donation_timer_;

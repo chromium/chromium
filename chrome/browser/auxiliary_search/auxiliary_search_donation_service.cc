@@ -21,6 +21,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
+#include "chrome/browser/auxiliary_search/auxiliary_search_donation_service_bridge.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
@@ -114,7 +115,7 @@ AuxiliarySearchDonationService::AuxiliarySearchDonationService(
     visited_url_ranking::VisitedURLRankingService* ranking_service,
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
-    std::unique_ptr<Delegate> delegate)
+    std::unique_ptr<Delegate> testing_delegate)
     : page_content_annotations_service_(
           raw_ref<page_content_annotations::PageContentAnnotationsService>::
               from_ptr(page_content_annotations_service)),
@@ -124,14 +125,16 @@ AuxiliarySearchDonationService::AuxiliarySearchDonationService(
       identity_manager_(
           raw_ref<signin::IdentityManager>::from_ptr(identity_manager)),
       pref_service_(raw_ref<PrefService>::from_ptr(pref_service)),
-      delegate_(std::move(delegate)),
       application_status_listener_(
           base::android::ApplicationStatusListener::New(base::BindRepeating(
               &AuxiliarySearchDonationService::OnApplicationStateChanged,
               // Listener is destroyed at destructor, and
               // object will be alive for any callback.
               base::Unretained(this)))) {
-  CHECK(delegate_);
+  if (!testing_delegate) {
+    testing_delegate = std::make_unique<AuxiliarySearchDonationServiceBridge>();
+  }
+  delegate_ = std::move(testing_delegate);
   page_content_annotations_service_->AddObserver(
       page_content_annotations::AnnotationType::kContentVisibility, this);
 }
