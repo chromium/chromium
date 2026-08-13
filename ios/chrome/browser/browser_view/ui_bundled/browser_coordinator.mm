@@ -55,8 +55,6 @@
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
-#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -222,7 +220,6 @@
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
@@ -339,7 +336,6 @@
     DefaultBrowserPromoNonModalCommands,
     DefaultPromoNonModalPresentationDelegate,
     EditMenuBuilder,
-    EnterprisePromptCoordinatorDelegate,
     FindInPageCommands,
     NetExportTabHelperDelegate,
     NewTabPageCommands,
@@ -349,7 +345,6 @@
     OverscrollActionsControllerDelegate,
     PasswordControllerDelegate,
     PasswordSettingsCoordinatorDelegate,
-    PolicyChangeCommands,
     PrerenderBrowserAgentDelegate,
     PromosManagerCommands,
     QuickDeleteCommands,
@@ -431,10 +426,6 @@
 // Coordinator that manages the presentation of Download Manager UI.
 @property(nonatomic, strong)
     DownloadManagerCoordinator* downloadManagerCoordinator;
-
-// The coordinator that manages enterprise prompts.
-@property(nonatomic, strong)
-    EnterprisePromptCoordinator* enterprisePromptCoordinator;
 
 // Coordinator in charge of the presenting autofill options above the
 // keyboard.
@@ -1058,7 +1049,6 @@
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
     @protocol(NonModalSignInPromoCommands),
-    @protocol(PolicyChangeCommands),
     @protocol(QuickDeleteCommands),
     @protocol(SendTabToSelfCommands),
     @protocol(SharedTabGroupLastTabAlertCommands),
@@ -3023,51 +3013,6 @@
       ->SetPresentationContext(nullptr);
 }
 
-#pragma mark - PolicyChangeCommands
-
-- (void)showForceSignedOutPrompt {
-  if (!self.enterprisePromptCoordinator) {
-    self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser
-                        promptType:EnterprisePromptTypeForceSignOut];
-    self.enterprisePromptCoordinator.delegate = self;
-  }
-  [self.enterprisePromptCoordinator start];
-}
-
-- (void)showSyncDisabledPrompt {
-  if (!self.enterprisePromptCoordinator) {
-    self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser
-                        promptType:EnterprisePromptTypeSyncDisabled];
-    self.enterprisePromptCoordinator.delegate = self;
-  }
-  [self.enterprisePromptCoordinator start];
-}
-
-- (void)showRestrictAccountSignedOutPrompt {
-  if (self.sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
-    if (!self.enterprisePromptCoordinator) {
-      self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                          promptType:
-                              EnterprisePromptTypeRestrictAccountSignedOut];
-      self.enterprisePromptCoordinator.delegate = self;
-    }
-    [self.enterprisePromptCoordinator start];
-  } else {
-    __weak BrowserCoordinator* weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                 static_cast<int64_t>(1 * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(), ^{
-                     [weakSelf showRestrictAccountSignedOutPrompt];
-                   });
-  }
-}
-
 #pragma mark - SharedTabGroupLastTabAlertCommands
 
 - (void)showLastTabInSharedGroupAlert:
@@ -3243,13 +3188,6 @@
   return [self.browserContentCoordinator.editMenuBuilder
       buildEditMenuWithBuilder:builder
                     inWebState:webState];
-}
-
-#pragma mark - EnterprisePromptCoordinatorDelegate
-
-- (void)hideEnterprisePrompForLearnMore:(BOOL)learnMore {
-  [self.enterprisePromptCoordinator stop];
-  self.enterprisePromptCoordinator = nil;
 }
 
 #pragma mark - SendTabToSelfCoordinatorDelegate

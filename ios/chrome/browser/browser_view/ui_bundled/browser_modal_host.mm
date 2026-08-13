@@ -15,6 +15,7 @@
 #import "components/send_tab_to_self/features.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_coordinator.h"
@@ -98,6 +99,7 @@
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
+#import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
@@ -151,6 +153,7 @@ const char kChromeAppStoreUrl[] =
                                 DriveFilePickerCommands,
                                 EnhancedCalendarCommands,
                                 EnterpriseCommands,
+                                EnterprisePromptCoordinatorDelegate,
                                 FileUploadPanelCommands,
                                 GoogleOneCommands,
                                 IOSPasskeyClientCommands,
@@ -166,6 +169,7 @@ const char kChromeAppStoreUrl[] =
                                 PasswordSuggestionCommands,
                                 PasswordSuggestionCoordinatorDelegate,
                                 PictureInPictureCommands,
+                                PolicyChangeCommands,
                                 PriceTrackedItemsCommands,
                                 ReminderNotificationsCommands,
                                 ReminderNotificationsCoordinatorDelegate,
@@ -214,6 +218,7 @@ const char kChromeAppStoreUrl[] =
   InfobarAutofillEditProfileBottomSheetHandler* _editProfileBottomSheetHandler;
   EnhancedCalendarCoordinator* _enhancedCalendarCoordinator;
   EnterpriseDialogCoordinator* _enterpriseDialogCoordinator;
+  EnterprisePromptCoordinator* _enterprisePromptCoordinator;
   API_AVAILABLE(ios(18.4))
   FileUploadPanelCoordinator* _fileUploadPanelCoordinator;
   GoogleOneCoordinator* _googleOneCoordinator;
@@ -305,6 +310,7 @@ const char kChromeAppStoreUrl[] =
   [self hideDriveFilePicker];
   [self hideEnhancedCalendarBottomSheet];
   [self dismissEnterpriseWarningDialog];
+  [self stopEnterprisePromptCoordinator];
   if (@available(iOS 18.4, *)) {
     [self hideFileUploadPanel];
   }
@@ -348,6 +354,13 @@ const char kChromeAppStoreUrl[] =
 }
 
 #pragma mark - Private helpers
+
+// Stops the Enterprise Prompt coordinator.
+- (void)stopEnterprisePromptCoordinator {
+  [_enterprisePromptCoordinator stop];
+  _enterprisePromptCoordinator.delegate = nil;
+  _enterprisePromptCoordinator = nil;
+}
 
 // Stops the sharing sheet.
 - (void)stopSharingSheet {
@@ -433,6 +446,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(PasswordProtectionCommands),
     @protocol(PasswordSuggestionCommands),
     @protocol(PictureInPictureCommands),
+    @protocol(PolicyChangeCommands),
     @protocol(PriceTrackedItemsCommands),
     @protocol(ReminderNotificationsCommands),
     @protocol(SaveToDriveCommands),
@@ -1538,6 +1552,67 @@ const char kChromeAppStoreUrl[] =
 
 - (void)dismissPictureInPictureIfNotPipRestore {
   [_pictureInPictureCoordinator dismissIfNotPipRestore];
+}
+
+#pragma mark - PolicyChangeCommands
+
+- (void)showForceSignedOutPrompt {
+  // TODO(crbug.com/545540830): Check if it should have an early return or if
+  // the coordinator should be stopped instead.
+  if (!_enterprisePromptCoordinator) {
+    _enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
+        initWithBaseViewController:_baseViewController
+                           browser:_browser
+                        promptType:EnterprisePromptTypeForceSignOut];
+    _enterprisePromptCoordinator.delegate = self;
+  }
+  [_enterprisePromptCoordinator start];
+}
+
+- (void)showSyncDisabledPrompt {
+  // TODO(crbug.com/545540830): Check if it should have an early return or if
+  // the coordinator should be stopped instead.
+  if (!_enterprisePromptCoordinator) {
+    _enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
+        initWithBaseViewController:_baseViewController
+                           browser:_browser
+                        promptType:EnterprisePromptTypeSyncDisabled];
+    _enterprisePromptCoordinator.delegate = self;
+  }
+  [_enterprisePromptCoordinator start];
+}
+
+- (void)showRestrictAccountSignedOutPrompt {
+  SceneState* sceneState = _browser->GetSceneState();
+  if (sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
+    // TODO(crbug.com/545540830): Check if it should have an early return or if
+    // the coordinator should be stopped instead.
+    if (!_enterprisePromptCoordinator) {
+      _enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
+          initWithBaseViewController:_baseViewController
+                             browser:_browser
+                          promptType:
+                              EnterprisePromptTypeRestrictAccountSignedOut];
+      _enterprisePromptCoordinator.delegate = self;
+    }
+    [_enterprisePromptCoordinator start];
+  } else {
+    __weak BrowserModalHost* weakSelf = self;
+    // TODO(crbug.com/545541991): Don't dispatch_after here, this should be
+    // triggered by the activation level observer.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 static_cast<int64_t>(1 * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{
+                     [weakSelf showRestrictAccountSignedOutPrompt];
+                   });
+  }
+}
+
+#pragma mark - EnterprisePromptCoordinatorDelegate
+
+- (void)hideEnterprisePrompForLearnMore:(BOOL)learnMore {
+  // TODO(crbug.com/545535699): Use a command instead of a delegate.
+  [self stopEnterprisePromptCoordinator];
 }
 
 #pragma mark - PriceTrackedItemsCommands
