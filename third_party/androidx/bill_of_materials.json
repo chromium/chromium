@@ -527,27 +527,27 @@
     {
         "name": "fragment",
         "group": "androidx.fragment",
-        "version": "1.9.0-SNAPSHOT"
+        "version": "1.10.0-SNAPSHOT"
     },
     {
         "name": "fragment-compose",
         "group": "androidx.fragment",
-        "version": "1.9.0-SNAPSHOT"
+        "version": "1.10.0-SNAPSHOT"
     },
     {
         "name": "fragment-ktx",
         "group": "androidx.fragment",
-        "version": "1.9.0-SNAPSHOT"
+        "version": "1.10.0-SNAPSHOT"
     },
     {
         "name": "fragment-testing",
         "group": "androidx.fragment",
-        "version": "1.9.0-SNAPSHOT"
+        "version": "1.10.0-SNAPSHOT"
     },
     {
         "name": "fragment-testing-manifest",
         "group": "androidx.fragment",
-        "version": "1.9.0-SNAPSHOT"
+        "version": "1.10.0-SNAPSHOT"
     },
     {
         "name": "graphics-core",
@@ -867,32 +867,32 @@
     {
         "name": "navigation-common",
         "group": "androidx.navigation",
-        "version": "2.10.0-SNAPSHOT"
+        "version": "2.11.0-SNAPSHOT"
     },
     {
         "name": "navigation-common-android",
         "group": "androidx.navigation",
-        "version": "2.10.0-SNAPSHOT"
+        "version": "2.11.0-SNAPSHOT"
     },
     {
         "name": "navigation-compose",
         "group": "androidx.navigation",
-        "version": "2.10.0-SNAPSHOT"
+        "version": "2.11.0-SNAPSHOT"
     },
     {
         "name": "navigation-compose-android",
         "group": "androidx.navigation",
-        "version": "2.10.0-SNAPSHOT"
+        "version": "2.11.0-SNAPSHOT"
     },
     {
         "name": "navigation-runtime",
         "group": "androidx.navigation",
-        "version": "2.10.0-SNAPSHOT"
+        "version": "2.11.0-SNAPSHOT"
     },
     {
         "name": "navigation-runtime-android",
         "group": "androidx.navigation",
-        "version": "2.10.0-SNAPSHOT"
+        "version": "2.11.0-SNAPSHOT"
     },
     {
         "name": "navigationevent",
@@ -1062,22 +1062,22 @@
     {
         "name": "sqlite",
         "group": "androidx.sqlite",
-        "version": "2.7.0"
+        "version": "2.8.0-SNAPSHOT"
     },
     {
         "name": "sqlite-android",
         "group": "androidx.sqlite",
-        "version": "2.7.0"
+        "version": "2.8.0-SNAPSHOT"
     },
     {
         "name": "sqlite-framework",
         "group": "androidx.sqlite",
-        "version": "2.7.0"
+        "version": "2.8.0-SNAPSHOT"
     },
     {
         "name": "sqlite-framework-android",
         "group": "androidx.sqlite",
-        "version": "2.7.0"
+        "version": "2.8.0-SNAPSHOT"
     },
     {
         "name": "startup-runtime",
@@ -1172,17 +1172,17 @@
     {
         "name": "tracing",
         "group": "androidx.tracing",
-        "version": "2.0.0-SNAPSHOT"
+        "version": "2.1.0-SNAPSHOT"
     },
     {
         "name": "tracing-android",
         "group": "androidx.tracing",
-        "version": "2.0.0-SNAPSHOT"
+        "version": "2.1.0-SNAPSHOT"
     },
     {
         "name": "tracing-ktx",
         "group": "androidx.tracing",
-        "version": "2.0.0-SNAPSHOT"
+        "version": "2.1.0-SNAPSHOT"
     },
     {
         "name": "tracing-perfetto",
@@ -1237,7 +1237,7 @@
     {
         "name": "webkit",
         "group": "androidx.webkit",
-        "version": "1.17.0-SNAPSHOT"
+        "version": "1.18.0-SNAPSHOT"
     },
     {
         "name": "sidecar",

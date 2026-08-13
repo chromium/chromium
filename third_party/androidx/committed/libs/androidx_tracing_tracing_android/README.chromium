@@ -1,7 +1,7 @@
 Name: Tracing
 Short Name: tracing-android
-URL: https://androidx.dev/snapshots/builds/16067284/artifacts/repository/androidx/tracing/tracing-android/2.0.0-SNAPSHOT/tracing-android-2.0.0-20260812.125134-1.aar
-Version: 2.0.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/16071800/artifacts/repository/androidx/tracing/tracing-android/2.1.0-SNAPSHOT/tracing-android-2.1.0-20260812.211225-1.aar
+Version: 2.1.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Android Tracing
 
-See also: https://developer.android.com/jetpack/androidx/releases/tracing#2.0.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/tracing#2.1.0-SNAPSHOT
 
 
 Local Modifications:
