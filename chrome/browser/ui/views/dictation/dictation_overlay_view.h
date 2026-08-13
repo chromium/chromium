@@ -55,7 +55,6 @@ class DictationOverlayView : public views::BubbleDialogDelegate {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMicButtonElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWaveformElementIdForTesting);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFinalizingImageElementIdForTesting);
 
  private:
   void OnFocusSelectionBoundsChanged(

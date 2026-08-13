@@ -633,8 +633,6 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
         DictationOverlayView::kMicButtonElementIdForTesting)),
     InAnyContext(EnsureNotPresent(
         DictationOverlayView::kWaveformElementIdForTesting)),
-    InAnyContext(EnsureNotPresent(
-        DictationOverlayView::kFinalizingImageElementIdForTesting)),
 
     // Transition to kTranscribing: WaveformView shown, others absent.
     ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
@@ -643,20 +641,16 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
         DictationOverlayView::kWaveformElementIdForTesting)),
     InAnyContext(EnsureNotPresent(
         DictationOverlayView::kMicButtonElementIdForTesting)),
-    InAnyContext(EnsureNotPresent(
-        DictationOverlayView::kFinalizingImageElementIdForTesting)),
 
-    // Transition to kFinalizing: 3-dot finalizing image shown, others absent.
+    // Transition to kFinalizing: WaveformView shown, others absent.
     Do([this] {
       dictation_service().session_controller()->EndDictationStream();
     }),
     CheckResult(GetSessionState(), SessionState::kFinalizing),
     InAnyContext(WaitForShow(
-        DictationOverlayView::kFinalizingImageElementIdForTesting)),
+        DictationOverlayView::kWaveformElementIdForTesting)),
     InAnyContext(EnsureNotPresent(
         DictationOverlayView::kMicButtonElementIdForTesting)),
-    InAnyContext(EnsureNotPresent(
-        DictationOverlayView::kWaveformElementIdForTesting)),
 
     // Transition to kInactive: Mic icon button shown again, others absent.
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
@@ -664,9 +658,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     InAnyContext(WaitForShow(
         DictationOverlayView::kMicButtonElementIdForTesting)),
     InAnyContext(EnsureNotPresent(
-        DictationOverlayView::kWaveformElementIdForTesting)),
-    InAnyContext(EnsureNotPresent(
-        DictationOverlayView::kFinalizingImageElementIdForTesting))
+        DictationOverlayView::kWaveformElementIdForTesting))
   );
   // clang-format on
 }
