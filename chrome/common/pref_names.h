@@ -3279,6 +3279,11 @@ inline constexpr char kNonMilestoneUpdateToastVersion[] =
 inline constexpr char kAuxiliarySearchLastDonatedHistoryEntryVisitTime[] =
     "auxiliary_search.last_donated_history_entry_visit_time";
 
+// Boolean pref indicating whether sharing browsing data with on-device
+// intelligence features is enabled.
+inline constexpr char kAuxiliarySearchBrowsingDataDonationEnabled[] =
+    "auxiliary_search.browsing_data_donation_enabled";
+
 // Boolean pref indicating whether the app rating prompt has been shown.
 inline constexpr char kAppRatingPromptShown[] = "app_rating_prompt_shown";
 #endif  // BUILDFLAG(IS_ANDROID)

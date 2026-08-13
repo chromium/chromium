@@ -146,6 +146,8 @@ AuxiliarySearchDonationService::~AuxiliarySearchDonationService() {
 
 void AuxiliarySearchDonationService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kAuxiliarySearchBrowsingDataDonationEnabled, true);
   registry->RegisterTimePref(
       prefs::kAuxiliarySearchLastDonatedHistoryEntryVisitTime, base::Time());
 }
