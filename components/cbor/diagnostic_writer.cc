@@ -146,9 +146,6 @@ static bool Serialize(const Value& node,
     case Value::Type::NONE:
       s->append("none");
       break;
-
-    case Value::Type::TAG:
-      NOTREACHED();
   }
 
   return true;

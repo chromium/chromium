@@ -99,7 +99,7 @@ class CBOR_EXPORT Value {
     STRING = 3,
     ARRAY = 4,
     MAP = 5,
-    TAG = 6,
+    // TAG = 6, but not actually supported.
     SIMPLE_VALUE = 7,
     NONE = -1,
     INVALID_UTF8 = -2,

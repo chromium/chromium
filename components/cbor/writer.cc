@@ -126,9 +126,6 @@ bool Writer::EncodeCBOR(const Value& node,
       return true;
     }
 
-    case Value::Type::TAG:
-      NOTREACHED() << constants::kUnsupportedMajorType;
-
     // Represents a simple value.
     case Value::Type::SIMPLE_VALUE: {
       const Value::SimpleValue simple_value = node.GetSimpleValue();

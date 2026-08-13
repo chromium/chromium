@@ -16,7 +16,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
-#include "components/cbor/constants.h"
 
 namespace cbor {
 
@@ -143,8 +142,6 @@ Value Value::Clone() const {
       return Value(array_value_);
     case Type::MAP:
       return Value(map_value_);
-    case Type::TAG:
-      NOTREACHED() << constants::kUnsupportedMajorType;
     case Type::SIMPLE_VALUE:
       return Value(simple_value_);
   }
@@ -229,8 +226,6 @@ void Value::InternalMoveConstructFrom(Value&& that) {
     case Type::MAP:
       new (&map_value_) MapValue(std::move(that.map_value_));
       return;
-    case Type::TAG:
-      NOTREACHED() << constants::kUnsupportedMajorType;
     case Type::SIMPLE_VALUE:
       simple_value_ = that.simple_value_;
       return;
@@ -255,8 +250,6 @@ void Value::InternalCleanup() {
     case Type::MAP:
       map_value_.~MapValue();
       break;
-    case Type::TAG:
-      NOTREACHED() << constants::kUnsupportedMajorType;
     case Type::NONE:
     case Type::UNSIGNED:
     case Type::NEGATIVE:

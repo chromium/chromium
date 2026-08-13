@@ -294,7 +294,6 @@ std::optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
       return ReadMapContent(*header, config, max_nesting_level);
     case Value::Type::SIMPLE_VALUE:
       return DecodeToSimpleValue(*header);
-    case Value::Type::TAG:  // We explicitly don't support TAG.
     case Value::Type::NONE:
     case Value::Type::INVALID_UTF8:
       break;
