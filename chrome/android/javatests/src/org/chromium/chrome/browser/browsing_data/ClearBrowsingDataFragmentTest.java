@@ -124,6 +124,7 @@ import org.chromium.components.sync.DataType;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /** Tests for ClearBrowsingDataFragment interaction with underlying data model. */
@@ -344,18 +345,20 @@ public class ClearBrowsingDataFragmentTest {
                 .clearBrowsingData(
                         eq(expectedProfile),
                         any(),
-                        eq(getAllDataTypes()),
+                        eq(getAllDataTypes(preferences)),
                         eq(DEFAULT_TIME_PERIOD),
                         any(),
                         any());
     }
 
-    private static int[] getAllDataTypes() {
-        Set<Integer> dialogTypes = ClearBrowsingDataFragment.getAllOptions();
+    private static int[] getAllDataTypes(ClearBrowsingDataFragment fragment) {
+        List<Integer> dialogTypes =
+                ClearBrowsingDataFragment.getDialogOptions(fragment.getArguments());
 
         int[] datatypes = new int[dialogTypes.size()];
-        for (int i = 0; i < datatypes.length; i++) {
-            datatypes[i] = ClearBrowsingDataFragment.getDataType(i);
+        int i = 0;
+        for (Integer type : dialogTypes) {
+            datatypes[i++] = ClearBrowsingDataFragment.getDataType(type);
         }
 
         Arrays.sort(datatypes);

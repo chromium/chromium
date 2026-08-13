@@ -470,7 +470,8 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     }
 
     /** Returns the list of supported {@link DialogOption}. */
-    private static List<Integer> getDialogOptions(Bundle fragmentArgs) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    protected static List<Integer> getDialogOptions(Bundle fragmentArgs) {
         String referrer =
                 fragmentArgs.getString(
                         ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_REFERRER, null);
