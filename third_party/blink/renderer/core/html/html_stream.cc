@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
@@ -112,6 +113,13 @@ WritableStream* HTMLStream::Create(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kHierarchyRequestError,
         "Cannot stream before/after a node with a null parent");
+    return nullptr;
+  }
+
+  if (IsA<HTMLTemplateElement>(target)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kHierarchyRequestError,
+        "Cannot stream around a direct child of a template element.");
     return nullptr;
   }
 

@@ -114,6 +114,7 @@
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_stream.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -1076,7 +1077,16 @@ void Node::after(
 namespace {
 ContainerNode* ParentForHTMLInsertion(Node* self,
                                       ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled());
   ContainerNode* parent = self->parentNode();
+
+  if (IsA<HTMLTemplateElement>(parent)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kHierarchyRequestError,
+        "Cannot insert HTML around a direct child of a template element.");
+    return nullptr;
+  }
+
   if (!parent || parent->IsElementNode() || parent->IsShadowRoot()) {
     return parent;
   }
