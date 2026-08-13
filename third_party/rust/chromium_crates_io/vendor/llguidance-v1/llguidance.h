@@ -1,5 +1,15 @@
 /* See src/ffi.rs for full API documentation. */
 
+#if defined(__cplusplus) && __cplusplus >= 201703L
+#define LLGUIDANCE_NODISCARD [[nodiscard]]
+#elif defined(__GNUC__) || defined(__clang__)
+#define LLGUIDANCE_NODISCARD __attribute__((warn_unused_result))
+#elif defined(_MSC_VER)
+#define LLGUIDANCE_NODISCARD _Check_return_
+#else
+#define LLGUIDANCE_NODISCARD
+#endif
+
 #ifndef LLGUIDANCE_H
 #define LLGUIDANCE_H
 
@@ -61,8 +71,6 @@ typedef struct LlgStopController LlgStopController;
  */
 typedef struct LlgTokenizer LlgTokenizer;
 
-typedef struct NodeRef NodeRef;
-
 typedef struct LlgParserLimits {
   /**
    * For non-ambiguous grammars, this is the maximum "branching factor" of the grammar.
@@ -119,8 +127,13 @@ typedef struct LlgParserLimits {
 /**
  * Configuration for creating a new constraint or matcher.
  *
- * Use [`llg_constraint_init_set_defaults()`] to populate sane defaults, then
- * override individual fields as needed.
+ * This struct does not include a `struct_size` field for forward
+ * compatibility (unlike [`LlgTokenizerInitV2`]). Callers **must**
+ * zero-initialize the struct before populating fields — for example,
+ * with `= {}` in C/C++ or `memset` — so that any fields added in
+ * future versions default to zero. The recommended pattern is to call
+ * [`llg_constraint_init_set_defaults()`] to populate sane defaults,
+ * then override individual fields as needed.
  */
 typedef struct LlgConstraintInit {
   /**
@@ -479,7 +492,9 @@ bool llg_is_stopped(const struct LlgConstraint *cc);
  * (use [`llg_get_error()`] to get the exact error). When 0 is returned, the
  * result is written to `*res_p`.
  */
-int32_t llg_compute_mask(struct LlgConstraint *cc, struct LlgMaskResult *res_p);
+LLGUIDANCE_NODISCARD
+int32_t llg_compute_mask(struct LlgConstraint *cc,
+                         struct LlgMaskResult *res_p);
 
 /**
  * Commit the token sampled with the mask returned from [`llg_compute_mask()`].
@@ -488,11 +503,41 @@ int32_t llg_compute_mask(struct LlgConstraint *cc, struct LlgMaskResult *res_p);
  * success and −1 on error (use [`llg_get_error()`] to get the exact error).
  * When 0 is returned, the result is written to `*res_p`.
  */
-int32_t llg_commit_token(struct LlgConstraint *cc, LlgToken token, struct LlgCommitResult *res_p);
+LLGUIDANCE_NODISCARD
+int32_t llg_commit_token(struct LlgConstraint *cc,
+                         LlgToken token,
+                         struct LlgCommitResult *res_p);
 
 /**
  * Compute masks for several constraints in parallel.
  *
+ * When `done_cb` is non-null, this function returns immediately and the work
+ * proceeds asynchronously on Rayon worker threads. The caller **must not**
+ * read step results (masks, constraint state) until `done_cb` has been
+ * invoked. Use a synchronization primitive (e.g., semaphore, condition
+ * variable) in the callback to signal completion to the calling thread.
+ *
+ * If `steps` is null but `n_steps > 0` (a caller bug), no work is performed
+ * and `done_cb` is invoked immediately so async callers do not deadlock.
+ * If the `rayon` feature is not enabled, each constraint is set
+ * to an error state and the callback is invoked immediately.
+ *
+ * - `steps` must point to an array of `n_steps` valid [`LlgConstraintStep`]
+ *   elements. The `steps` array itself is copied immediately and need not
+ *   remain valid after this function returns.
+ * - Each step's `constraint` pointer must remain valid and unaliased for the
+ *   duration of the parallel computation (until `done_cb` is invoked, or
+ *   until this function returns if `done_cb` is null).
+ * - Each step's `mask_dest` must point to a buffer of at least
+ *   `mask_byte_len` bytes.
+ * - All `mask_dest[..mask_byte_len]` regions across steps must be pairwise
+ *   non-overlapping until the computation completes, since steps are
+ *   processed concurrently by rayon workers.
+ * - `user_data` is passed opaquely to `done_cb`; the caller must ensure it
+ *   remains valid until `done_cb` is invoked.
+ * - When `done_cb` is non-null, it will be invoked on a Rayon worker thread
+ *   (not the calling thread). The callback and any state it accesses through
+ *   `user_data` must be safe for cross-thread invocation.
  */
 void llg_par_compute_mask(const struct LlgConstraintStep *steps,
                           size_t n_steps,
@@ -507,6 +552,14 @@ struct LlgConstraint *llg_clone_constraint(const struct LlgConstraint *cc);
 /**
  * Construct a new tokenizer from a [`LlgTokenizerInit`].
  *
+ * Returns a pointer to a new tokenizer on success, or null on error.
+ * On error, the error message is written to `error_string` (NUL-terminated).
+ *
+ * - `tok_init` must point to a valid, fully initialized [`LlgTokenizerInit`].
+ * - Pointer fields within the struct (`token_lens`, `token_bytes`, etc.) must
+ *   satisfy the documented requirements (see struct docs).
+ * - `error_string` must point to a buffer of at least `error_string_len` bytes
+ *   (or be null).
  */
 struct LlgTokenizer *llg_new_tokenizer(const struct LlgTokenizerInit *tok_init,
                                        char *error_string,
@@ -545,6 +598,9 @@ struct LlgTokenizer *llg_clone_tokenizer(const struct LlgTokenizer *tok);
  * Always returns the number of tokens that would be written to
  * `output_tokens` if `output_tokens_len` were large enough.
  *
+ * - If `bytes_len > 0`, `bytes` must point to `bytes_len` valid bytes.
+ * - If `output_tokens` is non-null, it must point to a buffer of at least
+ *   `output_tokens_len` elements.
  */
 size_t llg_tokenize_bytes(const struct LlgTokenizer *tok,
                           const uint8_t *bytes,
@@ -559,6 +615,9 @@ size_t llg_tokenize_bytes(const struct LlgTokenizer *tok,
  * Always returns the number of tokens that would be written to
  * `output_tokens` if `output_tokens_len` were large enough.
  *
+ * - If `bytes_len > 0`, `bytes` must point to `bytes_len` valid bytes.
+ * - If `output_tokens` is non-null, it must point to a buffer of at least
+ *   `output_tokens_len` elements.
  */
 size_t llg_tokenize_bytes_marker(const struct LlgTokenizer *tok,
                                  const uint8_t *bytes,
@@ -572,6 +631,9 @@ size_t llg_tokenize_bytes_marker(const struct LlgTokenizer *tok,
  * The output is NUL-terminated. Returns the number of bytes that would be
  * written to `output` if `output_len` were large enough.
  *
+ * - If `n_tokens > 0`, `tokens` must point to `n_tokens` valid `u32` values.
+ * - If `output` is non-null, it must point to a buffer of at least
+ *   `output_len` bytes.
  */
 size_t llg_stringify_tokens(const struct LlgTokenizer *tok,
                             const uint32_t *tokens,
@@ -587,6 +649,9 @@ size_t llg_stringify_tokens(const struct LlgTokenizer *tok,
  * `flags` is a combination of [`LLG_DECODE_NONE`], [`LLG_DECODE_INCLUDE_SPECIAL`],
  * and [`LLG_DECODE_VALID_UTF8`].
  *
+ * - If `n_tokens > 0`, `tokens` must point to `n_tokens` valid `u32` values.
+ * - If `output` is non-null, it must point to a buffer of at least
+ *   `output_len` bytes.
  */
 size_t llg_decode_tokens(const struct LlgTokenizer *tok,
                          const uint32_t *tokens,
@@ -599,13 +664,25 @@ size_t llg_decode_tokens(const struct LlgTokenizer *tok,
  * Free the tokenizer.
  *
  * Must **not** be called while there are still constraints using it.
+ * Passing null is a safe no-op.
  *
+ * - `tok` must be a pointer previously returned by [`llg_new_tokenizer()`] or
+ *   [`llg_new_tokenizer_v2()`] (or [`llg_clone_tokenizer()`]), or null.
+ * - `tok` must not have been freed already (double-free is UB).
+ * - No other thread may access `tok` concurrently with this call.
  */
 void llg_free_tokenizer(struct LlgTokenizer *tok);
 
 /**
  * Free the constraint.
  *
+ * Passing null is a safe no-op.
+ *
+ * - `cc` must be a pointer previously returned by one of the
+ *   `llg_new_constraint*` functions (or [`llg_clone_constraint()`]),
+ *   or null.
+ * - `cc` must not have been freed already (double-free is UB).
+ * - No other thread may access `cc` concurrently with this call.
  */
 void llg_free_constraint(struct LlgConstraint *cc);
 
@@ -620,6 +697,11 @@ const char *llg_flush_logs(struct LlgConstraint *cc);
 /**
  * Create a new stop-sequence controller.
  *
+ * - If `stop_tokens_len > 0`, `stop_tokens` must point to `stop_tokens_len`
+ *   valid `u32` values.
+ * - `stop_rx`, if non-null, must be a valid NUL-terminated UTF-8 C string.
+ * - `error_string`, if non-null, must point to a buffer of at least
+ *   `error_string_len` bytes.
  */
 struct LlgStopController *llg_new_stop_controller(const struct LlgTokenizer *tokenizer,
                                                   const uint32_t *stop_tokens,
@@ -652,6 +734,13 @@ struct LlgStopController *llg_clone_stop_controller(const struct LlgStopControll
 /**
  * Free the stop-sequence controller.
  *
+ * Passing null is a safe no-op.
+ *
+ * - `stop_ctrl` must be a pointer previously returned by
+ *   [`llg_new_stop_controller()`] (or [`llg_clone_stop_controller()`]),
+ *   or null.
+ * - `stop_ctrl` must not have been freed already.
+ * - No other thread may access `stop_ctrl` concurrently with this call.
  */
 void llg_free_stop_controller(struct LlgStopController *stop_ctrl);
 
@@ -677,6 +766,7 @@ void llg_free_stop_controller(struct LlgStopController *stop_ctrl);
  * - `"llguidance"` or `"guidance"` — data is a list of Lark or JSON schemas
  *   in JSON format
  *
+ * - `constraint_type` and `data` must be valid NUL-terminated UTF-8 C strings.
  */
 struct LlgMatcher *llg_new_matcher(const struct LlgConstraintInit *init,
                                    const char *constraint_type,
@@ -690,7 +780,10 @@ struct LlgMatcher *llg_new_matcher(const struct LlgConstraintInit *init,
  * −1 on error, and 1 on warning. The error message or warning is written to
  * `message`, which is `message_len` bytes long. It is always NUL-terminated.
  *
+ * - `constraint_type` and `data` must be valid NUL-terminated UTF-8 C strings.
+ * - `message` must point to a buffer of at least `message_len` bytes.
  */
+LLGUIDANCE_NODISCARD
 int32_t llg_validate_grammar(const struct LlgConstraintInit *init,
                              const char *constraint_type,
                              const char *data,
@@ -704,7 +797,10 @@ int32_t llg_validate_grammar(const struct LlgConstraintInit *init,
  * `mask_byte_len` must equal the value returned by
  * [`llg_matcher_get_mask_byte_size()`]. Returns 0 on success and −1 on error.
  *
+ * - `mask_dest` must point to a buffer of at least `mask_byte_len` bytes,
+ *   where `mask_byte_len` equals [`llg_matcher_get_mask_byte_size()`].
  */
+LLGUIDANCE_NODISCARD
 int32_t llg_matcher_compute_mask_into(struct LlgMatcher *matcher,
                                       uint32_t *mask_dest,
                                       size_t mask_byte_len);
@@ -715,7 +811,7 @@ int32_t llg_matcher_compute_mask_into(struct LlgMatcher *matcher,
  * Use [`llg_matcher_get_mask()`] to retrieve the result.
  * Returns 0 on success and −1 on error.
  */
-int32_t llg_matcher_compute_mask(struct LlgMatcher *matcher);
+LLGUIDANCE_NODISCARD int32_t llg_matcher_compute_mask(struct LlgMatcher *matcher);
 
 /**
  * Return a pointer to the mask computed by [`llg_matcher_compute_mask()`],
@@ -726,21 +822,23 @@ const uint32_t *llg_matcher_get_mask(struct LlgMatcher *matcher);
 /**
  * Return the size of the mask in bytes.
  */
-size_t llg_matcher_get_mask_byte_size(struct LlgMatcher *matcher);
+size_t llg_matcher_get_mask_byte_size(const struct LlgMatcher *matcher);
 
 /**
  * Advance the matcher by one token.
  *
  * Returns 0 on success and −1 on error.
  */
-int32_t llg_matcher_consume_token(struct LlgMatcher *matcher, uint32_t token);
+LLGUIDANCE_NODISCARD int32_t llg_matcher_consume_token(struct LlgMatcher *matcher, uint32_t token);
 
 /**
  * Advance the matcher by several tokens.
  *
  * Returns 0 on success and −1 on error.
  *
+ * - If `n_tokens > 0`, `tokens` must point to `n_tokens` valid `u32` values.
  */
+LLGUIDANCE_NODISCARD
 int32_t llg_matcher_consume_tokens(struct LlgMatcher *matcher,
                                    const uint32_t *tokens,
                                    size_t n_tokens);
@@ -751,18 +849,23 @@ int32_t llg_matcher_consume_tokens(struct LlgMatcher *matcher,
  * After it returns a non-null value, it will always return that same pointer
  * until the matcher is freed with [`llg_free_matcher()`] (at which point the
  * pointer becomes invalid).
- *
  */
 const char *llg_matcher_get_error(struct LlgMatcher *matcher);
 
 /**
  * Check whether the matcher is in an error state.
  */
-bool llg_matcher_is_error(struct LlgMatcher *matcher);
+bool llg_matcher_is_error(const struct LlgMatcher *matcher);
 
 /**
  * Free the matcher.
  *
+ * Passing null is a safe no-op.
+ *
+ * - `matcher` must be a pointer previously returned by [`llg_new_matcher()`]
+ *   (or [`llg_clone_matcher()`]), or null.
+ * - `matcher` must not have been freed already.
+ * - No other thread may access `matcher` concurrently with this call.
  */
 void llg_free_matcher(struct LlgMatcher *matcher);
 
@@ -771,7 +874,7 @@ void llg_free_matcher(struct LlgMatcher *matcher);
  *
  * Returns 0 on success and −1 on error.
  */
-int32_t llg_matcher_rollback(struct LlgMatcher *matcher, size_t num_tokens);
+LLGUIDANCE_NODISCARD int32_t llg_matcher_rollback(struct LlgMatcher *matcher, size_t num_tokens);
 
 /**
  * Reset the matcher to the initial state.
@@ -779,7 +882,7 @@ int32_t llg_matcher_rollback(struct LlgMatcher *matcher, size_t num_tokens);
  * A matcher in an error state cannot be reset.
  * Returns 0 on success and −1 on error.
  */
-int32_t llg_matcher_reset(struct LlgMatcher *matcher);
+LLGUIDANCE_NODISCARD int32_t llg_matcher_reset(struct LlgMatcher *matcher);
 
 /**
  * Check whether the grammar can fully accept the input so far.
@@ -798,7 +901,9 @@ bool llg_matcher_is_stopped(const struct LlgMatcher *matcher);
  *
  * Returns the number of tokens that can be consumed, or −1 on error.
  *
+ * - If `n_tokens > 0`, `tokens` must point to `n_tokens` valid `u32` values.
  */
+LLGUIDANCE_NODISCARD
 int32_t llg_matcher_validate_tokens(struct LlgMatcher *matcher,
                                     const uint32_t *tokens,
                                     size_t n_tokens);
@@ -809,7 +914,9 @@ int32_t llg_matcher_validate_tokens(struct LlgMatcher *matcher,
  * The result is written to `output`. Returns the number of tokens written
  * (which can be 0) or −1 on error.
  *
+ * - `output` must point to a buffer of at least `output_len` elements.
  */
+LLGUIDANCE_NODISCARD
 int32_t llg_matcher_compute_ff_tokens(struct LlgMatcher *matcher,
                                       uint32_t *output,
                                       size_t output_len);

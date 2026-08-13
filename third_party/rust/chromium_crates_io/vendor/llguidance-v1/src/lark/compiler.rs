@@ -6,9 +6,12 @@ use crate::{
 };
 use anyhow::{anyhow, bail, ensure, Result};
 use derivre::RegexAst;
+use serde::Deserialize;
 
 use crate::{
-    api::{GenGrammarOptions, GenOptions, GrammarId, LLGuidanceOptions, NodeProps, RegexExt},
+    api::{
+        GenGrammarOptions, GenOptions, GrammarId, LLGuidanceOptions, NodeProps, RegexExt, SkipSpec,
+    },
     json::json_merge,
     substring::{chunk_into_chars, chunk_into_words},
     GrammarBuilder, JsonCompileOptions, NodeRef,
@@ -22,6 +25,17 @@ use super::{
 };
 
 const DEBUG: bool = false;
+
+/// Options accepted by Lark's `%llguidance` directive. `ignore_once` is
+/// Lark-specific because it controls how `%ignore` expressions are compiled.
+#[derive(Debug, Default, Deserialize)]
+struct LarkLLGuidanceOptions {
+    #[serde(flatten)]
+    general: LLGuidanceOptions,
+    #[serde(default)]
+    ignore_once: bool,
+}
+
 macro_rules! debug {
     ($($arg:tt)*) => {
         if cfg!(feature = "logging") && DEBUG {
@@ -524,6 +538,17 @@ impl Compiler {
             bail!("max_tokens= is not supported for parametric rules");
         }
 
+        if rule.max_tokens == Some(0) {
+            // max_tokens=N caps a rule at N emitted tokens, so max_tokens=0
+            // forces zero emitted tokens: the rule can only match the empty
+            // string (epsilon). Compiling it as a token-limited lexeme (or
+            // subgrammar) instead produces broken runtime output -- the matcher
+            // emits an opening token and then never terminates. Treat it the
+            // same as an empty-string body `""`.
+            // See https://github.com/guidance-ai/llguidance/issues/236
+            return Ok(self.builder.string(""));
+        }
+
         let id = if let Some(stop) = rule.stop_like() {
             let is_suffix = rule.suffix.is_some();
             let is_empty = matches!(stop, Value::LiteralString(s, _) if s.is_empty());
@@ -634,7 +659,7 @@ impl Compiler {
         let ignore = std::mem::take(&mut grm.ignore);
         self.grammar = grm;
 
-        let opts: LLGuidanceOptions =
+        let opts: LarkLLGuidanceOptions =
             serde_json::from_value(self.grammar.llguidance_options.clone())
                 .map_err(|e| anyhow!("failed to parse %llguidance declaration: {}", e))?;
 
@@ -642,7 +667,13 @@ impl Compiler {
             .into_iter()
             .map(|exp| Ok(RegexAst::ExprRef(self.do_token_expansions(exp)?)))
             .collect::<Result<Vec<_>>>()?;
-        let id = self.builder.add_grammar(opts, RegexAst::Or(ignore))?;
+        let skip_regex = RegexAst::Or(ignore);
+        let skip = if opts.ignore_once {
+            SkipSpec::once(skip_regex)
+        } else {
+            SkipSpec::unbounded(skip_regex)
+        };
+        let id = self.builder.add_grammar_with_skip(opts.general, skip)?;
 
         let start = self.do_rule(start_name, None)?;
         self.builder.set_start_node(start);
@@ -714,7 +745,7 @@ impl Grammar {
                 // merge-in at the JSON level
                 json_merge(&mut self.llguidance_options, &json_value);
                 // but also check if it's valid format and all the right types
-                let _v: LLGuidanceOptions = serde_json::from_value(json_value)
+                let _v: LarkLLGuidanceOptions = serde_json::from_value(json_value)
                     .map_err(|e| anyhow!("failed to parse %llguidance declaration: {}", e))?;
             }
             Statement::OverrideRule(_) => {

@@ -3,7 +3,10 @@ use std::{
     rc::Rc,
 };
 
-use crate::{api::RegexExt, HashMap};
+use crate::{
+    api::{RegexExt, SkipSpec},
+    HashMap,
+};
 use anyhow::{anyhow, bail, Result};
 use derivre::RegexAst;
 use serde::de;
@@ -218,7 +221,7 @@ impl Token {
         // use JSON string syntax
         (
             Token::String,
-            r#""(\\([\"\\\/bfnrt]|u[a-fA-F0-9]{4})|[^\"\\\x00-\x1F\x7F])*"(i|)"#,
+            r#""(\\([\"\\\/bfnrt]|u[a-fA-F0-9]{4}|x[a-fA-F0-9]{2})|[^\"\\\x00-\x1F\x7F])*"(i|)"#,
         ),
         (Token::Regexp, r#"/(\\.|[^/\\])+/[imslux]*"#),
         (Token::Number, r#"[+-]?[0-9]+(\.[0-9]*)?([eE][+-]?[0-9]+)?"#),
@@ -233,7 +236,7 @@ pub fn lex_lark(input: &str) -> Result<Vec<Lexeme>> {
     let comment_or_ws = r"((#|//)[^\n]*)|[ \t]+".to_string();
     let mut spec = LexerSpec::new().unwrap();
     let cls = spec
-        .setup_lexeme_class(RegexAst::Regex(comment_or_ws))
+        .setup_lexeme_class_with_skip(SkipSpec::unbounded(RegexAst::Regex(comment_or_ws)))
         .unwrap();
     let mut lexeme_idx_to_token = HashMap::default();
     lexeme_idx_to_token.insert(spec.skip_id(cls), Token::SKIP);

@@ -246,6 +246,13 @@ fn test_lark_syntax_perc() {
         "#,
         "failed to parse %llguidance declaration",
     );
+    lark_err_test(
+        r#"
+            %llguidance { "ignore_once": "yes" }
+            start: "a" | "b"
+        "#,
+        "failed to parse %llguidance declaration",
+    );
 
     lark_ok(r#" start: %regex { "substring_words": "foo bar" } "#);
     lark_ok(r#" start: %regex { "substring_chars": "foo bar" } "#);
@@ -667,6 +674,207 @@ fn test_json_dw_pattern() {
             // we do not allow \uXXXX outside of \u0000-0x001F
             "\"\\u00A0\"",
         ],
+    );
+}
+
+/// Checks that printable Unicode escapes remain disabled unless explicitly enabled.
+#[test]
+fn test_json_general_unicode_escapes_are_opt_in() {
+    lark_str_test_many(
+        r#"start: %json { "type": "string" }"#,
+        &[r#""é""#, r#""\u001e""#],
+        &[r#""\u00e9""#],
+    );
+
+    lark_str_test_many(
+        r#"start: %json {
+            "type": "string",
+            "x-guidance": { "json_allow_general_unicode_escapes": true }
+        }"#,
+        &[
+            r#""""#,
+            r#""é""#,
+            r#""\u00e9""#,
+            r#""\u00E9""#,
+            r#""\u0041""#,
+            r#""\u001e""#,
+            r#""\u007f""#,
+            r#""\n""#,
+            r#""\"""#,
+            r#""\\""#,
+        ],
+        &[r#""\u00g9""#, r#""\u00e""#, "\"\n\""],
+    );
+}
+
+/// Ensures escaped surrogate pairs represent one scalar and isolated surrogates fail.
+#[test]
+fn test_json_general_unicode_escapes_surrogate_pairs() {
+    lark_str_test_many(
+        r#"start: %json {
+            "type": "string",
+            "x-guidance": { "json_allow_general_unicode_escapes": true }
+        }"#,
+        &[
+            r#""😀""#,
+            r#""\uD83D\uDE00""#,
+            r#""\ud83d\ude00""#,
+            r#""\uD800\uDC00""#,
+            r#""\uDBFF\uDFFF""#,
+            r#""\uD7FF""#,
+            r#""\uE000""#,
+        ],
+        &[
+            r#""\uD800""#,
+            r#""\uDBFF""#,
+            r#""\uDC00""#,
+            r#""\uDFFF""#,
+            r#""\uD83D\u0041""#,
+            r#""\uDE00\uD83D""#,
+            r#""\uD800\uD800""#,
+        ],
+    );
+}
+
+/// Counts escaped BMP characters and complete surrogate pairs as individual characters.
+#[test]
+fn test_json_general_unicode_escapes_respect_length_limits() {
+    lark_str_test_many(
+        r#"start: %json {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1,
+            "x-guidance": { "json_allow_general_unicode_escapes": true }
+        }"#,
+        &[
+            r#""é""#,
+            r#""\u00e9""#,
+            r#""\u001e""#,
+            r#""😀""#,
+            r#""\uD83D\uDE00""#,
+            r#""\n""#,
+        ],
+        &[
+            r#""""#,
+            r#""\u00e9x""#,
+            r#""\uD83D\uDE00x""#,
+            r#""\u00e9\u001e""#,
+        ],
+    );
+
+    lark_str_test_many(
+        r#"start: %json {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2,
+            "x-guidance": { "json_allow_general_unicode_escapes": true }
+        }"#,
+        &[r#""\uD83D\uDE00\u00e9""#, r#""😀\u001e""#],
+        &[r#""\uD83D\uDE00""#, r#""\u00e9xy""#],
+    );
+}
+
+/// Applies general Unicode escapes to unconstrained JSON values and object keys.
+#[test]
+fn test_json_general_unicode_escapes_in_unconstrained_values() {
+    lark_str_test_many(
+        r#"start: %json {
+            "type": "object",
+            "x-guidance": { "json_allow_general_unicode_escapes": true }
+        }"#,
+        &[
+            r#"{"value":"\u00e9"}"#,
+            r#"{"value":"\uD83D\uDE00"}"#,
+            r#"{"\u00e9":"value"}"#,
+            r#"{"\uD83D\uDE00":"value"}"#,
+            r#"{"nested":{"value":["\u00e9","\u001e"]}}"#,
+        ],
+        &[r#"{"\uD83D":"value"}"#, r#"{"value":"\uD83D"}"#],
+    );
+
+    lark_str_test_many(
+        r#"start: %json {
+            "x-guidance": { "json_allow_general_unicode_escapes": true }
+        }"#,
+        &[r#""\u00e9""#, r#"["\uD83D\uDE00"]"#],
+        &[r#""\uD800""#],
+    );
+}
+
+/// Validates Unicode scalar escapes in additional-property keys alongside named properties.
+#[test]
+fn test_json_additional_property_keys_validate_unicode_scalars() {
+    lark_str_test_many(
+        r#"start: %json {
+            "type": "object",
+            "properties": { "known": { "type": "integer" } },
+            "additionalProperties": { "type": "integer" }
+        }"#,
+        &[
+            r#"{"known":0,"\u00e9":1}"#,
+            r#"{"\uD83D\uDE00":1}"#,
+            r#"{"\u001e":1}"#,
+        ],
+        &[
+            r#"{"\uD83D":1}"#,
+            r#"{"\uDE00":1}"#,
+            r#"{"\uD83D\u0041":1}"#,
+        ],
+    );
+}
+
+/// Keeps Unicode and short escapes subject to the configured allowed-escape policy.
+#[test]
+fn test_json_general_unicode_escapes_respect_allowed_escapes() {
+    lark_str_test_many(
+        r#"start: %json {
+            "type": "string",
+            "x-guidance": {
+                "json_allow_general_unicode_escapes": true,
+                "json_allowed_escapes": "nt"
+            }
+        }"#,
+        &[r#""é""#, r#""\n""#, r#""\t""#],
+        &[r#""\b""#, r#""\u001e""#, r#""\u00e9""#],
+    );
+
+    lark_str_test_many(
+        r#"start: %json {
+            "type": "object",
+            "properties": { "known": { "type": "integer" } },
+            "additionalProperties": { "type": "integer" },
+            "x-guidance": { "json_allowed_escapes": "n" }
+        }"#,
+        &[r#"{"known":0}"#, r#"{"é":1}"#, r#"{"\n":1}"#],
+        &[
+            r#"{"\t":1}"#,
+            r#"{"\u001e":1}"#,
+            r#"{"\u00e9":1}"#,
+            r#"{"\/":1}"#,
+        ],
+    );
+}
+
+/// Leaves regex-constrained strings on the existing decoded-pattern matching path.
+#[test]
+fn test_json_general_unicode_escapes_do_not_change_regex_constraints() {
+    lark_str_test_many(
+        r#"start: %json {
+            "type": "string",
+            "pattern": "^.$",
+            "x-guidance": { "json_allow_general_unicode_escapes": true }
+        }"#,
+        &[r#""é""#, r#""\u001e""#],
+        &[r#""\u00e9""#, r#""\uD83D\uDE00""#],
+    );
+
+    lark_str_test_many(
+        r#"start: %json {
+            "const": "é",
+            "x-guidance": { "json_allow_general_unicode_escapes": true }
+        }"#,
+        &[r#""é""#],
+        &[r#""\u00e9""#],
     );
 }
 
@@ -1859,4 +2067,21 @@ fn test_parametric_long() {
         &[&s],
         &[&s2],
     );
+}
+
+#[test]
+fn test_lark_hex_escape() {
+    // \xHH escapes in string literals should be supported (issue #54).
+    lark_str_test_many(r#"start: "a\x00b""#, &["a\x00b"], &["ab", "a\x01b"]);
+    lark_str_test_many(r#"start: "\x41\x42""#, &["AB"], &["ab", "A", "ABC"]);
+    // \\x41 is an escaped backslash + literal x41, NOT the hex escape for "A".
+    lark_str_test_many(r#"start: "\\x41""#, &[r"\x41"], &["A", "x41"]);
+    // upper/lowercase hex digits and the 0x7F-0xFF range decode correctly.
+    lark_str_test_many(
+        r#"start: "\x7f\xFf""#,
+        &["\x7f\u{00ff}"],
+        &["\u{00ff}\x7f", "ab"],
+    );
+    // a malformed \xZZ (non-hex digits) must be rejected at grammar-compile time.
+    lark_err_test(r#"start: "\xZZ""#, "lexer error");
 }

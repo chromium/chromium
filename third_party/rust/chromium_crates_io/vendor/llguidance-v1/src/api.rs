@@ -31,6 +31,37 @@ pub enum GrammarInit {
 /// cbindgen:ignore
 pub const DEFAULT_CONTEXTUAL: bool = true;
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SkipRepetition {
+    #[default]
+    Unbounded,
+    Once,
+}
+
+/// The regex and repetition behavior of a compiled skip lexeme.
+#[derive(Debug, Clone)]
+pub struct SkipSpec {
+    /// Regex matched between grammar lexemes.
+    pub regex: RegexAst,
+    /// Whether the regex can be matched repeatedly at one grammar position.
+    pub repetition: SkipRepetition,
+}
+
+impl SkipSpec {
+    pub fn new(regex: RegexAst, repetition: SkipRepetition) -> Self {
+        Self { regex, repetition }
+    }
+
+    pub fn unbounded(regex: RegexAst) -> Self {
+        Self::new(regex, SkipRepetition::Unbounded)
+    }
+
+    pub fn once(regex: RegexAst) -> Self {
+        Self::new(regex, SkipRepetition::Once)
+    }
+}
+
 /// In lark syntax, this can be specified as JSON object after '%llguidance' declaration in the grammar.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct LLGuidanceOptions {

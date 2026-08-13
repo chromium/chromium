@@ -364,3 +364,24 @@ fn whitespace_flexible_many_formats(
     );
     lark_str_test(&lark, true, &target_str, true);
 }
+
+#[rstest]
+#[case::compact(r#"{"a":1}"#, true)]
+#[case::within_bound(r#"{  "a"  :  1  }"#, true)]
+#[case::after_open_over_bound(r#"{   "a":1}"#, false)]
+#[case::before_close_over_bound(r#"{"a":1   }"#, false)]
+fn whitespace_pattern_bounds_entire_gap(#[case] input: &str, #[case] should_succeed: bool) {
+    let schema = json!({
+        "type": "object",
+        "properties": {
+            "a": { "type": "integer" }
+        },
+        "required": ["a"],
+        "additionalProperties": false,
+        "x-guidance": {
+            "whitespace_pattern": r"\s{1,2}"
+        }
+    });
+    let lark = format!("start: %json {schema}");
+    lark_str_test(&lark, should_succeed, input, true);
+}

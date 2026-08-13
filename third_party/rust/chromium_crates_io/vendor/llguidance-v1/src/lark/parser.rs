@@ -506,14 +506,43 @@ impl Parser {
         }
     }
 
+    /// Rewrite `\xHH` escapes (allowed by the lark/Python string lexer above, but not by
+    /// `serde_json`) into the equivalent `\u00HH`. All other escapes are already valid JSON and
+    /// pass through unchanged. The lexer guarantees a `\x` is always followed by two hex digits.
+    fn rewrite_hex_escapes(s: &str) -> String {
+        let mut out = String::with_capacity(s.len());
+        let mut chars = s.chars();
+        while let Some(c) = chars.next() {
+            if c != '\\' {
+                out.push(c);
+                continue;
+            }
+            match chars.next() {
+                Some('x') => {
+                    out.push_str("\\u00");
+                    out.extend(chars.by_ref().take(2));
+                }
+                Some(other) => {
+                    out.push('\\');
+                    out.push(other);
+                }
+                None => out.push('\\'),
+            }
+        }
+        out
+    }
+
     fn parse_string(&self, s: &str) -> Result<(String, String)> {
         let (inner, flags) = if let Some(s) = s.strip_suffix('i') {
             (s, "i")
         } else {
             (s, "")
         };
-        let inner =
-            serde_json::from_str(inner).map_err(|e| anyhow!("error parsing string: {e}"))?;
+        // serde_json does not support \xHH escapes that lark/python string literals allow,
+        // so rewrite them to the equivalent \u00HH before JSON-decoding.
+        let inner_json = Self::rewrite_hex_escapes(inner);
+        let inner: String =
+            serde_json::from_str(&inner_json).map_err(|e| anyhow!("error parsing string: {e}"))?;
         Ok((inner, flags.to_string()))
     }
 
