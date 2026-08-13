@@ -7,16 +7,23 @@
 
 #import <UIKit/UIKit.h>
 
+@class SceneLayoutState;
+
 @class LayoutGuideCenter;
 
 // A view controller managing the actor overlay view.
 @interface ActorOverlayViewController : UIViewController
 
+// The layout state observed by this view controller.
+@property(nonatomic, weak) SceneLayoutState* layoutState;
+
 // Initializes the view controller using `browserCenter` to anchor subviews to
-// browser layout guides and `overlayColor` as the base scrim color.
+// browser layout guides, `scrimColor` as the base scrim color, and `glowColor`
+// as the base glow color.
 - (instancetype)initWithBrowserLayoutGuideCenter:
                     (LayoutGuideCenter*)browserCenter
-                                    overlayColor:(UIColor*)overlayColor
+                                      scrimColor:(UIColor*)scrimColor
+                                       glowColor:(UIColor*)glowColor
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

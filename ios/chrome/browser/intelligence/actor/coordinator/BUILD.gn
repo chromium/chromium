@@ -12,6 +12,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/actor/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/common/ui/colors",
   ]
@@ -30,7 +32,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
-    "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
 }

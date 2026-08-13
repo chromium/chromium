@@ -7,14 +7,18 @@
 #import "base/check.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actor_overlay_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @implementation ActorOverlayCoordinator {
   // The view controller managing the overlay UI.
   ActorOverlayViewController* _viewController;
-  // The base color of the overlay UI components.
-  UIColor* _overlayColor;
+  // The base color of the scrim.
+  UIColor* _scrimColor;
+  // The base color of the glow.
+  UIColor* _glowColor;
 }
 
 #pragma mark - ActorOverlayCoordinator
@@ -22,11 +26,14 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   webState:(web::WebState*)webState
-                              overlayColor:(UIColor*)overlayColor {
+                                scrimColor:(UIColor*)scrimColor
+                                 glowColor:(UIColor*)glowColor {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    CHECK(overlayColor);
-    _overlayColor = overlayColor;
+    CHECK(scrimColor);
+    CHECK(glowColor);
+    _scrimColor = scrimColor;
+    _glowColor = glowColor;
   }
   return self;
 }
@@ -37,7 +44,8 @@
   return [self initWithBaseViewController:viewController
                                   browser:browser
                                  webState:webState
-                             overlayColor:[UIColor colorNamed:kBlueColor]];
+                               scrimColor:[UIColor colorNamed:kBlueColor]
+                                glowColor:[UIColor colorNamed:kBlue900Color]];
 }
 
 #pragma mark - ChromeCoordinator
@@ -49,10 +57,14 @@
 
   Browser* browser = self.browser;
   LayoutGuideCenter* browserCenter = LayoutGuideCenterForBrowser(browser);
+  SceneLayoutState* layoutState =
+      browser ? browser->GetSceneState().layoutState : nil;
 
   _viewController = [[ActorOverlayViewController alloc]
       initWithBrowserLayoutGuideCenter:browserCenter
-                          overlayColor:_overlayColor];
+                            scrimColor:_scrimColor
+                             glowColor:_glowColor];
+  _viewController.layoutState = layoutState;
 
   UIViewController* baseViewController = self.baseViewController;
   [baseViewController addChildViewController:_viewController];
@@ -61,6 +73,7 @@
 }
 
 - (void)stop {
+  _viewController.layoutState = nil;
   [_viewController willMoveToParentViewController:nil];
   [_viewController.view removeFromSuperview];
   [_viewController removeFromParentViewController];

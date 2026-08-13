@@ -21,22 +21,24 @@ class Browser;
 @interface ActorOverlayCoordinator : ChromeCoordinator
 
 // Initializes the coordinator with a base view controller, a browser instance,
-// the web state undergoing actuation, and the overlay color.
+// the web state undergoing actuation, the scrim color, and the glow color.
 //
 // `viewController` is the base view controller used to present the actuation
 // UI.
 // `browser` is the browser instance containing the tab.
 // `webState` is the web state of the tab being actuated.
-// `overlayColor` is the color to use for the overlay.
+// `scrimColor` is the color to use for the scrim view.
+// `glowColor` is the color to use for the border glow view.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   webState:(web::WebState*)webState
-                              overlayColor:(UIColor*)overlayColor
+                                scrimColor:(UIColor*)scrimColor
+                                 glowColor:(UIColor*)glowColor
     NS_DESIGNATED_INITIALIZER;
 
 // Initializes the coordinator with a base `viewController`, a `browser`
-// instance, and the `webState` undergoing actuation, defaulting `overlayColor`
-// to `kBlueColor`.
+// instance, and the `webState` undergoing actuation, defaulting the scrim and
+// glow colors to blue.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   webState:(web::WebState*)webState;
