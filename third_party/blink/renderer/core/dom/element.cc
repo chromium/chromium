@@ -1013,7 +1013,8 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
       if (canvas) {
         break;
       }
-      if (const Element* parent = element->ParentOrShadowHostElement()) {
+      if (const Element* parent =
+              FlatTreeTraversal::ParentElementSkippingSlots(*element)) {
         element = parent;
       } else if (element->isConnected()) {
         element = element->GetDocument().LocalOwner();
