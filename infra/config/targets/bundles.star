@@ -6716,6 +6716,11 @@ targets.bundle(
             "updater-default-pool",
         ],
         "updater_tests_system": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
             "updater-tests-pool",
         ],
     },

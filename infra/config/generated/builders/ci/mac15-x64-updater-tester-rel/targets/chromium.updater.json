@@ -49,7 +49,8 @@
             "os": "Mac-15",
             "pool": "chromium.tests.updater"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "updater_tests_system",
         "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
