@@ -336,7 +336,7 @@ class TabStrip : public views::View,
   views::View* GetViewForDrop() override;
 
   void DisableTabStripEditingForTesting();
-  TabHoverCardController* hover_card_controller() {
+  TabHoverCardController* hover_card_controller_for_testing() {
     return hover_card_controller_.get();
   }
 

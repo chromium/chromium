@@ -586,11 +586,6 @@ views::View* HorizontalTabStripRegionViewOld::GetTabStripView() {
   return tab_strip_;
 }
 
-TabHoverCardController*
-HorizontalTabStripRegionViewOld::GetHoverCardController() {
-  return tab_strip_ ? tab_strip_->hover_card_controller() : nullptr;
-}
-
 std::unique_ptr<ExpandOnHoverLock>
 HorizontalTabStripRegionViewOld::GetExpandOnHoverLock(
     ExpandOnHoverLockType lock_type) {

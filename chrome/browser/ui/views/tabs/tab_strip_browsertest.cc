@@ -13,7 +13,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -32,12 +31,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/data_sharing/public/features.h"
-#include "components/prefs/pref_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -1047,8 +1044,6 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
       data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 
   // AccessibleName update with tab resource usage update
-  g_browser_process->local_state()->SetBoolean(
-      prefs::kHoverCardMemoryUsageEnabled, true);
   tab_data = tab_strip()->tab_at(new_index)->data();
   auto tab_resource_usage = base::MakeRefCounted<TabResourceUsage>();
   tab_resource_usage->SetMemoryUsage(base::ByteSize(100));
@@ -1094,20 +1089,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleNameUpdatesOnTabFocus) {
   std::u16string updated_name =
       data.GetString16Attribute(ax::mojom::StringAttribute::kName);
 
-  // The updated name should not contain the memory usage because the hover card
-  // doesn't show tab memory usage by default.
+  // The updated name should contain the memory usage.
   std::u16string expected_memory_string = ui::FormatBytes(memory_usage);
-  EXPECT_EQ(std::u16string::npos, updated_name.find(expected_memory_string));
-
-  // Enabling the hover card memory usage pref and refreshing the accessible
-  // name should include the tab memory usage value in the accessible name.
-  g_browser_process->local_state()->SetBoolean(
-      prefs::kHoverCardMemoryUsageEnabled, true);
-  tab->UpdateAccessibleName();
-
-  data = ui::AXNodeData();
-  tab->GetViewAccessibility().GetAccessibleNodeData(&data);
-  updated_name = data.GetString16Attribute(ax::mojom::StringAttribute::kName);
   EXPECT_NE(std::u16string::npos, updated_name.find(expected_memory_string));
 }
 
