@@ -1898,6 +1898,56 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
+    public void testTabSearchButtonFadeAndMargins_Ltr() {
+        // Setup LTR with Tab Search Button enabled
+        initializeTest(/* rtl= */ false, /* incognito= */ false, /* tabIndex= */ 0);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify mReservedStartMargin is 38.f (BUTTON_TOUCH_TARGET_SIZE_DP (48) - 10.f)
+        assertEquals(
+                "Reserved start margin should be 38.f",
+                38.f,
+                mStripLayoutHelper.getReservedStartMarginForTesting(),
+                EPSILON);
+
+        // Verify left fade opaque width: BUTTON_TOUCH_TARGET_SIZE_DP (48) + mButtonSideFadePadding
+        // (8)
+        assertEquals(
+                "Left fade opaque width should be 56.f",
+                56.f,
+                mStripLayoutHelper.getLeftFadeOpaqueWidth(),
+                EPSILON);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
+    public void testTabSearchButtonFadeAndMargins_Rtl() {
+        // Setup RTL with Tab Search Button enabled
+        initializeTest(/* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 0);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify mReservedStartMargin is 38.f (BUTTON_TOUCH_TARGET_SIZE_DP (48) - 10.f)
+        assertEquals(
+                "Reserved start margin should be 38.f",
+                38.f,
+                mStripLayoutHelper.getReservedStartMarginForTesting(),
+                EPSILON);
+
+        // Verify right fade opaque width: BUTTON_TOUCH_TARGET_SIZE_DP (48) + mButtonSideFadePadding
+        // (8)
+        assertEquals(
+                "Right fade opaque width should be 56.f",
+                56.f,
+                mStripLayoutHelper.getRightFadeOpaqueWidth(),
+                EPSILON);
+    }
+
+    @Test
     public void testCloseButtonHoverHighlightProperties() {
         // Setup
         initializeTest(false, false, 2);
