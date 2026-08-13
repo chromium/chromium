@@ -216,6 +216,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_SETTINGS_CONTAINMENT = "AndroidSettingsContainment";
     public static final String ANDROID_SETTINGS_URL = "AndroidSettingsUrl";
     public static final String ANDROID_SETUP_LIST = "AndroidSetupList";
+    public static final String ANDROID_STARTUP_IMPROVEMENTS = "AndroidStartupImprovements";
     public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
     public static final String ANDROID_TABSTRIP_STARTUP_CAPTURE_BUG_FIX =
             "AndroidTabstripStartupCaptureBugFix";
@@ -848,6 +849,11 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidSetupList =
             newCachedFlag(
                     ANDROID_SETUP_LIST, /* defaultValue= */ true, /* defaultValueInTests= */ true);
+    public static final CachedFlag sAndroidStartupImprovements =
+            newCachedFlag(
+                    ANDROID_STARTUP_IMPROVEMENTS,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidSurfaceColorUpdate =
             newCachedFlag(
                     ANDROID_SURFACE_COLOR_UPDATE,
@@ -1372,6 +1378,7 @@ public abstract class ChromeFeatureList {
                     sAndroidProgressBarVisualUpdate,
                     sAndroidSettingsContainment,
                     sAndroidSetupList,
+                    sAndroidStartupImprovements,
                     sAndroidSurfaceColorUpdate,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAndroidTabSkipSaveTabsKillswitch,

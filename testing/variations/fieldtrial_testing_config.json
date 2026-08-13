@@ -1382,6 +1382,21 @@
             ]
         }
     ],
+    "AndroidStartupImprovements": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidStartupImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidSurfaceControlPartialDamage": [
         {
             "platforms": [
