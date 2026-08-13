@@ -258,6 +258,16 @@ WinHttpUrlFetcher::WinHttpUrlFetcher(const GURL& url)
     LOGFN(ERROR) << "WinHttpOpen hr=" << putHR(hr);
   }
   session_.Set(session);
+
+  if (session_.is_valid()) {
+    DWORD autologon_policy = WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH;
+    if (!::WinHttpSetOption(session_.get(), WINHTTP_OPTION_AUTOLOGON_POLICY,
+                            &autologon_policy, sizeof(autologon_policy))) {
+      HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+      LOGFN(ERROR) << "WinHttpSetOption WINHTTP_OPTION_AUTOLOGON_POLICY hr="
+                   << putHR(hr);
+    }
+  }
 }
 
 WinHttpUrlFetcher::WinHttpUrlFetcher() = default;
