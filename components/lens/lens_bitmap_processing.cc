@@ -14,6 +14,7 @@
 #include "base/numerics/safe_math.h"
 #include "build/build_config.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
+#include "components/lens/lens_features.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -162,7 +163,7 @@ ImageData DownscaleAndEncodeBitmap(
       base::MakeRefCounted<base::RefCountedBytes>();
 
   auto resized_bitmap = DownscaleBitmap(image, client_logs, image_options);
-  if (image_options.enable_webp_encoding
+  if (base::FeatureList::IsEnabled(features::kLensEnableWebpForImageUpload)
           ? EncodeImageMaybeWithTransparency(resized_bitmap,
                                              image_options.compression_quality,
                                              data, client_logs)

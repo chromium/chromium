@@ -186,6 +186,10 @@ BASE_DECLARE_FEATURE(kLensOverlayNonBlockingPrivacyNotice);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayNonBlockingPrivacyNoticeForImageSearch);
 
+// Enables WebP encoding unconditionally.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensEnableWebpForImageUpload);
+
 // Enables using separate request ids for page contents vs page viewport
 // uploads.
 // TODO(crbug.com/479292553): Make this flag apply to the legacy CSB flow.

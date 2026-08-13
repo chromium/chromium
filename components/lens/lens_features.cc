@@ -127,6 +127,10 @@ BASE_FEATURE(kLensOverlayNonBlockingPrivacyNotice,
 BASE_FEATURE(kLensOverlayNonBlockingPrivacyNoticeForImageSearch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensEnableWebpForImageUpload,
+             "LensEnableWebpForImageUpload",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensUseSeparateRequestIdForViewportImages,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

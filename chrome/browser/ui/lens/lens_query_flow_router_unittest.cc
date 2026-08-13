@@ -135,8 +135,7 @@ MATCHER_P(ImageEncodingOptionsMatches,
     return false;
   }
   const auto& actual = arg.value();
-  return actual.enable_webp_encoding == expected.enable_webp_encoding &&
-         actual.max_size == expected.max_size &&
+  return actual.max_size == expected.max_size &&
          actual.max_height == expected.max_height &&
          actual.max_width == expected.max_width &&
          actual.compression_quality == expected.compression_quality;
@@ -1080,7 +1079,6 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   auto image_upload_config =
       ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
   lens::ImageEncodingOptions expected_image_options{
-      .enable_webp_encoding = image_upload_config.enable_webp_encoding(),
       .max_size = image_upload_config.downscale_max_image_size(),
       .max_height = image_upload_config.downscale_max_image_height(),
       .max_width = image_upload_config.downscale_max_image_width(),
@@ -1137,7 +1135,6 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   auto image_upload_config =
       ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
   lens::ImageEncodingOptions expected_image_options{
-      .enable_webp_encoding = image_upload_config.enable_webp_encoding(),
       .max_size = image_upload_config.downscale_max_image_size(),
       .max_height = image_upload_config.downscale_max_image_height(),
       .max_width = image_upload_config.downscale_max_image_width(),
