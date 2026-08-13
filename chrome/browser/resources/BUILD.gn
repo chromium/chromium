@@ -239,6 +239,29 @@ if (enable_extensions_core) {
   grit("component_extension_resources") {
     source = "component_extension_resources.grd"
 
+    inputs = [
+      "glic/extension/manifest.json",
+      "network_speech_synthesis/mv3/audio.html",
+      "network_speech_synthesis/mv3/audio.js",
+      "network_speech_synthesis/mv3/service_worker.js",
+      "network_speech_synthesis/mv3/tts_extension.js",
+      "network_speech_synthesis/tts_extension.js",
+      "reading_mode_gdocs_helper/content.js",
+      "reading_mode_gdocs_helper/gdocs_script.js",
+      "$root_gen_dir/chrome/browser/resources/glic/extension/tsc/background.js",
+    ]
+
+    if (is_chrome_branded || enable_hangout_services_extension) {
+      inputs += [
+        "hangout_services/background.html",
+        "hangout_services/thunk.js",
+      ]
+    }
+
+    if (is_mac) {
+      inputs += [ "screen_sharing/toggle_animation.json" ]
+    }
+
     defines = chrome_grit_defines
     if (enable_hangout_services_extension) {
       defines += [ "enable_hangout_services_extension" ]
@@ -249,6 +272,53 @@ if (enable_extensions_core) {
     deps = [ "//chrome/browser/resources/glic/extension:build_ts" ]
 
     if (is_chromeos) {
+      inputs += [
+        "chromeos/arc_input_overlay/button_placement_mode_nudge.json",
+        "chromeos/arc_input_overlay/key_edit_nudge.json",
+        "chromeos/arc_input_overlay/onboarding_illustration_dark.json",
+        "chromeos/arc_input_overlay/onboarding_illustration_light.json",
+        "chromeos/arc_support/arc_optin_focus_manager.js",
+        "chromeos/arc_support/background.js",
+        "chromeos/arc_support/bubble.css",
+        "chromeos/arc_support/bubble.js",
+        "chromeos/arc_support/bubble_button.css",
+        "chromeos/arc_support/bubble_button.js",
+        "chromeos/arc_support/controlled_indicator.css",
+        "chromeos/arc_support/controlled_indicator.js",
+        "chromeos/arc_support/cr_overlay.css",
+        "chromeos/arc_support/event_tracker.js",
+        "chromeos/arc_support/focus_manager.js",
+        "chromeos/arc_support/i18n_template_no_process.js",
+        "chromeos/arc_support/icon/192.png",
+        "chromeos/arc_support/icon/32.png",
+        "chromeos/arc_support/icon/playstore.svg",
+        "chromeos/arc_support/images/error_image.png",
+        "chromeos/arc_support/images/header.png",
+        "chromeos/arc_support/layout_style.css",
+        "chromeos/arc_support/main.css",
+        "chromeos/arc_support/main.html",
+        "chromeos/arc_support/main.js",
+        "chromeos/arc_support/overlay.css",
+        "chromeos/arc_support/overlay.js",
+        "chromeos/arc_support/playstore.css",
+        "chromeos/arc_support/playstore.js",
+        "chromeos/arc_support/progressbar.css",
+        "chromeos/arc_support/progressbar.js",
+        "chromeos/arc_support/ui.js",
+        "chromeos/desk_api/templates_icon.png",
+        "$root_gen_dir/chrome/browser/resources/chromeos/desk_api/desk_api_bundle.js",
+        "//ui/resources/default_100_percent/close_2.png",
+        "//ui/resources/default_100_percent/close_2_hover.png",
+        "//ui/resources/default_100_percent/close_2_pressed.png",
+        "//ui/resources/default_200_percent/close_2.png",
+        "//ui/resources/default_200_percent/close_2_hover.png",
+        "//ui/resources/default_200_percent/close_2_pressed.png",
+        "//ui/webui/resources/images/account_child_invert.svg",
+        "//ui/webui/resources/images/account_circle.svg",
+        "//ui/webui/resources/images/business.svg",
+        "//ui/webui/resources/images/extension.svg",
+        "//ui/webui/resources/images/group.svg",
+      ]
       deps += [
         "chromeos/accessibility/braille_ime:build_ts",
         "chromeos/desk_api:generate_desk_api_bundle",
