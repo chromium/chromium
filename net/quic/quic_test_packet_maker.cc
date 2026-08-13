@@ -382,8 +382,8 @@ QuicTestPacketMaker::MakeRetransmissionPacket(uint64_t original_packet_number,
 }
 
 std::unique_ptr<quic::QuicEncryptedPacket>
-QuicTestPacketMaker::MakeStatelessResetPacket() {
-  auto connection_id = quic::test::TestConnectionId();
+QuicTestPacketMaker::MakeStatelessResetPacket(
+    quic::QuicConnectionId& connection_id) {
   return quic::QuicFramer::BuildIetfStatelessResetPacket(
       connection_id, quic::QuicFramer::GetMinStatelessResetPacketLength() + 1,
       quic::QuicUtils::GenerateStatelessResetToken(connection_id));
