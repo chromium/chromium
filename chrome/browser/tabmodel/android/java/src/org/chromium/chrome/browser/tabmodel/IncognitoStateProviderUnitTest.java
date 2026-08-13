@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -112,5 +113,53 @@ public class IncognitoStateProviderUnitTest {
 
         mProvider.setIncognitoStateForTesting(true);
         verify(mObserver1, never()).onIncognitoStateChanged(true);
+    }
+
+    @Test
+    public void testShortCircuitDuplicateEmissions() {
+        mProvider.addIncognitoStateObserverAndTrigger(mObserver1);
+        verify(mObserver1).onIncognitoStateChanged(false);
+
+        // Duplicate emission to false should be short-circuited
+        mProvider.setIncognitoStateForTesting(false);
+        verify(mObserver1, times(1)).onIncognitoStateChanged(false);
+
+        // Toggle to true
+        mProvider.setIncognitoStateForTesting(true);
+        verify(mObserver1).onIncognitoStateChanged(true);
+
+        // Duplicate call to true should be short-circuited
+        mProvider.setIncognitoStateForTesting(true);
+        verify(mObserver1, times(1)).onIncognitoStateChanged(true);
+    }
+
+    @Test
+    public void testDestroyResetsStateTracking() {
+        mProvider.addIncognitoStateObserverAndTrigger(mObserver1);
+        mProvider.setIncognitoStateForTesting(true);
+        verify(mObserver1).onIncognitoStateChanged(true);
+
+        mProvider.destroy();
+        mProvider.addIncognitoStateObserverAndTrigger(mObserver2);
+
+        // Re-emitting true after destroy should notify new observers
+        mProvider.setIncognitoStateForTesting(true);
+        verify(mObserver2).onIncognitoStateChanged(true);
+    }
+
+    @Test
+    public void testShortCircuitWithTabModelSelector() {
+        mProvider.setTabModelSelector(mTabModelSelector);
+        mProvider.addIncognitoStateObserverAndTrigger(mObserver1);
+        verify(mObserver1).onIncognitoStateChanged(false);
+
+        // Setting standard tab model (incognito = false) should short-circuit since state was
+        // already false
+        mTabModelSupplier.set(mStandardTabModel);
+        verify(mObserver1, times(1)).onIncognitoStateChanged(false);
+
+        // Transitioning to incognito tab model (incognito = true) should notify
+        mTabModelSupplier.set(mIncognitoTabModel);
+        verify(mObserver1).onIncognitoStateChanged(true);
     }
 }
