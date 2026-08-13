@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/widget/conversions.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui_android.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -264,6 +265,22 @@ void GlicSidePanelUi::SidePanelStateChanged(
 
 GlicSidePanelCoordinator* GlicSidePanelUi::GetGlicSidePanelCoordinator() const {
   return GlicSidePanelCoordinator::GetForTab(tab_.get());
+}
+
+void GlicSidePanelUi::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), nullptr);
+}
+
+bool GlicSidePanelUi::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& security_origin,
+    blink::mojom::MediaStreamType type) {
+  return MediaCaptureDevicesDispatcher::GetInstance()
+      ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
 }
 
 void GlicSidePanelUi::RunFileChooser(

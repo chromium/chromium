@@ -42,16 +42,8 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementBrowserTest,
   ExecuteJsTest();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO: Android does not support microphone input.
-#define MAYBE_testMicrophonePermissionTestAllow \
-  DISABLED_testMicrophonePermissionTestAllow
-#else
-#define MAYBE_testMicrophonePermissionTestAllow \
-  testMicrophonePermissionTestAllow
-#endif
 IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementBrowserTest,
-                       MAYBE_testMicrophonePermissionTestAllow) {
+                       testMicrophonePermissionTestAllow) {
   GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, true);
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();

@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "content/public/browser/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 #include "ui/base/accelerators/accelerator.h"
 
 class BrowserWindowInterface;
@@ -89,6 +91,13 @@ class GlicSidePanelUi
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override {}
 
   // web_contents_delegate_android::WebContentsDelegateAndroid:
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
+                                  const url::Origin& security_origin,
+                                  blink::mojom::MediaStreamType type) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
