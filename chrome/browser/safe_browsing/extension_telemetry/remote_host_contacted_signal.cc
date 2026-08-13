@@ -11,15 +11,6 @@ namespace safe_browsing {
 RemoteHostContactedSignal::RemoteHostContactedSignal(
     const extensions::ExtensionId& extension_id,
     const GURL& host_url,
-    RemoteHostInfo::ProtocolType protocol)
-    : ExtensionSignal(extension_id),
-      remote_host_url_(host_url),
-      protocol_(protocol),
-      contact_initiator_(safe_browsing::RemoteHostInfo::EXTENSION) {}
-
-RemoteHostContactedSignal::RemoteHostContactedSignal(
-    const extensions::ExtensionId& extension_id,
-    const GURL& host_url,
     RemoteHostInfo::ProtocolType protocol,
     RemoteHostInfo::ContactInitiator contact_initiator)
     : ExtensionSignal(extension_id),

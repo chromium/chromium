@@ -19,18 +19,6 @@ TEST(RemoteHostContactedSignalTest, GeneratesUniqueIdForSignal) {
             "www.example.com,HTTP_HTTPS,CONTENT_SCRIPT");
 }
 
-// TODO(crbug.com/40913716): Remove test once new RHC
-// interception flow is fully launched.
-TEST(RemoteHostContactedSignalTest,
-     GeneratesUniqueIdForSignalWithDefaultContactInitiator) {
-  RemoteHostContactedSignal signal = RemoteHostContactedSignal(
-      /*extension_id=*/"ext-0",
-      /*host_url=*/GURL("http://www.example.com/"),
-      /*protocol=*/safe_browsing::RemoteHostInfo::WEBSOCKET);
-  EXPECT_EQ(signal.GetUniqueRemoteHostContactedId(),
-            "www.example.com,WEBSOCKET,EXTENSION");
-}
-
 }  // namespace
 
 }  // namespace safe_browsing
