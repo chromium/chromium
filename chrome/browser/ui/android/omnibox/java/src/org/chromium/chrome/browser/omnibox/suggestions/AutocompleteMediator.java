@@ -1128,16 +1128,15 @@ class AutocompleteMediator
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, false);
         mIgnoreOmniboxItemSelection = true;
         boolean isInZeroPrefixContext = mAutocompleteInput.isInZeroPrefixContext();
-        boolean isUnconventional =
-                isInZeroPrefixContext || !mAutocompleteInput.isConventionalRequestType();
+        boolean isUnconventional = !mAutocompleteInput.isConventionalRequestType();
+        boolean hasDesktopExperience = OmniboxCapabilities.hasDesktopExperience(mContext);
         @SelectionController.Mode int selectionMode;
-        if (isUnconventional || !OmniboxCapabilities.hasDesktopExperience(mContext)) {
+        if (!hasDesktopExperience || isUnconventional) {
+            selectionMode = SelectionController.Mode.WRAPPING_WITH_SENTINEL;
+        } else if (isInZeroPrefixContext) {
             // In desktop experiences, we use SENTINEL_THEN_WRAPPING to match the behavior of the
             // desktop browser.
-            selectionMode =
-                    OmniboxCapabilities.hasDesktopExperience(mContext)
-                            ? SelectionController.Mode.SENTINEL_THEN_WRAPPING
-                            : SelectionController.Mode.WRAPPING_WITH_SENTINEL;
+            selectionMode = SelectionController.Mode.SENTINEL_THEN_WRAPPING;
         } else {
             selectionMode = SelectionController.Mode.WRAPPING;
         }

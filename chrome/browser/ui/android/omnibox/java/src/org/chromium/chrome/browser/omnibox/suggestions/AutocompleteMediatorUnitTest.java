@@ -2825,8 +2825,15 @@ public class AutocompleteMediatorUnitTest {
                 Mode.SENTINEL_THEN_WRAPPING,
                 mListModel.get(SuggestionListProperties.SELECTION_MODE));
 
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        mMediator.onInputChanged();
+        assertEquals(
+                Mode.WRAPPING_WITH_SENTINEL,
+                mListModel.get(SuggestionListProperties.SELECTION_MODE));
+
         // Prefixed -- use WRAPPING mode on desktop.
         input.setUserText("test");
+        input.setRequestType(AutocompleteRequestType.SEARCH);
         mMediator.onInputChanged();
         assertEquals(Mode.WRAPPING, mListModel.get(SuggestionListProperties.SELECTION_MODE));
     }
