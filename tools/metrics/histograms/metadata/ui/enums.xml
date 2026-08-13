@@ -1037,6 +1037,7 @@ chromium-metrics-reviews@google.com.
   <int value="1131279479" label="chrome://actor-internals/"/>
   <int value="1131405887" label="chrome://taskscheduler-internals/"/>
   <int value="1134924982" label="chrome://app-icon/"/>
+  <int value="1139989231" label="chrome://content-settings/"/>
   <int value="1145000455" label="chrome://arc-overview-tracing/"/>
   <int value="1145963223" label="chrome://process-internals/"/>
   <int value="1148733422" label="chrome://restart/"/>

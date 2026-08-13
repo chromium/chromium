@@ -50,6 +50,7 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://connection-help",
       "chrome://connection-monitoring-detected",
       "chrome://connectors-internals",
+      "chrome://content-settings",
 #if !BUILDFLAG(IS_ANDROID)
       "chrome://content-annotator-internals",
       "chrome://contextual-cueing-internals",

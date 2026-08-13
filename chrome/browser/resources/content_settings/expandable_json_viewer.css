@@ -1,0 +1,77 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+:host([expanded]) {
+  #json-content {
+    max-height: 50vh;
+    overflow: auto;
+    border-top: 1px solid lightgray;
+    padding: 2px;
+    height: auto;
+  }
+
+  #close-icon {
+    display: block;
+  }
+
+  #open-icon {
+    display: none;
+  }
+}
+
+#json-content {
+  border-top: none;
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s;
+}
+
+#close-icon {
+  display: none;
+}
+
+#open-icon {
+  display: block;
+}
+
+.container {
+  border: 1px solid lightgray;
+  max-width: 50em;
+  margin: 2px 0;
+}
+
+.toggle-icon {
+  fill: var(--icon-fill-default);
+  transition: fill 0.3s;
+}
+
+#json-header {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-weight: bold;
+  justify-content: space-between;
+  padding: 2px;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: var(--interactive-bg-hover);
+
+    & .toggle-icon {
+      fill: var(--icon-fill-hover);
+    }
+  }
+
+  &:active {
+    background-color: var(--interactive-bg-active);
+
+    & .toggle-icon {
+      fill: var(--icon-fill-active);
+    }
+  }
+}
+
+#title {
+  flex-grow: 1;
+}

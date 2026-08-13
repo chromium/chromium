@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/webui/chrome_finds_internals/chrome_finds_internals_ui.h"
 #include "chrome/browser/ui/webui/chrome_urls/chrome_urls_ui.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
+#include "chrome/browser/ui/webui/content_settings/content_settings_internals.mojom.h"
+#include "chrome/browser/ui/webui/content_settings/content_settings_ui.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub_ui.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
@@ -267,6 +269,9 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
   RegisterWebUIControllerInterfaceBinder<
       browser::context_hub::mojom::PageHandlerFactory, ContextHubUI>(map);
 
+  RegisterWebUIControllerInterfaceBinder<
+      content_settings_internals::mojom::PageHandlerFactory,
+      content_settings_internals::ContentSettingsUI>(map);
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   content::RegisterWebUIControllerInterfaceBinder<

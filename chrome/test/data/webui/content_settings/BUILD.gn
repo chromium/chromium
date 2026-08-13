@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  cc_test_files = [ "content_settings_browsertest.cc" ]
+
+  files = [
+    "app_test.ts",
+    "content_settings_test.ts",
+    "test_content_settings_browser_proxy.ts",
+  ]
+
+  ts_path_mappings =
+      [ "chrome://content-settings/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/content_settings/tsc/*",
+            target_gen_dir) ]
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/content_settings:mojo_bindings_ts__generator",
+    "//components/content_settings/core/common:content_settings_enums_ts__generator",
+    "//components/content_settings/core/common:content_settings_types_ts__generator",
+    "//components/content_settings/core/common:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/content_settings/content_settings_internals.mojom-webui.ts",
+    "$root_gen_dir/components/content_settings/core/common/content_settings.mojom-webui.ts",
+    "$root_gen_dir/components/content_settings/core/common/content_settings_enums.mojom-webui.ts",
+    "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
+  ]
+
+  ts_deps = [
+    "//chrome/browser/resources/content_settings:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}

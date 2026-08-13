@@ -1,0 +1,55 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+div.content-setting {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  justify-content: space-between;
+}
+
+.id-primary-pattern,
+.id-secondary-pattern,
+.id-source {
+  color: dimgray;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pattern {
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.pattern-type {
+  font-weight: bold;
+}
+
+.patterns {
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  width: 13rem;
+}
+
+span.block {
+  display: block;
+}
+
+.metadata {
+  flex-basis: 0;
+  flex-grow: 1;
+}
+
+.metadata span {
+  width: auto;
+  font-size: 0.7rem;
+}
+
+.metadata span.label {
+  font-weight: bold;
+  padding-right: 1ch;
+}
