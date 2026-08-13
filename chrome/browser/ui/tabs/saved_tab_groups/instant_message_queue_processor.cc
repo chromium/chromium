@@ -184,7 +184,7 @@ void InstantMessageQueueProcessor::MaybeShowInstantMessage() {
       FROM_HERE,
       base::BindOnce(
           &InstantMessageQueueProcessor::ProcessQueueAfterMessageShown,
-          base::Unretained(this)),
+          weak_factory_.GetWeakPtr()),
       GetMessageInterval());
 }
 

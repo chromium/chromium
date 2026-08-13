@@ -123,6 +123,11 @@ class InstantMessageQueueProcessorTest : public testing::Test {
   }
 
   TestInstantMessageQueueProcessor* processor() { return processor_.get(); }
+  void ResetProcessor() { processor_.reset(); }
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
 
   void FastForwardByToastDuration() {
     task_environment_.FastForwardBy(processor()->GetMessageInterval());
@@ -280,6 +285,30 @@ TEST_F(InstantMessageQueueProcessorTest, QueuesMessages) {
 
   EXPECT_FALSE(processor()->IsMessageShowing());
   EXPECT_EQ(0, processor()->GetQueueSize());
+}
+
+TEST_F(InstantMessageQueueProcessorTest,
+       DoesNotProcessQueueAfterProcessorDestroyed) {
+  // Mock that toast to be shown.
+  processor()->SetToastWillBeShown(true);
+
+  auto message = CreateMessage(CollaborationEvent::TAB_REMOVED);
+  base::MockCallback<SuccessCallback> callback;
+
+  // Message will succeed and schedule a delayed task.
+  EXPECT_CALL(callback, Run(true));
+  processor()->Enqueue(message, callback.Get());
+
+  EXPECT_TRUE(processor()->IsMessageShowing());
+  EXPECT_EQ(1, processor()->GetQueueSize());
+
+  base::TimeDelta interval = processor()->GetMessageInterval();
+
+  // Destroy the processor before the delayed task fires.
+  ResetProcessor();
+
+  // Fast forward past the interval.
+  FastForwardBy(interval);
 }
 
 }  // namespace tab_groups
