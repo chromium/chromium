@@ -21,6 +21,7 @@
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
@@ -432,9 +433,36 @@ AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
   CHECK(base::FeatureList::IsEnabled(
       switches::kEnableAccountPreviewPreferredAccount));
 
-  // TODO(crbug.com/530144650): Implement heuristic to compute the preferred
-  // account and preferred data types.
-  return std::nullopt;
+  std::vector<AccountPreviewHeuristicContext> contexts;
+  // TODO(crbug.com/530144650): Ensure that the order of accounts is consistent
+  // between platforms, having the first account as the default account for
+  // promos.
+  for (const CoreAccountInfo& account : GetAccountsWithValidRefreshTokens()) {
+    auto cache_it = cached_data_.find(account.gaia);
+    if (cache_it == cached_data_.end()) {
+      continue;
+    }
+
+    AccountInfo extended_info =
+        identity_manager_->FindExtendedAccountInfo(account);
+    if (extended_info.IsEmpty()) {
+      continue;
+    }
+
+    AccountPreviewHeuristicContext context;
+    context.gaia_id = account.gaia;
+    context.is_managed = extended_info.IsManaged() == signin::Tribool::kTrue;
+    context.is_child = extended_info.IsChildAccount() == signin::Tribool::kTrue;
+    context.preview_data = &cache_it->second;
+
+    // TODO(crbug.com/530144650): Set `is_external_app_primary` when available
+    // on Android.
+    context.is_external_app_primary = false;
+
+    contexts.push_back(std::move(context));
+  }
+
+  return ComputePreferredAccountForPromo(contexts);
 }
 
 std::vector<CoreAccountInfo>

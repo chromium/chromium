@@ -11,6 +11,8 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -25,7 +27,7 @@ struct SyncDataTypeThresholds {
   size_t median = 0;
   size_t q3 = 0;
 
-  SyncDataQuartile GetQuartileScore(size_t count) const {
+  SyncDataQuartile GetQuartileForCount(size_t count) const {
     if (count == 0) {
       return SyncDataQuartile::kZero;
     }
@@ -71,7 +73,7 @@ std::vector<PreferredDataTypeInfo> ExtractPreferredDataTypes(
       double ratio = static_cast<double>(count) / thresholds.median;
       candidates.push_back({
           .type = type,
-          .quartile = thresholds.GetQuartileScore(count),
+          .quartile = thresholds.GetQuartileForCount(count),
           .median_ratio = ratio,
       });
     }
@@ -115,6 +117,108 @@ sync_pb::SyncEnums_DeviceFormFactor ExtractOtherDeviceFormFactor(
                    SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED;
 }
 
+// This function is needed as `SyncDataQuartileToValue()` should only be used
+// for persisting information, and not comparing score, since the value of the
+// enum may not represent its semantic meaning of magnitude.
+int GetQuartileScore(SyncDataQuartile quartile) {
+  switch (quartile) {
+    case SyncDataQuartile::kZero:
+      return 0;
+    case SyncDataQuartile::kBelowQ1:
+      return 1;
+    case SyncDataQuartile::kQ1ToMedian:
+      return 2;
+    case SyncDataQuartile::kMedianToQ3:
+      return 3;
+    case SyncDataQuartile::kAboveQ3:
+      return 4;
+  }
+  NOTREACHED();
+}
+
+// The Account Score is computed as the sum of each data type quartile score.
+// The Quartile score is a direct mapping of the quartile to an integer value
+// representing that quartile, check `GetQuartileScore()`, this allows to
+// normalize the values of each data type.
+int CalculateSyncDataScore(const AccountPreviewData& data) {
+  int total_score = 0;
+  for (const auto& [type, thresholds] : kDataTypeThresholds) {
+    auto it = data.counts.find(type);
+    if (it != data.counts.end()) {
+      total_score +=
+          GetQuartileScore(thresholds.GetQuartileForCount(it->second));
+    }
+  }
+  return total_score;
+}
+
+bool HasEqualOrMoreSyncData(const AccountPreviewData& candidate,
+                            const AccountPreviewData& base) {
+  return CalculateSyncDataScore(candidate) >= CalculateSyncDataScore(base);
+}
+
+bool HasStrictlyMoreSyncData(const AccountPreviewData& candidate,
+                             const AccountPreviewData& base) {
+  return CalculateSyncDataScore(candidate) > CalculateSyncDataScore(base);
+}
+
+bool IsCandidatePreferredOverDefault(
+    const AccountPreviewHeuristicContext& candidate,
+    const AccountPreviewHeuristicContext& default_account) {
+  if (!candidate.is_eligible_for_preferred_account()) {
+    return false;
+  }
+
+  if (!default_account.is_eligible_for_preferred_account()) {
+    return true;
+  }
+
+  // Comparison involving the external app (AGA) primary account on Android.
+  // The AGA primary account is always preferred, UNLESS the competing account
+  // is cross-device AND has strictly more sync data.
+  if (candidate.is_external_app_primary) {
+    if (default_account.has_other_devices() &&
+        HasStrictlyMoreSyncData(*default_account.preview_data,
+                                *candidate.preview_data)) {
+      return false;
+    }
+    return true;
+  }
+
+  if (default_account.is_external_app_primary) {
+    if (candidate.has_other_devices() &&
+        HasStrictlyMoreSyncData(*candidate.preview_data,
+                                *default_account.preview_data)) {
+      return true;
+    }
+    return false;
+  }
+
+  bool candidate_cross_device = candidate.has_other_devices();
+  bool default_cross_device = default_account.has_other_devices();
+
+  // Candidate is cross-device, Default is single-device.
+  if (candidate_cross_device && !default_cross_device) {
+    return HasEqualOrMoreSyncData(*candidate.preview_data,
+                                  *default_account.preview_data);
+  }
+
+  // Candidate is cross-device, Default is cross-device.
+  if (candidate_cross_device && default_cross_device) {
+    return HasStrictlyMoreSyncData(*candidate.preview_data,
+                                   *default_account.preview_data);
+  }
+
+  // Candidate is single-device, Default is single-device.
+  if (!candidate_cross_device && !default_cross_device) {
+    return HasStrictlyMoreSyncData(*candidate.preview_data,
+                                   *default_account.preview_data);
+  }
+
+  // Candidate is single-device, Default is cross-device.
+  return false;
+}
+
 }  // namespace
 
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
@@ -130,6 +234,34 @@ ComputeAccountPreviewPreference(const GaiaId& gaia_id,
   preference.preferred_data_types = ExtractPreferredDataTypes(data);
   preference.other_device_form_factor = ExtractOtherDeviceFormFactor(data);
   return preference;
+}
+
+std::optional<AccountPreviewDataService::AccountPreviewPreference>
+ComputePreferredAccountForPromo(
+    base::span<const AccountPreviewHeuristicContext> accounts) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewPreferredAccount)) {
+    return std::nullopt;
+  }
+
+  if (accounts.empty()) {
+    return std::nullopt;
+  }
+
+  size_t best_index = 0;
+  for (size_t i = 1; i < accounts.size(); ++i) {
+    if (IsCandidatePreferredOverDefault(accounts[i], accounts[best_index])) {
+      best_index = i;
+    }
+  }
+
+  const AccountPreviewHeuristicContext& chosen = accounts[best_index];
+  // This may happen if all accounts in the list are ineligible.
+  if (!chosen.is_eligible_for_preferred_account()) {
+    return std::nullopt;
+  }
+
+  return ComputeAccountPreviewPreference(chosen.gaia_id, *chosen.preview_data);
 }
 
 }  // namespace signin
