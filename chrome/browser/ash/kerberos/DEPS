@@ -17,10 +17,11 @@ include_rules = [
   "+chrome/browser/ash/login/session",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/test/base",
+
+  "+ui/message_center",
 ]
 
 specific_include_rules = {

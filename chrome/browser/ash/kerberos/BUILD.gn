@@ -27,7 +27,6 @@ static_library("kerberos") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
@@ -58,6 +57,7 @@ source_set("unit_tests") {
 
   deps = [
     ":kerberos",
+    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/login/session",
@@ -69,6 +69,7 @@ source_set("unit_tests") {
     "//components/user_manager",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/message_center",
   ]
 }
 

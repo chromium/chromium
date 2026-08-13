@@ -733,8 +733,11 @@ void KerberosCredentialsManager::OnKerberosTicketExpiring(
   // Only listen to the active account.
   VLOG(1) << "Got KerberosTicketExpiring for " << principal_name;
   if (principal_name == GetActivePrincipalName()) {
+    const user_manager::User& user =
+        CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+            primary_profile_.get()));
     kerberos_ticket_expiry_notification::Show(
-        primary_profile_, GetActivePrincipalName(),
+        user, GetActivePrincipalName(),
         base::BindRepeating(
             &KerberosCredentialsManager::OnTicketExpiryNotificationClick,
             weak_factory_.GetWeakPtr()));
@@ -955,17 +958,18 @@ void KerberosCredentialsManager::NotifyRequiresLoginPassword(
 
 void KerberosCredentialsManager::OnTicketExpiryNotificationClick(
     const std::string& principal_name) {
-  auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-      primary_profile_.get());
+  const user_manager::User& user =
+      CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          primary_profile_.get()));
   ash::SettingsAppManager::Get()->Open(
-      CHECK_DEREF(user),
+      user,
       {.sub_page =
            chromeos::settings::mojom::kKerberosAccountsV2SubpagePath +
            std::string("?kerberos_reauth=") +
            base::EscapeQueryParamValue(principal_name, false /* use_plus */)});
 
   // Close last! |principal_name| is owned by the notification.
-  kerberos_ticket_expiry_notification::Close(primary_profile_);
+  kerberos_ticket_expiry_notification::Close(user);
 }
 
 base::RepeatingClosure

@@ -11,12 +11,12 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/user_manager/user.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -24,7 +24,6 @@
 
 using message_center::ButtonInfo;
 using message_center::HandleNotificationClickDelegate;
-using message_center::Notification;
 using message_center::NotificationType;
 using message_center::NotifierId;
 using message_center::NotifierType;
@@ -43,10 +42,6 @@ constexpr char kNotificationId[] = "kerberos.ticket-expiry-notification";
 constexpr NotificationType kNotificationType =
     message_center::NOTIFICATION_TYPE_SIMPLE;
 
-// Generic type for notifications that are not from web pages etc.
-const NotificationHandler::Type kNotificationHandlerType =
-    NotificationHandler::Type::TRANSIENT;
-
 // This notification is a regular warning. It's not critical as users can still
 // authenticate in most cases using username/password.
 constexpr SystemNotificationWarningLevel kWarningLevel =
@@ -60,7 +55,7 @@ void OnClick(ClickCallback click_callback,
 
 }  // namespace
 
-void Show(Profile* profile,
+void Show(const user_manager::User& user,
           const std::string& principal_name,
           ClickCallback click_callback) {
   const std::u16string kTitle =
@@ -71,8 +66,12 @@ void Show(Profile* profile,
       l10n_util::GetStringUTF16(IDS_KERBEROS_TICKET_EXPIRY_BUTTON);
 
   // For histogram reporting.
-  const NotifierId kNotifierId(NotifierType::SYSTEM_COMPONENT, kNotificationId,
-                               NotificationCatalogName::kKerberosTicketExpiry);
+  NotifierId notifier_id(NotifierType::SYSTEM_COMPONENT, kNotificationId,
+                         NotificationCatalogName::kKerberosTicketExpiry);
+  notifier_id.profile_id = user.GetAccountId().GetUserEmail();
+
+  const std::string notification_id =
+      CreateUserScopedNotificationId(kNotificationId, user.username_hash());
 
   // No origin URL is needed since the notification comes from the system.
   const GURL kEmptyOriginUrl;
@@ -93,23 +92,24 @@ void Show(Profile* profile,
   HandleNotificationClickDelegate::ButtonClickCallback callback_wrapper =
       base::BindRepeating(&OnClick, click_callback, principal_name);
 
-  Notification notification = ash::CreateSystemNotification(
-      kNotificationType, kNotificationId, kTitle, kBody, kEmptyDisplaySource,
-      kEmptyOriginUrl, kNotifierId, notification_data,
+  auto notification = ash::CreateSystemNotificationPtr(
+      kNotificationType, notification_id, kTitle, kBody, kEmptyDisplaySource,
+      kEmptyOriginUrl, notifier_id, notification_data,
       base::MakeRefCounted<HandleNotificationClickDelegate>(callback_wrapper),
       kIcon, kWarningLevel);
 
-  NotificationDisplayService* nds =
-      NotificationDisplayServiceFactory::GetForProfile(profile);
-  // Calling close before display ensures that the notification pops up again
-  // even if it is already shown.
-  nds->Close(kNotificationHandlerType, kNotificationId);
-  nds->Display(kNotificationHandlerType, notification, nullptr /* metadata */);
+  // Calling remove before add ensures that the notification pops up again even
+  // if it is already shown.
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id,
+                                                           /*by_user=*/false);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
-void Close(Profile* profile) {
-  NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
-      kNotificationHandlerType, kNotificationId);
+void Close(const user_manager::User& user) {
+  message_center::MessageCenter::Get()->RemoveNotification(
+      CreateUserScopedNotificationId(kNotificationId, user.username_hash()),
+      /*by_user=*/false);
 }
 
 }  // namespace kerberos_ticket_expiry_notification

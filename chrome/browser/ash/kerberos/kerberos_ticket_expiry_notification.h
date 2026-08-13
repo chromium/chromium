@@ -9,7 +9,9 @@
 
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-class Profile;
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 namespace kerberos_ticket_expiry_notification {
@@ -19,12 +21,12 @@ using ClickCallback =
 
 // Shows the ticket expiry notification for the given |principal_name|.
 // |click_callback| is called when the user clicks on the notification.
-void Show(Profile* profile,
+void Show(const user_manager::User& user,
           const std::string& principal_name,
           ClickCallback click_callback);
 
 // Closes the ticket expiry notification.
-void Close(Profile* profile);
+void Close(const user_manager::User& user);
 
 }  // namespace kerberos_ticket_expiry_notification
 }  // namespace ash
