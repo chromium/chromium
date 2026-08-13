@@ -401,7 +401,7 @@ pub use crate::{
     wrappers::*,
 };
 
-#[cfg(any(feature = "alloc", test, kani))]
+#[cfg(any(feature = "alloc", test))]
 extern crate alloc;
 #[cfg(any(feature = "alloc", test))]
 use alloc::{boxed::Box, vec::Vec};

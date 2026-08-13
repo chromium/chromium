@@ -254,11 +254,10 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_authors = "Joshua Liebow-Feeser <joshlf@google.com>, Jack Wrenn <jswrenn@amazon.com>"
   cargo_pkg_name = "zerocopy"
   cargo_pkg_description = "Zerocopy makes zero-cost memory manipulation effortless. We write \"unsafe\" so you don't have to."
   cargo_pkg_repository = "https://github.com/google/zerocopy"
-  cargo_pkg_version = "0.8.55"
+  cargo_pkg_version = "0.8.56"
 
   allow_unsafe = true
 
