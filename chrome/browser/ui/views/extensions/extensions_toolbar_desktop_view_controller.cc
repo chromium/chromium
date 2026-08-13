@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop_view_controller.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 
 ExtensionsToolbarDesktopViewController::ExtensionsToolbarDesktopViewController(

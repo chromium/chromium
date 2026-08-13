@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "ui/base/class_property.h"
 #include "ui/base/interaction/element_identifier.h"
