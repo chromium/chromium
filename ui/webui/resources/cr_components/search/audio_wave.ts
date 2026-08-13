@@ -27,41 +27,21 @@ const WAVE_SIDE_MARGIN_IDLE: number = 56;
 const WAVE_SIDE_MARGIN_PEAK: number = 10;
 
 const STROKE_WIDTH: number = 3;
+const SPEECH_RECEIVED_VOL_SPIKE: number = 0.4;
 
-// At 60 fps:
-const MS_PER_FRAME: number = 16.67;
-
-const CIRCLE_RAD: number = Math.PI * 2;
-
-const VOWEL_GROUP_EXCEPTIONS = [
-  /iu/,  // Like in chromium.
-  /eo/,  // Like in stereo.
-  /ia/,  // Like in dial, media.
-];
-
-/* Fastest speakers speak 10-12 syllables/sec. Average is 4-5;
- * accounting for latency, make it 7.5 -> 8 frames per syllable.
- * using 10 -> ~0.167 syllable/frame -> 6 frames per syllable.
+/* Audio simulation math and heuristics (Bézier easing, syllable counting,
+ * bump summation) have been extracted to audio_simulation_utils.ts so they
+ * can be shared across Search WebUI components. Re-exporting here for
+ * backwards compatibility with existing consumers and tests.
  */
-const MIN_FRAMES_PER_SYLLABLE: number = 6;
-const MAX_FRAMES_PER_SYLLABLE: number = 8;
-
-// -12 frames = ~200ms compensation due to speech webkit latency.
-const FRAME_LATENCY: number = -12;
+import type {Bump} from './audio_simulation_utils.js';
+import {AMPLITUDE_DECAY_RATE, applySensitivityEasing, clamp, getAmbientSimulatedMotion, makeSimulatedAudioBump, MS_PER_FRAME, SPEECH_RECEIVED_BUMP_DURATION_MULT, SPEECH_RECEIVED_BUMP_DURATION_OFFSET, SPEECH_RECEIVED_BUMP_MAX_VOL_MULT, SPEECH_RECEIVED_BUMP_MAX_VOL_OFFSET, triggerSyllableBumps, updateBumpsAndGetSum} from './audio_simulation_utils.js';
 
 const SMOOTHING_WINDOW_SIZE: number = 3;
-
 const SMOOTHING_BUFFER_SIZE: number = 5;
 
-export interface Bump {
-  startTime: number;
-  duration: number;
-  maxVol: number;
-}
-
-function clamp(value: number, minVal: number, maxVal: number): number {
-  return Math.min(Math.max(value, minVal), maxVal);
-}
+export type {Bump} from './audio_simulation_utils.js';
+export {AMPLITUDE_DECAY_RATE, applySensitivityEasing, bezierEasing, CIRCLE_RAD, clamp, countSyllablesHeuristic, FRAME_LATENCY, getAmbientSimulatedMotion, makeSimulatedAudioBump, MAX_FRAMES_PER_SYLLABLE, MIN_FRAMES_PER_SYLLABLE, MS_PER_FRAME, SPEECH_RECEIVED_BUMP_DURATION_MULT, SPEECH_RECEIVED_BUMP_DURATION_OFFSET, SPEECH_RECEIVED_BUMP_MAX_VOL_MULT, SPEECH_RECEIVED_BUMP_MAX_VOL_OFFSET, SYLLABLE_BUMP_DURATION_MULT, SYLLABLE_BUMP_DURATION_OFFSET, SYLLABLE_BUMP_MAX_VOL_MULT, SYLLABLE_BUMP_MAX_VOL_OFFSET, triggerSyllableBumps} from './audio_simulation_utils.js';
 /*
  * Linear Interpolation that maps one unit to another unit, like volume to px.
  */
@@ -83,42 +63,6 @@ export function mapToRange(
       outputMin;
 }
 
-// Heuristic based on number of vowel groups, minus edge cases.
-export function countSyllablesHeuristic(word: string): number {
-  let count = 0;
-  word = word.toLocaleLowerCase();
-  if (word.length === 0) {
-    return 0;
-  }
-  // Words of length 3 are usually 1 syllable.
-  if (word.length <= 3) {
-    return 1;
-  }
-
-  /* Remove silent 'e', 'es', 'ed' at end, as long as it's not '-ted' or '-ded'.
-   * Don't take non-t/non-d in '-[x]ed'.
-   */
-  word = word.replace(/(?:[^laeiouy]es|(?<=[^td])ed|[^laeiouy]e)$/, '');
-
-  // Remove leading 'y'; it's never a "vowel" like middle y's are.
-  word = word.replace(/^y/, '');
-
-  /* Count vowel groups; either 1 or 2 in a row.
-   * 2 vowels in row diphthong. Vowels includes y in
-   * middle of words. 3 vowel diphthongs excluded for simplicity.
-   */
-  const vowelGroups = word.match(/[aeiouy]{1,2}/g);
-
-  // Count diphthong exceptions.
-  VOWEL_GROUP_EXCEPTIONS.forEach((pattern) => {
-    if (pattern.test(word)) {
-      count++;
-    }
-  });
-
-  return vowelGroups ? vowelGroups.length + count : 1 + count;
-}
-
 export function weightedAverage(
     numArray: number[], amountToAverage: number): number {
   let weightedSum = 0;
@@ -130,46 +74,6 @@ export function weightedAverage(
     sumOfWeights += weight;
   }
   return sumOfWeights === 0 ? 0 : weightedSum / sumOfWeights;
-}
-
-export function bezierEasing(
-    controlX1: number, controlX2: number, timeProgress: number): number {
-  /*
-   * Solve a Cubic Bezier curve for a specific time "t":
-   * Used to make the wave sensitivity non-linear (reacts more to soft
-   * sounds). Standard Newton-Raphson implementation.
-   */
-  if (timeProgress <= 0) {
-    return 0;
-  }
-  if (timeProgress >= 1) {
-    return 1;
-  }
-  if (controlX1 === 0 && controlX2 === 1) {
-    return timeProgress;
-  }
-
-  let currentT = timeProgress;
-  // Pre-calculate coefficients
-  const coeffA = 3 * controlX1;
-  const coeffB = 3 * (controlX2 - controlX1) - coeffA;
-  const coeffC = 1 - coeffA - coeffB;
-
-  // Newton-Raphson iteration to find t for a given x (timeProgress)
-  for (let i = 0; i < 8; i++) {
-    const currentX =
-        ((coeffC * currentT + coeffB) * currentT + coeffA) * currentT;
-    if (Math.abs(currentX - timeProgress) < 1e-6) {
-      break;
-    }
-    const currentSlope =
-        (3 * coeffC * currentT + 2 * coeffB) * currentT + coeffA;
-    if (Math.abs(currentSlope) < 1e-6) {
-      break;
-    }
-    currentT -= (currentX - timeProgress) / currentSlope;
-  }
-  return 3 * currentT * currentT - 2 * currentT * currentT * currentT;
 }
 
 export interface AudioWaveElement {
@@ -280,11 +184,16 @@ export class AudioWaveElement extends CrLitElement {
        */
 
       if (this.receivedSpeech) {
-        this.decayingAmplitude_ = 0.4;
+        this.decayingAmplitude_ = SPEECH_RECEIVED_VOL_SPIKE;
+
         for (let i = 0; i < this.volumeHistory_.length; i++) {
           this.volumeHistory_[i] = Math.max(this.volumeHistory_[i] ?? 0, 0.3);
         }
-        this.makeSimulatedAudioBump_(15, 25, this.frame_, 0.14, 0.05);
+        makeSimulatedAudioBump(
+            this.activeSimulatedBumps_, SPEECH_RECEIVED_BUMP_DURATION_MULT,
+            SPEECH_RECEIVED_BUMP_DURATION_OFFSET, this.frame_,
+            SPEECH_RECEIVED_BUMP_MAX_VOL_MULT,
+            SPEECH_RECEIVED_BUMP_MAX_VOL_OFFSET);
         if (this.transcript === '') {
           // Do measure since was not a word.
           this.firstSyllable_ = false;
@@ -345,7 +254,7 @@ export class AudioWaveElement extends CrLitElement {
       /* Define soft "ease-in", normal ease-out to reduce smaller
        * noises and slightly emphasize louder sounds.
        */
-      level = bezierEasing(0.4, 0.6, level ?? 0);
+      level = applySensitivityEasing(level ?? 0);
       this.drawEclipseWavePath_(level);
 
       this.lastUpdateTime_ = now - (elapsed % MS_PER_FRAME);
@@ -363,7 +272,7 @@ export class AudioWaveElement extends CrLitElement {
     // If quieter, hold the previous peak (it will decay slowly in the next
     // step).
     this.decayingAmplitude_ = Math.max(this.decayingAmplitude_, rawInputLevel);
-    this.decayingAmplitude_ *= 0.85;  // Decay
+    this.decayingAmplitude_ *= AMPLITUDE_DECAY_RATE;  // Decay
 
     // Wave width calculation (louder = wider)
     const currentSidePadding = mapToRange(
@@ -471,21 +380,10 @@ export class AudioWaveElement extends CrLitElement {
      * added in current frame due to mapping in mapToRange.
      */
 
-    // Start at 0, then ramp up physics during first 80 frames:
-    const startRamp = Math.min(1, this.frame_ / 80);
-
-    let ambientSimulatedMotion =  // Fast wave:
-        0.01 + (1 + Math.cos(((this.frame_) / 60) * CIRCLE_RAD)) * 0.05;
-    ambientSimulatedMotion *=  // Slow wave:
-        0.25 +
-        (1 + Math.cos(((this.frame_) / 400) * CIRCLE_RAD)) * 0.2 * startRamp;
-    // Random noise floor like live mic (random increase):
-    ambientSimulatedMotion += 0.01 * Math.random();
-    ambientSimulatedMotion *= startRamp;
-
-    // Combine historical value + audio bump simulation:
+    // Combine ambient breathing wave + audio bump simulation:
     this.volumeHistory_.unshift(
-        ambientSimulatedMotion + this.getSimulatedAudioBumpsSum_());
+        getAmbientSimulatedMotion(this.frame_) +
+        this.getSimulatedAudioBumpsSum_());
 
     // Trim volume history if too long:
     if (this.volumeHistory_.length > SMOOTHING_BUFFER_SIZE) {
@@ -517,85 +415,25 @@ export class AudioWaveElement extends CrLitElement {
     this.triggerSyllableBumps_(newWords);
   }
 
+  // Delegated to audio_simulation_utils.ts for shared syllable bump logic.
   protected triggerSyllableBumps_(words: string[]) {
-    /* Keeps every start time after this time (maintains order of time
-     * in activeSimulatedBumps_). Start in "future" to account for latency in
-     * speech recognition webkit.
-     */
-    let frameOffset = FRAME_LATENCY;
-
-    words.forEach(word => {
-      const syllableCount = countSyllablesHeuristic(word);
-      for (let i = 0; i < syllableCount; i++) {
-        /* If not first syllable; else, if first syllable already
-         * counted by change in speechReceived state, ignore
-         * to avoid double counting
-         */
-        if (!this.firstSyllable_) {
-          this.makeSimulatedAudioBump_(
-              25, 15, this.frame_ + frameOffset, 0.12, 0.08);
-          /* At least min frames, up to slower end of
-           * average frames per syllable:
-           */
-          frameOffset += MIN_FRAMES_PER_SYLLABLE +
-              ((MAX_FRAMES_PER_SYLLABLE - MIN_FRAMES_PER_SYLLABLE) *
-               Math.random());
-        } else {
-          this.firstSyllable_ = false;
-        }
-      }
-
-      // Breath gap:
-      frameOffset += 2;
-    });
+    const {firstSyllable} = triggerSyllableBumps(
+        this.activeSimulatedBumps_, words, this.frame_, this.firstSyllable_);
+    this.firstSyllable_ = firstSyllable;
   }
 
+  // Delegated to audio_simulation_utils.ts for backwards compatibility with
+  // tests.
   protected makeSimulatedAudioBump_(
       durationMultiplier: number, durationOffset: number, startTime: number,
       maxVolMultiplier: number, maxVolOffset: number) {
-    this.activeSimulatedBumps_.push({
-      duration: Math.random() * durationMultiplier +
-          durationOffset,    // In frames @60fps.
-      startTime: startTime,  // Can be in future.
-      maxVol: maxVolOffset + Math.random() * maxVolMultiplier,
-    });
+    makeSimulatedAudioBump(
+        this.activeSimulatedBumps_, durationMultiplier, durationOffset,
+        startTime, maxVolMultiplier, maxVolOffset);
   }
 
   protected getSimulatedAudioBumpsSum_(): number {
-    let simulatedVolumeSum = 0;
-    /* Let activeSimulatedBumps_ be a queue ordered by start time.
-     * Because of varying duration, it is not strictly ordered by
-     * end time; only start time. Cannot assume deletion will only
-     * happen at start of queue due to varying end times. Only
-     * write i to index for next func call if duration of sound not
-     * over. Otherwise, let compaction truncate it to remove it
-     * from the list.
-     */
-    let writeIndex = 0;
-    for (let i = 0; i < this.activeSimulatedBumps_.length; i++) {
-      const bump = this.activeSimulatedBumps_[i]!;
-      const bumpRelativeTime = this.frame_ - bump.startTime;
-      const progress = bumpRelativeTime / bump.duration;
-      if (progress >= 1) {
-        continue;
-      }
-      /* Multiply by max volume and cos allows for mountain, not
-       * slide down (just pure recursive decay). Vertical shift so
-       * bottom is 0, then shrink so top is 1.
-       * 1 - () to invert and start at 0.
-       * Only start if it is not in future.
-       */
-      if (this.frame_ >= bump.startTime) {
-        let newBumpAddition =
-            (1 - (1 + Math.cos(progress * CIRCLE_RAD)) * 0.5) * bump.maxVol;
-        newBumpAddition = clamp(newBumpAddition, 0, 1);
-        simulatedVolumeSum += newBumpAddition;
-      }
-      this.activeSimulatedBumps_[writeIndex] = bump;
-      writeIndex++;
-    }
-    this.activeSimulatedBumps_.length = writeIndex;  // Truncate dead data.
-    return simulatedVolumeSum;
+    return updateBumpsAndGetSum(this.activeSimulatedBumps_, this.frame_);
   }
 
   /* Note: audio stream from hardware does not work. Using simulated.

@@ -12,6 +12,7 @@ build_webui("build") {
   ts_files = [
     "audio_levels.ts",
     "audio_processor.service.ts",
+    "audio_simulation_utils.ts",
     "animated_glow.html.ts",
     "animated_glow.ts",
     "audio_wave.html.ts",
