@@ -11012,6 +11012,7 @@ from previous Chrome versions.
   <int value="-1140212005" label="ExtensionWebFileHandlers:enabled"/>
   <int value="-1139532878" label="PrivacyGuidePreload:disabled"/>
   <int value="-1138851579" label="QuerySearchBurnInPeriod:disabled"/>
+  <int value="-1138146296" label="CriticalActionHistory:enabled"/>
   <int value="-1137745598" label="PhoneHubNudge:disabled"/>
   <int value="-1137696948" label="enable-chromeos-account-manager"/>
   <int value="-1137470863" label="FedCmWebIdentitySubdomain:enabled"/>
@@ -19784,6 +19785,7 @@ from previous Chrome versions.
   <int value="1628259213" label="DuetTabStripIntegrationAndroid:enabled"/>
   <int value="1628273580" label="LoadAllTabsAtStartup:disabled"/>
   <int value="1628831121" label="SafeBrowsingUseLocalBlacklistsV2:enabled"/>
+  <int value="1628894641" label="CriticalActionHistory:disabled"/>
   <int value="1629047185" label="IPH_ExtensionsMenu:disabled"/>
   <int value="1629289109" label="EnableBloom:disabled"/>
   <int value="1629497607" label="CertDualVerificationTrial:disabled"/>

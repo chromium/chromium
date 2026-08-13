@@ -107,6 +107,7 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/switches.h"
 #include "components/desktop_to_mobile_promos/features.h"
@@ -13788,6 +13789,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kXplatSyncedSetupThemesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kXplatSyncedSetupThemes)},
 #endif
+
+    {"critical-action-history", flag_descriptions::kCriticalActionHistoryName,
+     flag_descriptions::kCriticalActionHistoryDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(critical_actions::features::kCriticalActionHistory)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

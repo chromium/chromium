@@ -2227,6 +2227,14 @@
     "expiry_milestone": 155
   },
   {
+    "name": "critical-action-history",
+    "owners": [
+      "kalinino@google.com",
+      "//components/critical_actions/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "cros-components",
     "owners": [ "wenbojie@chromium.org"],
     "expiry_milestone": 137
