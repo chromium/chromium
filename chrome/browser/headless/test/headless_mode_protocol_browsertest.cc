@@ -393,6 +393,9 @@ HEADLESS_MODE_PROTOCOL_TEST(WindowOpenNoopenerClickOpenerId,
 HEADLESS_MODE_PROTOCOL_TEST(WindowOpenShiftClickOpenerId,
                             "shared/window-open-shift-click-opener-id.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(WindowOpenMiddleClick,
+                            "shared/window-open-middle-click.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(CreateTargetSecondaryScreen,
                             "shared/create-target-secondary-screen.js")
 

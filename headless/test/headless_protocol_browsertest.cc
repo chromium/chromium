@@ -726,6 +726,9 @@ HEADLESS_PROTOCOL_TEST(WindowOpenNoopenerClickOpenerId,
 HEADLESS_PROTOCOL_TEST(WindowOpenShiftClickOpenerId,
                        "shared/window-open-shift-click-opener-id.js")
 
+HEADLESS_PROTOCOL_TEST(WindowOpenMiddleClick,
+                       "shared/window-open-middle-click.js")
+
 HEADLESS_PROTOCOL_TEST(BlockNewWebContents, "sanity/block-new-web-contents.js")
 
 HEADLESS_PROTOCOL_TEST(ContextDisposal, "sanity/context-disposal.js")

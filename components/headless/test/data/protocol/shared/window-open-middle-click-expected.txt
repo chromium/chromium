@@ -1,0 +1,2 @@
+Tests that middle click opens a new tab.
+New tab opened
