@@ -55,6 +55,7 @@ class GlicTabObserverAndroid : public GlicTabObserver,
                      bool is_all_tabs,
                      bool allow_undo) override;
   void WillCloseTab(TabAndroid* tab) override;
+  void OnTabModelDestroyed(TabModel& tab_model) override;
 
   // TabAndroid::Observer:
   void OnInitWebContents(TabAndroid* tab) override;
@@ -65,6 +66,8 @@ class GlicTabObserverAndroid : public GlicTabObserver,
   void OnTabChanged(TabAndroid* tab);
   void OnTabGroupChanged(tabs::TabInterface* tab,
                          std::optional<tab_groups::TabGroupId> new_group);
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
   void StartObservingTab(TabAndroid* tab);
   void StopObservingTab(TabAndroid* tab);
 
@@ -93,6 +96,9 @@ class GlicTabObserverAndroid : public GlicTabObserver,
 
   absl::flat_hash_map<TabAndroid*, base::CallbackListSubscription>
       tab_group_subscriptions_;
+
+  absl::flat_hash_map<TabAndroid*, base::CallbackListSubscription>
+      tab_detach_subscriptions_;
 };
 
 #endif  // CHROME_BROWSER_GLIC_COMMON_GLIC_TAB_OBSERVER_ANDROID_H_

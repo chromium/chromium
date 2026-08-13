@@ -174,3 +174,58 @@ TEST_F(GlicTabObserverAndroidTest, TabRemovalNotifiesObserver) {
   tab_model.CloseTabAt(0);
   TabModelList::RemoveObserver(&observer);
 }
+
+TEST_F(GlicTabObserverAndroidTest, TabClosureCommittedCleansUpObservation) {
+  base::MockCallback<GlicTabObserver::EventCallback> mock_callback;
+  OwningTestTabModel tab_model(profile());
+  auto observer =
+      std::make_unique<GlicTabObserverAndroid>(profile(), mock_callback.Get());
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  TabAndroid* tab =
+      tab_model.AddTabFromWebContents(std::move(web_contents), 0, true,
+                                      TabModel::TabLaunchType::FROM_CHROME_UI);
+
+  EXPECT_CALL(mock_callback, Run(VariantWith<TabMutationEvent>(_)));
+  observer->TabClosureCommitted(tab);
+
+  // Destroying observer should not attempt to remove observation from the tab
+  // or crash if the tab was deleted.
+  observer.reset();
+}
+
+TEST_F(GlicTabObserverAndroidTest, TabWillDetachCleansUpObservation) {
+  base::MockCallback<GlicTabObserver::EventCallback> mock_callback;
+  OwningTestTabModel tab_model(profile());
+  auto observer =
+      std::make_unique<GlicTabObserverAndroid>(profile(), mock_callback.Get());
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  TabAndroid* tab =
+      tab_model.AddTabFromWebContents(std::move(web_contents), 0, true,
+                                      TabModel::TabLaunchType::FROM_CHROME_UI);
+
+  tab->SendWillDetachUpdate(
+      nullptr, static_cast<int32_t>(tabs::TabInterface::DetachReason::kDelete));
+
+  // Destroying observer should safely clean up without accessing detached tab.
+  observer.reset();
+}
+
+TEST_F(GlicTabObserverAndroidTest, TabModelDestroyedCleansUpObservation) {
+  base::MockCallback<GlicTabObserver::EventCallback> mock_callback;
+  auto tab_model = std::make_unique<OwningTestTabModel>(profile());
+  auto observer =
+      std::make_unique<GlicTabObserverAndroid>(profile(), mock_callback.Get());
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  tab_model->AddTabFromWebContents(std::move(web_contents), 0, true,
+                                   TabModel::TabLaunchType::FROM_CHROME_UI);
+
+  observer->OnTabModelDestroyed(*tab_model);
+  tab_model.reset();
+  observer.reset();
+}
