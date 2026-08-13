@@ -6,16 +6,22 @@
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_DEVTOOLS_TASK_H_
 
 #include "chrome/browser/task_manager/providers/web_contents/tab_contents_task.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace task_manager {
 
 // Defines a task manager representation of the developer tools WebContents.
-class DevToolsTask : public TabContentsTask {
+class DevToolsTask : public TabContentsTask,
+                     public content::WebContentsObserver {
  public:
   explicit DevToolsTask(content::WebContents* web_contents);
   DevToolsTask(const DevToolsTask&) = delete;
   DevToolsTask& operator=(const DevToolsTask&) = delete;
   ~DevToolsTask() override;
+
+ private:
+  // content::WebContentsObserver:
+  void TitleWasSet(content::NavigationEntry* entry) override;
 };
 
 }  // namespace task_manager

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
@@ -127,6 +128,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsTagTest, DevToolsTaskIsProvided) {
   // WebContents (its js may update its title).
   const int64_t task_id = task->task_id();
   LoadTestPage(kTestPage2);
+  EXPECT_TRUE(base::test::RunUntil([task] {
+    return task->title().find(u"navigate_back.html") != std::u16string::npos;
+  }));
   EXPECT_EQ(2U, tracked_tags_count());
   tasks = task_manager.NonToolTasks();
   if (content::CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {

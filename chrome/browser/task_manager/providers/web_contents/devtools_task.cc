@@ -9,9 +9,13 @@
 namespace task_manager {
 
 DevToolsTask::DevToolsTask(content::WebContents* web_contents)
-    : TabContentsTask(web_contents) {
-}
+    : TabContentsTask(web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 DevToolsTask::~DevToolsTask() = default;
+
+void DevToolsTask::TitleWasSet(content::NavigationEntry*) {
+  UpdateTitle();
+}
 
 }  // namespace task_manager
