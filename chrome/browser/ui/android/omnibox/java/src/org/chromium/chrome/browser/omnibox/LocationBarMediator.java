@@ -1482,8 +1482,12 @@ class LocationBarMediator
         connectObservers();
 
         UrlBarData data = getUrlBarDataForCurrentInput(mCurrentInput);
+        // We use SCROLL_TO_BEGINNING to match the scroll type used when UrlBarMediator
+        // begins input (in pushCurrentInputToModel()). This alignment allows the
+        // early-return optimization in UrlBarMediator.setUrlBarData() to recognize
+        // the updates as equivalent and skip redundant view updates.
         mUrlCoordinator.setUrlBarData(
-                data, UrlBar.ScrollType.NO_SCROLL, mCurrentInput.getSelection());
+                data, UrlBar.ScrollType.SCROLL_TO_BEGINNING, mCurrentInput.getSelection());
         updateButtonVisibility();
 
         // Serve the cached suggestions while we wait for Profile.
@@ -2983,23 +2987,36 @@ class LocationBarMediator
             if (shouldShowLensButton()) LensMetrics.recordOmniboxFocusedWhenLensShown();
         }
 
+        boolean hadCurrentInput = mCurrentInput != null;
+
         // The || !isParentedToSuggestionsContainer() is to handle if the URL bar already has focus
         // (e.g. restored after activity recreation) but hasn't been reparented to the suggestions
         // container. We need this to trigger the focus animation to complete the reparenting.
         @FuseboxLayoutMode
         int layoutMode = mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get();
         boolean isPopover = layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
-        if (input.getDisplayState() == DisplayState.SUGGESTIONS
-                && (mUrlFocusedWithoutAnimations
-                        || (isPopover && !isParentedToSuggestionsContainer()))
-                && !mIsReparenting) {
+        boolean shouldAnimateFocus =
+                (input.getDisplayState() == DisplayState.SUGGESTIONS
+                                && (mUrlFocusedWithoutAnimations
+                                        || (isPopover && !isParentedToSuggestionsContainer())))
+                        || (mUrlFocusedWithoutAnimations
+                                && input.getAutocompleteState() == AutocompleteState.ENABLED);
+        if (shouldAnimateFocus && !mIsReparenting) {
             handleUrlFocusAnimation(/* hasFocus= */ true);
         } else if (input.getAutocompleteState() != AutocompleteState.STANDBY_NO_FOCUS) {
             mUrlCoordinator.requestFocus();
         }
 
         // Wait for the Url focus change before refreshing autocomplete.
-        beginOrResumeInput(/* activateNewSession= */ true);
+        // requestFocus() above can synchronously trigger onUrlFocusChange(), which
+        // in turn calls beginOrResumeInput() if mCurrentInput is null. We check
+        // mCurrentInput here to avoid double-initializing the session if it was
+        // already started synchronously.
+        if (hadCurrentInput) {
+            beginOrResumeInput(/* activateNewSession= */ false);
+        } else if (mCurrentInput == null) {
+            beginOrResumeInput(/* activateNewSession= */ true);
+        }
     }
 
     @Override

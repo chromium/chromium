@@ -1929,7 +1929,7 @@ public class LocationBarMediatorUnitTest {
         verify(mUrlCoordinator)
                 .setUrlBarData(
                         any(),
-                        eq(UrlBar.ScrollType.NO_SCROLL),
+                        eq(UrlBar.ScrollType.SCROLL_TO_BEGINNING),
                         eq(
                                 expectDesktopMode
                                         ? TextSelection.SELECT_ALL
@@ -3561,6 +3561,7 @@ public class LocationBarMediatorUnitTest {
         // On desktop, we show no suggestions in select cases, e.g. on the NTP where the omnibox is
         // prefocused. We don't want to show the scrim in that scenario either.
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        mMediator.suspendInput();
         mMediator.beginInput(
                 new AutocompleteInput().setAutocompleteState(AutocompleteState.STANDBY));
         verify(mScrimHandler).setVisibility(false);
@@ -4340,6 +4341,27 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testBeginInput_fromUnanimatedFocus_transitionsToEnabledAndShowsScrim() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+
+        mMediator.showUrlBarCursorWithoutFocusAnimations();
+        assertTrue(mSessionState.isSessionActive());
+        assertAutocompleteState(AutocompleteState.STANDBY);
+        assertTrue(mMediator.isUrlBarFocusedWithoutAnimation());
+        verify(mScrimHandler, never()).setVisibility(true);
+
+        mMediator.beginInput(
+                new AutocompleteInput(OmniboxFocusReason.FAKE_BOX_TAP)
+                        .setAutocompleteState(AutocompleteState.ENABLED));
+
+        assertAutocompleteState(AutocompleteState.ENABLED);
+        assertFalse(mMediator.isUrlBarFocusedWithoutAnimation());
+        verify(mScrimHandler).setVisibility(true);
+    }
+
+    @Test
     public void testOnUrlFocusChange_regularFocus_transitionsToEnabledState() {
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.DISABLED);
 
@@ -4627,5 +4649,29 @@ public class LocationBarMediatorUnitTest {
         // Regain window focus -> focus ring should be shown again.
         mWindowHasFocusSupplier.set(true);
         verify(mLocationBarLayout, times(2)).setShowFocusRing(true);
+    }
+
+    @Test
+    public void testBeginInput_ReentrancyGuard() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        // Stub requestFocus to trigger focus change synchronously.
+        doAnswer(
+                        invocation -> {
+                            mMediator.onUrlFocusChange(true);
+                            return null;
+                        })
+                .when(mUrlCoordinator)
+                .requestFocus();
+
+        // Clear invocations to start fresh.
+        clearInvocations(mUrlCoordinator);
+
+        AutocompleteInput input = new AutocompleteInput();
+        mMediator.beginInput(input);
+
+        // Verify setUrlBarData is called only once.
+        verify(mUrlCoordinator, times(1)).setUrlBarData(any(), anyInt(), any());
     }
 }
