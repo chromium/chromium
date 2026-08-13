@@ -17,12 +17,11 @@ namespace printing {
 
 class PrintWatermark {
  public:
-  PrintWatermark();
+  explicit PrintWatermark(watermark::mojom::WatermarkBlockPtr watermark_block);
   PrintWatermark(const PrintWatermark&) = delete;
   PrintWatermark& operator=(const PrintWatermark&) = delete;
   ~PrintWatermark();
 
-  void SetBlock(watermark::mojom::WatermarkBlockPtr watermark_block);
   void Draw(SkCanvas* canvas, const SkSize& size) const;
 
   const watermark::mojom::WatermarkBlockPtr& block_for_testing() const {
@@ -30,8 +29,7 @@ class PrintWatermark {
   }
 
  private:
-  // The watermark block. The special value `nullptr` indicates that there is no
-  // watermark.
+  // The watermark block. Never null.
   watermark::mojom::WatermarkBlockPtr watermark_block_;
 };
 

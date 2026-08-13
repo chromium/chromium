@@ -38,7 +38,9 @@ class MockPrintCompositorImplEnterpriseWatermark : public PrintCompositorImpl {
     bitmap_.allocN32Pixels(kWatermarkSize.fWidth, kWatermarkSize.fHeight);
     SkCanvas canvas(bitmap_);
     canvas.clear(SK_ColorBLACK);
-    watermark_for_testing().Draw(&canvas, kWatermarkSize);
+    const PrintWatermark* watermark = watermark_for_testing();
+    ASSERT_TRUE(watermark);
+    watermark->Draw(&canvas, kWatermarkSize);
   }
 
   const SkBitmap& bitmap() const { return bitmap_; }
@@ -55,8 +57,7 @@ class PrintWatermarkTest : public testing::Test {
                                         kWatermarkSize.fHeight);
     SkCanvas canvas(reference_watermark_);
     canvas.clear(SK_ColorBLACK);
-    PrintWatermark watermark;
-    watermark.SetBlock(enterprise_watermark::MakeTestWatermarkBlock(
+    PrintWatermark watermark(enterprise_watermark::MakeTestWatermarkBlock(
         kWatermarkText, kWatermarkSize));
     watermark.Draw(&canvas, kWatermarkSize);
   }

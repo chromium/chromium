@@ -38,6 +38,10 @@
 #include "third_party/blink/public/platform/platform.h"
 #endif
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "components/services/print_compositor/print_watermark.h"
+#endif
+
 using MojoDiscardableSharedMemoryManager =
     discardable_memory::mojom::DiscardableSharedMemoryManager;
 
@@ -463,7 +467,9 @@ void PrintCompositorImpl::DrawPage(SkDocument* doc,
   SkCanvas* canvas = doc->beginPage(page.fSize.width(), page.fSize.height());
   canvas->drawPicture(page.fPicture);
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-  watermark_.Draw(canvas, page.fSize);
+  if (watermark_) {
+    watermark_->Draw(canvas, page.fSize);
+  }
 #endif
   doc->endPage();
 }
@@ -539,7 +545,11 @@ void PrintCompositorImpl::SetTitle(const std::string& title) {
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 void PrintCompositorImpl::SetWatermarkBlock(
     watermark::mojom::WatermarkBlockPtr watermark_block) {
-  watermark_.SetBlock(std::move(watermark_block));
+  if (watermark_block) {
+    watermark_ = std::make_unique<PrintWatermark>(std::move(watermark_block));
+  } else {
+    watermark_.reset();
+  }
 }
 #endif
 

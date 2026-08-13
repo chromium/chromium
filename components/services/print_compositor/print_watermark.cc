@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/enterprise/watermarking/mojom/watermark.mojom.h"
@@ -17,19 +18,15 @@
 
 namespace printing {
 
-PrintWatermark::PrintWatermark() = default;
+PrintWatermark::PrintWatermark(
+    watermark::mojom::WatermarkBlockPtr watermark_block)
+    : watermark_block_(std::move(watermark_block)) {
+  CHECK(watermark_block_);
+}
 
 PrintWatermark::~PrintWatermark() = default;
 
-void PrintWatermark::SetBlock(
-    watermark::mojom::WatermarkBlockPtr watermark_block) {
-  watermark_block_ = std::move(watermark_block);
-}
-
 void PrintWatermark::Draw(SkCanvas* canvas, const SkSize& size) const {
-  if (!watermark_block_) {
-    return;
-  }
   base::ReadOnlySharedMemoryMapping mapping =
       watermark_block_->serialized_skpicture.Map();
   if (!mapping.IsValid()) {

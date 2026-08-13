@@ -29,10 +29,6 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/accessibility/ax_tree_update.h"
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "components/services/print_compositor/print_watermark.h"
-#endif
-
 class SkDocument;
 struct SkDocumentPage;
 
@@ -45,6 +41,10 @@ class ClientDiscardableSharedMemoryManager;
 }
 
 namespace printing {
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+class PrintWatermark;
+#endif
 
 class PrintCompositorImpl : public mojom::PrintCompositor {
  public:
@@ -132,7 +132,9 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       FinishDocumentCompositionCallback callback);
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-  const PrintWatermark& watermark_for_testing() const { return watermark_; }
+  const PrintWatermark* watermark_for_testing() const {
+    return watermark_.get();
+  }
 #endif
 
  private:
@@ -290,7 +292,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   std::string title_;
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-  PrintWatermark watermark_;
+  std::unique_ptr<PrintWatermark> watermark_;
 #endif
 };
 
