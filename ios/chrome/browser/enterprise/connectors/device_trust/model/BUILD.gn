@@ -4,23 +4,38 @@
 
 source_set("model") {
   sources = [
+    "device_trust_connector_service_factory_ios.h",
+    "device_trust_connector_service_factory_ios.mm",
     "device_trust_key_manager_ios.h",
     "device_trust_key_manager_ios.mm",
   ]
 
   deps = [
     "//base",
+    "//components/enterprise/device_trust",
     "//components/enterprise/device_trust/core",
+    "//components/enterprise/device_trust/core:device_trust_connector_service",
+    "//components/pref_registry",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "device_trust_key_manager_ios_unittest.mm" ]
+  sources = [
+    "device_trust_connector_service_factory_ios_unittest.mm",
+    "device_trust_key_manager_ios_unittest.mm",
+  ]
 
   deps = [
     ":model",
     "//base/test:test_support",
+    "//components/enterprise/device_trust",
+    "//components/enterprise/device_trust/core:device_trust_connector_service",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//testing/gtest",
+    "//url",
   ]
 }
