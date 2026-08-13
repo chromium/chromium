@@ -757,13 +757,12 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void willCloseTabs(
-                List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
-            for (Tab tab : tabs) {
-                Profile profile = mTabModelSelector.getModel(tab.isIncognito()).getProfile();
-                OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
-                if (bridge == null) continue;
+        public void willCloseTabs(List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+            Profile profile = mTabModelSelector.getModel(tabs.get(0).isIncognito()).getProfile();
+            OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
+            if (bridge == null) return;
 
+            for (Tab tab : tabs) {
                 WebContents webContents = tab.getWebContents();
                 if (webContents != null) bridge.willCloseTab(webContents);
             }
