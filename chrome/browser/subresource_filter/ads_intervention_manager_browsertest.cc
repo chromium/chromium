@@ -123,6 +123,7 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithEnforcement,
            entries.back(), ukm::builders::AdsIntervention_LastIntervention::
                                kInterventionStatusName) ==
        static_cast<int>(AdsInterventionStatus::kExpired)));
+  ads_intervention_manager()->set_clock_for_testing(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -213,6 +214,7 @@ IN_PROC_BROWSER_TEST_F(
            entries.back(), ukm::builders::AdsIntervention_LastIntervention::
                                kInterventionStatusName) ==
        static_cast<int>(AdsInterventionStatus::kExpired)));
+  ads_intervention_manager()->set_clock_for_testing(nullptr);
 }
 
 class AdsInterventionManagerTestWithoutEnforcement
@@ -287,6 +289,7 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithoutEnforcement,
       entries.front(),
       ukm::builders::AdsIntervention_LastIntervention::kInterventionStatusName,
       static_cast<int>(AdsInterventionStatus::kWouldBlock));
+  ads_intervention_manager()->set_clock_for_testing(nullptr);
 }
 
 }  // namespace subresource_filter

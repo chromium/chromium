@@ -44,7 +44,10 @@ class AdsInterventionManagerTest : public testing::Test {
     ads_intervention_manager_->set_clock_for_testing(test_clock_.get());
   }
 
-  void TearDown() override { settings_map_->ShutdownOnUIThread(); }
+  void TearDown() override {
+    ads_intervention_manager_.reset();
+    settings_map_->ShutdownOnUIThread();
+  }
 
   base::SimpleTestClock* test_clock() { return test_clock_.get(); }
 
