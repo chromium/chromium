@@ -386,6 +386,8 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
     on_contents_changed_.Notify();
   }
 
+  ~BubbleDialogModelHostContentsView() override { Detach(); }
+
   // TODO(pbos): Remove the need for this method by making sure the host always
   // outlives us. Currently we do outlive them. Widget, WidgetDelegate and
   // RootView lifetimes are complicated.
@@ -821,40 +823,50 @@ std::unique_ptr<DialogModelSectionHost> DialogModelSectionHost::Create(
 BEGIN_METADATA(DialogModelSectionHost)
 END_METADATA
 
-BubbleDialogModelHost::ThemeChangedObserver::ThemeChangedObserver(
+BubbleDialogModelHost::ContentsViewObserver::ContentsViewObserver(
     BubbleDialogModelHost* parent,
     BubbleDialogModelHostContentsView* contents_view)
     : parent_(parent) {
   observation_.Observe(contents_view);
 }
-BubbleDialogModelHost::ThemeChangedObserver::~ThemeChangedObserver() = default;
+BubbleDialogModelHost::ContentsViewObserver::~ContentsViewObserver() = default;
 
-void BubbleDialogModelHost::ThemeChangedObserver::OnViewThemeChanged(
+void BubbleDialogModelHost::ContentsViewObserver::OnViewThemeChanged(
     View* view) {
   parent_->UpdateWindowIcon(view->GetColorProvider());
+}
+
+void BubbleDialogModelHost::ContentsViewObserver::OnViewIsDeleting(View* view) {
+  observation_.Reset();
+  parent_->on_contents_changed_subscription_ = {};
+  parent_->contents_view_ = nullptr;
 }
 
 BubbleDialogModelHost::BubbleDialogModelHost(
     std::unique_ptr<ui::DialogModel> model,
     views::BubbleAnchor anchor,
     BubbleBorder::Arrow arrow,
-    bool autosize)
+    bool autosize,
+    bool owned_by_widget)
     : BubbleDialogModelHost(base::PassKey<BubbleDialogModelHost>(),
                             std::move(model),
                             anchor,
                             arrow,
                             ui::mojom::ModalType::kNone,
-                            autosize) {}
+                            autosize,
+                            owned_by_widget) {}
 
 BubbleDialogModelHost::BubbleDialogModelHost(
     std::unique_ptr<ui::DialogModel> model,
     views::View* anchor_view,
     BubbleBorder::Arrow arrow,
-    bool autosize)
+    bool autosize,
+    bool owned_by_widget)
     : BubbleDialogModelHost(std::move(model),
                             BubbleAnchor(anchor_view),
                             arrow,
-                            autosize) {}
+                            autosize,
+                            owned_by_widget) {}
 
 BubbleDialogModelHost::BubbleDialogModelHost(
     base::PassKey<BubbleDialogModelHost>,
@@ -862,7 +874,8 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     views::BubbleAnchor anchor,
     BubbleBorder::Arrow arrow,
     ui::mojom::ModalType modal_type,
-    bool autosize)
+    bool autosize,
+    bool owned_by_widget)
     : BubbleDialogDelegate(anchor,
                            arrow,
                            views::BubbleBorder::DIALOG_SHADOW,
@@ -876,8 +889,10 @@ BubbleDialogModelHost::BubbleDialogModelHost(
           contents_view_->AddOnContentsChangedCallback(
               base::BindRepeating(&BubbleDialogModelHost::OnContentsViewChanged,
                                   base::Unretained(this)))),
-      theme_observer_(this, contents_view_) {
-  SetOwnedByWidget(OwnedByWidgetPassKey());
+      contents_view_observer_(this, contents_view_) {
+  if (owned_by_widget) {
+    SetOwnedByWidget(OwnedByWidgetPassKey());
+  }
   model_->set_host(DialogModelHost::GetPassKey(), this);
 
   // Dialog callbacks can safely refer to |model_|, they can't be called after
@@ -1035,17 +1050,20 @@ bool BubbleDialogModelHost::ShouldAllowKeyEventsDuringInputProtection() const {
 BubbleDialogModelHost::~BubbleDialogModelHost() {
   // Detach ContentsView as it's referring to state that's about to be
   // destroyed.
-  contents_view_->Detach();
+  if (contents_view_) {
+    contents_view_->Detach();
+  }
 }
 
 std::unique_ptr<BubbleDialogModelHost> BubbleDialogModelHost::CreateModal(
     std::unique_ptr<ui::DialogModel> model,
     ui::mojom::ModalType modal_type,
-    bool autosize) {
+    bool autosize,
+    bool owned_by_widget) {
   DCHECK_NE(modal_type, ui::mojom::ModalType::kNone);
   return std::make_unique<BubbleDialogModelHost>(
       base::PassKey<BubbleDialogModelHost>(), std::move(model), BubbleAnchor(),
-      BubbleBorder::Arrow::NONE, modal_type, autosize);
+      BubbleBorder::Arrow::NONE, modal_type, autosize, owned_by_widget);
 }
 
 View* BubbleDialogModelHost::GetInitiallyFocusedView() {
@@ -1124,7 +1142,9 @@ void BubbleDialogModelHost::Close() {
 
   // Detach ContentsView as it's referring to state that's about to be
   // destroyed.
-  contents_view_->Detach();
+  if (contents_view_) {
+    contents_view_->Detach();
+  }
   model_.reset();
 }
 

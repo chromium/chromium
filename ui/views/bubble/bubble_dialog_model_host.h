@@ -87,13 +87,15 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   BubbleDialogModelHost(std::unique_ptr<ui::DialogModel> model,
                         views::BubbleAnchor anchor,
                         BubbleBorder::Arrow arrow,
-                        bool autosize = true);
+                        bool autosize = true,
+                        bool owned_by_widget = true);
 
   // Compat alias for old type.
   BubbleDialogModelHost(std::unique_ptr<ui::DialogModel> model,
                         views::View* anchor_view,
                         BubbleBorder::Arrow arrow,
-                        bool autosize = true);
+                        bool autosize = true,
+                        bool owned_by_widget = true);
 
   // "Private" constructor (uses base::PassKey), use another constructor or
   // ::CreateModal().
@@ -102,14 +104,21 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
                         views::BubbleAnchor anchor,
                         BubbleBorder::Arrow arrow,
                         ui::mojom::ModalType modal_type,
-                        bool autosize);
+                        bool autosize,
+                        bool owned_by_widget = true);
 
   ~BubbleDialogModelHost() override;
 
+  // If |owned_by_widget| is true, the client *must* pass ownership of the
+  // BubbleDialogModelHost to the Widget; If it is set to false, the client
+  // must retain ownership of the BubbleDialogModelHost and ensure that it
+  // outlives the Widget. It works best if the Widget were to also use the
+  // CLIENT_OWNS_WIDGET ownership model.
   static std::unique_ptr<BubbleDialogModelHost> CreateModal(
       std::unique_ptr<ui::DialogModel> model,
       ui::mojom::ModalType modal_type,
-      bool autosize = true);
+      bool autosize = true,
+      bool owned_by_widget = true);
 
   // BubbleDialogDelegate:
   // TODO(pbos): Populate initparams with initial view instead of overriding
@@ -125,18 +134,20 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
 
  private:
-  // This class observes the ContentsView theme to make sure that the window
-  // icon updates with the theme.
-  class ThemeChangedObserver : public ViewObserver {
+  // Observes the ContentsView for theme changes (to update the window icon)
+  // and view deletion (to invalidate subscriptions and pointers when the
+  // Widget/ContentsView is destroyed before the host).
+  class ContentsViewObserver : public ViewObserver {
    public:
-    ThemeChangedObserver(BubbleDialogModelHost* parent,
+    ContentsViewObserver(BubbleDialogModelHost* parent,
                          BubbleDialogModelHostContentsView* contents_view);
-    ThemeChangedObserver(const ThemeChangedObserver&) = delete;
-    ThemeChangedObserver& operator=(const ThemeChangedObserver&) = delete;
-    ~ThemeChangedObserver() override;
+    ContentsViewObserver(const ContentsViewObserver&) = delete;
+    ContentsViewObserver& operator=(const ContentsViewObserver&) = delete;
+    ~ContentsViewObserver() override;
 
     // ViewObserver:
     void OnViewThemeChanged(View*) override;
+    void OnViewIsDeleting(View*) override;
 
    private:
     const raw_ptr<BubbleDialogModelHost> parent_;
@@ -158,9 +169,9 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   bool IsModalDialog() const;
 
   std::unique_ptr<ui::DialogModel> model_;
-  const raw_ptr<BubbleDialogModelHostContentsView> contents_view_;
+  raw_ptr<BubbleDialogModelHostContentsView> contents_view_ = nullptr;
   base::CallbackListSubscription on_contents_changed_subscription_;
-  ThemeChangedObserver theme_observer_;
+  ContentsViewObserver contents_view_observer_;
 
   base::WeakPtrFactory<BubbleDialogModelHost> weak_ptr_factory_{this};
 };

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/test/gtest_util.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -602,6 +603,85 @@ TEST_F(BubbleDialogModelHostTest, CheckboxDoesNotStretchToFullWidth) {
   EXPECT_LT(checkbox_preferred_width, dialog_content_width);
 
   bubble_widget->CloseNow();
+}
+
+TEST_F(BubbleDialogModelHostTest, ClientOwnedBubbleLifetime) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Show();
+
+  auto host = std::make_unique<BubbleDialogModelHost>(
+      ui::DialogModel::Builder().AddOkButton(base::DoNothing()).Build(),
+      anchor_widget->GetContentsView(), BubbleBorder::Arrow::TOP_RIGHT,
+      /*autosize=*/true, /*owned_by_widget=*/false);
+
+  std::unique_ptr<Widget> bubble_widget =
+      BubbleDialogDelegate::CreateBubble(host.get());
+  test::WidgetVisibleWaiter waiter(bubble_widget.get());
+  bubble_widget->Show();
+  waiter.Wait();
+  ASSERT_TRUE(bubble_widget->IsVisible());
+
+  // In CLIENT_OWNS_WIDGET mode, the client explicitly owns the Widget and the
+  // delegate (BubbleDialogModelHost). Destruction must proceed widget-first,
+  // then delegate-second.
+  bubble_widget.reset();
+  host.reset();
+}
+
+TEST_F(BubbleDialogModelHostTest, ClientOwnedModalDialogLifetime) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Show();
+
+  auto host = BubbleDialogModelHost::CreateModal(
+      ui::DialogModel::Builder().AddOkButton(base::DoNothing()).Build(),
+      ui::mojom::ModalType::kWindow, /*autosize=*/true,
+      /*owned_by_widget=*/false);
+  host->SetOwnershipOfNewWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  std::unique_ptr<Widget> dialog_widget =
+      base::WrapUnique(DialogDelegate::CreateDialogWidget(
+          host.get(), GetContext(), anchor_widget->GetNativeView()));
+  test::WidgetVisibleWaiter waiter(dialog_widget.get());
+  dialog_widget->Show();
+  waiter.Wait();
+  ASSERT_TRUE(dialog_widget->IsVisible());
+
+  dialog_widget.reset();
+  host.reset();
+}
+
+TEST_F(BubbleDialogModelHostTest, ClientOwnedWithTextfieldConsensusGroups) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kField1Id);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kField2Id);
+
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Show();
+
+  // Adding multiple textfields creates LayoutConsensusGroup registrations in
+  // BubbleDialogModelHostContentsView.
+  auto host = std::make_unique<BubbleDialogModelHost>(
+      ui::DialogModel::Builder()
+          .AddTextfield(kField1Id, u"Label 1", u"Text 1")
+          .AddTextfield(kField2Id, u"Label 2", u"Text 2")
+          .AddOkButton(base::DoNothing())
+          .Build(),
+      anchor_widget->GetContentsView(), BubbleBorder::Arrow::TOP_RIGHT,
+      /*autosize=*/true, /*owned_by_widget=*/false);
+
+  std::unique_ptr<Widget> bubble_widget =
+      BubbleDialogDelegate::CreateBubble(host.get());
+  test::WidgetVisibleWaiter waiter(bubble_widget.get());
+  bubble_widget->Show();
+  waiter.Wait();
+  ASSERT_TRUE(bubble_widget->IsVisible());
+
+  // Teardown of the widget first should cleanly detach consensus groups and
+  // children before member destruction.
+  bubble_widget.reset();
+  host.reset();
 }
 
 }  // namespace views
