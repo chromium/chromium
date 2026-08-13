@@ -62,7 +62,23 @@ public class TabStateStorageService {
      * @param tab The tab to save to storage.
      */
     public void saveTabData(Tab tab) {
-        TabStateStorageServiceJni.get().save(mNativeTabStateStorageService, tab);
+        TabStateStorageServiceJni.get().saveTabData(mNativeTabStateStorageService, tab);
+    }
+
+    /**
+     * Saves a tab explicitly with the provided metadata which avoids resolving data via the tab's
+     * parent collection.
+     *
+     * @param windowTag The window tag to save under.
+     * @param isOffTheRecord true if off the record.
+     * @param storageId The permanent storage ID for the tab.
+     * @param tab The tab to save.
+     */
+    public void saveTabData(String windowTag, boolean isOffTheRecord, int storageId, Tab tab) {
+        assert !windowTag.isEmpty();
+        TabStateStorageServiceJni.get()
+                .saveTabDataWithMetadata(
+                        mNativeTabStateStorageService, windowTag, isOffTheRecord, storageId, tab);
     }
 
     /**
@@ -190,7 +206,14 @@ public class TabStateStorageService {
     interface Natives {
         void boostPriority(long nativeTabStateStorageServiceAndroid);
 
-        void save(long nativeTabStateStorageServiceAndroid, @JniType("TabAndroid*") Tab tab);
+        void saveTabData(long nativeTabStateStorageServiceAndroid, @JniType("TabAndroid*") Tab tab);
+
+        void saveTabDataWithMetadata(
+                long nativeTabStateStorageServiceAndroid,
+                @JniType("std::string") String windowTag,
+                boolean isOffTheRecord,
+                int storageId,
+                @JniType("TabAndroid*") Tab tab);
 
         void loadAllData(
                 long nativeTabStateStorageServiceAndroid,

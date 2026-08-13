@@ -110,6 +110,13 @@ class TabStateStorageService : public KeyedService,
   void Save(const TabInterface* tab);
   void Save(const TabCollection* collection);
 
+  // Saves the tab state directly using an explicit window_tag and
+  // off-the-record status. This is used when a Tab lacks a parent
+  // TabCollection.
+  void Save(std::string window_tag,
+            bool is_off_the_record,
+            const TabInterface* tab);
+
   // These will silently fail if the collection has not already been saved to
   // the database.
   void SavePayload(const TabCollection* collection);

@@ -1,3 +1,4 @@
+#include "chrome/browser/tab/storage_update_unit.h"
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -138,8 +139,13 @@ void TabStateStorageService::Save(const TabInterface* tab) {
   std::string window_tag = packager_->GetWindowTag(parent);
   bool is_off_the_record = packager_->IsOffTheRecord(parent);
 
-  StorageId storage_id = GetStorageId(tab);
+  Save(std::move(window_tag), is_off_the_record, tab);
+}
 
+void TabStateStorageService::Save(std::string window_tag,
+                                  bool is_off_the_record,
+                                  const TabInterface* tab) {
+  StorageId storage_id = GetStorageId(tab);
   ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
     builder.SaveNode(storage_id, std::move(window_tag), is_off_the_record,
                      TabStorageType::kTab, tab->GetHandle());
