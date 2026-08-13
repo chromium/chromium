@@ -374,9 +374,9 @@ void TabStripCollectionController::ToggleTabGroupCollapsedState(
       CHECK(views::IsViewClass<TabView>(view));
       TabView* const tab_view = views::AsViewClass<TabView>(view);
       if (is_currently_collapsed) {
-        tab_view->ReleaseFreezingVote();
+        tab_view->ReleaseFreezingVote(FreezingVoteReason::kCollapsedGroup);
       } else {
-        tab_view->CreateFreezingVote();
+        tab_view->CreateFreezingVote(FreezingVoteReason::kCollapsedGroup);
       }
     }
   }

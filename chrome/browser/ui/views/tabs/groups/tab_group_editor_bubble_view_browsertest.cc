@@ -359,24 +359,24 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   ASSERT_FALSE(browser_view->horizontal_tab_strip_for_testing()
                    ->tab_at(0)
-                   ->HasFreezingVote());
+                   ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
   ASSERT_FALSE(browser_view->horizontal_tab_strip_for_testing()
                    ->tab_at(1)
-                   ->HasFreezingVote());
+                   ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
   ASSERT_FALSE(browser_view->horizontal_tab_strip_for_testing()
                    ->tab_at(2)
-                   ->HasFreezingVote());
+                   ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
   browser_view->horizontal_tab_strip_for_testing()
       ->ToggleTabGroupCollapsedState(group.value());
   EXPECT_TRUE(browser_view->horizontal_tab_strip_for_testing()
                   ->tab_at(0)
-                  ->HasFreezingVote());
+                  ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
   EXPECT_TRUE(browser_view->horizontal_tab_strip_for_testing()
                   ->tab_at(1)
-                  ->HasFreezingVote());
+                  ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
   EXPECT_FALSE(browser_view->horizontal_tab_strip_for_testing()
                    ->tab_at(2)
-                   ->HasFreezingVote());
+                   ->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
 }
 
 class TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup

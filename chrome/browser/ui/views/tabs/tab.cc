@@ -1096,14 +1096,31 @@ void Tab::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
   icon_->SetCanPaintToLayer(controller_->CanPaintThrobberToLayer());
 }
 
-void Tab::CreateFreezingVote(content::WebContents* contents) {
-  if (!freezing_vote_.has_value()) {
-    freezing_vote_.emplace(contents);
+void Tab::CreateFreezingVote(FreezingVoteReason reason,
+                             content::WebContents* contents) {
+  auto& vote = GetFreezingVote(reason);
+  if (!vote.has_value()) {
+    vote.emplace(contents);
   }
 }
 
-void Tab::ReleaseFreezingVote() {
-  freezing_vote_.reset();
+void Tab::ReleaseFreezingVote(FreezingVoteReason reason) {
+  GetFreezingVote(reason).reset();
+}
+
+bool Tab::HasFreezingVote(FreezingVoteReason reason) const {
+  switch (reason) {
+    case FreezingVoteReason::kCollapsedGroup:
+      return collapsed_freezing_vote_.has_value();
+    case FreezingVoteReason::kFocusedGroup:
+      return focus_mode_freezing_vote_.has_value();
+  }
+  NOTREACHED();
+}
+
+bool Tab::HasFreezingVote() const {
+  return collapsed_freezing_vote_.has_value() ||
+         focus_mode_freezing_vote_.has_value();
 }
 
 void Tab::ShowHover(TabStyle::ShowHoverStyle style) {
@@ -1584,6 +1601,17 @@ void Tab::OnTabDataChanged(TabChangeType tab_change_type,
 // static
 std::unique_ptr<TabStyleViewDelegate> Tab::CreateStyleDelegate(const Tab* tab) {
   return std::make_unique<TabStyleViewDelegateImpl>(tab);
+}
+
+std::optional<performance_manager::freezing::FreezingVote>&
+Tab::GetFreezingVote(FreezingVoteReason reason) {
+  switch (reason) {
+    case FreezingVoteReason::kCollapsedGroup:
+      return collapsed_freezing_vote_;
+    case FreezingVoteReason::kFocusedGroup:
+      return focus_mode_freezing_vote_;
+  }
+  NOTREACHED();
 }
 
 BEGIN_METADATA(Tab)

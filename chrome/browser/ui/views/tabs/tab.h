@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
@@ -175,9 +176,11 @@ class Tab : public gfx::AnimationDelegate,
   // throbbers in sync.
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
 
-  void CreateFreezingVote(content::WebContents* contents);
-  void ReleaseFreezingVote();
-  bool HasFreezingVote() const { return freezing_vote_.has_value(); }
+  void CreateFreezingVote(FreezingVoteReason reason,
+                          content::WebContents* contents);
+  void ReleaseFreezingVote(FreezingVoteReason reason);
+  bool HasFreezingVote(FreezingVoteReason reason) const;
+  bool HasFreezingVote() const;
 
   bool mouse_hovered() const { return mouse_hovered_; }
 
@@ -359,8 +362,15 @@ class Tab : public gfx::AnimationDelegate,
 
   std::unique_ptr<tabs::TabDataObserver> tab_data_observer_;
 
-  // Freezing vote held while the tab is collapsed.
-  std::optional<performance_manager::freezing::FreezingVote> freezing_vote_;
+  std::optional<performance_manager::freezing::FreezingVote>& GetFreezingVote(
+      FreezingVoteReason reason);
+
+  // Freezing vote held while the tab's group is collapsed.
+  std::optional<performance_manager::freezing::FreezingVote>
+      collapsed_freezing_vote_;
+  // Freezing vote held while another group is focused in focus mode.
+  std::optional<performance_manager::freezing::FreezingVote>
+      focus_mode_freezing_vote_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 

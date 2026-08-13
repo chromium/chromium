@@ -691,9 +691,11 @@ void BrowserTabStripController::OnTabGroupChanged(
           tabstrip_->tab_at(i)->SetVisible(!new_visuals->is_collapsed());
           if (new_visuals->is_collapsed()) {
             tabstrip_->tab_at(i)->CreateFreezingVote(
+                FreezingVoteReason::kCollapsedGroup,
                 model_->GetWebContentsAt(i));
           } else {
-            tabstrip_->tab_at(i)->ReleaseFreezingVote();
+            tabstrip_->tab_at(i)->ReleaseFreezingVote(
+                FreezingVoteReason::kCollapsedGroup);
           }
         }
       }

@@ -406,14 +406,32 @@ void TabView::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
   icon_->StepLoadingAnimation(elapsed_time);
 }
 
-void TabView::CreateFreezingVote() {
-  if (!freezing_vote_.has_value()) {
-    freezing_vote_.emplace(GetTabInterface()->GetContents());
+void TabView::CreateFreezingVote(FreezingVoteReason reason) {
+  auto& vote = GetFreezingVote(reason);
+  if (!vote.has_value()) {
+    if (const tabs::TabInterface* tab = GetTabInterface()) {
+      vote.emplace(tab->GetContents());
+    }
   }
 }
 
-void TabView::ReleaseFreezingVote() {
-  freezing_vote_.reset();
+void TabView::ReleaseFreezingVote(FreezingVoteReason reason) {
+  GetFreezingVote(reason).reset();
+}
+
+bool TabView::HasFreezingVote(FreezingVoteReason reason) const {
+  switch (reason) {
+    case FreezingVoteReason::kCollapsedGroup:
+      return collapsed_freezing_vote_.has_value();
+    case FreezingVoteReason::kFocusedGroup:
+      return focus_mode_freezing_vote_.has_value();
+  }
+  NOTREACHED();
+}
+
+bool TabView::HasFreezingVote() const {
+  return collapsed_freezing_vote_.has_value() ||
+         focus_mode_freezing_vote_.has_value();
 }
 
 void TabView::UpdateHovered(bool hovered) {
@@ -1447,6 +1465,17 @@ std::optional<SkColor> TabView::GetGroupColor() const {
 std::unique_ptr<TabStyleViewDelegate> TabView::CreateStyleDelegate(
     const TabView* tab_view) {
   return std::make_unique<TabStyleViewDelegateImpl>(tab_view);
+}
+
+std::optional<performance_manager::freezing::FreezingVote>&
+TabView::GetFreezingVote(FreezingVoteReason reason) {
+  switch (reason) {
+    case FreezingVoteReason::kCollapsedGroup:
+      return collapsed_freezing_vote_;
+    case FreezingVoteReason::kFocusedGroup:
+      return focus_mode_freezing_vote_;
+  }
+  NOTREACHED();
 }
 
 BEGIN_METADATA(TabView)

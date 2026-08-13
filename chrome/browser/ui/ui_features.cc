@@ -493,6 +493,13 @@ BASE_FEATURE_PARAM(std::string,
 
 BASE_FEATURE(kTabGroupsFocusing, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(bool, kTabGroupsFocusFreezing, &kTabGroupsFocusing, true);
+
+bool IsTabGroupsFocusFreezingEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupsFocusing) &&
+         kTabGroupsFocusFreezing.Get();
+}
+
 BASE_FEATURE(kTabGroupRibbon, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGroupRibbonEnabled() {

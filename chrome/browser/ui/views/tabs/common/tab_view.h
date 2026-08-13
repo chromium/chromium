@@ -74,9 +74,10 @@ class TabView : public views::View,
 
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
 
-  void CreateFreezingVote();
-  void ReleaseFreezingVote();
-  bool HasFreezingVote() const { return freezing_vote_.has_value(); }
+  void CreateFreezingVote(FreezingVoteReason reason);
+  void ReleaseFreezingVote(FreezingVoteReason reason);
+  bool HasFreezingVote(FreezingVoteReason reason) const;
+  bool HasFreezingVote() const;
 
   void UpdateHovered(bool hovered);
   bool IsHoverAnimationActive() const;
@@ -254,7 +255,15 @@ class TabView : public views::View,
   float hover_opacity_max_;
   float radial_highlight_opacity_;
 
-  std::optional<performance_manager::freezing::FreezingVote> freezing_vote_;
+  std::optional<performance_manager::freezing::FreezingVote>& GetFreezingVote(
+      FreezingVoteReason reason);
+
+  // Freezing vote held while the tab's group is collapsed.
+  std::optional<performance_manager::freezing::FreezingVote>
+      collapsed_freezing_vote_;
+  // Freezing vote held while another group is focused in focus mode.
+  std::optional<performance_manager::freezing::FreezingVote>
+      focus_mode_freezing_vote_;
 
   std::unique_ptr<tabs::TabDataObserver> tab_data_observer_;
 

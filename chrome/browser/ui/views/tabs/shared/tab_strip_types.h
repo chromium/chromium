@@ -40,9 +40,19 @@ enum class ToggleTabGroupCollapsedStateOrigin {
   // expand if the range of tabs include a collapsed group.
   kTabsSelected,
 };
+
 enum class TabStripOrientation {
   kHorizontal,
   kVertical,
+};
+
+// Reasons for placing a freezing vote on a tab.
+enum class FreezingVoteReason {
+  // For the tabs inside a collapsed tab group.
+  kCollapsedGroup,
+
+  // For the unpinned tabs outside a focused tab group.
+  kFocusedGroup,
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_TYPES_H_
