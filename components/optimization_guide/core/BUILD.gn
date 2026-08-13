@@ -896,6 +896,7 @@ source_set("model_execution_unit_tests") {
       "model_execution/repetition_checker_unittest.cc",
       "model_execution/response_parser_factory_unittest.cc",
       "model_execution/safety_checker_unittest.cc",
+      "model_execution/session_impl_unittest.cc",
       "model_execution/simple_response_parser_unittest.cc",
       "model_execution/substitution_unittest.cc",
       "model_quality/model_execution_logging_wrappers_unittest.cc",
