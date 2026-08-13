@@ -118,10 +118,10 @@ content::WebContents* AddWebContents(
   return params.navigated_or_inserted_contents;
 }
 
-void CloseWebContents(Browser* browser,
+void CloseWebContents(BrowserWindowInterface* browser,
                       content::WebContents* contents,
                       bool add_to_history) {
-  int index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+  int index = browser->GetTabStripModel()->GetIndexOfWebContents(contents);
   if (index == TabStripModel::kNoTab) {
     DUMP_WILL_BE_NOTREACHED()
         << "CloseWebContents called for tab not in our strip";
@@ -138,7 +138,7 @@ void CloseWebContents(Browser* browser,
     close_types |= TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB;
   }
 
-  browser->tab_strip_model()->CloseWebContents(contents, close_types);
+  browser->GetTabStripModel()->CloseWebContents(contents, close_types);
 }
 
 void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
@@ -153,8 +153,7 @@ void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
     return;
   }
 
-  TabStripModel* model =
-      nav_params->browser->GetBrowserForMigrationOnly()->tab_strip_model();
+  TabStripModel* model = nav_params->browser->GetTabStripModel();
   DCHECK(model);
 
   const int source_index =

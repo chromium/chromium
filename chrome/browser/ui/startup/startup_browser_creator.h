@@ -15,7 +15,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 
-class Browser;
+class BrowserWindowInterface;
 class GURL;
 class PrefRegistrySimple;
 class Profile;
@@ -107,7 +107,7 @@ class StartupBrowserCreator {
 
   // Opens the set of startup pages from the current session startup prefs.
   static void OpenStartupPages(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       chrome::startup::IsProcessStartup process_startup);
 
   // Returns true if we're launching a profile synchronously. In that case, the

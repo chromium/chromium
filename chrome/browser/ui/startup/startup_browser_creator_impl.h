@@ -74,17 +74,18 @@ class StartupBrowserCreatorImpl {
 
   // Convenience for OpenTabsInBrowser that converts |urls| into a set of
   // Tabs.
-  Browser* OpenURLsInBrowser(Browser* browser,
-                             chrome::startup::IsProcessStartup process_startup,
-                             const std::vector<GURL>& urls);
+  BrowserWindowInterface* OpenURLsInBrowser(
+      BrowserWindowInterface* browser,
+      chrome::startup::IsProcessStartup process_startup,
+      const std::vector<GURL>& urls);
 
   // Creates a tab for each of the Tabs in |tabs|. If browser is non-null
   // and a tabbed browser, the tabs are added to it. Otherwise a new tabbed
   // browser is created and the tabs are added to it. The browser the tabs
   // are added to is returned, which is either |browser|, the newly created
   // browser, or nullptr if browser could not be created.
-  Browser* OpenTabsInBrowser(
-      Browser* browser,
+  BrowserWindowInterface* OpenTabsInBrowser(
+      BrowserWindowInterface* browser,
       chrome::startup::IsProcessStartup process_startup,
       const StartupTabs& tabs,
       TabOverWrite is_active_tab_overwrite = TabOverWrite::kNo);
@@ -194,7 +195,7 @@ class StartupBrowserCreatorImpl {
   // Returns a browser displaying the contents of |tabs|. Based on |behavior|,
   // this may attempt a session restore or create a new browser. May also allow
   // DOM Storage to begin cleanup once it's clear it is not needed anymore.
-  Browser* RestoreOrCreateBrowser(
+  BrowserWindowInterface* RestoreOrCreateBrowser(
       const StartupTabs& tabs,
       BrowserOpenBehavior behavior,
       SessionRestore::BehaviorBitmask restore_options,
@@ -218,7 +219,7 @@ class StartupBrowserCreatorImpl {
 
   // Show a toast if a non milestone update is detected.
   static void MaybeShowNonMilestoneUpdateToast(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const std::string& current_version_string);
 
   // Return whether the current version update is non milestone update.

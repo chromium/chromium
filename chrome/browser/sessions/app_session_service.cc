@@ -72,7 +72,7 @@ void AppSessionService::TabClosed(SessionID window_id, SessionID tab_id) {
   ScheduleCommand(sessions::CreateTabClosedCommand(tab_id));
 }
 
-void AppSessionService::WindowOpened(Browser* browser) {
+void AppSessionService::WindowOpened(BrowserWindowInterface* browser) {
   if (!ShouldTrackBrowser(browser)) {
     return;
   }
@@ -111,7 +111,8 @@ void AppSessionService::WindowClosed(SessionID window_id) {
   ScheduleCommand(sessions::CreateWindowClosedCommand(window_id));
 }
 
-void AppSessionService::SetWindowType(SessionID window_id, Browser::Type type) {
+void AppSessionService::SetWindowType(SessionID window_id,
+                                      BrowserWindowInterface::Type type) {
   sessions::SessionWindow::WindowType window_type =
       WindowTypeForBrowserType(type);
   if (!ShouldRestoreWindowOfType(window_type)) {
@@ -123,8 +124,9 @@ void AppSessionService::SetWindowType(SessionID window_id, Browser::Type type) {
   ScheduleCommand(CreateSetWindowTypeCommand(window_id, window_type));
 }
 
-Browser::Type AppSessionService::GetDesiredBrowserTypeForWebContents() {
-  return Browser::Type::TYPE_APP;
+BrowserWindowInterface::Type
+AppSessionService::GetDesiredBrowserTypeForWebContents() {
+  return BrowserWindowInterface::Type::TYPE_APP;
 }
 
 bool AppSessionService::ShouldRestoreWindowOfType(

@@ -161,8 +161,7 @@ void BrowserRestoreObserver::OnSessionRestoreDone(Profile* profile,
   auto create_params =
       BrowserWindowCreateParams(profile, /*user_gesture=*/false);
   BrowserDelegate* browser = BrowserController::GetInstance()->GetDelegate(
-      CreateBrowserWindow(std::move(create_params))
-          ->GetBrowserForMigrationOnly());
+      CreateBrowserWindow(std::move(create_params)));
   RestoreUrls(browser);
   browser->Show();
   browser->Activate();

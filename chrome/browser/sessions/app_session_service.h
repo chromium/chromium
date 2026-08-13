@@ -33,11 +33,12 @@ class AppSessionService : public SessionServiceBase {
 
   // SessionServiceBase:
   void TabClosed(SessionID window_id, SessionID tab_id) override;
-  void WindowOpened(Browser* browser) override;
+  void WindowOpened(BrowserWindowInterface* browser) override;
   void WindowClosing(SessionID window_id) override;
   void WindowClosed(SessionID window_id) override;
-  void SetWindowType(SessionID window_id, Browser::Type type) override;
-  Browser::Type GetDesiredBrowserTypeForWebContents() override;
+  void SetWindowType(SessionID window_id,
+                     BrowserWindowInterface::Type type) override;
+  BrowserWindowInterface::Type GetDesiredBrowserTypeForWebContents() override;
   bool ShouldRestoreWindowOfType(
       sessions::SessionWindow::WindowType window_type) const override;
   void ScheduleResetCommands() override;

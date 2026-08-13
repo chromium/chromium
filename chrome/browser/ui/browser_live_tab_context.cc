@@ -330,7 +330,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
   std::optional<base::Uuid> saved_group_id = tab.saved_group_id;
   content::WebContents* web_contents = nullptr;
 
-  Browser* const browser = browser_->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* const browser = &*browser_;
   const bool is_normal_tab = !group_id.has_value();
   const bool is_grouped_tab_unsaved =
       group_id.has_value() && !saved_group_id.has_value();
@@ -423,10 +423,9 @@ sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
           : nullptr;
 
   WebContents* web_contents = chrome::ReplaceRestoredTab(
-      browser_->GetBrowserForMigrationOnly(), tab.navigations,
-      tab.normalized_navigation_index(), tab.extension_app_id,
-      storage_namespace, tab.user_agent_override, tab.extra_data,
-      false /* from_session_restore */);
+      &*browser_, tab.navigations, tab.normalized_navigation_index(),
+      tab.extension_app_id, storage_namespace, tab.user_agent_override,
+      tab.extra_data, false /* from_session_restore */);
   return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
 }
 

@@ -13,11 +13,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sessions/session_service_base.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -72,7 +72,7 @@ class SessionService : public SessionServiceBase {
   // Returns true if restore should be triggered. If `browser` is non-null this
   // is called as the result of a new Browser being created. If `browser` is
   // null this is called from RestoreIfNecessary();
-  bool ShouldRestore(Browser* browser);
+  bool ShouldRestore(BrowserWindowInterface* browser);
 
   // Invoke at a point when you think session restore might occur. For example,
   // during startup and window creation this is invoked to see if a session
@@ -141,7 +141,7 @@ class SessionService : public SessionServiceBase {
   void TabClosed(SessionID window_id, SessionID tab_id) override;
 
   // Notification a window has opened.
-  void WindowOpened(Browser* browser) override;
+  void WindowOpened(BrowserWindowInterface* browser) override;
 
   // Notification the window is about to close.
   void WindowClosing(SessionID window_id) override;
@@ -152,7 +152,8 @@ class SessionService : public SessionServiceBase {
   // Sets the type of window. In order for the contents of a window to be
   // tracked SetWindowType must be invoked with a type we track
   // (ShouldRestoreOfWindowType returns true).
-  void SetWindowType(SessionID window_id, Browser::Type type) override;
+  void SetWindowType(SessionID window_id,
+                     BrowserWindowInterface::Type type) override;
 
   void SetWindowUserTitle(SessionID window_id, const std::string& user_title);
 
@@ -169,11 +170,11 @@ class SessionService : public SessionServiceBase {
   }
 
  protected:
-  Browser::Type GetDesiredBrowserTypeForWebContents() override;
+  BrowserWindowInterface::Type GetDesiredBrowserTypeForWebContents() override;
   void DidScheduleCommand() override;
 
  private:
-  // Allow tests to access our innards for testing purposes.
+  // Allow tests to access our inner structures for testing purposes.
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, SavedSessionNotification);
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, RestoreActivation1);
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, RestoreActivation2);
@@ -195,7 +196,7 @@ class SessionService : public SessionServiceBase {
   // need to restore, the tabs are added to it, otherwise a new browser is
   // created.
   bool RestoreIfNecessary(const StartupTabs& startup_tabs,
-                          Browser* browser,
+                          BrowserWindowInterface* browser,
                           bool restore_apps);
 
   // Adds commands to commands that will recreate the state of the specified

@@ -35,6 +35,7 @@
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -56,6 +57,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
@@ -88,7 +90,7 @@ class SessionServiceTest : public testing::Test {
     session_service_ = std::make_unique<SessionService>(profile_.get());
     helper_.SetService(session_service_.get());
 
-    service()->SetWindowType(window_id, Browser::TYPE_NORMAL);
+    service()->SetWindowType(window_id, BrowserWindowInterface::TYPE_NORMAL);
     service()->SetWindowBounds(window_id, window_bounds,
                                ui::mojom::WindowShowState::kNormal);
     service()->SetWindowWorkspace(window_id, window_workspace);
@@ -205,7 +207,7 @@ class SessionServiceTest : public testing::Test {
     UpdateNavigation(window_id, tab1_id, *nav1, true);
 
     const gfx::Rect window2_bounds(3, 4, 5, 6);
-    service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
+    service()->SetWindowType(window2_id, BrowserWindowInterface::TYPE_NORMAL);
     service()->SetWindowBounds(window2_id, window2_bounds,
                                ui::mojom::WindowShowState::kMaximized);
     helper_.PrepareTabInWindow(window2_id, tab2_id, 0, true);
@@ -446,7 +448,7 @@ TEST_F(SessionServiceTest, WindowWithNoTabsGetsPruned) {
   UpdateNavigation(window_id, tab1_id, nav1, true);
 
   const gfx::Rect window2_bounds(3, 4, 5, 6);
-  service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
+  service()->SetWindowType(window2_id, BrowserWindowInterface::TYPE_NORMAL);
   service()->SetWindowBounds(window2_id, window2_bounds,
                              ui::mojom::WindowShowState::kNormal);
   helper_.PrepareTabInWindow(window2_id, tab2_id, 0, true);
@@ -575,7 +577,7 @@ TEST_F(SessionServiceTest, WindowCloseCommittedAfterNavigate) {
   SessionID tab2_id = SessionID::NewUnique();
   ASSERT_NE(window2_id, window_id);
 
-  service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
+  service()->SetWindowType(window2_id, BrowserWindowInterface::TYPE_NORMAL);
   service()->SetWindowBounds(window2_id, window_bounds,
                              ui::mojom::WindowShowState::kNormal);
 
@@ -1440,7 +1442,7 @@ TEST_F(SessionServiceTest, DisableSaving) {
 
   // Schedule another command, it should not trigger any saving.
   const SessionID window2_id = SessionID::NewUnique();
-  service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
+  service()->SetWindowType(window2_id, BrowserWindowInterface::TYPE_NORMAL);
   EXPECT_FALSE(helper_.command_storage_manager()->HasPendingSave());
   EXPECT_TRUE(helper_.command_storage_manager()->pending_commands().empty());
   helper_.SaveNow();

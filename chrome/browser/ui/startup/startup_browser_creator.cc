@@ -1524,7 +1524,7 @@ void StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
 
 // static
 void StartupBrowserCreator::OpenStartupPages(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     chrome::startup::IsProcessStartup process_startup) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   chrome::startup::IsFirstRun is_first_run =

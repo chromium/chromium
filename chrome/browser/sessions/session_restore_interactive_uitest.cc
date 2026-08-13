@@ -58,7 +58,8 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
     return InProcessBrowserTest::SetUpUserDataDirectory();
   }
 
-  BrowserWindowInterface* QuitBrowserAndRestore(Browser* browser) {
+  BrowserWindowInterface* QuitBrowserAndRestore(
+      BrowserWindowInterface* browser) {
     Profile* profile = browser->GetProfile();
 
     // Close the browser.
@@ -296,14 +297,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreAshInteractiveTest, MultiWindowTabLoad) {
   const gfx::Rect bounds(0, 0, 600, 400);
 
   // Creates 2 browser windows with one fully occludes the other.
-  Browser* browser1 = browser();
+  BrowserWindowInterface* browser1 = browser();
   const GURL kUrlWindow1("data:,window 1");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, kUrlWindow1));
   browser1->GetWindow()->SetBounds(bounds);
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::NewWindow(browser1);
-  Browser* browser2 = browser_created_observer.Wait();
+  BrowserWindowInterface* browser2 = browser_created_observer.Wait();
   browser2->GetWindow()->SetBounds(bounds);
 
   ui_test_utils::WaitUntilBrowserBecomeActive(browser2);
@@ -312,10 +313,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreAshInteractiveTest, MultiWindowTabLoad) {
 
   EXPECT_EQ(
       content::Visibility::OCCLUDED,
-      browser1->tab_strip_model()->GetActiveWebContents()->GetVisibility());
+      browser1->GetTabStripModel()->GetActiveWebContents()->GetVisibility());
   EXPECT_EQ(
       content::Visibility::VISIBLE,
-      browser2->tab_strip_model()->GetActiveWebContents()->GetVisibility());
+      browser2->GetTabStripModel()->GetActiveWebContents()->GetVisibility());
 
   // Quit and restore.
   QuitMultiWindowBrowserAndRestore(profile, /*wait_for_tab_loading=*/false);

@@ -13,12 +13,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/sessions/session_common_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/content/session_tab_helper_delegate.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
@@ -65,7 +66,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
 
   ~SessionServiceBase() override;
 
-  static Browser::Type GetBrowserTypeFromWebContents(
+  static BrowserWindowInterface::Type GetBrowserTypeFromWebContents(
       content::WebContents* web_contents);
 
   Profile* profile() const { return profile_; }
@@ -101,7 +102,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   virtual void TabClosed(SessionID window_id, SessionID tab_id) = 0;
 
   // Notification a window has opened.
-  virtual void WindowOpened(Browser* browser) = 0;
+  virtual void WindowOpened(BrowserWindowInterface* browser) = 0;
 
   // Notification the window is about to close.
   virtual void WindowClosing(SessionID window_id) = 0;
@@ -122,7 +123,8 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // Sets the type of window. In order for the contents of a window to be
   // tracked SetWindowType must be invoked with a type we track
   // (ShouldRestoreOfWindowType returns true).
-  virtual void SetWindowType(SessionID window_id, Browser::Type type) = 0;
+  virtual void SetWindowType(SessionID window_id,
+                             BrowserWindowInterface::Type type) = 0;
 
   // Sets the index of the selected tab in the specified window.
   void SetSelectedTabInWindow(SessionID window_id, int index);
@@ -199,7 +201,8 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   SessionServiceBase(Profile* profile, SessionServiceType type);
 
   // This method is implemented by child classes to pass us the type.
-  virtual Browser::Type GetDesiredBrowserTypeForWebContents() = 0;
+  virtual BrowserWindowInterface::Type
+  GetDesiredBrowserTypeForWebContents() = 0;
 
   bool rebuild_on_next_save() const { return rebuild_on_next_save_; }
   void set_rebuild_on_next_save(bool value) { rebuild_on_next_save_ = value; }
@@ -254,7 +257,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // Adds commands to create the specified browser, and invokes
   // BuildCommandsForTab for each of the tabs in the browser. This ignores
   // any tabs not in the profile we were created with.
-  virtual void BuildCommandsForBrowser(Browser* browser,
+  virtual void BuildCommandsForBrowser(BrowserWindowInterface* browser,
                                        IdToRange* tab_to_available_range,
                                        std::set<SessionID>* windows_to_track);
 

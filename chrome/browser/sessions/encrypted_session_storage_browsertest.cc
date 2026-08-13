@@ -28,7 +28,6 @@
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -259,7 +258,7 @@ class EncryptedSessionStorageBrowserTestBase : public InProcessBrowserTest {
   // `url` and waits for all restored tabs to finish loading if
   // `no_memory_pressure` is true.
   BrowserWindowInterface* QuitBrowserAndRestore(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const GURL& url = GURL(),
       bool no_memory_pressure = true) {
     Profile* profile = browser->GetProfile();
@@ -593,7 +592,7 @@ IN_PROC_BROWSER_TEST_P(TabRestoreWithEncryptionTest, LargeSessionRestore) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  Browser* browser1 = browser();
+  BrowserWindowInterface* browser1 = browser();
   CloseBrowserSynchronously(browser1);
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -606,13 +605,13 @@ IN_PROC_BROWSER_TEST_P(TabRestoreWithEncryptionTest, LargeSessionRestore) {
   TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser2->GetProfile());
   service->RestoreMostRecentEntry(browser2->GetFeatures().live_tab_context());
-  Browser* restored_browser = observer.Wait();
+  BrowserWindowInterface* restored_browser = observer.Wait();
 
-  EXPECT_EQ(starting_tab_count, restored_browser->tab_strip_model()->count());
+  EXPECT_EQ(starting_tab_count, restored_browser->GetTabStripModel()->count());
   for (int i = 1; i < starting_tab_count; ++i) {
     EXPECT_EQ(
         GetUrl(i),
-        restored_browser->tab_strip_model()->GetWebContentsAt(i)->GetURL());
+        restored_browser->GetTabStripModel()->GetWebContentsAt(i)->GetURL());
   }
 }
 
@@ -776,13 +775,13 @@ class SessionRestoreAcrossStagesTest : public RestoreAcrossStagesTestBase {
     browser()->tab_strip_model()->ActivateTabAt(0);
 
     // Window 2 on the right side of the screen
-    Browser* window2 = CreateBrowser(browser()->GetProfile());
+    BrowserWindowInterface* window2 = CreateBrowser(browser()->GetProfile());
     window2->GetWindow()->SetBounds(kWindowBounds2);
 
     // Window 2 Tab 1 should be pinned and shows GetUrl(1)
     ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(window2,
                                                               GetUrl(1), 1);
-    window2->tab_strip_model()->SetTabPinned(0, true);
+    window2->GetTabStripModel()->SetTabPinned(0, true);
 
     // Window 2 Tab 2 should show GetUrl(2)
     chrome::AddSelectedTabWithURL(window2, GetUrl(2),

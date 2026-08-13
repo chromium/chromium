@@ -105,7 +105,7 @@ class SavedTabGroupUtils {
 
   static content::NavigationHandle* OpenTabInBrowser(
       const GURL& url,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       Profile* profile,
       WindowOpenDisposition disposition,
       std::optional<int> tabstrip_index = std::nullopt,

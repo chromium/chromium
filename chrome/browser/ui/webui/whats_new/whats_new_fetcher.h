@@ -8,7 +8,7 @@
 #include "components/user_education/webui/whats_new_registry.h"
 #include "url/gurl.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace whats_new {
 
@@ -40,7 +40,7 @@ GURL GetServerURLForRender(
 
 // Starts fetching the What's New page and will open the page in |browser| if
 // it exists.
-void StartWhatsNewFetch(Browser* browser);
+void StartWhatsNewFetch(BrowserWindowInterface* browser);
 
 }  // namespace whats_new
 

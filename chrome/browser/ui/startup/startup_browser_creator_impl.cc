@@ -285,8 +285,8 @@ void StartupBrowserCreatorImpl::Launch(
   MaybeToggleFullscreen(browser);
 }
 
-Browser* StartupBrowserCreatorImpl::OpenURLsInBrowser(
-    Browser* browser,
+BrowserWindowInterface* StartupBrowserCreatorImpl::OpenURLsInBrowser(
+    BrowserWindowInterface* browser,
     chrome::startup::IsProcessStartup process_startup,
     const std::vector<GURL>& urls) {
   StartupTabs tabs;
@@ -294,8 +294,8 @@ Browser* StartupBrowserCreatorImpl::OpenURLsInBrowser(
   return OpenTabsInBrowser(browser, process_startup, tabs, TabOverWrite::kNo);
 }
 
-Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
-    Browser* browser,
+BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
+    BrowserWindowInterface* browser,
     chrome::startup::IsProcessStartup process_startup,
     const StartupTabs& tabs,
     TabOverWrite is_active_tab_overwrite) {
@@ -353,7 +353,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
       manager->SetWindowCreationInfo(
           waap::NewWindowCreationSource::kBrowserInitiated, now);
     }
-    browser = browser_window->GetBrowserForMigrationOnly();
+    browser = browser_window;
   }
   CHECK(profile_);
 
@@ -415,7 +415,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     }
     // Active tab overwrites apply only to one tab per launch, and can only
     // happen if there is already a tab open to replace
-    if (first_tab && browser->tab_strip_model()->count() &&
+    if (first_tab && browser->GetTabStripModel()->count() &&
         (is_active_tab_overwrite == TabOverWrite::kYes)) {
       NavigateParams params(browser, tab.url,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
@@ -455,13 +455,13 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     Navigate(&params);
     first_tab = false;
   }
-  if (!browser->tab_strip_model()->GetActiveWebContents() &&
+  if (!browser->GetTabStripModel()->GetActiveWebContents() &&
       !process_headless_commands) {
     // TODO(sky): this is a work around for 110909. Figure out why it's needed.
-    if (!browser->tab_strip_model()->count()) {
+    if (!browser->GetTabStripModel()->count()) {
       chrome::AddTabAt(browser, GURL(), -1, true);
     } else {
-      browser->tab_strip_model()->ActivateTabAt(0);
+      browser->GetTabStripModel()->ActivateTabAt(0);
     }
   }
 
@@ -576,7 +576,7 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
         was_mac_login_or_resume, restore_tabbed_browser);
   }
 
-  Browser* browser = RestoreOrCreateBrowser(
+  BrowserWindowInterface* browser = RestoreOrCreateBrowser(
       tabs, behavior, restore_options, process_startup, is_post_crash_launch);
 
   tab_groups::MaybeShowSharedTabGroupVersionOutOfDateModal(browser);
@@ -735,13 +735,13 @@ bool StartupBrowserCreatorImpl::MaybeAsyncRestore(
   return service && service->RestoreIfNecessary(tabs, restore_apps);
 }
 
-Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
+BrowserWindowInterface* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
     const StartupTabs& tabs,
     BrowserOpenBehavior behavior,
     SessionRestore::BehaviorBitmask restore_options,
     chrome::startup::IsProcessStartup process_startup,
     bool is_post_crash_launch) {
-  Browser* browser = nullptr;
+  BrowserWindowInterface* browser = nullptr;
   if (behavior == BrowserOpenBehavior::SYNCHRONOUS_RESTORE) {
     // It's worth noting that this codepath is not hit by crash restore
     // because we want to avoid a crash restore loop, so we don't
@@ -754,7 +754,7 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
     BrowserWindowInterface* browser_window = SessionRestore::RestoreSession(
         profile_, nullptr, restore_options, tabs);
     if (browser_window) {
-      return browser_window->GetBrowserForMigrationOnly();
+      return browser_window;
     }
   } else if (behavior == BrowserOpenBehavior::USE_EXISTING ||
              behavior ==
@@ -845,7 +845,7 @@ StartupBrowserCreatorImpl::DetermineSynchronousRestoreOptions(
 
 // static
 void StartupBrowserCreatorImpl::MaybeShowNonMilestoneUpdateToast(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::string& current_version_string) {
   if (!browser) {
     return;

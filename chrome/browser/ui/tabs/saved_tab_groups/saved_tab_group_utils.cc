@@ -501,7 +501,7 @@ SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
 // static
 content::NavigationHandle* SavedTabGroupUtils::OpenTabInBrowser(
     const GURL& url,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     Profile* profile,
     WindowOpenDisposition disposition,
     std::optional<int> tabstrip_index,

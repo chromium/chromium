@@ -13,7 +13,7 @@
 #include "base/token.h"
 #include "components/sessions/core/session_types.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class SessionStorageNamespace;
@@ -44,7 +44,7 @@ namespace chrome {
 // whether `browser` is (or will be) the active browser.
 // Returns the WebContents of the restored tab.
 content::WebContents* AddRestoredTab(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     base::span<const sessions::SerializedNavigationEntry> navigations,
     int tab_index,
     int selected_navigation,
@@ -64,7 +64,7 @@ content::WebContents* AddRestoredTab(
 // history restored from the SessionRestore and TabRestoreService systems.
 // Returns the WebContents of the restored tab.
 content::WebContents* ReplaceRestoredTab(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     base::span<const sessions::SerializedNavigationEntry> navigations,
     int selected_navigation,
     const std::string& extension_app_id,

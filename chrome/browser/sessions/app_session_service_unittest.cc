@@ -12,7 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/sessions/app_session_service_test_helper.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/content_test_helper.h"
@@ -48,7 +48,8 @@ class AppSessionServiceTest : public testing::Test {
     app_session_service_ = std::make_unique<AppSessionService>(&profile_);
     app_helper_.SetService(app_session_service_.get());
 
-    app_service()->SetWindowType(app_window_id, Browser::TYPE_APP);
+    app_service()->SetWindowType(app_window_id,
+                                 BrowserWindowInterface::TYPE_APP);
     app_service()->SetWindowBounds(app_window_id, window_bounds_,
                                    ui::mojom::WindowShowState::kNormal);
     app_service()->SetWindowAppName(app_window_id, "TestApp");
@@ -119,7 +120,7 @@ class AppSessionServiceTest : public testing::Test {
                                         SerializedNavigationEntry* nav1) {
     *nav1 = ContentTestHelper::CreateNavigation("http://google.com", "abc");
 
-    app_service()->SetWindowType(app2_id, Browser::TYPE_APP);
+    app_service()->SetWindowType(app2_id, BrowserWindowInterface::TYPE_APP);
     app_service()->SetWindowBounds(app2_id, window_bounds_,
                                    ui::mojom::WindowShowState::kNormal);
     app_service()->SetWindowAppName(app2_id, "TestApp");
@@ -212,7 +213,8 @@ TEST_F(AppSessionServiceTest, RestoreAppWithAppSessionService) {
 
   // This unit test checks that the two instances of SessionService
   // do not interfer and are isolated.
-  app_helper_.service()->SetWindowType(window2_id, Browser::TYPE_APP);
+  app_helper_.service()->SetWindowType(window2_id,
+                                       BrowserWindowInterface::TYPE_APP);
   app_helper_.service()->SetWindowBounds(window2_id, window_bounds_,
                                          ui::mojom::WindowShowState::kNormal);
   app_helper_.service()->SetWindowAppName(window2_id, "TestApp");

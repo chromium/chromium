@@ -18,7 +18,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 class TabStripModel;
 
@@ -65,7 +65,7 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate,
  private:
   // Opens the tabs in `saved_group` in `browser`. These tabs are not grouped.
   std::map<tabs::TabInterface*, base::Uuid> OpenTabsAndMapToUuids(
-      Browser* const browser,
+      BrowserWindowInterface* const browser,
       const SavedTabGroup& saved_group);
 
   // Adds the opened tabs from OpenTabsAndMapToUuids into a tab

@@ -103,7 +103,8 @@ void ShowSharedTabGroupVersionUpToDateToast(
 
 }  // anonymous namespace
 
-void MaybeShowSharedTabGroupVersionOutOfDateModal(Browser* browser) {
+void MaybeShowSharedTabGroupVersionOutOfDateModal(
+    BrowserWindowInterface* browser) {
   // Only show on normal browser.
   if (!browser ||
       browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
@@ -130,7 +131,8 @@ void MaybeShowSharedTabGroupVersionOutOfDateModal(Browser* browser) {
                      browser->GetWeakPtr(), versioning_message_controller));
 }
 
-void MaybeShowSharedTabGroupVersionUpToDateToast(Browser* browser) {
+void MaybeShowSharedTabGroupVersionUpToDateToast(
+    BrowserWindowInterface* browser) {
   // Only show on normal browser.
   if (!browser ||
       browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {

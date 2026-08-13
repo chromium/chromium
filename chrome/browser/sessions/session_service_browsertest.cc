@@ -14,8 +14,8 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -164,6 +164,6 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, LogExit) {
 
   // Create another window, which should remove the exit.
   SessionID window2_id = SessionID::NewUnique();
-  service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
+  service()->SetWindowType(window2_id, BrowserWindowInterface::TYPE_NORMAL);
   EXPECT_FALSE(FindMostRecentEventOfType(SessionServiceEventLogType::kExit));
 }

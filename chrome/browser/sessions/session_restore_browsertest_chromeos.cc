@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -89,9 +88,9 @@ class SessionRestoreTestChromeOS : public InProcessBrowserTest {
     command_line->RemoveSwitch(wm::switches::kWindowAnimationsDisabled);
   }
 
-  Browser* CreateBrowserWithParams(BrowserWindowCreateParams params) {
-    Browser* browser =
-        CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* CreateBrowserWithParams(
+      BrowserWindowCreateParams params) {
+    BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
     AddBlankTabAndShow(browser);
     return browser;
   }
@@ -167,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
   // Create a second normal browser window in the second desk by
   // setting window workspace property.
   SwitchToDesk(1);
-  Browser* browser_desk1 = CreateBrowserWithParams(
+  BrowserWindowInterface* browser_desk1 = CreateBrowserWithParams(
       BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true));
   WindowMetadataController::From(browser_desk1)->SetWindowUserTitle("1");
   browser_desk1->GetWindow()->GetNativeWindow()->SetProperty(
@@ -179,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
   BrowserWindowCreateParams browser_desk2_params(profile(),
                                                  /*from_user_gesture=*/true);
   browser_desk2_params.initial_workspace = "2";
-  Browser* browser_desk2 =
+  BrowserWindowInterface* browser_desk2 =
       CreateBrowserWithParams(std::move(browser_desk2_params));
   WindowMetadataController::From(browser_desk2)->SetWindowUserTitle("2");
 
@@ -378,21 +377,21 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMaximized) {
   // One browser window is always created by default.
   ASSERT_TRUE(browser());
   // Create a second browser window and maximize it.
-  Browser* browser2 = CreateBrowserWithParams(
+  BrowserWindowInterface* browser2 = CreateBrowserWithParams(
       BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true));
   browser2->GetWindow()->Maximize();
 
   // Create two app windows and maximize the second one.
-  Browser* app_browser1 =
+  BrowserWindowInterface* app_browser1 =
       CreateBrowserWithParams(CreateParamsForApp(test_app_name1, true));
-  Browser* app_browser2 =
+  BrowserWindowInterface* app_browser2 =
       CreateBrowserWithParams(CreateParamsForApp(test_app_name2, true));
   app_browser2->GetWindow()->Maximize();
 
   // Create two app popup windows and maximize the second one.
-  Browser* app_popup_browser1 =
+  BrowserWindowInterface* app_popup_browser1 =
       CreateBrowserWithParams(CreateParamsForAppPopup(test_app_name1, true));
-  Browser* app_popup_browser2 =
+  BrowserWindowInterface* app_popup_browser2 =
       CreateBrowserWithParams(CreateParamsForAppPopup(test_app_name2, true));
   app_popup_browser2->GetWindow()->Maximize();
 
@@ -440,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMinimized) {
   ASSERT_TRUE(browser());
   browser()->GetWindow()->Minimize();
 
-  Browser* browser2 = CreateBrowserWithParams(
+  BrowserWindowInterface* browser2 = CreateBrowserWithParams(
       BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true));
   browser2->GetWindow()->Minimize();
 

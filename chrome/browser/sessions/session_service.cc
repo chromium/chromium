@@ -164,7 +164,7 @@ bool SessionService::IsRelevantWindowType(
          (window_type == sessions::SessionWindow::TYPE_POPUP);
 }
 
-bool SessionService::ShouldRestore(Browser* browser) {
+bool SessionService::ShouldRestore(BrowserWindowInterface* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Do not restore browser window in the kiosk session.
   if (chromeos::IsKioskSession()) {
@@ -400,7 +400,7 @@ void SessionService::TabClosed(SessionID window_id, SessionID tab_id) {
   }
 }
 
-void SessionService::WindowOpened(Browser* browser) {
+void SessionService::WindowOpened(BrowserWindowInterface* browser) {
   if (!ShouldTrackBrowser(browser)) {
     return;
   }
@@ -490,7 +490,8 @@ void SessionService::WindowClosed(SessionID window_id) {
   }
 }
 
-void SessionService::SetWindowType(SessionID window_id, Browser::Type type) {
+void SessionService::SetWindowType(SessionID window_id,
+                                   BrowserWindowInterface::Type type) {
   sessions::SessionWindow::WindowType window_type =
       WindowTypeForBrowserType(type);
   if (!ShouldRestoreWindowOfType(window_type)) {
@@ -548,8 +549,9 @@ void SessionService::SetTabUserAgentOverride(
       tab_id, user_agent_override));
 }
 
-Browser::Type SessionService::GetDesiredBrowserTypeForWebContents() {
-  return Browser::Type::TYPE_NORMAL;
+BrowserWindowInterface::Type
+SessionService::GetDesiredBrowserTypeForWebContents() {
+  return BrowserWindowInterface::Type::TYPE_NORMAL;
 }
 
 void SessionService::DidScheduleCommand() {
@@ -574,7 +576,7 @@ bool SessionService::ShouldRestoreWindowOfType(
 }
 
 bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
-                                        Browser* browser,
+                                        BrowserWindowInterface* browser,
                                         bool restore_apps) {
   if (ShouldRestore(browser)) {
     // We're going from no tabbed browsers to a tabbed browser (and not in
@@ -706,7 +708,7 @@ bool SessionService::IsOnlyOneTabLeft() const {
       [this, &is_only_one_tab_left,
        &window_count](BrowserWindowInterface* browser) {
         const SessionID window_id = browser->GetSessionID();
-        if (ShouldTrackBrowser(browser->GetBrowserForMigrationOnly()) &&
+        if (ShouldTrackBrowser(browser) &&
             !window_closing_ids_.contains(window_id)) {
           if (++window_count > 1) {
             is_only_one_tab_left = false;
@@ -735,7 +737,7 @@ bool SessionService::HasOpenTrackableBrowsers(SessionID window_id) const {
         const SessionID browser_id = browser->GetSessionID();
         if (browser_id != window_id &&
             !window_closing_ids_.contains(browser_id)) {
-          if (ShouldTrackBrowser(browser->GetBrowserForMigrationOnly())) {
+          if (ShouldTrackBrowser(browser)) {
             has_open_trackable = true;
           }
         }
