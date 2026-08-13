@@ -33,6 +33,13 @@
 
 namespace media {
 
+// Rollback feature flag to force AAUDIO_INPUT_PRESET_CAMCORDER instead of
+// PRESET_GENERIC for non-AEC streams in case of unexpected regressions.
+// TODO(crbug.com/503025582): Remove this flag and clean up once M153 hits
+// stable.
+BASE_FEATURE(kForceAAudioCamcorderInputPreset,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 constexpr base::TimeDelta kCloseDelay = base::Seconds(1);
@@ -508,17 +515,23 @@ bool AAudioStreamWrapper::Open() {
 
   if (stream_type_ == StreamType::kInput) {
     // Set AAUDIO_INPUT_PRESET_VOICE_COMMUNICATION when we need echo
-    // cancellation. Otherwise, we use AAUDIO_INPUT_PRESET_CAMCORDER instead
-    // of the platform default of AAUDIO_INPUT_PRESET_VOICE_RECOGNITION, since
-    // it supposedly uses a wideband signal.
+    // cancellation. Otherwise, we use AAUDIO_INPUT_PRESET_GENERIC to ensure
+    // standard audio routing (e.g. prioritizing USB or wired headsets over the
+    // internal phone microphone).
     //
     // We do not use AAUDIO_INPUT_PRESET_UNPROCESSED, even if
     // `params_.effects() == AudioParameters::NO_EFFECTS` because the lack of
     // automatic gain control results in quiet, sometimes silent, streams.
+
+    const aaudio_input_preset_t fallback_preset =
+        base::FeatureList::IsEnabled(kForceAAudioCamcorderInputPreset)
+            ? AAUDIO_INPUT_PRESET_CAMCORDER
+            : AAUDIO_INPUT_PRESET_GENERIC;
+
     AAudioStreamBuilder_setInputPreset(
         builder, params_.effects() & AudioParameters::ECHO_CANCELLER
                      ? AAUDIO_INPUT_PRESET_VOICE_COMMUNICATION
-                     : AAUDIO_INPUT_PRESET_CAMCORDER);
+                     : fallback_preset);
   }
 
   // Callbacks
