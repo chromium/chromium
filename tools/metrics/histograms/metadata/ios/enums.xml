@@ -155,6 +155,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Flow continued in another app"/>
   <int value="9" label="Flow could not launch"/>
   <int value="10" label="Invalid parameters"/>
+  <int value="11"
+      label="Invalid parameters, falling back to opening URL in new tab"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/google_one/coordinator/google_one_coordinator.mm:GoogleOneOutcome) -->

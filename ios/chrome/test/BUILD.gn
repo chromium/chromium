@@ -364,6 +364,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/fullscreen/public:unit_tests",
     "//ios/chrome/browser/fullscreen/ui_bundled:unit_tests",
     "//ios/chrome/browser/geolocation/model:unit_tests",
+    "//ios/chrome/browser/google_one/coordinator:unit_tests",
     "//ios/chrome/browser/google_one/shared:unit_tests",
     "//ios/chrome/browser/history/model:unit_tests",
     "//ios/chrome/browser/history/ui_bundled:unit_tests",
