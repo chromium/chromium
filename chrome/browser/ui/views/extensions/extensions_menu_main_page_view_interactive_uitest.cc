@@ -1075,11 +1075,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
           extension->id(),
           extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem,
           extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY,
-          IDS_EXTENSIONS_CONTEXT_MENU_PIN_TO_TOOLBAR),
-
-      // TODO(crbug.com/378724154): Test crashes if popup is left opened at the
-      // end of the test. For now, close the popup so don't lose test coverage.
-      Do([&]() { extensions_container()->HideActivePopup(); }));
+          IDS_EXTENSIONS_CONTEXT_MENU_PIN_TO_TOOLBAR));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
