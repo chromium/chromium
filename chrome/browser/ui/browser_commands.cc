@@ -1784,10 +1784,7 @@ void NewSplitTab(BrowserWindowInterface* browser,
   tab_strip_model->AddToNewSplit(
       {active_index}, split_tabs::SplitTabVisualData(layout), source);
 
-  if (content::WebContents* active_contents =
-          tab_strip_model->GetActiveWebContents()) {
-    active_contents->Focus();
-  }
+  tab_strip_model->ActivateTabAt(active_index + 1);
 }
 
 void AddNewTabToGroup(BrowserWindowInterface* browser) {

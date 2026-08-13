@@ -62,6 +62,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/interaction/view_focus_observer.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 #include "url/gurl.h"
@@ -637,8 +638,12 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, EnterSplitView) {
       WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
       WaitForElementNonzeroSize(kToolbarSplitTabsToolbarButtonElementId),
       WaitForAXNode(), DoWaitForLayout(), WaitForTabCount(1),
+      ObserveState(
+          views::test::kCurrentFocusedViewId,
+          BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
       ClickSplitTabButton(), WaitForTabCount(2), CheckTabInSplit(0, true),
-      CheckTabInSplit(1, true));
+      CheckTabInSplit(1, true),
+      WaitForState(views::test::kCurrentFocusedViewId, kOmniboxElementId));
 }
 
 IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, ToggleMenu) {
