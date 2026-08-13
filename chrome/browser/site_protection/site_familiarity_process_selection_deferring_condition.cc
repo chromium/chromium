@@ -54,18 +54,6 @@ SiteFamiliarityProcessSelectionDeferringCondition::OnWillSelectFinalProcess(
       "SafeBrowsing.V8Optimizer.DeferNavigationToComputeSiteFamiliarity",
       !verdict_);
 
-  if (IsDefaultSearchEngineUrl(
-          navigation_handle().GetURL(),
-          Profile::FromBrowserContext(
-              navigation_handle().GetWebContents()->GetBrowserContext()))) {
-    // This histogram will always record "did not defer" whenever the feature
-    // kSkipSiteFamiliarityDeferralForDefaultSearchEngine is enabled.
-    // TODO(crbug.com/507810928): Clean up this histogram after reaching stable.
-    UMA_HISTOGRAM_BOOLEAN(
-        kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram,
-        !verdict_);
-  }
-
   if (verdict_) {
     SetVerdictOnHandle();
     return content::ProcessSelectionDeferringCondition::Result::kProceed;

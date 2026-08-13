@@ -23,10 +23,6 @@ namespace site_protection {
 
 BASE_DECLARE_FEATURE(kSkipSiteFamiliarityDeferralForSameSite);
 
-inline constexpr char
-    kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram[] =
-        "SafeBrowsing.SiteFamiliarity.DeferNavigation.DefaultSearchEngine";
-
 inline constexpr char kSiteFamiliarityDeferNavigationDurationHistogram[] =
     "SafeBrowsing.SiteFamiliarity.DeferNavigationToComputeSiteFamiliarity."
     "DeferDuration";

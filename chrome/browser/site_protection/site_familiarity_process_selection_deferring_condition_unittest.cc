@@ -1031,8 +1031,6 @@ TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest, SearchUrl) {
   EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kProceed,
             condition.OnWillSelectFinalProcess(mock_callback.Get()));
 
-  histogram_tester.ExpectUniqueSample(
-      kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, false, 1);
   histogram_tester.ExpectTotalCount(
       kSiteFamiliarityDeferNavigationDurationHistogram, 0);
   CheckSiteFamiliar(navigation_handle);
@@ -1053,8 +1051,6 @@ TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest,
       navigation_handle);
   EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kDefer,
             condition.OnWillSelectFinalProcess(callback.Get()));
-  histogram_tester.ExpectTotalCount(
-      kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, 0);
 
   // Complete history fetch.
   raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
@@ -1080,8 +1076,6 @@ TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest,
 
   EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kDefer,
             condition.OnWillSelectFinalProcess(callback.Get()));
-  histogram_tester.ExpectTotalCount(
-      kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, 0);
 
   // Complete history fetch.
   raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
@@ -1332,8 +1326,6 @@ TEST_F(SiteFamiliarityDefaultSearchEngineRunFamiliarityCheckTest,
   EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kDefer,
             condition.OnWillSelectFinalProcess(callback.Get()));
 
-  histogram_tester.ExpectUniqueSample(
-      kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, true, 1);
 
   // Complete history fetch.
   raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
@@ -1369,8 +1361,6 @@ TEST_F(SiteFamiliarityDefaultSearchEngineRunFamiliarityCheckTest,
   EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kProceed,
             condition.OnWillSelectFinalProcess(mock_callback.Get()));
 
-  histogram_tester.ExpectUniqueSample(
-      kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, false, 1);
   histogram_tester.ExpectTotalCount(
       kSiteFamiliarityDeferNavigationDurationHistogram, 0);
 
