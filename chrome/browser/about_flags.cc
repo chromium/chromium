@@ -10746,12 +10746,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-lens-search-aim-m3", flag_descriptions::kLensSearchAimM3Name,
      flag_descriptions::kLensSearchAimM3Description, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensSearchAimM3)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     {"enable-lens-side-panel-unification",
      flag_descriptions::kLensSidePanelUnificationName,
-     flag_descriptions::kLensSidePanelUnificationDescription, kOsDesktop,
+     flag_descriptions::kLensSidePanelUnificationDescription, kOsAll,
      FEATURE_VALUE_TYPE(lens::features::kLensSidePanelUnification)},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"jump-start-omnibox", flag_descriptions::kJumpStartOmniboxName,
