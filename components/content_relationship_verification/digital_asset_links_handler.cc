@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -76,6 +77,33 @@ void RecordNumFingerprints(size_t num_fingerprints) {
 
 GURL GetUrlForAssetLinks(const url::Origin& origin) {
   return origin.GetURL().Resolve(kAssetLinksAbsolutePath);
+}
+
+bool IsTransientNetworkError(int net_error, int response_code) {
+  if (net_error == net::ERR_INTERNET_DISCONNECTED ||
+      net_error == net::ERR_NAME_NOT_RESOLVED ||
+      net_error == net::ERR_TIMED_OUT ||
+      net_error == net::ERR_CONNECTION_TIMED_OUT ||
+      net_error == net::ERR_CONNECTION_RESET ||
+      net_error == net::ERR_CONNECTION_CLOSED ||
+      net_error == net::ERR_CONNECTION_REFUSED ||
+      net_error == net::ERR_CONNECTION_ABORTED ||
+      net_error == net::ERR_CONNECTION_FAILED ||
+      net_error == net::ERR_PROXY_CONNECTION_FAILED ||
+      net_error == net::ERR_TUNNEL_CONNECTION_FAILED ||
+      net_error == net::ERR_ADDRESS_UNREACHABLE ||
+      net_error == net::ERR_NETWORK_CHANGED ||
+      net_error == net::ERR_EMPTY_RESPONSE) {
+    return true;
+  }
+
+  if (response_code == net::HTTP_BAD_GATEWAY ||
+      response_code == net::HTTP_SERVICE_UNAVAILABLE ||
+      response_code == net::HTTP_GATEWAY_TIMEOUT) {
+    return true;
+  }
+
+  return false;
 }
 
 // An example, well formed asset links file for reference:
@@ -201,8 +229,7 @@ void DigitalAssetLinksHandler::OnURLLoadComplete(
 
   if (!response_body || response_code != net::HTTP_OK) {
     int net_error = url_loader->NetError();
-    if (net_error == net::ERR_INTERNET_DISCONNECTED ||
-        net_error == net::ERR_NAME_NOT_RESOLVED) {
+    if (IsTransientNetworkError(net_error, response_code)) {
       AddMessageToConsole(web_contents_.get(),
                           "Digital Asset Links connection failed.");
       std::move(callback).Run(RelationshipCheckResult::kNoConnection);

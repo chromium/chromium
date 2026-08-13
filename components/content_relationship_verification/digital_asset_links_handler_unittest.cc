@@ -305,17 +305,53 @@ TEST_F(DigitalAssetLinksHandlerTest, NetworkError) {
   EXPECT_EQ(result_, RelationshipCheckResult::kFailure);
 }
 
-TEST_F(DigitalAssetLinksHandlerTest, NetworkDisconnected) {
+namespace {
+
+struct TransientErrorTestCase {
+  net::Error net_error;
+  int response_code;
+};
+
+class DigitalAssetLinksHandlerTransientErrorTest
+    : public DigitalAssetLinksHandlerTest,
+      public ::testing::WithParamInterface<TransientErrorTestCase> {};
+
+}  // namespace
+
+TEST_P(DigitalAssetLinksHandlerTransientErrorTest, HandleTransientError) {
+  TransientErrorTestCase test_case = GetParam();
   DigitalAssetLinksHandler handler(GetSharedURLLoaderFactory());
   handler.CheckDigitalAssetLinkRelationshipForAndroidApp(
       GetTestingOrigin(), kValidRelation, kValidFingerprint, kValidPackage,
       base::BindOnce(&DigitalAssetLinksHandlerTest::OnRelationshipCheckComplete,
                      base::Unretained(this)));
-  AddErrorResponse(net::ERR_INTERNET_DISCONNECTED, net::HTTP_OK);
+  AddErrorResponse(test_case.net_error, test_case.response_code);
 
   EXPECT_EQ(1, num_invocations_);
   EXPECT_EQ(result_, RelationshipCheckResult::kNoConnection);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    AllTransientErrors,
+    DigitalAssetLinksHandlerTransientErrorTest,
+    ::testing::Values(
+        TransientErrorTestCase{net::ERR_INTERNET_DISCONNECTED, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_NAME_NOT_RESOLVED, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_TIMED_OUT, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_CONNECTION_TIMED_OUT, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_CONNECTION_RESET, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_CONNECTION_CLOSED, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_CONNECTION_REFUSED, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_CONNECTION_ABORTED, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_CONNECTION_FAILED, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_PROXY_CONNECTION_FAILED, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_TUNNEL_CONNECTION_FAILED, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_ADDRESS_UNREACHABLE, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_NETWORK_CHANGED, net::HTTP_OK},
+        TransientErrorTestCase{net::ERR_EMPTY_RESPONSE, net::HTTP_OK},
+        TransientErrorTestCase{net::OK, net::HTTP_BAD_GATEWAY},
+        TransientErrorTestCase{net::OK, net::HTTP_SERVICE_UNAVAILABLE},
+        TransientErrorTestCase{net::OK, net::HTTP_GATEWAY_TIMEOUT}));
 
 TEST_F(DigitalAssetLinksHandlerTest, WebApkPositiveResponse) {
   DigitalAssetLinksHandler handler(GetSharedURLLoaderFactory());
