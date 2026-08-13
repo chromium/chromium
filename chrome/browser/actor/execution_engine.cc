@@ -205,7 +205,7 @@ struct PageActionGatingContext : public origin_gating::GatingDecisionContext {
 };
 
 // Blocks acting on a tab whose primary main frame is showing an error document.
-origin_gating::Decision EvaluateTabErrorDocument(
+origin_gating::Decision BlockTabErrorDocument(
     const origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination) {
@@ -220,7 +220,7 @@ origin_gating::Decision EvaluateTabErrorDocument(
 // Blocks acting on a tab that has a pending SafeBrowsing delayed warning. The
 // SafeBrowsing Delayed Warnings experiment can delay some SafeBrowsing warnings
 // until user interaction; such a page has a user interaction observer attached.
-origin_gating::Decision EvaluateTabSafeBrowsingObserver(
+origin_gating::Decision BlockSafeBrowsingWarningIfSafetyChecksEnabled(
     const origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination) {
@@ -313,7 +313,7 @@ void BlockSensitiveUrlWhenPromptsDisabled(
   BlockSensitiveUrl(profile, context, source, destination, std::move(callback));
 }
 
-origin_gating::Decision EvaluateLookalikeUrl(
+origin_gating::Decision BlockLookalikeUrl(
     Profile* profile,
     const origin_gating::GatingDecisionContext* context,
     const GURL& source,
@@ -338,7 +338,7 @@ origin_gating::Decision EvaluateLookalikeUrl(
   return origin_gating::Decision::kNoDecision;
 }
 
-origin_gating::Decision EvaluateSafeBrowsingEnabled(
+origin_gating::Decision BlockIfSafeBrowsingDisabled(
     Profile* profile,
     const origin_gating::GatingDecisionContext* context,
     const GURL& source,
@@ -354,7 +354,7 @@ origin_gating::Decision EvaluateSafeBrowsingEnabled(
                                   : origin_gating::Decision::kBlocked;
 }
 
-origin_gating::Decision EvaluateSafetyChecksDisabled(
+origin_gating::Decision AllowIfSafetyChecksDisabled(
     const origin_gating::GatingDecisionContext* context,
     const GURL& source,
     const GURL& destination) {
@@ -664,12 +664,12 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
-                  {CustomPredicate(
-                       base::BindRepeating(&EvaluateTabErrorDocument),
-                       kTabErrorDocumentPredicateName),
+                  {CustomPredicate(base::BindRepeating(&BlockTabErrorDocument),
+                                   kTabErrorDocumentPredicateName),
                    {GateableEvent::kPageAction}},
                   {CustomPredicate(
-                       base::BindRepeating(&EvaluateTabSafeBrowsingObserver),
+                       base::BindRepeating(
+                           &BlockSafeBrowsingWarningIfSafetyChecksEnabled),
                        kTabSafeBrowsingObserverPredicateName),
                    {GateableEvent::kPageAction}},
                   {DecisionSource::kAllowHttpLocalhost,
@@ -684,11 +684,11 @@ ExecutionEngine::ExecutionEngine(
                   {DecisionSource::kRequireHttps, {GateableEvent::kPageAction}},
                   {DecisionSource::kForbidIpAddress, kRequestsAndPageActions},
                   {CustomPredicate(
-                       base::BindRepeating(&EvaluateSafetyChecksDisabled),
+                       base::BindRepeating(&AllowIfSafetyChecksDisabled),
                        kSafetyChecksDisabledPredicateName),
                    kRequestsAndPageActions},
                   {CustomPredicate(
-                       base::BindRepeating(&EvaluateSafeBrowsingEnabled,
+                       base::BindRepeating(&BlockIfSafeBrowsingDisabled,
                                            task_->GetProfile()),
                        kSafeBrowsingPredicateName),
                    kRequestsAndPageActions},
@@ -697,7 +697,7 @@ ExecutionEngine::ExecutionEngine(
                        kActionAllowlistPredicateName),
                    kRequestsAndPageActions},
                   {DecisionSource::kEnterprisePolicy, GateableEventSet::All()},
-                  {CustomPredicate(base::BindRepeating(&EvaluateLookalikeUrl,
+                  {CustomPredicate(base::BindRepeating(&BlockLookalikeUrl,
                                                        task_->GetProfile()),
                                    kLookalikeUrlPredicateName),
                    kRequestsAndPageActions},
