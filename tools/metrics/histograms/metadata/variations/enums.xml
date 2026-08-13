@@ -139,6 +139,9 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Overridden Trial Has Google Web ID">
     The trial being overridden has a Google web experiment ID.
   </int>
+  <int value="19" label="Runtime Experiment Has Params">
+    The runtime mutable experiment has params.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/variations/metrics.h:VariationsApplyRuntimeMutableChangesResult) -->

@@ -1755,6 +1755,38 @@ TEST_F(VariationsServiceTest,
   }
 }
 
+// Verifies that runtime experiments with params are not applied.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_RuntimeExperimentHasParams) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed seed = CreateTestRuntimeMutableSeed(
+      "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
+  Study::Experiment::Param* param =
+      seed.mutable_study(0)->mutable_experiment(0)->add_param();
+  param->set_name("param_name");
+  param->set_value("param_value");
+  service.SimulateAndApplyRuntimeMutableChanges(seed);
+  histogram_tester.ExpectUniqueSample(
+      kApplyRuntimeMutableChangesResultMetric,
+      ApplyRuntimeMutableChangesResult::kRuntimeExperimentHasParams, 1);
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                   ->GetRuntimeOverride("MyStudy")
+                   .has_value());
+}
+
 // Verifies that overriding a trial with Google web experiment IDs is not
 // allowed (even if the variation ID was set on an unselected group in that
 // trial).

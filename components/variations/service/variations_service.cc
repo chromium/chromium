@@ -1197,6 +1197,12 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
     return kRuntimeExperimentHasGoogleWebId;
   }
 
+  // TODO(crbug.com/482450632): Support params for runtime mutable experiments.
+  // For now, disallow applying a runtime experiment if it has params.
+  if (experiment.param_size() > 0) {
+    return kRuntimeExperimentHasParams;
+  }
+
   // If the runtime mutable experiment has already been applied, don't need to
   // apply it again.
   if (RuntimeMutableExperimentAlreadyApplied(study, experiment)) {
