@@ -41,6 +41,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "url/gurl.h"
 #include "url/mojom/url.mojom.h"
 
@@ -247,7 +248,10 @@ void ActionChipsHandler::OnVisibilityChanged() {
   }
 }
 
-void ActionChipsHandler::NavigateToAim(const std::u16string& query_text) {
+void ActionChipsHandler::NavigateToAim(
+    const std::string& query_text,
+    uint8_t mouse_button,
+    searchbox::mojom::ActionModifiersPtr modifiers) {
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   if (!template_url_service ||
@@ -260,14 +264,15 @@ void ActionChipsHandler::NavigateToAim(const std::u16string& query_text) {
       // TODO(crbug.com/540050449): This is a temporary placeholder that needs
       // to be updated to the new Action Chips entry point.
       omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
-      base::Time::Now(), query_text,
+      base::Time::Now(), base::UTF8ToUTF16(query_text),
       lens::LensOverlayInvocationSource::kNtpActionChips,
       /*additional_params=*/{});
 
-  // TODO(crbug.com/540067558): Replace hardcoded CURRENT_TAB with
-  // WindowOpenDisposition based on click modifiers passed from WebUI.
-  content::OpenURLParams params(aim_url, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
+  const WindowOpenDisposition disposition = ui::DispositionFromClick(
+      /*middle_button=*/mouse_button == 1, modifiers->alt_key,
+      modifiers->ctrl_key, modifiers->meta_key, modifiers->shift_key);
+
+  content::OpenURLParams params(aim_url, content::Referrer(), disposition,
                                 ui::PAGE_TRANSITION_GENERATED,
                                 /*is_renderer_initiated=*/false);
   web_ui_->GetWebContents()->OpenURL(params,

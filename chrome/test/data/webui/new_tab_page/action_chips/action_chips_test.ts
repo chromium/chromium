@@ -304,6 +304,34 @@ suite('NewTabPageActionChipsTest', () => {
           1, metrics.count('NewTabPage.ActionChips.Click2', IconType.kBanana));
     });
 
+    test('chip auxclick triggers chip click event', async () => {
+      const nanoBananaChip =
+          chips.shadowRoot.querySelector<HTMLDivElement>('.icon-type-banana');
+      assertTrue(!!nanoBananaChip);
+      const whenActionChipClicked = eventToPromise<ActionChipClickEvent>(
+          'action-chip-click', document.body);
+      nanoBananaChip.dispatchEvent(new MouseEvent(
+          'auxclick', {button: 1, bubbles: true, composed: true}));
+
+      const event = await whenActionChipClicked;
+      assertEquals('Suggestion for image', event.detail.suggestion);
+    });
+
+    test('chip auxclick ignores right clicks', async () => {
+      const nanoBananaChip =
+          chips.shadowRoot.querySelector<HTMLDivElement>('.icon-type-banana');
+      assertTrue(!!nanoBananaChip);
+      let actionChipClicked = false;
+      document.body.addEventListener('action-chip-click', () => {
+        actionChipClicked = true;
+      }, {once: true});
+      nanoBananaChip.dispatchEvent(new MouseEvent(
+          'auxclick', {button: 2, bubbles: true, composed: true}));
+      await microtasksFinished();
+
+      assertFalse(actionChipClicked);
+    });
+
     test('deep search chip triggers chip click event', async () => {
       // Setup.
       const deepSearchChip = chips.shadowRoot.querySelector<HTMLDivElement>(
