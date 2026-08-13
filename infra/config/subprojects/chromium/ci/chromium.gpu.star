@@ -107,9 +107,6 @@ gpu.ci.linux_builder(
         ],
         mixins = [
             "chromium_pixel_2_q",
-            # TODO(crbug.com/538273327): Return these tests to CQ after device
-            # pool stabalizes (or we increase its size?)
-            "ci_only",
         ],
     ),
     targets_settings = targets.settings(
