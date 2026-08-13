@@ -672,4 +672,46 @@ TEST_F(ChromePasswordChangeServiceFeatureEnabledTest,
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kAvailable, 1);
 }
+
+class ChromePasswordChangeServiceGlicEnabledTest
+    : public testing::Test,
+      public ChromePasswordChangeServiceBase {
+ public:
+  ChromePasswordChangeServiceGlicEnabledTest() {
+    feature_list_.InitWithFeatures(
+        {password_change::features::kPasswordChangeWithGlic},
+        {password_change::features::
+             kSkipModelExecutionAllowedCheckForPasswordChange});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ChromePasswordChangeServiceGlicEnabledTest,
+       PasswordChangeSupportedWithoutChangePasswordUrl) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      variations::switches::kVariationsOverrideCountry, "us");
+
+  base::HistogramTester histogram_tester;
+  GURL url("https://test.com/");
+  EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(settings_service(), IsSettingEnabled)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
+      .WillOnce(testing::Return(true));
+
+  password_manager::PasswordForm form =
+      CreateTestForm(url, /*is_signup_form=*/false);
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
+      form, /*is_non_password_login_detected=*/false));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChangeAvailability",
+      PasswordChangeAvailability::kAvailable, 1);
+  histogram_tester.ExpectUniqueSample(
+      ChromePasswordChangeService::kHasPasswordChangeUrlHistogram, false, 1);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)

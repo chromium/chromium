@@ -294,8 +294,10 @@ void GlicPasswordChangeActuator::OpenPasswordChangeTab(
   }
 
   if (originator) {
+    GURL target_url = change_password_url_.is_empty() ? credential_.url
+                                                      : change_password_url_;
     originator->OpenURL(
-        content::OpenURLParams(change_password_url_, content::Referrer(),
+        content::OpenURLParams(target_url, content::Referrer(),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                ui::PAGE_TRANSITION_LINK,
                                /*is_renderer_initiated=*/false),
