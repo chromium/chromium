@@ -407,6 +407,10 @@ class AimEligibilityService
   // Returns true if the request should be dropped.
   bool ShouldDropRequest() const;
 
+  // Returns true if the manual override is active and has not expired.
+  // Clears the override if it has expired.
+  bool IsManualOverrideActive();
+
   // Queues a request if the last active account changed.
   void ScheduleServerEligibilityRequestIfNeeded(RequestSource source);
 
