@@ -1304,6 +1304,23 @@ Setting this attribute makes the bindings generator create a callback that V8 wo
 
 Only used in NodeList.idl to speed up the idiom of "attaching an event handler to elements matching a selector now or in the future, based on a root element". See, [example](https://source.chromium.org/chromium/chromium/src/+/435b391842a73b172749d98c4e051a80374d3a68:third_party/speedometer/v3.1/resources/todomvc/vanilla-examples/javascript-es5/src/helpers.js;l=24?q=%22Array.prototype.indexOf.call%28potentialElements,%20targetElement%29%22&ss=chromium%2Fchromium%2Fsrc).
 
+### [V8EnableIterableToList]
+
+Summary: `[V8EnableIterableToList]` enables fast single-shot iterable-to-list conversion for collections (e.g. `Array.from(nodeList)`).
+
+Usage: `[V8EnableIterableToList]` can be specified on [collection](https://dom.spec.whatwg.org/#concept-collection) interfaces:
+
+```webidl
+[V8EnableIterableToList]
+interface NodeList {
+  readonly attribute unsigned long length;
+  getter Node? item(unsigned long index);
+  ...
+};
+```
+
+Setting this attribute makes the bindings generator create an `IndexedPropertyIterableToListCallback` that V8 calls on a fast path of `IterableToList` (used by `Array.from`, array spread and function calls with spread arguments). Having such a callback materializes the whole `v8::Array` in a single C++ call, avoiding JS iterator allocation and multiple V8-Blink boundary crossings.
+
 ## Temporary Blink-specific IDL Extended Attributes
 
 These extended attributes are _temporary_ and are only in use while some change is in progress. Unless you are involved with the change, you can generally ignore them, and should not use them.

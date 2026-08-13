@@ -2748,7 +2748,7 @@ def _make_interceptor_callback_args(cg_context, named_or_indexed,
 
     # name/index parameter is used for every interceptor except Enumerator
     # and IndexOf.
-    if callback_type != "Enumerator" and callback_type != "IndexOf":
+    if callback_type != "Enumerator" and callback_type != "IndexOf" and callback_type != "IterableToList":
         if named_or_indexed == "Named":
             arg_decls.append("v8::Local<v8::Name> v8_property_name")
             arg_names.append("v8_property_name")
@@ -2788,6 +2788,9 @@ def _make_interceptor_callback_args(cg_context, named_or_indexed,
         arg_names.append("out_length")
         return_type = "uint32_t"
         callback_info_type = "void"
+    elif callback_type == "IterableToList":
+        return_type = "void"
+        callback_info_type = "v8::Value"
     else:
         assert False
     arg_decls.append(
@@ -3186,6 +3189,51 @@ def make_indexed_property_index_of_callback(cg_context, function_name):
           """,
           getter_name=indexed_getter.identifier),
     ])
+
+    return func_decl, func_def
+
+
+def make_indexed_property_iterable_to_list_callback(cg_context, function_name):
+    assert isinstance(cg_context, CodeGenContext)
+    assert isinstance(function_name, str)
+
+    indexed_getter = (
+        cg_context.interface.indexed_and_named_properties.indexed_getter)
+
+    if not indexed_getter:
+        return None, None
+
+    return_type, arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "IterableToList")
+    func_decl, func_def = _make_interceptor_callback(
+        cg_context, function_name, return_type, arg_decls, arg_names,
+        cg_context.class_name, "IndexedPropertyIterableToList")
+    body = func_def.body
+
+    T = TextNode
+    F = FormatNode
+
+    body.append(
+        F("""\
+uint32_t length = ${{blink_receiver}}->length();
+v8::LocalVector<v8::Value> elements(${{isolate}});
+elements.reserve(length);
+for (uint32_t i = 0; i < length; ++i) {{
+  auto&& item = ${{blink_receiver}}->{getter_name}(i);
+  v8::Local<v8::Value> v8_item =
+      ToV8Traits<{native_tag}>::ToV8(${{script_state}}, item);
+  elements.push_back(v8_item);
+}}
+v8::Local<v8::Array> array = v8::Array::New(${{isolate}}, elements.data(), elements.size());
+bindings::V8SetReturnValue(${{info}}, array);
+""",
+          getter_name=indexed_getter.identifier,
+          native_tag=native_value_tag(indexed_getter.return_type.unwrap())))
+
+    body.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h"
+        ]))
 
     return func_decl, func_def
 
@@ -5908,6 +5956,8 @@ def make_indexed_and_named_property_callbacks_and_install_node(cg_context):
 
     interface.enable_index_of = ("V8EnableIndexOf"
                                  in interface.extended_attributes)
+    interface.enable_iterable_to_list = ("V8EnableIterableToList"
+                                         in interface.extended_attributes)
 
     cg_context = cg_context.make_copy(
         v8_callback_type=CodeGenContext.V8_OTHER_CALLBACK)
@@ -6012,6 +6062,11 @@ interface.indexed_and_named_properties.named_getter.extended_attributes:
             add_callback(*make_indexed_property_index_of_callback(
                 cg_context.make_copy(indexed_interceptor_kind="IndexOf"),
                 "IndexedPropertyIndexOfCallback"))
+        if interface.enable_iterable_to_list:
+            add_callback(*make_indexed_property_iterable_to_list_callback(
+                cg_context.make_copy(
+                    indexed_interceptor_kind="IterableToList"),
+                "IndexedPropertyIterableToListCallback"))
 
     if props.indexed_getter or props.named_getter:
         impl_bridge = v8_bridge_class_name(
@@ -6048,6 +6103,11 @@ interface.indexed_and_named_properties.named_getter.extended_attributes:
         {impl_bridge}::IndexedPropertyIndexOfCallback,
 % else:
         nullptr,  // index_of
+% endif
+% if interface.enable_iterable_to_list:
+        {impl_bridge}::IndexedPropertyIterableToListCallback,
+% else:
+        nullptr,  // iterable_to_list
 % endif
         v8::Local<v8::Value>(),
         {property_handler_flags}));"""
@@ -6226,6 +6286,8 @@ ${instance_template}->SetAccessCheckCallbackAndHandler(
         CrossOriginIndexedEnumeratorCallback,
         CrossOriginIndexedDefinerCallback,
         CrossOriginIndexedDescriptorCallback,
+        nullptr,  // index_of
+        nullptr,  // iterable_to_list
         v8::Local<v8::Value>(),
         v8::PropertyHandlerFlags::kNone));
 """
