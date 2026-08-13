@@ -95,7 +95,8 @@ TEST_F(SendTabToSelfActivityTest, DeviceSpecific_ActivityTitle) {
       activityTitle:activity_title
           cacheGUID:@"guid_mac"
          deviceName:@"My MacBook Pro"
-         formFactor:syncer::DeviceInfo::FormFactor::kDesktop];
+         formFactor:syncer::DeviceInfo::FormFactor::kDesktop
+             osType:syncer::DeviceInfo::OsType::kMac];
 
   EXPECT_NSEQ(activity_title, [activity activityTitle]);
 }
@@ -112,7 +113,8 @@ TEST_F(SendTabToSelfActivityTest, DeviceSpecific_ActivityImage) {
           activityTitle:@"Phone"
               cacheGUID:@"guid1"
              deviceName:@"Phone"
-             formFactor:syncer::DeviceInfo::FormFactor::kPhone];
+             formFactor:syncer::DeviceInfo::FormFactor::kPhone
+                 osType:syncer::DeviceInfo::OsType::kIOS];
   EXPECT_NE(nil, [phone_activity activityImage]);
 
   SendTabToSelfShareActivity* tablet_activity =
@@ -122,7 +124,8 @@ TEST_F(SendTabToSelfActivityTest, DeviceSpecific_ActivityImage) {
           activityTitle:@"Tablet"
               cacheGUID:@"guid2"
              deviceName:@"Tablet"
-             formFactor:syncer::DeviceInfo::FormFactor::kTablet];
+             formFactor:syncer::DeviceInfo::FormFactor::kTablet
+                 osType:syncer::DeviceInfo::OsType::kIOS];
   EXPECT_NE(nil, [tablet_activity activityImage]);
 
   SendTabToSelfShareActivity* desktop_activity =
@@ -132,7 +135,8 @@ TEST_F(SendTabToSelfActivityTest, DeviceSpecific_ActivityImage) {
           activityTitle:@"Desktop"
               cacheGUID:@"guid3"
              deviceName:@"Desktop"
-             formFactor:syncer::DeviceInfo::FormFactor::kDesktop];
+             formFactor:syncer::DeviceInfo::FormFactor::kDesktop
+                 osType:syncer::DeviceInfo::OsType::kMac];
   EXPECT_NE(nil, [desktop_activity activityImage]);
 }
 
@@ -158,7 +162,8 @@ TEST_F(SendTabToSelfActivityTest,
       activityTitle:activity_title
           cacheGUID:cache_guid
          deviceName:@"My Pixel 8"
-         formFactor:syncer::DeviceInfo::FormFactor::kPhone];
+         formFactor:syncer::DeviceInfo::FormFactor::kPhone
+             osType:syncer::DeviceInfo::OsType::kAndroid];
 
   id activity_partial_mock = OCMPartialMock(activity);
   [[activity_partial_mock expect] activityDidFinish:YES];
