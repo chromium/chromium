@@ -99,7 +99,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   void SetFilter(std::optional<SuggestionFilter> filter,
                  FilterSource source) override;
   bool HasFilteredOutSuggestions() const override;
-  bool ShouldShowNoSuggestionsMessage() const override;
+  bool ShouldShowNoSuggestionsMessage(
+      const std::optional<AutofillPopupView::SearchBarConfig>&
+          search_bar_config) const override;
   bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
   void OnPopupPainted() override;
   void OnTabSelected(int tab_index,

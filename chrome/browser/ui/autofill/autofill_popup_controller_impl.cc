@@ -104,7 +104,7 @@ bool ShouldEnforcePaintChecks(AutofillSuggestionTriggerSource trigger_source) {
 
 std::optional<AutofillPopupView::SearchBarConfig> GetSearchBarConfig(
     AutofillSuggestionTriggerSource trigger_source,
-    const std::u16string& search_bar_initial_value = {}) {
+    const std::u16string& search_bar_initial_value) {
   switch (trigger_source) {
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
@@ -1092,7 +1092,9 @@ bool AutofillPopupControllerImpl::HasFilteredOutSuggestions() const {
          filtered_suggestions_.size() != non_filtered_suggestions_.size();
 }
 
-bool AutofillPopupControllerImpl::ShouldShowNoSuggestionsMessage() const {
+bool AutofillPopupControllerImpl::ShouldShowNoSuggestionsMessage(
+    const std::optional<AutofillPopupView::SearchBarConfig>& search_bar_config)
+    const {
   // If there is no filter, we should never show the "no results" message.
   if (!filter_.has_value()) {
     return false;
@@ -1100,9 +1102,7 @@ bool AutofillPopupControllerImpl::ShouldShowNoSuggestionsMessage() const {
 
   // If the search bar is configured to not show a "no results" message,
   // we should not show it.
-  std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
-      GetSearchBarConfig(trigger_source_);
-  if (search_bar_config && search_bar_config->no_results_message.empty()) {
+  if (!search_bar_config || search_bar_config->no_results_message.empty()) {
     return false;
   }
 

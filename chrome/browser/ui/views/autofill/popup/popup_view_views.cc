@@ -1346,8 +1346,8 @@ void PopupViewViews::CreateSuggestionViews() {
 
   SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
 
-  // Show the "no results" message if the controller identifies this state.
-  if (search_bar_ && controller_->ShouldShowNoSuggestionsMessage()) {
+  if (search_bar_ &&
+      controller_->ShouldShowNoSuggestionsMessage(search_bar_config_)) {
     suggestions_container_->AddChildView(
         std::make_unique<PopupCenteredTextView>(
             search_bar_config_->no_results_message));

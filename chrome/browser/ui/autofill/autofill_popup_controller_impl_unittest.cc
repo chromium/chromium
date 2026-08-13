@@ -1076,8 +1076,12 @@ TEST_F(AutofillPopupControllerImplTest,
        AtMemory_NoFilter_NoSuggestionsMessageNotShown) {
   ShowSuggestions(manager(), {SuggestionType::kAtMemorySearchResult},
                   AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
-  EXPECT_FALSE(client().suggestion_controller(manager())
-                   .ShouldShowNoSuggestionsMessage());
+  EXPECT_FALSE(
+      client().suggestion_controller(manager()).ShouldShowNoSuggestionsMessage(
+          AutofillPopupView::SearchBarConfig{
+              .placeholder = u"Recall from memory",
+              .initial_value = {},
+              .no_results_message = u""}));
 }
 
 // Tests that the "no suggestions" message is not shown when @memory is
@@ -1086,8 +1090,12 @@ TEST_F(AutofillPopupControllerImplTest,
        AtMemory_FilterWithResults_NoSuggestionsMessageNotShown) {
   ShowAtMemoryPopup();
   SimulateAtMemoryQuery(/*query=*/u"res", /*results=*/{u"result"});
-  EXPECT_FALSE(client().suggestion_controller(manager())
-                   .ShouldShowNoSuggestionsMessage());
+  EXPECT_FALSE(
+      client().suggestion_controller(manager()).ShouldShowNoSuggestionsMessage(
+          AutofillPopupView::SearchBarConfig{
+              .placeholder = u"Recall from memory",
+              .initial_value = {},
+              .no_results_message = u""}));
 }
 // Tests that clearing the search query clears the suggestions in an @memory
 // session.
@@ -1114,8 +1122,12 @@ TEST_F(AutofillPopupControllerImplTest,
        AtMemory_FilterWithNoResults_NoSuggestionsMessageNotShown) {
   ShowAtMemoryPopup();
   SimulateAtMemoryQuery(/*query=*/u"abc", /*results=*/{});
-  EXPECT_FALSE(client().suggestion_controller(manager())
-                   .ShouldShowNoSuggestionsMessage());
+  EXPECT_FALSE(
+      client().suggestion_controller(manager()).ShouldShowNoSuggestionsMessage(
+          AutofillPopupView::SearchBarConfig{
+              .placeholder = u"Recall from memory",
+              .initial_value = {},
+              .no_results_message = u""}));
 }
 
 TEST_F(

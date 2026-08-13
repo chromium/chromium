@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -133,7 +134,10 @@ class MockAutofillPopupController : public AutofillPopupController {
               (const input::NativeWebKeyboardEvent& event),
               (override));
   MOCK_METHOD(bool, HasFilteredOutSuggestions, (), (const override));
-  MOCK_METHOD(bool, ShouldShowNoSuggestionsMessage, (), (const override));
+  MOCK_METHOD(bool,
+              ShouldShowNoSuggestionsMessage,
+              (const std::optional<AutofillPopupView::SearchBarConfig>&),
+              (const override));
   MOCK_METHOD(bool,
               IsViewVisibilityAcceptingThresholdEnabled,
               (),
