@@ -206,26 +206,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void set_delegate(Delegate* delegate) { omnibox_delegate_ = delegate; }
 
  protected:
-  FRIEND_TEST_ALL_PREFIXES(SearchboxHandlerTest, QuestionMarkKeywordInput);
-  FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
-  FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest,
-                           AutocompleteController_StartWithSuggestInventory);
-  FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, InputMethodTest);
-  FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);
-  FRIEND_TEST_ALL_PREFIXES(LensSearchboxHandlerTest,
-                           Lens_AutocompleteController_Start);
-  FRIEND_TEST_ALL_PREFIXES(WebuiOmniboxHandlerTest,
-                           OpenAutocompleteMatch_KeyboardModifiers);
-  FRIEND_TEST_ALL_PREFIXES(WebuiOmniboxHandlerTest, OpenLensSearch);
-  FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
-                           QueryAutocomplete_SetsLensInputs);
-  FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
-                           QueryAutocomplete_SetsLensInputs_InToolModes);
-  FRIEND_TEST_ALL_PREFIXES(WebuiOmniboxHandlerTest,
-                           OpenMatchResumesNavigationWhenNoDialogShown);
-  FRIEND_TEST_ALL_PREFIXES(WebuiOmniboxHandlerTest,
-                           OpenMatchDropsNavigationWhenDialogCancelled);
-
   SearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       mojo::PendingRemote<searchbox::mojom::Page> pending_page,
@@ -271,7 +251,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   base::ScopedObservation<AutocompleteController,
                           AutocompleteController::Observer>
       autocomplete_controller_observation_{this};
-
 
   mojo::Receiver<searchbox::mojom::PageHandler> page_handler_;
   mojo::Remote<searchbox::mojom::Page> page_;

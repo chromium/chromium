@@ -147,6 +147,9 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
 #endif
   }
 
+  using SearchboxHandler::client;
+  using SearchboxHandler::SetAutocompleteControllerForTesting;
+
   // searchbox::mojom::PageHandler
   void ExecuteAction(uint8_t line,
                      uint8_t action_index,

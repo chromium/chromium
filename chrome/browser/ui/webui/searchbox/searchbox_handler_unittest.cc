@@ -95,6 +95,28 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #endif
 
+namespace {
+class RealboxHandlerPublic : public RealboxHandler {
+ public:
+  using RealboxHandler::RealboxHandler;
+  using SearchboxHandler::autocomplete_controller_observation_;
+  using SearchboxHandler::client;
+  using SearchboxHandler::omnibox_controller;
+  using SearchboxHandler::OpenMatch;
+  using SearchboxHandler::SetAutocompleteControllerForTesting;
+};
+
+class LensSearchboxHandlerPublic : public LensSearchboxHandler {
+ public:
+  using LensSearchboxHandler::LensSearchboxHandler;
+  using SearchboxHandler::autocomplete_controller_observation_;
+  using SearchboxHandler::client;
+  using SearchboxHandler::omnibox_controller;
+  using SearchboxHandler::OpenMatch;
+  using SearchboxHandler::SetAutocompleteControllerForTesting;
+};
+}  // namespace
+
 class SearchboxHandlerTest : public ::testing::Test {
  public:
   SearchboxHandlerTest() = default;
@@ -217,7 +239,7 @@ TEST_F(SearchboxHandlerTest, QuestionMarkKeywordInput) {
   webui::SetBrowserWindowInterface(web_contents.get(),
                                    &browser_window_interface);
 
-  auto handler = std::make_unique<RealboxHandler>(
+  auto handler = std::make_unique<RealboxHandlerPublic>(
       mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
       page_.BindAndGetRemote(), profile(), web_contents.get(),
       base::BindLambdaForTesting(
@@ -291,7 +313,7 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
  protected:
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<RealboxHandler> handler_;
+  std::unique_ptr<RealboxHandlerPublic> handler_;
   testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
 #if !BUILDFLAG(IS_ANDROID)
   BrowserWindowFeatures browser_window_features_;
@@ -315,7 +337,7 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
     webui::SetBrowserWindowInterface(web_contents_.get(),
                                      &browser_window_interface_);
 
-    handler_ = std::make_unique<RealboxHandler>(
+    handler_ = std::make_unique<RealboxHandlerPublic>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         page_.BindAndGetRemote(), profile(), web_contents_.get(),
         base::BindLambdaForTesting(
@@ -423,7 +445,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
       std::make_unique<testing::NiceMock<MockAutocompleteController>>(
           std::make_unique<MockAutocompleteProviderClient>(), 0);
   autocomplete_controller_ = autocomplete_controller.get();
-  handler_->omnibox_controller()->SetAutocompleteControllerForTesting(
+  handler_->SetAutocompleteControllerForTesting(
       std::move(autocomplete_controller));
   // Set a mock OmniboxEditModel.
   auto omnibox_edit_model =
@@ -504,7 +526,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_StartWithSuggestInventory) {
       std::make_unique<testing::NiceMock<MockAutocompleteController>>(
           std::make_unique<MockAutocompleteProviderClient>(), 0);
   autocomplete_controller_ = autocomplete_controller.get();
-  handler_->omnibox_controller()->SetAutocompleteControllerForTesting(
+  handler_->SetAutocompleteControllerForTesting(
       std::move(autocomplete_controller));
   // Set a mock OmniboxEditModel.
   auto omnibox_edit_model =
@@ -555,7 +577,7 @@ TEST_F(RealboxHandlerTest, InputMethodTest) {
       std::make_unique<testing::NiceMock<MockAutocompleteController>>(
           std::make_unique<MockAutocompleteProviderClient>(), 0);
   autocomplete_controller_ = autocomplete_controller.get();
-  handler_->omnibox_controller()->SetAutocompleteControllerForTesting(
+  handler_->SetAutocompleteControllerForTesting(
       std::move(autocomplete_controller));
   // Set a mock OmniboxEditModel.
   auto omnibox_edit_model =
@@ -665,7 +687,7 @@ class SearchboxHandlerAimEligibilityTest : public RealboxHandlerTest {
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-    handler_ = std::make_unique<RealboxHandler>(
+    handler_ = std::make_unique<RealboxHandlerPublic>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         page_.BindAndGetRemote(), profile(), web_contents_.get(),
         base::BindLambdaForTesting(
@@ -751,7 +773,7 @@ class LensSearchboxHandlerTest : public SearchboxHandlerTest {
  protected:
   std::unique_ptr<testing::NiceMock<MockLensSearchboxClient>>
       lens_searchbox_client_;
-  std::unique_ptr<LensSearchboxHandler> handler_;
+  std::unique_ptr<LensSearchboxHandlerPublic> handler_;
 
  private:
   void SetUp() override {
@@ -761,7 +783,7 @@ class LensSearchboxHandlerTest : public SearchboxHandlerTest {
     lens_searchbox_client_ =
         std::make_unique<testing::NiceMock<MockLensSearchboxClient>>();
 
-    handler_ = std::make_unique<LensSearchboxHandler>(
+    handler_ = std::make_unique<LensSearchboxHandlerPublic>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         page_.BindAndGetRemote(), profile(),
         /*web_contents=*/nullptr, lens_searchbox_client_.get());
@@ -776,7 +798,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
       std::make_unique<testing::NiceMock<MockAutocompleteController>>(
           std::make_unique<MockAutocompleteProviderClient>(), 0);
   autocomplete_controller_ = autocomplete_controller.get();
-  handler_->omnibox_controller()->SetAutocompleteControllerForTesting(
+  handler_->SetAutocompleteControllerForTesting(
       std::move(autocomplete_controller));
   // Set a mock OmniboxEditModel.
   auto omnibox_edit_model =
@@ -930,6 +952,16 @@ class FakeOmniboxPopupView : public OmniboxPopupView {
 };
 }  // namespace
 
+class WebuiOmniboxHandlerPublic : public WebuiOmniboxHandler {
+ public:
+  using SearchboxHandler::autocomplete_controller_observation_;
+  using SearchboxHandler::client;
+  using SearchboxHandler::omnibox_controller;
+  using SearchboxHandler::OpenMatch;
+  using SearchboxHandler::SetAutocompleteControllerForTesting;
+  using WebuiOmniboxHandler::WebuiOmniboxHandler;
+};
+
 class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
  public:
   WebuiOmniboxHandlerTest() = default;
@@ -958,7 +990,7 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
 
     EXPECT_CALL(page_, AutocompleteResultChanged(testing::_)).Times(1);
 
-    handler_ = std::make_unique<WebuiOmniboxHandler>(
+    handler_ = std::make_unique<WebuiOmniboxHandlerPublic>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         page_.BindAndGetRemote(),
         /*metrics_reporter=*/nullptr, omnibox_controller_.get(), &web_ui_,
@@ -982,7 +1014,7 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<FakeOmniboxPopupView> popup_view_;
   std::unique_ptr<TestOmniboxView> test_omnibox_view_;
-  std::unique_ptr<WebuiOmniboxHandler> handler_;
+  std::unique_ptr<WebuiOmniboxHandlerPublic> handler_;
 };
 
 TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {

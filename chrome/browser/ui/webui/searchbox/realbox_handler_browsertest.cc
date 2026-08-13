@@ -264,6 +264,17 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadWithoutSearchStatsBrowserTest,
                                        browser()->GetProfile(), prerender_url));
 }
 
+namespace {
+class RealboxHandlerPublic : public RealboxHandler {
+ public:
+  using RealboxHandler::RealboxHandler;
+  using SearchboxHandler::autocomplete_controller_observation_;
+  using SearchboxHandler::client;
+  using SearchboxHandler::omnibox_controller;
+  using SearchboxHandler::SetAutocompleteControllerForTesting;
+};
+}  // namespace
+
 class RealboxHandlerTest : public InProcessBrowserTest,
                            public testing::WithParamInterface<bool> {
  public:
@@ -280,11 +291,11 @@ class RealboxHandlerTest : public InProcessBrowserTest,
 
  protected:
   testing::NiceMock<MockSearchboxPage> page_;
-  std::unique_ptr<RealboxHandler> handler_;
+  std::unique_ptr<RealboxHandlerPublic> handler_;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    handler_ = std::make_unique<RealboxHandler>(
+    handler_ = std::make_unique<RealboxHandlerPublic>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         page_.BindAndGetRemote(), browser()->GetProfile(),
         /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
