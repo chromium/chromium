@@ -202,6 +202,9 @@ public class AwBrowserContext implements BrowserContextHandle {
                             public void onLastWebViewDestroyed() {
                                 MemoryPressureMonitor.INSTANCE.disablePolling();
                             }
+
+                            @Override
+                            public void onAppStateChanged(@AppState int appState) {}
                         });
     }
 

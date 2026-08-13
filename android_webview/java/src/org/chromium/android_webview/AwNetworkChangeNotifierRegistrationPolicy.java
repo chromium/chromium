@@ -52,4 +52,7 @@ public class AwNetworkChangeNotifierRegistrationPolicy
             }
         }
     }
+
+    @Override
+    public void onAppStateChanged(@AppState int appState) {}
 }
