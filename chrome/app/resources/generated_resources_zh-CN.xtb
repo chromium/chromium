@@ -4396,7 +4396,7 @@
 <translation id="435185728237714178">前往“<ph name="APP_NAME" />”应用即可管理已安装的应用和流式传输的应用</translation>
 <translation id="4352913519324947509">密码未更改，但您应该仍能使用当前密码访问该网站</translation>
 <translation id="4354073718307267720">在网站想为您的周边环境创建 3D 地图或跟踪摄像头位置时询问您</translation>
-<translation id="435434000498374342">为想要挑战 5 公里跑的零基础新手制定一份为期 8 周的训练计划。计划中要包含走跑交替的间歇训练，并安排专门的休息日</translation>
+<translation id="435434000498374342">为想要挑战 5 公里跑的零基础新手制定一份为期 8 周的训练计划。要安排走跑交替的间歇训练，并预留专门的休息日</translation>
 <translation id="4354344420232759511">您访问的网站将显示在此处</translation>
 <translation id="4356100841225547054">关闭声音</translation>
 <translation id="4357583358198801992">显示标签页分组</translation>
@@ -8055,7 +8055,7 @@
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{在包含 1 个标签页的分组中新增标签页}other{在包含 # 个标签页的分组中新增标签页}}</translation>
 <translation id="721490496276866468">导入密码</translation>
 <translation id="7217208603285112910">所选内容不是<ph name="LANGUAGE" /></translation>
-<translation id="7217317914610152390">使用新的“文本注释”工具添加文字、评论和备注</translation>
+<translation id="7217317914610152390">使用新的“文字注释”工具，轻松添加文字、评论和备注</translation>
 <translation id="7219254577985949841">删除网站数据？</translation>
 <translation id="7219473482981809164">我们找到了多份可供下载的个人资料。请先选择您想下载的个人资料，然后继续操作。</translation>
 <translation id="7220019174139618249">无法将密码导出到“<ph name="FOLDER" />”</translation>
@@ -9555,7 +9555,7 @@
 <translation id="8356409598322585307">您已注册此设备。无需再次注册。</translation>
 <translation id="8357883857705092796">无法识别的网站</translation>
 <translation id="8358685469073206162">要恢复页面吗？</translation>
-<translation id="835927394551949760">询问 Google</translation>
+<translation id="835927394551949760">问问 Google</translation>
 <translation id="835951711479681002">保存到您的 Google 账号中</translation>
 <translation id="8360267485906769442">“发送反馈”按钮</translation>
 <translation id="8363095875018065315">稳定</translation>

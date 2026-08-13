@@ -512,7 +512,7 @@
 <translation id="6418511932144861495">Instalar una actualización crítica</translation>
 <translation id="6452251728599530347">Se completó en un <ph name="PERCENT" /></translation>
 <translation id="6478849105642611893">La tecla Insertar rápido se encuentra debajo de la tecla Tab</translation>
-<translation id="6480327114083866287">Administrador: <ph name="MANAGER" /></translation>
+<translation id="6480327114083866287">Administrado por <ph name="MANAGER" /></translation>
 <translation id="6488384360522318064">Seleccionar idioma</translation>
 <translation id="6495266441917713704">No se puede transferir la conexión Wi-Fi</translation>
 <translation id="6515620015470298987">No se pudo acceder debido a un problema de verificación de la configuración del dispositivo. Usa Powerwash en tu <ph name="DEVICE_TYPE" /> y vuelve a intentarlo.</translation>
