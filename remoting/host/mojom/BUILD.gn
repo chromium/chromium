@@ -252,6 +252,11 @@ mojom("mojom") {
         cpp = "::remoting::protocol::IceConfig"
         move_only = true
       },
+      {
+        mojom = "remoting.mojom.PairingResponse"
+        cpp = "::remoting::protocol::PairingResponse"
+        move_only = true
+      },
     ]
 
     if (is_win) {

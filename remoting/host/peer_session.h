@@ -6,14 +6,17 @@
 #define REMOTING_HOST_PEER_SESSION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/base/source_location.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
+#include "remoting/proto/control.pb.h"
 #include "remoting/protocol/errors.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -100,10 +103,23 @@ class PeerSession {
 // Factory interface for creating `PeerSession` instances.
 class PeerSessionFactory {
  public:
+  using RequestPairingResponseCallback =
+      base::OnceCallback<void(std::optional<protocol::PairingResponse>)>;
+  using RequestPairingCallback =
+      base::RepeatingCallback<void(const std::string& client_name,
+                                   RequestPairingResponseCallback response_cb)>;
+  using RequestPairingOnceCallback =
+      base::OnceCallback<void(const std::string& client_name,
+                              RequestPairingResponseCallback response_cb)>;
+
   virtual ~PeerSessionFactory() = default;
 
   // Creates a new `PeerSession` instance.
   virtual std::unique_ptr<PeerSession> Create() = 0;
+
+  // Sets the callback to handle client pairing requests.
+  virtual void set_request_pairing_callback(
+      const RequestPairingCallback& request_pairing_cb) = 0;
 };
 
 }  // namespace remoting

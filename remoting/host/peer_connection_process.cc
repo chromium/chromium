@@ -128,6 +128,7 @@ void PeerConnectionProcess::Start(
     mojo::PendingRemote<mojom::DesktopSession> desktop_control,
     mojo::PendingReceiver<mojom::DesktopSessionEvents> desktop_events_receiver,
     mojo::PendingRemote<mojom::IceConfigFetcher> ice_config_fetcher,
+    mojo::PendingRemote<mojom::PairingRequester> pairing_requester,
     const DesktopEnvironmentOptions& desktop_environment_options,
     const SessionPolicies& session_policies,
     const SessionOptions& session_options) {
@@ -165,8 +166,16 @@ void PeerConnectionProcess::Start(
         });
   }
 
+  PeerSessionImplFactory::RequestPairingCallback request_pairing_cb;
+  if (pairing_requester) {
+    pairing_requester_remote_.Bind(std::move(pairing_requester));
+    request_pairing_cb = base::BindRepeating(
+        &PeerConnectionProcess::RequestPairing, base::Unretained(this));
+  }
+
   PeerSessionImplFactory peer_session_factory(
-      desktop_environment_factory_.get(), get_ice_config_fetcher_cb);
+      desktop_environment_factory_.get(), get_ice_config_fetcher_cb,
+      std::move(request_pairing_cb));
 
   peer_session_ = peer_session_factory.Create();
   if (!peer_session_) {
@@ -267,11 +276,24 @@ void PeerConnectionProcess::OnSessionDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO)
       << "PeerSession dropped by Network process; shutting down PC process.";
+  pairing_requester_remote_.reset();
   transport_event_handler_.reset();
   pending_start_transport_.reset();
   pending_transport_infos_.clear();
   pending_session_services_receivers_.clear();
   Shutdown(0);
+}
+
+void PeerConnectionProcess::RequestPairing(
+    const std::string& client_name,
+    PeerSessionFactory::RequestPairingResponseCallback response_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pairing_requester_remote_.is_bound()) {
+    std::move(response_cb).Run(std::nullopt);
+    return;
+  }
+  pairing_requester_remote_->RequestPairing(client_name,
+                                            std::move(response_cb));
 }
 
 void PeerConnectionProcess::Shutdown(int exit_code) {

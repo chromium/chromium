@@ -446,6 +446,10 @@ class MockPeerSessionFactory : public PeerSessionFactory {
   ~MockPeerSessionFactory() override;
 
   MOCK_METHOD(std::unique_ptr<PeerSession>, Create, (), (override));
+  MOCK_METHOD(void,
+              set_request_pairing_callback,
+              (const RequestPairingCallback&),
+              (override));
 };
 
 }  // namespace remoting

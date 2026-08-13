@@ -94,6 +94,7 @@ class MockPeerSessionReceiver : public mojom::PeerSession {
              mojo::PendingReceiver<mojom::DesktopSessionEvents>
                  desktop_events_receiver,
              mojo::PendingRemote<mojom::IceConfigFetcher> ice_config_fetcher,
+             mojo::PendingRemote<mojom::PairingRequester> pairing_requester,
              const DesktopEnvironmentOptions& desktop_environment_options,
              const SessionPolicies& session_policies,
              const SessionOptions& session_options) override {
@@ -103,6 +104,9 @@ class MockPeerSessionReceiver : public mojom::PeerSession {
     }
     if (ice_config_fetcher) {
       ice_config_fetcher_remote_.Bind(std::move(ice_config_fetcher));
+    }
+    if (pairing_requester) {
+      pairing_requester_remote_.Bind(std::move(pairing_requester));
     }
     last_client_jid_ = client_jid;
     last_session_policies_ = session_policies;
@@ -147,12 +151,16 @@ class MockPeerSessionReceiver : public mojom::PeerSession {
   mojo::Remote<mojom::IceConfigFetcher>& ice_config_fetcher_remote() {
     return ice_config_fetcher_remote_;
   }
+  mojo::Remote<mojom::PairingRequester>& pairing_requester_remote() {
+    return pairing_requester_remote_;
+  }
 
  private:
   mojo::Receiver<mojom::PeerSession> receiver_{this};
   mojo::Remote<mojom::PeerSessionEventHandler> event_handler_remote_;
   mojo::Remote<mojom::TransportEventHandler> transport_event_handler_;
   mojo::Remote<mojom::IceConfigFetcher> ice_config_fetcher_remote_;
+  mojo::Remote<mojom::PairingRequester> pairing_requester_remote_;
   base::OnceClosure start_closure_;
   base::OnceClosure transport_closure_;
   bool start_called_ = false;
@@ -268,7 +276,8 @@ TEST_F(IpcPeerSessionTest, DisconnectHandlerFiresWhenSessionDestroyed) {
 
   auto session = std::make_unique<IpcPeerSession>(
       std::move(remote), base::DoNothing(),
-      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()));
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
   EXPECT_TRUE(receiver.is_bound());
 
   base::RunLoop run_loop;
@@ -291,7 +300,8 @@ TEST_F(IpcPeerSessionTest, CallingStubbedMethodsDoesNotCrash) {
 
   auto session = std::make_unique<IpcPeerSession>(
       std::move(remote), base::DoNothing(),
-      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()));
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
   MockEventHandler event_handler;
   session->Start(&event_handler, "", DesktopEnvironmentOptions(), {},
                  SessionPolicies(), SessionOptions());
@@ -306,7 +316,8 @@ TEST_F(IpcPeerSessionTest, TransportStartPropagatesAuthKey) {
 
   auto session = std::make_unique<IpcPeerSession>(
       std::move(remote), base::DoNothing(),
-      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()));
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
   MockEventHandler event_handler;
   session->Start(&event_handler, "", DesktopEnvironmentOptions(), {},
                  SessionPolicies(), SessionOptions());
@@ -329,7 +340,8 @@ TEST_F(IpcPeerSessionTest, TransportProcessTransportInfoCallsRemote) {
 
   auto session = std::make_unique<IpcPeerSession>(
       std::move(remote), base::DoNothing(),
-      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()));
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
   MockEventHandler event_handler;
   session->Start(&event_handler, "", DesktopEnvironmentOptions(), {},
                  SessionPolicies(), SessionOptions());
@@ -358,7 +370,8 @@ TEST_F(IpcPeerSessionTest, SendTransportInfoDispatchesToCallback) {
 
   auto session = std::make_unique<IpcPeerSession>(
       std::move(remote), base::DoNothing(),
-      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()));
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
   MockEventHandler event_handler;
 
   base::RunLoop start_loop;
@@ -403,7 +416,8 @@ TEST_F(IpcPeerSessionTest, SendTransportInfoDispatchesToCallback) {
 TEST_F(IpcPeerSessionTest, UnboundTransportOperationsDoNotCrash) {
   auto session = std::make_unique<IpcPeerSession>(
       mojo::NullRemote(), base::DoNothing(),
-      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()));
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
   EXPECT_EQ(session->transport(), session.get());
 
   session->transport()->Start("auth_key", base::DoNothing());
@@ -507,7 +521,8 @@ TEST_F(IpcPeerSessionTest, StartPropagatesSessionPoliciesAndOptions) {
           [](mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
              mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
              mojom::DesktopSessionOptionsPtr options) {}),
-      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()));
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
 
   SessionPolicies policies;
   policies.allow_file_transfer = false;
@@ -557,7 +572,8 @@ TEST_F(IpcPeerSessionTest, IceConfigFetcherFetchesConfigOverMojo) {
 
   auto session = std::make_unique<IpcPeerSession>(
       std::move(remote), base::DoNothing(),
-      std::make_unique<FakeIceConfigFetcher>(test_config));
+      std::make_unique<FakeIceConfigFetcher>(test_config),
+      base::NullCallback());
 
   MockEventHandler event_handler;
   base::RunLoop start_loop;
@@ -588,6 +604,189 @@ TEST_F(IpcPeerSessionTest, IceConfigFetcherFetchesConfigOverMojo) {
   ASSERT_EQ(received_config->turn_servers.size(), 1u);
   EXPECT_EQ(received_config->turn_servers[0].credentials.username, "test_user");
   EXPECT_EQ(received_config->turn_servers[0].credentials.password, "test_pass");
+}
+
+TEST_F(IpcPeerSessionTest, PairingRequesterRequestsPairingOverMojo) {
+  mojo::PendingRemote<mojom::PeerSession> remote;
+  MockPeerSessionReceiver receiver;
+  receiver.Bind(remote.InitWithNewPipeAndPassReceiver());
+
+  std::string requested_client_name;
+  auto request_pairing_cb = base::BindLambdaForTesting(
+      [&](const std::string& client_name,
+          PeerSessionFactory::RequestPairingResponseCallback response_cb) {
+        requested_client_name = client_name;
+        protocol::PairingResponse response;
+        response.set_client_id("test_client_id_999");
+        response.set_shared_secret("test_shared_secret_888");
+        std::move(response_cb).Run(std::move(response));
+      });
+
+  auto session = std::make_unique<IpcPeerSession>(
+      std::move(remote), base::DoNothing(),
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      std::move(request_pairing_cb));
+
+  MockEventHandler event_handler;
+  base::RunLoop start_loop;
+  receiver.set_start_closure(start_loop.QuitClosure());
+  session->Start(&event_handler, "client@example.com/test",
+                 DesktopEnvironmentOptions(), {}, SessionPolicies(),
+                 SessionOptions());
+  start_loop.Run();
+
+  ASSERT_TRUE(receiver.start_called());
+  ASSERT_TRUE(receiver.pairing_requester_remote().is_bound());
+
+  base::RunLoop pairing_loop;
+  std::optional<protocol::PairingResponse> received_response;
+  receiver.pairing_requester_remote()->RequestPairing(
+      "my_test_client",
+      base::BindLambdaForTesting(
+          [&](std::optional<protocol::PairingResponse> response) {
+            received_response = std::move(response);
+            pairing_loop.Quit();
+          }));
+  pairing_loop.Run();
+
+  EXPECT_EQ(requested_client_name, "my_test_client");
+  ASSERT_TRUE(received_response.has_value());
+  EXPECT_EQ(received_response->client_id(), "test_client_id_999");
+  EXPECT_EQ(received_response->shared_secret(), "test_shared_secret_888");
+}
+
+TEST_F(IpcPeerSessionTest, PairingRequesterReturnsNullWhenNoCallback) {
+  mojo::PendingRemote<mojom::PeerSession> remote;
+  MockPeerSessionReceiver receiver;
+  receiver.Bind(remote.InitWithNewPipeAndPassReceiver());
+
+  auto session = std::make_unique<IpcPeerSession>(
+      std::move(remote), base::DoNothing(),
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
+
+  MockEventHandler event_handler;
+  base::RunLoop start_loop;
+  receiver.set_start_closure(start_loop.QuitClosure());
+  session->Start(&event_handler, "client@example.com/test",
+                 DesktopEnvironmentOptions(), {}, SessionPolicies(),
+                 SessionOptions());
+  start_loop.Run();
+
+  ASSERT_TRUE(receiver.start_called());
+  ASSERT_TRUE(receiver.pairing_requester_remote().is_bound());
+
+  base::RunLoop pairing_loop;
+  std::optional<protocol::PairingResponse> received_response;
+  receiver.pairing_requester_remote()->RequestPairing(
+      "my_test_client",
+      base::BindLambdaForTesting(
+          [&](std::optional<protocol::PairingResponse> response) {
+            received_response = std::move(response);
+            pairing_loop.Quit();
+          }));
+  pairing_loop.Run();
+
+  EXPECT_FALSE(received_response.has_value());
+}
+
+TEST_F(IpcPeerSessionTest, PairingRequesterRejectsSubsequentRequests) {
+  mojo::PendingRemote<mojom::PeerSession> remote;
+  MockPeerSessionReceiver receiver;
+  receiver.Bind(remote.InitWithNewPipeAndPassReceiver());
+
+  int call_count = 0;
+  auto request_pairing_cb = base::BindLambdaForTesting(
+      [&](const std::string& client_name,
+          PeerSessionFactory::RequestPairingResponseCallback response_cb) {
+        call_count++;
+        std::move(response_cb).Run(protocol::PairingResponse());
+      });
+
+  auto session = std::make_unique<IpcPeerSession>(
+      std::move(remote), base::DoNothing(),
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      std::move(request_pairing_cb));
+
+  MockEventHandler event_handler;
+  base::RunLoop start_loop;
+  receiver.set_start_closure(start_loop.QuitClosure());
+  session->Start(&event_handler, "client@example.com/test",
+                 DesktopEnvironmentOptions(), {}, SessionPolicies(),
+                 SessionOptions());
+  start_loop.Run();
+
+  ASSERT_TRUE(receiver.start_called());
+  ASSERT_TRUE(receiver.pairing_requester_remote().is_bound());
+
+  base::RunLoop pairing_loop1;
+  std::optional<protocol::PairingResponse> response1;
+  receiver.pairing_requester_remote()->RequestPairing(
+      "my_test_client",
+      base::BindLambdaForTesting(
+          [&](std::optional<protocol::PairingResponse> response) {
+            response1 = std::move(response);
+            pairing_loop1.Quit();
+          }));
+  pairing_loop1.Run();
+  EXPECT_EQ(call_count, 1);
+  EXPECT_TRUE(response1.has_value());
+
+  // Calling RequestPairing a second time should return nullopt and not invoke
+  // the callback.
+  base::RunLoop pairing_loop2;
+  std::optional<protocol::PairingResponse> response2 =
+      protocol::PairingResponse();
+  receiver.pairing_requester_remote()->RequestPairing(
+      "my_test_client",
+      base::BindLambdaForTesting(
+          [&](std::optional<protocol::PairingResponse> response) {
+            response2 = std::move(response);
+            pairing_loop2.Quit();
+          }));
+  pairing_loop2.Run();
+  EXPECT_EQ(call_count, 1);
+  EXPECT_FALSE(response2.has_value());
+}
+
+TEST_F(IpcPeerSessionTest, IpcPeerSessionFactorySetsRequestPairingCallback) {
+  mojo::AssociatedRemote<mojom::PeerSessionManager> peer_remote;
+  mojo::PendingAssociatedReceiver<mojom::PeerSessionManager>
+      peer_pending_receiver = peer_remote.BindNewEndpointAndPassReceiver();
+  peer_pending_receiver.EnableUnassociatedUsage();
+
+  mojo::AssociatedRemote<mojom::DesktopSessionManager> desktop_remote;
+  mojo::PendingAssociatedReceiver<mojom::DesktopSessionManager>
+      desktop_pending_receiver =
+          desktop_remote.BindNewEndpointAndPassReceiver();
+  desktop_pending_receiver.EnableUnassociatedUsage();
+
+  MockPeerSessionManager mock_peer_manager;
+  mock_peer_manager.Bind(std::move(peer_pending_receiver));
+
+  MockDesktopSessionManager mock_desktop_manager;
+  mock_desktop_manager.Bind(std::move(desktop_pending_receiver));
+
+  IpcPeerSessionFactory factory(
+      peer_remote.Unbind(), desktop_remote.Unbind(),
+      base::BindRepeating([]() -> std::unique_ptr<protocol::IceConfigFetcher> {
+        return std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig());
+      }));
+
+  bool pairing_called = false;
+  factory.set_request_pairing_callback(base::BindLambdaForTesting(
+      [&](const std::string& client_name,
+          PeerSessionFactory::RequestPairingResponseCallback response_cb) {
+        pairing_called = true;
+        std::move(response_cb).Run(protocol::PairingResponse());
+      }));
+
+  std::unique_ptr<PeerSession> session = factory.Create();
+  ASSERT_NE(session, nullptr);
+
+  static_cast<IpcPeerSession*>(session.get())
+      ->RequestPairing("test_client", base::DoNothing());
+  EXPECT_TRUE(pairing_called);
 }
 
 }  // namespace remoting

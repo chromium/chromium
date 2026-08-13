@@ -433,7 +433,7 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   void RequestPairing(
       const std::string& client_name,
-      PeerSessionImpl::RequestPairingResponseCallback response_cb);
+      PeerSessionFactory::RequestPairingResponseCallback response_cb);
 
   // Tear down resources that run on the UI thread.
   void ShutdownOnUiThread();
@@ -598,7 +598,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::unique_ptr<CorpHostStatusLogger> corp_host_status_logger_;
 
   std::unique_ptr<ChromotingHost> host_;
-  raw_ptr<PeerSessionImplFactory> peer_session_factory_ = nullptr;
+  raw_ptr<PeerSessionFactory> peer_session_factory_ = nullptr;
 
   // Used to keep this HostProcess alive until it is shutdown.
   scoped_refptr<HostProcess> self_;
@@ -1083,7 +1083,7 @@ void HostProcess::CreateAuthenticatorFactory() {
 
 void HostProcess::RequestPairing(
     const std::string& client_name,
-    PeerSessionImpl::RequestPairingResponseCallback response_cb) {
+    PeerSessionFactory::RequestPairingResponseCallback response_cb) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
   if (!allow_pairing_ || !pairing_registry_ || client_name.empty() ||
       client_name.size() > PeerSessionImpl::kMaxClientNameLength ||
@@ -2130,6 +2130,7 @@ void HostProcess::StartHost() {
         base::BindRepeating(&IpcPeerSessionFactory::SetRequiredUsername,
                             base::Unretained(factory.get()));
     SetRequiredUsernameOnDaemonProcess();
+    peer_session_factory_ = factory.get();
     peer_session_factory = std::move(factory);
   } else if (multi_process_) {
     // When the PeerConnection process is disabled, DesktopEnvironmentFactory

@@ -1111,7 +1111,7 @@ TEST_F(PeerSessionImplTest, RequestPairing_BufferedBeforeChannelsConnected) {
   future.Get();
 }
 
-TEST_F(PeerSessionImplTest, RequestPairing_ConcurrentRequestsIgnored) {
+TEST_F(PeerSessionImplTest, RequestPairing_SubsequentRequestsIgnored) {
   ConnectPeerSession();
 
   protocol::PairingRequest request1;
@@ -1140,7 +1140,7 @@ TEST_F(PeerSessionImplTest, RequestPairing_ConcurrentRequestsIgnored) {
   protocol::PairingRequest request3;
   request3.set_client_name("client3");
   peer_session_->RequestPairing(request3);
-  EXPECT_EQ(requested_client_name_, "client3");
+  EXPECT_TRUE(requested_client_name_.empty());
 }
 
 TEST_F(PeerSessionImplTest, RequestPairing_EmptyClientIdOrSecretIgnored) {

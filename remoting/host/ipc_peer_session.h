@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -32,7 +33,8 @@ namespace remoting {
 class IpcPeerSession : public PeerSession,
                        public protocol::Transport,
                        public mojom::TransportEventHandler,
-                       public mojom::IceConfigFetcher {
+                       public mojom::IceConfigFetcher,
+                       public mojom::PairingRequester {
  public:
   using GetDesktopSessionCallback = base::RepeatingCallback<void(
       mojo::PendingReceiver<mojom::DesktopSession>,
@@ -42,7 +44,8 @@ class IpcPeerSession : public PeerSession,
   IpcPeerSession(
       mojo::PendingRemote<mojom::PeerSession> peer_session_remote,
       GetDesktopSessionCallback get_desktop_session_callback,
-      std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher);
+      std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
+      PeerSessionFactory::RequestPairingOnceCallback request_pairing_cb);
   IpcPeerSession(const IpcPeerSession&) = delete;
   IpcPeerSession& operator=(const IpcPeerSession&) = delete;
   ~IpcPeerSession() override;
@@ -73,6 +76,10 @@ class IpcPeerSession : public PeerSession,
   // mojom::IceConfigFetcher interface:
   void GetIceConfig(GetIceConfigCallback callback) override;
 
+  // mojom::PairingRequester interface:
+  void RequestPairing(const std::string& client_name,
+                      RequestPairingCallback callback) override;
+
  private:
   void OnPeerSessionDisconnected();
   void OnEventHandlerDisconnected();
@@ -91,9 +98,11 @@ class IpcPeerSession : public PeerSession,
   mojo::Receiver<mojom::TransportEventHandler>
       transport_event_handler_receiver_{this};
   mojo::Receiver<mojom::IceConfigFetcher> ice_config_fetcher_receiver_{this};
+  mojo::Receiver<mojom::PairingRequester> pairing_requester_receiver_{this};
   raw_ptr<EventHandler> event_handler_ = nullptr;
   GetDesktopSessionCallback get_desktop_session_callback_;
   std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher_;
+  PeerSessionFactory::RequestPairingOnceCallback request_pairing_cb_;
   SendTransportInfoCallback send_transport_info_callback_;
 
   base::WeakPtrFactory<IpcPeerSession> weak_factory_{this};
@@ -118,6 +127,8 @@ class IpcPeerSessionFactory : public PeerSessionFactory {
 
   // PeerSessionFactory interface:
   std::unique_ptr<PeerSession> Create() override;
+  void set_request_pairing_callback(
+      const RequestPairingCallback& request_pairing_cb) override;
 
   // If set to a non-empty value, the login user of the desktop session must
   // match `username`.
@@ -144,6 +155,7 @@ class IpcPeerSessionFactory : public PeerSessionFactory {
   mojo::AssociatedRemote<mojom::PeerSessionManager> peer_session_manager_;
   mojo::AssociatedRemote<mojom::DesktopSessionManager> desktop_session_manager_;
   GetIceConfigFetcherCallback get_ice_config_fetcher_cb_;
+  RequestPairingCallback request_pairing_cb_;
 
   base::WeakPtrFactory<IpcPeerSessionFactory> weak_factory_{this};
 };

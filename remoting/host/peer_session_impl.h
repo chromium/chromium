@@ -96,15 +96,15 @@ class PeerSessionImpl : public PeerSession,
   static constexpr size_t kMaxClientNameLength = 1024;
 
   using RequestPairingResponseCallback =
-      base::OnceCallback<void(std::optional<protocol::PairingResponse>)>;
-  using RequestPairingCallback =
-      base::RepeatingCallback<void(const std::string& client_name,
-                                   RequestPairingResponseCallback response_cb)>;
+      PeerSessionFactory::RequestPairingResponseCallback;
+  using RequestPairingCallback = PeerSessionFactory::RequestPairingCallback;
+  using RequestPairingOnceCallback =
+      PeerSessionFactory::RequestPairingOnceCallback;
 
   // `desktop_environment_factory` must outlive `this`.
   PeerSessionImpl(std::unique_ptr<protocol::ConnectionToClient> connection,
                   DesktopEnvironmentFactory* desktop_environment_factory,
-                  RequestPairingCallback request_pairing_cb);
+                  RequestPairingOnceCallback request_pairing_cb);
 
   PeerSessionImpl(const PeerSessionImpl&) = delete;
   PeerSessionImpl& operator=(const PeerSessionImpl&) = delete;
@@ -224,7 +224,7 @@ class PeerSessionImpl : public PeerSession,
     return effective_policies_;
   }
 
-  void SetRequestPairingCallbackForTesting(RequestPairingCallback cb) {
+  void SetRequestPairingCallbackForTesting(RequestPairingOnceCallback cb) {
     request_pairing_cb_ = std::move(cb);
   }
 
@@ -377,7 +377,7 @@ class PeerSessionImpl : public PeerSession,
   int default_y_dpi_ = kDefaultDpi;
 
   // Callback for PIN-less authentication pairing request.
-  RequestPairingCallback request_pairing_cb_;
+  RequestPairingOnceCallback request_pairing_cb_;
 
   // Used to dispatch new data channels to factory methods.
   protocol::DataChannelManager data_channel_manager_;
@@ -459,9 +459,7 @@ class PeerSessionImplFactory : public PeerSessionFactory {
   std::unique_ptr<PeerSession> Create() override;
 
   void set_request_pairing_callback(
-      const RequestPairingCallback& request_pairing_cb) {
-    request_pairing_cb_ = request_pairing_cb;
-  }
+      const RequestPairingCallback& request_pairing_cb) override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

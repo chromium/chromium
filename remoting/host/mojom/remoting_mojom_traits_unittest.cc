@@ -1122,6 +1122,18 @@ TEST(RemotingMojomTraitsTest, IceConfigRoundTrip) {
   EXPECT_EQ(output.turn_servers[0].credentials.password, "turn_pass");
 }
 
+TEST(RemotingMojomTraitsTest, PairingResponseRoundTrip) {
+  protocol::PairingResponse input;
+  input.set_client_id("test_client_id_12345");
+  input.set_shared_secret("test_shared_secret_abcde");
+
+  protocol::PairingResponse output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PairingResponse>(
+      input, output));
+  EXPECT_EQ(input.client_id(), output.client_id());
+  EXPECT_EQ(input.shared_secret(), output.shared_secret());
+}
+
 #endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 }  // namespace remoting

@@ -145,7 +145,7 @@ using protocol::ActionRequest;
 PeerSessionImpl::PeerSessionImpl(
     std::unique_ptr<protocol::ConnectionToClient> connection,
     DesktopEnvironmentFactory* desktop_environment_factory,
-    RequestPairingCallback request_pairing_cb)
+    RequestPairingOnceCallback request_pairing_cb)
     : desktop_environment_factory_(desktop_environment_factory),
       host_clipboard_filter_(clipboard_echo_filter_.host_filter()),
       client_clipboard_filter_(clipboard_echo_filter_.client_filter()),
@@ -555,10 +555,10 @@ void PeerSessionImpl::RequestPairing(
   }
 
   pairing_request_pending_ = true;
-  request_pairing_cb_.Run(
-      client_name,
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &PeerSessionImpl::OnPairingResponse, weak_factory_.GetWeakPtr())));
+  std::move(request_pairing_cb_)
+      .Run(client_name, base::BindPostTaskToCurrentDefault(
+                            base::BindOnce(&PeerSessionImpl::OnPairingResponse,
+                                           weak_factory_.GetWeakPtr())));
 }
 
 void PeerSessionImpl::OnPairingResponse(
@@ -1605,6 +1605,12 @@ PeerSessionImplFactory::PeerSessionImplFactory(
 
 PeerSessionImplFactory::~PeerSessionImplFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void PeerSessionImplFactory::set_request_pairing_callback(
+    const RequestPairingCallback& request_pairing_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  request_pairing_cb_ = request_pairing_cb;
 }
 
 std::unique_ptr<PeerSession> PeerSessionImplFactory::Create() {

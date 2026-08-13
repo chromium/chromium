@@ -131,6 +131,28 @@ interface IceConfigFetcher {
   GetIceConfig() => (IceConfig? ice_config);
 };
 
+// LINT.IfChange(PairingResponse)
+// Response to a client pairing request.
+// Maps to C++ type: `::remoting::protocol::PairingResponse`
+// (defined in remoting/proto/control.pb.h).
+struct PairingResponse {
+  string client_id;
+  string shared_secret;
+};
+// LINT.ThenChange(//remoting/proto/control.proto:PairingResponse)
+
+// Interface for requesting client pairing.
+//
+// Callee: Trusted Network Process (`remoting::IpcPeerSession`).
+// Caller: Untrusted Peer Connection Process
+//         (`remoting::PeerConnectionProcess`).
+interface PairingRequester {
+  // Requests pairing for `client_name`.
+  // Returns `pairing_response`, or null if the pairing request failed or was
+  // rejected.
+  RequestPairing(string client_name) => (PairingResponse? pairing_response);
+};
+
 // A session interface implemented by the Peer Connection process.
 // If the caller drops the remote, the disconnect handler terminates the Peer
 // Connection process.
@@ -145,6 +167,7 @@ interface PeerSession {
         pending_remote<DesktopSession> desktop_control,
         pending_receiver<DesktopSessionEvents> desktop_events_receiver,
         pending_remote<IceConfigFetcher> ice_config_fetcher,
+        pending_remote<PairingRequester> pairing_requester,
         DesktopEnvironmentOptions desktop_environment_options,
         SessionPolicies session_policies,
         SessionOptions session_options);

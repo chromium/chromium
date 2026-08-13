@@ -940,6 +940,22 @@ bool mojo::StructTraits<remoting::mojom::IceConfigDataView,
   return true;
 }
 
+// static
+bool mojo::StructTraits<remoting::mojom::PairingResponseDataView,
+                        ::remoting::protocol::PairingResponse>::
+    Read(remoting::mojom::PairingResponseDataView data_view,
+         ::remoting::protocol::PairingResponse* out_response) {
+  std::string client_id;
+  std::string shared_secret;
+  if (!data_view.ReadClientId(&client_id) ||
+      !data_view.ReadSharedSecret(&shared_secret)) {
+    return false;
+  }
+  out_response->set_client_id(std::move(client_id));
+  out_response->set_shared_secret(std::move(shared_secret));
+  return true;
+}
+
 #endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 }  // namespace mojo

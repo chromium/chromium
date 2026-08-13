@@ -82,6 +82,7 @@ class PeerConnectionProcess : public IPC::Listener,
              mojo::PendingReceiver<mojom::DesktopSessionEvents>
                  desktop_events_receiver,
              mojo::PendingRemote<mojom::IceConfigFetcher> ice_config_fetcher,
+             mojo::PendingRemote<mojom::PairingRequester> pairing_requester,
              const DesktopEnvironmentOptions& desktop_environment_options,
              const SessionPolicies& session_policies,
              const SessionOptions& session_options) override;
@@ -109,6 +110,10 @@ class PeerConnectionProcess : public IPC::Listener,
 
   void Shutdown(int exit_code);
 
+  void RequestPairing(
+      const std::string& client_name,
+      PeerSessionFactory::RequestPairingResponseCallback response_cb);
+
   void GetDesktopSession(
       mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
       mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
@@ -132,6 +137,7 @@ class PeerConnectionProcess : public IPC::Listener,
   std::unique_ptr<IpcDesktopEnvironmentFactory> desktop_environment_factory_;
   mojo::Remote<mojom::PeerSessionEventHandler> event_handler_;
   mojo::Remote<mojom::TransportEventHandler> transport_event_handler_;
+  mojo::Remote<mojom::PairingRequester> pairing_requester_remote_;
   std::unique_ptr<::remoting::PeerSession> peer_session_;
 
   // Transport and session service messages may arrive from the NetworkProcess

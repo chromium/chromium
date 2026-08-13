@@ -2074,6 +2074,24 @@ class StructTraits<remoting::mojom::IceConfigDataView,
                    ::remoting::protocol::IceConfig* out);
 };
 
+template <>
+class StructTraits<remoting::mojom::PairingResponseDataView,
+                   ::remoting::protocol::PairingResponse> {
+ public:
+  static const std::string& client_id(
+      const ::remoting::protocol::PairingResponse& response) {
+    return response.client_id();
+  }
+
+  static const std::string& shared_secret(
+      const ::remoting::protocol::PairingResponse& response) {
+    return response.shared_secret();
+  }
+
+  static bool Read(remoting::mojom::PairingResponseDataView data_view,
+                   ::remoting::protocol::PairingResponse* out);
+};
+
 #endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 }  // namespace mojo
