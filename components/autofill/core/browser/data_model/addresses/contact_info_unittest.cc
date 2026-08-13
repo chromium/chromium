@@ -1471,41 +1471,4 @@ INSTANTIATE_TEST_SUITE_P(
         NameMigrationTestCase{"メタワ", false, AddressCountryCode("US")},
         NameMigrationTestCase{"ねこです", false, AddressCountryCode("US")}));
 
-TEST(CompanyTest, SetRawInfo) {
-  CompanyInfo company;
-  company.SetRawInfo(COMPANY_NAME, u"Google");
-  EXPECT_EQ(company.GetRawInfo(COMPANY_NAME), u"Google");
-}
-
-TEST(CompanyTest, IsValid) {
-  auto set_and_validate = [](const std::u16string& company_name) {
-    CompanyInfo company;
-    company.SetRawInfo(COMPANY_NAME, company_name);
-    return company.IsValid();
-  };
-
-  EXPECT_TRUE(set_and_validate(u"Google"));
-  EXPECT_TRUE(set_and_validate(u"1818"));
-  EXPECT_FALSE(set_and_validate(u"1987"));
-  EXPECT_FALSE(set_and_validate(u"2019"));
-  EXPECT_TRUE(set_and_validate(u"2345"));
-  EXPECT_TRUE(set_and_validate(u"It was 1987."));
-  EXPECT_TRUE(set_and_validate(u"1987 was the year."));
-  EXPECT_FALSE(set_and_validate(u"Mr"));
-  EXPECT_FALSE(set_and_validate(u"Mr."));
-  EXPECT_FALSE(set_and_validate(u"Mrs"));
-  EXPECT_FALSE(set_and_validate(u"Mrs."));
-  EXPECT_TRUE(set_and_validate(u"Mr. & Mrs."));
-  EXPECT_TRUE(set_and_validate(u"Mr. & Mrs. Smith"));
-  EXPECT_FALSE(set_and_validate(u"Frau"));
-  EXPECT_TRUE(set_and_validate(u"Frau Doktor"));
-  EXPECT_FALSE(set_and_validate(u"Herr"));
-  EXPECT_FALSE(set_and_validate(u"Mme"));
-  EXPECT_FALSE(set_and_validate(u"Ms"));
-  EXPECT_FALSE(set_and_validate(u"Dr"));
-  EXPECT_FALSE(set_and_validate(u"Dr."));
-  EXPECT_FALSE(set_and_validate(u"Prof"));
-  EXPECT_FALSE(set_and_validate(u"Prof."));
-}
-
 }  // namespace autofill

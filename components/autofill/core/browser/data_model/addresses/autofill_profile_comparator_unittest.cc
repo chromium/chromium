@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/company_info.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"

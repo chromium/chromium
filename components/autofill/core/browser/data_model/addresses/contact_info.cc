@@ -41,7 +41,6 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_regexes.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/urename.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
@@ -917,72 +916,6 @@ bool EmailInfo::SetInfoWithVerificationStatus(const AutofillType& type,
 
 VerificationStatus EmailInfo::GetVerificationStatus(FieldType type) const {
   return VerificationStatus::kNoStatus;
-}
-
-CompanyInfo::CompanyInfo() = default;
-
-CompanyInfo::CompanyInfo(const CompanyInfo& info) = default;
-
-CompanyInfo::~CompanyInfo() = default;
-
-bool CompanyInfo::operator==(const CompanyInfo& other) const {
-  return this == &other ||
-         GetRawInfo(COMPANY_NAME) == other.GetRawInfo(COMPANY_NAME);
-}
-
-FieldTypeSet CompanyInfo::GetSupportedTypes() const {
-  static constexpr FieldTypeSet supported_types{COMPANY_NAME};
-  return supported_types;
-}
-
-void CompanyInfo::GetMatchingTypes(std::u16string_view text,
-                                   std::string_view app_locale,
-                                   FieldTypeSet* matching_types) const {
-  if (IsValid()) {
-    FormGroup::GetMatchingTypes(text, app_locale, matching_types);
-  } else if (text.empty()) {
-    matching_types->insert(EMPTY_TYPE);
-  }
-}
-
-std::u16string CompanyInfo::GetInfo(const AutofillType& type,
-                                    std::string_view app_locale) const {
-  return GetRawInfo(type.GetAddressType());
-}
-
-std::u16string CompanyInfo::GetRawInfo(FieldType type) const {
-  return company_name_;
-}
-
-void CompanyInfo::SetRawInfoWithVerificationStatus(FieldType type,
-                                                   std::u16string_view value,
-                                                   VerificationStatus status) {
-  DCHECK_EQ(COMPANY_NAME, type);
-  company_name_ = value;
-}
-
-bool CompanyInfo::SetInfoWithVerificationStatus(
-    const AutofillType& type,
-    std::u16string_view value,
-    std::string_view app_locale,
-    const VerificationStatus status) {
-  SetRawInfoWithVerificationStatus(type.GetAddressType(), value, status);
-  return true;
-}
-
-VerificationStatus CompanyInfo::GetVerificationStatus(FieldType type) const {
-  return VerificationStatus::kNoStatus;
-}
-
-bool CompanyInfo::IsValid() const {
-  static constexpr char16_t kBirthyearRe[] = u"^(19|20)\\d{2}$";
-  static constexpr char16_t kSocialTitleRe[] =
-      u"^(Ms\\.?|Mrs\\.?|Mr\\.?|Miss|Mistress|Mister|"
-      u"Frau|Herr|"
-      u"Mlle|Mme|M\\.|"
-      u"Dr\\.?|Prof\\.?)$";
-  return !MatchesRegex<kBirthyearRe>(company_name_) &&
-         !MatchesRegex<kSocialTitleRe>(company_name_);
 }
 
 }  // namespace autofill

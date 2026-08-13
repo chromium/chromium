@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/addresses/company_info.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
 #include "components/autofill/core/browser/data_model/addresses/phone_number.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
