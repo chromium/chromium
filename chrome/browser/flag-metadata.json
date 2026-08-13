@@ -7674,11 +7674,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "omnibox-multiline-edit-field",
-    "owners": [ "ender@google.com", "chrome-mobile-search@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "omnibox-multimodal-input",
     "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 160

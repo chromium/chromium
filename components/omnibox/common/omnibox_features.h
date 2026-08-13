@@ -160,10 +160,6 @@ BASE_DECLARE_FEATURE(kEnableSiteSearchAllowUserOverridePolicy);
 // Preconnect/prerender behavior for suggestions
 BASE_DECLARE_FEATURE(kPreconnectNonSearchOmniboxSuggestions);
 
-// When enabled, unblocks omnibox height on small form factor devices, allowing
-// users to type in multiline / longer text.
-BASE_DECLARE_FEATURE(kMultilineEditField);
-
 // Whether the composebox should use the new `chrome-compose` client.
 BASE_DECLARE_FEATURE(kComposeboxUsesChromeComposeClient);
 inline constexpr base::FeatureParam<std::string> kComposeboxClientOverride{

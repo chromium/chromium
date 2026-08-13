@@ -2407,9 +2407,7 @@ public class ToolbarPhone extends ToolbarLayout
         // - investigate what else needs to be done to make the WRAP_CONTENT work well as the
         //   default / static setting (likely leading to elimination of `toolbar_height_no_shadow`
         //   dimension).
-        if (OmniboxFeatures.sMultilineEditField.isEnabled()) {
-            updateLayoutParamsForMultiline();
-        }
+        updateLayoutParamsForMultiline();
 
         // If the refactored animations are enabled, we want to update the bg only after we've
         // started the delayed transition in order to grab the correct starting properties.
@@ -3136,7 +3134,7 @@ public class ToolbarPhone extends ToolbarLayout
         // During screen rotation, onToEdgeChange() is called and may reset the toolbar height.
         // When URL has focus, the toolbar should use WRAP_CONTENT to support multiline omnibox,
         // instead of being reset to a fixed height.
-        if (urlHasFocus() && OmniboxFeatures.sMultilineEditField.isEnabled()) {
+        if (urlHasFocus()) {
             layoutParams.height = LayoutParams.WRAP_CONTENT;
         } else {
             layoutParams.height =

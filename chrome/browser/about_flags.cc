@@ -2087,11 +2087,6 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"^ + Bottom Sheet (3)", kOmniboxAimModelPickerBottomSheet_3, nullptr},
     {"Model Picker Hint", kOmniboxAimModelPickerHint, nullptr},
 };
-const FeatureEntry::FeatureParam kOmniboxMultilineEditFieldForAutocomplete[] = {
-    {"wrap_autocomplete_text", "true"}};
-
-const FeatureEntry::FeatureVariation kOmniboxMultilineEditFieldVariants[] = {
-    {"For Autocomplete", kOmniboxMultilineEditFieldForAutocomplete, nullptr}};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -6851,12 +6846,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxFuseboxAsyncInflationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxFuseboxAsyncInflation)},
 
-    {"omnibox-multiline-edit-field",
-     flag_descriptions::kOmniboxMultilineEditFieldName,
-     flag_descriptions::kOmniboxMultilineEditFieldDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMultilineEditField,
-                                    kOmniboxMultilineEditFieldVariants,
-                                    "BottomToolbarV2")},
 
     {"omnibox-multimodal-input", flag_descriptions::kOmniboxMultimodalInputName,
      flag_descriptions::kOmniboxMultimodalInputDescription, kOsAndroid,

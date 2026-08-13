@@ -94,7 +94,6 @@ import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassificati
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -1059,9 +1058,9 @@ public class LocationBarCoordinator
      * whether it will be applied.
      */
     private void updateUrlBarForMultilineInput() {
-        boolean allowMultilineInput = OmniboxFeatures.sMultilineEditField.isEnabled();
         // Disable multiline input on Tablets if Fusebox state is "off".
-        allowMultilineInput &= !(isTabletLayout() && mCurrentFuseboxState == FuseboxState.DISABLED);
+        boolean allowMultilineInput =
+                !(isTabletLayout() && mCurrentFuseboxState == FuseboxState.DISABLED);
         mUrlCoordinator.setAllowMultilineInput(allowMultilineInput);
     }
 

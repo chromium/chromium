@@ -3583,11 +3583,6 @@ inline constexpr char kOmniboxGroupingFrameworkDescription[] =
     "Enables an alternative grouping implementation for omnibox "
     "autocompletion.";
 
-inline constexpr char kOmniboxMultilineEditFieldName[] =
-    "Omnibox Multiline edit field";
-inline constexpr char kOmniboxMultilineEditFieldDescription[] =
-    "When enabled, allows Omnibox input to span across multiple lines";
-
 inline constexpr char kOmniboxMultimodalInputName[] =
     "Omnibox Multimodal Input";
 inline constexpr char kOmniboxMultimodalInputDescription[] =

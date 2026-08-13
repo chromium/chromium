@@ -240,11 +240,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
         mInputDelegate
                 .getAutocompleteEditTextModelBaseDelegate()
                 .setInputIsMultilineEligible(
-                        TextUtils.indexOf(
-                                        OmniboxFeatures.sWrapAutocompleteText.getValue()
-                                                ? mInputDelegate.getCurrentState().getText()
-                                                : mInputDelegate.getCurrentState().getUserText(),
-                                        ' ')
+                        TextUtils.indexOf(mInputDelegate.getCurrentState().getUserText(), ' ')
                                 >= 0);
 
         if (!mInputDelegate.getCurrentState().isCursorAtEndOfUserText()) return false;

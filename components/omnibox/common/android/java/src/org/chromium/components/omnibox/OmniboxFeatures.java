@@ -183,12 +183,6 @@ public class OmniboxFeatures {
     public static final CachedFlag sAndroidDesktopAimGate =
             newFlag(OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE, FeatureState.ENABLED_IN_PROD);
 
-    public static final CachedFlag sMultilineEditField =
-            newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.ENABLED_IN_PROD);
-
-    public static final BooleanCachedFeatureParam sWrapAutocompleteText =
-            newBooleanParam(sOmniboxMultimodalInput, "wrap_autocomplete_text", false);
-
     public static final CachedFlag sAIMSuppressVerbatimMatch =
             newFlag(OmniboxFeatureList.AIM_SUPPRESS_VERBATIM_MATCH, FeatureState.ENABLED_IN_PROD);
 

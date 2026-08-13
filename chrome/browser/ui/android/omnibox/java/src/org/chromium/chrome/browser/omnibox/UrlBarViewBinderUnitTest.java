@@ -37,11 +37,9 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -155,7 +153,6 @@ public class UrlBarViewBinderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
     public void testSetAllowMultilineInput() {
         mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, true);
         mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);

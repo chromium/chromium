@@ -18060,7 +18060,6 @@
                     },
                     "enable_features": [
                         "ComposeboxUsesChromeComposeClient",
-                        "OmniboxMultilineEditField",
                         "OmniboxMultimodalInput"
                     ]
                 }

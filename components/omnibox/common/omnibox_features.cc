@@ -385,10 +385,6 @@ BASE_FEATURE(kEnableSiteSearchAllowUserOverridePolicy, ENABLED);
 // Enables preconnecting to omnibox suggestions that are not only Search types.
 BASE_FEATURE(kPreconnectNonSearchOmniboxSuggestions, ENABLED);
 
-// When enabled, unblocks omnibox height on small form factor devices, allowing
-// users to type in multiline / longer text.
-BASE_FEATURE(kMultilineEditField, "OmniboxMultilineEditField", ENABLED);
-
 // Controls whether the composebox
 BASE_FEATURE(kComposeboxUsesChromeComposeClient, ENABLED);
 
@@ -527,7 +523,6 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxSiteSearch,
       &kOmniboxMultimodalInput,
       &kAndroidDesktopAimGate,
-      &kMultilineEditField,
       &kServeJavaCachedZeroSuggest,
       &kAIMSuppressVerbatimMatch,
       &kResetSuggestionsScroll,

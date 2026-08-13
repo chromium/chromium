@@ -1248,7 +1248,6 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
     public void setInputIsMultilineEligible() {
         // Permit line wrapping.
         mUrlBar.setAllowMultilineInput(true);
@@ -1330,7 +1329,6 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
     public void onFocusChanged_MultilineEligibility() {
         mUrlBar.setAllowMultilineInput(true);
         mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);

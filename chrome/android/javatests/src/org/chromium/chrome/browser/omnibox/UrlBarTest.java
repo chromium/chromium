@@ -251,7 +251,6 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
-    // @DisableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
     public void testAutocompleteUpdatedOnSelection() throws TimeoutException {
         // Verify that setting a selection before the autocomplete clears it.
         verifySelectionState(
