@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/onc/onc_translator.h"
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -34,8 +35,9 @@ TEST_P(ONCTranslatorOncToShillTest, TranslateOncToShill) {
   base::DictValue expected_shill_network =
       test_utils::ReadTestDictionary(result_shill_filename);
 
-  base::DictValue translation = TranslateONCObjectToShill(
-      &chromeos::onc::kNetworkConfigurationSignature, onc_network);
+  base::DictValue translation =
+      TranslateONCObjectToShill(&chromeos::onc::kNetworkConfigurationSignature,
+                                onc_network, ::onc::ONC_SOURCE_USER_POLICY);
 
   EXPECT_TRUE(test_utils::Equals(&expected_shill_network, &translation));
 }
@@ -96,6 +98,61 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair("wifi_eap_ttls_with_hardcoded_password.onc",
                        "shill_wifi_eap_ttls_with_hardcoded_password.json")));
 
+// First parameter: Filename of source ONC.
+// Second parameter: ONC source of the configuration.
+// Third parameter: Filename of expected translated Shill json.
+class ONCTranslatorOncToShillSourceTest
+    : public ::testing::TestWithParam<
+          std::tuple<std::string, ::onc::ONCSource, std::string>> {};
+
+// Tests that translation from ONC to Shill json honors the ONC source for
+// fields whose handling differs between policy and non-policy configurations.
+TEST_P(ONCTranslatorOncToShillSourceTest, TranslateOncToShill) {
+  base::DictValue onc_network =
+      test_utils::ReadTestDictionary(std::get<0>(GetParam()));
+  base::DictValue expected_shill_network =
+      test_utils::ReadTestDictionary(std::get<2>(GetParam()));
+
+  base::DictValue translation =
+      TranslateONCObjectToShill(&chromeos::onc::kNetworkConfigurationSignature,
+                                onc_network, std::get<1>(GetParam()));
+
+  EXPECT_TRUE(test_utils::Equals(&expected_shill_network, &translation));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ONCTranslatorOncToShillSourceTest,
+    ONCTranslatorOncToShillSourceTest,
+    ::testing::Values(
+        std::make_tuple("wifi_eap_ttls_with_password_variable.onc",
+                        ::onc::ONC_SOURCE_USER_POLICY,
+                        "shill_wifi_eap_ttls_with_password_variable.json"),
+        std::make_tuple("wifi_eap_ttls_with_password_variable.onc",
+                        ::onc::ONC_SOURCE_DEVICE_POLICY,
+                        "shill_wifi_eap_ttls_with_password_variable.json"),
+        std::make_tuple(
+            "wifi_eap_ttls_with_password_variable.onc",
+            ::onc::ONC_SOURCE_NONE,
+            "shill_wifi_eap_ttls_with_password_variable_non_policy.json"),
+        std::make_tuple(
+            "wifi_eap_ttls_with_password_variable.onc",
+            ::onc::ONC_SOURCE_USER_IMPORT,
+            "shill_wifi_eap_ttls_with_password_variable_non_policy.json"),
+        std::make_tuple("l2tpipsec_with_password_variable.onc",
+                        ::onc::ONC_SOURCE_USER_POLICY,
+                        "shill_l2tpipsec_with_password_variable.json"),
+        std::make_tuple("l2tpipsec_with_password_variable.onc",
+                        ::onc::ONC_SOURCE_DEVICE_POLICY,
+                        "shill_l2tpipsec_with_password_variable.json"),
+        std::make_tuple(
+            "l2tpipsec_with_password_variable.onc",
+            ::onc::ONC_SOURCE_NONE,
+            "shill_l2tpipsec_with_password_variable_non_policy.json"),
+        std::make_tuple(
+            "l2tpipsec_with_password_variable.onc",
+            ::onc::ONC_SOURCE_USER_IMPORT,
+            "shill_l2tpipsec_with_password_variable_non_policy.json")));
+
 TEST_F(ONCTranslatorOncToShillTest, TranslateCellularApnRevamp) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
@@ -105,8 +162,9 @@ TEST_F(ONCTranslatorOncToShillTest, TranslateCellularApnRevamp) {
   base::DictValue expected_shill_network =
       test_utils::ReadTestDictionary("shill_cellular_apn_revamp.json");
 
-  base::DictValue translation = TranslateONCObjectToShill(
-      &chromeos::onc::kNetworkConfigurationSignature, onc_network);
+  base::DictValue translation =
+      TranslateONCObjectToShill(&chromeos::onc::kNetworkConfigurationSignature,
+                                onc_network, ::onc::ONC_SOURCE_USER_POLICY);
 
   EXPECT_TRUE(test_utils::Equals(&expected_shill_network, &translation));
 }
@@ -121,8 +179,9 @@ TEST_F(ONCTranslatorOncToShillTest,
   base::DictValue expected_shill_network = test_utils::ReadTestDictionary(
       "shill_cellular_apn_revamp_on_apn_policies_off.json");
 
-  base::DictValue translation = TranslateONCObjectToShill(
-      &chromeos::onc::kNetworkConfigurationSignature, onc_network);
+  base::DictValue translation =
+      TranslateONCObjectToShill(&chromeos::onc::kNetworkConfigurationSignature,
+                                onc_network, ::onc::ONC_SOURCE_USER_POLICY);
 
   EXPECT_TRUE(test_utils::Equals(&expected_shill_network, &translation));
 }

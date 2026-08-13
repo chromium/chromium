@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/network/onc/onc_translator.h"
 #include "chromeos/ash/components/network/shill_property_util.h"
 #include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "net/base/ip_address.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -82,6 +83,11 @@ void SetClientCertProperties(client_cert::ConfigType config_type,
                                   *shill_dictionary);
 }
 
+bool IsPolicyOncSource(::onc::ONCSource source) {
+  return source == ::onc::ONC_SOURCE_USER_POLICY ||
+         source == ::onc::ONC_SOURCE_DEVICE_POLICY;
+}
+
 // This class is responsible to translate the local fields of the given
 // |onc_object| according to |onc_signature| into |shill_dictionary|. This
 // translation should consider (if possible) only fields of this ONC object and
@@ -91,9 +97,11 @@ class LocalTranslator {
  public:
   LocalTranslator(const chromeos::onc::OncValueSignature& onc_signature,
                   const base::DictValue& onc_object,
+                  ::onc::ONCSource onc_source,
                   base::DictValue* shill_dictionary)
       : onc_signature_(&onc_signature),
         onc_object_(&onc_object),
+        onc_source_(onc_source),
         shill_dictionary_(shill_dictionary) {
     field_translation_table_ = GetFieldTranslationTable(onc_signature);
   }
@@ -142,6 +150,7 @@ class LocalTranslator {
   raw_ptr<const chromeos::onc::OncValueSignature> onc_signature_;
   raw_ptr<const FieldTranslationEntry> field_translation_table_;
   raw_ptr<const base::DictValue> onc_object_;
+  const ::onc::ONCSource onc_source_;
   raw_ptr<base::DictValue> shill_dictionary_;
 };
 
@@ -298,9 +307,11 @@ void LocalTranslator::TranslateL2TP() {
   }
 
   // Set shill::kL2TPIPsecUseLoginPasswordProperty according to whether or not
-  // the password substitution variable is set.
+  // the password substitution variable is set. The substitution variable is
+  // only honored for policy-provided configurations because the login password
+  // is only made available to Shill when policy requests it.
   const std::string* password = onc_object_->FindString(::onc::l2tp::kPassword);
-  if (password &&
+  if (IsPolicyOncSource(onc_source_) && password &&
       *password == ::onc::substitutes::kPasswordPlaceholderVerbatim) {
     // TODO(b/220249018): shill::kL2tpIpsecUseLoginPasswordProperty is a string
     // property containing "false" or "true". Migrate it to a bool to match
@@ -380,10 +391,12 @@ void LocalTranslator::TranslateEAP() {
                           shill_dictionary_);
 
   // Set shill::kEapUseLoginPasswordProperty according to whether or not the
-  // password substitution variable is set.
+  // password substitution variable is set. The substitution variable is only
+  // honored for policy-provided configurations because the login password is
+  // only made available to Shill when policy requests it.
   const std::string* password_field =
       onc_object_->FindString(::onc::eap::kPassword);
-  if (password_field &&
+  if (IsPolicyOncSource(onc_source_) && password_field &&
       *password_field == ::onc::substitutes::kPasswordPlaceholderVerbatim) {
     shill_dictionary_->Set(shill::kEapUseLoginPasswordProperty, true);
   }
@@ -507,7 +520,7 @@ void LocalTranslator::TranslateCellular() {
 
       base::DictValue shill_apn;
       LocalTranslator translator(chromeos::onc::kCellularApnSignature,
-                                 apn.GetDict(), &shill_apn);
+                                 apn.GetDict(), onc_source_, &shill_apn);
       translator.TranslateFields();
       enabled_apns.Append(std::move(shill_apn));
     }
@@ -647,6 +660,7 @@ void LocalTranslator::TranslateWithTableAndSet(
 // results are written to |shill_dictionary|.
 void TranslateONCHierarchy(const chromeos::onc::OncValueSignature& signature,
                            const base::DictValue& onc_object,
+                           ::onc::ONCSource onc_source,
                            base::DictValue& shill_dictionary) {
   const std::vector<std::string> path =
       GetPathToNestedShillDictionary(signature);
@@ -657,7 +671,8 @@ void TranslateONCHierarchy(const chromeos::onc::OncValueSignature& signature,
 
   // Translates fields of |onc_object| and writes them to
   // |target_shill_dictionary_| nested in |shill_dictionary|.
-  LocalTranslator translator(signature, onc_object, target_shill_dictionary);
+  LocalTranslator translator(signature, onc_object, onc_source,
+                             target_shill_dictionary);
   translator.TranslateFields();
 
   // Recurse into nested objects.
@@ -672,7 +687,7 @@ void TranslateONCHierarchy(const chromeos::onc::OncValueSignature& signature,
       continue;
     }
     TranslateONCHierarchy(*field_signature->value_signature,
-                          it.second.GetDict(), shill_dictionary);
+                          it.second.GetDict(), onc_source, shill_dictionary);
   }
 }
 
@@ -680,10 +695,12 @@ void TranslateONCHierarchy(const chromeos::onc::OncValueSignature& signature,
 
 base::DictValue TranslateONCObjectToShill(
     const chromeos::onc::OncValueSignature* onc_signature,
-    const base::DictValue& onc_object) {
+    const base::DictValue& onc_object,
+    ::onc::ONCSource onc_source) {
   CHECK(onc_signature != nullptr);
   base::DictValue shill_dictionary;
-  TranslateONCHierarchy(*onc_signature, onc_object, shill_dictionary);
+  TranslateONCHierarchy(*onc_signature, onc_object, onc_source,
+                        shill_dictionary);
   return shill_dictionary;
 }
 
