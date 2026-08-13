@@ -27,7 +27,9 @@
 #include "device/vr/openxr/openxr_visibility_mask_handler.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
+#include "device/vr/public/mojom/test/browser_test_interfaces.mojom-forward.h"
 #include "device/vr/vr_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -152,7 +154,8 @@ class OpenXrApiWrapper {
 
   uint16_t GetMaxRenderLayers() const;
 
-  static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
+  static void DEVICE_VR_EXPORT
+  SetTestHook(mojo::PendingRemote<device_test::mojom::XRTestHook> hook);
 
  private:
   void Reset();
@@ -224,7 +227,6 @@ class OpenXrApiWrapper {
   mojom::XRRuntimeSessionOptionsPtr session_options_;
 
   // Testing objects
-  static VRTestHook* test_hook_;
   static ServiceTestHook* service_test_hook_;
 
   std::unique_ptr<OpenXRInputHelper> input_helper_;

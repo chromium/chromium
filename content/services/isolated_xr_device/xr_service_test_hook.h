@@ -5,14 +5,8 @@
 #ifndef CONTENT_SERVICES_ISOLATED_XR_DEVICE_XR_SERVICE_TEST_HOOK_H_
 #define CONTENT_SERVICES_ISOLATED_XR_DEVICE_XR_SERVICE_TEST_HOOK_H_
 
-#include <memory>
-
 #include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-
-namespace webxr {
-class XRTestHookWrapper;
-}
 
 namespace device {
 
@@ -25,9 +19,6 @@ class XRServiceTestHook final : public device_test::mojom::XRServiceTestHook {
   void SetTestHook(mojo::PendingRemote<device_test::mojom::XRTestHook> hook,
                    device_test::mojom::XRServiceTestHook::SetTestHookCallback
                        callback) override;
-
- private:
-  std::unique_ptr<webxr::XRTestHookWrapper> wrapper_;
 };
 
 }  // namespace device

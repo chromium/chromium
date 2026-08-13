@@ -16,7 +16,6 @@
 #include "components/webxr/android/openxr_platform_helper_android.h"
 #include "components/webxr/android/xr_session_coordinator.h"
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
-#include "components/webxr/xr_test_hook_wrapper.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -30,19 +29,6 @@
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace webxr {
-
-// static
-void OpenXrDeviceProvider::SetTestHook(
-    mojo::PendingRemote<device_test::mojom::XRTestHook> hook_info) {
-  static base::NoDestructor<std::unique_ptr<XRTestHookWrapper>> wrapper;
-  if (wrapper->get() != nullptr) {
-    device::OpenXrApiWrapper::SetTestHook(nullptr);
-  }
-  *wrapper = hook_info
-                 ? std::make_unique<XRTestHookWrapper>(std::move(hook_info))
-                 : nullptr;
-  device::OpenXrApiWrapper::SetTestHook(wrapper->get());
-}
 
 OpenXrDeviceProvider::OpenXrDeviceProvider() = default;
 

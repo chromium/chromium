@@ -19,12 +19,8 @@
 namespace openxr_mock {
 
 namespace {
-// Global test helper that communicates with the test and contains the mock
-// OpenXR runtime state/properties. A reference to this is returned as the
-// instance handle through xrCreateInstance.
 OpenXrTestHelper& GetTestHelper() {
-  static base::NoDestructor<OpenXrTestHelper> test_helper;
-  return *test_helper;
+  return OpenXrTestHelper::Get();
 }
 }  // namespace
 

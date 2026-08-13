@@ -16,7 +16,10 @@
 #include "base/synchronization/lock.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
+#include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
 #include "device/vr/test/test_hook.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -35,6 +38,8 @@ class Transform;
 
 class OpenXrTestHelper : public device::ServiceTestHook {
  public:
+  static OpenXrTestHelper& Get();
+
   OpenXrTestHelper();
   ~OpenXrTestHelper();
 
@@ -46,7 +51,8 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   void TestFailure();
 
   // TestHookRegistration
-  void SetTestHook(device::VRTestHook* hook) final;
+  void SetTestHook(
+      mojo::PendingRemote<device_test::mojom::XRTestHook> hook) override;
 
   // Helper methods called by the mock OpenXR runtime. These methods will
   // call back into the test hook, thus communicating with the test object
@@ -313,7 +319,11 @@ class OpenXrTestHelper : public device::ServiceTestHook {
 
   std::queue<XrEventDataBuffer> event_queue_;
 
-  raw_ptr<device::VRTestHook> test_hook_ GUARDED_BY(lock_) = nullptr;
+  void OnTestHookDisconnected();
+  mojo::SharedRemote<device_test::mojom::XRTestHook> GetTestHook();
+
+  mojo::SharedRemote<device_test::mojom::XRTestHook> test_hook_
+      GUARDED_BY(lock_);
   base::Lock lock_;
 };
 

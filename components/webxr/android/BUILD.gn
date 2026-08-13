@@ -99,7 +99,6 @@ source_set("android") {
 
     if (enable_openxr) {
       deps += [
-        "//components/webxr:test_support",
         "//device/vr",
         "//third_party/openxr",
       ]

@@ -17,8 +17,8 @@
 #include "ui/gfx/geometry/decomposed_transform.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/webxr/android/openxr_device_provider.h"
 #include "components/webxr/android/openxr_platform_helper_android.h"
+#include "device/vr/openxr/test/openxr_test_helper.h"
 #endif
 
 MockXRDeviceHookBase::MockXRDeviceHookBase() {
@@ -42,8 +42,7 @@ MockXRDeviceHookBase::MockXRDeviceHookBase() {
       receiver_.BindNewPipeAndPassRemote(thread_->task_runner()));
 #elif BUILDFLAG(IS_ANDROID)
   webxr::OpenXrPlatformHelperAndroid::SetXrHostActivityDisabledForTesting(true);
-  mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-  webxr::OpenXrDeviceProvider::SetTestHook(
+  OpenXrTestHelper::Get().SetTestHook(
       receiver_.BindNewPipeAndPassRemote(thread_->task_runner()));
 #endif
 }
@@ -64,6 +63,9 @@ void MockXRDeviceHookBase::StopHooking() {
   // that will potentially deadlock with reentrant or crossing synchronous mojo
   // calls.
   service_test_hook_.reset();
+#if BUILDFLAG(IS_ANDROID)
+  OpenXrTestHelper::Get().SetTestHook(mojo::NullRemote());
+#endif
   // Unretained is safe here because we are going to block until this message
   // has been processed.
   thread_->task_runner()->PostTask(
@@ -111,6 +113,13 @@ void MockXRDeviceHookBase::OnFrameSubmitted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
   frame_count_++;
   ProcessSubmittedFrameUnlocked(views, layers);
+
+  // This method is called synchronously by the mock device in the child
+  // process. Run the Mojo reply callback before running `quit_closure`, so that
+  // the child process rendering thread is released from its synchronous IPC
+  // call before the test runner thread unblocks and starts subsequent actions.
+  std::move(callback).Run();
+
   if (frame_count_ >= target_frame_count_) {
     base::RepeatingClosure quit_closure;
     {
@@ -121,8 +130,6 @@ void MockXRDeviceHookBase::OnFrameSubmitted(
       quit_closure.Run();
     }
   }
-
-  std::move(callback).Run();
 }
 
 void MockXRDeviceHookBase::SetDeviceConfig(const device::DeviceConfig& config) {

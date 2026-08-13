@@ -43,7 +43,8 @@ class VRTestHook {
 
 class COMPONENT_EXPORT(VR_TEST_HOOK) ServiceTestHook {
  public:
-  virtual void SetTestHook(VRTestHook*) = 0;
+  virtual void SetTestHook(
+      mojo::PendingRemote<device_test::mojom::XRTestHook> hook) = 0;
 };
 
 }  // namespace device

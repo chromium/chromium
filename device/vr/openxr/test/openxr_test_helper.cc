@@ -9,14 +9,18 @@
 #include <limits>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "device/vr/openxr/openxr_interaction_profile_paths.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/test/webxr_test_gamepad_utils.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/transform.h"
@@ -170,9 +174,35 @@ void OpenXrTestHelper::TestFailure() {
   NOTREACHED();
 }
 
-void OpenXrTestHelper::SetTestHook(device::VRTestHook* hook) {
+// static
+OpenXrTestHelper& OpenXrTestHelper::Get() {
+  static base::NoDestructor<OpenXrTestHelper> test_helper;
+  return *test_helper;
+}
+
+void OpenXrTestHelper::SetTestHook(
+    mojo::PendingRemote<device_test::mojom::XRTestHook> hook) {
   base::AutoLock auto_lock(lock_);
-  test_hook_ = hook;
+  test_hook_.reset();
+  if (hook.is_valid()) {
+    auto task_runner = base::ThreadPool::CreateSequencedTaskRunner({});
+    test_hook_.Bind(std::move(hook), task_runner);
+    test_hook_.set_disconnect_handler(
+        base::BindOnce(&OpenXrTestHelper::OnTestHookDisconnected,
+                       base::Unretained(this)),
+        task_runner);
+  }
+}
+
+void OpenXrTestHelper::OnTestHookDisconnected() {
+  base::AutoLock auto_lock(lock_);
+  test_hook_.reset();
+}
+
+mojo::SharedRemote<device_test::mojom::XRTestHook>
+OpenXrTestHelper::GetTestHook() {
+  base::AutoLock auto_lock(lock_);
+  return test_hook_;
 }
 
 void OpenXrTestHelper::OnPresentedFrame(const XrFrameEndInfo* frame_end_info) {
@@ -270,11 +300,10 @@ void OpenXrTestHelper::OnPresentedFrame(const XrFrameEndInfo* frame_end_info) {
   }
 #endif
 
-  base::AutoLock auto_lock(lock_);
-  if (!test_hook_)
-    return;
-
-  test_hook_->OnFrameSubmitted(submitted_views, submitted_layers);
+  if (auto test_hook = GetTestHook(); test_hook) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
+    test_hook->OnFrameSubmitted(submitted_views, submitted_layers);
+  }
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1202,24 +1231,26 @@ XrTime OpenXrTestHelper::NextPredictedDisplayTime() {
 }
 
 void OpenXrTestHelper::UpdateEventQueue() {
-  base::AutoLock auto_lock(lock_);
-  if (test_hook_) {
-    device_test::mojom::EventData data = {};
+  if (auto test_hook = GetTestHook(); test_hook) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
+    device_test::mojom::EventDataPtr data;
     do {
-      data = test_hook_->WaitGetEventData();
-      if (data.type == device_test::mojom::EventType::kSessionLost) {
+      if (!test_hook->WaitGetEventData(&data) || !data) {
+        break;
+      }
+      if (data->type == device_test::mojom::EventType::kSessionLost) {
         SetSessionState(XR_SESSION_STATE_STOPPING);
-      } else if (data.type ==
+      } else if (data->type ==
                  device_test::mojom::EventType::kVisibilityVisibleBlurred) {
         // WebXR Visible-Blurred map to OpenXR Visible
         SetSessionState(XR_SESSION_STATE_VISIBLE);
-      } else if (data.type == device_test::mojom::EventType::kInstanceLost) {
+      } else if (data->type == device_test::mojom::EventType::kInstanceLost) {
         XrEventDataBuffer event_data = {
             XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING};
         event_queue_.push(event_data);
-      } else if (data.type ==
+      } else if (data->type ==
                  device_test::mojom::EventType::kInteractionProfileChanged) {
-        UpdateInteractionProfile(data.interaction_profile);
+        UpdateInteractionProfile(data->interaction_profile);
         XrEventDataBuffer event_data;
         XrEventDataInteractionProfileChanged* interaction_profile_changed =
             reinterpret_cast<XrEventDataInteractionProfileChanged*>(
@@ -1228,10 +1259,10 @@ void OpenXrTestHelper::UpdateEventQueue() {
             XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED;
         interaction_profile_changed->session = session_;
         event_queue_.push(event_data);
-      } else if (data.type != device_test::mojom::EventType::kNoEvent) {
+      } else if (data->type != device_test::mojom::EventType::kNoEvent) {
         NOTREACHED() << "Event changed event type not implemented for test";
       }
-    } while (data.type != device_test::mojom::EventType::kNoEvent);
+    } while (data && data->type != device_test::mojom::EventType::kNoEvent);
   }
 }
 
@@ -1241,17 +1272,23 @@ std::optional<gfx::Transform> OpenXrTestHelper::GetPose() {
 }
 
 std::optional<device::DeviceConfig> OpenXrTestHelper::GetDeviceConfig() {
-  base::AutoLock lock(lock_);
-  if (test_hook_) {
-    return test_hook_->WaitGetDeviceConfig();
+  if (auto test_hook = GetTestHook(); test_hook) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
+    device::DeviceConfig config;
+    if (test_hook->WaitGetDeviceConfig(&config)) {
+      return config;
+    }
   }
   return std::nullopt;
 }
 
 bool OpenXrTestHelper::GetCanCreateSession() {
-  base::AutoLock lock(lock_);
-  if (test_hook_) {
-    return test_hook_->WaitGetCanCreateSession();
+  if (auto test_hook = GetTestHook(); test_hook) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
+    bool can_create_session = true;
+    if (test_hook->WaitGetCanCreateSession(&can_create_session)) {
+      return can_create_session;
+    }
   }
 
   // In the absence of a test hook telling us that we can't create a session;
@@ -1394,11 +1431,9 @@ XrResult OpenXrTestHelper::GetVisibilityMask(
       "VISIBLE_TRIANGLE_MESH");
 
   device::mojom::XRVisibilityMaskPtr mask;
-  {
-    base::AutoLock auto_lock(lock_);
-    if (test_hook_) {
-      mask = test_hook_->WaitGetVisibilityMask(view_index);
-    }
+  if (auto test_hook = GetTestHook(); test_hook) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
+    test_hook->WaitGetVisibilityMask(view_index, &mask);
   }
 
   if (!mask) {
@@ -1491,11 +1526,11 @@ std::string OpenXrTestHelper::PathToString(XrPath path) const {
 }
 
 bool OpenXrTestHelper::UpdateData() {
-  base::AutoLock auto_lock(lock_);
-  if (test_hook_) {
-    device_test::mojom::XRTestFrameDataPtr frame_data =
-        test_hook_->WaitGetFrameData();
-    if (frame_data) {
+  if (auto test_hook = GetTestHook(); test_hook) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
+    device_test::mojom::XRTestFrameDataPtr frame_data;
+    if (test_hook->WaitGetFrameData(&frame_data) && frame_data) {
+      base::AutoLock auto_lock(lock_);
       presenting_pose_ = std::move(frame_data->head_pose);
       controllers_ = std::move(frame_data->controllers);
     }
