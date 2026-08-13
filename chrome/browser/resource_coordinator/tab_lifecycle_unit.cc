@@ -334,9 +334,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   DCHECK_EQ(GetLoadingState(), LifecycleUnitLoadingState::UNLOADED);
 
   web_contents()->NotifyWasDiscarded();
-  tab_strip_model_->UpdateWebContentsStateAt(
-      tab_strip_model_->GetIndexOfWebContents(web_contents()),
-      TabChangeType::kAll);
+  tab_strip_model_->UpdateWebContentsState(web_contents(), TabChangeType::kAll);
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::
@@ -355,9 +353,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::
                                 NowTicks() - start_time);
       },
       discard_start_time));
-  tab_strip_model_->UpdateWebContentsStateAt(
-      tab_strip_model_->GetIndexOfWebContents(web_contents()),
-      TabChangeType::kAll);
+  tab_strip_model_->UpdateWebContentsState(web_contents(), TabChangeType::kAll);
 
   is_discarded_ = true;
   RecomputeLifecycleUnitState();

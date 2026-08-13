@@ -452,13 +452,14 @@ class TabStripModel {
   void NotifyTabChanged(tabs::TabInterface* tab,
                         TabChangeType change_type);
 
-  // Notify any observers that the WebContents at the specified index has
-  // changed in some way. See TabChangeType for details of |change_type|.
-  void UpdateWebContentsStateAt(int index, TabChangeType change_type);
+  // Notify any observers that the WebContents has changed in some way. See
+  // TabChangeType for details of |change_type|.
+  void UpdateWebContentsState(content::WebContents* contents,
+                              TabChangeType change_type);
 
   // Cause a tab to display a UI indication to the user that it needs their
   // attention.
-  void SetTabNeedsAttentionAt(int index, bool attention);
+  void SetTabNeedsAttention(content::WebContents* contents, bool attention);
 
   // Close all tabs at once. Code can use closing_all() above to defer
   // operations that might otherwise by invoked by the flurry of detach/select

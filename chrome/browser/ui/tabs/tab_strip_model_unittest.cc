@@ -734,9 +734,9 @@ TEST_F(TabStripModelTest, TestBasicAPI) {
     EXPECT_EQ(1, tabstrip()->GetIndexOfWebContents(raw_contents1));
   }
 
-  // Test UpdateWebContentsStateAt
+  // Test UpdateWebContentsState
   {
-    tabstrip()->UpdateWebContentsStateAt(0, TabChangeType::kAll);
+    tabstrip()->UpdateWebContentsState(raw_contents2, TabChangeType::kAll);
     EXPECT_EQ(1, observer()->GetStateCount());
     State s1(raw_contents2, std::nullopt, MockTabStripModelObserver::CHANGE);
     observer()->ExpectStateEquals(0, s1);

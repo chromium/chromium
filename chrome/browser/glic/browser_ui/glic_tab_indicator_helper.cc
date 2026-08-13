@@ -99,8 +99,7 @@ void GlicTabIndicatorHelper::UpdateTab() {
   // the TabAlertController.
 #if !BUILDFLAG(IS_ANDROID)
   auto* const model = tab_->GetBrowserWindowInterface()->GetTabStripModel();
-  const int index = model->GetIndexOfTab(tab_);
-  model->UpdateWebContentsStateAt(index, TabChangeType::kAll);
+  model->UpdateWebContentsState(tab_->GetContents(), TabChangeType::kAll);
 #endif
 }
 

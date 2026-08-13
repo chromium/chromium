@@ -1281,17 +1281,20 @@ void TabStripModel::NotifyTabChanged(tabs::TabInterface* tab,
   }
 }
 
-void TabStripModel::UpdateWebContentsStateAt(int index,
-                                             TabChangeType change_type) {
-  tabs::TabInterface* tab = GetTabAtIndex(index);
+void TabStripModel::UpdateWebContentsState(content::WebContents* contents,
+                                           TabChangeType change_type) {
+  tabs::TabInterface* tab = GetTabForWebContents(contents);
+  CHECK(tab);
 
   for (auto& observer : observers_) {
     observer.OnTabChangedAt(tab, change_type);
   }
 }
 
-void TabStripModel::SetTabNeedsAttentionAt(int index, bool attention) {
-  tabs::TabInterface* const tab = GetTabAtIndex(index);
+void TabStripModel::SetTabNeedsAttention(content::WebContents* contents,
+                                         bool attention) {
+  tabs::TabInterface* const tab = GetTabForWebContents(contents);
+  CHECK(tab);
   TabUIHelper::From(tab)->SetNeedsAttention(attention);
 
   for (auto& observer : observers_) {

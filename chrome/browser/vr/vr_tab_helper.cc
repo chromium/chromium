@@ -89,9 +89,7 @@ void VrTabHelper::SetIsContentDisplayedInHeadset(content::WebContents* contents,
     if (browser) {
       TabStripModel* tab_strip_model = browser->GetTabStripModel();
       if (tab_strip_model) {
-        tab_strip_model->UpdateWebContentsStateAt(
-            tab_strip_model->GetIndexOfWebContents(contents),
-            TabChangeType::kAll);
+        tab_strip_model->UpdateWebContentsState(contents, TabChangeType::kAll);
       }
     }
 #endif

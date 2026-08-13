@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(TabViewTest, IconDataChanged) {
 
   // After setting the tab as needing attention, expect the attention indicator
   // to be showing.
-  tab_strip_model()->SetTabNeedsAttentionAt(0, true);
+  tab_strip_model()->SetTabNeedsAttention(web_contents, true);
   EXPECT_TRUE(icon->GetShowingAttentionIndicator());
 
   // After discarding the tab, the icon should show the discard indicator.
