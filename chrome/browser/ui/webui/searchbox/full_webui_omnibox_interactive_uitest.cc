@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base64.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -20,10 +23,15 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -47,16 +55,12 @@ const DeepQuery kFirstSuggestionMatchContents = {
     "cr-searchbox-match[match-index='1']", "#contents"};
 }  // namespace
 
-class FullWebUIOmniboxInteractiveTest
+class FullWebUIOmniboxInteractiveTestBase
     : public SearchboxInteractiveTestMixin<
           WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
-  FullWebUIOmniboxInteractiveTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kWebUIOmniboxFullPopup},
-        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxPopup});
-  }
-  ~FullWebUIOmniboxInteractiveTest() override = default;
+  FullWebUIOmniboxInteractiveTestBase() = default;
+  ~FullWebUIOmniboxInteractiveTestBase() override = default;
 
  protected:
   auto GetActivePopupWebView() {
@@ -235,6 +239,17 @@ class FullWebUIOmniboxInteractiveTest
                  }),
                  WaitForPopupReady());
   }
+};
+
+class FullWebUIOmniboxInteractiveTest
+    : public FullWebUIOmniboxInteractiveTestBase {
+ public:
+  FullWebUIOmniboxInteractiveTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kWebUIOmniboxFullPopup},
+        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxPopup});
+  }
+  ~FullWebUIOmniboxInteractiveTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -692,3 +707,190 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       CheckWebUIInputSelection(0, 0));
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+class FullWebUIOmniboxAimInteractiveTestBase
+    : public FullWebUIOmniboxInteractiveTestBase {
+ public:
+  FullWebUIOmniboxAimInteractiveTestBase() = default;
+  ~FullWebUIOmniboxAimInteractiveTestBase() override = default;
+
+ protected:
+  static std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures(
+      bool force_enable_aim) {
+    std::vector<base::test::FeatureRefAndParams> features = {
+        {omnibox::kWebUIOmniboxFullPopup, {}},
+        {omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady, {}}};
+    if (force_enable_aim) {
+      features.emplace_back(omnibox::internal::kWebUIOmniboxAimPopup,
+                            base::FieldTrialParams());
+      base::FieldTrialParams simplification_params = {
+          {omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
+           "below_results"},
+          {omnibox::kHideClassicContextButton.name, "false"},
+          {omnibox::kShowLensSearchChip.name, "true"}};
+      features.emplace_back(omnibox::internal::kWebUIOmniboxSimplification,
+                            simplification_params);
+      features.emplace_back(omnibox::kAimEnabled, base::FieldTrialParams());
+    }
+    return features;
+  }
+
+  auto SetAimEligibleResponse() {
+    return Do([this]() {
+      auto* profile = browser()->GetProfile();
+      auto* service = AimEligibilityServiceFactory::GetForProfile(profile);
+      omnibox::AimEligibilityResponse response;
+      response.set_is_eligible(true);
+      response.set_is_fusebox_eligible(true);
+      response.set_is_cobrowse_eligible(true);
+      auto* config = response.mutable_searchbox_config();
+      config->mutable_rule_set();
+      auto* tool_config = config->add_tool_configs();
+      tool_config->set_tool(omnibox::TOOL_MODE_DEEP_SEARCH);
+      tool_config->mutable_rule()->set_allow_all_input_types(true);
+
+      auto* input_config = config->add_input_type_configs();
+      input_config->set_input_type(omnibox::INPUT_TYPE_LENS_IMAGE);
+
+      auto* input_config2 = config->add_input_type_configs();
+      input_config2->set_input_type(omnibox::INPUT_TYPE_LENS_FILE);
+
+      auto* input_config3 = config->add_input_type_configs();
+      input_config3->set_input_type(omnibox::INPUT_TYPE_BROWSER_TAB);
+
+      std::string serialized;
+      response.SerializeToString(&serialized);
+      service->SetEligibilityResponseForDebugging(
+          base::Base64Encode(serialized));
+      ASSERT_TRUE(
+          base::test::RunUntil([&]() { return service->IsAimEligible(); }));
+    });
+  }
+
+  auto WaitForAimStateReady(const ui::ElementIdentifier& contents_id) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimStateReady);
+    StateChange state_ready;
+    state_ready.event = kAimStateReady;
+    state_ready.where = {"omnibox-full-app", "omnibox-popup-searchbox"};
+    state_ready.test_function =
+        "(el) => { const ep = "
+        "el?.shadowRoot?.querySelector('omnibox-popup-contextual-entrypoint'); "
+        "return ep && ep.isAimPopupEligible && ep.inputState && "
+        "ep.inputState.allowedTools.length > 0; }";
+    state_ready.continue_across_navigation = true;
+    return WaitForStateChange(contents_id, state_ready);
+  }
+};
+
+class FullWebUIOmniboxSimplificationInteractiveTest
+    : public FullWebUIOmniboxAimInteractiveTestBase {
+ public:
+  FullWebUIOmniboxSimplificationInteractiveTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    for (auto& feature : GetEnabledFeatures(/*force_enable_aim=*/true)) {
+      if (feature.feature.get().name !=
+          omnibox::internal::kWebUIOmniboxSimplification.name) {
+        enabled_features.push_back(feature);
+      }
+    }
+    enabled_features.emplace_back(
+        omnibox::internal::kWebUIOmniboxSimplification,
+        base::FieldTrialParams{
+            {omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
+             "below_results"},
+            {omnibox::kHideClassicContextButton.name, "false"},
+            {"Omnibox_ContextButtonHasBackground", "true"},
+            {"Omnibox_ContextButtonShapeIsOblong", "true"},
+            {"Omnibox_ContextButtonShowSuggestionLabel", "true"}});
+    enabled_features.emplace_back(omnibox::kAimUsePecApi,
+                                  base::FieldTrialParams());
+    feature_list_.InitWithFeaturesAndParameters(
+        enabled_features, {omnibox::internal::kWebUIOmniboxPopup});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// TODO(crbug.com/512348269): Reenable tests.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
+                       DISABLED_HasBackgroundApplied) {
+  const DeepQuery kContextButton = {
+      "omnibox-full-app",
+      "omnibox-popup-searchbox",
+      "omnibox-popup-contextual-entrypoint",
+      "#context",
+      "cr-composebox-contextual-entrypoint-button",
+      "#entrypoint"};
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InAnyContext(WaitForAimStateReady(kPopupWebView)),
+      SeedSearchboxResult("a"), InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kContextButton)),
+      InSameContext(CheckJsResultAt(
+          kPopupWebView, kContextButton,
+          "el => window.getComputedStyle(el).backgroundColor !== 'transparent'",
+          true)));
+}
+
+// TODO(crbug.com/512348269): Reenable tests.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
+                       DISABLED_OblongShapeApplied) {
+  const DeepQuery kContextButton = {
+      "omnibox-full-app",
+      "omnibox-popup-searchbox",
+      "omnibox-popup-contextual-entrypoint",
+      "#context",
+      "cr-composebox-contextual-entrypoint-button",
+      "#entrypoint"};
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kOblongStyleApplied);
+  StateChange style_applied;
+  style_applied.event = kOblongStyleApplied;
+  style_applied.where = kContextButton;
+  style_applied.test_function =
+      "(el) => el && window.getComputedStyle(el).borderRadius === \"100px\"";
+
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InAnyContext(WaitForAimStateReady(kPopupWebView)),
+      SeedSearchboxResult("a"), InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kContextButton)),
+      InAnyContext(WaitForStateChange(kPopupWebView, style_applied)));
+}
+
+// TODO(crbug.com/512348269): Reenable tests.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
+                       DISABLED_HasSuggestionLabel) {
+  const DeepQuery kSuggestionLabel = {
+      "omnibox-full-app",
+      "omnibox-popup-searchbox",
+      "omnibox-popup-contextual-entrypoint",
+      "#context",
+      "cr-composebox-contextual-entrypoint-button",
+      "#description"};
+  std::u16string expected_text =
+      l10n_util::GetStringUTF16(IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL);
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InAnyContext(WaitForAimStateReady(kPopupWebView)),
+      SeedSearchboxResult("a"), InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kSuggestionLabel)),
+      InSameContext(CheckJsResultAt(kPopupWebView, kSuggestionLabel,
+                                    "el => el.textContent.trim()",
+                                    base::UTF16ToUTF8(expected_text))));
+}

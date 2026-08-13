@@ -3,14 +3,26 @@
 // found in the LICENSE file.
 
 import {OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import type {OmniboxInputState, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {RenderType, SelectionLineState, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
+import {createDefaultInputState, TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
+
+function getContextualEntrypointButton(searchbox: OmniboxPopupSearchboxElement):
+    OmniboxPopupContextualEntrypointButtonElement|null {
+  const popupEntrypoint = $$(searchbox, 'omnibox-popup-contextual-entrypoint');
+  if (!popupEntrypoint) {
+    return null;
+  }
+  return $$<OmniboxPopupContextualEntrypointButtonElement>(
+      popupEntrypoint, 'omnibox-popup-contextual-entrypoint-button');
+}
 
 function createDefaultOmniboxInputState(overrides?: Partial<OmniboxInputState>):
     OmniboxInputState {
@@ -37,6 +49,14 @@ suite('OmniboxPopupSearchboxTest', function() {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      hideClassicContextButton: false,
+      composeboxShowContextMenuDescription: false,
+      omniboxShowContextButtonSuggestionLabel: false,
+      addContext: 'Add tabs and more',
+      contextButtonShapeIsOblong: false,
+      contextualMenuUsePecApi: false,
+    });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
     handler = TestMock.fromClass(OmniboxPopupPageHandlerRemote);
@@ -768,30 +788,30 @@ suite('OmniboxPopupSearchboxTest', function() {
 
    // Dropdown should now be closed.
    assertFalse(searchbox.dropdownIsVisible);
-   test('IgnoreOutOfBoundsMatchIndexChange', async () => {
-     assertEquals(-1, searchbox.selectedMatchIndex);
+ });
 
-     searchbox.activeQueryId = 0;
-     searchbox.lastQueriedInput = '';
-     testProxy.page.autocompleteResultChanged(
-         createAutocompleteResultForTesting({
-           queryId: 0,
-           input: '',
-           matches: [
-             createSearchMatchForTesting(),
-           ],
-         }));
-     await microtasksFinished();
+ test('IgnoreOutOfBoundsMatchIndexChange', async () => {
+   assertEquals(-1, searchbox.selectedMatchIndex);
 
-     testProxy.handler.reset();
+   searchbox.activeQueryId = 0;
+   searchbox.lastQueriedInput = '';
+   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: 0,
+     input: '',
+     matches: [
+       createSearchMatchForTesting(),
+     ],
+   }));
+   await microtasksFinished();
 
-     // Set an out-of-bounds index.
-     searchbox.selectedMatchIndex = 5;
-     await microtasksFinished();
+   testProxy.handler.reset();
 
-     // Verify handler was not notified because index is out of bounds.
-     assertEquals(0, testProxy.handler.getCallCount('setPopupSelection'));
-   });
+   // Set an out-of-bounds index.
+   searchbox.selectedMatchIndex = 5;
+   await microtasksFinished();
+
+   // Verify handler was not notified because index is out of bounds.
+   assertEquals(0, testProxy.handler.getCallCount('setPopupSelection'));
  });
 
  test('InputWrapperFocusout_NullRelatedTarget', async () => {
@@ -1199,5 +1219,247 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals('https://example.com', queryText);
    assertTrue(preventInline);
    assertFalse(isOnFocus);
+ });
+
+ suite('ContextEntrypoint', () => {
+   test('CurrentTabChipShown', async () => {
+     loadTimeData.overrideValues({
+       composeboxShowCurrentTabChip: true,
+       composeboxShowLensSearchChip: true,
+     });
+
+     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+     searchbox = document.createElement('omnibox-popup-searchbox');
+     document.body.appendChild(searchbox);
+     searchbox.dropdownIsVisible = true;
+     testProxy.initVisibilityPrefs();
+     await microtasksFinished();
+
+     const mockTab: TabInfo = {
+       tabId: 1,
+       title: 'Tab 1',
+       url: 'https://tab1.com/',
+       showInCurrentTabChip: true,
+       showInPreviousTabChip: false,
+       lastActive: {internalValue: 1n},
+     };
+
+     testProxy.handler.setPromiseResolveFor('getRecentTabs', {tabs: [mockTab]});
+     testProxy.page.updateLensSearchEligibility(true);
+     testProxy.page.updateContentSharingPolicy(true);
+
+     const result = createAutocompleteResultForTesting({
+       input: '',
+       matches: [],
+     });
+     testProxy.page.autocompleteResultChanged(result);
+     await microtasksFinished();
+
+     callbackRouter.onShow();
+     await testProxy.handler.whenCalled('getRecentTabs');
+     await microtasksFinished();
+
+     const popupEntrypoint =
+         $$(searchbox, 'omnibox-popup-contextual-entrypoint');
+     assertTrue(!!popupEntrypoint);
+     const chip = $$(popupEntrypoint, 'composebox-current-tab-chip');
+     assertTrue(!!chip);
+     assertTrue(isVisible(chip));
+   });
+
+   test('LensIconShown', async () => {
+     loadTimeData.overrideValues({
+       composeboxShowLensIcon: true,
+     });
+
+     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+     searchbox = document.createElement('omnibox-popup-searchbox');
+     document.body.appendChild(searchbox);
+     searchbox.dropdownIsVisible = true;
+     testProxy.initVisibilityPrefs();
+     await microtasksFinished();
+
+     testProxy.page.updateLensSearchEligibility(true);
+
+     const result = createAutocompleteResultForTesting({
+       input: '',
+       matches: [],
+     });
+     testProxy.page.autocompleteResultChanged(result);
+     await microtasksFinished();
+
+     callbackRouter.onShow();
+     await microtasksFinished();
+
+     const popupEntrypoint =
+         $$(searchbox, 'omnibox-popup-contextual-entrypoint');
+     assertTrue(!!popupEntrypoint);
+     assertTrue(isVisible($$(popupEntrypoint, '#lensSearchIcon')));
+   });
+
+   suite('TallSearchbox', () => {
+     let localSearchbox: OmniboxPopupSearchboxElement;
+
+     setup(async () => {
+       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+       loadTimeData.overrideValues({
+         omniboxAimPopupEnabled: true,
+         omniboxShowContextButtonSuggestionLabel: false,
+         hideClassicContextButton: false,
+         contextualMenuUsePecApi: false,
+         searchboxLayoutMode: 'TallBottomContext',
+       });
+
+       localSearchbox = document.createElement('omnibox-popup-searchbox');
+       localSearchbox.dropdownIsVisible = true;
+       document.body.appendChild(localSearchbox);
+       await microtasksFinished();
+       testProxy.initVisibilityPrefs();
+       await microtasksFinished();
+     });
+
+     test('ContextMenuEntrypointHiddenWhenDisabled', async () => {
+       testProxy.page.updateAimPopupEligibility(false);
+       await microtasksFinished();
+       assertFalse(!!getContextualEntrypointButton(localSearchbox));
+     });
+
+     test('ShowContextButtonText', async () => {
+       const contextualEntrypoint =
+           getContextualEntrypointButton(localSearchbox);
+       assertTrue(!!contextualEntrypoint);
+       if (contextualEntrypoint) {
+         const innerEntrypoint =
+             $$(contextualEntrypoint,
+                'cr-composebox-contextual-entrypoint-button');
+         assertTrue(!!innerEntrypoint);
+         assertFalse(!!$$(innerEntrypoint, '#description'));
+       }
+
+       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+       loadTimeData.overrideValues({
+         omniboxAimPopupEnabled: true,
+         omniboxShowContextButtonSuggestionLabel: false,
+         hideClassicContextButton: false,
+         contextualMenuUsePecApi: false,
+         composeboxShowContextMenuDescription: true,
+         searchboxLayoutMode: 'TallBottomContext',
+       });
+       localSearchbox = document.createElement('omnibox-popup-searchbox');
+       localSearchbox.dropdownIsVisible = true;
+       document.body.appendChild(localSearchbox);
+       await microtasksFinished();
+
+       testProxy.initVisibilityPrefs();
+       testProxy.page.updateAimPopupEligibility(true);
+       await microtasksFinished();
+
+       const contextualEntrypoint2 =
+           getContextualEntrypointButton(localSearchbox);
+       assertTrue(!!contextualEntrypoint2);
+       if (contextualEntrypoint2) {
+         const newInnerEntrypoint =
+             $$(contextualEntrypoint2,
+                'cr-composebox-contextual-entrypoint-button');
+         assertTrue(!!newInnerEntrypoint);
+         const description = $$(newInnerEntrypoint, '#description');
+         assertTrue(!!description);
+         assertEquals('Add tabs and more', description.textContent.trim());
+       }
+     });
+
+     test('HideClassicContextButton', async () => {
+       const contextualEntrypoint =
+           getContextualEntrypointButton(localSearchbox);
+       assertTrue(!!contextualEntrypoint);
+       assertTrue(isVisible(contextualEntrypoint));
+
+       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+       loadTimeData.overrideValues({
+         omniboxShowContextButtonSuggestionLabel: false,
+         hideClassicContextButton: true,
+         contextualMenuUsePecApi: false,
+       });
+       localSearchbox = document.createElement('omnibox-popup-searchbox');
+       localSearchbox.dropdownIsVisible = true;
+       document.body.appendChild(localSearchbox);
+       await microtasksFinished();
+
+       testProxy.initVisibilityPrefs();
+       testProxy.page.updateAimPopupEligibility(true);
+       await microtasksFinished();
+
+       assertFalse(!!getContextualEntrypointButton(localSearchbox));
+     });
+   });
+
+   suite('AimEligibility', () => {
+     let localSearchbox: OmniboxPopupSearchboxElement;
+
+     setup(async () => {
+       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+       loadTimeData.overrideValues({
+         hideClassicContextButton: false,
+         contextualMenuUsePecApi: false,
+         searchboxLayoutMode: 'TallBottomContext',
+       });
+       localSearchbox = document.createElement('omnibox-popup-searchbox');
+       localSearchbox.dropdownIsVisible = true;
+       document.body.appendChild(localSearchbox);
+       await microtasksFinished();
+
+       testProxy.initVisibilityPrefs();
+       await microtasksFinished();
+     });
+
+     test('AimEligibility', async () => {
+       testProxy.page.updateAimPopupEligibility(false);
+       await microtasksFinished();
+       let contextualEntrypoint = getContextualEntrypointButton(localSearchbox);
+       assertFalse(!!contextualEntrypoint);
+
+       testProxy.page.updateAimPopupEligibility(true);
+       await microtasksFinished();
+       contextualEntrypoint = getContextualEntrypointButton(localSearchbox);
+       assertTrue(!!contextualEntrypoint);
+       assertTrue(isVisible(contextualEntrypoint));
+
+       testProxy.page.updateAimPopupEligibility(false);
+       await microtasksFinished();
+       contextualEntrypoint = getContextualEntrypointButton(localSearchbox);
+       assertFalse(!!contextualEntrypoint);
+     });
+
+     test('DisallowedInputsHidesEntrypoint', async () => {
+       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+       loadTimeData.overrideValues({
+         hideClassicContextButton: false,
+         contextualMenuUsePecApi: true,
+         searchboxLayoutMode: 'TallBottomContext',
+       });
+       localSearchbox = document.createElement('omnibox-popup-searchbox');
+       document.body.appendChild(localSearchbox);
+       localSearchbox.dropdownIsVisible = true;
+
+       testProxy.initVisibilityPrefs();
+       testProxy.page.updateAimPopupEligibility(true);
+       await microtasksFinished();
+
+       testProxy.page.onInputStateChanged({
+         ...createDefaultInputState(),
+         allowedModels: [],
+         allowedTools: [],
+         allowedInputTypes: [],
+       });
+       await microtasksFinished();
+
+       const popupEntrypoint =
+           $$(localSearchbox, 'omnibox-popup-contextual-entrypoint');
+       assertTrue(!!popupEntrypoint);
+       const contextualEntrypoint =
+           $$(popupEntrypoint, 'omnibox-popup-contextual-entrypoint-button');
+       assertFalse(!!contextualEntrypoint);
+     });
+   });
  });
 });

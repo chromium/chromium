@@ -83,11 +83,6 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
         reflect: true,
       },
 
-      showContextEntrypoint_: {
-        type: Boolean,
-        reflect: true,
-      },
-
       result_: {type: Object},
       isAimButtonVisible_: {type: Boolean},
       webuiOmniboxPopupSelectionControlEnabled_: {type: Boolean},
@@ -99,7 +94,6 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
   accessor hasSecondarySide: boolean = false;
   accessor isDebug: boolean = false;
   protected accessor hasVisibleMatches_: boolean = false;
-  protected accessor showContextEntrypoint_: boolean = false;
   protected accessor result_: AutocompleteResult|null = null;
   protected accessor webuiOmniboxPopupSelectionControlEnabled_: boolean =
       loadTimeData.getBoolean('webuiOmniboxPopupSelectionControlEnabled');
@@ -110,13 +104,11 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
   }
 
   override get showContextEntrypoint(): boolean {
-    const show = this.shadowRoot
-                     ?.querySelector<OmniboxPopupContextualEntrypointElement>(
-                         'omnibox-popup-contextual-entrypoint')
-                     ?.showContextEntrypoint ??
+    return this.shadowRoot
+               ?.querySelector<OmniboxPopupContextualEntrypointElement>(
+                   'omnibox-popup-contextual-entrypoint')
+               ?.showContextEntrypoint ??
         false;
-    this.showContextEntrypoint_ = show;
-    return show;
   }
 
   private searchboxBrowserProxy_: SearchboxBrowserProxy;
