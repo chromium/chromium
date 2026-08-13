@@ -21105,25 +21105,6 @@
             ]
         }
     ],
-    "PsDualWritePrefsToNoticeStorage": [
-        {
-            "platforms": [
-                "linux",
-                "windows",
-                "android",
-                "mac",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PsDualWritePrefsToNoticeStorage"
-                    ]
-                }
-            ]
-        }
-    ],
     "PumpPeekMessageWithObserver": [
         {
             "platforms": [
