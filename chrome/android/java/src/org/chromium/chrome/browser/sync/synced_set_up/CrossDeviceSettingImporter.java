@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.sync.synced_set_up;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS;
 import static org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsMediator.MODULE_TYPE_TO_USER_PREFS_KEY;
+import static org.chromium.chrome.browser.ntp_customization.theme_sync.ServiceStatus.INITIALIZING;
 import static org.chromium.chrome.browser.sync.synced_set_up.SyncedSetUpUtilsBridge.getCrossDevicePrefsFromRemoteDevice;
 import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.computeToolbarPositionAndSource;
 import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.setToolbarPositionAndSource;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -116,6 +118,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private @Nullable Runnable mLocalStateObserver;
     private @Nullable CrossDevicePrefTracker mPrefTrackerBeingObserved;
     private @Nullable CrossDevicePrefTrackerObserver mPrefTrackerObserver;
+    private @Nullable CrossDeviceThemeTracker mThemeTrackerBeingObserved;
+    private CrossDeviceThemeTracker.@Nullable Observer mThemeTrackerObserver;
 
     private final Callback<@Nullable Tab> mTabChangeCallback =
             new Callback<@Nullable Tab>() {
@@ -176,6 +180,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         mPrefTrackerBeingObserved = null;
     }
 
+    private void stopObservingThemeTracker() {
+        if (mThemeTrackerObserver != null && mThemeTrackerBeingObserved != null) {
+            mThemeTrackerBeingObserved.removeObserver(mThemeTrackerObserver);
+        }
+        mThemeTrackerObserver = null;
+        mThemeTrackerBeingObserved = null;
+    }
+
     /**
      * Called when the current tab changes or gains focus.
      *
@@ -200,20 +212,32 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         @ServiceStatus int status = crossDevicePrefTracker.getServiceStatus();
         boolean prefTrackerReady = !NOT_READY_YET_STATES.contains(status);
 
+        @Nullable CrossDeviceThemeTracker crossDeviceThemeTracker = null;
+        boolean themeTrackerReady = true;
+        if (ChromeFeatureList.sXplatSyncedSetupThemes.isEnabled()) {
+            crossDeviceThemeTracker = CrossDeviceThemeTracker.getForProfile(profile);
+            if (crossDeviceThemeTracker == null) return;
+            int themeStatus = crossDeviceThemeTracker.getServiceStatus();
+            themeTrackerReady = themeStatus != INITIALIZING;
+        }
+
         if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
             Log.i(
                     TAG,
                     "onTabChangeOrGainFocus - localStateReady = "
                             + localStateReady
                             + ", prefTrackerReady = "
-                            + prefTrackerReady);
+                            + prefTrackerReady
+                            + ", themeTrackerReady = "
+                            + themeTrackerReady);
         }
 
-        // If both dependencies are ready, stop any active observation and proceed to import.
-        if (localStateReady && prefTrackerReady) {
+        // If all dependencies are ready, stop any active observation and proceed to import.
+        if (localStateReady && prefTrackerReady && themeTrackerReady) {
             stopObservingLocalState();
             stopObservingPrefTracker();
-            onCrossDevicePrefTrackerAndLocalStateReady(
+            stopObservingThemeTracker();
+            onDependenciesReady(
                     crossDevicePrefTracker, status, profile, currentTab, availableImmediately);
             return;
         }
@@ -229,6 +253,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             ensureObservingPrefTracker(crossDevicePrefTracker, profile);
         } else {
             stopObservingPrefTracker();
+        }
+
+        if (ChromeFeatureList.sXplatSyncedSetupThemes.isEnabled()
+                && crossDeviceThemeTracker != null
+                && !themeTrackerReady) {
+            ensureObservingThemeTracker(crossDeviceThemeTracker, profile);
+        } else {
+            stopObservingThemeTracker();
         }
     }
 
@@ -283,19 +315,51 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         prefTracker.addObserver(mPrefTrackerObserver);
     }
 
+    private void ensureObservingThemeTracker(
+            CrossDeviceThemeTracker themeTracker, Profile profile) {
+        if (mThemeTrackerBeingObserved != null && mThemeTrackerBeingObserved != themeTracker) {
+            stopObservingThemeTracker();
+        }
+        if (mThemeTrackerObserver != null) return;
+
+        mThemeTrackerObserver =
+                new CrossDeviceThemeTracker.Observer() {
+                    @Override
+                    public void onThemesChanged() {}
+
+                    @Override
+                    public void onStatusChanged(int status) {
+                        // If the tracker is still not ready, keep listening for status changes.
+                        if (status == INITIALIZING) {
+                            return;
+                        }
+
+                        // Ensure the tab and profile are still valid before retrying.
+                        @Nullable Tab currentTab = mActivityTabSupplier.get();
+                        if (currentTab == null) return;
+
+                        @Nullable Profile currentProfile = currentTab.getProfile();
+                        if (!profile.equals(currentProfile)) return;
+
+                        onTabChangeOrGainFocus(currentTab, /* availableImmediately= */ false);
+                    }
+                };
+        mThemeTrackerBeingObserved = themeTracker;
+        themeTracker.addObserver(mThemeTrackerObserver);
+    }
+
     /**
-     * Handles the {@link CrossDevicePrefTracker} and {@link LocalStatePrefs} reaching a "ready"
-     * state.
+     * Handles dependencies reaching a "ready" state.
      *
      * @param tracker The {@link CrossDevicePrefTracker}.
      * @param status The {@link ServiceStatus} of the tracker.
      * @param profile The {@link Profile}.
      * @param tab The {@link Tab} that is currently focused.
-     * @param availableImmediately Whether the CrossDevicePrefTracker and LocalStatePrefs were
-     *     available immediately (when we first checked).
+     * @param availableImmediately Whether dependencies were available immediately (when we first
+     *     checked).
      */
     @VisibleForTesting
-    void onCrossDevicePrefTrackerAndLocalStateReady(
+    void onDependenciesReady(
             CrossDevicePrefTracker tracker,
             @ServiceStatus int status,
             Profile profile,
@@ -304,7 +368,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
             Log.i(
                     TAG,
-                    "running onCrossDevicePrefTrackerAndLocalStateReady with status "
+                    "running onDependenciesReady with status "
                             + status
                             + ", available immediately ? "
                             + availableImmediately);
@@ -758,5 +822,6 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
         stopObservingLocalState();
         stopObservingPrefTracker();
+        stopObservingThemeTracker();
     }
 }

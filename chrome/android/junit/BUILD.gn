@@ -1231,6 +1231,7 @@ if (is_android) {
 
     deps = [
       ":chrome_junit_tests_helper",
+      "//chrome/browser/ntp_customization:java",
       "//chrome/browser/prefs/android:java",
       "//chrome/browser/sync/synced_set_up/android:java",
       "//components/sync_preferences/cross_device_pref_tracker/android:java",
