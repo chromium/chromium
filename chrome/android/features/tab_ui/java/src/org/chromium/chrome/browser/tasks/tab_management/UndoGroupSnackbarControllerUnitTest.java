@@ -33,8 +33,11 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -216,8 +219,19 @@ public class UndoGroupSnackbarControllerUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testTabModelSelectorTabModelObserver_WillCloseTab_DismissesSnackbar() {
         mTabModelObserver.willCloseTab(mTab, /* didCloseAlone= */ true);
+
+        verify(mSnackbarManager).dismissSnackbars(mController);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testTabModelSelectorTabModelObserver_WillCloseTab_DismissesSnackbar_WillCloseTabs() {
+        mTabModelObserver.willCloseTabs(
+                List.of(mTab), /* isAllTabs= */ false, /* allowUndo= */ false);
 
         verify(mSnackbarManager).dismissSnackbars(mController);
     }

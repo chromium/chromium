@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.ui.util.TokenHolder;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -103,6 +104,12 @@ public class UndoGroupSnackbarController
 
                     @Override
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
+                        dismissSnackbars();
+                    }
+
+                    @Override
+                    public void willCloseTabs(
+                            List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                         dismissSnackbars();
                     }
 
