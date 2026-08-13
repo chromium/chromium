@@ -20,6 +20,7 @@
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -153,26 +154,36 @@ constexpr std::string_view kNoticeInteractionsHistogram =
   switch (results.status) {
     case autofill::MemorySearchStatus::kNoConnectionFailure:
       [self.consumer setErrorType:AtMemoryErrorType::kNoConnectionError];
-      break;
+      return;
     case autofill::MemorySearchStatus::kUnsupportedQuery:
       [self.consumer setErrorType:AtMemoryErrorType::kUnsupportedQueryError];
-      break;
+      return;
     case autofill::MemorySearchStatus::kFinalResponseSuccess:
     case autofill::MemorySearchStatus::kPartialResponseSuccess:
       if (results.entries.empty()) {
         [self.consumer setErrorType:AtMemoryErrorType::kNoDataError];
       } else {
-        // TODO(crbug.com/543036121): Add a method to push results to the
-        // consumer once `AtMemorySearchItem` has been created.
+        [self pushResultsToConsumer:results];
       }
-      break;
+      return;
     case autofill::MemorySearchStatus::kInferenceFailure:
     case autofill::MemorySearchStatus::kInternalFailure:
       [self.consumer setErrorType:AtMemoryErrorType::kNoDataError];
-      break;
+      return;
   }
-  // TODO(crbug.com/543036121): Here, an array with the results will be provided
-  // to the consumer. If the array is nil, there was an error.
+  NOTREACHED();
+}
+
+// Converts memory search results to items and sends them to the consumer.
+- (void)pushResultsToConsumer:(const autofill::MemorySearchResults&)results {
+  NSMutableArray<AtMemorySearchItem*>* searchItems = [NSMutableArray array];
+  NSInteger index = 0;
+  for (const autofill::MemorySearchResult& entry : results.entries) {
+    [searchItems addObject:[[AtMemorySearchItem alloc]
+                               initWithMemorySearchResult:entry
+                                                    index:index++]];
+  }
+  [self.consumer setSearchResults:searchItems];
 }
 
 - (AtMemoryBackgroundStyle)currentTableViewBackgroundStyle {

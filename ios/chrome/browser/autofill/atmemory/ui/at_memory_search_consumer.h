@@ -25,6 +25,7 @@ enum class AtMemoryErrorType {
   kUnsupportedQueryError,
 };
 
+@class AtMemorySearchItem;
 // Consumer for the AtMemory search feature.
 @protocol AtMemorySearchConsumer <NSObject>
 
@@ -42,8 +43,8 @@ enum class AtMemoryErrorType {
 // Sets the previously filled results on the same page.
 - (void)setRecentFills;
 
-// TODO(crbug.com/543036121): Create a `setSearchResults` method once
-// AtMemorySearchItem has been created.
+// Sets search results to display in the UI.
+- (void)setSearchResults:(NSArray<AtMemorySearchItem*>*)searchResults;
 
 // Displays the table view background for the given `style`.
 - (void)updateTableViewBackgroundStyle:(AtMemoryBackgroundStyle)style;

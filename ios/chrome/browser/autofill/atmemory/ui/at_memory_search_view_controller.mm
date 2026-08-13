@@ -213,6 +213,10 @@ enum class ItemIdentifier {
   // TODO(crbug.com/540877897): Implement recent fills.
 }
 
+- (void)setSearchResults:(NSArray<AtMemorySearchItem*>*)searchResults {
+  // TODO(crbug.com/543036121): Implement search results.
+}
+
 - (void)updateTableViewBackgroundStyle:(AtMemoryBackgroundStyle)style {
   _backgroundStyle = style;
   switch (style) {

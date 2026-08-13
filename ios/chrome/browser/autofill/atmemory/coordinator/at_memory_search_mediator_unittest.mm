@@ -6,6 +6,7 @@
 
 #import <string>
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
@@ -13,6 +14,7 @@
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -25,6 +27,13 @@
 using ::testing::_;
 
 namespace {
+
+// Constants for mock search items.
+NSString* const kPassportTypeName = @"Passport";
+NSString* const kPassportValue = @"AA123456";
+
+// Search query used for testing mediator search requests.
+NSString* const kSearchQuery = @"test mediator query";
 
 // Fake implementation of PersonalContextFirstRunService to control the notice
 // state.
@@ -69,12 +78,63 @@ class AtMemorySearchMediatorTest : public PlatformTest {
     PlatformTest::SetUp();
     web_state_.SetVisibleURL(GURL("http://example.org"));
     web_state_.SetTitle(u"Example Title");
+    mock_consumer_ = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
+  }
+
+  void TearDown() override {
+    if (mediator_) {
+      [mediator_ disconnect];
+      mediator_ = nil;
+    }
+    PlatformTest::TearDown();
+  }
+
+  void CreateMediator() {
+    mediator_ = [[AtMemorySearchMediator alloc]
+        initWithAtMemoryQueryService:&mock_query_service_
+                            webState:&web_state_
+                     firstRunService:&first_run_service_];
+    mediator_.consumer = mock_consumer_;
   }
 
   web::WebTaskEnvironment task_environment_;
   autofill::MockAtMemoryQueryService mock_query_service_;
   web::FakeWebState web_state_;
+  FakePersonalContextFirstRunService first_run_service_;
+  id mock_consumer_;
+  AtMemorySearchMediator* mediator_;
 };
+
+// Tests that successful search results are converted to items and pushed to the
+// consumer.
+TEST_F(AtMemorySearchMediatorTest, PushesSearchResultsToConsumer) {
+  CreateMediator();
+
+  autofill::MemorySearchResults fake_results(
+      autofill::MemorySearchStatus::kFinalResponseSuccess);
+  fake_results.entries.push_back(
+      autofill::MemorySearchResult(autofill::MemoryDataType::kPassportNumber,
+                                   base::SysNSStringToUTF16(kPassportTypeName),
+                                   base::SysNSStringToUTF16(kPassportValue)));
+
+  EXPECT_CALL(mock_query_service_, Query)
+      .WillOnce(base::test::RunCallback<3>(fake_results));
+
+  OCMExpect([mock_consumer_
+      setSearchResults:[OCMArg checkWithBlock:^BOOL(
+                                   NSArray<AtMemorySearchItem*>* items) {
+        if (items.count != 1) {
+          return NO;
+        }
+        AtMemorySearchItem* item = items.firstObject;
+        return [item.title isEqualToString:kPassportValue] &&
+               [item.subtitle isEqualToString:kPassportTypeName];
+      }]]);
+
+  [mediator_ startSearchWithQuery:kSearchQuery];
+
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
 
 // Parameters for AtMemorySearchMediatorErrorTest.
 struct AtMemoryErrorTestParam {
@@ -92,25 +152,18 @@ class AtMemorySearchMediatorErrorTest
 // Tests that handleAtMemorySearchResults maps search status to the expected
 // consumer error type.
 TEST_P(AtMemorySearchMediatorErrorTest, HandlesErrorStatus) {
-  FakePersonalContextFirstRunService first_run_service;
-  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
-      initWithAtMemoryQueryService:&mock_query_service_
-                          webState:&web_state_
-                   firstRunService:&first_run_service];
-  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
-  mediator.consumer = mock_consumer;
+  CreateMediator();
 
   autofill::MemorySearchResults fake_results(GetParam().status);
 
   EXPECT_CALL(mock_query_service_, Query)
       .WillOnce(base::test::RunCallback<3>(fake_results));
 
-  OCMExpect([mock_consumer setErrorType:GetParam().expected_error_type]);
+  OCMExpect([mock_consumer_ setErrorType:GetParam().expected_error_type]);
 
-  [mediator startSearchWithQuery:@"test query"];
+  [mediator_ startSearchWithQuery:kSearchQuery];
 
-  EXPECT_OCMOCK_VERIFY(mock_consumer);
-  [mediator disconnect];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
 // Instantiates the test suite with various combinations of search statuses to
@@ -151,134 +204,88 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests that the notice is shown when the first-run service requires it.
 TEST_F(AtMemorySearchMediatorTest, ShowsNoticeInitiallyIfEligible) {
-  FakePersonalContextFirstRunService first_run_service;
-  first_run_service.set_should_show_at_memory_notice(true);
-  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
+  first_run_service_.set_should_show_at_memory_notice(true);
 
-  OCMExpect([mock_consumer setNoticeVisible:YES]);
-  OCMExpect([mock_consumer
+  OCMExpect([mock_consumer_ setNoticeVisible:YES]);
+  OCMExpect([mock_consumer_
       updateTableViewBackgroundStyle:AtMemoryBackgroundStyle::kDefaultStyle]);
 
-  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
-      initWithAtMemoryQueryService:&mock_query_service_
-                          webState:&web_state_
-                   firstRunService:&first_run_service];
-  mediator.consumer = mock_consumer;
+  CreateMediator();
 
-  EXPECT_OCMOCK_VERIFY(mock_consumer);
-  [mediator disconnect];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
 // Tests that the notice is hidden when the first-run service does not require
 // it.
 TEST_F(AtMemorySearchMediatorTest, HidesNoticeInitiallyIfNotEligible) {
-  FakePersonalContextFirstRunService first_run_service;
-  first_run_service.set_should_show_at_memory_notice(false);
-  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
+  first_run_service_.set_should_show_at_memory_notice(false);
 
-  OCMExpect([mock_consumer setNoticeVisible:NO]);
-  OCMExpect([mock_consumer
+  OCMExpect([mock_consumer_ setNoticeVisible:NO]);
+  OCMExpect([mock_consumer_
       updateTableViewBackgroundStyle:AtMemoryBackgroundStyle::kEmptyStyle]);
 
-  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
-      initWithAtMemoryQueryService:&mock_query_service_
-                          webState:&web_state_
-                   firstRunService:&first_run_service];
-  mediator.consumer = mock_consumer;
+  CreateMediator();
 
-  EXPECT_OCMOCK_VERIFY(mock_consumer);
-  [mediator disconnect];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
 // Tests that acknowledging the notice updates the first-run service and UI.
 TEST_F(AtMemorySearchMediatorTest, AcknowledgeNoticeAcksServiceAndUpdatesUI) {
-  FakePersonalContextFirstRunService first_run_service;
-  first_run_service.set_should_show_at_memory_notice(true);
-  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
+  first_run_service_.set_should_show_at_memory_notice(true);
+  CreateMediator();
 
-  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
-      initWithAtMemoryQueryService:&mock_query_service_
-                          webState:&web_state_
-                   firstRunService:&first_run_service];
-  mediator.consumer = mock_consumer;
-
-  OCMExpect([mock_consumer setNoticeVisible:NO]);
-  OCMExpect([mock_consumer
+  OCMExpect([mock_consumer_ setNoticeVisible:NO]);
+  OCMExpect([mock_consumer_
       updateTableViewBackgroundStyle:AtMemoryBackgroundStyle::kEmptyStyle]);
 
-  [mediator acknowledgePrivacyNotice];
+  [mediator_ acknowledgePrivacyNotice];
 
-  EXPECT_TRUE(first_run_service.acknowledged());
-  EXPECT_OCMOCK_VERIFY(mock_consumer);
-  [mediator disconnect];
+  EXPECT_TRUE(first_run_service_.acknowledged());
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
 // Tests that setting the consumer logs the "Shown" metric if eligible.
 TEST_F(AtMemorySearchMediatorTest, LogsShownMetric) {
-  FakePersonalContextFirstRunService first_run_service;
-  first_run_service.set_should_show_at_memory_notice(true);
-  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
-
-  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
-      initWithAtMemoryQueryService:&mock_query_service_
-                          webState:&web_state_
-                   firstRunService:&first_run_service];
+  first_run_service_.set_should_show_at_memory_notice(true);
 
   base::HistogramTester histogram_tester;
 
-  mediator.consumer = mock_consumer;
+  CreateMediator();
 
   histogram_tester.ExpectUniqueSample(
       "PersonalContext.AtMemory.NoticeInteractions",
       autofill::AutofillMetrics::PopupNoticeInteractions::kShown, 1);
-
-  [mediator disconnect];
 }
 
 // Tests that acknowledging the notice logs the "Acknowledged" metric.
 TEST_F(AtMemorySearchMediatorTest, LogsAcknowledgedMetric) {
-  FakePersonalContextFirstRunService first_run_service;
-  first_run_service.set_should_show_at_memory_notice(true);
-  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
-
-  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
-      initWithAtMemoryQueryService:&mock_query_service_
-                          webState:&web_state_
-                   firstRunService:&first_run_service];
-  mediator.consumer = mock_consumer;
+  first_run_service_.set_should_show_at_memory_notice(true);
+  CreateMediator();
 
   base::HistogramTester histogram_tester;
 
-  [mediator acknowledgePrivacyNotice];
+  [mediator_ acknowledgePrivacyNotice];
 
   histogram_tester.ExpectBucketCount(
       "PersonalContext.AtMemory.NoticeInteractions",
       autofill::AutofillMetrics::PopupNoticeInteractions::kAcknowledged, 1);
-
-  [mediator disconnect];
 }
 
 // Tests that clicking the settings link logs the "LinkButtonClicked" metric and
 // calls the handler.
 TEST_F(AtMemorySearchMediatorTest,
        LogsSettingsLinkClickedMetricAndCallsHandler) {
-  FakePersonalContextFirstRunService first_run_service;
-  first_run_service.set_should_show_at_memory_notice(true);
-  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
+  first_run_service_.set_should_show_at_memory_notice(true);
   id mock_handler = OCMProtocolMock(@protocol(AtMemoryCommands));
 
-  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
-      initWithAtMemoryQueryService:&mock_query_service_
-                          webState:&web_state_
-                   firstRunService:&first_run_service];
-  mediator.consumer = mock_consumer;
-  mediator.atMemoryHandler = mock_handler;
+  CreateMediator();
+  mediator_.atMemoryHandler = mock_handler;
 
   OCMExpect([mock_handler openAutofillSettings]);
 
   base::HistogramTester histogram_tester;
 
-  [mediator didTapSettingsLink];
+  [mediator_ didTapSettingsLink];
 
   histogram_tester.ExpectBucketCount(
       "PersonalContext.AtMemory.NoticeInteractions",
@@ -286,24 +293,17 @@ TEST_F(AtMemorySearchMediatorTest,
       1);
 
   EXPECT_OCMOCK_VERIFY(mock_handler);
-  [mediator disconnect];
 }
 
 // Tests that disconnecting without interacting logs the "Dismissed" metric.
 TEST_F(AtMemorySearchMediatorTest, LogsDismissedMetricOnDisconnect) {
-  FakePersonalContextFirstRunService first_run_service;
-  first_run_service.set_should_show_at_memory_notice(true);
-  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
-
-  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
-      initWithAtMemoryQueryService:&mock_query_service_
-                          webState:&web_state_
-                   firstRunService:&first_run_service];
-  mediator.consumer = mock_consumer;
+  first_run_service_.set_should_show_at_memory_notice(true);
+  CreateMediator();
 
   base::HistogramTester histogram_tester;
 
-  [mediator disconnect];
+  [mediator_ disconnect];
+  mediator_ = nil;
 
   histogram_tester.ExpectBucketCount(
       "PersonalContext.AtMemory.NoticeInteractions",
