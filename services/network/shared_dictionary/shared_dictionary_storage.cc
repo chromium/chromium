@@ -93,7 +93,7 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
   std::optional<base::TimeDelta> ttl;
   for (auto& [key, value] : dictionary.value()) {
     if (key == shared_dictionary::kOptionNameMatch) {
-      match_value = value.member.size() != 1u
+      match_value = (value.member_is_inner_list || value.member.size() != 1u)
                         ? nullptr
                         : value.member.front().item.GetIfString();
       if (!match_value) {
@@ -128,7 +128,7 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
             mojom::SharedDictionaryError::kWriteErrorInvalidMatchDestList);
       }
     } else if (key == shared_dictionary::kOptionNameType) {
-      type_value = value.member.size() != 1u
+      type_value = (value.member_is_inner_list || value.member.size() != 1u)
                        ? nullptr
                        : value.member.front().item.GetIfToken();
       if (!type_value) {
@@ -136,7 +136,7 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
             mojom::SharedDictionaryError::kWriteErrorNonTokenTypeField);
       }
     } else if (key == shared_dictionary::kOptionNameId) {
-      id_value = value.member.size() != 1u
+      id_value = (value.member_is_inner_list || value.member.size() != 1u)
                      ? nullptr
                      : value.member.front().item.GetIfString();
       if (!id_value) {
@@ -151,8 +151,9 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
                base::FeatureList::IsEnabled(
                    features::kCompressionDictionaryTTL)) {
       const int64_t* ttl_seconds =
-          value.member.size() != 1u ? nullptr
-                                    : value.member.front().item.GetIfInteger();
+          (value.member_is_inner_list || value.member.size() != 1u)
+              ? nullptr
+              : value.member.front().item.GetIfInteger();
       if (!ttl_seconds) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorNonIntegerTTLField);

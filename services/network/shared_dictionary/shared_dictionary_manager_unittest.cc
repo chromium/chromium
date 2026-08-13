@@ -593,13 +593,20 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
       // List `match` value is not supported.
       {"match=(\"test1\" \"test2\")",
        mojom::SharedDictionaryError::kWriteErrorNonStringMatchField},
+      // Single-element list `match` value is not supported
+      // (http://crbug.com/546075205).
+      {"match=(\"test1\")",
+       mojom::SharedDictionaryError::kWriteErrorNonStringMatchField},
       // Token `match` value is not supported.
       {"match=test",
        mojom::SharedDictionaryError::kWriteErrorNonStringMatchField},
 
       // We support `raw` type.
       {"match=\"test\", type=raw", /*error_status=*/std::nullopt},
-      {"match=\"test\", type=(raw)", /*error_status=*/std::nullopt},
+      // Single-element list `type` value is not supported
+      // (http://crbug.com/546075205).
+      {"match=\"test\", type=(raw)", /*error_status=*/mojom::
+           SharedDictionaryError::kWriteErrorNonTokenTypeField},
       // The type must be a token.
       {"match=\"test\", type=\"raw\"",
        mojom::SharedDictionaryError::kWriteErrorNonTokenTypeField},
@@ -727,6 +734,10 @@ TEST_P(SharedDictionaryManagerTest, DictionaryLifetimeFromTTLOption) {
       {"match=\"test\"", kDefaultExpiration},
       // Valid value
       {"match=\"test\", ttl=100", base::Seconds(100)},
+      // Single-element list is not supported (http://crbug.com/546075205).
+      {"match=\"test\", ttl=(100)",
+       base::unexpected(
+           mojom::SharedDictionaryError::kWriteErrorNonIntegerTTLField)},
       // Wrong type
       {"match=\"test\", ttl=token",
        base::unexpected(
@@ -966,6 +977,10 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryIdOption) {
       {"match=\"test\", id=\"test\\\"id\"", "test\"id"},
       // `id` should not be a list.
       {"match=\"test\", id=(\"id1\" \"id2\")",
+       base::unexpected(
+           mojom::SharedDictionaryError::kWriteErrorNonStringIdField)},
+      // `id` should not be a single-element list (http://crbug.com/546075205).
+      {"match=\"test\", id=(\"id1\")",
        base::unexpected(
            mojom::SharedDictionaryError::kWriteErrorNonStringIdField)},
       // `id` can be 1024 characters long.
