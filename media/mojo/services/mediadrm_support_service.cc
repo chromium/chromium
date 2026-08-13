@@ -36,13 +36,10 @@ void MediaDrmSupportService::IsKeySystemSupported(
   }
 
   auto result = mojom::MediaDrmSupportResult::New();
-  auto security_level = media::MediaDrmBridge::SECURITY_LEVEL_UNKNOWN;
-  if (base::FeatureList::IsEnabled(
-          media::kUseSecurityLevelWhenCheckingMediaDrmVersion)) {
-    security_level =
-        is_secure ? media::MediaDrmBridge::SECURITY_LEVEL_HW_SECURE_ALL
-                  : media::MediaDrmBridge::SECURITY_LEVEL_SW_SECURE_CRYPTO;
-  }
+  auto security_level =
+      is_secure ? media::MediaDrmBridge::SECURITY_LEVEL_HW_SECURE_ALL
+                : media::MediaDrmBridge::SECURITY_LEVEL_SW_SECURE_CRYPTO;
+
   auto version = MediaDrmBridge::MaybeGetVersion(key_system, security_level);
   if (!version.has_value() &&
       version.error() ==

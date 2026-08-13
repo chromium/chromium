@@ -1398,12 +1398,6 @@ BASE_FEATURE(kUseAudioManagerMaxChannelLayout,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseMediaFormatCodedSize, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Specify the required security level for MediaDrm when checking the MediaDrm
-// version.
-BASE_FEATURE(kUseSecurityLevelWhenCheckingMediaDrmVersion,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_APPLE)
