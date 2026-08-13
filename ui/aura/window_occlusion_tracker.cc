@@ -319,6 +319,24 @@ void WindowOcclusionTracker::Untrack(Window* window) {
   builder->Add(window, Window::OcclusionState::UNKNOWN, {});
 }
 
+Window::OcclusionState WindowOcclusionTracker::GetComputedOcclusionState(
+    Window* window) const {
+  auto it = tracked_windows_.find(window);
+  if (it == tracked_windows_.end()) {
+    return Window::OcclusionState::UNKNOWN;
+  }
+  return it->second.occlusion_state;
+}
+
+bool WindowOcclusionTracker::IsTracking(Window* window) const {
+  return WindowIsTracked(window);
+}
+
+void WindowOcclusionTracker::ForceComputeOcclusion() {
+  base::AutoReset<int> auto_reset(&num_pause_occlusion_tracking_, 0);
+  MaybeComputeOcclusion();
+}
+
 WindowOcclusionTracker::OcclusionData
 WindowOcclusionTracker::ComputeTargetOcclusionForWindow(Window* window) {
   // Compute the occlusion with target state, just for this window.

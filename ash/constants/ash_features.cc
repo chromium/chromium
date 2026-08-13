@@ -526,6 +526,9 @@ BASE_FEATURE(kDoNotDisturbShortcut, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables Sync for desk templates on ChromeOS.
 BASE_FEATURE(kDeskTemplateSync, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables the new window occlusion calculator.
+BASE_FEATURE(kNewWindowOcclusionCalculator, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDesksTemplates, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables diacritics on longpress on the physical keyboard by default.
@@ -2466,6 +2469,10 @@ bool IsDemoModeWallpaperUpdateEnabled() {
 
 bool IsDemoModeSignInFileCleanupEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSignInFileCleanup);
+}
+
+bool IsNewWindowOcclusionCalculatorEnabled() {
+  return base::FeatureList::IsEnabled(kNewWindowOcclusionCalculator);
 }
 
 bool IsDeskTemplateSyncEnabled() {

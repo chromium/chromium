@@ -6,12 +6,17 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/wm/desks/legacy_window_occlusion_calculator.h"
+#include "ash/wm/desks/new_window_occlusion_calculator.h"
 
 namespace ash {
 
 // static
 std::unique_ptr<WindowOcclusionCalculator> WindowOcclusionCalculator::Create() {
+  if (features::IsNewWindowOcclusionCalculatorEnabled()) {
+    return std::make_unique<NewWindowOcclusionCalculator>();
+  }
   return std::make_unique<legacy::WindowOcclusionCalculator>();
 }
 

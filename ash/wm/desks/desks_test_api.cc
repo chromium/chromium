@@ -116,6 +116,17 @@ ui::LayerTreeOwner* DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(
 }
 
 // static
+WindowOcclusionCalculator* DesksTestApi::GetWindowOcclusionCalculator(
+    DeskBarViewBase::Type type,
+    aura::Window* root) {
+  auto& mini_views = GetDeskBarView(type, root)->mini_views();
+  if (mini_views.empty()) {
+    return nullptr;
+  }
+  return mini_views[0]->desk_preview()->window_occlusion_calculator_.get();
+}
+
+// static
 views::Label* DesksTestApi::GetDeskShortcutLabel(DeskMiniView* mini_view) {
   return mini_view->desk_shortcut_label_;
 }

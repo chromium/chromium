@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
@@ -14,6 +15,7 @@
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
+#include "ash/wm/desks/window_occlusion_calculator.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -35,7 +37,15 @@ class DesksWindowOcclusionCalculatorTest
     : public AshTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  DesksWindowOcclusionCalculatorTest() = default;
+  DesksWindowOcclusionCalculatorTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kNewWindowOcclusionCalculator);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kNewWindowOcclusionCalculator);
+    }
+  }
   DesksWindowOcclusionCalculatorTest(
       const DesksWindowOcclusionCalculatorTest&) = delete;
   DesksWindowOcclusionCalculatorTest& operator=(
@@ -44,6 +54,9 @@ class DesksWindowOcclusionCalculatorTest
 
   // AshTestBase:
   void SetUp() override { AshTestBase::SetUp(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 bool HasLayerWithName(const ui::Layer* layer, const std::string& name) {
@@ -62,7 +75,7 @@ bool HasLayerWithName(const ui::Layer* layer, const std::string& name) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DesksWindowOcclusionCalculatorTest,
-                         testing::Values(false));
+                         testing::Bool());
 
 // Tests that desk bar mini views accurately update and filter occluded windows
 // from their mirrored layer trees during desk operations like moving windows

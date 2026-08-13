@@ -173,18 +173,18 @@ void WindowOcclusionCalculator::RemoveObserver(Observer* observer) {
 }
 
 void WindowOcclusionCalculator::SnapshotOcclusionStateForWindows(
-    const aura::Window::Windows& parent_windows_to_snapshot) {
+    const aura::Window::Windows& containers_to_snapshot) {
   // Order is important. `RegisterWindows()` will cause the `occlusion_tracker_`
   // to do a round of occlusion calculations for all
-  // `parent_windows_to_snapshot`, ultimately resulting in `SetOcclusionState()`
+  // `containers_to_snapshot`, ultimately resulting in `SetOcclusionState()`
   // being called and the snapshots being recorded in `occlusion_map_`.
   //
-  // Afterwards, adding to `snapshot_parent_windows_` effectively blocks future
+  // Afterwards, adding to `snapshot_containers_` effectively blocks future
   // updates to the snapshot windows. If the order is reversed, the initial
   // snapshots will not be recorded because they're blocked too early.
-  RegisterWindows(parent_windows_to_snapshot);
-  for (const auto& window : parent_windows_to_snapshot) {
-    CHECK(snapshot_parent_windows_.insert(window.get()).second)
+  RegisterWindows(containers_to_snapshot);
+  for (const auto& window : containers_to_snapshot) {
+    CHECK(snapshot_containers_.insert(window.get()).second)
         << "Requesting multiple snapshots for a window is currently not "
            "implemented";
   }
@@ -245,7 +245,7 @@ void WindowOcclusionCalculator::OnWindowDestroyed(aura::Window* window) {
   occlusion_change_observers_.erase(window);
   // Prevents dangling `raw_ptr<aura::Window>` failures.
   excluded_windows_.erase(window);
-  snapshot_parent_windows_.erase(window);
+  snapshot_containers_.erase(window);
 }
 
 void WindowOcclusionCalculator::OnWindowPropertyChanged(aura::Window* window,
@@ -366,8 +366,8 @@ void WindowOcclusionCalculator::ExcludeWindowFromOcclusionCalculation(
 }
 
 bool WindowOcclusionCalculator::IsSnapshotWindow(aura::Window* window) const {
-  for (const auto& parent_window : snapshot_parent_windows_) {
-    if (parent_window->Contains(window)) {
+  for (const auto& container : snapshot_containers_) {
+    if (container->Contains(window)) {
       return true;
     }
   }

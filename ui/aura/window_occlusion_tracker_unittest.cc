@@ -526,6 +526,50 @@ TEST_F(WindowOcclusionTrackerTest, UnlockWhilePausedAfterOcclusionChange) {
   EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::VISIBLE);
 }
 
+TEST_F(WindowOcclusionTrackerTest, LockStateWithScopedPauseAndForceCompute) {
+  MockWindowDelegate* delegate_a = new MockWindowDelegate();
+  delegate_a->set_expectation(Window::OcclusionState::VISIBLE);
+  auto* window_a = CreateTrackedWindow(delegate_a, gfx::Rect(0, 0, 10, 10));
+  window_a->SetName("A");
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::VISIBLE);
+
+  MockWindowDelegate* delegate_b = new MockWindowDelegate();
+  {
+    WindowOcclusionTracker::ScopedPause pause;
+    {
+      // Lock state.
+      WindowOcclusionTracker::ScopedLockState lock(window_a);
+      // Occlude `window_a`.
+      delegate_b->set_expectation(Window::OcclusionState::VISIBLE);
+      delegate_a->set_expectation(Window::OcclusionState::OCCLUDED);
+      auto* window_b = CreateTrackedWindow(delegate_b, gfx::Rect(0, 0, 10, 10));
+      window_b->SetName("B");
+
+      EXPECT_TRUE(delegate_a->is_expecting_call());
+      EXPECT_TRUE(delegate_b->is_expecting_call());
+
+      // Force compute. This is allowed while paused.
+      // It should NOT update window_a's property because it is locked.
+      Env::GetInstance()->GetWindowOcclusionTracker()->ForceComputeOcclusion();
+      EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::VISIBLE);
+    }
+    // Unlock happens here.
+
+    // Call ForceComputeOcclusion again while still paused.
+    // Without our fix, this crashes because tracked state (OCCLUDED) doesn't
+    // match actual property (VISIBLE). With our fix, it doesn't crash because
+    // the tracker still considers it locked to VISIBLE.
+    Env::GetInstance()->GetWindowOcclusionTracker()->ForceComputeOcclusion();
+    EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::VISIBLE);
+  }
+  // Unpause happens here.
+  // Pending unlock is processed, lock is reset, and occlusion is recomputed and
+  // notified.
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_FALSE(delegate_b->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::OCCLUDED);
+}
 #if defined(GTEST_HAS_DEATH_TEST)
 using WindowOcclusionTrackerDeathTest = WindowOcclusionTrackerTest;
 

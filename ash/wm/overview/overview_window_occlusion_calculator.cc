@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_window_occlusion_calculator.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -76,8 +77,10 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeEnding(
   if (calculator_) {
     TRACE_EVENT0("ui",
                  "OverviewWindowOcclusionCalculator::OnOverviewModeEnding");
-    static_cast<legacy::WindowOcclusionCalculator*>(calculator_.get())
-        ->RemoveObserver(this);
+    if (!features::IsNewWindowOcclusionCalculatorEnabled()) {
+      static_cast<legacy::WindowOcclusionCalculator*>(calculator_.get())
+          ->RemoveObserver(this);
+    }
     calculator_.reset();
   }
 }
@@ -90,13 +93,18 @@ void OverviewWindowOcclusionCalculator::ComputeOcclusionStateForAllDesks() {
     }
   }
   CHECK(calculator_);
-  // `AddObserver()` is just a way of getting the the `calculator_` to do an
-  // initial round of occlusion calculations for all desks (while forcing
-  // inactive desks to be visible internally) and caching the result for future
-  // calls to `GetOcclusionState()`. This class does not actually care about
-  // future changes, so `OnWindowOcclusionChanged()` is intentionally a no-op.
-  static_cast<legacy::WindowOcclusionCalculator*>(calculator_.get())
-      ->AddObserver(all_desk_containers, this);
+  if (features::IsNewWindowOcclusionCalculatorEnabled()) {
+    calculator_->SnapshotOcclusionStateForWindows(all_desk_containers);
+  } else {
+    // `AddObserver()` is just a way of getting the `calculator_` to do an
+    // initial round of occlusion calculations for all desks (while forcing
+    // inactive desks to be visible internally) and caching the result for
+    // future calls to `GetOcclusionState()`. This class does not actually care
+    // about future changes, so `OnWindowOcclusionChanged()` is intentionally a
+    // no-op.
+    static_cast<legacy::WindowOcclusionCalculator*>(calculator_.get())
+        ->AddObserver(all_desk_containers, this);
+  }
 }
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include <ranges>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -438,9 +439,11 @@ DeskPreviewView::DeskPreviewView(
 
 DeskPreviewView::~DeskPreviewView() {
   if (window_occlusion_calculator_) {
-    static_cast<legacy::WindowOcclusionCalculator*>(
-        window_occlusion_calculator_.get())
-        ->RemoveObserver(this);
+    if (!features::IsNewWindowOcclusionCalculatorEnabled()) {
+      static_cast<legacy::WindowOcclusionCalculator*>(
+          window_occlusion_calculator_.get())
+          ->RemoveObserver(this);
+    }
   }
 }
 
@@ -474,12 +477,13 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   DCHECK(desk_container->layer());
 
   // For simplicity, clear occlusion observation state and set it up again.
-  if (window_occlusion_calculator_) {
+  if (window_occlusion_calculator_ &&
+      !features::IsNewWindowOcclusionCalculatorEnabled()) {
     static_cast<legacy::WindowOcclusionCalculator*>(
         window_occlusion_calculator_.get())
         ->RemoveObserver(this);
   }
-  aura::Window::Windows parent_windows_to_mirror = {desk_container};
+  aura::Window::Windows containers_to_mirror = {desk_container};
   // If there is a floated window that belongs to this desk, since it doesn't
   // belong to `desk_container`, we need to add it separately. Note: this
   // function may be called *while* a floated window is in the process of being
@@ -489,22 +493,27 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
       Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
           mini_view_->desk());
   if (floated_window && floated_window->parent()) {
-    parent_windows_to_mirror.push_back(floated_window);
+    containers_to_mirror.push_back(floated_window);
     force_float_occlusion_tracker_visible_.emplace(floated_window);
   } else {
     force_float_occlusion_tracker_visible_.reset();
   }
   if (window_occlusion_calculator_) {
-    static_cast<legacy::WindowOcclusionCalculator*>(
-        window_occlusion_calculator_.get())
-        ->AddObserver(parent_windows_to_mirror, this);
+    if (features::IsNewWindowOcclusionCalculatorEnabled()) {
+      window_occlusion_calculator_->SnapshotOcclusionStateForWindows(
+          containers_to_mirror);
+    } else {
+      static_cast<legacy::WindowOcclusionCalculator*>(
+          window_occlusion_calculator_.get())
+          ->AddObserver(containers_to_mirror, this);
+    }
   }
 
   // Mirror the layer tree of the desk container.
   auto mirrored_content_root_layer = std::make_unique<ui::LayerNotDrawn>();
   mirrored_content_root_layer->SetName("mirrored contents root layer");
   base::flat_map<ui::Layer*, LayerData> layers_data;
-  for (const auto& window : parent_windows_to_mirror) {
+  for (const auto& window : containers_to_mirror) {
     GetLayersData(window.get(), window_occlusion_calculator_.get(),
                   &layers_data);
   }

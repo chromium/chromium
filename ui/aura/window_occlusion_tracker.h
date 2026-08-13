@@ -215,6 +215,17 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // Stop tracking the occlusion state of `window`.
   void Untrack(Window* window);
 
+  // Returns the computed occlusion state of `window`. If `window` is not
+  // tracked, returns `Window::OcclusionState::UNKNOWN`.
+  Window::OcclusionState GetComputedOcclusionState(Window* window) const;
+
+  // Returns true if the occlusion state of `window` is being tracked.
+  bool IsTracking(Window* window) const;
+
+  // Force a synchronous occlusion computation. This computes occlusion even if
+  // the tracker is paused.
+  void ForceComputeOcclusion();
+
   // Compute the occlusion state and occluded region that |window| will have
   // once all bounds, transform, opacity, and visibility animations have
   // completed. |window| must be a window that has its occlusion state tracked.

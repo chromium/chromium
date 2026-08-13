@@ -100,8 +100,8 @@ class ASH_EXPORT WindowOcclusionCalculator
   void RemoveObserver(Observer* observer);
 
   // Internally records a snapshot of the occlusion state for all
-  // `parent_windows_to_snapshot` and their descendants. All subsequent calls
-  // to `GetOcclusionState()` for any of the `parent_windows_to_snapshot` or
+  // `containers_to_snapshot` and their descendants. All subsequent calls
+  // to `GetOcclusionState()` for any of the `containers_to_snapshot` or
   // their descendants will reflect the occlusion state at the time of this call
   // and will not be updated in the future. Calling
   // `SnapshotOcclusionStateForWindows()` for the same window multiple times
@@ -111,7 +111,7 @@ class ASH_EXPORT WindowOcclusionCalculator
   // will effectively be a no-op (the observer by definition should not get any
   // `OnWindowOcclusionChanged()` calls).
   void SnapshotOcclusionStateForWindows(
-      const aura::Window::Windows& parent_windows_to_snapshot) override;
+      const aura::Window::Windows& containers_to_snapshot) override;
 
   // Temporarily pauses all calculations for the duration of the returned
   // object. `GetOcclusionState()` can still be called while paused; the result
@@ -183,9 +183,9 @@ class ASH_EXPORT WindowOcclusionCalculator
                  std::unique_ptr<aura::WindowOcclusionTracker::ScopedExclude>>
       excluded_windows_;
 
-  // Set of all parent windows for which `SnapshotOcclusionStateForWindows()`
+  // Set of all container windows for which `SnapshotOcclusionStateForWindows()`
   // has been called.
-  base::flat_set<raw_ptr<aura::Window>> snapshot_parent_windows_;
+  base::flat_set<raw_ptr<aura::Window>> snapshot_containers_;
 
   base::WeakPtrFactory<WindowOcclusionCalculator> weak_ptr_factory_{this};
 };
