@@ -1639,9 +1639,13 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #endif
 }
 
-// TODO(crbug.com/538459286): Flaky on MSan due to clipboard synchronization
-// timeouts.
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
+class WebUIToolbarViewsLocationBarClipboardInteractiveUiTest
+    : public WebUIToolbarViewsLocationBarInteractiveUiTest {
+ private:
+  content::BrowserTestClipboardScope test_clipboard_scope_;
+};
+
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CopyTextFromWebUIOmnibox CopyTextFromWebUIOmnibox
 #define MAYBE_CopyUrlFromWebUIOmnibox CopyUrlFromWebUIOmnibox
 #define MAYBE_CutUrlFromWebUIOmnibox CutUrlFromWebUIOmnibox
@@ -1660,7 +1664,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
   DISABLED_CopyPartialUrlFromWebUIOmnibox
 #endif
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CopyTextFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const char kAdjustTextScript[] = R"(
@@ -1680,7 +1684,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CopyUrlFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
@@ -1692,7 +1696,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CutUrlFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
@@ -1705,7 +1709,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CopyJavascriptFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const char kAdjustTextTemplate[] = R"(
@@ -1727,7 +1731,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CopyChromeUrlFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const std::string chrome_url_to_copy = "chrome://version/";
@@ -1739,7 +1743,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CopyPartialUrlFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const GURL initial_url =
