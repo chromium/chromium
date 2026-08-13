@@ -1081,6 +1081,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/settings/SettingsCustomTabLauncherImpl.java",
   "java/src/org/chromium/chrome/browser/settings/SettingsFragmentRegistry.java",
   "java/src/org/chromium/chrome/browser/settings/SettingsHostFragment.java",
+  "java/src/org/chromium/chrome/browser/settings/SettingsInTabNavigationDelegate.java",
   "java/src/org/chromium/chrome/browser/settings/SettingsIntentUtil.java",
   "java/src/org/chromium/chrome/browser/settings/SettingsMenuHelper.java",
   "java/src/org/chromium/chrome/browser/settings/SettingsMetricsReporter.java",

@@ -1565,6 +1565,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/settings/SettingsEnumsTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsFragmentRegistryTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsHostFragmentTest.java",
+      "src/org/chromium/chrome/browser/settings/SettingsInTabNavigationDelegateTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsInTabTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsMetricsReporterTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsNavigationImplTest.java",

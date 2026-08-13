@@ -274,7 +274,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
         return createSettingsIntent(context, getFragmentClassFromEnum(fragment), fragmentArgs);
     }
 
-    private static @Nullable Class<? extends Fragment> getFragmentClassFromEnum(
+    static @Nullable Class<? extends Fragment> getFragmentClassFromEnum(
             @SettingsFragment int fragment) {
         switch (fragment) {
             case SettingsFragment.ABOUT_CHROME:
