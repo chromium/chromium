@@ -6481,6 +6481,12 @@ inline constexpr char kSubmenusInAppMenuLffDescription[] =
     "Enables displaying submenus in the app menu on LFFs (excluding "
     "foldables), using drilldown or flyout depending on conditions.";
 
+inline constexpr char kSwitchToIncognitoInSettingsName[] =
+    "Switch to Incognito in Settings";
+inline constexpr char kSwitchToIncognitoInSettingsDescription[] =
+    "Enables an option in settings to open a new Incognito window on Desktop "
+    "Android.";
+
 inline constexpr char kTabBottomSheetName[] = "Tab bottom sheet";
 inline constexpr char kTabBottomSheetDescription[] =
     "Enables the tab bottom sheet feature.";

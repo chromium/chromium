@@ -849,6 +849,9 @@ BASE_FEATURE(kSupportForcedSigninPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Killswitch for the support of AddSession in web sign-in flow.
 BASE_FEATURE(kSupportWebSigninAddSession, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables an option in settings to open an Incognito window on Desktop Android.
+BASE_FEATURE(kSwitchToIncognitoInSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSyncEnableBookmarksInTransportMode,

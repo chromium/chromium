@@ -9333,6 +9333,14 @@
     "expiry_milestone": 155
   },
   {
+    "name": "switch-to-incognito-in-settings",
+    "owners": [
+      "crowleso@google.com",
+      "chrome-signin-mobile@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "symphonia-audio-decoding",
     "owners": [ "jophba@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 152

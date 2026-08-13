@@ -13792,7 +13792,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordChangeWithGlicDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(password_change::features::kPasswordChangeWithGlic)},
 #endif
+
 #if BUILDFLAG(IS_ANDROID)
+    {"switch-to-incognito-in-settings",
+     flag_descriptions::kSwitchToIncognitoInSettingsName,
+     flag_descriptions::kSwitchToIncognitoInSettingsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kSwitchToIncognitoInSettings)},
+
     {"xplat-synced-setup-themes",
      flag_descriptions::kXplatSyncedSetupThemesName,
      flag_descriptions::kXplatSyncedSetupThemesDescription, kOsAndroid,

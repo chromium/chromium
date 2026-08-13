@@ -825,6 +825,9 @@ BASE_DECLARE_FEATURE(kSupportForcedSigninPolicy);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSupportWebSigninAddSession);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSwitchToIncognitoInSettings);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // This gates the new single-model approach where account bookmarks are stored

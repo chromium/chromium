@@ -7885,6 +7885,7 @@ from previous Chrome versions.
   <int value="-2099608999" label="CrOSEnforceSystemAecNs:enabled"/>
   <int value="-2099486626" label="DownloadLater:enabled"/>
   <int value="-2099457894" label="Mash:enabled"/>
+  <int value="-2099214379" label="SwitchToIncognitoInSettings:enabled"/>
   <int value="-2099050164" label="InputDeviceSettingsSplit:disabled"/>
   <int value="-2099035488" label="enable-data-reduction-proxy-bypass-warning"/>
   <int value="-2098610409" label="disable-lcd-text"/>
@@ -20636,6 +20637,7 @@ from previous Chrome versions.
   <int value="1874604540" label="UseSuggestionsEvenIfFew:disabled"/>
   <int value="1874910934" label="(Obsolete) CrOSSuspendToDiskAllowS4:disabled"/>
   <int value="1875156497" label="CaptureMode:enabled"/>
+  <int value="1877401707" label="SwitchToIncognitoInSettings:disabled"/>
   <int value="1877769074" label="PhoneHubFeatureSetupErrorHandling:enabled"/>
   <int value="1877956196" label="AccessibilityTextFormatting:disabled"/>
   <int value="1878331098" label="GuestViewCrossProcessFrames:enabled"/>
