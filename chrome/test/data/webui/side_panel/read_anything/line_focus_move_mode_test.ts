@@ -759,6 +759,65 @@ suite('LineFocusMoveMode', () => {
       assertTrue(notifiedVisualPositionChange);
     });
 
+
+    test(
+        'onTextLocationsChange shifts focalPoint by scrollDiff during smooth scroll',
+        () => {
+          // Create a scroller wrapper for the container.
+          const scroller = document.createElement('div');
+          scroller.className = 'sp-scroller';
+          Object.defineProperty(scroller, 'scrollTop', {
+            value: 0,
+            writable: true,
+          });
+          const container = createShortContainer();
+          scroller.appendChild(container);
+
+          // Setup initial state: tracking the cursor, so current line index is
+          // null.
+          model.setCurrentLineIndex(null);
+          model.setFocalPoint(50);
+          model.setInitiatedScroll(true);
+
+          // Simulate first scroll event to set lastFrameScrollTop_.
+          scroller.scrollTop = 100;
+          mode.onTextLocationsChange(container, defaultHeight);
+
+          // Simulate next frame of scroll animation: scroller moved down 15px.
+          // So text physically moved up 15px on screen.
+          scroller.scrollTop = 115;
+          mode.onTextLocationsChange(container, defaultHeight);
+
+          // focalPoint should shift up by 15px (-15px) to track the text.
+          assertEquals(50 - 15, model.getFocalPoint());
+        });
+
+    test(
+        'onTextLocationsChange does not shift focalPoint during manual mouse scroll',
+        () => {
+          const scroller = document.createElement('div');
+          scroller.className = 'sp-scroller';
+          Object.defineProperty(scroller, 'scrollTop', {
+            value: 0,
+            writable: true,
+          });
+          const container = createShortContainer();
+          scroller.appendChild(container);
+
+          model.setCurrentLineIndex(null);
+          model.setFocalPoint(50);
+          model.setInitiatedScroll(false);  // User scrolled manually.
+
+          scroller.scrollTop = 100;
+          mode.onTextLocationsChange(container, defaultHeight);
+
+          scroller.scrollTop = 115;
+          mode.onTextLocationsChange(container, defaultHeight);
+
+          // focalPoint should not shift.
+          assertEquals(50, model.getFocalPoint());
+        });
+
     test('snapToNextLine moves by line', () => {
       mockLinesCounters();
       model.setMaxY(defaultHeight);

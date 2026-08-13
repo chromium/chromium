@@ -41,6 +41,13 @@ export interface MoveModeDelegate {
 // Base class for line focus movement strategies.
 export abstract class LineFocusMoveMode {
   protected movementThreshold: number = BASE_MOVEMENT_THRESHOLD;
+  // Tracks the scroller scrollTop position across frames during smooth
+  // scrolling to calculate frame-by-frame scroll differences.
+  protected lastFrameScrollTop_: number|null = null;
+  // Cached container and viewport height to enable recalculating fresh text
+  // bounds when repositioning the focal point.
+  protected textContentContainer_: HTMLElement|null = null;
+  protected viewportHeight_: number = 0;
 
   constructor(
       protected model_: LineFocusModel,
@@ -174,6 +181,7 @@ export abstract class LineFocusMoveMode {
     }
 
     this.model_.setInitiatedScroll(false);
+    this.lastFrameScrollTop_ = null;
   }
 
   protected initializeSnapIndex(isForward: boolean) {
@@ -185,6 +193,8 @@ export abstract class LineFocusMoveMode {
   }
 
   protected updatePositions(container: HTMLElement, height: number): void {
+    this.textContentContainer_ = container;
+    this.viewportHeight_ = height;
     const {minY, maxY, bounds} = calculateTextBounds(container, height);
     this.model_.setMinY(minY);
     this.model_.setMaxY(maxY);
@@ -393,6 +403,7 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     const currentIndex = this.model_.getCurrentLineIndex();
 
     this.updatePositions(container, height);
+    this.updateScrollOffset_(container);
     this.updateScrollBuffer();
     // If the user is focusing on a particular line when font size or spacing
     // changes, recenter that text line if it would go off screen to keep their
@@ -414,6 +425,11 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     const oldHeight = this.model_.getWindowHeight();
     const oldTop = this.model_.getTop();
     const oldFocalPoint = this.model_.getFocalPoint();
+
+    // Ensure bounds are perfectly fresh before applying the new focalPoint
+    if (this.textContentContainer_) {
+      this.updatePositions(this.textContentContainer_, this.viewportHeight_);
+    }
 
     // Set the focal point quietly as the threshold calculation below will
     // determine whether or not to notify of movement.
@@ -450,6 +466,33 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     return firstVisibleRect ?
         this.styleMode_.getFocalPointForRect(firstVisibleRect) :
         this.model_.getMinY();
+  }
+
+  // Shifts the line focus focal point during an active smooth-scroll animation
+  // (such as when scrolling while reading) when using follow cursor mode so
+  // that the focus window visually follows the moving text instead of being
+  // offset by the previous scroll amount.
+  private updateScrollOffset_(container: HTMLElement): void {
+    const scroller = container.closest('.sp-scroller');
+    if (!scroller) {
+      return;
+    }
+
+    const currentScrollTop = scroller.scrollTop;
+    if (this.lastFrameScrollTop_ !== null) {
+      const scrollDiff = currentScrollTop - this.lastFrameScrollTop_;
+
+      // If line focus is currently tracking the reading cursor (currentIndex
+      // is null), shift the focal point by the scroll difference so the focus
+      // box visually moves with the text during the smooth scroll animation.
+      if ((this.model_.getCurrentLineIndex() === null) && (scrollDiff !== 0) &&
+          this.model_.getInitiatedScroll()) {
+        this.setFocalPoint(
+            this.model_.getFocalPoint() - scrollDiff,
+            LineFocusNotificationType.NONE);
+      }
+    }
+    this.lastFrameScrollTop_ = currentScrollTop;
   }
 }
 
