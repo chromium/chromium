@@ -691,10 +691,12 @@ bool PrefetchService::IsPrefetchAttemptFailedOrDiscardedInternal(
 // Parameter class used during eligibility check and `OnGotEligibility*` methods
 // (`callback`).
 struct PrefetchService::CheckEligibilityParams final {
-  void Finish(PreloadingEligibility eligibility) && {
+  [[nodiscard]] CheckEligibilityResult Finish(
+      PreloadingEligibility eligibility) && {
     // `callback_local` is needed to avoid use-after-move.
     auto callback_local = std::move(callback);
     std::move(callback_local).Run(std::move(*this), eligibility);
+    return CheckEligibilityResult::kFinishCalled;
   }
 
   // Methods accessing `prefetch_container_internal`. These should be used
@@ -822,12 +824,18 @@ void PrefetchService::PrefetchUrl(
            base::BindOnce(&PrefetchService::OnGotEligibilityForNonRedirect,
                           weak_method_factory_.GetWeakPtr())});
 
+  std::ignore = CheckInitialEligibilityOfPrefetch(std::move(params));
+}
+
+PrefetchService::CheckEligibilityResult
+PrefetchService::CheckInitialEligibilityOfPrefetch(
+    CheckEligibilityParams params) {
+  auto prefetch_container = params.prefetch_container_internal;
   if (delegate_) {
     const auto eligibility_from_delegate = delegate_->IsSomePreloadingEnabled();
     // If pre* actions are disabled then don't prefetch.
     if (eligibility_from_delegate != PreloadingEligibility::kEligible) {
-      std::move(params).Finish(eligibility_from_delegate);
-      return;
+      return std::move(params).Finish(eligibility_from_delegate);
     }
 
     const auto& prefetch_type = prefetch_container->request().prefetch_type();
@@ -842,8 +850,7 @@ void PrefetchService::PrefetchUrl(
                                                       .referring_origin()
                                                       .value()
                                                       .GetURL())) {
-        std::move(params).Finish(PreloadingEligibility::kCrossOrigin);
-        return;
+        return std::move(params).Finish(PreloadingEligibility::kCrossOrigin);
       }
     }
 
@@ -862,34 +869,35 @@ void PrefetchService::PrefetchUrl(
   if (GetInjectedEligibilityCheckForTesting()) {
     GetInjectedEligibilityCheckForTesting().Run(  // IN-TEST
         base::BindOnce(
-            &PrefetchService::InjectedEligibilityCheckCompletedForTesting,
+            base::IgnoreResult(
+                &PrefetchService::InjectedEligibilityCheckCompletedForTesting),
             weak_method_factory_.GetWeakPtr(), std::move(params)));
-    return;
+    return CheckEligibilityResult::kEligibilityNotYetGot;
   }
 
-  CheckEligibilityOfPrefetch(std::move(params));
+  return CheckEligibilityOfPrefetch(std::move(params));
 }
 
-void PrefetchService::InjectedEligibilityCheckCompletedForTesting(
+PrefetchService::CheckEligibilityResult
+PrefetchService::InjectedEligibilityCheckCompletedForTesting(
     CheckEligibilityParams params,
     PreloadingEligibility eligibility) {
   if (!params.IsAlive()) {
     // The eligibility check can be paused and resumed via
     // `GetInjectedEligibilityCheckForTesting()`, so `prefetch_container` might
     // be already gone.
-    std::move(params).Finish(PreloadingEligibility::kEligible);
-    return;
+    return std::move(params).Finish(PreloadingEligibility::kEligible);
   }
 
   if (eligibility != PreloadingEligibility::kEligible) {
-    std::move(params).Finish(eligibility);
-    return;
+    return std::move(params).Finish(eligibility);
   }
-  CheckEligibilityOfPrefetch(std::move(params));
+
+  return CheckEligibilityOfPrefetch(std::move(params));
 }
 
-void PrefetchService::CheckEligibilityOfPrefetch(
-    CheckEligibilityParams params) {
+PrefetchService::CheckEligibilityResult
+PrefetchService::CheckEligibilityOfPrefetch(CheckEligibilityParams params) {
   CHECK(params.IsAlive());
 
   TRACE_EVENT_END("loading",
@@ -904,9 +912,8 @@ void PrefetchService::CheckEligibilityOfPrefetch(
   // Prefetch to an URL not allowed by connection allowlist is not eligible.
   if (!IsAllowedByConnectionAllowlist(params.request(), params.url,
                                       params.is_redirect)) {
-    std::move(params).Finish(
+    return std::move(params).Finish(
         PreloadingEligibility::kBlockedByConnectionAllowlist);
-    return;
   }
 
   // While a registry-controlled domain could still resolve to a non-publicly
@@ -924,8 +931,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
             ? g_host_non_unique_filter(params.url.HostNoBrackets())
             : net::IsHostnameNonUnique(params.url.HostNoBrackets());
     if (is_host_non_unique) {
-      std::move(params).Finish(PreloadingEligibility::kHostIsNonUnique);
-      return;
+      return std::move(params).Finish(PreloadingEligibility::kHostIsNonUnique);
     }
   }
 
@@ -939,8 +945,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
           : (params.url.SchemeIsHTTPOrHTTPS() &&
              network::IsUrlPotentiallyTrustworthy(params.url));
   if (!is_secure_http) {
-    std::move(params).Finish(PreloadingEligibility::kSchemeIsNotHttps);
-    return;
+    return std::move(params).Finish(PreloadingEligibility::kSchemeIsNotHttps);
   }
 
   // Fail the prefetch (or more precisely, PrefetchContainer::SinglePrefetch)
@@ -949,8 +954,8 @@ void PrefetchService::CheckEligibilityOfPrefetch(
   if (params.IsProxyRequired() &&
       (!prefetch_proxy_configurator_ ||
        !prefetch_proxy_configurator_->IsPrefetchProxyAvailable())) {
-    std::move(params).Finish(PreloadingEligibility::kPrefetchProxyNotAvailable);
-    return;
+    return std::move(params).Finish(
+        PreloadingEligibility::kPrefetchProxyNotAvailable);
   }
 
   // Only the default storage partition is supported since that is where we
@@ -968,22 +973,21 @@ void PrefetchService::CheckEligibilityOfPrefetch(
       default_storage_partition !=
           browser_context_->GetStoragePartitionForUrl(params.url,
                                                       /*can_create=*/false)) {
-    std::move(params).Finish(
+    return std::move(params).Finish(
         PreloadingEligibility::kNonDefaultStoragePartition);
-    return;
   }
 
   // If we have recently received a "retry-after" for the origin, then don't
   // send new prefetches.
   if (delegate_ && !delegate_->IsOriginOutsideRetryAfterWindow(params.url)) {
-    std::move(params).Finish(PreloadingEligibility::kRetryAfter);
-    return;
+    return std::move(params).Finish(PreloadingEligibility::kRetryAfter);
   }
 
-  CheckHasServiceWorker(std::move(params));
+  return CheckHasServiceWorker(std::move(params));
 }
 
-void PrefetchService::CheckHasServiceWorker(CheckEligibilityParams params) {
+PrefetchService::CheckEligibilityResult PrefetchService::CheckHasServiceWorker(
+    CheckEligibilityParams params) {
   CHECK(params.IsAlive());
 
   TRACE_EVENT_END("loading",
@@ -1003,9 +1007,8 @@ void PrefetchService::CheckHasServiceWorker(CheckEligibilityParams params) {
       case PrefetchServiceWorkerState::kControlled:
         // Currently we disallow redirects from ServiceWorker-controlled
         // prefetches.
-        std::move(params).Finish(
+        return std::move(params).Finish(
             PreloadingEligibility::kRedirectFromServiceWorker);
-        return;
     }
   } else {
     switch (params.service_worker_state()) {
@@ -1016,9 +1019,9 @@ void PrefetchService::CheckHasServiceWorker(CheckEligibilityParams params) {
         // The controlling ServiceWorker will be checked by
         // `ServiceWorkerMainResourceLoaderInterceptor` from
         // `PrefetchStreamingURLLoader`, not here during eligibility check.
-        OnGotServiceWorkerResult(std::move(params), base::Time::Now(),
-                                 ServiceWorkerCapability::NO_SERVICE_WORKER);
-        return;
+        return OnGotServiceWorkerResult(
+            std::move(params), base::Time::Now(),
+            ServiceWorkerCapability::NO_SERVICE_WORKER);
 
       case PrefetchServiceWorkerState::kControlled:
         NOTREACHED();
@@ -1049,22 +1052,25 @@ void PrefetchService::CheckHasServiceWorker(CheckEligibilityParams params) {
             : PreloadingAttemptImpl::ServiceWorkerRegisteredCheck::kOriginOnly);
   }
   if (!has_registration_for_storage_key) {
-    OnGotServiceWorkerResult(std::move(params), base::Time::Now(),
-                             ServiceWorkerCapability::NO_SERVICE_WORKER);
-    return;
+    return OnGotServiceWorkerResult(std::move(params), base::Time::Now(),
+                                    ServiceWorkerCapability::NO_SERVICE_WORKER);
   }
+
   // Start recording here the start of the check for Service Worker registration
   // for url.
   // `url` is needed to avoid use-after-move.
   const GURL url = params.url;
   service_worker_context->CheckHasServiceWorker(
       url, key,
-      base::BindOnce(&PrefetchService::OnGotServiceWorkerResult,
-                     weak_method_factory_.GetWeakPtr(), std::move(params),
-                     base::Time::Now()));
+      base::BindOnce(
+          base::IgnoreResult(&PrefetchService::OnGotServiceWorkerResult),
+          weak_method_factory_.GetWeakPtr(), std::move(params),
+          base::Time::Now()));
+  return CheckEligibilityResult::kEligibilityNotYetGot;
 }
 
-void PrefetchService::OnGotServiceWorkerResult(
+PrefetchService::CheckEligibilityResult
+PrefetchService::OnGotServiceWorkerResult(
     CheckEligibilityParams params,
     base::Time check_has_service_worker_start_time,
     ServiceWorkerCapability service_worker_capability) {
@@ -1072,8 +1078,7 @@ void PrefetchService::OnGotServiceWorkerResult(
               "prefetch_url", params.PrefetchUrlForTrace());
 
   if (!params.IsAlive()) {
-    std::move(params).Finish(PreloadingEligibility::kEligible);
-    return;
+    return std::move(params).Finish(PreloadingEligibility::kEligible);
   }
 
   TRACE_EVENT_END("loading",
@@ -1102,14 +1107,12 @@ void PrefetchService::OnGotServiceWorkerResult(
       // is a controlling service worker at the time of navigation even if it
       // doesn't have fetch handlers. So we prevent prefetching here as well, to
       // avoid useless prefetches.
-      std::move(params).Finish(
+      return std::move(params).Finish(
           PreloadingEligibility::kUserHasServiceWorkerNoFetchHandler);
-      return;
     case ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER: {
-      std::move(params).Finish(
+      return std::move(params).Finish(
           params.is_redirect ? PreloadingEligibility::kRedirectToServiceWorker
                              : PreloadingEligibility::kUserHasServiceWorker);
-      return;
     }
   }
   // This blocks same-site cross-origin prefetches that require the prefetch
@@ -1120,15 +1123,13 @@ void PrefetchService::OnGotServiceWorkerResult(
   // that require the prefetch proxy to be made.
   if (params.IsProxyRequired() &&
       !params.is_isolated_network_context_required()) {
-    std::move(params).Finish(
+    return std::move(params).Finish(
         PreloadingEligibility::kSameSiteCrossOriginPrefetchRequiredProxy);
-    return;
   }
   // We do not need to check the cookies of prefetches that do not need an
   // isolated network context.
   if (!params.is_isolated_network_context_required()) {
-    std::move(params).Finish(PreloadingEligibility::kEligible);
-    return;
+    return std::move(params).Finish(PreloadingEligibility::kEligible);
   }
 
   StoragePartition* default_storage_partition =
@@ -1147,11 +1148,14 @@ void PrefetchService::OnGotServiceWorkerResult(
   const GURL url = params.url;
   default_storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
       url, options, net::CookiePartitionKeyCollection(),
-      base::BindOnce(&PrefetchService::OnGotCookiesForEligibilityCheck,
-                     weak_method_factory_.GetWeakPtr(), std::move(params)));
+      base::BindOnce(
+          base::IgnoreResult(&PrefetchService::OnGotCookiesForEligibilityCheck),
+          weak_method_factory_.GetWeakPtr(), std::move(params)));
+  return CheckEligibilityResult::kEligibilityNotYetGot;
 }
 
-void PrefetchService::OnGotCookiesForEligibilityCheck(
+PrefetchService::CheckEligibilityResult
+PrefetchService::OnGotCookiesForEligibilityCheck(
     CheckEligibilityParams params,
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_cookies) {
@@ -1159,8 +1163,7 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
               "prefetch_url", params.PrefetchUrlForTrace());
 
   if (!params.IsAlive()) {
-    std::move(params).Finish(PreloadingEligibility::kEligible);
-    return;
+    return std::move(params).Finish(PreloadingEligibility::kEligible);
   }
 
   TRACE_EVENT_END("loading",
@@ -1170,8 +1173,7 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
                     params.request().preload_pipeline_info().GetTrack());
 
   if (!cookie_list.empty()) {
-    std::move(params).Finish(PreloadingEligibility::kUserHasCookies);
-    return;
+    return std::move(params).Finish(PreloadingEligibility::kUserHasCookies);
   }
 
   if (base::FeatureList::IsEnabled(
@@ -1207,22 +1209,21 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
   }
 
   if (excluded_cookie_has_tld) {
-    std::move(params).Finish(PreloadingEligibility::kUserHasCookies);
-    return;
+    return std::move(params).Finish(PreloadingEligibility::kUserHasCookies);
   }
 
-  StartProxyLookupCheck(std::move(params));
+  return StartProxyLookupCheck(std::move(params));
 }
 
-void PrefetchService::StartProxyLookupCheck(CheckEligibilityParams params) {
+PrefetchService::CheckEligibilityResult PrefetchService::StartProxyLookupCheck(
+    CheckEligibilityParams params) {
   // Same origin prefetches (which use the default network context and cannot
   // use the prefetch proxy) can use the existing proxy settings.
   // TODO(crbug.com/40231580): Copy proxy settings over to the isolated
   // network context for the prefetch in order to allow non-private cross origin
   // prefetches to be made using the existing proxy settings.
   if (!params.is_isolated_network_context_required()) {
-    std::move(params).Finish(PreloadingEligibility::kEligible);
-    return;
+    return std::move(params).Finish(PreloadingEligibility::kEligible);
   }
 
   TRACE_EVENT_END("loading",
@@ -1237,22 +1238,24 @@ void PrefetchService::StartProxyLookupCheck(CheckEligibilityParams params) {
   ProxyLookupClientImpl::CreateAndStart(
       url,
       net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(url)),
-      base::BindOnce(&PrefetchService::OnGotProxyLookupResult,
-                     weak_method_factory_.GetWeakPtr(), std::move(params)),
+      base::BindOnce(
+          base::IgnoreResult(&PrefetchService::OnGotProxyLookupResult),
+          weak_method_factory_.GetWeakPtr(), std::move(params)),
       g_network_context_for_proxy_lookup_for_testing
           ? g_network_context_for_proxy_lookup_for_testing
           : browser_context_->GetDefaultStoragePartition()
                 ->GetNetworkContext());
+  return CheckEligibilityResult::kEligibilityNotYetGot;
 }
 
-void PrefetchService::OnGotProxyLookupResult(CheckEligibilityParams params,
-                                             bool has_proxy) {
+PrefetchService::CheckEligibilityResult PrefetchService::OnGotProxyLookupResult(
+    CheckEligibilityParams params,
+    bool has_proxy) {
   TRACE_EVENT("loading", "PrefetchService::OnGotProxyLookupResult",
               "prefetch_url", params.PrefetchUrlForTrace());
 
   if (!params.IsAlive()) {
-    std::move(params).Finish(PreloadingEligibility::kEligible);
-    return;
+    return std::move(params).Finish(PreloadingEligibility::kEligible);
   }
 
   TRACE_EVENT_END("loading",
@@ -1261,11 +1264,10 @@ void PrefetchService::OnGotProxyLookupResult(CheckEligibilityParams params,
                     params.request().preload_pipeline_info().GetTrack());
 
   if (has_proxy) {
-    std::move(params).Finish(PreloadingEligibility::kExistingProxy);
-    return;
+    return std::move(params).Finish(PreloadingEligibility::kExistingProxy);
   }
 
-  std::move(params).Finish(PreloadingEligibility::kEligible);
+  return std::move(params).Finish(PreloadingEligibility::kEligible);
 }
 
 void PrefetchService::OnGotEligibilityForNonRedirect(
@@ -1900,12 +1902,13 @@ void PrefetchService::OnPrefetchRedirect(
   if (GetInjectedEligibilityCheckForTesting()) {
     GetInjectedEligibilityCheckForTesting().Run(  // IN-TEST
         base::BindOnce(
-            &PrefetchService::InjectedEligibilityCheckCompletedForTesting,
+            base::IgnoreResult(
+                &PrefetchService::InjectedEligibilityCheckCompletedForTesting),
             weak_method_factory_.GetWeakPtr(), std::move(params)));
     return;
   }
 
-  CheckEligibilityOfPrefetch(std::move(params));
+  std::ignore = CheckEligibilityOfPrefetch(std::move(params));
 }
 
 void PrefetchService::OnWillBeDestroyed(
