@@ -689,6 +689,9 @@ gfx::Range TabStripModel::InsertDetachedTabGroupAt(
       group->collection_));
 
   if (selection_model_.focused_group().has_value()) {
+    base::UmaHistogramEnumeration(
+        "TabGroups.Focus.ExitReason",
+        TabGroupFocusExitReason::kGroupHeaderDraggedIn);
     SetFocusedGroup(std::nullopt);
   }
 
@@ -4852,6 +4855,16 @@ void TabStripModel::MoveTabToIndexImpl(
       tab_group->MoveTab();
     }
   }
+
+  // Unpinning an active pinned tab exits focus mode.
+  if (initial_pinned_state && !tab->IsPinned() &&
+      tab == selection_model_.active_tab()) {
+    if (GetFocusedGroup().has_value()) {
+      base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
+                                    TabGroupFocusExitReason::kUnpinActiveTab);
+      SetFocusedGroup(std::nullopt);
+    }
+  }
 }
 
 void TabStripModel::MoveTabsToIndexImpl(
@@ -5279,6 +5292,16 @@ void TabStripModel::MoveTabsWithNotifications(
     if (notification.initial_pinned != tab->IsPinned()) {
       for (auto& observer : observers_) {
         observer.OnTabPinnedStateChanged(tab, final_index);
+      }
+    }
+
+    // Unpinning an active pinned tab exits focus mode.
+    if (notification.initial_pinned && !tab->IsPinned() &&
+        tab == selection_model_.active_tab()) {
+      if (GetFocusedGroup().has_value()) {
+        base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
+                                      TabGroupFocusExitReason::kUnpinActiveTab);
+        SetFocusedGroup(std::nullopt);
       }
     }
   }

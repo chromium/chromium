@@ -436,6 +436,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Group closed or deleted"/>
   <int value="3" label="Group ungrouped"/>
   <int value="4" label="Last tab in focused group closed"/>
+  <int value="5" label="Active tab unpinned"/>
+  <int value="6" label="Tab group header dragged into window"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_enums.h:TabGroupFocusExitReason) -->

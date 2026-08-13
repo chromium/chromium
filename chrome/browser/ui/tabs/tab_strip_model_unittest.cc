@@ -1411,6 +1411,7 @@ TEST_F(TabStripModelTest, InsertingDetachedTabGroupUnsetsFocus) {
   TabStripModel model(&delegate, profile());
   ASSERT_TRUE(model.empty());
 
+  base::HistogramTester histogram_tester;
   model.AppendWebContents(CreateWebContents(), true);
   model.AppendWebContents(CreateWebContents(), true);
 
@@ -1430,6 +1431,9 @@ TEST_F(TabStripModelTest, InsertingDetachedTabGroupUnsetsFocus) {
   EXPECT_EQ(model.GetFocusedGroup(), std::nullopt);
   EXPECT_TRUE(model.group_model()->ContainsTabGroup(group1));
   EXPECT_TRUE(model.group_model()->ContainsTabGroup(group2));
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason",
+      TabGroupFocusExitReason::kGroupHeaderDraggedIn, 1);
 }
 
 TEST_F(TabStripModelTest,
@@ -2739,6 +2743,54 @@ TEST_F(TabStripModelTest, SelectingPinnedTabPreservesFocus) {
 
   // Focus should be preserved.
   EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
+}
+
+TEST_F(TabStripModelTest, UnpinningActivePinnedTabExitsFocusMode) {
+  base::HistogramTester histogram_tester;
+  PrepareTabs(tabstrip(), 4);
+  tabstrip()->SetTabPinned(0, true);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Activate the pinned tab (index 0).
+  tabstrip()->ActivateTabAt(0);
+  ASSERT_EQ(0, tabstrip()->active_index());
+
+  // Unpin the active pinned tab.
+  tabstrip()->SetTabPinned(0, false);
+
+  // Unpinning the active pinned tab should exit focus mode.
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  EXPECT_FALSE(tabstrip()->IsTabPinned(tabstrip()->active_index()));
+  EXPECT_EQ(std::nullopt,
+            tabstrip()->GetTabGroupForTab(tabstrip()->active_index()));
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.ExitReason",
+                                      TabGroupFocusExitReason::kUnpinActiveTab,
+                                      1);
+}
+
+TEST_F(TabStripModelTest, UnpinningInactivePinnedTabPreservesFocusMode) {
+  base::HistogramTester histogram_tester;
+  PrepareTabs(tabstrip(), 4);
+  tabstrip()->SetTabPinned(0, true);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Ensure active tab is within the focused group (index 1).
+  tabstrip()->ActivateTabAt(1);
+  ASSERT_EQ(1, tabstrip()->active_index());
+
+  // Unpin the inactive pinned tab (index 0).
+  tabstrip()->SetTabPinned(0, false);
+
+  // Focus mode should be preserved, and the unpinned tab should be outside the
+  // group.
+  EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
+  EXPECT_EQ(group_id,
+            tabstrip()->GetTabGroupForTab(tabstrip()->active_index()));
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
 }
 
 TEST_F(TabStripModelTest, RemovingPinnedTabPreservesFocusAndSelectsGroupTab) {
