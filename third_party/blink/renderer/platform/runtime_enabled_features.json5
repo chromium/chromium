@@ -1006,7 +1006,7 @@
       // embed camera and microphone permission request controls directly in the page.
       // https://chromestatus.com/feature/5153829504024576
       name: "CameraAndMicrophoneElements",
-      status: "test",
+      status: "experimental",
       public: true,
     },
     {
