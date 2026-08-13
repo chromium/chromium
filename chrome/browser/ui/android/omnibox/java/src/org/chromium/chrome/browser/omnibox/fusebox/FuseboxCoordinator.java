@@ -225,6 +225,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         // matters.
                         .with(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT)
                         .with(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN)
+                        .with(
+                                FuseboxProperties.POPUP_IS_BOTTOM_SHEET,
+                                OmniboxFeatures.shouldShowBottomSheetPopup())
                         .build();
 
         new AsyncLayoutInflater(mActivity)

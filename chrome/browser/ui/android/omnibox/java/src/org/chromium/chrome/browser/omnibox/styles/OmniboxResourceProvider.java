@@ -607,6 +607,36 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
+     * Get secondary icon tint list.
+     *
+     * @see #getSecondaryIconTintList(Context, ...)
+     */
+    public ColorStateList getSecondaryIconTintList() {
+        return getSecondaryIconTintList(mContext, getBrandedColorScheme());
+    }
+
+    /**
+     * Get Fusebox popup icon tint list.
+     *
+     * @param isBottomSheet Whether the popup is presented as a bottom sheet.
+     * @see #getFuseboxPopupIconTintList(Context, int, boolean)
+     */
+    public ColorStateList getFuseboxPopupIconTintList(boolean isBottomSheet) {
+        return getFuseboxPopupIconTintList(mContext, getBrandedColorScheme(), isBottomSheet);
+    }
+
+    /**
+     * Get Fusebox popup icon background tint list.
+     *
+     * @param isBottomSheet Whether the popup is presented as a bottom sheet.
+     * @see #getFuseboxPopupIconBackgroundTintList(Context, int, boolean)
+     */
+    public @Nullable ColorStateList getFuseboxPopupIconBackgroundTintList(boolean isBottomSheet) {
+        return getFuseboxPopupIconBackgroundTintList(
+                mContext, getBrandedColorScheme(), isBottomSheet);
+    }
+
+    /**
      * Get primary icon background tint list.
      *
      * @see #getPrimaryIconBackgroundTintList(Context, ...)
@@ -1277,6 +1307,45 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
         return ChromeColors.getPrimaryIconTint(context, isIncognito);
+    }
+
+    /** Resolves the secondary icon tint color. */
+    public static ColorStateList getSecondaryIconTintList(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return ChromeColors.getSecondaryIconTint(context, isIncognito);
+    }
+
+    /**
+     * Resolves the icon tint for Fusebox popup items (primary for bottom sheet, secondary for plus
+     * menu).
+     */
+    public static ColorStateList getFuseboxPopupIconTintList(
+            Context context, @BrandedColorScheme int brandedColorScheme, boolean isBottomSheet) {
+        return isBottomSheet
+                ? getPrimaryIconTintList(context, brandedColorScheme)
+                : getSecondaryIconTintList(context, brandedColorScheme);
+    }
+
+    /**
+     * Resolves the icon background tint for Fusebox popup items (only present for bottom sheet).
+     */
+    public static @Nullable ColorStateList getFuseboxPopupIconBackgroundTintList(
+            Context context, @BrandedColorScheme int brandedColorScheme, boolean isBottomSheet) {
+        return isBottomSheet ? getPrimaryIconBackgroundTintList(context, brandedColorScheme) : null;
+    }
+
+    /**
+     * Resolves the icon dimension for Fusebox popup items (24dp for bottom sheet, 20dp for plus
+     * menu).
+     */
+    public static @Px int getFuseboxPopupIconSize(Context context, boolean isBottomSheet) {
+        Resources res = context.getResources();
+        return res.getDimensionPixelSize(
+                isBottomSheet
+                        ? R.dimen.fusebox_bottom_sheet_attachment_icon_size
+                        : R.dimen.fusebox_popup_item_icon_size);
     }
 
     /**

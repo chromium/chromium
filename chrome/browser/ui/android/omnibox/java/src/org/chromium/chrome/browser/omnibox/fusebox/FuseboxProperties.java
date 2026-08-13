@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -220,6 +221,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ATTACH_TAB_PICKER_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** Whether the popup is shown as a bottom sheet. */
+    public static final ReadableBooleanPropertyKey POPUP_IS_BOTTOM_SHEET =
+            new ReadableBooleanPropertyKey();
+
     /** Holds button data objects for each model that is to be shown. */
     public static final WritableObjectPropertyKey<List<PopupButtonData>>
             POPUP_MODEL_BUTTON_DATA_LIST = new WritableObjectPropertyKey<>();
@@ -318,6 +323,7 @@ class FuseboxProperties {
         POPUP_ATTACH_TAB_PICKER_CLICKED,
         POPUP_ATTACH_TAB_PICKER_ENABLED,
         POPUP_ATTACH_TAB_PICKER_VISIBLE,
+        POPUP_IS_BOTTOM_SHEET,
         POPUP_MODEL_BUTTON_DATA_LIST,
         POPUP_MODEL_DIVIDER_VISIBLE,
         POPUP_MODEL_HEADER_TEXT,

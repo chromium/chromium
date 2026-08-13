@@ -36,7 +36,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
@@ -147,8 +146,7 @@ class FuseboxViewBinder {
                         model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
             }
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON) {
-            updateForCurrentTabFavicon(
-                    model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON), view);
+            updateForCurrentTabFavicon(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE) {
             updateButtonVisibility(
                     model,
@@ -396,13 +394,24 @@ class FuseboxViewBinder {
 
         @StyleRes
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
+        boolean isBottomSheet = model.get(FuseboxProperties.POPUP_IS_BOTTOM_SHEET);
         ColorStateList iconTint =
-                OmniboxResourceProvider.getPrimaryIconTintList(
-                        buttonView.getContext(), brandedColorScheme);
+                OmniboxResourceProvider.getFuseboxPopupIconTintList(
+                        buttonView.getContext(), brandedColorScheme, isBottomSheet);
         ColorStateList iconBackgroundTint =
-                OmniboxResourceProvider.getPrimaryIconBackgroundTintList(
-                        buttonView.getContext(), brandedColorScheme);
+                OmniboxResourceProvider.getFuseboxPopupIconBackgroundTintList(
+                        buttonView.getContext(), brandedColorScheme, isBottomSheet);
         themeButton(buttonView, textAppearance, iconTint, iconBackgroundTint);
+
+        @Px
+        int iconSize =
+                OmniboxResourceProvider.getFuseboxPopupIconSize(
+                        buttonView.getContext(), isBottomSheet);
+
+        FuseboxItemViewHolder holder = getViewHolder(buttonView);
+        updateIconSize(holder.mActionIcon, iconSize);
+        updateIconSize(holder.mActionEndIcon, iconSize);
+
         if (data.customIcon != null) {
             var drawable = new BitmapDrawable(res, data.customIcon);
             setCustomButtonDrawables(buttonView, drawable, data.selected);
@@ -413,7 +422,6 @@ class FuseboxViewBinder {
         }
 
         if (data.hasColor) {
-            FuseboxItemViewHolder holder = getViewHolder(buttonView);
             ImageView imageView = holder.mActionIcon;
             if (imageView != null) {
                 imageView.setImageTintList(null);
@@ -491,7 +499,7 @@ class FuseboxViewBinder {
             View buttonView,
             @StyleRes int textAppearance,
             ColorStateList iconTint,
-            ColorStateList iconBackgroundTint) {
+            @Nullable ColorStateList iconBackgroundTint) {
         FuseboxItemViewHolder holder = getViewHolder(buttonView);
         TextView textView = holder.mActionText;
         ImageView imageView = holder.mActionIcon;
@@ -510,7 +518,7 @@ class FuseboxViewBinder {
         // The icon background is only present for horizontal attachments, so null-checking is
         // necessary.
         View iconBackground = buttonView.findViewById(R.id.start_icon_background);
-        if (iconBackground != null) {
+        if (iconBackground != null && iconBackgroundTint != null) {
             iconBackground.setBackgroundTintList(iconBackgroundTint);
         }
     }
@@ -677,42 +685,35 @@ class FuseboxViewBinder {
     private static void updatePopupTheme(PropertyModel model, FuseboxViewHolder view) {
         @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
         Context context = view.parentView.getContext();
+        FuseboxPopup popup = view.popup;
+        boolean isBottomSheet = model.get(FuseboxProperties.POPUP_IS_BOTTOM_SHEET);
 
         ColorStateList iconTint =
-                OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme);
+                OmniboxResourceProvider.getFuseboxPopupIconTintList(
+                        context, brandedColorScheme, isBottomSheet);
         ColorStateList iconBackgroundTint =
-                OmniboxResourceProvider.getPrimaryIconBackgroundTintList(
-                        context, brandedColorScheme);
-        @StyleRes
-        int dynamicTextAppearance =
-                OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
-
-        for (View button : view.popup.mAttachmentButtons) {
-            @StyleRes int attachmentTextAppearance;
-            if (Integer.valueOf(PopupState.BOTTOM).equals(model.get(FuseboxProperties.POPUP_STATE))
-                    && view.popup.mAttachmentButtons.contains(button)) {
-                attachmentTextAppearance =
-                        OmniboxResourceProvider.getAttachmentButtonTextRes(brandedColorScheme);
-            } else {
-                attachmentTextAppearance = dynamicTextAppearance;
-            }
-            themeButton(button, attachmentTextAppearance, iconTint, iconBackgroundTint);
+                OmniboxResourceProvider.getFuseboxPopupIconBackgroundTintList(
+                        context, brandedColorScheme, isBottomSheet);
+        int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
+        for (View button : popup.mAttachmentButtons) {
+            themeButton(button, textAppearance, iconTint, iconBackgroundTint);
         }
-        for (View button : view.popup.mDynamicThemedButtons) {
-            themeButton(button, dynamicTextAppearance, iconTint, iconBackgroundTint);
+
+        for (View button : popup.mDynamicThemedButtons) {
+            themeButton(button, textAppearance, iconTint, iconBackgroundTint);
         }
 
         @StyleRes
         int headerTextAppearance =
                 OmniboxResourceProvider.getPopupHeaderVisibilityTextRes(brandedColorScheme);
-        for (TextView header : view.popup.mHeaders) {
+        for (TextView header : popup.mHeaders) {
             header.setTextAppearance(headerTextAppearance);
         }
 
         @ColorInt
         int dividerLineColor =
                 OmniboxResourceProvider.getPopupDividerLineColor(context, brandedColorScheme);
-        for (View divider : view.popup.mDividers) {
+        for (View divider : popup.mDividers) {
             divider.setBackgroundColor(dividerLineColor);
         }
     }
@@ -763,17 +764,19 @@ class FuseboxViewBinder {
         cs.applyTo(view.parentView);
     }
 
-    private static void updateForCurrentTabFavicon(Bitmap favicon, FuseboxViewHolder viewHolder) {
+    private static void updateForCurrentTabFavicon(
+            PropertyModel model, FuseboxViewHolder viewHolder) {
         Context context = viewHolder.parentView.getContext();
-        Resources res = context.getResources();
         FuseboxPopup popup = viewHolder.popup;
         View addCurrentTabButton = popup.mAddCurrentTab;
+        Bitmap favicon = model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON);
 
         Drawable drawable =
                 FuseboxTabUtils.getDrawableForTabFavicon(
                         context,
                         favicon,
-                        res.getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size));
+                        OmniboxResourceProvider.getFuseboxPopupIconSize(
+                                context, model.get(FuseboxProperties.POPUP_IS_BOTTOM_SHEET)));
         setCustomButtonDrawables(addCurrentTabButton, drawable, /* selected= */ false);
 
         if (favicon != null) {
@@ -786,6 +789,16 @@ class FuseboxViewBinder {
     private static void scaleDrawable(@Nullable Drawable drawable, @Px int sizePx) {
         if (drawable == null) return;
         drawable.setBounds(0, 0, sizePx, sizePx);
+    }
+
+    private static void updateIconSize(@Nullable ImageView iconView, @Px int sizePx) {
+        if (iconView == null) return;
+        ViewGroup.LayoutParams params = iconView.getLayoutParams();
+        if (params.width != sizePx || params.height != sizePx) {
+            params.width = sizePx;
+            params.height = sizePx;
+            iconView.setLayoutParams(params);
+        }
     }
 
     /** Helper to retrieve view holder, creating a new one if needed. */

@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.omnibox.styles;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
@@ -393,6 +396,67 @@ public class OmniboxResourceProviderUnitTest {
     }
 
     @Test
+    public void getSecondaryIconTintList() {
+        ColorStateList adaptiveSecondary =
+                mContext.getColorStateList(R.color.default_icon_color_secondary_tint_list);
+        ColorStateList incognitoSecondary =
+                mContext.getColorStateList(R.color.default_icon_color_secondary_light_tint_list);
+        OmniboxResourceProvider provider =
+                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(adaptiveSecondary, provider.getSecondaryIconTintList());
+        provider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+        assertEquals(incognitoSecondary, provider.getSecondaryIconTintList());
+    }
+
+    @Test
+    public void getFuseboxPopupIconTintList() {
+        ColorStateList primaryTint =
+                OmniboxResourceProvider.getPrimaryIconTintList(
+                        mContext, BrandedColorScheme.APP_DEFAULT);
+        ColorStateList secondaryTint =
+                OmniboxResourceProvider.getSecondaryIconTintList(
+                        mContext, BrandedColorScheme.APP_DEFAULT);
+        OmniboxResourceProvider provider =
+                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+
+        assertEquals(primaryTint, provider.getFuseboxPopupIconTintList(/* isBottomSheet= */ true));
+        assertEquals(
+                secondaryTint, provider.getFuseboxPopupIconTintList(/* isBottomSheet= */ false));
+    }
+
+    @Test
+    public void getFuseboxPopupIconBackgroundTintList() {
+        ColorStateList primaryBgTint =
+                OmniboxResourceProvider.getPrimaryIconBackgroundTintList(
+                        mContext, BrandedColorScheme.APP_DEFAULT);
+        OmniboxResourceProvider provider =
+                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+
+        assertEquals(
+                primaryBgTint,
+                provider.getFuseboxPopupIconBackgroundTintList(/* isBottomSheet= */ true));
+        assertNull(provider.getFuseboxPopupIconBackgroundTintList(/* isBottomSheet= */ false));
+    }
+
+    @Test
+    public void getFuseboxPopupIconSize() {
+        Resources res = mContext.getResources();
+        int expectedBottomSheetSize =
+                res.getDimensionPixelSize(R.dimen.fusebox_bottom_sheet_attachment_icon_size);
+        int expectedPlusMenuSize = res.getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size);
+
+        assertEquals(
+                expectedBottomSheetSize,
+                OmniboxResourceProvider.getFuseboxPopupIconSize(
+                        mContext, /* isBottomSheet= */ true));
+        assertEquals(
+                expectedPlusMenuSize,
+                OmniboxResourceProvider.getFuseboxPopupIconSize(
+                        mContext, /* isBottomSheet= */ false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES)
     public void getDrawableCached() {
         Drawable drawable1 = mProvider.getDrawable(R.drawable.btn_suggestion_refine_up);
         assertNotNull(drawable1);

@@ -22,7 +22,7 @@ found in the LICENSE file.
         android:layout_height="@dimen/fusebox_popup_item_icon_size"
         android:layout_marginEnd="@dimen/fusebox_popup_item_spacing"
         android:importantForAccessibility="no"
-        app:tint="@macro/default_icon_color" />
+        app:tint="@macro/default_icon_color_secondary" />
 
     <TextView
         android:id="@+id/action_text"
@@ -40,5 +40,5 @@ found in the LICENSE file.
         android:layout_marginStart="@dimen/fusebox_popup_item_spacing"
         android:importantForAccessibility="no"
         android:visibility="gone"
-        app:tint="@macro/default_icon_color" />
+        app:tint="@macro/default_icon_color_secondary" />
 </LinearLayout>
