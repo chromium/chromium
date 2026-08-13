@@ -125,6 +125,7 @@ bool ShouldConsiderDecoyRequestForStatus(PreloadingEligibility eligibility) {
     case PreloadingEligibility::kRetryAfter:
     case PreloadingEligibility::kSameSiteCrossOriginPrefetchRequiredProxy:
     case PreloadingEligibility::kSchemeIsNotHttps:
+    case PreloadingEligibility::kCrossOrigin:
       // These statuses don't relate to any user state, so don't send a decoy
       // request.
       return false;
@@ -664,6 +665,7 @@ bool PrefetchService::IsPrefetchAttemptFailedOrDiscardedInternal(
     case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
     case PrefetchStatus::kPrefetchIneligibleExistingProxy:
     case PrefetchStatus::kPrefetchIneligibleBlockedByConnectionAllowlist:
+    case PrefetchStatus::kPrefetchIneligibleCrossOrigin:
     case PrefetchStatus::kPrefetchIsStale:
     case PrefetchStatus::kPrefetchNotUsedProbeFailed:
     case PrefetchStatus::kPrefetchNotStarted:
@@ -840,8 +842,7 @@ void PrefetchService::PrefetchUrl(
                                                       .referring_origin()
                                                       .value()
                                                       .GetURL())) {
-        DVLOG(1) << *prefetch_container
-                 << ": not prefetched (not in allow list)";
+        std::move(params).Finish(PreloadingEligibility::kCrossOrigin);
         return;
       }
     }

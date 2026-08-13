@@ -304,6 +304,8 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchIneligibleBlockedByConnectionAllowlist:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleBlockedByConnectionAllowlist;
+    case PrefetchStatus::kPrefetchIneligibleCrossOrigin:
+      return Preload::PrefetchStatusEnum::PrefetchNotEligibleCrossOrigin;
   }
 }
 

@@ -24249,6 +24249,10 @@ Called by update_net_error_codes.py.-->
     The prefetch was cancelled because the URL is not allowed by Connection
     Allowlist.
   </int>
+  <int value="58" label="Prefetch Not Eligible: Cross-Origin">
+    The prefetch was not eligible because cross-origin prefetch was not allowed
+    for the origin.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/preloading/prefetch/prefetch_status.h:PrefetchStatus) -->

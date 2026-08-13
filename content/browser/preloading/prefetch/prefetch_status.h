@@ -256,8 +256,12 @@ enum class PrefetchStatus {
   // See https://github.com/WICG/connection-allowlists.
   kPrefetchIneligibleBlockedByConnectionAllowlist = 57,
 
+  // The prefetch was not eligible because cross-origin prefetch was not
+  // allowed for the origin.
+  kPrefetchIneligibleCrossOrigin = 58,
+
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchIneligibleBlockedByConnectionAllowlist,
+  kMaxValue = kPrefetchIneligibleCrossOrigin,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:PrefetchProxyPrefetchStatus)
 

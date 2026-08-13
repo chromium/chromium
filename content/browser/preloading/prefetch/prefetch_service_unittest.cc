@@ -1718,9 +1718,7 @@ TEST_P(PrefetchServiceTest, NoPrefetchingDomainNotInAllowList) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  // `IsDomainInPrefetchAllowList` returns false so we did not reach the
-  // eligibility check.
-  ExpectPrefetchNotEligible(PreloadingEligibility::kUnspecified);
+  ExpectPrefetchNotEligible(PreloadingEligibility::kCrossOrigin);
 
   NavigateInitiatedByRenderer(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
@@ -1859,7 +1857,7 @@ TEST_P(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
 
   EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchNotEligible(PreloadingEligibility::kUnspecified);
+  ExpectPrefetchNotEligible(PreloadingEligibility::kCrossOrigin);
 
   NavigateInitiatedByRenderer(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
