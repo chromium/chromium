@@ -40,6 +40,12 @@
 #include "extensions/common/manifest_constants.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/image_model.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
+#include "url/gurl.h"
 
 namespace ash::file_system_provider {
 namespace {
@@ -93,6 +99,7 @@ class FileSystemProviderServiceTest : public testing::Test {
   ~FileSystemProviderServiceTest() override = default;
 
   void SetUp() override {
+    message_center::MessageCenter::Initialize();
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -117,6 +124,7 @@ class FileSystemProviderServiceTest : public testing::Test {
 
   void TearDown() override {
     service_->Shutdown();
+    message_center::MessageCenter::Shutdown();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -249,6 +257,17 @@ TEST_F(FileSystemProviderServiceTest, UnmountFileSystem) {
                 kProviderId, MountOptions(kFileSystemId, kDisplayName)));
   ASSERT_EQ(1u, observer.mounts.size());
 
+  const std::string notification_id =
+      service_->GetProvidedFileSystemInfoList()[0].mount_path().value();
+  message_center::MessageCenter::Get()->AddNotification(
+      std::make_unique<message_center::Notification>(
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, u"title",
+          u"message", ui::ImageModel(), std::u16string(), GURL(),
+          message_center::NotifierId(), message_center::RichNotificationData(),
+          nullptr));
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+
   EXPECT_EQ(base::File::FILE_OK,
             service_->UnmountFileSystem(kProviderId, kFileSystemId,
                                         Service::UNMOUNT_REASON_USER));
@@ -262,6 +281,8 @@ TEST_F(FileSystemProviderServiceTest, UnmountFileSystem) {
   std::vector<ProvidedFileSystemInfo> file_system_info_list =
       service_->GetProvidedFileSystemInfoList();
   ASSERT_EQ(0u, file_system_info_list.size());
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
 
   service_->RemoveObserver(&observer);
 }

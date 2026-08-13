@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/extensions/chrome_app_icon_loader.h",
   "+chrome/browser/extensions/chrome_extension_system_factory.h",
   "+chrome/browser/extensions/window_controller_list.h",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
@@ -25,6 +24,7 @@ include_rules = [
 
   # Dependencies outside of //chrome:
   "+components/app_icon_loader/app_icon_loader.h",
+  "+ui/message_center/message_center.h",
 ]
 
 specific_include_rules = {

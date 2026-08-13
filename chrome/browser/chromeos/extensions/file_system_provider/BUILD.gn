@@ -40,6 +40,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//content/test:test_support",
-    "//ui/message_center/public/cpp",
+    "//ui/message_center",
   ]
 }

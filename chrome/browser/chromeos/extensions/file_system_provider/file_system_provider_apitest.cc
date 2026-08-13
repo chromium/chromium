@@ -22,12 +22,10 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
-#include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/message_center.h"
 
 namespace extensions {
 namespace {
@@ -76,11 +74,8 @@ class NotificationButtonClicker : public RequestManager::Observer {
 
  private:
   void ClickButton() {
-    std::optional<message_center::Notification> notification =
-        NotificationDisplayServiceTester::Get()->GetNotification(
-            file_system_info_.mount_path().value());
-    if (notification)
-      notification->delegate()->Click(0, std::nullopt);
+    message_center::MessageCenter::Get()->ClickOnNotificationButton(
+        file_system_info_.mount_path().value(), /*button_index=*/0);
   }
 
   ProvidedFileSystemInfo file_system_info_;
@@ -145,14 +140,9 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
 
-    display_service_ = std::make_unique<NotificationDisplayServiceTester>(
-        browser()->GetProfile());
-
     user_manager_.AddUser(
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345")));
   }
-
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 
  private:
   ash::FakeChromeUserManager user_manager_;

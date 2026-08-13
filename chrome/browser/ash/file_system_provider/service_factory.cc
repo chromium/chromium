@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -44,7 +43,6 @@ ServiceFactory::ServiceFactory()
               .Build()) {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ChromeExtensionSystemFactory::GetInstance());
-  DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
 
 ServiceFactory::~ServiceFactory() = default;

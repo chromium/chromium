@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_apitest.h",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
   "+chrome/common",
@@ -27,6 +26,7 @@ include_rules = [
 # TODO(crbug.com/379262505) - Remove this.
 specific_include_rules = {
   "file_system_provider_apitest\\.cc": [
-    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h",
+    "+ui/message_center/message_center.h",
   ],
 }

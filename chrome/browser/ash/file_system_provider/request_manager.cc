@@ -24,6 +24,8 @@ RequestManager::RequestManager(
       timeout_(timeout) {}
 
 RequestManager::~RequestManager() {
+  DetachNotificationManager();
+
   // Abort all of the active requests.
   auto it = requests_.begin();
   while (it != requests_.end()) {
@@ -125,6 +127,10 @@ std::vector<int> RequestManager::GetActiveRequestIds() const {
   }
 
   return result;
+}
+
+void RequestManager::DetachNotificationManager() {
+  notification_manager_ = nullptr;
 }
 
 void RequestManager::AddObserver(Observer* observer) {

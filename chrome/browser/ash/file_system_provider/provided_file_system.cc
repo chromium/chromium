@@ -197,6 +197,8 @@ ProvidedFileSystem::ProvidedFileSystem(
 }
 
 ProvidedFileSystem::~ProvidedFileSystem() {
+  request_manager_->DetachNotificationManager();
+
   const std::vector<int> request_ids = request_manager_->GetActiveRequestIds();
   for (int request_id : request_ids) {
     Abort(request_id);

@@ -33,6 +33,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/common/file_system/file_system_mount_option.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash::file_system_provider {
 namespace {
@@ -255,6 +256,10 @@ base::File::Error Service::UnmountFileSystem(const ProviderId& provider_id,
   mount_point_name_to_key_map_.erase(mount_point_name);
 
   if (reason == UNMOUNT_REASON_USER) {
+    // At browser shutdown MessageCenter has already destroyed its
+    // notifications. Only an in-session unmount removes this one explicitly.
+    message_center::MessageCenter::Get()->RemoveNotification(
+        file_system_info.mount_path().value(), /*by_user=*/false);
     registry_->ForgetFileSystem(file_system_info.provider_id(),
                                 file_system_info.file_system_id());
     if (cache_manager_ &&
