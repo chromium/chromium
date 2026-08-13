@@ -3226,10 +3226,10 @@ Google Chrome is unable to recover your settings.
         </if>
 
         <message name="IDS_DICTATION_ONBOARDING_TITLE" desc="The title string in the onboarding dialog for the dictation feature." translateable="false">
-          Turn your spoken thoughts into polished text with Gemini
+          Allow voice typing to use your microphone and page content to generate polished text?
         </message>
         <message name="IDS_DICTATION_ONBOARDING_BULLET_MICROPHONE" desc="The first paragraph in the onboarding dialog describing how the microphone is used." translateable="false">
-          Gemini will use your microphone to capture your voice and fill in text fields with cleaned up content.
+          Your microphone will be used to capture your voice.
         </message>
         <message name="IDS_DICTATION_ONBOARDING_BULLET_DISCLAIMER" desc="The disclaimer text in the onboarding dialog describing the use of AI and potential for mistakes and providing a link for more details." translateable="false">
           Gemini is AI and can make mistakes. <ph name="LEARN_MORE_LINK">$1<ex>Learn more</ex></ph>
