@@ -83,8 +83,9 @@ def _check_color_tokens_css() -> int:
             # for now.
             # TODO(pihsun): Use CSS variables for different kind of box-shadow,
             # and remove this special casing of box-shadow.
-            if re.search(r"rgba?\(",
-                         line) and not line.startswith("box-shadow: "):
+            if re.search(r"rgba?\(", line) and not line.startswith(
+                "box-shadow: "
+            ):
                 print_error(filename, lineno, "hardcoded rgba() value found.")
 
             # Check for color names and hexadecimal notations.
@@ -98,8 +99,9 @@ def _check_color_tokens_css() -> int:
                 line,
             )
             if match is not None:
-                print_error(filename, lineno,
-                            f'hardcoded color "{match[1]}" found.')
+                print_error(
+                    filename, lineno, f'hardcoded color "{match[1]}" found.'
+                )
 
     return returncode
 

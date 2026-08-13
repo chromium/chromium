@@ -28,10 +28,12 @@ def _get_root_relative_path(request_path: str) -> str:
 # some imports in cros_component and mwc use // instead of chrome://, but
 # replacing all '//' is too broad.
 def _stub_chrome_url(request_path: str, s: str) -> str:
-    chrome_stub_path = os.path.join(_get_root_relative_path(request_path),
-                                    "chrome_stub/")
+    chrome_stub_path = os.path.join(
+        _get_root_relative_path(request_path), "chrome_stub/"
+    )
     return s.replace("chrome://", chrome_stub_path).replace(
-        "//resources/", os.path.join(chrome_stub_path, "resources/"))
+        "//resources/", os.path.join(chrome_stub_path, "resources/")
+    )
 
 
 class _Route(NamedTuple):
@@ -43,7 +45,6 @@ class _Route(NamedTuple):
 
 
 class RequestHandler:
-
     def __init__(
         self,
         cca_root: str,
@@ -78,7 +79,7 @@ class RequestHandler:
             name = message.getAttribute("name").lower()
             value = get_message_text_content(message).strip()
             assert name.startswith("ids_")
-            id = name[len("ids_"):]
+            id = name[len("ids_") :]
             strings[id] = value
         return strings
 
@@ -100,13 +101,15 @@ class RequestHandler:
         return (
             "import {loadTimeData} from "
             f"'{relative_path}/chrome_stub/resources/js/load_time_data.js';"
-            f"loadTimeData.data = {json.dumps(load_time_data)}").encode()
+            f"loadTimeData.data = {json.dumps(load_time_data)}"
+        ).encode()
 
     def _handle_preload_images_js(self, request_path: str) -> bytes:
         # TODO(pihsun): With watch, we can cache the result and only
         # re-generate when any image files are changed.
-        return _stub_chrome_url(request_path,
-                                build.gen_preload_images_js()).encode()
+        return _stub_chrome_url(
+            request_path, build.gen_preload_images_js()
+        ).encode()
 
     def _transform_html(self, request_path: str, html: str) -> str:
         name = self._load_grd_strings()["name"]
@@ -122,8 +125,9 @@ class RequestHandler:
     def _transform_init_js(self, request_path: str, js: str) -> str:
         # Note that this breaks source map, but there's no frequent need to
         # debug init.ts so the impact should be minimal.
-        return self._transform_js(request_path,
-                                  "import './local_dev_overrides.js';\n" + js)
+        return self._transform_js(
+            request_path, "import './local_dev_overrides.js';\n" + js
+        )
 
     def _transform_js(self, request_path: str, js: str) -> str:
         return _stub_chrome_url(request_path, js)
@@ -134,8 +138,9 @@ class RequestHandler:
         return css
 
     def _load_mojo_enums(self, mojo_file_name) -> Dict[str, Dict[str, int]]:
-        with open(os.path.join(self._cca_root, "../", mojo_file_name),
-                  "r") as f:
+        with open(
+            os.path.join(self._cca_root, "../", mojo_file_name), "r"
+        ) as f:
             mojom = f.read()
         enum_blocks = re.findall(r"enum (.*?) \{(.*?)\}", mojom, re.DOTALL)
 
@@ -163,7 +168,8 @@ class RequestHandler:
         del request_path  # Unused.
         export_blocks = re.findall(r"export \{(.*?)\}", ts_src, re.DOTALL)
         exports = [
-            export.strip() for block in export_blocks
+            export.strip()
+            for block in export_blocks
             for export in block.split(",")
         ]
         # Ignore empty value from split.
@@ -191,21 +197,26 @@ class RequestHandler:
         for enum_dict in [self._load_mojo_enums(file) for file in mojo_files]:
             mojo_enums |= enum_dict
 
-        js = "\n".join(f"export const {export_name} = "
-                       f"{json.dumps(mojo_enums.get(import_name))};"
-                       for import_name, export_name in exports)
+        js = "\n".join(
+            f"export const {export_name} = "
+            f"{json.dumps(mojo_enums.get(import_name))};"
+            for import_name, export_name in exports
+        )
         return js
 
-    def _transform_js_models_load_time_data_js(self, request_path: str,
-                                               js: str) -> str:
-        return _stub_chrome_url(request_path,
-                                js).replace('/strings.m.js',
-                                            '../../strings.m.js')
+    def _transform_js_models_load_time_data_js(
+        self, request_path: str, js: str
+    ) -> str:
+        return _stub_chrome_url(request_path, js).replace(
+            '/strings.m.js', '../../strings.m.js'
+        )
 
     def _handle_color_css_updater_js(self, request_path: str) -> bytes:
         del request_path  # Unused.
-        return (b"export const ColorChangeUpdater = "
-                b"{forDocument: () => ({start: () => {}})};")
+        return (
+            b"export const ColorChangeUpdater = "
+            b"{forDocument: () => ({start: () => {}})};"
+        )
 
     def _handle_static_file(
         self,
@@ -268,8 +279,7 @@ class RequestHandler:
                 re.compile("/chrome_stub/resources/(mwc|cros_components)/.*"),
                 functools.partial(
                     self._handle_static_file,
-                    root=os.path.join(self._gen_dir,
-                                      "ui/webui/resources/tsc/"),
+                    root=os.path.join(self._gen_dir, "ui/webui/resources/tsc/"),
                     path=lambda path: "/".join(path.split("/")[3:]),
                     transform=_stub_chrome_url,
                 ),
@@ -336,8 +346,9 @@ class RequestHandler:
             # All .html files
             _Route(
                 re.compile(r"/.*\.html"),
-                functools.partial(self._handle_static_file,
-                                  transform=self._transform_html),
+                functools.partial(
+                    self._handle_static_file, transform=self._transform_html
+                ),
             ),
             # All .css files.
             _Route(
@@ -353,7 +364,6 @@ class RequestHandler:
 
 
 class DevServerHandler(http.server.SimpleHTTPRequestHandler):
-
     def __init__(
         self,
         handler: RequestHandler,
@@ -424,11 +434,13 @@ _DEV_OUTPUT_TEMP_DIR = "/tmp/cca-dev-out"
 # BUILD.gn, so the board argument isn't needed?
 @cli.option(
     "board",
-    help=("board name. "
-          "Use any board name with Chrome already built. "
-          "The provided board name is used for finding MWC and lit, "
-          "which is board independent. "
-          "All other board dependent references will be stubbed."),
+    help=(
+        "board name. "
+        "Use any board name with Chrome already built. "
+        "The provided board name is used for finding MWC and lit, "
+        "which is board independent. "
+        "All other board dependent references will be stubbed."
+    ),
 )
 @cli.option(
     "--port",
@@ -444,29 +456,32 @@ def cmd(board: str, port: int) -> int:
     build.generate_tsconfig(board)
 
     # TODO(pihsun): Watch / live reload
-    util.run_node([
-        "typescript/bin/tsc",
-        "--outDir",
-        _DEV_OUTPUT_TEMP_DIR,
-        "--noEmit",
-        "false",
-        # Makes compilation faster
-        "--incremental",
-        # For better debugging experience.
-        "--inlineSourceMap",
-        "--inlineSources",
-        # Makes devtools show TypeScript source with better path
-        "--sourceRoot",
-        "/",
-        # For easier developing / test cycle.
-        "--noUnusedLocals",
-        "false",
-        "--noUnusedParameters",
-        "false",
-    ])
+    util.run_node(
+        [
+            "typescript/bin/tsc",
+            "--outDir",
+            _DEV_OUTPUT_TEMP_DIR,
+            "--noEmit",
+            "false",
+            # Makes compilation faster
+            "--incremental",
+            # For better debugging experience.
+            "--inlineSourceMap",
+            "--inlineSources",
+            # Makes devtools show TypeScript source with better path
+            "--sourceRoot",
+            "/",
+            # For easier developing / test cycle.
+            "--noUnusedLocals",
+            "false",
+            "--noUnusedParameters",
+            "false",
+        ]
+    )
 
-    handler = RequestHandler(cca_root, _DEV_OUTPUT_TEMP_DIR,
-                             util.get_gen_dir(board))
+    handler = RequestHandler(
+        cca_root, _DEV_OUTPUT_TEMP_DIR, util.get_gen_dir(board)
+    )
     dev_server = http.server.ThreadingHTTPServer(
         ("localhost", port),
         lambda *args: DevServerHandler(handler, *args),
@@ -477,7 +492,8 @@ def cmd(board: str, port: int) -> int:
         "Attach a camera, or use utils/launch_dev_chrome.sh to launch "
         "Chrome with fake VCD. (You can port forward {port} "
         "and copy that script to your local machine "
-        "if developing over ssh.)")
+        "if developing over ssh.)"
+    )
     dev_server.serve_forever()
 
     return 0

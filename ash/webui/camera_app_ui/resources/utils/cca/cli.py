@@ -32,6 +32,7 @@ class _Option(NamedTuple):
 
 class _Command:
     """Parameters to build a command with add_parser()."""
+
     def __init__(self, func: Callable):
         self._func = func
         self._name: Optional[str] = None
@@ -71,7 +72,8 @@ class _Command:
                 if child._name is None:
                     raise CLIError(
                         f"Children {child._func} should be wrapped with"
-                        " @command")
+                        " @command"
+                    )
                 subparser = subparsers.add_parser(child._name, **child._kwargs)
                 child.build_parsers(subparser)
 
@@ -131,10 +133,9 @@ def _ensure_command(cmd: _MaybeCommand) -> _Command:
 _Decorator = Callable[[_MaybeCommand], _Command]
 
 
-def command(name: str,
-            *,
-            children: Optional[List[_Command]] = None,
-            **kwargs) -> _Decorator:
+def command(
+    name: str, *, children: Optional[List[_Command]] = None, **kwargs
+) -> _Decorator:
     """Decorator to create a new command.
 
     Args:
@@ -165,6 +166,7 @@ def option(*args, **kwargs) -> _Decorator:
         *args: The arguments to be forwarded to add_argument().
         **kwargs: The keyword arguments to be forwarded to add_parser().
     """
+
     def decorator(func: _MaybeCommand) -> _Command:
         func = _ensure_command(func)
         func._options.append(_Option(args, kwargs))

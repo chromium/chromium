@@ -26,11 +26,13 @@ _BUNDLE_TSC_OUTPUT_TEMP_DIR = "/tmp/cca-bundle-out"
 # BUILD.gn, so the board argument isn't needed?
 @cli.option(
     "board",
-    help=("board name. "
-          "Use any board name with Chrome already built. "
-          "The provided board name is used for finding MWC and lit, "
-          "which is board independent. "
-          "All other board dependent references will be stubbed."),
+    help=(
+        "board name. "
+        "Use any board name with Chrome already built. "
+        "The provided board name is used for finding MWC and lit, "
+        "which is board independent. "
+        "All other board dependent references will be stubbed."
+    ),
 )
 def cmd(board: str) -> int:
     os.makedirs(_BUNDLE_TSC_OUTPUT_TEMP_DIR, exist_ok=True)
@@ -39,29 +41,32 @@ def cmd(board: str) -> int:
 
     build.generate_tsconfig(board)
 
-    util.run_node([
-        "typescript/bin/tsc",
-        "--outDir",
-        _BUNDLE_TSC_OUTPUT_TEMP_DIR,
-        "--noEmit",
-        "false",
-        # Makes compilation faster
-        "--incremental",
-        # For better debugging experience.
-        "--inlineSourceMap",
-        "--inlineSources",
-        # Makes devtools show TypeScript source with better path
-        "--sourceRoot",
-        "/",
-        # For easier developing / test cycle.
-        "--noUnusedLocals",
-        "false",
-        "--noUnusedParameters",
-        "false",
-    ])
+    util.run_node(
+        [
+            "typescript/bin/tsc",
+            "--outDir",
+            _BUNDLE_TSC_OUTPUT_TEMP_DIR,
+            "--noEmit",
+            "false",
+            # Makes compilation faster
+            "--incremental",
+            # For better debugging experience.
+            "--inlineSourceMap",
+            "--inlineSources",
+            # Makes devtools show TypeScript source with better path
+            "--sourceRoot",
+            "/",
+            # For easier developing / test cycle.
+            "--noUnusedLocals",
+            "false",
+            "--noUnusedParameters",
+            "false",
+        ]
+    )
 
-    handler = dev_cmd.RequestHandler(cca_root, _BUNDLE_TSC_OUTPUT_TEMP_DIR,
-                                     util.get_gen_dir(board))
+    handler = dev_cmd.RequestHandler(
+        cca_root, _BUNDLE_TSC_OUTPUT_TEMP_DIR, util.get_gen_dir(board)
+    )
     routes = handler.routes
 
     output_folder = os.path.join(cca_root, "dist")
@@ -85,7 +90,9 @@ def cmd(board: str) -> int:
                     continue
                 to_output_files.add(
                     os.path.normpath(
-                        os.path.join(folder_name, relative_dir, file)))
+                        os.path.join(folder_name, relative_dir, file)
+                    )
+                )
 
     to_output_files.add("js/lib/ffmpeg.wasm")
 
@@ -117,6 +124,7 @@ def cmd(board: str) -> int:
 
     if to_output_files:
         logging.warning(
-            f"Some files are not covered by route: {to_output_files}.")
+            f"Some files are not covered by route: {to_output_files}."
+        )
 
     return 0

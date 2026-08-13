@@ -19,7 +19,8 @@ _CHROME_DEV_CONF_PATH = "/etc/chrome_dev.conf"
 
 def _local_override_enabled(device: str) -> bool:
     chrome_dev_conf = util.check_output(
-        ["ssh", device, "--", "cat", _CHROME_DEV_CONF_PATH])
+        ["ssh", device, "--", "cat", _CHROME_DEV_CONF_PATH]
+    )
     # This is a simple heuristic that is not 100% accurate, since this only
     # matches the feature name which can be in other irrevelant position in the
     # file. This should be fine though since this is only used for developers
@@ -31,20 +32,25 @@ def _local_override_enabled(device: str) -> bool:
 def _ensure_local_override_enabled(device: str, force: bool):
     if _local_override_enabled(device):
         return
-    util.run([
-        "ssh",
-        device,
-        "--",
-        f'echo "--enable-features={_CCA_OVERRIDE_FEATURE}"' +
-        f" >> {_CHROME_DEV_CONF_PATH}",
-    ])
+    util.run(
+        [
+            "ssh",
+            device,
+            "--",
+            f'echo "--enable-features={_CCA_OVERRIDE_FEATURE}"'
+            + f" >> {_CHROME_DEV_CONF_PATH}",
+        ]
+    )
     if not force:
-        prompt = input("Need to restart UI for deploy to take effect, " +
-                       "do it now? (y/N): ").lower()
+        prompt = input(
+            "Need to restart UI for deploy to take effect, "
+            + "do it now? (y/N): "
+        ).lower()
         if prompt != "y":
             print(
-                "Not restarting UI. " +
-                "`restart ui` on DUT manually for the change to take effect.")
+                "Not restarting UI. "
+                + "`restart ui` on DUT manually for the change to take effect."
+            )
             return
     util.run(["ssh", device, "--", "restart", "ui"])
 
@@ -84,23 +90,27 @@ def _reload_cca(device: str, changed_files: List[str]):
         reload_script = "document.location.reload()"
         if _can_only_reload_css(changed_files):
             reload_script = _CSS_RELOAD_SCRIPT
-        util.run([
-            "ssh",
-            device,
-            "--",
-            "cca",
-            "open",
-            "&&",
-            "cca",
-            "eval",
-            shlex.quote(reload_script),
-            ">",
-            "/dev/null",
-        ])
+        util.run(
+            [
+                "ssh",
+                device,
+                "--",
+                "cca",
+                "open",
+                "&&",
+                "cca",
+                "eval",
+                shlex.quote(reload_script),
+                ">",
+                "/dev/null",
+            ]
+        )
     except subprocess.CalledProcessError as e:
-        print("Failed to reload CCA on DUT, "
-              "please make sure that the DUT is logged in "
-              "and `cca setup` has been run on DUT.")
+        print(
+            "Failed to reload CCA on DUT, "
+            "please make sure that the DUT is logged in "
+            "and `cca setup` has been run on DUT."
+        )
 
 
 # Use a fixed temporary output folder for deploy, so incremental compilation
@@ -108,11 +118,9 @@ def _reload_cca(device: str, changed_files: List[str]):
 _DEPLOY_OUTPUT_TEMP_DIR = "/tmp/cca-deploy-out"
 
 
-def _rsync_to_device(device: str,
-                     src: str,
-                     target: str,
-                     *,
-                     extra_arguments: List[str] = []):
+def _rsync_to_device(
+    device: str, src: str, target: str, *, extra_arguments: List[str] = []
+):
     """Returns list of files that are changed."""
     cmd = [
         "rsync",
@@ -149,7 +157,8 @@ def _rsync_to_device(device: str,
     description=(
         "Deploy CCA to device. "
         "This script only works if there's no .cc / .grd changes. "
-        "And please build Chrome at least once before running the command."),
+        "And please build Chrome at least once before running the command."
+    ),
 )
 @cli.option("board")
 @cli.option("device")
@@ -172,26 +181,28 @@ def cmd(board: str, device: str, force: bool, reload: bool):
 
     build.generate_tsconfig(board)
 
-    util.run_node([
-        "typescript/bin/tsc",
-        "--outDir",
-        _DEPLOY_OUTPUT_TEMP_DIR,
-        "--noEmit",
-        "false",
-        # Makes compilation faster
-        "--incremental",
-        # For better debugging experience on DUT.
-        "--inlineSourceMap",
-        "--inlineSources",
-        # Makes devtools show TypeScript source with better path
-        "--sourceRoot",
-        "/",
-        # For easier developing / test cycle.
-        "--noUnusedLocals",
-        "false",
-        "--noUnusedParameters",
-        "false",
-    ])
+    util.run_node(
+        [
+            "typescript/bin/tsc",
+            "--outDir",
+            _DEPLOY_OUTPUT_TEMP_DIR,
+            "--noEmit",
+            "false",
+            # Makes compilation faster
+            "--incremental",
+            # For better debugging experience on DUT.
+            "--inlineSourceMap",
+            "--inlineSources",
+            # Makes devtools show TypeScript source with better path
+            "--sourceRoot",
+            "/",
+            # For easier developing / test cycle.
+            "--noUnusedLocals",
+            "false",
+            "--noUnusedParameters",
+            "false",
+        ]
+    )
 
     build.build_preload_images_js(js_out_dir)
 
@@ -213,18 +224,20 @@ def cmd(board: str, device: str, force: bool, reload: bool):
         )
 
     current_time = time.strftime("%F %T%z")
-    util.run([
-        "ssh",
-        device,
-        "--",
-        "printf",
-        "%s",
-        shlex.quote(
-            f'export const DEPLOYED_VERSION = "cca.py deploy {current_time}";'
-        ),
-        ">",
-        f"{_CCA_OVERRIDE_PATH}/js/deployed_version.js",
-    ])
+    util.run(
+        [
+            "ssh",
+            device,
+            "--",
+            "printf",
+            "%s",
+            shlex.quote(
+                f'export const DEPLOYED_VERSION = "cca.py deploy {current_time}";'
+            ),
+            ">",
+            f"{_CCA_OVERRIDE_PATH}/js/deployed_version.js",
+        ]
+    )
 
     _ensure_local_override_enabled(device, force)
 

@@ -29,6 +29,7 @@ def _parse_i18n_string_ts() -> Dict[str, str]:
 # Same as tools/check_grd_for_unused_strings.py
 class _GrdIDExtractor(xml.sax.handler.ContentHandler):
     """Extracts the IDs from messages in GRIT files"""
+
     def __init__(self):
         self.id_set_: Set[str] = set()
 
@@ -60,11 +61,12 @@ def cmd() -> int:
 
     def check_name_id_consistent(strings: Set[Tuple[str, str]], filename: str):
         nonlocal returncode
-        bad = [(name, id) for (name, id) in strings
-               if id != f"IDS_{name.upper()}"]
+        bad = [
+            (name, id) for (name, id) in strings if id != f"IDS_{name.upper()}"
+        ]
         if bad:
             print(f"{filename} includes string id with inconsistent name:")
-            for (name, id) in bad:
+            for name, id in bad:
                 print(f"    {name}: Expect IDS_{name.upper()}, got {id}")
             returncode = 1
 
@@ -94,32 +96,38 @@ def cmd() -> int:
         with open(os.path.join(cca_root, "views/main.html")) as f:
             # Find all values of i18n-xxx attributes such as `i18n-text="name"`.
             name_set_from_html_files.update(
-                re.findall(r"i18n-[\w-]+=\"(\w+)\"", f.read()))
+                re.findall(r"i18n-[\w-]+=\"(\w+)\"", f.read())
+            )
 
         for dirpath, _dirnames, filenames in os.walk(
-                os.path.join(cca_root, "js")):
+            os.path.join(cca_root, "js")
+        ):
             for filename in filenames:
                 if not filename.endswith(".ts"):
                     continue
                 with open(os.path.join(dirpath, filename)) as f:
                     id_set_from_ts_files.update(
-                        re.findall(r"I18nString\.(\w+)", f.read()))
+                        re.findall(r"I18nString\.(\w+)", f.read())
+                    )
 
         unused_ids = [
-            id for (id, name) in i18n_string_ts_dict.items()
+            id
+            for (id, name) in i18n_string_ts_dict.items()
             if id not in id_set_from_ts_files
             and name not in name_set_from_html_files
         ]
 
         unused_ids = []
-        for (id, name) in i18n_string_ts_dict.items():
+        for id, name in i18n_string_ts_dict.items():
             if id in id_set_from_ts_files or name in name_set_from_html_files:
                 continue
             unused_ids.append(id)
 
         if len(unused_ids) > 0:
-            print("The following strings are defined in i18n_string.ts but "
-                  "unused. Please remove them:")
+            print(
+                "The following strings are defined in i18n_string.ts but "
+                "unused. Please remove them:"
+            )
             for id in unused_ids:
                 print(f"    {id}")
             returncode = 1
@@ -131,9 +139,9 @@ def cmd() -> int:
     i18n_string_ts_dict = _parse_i18n_string_ts()
     check_unused(i18n_string_ts_dict)
 
-    i18n_string_ts_name_id_set = set([
-        (name, f"IDS_{id}") for (id, name) in i18n_string_ts_dict.items()
-    ])
+    i18n_string_ts_name_id_set = set(
+        [(name, f"IDS_{id}") for (id, name) in i18n_string_ts_dict.items()]
+    )
     check_name_id_consistent(i18n_string_ts_name_id_set, _I18N_STRING_TS_PATH)
     i18n_string_ts_ids = set([id for (name, id) in i18n_string_ts_name_id_set])
 
@@ -141,7 +149,8 @@ def cmd() -> int:
     check_all_name_lower_case(resources_h_names, _RESOURCES_H_PATH)
 
     i18n_string_ts_names = set(
-        [name for (name, id) in i18n_string_ts_name_id_set])
+        [name for (name, id) in i18n_string_ts_name_id_set]
+    )
     check_all_name_lower_case(i18n_string_ts_names, _I18N_STRING_TS_PATH)
 
     camera_strings_grd_ids = _parse_camera_strings_grd()
@@ -150,7 +159,8 @@ def cmd() -> int:
 
     check_all_ids_exist(all_ids, resources_h_ids, _RESOURCES_H_PATH)
     check_all_ids_exist(all_ids, i18n_string_ts_ids, _I18N_STRING_TS_PATH)
-    check_all_ids_exist(all_ids, camera_strings_grd_ids,
-                        _CAMERA_STRINGS_GRD_PATH)
+    check_all_ids_exist(
+        all_ids, camera_strings_grd_ids, _CAMERA_STRINGS_GRD_PATH
+    )
 
     return returncode

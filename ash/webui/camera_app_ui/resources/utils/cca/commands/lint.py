@@ -24,7 +24,8 @@ def cmd(fix: bool, eslintrc: str) -> int:
     if fix:
         cmd.append("--fix")
     eslintrc = eslintrc or os.path.join(
-        util.get_chromium_root(), "tools/web_dev_style/eslint.config.mjs")
+        util.get_chromium_root(), "tools/web_dev_style/eslint.config.mjs"
+    )
     cmd.extend(["--config", eslintrc])
     try:
         util.run_node(cmd)

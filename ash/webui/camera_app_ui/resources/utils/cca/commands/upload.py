@@ -11,11 +11,13 @@ def _make_dir(path: str):
     util.run(['fileutil', 'mkdir', path])
 
 
-def _upload_dir(name: str,
-                local_path: str,
-                remote_path: str,
-                force: bool = True,
-                recursive: bool = True):
+def _upload_dir(
+    name: str,
+    local_path: str,
+    remote_path: str,
+    force: bool = True,
+    recursive: bool = True,
+):
     _make_dir(os.path.join(remote_path, name))
     cmd = ["fileutil", "cp"]
     if force:
@@ -24,10 +26,14 @@ def _upload_dir(name: str,
         cmd.append("-R")
     cmd.extend([local_path, os.path.join(remote_path, name)])
     util.run(cmd)
-    url = ("https://x20.corp.google.com"
-           f"/teams/chromeos-camera-app/cca-bundle/{name}")
-    print("Upload Successfully."
-          f" Click the below URL to open your CCA bundle:\n{url}")
+    url = (
+        "https://x20.corp.google.com"
+        f"/teams/chromeos-camera-app/cca-bundle/{name}"
+    )
+    print(
+        "Upload Successfully."
+        f" Click the below URL to open your CCA bundle:\n{url}"
+    )
 
 
 def _delete_dir(path: str, force: bool = True, recursive: bool = True):
@@ -42,8 +48,14 @@ def _delete_dir(path: str, force: bool = True, recursive: bool = True):
 
 def _check_path_exist(remote_root_path: str, name: str) -> bool:
     cmd = [
-        "fileutil", "find", remote_root_path, "--", "-name", name, "-maxdepth",
-        "1"
+        "fileutil",
+        "find",
+        remote_root_path,
+        "--",
+        "-name",
+        name,
+        "-maxdepth",
+        "1",
     ]
     output = util.check_output(cmd).strip()
     return output == os.path.join(remote_root_path, name)
@@ -55,7 +67,8 @@ def _confirm_name_deletion(name) -> bool:
             "CCA bundle directory with name: "
             f"{name} already exists."
             "\nPress 'Y' to overwrite the old directory with the new one. "
-            "[Y/n]:")
+            "[Y/n]:"
+        )
         response = input(message).lower()
         if response == "y" or response == "":
             return True

@@ -17,17 +17,19 @@ from cca.commands import tsc
 from cca.commands import upload
 
 
-@cli.root(children=[
-    bundle.cmd,
-    check_color_tokens.cmd,
-    check_strings.cmd,
-    deploy.cmd,
-    dev.cmd,
-    lint.cmd,
-    test.cmd,
-    tsc.cmd,
-    upload.cmd,
-])
+@cli.root(
+    children=[
+        bundle.cmd,
+        check_color_tokens.cmd,
+        check_strings.cmd,
+        deploy.cmd,
+        dev.cmd,
+        lint.cmd,
+        test.cmd,
+        tsc.cmd,
+        upload.cmd,
+    ]
+)
 @cli.option(
     "--debug",
     action="store_true",

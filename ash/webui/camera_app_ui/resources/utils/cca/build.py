@@ -33,7 +33,8 @@ def gen_preload_images_js() -> str:
     ]
 
     return gen_preload_images_js_module.gen_preload_images_js(
-        in_app_images, standalone_images)
+        in_app_images, standalone_images
+    )
 
 
 def build_preload_images_js(outdir: str):
@@ -62,16 +63,19 @@ def _get_tsc_paths(board: str) -> Dict[str, List[str]]:
     resources_dir = os.path.join(target_gen_dir, "ui/webui/resources/tsc/*")
 
     lit_d_ts = os.path.join(
-        root_dir, "third_party/material_web_components/lit_exports.d.ts")
-    typescript_definition_dir = os.path.join(root_dir,
-                                             "tools/typescript/definitions")
+        root_dir, "third_party/material_web_components/lit_exports.d.ts"
+    )
+    typescript_definition_dir = os.path.join(
+        root_dir, "tools/typescript/definitions"
+    )
 
     return {
         "//resources/*": [os.path.relpath(resources_dir)],
         "chrome://resources/*": [os.path.relpath(resources_dir)],
         "chrome://resources/mwc/lit/index.js": [os.path.relpath(lit_d_ts)],
-        "/strings.m.js":
-        [os.path.join(typescript_definition_dir, "strings.d.ts")],
+        "/strings.m.js": [
+            os.path.join(typescript_definition_dir, "strings.d.ts")
+        ],
     }
 
 
@@ -80,8 +84,9 @@ def _make_mojom_symlink(board: str):
     root_dir = util.get_chromium_root()
     target_gen_dir = util.get_gen_dir(board)
     src_relative_dir = os.path.relpath(cca_root, root_dir)
-    generated_mojom_dir = os.path.join(target_gen_dir, src_relative_dir,
-                                       "mojom")
+    generated_mojom_dir = os.path.join(
+        target_gen_dir, src_relative_dir, "mojom"
+    )
     target = os.path.join(cca_root, "mojom")
 
     if os.path.islink(target):
@@ -94,8 +99,10 @@ def _make_mojom_symlink(board: str):
     elif os.path.exists(target):
         # Some other things are at the mojom path. cca.py won't work in
         # this case.
-        raise Exception("resources/mojom exists but not a symlink."
-                        " Please remove it and try again.")
+        raise Exception(
+            "resources/mojom exists but not a symlink."
+            " Please remove it and try again."
+        )
     else:
         os.symlink(generated_mojom_dir, target)
 
@@ -121,7 +128,8 @@ def generate_tsconfig(board: str):
     target_gen_dir = util.get_gen_dir(board)
     assert os.path.exists(target_gen_dir), (
         f"Failed to find the build output dir {target_gen_dir}."
-        " Please check the board name and build Chrome once.")
+        " Please check the board name and build Chrome once."
+    )
 
     with open(os.path.join(cca_root, "tsconfig_base.json")) as f:
         tsconfig = json.load(f)
@@ -133,10 +141,9 @@ def generate_tsconfig(board: str):
     tsconfig["compilerOptions"]["rootDir"] = cca_root
     tsconfig["compilerOptions"]["noEmit"] = True
     tsconfig["compilerOptions"]["paths"] = _get_tsc_paths(board)
-    tsconfig["compilerOptions"]["plugins"] = [{
-        "name": "ts-lit-plugin",
-        "strict": True
-    }]
+    tsconfig["compilerOptions"]["plugins"] = [
+        {"name": "ts-lit-plugin", "strict": True}
+    ]
     tsconfig["references"] = _get_tsc_references(board)
 
     with open(os.path.join(cca_root, "tsconfig.json"), "w") as f:
