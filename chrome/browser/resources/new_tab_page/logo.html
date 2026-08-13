@@ -2,12 +2,17 @@ ${this.showLogo_ ? html`
   <div id="logo"></div>
 ` : ''}
 ${this.showDoodle_ ? html`
-  <div id="doodle" title="${this.doodle_!.description}">
-    <div id="imageDoodle" ?hidden="${!this.imageDoodle_}"
-        tabindex="${this.imageDoodleTabIndex_}" @click="${this.onImageClick_}"
-        @keydown="${this.onImageKeydown_}">
-      <div id="imageContainer">
-        <img id="image" src="${this.imageUrl_}" @load="${this.onImageLoad_}">
+  <div id="doodle">
+    <div id="imageDoodle" ?hidden="${!this.imageDoodle_}">
+      <div id="imageContainer"
+          title="${this.doodle_!.description}"
+          role="${this.imageDoodleTabIndex_ === 0 ? 'link' : undefined}"
+          tabindex="${this.imageDoodleTabIndex_}"
+          @click="${this.onImageClick_}"
+          @keydown="${this.onImageKeydown_}">
+        <img id="image" src="${this.imageUrl_}" alt="${this.doodle_!.description}"
+            ?aria-hidden="${this.imageDoodleTabIndex_ === 0}"
+            @load="${this.onImageLoad_}">
       </div>
       <cr-button id="shareButton" title="$i18n{shareDoodle}"
           @click="${this.onShareButtonClick_}">

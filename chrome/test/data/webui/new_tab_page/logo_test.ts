@@ -362,7 +362,7 @@ suite('NewTabPageLogoTest', () => {
         assertEquals('https://foo.com/', windowProxy.getArgs('open')[0]);
       }
       assertEquals(
-          hasUrl ? 0 : -1, $$<HTMLElement>(logo, '#imageDoodle')!.tabIndex);
+          hasUrl ? 0 : -1, $$<HTMLElement>(logo, '#imageContainer')!.tabIndex);
     });
 
     [' ', 'Enter'].forEach(key => {
@@ -381,7 +381,8 @@ suite('NewTabPageLogoTest', () => {
           assertEquals('https://foo.com/', windowProxy.getArgs('open')[0]);
         }
         assertEquals(
-            hasUrl ? 0 : -1, $$<HTMLElement>(logo, '#imageDoodle')!.tabIndex);
+            hasUrl ? 0 : -1,
+            $$<HTMLElement>(logo, '#imageContainer')!.tabIndex);
       });
     });
 
@@ -393,7 +394,7 @@ suite('NewTabPageLogoTest', () => {
       doodle.image.onClickUrl = hasUrl ? 'https://bar.com' : null;
       const logo = await createLogo(doodle, createTheme({isDark: false}));
       assertEquals(
-          hasUrl ? 0 : -1, $$<HTMLElement>(logo, '#imageDoodle')!.tabIndex);
+          hasUrl ? 0 : -1, $$<HTMLElement>(logo, '#imageContainer')!.tabIndex);
 
       // Act (click).
       $$<HTMLElement>(logo, '#image')!.click();
@@ -405,7 +406,7 @@ suite('NewTabPageLogoTest', () => {
         assertEquals('https://bar.com/', windowProxy.getArgs('open')[0]);
       }
       assertEquals(
-          hasUrl ? 0 : -1, $$<HTMLElement>(logo, '#imageDoodle')!.tabIndex);
+          hasUrl ? 0 : -1, $$<HTMLElement>(logo, '#imageContainer')!.tabIndex);
     });
   });
 

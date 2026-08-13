@@ -54,15 +54,6 @@
   background-size: 100%;
 }
 
-#imageDoodle {
-  cursor: pointer;
-  outline: none;
-}
-
-#imageDoodle[tabindex='-1'] {
-  cursor: auto;
-}
-
 :host([doodle-boxed_]:not([show-tight-doodle-boxing_])) #imageDoodle {
   background-color: var(--ntp-logo-box-color);
   border-radius: 20px;
@@ -75,15 +66,21 @@
   padding: 16px;
 }
 
-:host-context(.focus-outline-visible) #imageDoodle:focus {
-  box-shadow: 0 0 0 2px rgba(var(--google-blue-600-rgb), .4);
-}
-
 #imageContainer {
+  cursor: pointer;
   display: flex;
   height: fit-content;
+  outline: none;
   position: relative;
   width: fit-content;
+}
+
+#imageContainer[tabindex='-1'] {
+  cursor: auto;
+}
+
+:host-context(.focus-outline-visible) #imageContainer:focus {
+  box-shadow: 0 0 0 2px rgba(var(--google-blue-600-rgb), .4);
 }
 
 #image {

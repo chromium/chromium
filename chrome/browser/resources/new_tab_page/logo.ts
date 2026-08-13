@@ -203,7 +203,7 @@ export class LogoElement extends CrLitElement {
    * doodle-associated URL in new tab/window.
    */
   protected onImageClick_() {
-    if ($$<HTMLElement>(this, '#imageDoodle')!.tabIndex < 0) {
+    if ($$<HTMLElement>(this, '#imageContainer')!.tabIndex < 0) {
       return;
     }
 
