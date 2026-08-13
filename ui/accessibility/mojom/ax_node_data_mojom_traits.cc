@@ -5,7 +5,6 @@
 #include "ui/accessibility/mojom/ax_node_data_mojom_traits.h"
 
 #include "base/containers/flat_map.h"
-#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/mojom/ax_relative_bounds.mojom-shared.h"
 #include "ui/accessibility/mojom/ax_relative_bounds_mojom_traits.h"
 
@@ -156,9 +155,6 @@ bool StructTraits<ax::mojom::AXBitsetDataDataView,
 bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
     ax::mojom::AXNodeDataDataView data,
     ui::AXNodeData* out) {
-  if (!ui::IsValidAXNodeIDFromRenderer(data.id())) {
-    return false;
-  }
   out->id = data.id();
   out->role = data.role();
   out->state = ui::AXStates(data.state());
@@ -238,16 +234,9 @@ bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
     return false;
   out->html_attributes = std::move(html_attributes).extract();
 
-  std::vector<int32_t> child_ids;
-  if (!data.ReadChildIds(&child_ids)) {
+  if (!data.ReadChildIds(&out->child_ids)) {
     return false;
   }
-  for (int32_t child_id : child_ids) {
-    if (!ui::IsValidAXNodeIDFromRenderer(child_id)) {
-      return false;
-    }
-  }
-  out->child_ids = std::move(child_ids);
 
   if (!data.ReadRelativeBounds(&out->relative_bounds))
     return false;
