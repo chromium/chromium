@@ -182,16 +182,6 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
 
   bool IsRunningInCrdSessionSynchronous(const std::string& session_id) const;
 
-  void FetchSystemdEnvironmentVariables(
-      const std::string& display_name,
-      const gvariant::ObjectPath& display_path,
-      const std::string& username);
-
-  void OnGetUserSystemdEnvironmentResult(
-      const std::string& display_name,
-      const gvariant::ObjectPath& display_path,
-      const std::string& output);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   StartState start_state_ GUARDED_BY_CONTEXT(sequence_checker_) =
