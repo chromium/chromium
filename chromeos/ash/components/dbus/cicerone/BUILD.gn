@@ -8,8 +8,8 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 component("cicerone") {
   defines = [ "IS_CICERONE_IMPL" ]
+  public_deps = [ ":cicerone_proto" ]
   deps = [
-    ":cicerone_proto",
     "//base",
     "//chromeos/dbus/common",
     "//dbus",
