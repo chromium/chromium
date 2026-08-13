@@ -107,6 +107,10 @@ class CONTENT_EXPORT ClipboardHostImpl
                            ClipboardListenerDisconnect);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplChangeTest,
                            NoNotificationToInactiveDocument);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplChangeTest,
+                           NoNotificationWhenDocumentBecomesInactiveDuringRead);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplChangeTest,
+                           NoNotificationWhenListenerDisconnectsDuringRead);
 
   // mojom::ClipboardHost
   void RegisterClipboardListener(
@@ -286,6 +290,8 @@ class CONTENT_EXPORT ClipboardHostImpl
       ui::ClipboardSequenceNumberToken seqno,
       ReadUnsanitizedCustomFormatCallback callback,
       std::map<std::string, std::string> custom_format_names);
+
+  bool CanSendClipboardChangeNotification() const;
 
   void OnReadAvailableTypesForUpdate(absl::uint128 change_id,
                                      std::vector<std::u16string> types);

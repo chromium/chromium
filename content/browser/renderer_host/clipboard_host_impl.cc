@@ -1054,9 +1054,13 @@ void ClipboardHostImpl::ResetClipboardWriter() {
       ui::ClipboardBuffer::kCopyPaste, std::move(data_endpoint_ptr));
 }
 
+bool ClipboardHostImpl::CanSendClipboardChangeNotification() const {
+  return listening_to_clipboard_ && clipboard_listener_ &&
+         render_frame_host().IsActive();
+}
+
 void ClipboardHostImpl::OnClipboardDataChanged() {
-  if (!listening_to_clipboard_ || !clipboard_listener_ ||
-      !render_frame_host().IsActive()) {
+  if (!CanSendClipboardChangeNotification()) {
     return;
   }
 
@@ -1076,6 +1080,13 @@ void ClipboardHostImpl::OnClipboardDataChanged() {
 void ClipboardHostImpl::OnReadAvailableTypesForUpdate(
     absl::uint128 change_id,
     std::vector<std::u16string> types) {
+  // These are re-checked because ReadAvailableTypes() is asynchronous: the
+  // listener may have disconnected, or the document may have become inactive,
+  // while the read was in flight.
+  if (!CanSendClipboardChangeNotification()) {
+    return;
+  }
+
   if (change_id != GetSequenceNumberImpl(ui::ClipboardBuffer::kCopyPaste)) {
     // Clipboard changed meanwhile. There will be another notification anyway,
     // no need to retry here.

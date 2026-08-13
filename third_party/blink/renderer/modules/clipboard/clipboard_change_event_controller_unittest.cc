@@ -226,6 +226,64 @@ TEST_F(ClipboardChangeEventTest,
 // dangling pointer crashes. The permission denial path is successfully tested
 // by ClipboardChangeEventNotFiredWithoutStickyActivationOrPermission.
 
+// The permission check is asynchronous, so the document may lose focus between
+// the request and its callback. The event must then be deferred until focus is
+// regained rather than fired at an unfocused document.
+TEST_F(ClipboardChangeEventTest, PermissionCallbackRechecksFocus) {
+  ExecutionContext* execution_context = GetFrame().DomWindow();
+  GetFrame().GetSystemClipboard()->OnClipboardDataChanged({"text/plain"}, 1);
+  SetSecureOrigin(execution_context);
+  SetPageFocus(true);
+
+  auto* listener = MakeGarbageCollected<EventCountingListener>();
+  GetDocument().addEventListener(event_type_names::kClipboardchange, listener,
+                                 false);
+
+  // The first request is captured so it can be answered after focus is lost;
+  // regaining focus starts a second request, which is granted immediately.
+  BindMockPermissionService(execution_context);
+  MockClipboardPermissionService::HasPermissionCallback permission_callback;
+  EXPECT_CALL(permission_service_, HasPermission(testing::_, testing::_))
+      .WillOnce(
+          [&](mojom::blink::PermissionDescriptorPtr,
+              MockClipboardPermissionService::HasPermissionCallback callback) {
+            permission_callback = std::move(callback);
+          })
+      .WillRepeatedly(
+          [](mojom::blink::PermissionDescriptorPtr,
+             MockClipboardPermissionService::HasPermissionCallback callback) {
+            std::move(callback).Run(
+                mojom::blink::PermissionStatusWithDetails::New(
+                    mojom::blink::PermissionStatus::GRANTED, nullptr));
+          });
+
+  auto* clipboard_change_event_controller =
+      MakeGarbageCollected<ClipboardChangeEventController>(
+          *GetFrame().DomWindow()->navigator(), &GetDocument());
+  ASSERT_FALSE(GetFrame().HasStickyUserActivation());
+  clipboard_change_event_controller->DidUpdateData();
+  test::RunPendingTasks();
+  ASSERT_TRUE(permission_callback);
+
+  // Focus is lost while the permission request is in flight.
+  SetPageFocus(false);
+  std::move(permission_callback)
+      .Run(mojom::blink::PermissionStatusWithDetails::New(
+          mojom::blink::PermissionStatus::GRANTED, nullptr));
+  test::RunPendingTasks();
+
+  // The grant arrived while unfocused, so the event must be deferred.
+  EXPECT_EQ(listener->Count(), 0);
+
+  // Regaining focus delivers the deferred event.
+  SetPageFocus(true);
+  test::RunPendingTasks();
+  EXPECT_EQ(listener->Count(), 1);
+
+  GetDocument().removeEventListener(event_type_names::kClipboardchange,
+                                    listener, false);
+}
+
 TEST_F(ClipboardChangeEventTest,
        StickyActivationTakesPrecedenceOverPermissionCheck) {
   ExecutionContext* execution_context = GetFrame().DomWindow();

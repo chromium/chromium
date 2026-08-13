@@ -150,6 +150,21 @@ void ClipboardChangeEventController::MaybeDispatchClipboardChangeEvent() {
 }
 
 void ClipboardChangeEventController::DispatchClipboardChangeEvent() {
+  ExecutionContext* context = GetExecutionContext();
+  if (!context) {
+    return;
+  }
+  LocalDOMWindow& window = *To<LocalDOMWindow>(context);
+
+  // Focus is re-checked here because this can be reached asynchronously from
+  // OnPermissionResult(), by which point the document may have lost focus. The
+  // spec requires the event to be deferred until the document regains focus.
+  // https://w3c.github.io/clipboard-apis/#clipboard-event-clipboardchange
+  if (!window.document()->hasFocus()) {
+    fire_clipboardchange_on_focus_ = true;
+    return;
+  }
+
   SystemClipboard* clipboard = GetSystemClipboard();
   if (!clipboard) {
     return;
@@ -159,8 +174,7 @@ void ClipboardChangeEventController::DispatchClipboardChangeEvent() {
   // available.
   event_target_->DispatchEvent(*ClipboardChangeEvent::Create(
       clipboardchange_data.types, clipboardchange_data.change_id));
-  UseCounter::Count(GetExecutionContext(),
-                    WebFeature::kClipboardChangeEventFired);
+  UseCounter::Count(context, WebFeature::kClipboardChangeEventFired);
 }
 
 }  // namespace blink

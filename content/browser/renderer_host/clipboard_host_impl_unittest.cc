@@ -1176,8 +1176,38 @@ class MockClipboardListener : public blink::mojom::ClipboardListener {
 
   void CloseConnection() { receiver_.reset(); }
 
+  // Synchronously drains the listener pipe, so a caller can assert that no
+  // OnClipboardDataChanged() message is in flight without spinning the loop.
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
  private:
   mojo::Receiver<blink::mojom::ClipboardListener> receiver_{this};
+};
+
+// Defers the ReadAvailableTypes() callback so the test can change document
+// state while the asynchronous read is in flight.
+class DeferredReadAvailableTypesClipboard : public ui::TestClipboard {
+ public:
+  DeferredReadAvailableTypesClipboard() = default;
+  ~DeferredReadAvailableTypesClipboard() override = default;
+
+  void ReadAvailableTypes(
+      ui::ClipboardBuffer buffer,
+      const std::optional<ui::DataTransferEndpoint>& data_dst,
+      ReadAvailableTypesCallback callback) const override {
+    read_available_types_callback_ = std::move(callback);
+  }
+
+  bool HasPendingReadAvailableTypes() const {
+    return !read_available_types_callback_.is_null();
+  }
+
+  void CompleteReadAvailableTypes(std::vector<std::u16string> types) {
+    std::move(read_available_types_callback_).Run(std::move(types));
+  }
+
+ private:
+  mutable ReadAvailableTypesCallback read_available_types_callback_;
 };
 
 TEST_F(ClipboardHostImplChangeTest, AddClipboardListener) {
@@ -1221,6 +1251,71 @@ TEST_F(ClipboardHostImplChangeTest, NoNotificationToInactiveDocument) {
   ASSERT_FALSE(web_contents()->GetPrimaryMainFrame()->IsActive());
 
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  remote_.FlushForTesting();
+}
+
+// The document can become inactive while the asynchronous ReadAvailableTypes()
+// call is in flight, so the state must be re-checked in the callback.
+TEST_F(ClipboardHostImplChangeTest,
+       NoNotificationWhenDocumentBecomesInactiveDuringRead) {
+  ui::Clipboard::DestroyClipboardForCurrentThread();
+  auto deferred_clipboard =
+      std::make_unique<DeferredReadAvailableTypesClipboard>();
+  auto* deferred_clipboard_ptr = deferred_clipboard.get();
+  ui::Clipboard::SetClipboardForCurrentThread(std::move(deferred_clipboard));
+
+  auto mock_listener = std::make_unique<MockClipboardListener>();
+  EXPECT_CALL(*mock_listener, OnClipboardDataChanged).Times(0);
+
+  clipboard_host_impl()->RegisterClipboardListener(mock_listener->GetRemote());
+  remote_.FlushForTesting();
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  ASSERT_TRUE(deferred_clipboard_ptr->HasPendingReadAvailableTypes());
+
+  // The document goes away before the clipboard read completes.
+  static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  deferred_clipboard_ptr->CompleteReadAvailableTypes({u"text/plain"});
+  // Drain the listener pipe so that an unwanted OnClipboardDataChanged() would
+  // actually be delivered, and therefore caught by the Times(0) expectation.
+  mock_listener->FlushForTesting();
+  remote_.FlushForTesting();
+}
+
+// The listener can also disconnect while the asynchronous ReadAvailableTypes()
+// call is in flight. StopObservingClipboard() resets `clipboard_listener_`, so
+// the callback must not dereference it.
+TEST_F(ClipboardHostImplChangeTest,
+       NoNotificationWhenListenerDisconnectsDuringRead) {
+  ui::Clipboard::DestroyClipboardForCurrentThread();
+  auto deferred_clipboard =
+      std::make_unique<DeferredReadAvailableTypesClipboard>();
+  auto* deferred_clipboard_ptr = deferred_clipboard.get();
+  ui::Clipboard::SetClipboardForCurrentThread(std::move(deferred_clipboard));
+
+  auto mock_listener = std::make_unique<MockClipboardListener>();
+  EXPECT_CALL(*mock_listener, OnClipboardDataChanged).Times(0);
+
+  clipboard_host_impl()->RegisterClipboardListener(mock_listener->GetRemote());
+  remote_.FlushForTesting();
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  ASSERT_TRUE(deferred_clipboard_ptr->HasPendingReadAvailableTypes());
+
+  // The renderer goes away before the clipboard read completes. Round-trip the
+  // host pipe so the queued disconnect notification is processed.
+  // base::test::RunUntil() is avoided here because this fixture uses MOCK_TIME,
+  // where an unmet condition hangs until the test launcher timeout instead of
+  // failing.
+  mock_listener->CloseConnection();
+  remote_.FlushForTesting();
+  ASSERT_FALSE(clipboard_host_impl()->clipboard_listener_);
+
+  // An unwanted OnClipboardDataChanged() would dereference the now-unbound
+  // `clipboard_listener_` synchronously inside this call.
+  deferred_clipboard_ptr->CompleteReadAvailableTypes({u"text/plain"});
   remote_.FlushForTesting();
 }
 
