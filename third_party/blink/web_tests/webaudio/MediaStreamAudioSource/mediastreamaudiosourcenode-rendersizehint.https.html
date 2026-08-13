@@ -52,6 +52,26 @@
         }, `MediaStreamAudioSourceNode block size matches custom ` +
            `renderSizeHint: ${label}`);
       }
+
+      promise_test(async (t) => {
+        // 1,000,000 is within [1, 6 * 384000 = 2304000] so AudioContext
+        // creation succeeds, but exceeds media::limits::kMaxSamplesPerPacket
+        // (768000).
+        const context = new AudioContext({
+          sampleRate: 384000,
+          renderSizeHint: 1000000,
+        });
+        t.add_cleanup(() => context.close());
+
+        assert_throws_dom('NotSupportedError', () => {
+          new MediaStreamAudioSourceNode(context, {mediaStream});
+        }, 'new MediaStreamAudioSourceNode should throw NotSupportedError');
+
+        assert_throws_dom('NotSupportedError', () => {
+          context.createMediaStreamSource(mediaStream);
+        }, 'createMediaStreamSource should throw NotSupportedError');
+      }, 'MediaStreamAudioSourceNode throws NotSupportedError when quantum ' +
+         'exceeds kMaxSamplesPerPacket');
     </script>
   </body>
 </html>

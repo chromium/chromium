@@ -27,6 +27,7 @@
 
 #include <inttypes.h>
 
+#include "media/base/limits.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_audio_source_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
@@ -67,6 +68,18 @@ MediaStreamAudioSourceNode* MediaStreamAudioSourceNode::Create(
   // TODO(crbug.com/1055983): Remove this when the execution context validity
   // check is not required in the AudioNode factory methods.
   if (!context.CheckExecutionContextAndThrowIfNecessary(exception_state)) {
+    return nullptr;
+  }
+
+  if (context.renderQuantumSize() >
+      static_cast<uint32_t>(media::limits::kMaxSamplesPerPacket)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        String::Format(
+            "MediaStreamAudioSourceNode cannot be created because the "
+            "context render quantum size (%u) exceeds the maximum "
+            "supported buffer size (%d).",
+            context.renderQuantumSize(), media::limits::kMaxSamplesPerPacket));
     return nullptr;
   }
 
