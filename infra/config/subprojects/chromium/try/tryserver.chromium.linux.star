@@ -26,6 +26,7 @@ try_.defaults.set(
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
     experiments = {
         "chromium_tests.resultdb_module": 100,
+        "luci.buildbucket.run_in_turboci": 25,
     },
     orchestrator_cores = 2,
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
@@ -74,9 +75,6 @@ try_.builder(
     cq_settings = try_.cq_settings(
         on_default_cq = True,
     ),
-    experiments = {
-        "luci.buildbucket.run_in_turboci": 2,
-    },
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
@@ -476,7 +474,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # go/rts-project-proposal
         "chromium_rts.filter_file_analysis": 100,
-        "luci.buildbucket.run_in_turboci": 100,
         # crbug.com/40280175
         "chromium_checkout.expand_submodules": 100,
     },
@@ -725,7 +722,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # go/rts-project-proposal
         "chromium_rts.filter_file_analysis": 100,
-        "luci.buildbucket.run_in_turboci": 2,
     },
     main_list_view = "try",
 )
@@ -978,7 +974,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # go/rts-project-proposal
         "chromium_rts.filter_file_analysis": 100,
-        "luci.buildbucket.run_in_turboci": 2,
     },
     main_list_view = "try",
 )
@@ -1146,9 +1141,6 @@ gpu.try_.linux_optional_builder(
     cq_settings = try_.cq_settings(
         location_filters = gpu.try_.optional_trybot_location_filters.LINUX,
     ),
-    experiments = {
-        "luci.buildbucket.run_in_turboci": 100,
-    },
     main_list_view = "try",
     max_concurrent_builds = 7,
 )
@@ -1198,9 +1190,6 @@ try_.builder(
             cq.location_filter(path_regexp = r".*\.(js|ts)"),
         ],
     ),
-    experiments = {
-        "luci.buildbucket.run_in_turboci": 100,
-    },
     main_list_view = "try",
     use_javascript_coverage = True,
 )

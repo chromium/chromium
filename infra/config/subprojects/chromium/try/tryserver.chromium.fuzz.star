@@ -209,7 +209,7 @@ def _test_builder(**kwargs):
             ],
         ),
         experiments = {
-            "luci.buildbucket.run_in_turboci": 25,
+            "luci.buildbucket.run_in_turboci": 50,
         },
         **kwargs
     )
