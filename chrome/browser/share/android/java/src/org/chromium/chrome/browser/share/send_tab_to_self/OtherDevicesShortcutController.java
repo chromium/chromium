@@ -20,7 +20,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
-import android.view.ContextThemeWrapper;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -38,12 +37,12 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
+import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -381,7 +380,10 @@ public class OtherDevicesShortcutController implements Destroyable {
                         .getDeviceTypeIcon(device.formFactor, device.osType);
         // Use a themed context to inflate the drawable, as the application context (mContext)
         // does not carry theme attributes (e.g. ?attr/colorOnSurface) which are used in the icons.
-        Context themedContext = new ContextThemeWrapper(mContext, R.style.Theme_BrowserUI_DayNight);
+        // However, the shortcut icons are always rendered in light mode.
+        Context themedContext =
+                NightModeUtils.wrapContextWithNightModeConfig(
+                        mContext, R.style.Theme_BrowserUI_DayNight, /* nightMode= */ false);
         Drawable drawable = themedContext.getDrawable(iconRes);
         if (drawable == null) {
             return Icon.createWithResource(mContext, iconRes);
@@ -399,13 +401,8 @@ public class OtherDevicesShortcutController implements Destroyable {
         int size = (int) (res.getDisplayMetrics().density * 108);
         int iconSize = (int) (res.getDisplayMetrics().density * 56);
         Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        // The icons have a transparent background by default. Add an appropriate background,
-        // depending on light vs dark mode.
-        if (ColorUtils.inNightMode(mContext)) {
-            bitmap.eraseColor(mContext.getColor(R.color.baseline_neutral_variant_30));
-        } else {
-            bitmap.eraseColor(Color.WHITE);
-        }
+        // The icons have a transparent background by default. Add a white background.
+        bitmap.eraseColor(Color.WHITE);
 
         // Center the icon in the bitmap.
         Canvas canvas = new Canvas(bitmap);
