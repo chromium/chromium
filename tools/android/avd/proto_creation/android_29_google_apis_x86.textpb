@@ -30,6 +30,8 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
+  # Increase RAM to 3072MB to reduce OOM errors.
+  ram_size: 3072
 }
 avd_variants {
   key: "swarming"
