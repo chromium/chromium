@@ -31,6 +31,15 @@ bool ContainsCommand(const ui::MenuModel& model, int command_id) {
   return false;
 }
 
+int GetCommandOrder(const ui::MenuModel& model, int command_id) {
+  for (size_t i = 0; i < model.GetItemCount(); ++i) {
+    if (model.GetCommandIdAt(i) == command_id) {
+      return model.GetDisplayOrderAt(i);
+    }
+  }
+  return -1;
+}
+
 }  // namespace
 
 namespace android {
@@ -61,7 +70,8 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
       delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
 
   ASSERT_TRUE(model);
-  EXPECT_TRUE(ContainsCommand(*model, IDC_PRINT));
+  ASSERT_TRUE(ContainsCommand(*model, IDC_PRINT));
+  EXPECT_EQ(100, GetCommandOrder(*model, IDC_PRINT));
 }
 
 TEST_F(ChromeSelectionDropdownMenuDelegateTest,
@@ -143,6 +153,21 @@ TEST_F(ChromeSelectionDropdownMenuDelegateFeatureDisabledTest,
 
   ASSERT_TRUE(model);
   EXPECT_FALSE(ContainsCommand(*model, IDC_PRINT));
+}
+
+TEST_F(ChromeSelectionDropdownMenuDelegateTest,
+       GetSelectionPopupExtraItems_InspectOrder) {
+  ChromeSelectionDropdownMenuDelegate delegate;
+  content::ContextMenuParams params;
+  params.selection_text = u"hello";
+
+  std::unique_ptr<ui::MenuModel> model =
+      delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
+
+  ASSERT_TRUE(model);
+  ASSERT_TRUE(ContainsCommand(*model, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+  EXPECT_EQ(1000000,
+            GetCommandOrder(*model, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
 }  // namespace android

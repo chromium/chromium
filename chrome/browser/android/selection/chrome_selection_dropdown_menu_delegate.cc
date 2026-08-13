@@ -35,6 +35,24 @@ namespace android {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_PRINTING)
+// The display order for the Print menu item in the selection dropdown menu.
+// Placed after standard items (e.g., "Search Google for...", order 16) and
+// before alternative items (e.g., "Ask Gemini", order 262144).
+constexpr int kPrintMenuItemOrder = 100;
+#endif
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+// The display order for extension items in the selection dropdown menu.
+// Placed after alternative and Share items (order > Menu.CATEGORY_ALTERNATIVE +
+// 1).
+constexpr int kExtensionMenuItemOrder = 300000;
+#endif
+
+// The display order for the Inspect element item in the selection dropdown
+// menu. Positioned at the absolute end of the selection dropdown menu.
+constexpr int kInspectElementItemOrder = 1000000;
+
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 using BaseSelectionDropdownMenuModel = extensions::ExtensionMenuModel;
 #else
@@ -60,6 +78,31 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
   }
 
   ~ChromeSelectionDropdownMenuModel() override = default;
+
+  // ui::MenuModel overrides:
+  int GetDisplayOrderAt(size_t index) const override {
+    if (GetTypeAt(index) == ui::MenuModel::TYPE_SEPARATOR) {
+      return BaseSelectionDropdownMenuModel::GetDisplayOrderAt(index);
+    }
+    int command_id = GetCommandIdAt(index);
+#if BUILDFLAG(ENABLE_PRINTING)
+    if (command_id == IDC_PRINT) {
+      return kPrintMenuItemOrder;
+    }
+#endif
+    if (command_id == IDC_CONTENT_CONTEXT_INSPECTELEMENT) {
+      return kInspectElementItemOrder;
+    }
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+    int base_order = BaseSelectionDropdownMenuModel::GetDisplayOrderAt(index);
+    if (base_order >= 0) {
+      return base_order;
+    }
+    return kExtensionMenuItemOrder;
+#else
+    return BaseSelectionDropdownMenuModel::GetDisplayOrderAt(index);
+#endif
+  }
 
   // ui::SimpleMenuModel::Delegate overrides:
   void ExecuteCommand(int command_id, int event_flags) override {
@@ -198,11 +241,9 @@ ChromeSelectionDropdownMenuDelegate::GetSelectionPopupExtraItems(
 #endif
 
   if (is_devtools_allowed) {
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS) || BUILDFLAG(ENABLE_PRINTING)
     if (model->GetItemCount() > 0) {
       model->AddSeparator(ui::NORMAL_SEPARATOR);
     }
-#endif
     model->AddItemWithStringId(IDC_CONTENT_CONTEXT_INSPECTELEMENT,
                                IDS_INSPECT_ELEMENT_ANDROID);
   }
