@@ -13,7 +13,8 @@ import enum
 
 _SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
 _CHROME_SOURCE = os.path.realpath(
-    os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 5))
+    os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 5)
+)
 
 sys.path.append(os.path.join(_CHROME_SOURCE, 'build'))
 
@@ -116,11 +117,11 @@ def transform_emoji_data(metadata, names, keywords, first_only):
         if shortcodes is None:
             shortcodes = []
         # transform array of codepoint values into unicode string.
-        string = u''.join(chr(x) for x in codepoints)
+        string = ''.join(chr(x) for x in codepoints)
 
         # keyword data has U+FE0F emoji presentation characters removed.
         if string not in names:
-            string = string.replace(u'\ufe0f', u'')
+            string = string.replace('\ufe0f', '')
         # TODO(b/183440310): Better handle search for non-standard emoji.
         if string in names:
             name = names[string]
@@ -146,8 +147,7 @@ def transform_emoji_data(metadata, names, keywords, first_only):
         newGroup = []
         for emoji in group['emoji']:
             newobj = {
-                'base':
-                transform(
+                'base': transform(
                     emoji['base'],
                     False,
                     emoji['emoticons'],
@@ -196,22 +196,24 @@ def transform_emoji_data(metadata, names, keywords, first_only):
         out.append({'emoji': newGroup})
     return out
 
+
 def main(args):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--metadata',
-                        required=True,
-                        help='emoji metadata ordering file as JSON')
-    parser.add_argument('--output',
-                        required=True,
-                        help='output JSON file path')
-    parser.add_argument('--keywords',
-                        required=True,
-                        nargs='+',
-                        help='emoji keyword files as list of XML files')
+    parser.add_argument(
+        '--metadata', required=True, help='emoji metadata ordering file as JSON'
+    )
+    parser.add_argument('--output', required=True, help='output JSON file path')
+    parser.add_argument(
+        '--keywords',
+        required=True,
+        nargs='+',
+        help='emoji keyword files as list of XML files',
+    )
     parser.add_argument(
         '--firstgroup',
         required=True,
-        help='Only output the first group, otherwise only output other groups')
+        help='Only output the first group, otherwise only output other groups',
+    )
 
     options = parser.parse_args(args)
 
@@ -235,8 +237,10 @@ def main(args):
     # write output file atomically in utf-8 format.
     with action_helpers.atomic_output(output_file) as tmp_file:
         tmp_file.write(
-            json.dumps(metadata, separators=(',', ':'),
-                       ensure_ascii=False).encode('utf-8'))
+            json.dumps(
+                metadata, separators=(',', ':'), ensure_ascii=False
+            ).encode('utf-8')
+        )
 
 
 if __name__ == '__main__':
