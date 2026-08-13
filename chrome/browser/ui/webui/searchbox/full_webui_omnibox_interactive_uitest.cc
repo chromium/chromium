@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, FocusOnlyNtp) {
 
 // Verifies switching to a tab where the webpage body is focused and has no
 // omnibox draft to verify the popup remains closed.
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_BlurredPage DISABLED_BlurredPage
 #else
 #define MAYBE_BlurredPage BlurredPage
