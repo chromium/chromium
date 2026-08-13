@@ -23,6 +23,7 @@ from update_rust import RUST_REVISION, RUST_SUB_REVISION
 CLANG_PLATFORM_TO_PACKAGE_FILES = {
     'Linux_x64': [
         'clang',
+        'clang-android-runtime-library',
         'clang-tidy',
         'clangd',
         'llvm-code-coverage',

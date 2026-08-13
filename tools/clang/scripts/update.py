@@ -40,7 +40,7 @@ import zlib
 # should not be changed manually.
 # They are also read by build/config/compiler/BUILD.gn.
 CLANG_REVISION = 'llvmorg-23-init-19482-g53d18800'
-CLANG_SUB_REVISION = 2
+CLANG_SUB_REVISION = 22
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 # TODO(crbug.com/534655507): Bump to 24 in next Clang roll.
@@ -261,6 +261,20 @@ def DownloadAndUnpackClangWinRuntime(output_dir):
     sys.exit(1)
 
 
+def DownloadAndUnpackClangAndroidRuntime(output_dir):
+  cds_file = "clang-android-runtime-library-%s.tar.xz" % PACKAGE_VERSION
+  # The Android compiler-rt runtimes are host-independent target libraries
+  # built by the Linux packager, so they live under the Linux prefix.
+  cds_full_url = GetPlatformUrlPrefix('linux') + cds_file
+  try:
+    DownloadAndUnpack(cds_full_url, output_dir)
+  except urllib.error.URLError:
+    print('Failed to download prebuilt clang %s' % cds_file)
+    print('Use build.py if you want to build locally.')
+    print('Exiting.')
+    sys.exit(1)
+
+
 def UpdatePackage(package_name,
                   host_os,
                   preserve_gcs_signature,
@@ -331,6 +345,11 @@ def UpdatePackage(package_name,
     # When doing win/cross builds on other hosts, get the Windows runtime
     # libraries, and llvm-symbolizer.exe (needed in asan builds).
     DownloadAndUnpackClangWinRuntime(dir)
+  if package_name == 'clang' and 'android' in target_os and host_os != 'linux':
+    # Non-Linux hosts building for Android need the Android compiler-rt
+    # runtimes; they ship in the Linux clang package, so cross builds pull
+    # them via the standalone clang-android-runtime-library package.
+    DownloadAndUnpackClangAndroidRuntime(dir)
 
   WriteStampFile(expected_stamp, stamp_file, preserve_gcs_signature)
   return 0
