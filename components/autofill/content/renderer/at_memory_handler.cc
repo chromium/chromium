@@ -109,7 +109,8 @@ AtMemoryHandler::~AtMemoryHandler() = default;
 
 std::optional<AtMemoryHandler::CaretInfo> AtMemoryHandler::GetCaretInfo(
     const WebElement& element) const {
-  if (!element || !element.Focused() || !element.ContainsFrameSelection() ||
+  // TODO(crbug.com/545987198): Consider re-adding `element.Focused()`.
+  if (!element || !element.ContainsFrameSelection() ||
       element.DynamicTo<WebFormElement>() ||
       !form_util::IsAccessible(element)) {
     return std::nullopt;
