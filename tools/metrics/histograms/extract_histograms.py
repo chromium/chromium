@@ -15,13 +15,13 @@ import itertools
 import logging
 import re
 from typing import Optional, TypedDict
-import typing
 import xml.dom.minidom
 import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
+
 
 BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
@@ -107,11 +107,11 @@ class HistogramDict(TypedDict, total=False):
   enum_attr: str
 
 
-def _XmlToET(tree: xml.dom.minidom.Node | ET.Element, ) -> ET.Element:
+def _XmlToET(tree: xml.dom.minidom.Node | ET.Element) -> ET.Element:
   """Converts a minidom Node to an ElementTree Element if needed."""
-  if hasattr(tree, 'toxml'):
-    return ET.fromstring(tree.toxml())
-  return tree
+  if isinstance(tree, ET.Element):
+    return tree
+  return ET.fromstring(tree.toxml())
 
 
 def ExpandHistogramNameWithSuffixes(
@@ -171,7 +171,7 @@ def ExpandHistogramNameWithSuffixes(
 
 
 def ExtractEnumsFromXmlTree(
-    tree: ET.Element, ) -> tuple[dict[str, EnumDict], ExtractionErrors]:
+    tree: ET.Element) -> tuple[dict[str, EnumDict], ExtractionErrors]:
   """Extracts all <enum> nodes in the tree into a dictionary.
 
   Args:
@@ -398,7 +398,7 @@ def _ValidateMilestoneString(milestone_str: str) -> bool:
 
 
 def ExtractTokens(
-    histogram: typing.Union[xml.dom.minidom.Element, ET.Element],
+    histogram: xml.dom.minidom.Element | ET.Element,
     variants_dict: dict[str, list[VariantDict]],
 ) -> tuple[list[TokenDict], ExtractionErrors]:
   """Extracts tokens and variants from the given histogram element.
@@ -659,7 +659,7 @@ def ExtractHistogramsFromXmlTree(
 
 
 def ExtractVariantsFromXmlTree(
-    tree: typing.Union[xml.dom.minidom.Node, ET.Element],
+    tree: xml.dom.minidom.Node | ET.Element,
 ) -> tuple[dict[str, list[VariantDict]], ExtractionErrors]:
   """Extracts all <variants> nodes in the tree into a dictionary.
 
@@ -1018,7 +1018,7 @@ def ExtractHistogramsFromDom(
 
 
 def ExtractHistogramsFromXmlET(
-    tree: typing.Union[xml.dom.minidom.Node, ET.Element],
+    tree: xml.dom.minidom.Node | ET.Element,
 ) -> tuple[dict[str, HistogramDict], ExtractionErrors]:
   """Computes the histogram names and descriptions from the XML representation.
 
