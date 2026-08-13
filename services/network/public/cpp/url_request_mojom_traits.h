@@ -263,7 +263,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.request_initiator;
   }
-  static const std::vector<GURL> navigation_redirect_chain(
+  static const std::vector<GURL>& navigation_redirect_chain(
       const network::ResourceRequest& request) {
     return request.navigation_redirect_chain;
   }
