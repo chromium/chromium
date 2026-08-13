@@ -128,13 +128,14 @@ void RemoteActorCredentialStoreClient::UpdateCredential(
 
   std::string base64_payload = base::Base64Encode(serialized_proto);
 
-  std::string escaped_origin =
-      base::EscapeQueryParamValue(web_origin, /*use_plus=*/false);
+  std::string escaped_origin = base::EscapeAllExceptUnreserved(web_origin);
+  std::string escaped_client_tag_hash =
+      base::EscapeAllExceptUnreserved(password_client_tag_hash);
   std::string resource_name = base::StringPrintf(
       "internalservices/AGENTIC_CREDENTIAL_MANAGER/owneridnamespaces/"
       "GOOGLE_USER_ID/ownerids/%s/externalservices/%s/credentials/%s",
       obfuscated_gaia_id.c_str(), escaped_origin.c_str(),
-      password_client_tag_hash.c_str());
+      escaped_client_tag_hash.c_str());
 
   GURL url(base::StrCat(
       {GetEndpointUrlBase(), "v1/", resource_name, "?allow_missing=true"}));
@@ -169,13 +170,14 @@ void RemoteActorCredentialStoreClient::DeleteCredential(
     const std::string& password_client_tag_hash,
     DeleteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string escaped_origin =
-      base::EscapeQueryParamValue(web_origin, /*use_plus=*/false);
+  std::string escaped_origin = base::EscapeAllExceptUnreserved(web_origin);
+  std::string escaped_client_tag_hash =
+      base::EscapeAllExceptUnreserved(password_client_tag_hash);
   std::string resource_name = base::StringPrintf(
       "internalservices/AGENTIC_CREDENTIAL_MANAGER/owneridnamespaces/"
       "GOOGLE_USER_ID/ownerids/%s/externalservices/%s/credentials/%s",
       obfuscated_gaia_id.c_str(), escaped_origin.c_str(),
-      password_client_tag_hash.c_str());
+      escaped_client_tag_hash.c_str());
 
   GURL url(base::StrCat(
       {GetEndpointUrlBase(), "v1/", resource_name, "?allow_missing=true"}));
