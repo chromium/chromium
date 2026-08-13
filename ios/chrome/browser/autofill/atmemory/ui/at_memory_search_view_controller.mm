@@ -22,9 +22,6 @@
 
 namespace {
 
-// The symbol point size for the cell icons.
-constexpr CGFloat kIconPointSize = 24;
-
 // Section identifiers in the "AtMemory" page table view.
 enum class SectionIdentifier {
   kSearchSection,

@@ -21,16 +21,21 @@ source_set("ui") {
     "at_memory_inline_notice_view.h",
     "at_memory_inline_notice_view.mm",
     "at_memory_search_consumer.h",
+    "at_memory_search_item.h",
+    "at_memory_search_item.mm",
     "at_memory_search_mutator.h",
     "at_memory_search_view_controller.h",
     "at_memory_search_view_controller.mm",
   ]
   deps = [
+    "//base",
+    "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/resources",
     "//ios/chrome/browser/autofill/atmemory/utils",
+    "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/shared/ui:buildflags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -50,6 +55,8 @@ source_set("unit_tests") {
   ]
   deps = [
     ":ui",
+    "//base",
+    "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/utils",
