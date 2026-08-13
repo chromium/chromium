@@ -56,6 +56,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/web_dialogs",
     "//chrome/browser/ui/webui/data_sharing",
     "//chrome/common",
     "//components/collaboration/public",

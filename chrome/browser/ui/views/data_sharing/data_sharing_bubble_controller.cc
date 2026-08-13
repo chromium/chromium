@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,32 +15,48 @@
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/web_dialogs/chrome_webui_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "net/base/url_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
 
+// Opens a link from the hosted WebUI in a new window, for better visibility
+// because the dialog lays on top of the current window.
+content::WebContents* OpenLinkInNewWindow(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture) {
+  NavigateParams params(/*a_browser=*/nullptr, std::move(new_contents));
+  params.initiating_profile =
+      Profile::FromBrowserContext(source->GetBrowserContext());
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  Navigate(&params);
+  return params.navigated_or_inserted_contents;
+}
+
 class DataSharingBubbleDialogView : public WebUIBubbleDialogView {
   METADATA_HEADER(DataSharingBubbleDialogView, WebUIBubbleDialogView)
  public:
   DataSharingBubbleDialogView(
-      BrowserWindowInterface* browser,
-      TabStripModel* tab_strip_model,
       views::View* anchor_view,
       std::unique_ptr<WebUIContentsWrapper> contents_wrapper)
       : WebUIBubbleDialogView(anchor_view,
                               contents_wrapper->GetWeakPtr(),
                               std::nullopt,
                               views::BubbleBorder::Arrow::TOP_LEFT),
-        contents_wrapper_(std::move(contents_wrapper)),
-        browser_(CHECK_DEREF(browser)),
-        tab_strip_model_(CHECK_DEREF(tab_strip_model)) {}
+        contents_wrapper_(std::move(contents_wrapper)) {}
 
   // WebUIContentsWrapper::Host override. Handle opening WebUI href links into
   // browser.
@@ -54,8 +71,6 @@ class DataSharingBubbleDialogView : public WebUIBubbleDialogView {
 
  private:
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
-  const raw_ref<BrowserWindowInterface> browser_;
-  const raw_ref<TabStripModel> tab_strip_model_;
 };
 
 content::WebContents* DataSharingBubbleDialogView::AddNewContents(
@@ -66,14 +81,8 @@ content::WebContents* DataSharingBubbleDialogView::AddNewContents(
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
-  NavigateParams params(browser_->GetBrowserForMigrationOnly(),
-                        std::move(new_contents));
-  params.tabstrip_index = tab_strip_model_->count();
-  // Open link in a new window for better visibility because the bubble lays on
-  // top of the current window.
-  params.disposition = WindowOpenDisposition::NEW_WINDOW;
-  Navigate(&params);
-  return params.navigated_or_inserted_contents;
+  return OpenLinkInNewWindow(source, std::move(new_contents), target_url,
+                             disposition, window_features, user_gesture);
 }
 
 BEGIN_METADATA(DataSharingBubbleDialogView)
@@ -95,10 +104,16 @@ views::View* GetAnchorViewForShare(const BrowserView* browser_view,
 
 DEFINE_USER_DATA(DataSharingBubbleController);
 
-DataSharingBubbleController::~DataSharingBubbleController() = default;
+DataSharingBubbleController::~DataSharingBubbleController() {
+  if (data_sharing_ui_) {
+    data_sharing_ui_->SetDelegate(nullptr);
+  }
+}
 
 void DataSharingBubbleController::Show(data_sharing::RequestInfo request_info) {
-  if (bubble_view_) {
+  // Guard on the widget rather than the bubble view: the modal flows no longer
+  // create a view, and only one dialog may be open at a time.
+  if (bubble_widget_) {
     return;
   }
 
@@ -129,28 +144,31 @@ void DataSharingBubbleController::Show(data_sharing::RequestInfo request_info) {
           url.value(), GetProfile(), IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE,
           /*esc_closes_ui=*/true,
           /*supports_draggable_regions=*/false);
-  contents_wrapper->GetWebUIController()->SetDelegate(this);
-
-  auto bubble_view = std::make_unique<DataSharingBubbleDialogView>(
-      &browser_.get(), &tab_strip_model_.get(), anchor_view_for_share,
-      std::move(contents_wrapper));
-  bubble_view->SetProperty(views::kElementIdentifierKey,
-                           kDataSharingBubbleElementId);
-  bubble_view->SetOwnershipOfNewWidget(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  bubble_view_ = bubble_view->GetWeakPtr();
+  data_sharing_ui_ = contents_wrapper->GetWebUIController();
+  data_sharing_ui_->SetDelegate(this);
 
   std::unique_ptr<views::Widget> widget;
   if (flow_value == data_sharing::kFlowShare) {
-    // Sharing flow uses a normal bubble.
+    // The share flow is anchored to the tab group header, so it stays a bubble.
+    auto bubble_view = std::make_unique<DataSharingBubbleDialogView>(
+        anchor_view_for_share, std::move(contents_wrapper));
+    bubble_view->SetProperty(views::kElementIdentifierKey,
+                             kDataSharingBubbleElementId);
+    bubble_view->SetOwnershipOfNewWidget(
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    bubble_view_ = bubble_view->GetWeakPtr();
     widget = views::BubbleDialogDelegate::CreateBubble(
         std::move(bubble_view).release());
   } else {
-    // Manage and Join flow use modals. In this case the `anchor_view_for_share`
-    // doesn't take effect.
-    bubble_view->SetModalType(ui::mojom::ModalType::kWindow);
-    widget = base::WrapUnique(constrained_window::CreateBrowserModalDialogViews(
-        std::move(bubble_view), browser_view->GetNativeWindow()));
+    // Every other flow is an unanchored browser-modal, which is what
+    // ChromeWebUIDialog provides. Sizing stays content-driven:
+    // DataSharingUIConfig::ShouldAutoResizeHost() is already true.
+    webui_dialog::WebDialogSpec spec;
+    spec.modal_type = ui::mojom::ModalType::kWindow;
+    spec.dialog_element_identifier = kDataSharingBubbleElementId;
+    spec.add_new_contents_callback = base::BindRepeating(&OpenLinkInNewWindow);
+    widget = webui_dialog::ChromeWebUIDialog::Show(
+        browser_view->GetNativeWindow(), std::move(contents_wrapper), spec);
   }
 
   CHECK(widget);
@@ -181,6 +199,11 @@ void DataSharingBubbleController::Close() {
   group_action_progress_ = std::nullopt;
 
   bubble_view_ = nullptr;
+
+  if (data_sharing_ui_) {
+    data_sharing_ui_->SetDelegate(nullptr);
+    data_sharing_ui_ = nullptr;
+  }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, bubble_widget_.release());

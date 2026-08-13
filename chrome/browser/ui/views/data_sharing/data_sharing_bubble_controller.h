@@ -134,6 +134,8 @@ class DataSharingBubbleController : public DataSharingUI::Delegate {
 
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
   std::unique_ptr<views::Widget> bubble_widget_;
+
+  raw_ptr<DataSharingUI> data_sharing_ui_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DATA_SHARING_DATA_SHARING_BUBBLE_CONTROLLER_H_
