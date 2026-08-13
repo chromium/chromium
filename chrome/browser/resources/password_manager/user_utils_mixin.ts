@@ -4,6 +4,7 @@
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -41,7 +42,7 @@ export const UserUtilMixin = dedupingMixin(
 
             actionableError: {
               type: Number,
-              value: PasswordManagerActionableError.kNoError,
+              value: null,
             },
 
             /* Email of the primary account. */
@@ -72,7 +73,7 @@ export const UserUtilMixin = dedupingMixin(
 
         declare isAccountStoreUser: boolean;
         declare isSyncingPasswords: boolean;
-        declare actionableError: PasswordManagerActionableError;
+        declare actionableError: PasswordManagerActionableError|null;
         declare accountEmail: string;
         declare avatarImage: string;
         declare private syncInfo_: SyncInfo|null;
@@ -102,7 +103,9 @@ export const UserUtilMixin = dedupingMixin(
               this.setIsAccountStorageActiveListener_);
           PasswordManagerImpl.getInstance()
               .getPasswordManagerActionableError()
-              .then(error => this.actionableError = error);
+              .then(error => {
+                this.actionableError = error;
+              });
           SyncBrowserProxyImpl.getInstance().getSyncInfo().then(
               syncInfoChanged);
           SyncBrowserProxyImpl.getInstance().getAccountInfo().then(
@@ -135,6 +138,12 @@ export const UserUtilMixin = dedupingMixin(
           this.setPasswordManagerActionableErrorListener_ = null;
         }
 
+        isTrustedVaultKeyNeeded(): boolean {
+          return loadTimeData.getBoolean('enableTrustedVaultUnlock') &&
+              this.actionableError ===
+              PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+        }
+
         private computeIsSyncingPasswords_(): boolean {
           return !!(this.syncInfo_?.isSyncingPasswords);
         }
@@ -155,7 +164,8 @@ export const UserUtilMixin = dedupingMixin(
 export interface UserUtilMixinInterface {
   isAccountStoreUser: boolean;
   isSyncingPasswords: boolean;
-  actionableError: PasswordManagerActionableError;
+  actionableError: PasswordManagerActionableError|null;
   accountEmail: string;
   avatarImage: string;
+  isTrustedVaultKeyNeeded(): boolean;
 }

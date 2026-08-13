@@ -3,6 +3,10 @@
     margin-top: 16px;
   }
 
+  a[href] {
+    color: var(--cr-link-color);
+  }
+
   #checkupStatus {
     align-items: center;
     display: flex;
@@ -112,8 +116,9 @@
     <div id="spinner" class="spinner" hidden$="[[!isCheckRunning_]]"></div>
     <div id="labelWrapper">
       <div id="checkupStatusLabel" class="title">[[checkedPasswordsText_]]</div>
-      <div id="checkupStatusSubLabel" class="cr-secondary-text label">
-        [[getCheckupSublabelValue_(status_)]]
+      <div id="checkupStatusSubLabel" class="cr-secondary-text label"
+          inner-h-t-m-l="[[getCheckupSublabelValue_(status_, actionableError)]]"
+          on-click="onCheckupStatusSubLabelClick_">
       </div>
     </div>
     <div id="checkupButtons" hidden="[[!showCheckButton_(status_)]]">

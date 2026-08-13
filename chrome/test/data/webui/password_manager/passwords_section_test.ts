@@ -5,7 +5,8 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {AddPasswordDialogElement, AuthTimedOutDialogElement, MovePasswordsDialogElement, PasswordListItemElement, PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
-import {Page, PasswordManagerImpl, PasswordViewPageInteractions, PluralStringProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerActionableError, PasswordManagerImpl, PasswordViewPageInteractions, PluralStringProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -323,6 +324,29 @@ suite('PasswordsSectionTest', function() {
     assertTrue(!!addDialog);
     assertTrue(addDialog.$.dialog.open);
   });
+
+  test(
+      'displays locked empty state and triggers unlock on link click',
+      async function() {
+        loadTimeData.overrideValues({enableTrustedVaultUnlock: true});
+        passwordManager.data.getActionableError =
+            PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+        const section = await createPasswordsSection();
+        await passwordManager.whenCalled('getPasswordManagerActionableError');
+        await flushTasks();
+
+        const trustedVaultDiv = section.$.trustedVaultUnlock;
+        assertTrue(isVisible(trustedVaultDiv));
+        assertTrue(section.$.importPasswords.hidden);
+        const unlockLink = trustedVaultDiv.querySelector<HTMLElement>('a');
+        assertTrue(!!unlockLink);
+
+        unlockLink.click();
+        await flushTasks();
+
+        assertEquals(
+            1, passwordManager.getCallCount('startTrustedVaultUnlock'));
+      });
 
   test('search calls plural string proxy to announce result', async function() {
     passwordManager.data.groups = [

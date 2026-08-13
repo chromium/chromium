@@ -5,7 +5,8 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {PluralStringProxy} from 'chrome://password-manager/password_manager.js';
-import {CheckupSubpage, Page, PasswordCheckInteraction, PasswordManagerImpl, PluralStringProxyImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {CheckupSubpage, Page, PasswordCheckInteraction, PasswordManagerActionableError, PasswordManagerImpl, PluralStringProxyImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -126,6 +127,36 @@ suite('CheckupSectionTest', function() {
     assertFalse(isVisible(section.$.retryButton));
     assertFalse(isVisible(section.$.spinner));
   });
+
+  test(
+      'displays locked empty state and triggers unlock on link click',
+      async function() {
+        loadTimeData.overrideValues({enableTrustedVaultUnlock: true});
+        passwordManager.data.getActionableError =
+            PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+        passwordManager.data.checkStatus =
+            makePasswordCheckStatus({state: PasswordCheckState.NO_PASSWORDS});
+
+        const section = document.createElement('checkup-section');
+        document.body.appendChild(section);
+        await passwordManager.whenCalled('getPasswordManagerActionableError');
+        await flushTasks();
+
+        assertFalse(isVisible(section.$.checkupResult));
+        assertFalse(isVisible(section.$.refreshButton));
+        assertTrue(isVisible(section.$.checkupStatusLabel));
+        assertTrue(isVisible(section.$.checkupStatusSubLabel));
+
+        const unlockLink =
+            section.$.checkupStatusSubLabel.querySelector<HTMLElement>('a');
+        assertTrue(!!unlockLink);
+
+        unlockLink.click();
+        await flushTasks();
+
+        assertEquals(
+            1, passwordManager.getCallCount('startTrustedVaultUnlock'));
+      });
 
   [{state: PasswordCheckState.QUOTA_LIMIT, message: 'checkupErrorQuota'},
    {state: PasswordCheckState.OFFLINE, message: 'checkupErrorOffline'},

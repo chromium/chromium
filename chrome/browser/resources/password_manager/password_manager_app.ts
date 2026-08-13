@@ -42,7 +42,7 @@ import type {BackupPasswordRemovedEvent} from './credential_details/backup_passw
 import type {PasswordRemovedEvent} from './credential_details/password_details_card.js';
 import type {FocusConfig} from './focus_config.js';
 import {getTemplate} from './password_manager_app.html.js';
-import {PasswordManagerActionableError, PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 import type {PasswordsSectionElement} from './passwords_section.js';
 import type {Route} from './router.js';
 import {Page, RouteObserverMixin, Router} from './router.js';
@@ -405,12 +405,8 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     document.body.appendChild(link);
   }
 
-  private onActionableErrorChanged_(
-      actionableError: PasswordManagerActionableError) {
-    this.showTrustedVaultErrorDialog_ =
-        loadTimeData.getBoolean('enableTrustedVaultUnlock') &&
-        actionableError ===
-            PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+  private onActionableErrorChanged_() {
+    this.showTrustedVaultErrorDialog_ = this.isTrustedVaultKeyNeeded();
   }
 
   private onTrustedVaultErrorDialogClose_() {

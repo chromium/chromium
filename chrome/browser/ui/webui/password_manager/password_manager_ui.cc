@@ -170,6 +170,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_MANAGER_PIN},
       {"checkup", IDS_PASSWORD_MANAGER_UI_CHECKUP},
       {"checkupCanceled", IDS_PASSWORD_MANAGER_UI_CHECKUP_CANCELED},
+      {"checkupEmptyStateTrustedVaultKeyNeeded",
+       IDS_PASSWORD_MANAGER_UI_CHECKUP_EMPTY_STATE_TRUSTED_VAULT_KEY_NEEDED},
       {"checkupErrorGeneric", IDS_PASSWORD_MANAGER_UI_CHECKUP_OTHER_ERROR},
       {"checkupErrorNoPasswords", IDS_PASSWORD_MANAGER_UI_CHECKUP_NO_PASSWORDS},
       {"checkupErrorOffline", IDS_PASSWORD_MANAGER_UI_CHECKUP_OFFLINE},
@@ -651,6 +653,9 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddString("emptyStateImportDevice",
                     InsertBrandedPasswordManager(
                         IDS_PASSWORD_MANAGER_UI_EMPTY_STATE_SIGNEDOUT_USERS));
+  webui::AddLocalizedString(
+      source, "emptyStateTrustedVaultKeyNeeded",
+      IDS_PASSWORD_MANAGER_UI_EMPTY_STATE_TRUSTED_VAULT_KEY_NEEDED);
 
   source->AddString(
       "importPasswordsGenericDescription",
