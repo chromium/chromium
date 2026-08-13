@@ -2273,8 +2273,7 @@ void BrowserAutofillManager::DidShowSuggestions(
 
   if (AtMemoryManager* am = client().GetAtMemoryManager()) {
     am->OnPopupShown(form_id, field_id, trigger_source,
-                     parent_suggestion_metadata, client().IsContextSecure(),
-                     update_suggestions_callback,
+                     parent_suggestion_metadata, update_suggestions_callback,
                      driver().GetPageUkmSourceId());
   }
   if (parent_suggestion_metadata.has_value()) {

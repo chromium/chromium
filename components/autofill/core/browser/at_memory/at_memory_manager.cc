@@ -402,7 +402,6 @@ void AtMemoryManager::OnPopupShown(
     AutofillSuggestionTriggerSource trigger_source,
     base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
         parent_suggestion_metadata,
-    bool is_context_secure,
     UpdateSuggestionsCallback update_callback,
     ukm::SourceId ukm_source_id) {
   if (!IsAtMemoryTriggerSource(trigger_source)) {
@@ -428,7 +427,6 @@ void AtMemoryManager::OnPopupShown(
             client_->GetMqlsUploadService(), client_->GetUkmRecorder(),
             ukm_source_id, client_->GetLastCommittedPrimaryMainFrameURL(),
             client_->GetPageTitle(), field_id, form_signature, field_signature),
-        .is_context_secure = is_context_secure,
     });
   }
 
@@ -920,18 +918,19 @@ void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
     session_state_->metrics_recorder->OnQueryResponseReceived(result);
   }
 
+  const bool is_context_secure = client_->IsContextSecure();
   if (!result.entries.empty()) {
-    std::erase_if(result.entries, [this](const MemorySearchResult& entry) {
-      return ShouldEraseMemorySearchResult(entry.type, entry.sources, *client_,
-                                           session_state_->is_context_secure);
-    });
+    std::erase_if(result.entries,
+                  [this, is_context_secure](const MemorySearchResult& entry) {
+                    return ShouldEraseMemorySearchResult(
+                        entry.type, entry.sources, *client_, is_context_secure);
+                  });
     for (MemorySearchResult& entry : result.entries) {
-      std::erase_if(entry.metadata_list,
-                    [this, &entry](const EntryMetadata& metadata) {
-                      return ShouldEraseMemorySearchResult(
-                          metadata.type, entry.sources, *client_,
-                          session_state_->is_context_secure);
-                    });
+      std::erase_if(entry.metadata_list, [this, &entry, is_context_secure](
+                                             const EntryMetadata& metadata) {
+        return ShouldEraseMemorySearchResult(metadata.type, entry.sources,
+                                             *client_, is_context_secure);
+      });
     }
 
     if (!result.entries.empty()) {

@@ -66,7 +66,6 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
       AutofillSuggestionTriggerSource trigger_source,
       base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
           parent_suggestion_metadata,
-      bool is_context_secure,
       UpdateSuggestionsCallback update_callback,
       ukm::SourceId ukm_source_id);
 
@@ -263,8 +262,6 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
         AutofillSuggestionTriggerSource::kUnspecified;
     UpdateSuggestionsCallback update_callback;
     std::unique_ptr<AtMemoryMetricsRecorder> metrics_recorder;
-    // Indicates whether the current tab and the form uses a secure connection.
-    bool is_context_secure = false;
     // Flag indicating that a search query is in progress.
     bool is_searching = false;
   };
