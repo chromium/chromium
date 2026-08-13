@@ -85,8 +85,6 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -94,9 +92,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/window_util.h"
-#include "components/app_restore/full_restore_utils.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -3292,24 +3288,10 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
       num_incognito_windows_ += addend;
     }
 
-    // TODO(b/319904368): Clean this up after we figure out which app changes
-    // its supported/incognito type and a proper fix is made.
     if (num_unsupported_windows_ < 0) {
       num_unsupported_windows_ = 0;
-      SCOPED_CRASH_KEY_NUMBER(
-          "OG_UNSDUW", "unsupported_app_type",
-          static_cast<int>(window->GetProperty(chromeos::kAppTypeKey)));
-      SCOPED_CRASH_KEY_STRING32("OG_UNSDUW", "unsupported_app_id",
-                                ::full_restore::GetAppId(window));
-      base::debug::DumpWithoutCrashing();
     } else if (num_incognito_windows_ < 0) {
       num_incognito_windows_ = 0;
-      SCOPED_CRASH_KEY_NUMBER(
-          "OG_UNSDUW", "incognito_app_type",
-          static_cast<int>(window->GetProperty(chromeos::kAppTypeKey)));
-      SCOPED_CRASH_KEY_STRING32("OG_UNSDUW", "incognito_app_id",
-                                ::full_restore::GetAppId(window));
-      base::debug::DumpWithoutCrashing();
     }
   }
 }
