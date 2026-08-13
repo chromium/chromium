@@ -305,8 +305,8 @@ class MediaDrmProvisionHelper {
     // Try provisioning for L3 first.
     auto result = media::MediaDrmBridge::CreateWithoutSessionSupport(
         kWidevineKeySystem, origin_id_.ToString(),
-        media::MediaDrmBridge::SECURITY_LEVEL_3, "L3 provisioning",
-        create_fetcher_cb_);
+        media::MediaDrmBridge::SECURITY_LEVEL_SW_SECURE_CRYPTO,
+        "L3 provisioning", create_fetcher_cb_);
     if (!result.has_value()) {
       // Unable to create mediaDrm for L3, so try L1.
       DVLOG(1) << "Unable to create MediaDrmBridge for L3, CreateCdmStatus: "
@@ -336,7 +336,7 @@ class MediaDrmProvisionHelper {
     media_drm_bridge_.reset();
     auto result = media::MediaDrmBridge::CreateWithoutSessionSupport(
         kWidevineKeySystem, origin_id_.ToString(),
-        media::MediaDrmBridge::SECURITY_LEVEL_1, "L1 provisioning",
+        media::MediaDrmBridge::SECURITY_LEVEL_HW_SECURE_ALL, "L1 provisioning",
         create_fetcher_cb_);
     if (!result.has_value()) {
       // Unable to create MediaDrm for L1, so quit. Note that L3 provisioning

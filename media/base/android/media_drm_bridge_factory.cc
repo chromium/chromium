@@ -45,10 +45,10 @@ void MediaDrmBridgeFactory::Create(
   // Set security level.
   if (cdm_config.key_system == kWidevineKeySystem) {
     security_level_ = cdm_config.use_hw_secure_codecs
-                          ? MediaDrmBridge::SECURITY_LEVEL_1
-                          : MediaDrmBridge::SECURITY_LEVEL_3;
+                          ? MediaDrmBridge::SECURITY_LEVEL_HW_SECURE_ALL
+                          : MediaDrmBridge::SECURITY_LEVEL_SW_SECURE_CRYPTO;
   } else if (media::IsExternalClearKey(cdm_config.key_system)) {
-    security_level_ = MediaDrmBridge::SECURITY_LEVEL_DEFAULT;
+    security_level_ = MediaDrmBridge::SECURITY_LEVEL_UNKNOWN;
   } else if (!cdm_config.use_hw_secure_codecs) {
     // Assume other key systems require hardware-secure codecs and thus do not
     // support full compositing.

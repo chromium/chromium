@@ -235,18 +235,6 @@ bool IsKeySystemSupportedWithTypeImpl(const std::string& key_system,
   return supported;
 }
 
-MediaDrmBridge::SecurityLevel GetSecurityLevelFromString(
-    const std::string& security_level_str) {
-  if (0 == security_level_str.compare("L1")) {
-    return MediaDrmBridge::SECURITY_LEVEL_1;
-  }
-  if (0 == security_level_str.compare("L3")) {
-    return MediaDrmBridge::SECURITY_LEVEL_3;
-  }
-  DCHECK(security_level_str.empty());
-  return MediaDrmBridge::SECURITY_LEVEL_DEFAULT;
-}
-
 // Converts from String value returned from MediaDrm to an enum of HdcpVersion
 // values. Refer to http://shortn/_eFj9y8KBgR for the list of Strings that could
 // possibly be returned.
@@ -297,21 +285,6 @@ HdcpVersion ToEmeHdcpVersion(const std::string& hdcp_level_str) {
   return HdcpVersion::kHdcpVersionNone;
 }
 
-// Do not change the return values as they are part of Android MediaDrm API
-// for Widevine.
-std::string GetSecurityLevelString(
-    MediaDrmBridge::SecurityLevel security_level) {
-  switch (security_level) {
-    case MediaDrmBridge::SECURITY_LEVEL_DEFAULT:
-      return "";
-    case MediaDrmBridge::SECURITY_LEVEL_1:
-      return "L1";
-    case MediaDrmBridge::SECURITY_LEVEL_3:
-      return "L3";
-  }
-  return "";
-}
-
 CreateCdmTypedStatus ConvertMediaDrmCreateError(
     MediaDrmBridge::MediaDrmCreateError error,
     MediaDrmBridge::SecurityLevel security_level) {
@@ -325,7 +298,7 @@ CreateCdmTypedStatus ConvertMediaDrmCreateError(
     case MediaDrmBridge::MediaDrmCreateError::MEDIADRM_ILLEGAL_STATE:
       return CreateCdmTypedStatus::Codes::kAndroidMediaDrmIllegalState;
     case MediaDrmBridge::MediaDrmCreateError::FAILED_SECURITY_LEVEL:
-      return (security_level == MediaDrmBridge::SECURITY_LEVEL_1)
+      return (security_level >= MediaDrmBridge::SECURITY_LEVEL_SW_SECURE_DECODE)
                  ? CreateCdmTypedStatus::Codes::kAndroidFailedL1SecurityLevel
                  : CreateCdmTypedStatus::Codes::kAndroidFailedL3SecurityLevel;
     case MediaDrmBridge::MediaDrmCreateError::FAILED_SECURITY_ORIGIN:
@@ -736,7 +709,7 @@ bool MediaDrmBridge::IsSecureCodecRequired() {
   // To fix it, we could call MediaCrypto.requiresSecureDecoderComponent().
   // See http://crbug.com/727918.
   if (std::ranges::equal(scheme_uuid_, kWidevineUuid)) {
-    return SECURITY_LEVEL_1 == GetSecurityLevel();
+    return GetSecurityLevel() >= SECURITY_LEVEL_SW_SECURE_DECODE;
   }
 
   // If UUID is ClearKey, we should automatically return false since secure
@@ -1053,6 +1026,7 @@ MediaDrmBridge::MediaDrmBridge(
       session_keys_change_cb_(session_keys_change_cb),
       session_expiration_update_cb_(session_expiration_update_cb),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      security_level_(security_level),
       media_crypto_context_(this) {
   DVLOG(1) << __func__;
 
@@ -1061,10 +1035,6 @@ MediaDrmBridge::MediaDrmBridge(
 
   ScopedJavaLocalRef<jbyteArray> j_scheme_uuid =
       base::android::ToJavaByteArray(env, scheme_uuid);
-
-  std::string security_level_str = GetSecurityLevelString(security_level);
-  ScopedJavaLocalRef<jstring> j_security_level =
-      ConvertUTF8ToJavaString(env, security_level_str);
 
   // origin id can be empty when MediaDrmBridge is created by
   // CreateWithoutSessionSupport, which is used for unprovisioning, or for
@@ -1075,8 +1045,8 @@ MediaDrmBridge::MediaDrmBridge(
   ScopedJavaLocalRef<jstring> j_message = ConvertUTF8ToJavaString(env, message);
 
   j_media_drm_.Reset(Java_MediaDrmBridge_create(
-      env, j_scheme_uuid, j_security_origin, j_security_level, j_message,
-      requires_media_crypto, reinterpret_cast<intptr_t>(this),
+      env, j_scheme_uuid, j_security_origin, static_cast<jint>(security_level),
+      j_message, requires_media_crypto, reinterpret_cast<intptr_t>(this),
       reinterpret_cast<intptr_t>(storage_.get())));
 }
 
@@ -1102,12 +1072,7 @@ MediaDrmBridge::~MediaDrmBridge() {
 }
 
 MediaDrmBridge::SecurityLevel MediaDrmBridge::GetSecurityLevel() {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_security_level =
-      Java_MediaDrmBridge_getSecurityLevel(env, j_media_drm_);
-  std::string security_level_str =
-      ConvertJavaStringToUTF8(env, j_security_level.obj());
-  return GetSecurityLevelFromString(security_level_str);
+  return security_level_;
 }
 
 std::string MediaDrmBridge::GetVersionInternal() {
@@ -1118,6 +1083,11 @@ std::string MediaDrmBridge::GetVersionInternal() {
 }
 
 HdcpVersion MediaDrmBridge::GetCurrentHdcpLevel() {
+  if (security_level_ == SECURITY_LEVEL_SW_SECURE_CRYPTO ||
+      security_level_ == SECURITY_LEVEL_SW_SECURE_DECODE) {
+    return HdcpVersion::kHdcpVersionNone;
+  }
+
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_current_hdcp_level =
       Java_MediaDrmBridge_getCurrentHdcpLevel(env, j_media_drm_);

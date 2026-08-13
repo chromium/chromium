@@ -54,11 +54,14 @@ namespace media {
 class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
                                     public CdmContext {
  public:
-  // TODO(ddorwin): These are specific to Widevine. http://crbug.com/459400
+  // See android.media.MediaDrm.SecurityLevel.
   enum SecurityLevel {
-    SECURITY_LEVEL_DEFAULT = 0,
-    SECURITY_LEVEL_1 = 1,
-    SECURITY_LEVEL_3 = 3,
+    SECURITY_LEVEL_UNKNOWN = 0,
+    SECURITY_LEVEL_SW_SECURE_CRYPTO = 1,
+    SECURITY_LEVEL_SW_SECURE_DECODE = 2,
+    SECURITY_LEVEL_HW_SECURE_CRYPTO = 3,
+    SECURITY_LEVEL_HW_SECURE_DECODE = 4,
+    SECURITY_LEVEL_HW_SECURE_ALL = 5,
   };
 
   // MediaDrm system codes. These are used to keep track of failures in
@@ -424,6 +427,9 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
   // Default task runner.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // The security level of the MediaDrmBridge.
+  const SecurityLevel security_level_;
 
   MediaCryptoContextImpl media_crypto_context_;
 

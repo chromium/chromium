@@ -60,7 +60,7 @@ class MEDIA_EXPORT MediaDrmBridgeFactory final : public CdmFactory {
   std::vector<uint8_t> scheme_uuid_;
 
   MediaDrmBridge::SecurityLevel security_level_ =
-      MediaDrmBridge::SECURITY_LEVEL_DEFAULT;
+      MediaDrmBridge::SECURITY_LEVEL_UNKNOWN;
 
   SessionMessageCB session_message_cb_;
   SessionClosedCB session_closed_cb_;

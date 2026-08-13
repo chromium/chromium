@@ -403,7 +403,7 @@ void ClearMediaDrmLicensesBlocking(
     // DEFAULT here is OK.
     auto media_drm_bridge = media::MediaDrmBridge::CreateWithoutSessionSupport(
         kWidevineKeySystem, origin_id.ToString(),
-        media::MediaDrmBridge::SECURITY_LEVEL_DEFAULT, "ClearMediaLicenses",
+        media::MediaDrmBridge::SECURITY_LEVEL_UNKNOWN, "ClearMediaLicenses",
         base::NullCallback());
 
     if (media_drm_bridge.has_value()) {

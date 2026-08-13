@@ -56,9 +56,11 @@ const char kAudioWebM[] = "audio/webm";
 const char kVideoWebM[] = "video/webm";
 const char kInvalidKeySystem[] = "invalid.keysystem";
 const MediaDrmBridge::SecurityLevel kDefault =
-    MediaDrmBridge::SECURITY_LEVEL_DEFAULT;
-const MediaDrmBridge::SecurityLevel kL1 = MediaDrmBridge::SECURITY_LEVEL_1;
-const MediaDrmBridge::SecurityLevel kL3 = MediaDrmBridge::SECURITY_LEVEL_3;
+    MediaDrmBridge::SECURITY_LEVEL_UNKNOWN;
+const MediaDrmBridge::SecurityLevel kL1 =
+    MediaDrmBridge::SECURITY_LEVEL_HW_SECURE_ALL;
+const MediaDrmBridge::SecurityLevel kL3 =
+    MediaDrmBridge::SECURITY_LEVEL_SW_SECURE_CRYPTO;
 const char kTestOrigin[] = "http://www.example.com";
 const char kEmptyOrigin[] = "";
 

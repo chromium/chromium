@@ -66,7 +66,6 @@ import java.util.UUID;
 @NullMarked
 public class MediaDrmBridge {
     private static final String TAG = "MediaDrmBridge";
-    private static final String SECURITY_LEVEL = "securityLevel";
     private static final String CURRENT_HDCP_LEVEL = "hdcpLevel";
     private static final String SERVER_CERTIFICATE = "serviceCertificate";
     private static final String ORIGIN = "origin";
@@ -107,6 +106,7 @@ public class MediaDrmBridge {
     private final Object mNativeMediaDrmBridgeLock = new Object();
 
     private final UUID mKeySystemUuid;
+    private final int mSecurityLevel;
     private final boolean mRequiresMediaCrypto;
 
     // A session only for the purpose of creating a MediaCrypto object. Created
@@ -275,11 +275,13 @@ public class MediaDrmBridge {
 
     private MediaDrmBridge(
             UUID keySystemUuid,
+            int securityLevel,
             boolean requiresMediaCrypto,
             long nativeMediaDrmBridge,
             long nativeMediaDrmStorageBridge)
             throws android.media.UnsupportedSchemeException {
         mKeySystemUuid = keySystemUuid;
+        mSecurityLevel = securityLevel;
         mMediaDrm = new MediaDrm(keySystemUuid);
         mRequiresMediaCrypto = requiresMediaCrypto;
 
@@ -384,7 +386,10 @@ public class MediaDrmBridge {
     private byte @Nullable [] openSession() throws android.media.NotProvisionedException {
         assert mMediaDrm != null;
         try {
-            byte[] sessionId = mMediaDrm.openSession();
+            byte[] sessionId =
+                    (mSecurityLevel == MediaDrm.SECURITY_LEVEL_UNKNOWN)
+                            ? mMediaDrm.openSession()
+                            : mMediaDrm.openSession(mSecurityLevel);
             // Make a clone here in case the underlying byte[] is modified.
             return sessionId.clone();
         } catch (java.lang.RuntimeException e) { // TODO(xhwang): Drop this?
@@ -457,7 +462,7 @@ public class MediaDrmBridge {
      *
      * @param keySystemBytes Key system UUID.
      * @param securityOrigin Security origin. Empty value means no need for origin isolated storage.
-     * @param securityLevel Security level. If empty, the default one should be used.
+     * @param securityLevel Security level.
      * @param nativeMediaDrmBridge Native C++ object of this class.
      * @param nativeMediaDrmStorageBridge Native C++ object of persistent storage.
      */
@@ -465,14 +470,14 @@ public class MediaDrmBridge {
     private static @Nullable MediaDrmBridge create(
             byte[] keySystemBytes,
             String securityOrigin,
-            String securityLevel,
+            int securityLevel,
             String message,
             boolean requiresMediaCrypto,
             long nativeMediaDrmBridge,
             long nativeMediaDrmStorageBridge) {
         Log.i(
                 TAG,
-                "Create MediaDrmBridge with level %s and origin %s for %s",
+                "Create MediaDrmBridge with level %d and origin %s for %s",
                 securityLevel,
                 securityOrigin,
                 message);
@@ -490,7 +495,8 @@ public class MediaDrmBridge {
 
             mediaDrmBridge =
                     new MediaDrmBridge(
-                            keySystemUuid,
+                            assumeNonNull(keySystemUuid),
+                            securityLevel,
                             requiresMediaCrypto,
                             nativeMediaDrmBridge,
                             nativeMediaDrmStorageBridge);
@@ -511,13 +517,6 @@ public class MediaDrmBridge {
             MediaDrmBridgeJni.get()
                     .onCreateError(
                             nativeMediaDrmBridge, MediaDrmCreateError.MEDIADRM_ILLEGAL_STATE);
-            return null;
-        }
-
-        if (!securityLevel.isEmpty() && !mediaDrmBridge.setSecurityLevel(securityLevel)) {
-            MediaDrmBridgeJni.get()
-                    .onCreateError(nativeMediaDrmBridge, MediaDrmCreateError.FAILED_SECURITY_LEVEL);
-            mediaDrmBridge.release();
             return null;
         }
 
@@ -573,50 +572,6 @@ public class MediaDrmBridge {
         }
 
         Log.e(TAG, "Security origin %s not supported!", origin);
-        return false;
-    }
-
-    /**
-     * Set the security level that the MediaDrm object uses.
-     * This function should be called right after we construct MediaDrmBridge
-     * and before we make any other calls.
-     *
-     * @param securityLevel Security level to be set.
-     * @return whether the security level was successfully set.
-     */
-    private boolean setSecurityLevel(String securityLevel) {
-        if (!isWidevine()) {
-            Log.d(TAG, "Security level is not supported.");
-            return true;
-        }
-
-        assert mMediaDrm != null;
-        assert !securityLevel.isEmpty();
-
-        String currentSecurityLevel = getSecurityLevel();
-        if (currentSecurityLevel.equals("")) {
-            // Failure logged by getSecurityLevel().
-            return false;
-        }
-
-        Log.d(TAG, "Security level: current %s, new %s", currentSecurityLevel, securityLevel);
-        if (securityLevel.equals(currentSecurityLevel)) {
-            // No need to set the same security level again. This is not just
-            // a shortcut! Setting the same security level actually causes an
-            // exception in MediaDrm!
-            return true;
-        }
-
-        try {
-            mMediaDrm.setPropertyString(SECURITY_LEVEL, securityLevel);
-            return true;
-        } catch (java.lang.IllegalArgumentException e) {
-            Log.e(TAG, "Failed to set security level %s", securityLevel, e);
-        } catch (java.lang.IllegalStateException e) {
-            Log.e(TAG, "Failed to set security level %s", securityLevel, e);
-        }
-
-        Log.e(TAG, "Security level %s not supported!", securityLevel);
         return false;
     }
 
@@ -1301,18 +1256,6 @@ public class MediaDrmBridge {
 
         // May return empty string on failure.
         return getPropertyString(CURRENT_HDCP_LEVEL);
-    }
-
-    /**
-     * Return the security level of this MediaDrm object. In case of failure this returns the empty
-     * string, which is treated by the native side as "DEFAULT".
-     * TODO(jrummell): Revisit this in the future if the security level gets used for more things.
-     */
-    @CalledByNative
-    private String getSecurityLevel() {
-
-        /// May return empty string on failure.
-        return getPropertyString(SECURITY_LEVEL);
     }
 
     /** Return the version property. In case of failure this returns an empty string. */
