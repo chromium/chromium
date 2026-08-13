@@ -213,14 +213,18 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
                              ? OmniboxPopupState::kFull
                              : OmniboxPopupState::kNone;
   } else {
-    // No saved state, so revert to default and re-evaluate popup visibility
-    // based on current focus.
+    // No saved state. Revert the edit model and check if the tab should focus
+    // the location bar by default (e.g., New Tab Page).
     controller()->edit_model()->Revert();
     controller()->edit_model()->OnChanged();
-    target_popup_state = controller()->edit_model()->has_focus()
-                             ? OmniboxPopupState::kFull
-                             : OmniboxPopupState::kNone;
-    should_focus_popup = controller()->edit_model()->has_focus();
+    should_focus_popup = contents && contents->FocusLocationBarByDefault();
+    if (should_focus_popup) {
+      controller()->edit_model()->OnSetFocus(/*control_down=*/false);
+      target_popup_state = OmniboxPopupState::kFull;
+    } else {
+      controller()->edit_model()->OnKillFocus();
+      target_popup_state = OmniboxPopupState::kNone;
+    }
   }
 
 
@@ -233,7 +237,13 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
   if (target_popup_state == OmniboxPopupState::kFull) {
     if (presenter()) {
       presenter()->Show();
-      if (should_focus_popup) {
+      // Only request native widget activation if the browser window is already
+      // active, to prevent stealing activation during initial window creation.
+      views::Widget* location_bar_widget =
+          presenter()->delegate().GetLocationBarWidget();
+      const bool can_activate =
+          !location_bar_widget || location_bar_widget->IsActive();
+      if (should_focus_popup && can_activate) {
         presenter()->RequestFocus();
       }
     }
