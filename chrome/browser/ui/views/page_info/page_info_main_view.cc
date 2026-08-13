@@ -49,9 +49,11 @@
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/metadata/view_factory.h"
@@ -72,6 +74,40 @@ constexpr int kContainerExtraRightMargin = 2;
 int GetSeparatorPadding() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW);
+}
+
+// Creates a StyledLabel from a localized string containing <link>...</link>
+// tags, configuring the link style and binding it to |link_callback|.
+std::unique_ptr<views::StyledLabel> CreateLearnMoreLabel(
+    const std::u16string& raw_text,
+    base::RepeatingClosure link_callback) {
+  constexpr std::u16string_view kBeginTag = u"<link>";
+  constexpr std::u16string_view kEndTag = u"</link>";
+  const size_t begin_pos = raw_text.find(kBeginTag);
+  const size_t end_pos = raw_text.find(kEndTag);
+
+  std::u16string clean_text = raw_text;
+  gfx::Range link_range;
+  if (begin_pos != std::u16string::npos && end_pos != std::u16string::npos &&
+      end_pos > begin_pos) {
+    const std::u16string link_text =
+        raw_text.substr(begin_pos + kBeginTag.length(),
+                        end_pos - (begin_pos + kBeginTag.length()));
+    clean_text = raw_text.substr(0, begin_pos) + link_text +
+                 raw_text.substr(end_pos + kEndTag.length());
+    link_range = gfx::Range(begin_pos, begin_pos + link_text.length());
+  }
+
+  auto label = std::make_unique<views::StyledLabel>();
+  label->SetText(clean_text);
+  label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
+  label->SetDefaultEnabledColorId(ui::kColorSysOnSurfaceSubtle);
+  if (link_range.IsValid()) {
+    label->AddStyleRange(link_range,
+                         views::StyledLabel::RangeStyleInfo::CreateForLink(
+                             std::move(link_callback)));
+  }
+  return label;
 }
 
 }  // namespace
@@ -402,7 +438,12 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
 
   security_container_view_->RemoveAllChildViews();
   extended_site_info_section_->SetVisible(false);
-  if (security_description->summary_style == SecuritySummaryColor::GREEN) {
+  if (identity_info.safe_browsing_status ==
+      PageInfo::SAFE_BROWSING_STATUS_WARNABLE_SUSPICIOUS_SITE) {
+    security_container_view_->AddChildView(
+        CreateSuspiciousSiteBannerView(identity_info));
+  } else if (security_description->summary_style ==
+             SecuritySummaryColor::GREEN) {
     // base::Unretained(navigation_handler_) is safe because navigation_handler_
     // is the bubble view which is the owner of this view and therefore will
     // always exist when this view exists.
@@ -738,6 +779,115 @@ PageInfoMainView::CreateMerchantTrustLaunchButton(GURL page_url) {
 void PageInfoMainView::OpenMerchantTrustSidePanel(const GURL& url) {
   ui_delegate_->OpenMerchantTrustSidePanel(url);
   ui_delegate_->RecordMerchantTrustSidePanelOpened();
+}
+
+std::unique_ptr<views::View> PageInfoMainView::CreateSuspiciousSiteBannerView(
+    const IdentityInfo& identity_info) {
+  constexpr int kBannerCornerRadius = 12;
+  constexpr int kBannerPadding = 12;
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int side_margin =
+      layout_provider
+          ->GetInsetsMetric(ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)
+          .left();
+  const int vertical_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  const int icon_label_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  const int button_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
+
+  auto banner = std::make_unique<views::View>();
+  auto* layout = banner->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::VH(kBannerPadding, kBannerPadding), vertical_spacing));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
+  banner->SetBackground(views::CreateRoundedRectBackground(
+      ui::kColorSysNeutralContainer, kBannerCornerRadius));
+  banner->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0, side_margin,
+                        layout_provider->GetDistanceMetric(
+                            DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
+                        side_margin));
+
+  auto* content_row = banner->AddChildView(std::make_unique<views::View>());
+  auto* content_layout =
+      content_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          icon_label_spacing));
+  content_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+
+  const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
+  auto* icon = content_row->AddChildView(std::make_unique<views::ImageView>());
+  icon->SetImage(
+      ui::ImageModel::FromVectorIcon(vector_icons::kShieldQuestionIcon,
+                                     ui::kColorAlertHighSeverity, icon_size));
+
+  auto* text_column =
+      content_row->AddChildView(std::make_unique<views::View>());
+  auto* text_layout =
+      text_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+          /*between_child_spacing=*/4));
+  text_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
+
+  auto* title_label = text_column->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SUSPICIOUS_SITE_SUMMARY),
+      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
+  title_label->SetEnabledColor(ui::kColorAlertHighSeverity);
+  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  auto* description_label = text_column->AddChildView(CreateLearnMoreLabel(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SUSPICIOUS_SITE_DETAILS),
+      base::BindRepeating(
+          [](PageInfoMainView* view) {
+            view->presenter_->OpenSafeBrowsingHelpCenterPage(nullptr);
+          },
+          base::Unretained(this))));
+  constexpr int kTargetDescriptionWidth = 300;
+  description_label->SizeToFit(kTargetDescriptionWidth);
+
+  auto* buttons_row = banner->AddChildView(std::make_unique<views::View>());
+  auto* buttons_layout =
+      buttons_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          button_spacing));
+  buttons_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+
+  auto* mark_as_safe_btn =
+      buttons_row->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(
+              [](PageInfoMainView* view) {
+                view->presenter_->OnSuspiciousSiteMarkAsSafe();
+                if (view->GetWidget()) {
+                  view->GetWidget()->Close();
+                }
+              },
+              base::Unretained(this)),
+          l10n_util::GetStringUTF16(
+              IDS_PAGE_INFO_SUSPICIOUS_SITE_BUTTON_MARK_AS_SAFE)));
+  mark_as_safe_btn->SetStyle(ui::ButtonStyle::kTonal);
+
+  auto* back_to_safety_btn =
+      buttons_row->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(
+              [](PageInfoMainView* view) {
+                view->presenter_->OnSuspiciousSiteBackToSafety();
+                if (view->GetWidget()) {
+                  view->GetWidget()->Close();
+                }
+              },
+              base::Unretained(this)),
+          l10n_util::GetStringUTF16(
+              IDS_PAGE_INFO_SUSPICIOUS_SITE_BUTTON_BACK_TO_SAFETY)));
+  back_to_safety_btn->SetStyle(ui::ButtonStyle::kProminent);
+
+  return banner;
 }
 
 BEGIN_METADATA(PageInfoMainView)

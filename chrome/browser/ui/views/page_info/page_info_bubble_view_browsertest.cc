@@ -948,6 +948,26 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, UnwantedSoftwareStrings) {
                 u" " + l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 }
 
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
+                       SuspiciousSiteBannerAndSecurityStatus) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/simple.html")));
+
+  PageInfoUI::IdentityInfo identity;
+  identity.safe_browsing_status =
+      PageInfo::SAFE_BROWSING_STATUS_WARNABLE_SUSPICIOUS_SITE;
+  OpenPageInfoBubble(browser());
+
+  SetPageInfoBubbleIdentityInfo(identity);
+
+  EXPECT_TRUE(PageInfoBubbleView::GetPageInfoBubbleForTesting());
+}
+
 // Navigate to a page with an SSL warning (but no malware status) and click
 // through the SSL warning. The "reset decisions" button should be shown.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,

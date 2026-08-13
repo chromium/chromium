@@ -289,6 +289,11 @@ std::u16string LocationBarModelImpl::GetSecureDisplayText() const {
         return std::u16string();
       }
 
+      if (visible_security_state->malicious_content_status ==
+          security_state::MALICIOUS_CONTENT_STATUS_WARNABLE_SUSPICIOUS_SITE) {
+        return l10n_util::GetStringUTF16(IDS_SUSPICIOUS_VERBOSE_STATE);
+      }
+
       bool fails_malware_check =
           visible_security_state->malicious_content_status !=
           security_state::MALICIOUS_CONTENT_STATUS_NONE;

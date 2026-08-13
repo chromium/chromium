@@ -22,6 +22,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
@@ -46,15 +47,20 @@
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -452,8 +458,32 @@ void ChromePageInfoDelegate::OnSuspiciousSiteBackToSafety() {
     ssc->HandleBackNavigation(
         safe_browsing::SuspiciousSiteWarningUserInteraction::
             kBackToSafetyButton);
+    return;
   }
 #endif
+  if (!web_contents_) {
+    return;
+  }
+
+  auto& controller = web_contents_->GetController();
+  const GURL& current_url = web_contents_->GetLastCommittedURL();
+
+  // Find the most recent navigation entry that belongs to a different site.
+  for (int i = controller.GetLastCommittedEntryIndex() - 1; i >= 0; --i) {
+    content::NavigationEntry* entry = controller.GetEntryAtIndex(i);
+    if (entry && !entry->GetURL().is_empty() &&
+        !net::registry_controlled_domains::SameDomainOrHost(
+            current_url, entry->GetURL(),
+            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+      controller.GoToIndex(i);
+      return;
+    }
+  }
+
+  // If there is no previous entry on a different site, navigate to the New Tab
+  // Page.
+  controller.LoadURLWithParams(content::NavigationController::LoadURLParams(
+      GURL(chrome::kChromeUINewTabURL)));
 }
 
 void ChromePageInfoDelegate::OnSuspiciousSiteMarkAsSafe() {
@@ -462,8 +492,25 @@ void ChromePageInfoDelegate::OnSuspiciousSiteMarkAsSafe() {
           safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
               web_contents_)) {
     ssc->OnContinueButtonClicked();
+    return;
   }
 #endif
+  if (!web_contents_) {
+    return;
+  }
+  const GURL& current_url = web_contents_->GetLastCommittedURL();
+  if (!current_url.is_valid() || current_url.host().empty()) {
+    return;
+  }
+  Profile* profile = GetProfile();
+  if (profile) {
+    HostContentSettingsMap* hcsm =
+        HostContentSettingsMapFactory::GetForProfile(profile);
+    if (hcsm) {
+      safe_browsing::SuspiciousSiteWarningAllowlist(hcsm).AllowSiteForHost(
+          std::string(current_url.host()));
+    }
+  }
 }
 
 std::u16string ChromePageInfoDelegate::GetSubjectName(const GURL& url) {

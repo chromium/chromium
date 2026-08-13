@@ -122,6 +122,9 @@
   <message name="IDS_DANGEROUS_VERBOSE_STATE" desc="Text for the Dangerous Omnibox Verbose State. Displayed when the current page fails the malware check.">
     Dangerous
   </message>
+  <message name="IDS_SUSPICIOUS_VERBOSE_STATE" desc="Text for the Suspicious Omnibox Verbose State. Displayed when the current page is marked as a suspicious site.">
+    Suspicious
+  </message>
   <message name="IDS_OFFLINE_VERBOSE_STATE" desc="Text for the Offline Omnibox Verbose state. Displayed when the current page is loaded from a previously-downloaded cache.">
     Offline
   </message>

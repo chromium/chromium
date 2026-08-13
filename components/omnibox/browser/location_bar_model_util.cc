@@ -59,6 +59,10 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
                    ? vector_icons::kDomainIcon
                    : vector_icons::kBusinessChromeRefreshOldIcon;
       }
+      if (malicious_content_status ==
+          security_state::MALICIOUS_CONTENT_STATUS_WARNABLE_SUSPICIOUS_SITE) {
+        return vector_icons::kShieldQuestionIcon;
+      }
       if (malicious_content_status !=
           security_state::MALICIOUS_CONTENT_STATUS_BILLING) {
         return features::IsRoundedIconsEnabled()

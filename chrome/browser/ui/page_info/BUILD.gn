@@ -101,6 +101,7 @@ source_set("impl") {
     "//components/page_info/core",
     "//components/permissions",
     "//components/prefs",
+    "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_state/content",
     "//components/strings:components_strings",

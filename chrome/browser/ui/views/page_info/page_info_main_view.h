@@ -136,6 +136,10 @@ class PageInfoMainView : public views::View,
   [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSiteButton(
       const page_info::proto::SiteInfo& info);
 
+  // Creates the warning banner view for suspicious sites.
+  [[nodiscard]] std::unique_ptr<views::View> CreateSuspiciousSiteBannerView(
+      const IdentityInfo& identity_info);
+
   // Creates 'Merchant trust' button.
   [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustButton(
       page_info::MerchantData value);
