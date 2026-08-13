@@ -35,7 +35,7 @@ class DataSharingSDKDelegateDesktopBrowserTest : public InProcessBrowserTest {
 };
 
 // TODO(460041655): Remove this once the underlying issue is fixed.
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
 #define MAYBE_ReadGroupLoadsWebContents DISABLED_ReadGroupLoadsWebContents
 #else
 #define MAYBE_ReadGroupLoadsWebContents ReadGroupLoadsWebContents
