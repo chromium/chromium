@@ -4782,20 +4782,10 @@ crbug.com/689781 external/wpt/media-source/mediasource-duration.html [ Failure P
 crbug.com/689781 [ Win ] http/tests/media/media-source/mediasource-duration.html [ Failure Pass ]
 crbug.com/689781 [ Mac ] http/tests/media/media-source/mediasource-duration.html [ Failure Pass ]
 
-
 crbug.com/716320 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/broadcastchannel-success-and-failure.https.html [ Failure Timeout ]
-
-# Test output varies depending on the bot. A single expectation file doesn't
-# work.
-
-# Fullscreen tests are failed because of consuming user activation on fullscreen
 
 # User-Agent is not able to be set on XHR/fetch
 crbug.com/571722 external/wpt/xhr/preserve-ua-header-on-redirect.htm [ Failure ]
-
-# 1) V8 code cache doesn't support host defined options. When V8 code cache is
-# disabled, the subtest will pass. 2) Module cases always fail.
-crbug.com/1244145 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/v8-code-cache.html [ Failure ]
 
 # Sheriff failures 2017-03-21
 crbug.com/674720 http/tests/loading/preload-img-test.html [ Failure Pass ]
@@ -4810,8 +4800,6 @@ crbug.com/722212 fast/events/pointerevents/mouse-pointer-event-properties.html [
 # Sheriff failures 2018-08-15
 crbug.com/874837 [ Win ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure Pass ]
 crbug.com/874837 [ Debug Linux ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure Pass ]
-
-# Sheiff failures 2021-04-09
 
 crbug.com/715718 external/wpt/media-source/mediasource-remove.html [ Failure Pass ]
 
