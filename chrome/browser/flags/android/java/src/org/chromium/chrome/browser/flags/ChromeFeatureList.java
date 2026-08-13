@@ -717,6 +717,8 @@ public abstract class ChromeFeatureList {
             "TabSwitcherGroupSuggestionsAndroid";
     public static final String TAB_SWITCHER_GROUP_SUGGESTIONS_TEST_MODE_ANDROID =
             "TabSwitcherGroupSuggestionsTestModeAndroid";
+    public static final String TAB_SWITCHER_MESSAGES_ON_DESKTOP_WINDOWING_KILL_SWITCH =
+            "TabSwitcherMessagesOnDesktopWindowingKillSwitch";
     public static final String TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH =
             "TabWindowManagerReportIndicesMismatch";
     public static final String TASK_MANAGER_CLANK = "TaskManagerClank";
@@ -1264,6 +1266,10 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TAB_STRIP_HEIGHT_TRANSITION_GLITCH_FIX, /* defaultValue= */ true);
     public static final CachedFlag sTabStripLayoutTransitionDebounceFix =
             newCachedFlag(TAB_STRIP_LAYOUT_TRANSITION_DEBOUNCE_FIX, /* defaultValue= */ true);
+    public static final CachedFlag sTabSwitcherMessagesOnDesktopWindowingKillSwitch =
+            newCachedFlag(
+                    TAB_SWITCHER_MESSAGES_ON_DESKTOP_WINDOWING_KILL_SWITCH,
+                    /* defaultValue= */ true);
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
     public static final CachedFlag sTestDefaultDisabled =
@@ -1528,6 +1534,7 @@ public abstract class ChromeFeatureList {
                     sTabStorageSqlitePrototype,
                     sTabStripHeightTransitionGlitchFix,
                     sTabStripLayoutTransitionDebounceFix,
+                    sTabSwitcherMessagesOnDesktopWindowingKillSwitch,
                     sTabWindowManagerReportIndicesMismatch,
                     sThreeDotMenuBackButton,
                     sToolbarCaptureFixForSPAs,

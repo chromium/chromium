@@ -308,6 +308,7 @@ BASE_DECLARE_FEATURE(kTabStripStopSpinnerOnLoadStop);
 BASE_DECLARE_FEATURE(kTabSwitcherDragDropAndroid);
 BASE_DECLARE_FEATURE(kTabSwitcherGroupSuggestionsAndroid);
 BASE_DECLARE_FEATURE(kTabSwitcherGroupSuggestionsTestModeAndroid);
+BASE_DECLARE_FEATURE(kTabSwitcherMessagesOnDesktopWindowingKillSwitch);
 BASE_DECLARE_FEATURE(kTabWindowManagerReportIndicesMismatch);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);

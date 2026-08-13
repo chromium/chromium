@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
@@ -194,6 +195,7 @@ public class TabSwitcherMessageManagerUnitTest {
 
     @After
     public void tearDown() {
+        AppHeaderUtils.setAppInDesktopWindowForTesting(false);
         mMessageManager.removeObserver(mMessageUpdateObserver);
         mMessageManager.destroy();
         assertFalse(mCurrentTabModelSupplier.hasObservers());
@@ -456,6 +458,38 @@ public class TabSwitcherMessageManagerUnitTest {
         mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(false);
 
         verify(mMessageUpdateObserver).onRestoreAllAppendedMessage();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_SWITCHER_MESSAGES_ON_DESKTOP_WINDOWING_KILL_SWITCH)
+    public void multiWindowMode_desktopWindow_killswitchEnabled() {
+        AppHeaderUtils.setAppInDesktopWindowForTesting(true);
+        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(true);
+
+        mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(false);
+
+        verify(mMessageUpdateObserver).onRestoreAllAppendedMessage();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_SWITCHER_MESSAGES_ON_DESKTOP_WINDOWING_KILL_SWITCH)
+    public void multiWindowMode_desktopWindow_killswitchDisabled() {
+        AppHeaderUtils.setAppInDesktopWindowForTesting(true);
+        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(true);
+
+        mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(false);
+
+        verify(mMessageUpdateObserver, never()).onRestoreAllAppendedMessage();
+    }
+
+    @Test
+    public void multiWindowMode_notInDesktopWindow() {
+        AppHeaderUtils.setAppInDesktopWindowForTesting(false);
+        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(true);
+
+        mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(false);
+
+        verify(mMessageUpdateObserver, never()).onRestoreAllAppendedMessage();
     }
 
     @Test

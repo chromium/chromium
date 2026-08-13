@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPropertie
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -652,8 +653,14 @@ public class TabSwitcherMessageManager {
         }
     }
 
+    private boolean shouldShowMessagesInDesktopWindow() {
+        return AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
+                && ChromeFeatureList.sTabSwitcherMessagesOnDesktopWindowingKillSwitch.isEnabled();
+    }
+
     private boolean shouldShowMessages() {
-        return !mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+        return (!mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+                        || shouldShowMessagesInDesktopWindow())
                 && mTabListCoordinatorSupplier.get() != null;
     }
 
