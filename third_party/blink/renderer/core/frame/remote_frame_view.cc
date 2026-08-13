@@ -362,9 +362,10 @@ void RemoteFrameView::PropagateFrameRects() {
 }
 
 void RemoteFrameView::Paint(const PaintInfo& paint_info,
-                            const CullRect& rect,
+                            const CullRect& cull_rect,
                             const gfx::Vector2d& paint_offset) const {
-  if (!rect.Intersects(DeprecatedFrameRect())) {
+  if (!RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled() &&
+      !cull_rect.Rect().Intersects(DeprecatedFrameRect())) {
     return;
   }
 
@@ -379,14 +380,18 @@ void RemoteFrameView::Paint(const PaintInfo& paint_info,
     DCHECK(context.Canvas());
 
     uint32_t content_id = 0;
+    gfx::Rect rect(Size());
+    if (!RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+      rect.set_origin(DeprecatedLocation());
+    }
     if (owner_layout_object.GetDocument().Printing()) {
       // Inform the remote frame to print.
-      content_id = Print(DeprecatedFrameRect(), context.Canvas());
+      content_id = Print(rect, context.Canvas());
     } else {
       DCHECK_NE(Document::kNotPaintingPreview,
                 owner_layout_object.GetDocument().GetPaintPreviewState());
       // Inform the remote frame to capture a paint preview.
-      content_id = CapturePaintPreview(DeprecatedFrameRect(), context.Canvas());
+      content_id = CapturePaintPreview(rect, context.Canvas());
     }
     // Record the place holder id on canvas.
     context.Canvas()->recordCustomData(content_id);
@@ -394,9 +399,13 @@ void RemoteFrameView::Paint(const PaintInfo& paint_info,
   }
 
   if (GetFrame().GetCcLayer() && !paint_info.IsPrivacyPreserving()) {
-    RecordForeignLayer(
-        context, owner_layout_object, DisplayItem::kForeignLayerRemoteFrame,
-        GetFrame().GetCcLayer(), DeprecatedLocation() + paint_offset);
+    gfx::Point origin = gfx::PointAtOffsetFromOrigin(paint_offset);
+    if (!RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+      origin += DeprecatedLocation().OffsetFromOrigin();
+    }
+    RecordForeignLayer(context, owner_layout_object,
+                       DisplayItem::kForeignLayerRemoteFrame,
+                       GetFrame().GetCcLayer(), origin);
   }
 }
 

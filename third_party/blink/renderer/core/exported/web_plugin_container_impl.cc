@@ -203,14 +203,10 @@ void WebPluginContainerImpl::Paint(const PaintInfo& paint_info,
                                    const CullRect& cull_rect,
                                    const gfx::Vector2d& paint_offset) const {
   // Don't paint anything if the plugin doesn't intersect.
-  if (!cull_rect.Intersects(DeprecatedFrameRect())) {
+  if (!RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled() &&
+      !cull_rect.Intersects(DeprecatedFrameRect())) {
     return;
   }
-
-  gfx::Rect visual_rect = DeprecatedFrameRect();
-  visual_rect.Offset(paint_offset);
-
-  GraphicsContext& context = paint_info.context;
 
   if ((paint_info.GetPaintFlags() & PaintFlag::kPrivacyPreserving) &&
       !element_->GetExecutionContext()->GetSecurityOrigin()->CanReadContent(
@@ -218,23 +214,31 @@ void WebPluginContainerImpl::Paint(const PaintInfo& paint_info,
     return;
   }
 
+  gfx::Rect visual_rect(Size());
+  if (!RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    visual_rect.set_origin(DeprecatedLocation());
+  }
+  visual_rect.Offset(paint_offset);
+
+  GraphicsContext& context = paint_info.context;
+  const auto* layout = GetLayoutEmbeddedContent();
+
   if (WantsWheelEvents()) {
     context.GetPaintController().RecordHitTestData(
-        *GetLayoutEmbeddedContent(), visual_rect, TouchAction::kAuto,
+        *layout, visual_rect, TouchAction::kAuto,
         /*blocking_wheel=*/true, cc::HitTestOpaqueness::kMixed,
         DisplayItem::kWebPluginHitTest);
   }
 
   if (element_->GetRegionCaptureCropId()) {
     context.GetPaintController().RecordRegionCaptureData(
-        *GetLayoutEmbeddedContent(), *(element_->GetRegionCaptureCropId()),
-        visual_rect);
+        *layout, *(element_->GetRegionCaptureCropId()), visual_rect);
   }
 
   if (element_->GetTrackedElementSubRects()) {
     const auto* sub_rects = element_->GetTrackedElementSubRects();
-    context.GetPaintController().RecordTrackedElementData(
-        *GetLayoutEmbeddedContent(), visual_rect, *sub_rects);
+    context.GetPaintController().RecordTrackedElementData(*layout, visual_rect,
+                                                          *sub_rects);
   }
 
   if (layer_ && !paint_info.ShouldOmitCompositingInfo()) {
@@ -243,30 +247,51 @@ void WebPluginContainerImpl::Paint(const PaintInfo& paint_info,
     layer_->SetHitTestable(true);
     // Composited plugins should have their layers inserted rather than invoking
     // WebPlugin::paint.
-    RecordForeignLayer(context, *element_->GetLayoutObject(),
-                       DisplayItem::kForeignLayerPlugin, layer_,
-                       DeprecatedLocation() + paint_offset);
+    gfx::Point layer_origin = gfx::PointAtOffsetFromOrigin(paint_offset);
+    if (!RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+      layer_origin += DeprecatedLocation().OffsetFromOrigin();
+    }
+    RecordForeignLayer(context, *layout, DisplayItem::kForeignLayerPlugin,
+                       layer_, layer_origin);
     return;
   }
 
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          context, *element_->GetLayoutObject(), DisplayItem::kWebPlugin))
+  if (DrawingRecorder::UseCachedDrawingIfPossible(context, *layout,
+                                                  DisplayItem::kWebPlugin)) {
     return;
+  }
 
-  DrawingRecorder recorder(context, *element_->GetLayoutObject(),
-                           DisplayItem::kWebPlugin, visual_rect);
+  DrawingRecorder recorder(context, *layout, DisplayItem::kWebPlugin,
+                           visual_rect);
   context.Save();
 
   // The plugin is positioned in the root frame's coordinates, so it needs to
   // be painted in them too.
-  gfx::PointF origin(ParentFrameView()->ConvertToRootFrame(gfx::Point()));
-  origin -= gfx::Vector2dF(paint_offset);
+  gfx::Point origin;
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    origin = ToRoundedPoint(layout->LocalToAbsolutePoint(
+        layout->ReplacedContentRect().offset - PhysicalOffset(paint_offset),
+        {MapCoordinatesMode::kTraverseDocumentBoundaries}));
+  } else {
+    origin = ParentFrameView()->ConvertToRootFrame(gfx::Point());
+    origin -= paint_offset;
+  }
   context.Translate(-origin.x(), -origin.y());
 
   cc::PaintCanvas* canvas = context.Canvas();
 
-  gfx::Rect window_rect =
-      ParentFrameView()->ConvertToRootFrame(cull_rect.Rect());
+  gfx::Rect window_rect;
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    window_rect = ToEnclosingRect(layout->LocalToAbsoluteRect(
+        PhysicalRect(
+            // From paint coordinates to plugin coordinates.
+            paint_info.GetCullRect().Rect() - paint_offset) +
+            // From plugin coordinates to layout object coordinates.
+            layout->ReplacedContentRect().offset,
+        {MapCoordinatesMode::kTraverseDocumentBoundaries}));
+  } else {
+    window_rect = ParentFrameView()->ConvertToRootFrame(cull_rect.Rect());
+  }
   web_plugin_->Paint(canvas, window_rect);
 
   context.Restore();
@@ -645,9 +670,13 @@ bool WebPluginContainerImpl::IsRectTopmost(const gfx::Rect& rect) {
   if (!frame)
     return false;
 
-  gfx::Rect frame_rect = rect;
-  frame_rect.Offset(DeprecatedLocation().OffsetFromOrigin());
-  HitTestLocation location((PhysicalRect(frame_rect)));
+  PhysicalRect frame_rect(rect);
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    frame_rect = element_->GetLayoutObject()->LocalToAbsoluteRect(frame_rect);
+  } else {
+    frame_rect.Move(PhysicalOffset(DeprecatedLocation().OffsetFromOrigin()));
+  }
+  HitTestLocation location(frame_rect);
   HitTestResult result = frame->GetEventHandler().HitTestResultAtLocation(
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive |
                     HitTestRequest::kListBased);
@@ -915,12 +944,17 @@ void WebPluginContainerImpl::HandleDragEvent(MouseEvent& event) {
       data_transfer->GetDataObject()->ToWebDragData(nullptr);
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
   gfx::PointF drag_screen_location(event.screenX(), event.screenY());
-  gfx::Point location(DeprecatedLocation());
-  gfx::PointF drag_location(event.AbsoluteLocation().x() - location.x(),
-                            event.AbsoluteLocation().y() - location.y());
+  gfx::PointF drag_local_location;
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    drag_local_location = element_->GetLayoutObject()->AbsoluteToLocalPoint(
+        event.AbsoluteLocation());
+  } else {
+    drag_local_location =
+        event.AbsoluteLocation() - DeprecatedLocation().OffsetFromOrigin();
+  }
 
   web_plugin_->HandleDragStatusUpdate(drag_status, drag_data,
-                                      drag_operation_mask, drag_location,
+                                      drag_operation_mask, drag_local_location,
                                       drag_screen_location);
 }
 
@@ -1144,13 +1178,17 @@ void WebPluginContainerImpl::ComputeClipRectsForPlugin(
   unclipped_root_frame_rect =
       root_view->GetFrameView()->DocumentToFrame(unclipped_root_frame_rect);
 
-  // The frameRect is already in absolute space of the local frame to the
-  // plugin so map it up to the root frame.
-  window_rect = DeprecatedFrameRect();
-  PhysicalRect layout_window_rect =
-      element_->GetDocument().View()->GetLayoutView()->LocalToAbsoluteRect(
-          PhysicalRect(window_rect),
-          {MapCoordinatesMode::kTraverseDocumentBoundaries});
+  PhysicalRect layout_window_rect;
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    layout_window_rect = box->LocalToAbsoluteRect(
+        box->PhysicalContentBoxRect(),
+        {MapCoordinatesMode::kTraverseDocumentBoundaries});
+  } else {
+    layout_window_rect =
+        element_->GetDocument().View()->GetLayoutView()->LocalToAbsoluteRect(
+            PhysicalRect(DeprecatedFrameRect()),
+            {MapCoordinatesMode::kTraverseDocumentBoundaries});
+  }
 
   window_rect = ToPixelSnappedRect(layout_window_rect);
 

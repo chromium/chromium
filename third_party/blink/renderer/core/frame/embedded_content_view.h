@@ -34,6 +34,10 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   virtual LayoutEmbeddedContent* GetLayoutEmbeddedContent() const = 0;
   virtual void AttachToLayout() = 0;
   virtual void DetachFromLayout() = 0;
+  // When AvoidEmbeddedContentViewLocation is enabled, `cull_rect` is unused and
+  // will be removed, and `paint_offset` is the offset of the embedded content
+  // from the current paint context.
+  // Deprecated usage:
   // |cull_rect| is in the same coordinate space as Location() and FrameRect().
   // |paint_offset| is Location() mapped into the current coordinates space of
   // the current paint context.
