@@ -40,6 +40,7 @@
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_switches.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/litert/buildflags.h"
 #include "third_party/litert/src/litert/c/litert_common.h"
@@ -173,8 +174,17 @@ class GraphImplLiteRt::ComputeResources {
         *self->weights_file_,
         std::move(build_graph_result.weights_section_map));
 
-    ASSIGN_OR_RETURN(self->env_,
-                     AsBaseExpected(::litert::Environment::Create({})));
+    std::vector<::litert::EnvironmentOptions::Option> env_options;
+    if (context_device == mojom::Device::kGpu) {
+      env_options.emplace_back(
+          ::litert::EnvironmentOptions::Tag::kWebGpuProcs,
+          reinterpret_cast<int64_t>(&dawn::native::GetProcs()));
+    }
+
+    ASSIGN_OR_RETURN(
+        self->env_,
+        AsBaseExpected(::litert::Environment::Create(
+            ::litert::EnvironmentOptions(absl::MakeConstSpan(env_options)))));
 
     ASSIGN_OR_RETURN(
         self->model_,
@@ -403,21 +413,19 @@ class GraphImplLiteRt::ComputeResources {
       accelerators |= ::litert::HwAccelerators::kNpu;
     }
 
-    // TODO(crbug.com/516836300): Re-enable once ABI mismatch is resolved.
-    // if (context_device == mojom::Device::kGpu) {
-    //   accelerators |= ::litert::HwAccelerators::kGpu;
-    //   auto gpu_options = options->GetGpuOptions();
-    //   if (!gpu_options) {
-    //     return base::unexpected(mojom::Error::New(
-    //         mojom::Error::Code::kUnknownError,
-    //         base::StringPrintf("Unable to create GPU Options: %s",
-    //                            gpu_options.Error().Message())));
-    //   }
-    //   gpu_options->SetPrecision(graph_requires_fp32_precision
-    //                                 ? ::litert::GpuOptions::Precision::kFp32
-    //                                 :
-    //                                 ::litert::GpuOptions::Precision::kFp16);
-    // }
+    if (context_device == mojom::Device::kGpu) {
+      accelerators |= ::litert::HwAccelerators::kGpu;
+      auto gpu_options = options->GetGpuOptions();
+      if (!gpu_options) {
+        return base::unexpected(mojom::Error::New(
+            mojom::Error::Code::kUnknownError,
+            base::StringPrintf("Unable to create GPU Options: %s",
+                               gpu_options.Error().Message())));
+      }
+      gpu_options->SetPrecision(graph_requires_fp32_precision
+                                    ? ::litert::GpuOptions::Precision::kFp32
+                                    : ::litert::GpuOptions::Precision::kFp16);
+    }
 #if BUILDFLAG(BUILD_LITERT_WITH_XNNPACK)
     accelerators |= ::litert::HwAccelerators::kCpu;
     auto cpu_options = options->GetCpuOptions();

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [required] pad float32 3D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pad float32 actual 0 should be close enough to expected 22.76361846923828 by ULP distance: expected a number less than or equal to 0n but got 1102453732n
+[FAIL] [required] pad float32 4D tensor options.mode='edge'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The edge padding mode is not supported in tflite schema."
+[FAIL] [required] pad float16 3D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pad float16 actual 0 should be close enough to expected 22.765625 by ULP distance: expected a number less than or equal to 0 but got 19889
+[FAIL] [required] pad float16 4D tensor options.mode='edge'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The edge padding mode is not supported in tflite schema."
+Harness: the test ran to completion.
+

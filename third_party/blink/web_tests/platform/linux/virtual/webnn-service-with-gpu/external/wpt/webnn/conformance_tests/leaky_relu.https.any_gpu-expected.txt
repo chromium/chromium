@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [required] leakyRelu float32 1D tensor negative options.alpha
+  assert_less_than_equal: assert_array_approx_equals_ulp: test leakyRelu float32 actual 0 should be close enough to expected 1861.5615234375 by ULP distance: expected a number less than or equal to 1n but got 1156100600n
+[FAIL] [required] leakyRelu float32 2D tensor positive options.alpha
+  assert_less_than_equal: assert_array_approx_equals_ulp: test leakyRelu float32 actual -19.053640365600586 should be close enough to expected -682.1043701171875 by ULP distance: expected a number less than or equal to 1n but got 43129043n
+[FAIL] [required] leakyRelu float16 1D tensor negative options.alpha
+  assert_less_than_equal: assert_array_approx_equals_ulp: test leakyRelu float16 actual 0 should be close enough to expected 1861 by ULP distance: expected a number less than or equal to 2 but got 26437
+[FAIL] [required] leakyRelu float16 2D tensor positive options.alpha
+  assert_less_than_equal: assert_array_approx_equals_ulp: test leakyRelu float16 actual -19.046875 should be close enough to expected -682 by ULP distance: expected a number less than or equal to 2 but got 5265
+Harness: the test ran to completion.
+

@@ -147,6 +147,7 @@ config("litert_config") {
     "LITERT_HAS_OPENCL_SUPPORT=0",
     "LITERT_STATIC",
     "LITERT_WITH_EXTERNAL_WEIGHT_LOADER",
+    "ML_DRIFT_USE_DAWN_PROC",
   ]
 
   if (build_litert_with_xnnpack) {

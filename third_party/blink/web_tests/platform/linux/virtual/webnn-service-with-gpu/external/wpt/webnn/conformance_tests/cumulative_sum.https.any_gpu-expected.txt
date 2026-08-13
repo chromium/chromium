@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [required] cumulativeSum with float32 input and set exclusive to true.
+  assert_less_than_equal: assert_array_approx_equals_ulp: test cumulativeSum float32 actual 60.42374038696289 should be close enough to expected 0 by ULP distance: expected a number less than or equal to 3n but got 1114747369n
+[FAIL] [required] cumulativeSum with float32 input and set reversed to true.
+  assert_less_than_equal: assert_array_approx_equals_ulp: test cumulativeSum float32 actual 60.42374038696289 should be close enough to expected -61.1454659 by ULP distance: expected a number less than or equal to 3n but got 2229683934n
+[FAIL] [required] cumulativeSum with float16 input and set exclusive to true.
+  assert_less_than_equal: assert_array_approx_equals_ulp: test cumulativeSum float16 actual 60.4375 should be close enough to expected 0 by ULP distance: expected a number less than or equal to 3 but got 21390
+[FAIL] [required] cumulativeSum with float16 input and set reversed to true.
+  assert_less_than_equal: assert_array_approx_equals_ulp: test cumulativeSum float16 actual 60.4375 should be close enough to expected -61.15625 by ULP distance: expected a number less than or equal to 3 but got 32791
+Harness: the test ran to completion.
+

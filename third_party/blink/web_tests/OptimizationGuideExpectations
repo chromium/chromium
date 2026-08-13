@@ -26,9 +26,10 @@ virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/tan.https.an
 crbug.com/463763785 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/batch_normalization_constant.https.any.html?gpu [ Failure ]
 
 ### virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/
-b/525536478 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/conv2d.https.any.html?gpu [ Crash Failure Skip ]
-b/525536478 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gemm.https.any.html?gpu [ Crash Failure Skip ]
-b/525536478 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Crash Failure Skip ]
-b/525536478 virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/pooling-and-reduction-keep-dims.https.any.html?gpu [ Crash Failure Skip ]
+crbug.com/525536478 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/add.https.any.html?gpu [ Crash Failure ]
+crbug.com/525536478 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/conv2d.https.any.html?gpu [ Crash Failure Skip ]
+crbug.com/525536478 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gemm.https.any.html?gpu [ Crash Failure Skip ]
+crbug.com/525536478 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Crash Failure Skip ]
+crbug.com/525536478 virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/pooling-and-reduction-keep-dims.https.any.html?gpu [ Crash Failure Skip ]
 crbug.com/489522225 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?gpu [ Failure Crash ]
 crbug.com/489392110 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/quantizeLinear.https.any.html?gpu [ Pass Failure Crash ]

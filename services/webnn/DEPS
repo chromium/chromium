@@ -13,6 +13,7 @@ include_rules = [
   "+services/viz/privileged/mojom/gl",
   "+third_party/blink/public/common/tokens/tokens.h",
   "+third_party/coremltools/mlmodel/format",
+  "+third_party/dawn/include/dawn/native",
   "+third_party/flatbuffers/src/include/flatbuffers",
   "+third_party/fp16/src/include/fp16.h",
   "+third_party/fuzztest/src/fuzztest/fuzztest.h",

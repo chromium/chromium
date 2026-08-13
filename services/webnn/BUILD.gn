@@ -194,6 +194,7 @@ component("webnn_service") {
 
     if (webnn_use_litert) {
       deps += [
+        "//third_party/dawn/src/dawn/native",
         "//third_party/litert",
         "//third_party/litert:buildflags",
       ]
