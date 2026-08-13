@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `futures-util-0.3.33` crate.
+# `futures-util-0.3.34` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "futures-util"
-version = "0.3.33"
+version = "0.3.34"
 
 [package.metadata.gnrt]
 is_placeholder = true
@@ -48,10 +48,10 @@ is_placeholder = true
 "write-all-vectored" = []
 
 [dependencies.futures-core]
-version = "^0.3.33"
+version = "^0.3.34"
 default_features = false
 [dependencies.futures-task]
-version = "^0.3.33"
+version = "^0.3.34"
 default_features = false
 [dependencies.pin-project-lite]
 version = "^0.2.6"
