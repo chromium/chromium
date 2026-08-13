@@ -10,21 +10,24 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
 
 /**
  * Tests the {@link HistogramWatcher} test util before native load.
  *
- * Contains exclusive tests that aren't run in all scenarios.
+ * <p>Contains exclusive tests that aren't run in all scenarios.
  *
- * Both histogram snapshots are taken through CachingUmaRecorder, so the deltas are calculated
+ * <p>Both histogram snapshots are taken through CachingUmaRecorder, so the deltas are calculated
  * across buckets of a single value, since CachingUmaRecorder stores the raw values.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@CommandLineFlags.Add(BaseSwitches.DISABLE_NATIVE_INITIALIZATION)
 public class HistogramWatcherWithoutNativeTest extends HistogramWatcherTestBase {
     @Test
     @MediumTest

@@ -13,12 +13,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 
 /** Test class for command lines. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Tests java -> native transition")
+@CommandLineFlags.Add(BaseSwitches.DISABLE_NATIVE_INITIALIZATION)
 public class CommandLineTest {
     // A reference command line. Note that switch2 is [brea\d], switch3 is [and "butter"],
     // and switch4 is [a "quoted" 'food'!]

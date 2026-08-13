@@ -27,12 +27,15 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.BaseSwitches;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ResettersForTesting.State;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.AsyncTask;
@@ -47,6 +50,7 @@ import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.TestLocale;
+import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
@@ -541,6 +545,19 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         Annotation[] testMethodAnnotations = getTestMethodAnnotations();
         CommandLineFlags.reset(testClass.getAnnotations(), testMethodAnnotations);
         TestAnimations.reset(testClass, null);
+
+        LibraryLoader libraryLoader = LibraryLoader.getInstance();
+        if (NativeLibraries.LIBRARIES.length > 0
+                && !libraryLoader.isInitialized()
+                && libraryLoader.getLibraryProcessType() != LibraryProcessType.PROCESS_UNINITIALIZED
+                && !CommandLine.getInstance()
+                        .hasSwitch(BaseSwitches.DISABLE_NATIVE_INITIALIZATION)) {
+            libraryLoader.ensureInitialized();
+            // Make code that checks LibraryLoader.isInitialized() return false, while still
+            // allowing unguarded JNI to succeed. This would ideally be removed, but some tests
+            // currently rely on it.
+            libraryLoader.resetForTesting();
+        }
 
         // Allows tests to set the locale before the feature list is initialized.
         applyTestLocale();

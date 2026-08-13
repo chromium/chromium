@@ -116,7 +116,7 @@ public class GURL {
     public static void ensureNativeInitializedForGURL() {
         if (LibraryLoader.getInstance().isInitialized()) return;
         long time = SystemClock.elapsedRealtime();
-        LibraryLoader.getInstance().ensureMainDexInitialized();
+        LibraryLoader.getInstance().ensureInitialized();
         // Record metrics only for the UI thread where the delay in loading the library is relevant.
         if (ThreadUtils.runningOnUiThread()) {
             // "MainDex" in name of histogram is a dated reference to when we used to have 2

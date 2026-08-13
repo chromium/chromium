@@ -15,6 +15,7 @@ import android.util.ArraySet;
 
 import org.jni_zero.JniZero;
 
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -27,7 +28,6 @@ import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.InitializeFeatureList;
 import org.chromium.chrome.modules.on_demand.OnDemandModule;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
@@ -169,7 +169,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
     }
 
     private void loadNativeLibraryAndInitFeatureList() {
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION)) {
+        if (CommandLine.getInstance().hasSwitch(BaseSwitches.DISABLE_NATIVE_INITIALIZATION)) {
             return;
         }
 

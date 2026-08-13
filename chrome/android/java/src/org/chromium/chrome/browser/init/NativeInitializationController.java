@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.init;
 
 import android.content.Intent;
 
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -13,7 +14,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,11 +74,11 @@ class NativeInitializationController {
      * process.
      *
      * @param allocateChildConnection Whether a spare child connection should be allocated. Set to
-     *                                false if you know that no new renderer is needed.
+     *     false if you know that no new renderer is needed.
      */
     public void startBackgroundTasks(final boolean allocateChildConnection) {
         ThreadUtils.assertOnUiThread();
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION)) {
+        if (CommandLine.getInstance().hasSwitch(BaseSwitches.DISABLE_NATIVE_INITIALIZATION)) {
             Log.i(TAG, "Exit early and start Chrome without loading native library!");
             return;
         }

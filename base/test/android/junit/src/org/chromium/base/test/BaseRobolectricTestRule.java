@@ -109,7 +109,12 @@ public class BaseRobolectricTestRule implements TestRule {
         // Whether or not native is loaded is a global one-way switch, so do it automatically so
         // that it is always in the same state.
         if (NativeLibraries.LIBRARIES.length > 0) {
-            LibraryLoader.getInstance().ensureMainDexInitialized();
+            LibraryLoader.getInstance().ensureInitialized();
+            // Make code that checks LibraryLoader.isInitialized() return false, while still
+            // allowing unguarded JNI to succeed. This would ideally be removed in favor of
+            // feature-specific initialization flags, since in Robolectric only a portion of native
+            // code exists.
+            LibraryLoader.getInstance().resetForTesting();
         }
 
         sPausedExecutor = new PausedExecutorService();

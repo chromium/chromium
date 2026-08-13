@@ -51,7 +51,6 @@ import org.robolectric.shadows.ShadowPowerManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Token;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -242,9 +241,6 @@ public class IntentHandlerRobolectricTest {
 
     @Before
     public void setUp() {
-        // To allow use of Origin.
-        LibraryLoader.getInstance().ensureMainDexInitialized();
-
         IntentHandlerJni.setInstanceForTesting(mNativeMock);
 
         ExternalIntentUrlCheckerJni.setInstanceForTesting(mExternalIntentUrlCheckerNativeMock);
