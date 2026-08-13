@@ -1624,6 +1624,12 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
 #endif  // !defined(BUILDING_CHROME_RENDERER)
 }
 
+#if BUILDFLAG(IS_MAC)
+int NoOpMain(content::MainFunctionParams main_parameters) {
+  return 0;
+}
+#endif
+
 std::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
     const std::string& process_type,
     content::MainFunctionParams main_function_params) {
@@ -1636,6 +1642,7 @@ std::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
       {switches::kRelauncherProcess, mac_relauncher::internal::RelauncherMain},
       {switches::kCodeSignCloneCleanupProcess,
        code_sign_clone_manager::internal::ChromeCodeSignCloneCleanupMain},
+      {switches::kNoOpForTestingProcess, NoOpMain},
   };
 
   for (size_t i = 0; i < std::size(kMainFunctions); ++i) {
