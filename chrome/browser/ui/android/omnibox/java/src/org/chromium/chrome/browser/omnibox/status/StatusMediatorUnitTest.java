@@ -79,7 +79,7 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
+import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -177,6 +177,7 @@ public final class StatusMediatorUnitTest {
                 .when(mAutocompleteInput)
                 .getPreviewMatchUrl();
         doReturn(mRequestTypeSupplier).when(mAutocompleteInput).getRequestTypeSupplier();
+        doReturn(DisplayState.WEBSITE).when(mAutocompleteInput).getDisplayState();
         doReturn(AutocompleteInput.AutocompleteState.ENABLED)
                 .when(mAutocompleteInput)
                 .getAutocompleteState();
@@ -337,8 +338,8 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.EXACT_MATCH_FAVICONS)
-    public void previewUrlChanged_autocompleteEnabled_showFavicon() {
-        setAutocompleteState(AutocompleteInput.AutocompleteState.ENABLED);
+    public void previewUrlChanged_displayStateSuggestions_showFavicon() {
+        setDisplayState(DisplayState.SUGGESTIONS);
 
         mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
         mMediator.onFaviconFetched(JUnitTestGURLs.BLUE_1, mMockFaviconDrawable);
@@ -351,8 +352,8 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.EXACT_MATCH_FAVICONS)
-    public void previewUrlChanged_autocompleteStandby_showFavicon() {
-        setAutocompleteState(AutocompleteInput.AutocompleteState.STANDBY);
+    public void previewUrlChanged_displayStateDrafting_showFavicon() {
+        setDisplayState(DisplayState.DRAFTING);
 
         mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
         mMediator.onFaviconFetched(JUnitTestGURLs.BLUE_1, mMockFaviconDrawable);
@@ -365,8 +366,22 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.EXACT_MATCH_FAVICONS)
-    public void previewUrlChanged_autocompleteDisabled_noFavicon() {
-        setAutocompleteState(AutocompleteInput.AutocompleteState.DISABLED);
+    public void previewUrlChanged_displayStateDraftingNoFocus_showFavicon() {
+        setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+
+        mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
+        mMediator.onFaviconFetched(JUnitTestGURLs.BLUE_1, mMockFaviconDrawable);
+
+        assertEquals(
+                mMockFaviconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getDrawable(mContext));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.EXACT_MATCH_FAVICONS)
+    public void previewUrlChanged_displayStateWebsite_noFavicon() {
+        setDisplayState(DisplayState.WEBSITE);
 
         mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
         mMediator.onFaviconFetched(JUnitTestGURLs.BLUE_1, mMockFaviconDrawable);
@@ -1411,8 +1426,8 @@ public final class StatusMediatorUnitTest {
         assertFalse(mModel.get(StatusProperties.STATUS_VIEW_HOVER_ENABLED));
     }
 
-    private void setAutocompleteState(@AutocompleteState int state) {
-        doReturn(state).when(mAutocompleteInput).getAutocompleteState();
+    private void setDisplayState(@DisplayState int state) {
+        doReturn(state).when(mAutocompleteInput).getDisplayState();
         mMediator.beginInput(mFuseboxSessionState);
     }
 

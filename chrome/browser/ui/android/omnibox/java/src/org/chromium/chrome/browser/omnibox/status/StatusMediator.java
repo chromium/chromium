@@ -55,7 +55,7 @@ import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
+import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -591,16 +591,15 @@ public class StatusMediator
                 mInputSessionState == null
                         ? AutocompleteRequestType.SEARCH
                         : mInputSessionState.getAutocompleteInput().getRequestType();
-        @AutocompleteState
-        int autocompleteState =
+        @DisplayState
+        int displayState =
                 mInputSessionState == null
-                        ? AutocompleteState.DISABLED
-                        : mInputSessionState.getAutocompleteInput().getAutocompleteState();
-        // TODO(b/542569045): Replace AutocompleteState check with DisplayState !=
-        // DisplayState.WEBSITE when DisplayState lands.
-        boolean isAutocompleteActive =
-                autocompleteState == AutocompleteState.ENABLED
-                        || autocompleteState == AutocompleteState.STANDBY;
+                        ? DisplayState.WEBSITE
+                        : mInputSessionState.getAutocompleteInput().getDisplayState();
+        boolean shouldShowFavicon =
+                displayState == DisplayState.SUGGESTIONS
+                        || displayState == DisplayState.DRAFTING
+                        || displayState == DisplayState.DRAFTING_NO_FOCUS;
 
         if (PageClassificationUtils.isHubOrTabSearch(
                 mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))) {
@@ -615,11 +614,11 @@ public class StatusMediator
                             : R.string.accessibility_toolbar_exit_hub_search;
             applyBackgroundAndTooltipProperties();
             clickListener = hasIconOverride ? null : mOnStatusIconNavigateBackButtonPress;
-        } else if (isAutocompleteActive && previewMatchFaviconsEnabled && mShowPreviewMatchGlobe) {
+        } else if (shouldShowFavicon && previewMatchFaviconsEnabled && mShowPreviewMatchGlobe) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             iconRes = R.drawable.ic_globe_24dp;
             tintRes = mNavigationIconTintRes;
-        } else if (isAutocompleteActive
+        } else if (shouldShowFavicon
                 && previewMatchFaviconsEnabled
                 && mPreviewMatchFavicon != null) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
