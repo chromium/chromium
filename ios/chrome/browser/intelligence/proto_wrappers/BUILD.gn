@@ -191,7 +191,6 @@ source_set("utils") {
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:util",
     "//ios/chrome/browser/intelligence/features",
-    "//ios/chrome/browser/shared/model/utils",
     "//ios/web/public",
     "//url",
   ]

@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 
-#import "base/strings/string_util.h"
 #import "components/autofill/ios/browser/autofill_util.h"
-#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/web/public/content_type_util.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -20,12 +18,9 @@ bool CanExtractPageContextForWebState(web::WebState* web_state,
   const GURL& url = web_state->GetVisibleURL();
   const std::string mime_type = web_state->GetContentsMimeType();
 
-  const bool is_pdf = base::EqualsCaseInsensitiveASCII(
-      mime_type, kAdobePortableDocumentFormatMimeType);
-
   bool mime_type_ok = web::IsContentTypeHtml(mime_type) ||
                       web::IsContentTypeImage(mime_type) ||
-                      (is_pdf && pdf_enabled);
+                      (web::IsContentTypePdf(mime_type) && pdf_enabled);
 
   return url.SchemeIsHTTPOrHTTPS() && mime_type_ok;
 }

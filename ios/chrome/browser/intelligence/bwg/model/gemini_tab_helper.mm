@@ -52,7 +52,6 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
-#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
@@ -60,6 +59,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
+#import "ios/web/public/content_type_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "mojo/public/cpp/bindings/remote.h"
@@ -75,13 +75,8 @@ const base::TimeDelta kFullPageContextTimeout = base::Seconds(3);
 // Returns true if `mime_type` represents an extractable web page (HTML or
 // Image).
 bool IsExtractableMimeType(const std::string& mime_type) {
-  const std::string image = "image";
-  const bool is_image = mime_type.compare(0, image.size(), image) == 0;
-  return is_image ||
-         base::EqualsCaseInsensitiveASCII(mime_type,
-                                          kHyperTextMarkupLanguageMimeType) ||
-         base::EqualsCaseInsensitiveASCII(mime_type, kXHTMLMimeType) ||
-         base::EqualsCaseInsensitiveASCII(mime_type, kXMLMimeType);
+  return web::IsContentTypeHtml(mime_type) ||
+         web::IsContentTypeImage(mime_type);
 }
 
 // Helper to convert PageContextWrapperError to
@@ -395,8 +390,7 @@ IOSGeminiInvocationPageType GeminiTabHelper::GetCurrentPageType() {
   }
 
   const std::string mime_type = web_state_->GetContentsMimeType();
-  if (base::EqualsCaseInsensitiveASCII(mime_type,
-                                       kAdobePortableDocumentFormatMimeType)) {
+  if (web::IsContentTypePdf(mime_type)) {
     return IOSGeminiInvocationPageType::kPdfDocument;
   }
 
@@ -617,8 +611,7 @@ void GeminiTabHelper::PopulatePageContextFields() {
       completionCallback:base::BindRepeating(
                              &GeminiTabHelper::OnPageContextWrapperResponse,
                              weak_ptr_factory_.GetWeakPtr())];
-  const bool is_pdf = base::EqualsCaseInsensitiveASCII(
-      web_state_->GetContentsMimeType(), kAdobePortableDocumentFormatMimeType);
+  const bool is_pdf = web::IsContentTypePdf(web_state_->GetContentsMimeType());
   if (is_pdf) {
     page_context_wrapper_.shouldGetFullPagePDF = YES;
     page_context_wrapper_.shouldGetAnnotatedPageContent = NO;
