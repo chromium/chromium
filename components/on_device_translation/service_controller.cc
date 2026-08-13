@@ -215,7 +215,8 @@ void OnDeviceTranslationServiceController::CreateTranslator(
       *best_fit_target_language);
 
   LanguagePackRequirements language_pack_requirements =
-      GetLanguagePackRequirements(source_lang, target_lang);
+      GetLanguagePackRequirements(*best_fit_source_language,
+                                  *best_fit_target_language);
   std::vector<LanguagePackKey> to_be_registered_packs =
       language_pack_requirements.to_be_registered_packs;
   if (!to_be_registered_packs.empty()) {
