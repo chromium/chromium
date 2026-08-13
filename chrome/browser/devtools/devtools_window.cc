@@ -1717,7 +1717,17 @@ void DevToolsWindow::ActivateWindow() {
 }
 
 void DevToolsWindow::CloseWindow() {
-  Close(DevToolsClosedByAction::kCloseButton);
+  if (is_docked_) {
+    Close(DevToolsClosedByAction::kCloseButton);
+  } else {
+#if BUILDFLAG(IS_ANDROID)
+    main_web_contents_->Close();
+#else
+    if (browser_) {
+      browser_->GetWindow()->Close();
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
 }
 
 void DevToolsWindow::Close(DevToolsClosedByAction closed_by) {
