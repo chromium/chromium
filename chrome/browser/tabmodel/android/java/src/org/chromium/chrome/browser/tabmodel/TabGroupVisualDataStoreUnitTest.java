@@ -89,13 +89,6 @@ public class TabGroupVisualDataStoreUnitTest {
     }
 
     @Test
-    public void testColorMigration() {
-        assertFalse(TabGroupVisualDataStore.isColorInitialMigrationDone());
-        TabGroupVisualDataStore.setColorInitialMigrationDone();
-        assertTrue(TabGroupVisualDataStore.isColorInitialMigrationDone());
-    }
-
-    @Test
     public void testStoreAndGetTabGroupTitle_Token() {
         TabGroupVisualDataStore.storeTabGroupTitle(TOKEN_ID, TAB_TITLE);
         assertEquals(TAB_TITLE, TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID));

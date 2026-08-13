@@ -36,9 +36,6 @@ public class TabGroupVisualDataStore {
     private static final String TAB_GROUP_TITLES_TOKEN_FILE_NAME = "tab_group_titles_token";
     private static final String TAB_GROUP_COLLAPSED_TOKEN_FILE_NAME = "tab_group_collapsed_token";
     private static final String TAB_GROUP_COLORS_TOKEN_FILE_NAME = "tab_group_colors_token";
-    private static final String COLOR_INITIAL_MIGRATION_CHECK = "migration_check";
-    private static final int COLOR_INITIAL_MIGRATION_NOT_DONE = 0;
-    private static final int COLOR_INITIAL_MIGRATION_DONE = 1;
     private static final Map<Token, TabGroupCollectionData> sGroupsCache = new HashMap<>();
 
     /**
@@ -124,25 +121,6 @@ public class TabGroupVisualDataStore {
     private static SharedPreferences getTitleSharedPreferences() {
         return ContextUtils.getApplicationContext()
                 .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
-    }
-
-    /**
-     * Returns whether the initial migration of tab group colors has been done.
-     *
-     * @return Whether the initial migration of tab group colors has been done.
-     */
-    /* package */ static boolean isColorInitialMigrationDone() {
-        return getColorSharedPreferences()
-                        .getInt(COLOR_INITIAL_MIGRATION_CHECK, COLOR_INITIAL_MIGRATION_NOT_DONE)
-                == COLOR_INITIAL_MIGRATION_DONE;
-    }
-
-    /** This method sets the initial migration of tab group colors as done. */
-    /* package */ static void setColorInitialMigrationDone() {
-        getColorSharedPreferences()
-                .edit()
-                .putInt(COLOR_INITIAL_MIGRATION_CHECK, COLOR_INITIAL_MIGRATION_DONE)
-                .apply();
     }
 
     /**

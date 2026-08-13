@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,8 +48,6 @@ import java.util.Set;
 public class TabGroupColorUtilsUnitTest {
 
     private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
-    private static final String MIGRATION_CHECK = "migration_check";
-    private static final int MIGRATION_DONE = 1;
 
     private static final int ROOT_ID_1 = 123;
     private static final int ROOT_ID_2 = 456;
@@ -160,33 +157,6 @@ public class TabGroupColorUtilsUnitTest {
 
         verify(mEditor).putInt(eq(String.valueOf(ROOT_ID_1)), eq(COLOR_1));
         verify(mPutIntEditor).apply();
-    }
-
-    @Test
-    public void testAssignDefaultTabGroupColors() {
-        Set<Token> tabGroupIdsSet = new ArraySet<>();
-        tabGroupIdsSet.add(TAB_GROUP_ID_1);
-        tabGroupIdsSet.add(TAB_GROUP_ID_2);
-        tabGroupIdsSet.add(TAB_GROUP_ID_3);
-
-        when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
-        // Mock that there is no stored tab group color for these root ids.
-        when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_1), INVALID_COLOR_ID))
-                .thenReturn(INVALID_COLOR_ID);
-        when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_2), INVALID_COLOR_ID))
-                .thenReturn(INVALID_COLOR_ID);
-        when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_3), INVALID_COLOR_ID))
-                .thenReturn(INVALID_COLOR_ID);
-
-        TabGroupColorUtils.assignTabGroupColorsIfApplicable(mTabModel);
-
-        // Test the scenario where no tab groups have colors so the first colors in order are
-        // assigned.
-        verify(mEditor).putInt(eq(String.valueOf(ROOT_ID_1)), eq(COLOR_1));
-        verify(mEditor).putInt(eq(String.valueOf(ROOT_ID_2)), eq(COLOR_2));
-        verify(mEditor).putInt(eq(String.valueOf(ROOT_ID_3)), eq(COLOR_3));
-        verify(mEditor).putInt(eq(MIGRATION_CHECK), eq(MIGRATION_DONE));
-        verify(mPutIntEditor, times(4)).apply();
     }
 
     @Test

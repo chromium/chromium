@@ -299,7 +299,6 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
-import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -3407,16 +3406,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         mUndoBarPopupController =
                 new TabUndoBarController(this, mTabModelSelector, this, dialogVisibilitySupplier);
-
-        // TODO(crbug.com/376668040): Remove this once enough time has passed
-        // most clients have upgraded to have colors.
-        TabModelUtils.runOnTabStateInitialized(
-                getTabModelSelectorSupplier().get(),
-                mCallbackController.makeCancelable(
-                        (tabModelSelectorReturn) -> {
-                            TabGroupColorUtils.assignTabGroupColorsIfApplicable(
-                                    tabModelSelectorReturn.getCurrentModel());
-                        }));
 
         mInactivityTrackerSupplier.set(
                 new ChromeInactivityTracker(
