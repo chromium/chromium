@@ -94,7 +94,6 @@
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
-#import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_constants.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
@@ -178,8 +177,6 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
-#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
-#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/coordinator/quick_delete_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_coordinator_delegate.h"
@@ -228,7 +225,6 @@
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_commands.h"
@@ -271,7 +267,6 @@
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
@@ -331,7 +326,6 @@
     BubblePresenterDelegate,
     CollaborationGroupCommands,
     ContextualPanelEntrypointIPHCommands,
-    ContextualSheetCommands,
     DefaultBrowserGenericPromoCommands,
     DefaultBrowserPromoNonModalCommands,
     DefaultPromoNonModalPresentationDelegate,
@@ -356,9 +350,7 @@
     RecentTabsCoordinatorDelegate,
     RepostFormCoordinatorDelegate,
     RepostFormTabHelperDelegate,
-    SendTabToSelfCommands,
-    SendTabToSelfCoordinatorDelegate,
-    SharedTabGroupLastTabAlertCommands,
+
     SnackbarCoordinatorDelegate,
     SnapshotGeneratorDelegate,
     StoreKitCoordinatorDelegate,
@@ -531,8 +523,6 @@
   BrowserOmniboxStateProvider* _browserOmniboxStateProvider;
   SideSwipeCoordinator* _sideSwipeCoordinator;
   raw_ptr<FullscreenController> _fullscreenController;
-  // The coordinator that shows the Send Tab To Self UI.
-  SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
   BookmarksCoordinator* _bookmarksCoordinator;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
   // Used to display the Voice Search UI.  Nil if not visible.
@@ -545,7 +535,6 @@
   OmniboxPositionChoiceCoordinator* _omniboxPositionChoiceCoordinator;
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
-  ContextualSheetCoordinator* _contextualSheetCoordinator;
 
   // The coordinator that manages the BrowserLayoutViewController.
   BrowserLayoutCoordinator* _browserLayoutCoordinator;
@@ -565,6 +554,7 @@
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
   QuickDeleteCoordinator* _quickDeleteCoordinator;
+
   LensPromoCoordinator* _lensPromoCoordinator;
   EnhancedSafeBrowsingPromoCoordinator* _enhancedSafeBrowsingPromoCoordinator;
   PriceTrackingPromoCoordinator* _priceTrackingPromoCoordinator;
@@ -574,10 +564,6 @@
       _trustedVaultReauthenticationCoordinator;
   SyncPresenterCompletionCallback
       _trustedVaultReauthenticationCoordinatorCompletion;
-
-  // Coordinator that handles confirmation dialog when the last tab of a shared
-  // group is closed.
-  TabGroupConfirmationCoordinator* _lastTabClosingAlert;
 
   // The coordinator for the Search What You See promo.
   SearchWhatYouSeePromoCoordinator* _searchWhatYouSeePromoCoordinator;
@@ -855,12 +841,6 @@
   }
 }
 
-- (void)stopSendTabToSelf {
-  [_sendTabToSelfCoordinator stop];
-  _sendTabToSelfCoordinator.delegate = nil;
-  _sendTabToSelfCoordinator = nil;
-}
-
 - (void)signinCoordinatorCompletionWithCoordinator:
     (SigninCoordinator*)coordinator {
   CHECK(!coordinator || _signinCoordinator == coordinator,
@@ -1041,7 +1021,6 @@
     @protocol(BrowserCoordinatorCommands),
     @protocol(CollaborationGroupCommands),
     @protocol(ContextualPanelEntrypointIPHCommands),
-    @protocol(ContextualSheetCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(PromosManagerCommands),
     @protocol(FindInPageCommands),
@@ -1049,8 +1028,6 @@
     @protocol(NewTabPageCommands),
     @protocol(NonModalSignInPromoCommands),
     @protocol(QuickDeleteCommands),
-    @protocol(SendTabToSelfCommands),
-    @protocol(SharedTabGroupLastTabAlertCommands),
     @protocol(SyncPresenterCommands),
     @protocol(TabPickerCommands),
     @protocol(TextZoomCommands),
@@ -1523,15 +1500,12 @@
   [self.netExportCoordinator stop];
   self.netExportCoordinator = nil;
 
-  [self stopSendTabToSelf];
-
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
 
   [_credentialProviderPromoCoordinator stop];
   _credentialProviderPromoCoordinator = nil;
-
 
   [self.defaultBrowserGenericPromoCoordinator stop];
   self.defaultBrowserGenericPromoCoordinator = nil;
@@ -1545,10 +1519,6 @@
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
 
-  [_lastTabClosingAlert stop];
-  _lastTabClosingAlert = nil;
-
-  [self hideContextualSheet];
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
   [self dismissPriceTrackingPromo];
@@ -1642,7 +1612,8 @@
 
   if (reason == IPHDismissalReasonType::kTappedAnchorView ||
       reason == IPHDismissalReasonType::kTappedIPH) {
-    [self openContextualSheet];
+    [HandlerForProtocol(self.dispatcher, ContextualSheetCommands)
+        openContextualSheet];
     [self recordContextualPanelEntrypointIPHDismissed:
               ContextualPanelIPHDismissedReason::UserInteracted];
     return;
@@ -1896,44 +1867,6 @@
                          browser:self.browser];
   self.addCreditCardCoordinator.delegate = self;
   [self.addCreditCardCoordinator start];
-}
-
-#pragma mark - SendTabToSelfCommands
-
-- (void)showSendTabToSelfUI:(const GURL&)url
-                      title:(NSString*)title
-                 entryPoint:(send_tab_to_self::ShareEntryPoint)entryPoint {
-  [self sendTabToSelfToDeviceWithURL:url
-                               title:title
-                            deviceID:nil
-                          deviceName:nil
-                          entryPoint:entryPoint];
-}
-
-- (void)sendTabToSelfToDeviceWithURL:(const GURL&)url
-                               title:(NSString*)title
-                            deviceID:(NSString*)deviceID
-                          deviceName:(NSString*)deviceName
-                          entryPoint:
-                              (send_tab_to_self::ShareEntryPoint)entryPoint {
-  [_sendTabToSelfCoordinator stop];
-  _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                             url:url
-                           title:title
-           targetDeviceCacheGUID:deviceID
-                targetDeviceName:deviceName
-                      entryPoint:entryPoint];
-  _sendTabToSelfCoordinator.delegate = self;
-
-  __weak SendTabToSelfCoordinator* weakSendTabToSelfCoordinator =
-      _sendTabToSelfCoordinator;
-  ExecuteWhenTransitionsComplete(
-      ^{
-        [weakSendTabToSelfCoordinator start];
-      },
-      self.viewController);
 }
 
 #if !defined(NDEBUG)
@@ -2297,8 +2230,6 @@
 
   [self hideReaderModeBlurOverlay];
 
-  [self stopSendTabToSelf];
-
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
@@ -2309,9 +2240,6 @@
 
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
-
-  [_lastTabClosingAlert stop];
-  _lastTabClosingAlert = nil;
 
   [self updateLensUIForBackground];
 
@@ -2410,59 +2338,6 @@
 - (void)dismissContextualPanelEntrypointIPH:(BOOL)animated {
   [_contextualPanelEntrypointHelpPresenter dismissAnimated:animated];
   _contextualPanelEntrypointHelpPresenter = nil;
-}
-
-#pragma mark - ContextualSheetCommands
-
-- (void)openContextualSheet {
-  web::WebState* activeWebState = self.activeWebState;
-  if (!activeWebState) {
-    return;
-  }
-
-  // Close the keyboard before opening the sheet.
-  UIView* view = activeWebState->GetView();
-  if (view) {
-    [view endEditing:YES];
-  }
-
-  ContextualPanelTabHelper* contextualPanelTabHelper =
-      ContextualPanelTabHelper::FromWebState(activeWebState);
-  contextualPanelTabHelper->OpenContextualPanel();
-
-  [self showContextualSheetUIIfActive];
-}
-
-- (void)closeContextualSheet {
-  web::WebState* activeWebState = self.activeWebState;
-  if (activeWebState) {
-    ContextualPanelTabHelper* contextualPanelTabHelper =
-        ContextualPanelTabHelper::FromWebState(activeWebState);
-    contextualPanelTabHelper->CloseContextualPanel();
-  }
-
-  [self hideContextualSheet];
-}
-
-- (void)showContextualSheetUIIfActive {
-  web::WebState* activeWebState = self.activeWebState;
-  DCHECK(activeWebState);
-  ContextualPanelTabHelper* contextualPanelTabHelper =
-      ContextualPanelTabHelper::FromWebState(activeWebState);
-  if (!contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()) {
-    return;
-  }
-
-  _contextualSheetCoordinator = [[ContextualSheetCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  _contextualSheetCoordinator.presenter = self.viewController;
-  [_contextualSheetCoordinator start];
-}
-
-- (void)hideContextualSheet {
-  [_contextualSheetCoordinator stop];
-  _contextualSheetCoordinator = nil;
 }
 
 #pragma mark - DefaultBrowserPromoCommands
@@ -3011,110 +2886,6 @@
       ->SetPresentationContext(nullptr);
 }
 
-#pragma mark - SharedTabGroupLastTabAlertCommands
-
-- (void)showLastTabInSharedGroupAlert:
-    (SharedTabGroupLastTabAlertCommand*)command {
-  UIViewController* viewController = command.baseViewController
-                                         ? command.baseViewController
-                                         : self.viewController;
-  UIView* sourceView =
-      command.sourceView ? command.sourceView : self.viewController.view;
-
-  _lastTabClosingAlert = [[TabGroupConfirmationCoordinator alloc]
-      initWithBaseViewController:viewController
-                         browser:self.browser
-                      actionType:command.actionType
-                      sourceView:sourceView];
-
-  __weak BrowserCoordinator* weakSelf = self;
-  _lastTabClosingAlert.primaryAction = ^{
-    [weakSelf runLeaveOrDeleteCompletion:command.group
-                          viewController:viewController];
-  };
-  if (command.actionType == TabGroupActionType::kCloseLastTabUnknownRole) {
-    // If the user's member role is unknown (i.e. sync not complete yet),
-    // cannot show option to leave/keep group when attempting to close last
-    // tab. Instead, close last tab and replace with new tab after an error
-    // alert is shown.
-    _lastTabClosingAlert.primaryAction = ^{
-      [weakSelf runKeepGroup:command.group lastTabID:command.tabID];
-    };
-  }
-  _lastTabClosingAlert.secondaryAction = ^{
-    if (command.closing) {
-      [weakSelf runKeepGroup:command.group lastTabID:command.tabID];
-    }
-  };
-
-  _lastTabClosingAlert.tabGroupName = command.groupTitle;
-  _lastTabClosingAlert.showAsAlert = command.displayAsAlert;
-  _lastTabClosingAlert.canCancel = command.canCancel;
-  [_lastTabClosingAlert start];
-}
-
-#pragma mark - SharedTabGroupLastTabAlertCommands helpers
-
-// Runs `leaveOrDeleteCompletion`. If not nil, calls it with `kSuccess`.
-- (void)runLeaveOrDeleteCompletion:(const TabGroup*)group
-                    viewController:(UIViewController*)viewController {
-  __weak BrowserCoordinator* weakSelf = self;
-  base::OnceCallback<void(
-      collaboration::CollaborationControllerDelegate::ResultCallback)>
-      completionCallback = base::BindOnce(
-          ^(collaboration::CollaborationControllerDelegate::ResultCallback
-                resultCallback) {
-            BrowserCoordinator* strongSelf = weakSelf;
-            if (!strongSelf) {
-              std::move(resultCallback)
-                  .Run(collaboration::CollaborationControllerDelegate::Outcome::
-                           kCancel);
-              return;
-            }
-            std::move(resultCallback)
-                .Run(collaboration::CollaborationControllerDelegate::Outcome::
-                         kSuccess);
-          });
-
-  std::unique_ptr<collaboration::IOSCollaborationControllerDelegate> delegate =
-      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          self.browser, CreateControllerDelegateParamsFromProfile(
-                            self.profile, viewController,
-                            collaboration::FlowType::kLeaveOrDelete));
-  delegate->SetLeaveOrDeleteConfirmationCallback(std::move(completionCallback));
-
-  collaboration::CollaborationService* collaborationService =
-      collaboration::CollaborationServiceFactory::GetForProfile(self.profile);
-  collaboration::CollaborationServiceLeaveOrDeleteEntryPoint entryPoint =
-      collaboration::CollaborationServiceLeaveOrDeleteEntryPoint::kUnknown;
-  collaborationService->StartLeaveOrDeleteFlow(
-      std::move(delegate), group->tab_group_id(), entryPoint);
-  _lastTabClosingAlert = nil;
-}
-
-// Replaces the last tab with a New Tab Page (NTP).
-- (void)runKeepGroup:(const TabGroup*)group lastTabID:(web::WebStateID)tabID {
-  TabGroupService* groupService =
-      TabGroupServiceFactory::GetForProfile(self.profile);
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  std::unique_ptr<web::WebState> webState =
-      groupService->WebStateToAddToEmptyGroup();
-  webStateList->InsertWebState(
-      std::move(webState),
-      WebStateList::InsertionParams::Automatic().Activate().InGroup(group));
-
-  const WebStateSearchCriteria& searchCriteria = WebStateSearchCriteria{
-      .identifier = tabID,
-  };
-
-  int index = GetWebStateIndex(webStateList, searchCriteria);
-  if (index != WebStateList::kInvalidIndex) {
-    webStateList->CloseWebStateAt(index,
-                                  WebStateList::ClosingReason::kUserAction);
-  }
-  _lastTabClosingAlert = nil;
-}
-
 #pragma mark - WebContentCommands
 
 - (void)showAppStoreWithParameters:(NSDictionary*)productParameters {
@@ -3186,14 +2957,6 @@
   return [self.browserContentCoordinator.editMenuBuilder
       buildEditMenuWithBuilder:builder
                     inWebState:webState];
-}
-
-#pragma mark - SendTabToSelfCoordinatorDelegate
-
-- (void)sendTabToSelfCoordinatorWantsToBeStopped:
-    (SendTabToSelfCoordinator*)coordinator {
-  CHECK_EQ(_sendTabToSelfCoordinator, coordinator, base::NotFatalUntil::M150);
-  [self stopSendTabToSelf];
 }
 
 #pragma mark - NetExportTabHelperDelegate
@@ -3885,6 +3648,7 @@
   self.active = WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
                     ->IsWebUsageEnabled();
 }
+
 #pragma mark - QuickDeleteCommands
 
 - (void)showQuickDeleteAndCanPerformRadialWipeAnimation:
@@ -3961,7 +3725,6 @@
                                           completion:dismissalCompletion];
 }
 
-
 #pragma mark - NotificationsOptInCoordinatorDelegate
 
 - (void)notificationsOptInScreenDidFinish:
@@ -3970,20 +3733,18 @@
   [self dismissNotificationsOptIn];
 }
 
-
 #pragma mark - NonModalSignInPromoCommands
 
 - (void)showNonModalSignInPromoWithType:(NonModalSignInPromoType)promoType {
   if (self.nonModalSignInPromoCoordinator || !self.isStarted) {
     return;
   }
-    self.nonModalSignInPromoCoordinator =
-        [[NonModalSignInPromoCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:signin::GetRegularBrowser(self.browser)
-                             promoType:promoType];
-    [self.nonModalSignInPromoCoordinator start];
-    self.nonModalSignInPromoCoordinator.delegate = self;
+  self.nonModalSignInPromoCoordinator = [[NonModalSignInPromoCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:signin::GetRegularBrowser(self.browser)
+                       promoType:promoType];
+  [self.nonModalSignInPromoCoordinator start];
+  self.nonModalSignInPromoCoordinator.delegate = self;
 }
 
 #pragma mark - NonModalSignInPromoCoordinatorDelegate

@@ -10,13 +10,14 @@
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
+#import "components/collaboration/public/collaboration_flow_type.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_coordinator.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/payments/coordinator/payments_suggestion_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/autofill/public/autofill_settings_navigator.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/coordinator/payments_scan_save_and_fill_offer_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/infobar_autofill_edit_profile_bottom_sheet_handler.h"
@@ -32,7 +34,11 @@
 #import "ios/chrome/browser/autofill/ui_bundled/error_dialog/autofill_error_dialog_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_coordinator.h"
 #import "ios/chrome/browser/autofill/wallet_reminder_notice/coordinator/wallet_reminder_notice_coordinator.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_passwords_coordinator.h"
+#import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
@@ -64,12 +70,19 @@
 #import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h"
+#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
+#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
@@ -79,6 +92,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/cobalt_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
@@ -106,9 +120,13 @@
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_engine_choice_commands.h"
+#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
+#import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
+#import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tips_passwords_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
@@ -117,6 +135,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/layout_guide/layout_guide_swift.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
@@ -126,6 +145,8 @@
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
 #import "ios/chrome/browser/synced_set_up/utils/utils.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/webauthn/coordinator/passkey_incognito_interstitial_coordinator.h"
@@ -147,6 +168,7 @@ const char kChromeAppStoreUrl[] =
                                 AddContactsCommands,
                                 AutofillCommands,
                                 CobaltCommands,
+                                ContextualSheetCommands,
                                 CountryCodePickerCommands,
                                 DockingPromoCommands,
                                 DownloadListCommands,
@@ -177,6 +199,9 @@ const char kChromeAppStoreUrl[] =
                                 SaveToPhotosCommands,
                                 SearchEngineChoiceCommands,
                                 SearchEngineChoiceCoordinatorDelegate,
+                                SendTabToSelfCommands,
+                                SendTabToSelfCoordinatorDelegate,
+                                SharedTabGroupLastTabAlertCommands,
                                 SyncedSetUpCommands,
                                 SyncedSetUpCoordinatorDelegate,
                                 TipsPasswordsCommands,
@@ -209,6 +234,7 @@ const char kChromeAppStoreUrl[] =
   ChromeCoordinator* _cobaltCoordinator;
   ChromeCoordinator* _cobaltAlertCoordinator;
   ChromeCoordinator* _cobaltPopupCoordinator;
+  ContextualSheetCoordinator* _contextualSheetCoordinator;
   CountryCodePickerCoordinator* _countryCodePickerCoordinator;
   CredentialSuggestionBottomSheetCoordinator*
       _credentialSuggestionBottomSheetCoordinator;
@@ -222,6 +248,7 @@ const char kChromeAppStoreUrl[] =
   API_AVAILABLE(ios(18.4))
   FileUploadPanelCoordinator* _fileUploadPanelCoordinator;
   GoogleOneCoordinator* _googleOneCoordinator;
+  TabGroupConfirmationCoordinator* _lastTabClosingAlert;
   LevelUpCoordinator* _levelUpCoordinator;
   MiniMapCoordinator* _miniMapCoordinator;
   PageActionMenuCoordinator* _pageActionMenuCoordinator;
@@ -244,6 +271,7 @@ const char kChromeAppStoreUrl[] =
   SaveToPhotosCoordinator* _saveToPhotosCoordinator;
   SearchEngineChoiceCoordinator* _searchEngineChoiceCoordinator;
   ProceduralBlock _searchEngineChoiceClosedBlock;
+  SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
   SharingCoordinator* _sharingCoordinator;
   SyncedSetUpCoordinator* _syncedSetUpCoordinator;
   ProceduralBlock _runAfterSyncedSetUpDismissal;
@@ -302,6 +330,7 @@ const char kChromeAppStoreUrl[] =
   [self hideCobalt];
   [self hideCobaltAlert];
   [self hideCobaltPopup];
+  [self hideContextualSheet];
   [self hideCountryCodePicker];
   [self dismissDockingPromo];
   if (IsDownloadListEnabled()) {
@@ -315,6 +344,8 @@ const char kChromeAppStoreUrl[] =
     [self hideFileUploadPanel];
   }
   [self hideGoogleOne];
+  [_lastTabClosingAlert stop];
+  _lastTabClosingAlert = nil;
   [self dismissLevelUp];
   [self dismissPasskeyCreation];
   [self dismissPasskeySuggestions];
@@ -333,6 +364,7 @@ const char kChromeAppStoreUrl[] =
   [self hideSaveToDrive];
   [self stopSaveToPhotos];
   [self stopSearchEngineChoiceScreen];
+  [self stopSendTabToSelf];
   [self stopSharingSheet];
   [self stopSyncedSetUpCoordinator];
   [self dismissPasswordsTip];
@@ -354,6 +386,13 @@ const char kChromeAppStoreUrl[] =
 }
 
 #pragma mark - Private helpers
+
+// Stops Send Tab To Self.
+- (void)stopSendTabToSelf {
+  [_sendTabToSelfCoordinator stop];
+  _sendTabToSelfCoordinator.delegate = nil;
+  _sendTabToSelfCoordinator = nil;
+}
 
 // Stops the Enterprise Prompt coordinator.
 - (void)stopEnterprisePromptCoordinator {
@@ -428,6 +467,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(AddContactsCommands),
     @protocol(AutofillCommands),
     @protocol(CobaltCommands),
+    @protocol(ContextualSheetCommands),
     @protocol(CountryCodePickerCommands),
     @protocol(DockingPromoCommands),
     @protocol(DownloadListCommands),
@@ -452,6 +492,8 @@ const char kChromeAppStoreUrl[] =
     @protocol(SaveToDriveCommands),
     @protocol(SaveToPhotosCommands),
     @protocol(SearchEngineChoiceCommands),
+    @protocol(SendTabToSelfCommands),
+    @protocol(SharedTabGroupLastTabAlertCommands),
     @protocol(SyncedSetUpCommands),
     @protocol(TipsPasswordsCommands),
     @protocol(UnitConversionCommands),
@@ -955,6 +997,60 @@ const char kChromeAppStoreUrl[] =
 - (void)hideCobaltPopup {
   [_cobaltPopupCoordinator stop];
   _cobaltPopupCoordinator = nil;
+}
+
+#pragma mark - ContextualSheetCommands
+
+- (void)openContextualSheet {
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState) {
+    return;
+  }
+
+  // Close the keyboard before opening the sheet.
+  UIView* view = activeWebState->GetView();
+  if (view) {
+    [view endEditing:YES];
+  }
+
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(activeWebState);
+  contextualPanelTabHelper->OpenContextualPanel();
+
+  [self showContextualSheetUIIfActive];
+}
+
+- (void)closeContextualSheet {
+  web::WebState* activeWebState = self.activeWebState;
+  if (activeWebState) {
+    ContextualPanelTabHelper* contextualPanelTabHelper =
+        ContextualPanelTabHelper::FromWebState(activeWebState);
+    contextualPanelTabHelper->CloseContextualPanel();
+  }
+
+  [self hideContextualSheet];
+}
+
+- (void)showContextualSheetUIIfActive {
+  web::WebState* activeWebState = self.activeWebState;
+  CHECK(activeWebState, base::NotFatalUntil::M160);
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(activeWebState);
+  if (!contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()) {
+    return;
+  }
+
+  _contextualSheetCoordinator = [[ContextualSheetCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser];
+  _contextualSheetCoordinator.presenter =
+      (id<ContextualSheetPresenter>)_baseViewController;
+  [_contextualSheetCoordinator start];
+}
+
+- (void)hideContextualSheet {
+  [_contextualSheetCoordinator stop];
+  _contextualSheetCoordinator = nil;
 }
 
 #pragma mark - CountryCodePickerCommands
@@ -1740,6 +1836,164 @@ const char kChromeAppStoreUrl[] =
       block();
     }
   }
+}
+
+#pragma mark - SendTabToSelfCommands
+
+- (void)showSendTabToSelfUI:(const GURL&)url
+                      title:(NSString*)title
+                 entryPoint:(send_tab_to_self::ShareEntryPoint)entryPoint {
+  [self sendTabToSelfToDeviceWithURL:url
+                               title:title
+                            deviceID:nil
+                          deviceName:nil
+                          entryPoint:entryPoint];
+}
+
+- (void)sendTabToSelfToDeviceWithURL:(const GURL&)url
+                               title:(NSString*)title
+                            deviceID:(NSString*)deviceID
+                          deviceName:(NSString*)deviceName
+                          entryPoint:
+                              (send_tab_to_self::ShareEntryPoint)entryPoint {
+  [self stopSendTabToSelf];
+  _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser
+                             url:url
+                           title:title
+           targetDeviceCacheGUID:deviceID
+                targetDeviceName:deviceName
+                      entryPoint:entryPoint];
+  _sendTabToSelfCoordinator.delegate = self;
+
+  __weak SendTabToSelfCoordinator* weakSendTabToSelfCoordinator =
+      _sendTabToSelfCoordinator;
+  ExecuteWhenTransitionsComplete(
+      ^{
+        [weakSendTabToSelfCoordinator start];
+      },
+      _baseViewController);
+}
+
+#pragma mark - SendTabToSelfCoordinatorDelegate
+
+- (void)sendTabToSelfCoordinatorWantsToBeStopped:
+    (SendTabToSelfCoordinator*)coordinator {
+  // TODO(crbug.com/545567389): Use a command instead of a delegate here.
+  CHECK_EQ(_sendTabToSelfCoordinator, coordinator, base::NotFatalUntil::M150);
+  [self stopSendTabToSelf];
+}
+
+#pragma mark - SharedTabGroupLastTabAlertCommands
+
+- (void)showLastTabInSharedGroupAlert:
+    (SharedTabGroupLastTabAlertCommand*)command {
+  UIViewController* viewController = command.baseViewController
+                                         ? command.baseViewController
+                                         : _baseViewController;
+  UIView* sourceView =
+      command.sourceView ? command.sourceView : _baseViewController.view;
+
+  _lastTabClosingAlert = [[TabGroupConfirmationCoordinator alloc]
+      initWithBaseViewController:viewController
+                         browser:_browser
+                      actionType:command.actionType
+                      sourceView:sourceView];
+
+  // TODO(crbug.com/545566706): This should be done in
+  // TabGroupConfirmationCoordinator if possible.
+  __weak BrowserModalHost* weakSelf = self;
+  _lastTabClosingAlert.primaryAction = ^{
+    [weakSelf runLeaveOrDeleteCompletion:command.group
+                          viewController:viewController];
+  };
+  if (command.actionType == TabGroupActionType::kCloseLastTabUnknownRole) {
+    // If the user's member role is unknown (i.e. sync not complete yet),
+    // cannot show option to leave/keep group when attempting to close last
+    // tab. Instead, close last tab and replace with new tab after an error
+    // alert is shown.
+    _lastTabClosingAlert.primaryAction = ^{
+      [weakSelf runKeepGroup:command.group lastTabID:command.tabID];
+    };
+  }
+  _lastTabClosingAlert.secondaryAction = ^{
+    if (command.closing) {
+      [weakSelf runKeepGroup:command.group lastTabID:command.tabID];
+    }
+  };
+
+  _lastTabClosingAlert.tabGroupName = command.groupTitle;
+  _lastTabClosingAlert.showAsAlert = command.displayAsAlert;
+  _lastTabClosingAlert.canCancel = command.canCancel;
+  [_lastTabClosingAlert start];
+}
+
+#pragma mark - SharedTabGroupLastTabAlertCommands helpers
+
+// Runs `leaveOrDeleteCompletion`. If not nil, calls it with `kSuccess`.
+// TODO(crbug.com/545566706): This should be done in
+// TabGroupConfirmationCoordinator if possible.
+- (void)runLeaveOrDeleteCompletion:(const TabGroup*)group
+                    viewController:(UIViewController*)viewController {
+  __weak BrowserModalHost* weakSelf = self;
+  base::OnceCallback<void(
+      collaboration::CollaborationControllerDelegate::ResultCallback)>
+      completionCallback = base::BindOnce(
+          ^(collaboration::CollaborationControllerDelegate::ResultCallback
+                resultCallback) {
+            BrowserModalHost* strongSelf = weakSelf;
+            if (!strongSelf) {
+              std::move(resultCallback)
+                  .Run(collaboration::CollaborationControllerDelegate::Outcome::
+                           kCancel);
+              return;
+            }
+            std::move(resultCallback)
+                .Run(collaboration::CollaborationControllerDelegate::Outcome::
+                         kSuccess);
+          });
+
+  std::unique_ptr<collaboration::IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          _browser, CreateControllerDelegateParamsFromProfile(
+                        _browser->GetProfile(), viewController,
+                        collaboration::FlowType::kLeaveOrDelete));
+  delegate->SetLeaveOrDeleteConfirmationCallback(std::move(completionCallback));
+
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          _browser->GetProfile());
+  collaboration::CollaborationServiceLeaveOrDeleteEntryPoint entryPoint =
+      collaboration::CollaborationServiceLeaveOrDeleteEntryPoint::kUnknown;
+  collaborationService->StartLeaveOrDeleteFlow(
+      std::move(delegate), group->tab_group_id(), entryPoint);
+  _lastTabClosingAlert = nil;
+}
+
+// Replaces the last tab with a New Tab Page (NTP).
+// TODO(crbug.com/545566706): This should be done in
+// TabGroupConfirmationCoordinator if possible.
+- (void)runKeepGroup:(const TabGroup*)group lastTabID:(web::WebStateID)tabID {
+  TabGroupService* groupService =
+      TabGroupServiceFactory::GetForProfile(_browser->GetProfile());
+  WebStateList* webStateList = _browser->GetWebStateList();
+  std::unique_ptr<web::WebState> webState =
+      groupService->WebStateToAddToEmptyGroup();
+  webStateList->InsertWebState(
+      std::move(webState),
+      WebStateList::InsertionParams::Automatic().Activate().InGroup(group));
+
+  const WebStateSearchCriteria& searchCriteria = WebStateSearchCriteria{
+      .identifier = tabID,
+  };
+
+  int index = GetWebStateIndex(webStateList, searchCriteria);
+  if (index != WebStateList::kInvalidIndex) {
+    webStateList->CloseWebStateAt(index,
+                                  WebStateList::ClosingReason::kUserAction);
+  }
+  _lastTabClosingAlert = nil;
 }
 
 #pragma mark - SyncedSetUpCommands
