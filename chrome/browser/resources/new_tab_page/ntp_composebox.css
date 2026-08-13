@@ -78,6 +78,7 @@ cr-composebox-submit::part(submit) {
 }
 
 #contextEntrypoint::part(context-menu-entrypoint-icon) {
+  inset-inline-start: var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start, 8px);
   position: absolute;
   top: 10px;
   --cr-icon-button-icon-size: 24px;
