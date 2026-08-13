@@ -103,7 +103,8 @@ gpu.ci.linux_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_common_android_telemetry_tests",
+            "gpu_android_arm_release_gtests",
+            "gpu_android_arm_release_telemetry_tests",
         ],
         mixins = [
             "chromium_pixel_2_q",

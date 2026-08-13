@@ -125,25 +125,52 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_android_gtests",
-            "gpu_pixel_02_telemetry_tests",
+            "gpu_fyi_android_arm_release_gtests",
+            "gpu_fyi_android_arm_release_telemetry_tests",
         ],
         mixins = [
             "chromium_pixel_2_q",
             "has_native_resultdb_integration",
         ],
         per_test_modifications = {
-            "context_lost_validating_tests": targets.remove(
-                reason = "TODO(crbug.com/40039565): Remove once there is capacity",
+            "android_webview_pixel_skia_gold_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "expected_color_pixel_validating_test": targets.remove(
-                reason = "TODO(crbug.com/40039565): Remove once there is capacity",
+            "context_lost_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "gpu_process_launch_tests": targets.remove(
-                reason = "TODO(crbug.com/40039565): Remove once there is capacity",
+            "context_lost_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "hardware_accelerated_feature_tests": targets.remove(
-                reason = "TODO(crbug.com/40039565): Remove once there is capacity",
+            "expected_color_pixel_passthrough_ganesh_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_ganesh_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webcodecs_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_gles_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_validating_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webrtc_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
         },
     ),
@@ -183,15 +210,17 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_android_gtests",
-            "gpu_pixel_04_telemetry_tests",
-            "android_webview_gpu_telemetry_tests",
+            "gpu_all_android_arm_release_gtests",
+            "gpu_all_android_arm_release_telemetry_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
             "gpu_pixel_4_stable",
         ],
         per_test_modifications = {
+            "context_lost_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
             "expected_color_pixel_passthrough_ganesh_test": targets.mixin(
                 # Pixel 4s are weird in that they can output in different color spaces
                 # simultaneously. The readback code for capturing a screenshot assumes
@@ -201,6 +230,9 @@ ci.thin_tester(
                 args = [
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
+            ),
+            "expected_color_pixel_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
             "expected_color_pixel_validating_test": targets.mixin(
                 # Pixel 4s are weird in that they can output in different color spaces
@@ -222,6 +254,9 @@ ci.thin_tester(
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
             ),
+            "pixel_skia_gold_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
             "pixel_skia_gold_validating_test": targets.mixin(
                 # Pixel 4s are weird in that they can output in different color spaces
                 # simultaneously. The readback code for capturing a screenshot assumes
@@ -242,6 +277,9 @@ ci.thin_tester(
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
             ),
+            "screenshot_sync_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
             "screenshot_sync_validating_tests": targets.mixin(
                 # Pixel 4s are weird in that they can output in different color spaces
                 # simultaneously. The readback code for capturing a screenshot assumes
@@ -251,6 +289,9 @@ ci.thin_tester(
                 args = [
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
+            ),
+            "webgl_conformance_gles_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
         },
     ),
@@ -294,14 +335,29 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_android_gtests",
-            "gpu_pixel_06_telemetry_tests",
+            "gpu_all_android_arm64_release_gtests",
+            "gpu_all_android_arm64_release_telemetry_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
             "gpu_pixel_6_stable",
         ],
         per_test_modifications = {
+            "android_webview_pixel_skia_gold_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "context_lost_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
             "webgl2_conformance_gles_passthrough_tests": targets.remove(
                 reason = [
                     "Currently not enough capacity to run these tests on this config.",
@@ -315,6 +371,9 @@ ci.thin_tester(
                     "TODO(crbug.com/40208926): Re-enable once more of the Pixel 6 capacity",
                     "is deployed.",
                 ],
+            ),
+            "webgl_conformance_gles_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
         },
     ),
@@ -360,8 +419,8 @@ ci.thin_tester(
         # only be running 'gpu_noop_sleep_telemetry_test'. Otherwise, this
         # should be running the same tests as 'Android FYI Release (Pixel 6)'.
         targets = [
-            "gpu_fyi_android_gtests",
-            "gpu_pixel_06_telemetry_tests",
+            "gpu_all_android_arm64_release_gtests",
+            "gpu_all_android_arm64_release_telemetry_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
@@ -369,6 +428,21 @@ ci.thin_tester(
             "limited_capacity_bot",
         ],
         per_test_modifications = {
+            "android_webview_pixel_skia_gold_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "context_lost_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
             "webgl2_conformance_gles_passthrough_tests": targets.remove(
                 reason = [
                     "Currently not enough capacity to run these tests on this config.",
@@ -382,6 +456,9 @@ ci.thin_tester(
                     "TODO(crbug.com/40208926): Re-enable once more of the Pixel 6 capacity",
                     "is deployed.",
                 ],
+            ),
+            "webgl_conformance_gles_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
         },
     ),
@@ -427,15 +504,32 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_android_gtests",
-            "gpu_pixel_10_telemetry_tests",
-            "android_webview_gpu_telemetry_tests",
+            "gpu_all_android_arm64_release_gtests",
+            "gpu_all_android_arm64_release_telemetry_tests",
         ],
         mixins = [
             "gpu_pixel_10_stable",
             "has_native_resultdb_integration",
         ],
         per_test_modifications = {
+            "context_lost_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "context_lost_validating_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_ganesh_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_validating_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
             "gl_tests_passthrough": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.pixel_10.gl_tests_passthrough.filter",
@@ -446,9 +540,74 @@ ci.thin_tester(
                     "Passthrough is default on Pixel 10",
                 ],
             ),
-            "webcodecs_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 9,  # due to many timeouts crbug.com/447317875
+            "pixel_skia_gold_passthrough_ganesh_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_validating_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_validating_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webcodecs_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webcodecs_tests": targets.per_test_modification(
+                mixins = targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 9,  # due to many timeouts crbug.com/447317875
+                    ),
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # This is currently necessary due to this config
+                        # originally testing default behavior, but default
+                        # behavior testing generally being omitted from FYI
+                        # testers as part of bundle standardization.
+                        # TODO(crbug.com/541312843): Remove this once we decide
+                        # which explicit configuration to test here.
+                        "--extra-browser-args": None,
+                    },
+                ),
+            ),
+            "webgl2_conformance_validating_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_gles_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_gles_passthrough_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_validating_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_validating_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webrtc_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webrtc_tests": targets.per_test_modification(
+                replacements = targets.replacements(
+                    args = {
+                        # This is currently necessary due to this config
+                        # originally testing default behavior, but default
+                        # behavior testing generally being omitted from FYI
+                        # testers as part of bundle standardization.
+                        # TODO(crbug.com/541312843): Remove this once we decide
+                        # which explicit configuration to test here.
+                        "--extra-browser-args": None,
+                    },
                 ),
             ),
         },
@@ -489,8 +648,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_android_gtests",
-            "gpu_common_android_telemetry_tests",
+            "gpu_all_android_arm_release_gtests",
+            "gpu_all_android_arm_release_telemetry_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
@@ -498,6 +657,51 @@ ci.thin_tester(
             "limited_capacity_bot",
         ],
         per_test_modifications = {
+            "android_webview_pixel_skia_gold_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "context_lost_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "context_lost_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_ganesh_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_ganesh_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webcodecs_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl2_conformance_gles_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl2_conformance_validating_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_gles_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_gles_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webrtc_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
             "gl_tests_validating": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a13.gl_tests.filter",
@@ -541,8 +745,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_android_gtests",
-            "gpu_common_android_telemetry_tests",
+            "gpu_all_android_arm_release_gtests",
+            "gpu_all_android_arm_release_telemetry_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
@@ -550,6 +754,51 @@ ci.thin_tester(
             "limited_capacity_bot",
         ],
         per_test_modifications = {
+            "android_webview_pixel_skia_gold_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "context_lost_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "context_lost_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_ganesh_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_ganesh_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webcodecs_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl2_conformance_gles_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl2_conformance_validating_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_gles_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_gles_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webrtc_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
             "gl_tests_validating": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a23.gl_tests.filter",
@@ -593,8 +842,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_android_gtests",
-            "gpu_common_android_telemetry_tests",
+            "gpu_all_android_arm64_release_gtests",
+            "gpu_all_android_arm64_release_telemetry_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
@@ -602,6 +851,77 @@ ci.thin_tester(
             "limited_capacity_bot",
             "no_tombstones",
         ],
+        per_test_modifications = {
+            "android_webview_pixel_skia_gold_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "context_lost_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "context_lost_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_ganesh_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "expected_color_pixel_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_ganesh_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "pixel_skia_gold_passthrough_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "screenshot_sync_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webcodecs_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webcodecs_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl2_conformance_gles_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl2_conformance_validating_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_gles_passthrough_ganesh_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_gles_passthrough_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_gles_passthrough_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webgl_conformance_validating_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webrtc_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+            "webrtc_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.ANDROID_CHROMIUM,

@@ -3112,6 +3112,48 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_all_android_arm64_release_gtests",
+    targets = [
+        "gpu_android_arm64_release_gtests",
+        "gpu_fyi_android_arm64_release_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_all_android_arm64_release_telemetry_tests",
+    targets = [
+        "gpu_android_arm64_release_telemetry_tests",
+        "gpu_fyi_android_arm64_release_telemetry_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_validating_tests": targets.remove(
+            reason = "Only run default behavior tests on non-FYI.",
+        ),
+    },
+)
+
+targets.bundle(
+    name = "gpu_all_android_arm_release_gtests",
+    targets = [
+        "gpu_android_arm_release_gtests",
+        "gpu_fyi_android_arm_release_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_all_android_arm_release_telemetry_tests",
+    targets = [
+        "gpu_android_arm_release_telemetry_tests",
+        "gpu_fyi_android_arm_release_telemetry_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_validating_tests": targets.remove(
+            reason = "Only run default behavior tests on non-FYI.",
+        ),
+    },
+)
+
+targets.bundle(
     name = "gpu_all_linux_release_gtests",
     targets = [
         "gpu_linux_release_gtests",
@@ -3201,6 +3243,39 @@ targets.bundle(
     targets = [
         "gpu_win_release_telemetry_tests",
         "gpu_fyi_win_release_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_android_arm64_release_gtests",
+    targets = [
+        # Identical to the arm tests at the moment.
+        "gpu_android_arm_release_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_android_arm64_release_telemetry_tests",
+    targets = [
+        # Same as the arm tests for now, although there technically aren't any
+        # arm64 non-FYI testers at the moment.
+        "gpu_android_arm_release_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_android_arm_release_gtests",
+    targets = [
+        # No non-FYI gtests at this time.
+    ],
+)
+
+targets.bundle(
+    name = "gpu_android_arm_release_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_validating_telemetry_tests",
+        "gpu_webgl_conformance_validating_telemetry_tests",
     ],
 )
 
@@ -3335,15 +3410,6 @@ targets.bundle(
             ],
         ),
     },
-)
-
-targets.bundle(
-    name = "gpu_common_android_telemetry_tests",
-    targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_validating_telemetry_tests",
-        "gpu_webgl_conformance_validating_telemetry_tests",
-    ],
 )
 
 # GPU gtests which run on both the main and FYI waterfalls.
@@ -4181,7 +4247,77 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_fyi_android_arm64_release_gtests",
+    targets = [
+        # Identical to the arm tests at the moment.
+        "gpu_fyi_android_arm_release_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_android_arm64_release_telemetry_tests",
+    targets = [
+        # arm64 tests are the arm tests + Graphite equivalents.
+        "gpu_fyi_android_arm_release_telemetry_tests",
+        "gpu_passthrough_graphite_telemetry_tests",
+        "gpu_webcodecs_validating_graphite_telemetry_test",
+        "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
+        "gpu_webgl_conformance_validating_graphite_telemetry_tests",
+        "gpu_webrtc_validating_graphite_telemetry_test",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_android_arm_release_gtests",
+    targets = [
+        "gpu_angle_unit_gtests",
+        "gpu_common_gtests_passthrough",
+        "gpu_common_gtests_validating",
+        "gpu_fyi_and_optional_non_linux_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_android_arm_release_telemetry_tests",
+    targets = [
+        # Android/ARM only runs Ganesh tests since older devices that we
+        # typically use for 32-bit testing do not have good Vulkan support
+        # for Graphite.
+        "android_webview_gpu_telemetry_tests",
+        "gpu_passthrough_ganesh_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webcodecs_validating_ganesh_telemetry_test",
+        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl2_conformance_validating_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
+        "gpu_webrtc_validating_ganesh_telemetry_test",
+    ],
+    per_test_modifications = {
+        "gpu_process_launch_tests": targets.remove(
+            reason = ("TODO(crbug.com/541312843): Remove this once the test bundles are updated to use the underlying tests. " +
+                      "Currently, both gpu_validating_telemetry_tests and gpu_passthrough_telemetry_tests include this."),
+        ),
+        "hardware_accelerated_feature_tests": targets.remove(
+            reason = ("TODO(crbug.com/541312843): Remove this once the test bundles are updated to use the underlying tests. " +
+                      "Currently, both gpu_validating_telemetry_tests and gpu_passthrough_telemetry_tests include this."),
+        ),
+    },
+)
+
+targets.bundle(
     name = "gpu_fyi_android_gtests",
+    targets = [
+        "gpu_angle_unit_gtests",
+        "gpu_common_gtests_passthrough",
+        "gpu_common_gtests_validating",
+        "gpu_fyi_and_optional_non_linux_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_android_release_gtests",
     targets = [
         "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
@@ -4482,16 +4618,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_pixel_02_telemetry_tests",
-    targets = [
-        "gpu_validating_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_validating_telemetry_tests",
-    ],
-)
-
-targets.bundle(
     name = "gpu_pixel_04_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
@@ -4503,38 +4629,6 @@ targets.bundle(
         "gpu_webgl2_conformance_validating_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
-    ],
-)
-
-targets.bundle(
-    name = "gpu_pixel_06_telemetry_tests",
-    targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_ganesh_telemetry_tests",
-        "gpu_passthrough_graphite_telemetry_tests",
-        "gpu_validating_telemetry_tests",
-        "gpu_webrtc_validating_ganesh_telemetry_test",
-        "gpu_webcodecs_validating_ganesh_telemetry_test",
-        "gpu_webrtc_validating_graphite_telemetry_test",
-        "gpu_webcodecs_validating_graphite_telemetry_test",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_validating_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_validating_graphite_telemetry_tests",
-    ],
-)
-
-targets.bundle(
-    name = "gpu_pixel_10_telemetry_tests",
-    targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webrtc_telemetry_test",
-        "gpu_webcodecs_telemetry_test",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
     ],
 )
 
@@ -4562,6 +4656,8 @@ targets.bundle(
     },
 )
 
+# TODO(crbug.com/541312843): Update this to properly include validating/ganesh
+# in the suite name.
 targets.bundle(
     name = "gpu_webcodecs_validating_ganesh_telemetry_test",
     targets = [
@@ -4714,6 +4810,8 @@ targets.bundle(
     },
 )
 
+# TODO(crbug.com/541312843): Actually include validating/ganesh in the suite
+# name.
 targets.bundle(
     name = "gpu_webrtc_validating_ganesh_telemetry_test",
     targets = [
