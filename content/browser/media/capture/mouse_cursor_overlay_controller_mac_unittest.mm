@@ -81,7 +81,6 @@ class MouseCursorOverlayControllerMacTest
                                          styleMask:NSWindowStyleMaskTitled
                                            backing:NSBackingStoreBuffered
                                              defer:NO];
-    [window_ makeKeyAndOrderFront:nil];
     NSView* main_view = web_contents()->GetNativeView().GetNativeNSView();
     main_view.frame = NSMakeRect(0, 0, 100, 100);
     [window_.contentView addSubview:main_view];
@@ -92,6 +91,12 @@ class MouseCursorOverlayControllerMacTest
     target_web_contents->GetNativeView().GetNativeNSView().hidden = NO;
     web_contents()->WasShown();
     target_web_contents->WasShown();
+
+    // The window must never be brought on screen. This test is driven with
+    // synthetic mouse events. If the window is on-screen, it's possible for
+    // AppKit to place the window below the real cursor. Real mouse events from
+    // the cursor will cause the test to fail.
+    ASSERT_FALSE([window_ isVisible]);
   }
 
   gfx::NativeView GetTargetView() override {
