@@ -9,6 +9,7 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//ui/webui/webui_features.gni")
 
 source_set("tabs_public") {
   public = [
@@ -30,6 +31,7 @@ source_set("tabs_public") {
     "//components/tabs:public",
     "//skia",
     "//ui/base/unowned_user_data",
+    "//ui/webui:buildflags",
   ]
 }
 
@@ -61,9 +63,13 @@ source_set("tabs_impl") {
     "//components/favicon/content",
     "//components/lens",
     "//components/metrics:content",
+    "//components/search",
     "//components/tabs:public",
     "//content/public/browser",
   ]
+  if (enable_webui_ntp) {
+    deps += [ "//chrome/browser/ui/customize_chrome:customize_chrome_base" ]
+  }
 }
 
 source_set("resource_mapper") {

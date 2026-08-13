@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
+#include "ui/webui/buildflags.h"
 
 class AskBeforeHttpDialogController;
 class SidePanelTabScopedDevFeature;
@@ -54,6 +55,12 @@ class TabContextualizationController;
 
 class HttpAuthCacheStatus;
 
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+namespace customize_chrome {
+class SidePanelController;
+}  // namespace customize_chrome
+#endif
+
 namespace tabs {
 
 class TabInterface;
@@ -73,6 +80,13 @@ class TabFeatures {
   data_protection_controller() {
     return data_protection_tab_controller_.get();
   }
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  customize_chrome::SidePanelController*
+  customize_chrome_side_panel_controller() {
+    return customize_chrome_side_panel_controller_.get();
+  }
+#endif
 
  private:
   // Returns the factory used to create owned components.
@@ -103,6 +117,10 @@ class TabFeatures {
       data_protection_tab_controller_;
 
   std::unique_ptr<glic::ContextualCueingHelper> contextual_cueing_helper_;
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  std::unique_ptr<customize_chrome::SidePanelController>
+      customize_chrome_side_panel_controller_;
+#endif
   std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
   std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
   std::unique_ptr<actor::ui::ActorUiTabControllerInterface>

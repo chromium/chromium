@@ -110,6 +110,10 @@ inline constexpr char kChromeUICrossDeviceSigninQrBubbleHost[] =
     "cross-device-signin-qr-bubble";
 inline constexpr char kChromeUICrossDeviceSigninQrBubbleURL[] =
     "chrome://cross-device-signin-qr-bubble/";
+inline constexpr char kChromeUICustomizeChromeSidePanelHost[] =
+    "customize-chrome-side-panel.top-chrome";
+inline constexpr char kChromeUICustomizeChromeSidePanelURL[] =
+    "chrome://customize-chrome-side-panel.top-chrome";
 inline constexpr char kChromeUIDataSharingInternalsHost[] =
     "data-sharing-internals";
 inline constexpr char kChromeUIDefaultHost[] = "version";
@@ -385,10 +389,6 @@ inline constexpr char kChromeUICommentsSidePanelHost[] =
     "comments-side-panel.top-chrome";
 inline constexpr char kChromeUICommentsSidePanelURL[] =
     "chrome://comments-side-panel.top-chrome/";
-inline constexpr char kChromeUICustomizeChromeSidePanelHost[] =
-    "customize-chrome-side-panel.top-chrome";
-inline constexpr char kChromeUICustomizeChromeSidePanelURL[] =
-    "chrome://customize-chrome-side-panel.top-chrome";
 inline constexpr char kChromeUIHistorySidePanelHost[] =
     "history-side-panel.top-chrome";
 inline constexpr char kChromeUIHistorySidePanelURL[] =

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/prefs/pref_service.h"
@@ -41,9 +42,8 @@ SidePanelControllerBase::~SidePanelControllerBase() = default;
 
 bool SidePanelControllerBase::IsCustomizeChromeEntryAvailable() const {
   auto* registry = SidePanelRegistry::From(&tab_.get());
-  return registry ? (registry->GetEntryForKey(SidePanelEntry::Key(
-                         SidePanelEntry::Id::kCustomizeChrome)) != nullptr)
-                  : false;
+  return registry && registry->GetEntryForKey(SidePanelEntry::Key(
+                         SidePanelEntry::Id::kCustomizeChrome));
 }
 
 bool SidePanelControllerBase::IsCustomizeChromeEntryShowing() const {
@@ -55,13 +55,13 @@ bool SidePanelControllerBase::IsCustomizeChromeEntryShowing() const {
 
 void SidePanelControllerBase::OnEntryShown(SidePanelEntry* entry) {
   if (entry_state_changed_callback_) {
-    entry_state_changed_callback_.Run(true);
+    entry_state_changed_callback_.Run(/*is_showing=*/true);
   }
 }
 
 void SidePanelControllerBase::OnEntryHidden(SidePanelEntry* entry) {
   if (entry_state_changed_callback_) {
-    entry_state_changed_callback_.Run(false);
+    entry_state_changed_callback_.Run(/*is_showing=*/false);
   }
 }
 
@@ -69,7 +69,7 @@ void SidePanelControllerBase::OnEntryWillHide(SidePanelEntry* entry,
                                               SidePanelEntryHideReason reason) {
   // Only count explicit user action to close the SidePanel here.
   // The SidePanel may be hidden if the user opens a new tab or navigates away
-  // without explicitly closing the it. In those cases the view of the SidePanel
+  // without explicitly closing it. In those cases the view of the SidePanel
   // still exists, therefore we do not count those events. Also closing the
   // browser with an opened SidePanel does not trigger this call.
   if (reason == SidePanelEntryHideReason::kSidePanelClosed) {
@@ -153,7 +153,7 @@ void SidePanelControllerBase::DeregisterEntry() {
 
 void SidePanelControllerBase::OpenSidePanel(
     SidePanelOpenTrigger trigger,
-    std::optional<CustomizeChromeSection> section) {
+    std::optional<CustomizeChromeSection> /*section*/) {
   SidePanelUI* side_panel_ui = GetSidePanelUI();
   if (side_panel_ui) {
     side_panel_ui->Show(SidePanelEntry::Id::kCustomizeChrome, trigger);
@@ -172,7 +172,7 @@ void SidePanelControllerBase::CloseSidePanel() {
 
 SidePanelUI* SidePanelControllerBase::GetSidePanelUI() const {
   auto* browser = tab_->GetBrowserWindowInterface();
-  return browser ? SidePanelUI::From(browser) : nullptr;
+  return browser ? SidePanelUIProvider::From(browser) : nullptr;
 }
 
 void SidePanelControllerBase::SetEntryChangedCallback(

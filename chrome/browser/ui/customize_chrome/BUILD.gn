@@ -4,6 +4,11 @@
 
 import("//ui/webui/webui_features.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 assert(enable_webui_ntp)
 
 source_set("customize_chrome") {
@@ -26,13 +31,37 @@ source_set("customize_chrome_base") {
 
   deps = [
     # Does not actually depend on //ui/views for is_android.
+    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
   ]
 
-  if (!is_android) {
+  if (is_android) {
+    sources += [
+      "side_panel_controller_android.cc",
+      "side_panel_controller_android.h",
+    ]
+    deps += [
+      ":jni_headers",
+      "//ui/android",
+    ]
+  } else {
     deps += [
       "//chrome/browser/search/background",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
+    ]
+  }
+}
+
+if (is_android) {
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/ui/customize_chrome/CustomizeChromeSidePanelHelper.java" ]
+  }
+
+  android_library("java") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/ui/customize_chrome/CustomizeChromeSidePanelHelper.java" ]
+    deps = [
+      "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
     ]
   }
 }

@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_WEBUI_CUSTOMIZE_BUTTONS_CUSTOMIZE_BUTTONS_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -57,14 +57,14 @@ class CustomizeButtonsHandler
 
  private:
   tabs::TabInterface* GetActiveTab();
-  customize_chrome::SidePanelController* GetSidePanelControllerForActiveTab();
+  customize_chrome::SidePanelController*
+  SetCustomizeChromeEntryChangedCallback();
   // TODO(crbug.com/419368727) Remove
   // NotifyCustomizeChromeSidePanelVisibilityChanged() as part of deprecating
   // the Wallpaper Search button.
   void NotifyCustomizeChromeSidePanelVisibilityChanged(bool is_open);
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
-  void SetCustomizeChromeEntryChangedCallback(tabs::TabInterface* tab);
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;

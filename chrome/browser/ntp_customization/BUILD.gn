@@ -22,6 +22,7 @@ source_set("ntp_customization") {
     "ntp_android_custom_background_service.cc",
     "ntp_android_custom_background_service_factory.cc",
     "ntp_android_theme_sync_bridge.cc",
+    "ntp_customization_side_panel.cc",
     "ntp_customization_utils.cc",
     "ntp_synced_theme_bridge.cc",
     "ntp_theme_collection_bridge.cc",
@@ -36,7 +37,9 @@ source_set("ntp_customization") {
     "//build:android_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//chrome/browser/android:tabs_public",
     "//chrome/browser/sync:factories",
+    "//chrome/browser/ui/side_panel",
     "//chrome/common:constants",
     "//components/application_locale_storage",
     "//components/sync",
@@ -48,6 +51,9 @@ source_set("ntp_customization") {
     "//ui/webui:buildflags",
     "//url",
   ]
+  if (enable_webui_ntp) {
+    deps += [ "//chrome/browser/ui/customize_chrome" ]
+  }
 }
 
 android_library("public_java") {
@@ -79,6 +85,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMediator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMetricsUtils.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationSidePanel.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationUtils.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationViewProperties.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/edge_to_edge/TopInsetCoordinator.java",
@@ -222,6 +229,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationSidePanel.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationUtils.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeBridge.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionBridge.java",
@@ -337,6 +345,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMetricsUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationSidePanelUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/edge_to_edge/TopInsetCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/feed/FeedSettingsCoordinatorUnitTest.java",

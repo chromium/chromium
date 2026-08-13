@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(enable_webui_ntp)
 
 mojom("mojo_bindings") {
   sources = [ "customize_buttons.mojom" ]
@@ -14,32 +17,41 @@ mojom("mojo_bindings") {
   ]
 }
 
+source_set("customize_buttons") {
+  sources = [ "customize_buttons_handler.h" ]
+  public_deps = [
+    ":mojo_bindings",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/new_tab_page",
+    "//chrome/browser/resources/new_tab_shared:resources_grit",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome",
+    "//chrome/common",
+  ]
+  if (!is_android) {
+    public_deps += [ "//chrome/browser/ui/views/side_panel" ]
+  }
+}
+
+source_set("impl") {
+  sources = [ "customize_buttons_handler.cc" ]
+  deps = [
+    ":customize_buttons",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/customize_chrome",
+    "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/webui:webui_util",
+    "//components/feature_engagement/public:feature_constants",
+  ]
+  if (is_android) {
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/android:tabs_public",
+    ]
+  }
+}
+
 if (!is_android) {
-  source_set("customize_buttons") {
-    sources = [ "customize_buttons_handler.h" ]
-    public_deps = [
-      ":mojo_bindings",
-      "//chrome/browser:browser_public_dependencies",
-      "//chrome/browser/new_tab_page",
-      "//chrome/browser/resources/new_tab_shared:resources_grit",
-      "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome",
-      "//chrome/common",
-    ]
-  }
-
-  source_set("impl") {
-    sources = [ "customize_buttons_handler.cc" ]
-    deps = [
-      ":customize_buttons",
-      "//chrome/browser/profiles",
-      "//chrome/browser/ui/customize_chrome",
-      "//chrome/browser/ui/side_panel",
-      "//chrome/browser/ui/webui:webui_util",
-      "//components/feature_engagement/public:feature_constants",
-    ]
-  }
-
   source_set("test_support") {
     testonly = true
     public_deps = [

@@ -6,9 +6,17 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
+#include "chrome/common/pref_names.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
+#include "ui/base/ui_base_features.h"
+
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
-#include "chrome/browser/search/search.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -24,14 +32,10 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/common/pref_names.h"
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/prefs/pref_service.h"
-#include "components/search/ntp_features.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
-#include "ui/base/ui_base_features.h"
+#endif
 
+#if !BUILDFLAG(IS_ANDROID)
 namespace {
 
 const void* const kCustomizeChromeAutoOpenedUserDataKey =
@@ -141,16 +145,19 @@ NTPCustomizeChromePromoEligibility CanShowCustomizeChromePromo(
 }
 
 }  // namespace
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void NewTabPageFeaturePromoHelper::RecordPromoFeatureUsageAndClosePromo(
     const base::Feature& feature,
     content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
   if (auto* const interface =
           BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
               web_contents)) {
     interface->NotifyFeaturePromoFeatureUsed(
         feature, FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
+#endif
 }
 
 // For testing purposes only.
@@ -167,6 +174,7 @@ bool NewTabPageFeaturePromoHelper::DefaultSearchProviderIsGoogle(
   return search::DefaultSearchProviderIsGoogle(profile);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void NewTabPageFeaturePromoHelper::MaybeShowFeaturePromo(
     user_education::FeaturePromoParams params,
     content::WebContents* web_contents) {
@@ -180,9 +188,11 @@ void NewTabPageFeaturePromoHelper::MaybeShowFeaturePromo(
     interface->MaybeShowFeaturePromo(std::move(params));
   }
 }
+#endif
 
 bool NewTabPageFeaturePromoHelper::IsSigninModalDialogOpen(
     content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   // `browser` might be NULL if the new tab is immediately dragged out of the
@@ -191,10 +201,14 @@ bool NewTabPageFeaturePromoHelper::IsSigninModalDialogOpen(
                        .signin_view_controller()
                        ->ShowsModalDialog()
                  : false;
+#else
+  return false;
+#endif
 }
 
 void NewTabPageFeaturePromoHelper::MaybeTriggerAutomaticCustomizeChromePromo(
     content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
   auto* browser_interface = webui::GetBrowserWindowInterface(web_contents);
   if (!browser_interface ||
       browser_interface->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
@@ -239,4 +253,5 @@ void NewTabPageFeaturePromoHelper::MaybeTriggerAutomaticCustomizeChromePromo(
 
   interface->MaybeShowFeaturePromo(std::move(params));
   ShowCustomizeChromeSidePanel(profile);
+#endif
 }

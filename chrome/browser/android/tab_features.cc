@@ -40,10 +40,16 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/enterprise/data_protection/features.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/search/ntp_features.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/base/features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
+#include "ui/webui/buildflags.h"
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "chrome/browser/ui/customize_chrome/side_panel_controller_android.h"
+#endif
 
 namespace tabs {
 
@@ -141,6 +147,13 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   }
 
   contextual_cueing_helper_ = glic::ContextualCueingHelper::MaybeCreate(tab);
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpCustomizeWebUiAndroid)) {
+    customize_chrome_side_panel_controller_ =
+        std::make_unique<customize_chrome::SidePanelControllerAndroid>(*tab);
+  }
+#endif
 }
 
 TabFeatures::~TabFeatures() = default;

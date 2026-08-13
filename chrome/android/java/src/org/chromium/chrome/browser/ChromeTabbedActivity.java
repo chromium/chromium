@@ -214,6 +214,7 @@ import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationSidePanel;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
@@ -4607,26 +4608,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             createQuickDeleteController().showDialog();
         } else if (id == R.id.ntp_customization_id) {
-            Supplier<@Nullable Profile> profileSupplier =
-                    () -> {
-                        var profileProvider = getProfileProviderSupplier().get();
-                        return profileProvider != null
-                                ? profileProvider.getOriginalProfile()
-                                : null;
-                    };
-            NtpCustomizationCoordinatorFactory.getInstance()
-                    .create(
-                            this,
-                            assertNonNull(mRootUiCoordinator.getBottomSheetController()),
-                            profileSupplier,
-                            NtpCustomizationCoordinator.BottomSheetType.MAIN,
-                            getWindowAndroid(),
-                            mModuleRegistrySupplier.get(),
-                            getSnackbarManager())
-                    .showBottomSheet();
-            NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
-                    NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);
-            RecordUserAction.record("MobileMenuNtpCustomization");
+            openCustomizeChrome();
         } else if (id == R.id.menu_item_content_filter_help_center_id) {
             currentTab.loadUrl(
                     new LoadUrlParams(
@@ -5906,5 +5888,29 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (isInMultiWindowMode() && !isTopResumedActivity) {
             DefaultBrowserInfo.resetDefaultInfoTask();
         }
+    }
+
+    private void openCustomizeChrome() {
+        if (NtpCustomizationSidePanel.isEnabled()) {
+            Tab tab = getActivityTab();
+            if (tab != null) {
+                NtpCustomizationSidePanel.show(tab);
+            }
+        } else {
+            NtpCustomizationCoordinator coordinator =
+                    NtpCustomizationCoordinatorFactory.getInstance()
+                            .create(
+                                    this,
+                                    assertNonNull(mRootUiCoordinator.getBottomSheetController()),
+                                    mTabModelProfileSupplier,
+                                    NtpCustomizationCoordinator.BottomSheetType.MAIN,
+                                    getWindowAndroid(),
+                                    mModuleRegistrySupplier.get(),
+                                    getSnackbarManager());
+            coordinator.showBottomSheet();
+            NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
+                    NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);
+        }
+        RecordUserAction.record("MobileMenuNtpCustomization");
     }
 }

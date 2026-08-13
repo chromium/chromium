@@ -55,8 +55,6 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
@@ -146,6 +144,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -163,13 +162,6 @@ using content::WebContents;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
                                       kRealboxContextualEntrypointElementId);
-
-// TODO(b/507919199): Remove this definition once Android implements the NTP
-// customize chrome handler.
-#if BUILDFLAG(IS_ANDROID)
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeButtonsHandler,
-                                      kCustomizeChromeButtonElementId);
-#endif
 
 bool NewTabPageUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
@@ -1107,6 +1099,11 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<
         customize_buttons::mojom::CustomizeButtonsHandlerFactory>
         pending_receiver) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpCustomizeWebUiAndroid)) {
+    return;
+  }
+#endif
   if (customize_buttons_factory_receiver_.is_bound()) {
     customize_buttons_factory_receiver_.reset();
   }
@@ -1285,13 +1282,13 @@ void NewTabPageUI::CreateCustomizeButtonsHandler(
         pending_page,
     mojo::PendingReceiver<customize_buttons::mojom::CustomizeButtonsHandler>
         pending_page_handler) {
-// TODO(b/502297163): Implement for Android.
+  std::unique_ptr<NewTabPageFeaturePromoHelper> promo_helper;
 #if !BUILDFLAG(IS_ANDROID)
+  promo_helper = std::make_unique<NewTabPageFeaturePromoHelper>();
+#endif
   customize_buttons_handler_ = std::make_unique<CustomizeButtonsHandler>(
       std::move(pending_page_handler), std::move(pending_page), web_ui(),
-      webui::GetTabInterface(web_contents()),
-      std::make_unique<NewTabPageFeaturePromoHelper>());
-#endif
+      webui::GetTabInterface(web_contents()), std::move(promo_helper));
 }
 
 void NewTabPageUI::CreatePageHandler(
