@@ -100,11 +100,6 @@ struct EpWorkarounds {
   // respect this limit.
   bool resample2d_limit_to_nchw = false;
 
-  // The maximum K dimension size of batched MatMul on certain NPU devices.
-  // It is unnecessary to compute `|=` operation result across EP devices,
-  // because there will be only one NPU device EP.
-  std::optional<uint32_t> npu_batched_matmul_k_dimension_limit;
-
   // Whether the EP may report the NPU driver version in legacy concatenated
   // format (e.g., "1004404") instead of 4-part dot-separated format.
   bool npu_concatenated_driver_version = false;
@@ -198,11 +193,6 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
             .workarounds =
                 {
                     .resample2d_limit_to_nchw = true,
-                    // The OpenVINO NPU limits the batched MatMul K dimension
-                    // size to 8192.
-                    // For more details, see GraphBuilderOrt::AddMatMulOperation
-                    // in src/services/webnn/graph_builder_ort.cc.
-                    .npu_batched_matmul_k_dimension_limit = 8192,
                     // The OpenVINO EP currently reports NPU driver versions in
                     // legacy concatenated format (e.g., "1004404").
                     .npu_concatenated_driver_version = true,

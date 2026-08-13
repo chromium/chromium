@@ -362,16 +362,13 @@ const base::cstring_view GetRecurrentNetworkDirection(
 }  // namespace
 
 // static
-base::expected<std::unique_ptr<ModelEditor::ModelInfo>, mojom::ErrorPtr>
-GraphBuilderOrt::CreateAndBuild(
+std::unique_ptr<ModelEditor::ModelInfo> GraphBuilderOrt::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands,
-    std::optional<uint32_t> batched_matmul_k_dimension_limit) {
+        constant_operands) {
   GraphBuilderOrt graph_builder(graph_info, std::move(context_properties),
-                                std::move(constant_operands),
-                                std::move(batched_matmul_k_dimension_limit));
+                                std::move(constant_operands));
   return graph_builder.BuildModel();
 }
 
@@ -379,14 +376,11 @@ GraphBuilderOrt::GraphBuilderOrt(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands,
-    std::optional<uint32_t> batched_matmul_k_dimension_limit)
+        constant_operands)
     : next_operand_id_(graph_info.operands.size()),
       graph_info_(graph_info),
       constant_operands_(std::move(constant_operands)),
-      context_properties_(std::move(context_properties)),
-      batched_matmul_k_dimension_limit_(
-          std::move(batched_matmul_k_dimension_limit)) {}
+      context_properties_(std::move(context_properties)) {}
 
 GraphBuilderOrt::~GraphBuilderOrt() = default;
 
@@ -2555,8 +2549,7 @@ template void GraphBuilderOrt::AddLstmOperation(const mojom::Lstm& lstm);
 template void GraphBuilderOrt::AddLstmOperation(
     const mojom::LstmCell& lstm_cell);
 
-base::expected<void, mojom::ErrorPtr> GraphBuilderOrt::AddMatMulOperation(
-    const mojom::Matmul& matmul) {
+void GraphBuilderOrt::AddMatMulOperation(const mojom::Matmul& matmul) {
   const std::string node_name = GenerateNodeName(matmul.label);
   const std::string input_a = GetOperandNameById(matmul.a_operand_id);
   const std::string input_b = GetOperandNameById(matmul.b_operand_id);
@@ -2566,38 +2559,10 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderOrt::AddMatMulOperation(
       {GetOperand(matmul.a_operand_id).descriptor,
        GetOperand(matmul.b_operand_id).descriptor}));
 
-  if (batched_matmul_k_dimension_limit_.has_value()) {
-    bool is_batched_matmul =
-        GetOperand(matmul.output_operand_id).descriptor.Rank() > 2;
-    if (is_batched_matmul) {
-      uint32_t batched_matmul_k_dimension_size =
-          GetOperand(matmul.a_operand_id).descriptor.shape().back();
-      // Limitation: Reject batched MatMul operations with excessively large K
-      // dimension size to prevent the EP from becoming unresponsive during
-      // model compilation on some NPU devices.
-      // OpenVINO issue: https://github.com/microsoft/onnxruntime/issues/26643
-      // The fix is expected to be available in NPU driver Feb '26 release.
-      //
-      // TODO(crbug.com/468812994): Check the version of OV EP or NPU driver
-      // before applying the Limitation.
-      // TODO(crbug.com/467468912): When the OpenVINO issue is fixed, remove
-      // the limitation and increase the minimum required EP version.
-      if (batched_matmul_k_dimension_size >
-          batched_matmul_k_dimension_limit_.value()) {
-        return base::unexpected(mojom::Error::New(
-            mojom::Error::Code::kNotSupportedError,
-            "The K dimension size of the batched MatMul operation is too "
-            "large which is not supported on NPU."));
-      }
-    }
-  }
-
   std::array<const char*, 2> inputs = {input_a.c_str(), input_b.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
   model_editor_.AddNode(kOpTypeMatMul, node_name, inputs, outputs);
-
-  return base::ok();
 }
 
 void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
@@ -3172,8 +3137,7 @@ void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
   model_editor_.AddNode(kOpTypeWhere, node_name, inputs, outputs);
 }
 
-base::expected<std::unique_ptr<ModelEditor::ModelInfo>, mojom::ErrorPtr>
-GraphBuilderOrt::BuildModel() {
+std::unique_ptr<ModelEditor::ModelInfo> GraphBuilderOrt::BuildModel() {
   for (OperandId input_id : graph_info_->input_operands) {
     model_editor_.AddInput(GetOperandNameById(input_id), GetOperand(input_id));
   }
@@ -3321,10 +3285,7 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kMatmul: {
-        auto result = AddMatMulOperation(*operation->get_matmul());
-        if (!result.has_value()) {
-          return base::unexpected(std::move(result.error()));
-        }
+        AddMatMulOperation(*operation->get_matmul());
         break;
       }
       case mojom::Operation::Tag::kPad: {

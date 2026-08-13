@@ -109,25 +109,6 @@ std::optional<GraphOptimizationLevel> StringToOrtGraphOptimizationLevel(
   return std::nullopt;
 }
 
-std::optional<uint32_t> GetBatchedMatMulKDimensionLimit(
-    const OrtEpDevice* first_selected_device) {
-  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-
-  std::string_view ep_name = ort_api->EpDevice_EpName(first_selected_device);
-  const auto iter = kKnownEPs.find(ep_name);
-  if (iter == kKnownEPs.end()) {
-    return std::nullopt;
-  }
-
-  OrtHardwareDeviceType hardware_device_type = ort_api->HardwareDevice_Type(
-      ort_api->EpDevice_Device(first_selected_device));
-  if (hardware_device_type != OrtHardwareDeviceType_NPU) {
-    return std::nullopt;
-  }
-
-  return iter->second.workarounds.npu_batched_matmul_k_dimension_limit;
-}
-
 ScopedOrtSessionOptions CreateBaseSessionOptions(
     std::string_view primary_ep_name) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
@@ -377,8 +358,6 @@ SessionOptions::SessionOptions(base::PassKey<SessionOptions>,
     : session_options_(std::move(session_options)),
       env_(std::move(env)),
       first_selected_device_(first_selected_device),
-      batched_matmul_k_dimension_limit_(
-          GetBatchedMatMulKDimensionLimit(first_selected_device)),
       context_options_(std::move(context_options)) {
   // Set the EP selection policy delegate if `context_options_` is provided.
   if (context_options_) {

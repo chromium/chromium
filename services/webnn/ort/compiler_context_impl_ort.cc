@@ -112,11 +112,10 @@ CompilerContextImplOrt::CompileOnBackgroundThread(
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands) {
   // Step 1: Build the ORT model from GraphInfo.
-  ASSIGN_OR_RETURN(std::unique_ptr<ModelEditor::ModelInfo> model_info,
-                   GraphBuilderOrt::CreateAndBuild(
-                       *graph_info, std::move(context_properties),
-                       std::move(constant_operands),
-                       session_options->batched_matmul_k_dimension_limit()));
+  std::unique_ptr<ModelEditor::ModelInfo> model_info =
+      GraphBuilderOrt::CreateAndBuild(*graph_info,
+                                      std::move(context_properties),
+                                      std::move(constant_operands));
 
   // Step 2: Compile the model using ORT Compile API.
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
