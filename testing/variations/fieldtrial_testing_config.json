@@ -15096,6 +15096,24 @@
             ]
         }
     ],
+    "ImportExportFlagsTeamfood": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Teamfood",
+                    "enable_features": [
+                        "ImportExportFlags"
+                    ]
+                }
+            ]
+        }
+    ],
     "ImprovedStartupBestEffortDelay": [
         {
             "platforms": [
