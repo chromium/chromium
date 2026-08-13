@@ -159,6 +159,18 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
+  async testPinTabsFailsWhenIncognitoWindow() {
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinnedTabs);
+
+    assertFalse(await this.host.pinTabs([this.testParams.incognitoTabId]));
+
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    // The active tab is auto-pinned (length = 1), but the incognito tab cannot
+    // be pinned.
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 1);
+  }
+
   async testUnpinTabsWhileClosing() {
     assertDefined(this.host.closePanel);
     const tabId = await this.pinActiveTab();

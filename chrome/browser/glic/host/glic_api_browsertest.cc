@@ -1529,24 +1529,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ContinueJsTest();
 }
 
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
-  NavigateTabAndOpenGlicFloating();
-
-  // Open a new incognito window.
-  auto* incognito = CreateIncognitoBrowser();
-  const GURL page_url = InProcessBrowserTest::embedded_test_server()->GetURL(
-      "/glic/browser_tests/test.html");
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTab, page_url, std::nullopt, incognito));
-  const int incognito_tab_id =
-      GetTabId(incognito->tab_strip_model()->GetActiveWebContents());
-
-  ExecuteJsTest(
-      {.params = base::Value(base::DictValue().Set(
-           "incognitoTabId", base::NumberToString(incognito_tab_id)))});
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsFailsWhenNotPinned) {
   NavigateTabAndOpenGlicFloating();
   // Unpinning a tab that is not pinned should fail.

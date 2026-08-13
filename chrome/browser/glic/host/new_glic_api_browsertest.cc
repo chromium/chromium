@@ -1406,6 +1406,25 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+
+  // Open a new incognito window.
+  Browser* incognito = PlatformBrowserTest::CreateIncognitoBrowser();
+  tabs::TabInterface* incognito_tab =
+      TabListInterface::From(incognito)->OpenTab(
+          embedded_test_server()->GetURL("/browser_tests/test.html"), 1,
+          /*foreground=*/true);
+  ASSERT_TRUE(incognito_tab);
+  auto incognito_tab_id = incognito_tab->GetHandle().raw_value();
+
+  ExecuteJsTest(
+      {.params = base::Value(base::DictValue().Set(
+           "incognitoTabId", base::NumberToString(incognito_tab_id)))});
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
 class NewGlicApiTestWithFileUploadPolicyEnabled : public NewGlicApiTest {
  public:
   NewGlicApiTestWithFileUploadPolicyEnabled() {
