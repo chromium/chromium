@@ -10,7 +10,6 @@ import deb_version
 
 
 class PackageVersionIntervalEndpoint:
-
     def __init__(self, is_open, is_inclusive, version):
         self._is_open = is_open
         self._is_inclusive = is_inclusive
@@ -36,18 +35,22 @@ class PackageVersionIntervalEndpoint:
 
     def __str__(self):
         return 'PackageVersionIntervalEndpoint(%s, %s, %s)' % (
-            self._is_open, self._is_inclusive, self._version)
+            self._is_open,
+            self._is_inclusive,
+            self._version,
+        )
 
     def __eq__(self, other):
         if self._is_open and other._is_open:
             return True
-        return (self._is_open == other._is_open and
-                self._is_inclusive == other._is_inclusive and
-                self._version == other._version)
+        return (
+            self._is_open == other._is_open
+            and self._is_inclusive == other._is_inclusive
+            and self._version == other._version
+        )
 
 
 class PackageVersionInterval:
-
     def __init__(self, string_rep, package, start, end):
         self.string_rep = string_rep
         self.package = package
@@ -70,9 +73,12 @@ class PackageVersionInterval:
         return True
 
     def intersect(self, other):
-        return PackageVersionInterval('', '',
-                                      self.start._intersect(other.start, True),
-                                      self.end._intersect(other.end, False))
+        return PackageVersionInterval(
+            '',
+            '',
+            self.start._intersect(other.start, True),
+            self.end._intersect(other.end, False),
+        )
 
     def implies(self, other):
         if self.package != other.package:
@@ -87,7 +93,6 @@ class PackageVersionInterval:
 
 
 class PackageVersionIntervalSet:
-
     def __init__(self, intervals):
         self.intervals = intervals
 
@@ -105,7 +110,8 @@ class PackageVersionIntervalSet:
         # disjunction implies some term in |other|.
         for interval in self.intervals:
             if not self._interval_implies_other_intervals(
-                    interval, other.intervals):
+                interval, other.intervals
+            ):
                 return False
         return True
 
@@ -129,25 +135,29 @@ def version_interval_endpoints_from_exp(op, version):
 def parse_dep(dep):
     """Parses a package and version requirement formatted by dpkg-shlibdeps.
 
-  Args:
-      dep: A string of the format "package (op version)"
+    Args:
+        dep: A string of the format "package (op version)"
 
-  Returns:
-      A PackageVersionInterval.
-  """
+    Returns:
+        A PackageVersionInterval.
+    """
     package_name_regex = r'[a-z][a-z0-9\+\-\.]+'
     match = re.match('^(%s)$' % package_name_regex, dep)
     if match:
         return PackageVersionInterval(
-            dep, match.group(1),
+            dep,
+            match.group(1),
             PackageVersionIntervalEndpoint(True, None, None),
-            PackageVersionIntervalEndpoint(True, None, None))
+            PackageVersionIntervalEndpoint(True, None, None),
+        )
     match = re.match(
         r'^(%s) \(([\>\=\<]+) ([\~0-9A-Za-z\+\-\.\:]+)\)$' % package_name_regex,
-        dep)
+        dep,
+    )
     if match:
         (start, end) = version_interval_endpoints_from_exp(
-            match.group(2), deb_version.DebVersion(match.group(3)))
+            match.group(2), deb_version.DebVersion(match.group(3))
+        )
         return PackageVersionInterval(dep, match.group(1), start, end)
     print >> sys.stderr, 'Failed to parse ' + dep
     sys.exit(1)
@@ -156,12 +166,13 @@ def parse_dep(dep):
 def parse_interval_set(deps):
     r"""Parses a disjunction of package version requirements.
 
-  Args:
-      deps: A string of the format
-          "package \(op version\) (| package \(op version\))*"
+    Args:
+        deps: A string of the format
+            "package \(op version\) (| package \(op version\))*"
 
-  Returns:
-      A list of PackageVersionIntervals
-  """
+    Returns:
+        A list of PackageVersionIntervals
+    """
     return PackageVersionIntervalSet(
-        [parse_dep(dep.strip()) for dep in deps.split('|')])
+        [parse_dep(dep.strip()) for dep in deps.split('|')]
+    )

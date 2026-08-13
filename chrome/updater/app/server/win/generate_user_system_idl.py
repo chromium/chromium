@@ -115,7 +115,9 @@ def _GenerateIDLFile(idl_template_filename, idl_output_filename, generate_for):
             (.*?)    # Group for the replacement dictionary.
             \)
             (.*?)    # Group for interface text.
-            END_INTERFACE''', re.DOTALL | re.X)
+            END_INTERFACE''',
+        re.DOTALL | re.X,
+    )
 
     with open(idl_template_filename, 'rt') as f:
         matches = re.split(pattern, f.read())
@@ -128,35 +130,45 @@ def _GenerateIDLFile(idl_template_filename, idl_output_filename, generate_for):
             replacement_dict = json.loads(matches[i])
             interface_text = matches[i + 1]
             trailer = matches[i + 2]
-            interface_base_name = re.search(r'interface (\w+) :',
-                                            interface_text).group(1)
-            if not generate_for or generate_for in replacement_dict.get(
-                    'includeFor',
-                {}) or generate_for in replacement_dict['addToLibrary']:
+            interface_base_name = re.search(
+                r'interface (\w+) :', interface_text
+            ).group(1)
+            if (
+                not generate_for
+                or generate_for in replacement_dict.get('includeFor', {})
+                or generate_for in replacement_dict['addToLibrary']
+            ):
                 idl_output.append(interface_text)
                 if "" in replacement_dict['addToLibrary']:
-                    interfaces_in_library.append("interface " +
-                                                 interface_base_name)
+                    interfaces_in_library.append(
+                        "interface " + interface_base_name
+                    )
 
                 for scope, placeholder_guid in replacement_dict.get(
-                        'uuid', {}).items():
+                    'uuid', {}
+                ).items():
                     if generate_for and generate_for != scope:
                         continue
-                    interfaces_in_library.append("interface " +
-                                                 interface_base_name +
-                                                 scope.title())
-                    interface_gen = re.sub(r'(uuid\().*?(\))',
-                                           r'\1%s\2' % placeholder_guid,
-                                           interface_text)
+                    interfaces_in_library.append(
+                        "interface " + interface_base_name + scope.title()
+                    )
+                    interface_gen = re.sub(
+                        r'(uuid\().*?(\))',
+                        r'\1%s\2' % placeholder_guid,
+                        interface_text,
+                    )
                     for k in replacement_dict['tokensToSuffix']:
-                        interface_gen = re.sub(r'\b%s\b' % k,
-                                               k + scope.title(),
-                                               interface_gen)
+                        interface_gen = re.sub(
+                            r'\b%s\b' % k, k + scope.title(), interface_gen
+                        )
                     idl_output.append(interface_gen)
 
             if trailer.strip():
-                trailer = re.sub(r'INTERFACES_IN_LIBRARY',
-                                 ';\n  '.join(interfaces_in_library), trailer)
+                trailer = re.sub(
+                    r'INTERFACES_IN_LIBRARY',
+                    ';\n  '.join(interfaces_in_library),
+                    trailer,
+                )
                 idl_output.append(trailer)
 
         with open(idl_output_filename, 'w') as f_out:
@@ -168,24 +180,29 @@ def _GenerateIDLFile(idl_template_filename, idl_output_filename, generate_for):
 def _Main():
     """Generates IDL files from a template for user and system marshaling."""
     cmd_parser = argparse.ArgumentParser(
-        description='Tool to generate IDL from template.')
+        description='Tool to generate IDL from template.'
+    )
 
-    cmd_parser.add_argument('--idl_template_file',
-                            dest='idl_template_file',
-                            type=str,
-                            required=True,
-                            help='Input IDL template file.')
-    cmd_parser.add_argument('--idl_output_file',
-                            type=str,
-                            required=True,
-                            help='Output IDL file.')
-    cmd_parser.add_argument('--generate_for',
-                            type=str,
-                            help='Generate the IDL for `user` or `system`.')
+    cmd_parser.add_argument(
+        '--idl_template_file',
+        dest='idl_template_file',
+        type=str,
+        required=True,
+        help='Input IDL template file.',
+    )
+    cmd_parser.add_argument(
+        '--idl_output_file', type=str, required=True, help='Output IDL file.'
+    )
+    cmd_parser.add_argument(
+        '--generate_for',
+        type=str,
+        help='Generate the IDL for `user` or `system`.',
+    )
     flags = cmd_parser.parse_args()
 
-    _GenerateIDLFile(flags.idl_template_file, flags.idl_output_file,
-                     flags.generate_for)
+    _GenerateIDLFile(
+        flags.idl_template_file, flags.idl_output_file, flags.generate_for
+    )
 
 
 if __name__ == '__main__':

@@ -29,16 +29,20 @@ def main(argv):
     # wait for page to be loaded
     wait = WebDriverWait(driver, 10)
     wait.until(
-        expected_conditions.visibility_of_element_located((By.TAG_NAME,
-                                                           'history-app')))
+      expected_conditions.visibility_of_element_located(
+        (By.TAG_NAME, 'history-app')
+      )
+    )
 
     history_app = driver.find_element(By.CSS_SELECTOR, "history-app")
     histroy_list = getElementFromShadowRoot(driver, history_app, "history-list")
     # get the checkbox of the first history item
-    histroy_item = getElementFromShadowRoot(driver, histroy_list,
-                                            'history-item')
-    checkbox = getElementFromShadowRoot(driver, histroy_item,
-                                        '#main-container cr-checkbox')
+    histroy_item = getElementFromShadowRoot(
+      driver, histroy_list, 'history-item'
+    )
+    checkbox = getElementFromShadowRoot(
+      driver, histroy_item, '#main-container cr-checkbox'
+    )
     disabled = checkbox.get_attribute('disabled')
     if disabled == 'true':
       print('DISABLED')

@@ -33,12 +33,14 @@ class ReportingConnectorCombinedTest(ChromeReportingConnectorTestCase):
     self.EnableUITest(self.win_config['client'])
     self.InstallChrome(self.win_config['client'])
 
-  def runner(self, api_service: Verifyable, deviceId: str,
-             testStartTime: datetime) -> bool:
+  def runner(
+    self, api_service: Verifyable, deviceId: str, testStartTime: datetime
+  ) -> bool:
     try:
       self.TryVerifyUntilTimeout(
-          verifyClass=api_service,
-          content=VerifyContent(deviceId=deviceId, timestamp=testStartTime))
+        verifyClass=api_service,
+        content=VerifyContent(deviceId=deviceId, timestamp=testStartTime),
+      )
     except Exception:
       return False
     return True
@@ -46,18 +48,12 @@ class ReportingConnectorCombinedTest(ChromeReportingConnectorTestCase):
   def _create_api_services(self) -> List[Verifyable]:
     api_services = []
     gcs_assets = {
-        'secrets/ServiceAccountKey.json':
-            reporting_server.RealTimeReportingServer,
-        'secrets/splunkInstances.json':
-            splunk_server.SplunkApiService,
-        'secrets/chronicleCredentials.json':
-            chronicle_api_service.ChronicleApiService,
-        'secrets/pubsubCredentials.json':
-            pubsub_api_service.PubsubApiService,
-        'secrets/humio_user_token':
-            crowdstrike_humio_api_service.CrowdStrikeHumioApiService,
-        'secrets/panCredentials.json':
-            pan_api_service.PanApiService,
+      'secrets/ServiceAccountKey.json': reporting_server.RealTimeReportingServer,
+      'secrets/splunkInstances.json': splunk_server.SplunkApiService,
+      'secrets/chronicleCredentials.json': chronicle_api_service.ChronicleApiService,
+      'secrets/pubsubCredentials.json': pubsub_api_service.PubsubApiService,
+      'secrets/humio_user_token': crowdstrike_humio_api_service.CrowdStrikeHumioApiService,
+      'secrets/panCredentials.json': pan_api_service.PanApiService,
     }
     for asset, creator in gcs_assets.items():
       api_services.append(creator(self.GetFileFromGCSBucket(asset)))
@@ -78,18 +74,22 @@ class ReportingConnectorCombinedTest(ChromeReportingConnectorTestCase):
     self.assertIn('Enterprise.ReportingEventUploadSuccess', histogram)
     self.assertIn('count', histogram['Enterprise.ReportingEventUploadSuccess'])
     self.assertIsNotNone(
-        histogram['Enterprise.ReportingEventUploadSuccess']['count'])
-    self.assertIn('sum_value',
-                  histogram['Enterprise.ReportingEventUploadSuccess'])
+      histogram['Enterprise.ReportingEventUploadSuccess']['count']
+    )
+    self.assertIn(
+      'sum_value', histogram['Enterprise.ReportingEventUploadSuccess']
+    )
     self.assertIsNotNone(
-        histogram['Enterprise.ReportingEventUploadSuccess']['sum_value'])
+      histogram['Enterprise.ReportingEventUploadSuccess']['sum_value']
+    )
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
       futures = []
       api_services = self._create_api_services()
       for api_service in api_services:
         futures.append(
-            executor.submit(self.runner, api_service, deviceId, testStartTime))
+          executor.submit(self.runner, api_service, deviceId, testStartTime)
+        )
       for future in concurrent.futures.as_completed(futures):
         result_vals.append(future.result())
 

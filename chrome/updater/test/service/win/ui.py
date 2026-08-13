@@ -32,23 +32,28 @@ class _MessageQueueAttacher(object):
             logging.warning('No active window is found.')
             return
         current_thread_id = win32api.GetCurrentThreadId()
-        active_thread_id, _ = win32process.GetWindowThreadProcessId(
-            active_hwnd)
+        active_thread_id, _ = win32process.GetWindowThreadProcessId(active_hwnd)
         win32process.AttachThreadInput(current_thread_id, active_thread_id, 1)
-        logging.info('Attached current thread input %s to active thread: %s',
-                     current_thread_id, active_thread_id)
+        logging.info(
+            'Attached current thread input %s to active thread: %s',
+            current_thread_id,
+            active_thread_id,
+        )
         self._active_thread_id = active_thread_id
 
     def __exit__(self, unused_type, unused_value, unused_traceback):
-        """Detaches the current thread from the active thread's message queue.
-        """
+        """Detaches the current thread from the active thread's message queue."""
         if not self._active_thread_id:
             return
         current_thread_id = win32api.GetCurrentThreadId()
-        win32process.AttachThreadInput(current_thread_id,
-                                       self._active_thread_id, 0)
-        logging.info('Detached current thread input %s from thread: %s',
-                     current_thread_id, self._active_thread_id)
+        win32process.AttachThreadInput(
+            current_thread_id, self._active_thread_id, 0
+        )
+        logging.info(
+            'Detached current thread input %s from thread: %s',
+            current_thread_id,
+            self._active_thread_id,
+        )
 
 
 def SetForegroundWindow(hwnd):
@@ -84,9 +89,9 @@ def FindWindowsWithText(parent, text_to_search):
         def Process(self, handle):
             """Callback function when enumerating a window.
 
-      Args:
-          handle: HWND to the enumerated window.
-      """
+            Args:
+                handle: HWND to the enumerated window.
+            """
             text = win32gui.GetWindowText(handle).lower()
             text_to_search = self._text_to_search.lower()
 
@@ -100,8 +105,9 @@ def FindWindowsWithText(parent, text_to_search):
     try:
         win32gui.EnumChildWindows(parent, WinFoundCallback, handler)
     except pywintypes.error as e:
-        logging.info('Error while searching [%s], error: [%s]', text_to_search,
-                     e)
+        logging.info(
+            'Error while searching [%s], error: [%s]', text_to_search, e
+        )
 
     return handler.result
 
@@ -135,8 +141,9 @@ def FindWindow(title, class_name, parent=0, child_after=0):
     """
     hwnd = 0
     try:
-        hwnd = win32gui.FindWindowEx(int(parent), int(child_after), class_name,
-                                     title)
+        hwnd = win32gui.FindWindowEx(
+            int(parent), int(child_after), class_name, title
+        )
     except win32gui.error as err:
         if err[0] == winrror.ERROR_INVALID_WINDOW_HANDLE:  # Could be closed.
             pass
@@ -180,8 +187,12 @@ def WaitForWindow(title, class_name, timeout=30):
     Returns:
         A tuple of (HWND, title) of the found window, or (None, None) otherwise.
     """
-    logging.info('ui.WaitForWindow("%s", "%s") for %s seconds', title,
-                 class_name, timeout)
+    logging.info(
+        'ui.WaitForWindow("%s", "%s") for %s seconds',
+        title,
+        class_name,
+        timeout,
+    )
     hwnd = None
     start = time.perf_counter()
     stop = start + int(timeout)
@@ -195,8 +206,12 @@ def WaitForWindow(title, class_name, timeout=30):
         logging.info('Window with title [%s] has not appeared yet.', title)
         time.sleep(0.5)
 
-    logging.warning('WARNING: (%s,"%s") not found within %f seconds', title,
-                    class_name, timeout)
+    logging.warning(
+        'WARNING: (%s,"%s") not found within %f seconds',
+        title,
+        class_name,
+        timeout,
+    )
     return (None, None)
 
 
@@ -258,6 +273,7 @@ def SendKeyToWindow(hwnd, key_to_press):
         logging.error('Failed to press key: %s', err)
         raise
     except pythoncom.com_error as err:
-        logging.error('COM exception occurred: %s, is CoInitialize() called?',
-                      err)
+        logging.error(
+            'COM exception occurred: %s, is CoInitialize() called?', err
+        )
         raise

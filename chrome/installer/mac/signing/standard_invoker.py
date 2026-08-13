@@ -6,7 +6,6 @@ from signing import invoker, notarize, signing
 
 
 class Invoker(invoker.Interface):
-
     def __init__(self, *args):
         self._signer = signing.Invoker(*args)
         self._notarizer = notarize.Invoker(*args)

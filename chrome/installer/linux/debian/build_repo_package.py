@@ -41,7 +41,8 @@ def main() -> None:
     common_dir = script_dir.parent / "common"
 
     repo_package_version, repo_package_timestamp = get_repo_package_info(
-        script_dir)
+        script_dir
+    )
 
     config = installer.InstallerConfig.from_args(args, output_dir)
 
@@ -82,10 +83,12 @@ def main() -> None:
         )
         with (debian_dir / "control").open("a") as f:
             f.write("\n")
-        installer.process_template(script_dir / "postinst_repo",
-                                   debian_dir / "postinst", context)
-        installer.process_template(script_dir / "postrm_repo",
-                                   debian_dir / "postrm", context)
+        installer.process_template(
+            script_dir / "postinst_repo", debian_dir / "postinst", context
+        )
+        installer.process_template(
+            script_dir / "postrm_repo", debian_dir / "postrm", context
+        )
 
         (debian_dir / "control").chmod(0o644)
         (debian_dir / "postinst").chmod(0o755)
@@ -97,15 +100,17 @@ def main() -> None:
         os.environ["SOURCE_DATE_EPOCH"] = repo_package_timestamp
 
         # Use fakeroot to ensure correct permissions in the debian package.
-        installer.run_command([
-            "fakeroot",
-            "dpkg-deb",
-            "-Zxz",
-            "-z9",
-            "-b",
-            str(staging_dir),
-            str(deb_file),
-        ])
+        installer.run_command(
+            [
+                "fakeroot",
+                "dpkg-deb",
+                "-Zxz",
+                "-z9",
+                "-b",
+                str(staging_dir),
+                str(deb_file),
+            ]
+        )
 
 
 if __name__ == "__main__":

@@ -34,7 +34,7 @@ class ChromeReportingConnectorTestCase(ChromeEnterpriseTestCase):
 
   def InstallBrowserAndEnableUITest(self):
     """Install chrome on machine and enable ui test.
-      This is for the before all step"""
+    This is for the before all step"""
     self.EnableUITest(self.win_config['client'])
     self.InstallChrome(self.win_config['client'])
 
@@ -42,12 +42,14 @@ class ChromeReportingConnectorTestCase(ChromeEnterpriseTestCase):
     """Returns the API key required to get events from the
     ChromeOS Insights and Intelligence team's encrypted reporting server."""
     return self.GetFileFromGCSBucket(
-        'secrets/EncryptedReportingProductionAPIKey')
+      'secrets/EncryptedReportingProductionAPIKey'
+    )
 
   def GetManagedChromeDomainEnrollmentToken(self):
     """Get the enrollment token for the managedchrome.com domain"""
     return self.GetFileFromGCSBucket(
-        'secrets/ManagedChromeDomain-enrollmentToken')
+      'secrets/ManagedChromeDomain-enrollmentToken'
+    )
 
   def GetManagedChromeCustomerId(self):
     """Get the customer id for the managedchrome.com domain"""
@@ -59,8 +61,9 @@ class ChromeReportingConnectorTestCase(ChromeEnterpriseTestCase):
 
   def EnrollBrowserToDomain(self, token):
     """Enroll browser to test domain"""
-    self.SetPolicy(self.win_config['dc'], r'CloudManagementEnrollmentToken',
-                   token, 'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'CloudManagementEnrollmentToken', token, 'String'
+    )
 
   def EnableSafeBrowsing(self):
     """Enable safe browsing policy"""
@@ -77,20 +80,23 @@ class ChromeReportingConnectorTestCase(ChromeEnterpriseTestCase):
     self.EnableHistogramSupport(self.win_config['client'], localDir)
 
     output = self.RunUITest(
-        self.win_config['client'],
-        os.path.join(localDir, 'common', 'realtime_reporting_ui_test.py'),
-        timeout=600)
+      self.win_config['client'],
+      os.path.join(localDir, 'common', 'realtime_reporting_ui_test.py'),
+      timeout=600,
+    )
     result = parse_to_json(output, '(?<=Result:).*')
     self.assertIsNotNone(result)
     deviceId = result['DeviceId']
     histogram = result['Histogram']
     return deviceId, histogram
 
-  def TryVerifyUntilTimeout(self,
-                            verifyClass: Verifyable,
-                            content: VerifyContent,
-                            timeout: int = 600,
-                            interval: int = 10):
+  def TryVerifyUntilTimeout(
+    self,
+    verifyClass: Verifyable,
+    content: VerifyContent,
+    timeout: int = 600,
+    interval: int = 10,
+  ):
     """Calls verifyClass.tryVerify every interval until it returns true or
     Until timeout is reached"""
     # wait until events are logged in the connector

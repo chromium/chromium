@@ -33,34 +33,47 @@ def BuildGroupPolicyTemplateAdmx(target_adm, target_admx, target_adml, apps):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
     generate_group_policy_template_adm.WriteGroupPolicyTemplate(
-        target_adm, apps)
+        target_adm, apps
+    )
     generate_group_policy_template_admx.WriteGroupPolicyTemplateAdmx(
-        target_admx, apps)
+        target_admx, apps
+    )
     generate_group_policy_template_admx.WriteGroupPolicyTemplateAdml(
-        target_adml, apps)
+        target_adml, apps
+    )
 
 
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--updater_adm_file',
-                        required=True,
-                        help='path to the output updater adm file')
-    parser.add_argument('--updater_admx_file',
-                        required=True,
-                        help='path to the output updater admx file')
-    parser.add_argument('--updater_adml_file',
-                        required=True,
-                        help='path to the output updater adml file')
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        '--updater_adm_file',
+        required=True,
+        help='path to the output updater adm file',
+    )
+    parser.add_argument(
+        '--updater_admx_file',
+        required=True,
+        help='path to the output updater admx file',
+    )
+    parser.add_argument(
+        '--updater_adml_file',
+        required=True,
+        help='path to the output updater adml file',
+    )
     args = parser.parse_args()
 
     # `public_apps.EXTERNAL_APPS` contains a list of tuples containing
     # information about each app. See `generate_group_policy_template_adm` and
     # `generate_group_policy_template_admx` for details.
-    BuildGroupPolicyTemplateAdmx(args.updater_adm_file, args.updater_admx_file,
-                                 args.updater_adml_file,
-                                 public_apps.EXTERNAL_APPS)
+    BuildGroupPolicyTemplateAdmx(
+        args.updater_adm_file,
+        args.updater_admx_file,
+        args.updater_adml_file,
+        public_apps.EXTERNAL_APPS,
+    )
 
 
 if __name__ == '__main__':

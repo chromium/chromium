@@ -10,13 +10,21 @@ import package_version_interval
 
 sys.path.append(
     os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), os.path.pardir,
-        os.path.pardir, os.path.pardir, os.path.pardir, 'build'))
+        os.path.dirname(os.path.abspath(__file__)),
+        os.path.pardir,
+        os.path.pardir,
+        os.path.pardir,
+        os.path.pardir,
+        'build',
+    )
+)
 import action_helpers
 
 if len(sys.argv) < 3:
-    print('Usage: %s output_deps_file input1_deps_file input2_deps_file ...' %
-          sys.argv[0])
+    print(
+        'Usage: %s output_deps_file input1_deps_file input2_deps_file ...'
+        % sys.argv[0]
+    )
     sys.exit(1)
 
 output_filename = sys.argv[1]

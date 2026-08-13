@@ -34,9 +34,7 @@ def GetPIDsWithName(image_name, session=None):
     cmd = ['tasklist', '/FO:csv', '/NH', '/FI', 'IMAGENAME eq %s' % image_name]
     if session is not None:
         cmd.extend(['/FI', 'SESSION eq %s' % session])
-    proc = subprocess.Popen(cmd,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:

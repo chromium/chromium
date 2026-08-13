@@ -18,8 +18,8 @@ from infra import ChromeEnterpriseTestCase
 class GoogleUpdatePolicyCloud(ChromeEnterpriseTestCase):
   """Test the Google Update policy:
 
-    https://admx.help/?Category=GoogleUpdate&Policy=Google.Policies.Update::Pol_UpdatePolicyGoogleUrduInput
-    """
+  https://admx.help/?Category=GoogleUpdate&Policy=Google.Policies.Update::Pol_UpdatePolicyGoogleUrduInput
+  """
 
   @before_all
   def setup(self):
@@ -32,26 +32,31 @@ class GoogleUpdatePolicyCloud(ChromeEnterpriseTestCase):
   def test_google_update_policy_enabled_cbcm(self):
     # Get chrome version before rollback
     chrome_version_start = packaging.version.parse(
-        self.GetChromeVersion(self.win_config['client']))
+      self.GetChromeVersion(self.win_config['client'])
+    )
 
     # OU: Omaha->Rollback @chromepizzatest.com
     token = '7f8385ea-f21a-431e-91d2-92f994a4a90a'
-    self.SetPolicy(self.win_config['dc'], r'CloudManagementEnrollmentToken',
-                   token, 'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'CloudManagementEnrollmentToken', token, 'String'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     dir = os.path.dirname(os.path.abspath(__file__))
     # Launch Chrome and trigger the cloud enrollment and policy fetch.
     self.RunWebDriverTest(
-        self.win_config['client'],
-        os.path.join(dir, 'google_update_policy_webdriver.py'))
+      self.win_config['client'],
+      os.path.join(dir, 'google_update_policy_webdriver.py'),
+    )
 
     # Trigger Google Updater via Task Scheduler
-    self.RunGoogleUpdaterTaskSchedulerCommand(self.win_config['client'],
-                                              'Start-ScheduledTask')
+    self.RunGoogleUpdaterTaskSchedulerCommand(
+      self.win_config['client'], 'Start-ScheduledTask'
+    )
     self.WaitForUpdateCheck(self.win_config['client'])
 
     chrome_version_end = packaging.version.parse(
-        self.GetChromeVersion(self.win_config['client']))
+      self.GetChromeVersion(self.win_config['client'])
+    )
 
     self.assertTrue(chrome_version_start > chrome_version_end)

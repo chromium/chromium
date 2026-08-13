@@ -30,9 +30,11 @@ def VerifyProcessExpectation(expectation_name, expectation, variable_expander):
     ]
     process_path = variable_expander.Expand(expectation_name)
     is_running = process_path in running_process_paths
-    assert expectation['running'] == is_running, \
-        ('Process %s is running' % process_path) if is_running else \
-        ('Process %s is not running' % process_path)
+    assert expectation['running'] == is_running, (
+        ('Process %s is running' % process_path)
+        if is_running
+        else ('Process %s is not running' % process_path)
+    )
 
 
 def CleanProcess(expectation_name, expectation, variable_expander):
@@ -52,7 +54,8 @@ def CleanProcess(expectation_name, expectation, variable_expander):
     process_path = variable_expander.Expand(expectation_name)
     assert not expectation['running'], (
         'Invalid expectation for CleanProcess operation: \'running\' property '
-        + 'for %s must not be True' % process_path)
+        + 'for %s must not be True' % process_path
+    )
 
     for proc in psutil.process_iter():
         try:
@@ -66,8 +69,12 @@ def CleanProcess(expectation_name, expectation, variable_expander):
         pid = proc.pid
         try:
             proc.kill()
-            LOGGER.info('CleanProcess killed process %s of pid %s' %
-                        (process_path, pid))
+            LOGGER.info(
+                'CleanProcess killed process %s of pid %s' % (process_path, pid)
+            )
         except psutil.NoSuchProcess:
-            LOGGER.info('CleanProcess tried to kill process %s of pid %s, ' %
-                        (process_path, pid) + 'yet it was already gone')
+            LOGGER.info(
+                'CleanProcess tried to kill process %s of pid %s, '
+                % (process_path, pid)
+                + 'yet it was already gone'
+            )

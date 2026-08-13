@@ -66,7 +66,7 @@ def CreateChromedriver(args):
             return 0
         for dump in dumps:
             dump_path = os.path.join(report_dir, dump)
-            if (output_dir):
+            if output_dir:
                 target_path = os.path.join(output_dir, dump)
                 try:
                     shutil.copyfile(dump_path, target_path)
@@ -74,7 +74,9 @@ def CreateChromedriver(args):
                 except OSError:
                     logging.exception(
                         'Failed to copy Chrome crash dump from %s to %s',
-                        dump_path, target_path)
+                        dump_path,
+                        target_path,
+                    )
             else:
                 logging.error('Found Chrome crash dump at %s', dump_path)
         return len(dumps)
@@ -92,8 +94,9 @@ def CreateChromedriver(args):
     emit_log = False
     try:
         chromedriver_service = Service(executable_path=args.chromedriver_path)
-        driver = webdriver.Chrome(service=chromedriver_service,
-                                  options=chrome_options)
+        driver = webdriver.Chrome(
+            service=chromedriver_service, options=chrome_options
+        )
         yield driver
     except:
         emit_log = True
@@ -115,8 +118,9 @@ def CreateChromedriver(args):
                 with open(log_file) as fh:
                     logging.error(fh.read())
                 if args.output_dir:
-                    target = os.path.join(args.output_dir,
-                                          os.path.basename(log_file))
+                    target = os.path.join(
+                        args.output_dir, os.path.basename(log_file)
+                    )
                     shutil.copyfile(log_file, target)
                     logging.error('Saved Chrome log to %s', target)
             try:
@@ -125,46 +129,55 @@ def CreateChromedriver(args):
                 # Don't fail the test if the log file couldn't be deleted.
                 logging.exception('Failed to delete log file %s' % log_file)
         if report_count:
-            raise Exception('Failing test due to %s crash reports found' %
-                            report_count)
+            raise Exception(
+                'Failing test due to %s crash reports found' % report_count
+            )
 
 
 def main():
     """Main entry point."""
     parser = parser = argparse.ArgumentParser(
         description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-q',
-                        '--quiet',
-                        action='store_true',
-                        default=False,
-                        help='Reduce test runner output')
-    parser.add_argument('--chromedriver-path',
-                        default='chromedriver.exe',
-                        metavar='FILENAME',
-                        help='Path to chromedriver')
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        '-q',
+        '--quiet',
+        action='store_true',
+        default=False,
+        help='Reduce test runner output',
+    )
+    parser.add_argument(
+        '--chromedriver-path',
+        default='chromedriver.exe',
+        metavar='FILENAME',
+        help='Path to chromedriver',
+    )
     parser.add_argument(
         '--output-dir',
         metavar='DIR',
         help='Directory into which crash dumps and other output '
-        ' files are to be written')
-    parser.add_argument('chrome_path',
-                        metavar='FILENAME',
-                        help='Path to chrome installer')
+        ' files are to be written',
+    )
+    parser.add_argument(
+        'chrome_path', metavar='FILENAME', help='Path to chrome installer'
+    )
     args = parser.parse_args()
 
     # This test is run from src, but this script is called with a cwd of
     # chrome/test/mini_installer, so relative paths need to be compensated for.
     if not os.path.exists(args.chromedriver_path):
-        args.chromedriver_path = os.path.join('..', '..', '..',
-                                              args.chromedriver_path)
+        args.chromedriver_path = os.path.join(
+            '..', '..', '..', args.chromedriver_path
+        )
     if not os.path.exists(args.chrome_path):
         args.chrome_path = os.path.join('..', '..', '..', args.chrome_path)
 
     logging.basicConfig(
         format='[%(asctime)s:%(filename)s(%(lineno)d)] %(message)s',
         datefmt='%m%d/%H%M%S',
-        level=logging.ERROR if args.quiet else logging.INFO)
+        level=logging.ERROR if args.quiet else logging.INFO,
+    )
 
     if not args.chrome_path:
         logging.error('The path to the chrome binary is required.')
@@ -172,16 +185,20 @@ def main():
     # Check that chromedriver is correct.
     if not os.path.exists(args.chromedriver_path):
         # If we can't find chromedriver exit as a no-op.
-        logging.info('Cant find %s. Exiting test_chrome_with_chromedriver',
-                     args.chromedriver_path)
+        logging.info(
+            'Cant find %s. Exiting test_chrome_with_chromedriver',
+            args.chromedriver_path,
+        )
         return 0
     with CreateChromedriver(args) as driver:
         driver.get(TEST_HTML_FILE)
         assert driver.title == 'Chromedriver Test Page', (
-            'The page title was not correct.')
+            'The page title was not correct.'
+        )
         element = driver.find_element(By.TAG_NAME, 'body')
         assert element.text == 'This is the test page', (
-            'The page body was not correct')
+            'The page body was not correct'
+        )
     return 0
 
 

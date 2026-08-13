@@ -12,15 +12,18 @@ import ssl
 from absl import app, flags
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string('addr', '0.0.0.0:443',
-                    'Address (<host>:<port>) to bind server to.')
-flags.DEFINE_string('cert', None,
-                    'Path to certificate to run HTTPS server with.')
 flags.DEFINE_string(
-    'key', None,
-    'Path to private key that establishes authenticity of `--cert`.')
-flags.DEFINE_string('verify_cert', None,
-                    'If provided, verify clients using this certificate.')
+  'addr', '0.0.0.0:443', 'Address (<host>:<port>) to bind server to.'
+)
+flags.DEFINE_string(
+  'cert', None, 'Path to certificate to run HTTPS server with.'
+)
+flags.DEFINE_string(
+  'key', None, 'Path to private key that establishes authenticity of `--cert`.'
+)
+flags.DEFINE_string(
+  'verify_cert', None, 'If provided, verify clients using this certificate.'
+)
 flags.mark_flag_as_required('cert')
 flags.mark_flag_as_required('key')
 

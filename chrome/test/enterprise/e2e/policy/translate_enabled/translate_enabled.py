@@ -25,9 +25,10 @@ class TranslateEnabledTest(ChromeEnterpriseTestCase):
   def isChromeTranslateEnabled(self, incognito=False):
     dir = os.path.dirname(os.path.abspath(__file__))
     output = self.RunUITest(
-        self.win_config['client'],
-        os.path.join(dir, 'translate_enabled_webdriver_test.py'),
-        args=['--incognito'] if incognito else [])
+      self.win_config['client'],
+      os.path.join(dir, 'translate_enabled_webdriver_test.py'),
+      args=['--incognito'] if incognito else [],
+    )
     return "TRUE" in output
 
   @test

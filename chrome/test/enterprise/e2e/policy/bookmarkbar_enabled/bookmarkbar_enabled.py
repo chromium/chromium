@@ -18,11 +18,11 @@ FLAGS = flags.FLAGS
 class BookmarkBarEnabledTest(ChromeEnterpriseTestCase):
   """Test the BookmarkBarEnabled
 
-    https://chromeenterprise.google/policies/?policy=BookmarkBarEnabled.
+  https://chromeenterprise.google/policies/?policy=BookmarkBarEnabled.
 
-    If this setting is left not set the user can decide to use this function
-    or not.
-    """
+  If this setting is left not set the user can decide to use this function
+  or not.
+  """
 
   @before_all
   def setup(self):
@@ -31,8 +31,9 @@ class BookmarkBarEnabledTest(ChromeEnterpriseTestCase):
 
   def _getUIStructure(self, instance_name):
     local_dir = os.path.dirname(os.path.abspath(__file__))
-    output = self.RunUITest(instance_name,
-                            os.path.join(local_dir, 'bookmarkbar_webdriver.py'))
+    output = self.RunUITest(
+      instance_name, os.path.join(local_dir, 'bookmarkbar_webdriver.py')
+    )
     return output
 
   @test

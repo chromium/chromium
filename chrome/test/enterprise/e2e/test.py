@@ -16,42 +16,60 @@ import chrome_ent_test.infra.controller as controller
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
-    'test', None,
-    'The full class name of the EnterpriseTestCase class (w/ package)')
+  'test',
+  None,
+  'The full class name of the EnterpriseTestCase class (w/ package)',
+)
 flags.mark_flag_as_required('test')
 
-flags.DEFINE_string('test_filter', None,
-                    'The name of the test to run in the test class')
+flags.DEFINE_string(
+  'test_filter', None, 'The name of the test to run in the test class'
+)
 
-flags.DEFINE_string('host', None,
-                    'The full path to the *.host.textpb file to use')
+flags.DEFINE_string(
+  'host', None, 'The full path to the *.host.textpb file to use'
+)
 flags.mark_flag_as_required('host')
 
-flags.DEFINE_string('cel_ctl', None,
-                    'Which binary to use to deploy the environment')
+flags.DEFINE_string(
+  'cel_ctl', None, 'Which binary to use to deploy the environment'
+)
 flags.mark_flag_as_required('cel_ctl')
 
 flags.DEFINE_bool(
-    'deploy', True, 'Depoly the test environment. '
-    'Set to false to skip the deployment phase and go straight to tests')
+  'deploy',
+  True,
+  'Depoly the test environment. '
+  'Set to false to skip the deployment phase and go straight to tests',
+)
 flags.DEFINE_bool(
-    'skip_before_all', False, 'True to skip @before_all methods. '
-    'Like --nodeploy, this is used to skip set up steps. '
-    'Useful when developing new tests.')
+  'skip_before_all',
+  False,
+  'True to skip @before_all methods. '
+  'Like --nodeploy, this is used to skip set up steps. '
+  'Useful when developing new tests.',
+)
 flags.DEFINE_bool(
-    'no_external_access', False, 'True to skip creating RDP/SSH firewall '
-    'rules during deployment. Should be used in automated test runs.')
-flags.DEFINE_bool('cleanup', False,
-                  'Clean up the host environment after the test')
-flags.DEFINE_string('error_logs_dir', None,
-                    'Where to collect extra logs on test failures')
+  'no_external_access',
+  False,
+  'True to skip creating RDP/SSH firewall '
+  'rules during deployment. Should be used in automated test runs.',
+)
+flags.DEFINE_bool(
+  'cleanup', False, 'Clean up the host environment after the test'
+)
+flags.DEFINE_string(
+  'error_logs_dir', None, 'Where to collect extra logs on test failures'
+)
 flags.DEFINE_multi_string('test_arg', None, 'Flags passed to tests')
 
 
 def ConfigureLogging():
   # Filter out logs from low level loggers
   errorOnlyLoggers = [
-      'googleapiclient.discovery_cache', 'google.auth', 'google_auth_httplib2'
+    'googleapiclient.discovery_cache',
+    'google.auth',
+    'google_auth_httplib2',
   ]
   for logger in errorOnlyLoggers:
     logging.getLogger(logger).setLevel(logging.ERROR)
@@ -73,13 +91,14 @@ def main(argv):
       test_env = json.load(f)
 
   c = controller.SingleTestController(
-      FLAGS.test,
-      FLAGS.host,
-      FLAGS.cel_ctl,
-      test_filter=FLAGS.test_filter,
-      skip_before_all=FLAGS.skip_before_all,
-      no_external_access=FLAGS.no_external_access,
-      environ=test_env)
+    FLAGS.test,
+    FLAGS.host,
+    FLAGS.cel_ctl,
+    test_filter=FLAGS.test_filter,
+    skip_before_all=FLAGS.skip_before_all,
+    no_external_access=FLAGS.no_external_access,
+    environ=test_env,
+  )
 
   # Parse test specific flags. Note that we need to use a dummy element
   # as the first element of the list since absl.flags ignores the first element
@@ -88,7 +107,7 @@ def main(argv):
     FLAGS([''] + FLAGS.test_arg)
 
   success = False
-  should_write_logs = (FLAGS.error_logs_dir != None)
+  should_write_logs = FLAGS.error_logs_dir != None
   try:
     if FLAGS.deploy:
       c.DeployNewEnvironment()

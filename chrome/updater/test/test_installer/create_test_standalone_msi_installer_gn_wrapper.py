@@ -11,7 +11,10 @@ import subprocess
 import sys
 
 if __name__ == '__main__':
-    subprocess.run([
-        'vpython3.bat',
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sign.py')
-    ] + sys.argv[1:])
+    subprocess.run(
+        [
+            'vpython3.bat',
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sign.py'),
+        ]
+        + sys.argv[1:]
+    )

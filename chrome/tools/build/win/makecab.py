@@ -31,7 +31,8 @@ import sys
 import zlib
 
 
-class FlagParseError(Exception): pass
+class FlagParseError(Exception):
+    pass
 
 
 def ParseFlags(flags):
@@ -60,8 +61,9 @@ def ParseFlags(flags):
                     input_mtimestamp = int(defs.removeprefix('InputMtime='))
             # Ignore all other /D flags silently.
             i += 2
-        elif (flag.startswith('-')
-              or (flag.startswith('/') and not os.path.exists(flag))):
+        elif flag.startswith('-') or (
+            flag.startswith('/') and not os.path.exists(flag)
+        ):
             raise FlagParseError('unknown flag ' + flag)
         else:
             if not input:
@@ -69,8 +71,9 @@ def ParseFlags(flags):
             elif not output:
                 output = flag
             else:
-                raise FlagParseError('too many paths: %s %s %s' %
-                                     (input, output, flag))
+                raise FlagParseError(
+                    'too many paths: %s %s %s' % (input, output, flag)
+                )
             i += 1
     # Validate and set default values.
     if not input:
@@ -79,16 +82,20 @@ def ParseFlags(flags):
         input_mtimestamp = os.path.getmtime(input)
     if not output:
         output = os.path.basename(input)[:-1] + '_'
-    Flags = namedtuple('Flags',
-                       ['input', 'input_mtimestamp', 'output', 'output_dir'])
-    return Flags(input=input,
-                 input_mtimestamp=input_mtimestamp,
-                 output=output,
-                 output_dir=output_dir)
+    Flags = namedtuple(
+        'Flags', ['input', 'input_mtimestamp', 'output', 'output_dir']
+    )
+    return Flags(
+        input=input,
+        input_mtimestamp=input_mtimestamp,
+        output=output,
+        output_dir=output_dir,
+    )
 
 
-def WriteCab(output_file, input_file, cab_stored_filename, input_size,
-             input_mtimestamp):
+def WriteCab(
+    output_file, input_file, cab_stored_filename, input_size, input_mtimestamp
+):
     """Reads data from input_file and stores its MSZIP-compressed data
     in output_file.  cab_stored_filename is the filename stored in the
     cab file, input_size is the size of the input file, and input_mtimestamp
@@ -125,8 +132,10 @@ def WriteCab(output_file, input_file, cab_stored_filename, input_size,
         'H'  # iCabinet, index in multi-file cabinets. 0 here.
     )
     output_file.write(
-        struct.pack(CFHEADER, b'MSCF', 0, 0, 0, cffile_offset, 0, 3, 1, 1, 1,
-                    0, 0, 0))
+        struct.pack(
+            CFHEADER, b'MSCF', 0, 0, 0, cffile_offset, 0, 3, 1, 1, 1, 0, 0, 0
+        )
+    )
 
     # Write single CFFOLDER.
     CFFOLDER = (
@@ -171,7 +180,8 @@ def WriteCab(output_file, input_file, cab_stored_filename, input_size,
         # cbData, number of compressed bytes in this block.
         'H'
         # cbUncomp, size after decompressing. 1 << 15 for all but the last.
-        'H')
+        'H'
+    )
     # Read input data in chunks of 32kB, compress and write out compressed data.
     for _ in range(num_chunks):
         chunk = input_file.read(chunk_size)
@@ -186,11 +196,13 @@ def WriteCab(output_file, input_file, cab_stored_filename, input_size,
         # faster and 10% larger.
         # Since 6 is ok and the default, let's go with that.
         # Remember: User-shipped bits get recompressed on the signing server.
-        zlib_obj = zlib.compressobj(zlib.Z_DEFAULT_COMPRESSION, zlib.DEFLATED,
-                                    -zlib.MAX_WBITS)
+        zlib_obj = zlib.compressobj(
+            zlib.Z_DEFAULT_COMPRESSION, zlib.DEFLATED, -zlib.MAX_WBITS
+        )
         compressed = zlib_obj.compress(chunk) + zlib_obj.flush()
         compressed_size = 2 + len(
-            compressed)  # Also count 0x43 0x4b magic header.
+            compressed
+        )  # Also count 0x43 0x4b magic header.
         # cab spec: "Each data block represents 32k uncompressed, except that
         # the last block in a folder may be smaller. A two-byte MSZIP
         # signature precedes the compressed encoding in each block, consisting
@@ -218,17 +230,25 @@ def main():
         print(__doc__)
         sys.exit(0)
     if not os.path.exists(flags.input):
-        print('makecab.py: error: input file %s does not exist' % flags.input,
-              file=sys.stderr)
+        print(
+            'makecab.py: error: input file %s does not exist' % flags.input,
+            file=sys.stderr,
+        )
         sys.exit(1)
-    with open(os.path.join(flags.output_dir, flags.output),
-              'wb') as output_file:
+    with open(
+        os.path.join(flags.output_dir, flags.output), 'wb'
+    ) as output_file:
         cab_stored_filename = os.path.basename(flags.input)
         input_mtimestamp = flags.input_mtimestamp
         input_size = os.path.getsize(flags.input)
         with open(flags.input, 'rb') as input_file:
-            WriteCab(output_file, input_file, cab_stored_filename, input_size,
-                     input_mtimestamp)
+            WriteCab(
+                output_file,
+                input_file,
+                cab_stored_filename,
+                input_size,
+                input_mtimestamp,
+            )
 
 
 if __name__ == '__main__':

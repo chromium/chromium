@@ -25,9 +25,10 @@ class SafeBrowsingEnabledTest(ChromeEnterpriseTestCase):
   def isSafeBrowsingEnabled(self):
     dir = os.path.dirname(os.path.abspath(__file__))
     return self.RunUITest(
-        self.win_config['client'],
-        os.path.join(dir, 'safe_browsing_ui_test.py'),
-        timeout=600)
+      self.win_config['client'],
+      os.path.join(dir, 'safe_browsing_ui_test.py'),
+      timeout=600,
+    )
 
   @test
   def test_SafeBrowsingDisabledNoWarning(self):

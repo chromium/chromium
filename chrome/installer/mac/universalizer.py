@@ -117,6 +117,7 @@ class CantMergeException(Exception):
     """Raised when differences exist between input files such that they cannot
     be merged successfully.
     """
+
     pass
 
 
@@ -149,9 +150,17 @@ def _merge_info_plists(input_paths, output_path):
         for key in set(input_plist.keys()) | set(output_plist.keys()):
             if input_plist.get(key, None) == output_plist.get(key, None):
                 continue
-            if key in ('BuildMachineOSBuild', 'DTCompiler', 'DTPlatformBuild',
-                       'DTPlatformName', 'DTPlatformVersion', 'DTSDKBuild',
-                       'DTSDKName', 'DTXcode', 'DTXcodeBuild'):
+            if key in (
+                'BuildMachineOSBuild',
+                'DTCompiler',
+                'DTPlatformBuild',
+                'DTPlatformName',
+                'DTPlatformVersion',
+                'DTSDKBuild',
+                'DTSDKName',
+                'DTXcode',
+                'DTXcodeBuild',
+            ):
                 if key in input_plist:
                     del input_plist[key]
                 if key in output_plist:
@@ -162,7 +171,7 @@ def _merge_info_plists(input_paths, output_path):
                 #
                 # Ensure that the values match the expected format as a
                 # prerequisite to what follows.
-                key_tail = key[len('KSChannelID'):]
+                key_tail = key[len('KSChannelID') :]
                 input_value = input_plist.get(key, '')
                 output_value = output_plist.get(key, '')
                 assert input_value.endswith(key_tail)
@@ -213,15 +222,19 @@ def _universalize(input_paths, output_path, root):
     input_types = [_file_type_for_stat(x) for x in input_stats]
     type = _sole_list_element(
         input_types,
-        'varying types %r for input paths %r' % (input_types, input_paths))
+        'varying types %r for input paths %r' % (input_types, input_paths),
+    )
 
     if type == 'file':
         identical = True
         for index in range(1, len(input_paths)):
             if not filecmp.cmp(input_paths[0], input_paths[index]):
                 identical = False
-                if (os.path.basename(output_path) == 'Info.plist' or
-                        os.path.basename(output_path).endswith('-Info.plist')):
+                if os.path.basename(
+                    output_path
+                ) == 'Info.plist' or os.path.basename(output_path).endswith(
+                    '-Info.plist'
+                ):
                     _merge_info_plists(input_paths, output_path)
                 else:
                     command = ['lipo', '-create', '-output', output_path]
@@ -273,14 +286,18 @@ def _universalize(input_paths, output_path, root):
     elif type == 'symbolic_link':
         targets = [os.readlink(x) for x in input_paths]
         target = _sole_list_element(
-            targets, 'varying symbolic link targets %r for input paths %r' %
-            (targets, input_paths))
+            targets,
+            'varying symbolic link targets %r for input paths %r'
+            % (targets, input_paths),
+        )
         os.symlink(target, output_path)
 
     input_permissions = [stat.S_IMODE(x.st_mode) for x in input_stats]
     permission = _sole_list_element(
-        input_permissions, 'varying permissions %r for input paths %r' %
-        (['0o%o' % x for x in input_permissions], input_paths))
+        input_permissions,
+        'varying permissions %r for input paths %r'
+        % (['0o%o' % x for x in input_permissions], input_paths),
+    )
 
     os.lchmod(output_path, permission)
 
@@ -328,13 +345,15 @@ def universalize(input_paths, output_path):
 def main(args):
     parser = argparse.ArgumentParser(
         description='Merge multiple single-architecture directory trees into a '
-        'single universal tree.')
+        'single universal tree.'
+    )
     parser.add_argument(
         'inputs',
         nargs='+',
         metavar='input',
         help='An input directory tree to be merged. At least two inputs must '
-        'be provided.')
+        'be provided.',
+    )
     parser.add_argument('output', help='The merged directory tree to produce.')
     parsed = parser.parse_args(args)
     if len(parsed.inputs) < 2:

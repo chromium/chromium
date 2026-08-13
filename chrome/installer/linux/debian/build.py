@@ -25,7 +25,8 @@ def parse_args() -> argparse.Namespace:
         required=False,
         help="Number of threads to run xz",
         type=int,
-        default=0)
+        default=0,
+    )
     return parser.parse_args()
 
 
@@ -58,8 +59,9 @@ def gen_control(
     deb_control.unlink()
 
 
-def verify_package(config: installer.InstallerConfig,
-                   deb_file: pathlib.Path) -> None:
+def verify_package(
+    config: installer.InstallerConfig, deb_file: pathlib.Path
+) -> None:
     depends = config.deb_depends
     expected_depends = [d.strip() for d in depends.split(", ") if d.strip()]
 
@@ -67,7 +69,7 @@ def verify_package(config: installer.InstallerConfig,
     actual_depends = []
     for line in output.splitlines():
         if line.startswith(" Depends: "):
-            deps = line[len(" Depends: "):].split(", ")
+            deps = line[len(" Depends: ") :].split(", ")
             actual_depends = [d.strip() for d in deps if d.strip()]
             break
 
@@ -118,11 +120,14 @@ def main() -> None:
         (staging_dir / "DEBIAN").chmod(installer.StandardPermissions.EXECUTABLE)
         (staging_dir / "etc/cron.daily").mkdir(parents=True, exist_ok=True)
         (staging_dir / "etc/cron.daily").chmod(
-            installer.StandardPermissions.EXECUTABLE)
+            installer.StandardPermissions.EXECUTABLE
+        )
         (staging_dir / f"usr/share/doc/{config.usr_bin_symlink_name}").mkdir(
-            parents=True, exist_ok=True)
+            parents=True, exist_ok=True
+        )
         (staging_dir / f"usr/share/doc/{config.usr_bin_symlink_name}").chmod(
-            installer.StandardPermissions.EXECUTABLE)
+            installer.StandardPermissions.EXECUTABLE
+        )
 
         inst.stage_install_common()
 
@@ -141,7 +146,8 @@ def main() -> None:
         cron_file.chmod(installer.StandardPermissions.EXECUTABLE)
 
         cron_daily_link = (
-            staging_dir / "etc/cron.daily" / config.info_vars["PACKAGE"])
+            staging_dir / "etc/cron.daily" / config.info_vars["PACKAGE"]
+        )
         if cron_daily_link.is_symlink() or cron_daily_link.exists():
             cron_daily_link.unlink()
         os.symlink(
@@ -192,14 +198,16 @@ def main() -> None:
 
         os.environ["SOURCE_DATE_EPOCH"] = args.build_time
         staging_dir.chmod(0o750)
-        installer.run_command([
-            "fakeroot",
-            "dpkg-deb",
-            "-Znone",
-            "-b",
-            str(staging_dir),
-            str(tmp_file_dir),
-        ])
+        installer.run_command(
+            [
+                "fakeroot",
+                "dpkg-deb",
+                "-Znone",
+                "-b",
+                str(staging_dir),
+                str(tmp_file_dir),
+            ]
+        )
 
         package_file = f"{pkg_name}_{config.versionfull}_{args.arch}.deb"
         package_path = tmp_file_dir / package_file
@@ -207,15 +215,18 @@ def main() -> None:
         if args.official:
             pkg_basename = package_path.name
             installer.run_command(["ar", "-x", pkg_basename], cwd=tmp_file_dir)
-            installer.run_command([
-                "xz",
-                "-z9",
-                f"-T{args.xz_nthreads}",
-                "--lzma2=dict=256MiB",
-                str(tmp_file_dir / "data.tar"),
-            ])
             installer.run_command(
-                ["xz", "-z0", str(tmp_file_dir / "control.tar")])
+                [
+                    "xz",
+                    "-z9",
+                    f"-T{args.xz_nthreads}",
+                    "--lzma2=dict=256MiB",
+                    str(tmp_file_dir / "data.tar"),
+                ]
+            )
+            installer.run_command(
+                ["xz", "-z0", str(tmp_file_dir / "control.tar")]
+            )
             installer.run_command(
                 ["ar", "-d", pkg_basename, "control.tar", "data.tar"],
                 cwd=tmp_file_dir,

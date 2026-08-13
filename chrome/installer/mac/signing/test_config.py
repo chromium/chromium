@@ -8,7 +8,6 @@ from signing import config, model, standard_invoker
 
 
 class TestConfig(config.CodeSignConfig):
-
     def __init__(self, **kwargs):
         config_args = {
             'invoker': TestInvoker.factory_with_args(),
@@ -60,7 +59,6 @@ class TestConfig(config.CodeSignConfig):
 
 
 class TestConfigNonChromeBranded(TestConfig):
-
     @staticmethod
     def is_chrome_branded():
         return False
@@ -71,14 +69,12 @@ class TestConfigNonChromeBranded(TestConfig):
 
 
 class TestConfigInjectGetTaskAllow(TestConfig):
-
     @property
     def inject_get_task_allow_entitlement(self):
         return True
 
 
 class TestInvoker(standard_invoker.Invoker):
-
     @staticmethod
     def factory_with_args(**kwargs):
         if 'notary_arg' not in kwargs:

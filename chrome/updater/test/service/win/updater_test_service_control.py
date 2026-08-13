@@ -23,8 +23,13 @@ _UPDATER_TEST_SERVICE_NAME = 'UpdaterTestService'
 
 # Errors that might be raised when interacting with the service.
 # pylint: disable=undefined-variable
-_ServiceErrors = (OSError, pywintypes.error, win32api.error,
-                  win32service.error, WindowsError)
+_ServiceErrors = (
+    OSError,
+    pywintypes.error,
+    win32api.error,
+    win32service.error,
+    WindowsError,
+)
 # pylint: enable=undefined-variable
 
 
@@ -38,9 +43,9 @@ def _RunCommand(command, log_error=True):
     Returns:
         True if the process exits with 0.
     """
-    process = subprocess.Popen(command,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+    process = subprocess.Popen(
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
     stdout, stderr = process.communicate()
     logging.info('Command %s stdout:\n %s', command, stdout)
     if log_error and stderr:
@@ -54,8 +59,11 @@ def _CopyDLLsInDirectory(source_dir, destination_dir):
     for filename in os.listdir(source_dir):
         source_file = os.path.join(source_dir, filename)
         destination_file = os.path.join(destination_dir, filename)
-        if os.path.isfile(source_file) and source_file.endswith(
-                '.dll') and not os.path.exists(destination_file):
+        if (
+            os.path.isfile(source_file)
+            and source_file.endswith('.dll')
+            and not os.path.exists(destination_file)
+        ):
             logging.info(f'Copying {source_file} ===> {destination_file} ...')
             try:
                 shutil.copy(source_file, destination_file)
@@ -74,8 +82,9 @@ def _SetupEnvironmentForVPython():
     # Make pythonservice.exe explicit for our service. This is to avoid pickup
     # an incompatible interpreter accidentally.
     python_dir = os.path.dirname(os.path.abspath(sys.executable))
-    source = os.path.join(sysconfig.get_paths()['platlib'], 'win32',
-                          'pythonservice.exe')
+    source = os.path.join(
+        sysconfig.get_paths()['platlib'], 'win32', 'pythonservice.exe'
+    )
     python_service_path = os.path.join(python_dir, 'pythonservice.exe')
     if os.path.exists(source) and not os.path.exists(python_service_path):
         shutil.copyfile(source, python_service_path)
@@ -94,14 +103,19 @@ def _SetupEnvironmentForVPython():
     # https://github.com/mhammond/pywin32/commit/c6958cdccb38e5888a5141553dd36a21fa196f53.
     _CopyDLLsInDirectory(
         os.path.join(sysconfig.get_paths()['platlib'], 'pywin32_system32'),
-        python_dir)
+        python_dir,
+    )
 
 
 def _IsServiceInStatus(status):
     """Returns the if test service is in the given status."""
     try:
-        return status == win32serviceutil.QueryServiceStatus(
-            _UPDATER_TEST_SERVICE_NAME)[1]
+        return (
+            status
+            == win32serviceutil.QueryServiceStatus(_UPDATER_TEST_SERVICE_NAME)[
+                1
+            ]
+        )
     except _ServiceErrors as err:
         return False
 
@@ -110,8 +124,9 @@ def _MainServiceScriptPath():
     """Returns the service main script path."""
     # Assumes updater_test_service.py file is in the same directory as
     # this file.
-    service_main = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                                'updater_test_service.py')
+    service_main = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), 'updater_test_service.py'
+    )
     if not os.path.isfile(service_main):
         logging.error('Cannot find service main module: %s', service_main)
         return None
@@ -140,26 +155,24 @@ def InstallService():
 
     service_main = _MainServiceScriptPath()
     if not service_main:
-        logging.error('Cannot find the service main script [%s].',
-                      service_main)
+        logging.error('Cannot find the service main script [%s].', service_main)
         return False
 
     try:
-        if _IsServiceInStatus(
-                win32service.SERVICE_RUNNING) and not StopService():
+        if (
+            _IsServiceInStatus(win32service.SERVICE_RUNNING)
+            and not StopService()
+        ):
             logging.error('Cannot stop existing test service.')
             return False
 
         logging.info('Installing service with script: %s', service_main)
-        command = [
-            sys.executable, service_main, '--startup', 'auto', 'install'
-        ]
+        command = [sys.executable, service_main, '--startup', 'auto', 'install']
         if _RunCommand(command):
             logging.info('Service [%s] installed.', _UPDATER_TEST_SERVICE_NAME)
             return True
         else:
-            logging.error('Failed to install [%s].',
-                          _UPDATER_TEST_SERVICE_NAME)
+            logging.error('Failed to install [%s].', _UPDATER_TEST_SERVICE_NAME)
             return False
     except _ServiceErrors as err:
         logging.exception(err)
@@ -170,24 +183,29 @@ def UninstallService():
     """Uninstall the service."""
     service_main = _MainServiceScriptPath()
     if not service_main:
-        logging.error('Unexpected: missing service main script [%s].',
-                      service_main)
+        logging.error(
+            'Unexpected: missing service main script [%s].', service_main
+        )
         return False
 
     try:
-        if _IsServiceInStatus(
-                win32service.SERVICE_RUNNING) and not StopService():
+        if (
+            _IsServiceInStatus(win32service.SERVICE_RUNNING)
+            and not StopService()
+        ):
             logging.error('Cannot stop test service for uninstall.')
             return False
 
         command = [sys.executable, service_main, 'remove']
         if _RunCommand(command):
-            logging.error('Service [%s] uninstalled.',
-                          _UPDATER_TEST_SERVICE_NAME)
+            logging.error(
+                'Service [%s] uninstalled.', _UPDATER_TEST_SERVICE_NAME
+            )
             return True
         else:
-            logging.error('Failed to uninstall [%s].',
-                          _UPDATER_TEST_SERVICE_NAME)
+            logging.error(
+                'Failed to uninstall [%s].', _UPDATER_TEST_SERVICE_NAME
+            )
             return False
     except _ServiceErrors as err:
         logging.error('Failed to install service.')

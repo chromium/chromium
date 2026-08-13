@@ -22,8 +22,9 @@ from absl import flags
 
 FLAGS = flags.FLAGS
 
-flags.DEFINE_string('download_path', None,
-                    'Absolute path to the download folder.')
+flags.DEFINE_string(
+  'download_path', None, 'Absolute path to the download folder.'
+)
 flags.mark_flag_as_required('download_path')
 
 flags.DEFINE_string('channel', 'CANARY', 'Chrome Channel to download.')
@@ -34,14 +35,18 @@ def get_latest_chrome_version(channel):
   if channel not in ["STABLE", "BETA", "DEV", "CANARY"]:
     raise ValueError("Invalid channel: {}".format(channel))
 
-  url = 'https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_' + channel
+  url = (
+    'https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_'
+    + channel
+  )
   response = requests.get(url)
   return response.text
 
 
 def download_chromedriver(version, download_path):
   url = 'https://storage.googleapis.com/chrome-for-testing-public/{}/win64/chromedriver-win64.zip'.format(
-      version)
+    version
+  )
   response = requests.get(url)
   if response.status_code == 200:
     # Save the zip file
@@ -55,13 +60,14 @@ def download_chromedriver(version, download_path):
     logging.info("Chromedriver zip file downloaded and extract successfully")
   else:
     logging.info(
-        f"Failed to download zip file from '{url}'. Status code: {response.status_code}"
+      f"Failed to download zip file from '{url}'. Status code: {response.status_code}"
     )
 
 
 def download_chrome(version, download_path):
   gsutil_uri = 'gs://chrome-signed/desktop-5c0tCh/{}/win64-clang/mini_installer.exe.outputs/GoogleChromeStandaloneEnterprise.msi'.format(
-      version)
+    version
+  )
   command = ['gsutil', 'cp', gsutil_uri, download_path]
   try:
     subprocess.run(command, check=True)

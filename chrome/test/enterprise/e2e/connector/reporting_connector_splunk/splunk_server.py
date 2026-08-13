@@ -25,9 +25,10 @@ class SplunkApiService(Verifyable):
 
   def get_dispatch_state(self, job_id):
     response = requests.post(
-        self.baseurl + '/services/search/jobs/' + job_id,
-        auth=(self.userName, self.password),
-        verify=False)
+      self.baseurl + '/services/search/jobs/' + job_id,
+      auth=(self.userName, self.password),
+      verify=False,
+    )
     root = ET.fromstring(response.text)
     print(response.text)
     dispatchState = ""
@@ -37,7 +38,7 @@ class SplunkApiService(Verifyable):
           for tag3 in tag2:
             if tag3.attrib['name'] == "dispatchState":
               dispatchState = tag3.text
-    return (dispatchState.upper())
+    return dispatchState.upper()
 
   def get_results(self, job_id):
     data = {'output_mode': 'json'}
@@ -46,15 +47,22 @@ class SplunkApiService(Verifyable):
     events = list()
 
     while not results_fullness:
-      response = requests.get(self.baseurl + '/services/search/jobs/' \
-                              + job_id + '/results?count=50000&offset=' \
-                              + str(offset), data=data,
-                              auth=(self.userName, self.password), verify=False)
+      response = requests.get(
+        self.baseurl
+        + '/services/search/jobs/'
+        + job_id
+        + '/results?count=50000&offset='
+        + str(offset),
+        data=data,
+        auth=(self.userName, self.password),
+        verify=False,
+      )
       response_data = json.loads(response.text)
       print("Count: " + str(len(response_data['results'])))
       events += response_data['results']
-      if len(response_data['results']
-            ) == 0:  #This means that we got all the results
+      if (
+        len(response_data['results']) == 0
+      ):  # This means that we got all the results
         results_fullness = True
       else:
         offset += 50000
@@ -64,8 +72,9 @@ class SplunkApiService(Verifyable):
   def TryVerify(self, content: VerifyContent) -> bool:
     """This method Verify event entry existence on the splunk instance"""
     searchQuery = "sourcetype=google:chrome:json"
-    minutes = int((
-        (datetime.utcnow() - content.timestamp).total_seconds() / 60) + 2)
+    minutes = int(
+      ((datetime.utcnow() - content.timestamp).total_seconds() / 60) + 2
+    )
     searchQuery += ' earliest=-' + str(minutes) + 'm'
     searchQuery += ' device_id="' + content.device_id + '"'
     searchQuery += ' event="badNavigationEvent"'
@@ -82,10 +91,11 @@ class SplunkApiService(Verifyable):
     # Run the search.
     # disable SSL cert validation.
     response = requests.post(
-        self.baseurl + '/services/search/jobs',
-        data=data,
-        auth=(self.userName, self.password),
-        verify=False)
+      self.baseurl + '/services/search/jobs',
+      data=data,
+      auth=(self.userName, self.password),
+      verify=False,
+    )
 
     root = ET.fromstring(response.text)
     for tag in root:

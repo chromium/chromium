@@ -19,17 +19,24 @@ HORIZONTAL_RULE = ';%s\n' % ('-' * 78)
 MAIN_POLICY_KEY = r'Software\Policies\Google\Update'
 
 # pylint: disable-msg=C6004
-HEADER = """\
+HEADER = (
+    """\
 CLASS MACHINE
   CATEGORY !!Cat_Google
     CATEGORY !!Cat_GoogleUpdate
-      KEYNAME \"""" + MAIN_POLICY_KEY + """\"
+      KEYNAME \""""
+    + MAIN_POLICY_KEY
+    + """\"
       EXPLAIN !!Explain_GoogleUpdate
 """
+)
 
-PREFERENCES = """
+PREFERENCES = (
+    """
       CATEGORY !!Cat_Preferences
-        KEYNAME \"""" + MAIN_POLICY_KEY + """\"
+        KEYNAME \""""
+    + MAIN_POLICY_KEY
+    + """\"
         EXPLAIN !!Explain_Preferences
 
         POLICY !!Pol_AutoUpdateCheckPeriod
@@ -112,7 +119,9 @@ PREFERENCES = """
       END CATEGORY  ; Preferences
 
       CATEGORY !!Cat_ProxyServer
-        KEYNAME \"""" + MAIN_POLICY_KEY + """\"
+        KEYNAME \""""
+    + MAIN_POLICY_KEY
+    + """\"
 
         POLICY !!Pol_ProxyMode
           #if version >= 4
@@ -156,12 +165,17 @@ PREFERENCES = """
 
       END CATEGORY
 """
+)
 
-APPLICATIONS_HEADER = """
+APPLICATIONS_HEADER = (
+    """
       CATEGORY !!Cat_Applications
-        KEYNAME \"""" + MAIN_POLICY_KEY + """\"
+        KEYNAME \""""
+    + MAIN_POLICY_KEY
+    + """\"
         EXPLAIN !!Explain_Applications
 """
+)
 
 INSTALL_POLICY_ITEMLIST_BEGIN = """\
             ITEMLIST
@@ -187,12 +201,15 @@ INSTALL_POLICY_ITEMLIST_END = r"""
             END ITEMLIST
             REQUIRED"""
 
-INSTALL_POLICY_ITEMLIST = INSTALL_POLICY_ITEMLIST_BEGIN + \
-                          INSTALL_POLICY_ITEMLIST_END
+INSTALL_POLICY_ITEMLIST = (
+    INSTALL_POLICY_ITEMLIST_BEGIN + INSTALL_POLICY_ITEMLIST_END
+)
 
-INSTALL_POLICY_ITEMLIST_APP_SPECIFIC = INSTALL_POLICY_ITEMLIST_BEGIN + \
-                                       INSTALL_POLICY_ITEMLIST_APP_SPECIFIC + \
-                                       INSTALL_POLICY_ITEMLIST_END
+INSTALL_POLICY_ITEMLIST_APP_SPECIFIC = (
+    INSTALL_POLICY_ITEMLIST_BEGIN
+    + INSTALL_POLICY_ITEMLIST_APP_SPECIFIC
+    + INSTALL_POLICY_ITEMLIST_END
+)
 
 UPDATE_POLICY_ITEMLIST = """\
             ITEMLIST
@@ -207,7 +224,8 @@ UPDATE_POLICY_ITEMLIST = """\
             END ITEMLIST
             REQUIRED"""
 
-APPLICATION_DEFAULTS = ("""
+APPLICATION_DEFAULTS = (
+    """
         POLICY !!Pol_DefaultAllowInstallation
           #if version >= 4
             SUPPORTED !!Sup_GoogleUpdate1_2_145_5
@@ -215,7 +233,9 @@ APPLICATION_DEFAULTS = ("""
           EXPLAIN !!Explain_DefaultAllowInstallation
           PART !!Part_InstallPolicy DROPDOWNLIST
             VALUENAME InstallDefault
-""" + INSTALL_POLICY_ITEMLIST + """
+"""
+    + INSTALL_POLICY_ITEMLIST
+    + """
           END PART
         END POLICY
 
@@ -226,14 +246,20 @@ APPLICATION_DEFAULTS = ("""
           EXPLAIN !!Explain_DefaultUpdatePolicy
           PART !!Part_UpdatePolicy DROPDOWNLIST
             VALUENAME UpdateDefault
-""" + UPDATE_POLICY_ITEMLIST + """
+"""
+    + UPDATE_POLICY_ITEMLIST
+    + """
           END PART
         END POLICY
-""")
+"""
+)
 
-APP_POLICIES_TEMPLATE = ("""
+APP_POLICIES_TEMPLATE = (
+    """
         CATEGORY !!Cat_$AppLegalId$
-          KEYNAME \"""" + MAIN_POLICY_KEY + """\"
+          KEYNAME \""""
+    + MAIN_POLICY_KEY
+    + """\"
 
           POLICY !!Pol_AllowInstallation
             #if version >= 4
@@ -242,8 +268,11 @@ APP_POLICIES_TEMPLATE = ("""
             EXPLAIN !!Explain_Install$AppLegalId$
             PART !!Part_InstallPolicy DROPDOWNLIST
               VALUENAME Install$AppGuid$
-""" + INSTALL_POLICY_ITEMLIST_APP_SPECIFIC.replace('            ',
-                                                   '              ') + """
+"""
+    + INSTALL_POLICY_ITEMLIST_APP_SPECIFIC.replace(
+        '            ', '              '
+    )
+    + """
             END PART
           END POLICY
 
@@ -254,7 +283,9 @@ APP_POLICIES_TEMPLATE = ("""
             EXPLAIN !!Explain_AutoUpdate$AppLegalId$
             PART !!Part_UpdatePolicy DROPDOWNLIST
               VALUENAME Update$AppGuid$
-""" + UPDATE_POLICY_ITEMLIST.replace('            ', '              ') + """
+"""
+    + UPDATE_POLICY_ITEMLIST.replace('            ', '              ')
+    + """
             END PART
           END POLICY
 
@@ -291,7 +322,8 @@ APP_POLICIES_TEMPLATE = ("""
           END POLICY
 
         END CATEGORY  ; $AppName$
-""")
+"""
+)
 
 APPLICATIONS_FOOTER = """
       END CATEGORY  ; Applications
@@ -323,7 +355,10 @@ APPLICATIONS_CATEGORY = 'Applications'
 
 # The captions for update policy were selected such that they appear in order of
 # decreasing preference when organized alphabetically in gpedit.
-STRINGS_HEADER_AND_COMMON = ('\n' + HORIZONTAL_RULE + """
+STRINGS_HEADER_AND_COMMON = (
+    '\n'
+    + HORIZONTAL_RULE
+    + """
 [strings]
 Sup_GoogleUpdate1_2_145_5=At least Google Update 1.2.145.5
 Sup_GoogleUpdate1_3_21_81=At least Google Update 1.3.21.81
@@ -335,9 +370,15 @@ Sup_GoogleUpdate1_3_35_453=At least Google Update 1.3.35.453
 
 Cat_Google=Google
 Cat_GoogleUpdate=Google Update
-Cat_Preferences=""" + PREFERENCES_CATEGORY + """
-Cat_ProxyServer=""" + PROXYSERVER_CATEGORY + """
-Cat_Applications=""" + APPLICATIONS_CATEGORY + """
+Cat_Preferences="""
+    + PREFERENCES_CATEGORY
+    + """
+Cat_ProxyServer="""
+    + PROXYSERVER_CATEGORY
+    + """
+Cat_Applications="""
+    + APPLICATIONS_CATEGORY
+    + """
 
 Pol_AutoUpdateCheckPeriod=Auto-update check period override
 Pol_DownloadPreference=Download URL class override
@@ -348,13 +389,27 @@ Group Policy
 Pol_ProxyMode=Choose how to specify proxy server settings
 Pol_ProxyServer=Address or URL of proxy server
 Pol_ProxyPacUrl=URL to a proxy .pac file
-Pol_DefaultAllowInstallation=""" + DEFAULT_ALLOW_INSTALLATION_POLICY + """
-Pol_AllowInstallation=""" + ALLOW_INSTALLATION_POLICY + """
-Pol_DefaultUpdatePolicy=""" + DEFAULT_UPDATE_POLICY + """
-Pol_UpdatePolicy=""" + UPDATE_POLICY + """
-Pol_TargetChannel=""" + TARGET_CHANNEL_POLICY + """
-Pol_TargetVersionPrefix=""" + TARGET_VERSION_POLICY + """
-Pol_RollbackToTargetVersion=""" + ROLLBACK_VERSION_POLICY + """
+Pol_DefaultAllowInstallation="""
+    + DEFAULT_ALLOW_INSTALLATION_POLICY
+    + """
+Pol_AllowInstallation="""
+    + ALLOW_INSTALLATION_POLICY
+    + """
+Pol_DefaultUpdatePolicy="""
+    + DEFAULT_UPDATE_POLICY
+    + """
+Pol_UpdatePolicy="""
+    + UPDATE_POLICY
+    + """
+Pol_TargetChannel="""
+    + TARGET_CHANNEL_POLICY
+    + """
+Pol_TargetVersionPrefix="""
+    + TARGET_VERSION_POLICY
+    + """
+Pol_RollbackToTargetVersion="""
+    + ROLLBACK_VERSION_POLICY
+    + """
 
 Part_AutoUpdateCheckPeriod=Minutes between update checks
 Part_DownloadPreference=Type of download URL to request
@@ -381,10 +436,18 @@ Name_InstallsDisabled=Installs disabled
 Name_ForceInstallsMachine=Force Installs (Machine-Wide)
 Name_ForceInstallsUser=Force Installs (Per-User)
 
-Name_UpdatesEnabled=""" + UPDATES_ENABLED + """ (recommended)
-Name_ManualUpdatesOnly=""" + MANUAL_UPDATES_ONLY + """
-Name_AutomaticUpdatesOnly=""" + AUTOMATIC_UPDATES_ONLY + """
-Name_UpdatesDisabled=""" + UPDATES_DISABLED + """
+Name_UpdatesEnabled="""
+    + UPDATES_ENABLED
+    + """ (recommended)
+Name_ManualUpdatesOnly="""
+    + MANUAL_UPDATES_ONLY
+    + """
+Name_AutomaticUpdatesOnly="""
+    + AUTOMATIC_UPDATES_ONLY
+    + """
+Name_UpdatesDisabled="""
+    + UPDATES_DISABLED
+    + """
 
 ProxyDisabled_DropDown=Never use a proxy
 ProxyAutoDetect_DropDown=Auto detect proxy settings
@@ -394,7 +457,8 @@ ProxyUseSystem_DropDown=Use system proxy settings
 
 DownloadPreference_Cacheable=Cacheable download URLs
 
-""")
+"""
+)
 
 STRINGS_APP_NAME_TEMPLATE = """\
 Cat_$AppLegalId$=$AppName$
@@ -409,29 +473,43 @@ Microsoft Active Directory domain."""
 
 # "application's" should be preceded by a different word in different contexts.
 # The word is specified by replacing the $PreApplicationWord$ token.
-STRINGS_UPDATE_POLICY_OPTIONS = """\
+STRINGS_UPDATE_POLICY_OPTIONS = (
+    """\
     \\n\\nOptions:\\
-    \\n - """ + UPDATES_ENABLED + """: Updates are always applied when found, \
+    \\n - """
+    + UPDATES_ENABLED
+    + """: Updates are always applied when found, \
 either by periodic update check or by a manual update check.\\
-    \\n - """ + MANUAL_UPDATES_ONLY + """: Updates are only applied when the \
+    \\n - """
+    + MANUAL_UPDATES_ONLY
+    + """: Updates are only applied when the \
 user does a manual update check. (Not all apps provide an interface for \
 this.)\\
-    \\n - """ + AUTOMATIC_UPDATES_ONLY + """: Updates are only applied when \
+    \\n - """
+    + AUTOMATIC_UPDATES_ONLY
+    + """: Updates are only applied when \
 they are found via the periodic update check.\\
-    \\n - """ + UPDATES_DISABLED + """: Never apply updates.\\
+    \\n - """
+    + UPDATES_DISABLED
+    + """: Never apply updates.\\
     \\n\\nIf you select manual updates, you should periodically check for \
 updates using $PreApplicationWord$ application's manual update mechanism \
 if available. If you disable updates, you should periodically check for \
 updates and distribute them to users."""
+)
 
-STRINGS_COMMON_EXPLANATIONS = ("""
+STRINGS_COMMON_EXPLANATIONS = (
+    """
 Explain_GoogleUpdate=Policies to control the installation and updating of \
 Google applications that use Google Update/Google Installer.
 
-""" +
-                               HORIZONTAL_RULE +
-                               '; ' + PREFERENCES_CATEGORY + '\n' +
-                               HORIZONTAL_RULE + """
+"""
+    + HORIZONTAL_RULE
+    + '; '
+    + PREFERENCES_CATEGORY
+    + '\n'
+    + HORIZONTAL_RULE
+    + """
 Explain_Preferences=General policies for Google Update.
 
 Explain_AutoUpdateCheckPeriod=Minimum number of minutes between automatic \
@@ -475,17 +553,23 @@ Explain_ProxyPacUrl=You can specify a URL to a proxy .pac file here.\\n\\nThis \
 policy only takes effect if you have selected manual proxy settings at 'Choose \
 how to specify proxy server settings'.\\n\\n%(domain_requirement)s
 
-""" % {"domain_requirement": ADM_DOMAIN_REQUIREMENT_EN} +
-                               HORIZONTAL_RULE +
-                               '; ' + APPLICATIONS_CATEGORY + '\n' +
-                               HORIZONTAL_RULE + """
+"""
+    % {"domain_requirement": ADM_DOMAIN_REQUIREMENT_EN}
+    + HORIZONTAL_RULE
+    + '; '
+    + APPLICATIONS_CATEGORY
+    + '\n'
+    + HORIZONTAL_RULE
+    + """
 Explain_Applications=Policies for individual applications.\\
     \\n\\nAn updated ADM template will be required to support Google \
 applications released in the future.
 
 Explain_DefaultAllowInstallation=Specifies the default behavior for whether \
 Google software can be installed using Google Update/Google Installer.\\
-    \\n\\nCan be overridden by the \"""" + ALLOW_INSTALLATION_POLICY + """\" \
+    \\n\\nCan be overridden by the \""""
+    + ALLOW_INSTALLATION_POLICY
+    + """\" \
 for individual applications.\\
     \\n\\nOnly affects installation of Google software using Google \
 Update/Google Installer. Cannot prevent running the application installer \
@@ -495,13 +579,14 @@ Update/Google Installer for installation.\\
 
 Explain_DefaultUpdatePolicy=Specifies the default policy for software updates \
 from Google.\\
-    \\n\\nCan be overridden by the \"""" \
-    % {"domain_requirement": ADM_DOMAIN_REQUIREMENT_EN} +
-                               UPDATE_POLICY + """\" for individual \
+    \\n\\nCan be overridden by the \""""
+    % {"domain_requirement": ADM_DOMAIN_REQUIREMENT_EN}
+    + UPDATE_POLICY
+    + """\" for individual \
 applications.\\
-""" +
-                               STRINGS_UPDATE_POLICY_OPTIONS.replace(
-                               '$PreApplicationWord$', 'each') + """\\
+"""
+    + STRINGS_UPDATE_POLICY_OPTIONS.replace('$PreApplicationWord$', 'each')
+    + """\\
     \\n\\nOnly affects updates for Google software that uses Google Update for \
 updates. Does not prevent auto-updates of Google software that does not \
 use Google Update for updates.\\
@@ -512,10 +597,12 @@ Google applications released in the future, possibly including \
 dependencies for future versions of installed applications.\\
     \\n\\n%(domain_requirement)s
 
-""" % {"domain_requirement": ADM_DOMAIN_REQUIREMENT_EN} +
-                               HORIZONTAL_RULE +
-                               '; Individual Applications\n' +
-                               HORIZONTAL_RULE)
+"""
+    % {"domain_requirement": ADM_DOMAIN_REQUIREMENT_EN}
+    + HORIZONTAL_RULE
+    + '; Individual Applications\n'
+    + HORIZONTAL_RULE
+)
 
 DEFAULT_ROLLBACK_DISCLAIMER = """This policy is meant to serve as temporary \
 measure when Enterprise Administrators need to downgrade for business reasons. \
@@ -531,23 +618,29 @@ $AppName$ on a Per-User basis to all machines where Google Update is \
 pre-installed Per-User. Requires Google Update 1.3.36.82 or higher.\\n\\n"""
 
 STRINGS_APP_POLICY_EXPLANATIONS_TEMPLATE = (
-    """
+    (
+        """
 ; $AppName$
 Explain_Install$AppLegalId$=Specifies whether $AppName$ can be installed using \
 Google Update/Google Installer.\\
     \\n\\nIf this policy is not configured, $AppName$ can be installed as \
-specified by \"""" + DEFAULT_ALLOW_INSTALLATION_POLICY + """\".\\
+specified by \""""
+        + DEFAULT_ALLOW_INSTALLATION_POLICY
+        + """\".\\
     \\n\\n$ForceInstallsExplain$%(domain_requirement)s
 
 Explain_AutoUpdate$AppLegalId$=Specifies how Google Update handles available \
 $AppName$ updates from Google.\\
     \\n\\nIf this policy is not configured, Google Update handles available \
-updates as specified by \"""" % {
-        "domain_requirement": ADM_DOMAIN_REQUIREMENT_EN
-    } + DEFAULT_UPDATE_POLICY + """\".\\
-""" + STRINGS_UPDATE_POLICY_OPTIONS.replace('$PreApplicationWord$', 'the') +
-    '$AppUpdateExplainExtra$'
-) + """\\
+updates as specified by \""""
+        % {"domain_requirement": ADM_DOMAIN_REQUIREMENT_EN}
+        + DEFAULT_UPDATE_POLICY
+        + """\".\\
+"""
+        + STRINGS_UPDATE_POLICY_OPTIONS.replace('$PreApplicationWord$', 'the')
+        + '$AppUpdateExplainExtra$'
+    )
+    + """\\
     \\n\\n%(domain_requirement)s
 
 Explain_TargetChannel$AppLegalId$=Specifies which Channel $AppName$ should be \
@@ -584,19 +677,22 @@ should roll installations of $AppName$ back if the client has a higher version \
 than that available.\\
     \\nIf this policy is not configured or is disabled, installs that have \
 a version higher than that available will be left as-is. This could be the \
-case if \"""" % {
-    "domain_requirement": ADM_DOMAIN_REQUIREMENT_EN
-} + TARGET_CHANNEL_POLICY + """\" is set to a Channel with a lower version, if \
-\"""" + TARGET_VERSION_POLICY + """\" matches a lower version on the Channel, \
+case if \""""
+    % {"domain_requirement": ADM_DOMAIN_REQUIREMENT_EN}
+    + TARGET_CHANNEL_POLICY
+    + """\" is set to a Channel with a lower version, if \
+\""""
+    + TARGET_VERSION_POLICY
+    + """\" matches a lower version on the Channel, \
 or if a user had installed a higher version.\\
     \\nIf this policy is enabled, installs that have a version higher than \
 that available will be downgraded to the highest available version, \
 respecting any configured target Channel and target version.\\
     \\n\\n$AppRollbackDisclaimer$\\
     \\n\\n%(domain_requirement)s
-""" % {
-    "domain_requirement": ADM_DOMAIN_REQUIREMENT_EN
-}
+"""
+    % {"domain_requirement": ADM_DOMAIN_REQUIREMENT_EN}
+)
 
 # pylint: enable-msg=C6013
 # pylint: enable-msg=C6310
@@ -607,74 +703,96 @@ def GenerateGroupPolicyTemplate(apps):
     # pylint: disable-msg=C6114
     """Generates a Group Policy template (ADM format)for the specified apps.
 
-  Replaces LF in strings above with CRLF as required by gpedit.msc.
-  When writing the resulting contents to a file, use binary mode to ensure the
-  CRLFs are preserved.
+    Replaces LF in strings above with CRLF as required by gpedit.msc.
+    When writing the resulting contents to a file, use binary mode to ensure the
+    CRLFs are preserved.
 
-  Args:
-    apps: A list of tuples containing information about each app.
-        Each element of the list is a tuple of:
-          * app name
-          * app ID
-          * optional string to append to the auto-update explanation
-            - Should start with a space or double new line (\n\n).
+    Args:
+      apps: A list of tuples containing information about each app.
+          Each element of the list is a tuple of:
+            * app name
+            * app ID
+            * optional string to append to the auto-update explanation
+              - Should start with a space or double new line (\n\n).
 
-  Returns:
-    String containing the contents of the .ADM file.
-  """
+    Returns:
+      String containing the contents of the .ADM file.
+    """
 
     # pylint: enable-msg=C6114
 
     def _CreateLegalIdentifier(input_string):
         """Converts input_string to a legal identifier for ADM files.
 
-    Changes some characters that do not necessarily cause problems and may not
-    handle all cases.
+        Changes some characters that do not necessarily cause problems and may not
+        handle all cases.
 
-    Args:
-      input_string: Text to convert to a legal identifier.
+        Args:
+          input_string: Text to convert to a legal identifier.
 
-    Returns:
-      String containing a legal identifier based on input_string.
-    """
+        Returns:
+          String containing a legal identifier based on input_string.
+        """
 
         # pylint: disable-msg=C6004
-        return (input_string.replace(' ', '').replace('&', '').replace(
-            '=',
-            '').replace(';', '').replace(',', '').replace('.', '').replace(
-                '?',
-                '').replace('=', '').replace(';', '').replace("'", '').replace(
-                    '"', '').replace('\\', '').replace('/', '').replace(
-                        '(', '').replace(')', '').replace('[', '').replace(
-                            ']', '').replace('{', '').replace('}', '').replace(
-                                '-', '').replace('!', '').replace(
-                                    '@', '').replace('#', '').replace(
-                                        '$', '').replace('%', '').replace(
-                                            '^', '').replace('*', '').replace(
-                                                '+', '').replace(
-                                                    u'\u00a9',
-                                                    '')  # Copyright (C).
-                .replace(u'\u00ae', '')  # Registered Trademark (R).
-                .replace(u'\u2122', ''))  # Trademark (TM).
+        return (
+            input_string.replace(' ', '')
+            .replace('&', '')
+            .replace('=', '')
+            .replace(';', '')
+            .replace(',', '')
+            .replace('.', '')
+            .replace('?', '')
+            .replace('=', '')
+            .replace(';', '')
+            .replace("'", '')
+            .replace('"', '')
+            .replace('\\', '')
+            .replace('/', '')
+            .replace('(', '')
+            .replace(')', '')
+            .replace('[', '')
+            .replace(']', '')
+            .replace('{', '')
+            .replace('}', '')
+            .replace('-', '')
+            .replace('!', '')
+            .replace('@', '')
+            .replace('#', '')
+            .replace('$', '')
+            .replace('%', '')
+            .replace('^', '')
+            .replace('*', '')
+            .replace('+', '')
+            .replace('\u00a9', '')  # Copyright (C).
+            .replace('\u00ae', '')  # Registered Trademark (R).
+            .replace('\u2122', '')
+        )  # Trademark (TM).
 
         # pylint: enable-msg=C6004
 
     def _WriteTemplateForApp(template, app):
         """Writes the text for the specified app based on the template.
 
-    Replaces $AppName$, $AppLegalId$, $AppGuid$, and $AppUpdateExplainExtra$.
+        Replaces $AppName$, $AppLegalId$, $AppGuid$, and $AppUpdateExplainExtra$.
 
-    Args:
-      template: text to process and write.
-      app: tuple containing information about the app.
+        Args:
+          template: text to process and write.
+          app: tuple containing information about the app.
 
-    Returns:
-      String containing a copy of the template populated with app-specific
-      strings.
-    """
+        Returns:
+          String containing a copy of the template populated with app-specific
+          strings.
+        """
 
-        (app_name, app_guid, update_explain_extra, rollback_disclaimer,
-         force_install_machine, force_install_user) = app
+        (
+            app_name,
+            app_guid,
+            update_explain_extra,
+            rollback_disclaimer,
+            force_install_machine,
+            force_install_user,
+        ) = app
 
         if not rollback_disclaimer:
             rollback_disclaimer = DEFAULT_ROLLBACK_DISCLAIMER
@@ -690,28 +808,28 @@ def GenerateGroupPolicyTemplate(apps):
             force_installs_explain += FORCE_INSTALLS_USER_EXPLAIN
 
         # pylint: disable-msg=C6004
-        return (template.replace('$ForceInstalls$', force_installs).replace(
-            '$ForceInstallsExplain$',
-            force_installs_explain).replace('$AppName$', app_name).replace(
-                '$AppLegalId$', _CreateLegalIdentifier(app_name)).replace(
-                    '$AppGuid$',
-                    app_guid).replace('$AppUpdateExplainExtra$',
-                                      update_explain_extra).replace(
-                                          '$AppRollbackDisclaimer$',
-                                          rollback_disclaimer))
+        return (
+            template.replace('$ForceInstalls$', force_installs)
+            .replace('$ForceInstallsExplain$', force_installs_explain)
+            .replace('$AppName$', app_name)
+            .replace('$AppLegalId$', _CreateLegalIdentifier(app_name))
+            .replace('$AppGuid$', app_guid)
+            .replace('$AppUpdateExplainExtra$', update_explain_extra)
+            .replace('$AppRollbackDisclaimer$', rollback_disclaimer)
+        )
         # pylint: enable-msg=C6004
 
     def _WriteTemplateForAllApps(template, apps):
         """Writes a copy of the template for each of the specified apps.
 
-    Args:
-      template: text to process and write.
-      apps: list of tuples containing information about the apps.
+        Args:
+          template: text to process and write.
+          apps: list of tuples containing information about the apps.
 
-    Returns:
-      String containing concatenated copies of the template for each app in
-      apps, each populated with the appropriate app-specific strings.
-    """
+        Returns:
+          String containing concatenated copies of the template for each app in
+          apps, each populated with the appropriate app-specific strings.
+        """
 
         content = [_WriteTemplateForApp(template, app) for app in apps]
         return ''.join(content)
@@ -726,8 +844,9 @@ def GenerateGroupPolicyTemplate(apps):
         STRINGS_HEADER_AND_COMMON,
         _WriteTemplateForAllApps(STRINGS_APP_NAME_TEMPLATE, apps),
         STRINGS_COMMON_EXPLANATIONS,
-        _WriteTemplateForAllApps(STRINGS_APP_POLICY_EXPLANATIONS_TEMPLATE,
-                                 apps),
+        _WriteTemplateForAllApps(
+            STRINGS_APP_POLICY_EXPLANATIONS_TEMPLATE, apps
+        ),
     ]
 
     # Join the sections of content then replace LF with CRLF.
@@ -737,17 +856,17 @@ def GenerateGroupPolicyTemplate(apps):
 def WriteGroupPolicyTemplate(target_path, apps):
     """Writes a Group Policy template (ADM format)for the specified apps.
 
-  The file is UTF-16 and contains CRLF on all platforms.
+    The file is UTF-16 and contains CRLF on all platforms.
 
-  Args:
-    target_path: Output path of the .ADM template file.
-    apps: A list of tuples containing information about each app.
-        Each element of the list is a tuple of:
-          * app name
-          * app ID
-          * optional string to append to the auto-update explanation
-            - Should start with a space or double new line (\n\n).
-  """  # pylint: disable-msg=C6114
+    Args:
+      target_path: Output path of the .ADM template file.
+      apps: A list of tuples containing information about each app.
+          Each element of the list is a tuple of:
+            * app name
+            * app ID
+            * optional string to append to the auto-update explanation
+              - Should start with a space or double new line (\n\n).
+    """  # pylint: disable-msg=C6114
 
     contents = GenerateGroupPolicyTemplate(apps)
     f = codecs.open(target_path, 'wb', 'utf-16')

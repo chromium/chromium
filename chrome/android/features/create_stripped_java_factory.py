@@ -27,26 +27,42 @@ import sys
 import os
 
 sys.path.append(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'build'))
+  os.path.join(os.path.dirname(__file__), '..', '..', '..', 'build')
+)
 import action_helpers
 
 
 # six is a dependency of javalang
 sys.path.insert(
-    1,
-    os.path.join(
-        os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
-        'third_party', 'six', 'src'))
+  1,
+  os.path.join(
+    os.path.dirname(__file__),
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    'third_party',
+    'six',
+    'src',
+  ),
+)
 sys.path.insert(
-    1,
-    os.path.join(
-        os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
-        'third_party', 'javalang', 'src'))
+  1,
+  os.path.join(
+    os.path.dirname(__file__),
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    'third_party',
+    'javalang',
+    'src',
+  ),
+)
 import javalang
 
 _PARAM_TEMPLATE = '{TYPE} {NAME}'
-_METHOD_TEMPLATE = ('{MODIFIERS} {RETURN_TYPE} {NAME} ({PARAMS}) '
-                    '{{ return {RETURN_VAL}; }}')
+_METHOD_TEMPLATE = (
+  '{MODIFIERS} {RETURN_TYPE} {NAME} ({PARAMS}) {{ return {RETURN_VAL}; }}'
+)
 _FILE_TEMPLATE = '''\
 // Copyright {YEAR} The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -141,8 +157,9 @@ def _FormatType(type_node):
     if not type_node.arguments:
       return type_node.name
     formatted_args = (_FormatType(arg) for arg in type_node.arguments)
-    return '{name}<{arguments}>'.format(name=type_node.name,
-                                        arguments=','.join(formatted_args))
+    return '{name}<{arguments}>'.format(
+      name=type_node.name, arguments=','.join(formatted_args)
+    )
   if isinstance(type_node, javalang.tree.TypeArgument):
     # TODO: Support pattern_type if someone wants to use it.
     return _FormatType(type_node.type)
@@ -155,11 +172,21 @@ def _FormatType(type_node):
 def _FormatMethodModifiers(method_modifiers):
   # Found from:
   # https://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.4.3
-  modifiers_in_order = ('public', 'protected', 'private', 'abstract', 'static',
-                        'final', 'synchronized', 'native', 'strictfp')
+  modifiers_in_order = (
+    'public',
+    'protected',
+    'private',
+    'abstract',
+    'static',
+    'final',
+    'synchronized',
+    'native',
+    'strictfp',
+  )
   unknown_modifiers = method_modifiers - set(modifiers_in_order)
   assert len(unknown_modifiers) == 0, (
-      f'Unknown method modifiers: {unknown_modifiers}')
+    f'Unknown method modifiers: {unknown_modifiers}'
+  )
   return ' '.join([m for m in modifiers_in_order if m in method_modifiers])
 
 
@@ -167,19 +194,19 @@ def _FormatMethod(method):
   params = []
   for param in method.parameters:
     param_dict = {
-        'TYPE': _FormatType(param.type),
-        'NAME': param.name,
+      'TYPE': _FormatType(param.type),
+      'NAME': param.name,
     }
     params.append(_PARAM_TEMPLATE.format(**param_dict))
   return_type = _FormatType(method.return_type)
   method_dict = {
-      'MODIFIERS': _FormatMethodModifiers(method.modifiers),
-      'RETURN_TYPE': return_type,
-      'NAME': method.name,
-      'PARAMS': ', '.join(params),
-      'RETURN_VAL': _GetDefaultReturnVal(return_type),
+    'MODIFIERS': _FormatMethodModifiers(method.modifiers),
+    'RETURN_TYPE': return_type,
+    'NAME': method.name,
+    'PARAMS': ', '.join(params),
+    'RETURN_VAL': _GetDefaultReturnVal(return_type),
   }
-  return (_METHOD_TEMPLATE.format(**method_dict))
+  return _METHOD_TEMPLATE.format(**method_dict)
 
 
 def _FormatPublicMethods(clazz):
@@ -193,7 +220,7 @@ def _FormatPublicMethods(clazz):
 def _FilterAndFormatImports(import_dict, signature_types):
   """Returns formatted imports required by the passed signature types."""
   formatted_imports = [
-      'import %s;' % import_dict[t] for t in signature_types if t in import_dict
+    'import %s;' % import_dict[t] for t in signature_types if t in import_dict
   ]
   return sorted(formatted_imports)
 
@@ -208,11 +235,13 @@ def main(args):
     content = f.read()
 
   if '<@Nullable' in content:
-    sys.stderr.write("""
+    sys.stderr.write(
+      """
 Error: @Nullable annotations inside generic types are not supported.
 Please remove them from {file_path}.
 See https://crbug.com/433562519 for details.
-""".format(file_path=options.input))
+""".format(file_path=options.input)
+    )
     sys.exit(1)
 
   java_ast = javalang.parse.parse(content)
@@ -224,15 +253,15 @@ See https://crbug.com/433562519 for details.
   formatted_imports = _FilterAndFormatImports(import_dict, signature_types)
 
   file_dict = {
-      # This is necessary for this file to not trigger presubmit errors.
-      'DNS': ' '.join(['DO', 'NOT', 'SUBMIT']),
-      'YEAR': str(datetime.date.today().year),
-      'SCRIPT_NAME': _GetScriptName(),
-      'PACKAGE': java_ast.package.name,
-      'IMPORTS': '\n'.join(formatted_imports),
-      'MODIFIERS': ' '.join(clazz.modifiers),
-      'CLASS_NAME': clazz.name,
-      'METHODS': '\n'.join(['    ' + m for m in formatted_public_methods])
+    # This is necessary for this file to not trigger presubmit errors.
+    'DNS': ' '.join(['DO', 'NOT', 'SUBMIT']),
+    'YEAR': str(datetime.date.today().year),
+    'SCRIPT_NAME': _GetScriptName(),
+    'PACKAGE': java_ast.package.name,
+    'IMPORTS': '\n'.join(formatted_imports),
+    'MODIFIERS': ' '.join(clazz.modifiers),
+    'CLASS_NAME': clazz.name,
+    'METHODS': '\n'.join(['    ' + m for m in formatted_public_methods]),
   }
   with action_helpers.atomic_output(options.output, mode='w') as f:
     f.write(_FILE_TEMPLATE.format(**file_dict))

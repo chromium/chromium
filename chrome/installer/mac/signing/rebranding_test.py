@@ -28,7 +28,6 @@ def find_tool(name: str) -> pathlib.Path | None:
 
 
 class TestRebranding(unittest.TestCase):
-
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory(prefix="rebrand_test_")
         self.temp_path = pathlib.Path(self.temp_dir.name)
@@ -54,19 +53,22 @@ class TestRebranding(unittest.TestCase):
         (app_path / "Contents" / "MacOS").mkdir()
         (app_path / "Contents" / "MacOS" / name).write_text("Example Binary")
 
-    def _create_example_dmg(self, output_path: pathlib.Path,
-                            src_dir: pathlib.Path, volname: str):
-        subprocess.check_call([
-            "hdiutil",
-            "create",
-            "-srcfolder",
-            str(src_dir),
-            "-volname",
-            volname,
-            "-format",
-            "UDRW",  # Read/Write for simplicity in creation
-            str(output_path)
-        ])
+    def _create_example_dmg(
+        self, output_path: pathlib.Path, src_dir: pathlib.Path, volname: str
+    ):
+        subprocess.check_call(
+            [
+                "hdiutil",
+                "create",
+                "-srcfolder",
+                str(src_dir),
+                "-volname",
+                volname,
+                "-format",
+                "UDRW",  # Read/Write for simplicity in creation
+                str(output_path),
+            ]
+        )
 
     def test_rebrand_chromium_dmg(self):
         src_root = self.temp_path / "src"
@@ -79,13 +81,21 @@ class TestRebranding(unittest.TestCase):
         output_dir = self.temp_path / "output"
         brand_codes = ["TEST", "ABCD"]
 
-        rebranding.rebrand_chromium_dmg(self.hfs_tool, self.dmg_tool,
-                                        source_dmg, output_dir, brand_codes,
-                                        "Google Chrome", "123.0.0.0", "Stable")
+        rebranding.rebrand_chromium_dmg(
+            self.hfs_tool,
+            self.dmg_tool,
+            source_dmg,
+            output_dir,
+            brand_codes,
+            "Google Chrome",
+            "123.0.0.0",
+            "Stable",
+        )
 
         for brand in brand_codes:
             expected_output = (
-                output_dir / f"GoogleChrome-123.0.0.0-Stable-Brand-{brand}.dmg")
+                output_dir / f"GoogleChrome-123.0.0.0-Stable-Brand-{brand}.dmg"
+            )
             self.assertTrue(expected_output.exists())
 
             expected_tag = f"brand={brand}".encode("ascii")
@@ -99,27 +109,34 @@ class TestRebranding(unittest.TestCase):
                 self.assertEqual(info_plist.read_text(), "Example Info.plist")
 
                 macos_bin = (
-                    app_path / "Contents" / "MacOS" / "Google Chrome.app")
+                    app_path / "Contents" / "MacOS" / "Google Chrome.app"
+                )
                 self.assertTrue(macos_bin.exists())
                 self.assertEqual(macos_bin.read_text(), "Example Binary")
 
-                raw_output = subprocess.check_output([
-                    "xattr", "-p", "-x", "com.apple.application-instance",
-                    app_path
-                ],
-                                                     stderr=subprocess.PIPE)
+                raw_output = subprocess.check_output(
+                    [
+                        "xattr",
+                        "-p",
+                        "-x",
+                        "com.apple.application-instance",
+                        app_path,
+                    ],
+                    stderr=subprocess.PIPE,
+                )
                 output = bytes.fromhex(raw_output.decode("ascii"))
 
                 magic = b"Gact2.0Omaha"
                 self.assertTrue(output.startswith(magic))
 
                 tag_len = struct.unpack(">H", output[12:14])[0]
-                tag_content = output[14:14 + tag_len]
+                tag_content = output[14 : 14 + tag_len]
                 self.assertEqual(tag_content, expected_tag)
 
             # 3. Verify auto-open folder is set to root (ID 2)
             fsid_output = subprocess.check_output(
-                ["hdiutil", "fsid", expected_output]).decode("utf-8")
+                ["hdiutil", "fsid", expected_output]
+            ).decode("utf-8")
             # Look for the "finderInfo" section of `hdiutil fsid`'s output.
             found_open_folder = 0
             in_finder_info = False
@@ -141,16 +158,20 @@ class TestRebranding(unittest.TestCase):
                     if parts[0] == "2":
                         found_open_folder += 1
                         self.assertEqual(
-                            parts[1], "2",
+                            parts[1],
+                            "2",
                             f"finderInfo[2] should be 2, got {parts[1]} "
-                            f"(instance {found_open_folder})")
+                            f"(instance {found_open_folder})",
+                        )
                         # This is the only thing we wanted in FinderInfo.
                         in_finder_info = False
                         continue
             self.assertEqual(
-                found_open_folder, 2,
+                found_open_folder,
+                2,
                 "Wrong number of finderInfo[2] records, expected one each for "
-                "volume header and alternate volume header")
+                "volume header and alternate volume header",
+            )
 
 
 if __name__ == '__main__':

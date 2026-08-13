@@ -6,6 +6,7 @@ Parses mojom files and outputs JSON representation of the AST.
 This is a generic parser that outputs raw comments and structural info
 (camelCase).
 """
+
 import codecs
 import os
 import sys
@@ -26,15 +27,27 @@ def GetDirAbove(dirname: str):
 SOURCE_DIR = GetDirAbove('chrome')
 if SOURCE_DIR:
     sys.path.append(
-        os.path.abspath(os.path.join(SOURCE_DIR, 'mojo/public/tools/mojom')))
+        os.path.abspath(os.path.join(SOURCE_DIR, 'mojo/public/tools/mojom'))
+    )
 
 from mojom.parse import parser  # type: ignore
 from mojom.parse import ast  # type: ignore
 from mojom.generate import generator  # type: ignore
 
 MOJOM_PRIMITIVE_TYPES = {
-    'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64',
-    'double', 'float', 'bool', 'string', 'handle'
+    'int8',
+    'int16',
+    'int32',
+    'int64',
+    'uint8',
+    'uint16',
+    'uint32',
+    'uint64',
+    'double',
+    'float',
+    'bool',
+    'string',
+    'handle',
 }
 
 INPUT_MOJOM_FILES = [
@@ -92,7 +105,7 @@ def _ConvertField(field) -> dict:
         'name': field.mojom_name.name,
         'mojomType': mojom_type,
         'isNullable': typename.nullable,
-        'comments': comments
+        'comments': comments,
     }
 
 
@@ -115,18 +128,20 @@ def _ConvertEnum(enum_node) -> dict:
             except ValueError:
                 pass
 
-        values.append({
-            'name': ev.mojom_name.name,
-            'value': next_value,
-            'isDefault': is_default,
-            'comments': ev_comments
-        })
+        values.append(
+            {
+                'name': ev.mojom_name.name,
+                'value': next_value,
+                'isDefault': is_default,
+                'comments': ev_comments,
+            }
+        )
         next_value += 1
 
     return {
         'name': enum_node.mojom_name.name,
         'values': values,
-        'comments': comments
+        'comments': comments,
     }
 
 
@@ -144,7 +159,7 @@ def _ConvertStruct(struct_node) -> dict:
         'name': struct_node.mojom_name.name,
         'fields': fields,
         'comments': comments,
-        'bodyComments': body_comments
+        'bodyComments': body_comments,
     }
 
 
@@ -160,7 +175,7 @@ def _ConvertUnion(union_node) -> dict:
     return {
         'name': union_node.mojom_name.name,
         'fields': fields,
-        'comments': comments
+        'comments': comments,
     }
 
 
@@ -189,7 +204,7 @@ def _ConvertModule(mojom_node, filename: str) -> dict:
         'enums': enums,
         'structs': structs,
         'unions': unions,
-        'interfaces': interfaces
+        'interfaces': interfaces,
     }
 
 
@@ -201,7 +216,8 @@ def ParseAst(mojom_abspath: str) -> dict:
 
 def Main():
     parser_cli = argparse.ArgumentParser(
-        description="Parse Mojom files to JSON AST")
+        description="Parse Mojom files to JSON AST"
+    )
     parser_cli.add_argument("--output", help="Path to output JSON file")
     args = parser_cli.parse_args()
 

@@ -22,7 +22,8 @@ def main(argv):
     print("Closing info bar if exists.")
     if w.child_window(best_match="Infobar Container").exists():
       w.child_window(best_match="Infobar Container").child_window(
-          best_match="Close").click_input()
+        best_match="Close"
+      ).click_input()
 
     print("press F11 to enter full screen mode.")
     w.type_keys('{F11}')

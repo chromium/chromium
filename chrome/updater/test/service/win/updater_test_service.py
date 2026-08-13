@@ -39,9 +39,11 @@ class UpdaterTestXmlRpcServer(xmlrpc.server.SimpleXMLRPCServer):
     """Customized XML-RPC server for updater tests."""
 
     def __init__(self):
-        super().__init__(('localhost', _XML_RPC_SERVER_PORT),
-                         requestHandler=UpdaterTestRequestHandler,
-                         allow_none=True)
+        super().__init__(
+            ('localhost', _XML_RPC_SERVER_PORT),
+            requestHandler=UpdaterTestRequestHandler,
+            allow_none=True,
+        )
 
     def run(self):
         """xml-rpc server main loop."""
@@ -58,8 +60,9 @@ class UpdaterTestService(win32serviceutil.ServiceFramework):
     _svc_name_ = 'UpdaterTestService'
     _svc_display_name_ = 'Updater Test Service'
     _svc_description_ = 'Service for browser updater tests'
-    _exe_name_ = os.path.join(os.path.dirname(os.path.abspath(sys.executable)),
-                              'pythonservice.exe')
+    _exe_name_ = os.path.join(
+        os.path.dirname(os.path.abspath(sys.executable)), 'pythonservice.exe'
+    )
 
     def SvcStop(self):
         """Called by service framework to stop this service."""
@@ -72,9 +75,11 @@ class UpdaterTestService(win32serviceutil.ServiceFramework):
 
         try:
             logging.info('%s starting...', self._svc_name_)
-            servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
-                                  servicemanager.PYS_SERVICE_STARTED,
-                                  (self._svc_name_, ''))
+            servicemanager.LogMsg(
+                servicemanager.EVENTLOG_INFORMATION_TYPE,
+                servicemanager.PYS_SERVICE_STARTED,
+                (self._svc_name_, ''),
+            )
             self.ReportServiceStatus(win32service.SERVICE_RUNNING)
             self._xmlrpc_server = UpdaterTestXmlRpcServer()
             self._xmlrpc_server.run()
@@ -91,7 +96,8 @@ if __name__ == "__main__":
     # Prefer the pythonservice.exe in the same directory as the interpreter.
     # This is mainly for the vpython case.
     destination = os.path.join(
-        os.path.dirname(os.path.abspath(sys.executable)), 'pythonservice.exe')
+        os.path.dirname(os.path.abspath(sys.executable)), 'pythonservice.exe'
+    )
     if os.path.exists(destination):
         os.environ['PYTHON_SERVICE_EXE'] = destination
 

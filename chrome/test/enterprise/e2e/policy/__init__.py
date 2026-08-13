@@ -14,6 +14,7 @@ from .extension_forcelist.extension_forcelist import *
 from .extension_allowlist.extension_allowlist import *
 from .force_google_safe_search.force_google_safe_search import *
 from .gemini_settings.gemini_settings import *
+
 # Disable fullscreenallowed test due to pywinauto infra issue http://b/259118140
 # from .fullscreen_allowed.fullscreen_allowed import *
 from .homepage.homepage import *
@@ -23,6 +24,7 @@ from .popups_allowed.popups_allowed import *
 from .precedence.precedence import *
 from .encrypted_reporting.report_cbcm_events import *
 from .restore_on_startup.restore_on_startup import *
+
 # Disable safe_browsing test due to chrome://downloads shadow DOM issue http://b/298889715
 # from .safe_browsing.safe_browsing import *
 from .translate_enabled.translate_enabled import *

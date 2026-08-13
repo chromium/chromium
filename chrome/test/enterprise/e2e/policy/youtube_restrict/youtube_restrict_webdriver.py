@@ -27,8 +27,10 @@ def main(argv):
       time.sleep(FLAGS.wait)
 
     print(
-        driver.find_element(By.XPATH,
-                            '//*[@id="header"]/ytd-text-header-renderer').text)
+      driver.find_element(
+        By.XPATH, '//*[@id="header"]/ytd-text-header-renderer'
+      ).text
+    )
   except NoSuchElementException:
     print("Restricted text not found")
   finally:

@@ -13,8 +13,9 @@ def GlicCommonChecks(input_api, output_api):
         return []
     _common_checks_ran = True
 
-    return (_CheckGlicGeneratedApi(input_api, output_api) +
-            _CheckRuntimeFeatureChecksIfModified(input_api, output_api))
+    return _CheckGlicGeneratedApi(
+        input_api, output_api
+    ) + _CheckRuntimeFeatureChecksIfModified(input_api, output_api)
 
 
 def _CheckGlicGeneratedApi(input_api, output_api):
@@ -28,8 +29,9 @@ def _CheckGlicGeneratedApi(input_api, output_api):
     )
     repo_root = input_api.change.RepositoryRoot()
     affected_files = [
-        input_api.os_path.relpath(f.AbsoluteLocalPath(),
-                                  repo_root).replace('\\', '/')
+        input_api.os_path.relpath(f.AbsoluteLocalPath(), repo_root).replace(
+            '\\', '/'
+        )
         for f in input_api.AffectedFiles()
     ]
     if not any([path in monitored_files for path in affected_files]):
@@ -40,14 +42,15 @@ def _CheckGlicGeneratedApi(input_api, output_api):
     cmd = [
         input_api.python_executable,
         input_api.os_path.join(
-            src_root,
-            'chrome/browser/resources/glic/glic_api_impl/generate.py'),
+            src_root, 'chrome/browser/resources/glic/glic_api_impl/generate.py'
+        ),
         '--check-only',
     ]
 
     try:
-        input_api.subprocess.check_output(cmd,
-                                          stderr=input_api.subprocess.STDOUT)
+        input_api.subprocess.check_output(
+            cmd, stderr=input_api.subprocess.STDOUT
+        )
     except input_api.subprocess.CalledProcessError as e:
         message = e.output.decode('utf-8')
         return [output_api.PresubmitError(message)]
@@ -62,9 +65,9 @@ def _CheckRuntimeFeatureChecksIfModified(input_api, output_api):
         if path.startswith('chrome/browser/resources/glic/glic_api_impl/'):
             break
         if path in (
-                'chrome/browser/glic/host/glic.mojom',
-                'chrome/browser/resources/glic/presubmit' +
-                '/check_runtime_features.py',
+            'chrome/browser/glic/host/glic.mojom',
+            'chrome/browser/resources/glic/presubmit'
+            + '/check_runtime_features.py',
         ):
             break
     else:
@@ -74,14 +77,15 @@ def _CheckRuntimeFeatureChecksIfModified(input_api, output_api):
         input_api.python_executable,
         os_path.join(
             src_root,
-            'chrome/browser/resources/glic/presubmit/check_runtime_features.py'
+            'chrome/browser/resources/glic/presubmit/check_runtime_features.py',
         ),
     ]
 
     try:
         input_api.subprocess.check_output(cmd)
     except input_api.subprocess.CalledProcessError as e:
-        message = ('glic check_runtime_features.py failed:\n' +
-                   e.output.decode('utf-8'))
+        message = 'glic check_runtime_features.py failed:\n' + e.output.decode(
+            'utf-8'
+        )
         return [output_api.PresubmitError(message)]
     return []

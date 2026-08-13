@@ -19,6 +19,8 @@ def CheckPythonUnittestsPass(input_api, output_api):
             output_api,
             this_dir,
             files_to_check=['.*unittest.py$'],
-            env=None))
+            env=None,
+        )
+    )
 
     return results

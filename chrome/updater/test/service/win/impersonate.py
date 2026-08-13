@@ -52,8 +52,13 @@ class _StdoutStderrPipes(object):
     def _MakeInheritable(self, handle):
         """Returns an inheritable duplicated handle."""
         inheritable_handle = win32api.DuplicateHandle(
-            win32api.GetCurrentProcess(), handle, win32api.GetCurrentProcess(),
-            0, 1, win32con.DUPLICATE_SAME_ACCESS)
+            win32api.GetCurrentProcess(),
+            handle,
+            win32api.GetCurrentProcess(),
+            0,
+            1,
+            win32con.DUPLICATE_SAME_ACCESS,
+        )
         win32file.CloseHandle(handle)
         return inheritable_handle
 
@@ -61,8 +66,9 @@ class _StdoutStderrPipes(object):
         """Read content from the stdout pipe."""
         try:
             logging.info('Into read thread for STDOUT...')
-            stdout_buf = os.fdopen(msvcrt.open_osfhandle(self.stdout_r, 0),
-                                   'rt')
+            stdout_buf = os.fdopen(
+                msvcrt.open_osfhandle(self.stdout_r, 0), 'rt'
+            )
             self.stdout = stdout_buf.read()
         except Exception as err:
             logging.exception(err)
@@ -71,8 +77,9 @@ class _StdoutStderrPipes(object):
         """Read content from the stderr pipe."""
         try:
             logging.info('Into read thread for STDERR...')
-            stderr_buf = os.fdopen(msvcrt.open_osfhandle(self.stderr_r, 0),
-                                   'rt')
+            stderr_buf = os.fdopen(
+                msvcrt.open_osfhandle(self.stderr_r, 0), 'rt'
+            )
             self.stderr = stderr_buf.read()
         except Exception as err:
             logging.exception(err)
@@ -97,13 +104,15 @@ class _StdoutStderrPipes(object):
         win32file.CloseHandle(self.stderr_w)
 
 
-def _RunAsOnWindowStationDesktop(command_line,
-                                 security_token,
-                                 window_station,
-                                 desktop,
-                                 env=None,
-                                 cwd=None,
-                                 timeout=win32event.INFINITE):
+def _RunAsOnWindowStationDesktop(
+    command_line,
+    security_token,
+    window_station,
+    desktop,
+    env=None,
+    cwd=None,
+    timeout=win32event.INFINITE,
+):
     """Runs a command as the security token user on given desktop.
 
     Args:
@@ -128,42 +137,63 @@ def _RunAsOnWindowStationDesktop(command_line,
     """
     pipes = _StdoutStderrPipes()
     si = win32process.STARTUPINFO()
-    si.dwFlags = (win32process.STARTF_USESHOWWINDOW
-                  | win32con.STARTF_USESTDHANDLES)
+    si.dwFlags = (
+        win32process.STARTF_USESHOWWINDOW | win32con.STARTF_USESTDHANDLES
+    )
     si.wShowWindow = win32con.SW_SHOW
     si.lpDesktop = '%s\\%s' % (window_station, desktop)
     si.hStdOutput = pipes.stdout_w
     si.hStdError = pipes.stderr_w
-    create_flags = (win32process.CREATE_NEW_CONSOLE
-                    | win32process.CREATE_UNICODE_ENVIRONMENT)
+    create_flags = (
+        win32process.CREATE_NEW_CONSOLE
+        | win32process.CREATE_UNICODE_ENVIRONMENT
+    )
 
     if env:
         saved_env = dict(os.environ)
         os.environ.update(env)
     env_block = win32profile.CreateEnvironmentBlock(security_token, True)
-    (process_handle, unused_thread, pid,
-     unused_thread_id) = win32process.CreateProcessAsUser(
-         security_token, None, command_line, None, None, 1, create_flags,
-         env_block, cwd, si)
+    (process_handle, unused_thread, pid, unused_thread_id) = (
+        win32process.CreateProcessAsUser(
+            security_token,
+            None,
+            command_line,
+            None,
+            None,
+            1,
+            create_flags,
+            env_block,
+            cwd,
+            si,
+        )
+    )
     if env:
         os.environ.clear()
         os.environ.update(saved_env)
     pipes.CloseWriteHandles()
     if not process_handle:
-        logging.error('Failed to create child process [%s] on [%s\\%s]',
-                      command_line, window_station, desktop)
+        logging.error(
+            'Failed to create child process [%s] on [%s\\%s]',
+            command_line,
+            window_station,
+            desktop,
+        )
         raise ImpersonationError(
-            'Failed to create process [%s] with impersonation: [%s\\%s][%s]' %
-            (command_line, window_station, desktop, cwd))
+            'Failed to create process [%s] with impersonation: [%s\\%s][%s]'
+            % (command_line, window_station, desktop, cwd)
+        )
 
     pipes.ReadAll()
-    logging.info('Child process [%s] created on [%s\\%s]', command_line,
-                 window_station, desktop)
+    logging.info(
+        'Child process [%s] created on [%s\\%s]',
+        command_line,
+        window_station,
+        desktop,
+    )
     logging.info('Waiting %s seconds for child process.', timeout)
     if timeout != win32event.INFINITE:
         timeout *= 1000  # Convert from seconds to milli-seconds.
-    wait_result = win32event.WaitForSingleObject(process_handle,
-                                                 timeout * 1000)
+    wait_result = win32event.WaitForSingleObject(process_handle, timeout * 1000)
     if wait_result == win32event.WAIT_OBJECT_0:
         exit_code = win32process.GetExitCodeProcess(process_handle)
         logging.info('Child process exited with code %s.', exit_code)
@@ -172,8 +202,9 @@ def _RunAsOnWindowStationDesktop(command_line,
         return (pid, exit_code, pipes.stdout, pipes.stderr)
     else:
         if timeout != 0:
-            logging.warning('Wait for child process timeout in %s seconds',
-                            timeout / 1000)
+            logging.warning(
+                'Wait for child process timeout in %s seconds', timeout / 1000
+            )
         return (pid, None, None, None)
 
 
@@ -196,12 +227,15 @@ def RunAsStandardUser(command_line, env, cwd, timeout):
 
     # Adjust current process to be part of the trusted computer base.
     current_process_token = win32security.OpenProcessToken(
-        win32api.GetCurrentProcess(), win32security.TOKEN_ALL_ACCESS)
+        win32api.GetCurrentProcess(), win32security.TOKEN_ALL_ACCESS
+    )
     tcb_privilege_flag = win32security.LookupPrivilegeValue(
-        None, win32security.SE_TCB_NAME)
+        None, win32security.SE_TCB_NAME
+    )
     se_enable = win32security.SE_PRIVILEGE_ENABLED
-    win32security.AdjustTokenPrivileges(current_process_token, 0,
-                                        [(tcb_privilege_flag, se_enable)])
+    win32security.AdjustTokenPrivileges(
+        current_process_token, 0, [(tcb_privilege_flag, se_enable)]
+    )
 
     active_session_id = proc_util.GetActiveSessionID()
     if not active_session_id:
@@ -215,18 +249,20 @@ def RunAsStandardUser(command_line, env, cwd, timeout):
         else:
             raise ImpersonationError('Failed to get user token: %s' % err)
 
-    return _RunAsOnWindowStationDesktop(command_line, logon_user_token,
-                                        'WinSta0', 'default', env, cwd,
-                                        timeout)
+    return _RunAsOnWindowStationDesktop(
+        command_line, logon_user_token, 'WinSta0', 'default', env, cwd, timeout
+    )
 
 
-def RunAsPidOnDeskstop(command_line,
-                       pid,
-                       window_station='WinSta0',
-                       desktop='default',
-                       env=None,
-                       cwd=None,
-                       timeout=win32event.INFINITE):
+def RunAsPidOnDeskstop(
+    command_line,
+    pid,
+    window_station='WinSta0',
+    desktop='default',
+    env=None,
+    cwd=None,
+    timeout=win32event.INFINITE,
+):
     """Runs a command with pid's security token and on the given desktop.
 
     Args:
@@ -254,10 +290,17 @@ def RunAsPidOnDeskstop(command_line,
     try:
         process_handle = win32api.OpenProcess(win32con.GENERIC_ALL, False, pid)
         token_handle = win32security.OpenProcessToken(
-            process_handle, win32con.TOKEN_ALL_ACCESS)
-        return _RunAsOnWindowStationDesktop(command_line, token_handle,
-                                            window_station, desktop, env, cwd,
-                                            timeout)
+            process_handle, win32con.TOKEN_ALL_ACCESS
+        )
+        return _RunAsOnWindowStationDesktop(
+            command_line,
+            token_handle,
+            window_station,
+            desktop,
+            env,
+            cwd,
+            timeout,
+        )
     except (pywintypes.error, ImpersonationError) as err:
         logging.error(err)
         return (None, None, None, None)

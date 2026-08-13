@@ -18,8 +18,8 @@ FLAGS = flags.FLAGS
 class PopupsAllowedForUrlsTest(ChromeEnterpriseTestCase):
   """Test the PopupsAllowedForUrls
 
-    https://chromeenterprise.google/policies/?policy=PopupsAllowedForUrls.
-    """
+  https://chromeenterprise.google/policies/?policy=PopupsAllowedForUrls.
+  """
 
   @before_all
   def setup(self):
@@ -31,16 +31,18 @@ class PopupsAllowedForUrlsTest(ChromeEnterpriseTestCase):
     # Enable "Allow popups on these sites" with testing URL
     # TODO(jxiang, crbug.com/40105681)
     test_site = 'www.dummysoftware.com'
-    self.SetPolicy(self.win_config['dc'], r'PopupsAllowedForUrls\1', test_site,
-                   'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'PopupsAllowedForUrls\1', test_site, 'String'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
     logging.info('Enabled Allow pop-ups on' + test_site)
 
     # Run webdriver test
     local_dir = os.path.dirname(os.path.abspath(__file__))
     output = self.RunWebDriverTest(
-        self.win_config['client'],
-        os.path.join(local_dir, 'popup_allowed_webdriver_test.py'))
+      self.win_config['client'],
+      os.path.join(local_dir, 'popup_allowed_webdriver_test.py'),
+    )
     # Check if new pop up window comes up
     self.assertTrue(int(output) > 1)
 
@@ -48,15 +50,17 @@ class PopupsAllowedForUrlsTest(ChromeEnterpriseTestCase):
   def test_allow_for_other_url(self):
     # Set the allow popup site using google.com, so popuptest.com is disabled
     test_site = 'www.google.com'
-    self.SetPolicy(self.win_config['dc'], r'PopupsAllowedForUrls\1', test_site,
-                   'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'PopupsAllowedForUrls\1', test_site, 'String'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
     logging.info('Enabled Allow pop-ups on' + test_site)
 
     # Run webdriver test
     local_dir = os.path.dirname(os.path.abspath(__file__))
     output = self.RunWebDriverTest(
-        self.win_config['client'],
-        os.path.join(local_dir, 'popup_allowed_webdriver_test.py'))
+      self.win_config['client'],
+      os.path.join(local_dir, 'popup_allowed_webdriver_test.py'),
+    )
     # Check if the new pop-up windows are blocked
     self.assertEquals(int(output), 1)

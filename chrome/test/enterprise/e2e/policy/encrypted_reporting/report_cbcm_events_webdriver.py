@@ -20,7 +20,7 @@ def main(argv):
 
   # This flag tells Chrome to send heartbeat events on start up.
   options.add_argument(
-      '--enable-features=EncryptedReportingManualTestHeartbeatEvent,EncryptedReportingPipeline'
+    '--enable-features=EncryptedReportingManualTestHeartbeatEvent,EncryptedReportingPipeline'
   )
 
   driver = create_chrome_webdriver(chrome_options=options)
@@ -31,14 +31,18 @@ def main(argv):
     driver.get(policy_url)
 
     wait.until(
-        expected_conditions.visibility_of_element_located((By.ID, 'reload-policies'))
+      expected_conditions.visibility_of_element_located(
+        (By.ID, 'reload-policies')
+      )
     )
 
     # Reload policies
     driver.find_element(By.ID, 'reload-policies').click
 
     wait.until(
-        expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'status-box'))
+      expected_conditions.visibility_of_element_located(
+        (By.CSS_SELECTOR, 'status-box')
+      )
     )
     status_box = driver.find_element(By.CSS_SELECTOR, 'status-box')
 
@@ -49,8 +53,9 @@ def main(argv):
     print(el.find_element(By.CLASS_NAME, 'machine-enrollment-name').text)
     print(el.find_element(By.CLASS_NAME, 'machine-enrollment-token').text)
     print(el.find_element(By.CLASS_NAME, 'status').text)
-    device_id = el.find_element(By.CLASS_NAME,
-                                'machine-enrollment-device-id').text
+    device_id = el.find_element(
+      By.CLASS_NAME, 'machine-enrollment-device-id'
+    ).text
     print('DEVICE_ID=' + device_id.strip())
   except Exception as error:
     print(error)

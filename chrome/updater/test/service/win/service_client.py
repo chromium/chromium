@@ -25,17 +25,21 @@ import rpc_client
 def ParseCommandLine():
     """Parse the command line arguments."""
     cmd_parser = argparse.ArgumentParser(
-        description='Updater test service client')
+        description='Updater test service client'
+    )
 
     cmd_parser.add_argument(
         '--function',
         dest='function',
         type=str,
-        help='Name of the function to call, defined in rpc_client.py')
-    cmd_parser.add_argument('--args',
-                            dest='args',
-                            type=json.loads,
-                            help='Arguments to the function, in json format.')
+        help='Name of the function to call, defined in rpc_client.py',
+    )
+    cmd_parser.add_argument(
+        '--args',
+        dest='args',
+        type=json.loads,
+        help='Arguments to the function, in json format.',
+    )
     return cmd_parser.parse_args()
 
 
@@ -47,8 +51,9 @@ def main():
         sys.exit(-1)
 
     if not hasattr(rpc_client, flags.function):
-        logging.error('Function %s is not defined in module rpc_client.',
-                      flags.function)
+        logging.error(
+            'Function %s is not defined in module rpc_client.', flags.function
+        )
     function = getattr(rpc_client, flags.function)
     result = function(**flags.args)
     logging.error('Function [%s] returned: %s', flags.function, result)

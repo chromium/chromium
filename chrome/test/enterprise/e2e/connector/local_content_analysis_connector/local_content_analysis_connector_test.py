@@ -29,15 +29,17 @@ class LocalContentAnalysisTest(ChromeEnterpriseTestCase):
     # OU: beyondcorp.bigr.name -> Local Content Analysis Connector OU
     lcac_token_path = 'secrets/CELabOrg-localcontent-enrollToken'
     token = self.GetFileFromGCSBucket(lcac_token_path)
-    self.SetPolicy(self.win_config['dc'], r'CloudManagementEnrollmentToken',
-                   token, 'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'CloudManagementEnrollmentToken', token, 'String'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     # Launch the demo agent in the background
     self.RunCommand(
-        self.win_config['client'],
-        r'Start-Process -FilePath "agent.exe" -WorkingDirectory ' +
-        r'"C:\temp\demo_agent" -WindowStyle Hidden')
+      self.win_config['client'],
+      r'Start-Process -FilePath "agent.exe" -WorkingDirectory '
+      + r'"C:\temp\demo_agent" -WindowStyle Hidden',
+    )
 
     # Run dlp command to activate agent
     self.dlp_action(self.win_config['client'], self.DLP_TESTING_URL, 'paste')
@@ -46,31 +48,35 @@ class LocalContentAnalysisTest(ChromeEnterpriseTestCase):
     args = ['--url', url, '--action', action]
     dir = os.path.dirname(os.path.abspath(__file__))
     output = self.RunWebDriverTest(
-        instance_name,
-        os.path.join(dir, 'local_content_analysis_ui_test.py'),
-        args=args)
+      instance_name,
+      os.path.join(dir, 'local_content_analysis_ui_test.py'),
+      args=args,
+    )
     return output
 
   @test
   def test_local_content_analysis_paste(self):
     # Paste block keyword
-    output = self.dlp_action(self.win_config['client'], self.DLP_TESTING_URL,
-                             'paste')
+    output = self.dlp_action(
+      self.win_config['client'], self.DLP_TESTING_URL, 'paste'
+    )
     self.assertIn("EVENT_RESULT_BLOCKED", output)
     self.assertIn("WEB_CONTENT_UPLOAD", output)
 
   @test
   def test_local_content_analysis_upload(self):
     # Upload a text file with block keyword
-    output = self.dlp_action(self.win_config['client'], self.DLP_TESTING_URL,
-                             'upload')
+    output = self.dlp_action(
+      self.win_config['client'], self.DLP_TESTING_URL, 'upload'
+    )
     self.assertIn("EVENT_RESULT_BLOCKED", output)
     self.assertIn("FILE_UPLOAD", output)
 
   @test
   def test_local_content_analysis_print(self):
     # Print a web page with block keyword inside its url
-    output = self.dlp_action(self.win_config['client'], self.PRINT_BLOCK_URL,
-                             'print')
+    output = self.dlp_action(
+      self.win_config['client'], self.PRINT_BLOCK_URL, 'print'
+    )
     self.assertIn("EVENT_RESULT_BLOCKED", output)
     self.assertIn("PAGE_PRINT", output)

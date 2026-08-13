@@ -29,8 +29,9 @@ def compare_char(left, right):
 def compare_part(left, right):
     if isinstance(left, int) and isinstance(right, int):
         return compare_int(left, right)
-    assert isinstance(left,
-                      (str, unicode)) and isinstance(right, (str, unicode))
+    assert isinstance(left, (str, unicode)) and isinstance(
+        right, (str, unicode)
+    )
     # 'man deb-version' specifies that '~' should be matched before the
     # empty string.  Add a '$' to the end of the strings to make this
     # comparison easier.
@@ -84,7 +85,6 @@ def compare_component(left, right):
 
 
 class DebVersion:
-
     def __init__(self, version_string):
         self.version_string = version_string
         self.epoch = 0
@@ -96,26 +96,28 @@ class DebVersion:
             self.epoch = int(version_string[:colon])
         hyphen = version_string.rfind('-')
         if hyphen >= 0:
-            self.debian_revision = version_string[hyphen + 1:]
+            self.debian_revision = version_string[hyphen + 1 :]
         upstream_version_start = colon + 1
         upstream_version_end = hyphen if hyphen >= 0 else len(version_string)
         self.upstream_version = version_string[
-            upstream_version_start:upstream_version_end]
+            upstream_version_start:upstream_version_end
+        ]
 
     def __str__(self):
         return self.version_string
 
     # Comparison algorithm is specified in 'man deb-version'.
     def __cmp__(self, other):
-        assert (isinstance(other, DebVersion))
+        assert isinstance(other, DebVersion)
 
         # Epoch comparison.
         if self.epoch != other.epoch:
             return 1 if self.epoch > other.epoch else -1
 
         # Upstream version comparison.
-        upstream_version_cmp = compare_component(self.upstream_version,
-                                                 other.upstream_version)
+        upstream_version_cmp = compare_component(
+            self.upstream_version, other.upstream_version
+        )
         if upstream_version_cmp != 0:
             return upstream_version_cmp
 

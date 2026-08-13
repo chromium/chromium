@@ -30,14 +30,16 @@ class CloudManagementEnrollmentTokenTest(ChromeEnterpriseTestCase):
     cmd = r'gsutil cat ' + path
     token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
 
-    self.SetPolicy(self.win_config['dc'], r'CloudManagementEnrollmentToken',
-                   token, 'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'CloudManagementEnrollmentToken', token, 'String'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     local_dir = os.path.dirname(os.path.abspath(__file__))
 
-    output = self.RunWebDriverTest(self.win_config['client'],
-                                   os.path.join(local_dir, '../cbcm_enroll.py'))
+    output = self.RunWebDriverTest(
+      self.win_config['client'], os.path.join(local_dir, '../cbcm_enroll.py')
+    )
     # Verify CBCM status legend
     self.assertIn('Machine policies', output)
     self.assertIn('CLIENT2022', output)

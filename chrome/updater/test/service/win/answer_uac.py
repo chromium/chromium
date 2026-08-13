@@ -24,23 +24,27 @@ import uac
 def _ParseCommandLine():
     """Parse the command line arguments."""
     cmd_parser = argparse.ArgumentParser(
-        description='Window UAC prompt handler')
+        description='Window UAC prompt handler'
+    )
 
     cmd_parser.add_argument(
         '--actions',
         dest='actions',
         type=str,
         default='A',
-        help='How to handle UAC prompt, A for accept, D for deny.')
+        help='How to handle UAC prompt, A for accept, D for deny.',
+    )
     cmd_parser.add_argument(
         '--timeout',
         default=30,
         type=float,
-        help='Time to wait for each UAC prompt before giving up.')
+        help='Time to wait for each UAC prompt before giving up.',
+    )
     cmd_parser.add_argument(
         '--source',
         default='',
-        help='Name of the source that triggers UAC, optional (for logging).')
+        help='Name of the source that triggers UAC, optional (for logging).',
+    )
     return cmd_parser.parse_args()
 
 

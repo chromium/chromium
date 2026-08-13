@@ -7,7 +7,8 @@ import logging
 logger = logging.getLogger(__name__)
 _handler = logging.StreamHandler()
 _formatter = logging.Formatter(
-    '[%(asctime)s/%(levelname)s/%(filename)s:%(lineno)d] %(message)s')
+    '[%(asctime)s/%(levelname)s/%(filename)s:%(lineno)d] %(message)s'
+)
 _handler.setFormatter(_formatter)
 logger.addHandler(_handler)
 logger.setLevel(logging.DEBUG)

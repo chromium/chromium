@@ -25,14 +25,18 @@ def _sign_app(paths, config, dest_dir):
     commands.copy_files(os.path.join(paths.input, config.app_dir), paths.work)
     commands.copy_files(
         os.path.join(paths.input, "{.app_product}Util".format(config)),
-        paths.work)
+        paths.work,
+    )
     parts.sign_all(paths, config)
     commands.make_dir(dest_dir)
-    commands.move_file(os.path.join(paths.work, config.app_dir),
-                       os.path.join(dest_dir, config.app_dir))
+    commands.move_file(
+        os.path.join(paths.work, config.app_dir),
+        os.path.join(dest_dir, config.app_dir),
+    )
     commands.move_file(
         os.path.join(paths.work, "{.app_product}Util".format(config)),
-        os.path.dirname(dest_dir))
+        os.path.dirname(dest_dir),
+    )
 
 
 def _package_and_sign_dmg(paths, config):
@@ -46,9 +50,9 @@ def _package_and_sign_dmg(paths, config):
         The path to the signed DMG file.
     """
     dmg_path = _package_dmg(paths, config)
-    product = model.CodeSignedProduct(dmg_path,
-                                      config.packaging_basename,
-                                      sign_with_identifier=True)
+    product = model.CodeSignedProduct(
+        dmg_path, config.packaging_basename, sign_with_identifier=True
+    )
     signing.sign_part(paths, config, product)
     signing.verify_part(paths, product)
     return dmg_path
@@ -64,8 +68,9 @@ def _package_dmg(paths, config):
     Returns:
         A path to the produced DMG file.
     """
-    dmg_path = os.path.join(paths.output,
-                            '{}.dmg'.format(config.packaging_basename))
+    dmg_path = os.path.join(
+        paths.output, '{}.dmg'.format(config.packaging_basename)
+    )
     app_path = os.path.join(paths.work, config.app_dir)
     empty_dir = os.path.join(paths.work, 'empty')
     commands.make_dir(empty_dir)
@@ -102,16 +107,21 @@ def _package_and_sign_pkg(paths, config):
     Returns:
         The path to the signed PKG file.
     """
-    pkg_path = os.path.join(paths.output,
-                            '{}.pkg'.format(config.packaging_basename))
+    pkg_path = os.path.join(
+        paths.output, '{}.pkg'.format(config.packaging_basename)
+    )
     args = [
         'pkgbuild',
         '--root',
         os.path.join(paths.work, config.app_dir),
         '--install-location',
-        os.path.join('/Library/Application Support', config.company_name,
-                     config.app_product, 'PkgStaging',
-                     '%s.app' % config.app_product),
+        os.path.join(
+            '/Library/Application Support',
+            config.company_name,
+            config.app_product,
+            'PkgStaging',
+            '%s.app' % config.app_product,
+        ),
         '--scripts',
         os.path.join(paths.input, config.packaging_dir, 'signing', 'pkg'),
         '--version',
@@ -120,10 +130,12 @@ def _package_and_sign_pkg(paths, config):
         pkg_path,
     ]
     if config.installer_identity:
-        args.extend([
-            '--sign',
-            config.installer_identity,
-        ])
+        args.extend(
+            [
+                '--sign',
+                config.installer_identity,
+            ]
+        )
     commands.run_command(args)
     return pkg_path
 
@@ -138,22 +150,22 @@ def _package_zip(paths, config):
     Returns:
         A path to the produced ZIP file.
     """
-    zip_path = os.path.join(paths.output,
-                            '{}.zip'.format(config.packaging_basename))
+    zip_path = os.path.join(
+        paths.output, '{}.zip'.format(config.packaging_basename)
+    )
     prep_dir = os.path.join(paths.work, 'zip_prep')
     commands.make_dir(prep_dir)
     commands.copy_files(os.path.join(paths.work, config.app_dir), prep_dir)
-    commands.copy_files('{}/chrome/updater/.install'.format(paths.input),
-                        prep_dir)
+    commands.copy_files(
+        '{}/chrome/updater/.install'.format(paths.input), prep_dir
+    )
     commands.zip(zip_path, prep_dir)
     return zip_path
 
 
-async def sign_all(orig_paths,
-                   config,
-                   disable_packaging=False,
-                   skip_brands=[],
-                   channels=[]):
+async def sign_all(
+    orig_paths, config, disable_packaging=False, skip_brands=[], channels=[]
+):
     """Code signs, packages, and signs the package, placing the result into
     |orig_paths.output|. |orig_paths.input| must contain the products to
     customize and sign.
@@ -168,18 +180,26 @@ async def sign_all(orig_paths,
     with commands.WorkDirectory(orig_paths) as notary_paths:
         # First, sign and optionally submit the notarization requests.
         with commands.WorkDirectory(orig_paths) as paths:
-            dest_dir = os.path.join(notary_paths.work,
-                                    config.packaging_basename)
+            dest_dir = os.path.join(
+                notary_paths.work, config.packaging_basename
+            )
             _sign_app(paths, config, dest_dir)
 
             if config.notarize.should_notarize():
-                zip_file = os.path.join(notary_paths.work,
-                                        config.packaging_basename + '.zip')
-                commands.run_command([
-                    'zip', '--recurse-paths', '--symlinks', '--quiet',
-                    zip_file, config.app_dir
-                ],
-                                     cwd=dest_dir)
+                zip_file = os.path.join(
+                    notary_paths.work, config.packaging_basename + '.zip'
+                )
+                commands.run_command(
+                    [
+                        'zip',
+                        '--recurse-paths',
+                        '--symlinks',
+                        '--quiet',
+                        zip_file,
+                        config.app_dir,
+                    ],
+                    cwd=dest_dir,
+                )
                 await notarize.submit(zip_file, config)
 
         if config.notarize.should_staple():
@@ -187,16 +207,20 @@ async def sign_all(orig_paths,
                 # Only staple to the outermost app.
                 parts.get_parts(config)[-1:],
                 notary_paths.replace_work(
-                    os.path.join(notary_paths.work,
-                                 config.packaging_basename)))
+                    os.path.join(notary_paths.work, config.packaging_basename)
+                ),
+            )
 
         # Package.
         commands.move_file(
-            os.path.join(notary_paths.work,
-                         "{.app_product}Util".format(config)),
-            orig_paths.output)
+            os.path.join(
+                notary_paths.work, "{.app_product}Util".format(config)
+            ),
+            orig_paths.output,
+        )
         package_paths = orig_paths.replace_work(
-            os.path.join(notary_paths.work, config.packaging_basename))
+            os.path.join(notary_paths.work, config.packaging_basename)
+        )
         _package_zip(package_paths, config)
         dmg_path = _package_and_sign_dmg(package_paths, config)
         pkg_path = _package_and_sign_pkg(package_paths, config)

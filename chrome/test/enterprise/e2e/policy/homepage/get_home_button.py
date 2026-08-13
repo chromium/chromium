@@ -14,7 +14,8 @@ try:
   app.connect(title_re='.*Chrome|.*Chromium')
 
   home_button = app.top_window().child_window(
-      title="Home", control_type="Button")
+    title="Home", control_type="Button"
+  )
   if home_button.exists(timeout=1):
     print('home button exists')
 

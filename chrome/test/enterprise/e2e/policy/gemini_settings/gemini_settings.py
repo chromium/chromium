@@ -37,13 +37,15 @@ class GeminiSettingsTest(ChromeEnterpriseTestCase):
     password = self.RunCommand(self.win_config["dc"], cmd).strip().decode()
     d = os.path.dirname(os.path.abspath(__file__))
     self.RunUITest(
-        'genai-user',
-        os.path.join(d, 'gemini_settings_webdriver_test.py'),
-        args=['--account', account, '--password', password])
+      'genai-user',
+      os.path.join(d, 'gemini_settings_webdriver_test.py'),
+      args=['--account', account, '--password', password],
+    )
 
     # Assert that the pref is managed and set to 0.
-    raw_results = self.RunCommand('genai-user',
-                                  r'Get-Content c:\temp\results.json')
+    raw_results = self.RunCommand(
+      'genai-user', r'Get-Content c:\temp\results.json'
+    )
     results = json.loads(raw_results)
     self.assertEqual(['managed'], results['metadata'])
     self.assertEqual(0, results['value'])
@@ -60,13 +62,15 @@ class GeminiSettingsTest(ChromeEnterpriseTestCase):
     password = self.RunCommand(self.win_config["dc"], cmd).strip().decode()
     d = os.path.dirname(os.path.abspath(__file__))
     self.RunUITest(
-        'genai-user',
-        os.path.join(d, 'gemini_settings_webdriver_test.py'),
-        args=['--account', account, '--password', password])
+      'genai-user',
+      os.path.join(d, 'gemini_settings_webdriver_test.py'),
+      args=['--account', account, '--password', password],
+    )
 
     # Assert that the pref is managed and set to 0.
-    raw_results = self.RunCommand('genai-user',
-                                  r'Get-Content c:\temp\results.json')
+    raw_results = self.RunCommand(
+      'genai-user', r'Get-Content c:\temp\results.json'
+    )
     results = json.loads(raw_results)
     self.assertEqual(['managed'], results['metadata'])
     self.assertEqual(0, results['value'])
@@ -82,13 +86,15 @@ class GeminiSettingsTest(ChromeEnterpriseTestCase):
     password = self.RunCommand(self.win_config["dc"], cmd).strip().decode()
     d = os.path.dirname(os.path.abspath(__file__))
     self.RunUITest(
-        'genai-user',
-        os.path.join(d, 'gemini_settings_webdriver_test.py'),
-        args=['--account', account, '--password', password])
+      'genai-user',
+      os.path.join(d, 'gemini_settings_webdriver_test.py'),
+      args=['--account', account, '--password', password],
+    )
 
     # Assert that the pref is managed and set to 1.
-    raw_results = self.RunCommand('genai-user',
-                                  r'Get-Content c:\temp\results.json')
+    raw_results = self.RunCommand(
+      'genai-user', r'Get-Content c:\temp\results.json'
+    )
     results = json.loads(raw_results)
     self.assertEqual(['managed'], results['metadata'])
     self.assertEqual(1, results['value'])
@@ -104,13 +110,15 @@ class GeminiSettingsTest(ChromeEnterpriseTestCase):
     password = self.RunCommand(self.win_config["dc"], cmd).strip().decode()
     d = os.path.dirname(os.path.abspath(__file__))
     self.RunUITest(
-        'genai-user',
-        os.path.join(d, 'gemini_settings_webdriver_test.py'),
-        args=['--account', account, '--password', password])
+      'genai-user',
+      os.path.join(d, 'gemini_settings_webdriver_test.py'),
+      args=['--account', account, '--password', password],
+    )
 
     # Assert that the pref is managed and set to 0.
-    raw_results = self.RunCommand('genai-user',
-                                  r'Get-Content c:\temp\results.json')
+    raw_results = self.RunCommand(
+      'genai-user', r'Get-Content c:\temp\results.json'
+    )
     results = json.loads(raw_results)
     self.assertEqual(['managed'], results['metadata'])
     self.assertEqual(0, results['value'])
@@ -122,15 +130,19 @@ class GeminiSettingsTest(ChromeEnterpriseTestCase):
     self.RemovePolicy(self.win_config["dc"], 'GeminiSettings')
     self.RunCommand('genai-client', 'gpupdate /force')
     d = os.path.dirname(os.path.abspath(__file__))
-    self.RunWebDriverTest('genai-client',
-                          os.path.join(d, 'gemini_settings_webdriver_test.py'))
+    self.RunWebDriverTest(
+      'genai-client', os.path.join(d, 'gemini_settings_webdriver_test.py')
+    )
 
     # Assert that the pref is unmanaged and set to 0.
-    raw_results = self.RunCommand('genai-client',
-                                  r'Get-Content c:\temp\results.json')
+    raw_results = self.RunCommand(
+      'genai-client', r'Get-Content c:\temp\results.json'
+    )
     results = json.loads(raw_results)
-    self.assertEqual(['default', 'user_modifiable', 'extension_modifiable'],
-                     results['metadata'])
+    self.assertEqual(
+      ['default', 'user_modifiable', 'extension_modifiable'],
+      results['metadata'],
+    )
     self.assertEqual(0, results['value'])
 
   @test
@@ -139,12 +151,14 @@ class GeminiSettingsTest(ChromeEnterpriseTestCase):
     self.SetPolicy(self.win_config["dc"], 'GeminiSettings', 0, 'DWORD')
     self.RunCommand('genai-client', 'gpupdate /force')
     d = os.path.dirname(os.path.abspath(__file__))
-    self.RunWebDriverTest('genai-client',
-                          os.path.join(d, 'gemini_settings_webdriver_test.py'))
+    self.RunWebDriverTest(
+      'genai-client', os.path.join(d, 'gemini_settings_webdriver_test.py')
+    )
 
     # Assert that the pref is managed and set to 0.
-    raw_results = self.RunCommand('genai-client',
-                                  r'Get-Content c:\temp\results.json')
+    raw_results = self.RunCommand(
+      'genai-client', r'Get-Content c:\temp\results.json'
+    )
     results = json.loads(raw_results)
     self.assertEqual(['managed'], results['metadata'])
     self.assertEqual(0, results['value'])
@@ -155,12 +169,14 @@ class GeminiSettingsTest(ChromeEnterpriseTestCase):
     self.SetPolicy(self.win_config["dc"], 'GeminiSettings', 1, 'DWORD')
     self.RunCommand('genai-client', 'gpupdate /force')
     d = os.path.dirname(os.path.abspath(__file__))
-    self.RunWebDriverTest('genai-client',
-                          os.path.join(d, 'gemini_settings_webdriver_test.py'))
+    self.RunWebDriverTest(
+      'genai-client', os.path.join(d, 'gemini_settings_webdriver_test.py')
+    )
 
     # Assert that the pref is managed and set to 1.
-    raw_results = self.RunCommand('genai-client',
-                                  r'Get-Content c:\temp\results.json')
+    raw_results = self.RunCommand(
+      'genai-client', r'Get-Content c:\temp\results.json'
+    )
     results = json.loads(raw_results)
     self.assertEqual(['managed'], results['metadata'])
     self.assertEqual(1, results['value'])

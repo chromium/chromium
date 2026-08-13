@@ -14,23 +14,28 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.shadowroot import ShadowRoot
 
 from test_util import (
-    create_chrome_webdriver,
-    fetch_policies,
-    sign_in,
+  create_chrome_webdriver,
+  fetch_policies,
+  sign_in,
 )
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
-    'addr', 'test1.com:443',
-    'Address (<host>:<port>) of the echo server to connect to.')
+  'addr',
+  'test1.com:443',
+  'Address (<host>:<port>) of the echo server to connect to.',
+)
 flags.DEFINE_string(
-    'account', None,
-    'Sign into the browser as this account before refreshing policies')
+  'account',
+  None,
+  'Sign into the browser as this account before refreshing policies',
+)
 flags.DEFINE_string('password', None, 'Account password')
 # Write results to a file instead of stdout because `run_ui_test.py` adds its
 # own logs, making the combined output not easily machine-readable.
-flags.DEFINE_string('results', r'c:\temp\results.json',
-                    'Path to write results to.')
+flags.DEFINE_string(
+  'results', r'c:\temp\results.json', 'Path to write results to.'
+)
 
 
 # For an unknown reason, the client VM can't connect over TCP for ~5 minutes
@@ -56,7 +61,8 @@ def wait_for_connectivity(host: str, port: int, timeout: float = 10 * 60):
   # A firewall misconfiguration is likely (either Windows's native firewall
   # or Google Cloud's).
   raise TimeoutError(
-      f'{host}:{port} not accepting connections after {timeout:.3f}s')
+    f'{host}:{port} not accepting connections after {timeout:.3f}s'
+  )
 
 
 def main(argv):
@@ -84,17 +90,17 @@ def main(argv):
     policies_by_name, fingerprints = {}, {}
     for name, policy in fetch_policies(driver).items():
       policies_by_name[name] = {
-          'value': policy.value,
-          'source': policy.source,
-          'scope': policy.scope,
+        'value': policy.value,
+        'source': policy.source,
+        'scope': policy.scope,
       }
 
     # To aid diagnosis, try to get fingerprints from all sources, even if one of
     # the retrievals fails.
     for key, get_fingerprint in [
-        ('connectors', get_fingerprint_from_connector_internals),
-        ('cert-manager', get_fingerprint_from_cert_manager),
-        ('server', lambda driver: get_cert_sent_to_server(driver, host, port)),
+      ('connectors', get_fingerprint_from_connector_internals),
+      ('cert-manager', get_fingerprint_from_cert_manager),
+      ('server', lambda driver: get_cert_sent_to_server(driver, host, port)),
     ]:
       try:
         fingerprints[key] = get_fingerprint(driver)
@@ -110,13 +116,17 @@ def main(argv):
 
 def get_fingerprint_from_connector_internals(driver: webdriver.Chrome) -> str:
   driver.get('chrome://connectors-internals/#managed-client-certificate')
-  root = descend_shadow_roots(driver, [
+  root = descend_shadow_roots(
+    driver,
+    [
       'connectors-internals-app',
       'connectors-tabs',
       'managed-client-certificate',
-  ])
-  for div in root.find_elements(By.CSS_SELECTOR,
-                                '#managed-identities > div > div'):
+    ],
+  )
+  for div in root.find_elements(
+    By.CSS_SELECTOR, '#managed-identities > div > div'
+  ):
     if 'SHA-256 Fingerprint' in div.text:
       return div.find_element(By.CSS_SELECTOR, 'span').text.strip()
   raise Exception('Fingerprint not found in chrome://connectors-internals')
@@ -124,25 +134,29 @@ def get_fingerprint_from_connector_internals(driver: webdriver.Chrome) -> str:
 
 def get_fingerprint_from_cert_manager(driver: webdriver.Chrome) -> str:
   driver.get('chrome://certificate-manager/clientcerts')
-  root = descend_shadow_roots(driver, [
+  root = descend_shadow_roots(
+    driver,
+    [
       'certificate-manager-v2',
       '#provisionedClientCerts',
       'certificate-entry-v2',
       '#certhash',
-  ])
+    ],
+  )
   input_elem = root.find_element(By.ID, 'input')
   return input_elem.get_property('value').strip()
 
 
-def get_cert_sent_to_server(driver: webdriver.Chrome, host: str,
-                            port: int) -> str:
+def get_cert_sent_to_server(
+  driver: webdriver.Chrome, host: str, port: int
+) -> str:
   driver.get(f'https://{host}:{port}')
   return driver.find_element(By.TAG_NAME, 'body').text.strip()
 
 
 def descend_shadow_roots(
-    driver: webdriver.Chrome,
-    shadow_host_selectors: Sequence[str]) -> webdriver.Chrome | ShadowRoot:
+  driver: webdriver.Chrome, shadow_host_selectors: Sequence[str]
+) -> webdriver.Chrome | ShadowRoot:
   root = driver
   for selector in shadow_host_selectors:
     root = root.find_element(By.CSS_SELECTOR, selector).shadow_root

@@ -15,7 +15,6 @@ FLAGS = flags.FLAGS
 
 @environment(file="../policy_test.asset.textpb")
 class ForceGoogleSafeSearchTest(ChromeEnterpriseTestCase):
-
   @before_all
   def setup(self):
     self.InstallChrome(self.win_config['client'])
@@ -29,8 +28,9 @@ class ForceGoogleSafeSearchTest(ChromeEnterpriseTestCase):
     logging.info('ForceGoogleSafeSearch ENABLED')
     d = os.path.dirname(os.path.abspath(__file__))
     output = self.RunWebDriverTest(
-        self.win_config['client'],
-        os.path.join(d, 'force_google_safe_search_webdriver_test.py'))
+      self.win_config['client'],
+      os.path.join(d, 'force_google_safe_search_webdriver_test.py'),
+    )
     logging.info('url used: %s', output)
 
     # assert that safe search is enabled
@@ -45,8 +45,9 @@ class ForceGoogleSafeSearchTest(ChromeEnterpriseTestCase):
     d = os.path.dirname(os.path.abspath(__file__))
     logging.info('ForceGoogleSafeSearch DISABLED')
     output = self.RunWebDriverTest(
-        self.win_config['client'],
-        os.path.join(d, 'force_google_safe_search_webdriver_test.py'))
+      self.win_config['client'],
+      os.path.join(d, 'force_google_safe_search_webdriver_test.py'),
+    )
     logging.info('url used: %s', output)
 
     # assert that safe search is NOT enabled

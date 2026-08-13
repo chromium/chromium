@@ -35,8 +35,11 @@ class ReportingConnectorClientOnlyTest(ChromeReportingConnectorTestCase):
     self.assertIn('Enterprise.ReportingEventUploadSuccess', histogram)
     self.assertIn('count', histogram['Enterprise.ReportingEventUploadSuccess'])
     self.assertIsNotNone(
-        histogram['Enterprise.ReportingEventUploadSuccess']['count'])
-    self.assertIn('sum_value',
-                  histogram['Enterprise.ReportingEventUploadSuccess'])
+      histogram['Enterprise.ReportingEventUploadSuccess']['count']
+    )
+    self.assertIn(
+      'sum_value', histogram['Enterprise.ReportingEventUploadSuccess']
+    )
     self.assertIsNotNone(
-        histogram['Enterprise.ReportingEventUploadSuccess']['sum_value'])
+      histogram['Enterprise.ReportingEventUploadSuccess']['sum_value']
+    )

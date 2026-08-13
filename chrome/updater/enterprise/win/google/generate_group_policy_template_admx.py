@@ -435,60 +435,62 @@ ADMX_FOOTER = '</policyDefinitions>'
 def _CreateLegalIdentifier(input_string):
     """Converts input_string to a legal identifier for ADMX/ADML files.
 
-  Changes some characters that do not necessarily cause problems and may not
-  handle all cases.
+    Changes some characters that do not necessarily cause problems and may not
+    handle all cases.
 
-  Args:
-    input_string: Text to convert to a legal identifier.
+    Args:
+      input_string: Text to convert to a legal identifier.
 
-  Returns:
-    String containing a legal identifier based on input_string.
-  """
+    Returns:
+      String containing a legal identifier based on input_string.
+    """
     return re.sub(r'[\W_]', '', input_string)
 
 
 def GenerateGroupPolicyTemplateAdmx(apps):
     """Generates a Group Policy template (ADMX format)for the specified apps.
 
-  Replaces LF in strings above with CRLF as required by gpedit.msc.
-  When writing the resulting contents to a file, use binary mode to ensure the
-  CRLFs are preserved.
+    Replaces LF in strings above with CRLF as required by gpedit.msc.
+    When writing the resulting contents to a file, use binary mode to ensure the
+    CRLFs are preserved.
 
-  Args:
-    apps: A list of tuples containing information about each app.
-        Each element of the list is a tuple of:
-          * app name
-          * app ID
-          * optional string to append to the auto-update explanation
-            - Should start with a space or double new line.
+    Args:
+      apps: A list of tuples containing information about each app.
+          Each element of the list is a tuple of:
+            * app name
+            * app ID
+            * optional string to append to the auto-update explanation
+              - Should start with a space or double new line.
 
-  Returns:
-    String containing the contents of the .ADMX file.
-  """
+    Returns:
+      String containing the contents of the .ADMX file.
+    """
 
     def _GenerateCategories(apps):
         """Generates category string for each of the specified apps.
 
-    Args:
-      apps: list of tuples containing information about the apps.
+        Args:
+          apps: list of tuples containing information about the apps.
 
-    Returns:
-      String containing concatenated copies of the category string for each app
-      in apps, each populated with the appropriate app-specific strings.
-    """
+        Returns:
+          String containing concatenated copies of the category string for each app
+          in apps, each populated with the appropriate app-specific strings.
+        """
 
         admx_app_category_template = (
             '    <category name="Cat_%(AppLegalId)s"\n'
             '        displayName="$(string.Cat_%(AppLegalId)s)">\n'
             '      <parentCategory ref="Cat_Applications" />\n'
-            '    </category>')
+            '    </category>'
+        )
 
         app_category_list = []
         for app in apps:
             app_name = app[0]
             app_category_list.append(
-                admx_app_category_template %
-                {'AppLegalId': _CreateLegalIdentifier(app_name)})
+                admx_app_category_template
+                % {'AppLegalId': _CreateLegalIdentifier(app_name)}
+            )
 
         return ADMX_CATEGORIES % {
             'AppCategorList': '\n'.join(app_category_list)
@@ -497,17 +499,23 @@ def GenerateGroupPolicyTemplateAdmx(apps):
     def _GeneratePolicies(apps):
         """Generates policy string for each of the specified apps.
 
-    Args:
-      apps: list of tuples containing information about the apps.
+        Args:
+          apps: list of tuples containing information about the apps.
 
-    Returns:
-      String containing concatenated copies of the policy template for each app
-      in apps, each populated with the appropriate app-specific strings.
-    """
+        Returns:
+          String containing concatenated copies of the policy template for each app
+          in apps, each populated with the appropriate app-specific strings.
+        """
 
         app_policy_list = []
-        for app_name, app_guid, _, _, force_install_machine, force_install_user\
-        in apps:
+        for (
+            app_name,
+            app_guid,
+            _,
+            _,
+            force_install_machine,
+            force_install_user,
+        ) in apps:
             force_installs = ''
             if force_install_machine:
                 force_installs += INSTALL_POLICY_FORCE_INSTALL_MACHINE
@@ -515,12 +523,14 @@ def GenerateGroupPolicyTemplateAdmx(apps):
                 force_installs += INSTALL_POLICY_FORCE_INSTALL_USER
 
             app_policy_list.append(
-                ADMX_APP_POLICY_TEMPLATE % {
+                ADMX_APP_POLICY_TEMPLATE
+                % {
                     'AppLegalId': _CreateLegalIdentifier(app_name),
                     'AppGuid': app_guid,
                     'RootPolicyKey': MAIN_POLICY_KEY,
                     'ForceInstalls': force_installs,
-                })
+                }
+            )
 
         return ADMX_POLICIES % {
             'AppPolicyList': '\n'.join(app_policy_list),
@@ -554,20 +564,24 @@ ADML_DEFAULT_ROLLBACK_DISCLAIMER = (
     'Administrators need to downgrade for business reasons. To ensure '
     'users are protected by the latest security updates, the most recent '
     'version should be used. When versions are downgraded to older '
-    'versions, there could be incompatibilities.')
+    'versions, there could be incompatibilities.'
+)
 
 FORCE_INSTALLS_MACHINE_EXPLAIN = (
     'Force Installs (Machine-Wide): Allows Deploying %s to all machines where '
     'Google Update is pre-installed. Requires Google Update 1.3.36.82 or higher'
-    '.\n\n')
+    '.\n\n'
+)
 FORCE_INSTALLS_USER_EXPLAIN = (
     'Force Installs (Per-User): Allows Deploying %s on a Per-User basis to all '
     'machines where Google Update is pre-installed Per-User. Requires Google '
-    'Update 1.3.36.82 or higher.\n\n')
+    'Update 1.3.36.82 or higher.\n\n'
+)
 
 ADML_DOMAIN_REQUIREMENT_EN = (
     'This policy is available only on Windows instances that are joined to a '
-    'Microsoft&#x00AE; Active Directory&#x00AE; domain.')
+    'Microsoft&#x00AE; Active Directory&#x00AE; domain.'
+)
 
 ADML_PREDEFINED_STRINGS_TABLE_EN = [
     ('Sup_GoogleUpdate1_2_145_5', 'At least Google Update 1.2.145.5'),
@@ -583,10 +597,14 @@ ADML_PREDEFINED_STRINGS_TABLE_EN = [
     ('Cat_ProxyServer', 'Proxy Server'),
     ('Cat_Applications', 'Applications'),
     ('Pol_AutoUpdateCheckPeriod', 'Auto-update check period override'),
-    ('Pol_UpdateCheckSuppressedPeriod',
-     'Time period in each day to suppress auto-update check'),
-    ('Pol_CloudPolicyOverridesPlatformPolicy', 'Cloud Policy takes precedence '
-     'over Group Policy'),
+    (
+        'Pol_UpdateCheckSuppressedPeriod',
+        'Time period in each day to suppress auto-update check',
+    ),
+    (
+        'Pol_CloudPolicyOverridesPlatformPolicy',
+        'Cloud Policy takes precedence over Group Policy',
+    ),
     ('Pol_DownloadPreference', 'Download URL class override'),
     ('DownloadPreference_DropDown', 'Cacheable download URLs'),
     ('Pol_ProxyMode', 'Choose how to specify proxy server settings'),
@@ -602,19 +620,27 @@ ADML_PREDEFINED_STRINGS_TABLE_EN = [
     ('Pol_MajorVersionRollout', 'Major version rollout'),
     ('Pol_MinorVersionRollout', 'Minor version rollout'),
     ('Part_AutoUpdateCheckPeriod', 'Minutes between update checks'),
-    ('Part_UpdateCheckSuppressedStartHour',
-     'Hour in a day that start to suppress update check'),
-    ('Part_UpdateCheckSuppressedStartMin',
-     'Minute in hour that starts to suppress update check'),
-    ('Part_UpdateCheckSuppressedDurationMin',
-     'Number of minutes to suppress update check each day'),
+    (
+        'Part_UpdateCheckSuppressedStartHour',
+        'Hour in a day that start to suppress update check',
+    ),
+    (
+        'Part_UpdateCheckSuppressedStartMin',
+        'Minute in hour that starts to suppress update check',
+    ),
+    (
+        'Part_UpdateCheckSuppressedDurationMin',
+        'Number of minutes to suppress update check each day',
+    ),
     ('Part_ProxyMode', 'Choose how to specify proxy server settings'),
     ('Part_ProxyServer', 'Address or URL of proxy server'),
     ('Part_ProxyPacUrl', 'URL to a proxy .pac file'),
     ('Part_InstallPolicy', 'Policy'),
     ('Name_InstallsEnabled', 'Always allow Installs (recommended)'),
-    ('Name_InstallsEnabledMachineOnly',
-     'Always allow Machine-Wide Installs, but not Per-User Installs.'),
+    (
+        'Name_InstallsEnabledMachineOnly',
+        'Always allow Machine-Wide Installs, but not Per-User Installs.',
+    ),
     ('Name_InstallsDisabled', 'Installs disabled'),
     ('Name_ForceInstallsMachine', 'Force Installs (Machine-Wide)'),
     ('Name_ForceInstallsUser', 'Force Installs (Per-User)'),
@@ -635,98 +661,121 @@ ADML_PREDEFINED_STRINGS_TABLE_EN = [
     ('ProxyPacScript_DropDown', 'Use a .pac proxy script'),
     ('ProxyFixedServers_DropDown', 'Use fixed proxy servers'),
     ('ProxyUseSystem_DropDown', 'Use system proxy settings'),
-    ('Explain_GoogleUpdate',
-     'Policies to control the installation and updating of Google applications '
-     'that use Google Update/Google Installer.'),
+    (
+        'Explain_GoogleUpdate',
+        'Policies to control the installation and updating of Google applications '
+        'that use Google Update/Google Installer.',
+    ),
     ('Explain_Preferences', 'General policies for Google Update.'),
-    ('Explain_AutoUpdateCheckPeriod',
-     'Minimum number of minutes between automatic update checks.\n\n'
-     'Set this policy to the value 0 to disable all periodic network traffic '
-     'by Google Update. This is not recommended, as it prevents Google Update '
-     'itself from receiving stability and security updates.\n\nThe "Update '
-     'policy override default" and per-application "Update policy override" '
-     'settings should be used to manage application updates rather than this '
-     'setting.\n\n'
-     '%s' % ADML_DOMAIN_REQUIREMENT_EN),
-    ('Explain_DownloadPreference',
-     'If enabled, the Google Update server will attempt to provide '
-     'cache-friendly URLs for update payloads in its responses.\n\n'
-     '%s' % ADML_DOMAIN_REQUIREMENT_EN),
-    ('Explain_UpdateCheckSuppressedPeriod',
-     'If this setting is enabled, update checks will be suppressed during '
-     'each day starting from Hour:Minute for a period of Duration (in minutes).'
-     ' Duration does not account for daylight savings time. So for instance, '
-     'if the start time is 22:00, and with a duration of 480 minutes, the '
-     'updates will be suppressed for 8 hours regardless of whether daylight '
-     'savings time changes happen in between.\n\n'
-     '%s' % ADML_DOMAIN_REQUIREMENT_EN),
-    ('Explain_CloudPolicyOverridesPlatformPolicy',
-     'If the policy is Enabled, Cloud Policy settings take precedence over '
-     'Group Policy settings for Google Update.\n\n'
-     'If this policy is Not Configured or not Enabled, Group Policy takes '
-     'precedence over Cloud Policy.\n\n'
-     'This policy is only available as a mandatory machine platform policy and '
-     'it only affects machine scope cloud policies.\n\n'
-     '%s' % ADML_DOMAIN_REQUIREMENT_EN),
-    ('Explain_ProxyMode',
-     'Allows you to specify the proxy server used by Google Update.\n\n'
-     'If you choose to never use a proxy server and always connect directly, '
-     'all other options are ignored.\n\n'
-     'If you choose to use system proxy settings or auto detect the proxy '
-     'server, all other options are ignored.\n\n'
-     'If you choose fixed server proxy mode, you can specify further options '
-     'in \'Address or URL of proxy server\'.\n\n'
-     'If you choose to use a .pac proxy script, you must specify the URL to '
-     'the script in \'URL to a proxy .pac file\'.\n\n'
-     '%s' % ADML_DOMAIN_REQUIREMENT_EN),
-    ('Explain_ProxyServer',
-     'You can specify the URL of the proxy server here.\n\n'
-     'This policy only takes effect if you have selected manual proxy settings '
-     'at \'Choose how to specify proxy server settings\'.\n\n'
-     '%s' % ADML_DOMAIN_REQUIREMENT_EN),
-    ('Explain_ProxyPacUrl',
-     'You can specify a URL to a proxy .pac file here.\n\n'
-     'This policy only takes effect if you have selected manual proxy settings '
-     'at \'Choose how to specify proxy server settings\'.\n\n'
-     '%s' % ADML_DOMAIN_REQUIREMENT_EN),
-    ('Explain_Applications', 'Policies for individual applications.\n\n'
-     'An updated ADMX/ADML template will be required to support '
-     'Google applications released in the future.'),
-    ('Explain_DefaultAllowInstallation',
-     'Specifies the default behavior for whether Google software can be '
-     'installed using Google Update/Google Installer.\n\n'
-     'Can be overridden by the "Allow installation" for individual '
-     'applications.\n\n'
-     'Only affects installation of Google software using Google Update/Google '
-     'Installer. Cannot prevent running the application installer directly or '
-     'installation of Google software that does not use Google Update/Google '
-     'Installer for installation.\n\n'
-     '%s' % ADML_DOMAIN_REQUIREMENT_EN),
-    ('Explain_DefaultUpdatePolicy',
-     'Specifies the default policy for software updates from Google.\n\n'
-     'Can be overridden by the "Update policy override" for individual '
-     'applications.\n\n'
-     'Options:\n'
-     ' - Always allow updates: Updates are always applied when found, either '
-     'by periodic update check or by a manual update check.\n'
-     ' - Manual updates only: Updates are only applied when the user does a '
-     'manual update check. (Not all apps provide an interface for this.)\n'
-     ' - Automatic silent updates only: Updates are only applied when they are '
-     'found via the periodic update check.\n'
-     ' - Updates disabled: Never apply updates.\n\n'
-     'If you select manual updates, you should periodically check for updates '
-     'using each application\'s manual update mechanism if available. If you '
-     'disable updates, you should periodically check for updates and '
-     'distribute them to users.\n\n'
-     'Only affects updates for Google software that uses Google Update for '
-     'updates. Does not prevent auto-updates of Google software that does not '
-     'use Google Update for updates.\n\n'
-     'Updates for Google Update are not affected by this setting; Google '
-     'Update will continue to update itself while it is installed.\n\n'
-     'WARNING: Disabing updates will also prevent updates of any new Google '
-     'applications released in the future, possibly including dependencies for '
-     'future versions of installed applications.\n\n'
-     '%s' % ADML_DOMAIN_REQUIREMENT_EN),
+    (
+        'Explain_AutoUpdateCheckPeriod',
+        'Minimum number of minutes between automatic update checks.\n\n'
+        'Set this policy to the value 0 to disable all periodic network traffic '
+        'by Google Update. This is not recommended, as it prevents Google Update '
+        'itself from receiving stability and security updates.\n\nThe "Update '
+        'policy override default" and per-application "Update policy override" '
+        'settings should be used to manage application updates rather than this '
+        'setting.\n\n'
+        '%s' % ADML_DOMAIN_REQUIREMENT_EN,
+    ),
+    (
+        'Explain_DownloadPreference',
+        'If enabled, the Google Update server will attempt to provide '
+        'cache-friendly URLs for update payloads in its responses.\n\n'
+        '%s' % ADML_DOMAIN_REQUIREMENT_EN,
+    ),
+    (
+        'Explain_UpdateCheckSuppressedPeriod',
+        'If this setting is enabled, update checks will be suppressed during '
+        'each day starting from Hour:Minute for a period of Duration (in minutes).'
+        ' Duration does not account for daylight savings time. So for instance, '
+        'if the start time is 22:00, and with a duration of 480 minutes, the '
+        'updates will be suppressed for 8 hours regardless of whether daylight '
+        'savings time changes happen in between.\n\n'
+        '%s' % ADML_DOMAIN_REQUIREMENT_EN,
+    ),
+    (
+        'Explain_CloudPolicyOverridesPlatformPolicy',
+        'If the policy is Enabled, Cloud Policy settings take precedence over '
+        'Group Policy settings for Google Update.\n\n'
+        'If this policy is Not Configured or not Enabled, Group Policy takes '
+        'precedence over Cloud Policy.\n\n'
+        'This policy is only available as a mandatory machine platform policy and '
+        'it only affects machine scope cloud policies.\n\n'
+        '%s' % ADML_DOMAIN_REQUIREMENT_EN,
+    ),
+    (
+        'Explain_ProxyMode',
+        'Allows you to specify the proxy server used by Google Update.\n\n'
+        'If you choose to never use a proxy server and always connect directly, '
+        'all other options are ignored.\n\n'
+        'If you choose to use system proxy settings or auto detect the proxy '
+        'server, all other options are ignored.\n\n'
+        'If you choose fixed server proxy mode, you can specify further options '
+        'in \'Address or URL of proxy server\'.\n\n'
+        'If you choose to use a .pac proxy script, you must specify the URL to '
+        'the script in \'URL to a proxy .pac file\'.\n\n'
+        '%s' % ADML_DOMAIN_REQUIREMENT_EN,
+    ),
+    (
+        'Explain_ProxyServer',
+        'You can specify the URL of the proxy server here.\n\n'
+        'This policy only takes effect if you have selected manual proxy settings '
+        'at \'Choose how to specify proxy server settings\'.\n\n'
+        '%s' % ADML_DOMAIN_REQUIREMENT_EN,
+    ),
+    (
+        'Explain_ProxyPacUrl',
+        'You can specify a URL to a proxy .pac file here.\n\n'
+        'This policy only takes effect if you have selected manual proxy settings '
+        'at \'Choose how to specify proxy server settings\'.\n\n'
+        '%s' % ADML_DOMAIN_REQUIREMENT_EN,
+    ),
+    (
+        'Explain_Applications',
+        'Policies for individual applications.\n\n'
+        'An updated ADMX/ADML template will be required to support '
+        'Google applications released in the future.',
+    ),
+    (
+        'Explain_DefaultAllowInstallation',
+        'Specifies the default behavior for whether Google software can be '
+        'installed using Google Update/Google Installer.\n\n'
+        'Can be overridden by the "Allow installation" for individual '
+        'applications.\n\n'
+        'Only affects installation of Google software using Google Update/Google '
+        'Installer. Cannot prevent running the application installer directly or '
+        'installation of Google software that does not use Google Update/Google '
+        'Installer for installation.\n\n'
+        '%s' % ADML_DOMAIN_REQUIREMENT_EN,
+    ),
+    (
+        'Explain_DefaultUpdatePolicy',
+        'Specifies the default policy for software updates from Google.\n\n'
+        'Can be overridden by the "Update policy override" for individual '
+        'applications.\n\n'
+        'Options:\n'
+        ' - Always allow updates: Updates are always applied when found, either '
+        'by periodic update check or by a manual update check.\n'
+        ' - Manual updates only: Updates are only applied when the user does a '
+        'manual update check. (Not all apps provide an interface for this.)\n'
+        ' - Automatic silent updates only: Updates are only applied when they are '
+        'found via the periodic update check.\n'
+        ' - Updates disabled: Never apply updates.\n\n'
+        'If you select manual updates, you should periodically check for updates '
+        'using each application\'s manual update mechanism if available. If you '
+        'disable updates, you should periodically check for updates and '
+        'distribute them to users.\n\n'
+        'Only affects updates for Google software that uses Google Update for '
+        'updates. Does not prevent auto-updates of Google software that does not '
+        'use Google Update for updates.\n\n'
+        'Updates for Google Update are not affected by this setting; Google '
+        'Update will continue to update itself while it is installed.\n\n'
+        'WARNING: Disabing updates will also prevent updates of any new Google '
+        'applications released in the future, possibly including dependencies for '
+        'future versions of installed applications.\n\n'
+        '%s' % ADML_DOMAIN_REQUIREMENT_EN,
+    ),
 ]
 
 ADML_PRESENTATIONS = '''\
@@ -820,21 +869,21 @@ ADML_FOOTER = '</policyDefinitionResources>'
 def GenerateGroupPolicyTemplateAdml(apps):
     """Generates a Group Policy template (ADML format)for the specified apps.
 
-  Replaces LF in strings above with CRLF as required by gpedit.msc.
-  When writing the resulting contents to a file, use binary mode to ensure the
-  CRLFs are preserved.
+    Replaces LF in strings above with CRLF as required by gpedit.msc.
+    When writing the resulting contents to a file, use binary mode to ensure the
+    CRLFs are preserved.
 
-  Args:
-    apps: A list of tuples containing information about each app.
-        Each element of the list is a tuple of:
-          * app name
-          * app ID
-          * optional string to append to the auto-update explanation
-            - Should start with a space or double new line.
+    Args:
+      apps: A list of tuples containing information about each app.
+          Each element of the list is a tuple of:
+            * app name
+            * app ID
+            * optional string to append to the auto-update explanation
+              - Should start with a space or double new line.
 
-  Returns:
-    String containing the contents of the .ADML file.
-  """
+    Returns:
+      String containing the contents of the .ADML file.
+    """
 
     string_definition_list = ADML_PREDEFINED_STRINGS_TABLE_EN[:]
     for app in apps:
@@ -863,8 +912,14 @@ def GenerateGroupPolicyTemplateAdml(apps):
             'If this policy is not configured, %s can be installed as specified'
             ' by "Allow installation default".\n\n'
             '%s'
-            '%s' % (app_name, app_name, force_installs_explain,
-                    ADML_DOMAIN_REQUIREMENT_EN))
+            '%s'
+            % (
+                app_name,
+                app_name,
+                force_installs_explain,
+                ADML_DOMAIN_REQUIREMENT_EN,
+            ),
+        )
 
         string_definition_list.append(app_install_policy_explanation)
 
@@ -887,8 +942,9 @@ def GenerateGroupPolicyTemplateAdml(apps):
             'updates using the application\'s manual update mechanism if '
             'available. If you disable updates, you should periodically check '
             'for updates and distribute them to users.%s\n\n'
-            '%s' %
-            (app_name, app_additional_help_msg, ADML_DOMAIN_REQUIREMENT_EN))
+            '%s'
+            % (app_name, app_additional_help_msg, ADML_DOMAIN_REQUIREMENT_EN),
+        )
         string_definition_list.append(app_auto_update_policy_explanation)
 
         app_target_channel_explanation = (
@@ -904,7 +960,8 @@ def GenerateGroupPolicyTemplateAdml(apps):
             'latest beta version.\n'
             '2) Policy value is set to "dev": the app will be updated to the '
             'latest dev version.\n'
-            '%s' % (app_name, ADML_DOMAIN_REQUIREMENT_EN))
+            '%s' % (app_name, ADML_DOMAIN_REQUIREMENT_EN),
+        )
         string_definition_list.append(app_target_channel_explanation)
 
         app_target_version_prefix_explanation = (
@@ -920,7 +977,8 @@ def GenerateGroupPolicyTemplateAdml(apps):
             'version of 55.2 (e.g., 55.2.34 or 55.2.2).\n'
             '4) Policy value is "55.24.34": the app will be updated to this '
             'specific version only.\n\n'
-            '%s' % (app_name, ADML_DOMAIN_REQUIREMENT_EN))
+            '%s' % (app_name, ADML_DOMAIN_REQUIREMENT_EN),
+        )
         string_definition_list.append(app_target_version_prefix_explanation)
 
         app_rollback_to_target_version_explanation = (
@@ -938,32 +996,42 @@ def GenerateGroupPolicyTemplateAdml(apps):
             'version, respecting any configured target Channel and target '
             'version.\n\n'
             '%s\n\n'
-            '%s' % (app_name, rollback_disclaimer, ADML_DOMAIN_REQUIREMENT_EN))
+            '%s' % (app_name, rollback_disclaimer, ADML_DOMAIN_REQUIREMENT_EN),
+        )
         string_definition_list.append(
-            app_rollback_to_target_version_explanation)
+            app_rollback_to_target_version_explanation
+        )
 
         string_definition_list.append(
-            ('Explain_MajorVersionRollout' + app_legal_id,
-             'Specifies when to apply major %s updates that are gradually '
-             'rolling out. Major updates often have fixes, security patches, '
-             'and new features.\n\n'
-             '%s' % (app_name, ADML_DOMAIN_REQUIREMENT_EN)))
+            (
+                'Explain_MajorVersionRollout' + app_legal_id,
+                'Specifies when to apply major %s updates that are gradually '
+                'rolling out. Major updates often have fixes, security patches, '
+                'and new features.\n\n'
+                '%s' % (app_name, ADML_DOMAIN_REQUIREMENT_EN),
+            )
+        )
 
         string_definition_list.append(
-            ('Explain_MinorVersionRollout' + app_legal_id,
-             'Specifies when to apply minor %s updates that are gradually '
-             'rolling out. Minor version updates often have fixes and '
-             'security patches, but rarely contain new features.\n\n'
-             '%s' % (app_name, ADML_DOMAIN_REQUIREMENT_EN)))
+            (
+                'Explain_MinorVersionRollout' + app_legal_id,
+                'Specifies when to apply minor %s updates that are gradually '
+                'rolling out. Minor version updates often have fixes and '
+                'security patches, but rarely contain new features.\n\n'
+                '%s' % (app_name, ADML_DOMAIN_REQUIREMENT_EN),
+            )
+        )
 
     app_resource_strings = []
     for entry in string_definition_list:
-        app_resource_strings.append('      <string id="%s">%s</string>' %
-                                    (entry[0], entry[1]))
+        app_resource_strings.append(
+            '      <string id="%s">%s</string>' % (entry[0], entry[1])
+        )
 
-    app_resource_tables = (
-        ADML_RESOURCE_TABLE_TEMPLATE %
-        ('\n'.join(app_resource_strings), ADML_PRESENTATIONS))
+    app_resource_tables = ADML_RESOURCE_TABLE_TEMPLATE % (
+        '\n'.join(app_resource_strings),
+        ADML_PRESENTATIONS,
+    )
 
     target_contents = [
         ADML_HEADER,
@@ -978,17 +1046,17 @@ def GenerateGroupPolicyTemplateAdml(apps):
 def WriteGroupPolicyTemplateAdmx(target_path, apps):
     """Writes a Group Policy template (ADM format)for the specified apps.
 
-  The file is UTF-16 and contains CRLF on all platforms.
+    The file is UTF-16 and contains CRLF on all platforms.
 
-  Args:
-    target_path: Output path of the .ADM template file.
-    apps: A list of tuples containing information about each app.
-        Each element of the list is a tuple of:
-          * app name
-          * app ID
-          * optional string to append to the auto-update explanation
-            - Should start with a space or double new line.
-  """
+    Args:
+      target_path: Output path of the .ADM template file.
+      apps: A list of tuples containing information about each app.
+          Each element of the list is a tuple of:
+            * app name
+            * app ID
+            * optional string to append to the auto-update explanation
+              - Should start with a space or double new line.
+    """
 
     contents = GenerateGroupPolicyTemplateAdmx(apps)
     f = codecs.open(target_path, 'wb', 'utf-16')
@@ -999,17 +1067,17 @@ def WriteGroupPolicyTemplateAdmx(target_path, apps):
 def WriteGroupPolicyTemplateAdml(target_path, apps):
     """Writes a Group Policy template (ADM format)for the specified apps.
 
-  The file is UTF-16 and contains CRLF on all platforms.
+    The file is UTF-16 and contains CRLF on all platforms.
 
-  Args:
-    target_path: Output path of the .ADM template file.
-    apps: A list of tuples containing information about each app.
-        Each element of the list is a tuple of:
-          * app name
-          * app ID
-          * optional string to append to the auto-update explanation
-            - Should start with a space or double new line.
-  """
+    Args:
+      target_path: Output path of the .ADM template file.
+      apps: A list of tuples containing information about each app.
+          Each element of the list is a tuple of:
+            * app name
+            * app ID
+            * optional string to append to the auto-update explanation
+              - Should start with a space or double new line.
+    """
 
     contents = GenerateGroupPolicyTemplateAdml(apps)
     f = codecs.open(target_path, 'wb', 'utf-16')

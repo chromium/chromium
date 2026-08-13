@@ -36,18 +36,23 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     """
     local_dir = os.path.dirname(os.path.abspath(__file__))
     return self.RunWebDriverTest(
-        self.win_config['client'],
-        os.path.join(local_dir, 'report_cbcm_events_webdriver.py'))
+      self.win_config['client'],
+      os.path.join(local_dir, 'report_cbcm_events_webdriver.py'),
+    )
 
   def IsEventValid(self, event, test_start_time, device_id):
     timestamp_in_microseconds = int(
-        event['apiEvent']['reportingRecordEvent']['timestampUs'])
-    event_occurred_after_test_started = timestamp_in_microseconds > test_start_time
+      event['apiEvent']['reportingRecordEvent']['timestampUs']
+    )
+    event_occurred_after_test_started = (
+      timestamp_in_microseconds > test_start_time
+    )
     event_occurred_on_test_device = event['clientId'] == device_id
     return event_occurred_after_test_started and event_occurred_on_test_device
 
-  def VerifyHeartbeatEvents(self, test_start_time_in_microseconds, url,
-                            device_id):
+  def VerifyHeartbeatEvents(
+    self, test_start_time_in_microseconds, url, device_id
+  ):
     r = requests.get(url)
     logging.info('Querying reporting server for events...')
     logging.info('server response = %s' % r)
@@ -67,8 +72,10 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
   def GetReportingUrl(self, device_id, customer_id, api_key):
     url = "https://chromereporting-pa.googleapis.com/v1/test/events"
     # Add arguments to url
-    args = "?key=%s&obfuscatedCustomerId=%s&deviceId=%s&destination=HEARTBEAT_EVENTS" % (
-        api_key, customer_id, device_id)
+    args = (
+      "?key=%s&obfuscatedCustomerId=%s&deviceId=%s&destination=HEARTBEAT_EVENTS"
+      % (api_key, customer_id, device_id)
+    )
     url += args
     return url
 
@@ -77,7 +84,8 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     test_start_time_in_microseconds = round(time.time() * 1000000)
 
     # Enroll browser to managedchrome.com domain
-    managed_chrome_enrollment_token = self.GetManagedChromeDomainEnrollmentToken(
+    managed_chrome_enrollment_token = (
+      self.GetManagedChromeDomainEnrollmentToken()
     )
     self.EnrollBrowserToDomain(managed_chrome_enrollment_token)
 
@@ -92,7 +100,7 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     capture_device_id_regex = r'DEVICE_ID=.*[a-zA-Z0-9-]+'
     match = re.search(capture_device_id_regex, output)
     self.assertTrue(match)
-    device_id = match.group()[len('DEVICE_ID='):]
+    device_id = match.group()[len('DEVICE_ID=') :]
 
     # Customer id for managedchrome.com
     customer_id = self.GetManagedChromeCustomerId()
@@ -100,5 +108,7 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     url = self.GetReportingUrl(device_id, customer_id, api_key)
 
     self.assertTrue(
-        self.VerifyHeartbeatEvents(test_start_time_in_microseconds, url,
-                                   device_id))
+      self.VerifyHeartbeatEvents(
+        test_start_time_in_microseconds, url, device_id
+      )
+    )

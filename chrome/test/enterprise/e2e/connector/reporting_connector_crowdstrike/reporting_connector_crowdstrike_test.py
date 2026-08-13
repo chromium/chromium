@@ -13,10 +13,10 @@ from chrome_ent_test.infra.core import test
 from .. import ChromeReportingConnectorTestCase, VerifyContent
 from .crowdstrike_humio_api_service import CrowdStrikeHumioApiService
 
+
 @category("chrome_only")
 @environment(file="../connector_test.asset.textpb")
 class ReportingConnectorwithCrowdStrikeTest(ChromeReportingConnectorTestCase):
-
   @before_all
   def setup(self):
     self.InstallBrowserAndEnableUITest()
@@ -35,7 +35,9 @@ class ReportingConnectorwithCrowdStrikeTest(ChromeReportingConnectorTestCase):
 
     # read service account private key from gs-bucket & write into local
     apiService = CrowdStrikeHumioApiService(
-        self.GetFileFromGCSBucket('secrets/humio_user_token'))
+      self.GetFileFromGCSBucket('secrets/humio_user_token')
+    )
     self.TryVerifyUntilTimeout(
-        verifyClass=apiService,
-        content=VerifyContent(deviceId=deviceId, timestamp=testStartTime))
+      verifyClass=apiService,
+      content=VerifyContent(deviceId=deviceId, timestamp=testStartTime),
+    )

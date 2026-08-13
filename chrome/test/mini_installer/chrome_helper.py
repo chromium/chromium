@@ -42,13 +42,13 @@ def get_process_ppid(p):
 
 
 def GetProcessIDAndPathPairs():
-    """Returns a list of 2-tuples of (process id, process path).
-    """
+    """Returns a list of 2-tuples of (process id, process path)."""
     process_id_and_path_pairs = []
     for process in psutil.process_iter():
         try:
             process_id_and_path_pairs.append(
-                (process.pid, get_process_exe(process)))
+                (process.pid, get_process_exe(process))
+            )
         except psutil.Error:
             # It's normal that some processes are not accessible.
             pass
@@ -65,7 +65,8 @@ def GetProcessIDs(process_path):
         A list of process IDs.
     """
     return [
-        pid for (pid, path) in GetProcessIDAndPathPairs()
+        pid
+        for (pid, path) in GetProcessIDAndPathPairs()
         if path == process_path
     ]
 
@@ -84,12 +85,14 @@ def WaitForChromeExit(chrome_path):
             try:
                 if get_process_exe(process) == chrome_path:
                     chrome_processes[process.pid] = process
-                    LOGGER.info('Found chrome process %s' %
-                                get_process_exe(process))
-                elif get_process_name(process) == os.path.basename(
-                        chrome_path):
-                    raise Exception('Found other chrome process %s' %
-                                    get_process_exe(process))
+                    LOGGER.info(
+                        'Found chrome process %s' % get_process_exe(process)
+                    )
+                elif get_process_name(process) == os.path.basename(chrome_path):
+                    raise Exception(
+                        'Found other chrome process %s'
+                        % get_process_exe(process)
+                    )
             except psutil.Error:
                 pass
         return chrome_processes
@@ -115,9 +118,14 @@ def WaitForChromeExit(chrome_path):
             # Pick any process to wait on if no top-level parent was found.
             process = next(chrome_processes.values())
         if process.is_running():
-            LOGGER.info('Waiting on %s for %s %s processes to exit' %
-                        (str(process), len(chrome_processes),
-                         get_process_exe(process)))
+            LOGGER.info(
+                'Waiting on %s for %s %s processes to exit'
+                % (
+                    str(process),
+                    len(chrome_processes),
+                    get_process_exe(process),
+                )
+            )
             process.wait()
         # Check for stragglers and keep waiting until all are gone.
         chrome_processes = GetChromeProcesses(chrome_path)

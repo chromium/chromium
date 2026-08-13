@@ -57,14 +57,28 @@ def Main():
 
     this_dir = os.path.dirname(os.path.abspath(__file__))
     node_py = os.path.join(source_dir, 'third_party', 'node', 'node.py')
-    tsc_js = os.path.join(source_dir, 'third_party', 'node', 'node_modules',
-                          'typescript', 'bin', 'tsc')
+    tsc_js = os.path.join(
+        source_dir,
+        'third_party',
+        'node',
+        'node_modules',
+        'typescript',
+        'bin',
+        'tsc',
+    )
     tsconfig_json = os.path.join(this_dir, 'generate_impl', 'tsconfig.json')
 
     with tempfile.TemporaryDirectory() as temp_dir:
         tsc_cmd = [
-            sys.executable, node_py, tsc_js, '--project', tsconfig_json,
-            '--outDir', temp_dir, '--noEmit', 'false'
+            sys.executable,
+            node_py,
+            tsc_js,
+            '--project',
+            tsconfig_json,
+            '--outDir',
+            temp_dir,
+            '--noEmit',
+            'false',
         ]
         res = subprocess.run(tsc_cmd)
         if res.returncode != 0:

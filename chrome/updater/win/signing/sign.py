@@ -95,8 +95,18 @@ class SigningError(Exception):
 
 class Signer:
     """A container for a signing operation."""
-    def __init__(self, tmpdir, lzma_exe, signtool_exe, tagging_exe, identity,
-                 certificate_file_path, certificate_password, sign_flags):
+
+    def __init__(
+        self,
+        tmpdir,
+        lzma_exe,
+        signtool_exe,
+        tagging_exe,
+        identity,
+        certificate_file_path,
+        certificate_password,
+        sign_flags,
+    ):
         """Inits a signer with the necessary tools.
 
         Arguments:
@@ -126,10 +136,10 @@ class Signer:
     def _add_tagging_cert(self, in_file, out_file):
         """Adds the tagging cert. Returns the path to the tagged file."""
         subprocess.run(
-            [self._tagging_exe, '--set-tag',
-             '--out=%s' % out_file, in_file],
+            [self._tagging_exe, '--set-tag', '--out=%s' % out_file, in_file],
             check=True,
-            stdout=subprocess.DEVNULL)
+            stdout=subprocess.DEVNULL,
+        )
         return out_file
 
     def _sign_item(self, in_file):
@@ -151,15 +161,15 @@ class Signer:
             delay = 1
             for attempt in range(1, attempts + 1):
                 try:
-                    subprocess.run(command,
-                                   check=True,
-                                   stdout=subprocess.DEVNULL)
+                    subprocess.run(
+                        command, check=True, stdout=subprocess.DEVNULL
+                    )
                 except subprocess.CalledProcessError:
                     if attempt == attempts:
                         raise
                     logging.exception(
                         'Sign attempt failed, attempts left: %d',
-                        attempts - attempt
+                        attempts - attempt,
                     )
                     logging.info(
                         'Waiting for %d seconds before next attempt...', delay
@@ -168,8 +178,9 @@ class Signer:
                     continue
                 break
 
-    def _generate_target_manifest(self, appid, installer_path, manifest_path,
-                                  manifest_dict_replacements):
+    def _generate_target_manifest(
+        self, appid, installer_path, manifest_path, manifest_dict_replacements
+    ):
         """Replaces the following in the input file `manifest_path`:
         * `${APP_ID}`: `appid`.
         * `${INSTALLER_FILENAME}`: base name of `installer_path`.
@@ -185,73 +196,114 @@ class Signer:
         with open(manifest_path, 'rt') as f:
             manifest_result = f.read()
             for key, value in {
-                    '${APP_ID}': appid,
-                    '${INSTALLER_FILENAME}': os.path.basename(installer_path),
-                    '${INSTALLER_SIZE}': str(size),
-                    '${INSTALLER_HASH_SHA256}':
-                    hashlib.sha256(data).hexdigest(),
+                '${APP_ID}': appid,
+                '${INSTALLER_FILENAME}': os.path.basename(installer_path),
+                '${INSTALLER_SIZE}': str(size),
+                '${INSTALLER_HASH_SHA256}': hashlib.sha256(data).hexdigest(),
             }.items():
                 manifest_result = manifest_result.replace(key, value)
             for key, value in manifest_dict_replacements.items():
                 manifest_result = manifest_result.replace(key, value)
         return manifest_result
 
-    def _copy_offline_installer_files(self, root, appid, installer_path,
-                                      manifest_path,
-                                      manifest_dict_replacements):
+    def _copy_offline_installer_files(
+        self,
+        root,
+        appid,
+        installer_path,
+        manifest_path,
+        manifest_dict_replacements,
+    ):
         """Copies the offline installer and generated manifest under `root`."""
-        offline_dir = os.path.join(root, 'Offline',
-                                   '{' + str(uuid.uuid4()) + '}')
+        offline_dir = os.path.join(
+            root, 'Offline', '{' + str(uuid.uuid4()) + '}'
+        )
         app_dir = os.path.join(offline_dir, appid)
         os.makedirs(app_dir)
 
-        with open(os.path.join(offline_dir, 'OfflineManifest.gup'),
-                  'w') as f_out:
+        with open(
+            os.path.join(offline_dir, 'OfflineManifest.gup'), 'w'
+        ) as f_out:
             f_out.write(
-                self._generate_target_manifest(appid, installer_path,
-                                               manifest_path,
-                                               manifest_dict_replacements))
+                self._generate_target_manifest(
+                    appid,
+                    installer_path,
+                    manifest_path,
+                    manifest_dict_replacements,
+                )
+            )
         shutil.copyfile(
             installer_path,
-            os.path.join(app_dir, os.path.basename(installer_path)))
+            os.path.join(app_dir, os.path.basename(installer_path)),
+        )
 
-    def _sign_7z(self, in_file, appid, installer_path, manifest_path,
-                 manifest_dict_replacements, tag_and_sign):
+    def _sign_7z(
+        self,
+        in_file,
+        appid,
+        installer_path,
+        manifest_path,
+        manifest_dict_replacements,
+        tag_and_sign,
+    ):
         """Extract, sign, and rearchive the contents of a 7z archive."""
         tmp = tempfile.mkdtemp(dir=self._tmpdir)
-        subprocess.run([self._lzma_exe, 'x', in_file,
-                        '-o%s' % tmp],
-                       check=True,
-                       stdout=subprocess.DEVNULL)
-        signable_exts = frozenset([
-            '.exe', '.dll', '.msi', '.cat', '.ps1', '.psm1', '.psd1', '.ps1xml'
-        ])
+        subprocess.run(
+            [self._lzma_exe, 'x', in_file, '-o%s' % tmp],
+            check=True,
+            stdout=subprocess.DEVNULL,
+        )
+        signable_exts = frozenset(
+            [
+                '.exe',
+                '.dll',
+                '.msi',
+                '.cat',
+                '.ps1',
+                '.psm1',
+                '.psd1',
+                '.ps1xml',
+            ]
+        )
         for root, _, files in os.walk(tmp):
             for f in files:
                 ext = os.path.splitext(f)[1].lower()
                 if ext in signable_exts and tag_and_sign:
                     self._sign_item(os.path.join(root, f))
                 elif ext == '.7z':
-                    self._sign_7z(os.path.join(root, f), appid, installer_path,
-                                  manifest_path, manifest_dict_replacements,
-                                  tag_and_sign)
+                    self._sign_7z(
+                        os.path.join(root, f),
+                        appid,
+                        installer_path,
+                        manifest_path,
+                        manifest_dict_replacements,
+                        tag_and_sign,
+                    )
             if appid and 'updater.exe' in files:
-                self._copy_offline_installer_files(root, appid, installer_path,
-                                                   manifest_path,
-                                                   manifest_dict_replacements)
-        subprocess.run([self._lzma_exe, 'a', '-mx0', in_file, '*'],
-                       check=True,
-                       cwd=tmp,
-                       stdout=subprocess.DEVNULL)
+                self._copy_offline_installer_files(
+                    root,
+                    appid,
+                    installer_path,
+                    manifest_path,
+                    manifest_dict_replacements,
+                )
+        subprocess.run(
+            [self._lzma_exe, 'a', '-mx0', in_file, '*'],
+            check=True,
+            cwd=tmp,
+            stdout=subprocess.DEVNULL,
+        )
 
-    def sign_metainstaller(self,
-                           in_file,
-                           out_file,
-                           appid=None,
-                           installer_path=None,
-                           manifest_path=None,
-                           manifest_dict_replacements=None,
-                           tag_and_sign=True):
+    def sign_metainstaller(
+        self,
+        in_file,
+        out_file,
+        appid=None,
+        installer_path=None,
+        manifest_path=None,
+        manifest_dict_replacements=None,
+        tag_and_sign=True,
+    ):
         """Return a path to a signed copy of an updater metainstaller."""
         workdir = tempfile.mkdtemp(dir=self._tmpdir)
         out_metainstaller = os.path.join(workdir, "metainstaller.exe")
@@ -259,8 +311,14 @@ class Signer:
         resource = 'updater.packed.7z'
         extracted_7z = os.path.join(workdir, resource)
         resed.ExtractResource('B7', 1033, resource, extracted_7z)
-        self._sign_7z(extracted_7z, appid, installer_path, manifest_path,
-                      manifest_dict_replacements, tag_and_sign)
+        self._sign_7z(
+            extracted_7z,
+            appid,
+            installer_path,
+            manifest_path,
+            manifest_dict_replacements,
+            tag_and_sign,
+        )
         resed.UpdateResource('B7', 1033, resource, extracted_7z)
         resed.Commit()
 
@@ -279,83 +337,130 @@ def has_switch(switch_name: str) -> bool:
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--in_file',
-                        required=True,
-                        help='The path to the metainstaller.')
-    parser.add_argument('--out_file',
-                        required=True,
-                        help='The path to save the signed metainstaller to.')
-    parser.add_argument('--lzma_7z',
-                        default='7z.exe',
-                        required=not shutil.which('7z.exe'),
-                        help=('The path to the 7z executable.'
-                              'Required when 7z.exe is not in the PATH.'))
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        '--in_file', required=True, help='The path to the metainstaller.'
+    )
+    parser.add_argument(
+        '--out_file',
+        required=True,
+        help='The path to save the signed metainstaller to.',
+    )
+    parser.add_argument(
+        '--lzma_7z',
+        default='7z.exe',
+        required=not shutil.which('7z.exe'),
+        help=(
+            'The path to the 7z executable.'
+            'Required when 7z.exe is not in the PATH.'
+        ),
+    )
     parser.add_argument(
         '--signtool',
         default='signtool.exe',
-        help='The path to the signtool executable. Look in depot_tools.')
-    parser.add_argument('--tagging_exe',
-                        default=os.path.join(
-                            os.path.realpath(os.path.dirname(__file__)),
-                            'tag.exe'),
-                        help='The path to the tagging executable.')
+        help='The path to the signtool executable. Look in depot_tools.',
+    )
+    parser.add_argument(
+        '--tagging_exe',
+        default=os.path.join(
+            os.path.realpath(os.path.dirname(__file__)), 'tag.exe'
+        ),
+        help='The path to the tagging executable.',
+    )
     parser.add_argument(
         '--identity',
         default='Google',
-        help=('The subject name of the signing certificate in the `My` store. '
-              'Can be a substring of the entire subject name.'))
+        help=(
+            'The subject name of the signing certificate in the `My` store. '
+            'Can be a substring of the entire subject name.'
+        ),
+    )
     parser.add_argument(
         '--certificate_file_path',
         required=has_switch('--certificate_password'),
-        help=('Specifies the path to a PFX signing certificate. Takes '
-              'precedence over `--identity`.'
-              'Required when `--certificate_password` is present.'))
+        help=(
+            'Specifies the path to a PFX signing certificate. Takes '
+            'precedence over `--identity`.'
+            'Required when `--certificate_password` is present.'
+        ),
+    )
     parser.add_argument(
         '--certificate_password',
         required=False,
-        help='Specifies the password for `--certificate_file_path`.')
-    parser.add_argument('--appid',
-                        required=False,
-                        help='The offline installer appid.')
-    parser.add_argument('--installer_path',
-                        required=has_switch('--appid'),
-                        help=('The path to the offline installer.'
-                              'Required when `--appid` is present.'))
+        help='Specifies the password for `--certificate_file_path`.',
+    )
+    parser.add_argument(
+        '--appid', required=False, help='The offline installer appid.'
+    )
+    parser.add_argument(
+        '--installer_path',
+        required=has_switch('--appid'),
+        help=(
+            'The path to the offline installer.'
+            'Required when `--appid` is present.'
+        ),
+    )
     parser.add_argument(
         '--manifest_path',
-        required=(has_switch('--appid')
-                  or has_switch('--manifest_dict_replacements')),
-        help=('The path to the offline manifest .gup file.'
-              'Required when `--appid` or '
-              '`--manifest_dict_replacements` is present.'))
+        required=(
+            has_switch('--appid') or has_switch('--manifest_dict_replacements')
+        ),
+        help=(
+            'The path to the offline manifest .gup file.'
+            'Required when `--appid` or '
+            '`--manifest_dict_replacements` is present.'
+        ),
+    )
     parser.add_argument(
         '--manifest_dict_replacements',
         default='{}',
-        help=('A dictionary of `{key1:value1, ...keyN:valueN}`. This script '
-              'replaces the keys that it finds in the offline manifest .gup '
-              'file with the corresponding values.'))
-    parser.add_argument('--sign_flags',
-                        action='append',
-                        default=[],
-                        help='Flags to pass to codesign.exe.')
+        help=(
+            'A dictionary of `{key1:value1, ...keyN:valueN}`. This script '
+            'replaces the keys that it finds in the offline manifest .gup '
+            'file with the corresponding values.'
+        ),
+    )
+    parser.add_argument(
+        '--sign_flags',
+        action='append',
+        default=[],
+        help='Flags to pass to codesign.exe.',
+    )
     parser.add_argument(
         '--disable_tag_and_sign',
         action='store_true',
-        help='Allows disabling tagging and signing for test purposes.')
+        help='Allows disabling tagging and signing for test purposes.',
+    )
     args = parser.parse_args()
     sign_flags = args.sign_flags or [
-        '/v', '/tr', 'http://timestamp.digicert.com', '/td', 'SHA256', '/fd',
-        'SHA256'
+        '/v',
+        '/tr',
+        'http://timestamp.digicert.com',
+        '/td',
+        'SHA256',
+        '/fd',
+        'SHA256',
     ]
     with tempfile.TemporaryDirectory() as tmpdir:
-        Signer(tmpdir, args.lzma_7z, args.signtool, args.tagging_exe,
-               args.identity, args.certificate_file_path,
-               args.certificate_password, [sign_flags]).sign_metainstaller(
-                   args.in_file, args.out_file, args.appid,
-                   args.installer_path, args.manifest_path,
-                   ast.literal_eval(args.manifest_dict_replacements),
-                   not args.disable_tag_and_sign)
+        Signer(
+            tmpdir,
+            args.lzma_7z,
+            args.signtool,
+            args.tagging_exe,
+            args.identity,
+            args.certificate_file_path,
+            args.certificate_password,
+            [sign_flags],
+        ).sign_metainstaller(
+            args.in_file,
+            args.out_file,
+            args.appid,
+            args.installer_path,
+            args.manifest_path,
+            ast.literal_eval(args.manifest_dict_replacements),
+            not args.disable_tag_and_sign,
+        )
 
 
 if __name__ == '__main__':

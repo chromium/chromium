@@ -11,6 +11,7 @@ from .. import Verifyable, VerifyContent
 
 class ChronicleApiService(Verifyable):
   """This class handles retrieving and verifying chronicle messages"""
+
   messages = []
   serviceAccountInfo = None
 
@@ -27,7 +28,7 @@ class ChronicleApiService(Verifyable):
 
   def TryVerify(self, content: VerifyContent) -> bool:
     """This method will be called repeatedly until
-        success or timeout. Returns boolean"""
+    success or timeout. Returns boolean"""
     self.loadEvents(content.timestamp, content.device_id)
     return content.device_id in json.dumps(self.messages)
 
@@ -45,7 +46,8 @@ class ChronicleApiService(Verifyable):
     # Account Credential and Chronicle API scope.
     SCOPES = ['https://www.googleapis.com/auth/chronicle-backstory']
     credentials = service_account.Credentials.from_service_account_info(
-        self.serviceAccountInfo, scopes=SCOPES)
+      self.serviceAccountInfo, scopes=SCOPES
+    )
 
     # Build an HTTP client that can make authorized OAuth requests.
     http_client = _auth.authorized_http(credentials)
@@ -56,10 +58,10 @@ class ChronicleApiService(Verifyable):
     start_time = self._datetimeToIso(testStartTime - timedelta(minutes=15))
     end_time = self._datetimeToIso(datetime.utcnow())
     list_event_url = (
-        '{}/events:udmSearch?query=principal.resource.id+%3D+%22{}%22'
-        '&time_range.start_time={}&time_range.end_time={}'
-        '&limit=100').format(BACKSTORY_API_V1_URL, deviceId, start_time,
-                             end_time)
+      '{}/events:udmSearch?query=principal.resource.id+%3D+%22{}%22'
+      '&time_range.start_time={}&time_range.end_time={}'
+      '&limit=100'
+    ).format(BACKSTORY_API_V1_URL, deviceId, start_time, end_time)
 
     # Make a request
     print('GET', list_event_url)

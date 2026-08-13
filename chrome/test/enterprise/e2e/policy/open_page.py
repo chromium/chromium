@@ -12,20 +12,27 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('url', None, 'The url to open in Chrome.')
 flags.mark_flag_as_required('url')
 
-flags.DEFINE_integer('wait_before_page_load', 0,
-                     'How many seconds to wait before loading the page.')
-
 flags.DEFINE_integer(
-    'wait', 0,
-    'How many seconds to wait between loading the page and printing the source.'
+  'wait_before_page_load',
+  0,
+  'How many seconds to wait before loading the page.',
 )
 
-flags.DEFINE_bool('incognito', False,
-                  'Set flag to open Chrome in incognito mode.')
+flags.DEFINE_integer(
+  'wait',
+  0,
+  'How many seconds to wait between loading the page and printing the source.',
+)
 
 flags.DEFINE_bool(
-    'text_only', False,
-    'Set flag to print only page text (defaults to full source).')
+  'incognito', False, 'Set flag to open Chrome in incognito mode.'
+)
+
+flags.DEFINE_bool(
+  'text_only',
+  False,
+  'Set flag to print only page text (defaults to full source).',
+)
 
 
 def main(argv):

@@ -51,7 +51,8 @@ def ReadTypeSet(source_text: str, set_name: str) -> set[str]:
 
 
 def _GetAllExportedInterfacesInString(
-        source_text: str) -> dict[str, InterfaceInfo]:
+    source_text: str,
+) -> dict[str, InterfaceInfo]:
     pattern = r'\n\s*export\s+(declare\s+)?interface\s+(\w+)(<[^<>]*>)?'
     matches = re.finditer(pattern, StripComments(source_text))
     result = {}
@@ -62,7 +63,8 @@ def _GetAllExportedInterfacesInString(
                 p.strip() for p in match.group(3)[1:-1].split(',')
             ]
         result[match.group(2)] = InterfaceInfo(
-            match.group(1) is not None, type_parameters)
+            match.group(1) is not None, type_parameters
+        )
     return result
 
 
@@ -78,7 +80,8 @@ def GetPublicNamesInGeneratedBlock(glic_api_contents: str) -> set[str]:
 
 
 def GetBackwardsCompatibleTypes(
-        api_files: dict[str, str]) -> dict[str, InterfaceInfo]:
+    api_files: dict[str, str],
+) -> dict[str, InterfaceInfo]:
     all_types = {}
     for contents in api_files.values():
         for name, info in _GetAllExportedInterfacesInString(contents).items():
@@ -90,9 +93,9 @@ def GetBackwardsCompatibleTypes(
     if 'glic_api.ts' in api_files:
         glic_api_contents = api_files['glic_api.ts']
         public_interface_names = GetPublicNamesInGeneratedBlock(
-            glic_api_contents)
-        interfaces_in_api = _GetAllExportedInterfacesInString(
-            glic_api_contents)
+            glic_api_contents
+        )
+        interfaces_in_api = _GetAllExportedInterfacesInString(glic_api_contents)
         public_interface_names.update(interfaces_in_api.keys())
         all_types = {
             name: info
@@ -109,8 +112,9 @@ def CheckWithEslint(api_file_path: str) -> list[str]:
     eslint_cmd = [
         sys.executable,
         os.path.join(ROOT_PATH, 'third_party/node/node.py'),
-        os.path.join(ROOT_PATH,
-                     'third_party/node/node_modules/eslint/bin/eslint.js'),
+        os.path.join(
+            ROOT_PATH, 'third_party/node/node_modules/eslint/bin/eslint.js'
+        ),
         '--config',
         os.path.join(SCRIPT_PATH, 'eslint.config.mjs'),
         api_file_path,
@@ -141,13 +145,17 @@ def BuildBackwardsCompatibleTypesDeclaration(api_files: dict[str, str]) -> str:
     def MakeDecl(name):
         type_suffix = ''
         if types[name].type_parameters:
-            type_suffix = '<' + ','.join(
-                ['any'] * len(types[name].type_parameters)) + '>'
+            type_suffix = (
+                '<' + ','.join(['any'] * len(types[name].type_parameters)) + '>'
+            )
         return f'  {name}: {name}{type_suffix};'
 
     declarations = [MakeDecl(t) for t in sorted(types.keys())]
-    return 'export interface TheBackwardsCompatibleTypes {\n' + '\n'.join(
-        declarations) + '\n}'
+    return (
+        'export interface TheBackwardsCompatibleTypes {\n'
+        + '\n'.join(declarations)
+        + '\n}'
+    )
 
 
 def BuildExtensibleEnumsTypeDeclaration(api_files: dict[str, str]) -> str:
@@ -163,7 +171,8 @@ def BuildExtensibleEnumsTypeDeclaration(api_files: dict[str, str]) -> str:
         public_enum_names.update(enums_in_api.keys())
         enums = {
             name: text
-            for name, text in enums.items() if name in public_enum_names
+            for name, text in enums.items()
+            if name in public_enum_names
         }
     extensible_enums = enums.keys() - closed_enums
 
@@ -171,19 +180,25 @@ def BuildExtensibleEnumsTypeDeclaration(api_files: dict[str, str]) -> str:
         return f'  {name}: typeof {name};'
 
     declarations = [MakeDecl(t) for t in sorted(extensible_enums)]
-    return 'export interface TheExtensibleEnums {\n' + '\n'.join(
-        declarations) + '\n}'
+    return (
+        'export interface TheExtensibleEnums {\n'
+        + '\n'.join(declarations)
+        + '\n}'
+    )
 
 
 def BuildHelpers(api_files: dict[str, str]) -> str:
-    return '\n'.join([
-        BuildBackwardsCompatibleTypesDeclaration(api_files),
-        BuildExtensibleEnumsTypeDeclaration(api_files)
-    ])
+    return '\n'.join(
+        [
+            BuildBackwardsCompatibleTypesDeclaration(api_files),
+            BuildExtensibleEnumsTypeDeclaration(api_files),
+        ]
+    )
 
 
-def CheckCompatibility(old_files: dict[str, str],
-                       new_files: dict[str, str]) -> list[str]:
+def CheckCompatibility(
+    old_files: dict[str, str], new_files: dict[str, str]
+) -> list[str]:
     tmp_dir = tempfile.TemporaryDirectory()
     tmp_dir_name = tmp_dir.name
 
@@ -243,7 +258,8 @@ def CheckCompatibility(old_files: dict[str, str],
 
     tsconfig_path = os.path.join(tmp_dir_name, 'tsconfig.json')
     with open(tsconfig_path, 'w') as tsconfigfile:
-        tsconfigfile.write('''{
+        tsconfigfile.write(
+            '''{
   "extends": "$ROOT/chrome/browser/resources/glic/presubmit/tsconfig.json",
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
@@ -255,25 +271,29 @@ def CheckCompatibility(old_files: dict[str, str],
     }
   }
 }
-'''.replace("$TMP",
-            tmp_dir_name.replace('\\',
-                                 '/')).replace('$ROOT',
-                                               ROOT_PATH.replace('\\', '/')))
+'''.replace("$TMP", tmp_dir_name.replace('\\', '/')).replace(
+                '$ROOT', ROOT_PATH.replace('\\', '/')
+            )
+        )
 
     message = (
-        '** Your changelist is a backwards-incompatible Glic API change!\n' +
-        '** Did you add a non-optional field or function, or change the\n' +
-        '** type of an existing field or function?\n' +
-        '** Please fix, or add Bypass-Glic-Api-Compatibility-Check: <reason>' +
-        ' to your changelist description if this is intended. See ' +
-        'http://shortn/_sMpo1Bq6sw for more information. Error:\n  ')
+        '** Your changelist is a backwards-incompatible Glic API change!\n'
+        + '** Did you add a non-optional field or function, or change the\n'
+        + '** type of an existing field or function?\n'
+        + '** Please fix, or add Bypass-Glic-Api-Compatibility-Check: <reason>'
+        + ' to your changelist description if this is intended. See '
+        + 'http://shortn/_sMpo1Bq6sw for more information. Error:\n  '
+    )
 
     tsc_cmd = [
         sys.executable,
         os.path.join(ROOT_PATH, 'third_party/node/node.py'),
-        os.path.join(ROOT_PATH,
-                     'third_party/node/node_modules/typescript/bin/tsc'),
-        '--noEmit', '-p', tsconfig_path
+        os.path.join(
+            ROOT_PATH, 'third_party/node/node_modules/typescript/bin/tsc'
+        ),
+        '--noEmit',
+        '-p',
+        tsconfig_path,
     ]
 
     if DEBUG:
@@ -295,7 +315,8 @@ def main():
     old_api_stdin = False
     skip_compatibility_check = False
     glic_api_path = os.path.join(
-        ROOT_PATH, 'chrome/browser/resources/glic/glic_api/glic_api.ts')
+        ROOT_PATH, 'chrome/browser/resources/glic/glic_api/glic_api.ts'
+    )
     for arg in sys.argv[1:]:
         if arg == '--old-stdin':
             old_api_stdin = True

@@ -27,9 +27,12 @@ def Verify(property_dict, variable_expander):
         {
             'Files': file_operations.VerifyFileExpectation,
             'Processes': process_operations.VerifyProcessExpectation,
-            'RegistryEntries':
-            registry_operations.VerifyRegistryEntryExpectation,
-        }, False, property_dict, variable_expander)
+            'RegistryEntries': registry_operations.VerifyRegistryEntryExpectation,
+        },
+        False,
+        property_dict,
+        variable_expander,
+    )
 
 
 def Clean(property_dict, variable_expander):
@@ -44,7 +47,11 @@ def Clean(property_dict, variable_expander):
             'Files': file_operations.CleanFile,
             'Processes': process_operations.CleanProcess,
             'RegistryEntries': registry_operations.CleanRegistryEntry,
-        }, True, property_dict, variable_expander)
+        },
+        True,
+        property_dict,
+        variable_expander,
+    )
 
 
 def _Walk(operations, continue_on_error, property_dict, variable_expander):
@@ -63,17 +70,19 @@ def _Walk(operations, continue_on_error, property_dict, variable_expander):
             # Skip over expectations with conditions that aren't satisfied.
             if 'condition' in expectation_dict:
                 condition = variable_expander.Expand(
-                    expectation_dict['condition'])
+                    expectation_dict['condition']
+                )
                 if not _EvaluateCondition(condition):
                     continue
             try:
-                operation(expectation_name, expectation_dict,
-                          variable_expander)
+                operation(expectation_name, expectation_dict, variable_expander)
             except:  # pylint: disable=bare-except
                 if not continue_on_error:
                     raise
-                LOGGER.error('Error while processing expectation %s: %s' %
-                             (expectation_name, sys.exc_info()[1]))
+                LOGGER.error(
+                    'Error while processing expectation %s: %s'
+                    % (expectation_name, sys.exc_info()[1])
+                )
 
 
 def _EvaluateCondition(condition):

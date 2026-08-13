@@ -27,14 +27,16 @@ class AppsShortcutEnabledTest(ChromeEnterpriseTestCase):
 
   def isAppsShortcutVisible(self, instance):
     local = os.path.dirname(os.path.abspath(__file__))
-    output = self.RunUITest(instance,
-                            os.path.join(local, 'is_apps_shortcut_visible.py'))
+    output = self.RunUITest(
+      instance, os.path.join(local, 'is_apps_shortcut_visible.py')
+    )
     return "TRUE" in output
 
   @test
   def test_AppShortcutEnabled(self):
-    self.SetPolicy(self.win_config['dc'], AppsShortcutEnabledTest.Policy, 1,
-                   'DWORD')
+    self.SetPolicy(
+      self.win_config['dc'], AppsShortcutEnabledTest.Policy, 1, 'DWORD'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     visible = self.isAppsShortcutVisible(self.win_config['client'])
@@ -42,8 +44,9 @@ class AppsShortcutEnabledTest(ChromeEnterpriseTestCase):
 
   @test
   def test_AppShortcutDisabled(self):
-    self.SetPolicy(self.win_config['dc'], AppsShortcutEnabledTest.Policy, 0,
-                   'DWORD')
+    self.SetPolicy(
+      self.win_config['dc'], AppsShortcutEnabledTest.Policy, 0, 'DWORD'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     visible = self.isAppsShortcutVisible(self.win_config['client'])

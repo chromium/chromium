@@ -17,25 +17,27 @@ def _get_identity_hash(i):
 
 
 class TestGetParts(unittest.TestCase):
-
     def test_get_parts_no_base(self):
         config = test_config.TestConfig()
         all_parts = parts.get_parts(config)
         self.assertEqual('test.signing.bundle_id', all_parts['app'].identifier)
-        self.assertEqual('test.signing.bundle_id.framework',
-                         all_parts['framework'].identifier)
+        self.assertEqual(
+            'test.signing.bundle_id.framework',
+            all_parts['framework'].identifier,
+        )
         self.assertEqual(
             'test.signing.bundle_id.framework.AlertNotificationService',
-            all_parts['helper-alerts'].identifier)
-        self.assertEqual('test.signing.bundle_id.helper',
-                         all_parts['helper-app'].identifier)
+            all_parts['helper-alerts'].identifier,
+        )
+        self.assertEqual(
+            'test.signing.bundle_id.helper', all_parts['helper-app'].identifier
+        )
         self.assertIn('libEGL.dylib', all_parts)
         self.assertIn('libGLESv2.dylib', all_parts)
 
     def test_get_parts_static_angle(self):
 
         class StaticAngleTestConfig(test_config.TestConfig):
-
             @property
             def use_static_angle(self):
                 return True
@@ -48,16 +50,21 @@ class TestGetParts(unittest.TestCase):
 
     def test_get_parts_no_customize(self):
         config = model.Distribution(channel='dev').to_config(
-            test_config.TestConfig())
+            test_config.TestConfig()
+        )
         all_parts = parts.get_parts(config)
         self.assertEqual('test.signing.bundle_id', all_parts['app'].identifier)
-        self.assertEqual('test.signing.bundle_id.framework',
-                         all_parts['framework'].identifier)
+        self.assertEqual(
+            'test.signing.bundle_id.framework',
+            all_parts['framework'].identifier,
+        )
         self.assertEqual(
             'test.signing.bundle_id.framework.AlertNotificationService',
-            all_parts['helper-alerts'].identifier)
-        self.assertEqual('test.signing.bundle_id.helper',
-                         all_parts['helper-app'].identifier)
+            all_parts['helper-alerts'].identifier,
+        )
+        self.assertEqual(
+            'test.signing.bundle_id.helper', all_parts['helper-app'].identifier
+        )
 
     def test_get_parts_customize(self):
         config = model.Distribution(
@@ -65,24 +72,32 @@ class TestGetParts(unittest.TestCase):
             app_name_fragment='Canary',
             product_dirname='canary',
             creator_code='cana',
-            channel_customize=True).to_config(test_config.TestConfig())
+            channel_customize=True,
+        ).to_config(test_config.TestConfig())
         all_parts = parts.get_parts(config)
-        self.assertEqual('test.signing.bundle_id.canary',
-                         all_parts['app'].identifier)
-        self.assertEqual('test.signing.bundle_id.framework',
-                         all_parts['framework'].identifier)
+        self.assertEqual(
+            'test.signing.bundle_id.canary', all_parts['app'].identifier
+        )
+        self.assertEqual(
+            'test.signing.bundle_id.framework',
+            all_parts['framework'].identifier,
+        )
         self.assertEqual(
             'test.signing.bundle_id.canary.framework.AlertNotificationService',
-            all_parts['helper-alerts'].identifier)
-        self.assertEqual('test.signing.bundle_id.helper',
-                         all_parts['helper-app'].identifier)
+            all_parts['helper-alerts'].identifier,
+        )
+        self.assertEqual(
+            'test.signing.bundle_id.helper', all_parts['helper-app'].identifier
+        )
 
     def test_get_parts_chrome_branded(self):
         config = test_config.TestConfig()
         all_parts = parts.get_parts(config)
         self.assertIn('libchromecompaneros.dylib', all_parts)
-        self.assertEqual('libchromecompaneros',
-                         all_parts['libchromecompaneros.dylib'].identifier)
+        self.assertEqual(
+            'libchromecompaneros',
+            all_parts['libchromecompaneros.dylib'].identifier,
+        )
 
     def test_get_parts_non_chrome_branded(self):
         config = test_config.TestConfigNonChromeBranded()
@@ -95,51 +110,63 @@ class TestGetParts(unittest.TestCase):
             model.CodeSignOptions.RESTRICT
             | model.CodeSignOptions.LIBRARY_VALIDATION
             | model.CodeSignOptions.KILL
-            | model.CodeSignOptions.HARDENED_RUNTIME, all_parts['app'].options)
+            | model.CodeSignOptions.HARDENED_RUNTIME,
+            all_parts['app'].options,
+        )
         self.assertEqual(
             model.CodeSignOptions.RESTRICT
             | model.CodeSignOptions.LIBRARY_VALIDATION
             | model.CodeSignOptions.KILL
             | model.CodeSignOptions.HARDENED_RUNTIME,
-            all_parts['helper-app'].options)
+            all_parts['helper-app'].options,
+        )
         self.assertEqual(
-            model.CodeSignOptions.RESTRICT | model.CodeSignOptions.KILL
+            model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.KILL
             | model.CodeSignOptions.HARDENED_RUNTIME,
-            all_parts['helper-renderer-app'].options)
+            all_parts['helper-renderer-app'].options,
+        )
         self.assertEqual(
-            model.CodeSignOptions.RESTRICT | model.CodeSignOptions.KILL
+            model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.KILL
             | model.CodeSignOptions.HARDENED_RUNTIME,
-            all_parts['helper-gpu-app'].options)
+            all_parts['helper-gpu-app'].options,
+        )
         self.assertEqual(
             model.CodeSignOptions.RESTRICT
             | model.CodeSignOptions.LIBRARY_VALIDATION
             | model.CodeSignOptions.KILL
             | model.CodeSignOptions.HARDENED_RUNTIME,
-            all_parts['crashpad'].options)
+            all_parts['crashpad'].options,
+        )
         self.assertEqual(
             model.CodeSignOptions.RESTRICT
             | model.CodeSignOptions.LIBRARY_VALIDATION
             | model.CodeSignOptions.KILL
             | model.CodeSignOptions.HARDENED_RUNTIME,
-            all_parts['helper-alerts'].options)
+            all_parts['helper-alerts'].options,
+        )
         self.assertEqual(
             model.CodeSignOptions.RESTRICT
             | model.CodeSignOptions.LIBRARY_VALIDATION
             | model.CodeSignOptions.KILL
             | model.CodeSignOptions.HARDENED_RUNTIME,
-            all_parts['app-mode-app'].options)
+            all_parts['app-mode-app'].options,
+        )
         self.assertEqual(
             model.CodeSignOptions.RESTRICT
             | model.CodeSignOptions.LIBRARY_VALIDATION
             | model.CodeSignOptions.KILL
             | model.CodeSignOptions.HARDENED_RUNTIME,
-            all_parts['web-app-shortcut-copier'].options)
+            all_parts['web-app-shortcut-copier'].options,
+        )
         self.assertEqual(
             model.CodeSignOptions.RESTRICT
             | model.CodeSignOptions.LIBRARY_VALIDATION
             | model.CodeSignOptions.KILL
             | model.CodeSignOptions.HARDENED_RUNTIME,
-            all_parts['privileged-helper'].options)
+            all_parts['privileged-helper'].options,
+        )
 
 
 def _get_plist_read(other_version):
@@ -147,32 +174,39 @@ def _get_plist_read(other_version):
     def _plist_read(*args):
         path = args[0]
         first_slash = path.find('/')
-        path = path[first_slash + 1:]
+        path = path[first_slash + 1 :]
 
         plists = {
             '$W/App Product.app/Contents/Info.plist': {
                 'KSVersion': '99.0.9999.99'
             },
-            '$W/App Product.app/Contents/Frameworks/Product Framework.framework/Resources/Info.plist':
-                {
-                    'CFBundleShortVersionString': other_version
-                }
+            '$W/App Product.app/Contents/Frameworks/Product Framework.framework/Resources/Info.plist': {
+                'CFBundleShortVersionString': other_version
+            },
         }
         return plists[path]
 
     return _plist_read
 
 
-@mock.patch.multiple('signing.signing',
-                     **{m: mock.DEFAULT for m in ('sign_part', 'verify_part')})
 @mock.patch.multiple(
-    'signing.commands', **{
-        m: mock.DEFAULT for m in ('copy_files', 'move_file', 'make_dir',
-                                  'run_command', 'run_command_all_output_async')
-    })
+    'signing.signing', **{m: mock.DEFAULT for m in ('sign_part', 'verify_part')}
+)
+@mock.patch.multiple(
+    'signing.commands',
+    **{
+        m: mock.DEFAULT
+        for m in (
+            'copy_files',
+            'move_file',
+            'make_dir',
+            'run_command',
+            'run_command_all_output_async',
+        )
+    },
+)
 @mock.patch('signing.model._get_identity_hash', _get_identity_hash)
 class TestSignChrome(unittest.TestCase):
-
     def setUp(self):
         self.paths = model.Paths('/$I', '/$O', '/$W')
 
@@ -192,11 +226,15 @@ class TestSignChrome(unittest.TestCase):
         self.assertEqual(0, kwargs['move_file'].call_count)
 
         # Test that the provisioning profile is copied.
-        self.assertEqual(kwargs['copy_files'].mock_calls, [
-            mock.call.copy_files(
-                '/$I/Product Packaging/provisiontest.identity.provisionprofile',
-                '/$W/App Product.app/Contents/embedded.provisionprofile')
-        ])
+        self.assertEqual(
+            kwargs['copy_files'].mock_calls,
+            [
+                mock.call.copy_files(
+                    '/$I/Product Packaging/provisiontest.identity.provisionprofile',
+                    '/$W/App Product.app/Contents/embedded.provisionprofile',
+                )
+            ],
+        )
 
         # Ensure that all the parts are signed.
         signed_paths = [
@@ -204,29 +242,50 @@ class TestSignChrome(unittest.TestCase):
         ]
         self.assertEqual(
             set([p.path for p in parts.get_parts(config).values()]),
-            set(signed_paths))
+            set(signed_paths),
+        )
 
         # Make sure that the framework, helper, and the app are the last three
         # parts that are signed.
-        self.assertEqual(signed_paths[-3:], [
-            'App Product.app/Contents/Frameworks/Product Framework.framework',
-            'App Product.app/Contents/Library/LaunchServices/test.signing.bundle_id.UpdaterPrivilegedHelper',
-            'App Product.app'
-        ])
+        self.assertEqual(
+            signed_paths[-3:],
+            [
+                'App Product.app/Contents/Frameworks/Product Framework.framework',
+                'App Product.app/Contents/Library/LaunchServices/test.signing.bundle_id.UpdaterPrivilegedHelper',
+                'App Product.app',
+            ],
+        )
 
-        self.assertEqual(kwargs['run_command'].mock_calls, [
-            mock.call.run_command([
-                'codesign', '--display', '--requirements', '-', '--verbose=5',
-                '/$W/App Product.app'
-            ])
-        ])
-        kwargs['run_command_all_output_async'].assert_has_awaits([
-            mock.call([
-                'codesign', '--verify', '--verbose=6', '--deep', '--strict',
-                '/$W/App Product.app'
-            ]),
-            mock.call(['spctl', '--assess', '-vv', '/$W/App Product.app']),
-        ])
+        self.assertEqual(
+            kwargs['run_command'].mock_calls,
+            [
+                mock.call.run_command(
+                    [
+                        'codesign',
+                        '--display',
+                        '--requirements',
+                        '-',
+                        '--verbose=5',
+                        '/$W/App Product.app',
+                    ]
+                )
+            ],
+        )
+        kwargs['run_command_all_output_async'].assert_has_awaits(
+            [
+                mock.call(
+                    [
+                        'codesign',
+                        '--verify',
+                        '--verbose=6',
+                        '--deep',
+                        '--strict',
+                        '/$W/App Product.app',
+                    ]
+                ),
+                mock.call(['spctl', '--assess', '-vv', '/$W/App Product.app']),
+            ]
+        )
 
     @mock.patch('signing.parts._sanity_check_version_keys')
     def test_sign_chrome_no_assess(self, *args, **kwargs):
@@ -234,7 +293,6 @@ class TestSignChrome(unittest.TestCase):
         kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
 
         class Config(test_config.TestConfig):
-
             @property
             def run_spctl_assess(self):
                 return False
@@ -243,18 +301,35 @@ class TestSignChrome(unittest.TestCase):
 
         asyncio.run(parts.sign_chrome(self.paths, config, sign_framework=True))
 
-        self.assertEqual(kwargs['run_command'].mock_calls, [
-            mock.call.run_command([
-                'codesign', '--display', '--requirements', '-', '--verbose=5',
-                '/$W/App Product.app'
-            ]),
-        ])
-        kwargs['run_command_all_output_async'].assert_has_awaits([
-            mock.call([
-                'codesign', '--verify', '--verbose=6', '--deep', '--strict',
-                '/$W/App Product.app'
-            ]),
-        ])
+        self.assertEqual(
+            kwargs['run_command'].mock_calls,
+            [
+                mock.call.run_command(
+                    [
+                        'codesign',
+                        '--display',
+                        '--requirements',
+                        '-',
+                        '--verbose=5',
+                        '/$W/App Product.app',
+                    ]
+                ),
+            ],
+        )
+        kwargs['run_command_all_output_async'].assert_has_awaits(
+            [
+                mock.call(
+                    [
+                        'codesign',
+                        '--verify',
+                        '--verbose=6',
+                        '--deep',
+                        '--strict',
+                        '/$W/App Product.app',
+                    ]
+                ),
+            ]
+        )
 
     @mock.patch('signing.parts._sanity_check_version_keys')
     def test_sign_chrome_no_provisioning(self, *args, **kwargs):
@@ -262,7 +337,6 @@ class TestSignChrome(unittest.TestCase):
         dist = model.Distribution()
 
         class Config(test_config.TestConfig):
-
             @property
             def provisioning_profile_basename(self):
                 return None
@@ -288,41 +362,64 @@ class TestSignChrome(unittest.TestCase):
         self.assertEqual(0, kwargs['move_file'].call_count)
 
         # Test that the provisioning profile is copied.
-        self.assertEqual(kwargs['copy_files'].mock_calls, [
-            mock.call.copy_files(
-                '/$I/Product Packaging/provisiontest.identity.provisionprofile',
-                '/$W/App Product.app/Contents/embedded.provisionprofile')
-        ])
+        self.assertEqual(
+            kwargs['copy_files'].mock_calls,
+            [
+                mock.call.copy_files(
+                    '/$I/Product Packaging/provisiontest.identity.provisionprofile',
+                    '/$W/App Product.app/Contents/embedded.provisionprofile',
+                )
+            ],
+        )
 
         # Ensure that only the app is signed.
         signed_paths = [
             call[1][2].path for call in kwargs['sign_part'].mock_calls
         ]
-        self.assertEqual(signed_paths, [
-            'App Product.app/Contents/Library/LaunchServices/test.signing.bundle_id.UpdaterPrivilegedHelper',
-            'App Product.app'
-        ])
+        self.assertEqual(
+            signed_paths,
+            [
+                'App Product.app/Contents/Library/LaunchServices/test.signing.bundle_id.UpdaterPrivilegedHelper',
+                'App Product.app',
+            ],
+        )
 
-        self.assertEqual(kwargs['run_command'].mock_calls, [
-            mock.call.run_command([
-                'codesign', '--display', '--requirements', '-', '--verbose=5',
-                '/$W/App Product.app'
-            ]),
-        ])
-        kwargs['run_command_all_output_async'].assert_has_awaits([
-            mock.call([
-                'codesign', '--verify', '--verbose=6', '--deep', '--strict',
-                '/$W/App Product.app'
-            ]),
-            mock.call(['spctl', '--assess', '-vv', '/$W/App Product.app']),
-        ])
+        self.assertEqual(
+            kwargs['run_command'].mock_calls,
+            [
+                mock.call.run_command(
+                    [
+                        'codesign',
+                        '--display',
+                        '--requirements',
+                        '-',
+                        '--verbose=5',
+                        '/$W/App Product.app',
+                    ]
+                ),
+            ],
+        )
+        kwargs['run_command_all_output_async'].assert_has_awaits(
+            [
+                mock.call(
+                    [
+                        'codesign',
+                        '--verify',
+                        '--verbose=6',
+                        '--deep',
+                        '--strict',
+                        '/$W/App Product.app',
+                    ]
+                ),
+                mock.call(['spctl', '--assess', '-vv', '/$W/App Product.app']),
+            ]
+        )
 
     @mock.patch('signing.parts._sanity_check_version_keys')
     def test_sign_chrome_updater(self, *args, **kwargs):
         kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
 
         class Config(test_config.TestConfig):
-
             @property
             def enable_updater(self):
                 return True
@@ -331,16 +428,16 @@ class TestSignChrome(unittest.TestCase):
         asyncio.run(parts.sign_chrome(self.paths, config, sign_framework=True))
         # Ensure that the privileged helper is signed.
         self.assertIn(
-            'App Product.app/Contents/Library/LaunchServices' +
-            '/test.signing.bundle_id.UpdaterPrivilegedHelper',
-            [call[1][2].path for call in kwargs['sign_part'].mock_calls])
+            'App Product.app/Contents/Library/LaunchServices'
+            + '/test.signing.bundle_id.UpdaterPrivilegedHelper',
+            [call[1][2].path for call in kwargs['sign_part'].mock_calls],
+        )
 
     @mock.patch('signing.parts._sanity_check_version_keys')
     def test_sign_chrome_no_updater(self, *args, **kwargs):
         kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
 
         class Config(test_config.TestConfig):
-
             @property
             def enable_updater(self):
                 return False
@@ -349,19 +446,20 @@ class TestSignChrome(unittest.TestCase):
         asyncio.run(parts.sign_chrome(self.paths, config, sign_framework=True))
         # Ensure that the privileged helper not is signed.
         self.assertNotIn(
-            'App Product.app/Contents/Library/LaunchServices' +
-            '/test.signing.bundle_id.UpdaterPrivilegedHelper',
-            [call[1][2].path for call in kwargs['sign_part'].mock_calls])
+            'App Product.app/Contents/Library/LaunchServices'
+            + '/test.signing.bundle_id.UpdaterPrivilegedHelper',
+            [call[1][2].path for call in kwargs['sign_part'].mock_calls],
+        )
 
     @mock.patch('signing.parts._sanity_check_version_keys')
     @mock.patch(
         'signing.signing._binary_architectures_offsets',
-        return_value=(('arch_1', 123), ('arch_2', 456)))
+        return_value=(('arch_1', 123), ('arch_2', 456)),
+    )
     def test_sign_chrome_pinned_geometry(self, *args, **kwargs):
         kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
 
         class Config(test_config.TestConfig):
-
             @property
             def main_executable_pinned_geometry(self):
                 return (('arch_1', 123), ('arch_2', 456))
@@ -372,24 +470,28 @@ class TestSignChrome(unittest.TestCase):
     @mock.patch('signing.parts._sanity_check_version_keys')
     @mock.patch(
         'signing.signing._binary_architectures_offsets',
-        return_value=(('arch_1', 123), ('arch_2', 789)))
+        return_value=(('arch_1', 123), ('arch_2', 789)),
+    )
     def test_sign_chrome_unpinned_geometry(self, *args, **kwargs):
         kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
 
         class Config(test_config.TestConfig):
-
             @property
             def main_executable_pinned_geometry(self):
                 return (('arch_1', 123), ('arch_2', 456))
 
         config = model.Distribution().to_config(Config())
         self.assertRaises(
-            signing.InvalidAppGeometryException, lambda: asyncio.run(
-                parts.sign_chrome(self.paths, config, sign_framework=True)))
+            signing.InvalidAppGeometryException,
+            lambda: asyncio.run(
+                parts.sign_chrome(self.paths, config, sign_framework=True)
+            ),
+        )
 
     @mock.patch(
         'signing.commands.read_plist',
-        side_effect=_get_plist_read('99.0.9999.99'))
+        side_effect=_get_plist_read('99.0.9999.99'),
+    )
     def test_sanity_check_ok(self, read_plist, **kwargs):
         kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         config = model.Distribution().to_config(test_config.TestConfig())
@@ -397,9 +499,13 @@ class TestSignChrome(unittest.TestCase):
 
     @mock.patch(
         'signing.commands.read_plist',
-        side_effect=_get_plist_read('55.0.5555.55'))
+        side_effect=_get_plist_read('55.0.5555.55'),
+    )
     def test_sanity_check_bad(self, read_plist, **kwargs):
         config = model.Distribution().to_config(test_config.TestConfig())
         self.assertRaises(
-            ValueError, lambda: asyncio.run(
-                parts.sign_chrome(self.paths, config, sign_framework=True)))
+            ValueError,
+            lambda: asyncio.run(
+                parts.sign_chrome(self.paths, config, sign_framework=True)
+            ),
+        )

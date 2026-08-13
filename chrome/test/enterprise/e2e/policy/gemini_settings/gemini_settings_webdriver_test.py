@@ -14,11 +14,14 @@ from test_util import create_chrome_webdriver, sign_in
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
-    'account', None,
-    'Sign into the browser as this account before refreshing policies')
+  'account',
+  None,
+  'Sign into the browser as this account before refreshing policies',
+)
 flags.DEFINE_string('password', None, 'Account password')
-flags.DEFINE_string('results', r'c:\temp\results.json',
-                    'Path to write results to.')
+flags.DEFINE_string(
+  'results', r'c:\temp\results.json', 'Path to write results to.'
+)
 
 
 def main(argv):
@@ -74,8 +77,10 @@ def main(argv):
       try:
         json.dump(prefs_data['browser']['gemini_settings'], results_file)
       except KeyError:
-        print("Warning: 'browser' or 'gemini_settings' key not found in "
-              "prefs_data. Output file will be empty.")
+        print(
+          "Warning: 'browser' or 'gemini_settings' key not found in "
+          "prefs_data. Output file will be empty."
+        )
         json.dump({}, results_file)
 
   finally:

@@ -110,19 +110,25 @@ BANNED_LICENSES = [
     "Alliance for Open Media Patent License",
 ]
 
+
 def _Main():
     cmd_parser = argparse.ArgumentParser(
-        description="Creates a trimmed copy of Chromium Updater's LICENSE.")
-    cmd_parser.add_argument("--src",
-                            dest="src",
-                            type=str,
-                            required=True,
-                            help="Path to untrimmed LICENSE file.")
-    cmd_parser.add_argument("--dest",
-                            dest="dest",
-                            type=str,
-                            required=True,
-                            help="Path to save trimmed file into.")
+        description="Creates a trimmed copy of Chromium Updater's LICENSE."
+    )
+    cmd_parser.add_argument(
+        "--src",
+        dest="src",
+        type=str,
+        required=True,
+        help="Path to untrimmed LICENSE file.",
+    )
+    cmd_parser.add_argument(
+        "--dest",
+        dest="dest",
+        type=str,
+        required=True,
+        help="Path to save trimmed file into.",
+    )
     flags = cmd_parser.parse_args()
 
     with open(flags.src, "r", encoding="utf-8") as f:

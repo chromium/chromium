@@ -15,8 +15,7 @@ import sys
 # Add typ to the path if it's not already there, then import it.
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(CUR_DIR)))
-TYP_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult', 'third_party',
-                       'typ')
+TYP_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult', 'third_party', 'typ')
 if TYP_DIR not in sys.path:
     sys.path.insert(0, TYP_DIR)
 del SRC_DIR, TYP_DIR
@@ -45,9 +44,11 @@ def _prepare_env_for_subprocesses(parser, args):
     if args.installer_path != parser.get_default('installer_path'):
         os.environ['CMI_INSTALLER_PATH'] = args.installer_path
     if args.previous_version_installer_path != parser.get_default(
-            'previous_version_installer_path'):
-        os.environ['CMI_PREVIOUS_VERSION_INSTALLER_PATH'] = \
+        'previous_version_installer_path'
+    ):
+        os.environ['CMI_PREVIOUS_VERSION_INSTALLER_PATH'] = (
             args.previous_version_installer_path
+        )
     if args.chromedriver_path != parser.get_default('chromedriver_path'):
         os.environ['CMI_CHROMEDRIVER_PATH'] = args.chromedriver_path
     if args.config != parser.get_default('config'):

@@ -12,6 +12,7 @@ from chrome_ent_test.infra.core import test
 from .. import ChromeReportingConnectorTestCase, VerifyContent
 from .splunk_server import SplunkApiService
 
+
 @category("chrome_only")
 @environment(file="../connector_test.asset.textpb")
 class ReportingConnectorwithSplunkTest(ChromeReportingConnectorTestCase):
@@ -35,7 +36,9 @@ class ReportingConnectorwithSplunkTest(ChromeReportingConnectorTestCase):
 
     # read service account private key from gs-bucket & write into local
     apiService = SplunkApiService(
-        self.GetFileFromGCSBucket('secrets/splunkInstances.json'))
+      self.GetFileFromGCSBucket('secrets/splunkInstances.json')
+    )
     self.TryVerifyUntilTimeout(
-        verifyClass=apiService,
-        content=VerifyContent(deviceId=deviceId, timestamp=testStartTime))
+      verifyClass=apiService,
+      content=VerifyContent(deviceId=deviceId, timestamp=testStartTime),
+    )

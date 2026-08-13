@@ -16,4 +16,5 @@ if not TYP_DIR in sys.path:
 import typ
 
 sys.exit(
-    typ.main(top_level_dir=os.path.dirname(THIS_DIR), suffixes=['*_test.py']))
+    typ.main(top_level_dir=os.path.dirname(THIS_DIR), suffixes=['*_test.py'])
+)

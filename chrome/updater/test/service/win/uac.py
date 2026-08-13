@@ -28,8 +28,10 @@ def _QueryPolicyValue(value_name, expected_type=winreg.REG_DWORD):
         The policy value in its desired data type, or None if no such policy or
         data type is not expected.
     """
-    system_policy_path = (r'Software\Microsoft\Windows'
-                          r'\CurrentVersion\Policies\System')
+    system_policy_path = (
+        r'Software\Microsoft\Windows'
+        r'\CurrentVersion\Policies\System'
+    )
 
     try:
         hklm = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)

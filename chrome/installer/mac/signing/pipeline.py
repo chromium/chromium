@@ -12,7 +12,15 @@ The pipeline module orchestrates the entire signing process, which includes:
 import asyncio
 import os.path
 
-from signing import commands, logger, model, modification, notarize, parts, signing
+from signing import (
+    commands,
+    logger,
+    model,
+    modification,
+    notarize,
+    parts,
+    signing,
+)
 
 
 def _include_branding_code_in_app(dist):
@@ -49,8 +57,9 @@ def _binary_architectures(binary_path):
     return output
 
 
-async def _customize_and_sign_chrome(paths, dist_config, dest_dir,
-                                     signed_frameworks):
+async def _customize_and_sign_chrome(
+    paths, dist_config, dest_dir, signed_frameworks
+):
     """Does channel customization and signing of a Chrome distribution. The
     resulting app bundle is moved into |dest_dir|.
 
@@ -70,7 +79,8 @@ async def _customize_and_sign_chrome(paths, dist_config, dest_dir,
     """
     # Copy the app to sign into the work dir.
     commands.copy_files(
-        os.path.join(paths.input, dist_config.base_config.app_dir), paths.work)
+        os.path.join(paths.input, dist_config.base_config.app_dir), paths.work
+    )
 
     # Customize the app bundle.
     customization_dist = dist_config.distribution
@@ -78,14 +88,20 @@ async def _customize_and_sign_chrome(paths, dist_config, dest_dir,
     if not _include_branding_code_in_app(customization_dist):
         customization_dist = dist_config.distribution.brandless_copy()
         customization_dist_config = customization_dist.to_config(
-            dist_config.base_config)
+            dist_config.base_config
+        )
 
-    modification.customize_distribution(paths, customization_dist,
-                                        customization_dist_config)
+    modification.customize_distribution(
+        paths, customization_dist, customization_dist_config
+    )
 
-    work_dir_framework_path = os.path.join(paths.work,
-                                           dist_config.framework_dir)
-    if signed_frameworks is not None and dist_config.base_bundle_id in signed_frameworks:
+    work_dir_framework_path = os.path.join(
+        paths.work, dist_config.framework_dir
+    )
+    if (
+        signed_frameworks is not None
+        and dist_config.base_bundle_id in signed_frameworks
+    ):
         # If the inner framework has already been modified and signed for this
         # bundle ID, recycle the existing signed copy without signing a new
         # copy. This ensures that bit-for-bit identical input will result in
@@ -93,35 +109,49 @@ async def _customize_and_sign_chrome(paths, dist_config, dest_dir,
         # example, the signature's timestamp. All variants of a product sharing
         # the same bundle ID are assumed to have bit-for-bit identical
         # frameworks.
-        (signed_framework_path, signed_framework_change_count
-        ) = signed_frameworks[dist_config.base_bundle_id]
-        actual_framework_change_count = commands.copy_dir_overwrite_and_count_changes(
-            os.path.join(dest_dir, signed_framework_path),
-            work_dir_framework_path,
-            dry_run=False)
+        (signed_framework_path, signed_framework_change_count) = (
+            signed_frameworks[dist_config.base_bundle_id]
+        )
+        actual_framework_change_count = (
+            commands.copy_dir_overwrite_and_count_changes(
+                os.path.join(dest_dir, signed_framework_path),
+                work_dir_framework_path,
+                dry_run=False,
+            )
+        )
 
         if actual_framework_change_count != signed_framework_change_count:
             raise ValueError(
-                'While customizing and signing {} ({}), actual_framework_change_count {} != signed_framework_change_count {}'
-                .format(dist_config.base_bundle_id,
-                        dist_config.packaging_basename,
-                        actual_framework_change_count,
-                        signed_framework_change_count))
+                'While customizing and signing {} ({}), actual_framework_change_count {} != signed_framework_change_count {}'.format(
+                    dist_config.base_bundle_id,
+                    dist_config.packaging_basename,
+                    actual_framework_change_count,
+                    signed_framework_change_count,
+                )
+            )
 
         await parts.sign_chrome(paths, dist_config, sign_framework=False)
     else:
-        unsigned_framework_path = os.path.join(paths.work,
-                                               'modified_unsigned_framework')
+        unsigned_framework_path = os.path.join(
+            paths.work, 'modified_unsigned_framework'
+        )
         commands.copy_dir_overwrite_and_count_changes(
-            work_dir_framework_path, unsigned_framework_path, dry_run=False)
+            work_dir_framework_path, unsigned_framework_path, dry_run=False
+        )
         await parts.sign_chrome(paths, dist_config, sign_framework=True)
-        actual_framework_change_count = commands.copy_dir_overwrite_and_count_changes(
-            work_dir_framework_path, unsigned_framework_path, dry_run=True)
+        actual_framework_change_count = (
+            commands.copy_dir_overwrite_and_count_changes(
+                work_dir_framework_path, unsigned_framework_path, dry_run=True
+            )
+        )
         if signed_frameworks is not None:
-            dest_dir_framework_path = os.path.join(dest_dir,
-                                                   dist_config.framework_dir)
+            dest_dir_framework_path = os.path.join(
+                dest_dir, dist_config.framework_dir
+            )
             signed_frameworks[dist_config.base_bundle_id] = (
-                dest_dir_framework_path, actual_framework_change_count)
+                dest_dir_framework_path,
+                actual_framework_change_count,
+            )
 
     app_path = os.path.join(paths.work, dist_config.app_dir)
     commands.make_dir(dest_dir)
@@ -161,7 +191,7 @@ def _create_pkgbuild_scripts(paths, dist_config):
             '@APP_PRODUCT@': dist_config.app_product,
             '@BRAND_CODE@': dist_config.distribution.branding_code or '',
             '@BUNDLE_ID@': dist_config.base_bundle_id,
-            '@FRAMEWORK_DIR@': dist_config.framework_dir
+            '@FRAMEWORK_DIR@': dist_config.framework_dir,
         }
         for key, value in substitutions.items():
             script = script.replace(key, value)
@@ -201,15 +231,22 @@ def _component_property_path(paths, dist_config):
         The path to the component plist file.
     """
     component_property_path = os.path.join(
-        paths.work, '{}.plist'.format(dist_config.app_product))
+        paths.work, '{}.plist'.format(dist_config.app_product)
+    )
 
-    commands.write_plist([{
-        'BundleHasStrictIdentifier': True,
-        'BundleIsRelocatable': False,
-        'BundleIsVersionChecked': True,
-        'BundleOverwriteAction': 'upgrade',
-        'RootRelativeBundlePath': dist_config.app_dir
-    }], component_property_path, 'xml1')
+    commands.write_plist(
+        [
+            {
+                'BundleHasStrictIdentifier': True,
+                'BundleIsRelocatable': False,
+                'BundleIsVersionChecked': True,
+                'BundleOverwriteAction': 'upgrade',
+                'RootRelativeBundlePath': dist_config.app_dir,
+            }
+        ],
+        component_property_path,
+        'xml1',
+    )
 
     return component_property_path
 
@@ -223,14 +260,16 @@ def _minimum_os_version(app_paths, dist_config):
     Returns:
         The minimum OS requirement.
     """
-    app_plist_path = os.path.join(app_paths.work, dist_config.app_dir,
-                                  'Contents', 'Info.plist')
+    app_plist_path = os.path.join(
+        app_paths.work, dist_config.app_dir, 'Contents', 'Info.plist'
+    )
     with commands.PlistContext(app_plist_path) as app_plist:
         return app_plist['LSMinimumSystemVersion']
 
 
-def _productbuild_distribution_path(app_paths, pkg_paths, dist_config,
-                                    component_pkg_path):
+def _productbuild_distribution_path(
+    app_paths, pkg_paths, dist_config, component_pkg_path
+):
     """Creates a distribution XML file for use by `productbuild`. This copies
     the OS and architecture requirements from the copy of Chrome being packaged.
 
@@ -243,13 +282,20 @@ def _productbuild_distribution_path(app_paths, pkg_paths, dist_config,
     Returns:
         The path to the distribution file.
     """
-    distribution_path = os.path.join(pkg_paths.work,
-                                     '{}.dist'.format(dist_config.app_product))
+    distribution_path = os.path.join(
+        pkg_paths.work, '{}.dist'.format(dist_config.app_product)
+    )
 
-    app_binary_path = os.path.join(app_paths.work, dist_config.app_dir,
-                                   'Contents', 'MacOS', dist_config.app_product)
-    app_plist_path = os.path.join(app_paths.work, dist_config.app_dir,
-                                  'Contents', 'Info.plist')
+    app_binary_path = os.path.join(
+        app_paths.work,
+        dist_config.app_dir,
+        'Contents',
+        'MacOS',
+        dist_config.app_product,
+    )
+    app_plist_path = os.path.join(
+        app_paths.work, dist_config.app_dir, 'Contents', 'Info.plist'
+    )
     with commands.PlistContext(app_plist_path) as app_plist:
         # For now, restrict installation to only the boot volume (the <domains/>
         # tag) to simplify the Keystone installation.
@@ -292,7 +338,8 @@ def _productbuild_distribution_path(app_paths, pkg_paths, dist_config,
             host_architectures=_binary_architectures(app_binary_path),
             minimum_system=app_plist['LSMinimumSystemVersion'],
             component_pkg_filename=os.path.basename(component_pkg_path),
-            version=dist_config.version)
+            version=dist_config.version,
+        )
 
         commands.write_file(distribution_path, distribution_xml)
 
@@ -337,35 +384,58 @@ def _package_and_sign_pkg(paths, dist_config):
         # "Show Files" window to be blank if there is a space in a component
         # package name. https://stackoverflow.com/questions/43031272/
         component_pkg_name = '{}.pkg'.format(dist_config.app_product).replace(
-            ' ', '')
+            ' ', ''
+        )
         component_pkg_path = os.path.join(pkg_paths.work, component_pkg_name)
         component_property_path = _component_property_path(
-            pkg_paths, dist_config)
+            pkg_paths, dist_config
+        )
         scripts_path = _create_pkgbuild_scripts(pkg_paths, dist_config)
 
         command = [
-            'pkgbuild', '--root', root_directory, '--component-plist',
-            component_property_path, '--identifier', dist_config.base_bundle_id,
-            '--version', dist_config.version, '--install-location',
-            '/Applications', '--scripts', scripts_path, '--compression',
-            'latest', '--min-os-version',
-            _minimum_os_version(paths, dist_config), component_pkg_path
+            'pkgbuild',
+            '--root',
+            root_directory,
+            '--component-plist',
+            component_property_path,
+            '--identifier',
+            dist_config.base_bundle_id,
+            '--version',
+            dist_config.version,
+            '--install-location',
+            '/Applications',
+            '--scripts',
+            scripts_path,
+            '--compression',
+            'latest',
+            '--min-os-version',
+            _minimum_os_version(paths, dist_config),
+            component_pkg_path,
         ]
         commands.run_command(command)
 
         ## The distribution package.
 
         distribution_path = _productbuild_distribution_path(
-            paths, pkg_paths, dist_config, component_pkg_path)
+            paths, pkg_paths, dist_config, component_pkg_path
+        )
 
         product_pkg_path = os.path.join(
-            pkg_paths.output, '{}.pkg'.format(dist_config.packaging_basename))
+            pkg_paths.output, '{}.pkg'.format(dist_config.packaging_basename)
+        )
 
         command = [
-            'productbuild', '--identifier', dist_config.base_bundle_id,
-            '--version', dist_config.version, '--distribution',
-            distribution_path, '--package-path', pkg_paths.work, '--sign',
-            dist_config.installer_identity
+            'productbuild',
+            '--identifier',
+            dist_config.base_bundle_id,
+            '--version',
+            dist_config.version,
+            '--distribution',
+            distribution_path,
+            '--package-path',
+            pkg_paths.work,
+            '--sign',
+            dist_config.installer_identity,
         ]
         if dist_config.notarize.should_notarize():
             # Assume if the config has notary authentication information that
@@ -398,10 +468,12 @@ def _package_and_sign_dmg(paths, dist_config):
     dmg_identifier = dist_config.packaging_basename
     if dist.branding_code:
         dmg_identifier = dist_config.packaging_basename.replace(
-            dist.packaging_name_fragment, dist.branding_code)
+            dist.packaging_name_fragment, dist.branding_code
+        )
 
     product = model.CodeSignedProduct(
-        dmg_path, dmg_identifier, sign_with_identifier=True)
+        dmg_path, dmg_identifier, sign_with_identifier=True
+    )
     signing.sign_part(paths, dist_config, product)
     signing.verify_part(paths, product)
 
@@ -428,8 +500,9 @@ def _package_dmg(paths, dist, config):
         dsstore_file = 'chrome_dmg_dsstore'
         icon_file = 'chrome_dmg_icon.icns'
 
-    dmg_path = os.path.join(paths.output,
-                            '{}.dmg'.format(config.packaging_basename))
+    dmg_path = os.path.join(
+        paths.output, '{}.dmg'.format(config.packaging_basename)
+    )
     app_path = os.path.join(paths.work, config.app_dir)
 
     # A locally-created empty directory is more trustworthy than /var/empty.
@@ -457,7 +530,7 @@ def _package_dmg(paths, dist, config):
     if dist.inflation_kilobytes:
         pkg_dmg += [
             '--copy',
-            '{}/inflation.bin:/.background/inflation.bin'.format(packaging_dir)
+            '{}/inflation.bin:/.background/inflation.bin'.format(packaging_dir),
         ]
 
     if config.is_chrome_branded():
@@ -488,8 +561,9 @@ def _package_zip(paths, config):
     Returns:
         A path to the produced ZIP file.
     """
-    zip_path = os.path.join(paths.output,
-                            '{}.zip'.format(config.packaging_basename))
+    zip_path = os.path.join(
+        paths.output, '{}.zip'.format(config.packaging_basename)
+    )
 
     zip_command = [
         'zip',
@@ -509,8 +583,9 @@ def _package_zip(paths, config):
         # when it is eventually executed.
         packaging_dir = paths.packaging_dir(config)
         ks_install_path = os.path.join(packaging_dir, 'keystone_install.sh')
-        dotted_ks_install_work_path = os.path.join(paths.work,
-                                                   '.keystone_install')
+        dotted_ks_install_work_path = os.path.join(
+            paths.work, '.keystone_install'
+        )
         commands.copy_files(ks_install_path, dotted_ks_install_work_path)
         zip_command.append('.keystone_install')
 
@@ -591,8 +666,11 @@ def _filter_distributions(distributions, skip_brands, channels):
     invalid_brands = set(skip_brands) - all_distribution_brands
     invalid_brands.discard('*')
     if invalid_brands:
-        raise ValueError('Brand codes do not match any distribution: {}'.format(
-            invalid_brands))
+        raise ValueError(
+            'Brand codes do not match any distribution: {}'.format(
+                invalid_brands
+            )
+        )
 
     all_distribution_channels = {
         "stable" if dist.channel is None else dist.channel
@@ -600,8 +678,11 @@ def _filter_distributions(distributions, skip_brands, channels):
     }
     invalid_channels = set(channels) - all_distribution_channels
     if invalid_channels:
-        raise ValueError('Channels do not match any distribution: {}'.format(
-            invalid_channels))
+        raise ValueError(
+            'Channels do not match any distribution: {}'.format(
+                invalid_channels
+            )
+        )
 
     def include_brand(dist):
         if not dist.branding_code:
@@ -622,7 +703,8 @@ def _filter_distributions(distributions, skip_brands, channels):
         return channel in channels
 
     filtered_distributions = [
-        dist for dist in distributions
+        dist
+        for dist in distributions
         if include_brand(dist) and include_channel(dist)
     ]
 
@@ -633,17 +715,17 @@ def _filter_distributions(distributions, skip_brands, channels):
     filtered_channels = set(channels) - filtered_distribution_channels
     if filtered_channels:
         raise ValueError(
-            'All distributions for channels were filtered out by brand: {}'
-            .format(filtered_channels))
+            'All distributions for channels were filtered out by brand: {}'.format(
+                filtered_channels
+            )
+        )
 
     return filtered_distributions
 
 
-async def sign_all(orig_paths,
-                   config,
-                   disable_packaging=False,
-                   skip_brands=[],
-                   channels=[]):
+async def sign_all(
+    orig_paths, config, disable_packaging=False, skip_brands=[], channels=[]
+):
     """For each distribution in |config|, performs customization, signing, and
     DMG packaging and places the resulting signed DMG in |orig_paths.output|.
     The |paths.input| must contain the products to customize and sign.
@@ -663,36 +745,41 @@ async def sign_all(orig_paths,
             produced. The string 'stable' matches the None channel.
     """
     with commands.WorkDirectory(orig_paths) as notary_paths:
-        distributions = _filter_distributions(config.distributions, skip_brands,
-                                              channels)
+        distributions = _filter_distributions(
+            config.distributions, skip_brands, channels
+        )
 
         # First, sign all the distributions and optionally submit the
         # notarization requests.
         dist_configs = await asyncio.wait_for(
-            _sign_and_maybe_notarize_distributions(config, distributions,
-                                                   notary_paths,
-                                                   disable_packaging),
-            timeout=60 * 60 * 2)
+            _sign_and_maybe_notarize_distributions(
+                config, distributions, notary_paths, disable_packaging
+            ),
+            timeout=60 * 60 * 2,
+        )
 
         # Staple if required.
         if config.notarize.should_staple():
             for dist_config in dist_configs:
                 dest_dir = os.path.join(
                     notary_paths.work,
-                    _intermediate_work_dir_name(dist_config.distribution))
+                    _intermediate_work_dir_name(dist_config.distribution),
+                )
                 _staple_chrome(notary_paths.replace_work(dest_dir), dist_config)
 
         # After all apps are optionally notarized, package as required.
         if not disable_packaging:
             await asyncio.wait_for(
                 _package_and_maybe_notarize_distributions(
-                    config, distributions, notary_paths),
-                timeout=60 * 60 * 2)
+                    config, distributions, notary_paths
+                ),
+                timeout=60 * 60 * 2,
+            )
 
 
-async def _sign_and_maybe_notarize_distributions(config, distributions,
-                                                 notary_paths,
-                                                 disable_packaging):
+async def _sign_and_maybe_notarize_distributions(
+    config, distributions, notary_paths, disable_packaging
+):
     """Iterates each distribution in |distributions|, codesigns it according to
     the |config|, and potentially uploads it for notarization.
 
@@ -717,8 +804,11 @@ async def _sign_and_maybe_notarize_distributions(config, distributions,
             with commands.WorkDirectory(notary_paths) as paths:
                 dist_config = dist.to_config(config)
                 dist_configs.append(dist_config)
-                do_packaging = (dist.package_as_dmg or dist.package_as_pkg or
-                                dist.package_as_zip) and not disable_packaging
+                do_packaging = (
+                    dist.package_as_dmg
+                    or dist.package_as_pkg
+                    or dist.package_as_zip
+                ) and not disable_packaging
 
                 # If not packaging and not notarizing, then simply drop the
                 # signed bundle in the output directory when done signing.
@@ -727,8 +817,9 @@ async def _sign_and_maybe_notarize_distributions(config, distributions,
                 else:
                     dest_dir = notary_paths.work
 
-                dest_dir = os.path.join(dest_dir,
-                                        _intermediate_work_dir_name(dist))
+                dest_dir = os.path.join(
+                    dest_dir, _intermediate_work_dir_name(dist)
+                )
 
                 # Different distributions might share the same underlying app
                 # bundle, and if they do, then the _intermediate_work_dir_name
@@ -738,14 +829,16 @@ async def _sign_and_maybe_notarize_distributions(config, distributions,
                     continue
                 created_app_bundles.add(dest_dir)
 
-                await _customize_and_sign_chrome(paths, dist_config, dest_dir,
-                                                 signed_frameworks)
+                await _customize_and_sign_chrome(
+                    paths, dist_config, dest_dir, signed_frameworks
+                )
 
                 # If the build products are to be notarized, ZIP the app bundle
                 # and submit it for notarization.
                 if config.notarize.should_notarize():
                     tasks.create_task(
-                        _zip_and_notarize(notary_paths, dist_config, dest_dir))
+                        _zip_and_notarize(notary_paths, dist_config, dest_dir)
+                    )
 
             # Yield the event loop to let the notarization subprocesses start
             # before continuing to the next distribution.
@@ -754,23 +847,42 @@ async def _sign_and_maybe_notarize_distributions(config, distributions,
 
 
 async def _zip_and_notarize(notary_paths, dist_config, dest_dir):
-    zip_file = os.path.join(notary_paths.work,
-                            dist_config.packaging_basename + '.zip')
-    command, exit_code, stdout, stderr = await commands.run_command_all_output_async(
+    zip_file = os.path.join(
+        notary_paths.work, dist_config.packaging_basename + '.zip'
+    )
+    (
+        command,
+        exit_code,
+        stdout,
+        stderr,
+    ) = await commands.run_command_all_output_async(
         [
-            'zip', '--recurse-paths', '--symlinks', '--quiet', zip_file,
-            dist_config.app_dir
+            'zip',
+            '--recurse-paths',
+            '--symlinks',
+            '--quiet',
+            zip_file,
+            dist_config.app_dir,
         ],
-        cwd=dest_dir)
-    logger.info('Command %s returned %d: (stdout=) %s (stderr=) %s', command,
-                exit_code, stdout, stderr)
+        cwd=dest_dir,
+    )
+    logger.info(
+        'Command %s returned %d: (stdout=) %s (stderr=) %s',
+        command,
+        exit_code,
+        stdout,
+        stderr,
+    )
     if exit_code:
         raise subprocess.CalledProcessError(
-            exit_code, command, output=stdout, stderr=stderr)
+            exit_code, command, output=stdout, stderr=stderr
+        )
     await notarize.submit(zip_file, dist_config)
 
-async def _package_and_maybe_notarize_distributions(config, distributions,
-                                                    notary_paths):
+
+async def _package_and_maybe_notarize_distributions(
+    config, distributions, notary_paths
+):
     """Iterates each |model.Distribution| in |distributions| and packages it
     according to its specification. If notarization is requested, that is
     performed on the assembled package.
@@ -788,15 +900,23 @@ async def _package_and_maybe_notarize_distributions(config, distributions,
             paths = notary_paths.replace_work(
                 os.path.join(
                     notary_paths.work,
-                    _intermediate_work_dir_name(dist_config.distribution)))
+                    _intermediate_work_dir_name(dist_config.distribution),
+                )
+            )
 
             if dist.inflation_kilobytes:
                 inflation_path = os.path.join(
-                    paths.packaging_dir(config), 'inflation.bin')
-                commands.run_command([
-                    'dd', 'if=/dev/urandom', 'of=' + inflation_path, 'bs=1000',
-                    'count={}'.format(dist.inflation_kilobytes)
-                ])
+                    paths.packaging_dir(config), 'inflation.bin'
+                )
+                commands.run_command(
+                    [
+                        'dd',
+                        'if=/dev/urandom',
+                        'of=' + inflation_path,
+                        'bs=1000',
+                        'count={}'.format(dist.inflation_kilobytes),
+                    ]
+                )
 
             if dist.package_as_dmg:
                 dmg_path = _package_and_sign_dmg(paths, dist_config)

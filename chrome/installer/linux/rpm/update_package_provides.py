@@ -83,8 +83,8 @@ for version in SUPPORTED_FEDORA_RELEASES:
     ]
 for version in SUPPORTED_OPENSUSE_LEAP_RELEASES:
     rpm_sources["openSUSE Leap " + version] = [
-        "https://download.opensuse.org/distribution/leap/%s/repo/oss/" %
-        version,
+        "https://download.opensuse.org/distribution/leap/%s/repo/oss/"
+        % version,
         # 'update' must appear after 'distribution' since its entries
         # overwrite the originals.
         "https://download.opensuse.org/update/leap/%s/oss/" % version,
@@ -101,11 +101,15 @@ for distro in rpm_sources:
         response = urllib.request.urlopen(source + "repodata/repomd.xml")
         repomd = ET.fromstring(response.read())
         primary = (
-            source + repomd.find("./{%s}data[@type='primary']/{%s}location" %
-                                 (REPO_NS, REPO_NS)).attrib["href"])
+            source
+            + repomd.find(
+                "./{%s}data[@type='primary']/{%s}location" % (REPO_NS, REPO_NS)
+            ).attrib["href"]
+        )
         expected_checksum = repomd.find(
-            "./{%s}data[@type='primary']/{%s}checksum[@type='sha256']" %
-            (REPO_NS, REPO_NS)).text
+            "./{%s}data[@type='primary']/{%s}checksum[@type='sha256']"
+            % (REPO_NS, REPO_NS)
+        ).text
 
         response = urllib.request.urlopen(primary)
         gz_data = response.read()
@@ -123,8 +127,10 @@ for distro in rpm_sources:
                 continue
             package_name = package.find("./{%s}name" % COMMON_NS).text
             package_provides = []
-            for entry in package.findall("./{%s}format/{%s}provides/{%s}entry" %
-                                         (COMMON_NS, RPM_NS, RPM_NS)):
+            for entry in package.findall(
+                "./{%s}format/{%s}provides/{%s}entry"
+                % (COMMON_NS, RPM_NS, RPM_NS)
+            ):
                 name = entry.attrib["name"]
                 for prefix in LIBRARY_FILTER:
                     if name.startswith(prefix):
@@ -133,17 +139,22 @@ for distro in rpm_sources:
             distro_provides[package_name] = package_provides
     provides[distro] = sorted(
         list(
-            set([
-                package_provides for package in distro_provides
-                for package_provides in distro_provides[package]
-            ])))
+            set(
+                [
+                    package_provides
+                    for package in distro_provides
+                    for package_provides in distro_provides[package]
+                ]
+            )
+        )
+    )
 
     missing_libraries = LIBRARY_FILTER.difference(provided_prefixes)
     if missing_libraries:
         missing_any_library = True
         print(
-            "Libraries are not available on %s: %s" %
-            (distro, ", ".join(missing_libraries)),
+            "Libraries are not available on %s: %s"
+            % (distro, ", ".join(missing_libraries)),
             file=sys.stderr,
         )
 

@@ -31,14 +31,20 @@ def delete_file_if_exists(path):
 def copy_files(source, dest):
     assert source[-1] != '/'
     subprocess.check_call(
-        ['rsync', '--archive', '--checksum', '--delete', source, dest])
+        ['rsync', '--archive', '--checksum', '--delete', source, dest]
+    )
 
 
 def copy_dir_overwrite_and_count_changes(source, dest, dry_run=False):
     assert source[-1] != '/'
     command = [
-        'rsync', '--archive', '--checksum', '--itemize-changes', '--delete',
-        source + '/', dest
+        'rsync',
+        '--archive',
+        '--checksum',
+        '--itemize-changes',
+        '--delete',
+        source + '/',
+        dest,
     ]
     if dry_run:
         command.append('--dry-run')
@@ -88,9 +94,16 @@ def set_executable(path):
     Args:
         path: The path to the file to make executable.
     """
-    os.chmod(path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR
-             | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH
-             | stat.S_IXOTH)  # -rwxr-xr-x a.k.a. 0755
+    os.chmod(
+        path,
+        stat.S_IRUSR
+        | stat.S_IWUSR
+        | stat.S_IXUSR
+        | stat.S_IRGRP
+        | stat.S_IXGRP
+        | stat.S_IROTH
+        | stat.S_IXOTH,
+    )  # -rwxr-xr-x a.k.a. 0755
 
 
 def run_command(args, **kwargs):
@@ -109,12 +122,14 @@ async def run_command_output_async(args, **kwargs):
         *args,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
-        **kwargs)
+        **kwargs,
+    )
     stdout, stderr = await process.communicate()
     if process.returncode:
         logger.error('%s failed. stdout: %s stderr: %s', args, stdout, stderr)
         raise subprocess.CalledProcessError(
-            process.returncode, args, output=stdout, stderr=stderr)
+            process.returncode, args, output=stdout, stderr=stderr
+        )
     return stdout
 
 
@@ -124,7 +139,8 @@ async def run_command_all_output_async(args, **kwargs):
         *args,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
-        **kwargs)
+        **kwargs,
+    )
     stdout, stderr = await process.communicate()
     return ('%s' % args, process.returncode, stdout, stderr)
 
@@ -140,7 +156,8 @@ def lenient_run_command_output(args, **kwargs):
 
     try:
         process = subprocess.Popen(
-            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs
+        )
     except OSError:
         return (None, None, None)
 
@@ -165,7 +182,7 @@ def write_plist(data, path, format):
     with open(path, 'wb') as f:
         plist_format = {
             'binary1': plistlib.FMT_BINARY,
-            'xml1': plistlib.FMT_XML
+            'xml1': plistlib.FMT_XML,
         }
         plistlib.dump(data, f, fmt=plist_format[format])
 
@@ -179,11 +196,9 @@ class PlistContext(object):
     input and output will be in binary instead of the default XML format.
     """
 
-    def __init__(self,
-                 plist_path,
-                 rewrite=False,
-                 create_new=False,
-                 binary=False):
+    def __init__(
+        self, plist_path, rewrite=False, create_new=False, binary=False
+    ):
         self._path = plist_path
         self._rewrite = rewrite
         self._create_new = create_new

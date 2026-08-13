@@ -38,8 +38,12 @@ THIS_FILE = Path(__file__).resolve()
 
 
 def _read_release_file(path: Path) -> Dict[str, str]:
-    return dict([(x.strip() for x in line.split("=", 1))
-                 for line in path.read_text(encoding="utf-8").splitlines()])
+    return dict(
+        [
+            (x.strip() for x in line.split("=", 1))
+            for line in path.read_text(encoding="utf-8").splitlines()
+        ]
+    )
 
 
 def _is_chromeos() -> bool:
@@ -79,15 +83,17 @@ def _send_code_and_string(sock: socket.socket, code: int, message: str):
 def _run_cmd(sock: socket.socket, cmd: str):
     """Runs the given command.
 
-  Sends output and exit code to the given socket.
-  """
+    Sends output and exit code to the given socket.
+    """
     logging.info("Running : %s", cmd)
     try:
-        process = subprocess.run(cmd,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT,
-                                 shell=True,
-                                 check=False)
+        process = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            shell=True,
+            check=False,
+        )
 
         logging.info("Return code: %d", process.returncode)
         logging.info("Output: %s:", process.stdout[:80])
@@ -117,7 +123,8 @@ def _wait_for_fake_chrome(session_manager_proc):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             shell=True,
-            check=False)
+            check=False,
+        )
         if len(process.stdout) > 0:
             pid = process.stdout.decode("utf-8").strip()
             break
@@ -134,6 +141,7 @@ class SessionManagerRunner(threading.Thread):
     It runs session manager in a thread and sends the stopped state to the
     original client socket that requests to start the daemon.
     """
+
     def __init__(self, sock: socket.socket):
         self._sock = sock
         self._flag = threading.Event()
@@ -168,13 +176,15 @@ class SessionManagerRunner(threading.Thread):
                 stderr=subprocess.STDOUT,
                 cwd="/",
                 env=sm_env,
-                preexec_fn=preexec)
+                preexec_fn=preexec,
+            )
 
             if _wait_for_fake_chrome(self._session_manager_proc):
                 _send_code_and_string(self._sock, 0, "started")
             else:
-                _send_code_and_string(self._sock, 0xFF,
-                                      "unexpectedly terminated")
+                _send_code_and_string(
+                    self._sock, 0xFF, "unexpectedly terminated"
+                )
                 self._session_manager_proc = None
                 self._sock.close()
                 return
@@ -221,6 +231,7 @@ class SessionManagerRunner(threading.Thread):
 
 class HelperServer:
     """Serves requests to run `root` privileged tasks."""
+
     def __init__(self, socket_path: str):
         self._socket_path = socket_path
         self._socket = None
@@ -234,8 +245,9 @@ class HelperServer:
             if os.path.exists(self._socket_path):
                 raise
 
-        self._socket = socket.socket(socket.AF_UNIX,
-                                     socket.SOCK_STREAM | socket.SOCK_CLOEXEC)
+        self._socket = socket.socket(
+            socket.AF_UNIX, socket.SOCK_STREAM | socket.SOCK_CLOEXEC
+        )
         self._socket.bind(self._socket_path)
 
         # Allow access from all.
@@ -277,10 +289,9 @@ class HelperServer:
         else:
             logging.error("Unknown method: %s", method)
 
-            client_sock.sendall(b"\xFF")
+            client_sock.sendall(b"\xff")
             _send_string(client_sock, ("Unknown method: %s", method))
             client_sock.close()
-
 
     def run(self) -> int:
         """Listens and processes client requests."""
@@ -290,8 +301,9 @@ class HelperServer:
         # client.
         self._socket.listen(1)
 
-        logging.info("TestSudoHelperServer is listening at %s",
-                     self._socket_path)
+        logging.info(
+            "TestSudoHelperServer is listening at %s", self._socket_path
+        )
 
         while True:
             client_sock, client_address = self._socket.accept()

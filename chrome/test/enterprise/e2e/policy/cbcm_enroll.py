@@ -37,16 +37,19 @@ def main(argv):
     print(el.find_element(By.CLASS_NAME, 'machine-enrollment-name').text)
     print(el.find_element(By.CLASS_NAME, 'machine-enrollment-token').text)
     print(el.find_element(By.CLASS_NAME, 'status').text)
-    device_id = el.find_element(By.CLASS_NAME,
-                                'machine-enrollment-device-id').text
+    device_id = el.find_element(
+      By.CLASS_NAME, 'machine-enrollment-device-id'
+    ).text
     print("DEVICE_ID=" + device_id.strip())
 
     driver.find_element(By.ID, 'more-actions-button').click()
     wait = WebDriverWait(driver, 10)
     wait.until(EC.element_to_be_clickable((By.ID, 'upload-report'))).click()
     wait.until(
-        EC.visibility_of_element_located(
-            (By.XPATH, '//*[text()="Data sent to admin console"]')))
+      EC.visibility_of_element_located(
+        (By.XPATH, '//*[text()="Data sent to admin console"]')
+      )
+    )
   except Exception as error:
     print(error)
   finally:

@@ -10,38 +10,44 @@ import sys
 
 def ParseArgs():
   parser = argparse.ArgumentParser(
-      description='Host file generator for CELab E2E tests')
+    description='Host file generator for CELab E2E tests'
+  )
 
   all_tokens = ['project_id', 'storage_bucket', 'storage_prefix']
   template_help = 'The full path to the *.host.textpb template file to use. '
   template_help += 'Must contain the following tokens: %s' % all_tokens
   parser.add_argument(
-      '--template', metavar='<host_file>', required=True, help=template_help)
+    '--template', metavar='<host_file>', required=True, help=template_help
+  )
   parser.add_argument(
-      '--projects',
-      metavar='<projectA;projectB;...>',
-      dest="projects",
-      required=True,
-      help='The values to replace "<project_id>" with.')
+    '--projects',
+    metavar='<projectA;projectB;...>',
+    dest="projects",
+    required=True,
+    help='The values to replace "<project_id>" with.',
+  )
   parser.add_argument(
-      '--storage_bucket',
-      metavar='<token>',
-      dest="storage_bucket",
-      required=True,
-      help='The value to replace "<storage_bucket>" with.')
+    '--storage_bucket',
+    metavar='<token>',
+    dest="storage_bucket",
+    required=True,
+    help='The value to replace "<storage_bucket>" with.',
+  )
   parser.add_argument(
-      '--storage_prefix',
-      metavar='<token>',
-      dest="storage_prefix",
-      required=True,
-      help='The value to replace "<storage_prefix>" with.')
+    '--storage_prefix',
+    metavar='<token>',
+    dest="storage_prefix",
+    required=True,
+    help='The value to replace "<storage_prefix>" with.',
+  )
   parser.add_argument(
-      '--destination_dir',
-      metavar='<path>',
-      dest='destination',
-      required=True,
-      action='store',
-      help='Where to collect extra logs on test failures')
+    '--destination_dir',
+    metavar='<path>',
+    dest='destination',
+    required=True,
+    action='store',
+    help='Where to collect extra logs on test failures',
+  )
 
   return parser.parse_args()
 

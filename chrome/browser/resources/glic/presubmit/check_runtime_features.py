@@ -19,7 +19,7 @@ import sys
 
 def _GetDirAbove(dirname: str):
     """Returns the directory "above" this file containing |dirname| (which must
-  also be "above" this file)."""
+    also be "above" this file)."""
     path = os.path.abspath(__file__)
     while True:
         path, tail = os.path.split(path)
@@ -60,17 +60,19 @@ def _FindScopeBoundaries(scope_type: str, scope_name: str, mojom_text: str):
 def _ExcludeTextWithin(scope_type: str, scope_name: str, mojom_text: str):
     boundaries = _FindScopeBoundaries(scope_type, scope_name, mojom_text)
     if boundaries:
-        return mojom_text[:boundaries[0]] + mojom_text[boundaries[1]:]
+        return mojom_text[: boundaries[0]] + mojom_text[boundaries[1] :]
     return ''
 
 
 SRC_ROOT = _GetDirAbove('chrome')
 
+
 def _Main():
     error = False
     # Find methods marked as checked in *_client.ts files.
     client_files_pattern = os.path.join(
-        SRC_ROOT, 'chrome/browser/resources/glic/glic_api_impl/*/*_client.ts')
+        SRC_ROOT, 'chrome/browser/resources/glic/glic_api_impl/*/*_client.ts'
+    )
     client_files = glob.glob(client_files_pattern)
 
     checked_methods = set()
@@ -78,7 +80,8 @@ def _Main():
         with open(client_file, 'r') as f:
             client_src = f.read()
         checked_methods.update(
-            re.findall(r'//\s*MOJO_RUNTIME_FEATURE_GATED\s+(\S*)', client_src))
+            re.findall(r'//\s*MOJO_RUNTIME_FEATURE_GATED\s+(\S*)', client_src)
+        )
 
     # Find methods gated with RuntimeFeature annotations in glic.mojom.
     mojo_file_path = 'chrome/browser/glic/host/glic.mojom'
@@ -87,39 +90,49 @@ def _Main():
     mojom_text = _RemoveComments(mojom_text)
 
     for excluded_interface in ['WebClient']:
-        new_mojom_text = _ExcludeTextWithin('interface', excluded_interface,
-                                            mojom_text)
+        new_mojom_text = _ExcludeTextWithin(
+            'interface', excluded_interface, mojom_text
+        )
         if new_mojom_text:
             mojom_text = new_mojom_text
         else:
-            print('Error: Could not find excluded interface '
-                  f'"{excluded_interface}" in {mojo_file_path}.')
+            print(
+                'Error: Could not find excluded interface '
+                f'"{excluded_interface}" in {mojo_file_path}.'
+            )
             error = True
     if error:
         sys.exit(1)
 
     gated_methods = set(
-        m.group(1) for m in re.finditer(
+        m.group(1)
+        for m in re.finditer(
             r'^\s*\[[^\]]*RuntimeFeature\s*=[^\]]*]\s*(\S+)\s*\(',
             mojom_text,
-            flags=re.M | re.DOTALL))
+            flags=re.M | re.DOTALL,
+        )
+    )
 
     # Match checked and gated methods against each other.
     unchecked = gated_methods - checked_methods
     ungated = checked_methods - gated_methods
     for method in unchecked:
         decl = f'// MOJO_RUNTIME_FEATURE_GATED {method}'
-        print('Error: missing feature gating code for feature'
-              f' gated Mojo method {method} from {mojo_file_path}.'
-              ' Please update the appropriate client file (e.g. '
-              'glic_api_client.ts or actor_client.ts) with the line:\n'
-              f'  {decl}')
+        print(
+            'Error: missing feature gating code for feature'
+            f' gated Mojo method {method} from {mojo_file_path}.'
+            ' Please update the appropriate client file (e.g. '
+            'glic_api_client.ts or actor_client.ts) with the line:\n'
+            f'  {decl}'
+        )
         error = True
     for method in ungated:
         decl = f'// MOJO_RUNTIME_FEATURE_GATED {method}'
-        print(f'Error: found "{decl}" in one of the client files,'
-              ' but this method was not found or is not gated by'
-              f' a RuntimeFeature in {mojo_file_path}')
+        print(
+            f'Error: found "{decl}" in one of the client files,'
+            ' but this method was not found or is not gated by'
+            f' a RuntimeFeature in {mojo_file_path}'
+        )
         error = True
 
     if error:

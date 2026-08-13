@@ -31,5 +31,9 @@ class PanEvent:
       return True
     if not isinstance(other, self.__class__):
       return False
-    return (other.type == self.type and other.device_id == self.device_id and
-            other.reason == self.reason and other.url == self.url)
+    return (
+      other.type == self.type
+      and other.device_id == self.device_id
+      and other.reason == self.reason
+      and other.url == self.url
+    )

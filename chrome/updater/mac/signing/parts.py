@@ -23,12 +23,13 @@ def get_parts(config):
         A list of |model.CodeSignedProduct|. Items should be signed in the
         order they appear in this list.
     """
-    ks_bundle = (
-        '{0.app_product}.app/Contents/Helpers/{0.keystone_app_name}.bundle'.
-        format(config))
+    ks_bundle = '{0.app_product}.app/Contents/Helpers/{0.keystone_app_name}.bundle'.format(
+        config
+    )
     ks_agent_app = (
-        ks_bundle +
-        '/Contents/Resources/{0.keystone_app_name}Agent.app'.format(config))
+        ks_bundle
+        + '/Contents/Resources/{0.keystone_app_name}Agent.app'.format(config)
+    )
 
     # Innermost parts come first.
     return [
@@ -37,27 +38,32 @@ def get_parts(config):
             config.keystone_app_name + 'Agent',
             identifier_requirement=False,
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
-            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT,
+        ),
         CodeSignedProduct(  # Keystone's ksadmin
             ks_bundle + '/Contents/Helpers/ksadmin',
             'ksadmin',
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
-            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT,
+        ),
         CodeSignedProduct(  # Keystone's ksinstall
             ks_bundle + '/Contents/Helpers/ksinstall',
             'ksinstall',
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
-            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT,
+        ),
         CodeSignedProduct(  # Keystone bundle
             ks_bundle,
             config.keystone_app_name,
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
-            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT,
+        ),
         CodeSignedProduct(  # Updater Util
             '{.app_product}Util'.format(config),
             '{.app_product}Util'.format(config),
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
-            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT,
+        ),
         CodeSignedProduct(  # Updater bundle
             '{.app_product}.app/Contents/Helpers/launcher'.format(config),
             config.base_bundle_id,
@@ -65,7 +71,8 @@ def get_parts(config):
             requirements=config.codesign_requirements_outer_app,
             identifier_requirement=False,
             entitlements=None,
-            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT,
+        ),
         CodeSignedProduct(  # Updater bundle
             '{.app_product}.app'.format(config),
             config.base_bundle_id,
@@ -73,7 +80,8 @@ def get_parts(config):
             requirements=config.codesign_requirements_outer_app,
             identifier_requirement=False,
             entitlements=None,
-            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT,
+        ),
     ]
 
 

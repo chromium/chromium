@@ -27,21 +27,26 @@ from test_util import shutdown_chrome
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
-    'idp_matcher', '',
-    'The idp_matcher used to match a IdP site listed at chrome://policy.')
+  'idp_matcher',
+  '',
+  'The idp_matcher used to match a IdP site listed at chrome://policy.',
+)
 
 _CONNECTOR_INTERNAL_URL = 'chrome://connectors-internals'
 _POLICY_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST = (
-    'BrowserContextAwareAccessSignalsAllowlist')
+  'BrowserContextAwareAccessSignalsAllowlist'
+)
 _TIMEOUT = 10
 
 
 def save_screenshot(driver: webdriver.Chrome, path: str) -> None:
   original_size = driver.get_window_size()
   required_width = driver.execute_script(
-      'return document.body.parentNode.scrollWidth')
+    'return document.body.parentNode.scrollWidth'
+  )
   required_height = driver.execute_script(
-      'return document.body.parentNode.scrollHeight')
+    'return document.body.parentNode.scrollHeight'
+  )
   driver.set_window_size(required_width, required_height)
   wait_element(driver, By.TAG_NAME, 'body')
   driver.find_element(By.TAG_NAME, 'body').screenshot(path)
@@ -50,8 +55,9 @@ def save_screenshot(driver: webdriver.Chrome, path: str) -> None:
 
 def wait_element(driver, by_selector, selector, timeout=_TIMEOUT * 3):
   return WebDriverWait(driver, timeout).until(
-      EC.presence_of_element_located((by_selector, selector)),
-      'Could not find element with selector: "{}"'.format(selector))
+    EC.presence_of_element_located((by_selector, selector)),
+    'Could not find element with selector: "{}"'.format(selector),
+  )
 
 
 def main(argv):
@@ -84,13 +90,15 @@ def main(argv):
       wait_element(driver, By.CSS_SELECTOR, 'status-box')
       status_box = driver.find_element(By.CSS_SELECTOR, 'status-box')
       el = getElementFromShadowRoot(driver, status_box, '.status-box-fields')
-      device_id = el.find_element(By.CLASS_NAME,
-                                  'machine-enrollment-device-id').text
+      device_id = el.find_element(
+        By.CLASS_NAME, 'machine-enrollment-device-id'
+      ).text
       # `idp_urls` is a list of strings:
       # https://chromeenterprise.google/policies/#BrowserContextAwareAccessSignalsAllowlist
       idp_pattern = re.compile(FLAGS.idp_matcher)
       idp_url = next(
-          url for url in json.loads(idp_urls) if idp_pattern.search(url))
+        url for url in json.loads(idp_urls) if idp_pattern.search(url)
+      )
 
       # Step 2: navigate to chrome://connectors-internals app
       count = 0
@@ -104,27 +112,34 @@ def main(argv):
         driver.get(_CONNECTOR_INTERNAL_URL)
         wait_element(driver, By.CSS_SELECTOR, 'connectors-internals-app')
         connectors_internals_app = driver.find_element(
-            By.CSS_SELECTOR, 'connectors-internals-app')
-        connectors_tabs = getElementFromShadowRoot(driver,
-                                                   connectors_internals_app,
-                                                   'connectors-tabs')
+          By.CSS_SELECTOR, 'connectors-internals-app'
+        )
+        connectors_tabs = getElementFromShadowRoot(
+          driver, connectors_internals_app, 'connectors-tabs'
+        )
         device_trust_connector = getElementFromShadowRoot(
-            driver, connectors_tabs, 'device-trust-connector')
-        dtc_policy_enabled = getElementFromShadowRoot(driver,
-                                                      device_trust_connector,
-                                                      '#enabled-string').text
+          driver, connectors_tabs, 'device-trust-connector'
+        )
+        dtc_policy_enabled = getElementFromShadowRoot(
+          driver, device_trust_connector, '#enabled-string'
+        ).text
         key_manager_initialized = getElementFromShadowRoot(
-            driver, device_trust_connector, '#key-manager-state').text
-        spki_hash = getElementFromShadowRoot(driver, device_trust_connector,
-                                             '#spki-hash').text
-        key_trust_level = getElementFromShadowRoot(driver,
-                                                   device_trust_connector,
-                                                   '#key-trust-level').text
-        key_sync = getElementFromShadowRoot(driver, device_trust_connector,
-                                            '#key-sync').text
-        if dtc_policy_enabled.casefold() == 'true'.casefold(
-        ) and key_manager_initialized.casefold() == 'true'.casefold(
-        ) and '200' in key_sync:
+          driver, device_trust_connector, '#key-manager-state'
+        ).text
+        spki_hash = getElementFromShadowRoot(
+          driver, device_trust_connector, '#spki-hash'
+        ).text
+        key_trust_level = getElementFromShadowRoot(
+          driver, device_trust_connector, '#key-trust-level'
+        ).text
+        key_sync = getElementFromShadowRoot(
+          driver, device_trust_connector, '#key-sync'
+        ).text
+        if (
+          dtc_policy_enabled.casefold() == 'true'.casefold()
+          and key_manager_initialized.casefold() == 'true'.casefold()
+          and '200' in key_sync
+        ):
           break
         time.sleep(6)
 
@@ -135,15 +150,17 @@ def main(argv):
       result['KeyTrustLevel'] = key_trust_level
 
       # retrieve the other fields from signals
-      getElementFromShadowRoot(driver, device_trust_connector,
-                               '#copy-signals').click()
+      getElementFromShadowRoot(
+        driver, device_trust_connector, '#copy-signals'
+      ).click()
 
       ci_signals = ''
       # *[@id="device-trust-connector"]/device-trust-connector//div[3]
       # or 'div:nth-child(5)'
       # or #signals
-      content = getElementFromShadowRoot(driver, device_trust_connector,
-                                         '#signals').text
+      content = getElementFromShadowRoot(
+        driver, device_trust_connector, '#signals'
+      ).text
       # trim off 'Signals: {...} Copy Signals
       content = content.replace('Signals:', '')
       content = content.replace('Copy Signals', '')
@@ -169,23 +186,28 @@ def main(argv):
       try:
         wait_element(driver, By.XPATH, '//*[@id="serverSignals"]')
         server_signals = json.loads(
-            driver.find_element(By.XPATH, '//*[@id="serverSignals"]').text)
+          driver.find_element(By.XPATH, '//*[@id="serverSignals"]').text
+        )
 
         wait_element(driver, By.XPATH, '//*[@id="clientSignals"]')
         client_signals = json.loads(
-            driver.find_element(By.XPATH, '//*[@id="clientSignals"]').text)
+          driver.find_element(By.XPATH, '//*[@id="clientSignals"]').text
+        )
         result['ClientSignals'] = client_signals
         result['ServerSignals'] = server_signals
       except NoSuchElementException:
         logging.info('No such element found! trying to find error message')
         wait_element(driver, By.XPATH, '//*[@id="errorMessage"]/pre')
         err_msg = json.loads(
-            driver.find_element(By.XPATH, '//*[@id="errorMessage"]/pre').text)
+          driver.find_element(By.XPATH, '//*[@id="errorMessage"]/pre').text
+        )
         logging.info('error: %s' % err_msg)
         result['SignalError'] = err_msg
 
       # Check histograms
-      hg = poll_histogram(driver, [
+      hg = poll_histogram(
+        driver,
+        [
           'Enterprise.DeviceTrust.Persistence.StoreKeyPair.Error',
           'Enterprise.DeviceTrust.Persistence.LoadKeyPair.Error',
           'Enterprise.DeviceTrust.Persistence.CreateKeyPair.Error',
@@ -197,7 +219,8 @@ def main(argv):
           'Enterprise.DeviceTrust.KeyRotationCommand.Error',
           'Enterprise.DeviceTrust.KeyRotationCommand.Error.Hresult',
           'Enterprise.DeviceTrust.KeyRotationCommand.ExitCode',
-      ])
+        ],
+      )
       if hg:
         result['Histograms'] = hg
 

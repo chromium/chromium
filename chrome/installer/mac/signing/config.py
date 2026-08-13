@@ -8,10 +8,10 @@ from signing.model import Distribution, NotarizeAndStapleLevel
 
 
 class ConfigError(Exception):
-
     def __init__(self, attr_name):
         super(Exception, self).__init__(
-            'Missing CodeSignConfig attribute "{}"'.format(attr_name))
+            'Missing CodeSignConfig attribute "{}"'.format(attr_name)
+        )
 
 
 class CodeSignConfig(object):
@@ -29,12 +29,14 @@ class CodeSignConfig(object):
     objects.
     """
 
-    def __init__(self,
-                 invoker=None,
-                 identity=None,
-                 installer_identity=None,
-                 codesign_requirements_basic='',
-                 notarize=NotarizeAndStapleLevel.STAPLE):
+    def __init__(
+        self,
+        invoker=None,
+        identity=None,
+        installer_identity=None,
+        codesign_requirements_basic='',
+        notarize=NotarizeAndStapleLevel.STAPLE,
+    ):
         """Creates a CodeSignConfig that will sign the product using the static
         properties on the class, using the code signing identity passed to the
         constructor.
@@ -84,20 +86,17 @@ class CodeSignConfig(object):
 
     @property
     def invoker(self):
-        """Returns the |invoker.Interface| instance for signing and notarizing.
-        """
+        """Returns the |invoker.Interface| instance for signing and notarizing."""
         return self._invoker
 
     @property
     def enable_updater(self):
-        """Returns True if the build should use updater-related resources.
-        """
+        """Returns True if the build should use updater-related resources."""
         raise ConfigError('enable_updater')
 
     @property
     def use_static_angle(self):
-        """Returns True if ANGLE is statically linked.
-        """
+        """Returns True if ANGLE is statically linked."""
         raise ConfigError('use_static_angle')
 
     @property
@@ -203,7 +202,6 @@ class CodeSignConfig(object):
         """
         return False
 
-
     @property
     def main_executable_pinned_geometry(self):
         """An optional tuple of pinned architecture offset pairs. If set the
@@ -233,7 +231,8 @@ class CodeSignConfig(object):
     def framework_dir(self):
         """Returns the path to the app's framework directory."""
         return '{0.app_dir}/Contents/Frameworks/{0.product} Framework.framework'.format(
-            self)
+            self
+        )
 
     @property
     def packaging_dir(self):

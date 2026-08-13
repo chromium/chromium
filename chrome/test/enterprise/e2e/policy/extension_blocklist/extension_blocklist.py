@@ -13,7 +13,7 @@ from infra import ChromeEnterpriseTestCase
 @environment(file="../policy_test.asset.textpb")
 class ExtensionInstallBlocklistTest(ChromeEnterpriseTestCase):
   """Test the ExtensionInstallBlocklist policy.
-    https://chromeenterprise.google/policies/?policy=ExtensionInstallBlocklist"""
+  https://chromeenterprise.google/policies/?policy=ExtensionInstallBlocklist"""
 
   @before_all
   def setup(self):
@@ -26,16 +26,18 @@ class ExtensionInstallBlocklistTest(ChromeEnterpriseTestCase):
     dir = os.path.dirname(os.path.abspath(__file__))
     logging.info('Opening page: %s' % url)
     output = self.RunUITest(
-        self.win_config['client'],
-        os.path.join(dir, '../install_extension.py'),
-        args=args)
+      self.win_config['client'],
+      os.path.join(dir, '../install_extension.py'),
+      args=args,
+    )
     return output
 
   @test
   def test_ExtensionBlocklist_all(self):
     extension = '*'
-    self.SetPolicy(self.win_config['dc'], r'ExtensionInstallBlocklist\1',
-                   extension, 'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'ExtensionInstallBlocklist\1', extension, 'String'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
     logging.info('Disabled extension install for ' + extension)
 
@@ -46,8 +48,9 @@ class ExtensionInstallBlocklistTest(ChromeEnterpriseTestCase):
   @test
   def test_ExtensionBlocklist_hangout(self):
     extension = 'aapbdbdomjkkjkaonfhkkikfgjllcleb'
-    self.SetPolicy(self.win_config['dc'], r'ExtensionInstallBlocklist\1',
-                   extension, 'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'ExtensionInstallBlocklist\1', extension, 'String'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
     logging.info('Disabled extension install for ' + extension)
 

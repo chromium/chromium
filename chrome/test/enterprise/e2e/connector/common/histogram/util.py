@@ -29,6 +29,7 @@ class HistogramDataBucket:
     low: The "low" value in the nested "buckets" json object of the json
       response. Defaults to None.
   """
+
   count: int = None
   high: int = None
   low: int = None
@@ -55,14 +56,16 @@ class HistogramDataParams:
     data_type: The "type" value in the nested "params" json of the json
       response. Defaults to None.
   """
+
   bucket_count: float = None
   max_value: float = None
   min_value: float = None
   data_type: str = None
 
   def __bool__(self):
-    return bool(self.bucket_count or self.max_value or self.min_value or
-                self.data_type)
+    return bool(
+      self.bucket_count or self.max_value or self.min_value or self.data_type
+    )
 
 
 @define
@@ -83,6 +86,7 @@ class HistogramData:
     pid: The "pid" value of the json response. Defaults to None.
     sum_value: The "sum" value of the json response. Defaults to None.
   """
+
   buckets: List[HistogramDataBucket] = Factory(list)
   count: float = 0.0
   flags: float = None
@@ -112,17 +116,25 @@ def parse(response: str) -> HistogramData:
   """
   d = json.loads(response)
   buckets_list = d["buckets"] if "buckets" in d else []
-  buckets = [
-      HistogramDataBucket(b["count"], b["high"], b["low"]) for b in buckets_list
-  ] if buckets_list else None
+  buckets = (
+    [HistogramDataBucket(b["count"], b["high"], b["low"]) for b in buckets_list]
+    if buckets_list
+    else None
+  )
   count = d["count"] if "count" in d else None
   flags = d["flags"] if "flags" in d else None
   name = d["name"] if "name" in d else None
   p = d["params"] if "params" in d else None
-  params = HistogramDataParams(
+  params = (
+    HistogramDataParams(
       p["bucket_count"] if "bucket_count" in p else 0.0,
-      p["max"] if "max" in p else -1, p["min"] if "min" in p else -1,
-      p["type"] if "type" in p else None) if p else None
+      p["max"] if "max" in p else -1,
+      p["min"] if "min" in p else -1,
+      p["type"] if "type" in p else None,
+    )
+    if p
+    else None
+  )
   pid = d["pid"] if "pid" in d else None
   s = d["sum"] if "sum" in d else None
   return HistogramData(buckets, count, flags, name, params, pid, s)
@@ -141,8 +153,9 @@ def to_int(val: Optional[float]) -> int:
   return int(float(str(val)))
 
 
-def merge_histograms(hd1: Optional[HistogramData],
-                     hd2: Optional[HistogramData]) -> Optional[HistogramData]:
+def merge_histograms(
+  hd1: Optional[HistogramData], hd2: Optional[HistogramData]
+) -> Optional[HistogramData]:
   """Merges two histograms by summing corresponding values.
 
   Args:
@@ -165,7 +178,8 @@ def merge_histograms(hd1: Optional[HistogramData],
     hd1.values.add(to_int(hd2.sum_value))
   except e:
     logging.warning(
-        f'fail to add {hd1.sum_value}, {hd2.sum_value}. err: {str(e)}')
+      f'fail to add {hd1.sum_value}, {hd2.sum_value}. err: {str(e)}'
+    )
 
   if not hd2.buckets:
     return hd1
@@ -183,9 +197,9 @@ def merge_histograms(hd1: Optional[HistogramData],
   return hd1
 
 
-def histogram(cd: webdriver.chrome.webdriver.WebDriver,
-              name: str,
-              timeout: int = 30) -> Optional[HistogramData]:
+def histogram(
+  cd: webdriver.chrome.webdriver.WebDriver, name: str, timeout: int = 30
+) -> Optional[HistogramData]:
   """Queries a particular histogram from Chrome and formats the response.
 
   The ChromeDriver instance provided is used to execute javascript in browser,
@@ -205,8 +219,10 @@ def histogram(cd: webdriver.chrome.webdriver.WebDriver,
     BaseException: When either histogram request returns an empty response.
   """
   resp_str = execute_script(
-      cd, "return statsCollectionController.getBrowserHistogram('%s');" % name,
-      timeout)
+    cd,
+    "return statsCollectionController.getBrowserHistogram('%s');" % name,
+    timeout,
+  )
   if not resp_str:
     raise BaseException("Could not get histogram with %s" % name)
 
@@ -214,16 +230,17 @@ def histogram(cd: webdriver.chrome.webdriver.WebDriver,
 
   # Fetch renderer histograms as well
   resp_str = execute_script(
-      cd, "return statsCollectionController.getHistogram('%s');" % name)
+    cd, "return statsCollectionController.getHistogram('%s');" % name
+  )
   if not resp_str:
     raise ValueError("Could not get second histogram with %s" % name)
   hd2 = parse(resp_str)
   return merge_histograms(hd1, hd2)
 
 
-def execute_script(cd: webdriver.chrome.webdriver.WebDriver,
-                   script: str,
-                   timeout: int = 30) -> str:
+def execute_script(
+  cd: webdriver.chrome.webdriver.WebDriver, script: str, timeout: int = 30
+) -> str:
   """Executes javascript in browser through ChromeDriver.
 
   Args:
@@ -243,14 +260,15 @@ def execute_script(cd: webdriver.chrome.webdriver.WebDriver,
   logging.log(logging.DEBUG, "Executed Javascript in browser: %s", script)
 
   socket.setdefaulttimeout(default_timeout)
-  logging.log(logging.DEBUG, "Set socket timeout to default: %s",
-              default_timeout)
+  logging.log(
+    logging.DEBUG, "Set socket timeout to default: %s", default_timeout
+  )
   return script_result
 
 
-def poll_histogram(cd: webdriver.chrome.webdriver.WebDriver,
-                   names: List[str],
-                   timeout: int = 30) -> Optional[Dict[str, HistogramData]]:
+def poll_histogram(
+  cd: webdriver.chrome.webdriver.WebDriver, names: List[str], timeout: int = 30
+) -> Optional[Dict[str, HistogramData]]:
   """Polls the histograms and returns the list of non-empty histogram.
 
   Args:

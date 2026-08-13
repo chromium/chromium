@@ -66,16 +66,16 @@ def RunTestCase(test_name, old_files, new_files, expected_pass):
     entry_point_path = os.path.join(tmp_dir_name, 'check_api_cases.ts')
     args = [
         sys.executable,
-        os.path.join(SCRIPT_PATH, 'check_api.py'), '--old-stdin',
-        '--api-file-path=' + entry_point_path
+        os.path.join(SCRIPT_PATH, 'check_api.py'),
+        '--old-stdin',
+        '--api-file-path=' + entry_point_path,
     ]
     if DEBUG:
         args.append('--debug')
 
-    result = subprocess.run(args,
-                            input=old_contents_json,
-                            text=True,
-                            capture_output=True)
+    result = subprocess.run(
+        args, input=old_contents_json, text=True, capture_output=True
+    )
 
     if DEBUG:
         print(f'Test {test_name} stdout: {result.stdout}')
@@ -90,8 +90,10 @@ def RunTestCase(test_name, old_files, new_files, expected_pass):
             return False
     else:
         if result.returncode == 0:
-            print(f'Test {test_name} should have reported' +
-                  ' errors, but reported none.')
+            print(
+                f'Test {test_name} should have reported'
+                + ' errors, but reported none.'
+            )
             return False
 
     if DEBUG:

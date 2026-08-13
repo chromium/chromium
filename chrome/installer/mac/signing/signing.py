@@ -22,7 +22,6 @@ class InvalidAppGeometryException(ValueError):
 
 
 class Invoker(invoker.Base):
-
     def codesign(self, config, product, path):
         command = ['codesign', '--sign', config.identity]
         if config.notarize.should_notarize():
@@ -36,12 +35,12 @@ class Invoker(invoker.Base):
             command.extend(['--requirements', '=' + reqs])
         if product.options:
             command.extend(
-                ['--options',
-                 product.options.to_comma_delimited_string()])
+                ['--options', product.options.to_comma_delimited_string()]
+            )
         if product.entitlements:
             command.extend(
-                ['--entitlements',
-                 os.path.join(path, product.entitlements)])
+                ['--entitlements', os.path.join(path, product.entitlements)]
+            )
         command.append(os.path.join(path, product.path))
         commands.run_command(command)
 
@@ -67,21 +66,25 @@ def _binary_architectures_offsets(binary_path):
     logger.info('%s', output.decode('utf-8'))
 
     # Find the architecture for a non-universal binary.
-    match = re.search(rb'^Non-fat file:.+architecture:\s(.+)$', output,
-                      re.MULTILINE)
+    match = re.search(
+        rb'^Non-fat file:.+architecture:\s(.+)$', output, re.MULTILINE
+    )
     if match is not None:
         return tuple(((match.group(1).decode('ascii'), 0),))
 
     # Get the expected number of architectures for a universal binary.
     nfat_arch_count = int(
-        re.search(rb'^nfat_arch\s(\d+)$', output, re.MULTILINE).group(1))
+        re.search(rb'^nfat_arch\s(\d+)$', output, re.MULTILINE).group(1)
+    )
 
     # Find architecture-offset pairs for a universal binary.
     arch_offsets = tuple(
         (match.group(1).decode('ascii'), int(match.group(2)))
         for match in re.finditer(
-            rb'^architecture\s(.+)\n(?:^[^\n]*\n)*?^\s+offset\s(\d+)$', output,
-            re.MULTILINE)
+            rb'^architecture\s(.+)\n(?:^[^\n]*\n)*?^\s+offset\s(\d+)$',
+            output,
+            re.MULTILINE,
+        )
     )
 
     # Make sure nfat_arch matches the found number of pairs.
@@ -111,14 +114,23 @@ def verify_part(paths, part):
         part: The |model.CodeSignedProduct| to verify. The product's |path|
             must be in |paths.work|.
     """
-    verify_options = part.verify_options.to_list(
-    ) if part.verify_options else []
+    verify_options = (
+        part.verify_options.to_list() if part.verify_options else []
+    )
     part_path = os.path.join(paths.work, part.path)
-    commands.run_command([
-        'codesign', '--display', '--verbose=5', '--requirements', '-', part_path
-    ])
-    commands.run_command(['codesign', '--verify', '--verbose=6'] +
-                         verify_options + [part_path])
+    commands.run_command(
+        [
+            'codesign',
+            '--display',
+            '--verbose=5',
+            '--requirements',
+            '-',
+            part_path,
+        ]
+    )
+    commands.run_command(
+        ['codesign', '--verify', '--verbose=6'] + verify_options + [part_path]
+    )
 
 
 async def validate_app(paths, config, part):
@@ -131,29 +143,48 @@ async def validate_app(paths, config, part):
     """
     app_path = os.path.join(paths.work, part.path)
     verify_opts = part.verify_options.to_list() if part.verify_options else []
-    commands.run_command([
-        'codesign', '--display', '--requirements', '-', '--verbose=5', app_path
-    ])
+    commands.run_command(
+        [
+            'codesign',
+            '--display',
+            '--requirements',
+            '-',
+            '--verbose=5',
+            app_path,
+        ]
+    )
     tasks = [
         asyncio.create_task(
             commands.run_command_all_output_async(
-                ['codesign', '--verify', '--verbose=6'] + verify_opts +
-                [app_path]))
+                ['codesign', '--verify', '--verbose=6']
+                + verify_opts
+                + [app_path]
+            )
+        )
     ]
     if config.run_spctl_assess:
         tasks += [
             asyncio.create_task(
                 commands.run_command_all_output_async(
-                    ['spctl', '--assess', '-vv', app_path]))
+                    ['spctl', '--assess', '-vv', app_path]
+                )
+            )
         ]
     await asyncio.sleep(0)  # Allow commands to start.
     for task in tasks:
         command, exit_code, stdout, stderr = await task
-        logger.info('Command %s returned %d: (stdout=) %s (stderr=) %s',
-                    command, exit_code, stdout, stderr)
+        logger.info(
+            'Command %s returned %d: (stdout=) %s (stderr=) %s',
+            command,
+            exit_code,
+            stdout,
+            stderr,
+        )
         if exit_code:
             raise subprocess.CalledProcessError(
-                exit_code, command, output=stdout, stderr=stderr)
+                exit_code, command, output=stdout, stderr=stderr
+            )
+
 
 def validate_app_geometry(paths, config, part):
     """Validates the architecture offsets in the main executable.
@@ -166,10 +197,12 @@ def validate_app_geometry(paths, config, part):
     if config.main_executable_pinned_geometry is None:
         return
 
-    app_binary_path = os.path.join(paths.work, config.app_dir, 'Contents',
-                                   'MacOS', config.app_product)
+    app_binary_path = os.path.join(
+        paths.work, config.app_dir, 'Contents', 'MacOS', config.app_product
+    )
     pinned_offsets = config.main_executable_pinned_geometry
     offsets = _binary_architectures_offsets(app_binary_path)
     if pinned_offsets != offsets:
-        raise InvalidAppGeometryException('Unexpected main executable geometry',
-                                          pinned_offsets, offsets)
+        raise InvalidAppGeometryException(
+            'Unexpected main executable geometry', pinned_offsets, offsets
+        )

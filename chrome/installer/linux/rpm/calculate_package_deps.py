@@ -27,14 +27,21 @@ bundled_shlibs = [os.path.basename(file) for file in args.shlibs]
 distro_check = args.distro_check
 
 if os.stat(binary).st_mode & 0o111 == 0:
-    print(('/usr/lib/rpm/elfdeps requires that binaries have an executable ' +
-           'bit set, but binary "%s" does not.') % os.path.basename(binary))
+    print(
+        (
+            '/usr/lib/rpm/elfdeps requires that binaries have an executable '
+            + 'bit set, but binary "%s" does not.'
+        )
+        % os.path.basename(binary)
+    )
     sys.exit(1)
 
-proc = subprocess.Popen(['/usr/lib/rpm/find-requires'],
-                        stdin=subprocess.PIPE,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE)
+proc = subprocess.Popen(
+    ['/usr/lib/rpm/find-requires'],
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+)
 (stdout, stderr) = proc.communicate((binary + '\n').encode('utf8'))
 exit_code = proc.wait()
 if exit_code != 0:
@@ -61,14 +68,23 @@ if distro_check:
                 print(
                     'Unexpected new dependency %s on distro %s caused by binary %s'
                     % (requirement, distro, os.path.basename(binary)),
-                    file=sys.stderr)
+                    file=sys.stderr,
+                )
                 ret_code = 1
                 continue
 if ret_code == 0:
     sys.path.append(
-        os.path.join(script_dir, os.path.pardir, os.path.pardir, os.path.pardir,
-                     os.path.pardir, 'build'))
+        os.path.join(
+            script_dir,
+            os.path.pardir,
+            os.path.pardir,
+            os.path.pardir,
+            os.path.pardir,
+            'build',
+        )
+    )
     import action_helpers
+
     requires = requires.difference(remove_requires)
     with action_helpers.atomic_output(dep_filename, mode='w') as dep_file:
         for requirement in sorted(list(requires)):

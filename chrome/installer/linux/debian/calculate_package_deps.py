@@ -30,47 +30,69 @@ dep_filename = os.path.abspath(args.dep_filename)
 distro_check = args.distro_check
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-dpkg_shlibdeps = os.path.join(script_dir, '..', '..', '..', '..', 'third_party',
-                              'dpkg-shlibdeps', 'dpkg-shlibdeps.pl')
+dpkg_shlibdeps = os.path.join(
+    script_dir,
+    '..',
+    '..',
+    '..',
+    '..',
+    'third_party',
+    'dpkg-shlibdeps',
+    'dpkg-shlibdeps.pl',
+)
 dpkg_shlibdeps_root = os.path.dirname(dpkg_shlibdeps)
 dpkg_datadir = os.path.join(dpkg_shlibdeps_root, 'data')
 
 cmd = [dpkg_shlibdeps, '--ignore-weak-undefined']
 if arch == 'x64':
-    cmd.extend([
-        '-l%s/usr/lib/x86_64-linux-gnu' % sysroot,
-        '-l%s/lib/x86_64-linux-gnu' % sysroot
-    ])
+    cmd.extend(
+        [
+            '-l%s/usr/lib/x86_64-linux-gnu' % sysroot,
+            '-l%s/lib/x86_64-linux-gnu' % sysroot,
+        ]
+    )
 elif arch == 'x86':
-    cmd.extend([
-        '-l%s/usr/lib/i386-linux-gnu' % sysroot,
-        '-l%s/lib/i386-linux-gnu' % sysroot
-    ])
+    cmd.extend(
+        [
+            '-l%s/usr/lib/i386-linux-gnu' % sysroot,
+            '-l%s/lib/i386-linux-gnu' % sysroot,
+        ]
+    )
 elif arch == 'arm':
-    cmd.extend([
-        '-l%s/usr/lib/arm-linux-gnueabihf' % sysroot,
-        '-l%s/lib/arm-linux-gnueabihf' % sysroot
-    ])
+    cmd.extend(
+        [
+            '-l%s/usr/lib/arm-linux-gnueabihf' % sysroot,
+            '-l%s/lib/arm-linux-gnueabihf' % sysroot,
+        ]
+    )
 elif arch == 'arm64':
-    cmd.extend([
-        '-l%s/usr/lib/aarch64-linux-gnu' % sysroot,
-        '-l%s/lib/aarch64-linux-gnu' % sysroot
-    ])
+    cmd.extend(
+        [
+            '-l%s/usr/lib/aarch64-linux-gnu' % sysroot,
+            '-l%s/lib/aarch64-linux-gnu' % sysroot,
+        ]
+    )
 elif arch == 'mipsel':
-    cmd.extend([
-        '-l%s/usr/lib/mipsel-linux-gnu' % sysroot,
-        '-l%s/lib/mipsel-linux-gnu' % sysroot
-    ])
+    cmd.extend(
+        [
+            '-l%s/usr/lib/mipsel-linux-gnu' % sysroot,
+            '-l%s/lib/mipsel-linux-gnu' % sysroot,
+        ]
+    )
 elif arch == 'mips64el':
-    cmd.extend([
-        '-l%s/usr/lib/mips64el-linux-gnuabi64' % sysroot,
-        '-l%s/lib/mips64el-linux-gnuabi64' % sysroot
-    ])
+    cmd.extend(
+        [
+            '-l%s/usr/lib/mips64el-linux-gnuabi64' % sysroot,
+            '-l%s/lib/mips64el-linux-gnuabi64' % sysroot,
+        ]
+    )
 elif arch == 'riscv64':
-    cmd.extend([
-        '-l%s/usr/lib/riscv64-linux-gnu' % sysroot,
-        '-l%s/lib/riscv64-linux-gnu' % sysroot
-    ])
+    cmd.extend(
+        [
+            '-l%s/usr/lib/riscv64-linux-gnu' % sysroot,
+            '-l%s/lib/riscv64-linux-gnu' % sysroot,
+        ]
+    )
 else:
     print('Unsupported architecture ' + arch)
     sys.exit(1)
@@ -78,7 +100,8 @@ cmd.extend(['-l%s/usr/lib' % sysroot, '-O', '-e', binary])
 
 env = os.environ.copy()
 env['PERL5LIB'] = os.pathsep.join(
-    filter(None, [dpkg_shlibdeps_root, env.get('PERL5LIB')]))
+    filter(None, [dpkg_shlibdeps_root, env.get('PERL5LIB')])
+)
 env['DPKG_DATADIR'] = dpkg_datadir
 
 proc = subprocess.Popen(
@@ -87,7 +110,8 @@ proc = subprocess.Popen(
     stderr=subprocess.PIPE,
     cwd=sysroot,
     env=env,
-    encoding='utf-8')
+    encoding='utf-8',
+)
 (stdout, stderr) = proc.communicate()
 exit_code = proc.wait()
 if exit_code != 0:
@@ -99,7 +123,7 @@ SHLIBS_DEPENDS_PREFIX = 'shlibs:Depends='
 deps_str = ''
 for line in stdout.split('\n'):
     if line.startswith(SHLIBS_DEPENDS_PREFIX):
-        deps_str = line[len(SHLIBS_DEPENDS_PREFIX):]
+        deps_str = line[len(SHLIBS_DEPENDS_PREFIX) :]
 deps = deps_str.split(', ')
 interval_sets = []
 if deps_str != '':
@@ -116,7 +140,9 @@ if deps_str != '':
             # Ensure there's not a maximum version.
             assert interval.end == (
                 package_version_interval.PackageVersionIntervalEndpoint(
-                    True, None, None))
+                    True, None, None
+                )
+            )
             # The GCC version in Ubuntu Trusty is 4.8, so use that as the minimum.
             assert interval.contains(deb_version.DebVersion('4.8'))
             continue
@@ -136,22 +162,35 @@ if distro_check:
                 if package not in distro_package_versions[distro]:
                     continue
                 distro_version = deb_version.DebVersion(
-                    distro_package_versions[distro][package])
+                    distro_package_versions[distro][package]
+                )
                 if interval.contains(distro_version):
                     dep_satisfiable = True
                     break
             if not dep_satisfiable:
                 print(
                     'Dependency %s not satisfiable on distro %s caused by binary %s'
-                    % (interval_set.formatted(), distro,
-                       os.path.basename(binary)),
-                    file=sys.stderr)
+                    % (
+                        interval_set.formatted(),
+                        distro,
+                        os.path.basename(binary),
+                    ),
+                    file=sys.stderr,
+                )
                 ret_code = 1
 if ret_code == 0:
     sys.path.append(
-        os.path.join(script_dir, os.path.pardir, os.path.pardir, os.path.pardir,
-                     os.path.pardir, 'build'))
+        os.path.join(
+            script_dir,
+            os.path.pardir,
+            os.path.pardir,
+            os.path.pardir,
+            os.path.pardir,
+            'build',
+        )
+    )
     import action_helpers
+
     with action_helpers.atomic_output(dep_filename, mode='w') as dep_file:
         lines = [
             interval_set.formatted() + '\n' for interval_set in interval_sets

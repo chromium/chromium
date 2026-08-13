@@ -46,15 +46,26 @@ def download(directory, filter, scenario, gcs_bucket):
   # Downloading the files can be very spammy, so only show the output if
   # something actually goes wrong.
   try:
-    subprocess.check_output([
+    subprocess.check_output(
+      [
         'download_from_google_storage',
-        '--bucket', gcs_bucket,
-        '-d', directory,
-        '-t', str(_get_thread_count()),
-    ], stderr=subprocess.STDOUT)
+        '--bucket',
+        gcs_bucket,
+        '-d',
+        directory,
+        '-t',
+        str(_get_thread_count()),
+      ],
+      stderr=subprocess.STDOUT,
+    )
   except subprocess.CalledProcessError as e:
-    logging.error('Downloading %s in directory %s failed with error '
-                  '%d: %s', scenario, directory, e.returncode, e.output)
+    logging.error(
+      'Downloading %s in directory %s failed with error %d: %s',
+      scenario,
+      directory,
+      e.returncode,
+      e.output,
+    )
 
 
 # TODO(crbug.com/40700852): Remove this after root cause is found.
@@ -98,15 +109,21 @@ def upload(directory, filter, scenario, gcs_bucket, dry_run=False):
 
   if len(files_to_upload):
     if dry_run:
-      logging.info('Will upload the following %s: %s',
-                   scenario, ', '.join(files_to_upload))
+      logging.info(
+        'Will upload the following %s: %s', scenario, ', '.join(files_to_upload)
+      )
       logging.info('Destination gcs bucket: %s', gcs_bucket)
       return
-    subprocess.check_call([
+    subprocess.check_call(
+      [
         'upload_to_google_storage.py',
-        '--bucket', gcs_bucket,
-        '-t', str(_get_thread_count()),
-    ] + files_to_upload)
+        '--bucket',
+        gcs_bucket,
+        '-t',
+        str(_get_thread_count()),
+      ]
+      + files_to_upload
+    )
 
 
 def _get_files_to_upload(directory, filter):

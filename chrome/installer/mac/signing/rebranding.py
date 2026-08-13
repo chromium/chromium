@@ -49,7 +49,8 @@ def CStr(sb: str | bytes) -> CString:
     for c in b:
         if c == 0:
             raise ValueError(
-                f"C-safe string cannot contain NUL; arg was '{sb!a}'")
+                f"C-safe string cannot contain NUL; arg was '{sb!a}'"
+            )
     return CString(b)
 
 
@@ -83,7 +84,8 @@ class TreeVerifier:
         self._checksums: dict[pathlib.Path, Expectation] = {}
         for p in root.rglob('*'):
             self._checksums[p.relative_to(root)] = self._calculate_expectation(
-                p)
+                p
+            )
 
     def _calculate_expectation(self, path: pathlib.Path) -> Expectation:
         # Check for symlinks first, since `is_file` and `is_dir` will follow
@@ -133,8 +135,10 @@ class TreeVerifier:
 
             if got != want:
                 if got.type != want.type:
-                    raise ValueError(f"Target type mismatch for {rel_path}: "
-                                     f"want {want.type}, got {got.type}")
+                    raise ValueError(
+                        f"Target type mismatch for {rel_path}: "
+                        f"want {want.type}, got {got.type}"
+                    )
                 raise ValueError(f"Checksum mismatch for {rel_path}")
 
         # 2. Check for unexpected files in target
@@ -151,10 +155,12 @@ class HfsTool:
     def __init__(self, p: pathlib.Path):
         self._tool_path = os.fsencode(p)
 
-    def addall(self,
-               target_udif_path: pathlib.Path,
-               src_dir: pathlib.Path,
-               dest_dir_in_dmg: InteriorPath = DmgPath("/")):
+    def addall(
+        self,
+        target_udif_path: pathlib.Path,
+        src_dir: pathlib.Path,
+        dest_dir_in_dmg: InteriorPath = DmgPath("/"),
+    ):
         """Invokes `hfs_tool addall` to copy into an HFS+-formatted raw UDIF.
 
         Symlinks are duplicated, not traversed. File modes are preserved.
@@ -170,16 +176,26 @@ class HfsTool:
             subprocess.CalledProcessError: `hfs_tool` is sad. Maybe stdout will
               help explain why.
         """
-        subprocess.check_call([
-            self._tool_path,
-            os.fsencode(target_udif_path), b"addall", b"--symlinks",
-            b"clone_link", b"--special-modes", b"no",
-            os.fsencode(src_dir),
-            bytes(dest_dir_in_dmg)
-        ])
+        subprocess.check_call(
+            [
+                self._tool_path,
+                os.fsencode(target_udif_path),
+                b"addall",
+                b"--symlinks",
+                b"clone_link",
+                b"--special-modes",
+                b"no",
+                os.fsencode(src_dir),
+                bytes(dest_dir_in_dmg),
+            ]
+        )
 
-    def set_omaha_tag(self, target_udif_path: pathlib.Path,
-                      target_inside_dmg: InteriorPath, tag_value: CString):
+    def set_omaha_tag(
+        self,
+        target_udif_path: pathlib.Path,
+        target_inside_dmg: InteriorPath,
+        tag_value: CString,
+    ):
         """Invokes `hfs_tool setattr` to apply an Omaha tag.
 
         Args:
@@ -194,13 +210,18 @@ class HfsTool:
         if len(tag_value) > 8192:
             raise ValueError(f"Omaha tag too long ({len(tag_value)} bytes)")
 
-        subprocess.check_call([
-            self._tool_path,
-            os.fsencode(target_udif_path), b"setattr", b"--data-format",
-            b"omaha-tag-zone",
-            bytes(target_inside_dmg), b"com.apple.application-instance",
-            bytes(tag_value)
-        ])
+        subprocess.check_call(
+            [
+                self._tool_path,
+                os.fsencode(target_udif_path),
+                b"setattr",
+                b"--data-format",
+                b"omaha-tag-zone",
+                bytes(target_inside_dmg),
+                b"com.apple.application-instance",
+                bytes(tag_value),
+            ]
+        )
 
     def enable_folder_icon(self, target_udif_path: pathlib.Path):
         """Sets the "custom folder icon" HFS+ flag on the DMG root.
@@ -209,10 +230,15 @@ class HfsTool:
             target_udif_path: Where to find the existing HFS+-formatted
               raw UDIF with no volume map.
         """
-        subprocess.check_call([
-            self._tool_path,
-            os.fsencode(target_udif_path), b"attr", b"/", b"C"
-        ])
+        subprocess.check_call(
+            [
+                self._tool_path,
+                os.fsencode(target_udif_path),
+                b"attr",
+                b"/",
+                b"C",
+            ]
+        )
 
     def set_root_open_folder(self, target_udif_path: pathlib.Path):
         """Marks the DMG root folder to automatically open when mounted.
@@ -221,10 +247,14 @@ class HfsTool:
             target_udif_path: Where to find the existing HFS+-formatted
               raw UDIF with no volume map.
         """
-        subprocess.check_call([
-            self._tool_path,
-            os.fsencode(target_udif_path), b"setopenfolder", b"/"
-        ])
+        subprocess.check_call(
+            [
+                self._tool_path,
+                os.fsencode(target_udif_path),
+                b"setopenfolder",
+                b"/",
+            ]
+        )
 
 
 class DmgTool:
@@ -233,13 +263,15 @@ class DmgTool:
     def __init__(self, p: pathlib.Path):
         self._tool_path = os.fsencode(p)
 
-    def build(self,
-              udif_in_path: pathlib.Path,
-              dmg_out_path: pathlib.Path,
-              tag_placeholder: CString | None,
-              run_sectors: int = 8192,
-              compression: CompressionType | None = None,
-              level: int | None = None):
+    def build(
+        self,
+        udif_in_path: pathlib.Path,
+        dmg_out_path: pathlib.Path,
+        tag_placeholder: CString | None,
+        run_sectors: int = 8192,
+        compression: CompressionType | None = None,
+        level: int | None = None,
+    ):
         """Invokes `dmg_tool build` to convert a raw UDIF to a DMG.
 
         Args:
@@ -258,8 +290,11 @@ class DmgTool:
               which is also compressor-specific.
         """
         args = [
-            self._tool_path, b"--run-sectors",
-            _itoa(run_sectors), b"--data-format", b"omaha-tag-zone"
+            self._tool_path,
+            b"--run-sectors",
+            _itoa(run_sectors),
+            b"--data-format",
+            b"omaha-tag-zone",
         ]
         if compression is not None:
             args += [b"--compression", compression]
@@ -271,8 +306,13 @@ class DmgTool:
 
         subprocess.check_call(args)
 
-    def attribute(self, dmg_in_path: pathlib.Path, dmg_out_path: pathlib.Path,
-                  tag_placeholder: CString, new_tag: CString):
+    def attribute(
+        self,
+        dmg_in_path: pathlib.Path,
+        dmg_out_path: pathlib.Path,
+        tag_placeholder: CString,
+        new_tag: CString,
+    ):
         """Invokes `dmg_tool attribute` to re-tag a DMG created via `build`.
 
         Args:
@@ -292,13 +332,18 @@ class DmgTool:
         if len(new_tag) > 8192:
             raise ValueError(f"Omaha tag too long ({len(new_tag)} bytes)")
 
-        subprocess.check_call([
-            self._tool_path, b"--data-format", b"omaha-tag-zone", b"attribute",
-            os.fsencode(dmg_in_path),
-            os.fsencode(dmg_out_path),
-            bytes(tag_placeholder),
-            bytes(new_tag)
-        ])
+        subprocess.check_call(
+            [
+                self._tool_path,
+                b"--data-format",
+                b"omaha-tag-zone",
+                b"attribute",
+                os.fsencode(dmg_in_path),
+                os.fsencode(dmg_out_path),
+                bytes(tag_placeholder),
+                bytes(new_tag),
+            ]
+        )
 
 
 class HdiUtil:
@@ -329,29 +374,34 @@ class HdiUtil:
         try:
             # We use a randomized mount point to avoid collisions and to ensure
             # we know exactly where it is.
-            subprocess.check_call([
-                self._tool_path,
-                "attach",
-                dmg_path,
-                "-mountpoint",
-                mount_root,
-                "-nobrowse",
-                "-readonly",
-            ])
+            subprocess.check_call(
+                [
+                    self._tool_path,
+                    "attach",
+                    dmg_path,
+                    "-mountpoint",
+                    mount_root,
+                    "-nobrowse",
+                    "-readonly",
+                ]
+            )
             yield mount_root
         finally:
             # -force is used to ensure we clean up even if something is holding
             # the volume open (though we should avoid that).
-            subprocess.call([self._tool_path, "detach", mount_root, "-force"],
-                            stdout=subprocess.DEVNULL,
-                            stderr=subprocess.DEVNULL)
+            subprocess.call(
+                [self._tool_path, "detach", mount_root, "-force"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
             try:
                 os.rmdir(mount_root)
             except OSError:
                 pass
 
-    def create_blank_taggable(self, dmg_output_path: pathlib.Path,
-                              size_bytes: int, volume_name: str):
+    def create_blank_taggable(
+        self, dmg_output_path: pathlib.Path, size_bytes: int, volume_name: str
+    ):
         """Creates a blank, taggable HFS+ UDIF image.
 
         The image is created with specific settings to be compatible with
@@ -375,30 +425,50 @@ class HdiUtil:
         # - The size is rounded up to a kilobyte increment because
         #   hdiutil doesn't accept a size in bytes. (Specifying a size with a
         #   `b` suffix gets sectors rather than bytes.)
-        subprocess.check_call([
-            self._tool_path, "create", "-type", "UDIF", "-size",
-            str((size_bytes + 1023) // 1024) + "k", "-volname", volume_name,
-            "-fs", "HFS+", "-layout", "NONE", "-fsargs", "-n a=16384",
-            dmg_output_path
-        ])
+        subprocess.check_call(
+            [
+                self._tool_path,
+                "create",
+                "-type",
+                "UDIF",
+                "-size",
+                str((size_bytes + 1023) // 1024) + "k",
+                "-volname",
+                volume_name,
+                "-fs",
+                "HFS+",
+                "-layout",
+                "NONE",
+                "-fsargs",
+                "-n a=16384",
+                dmg_output_path,
+            ]
+        )
 
         # hdiutil might append .dmg if it's missing, rename it back if so.
         if not dmg_output_path.exists():
-            potential_path = dmg_output_path.with_name(dmg_output_path.name +
-                                                       ".dmg")
+            potential_path = dmg_output_path.with_name(
+                dmg_output_path.name + ".dmg"
+            )
             if potential_path.exists():
                 potential_path.rename(dmg_output_path)
             else:
                 raise FileNotFoundError(
                     f"Could not find created DMG at {dmg_output_path} or "
-                    f"{potential_path}")
+                    f"{potential_path}"
+                )
 
 
-def create_taggable_dmg(hfs_tool: HfsTool, dmg_tool: DmgTool, hdiutil: HdiUtil,
-                        original_dmg: pathlib.Path,
-                        output_dmg_path: pathlib.Path,
-                        scratch_dir: pathlib.Path, volume_name: str,
-                        app_name: str):
+def create_taggable_dmg(
+    hfs_tool: HfsTool,
+    dmg_tool: DmgTool,
+    hdiutil: HdiUtil,
+    original_dmg: pathlib.Path,
+    output_dmg_path: pathlib.Path,
+    scratch_dir: pathlib.Path,
+    volume_name: str,
+    app_name: str,
+):
     """Creates a blank taggable DMG and populates it from an original DMG.
 
     Args:
@@ -414,8 +484,13 @@ def create_taggable_dmg(hfs_tool: HfsTool, dmg_tool: DmgTool, hdiutil: HdiUtil,
     udif_path = scratch_dir / "temp.udif.dmg"
     with hdiutil.scoped_attach(original_dmg) as mount_path:
         # Calculate total size of files, rounding up to alloc blocks
-        total_size = sum((f.lstat().st_size + 4095) // 4096
-                         for f in mount_path.rglob('*')) * 4096
+        total_size = (
+            sum(
+                (f.lstat().st_size + 4095) // 4096
+                for f in mount_path.rglob('*')
+            )
+            * 4096
+        )
 
         # dmg_tool build corrupts the file system if it doesn't have
         # plenty of slack space. Cause and exact quantity are not yet known.
@@ -435,13 +510,19 @@ def create_taggable_dmg(hfs_tool: HfsTool, dmg_tool: DmgTool, hdiutil: HdiUtil,
         # string is valid tag data).
         hfs_tool.set_omaha_tag(udif_path, DmgPath(f"/{app_name}"), CString(b""))
 
-        dmg_tool.build(udif_path, output_dmg_path, CString(b""), 8192, b"lzma",
-                       9)
+        dmg_tool.build(
+            udif_path, output_dmg_path, CString(b""), 8192, b"lzma", 9
+        )
         os.remove(udif_path)
 
 
-def deep_verify(verifier: TreeVerifier, test_dmg: pathlib.Path,
-                hdiutil: HdiUtil, app_name: str, expected_tag: bytes) -> None:
+def deep_verify(
+    verifier: TreeVerifier,
+    test_dmg: pathlib.Path,
+    hdiutil: HdiUtil,
+    app_name: str,
+    expected_tag: bytes,
+) -> None:
     """Verifies that a DMG matches the source tree and has the correct tag.
 
     Args:
@@ -467,11 +548,16 @@ def deep_verify(verifier: TreeVerifier, test_dmg: pathlib.Path,
             # Use macOS `xattr` tool to read value (binary) via stdout. Use
             # hex format since xattr does not like emitting NUL bytes in ASCII
             # format, and we want to check the entire tag zone.
-            raw_output = subprocess.check_output([
-                "xattr", "-p", "-x", "com.apple.application-instance",
-                app_path_b
-            ],
-                                                 stderr=subprocess.PIPE)
+            raw_output = subprocess.check_output(
+                [
+                    "xattr",
+                    "-p",
+                    "-x",
+                    "com.apple.application-instance",
+                    app_path_b,
+                ],
+                stderr=subprocess.PIPE,
+            )
             output = bytes.fromhex(raw_output.decode("ascii"))
             # See chrome/updater/tag.h for tag format details.
             magic = b"Gact2.0Omaha"
@@ -484,18 +570,21 @@ def deep_verify(verifier: TreeVerifier, test_dmg: pathlib.Path,
             tag_len = struct.unpack(">H", output[12:14])[0]
             if tag_len > 8192:
                 raise ValueError(
-                    f"Tag longer than Omaha tag data limit (8192): {tag_len}")
-            tag_content = output[14:14 + tag_len]
+                    f"Tag longer than Omaha tag data limit (8192): {tag_len}"
+                )
+            tag_content = output[14 : 14 + tag_len]
 
             if tag_content != expected_tag:
                 raise ValueError(
-                    f"Tag mismatch. Expected {expected_tag}, got {tag_content}")
+                    f"Tag mismatch. Expected {expected_tag}, got {tag_content}"
+                )
 
-            tag_remainder = output[14 + tag_len:]
+            tag_remainder = output[14 + tag_len :]
             if len(tag_remainder) != 8192 - tag_len:
                 raise ValueError(
                     f"Wrong padding length. Expected {8192 - tag_len}, "
-                    f"got {len(tag_remainder)}")
+                    f"got {len(tag_remainder)}"
+                )
             if tag_remainder != b"\0" * (8192 - tag_len):
                 raise ValueError("Nonzero bytes found in tag remainder")
 
@@ -504,10 +593,16 @@ def deep_verify(verifier: TreeVerifier, test_dmg: pathlib.Path,
             raise ValueError("Failed to read Omaha tag xattr")
 
 
-def rebrand_chromium_dmg(hfs_tool: HfsTool, dmg_tool: DmgTool,
-                         source_dmg_path: pathlib.Path,
-                         output_dir: pathlib.Path, brand_codes: Iterable[str],
-                         app_name: str, version: str, channel: str) -> None:
+def rebrand_chromium_dmg(
+    hfs_tool: HfsTool,
+    dmg_tool: DmgTool,
+    source_dmg_path: pathlib.Path,
+    output_dir: pathlib.Path,
+    brand_codes: Iterable[str],
+    app_name: str,
+    version: str,
+    channel: str,
+) -> None:
     """Takes a Chromium DMG, creates a blank taggable version, and brands it.
 
     Args:
@@ -531,9 +626,16 @@ def rebrand_chromium_dmg(hfs_tool: HfsTool, dmg_tool: DmgTool,
         base_taggable = output_dir / f"{base_filename}-BlankTag.dmg"
 
         print("Creating base taggable/template DMG...")
-        create_taggable_dmg(hfs_tool, dmg_tool, hdiutil, source_dmg_path,
-                            base_taggable, scratch_dir, app_name,
-                            app_name + ".app")
+        create_taggable_dmg(
+            hfs_tool,
+            dmg_tool,
+            hdiutil,
+            source_dmg_path,
+            base_taggable,
+            scratch_dir,
+            app_name,
+            app_name + ".app",
+        )
 
         # Verify the blank tag
         print("Calculating checksums of source DMG...")
@@ -542,20 +644,31 @@ def rebrand_chromium_dmg(hfs_tool: HfsTool, dmg_tool: DmgTool,
 
             # Verify the blank tag
             print("Verifying base template...")
-            deep_verify(verifier, base_taggable, hdiutil, app_name + ".app",
-                        b"")
+            deep_verify(
+                verifier, base_taggable, hdiutil, app_name + ".app", b""
+            )
 
             for brand in brand_codes:
                 print(f"Branding {brand}...")
                 branded_dmg_path = (
-                    output_dir / f"{base_filename}-Brand-{brand}.dmg")
+                    output_dir / f"{base_filename}-Brand-{brand}.dmg"
+                )
 
                 brand_tag = f"brand={brand}".encode('ascii')
 
-                dmg_tool.attribute(base_taggable, branded_dmg_path,
-                                   CString(b""), CString(brand_tag))
+                dmg_tool.attribute(
+                    base_taggable,
+                    branded_dmg_path,
+                    CString(b""),
+                    CString(brand_tag),
+                )
 
                 # Verify
-                deep_verify(verifier, branded_dmg_path, hdiutil,
-                            app_name + ".app", brand_tag)
+                deep_verify(
+                    verifier,
+                    branded_dmg_path,
+                    hdiutil,
+                    app_name + ".app",
+                    brand_tag,
+                )
                 print(f"Created {branded_dmg_path}")

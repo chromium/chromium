@@ -27,14 +27,16 @@ class FullscreenAllowedTest(ChromeEnterpriseTestCase):
 
   def isFullscreenAllowed(self, instance):
     local = os.path.dirname(os.path.abspath(__file__))
-    output = self.RunUITest(instance,
-                            os.path.join(local, 'is_fullscreen_allowed.py'))
+    output = self.RunUITest(
+      instance, os.path.join(local, 'is_fullscreen_allowed.py')
+    )
     return "FullscreenAllowed: True" in output
 
   @test
   def test_FullscreenAllowed(self):
-    self.SetPolicy(self.win_config['dc'], FullscreenAllowedTest.Policy, 1,
-                   'DWORD')
+    self.SetPolicy(
+      self.win_config['dc'], FullscreenAllowedTest.Policy, 1, 'DWORD'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     allowed = self.isFullscreenAllowed(self.win_config['client'])
@@ -42,8 +44,9 @@ class FullscreenAllowedTest(ChromeEnterpriseTestCase):
 
   @test
   def test_FullscreenNotAllowed(self):
-    self.SetPolicy(self.win_config['dc'], FullscreenAllowedTest.Policy, 0,
-                   'DWORD')
+    self.SetPolicy(
+      self.win_config['dc'], FullscreenAllowedTest.Policy, 0, 'DWORD'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     allowed = self.isFullscreenAllowed(self.win_config['client'])

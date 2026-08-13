@@ -15,9 +15,9 @@ from infra import ChromeEnterpriseTestCase
 class WebProtectFileDownloadTest(ChromeEnterpriseTestCase):
   """Test the WebProtect client behaviour.
 
-     Here are the set of E2E test cases for testing chrome download behavior
-     when webprotect is enabled. The purpose of these tests is to catch chrome
-     client UI regression.
+  Here are the set of E2E test cases for testing chrome download behavior
+  when webprotect is enabled. The purpose of these tests is to catch chrome
+  client UI regression.
 
   """
 
@@ -33,15 +33,17 @@ class WebProtectFileDownloadTest(ChromeEnterpriseTestCase):
     cmd = r'gsutil cat ' + path
     token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
 
-    self.SetPolicy('win2022-dc', r'CloudManagementEnrollmentToken', token,
-                   'String')
+    self.SetPolicy(
+      'win2022-dc', r'CloudManagementEnrollmentToken', token, 'String'
+    )
     instance_name = 'webprotect-1'
     self.RunCommand(instance_name, 'gpupdate /force')
 
     local_dir = os.path.dirname(os.path.abspath(__file__))
     output = self.RunUITest(
-        instance_name,
-        os.path.join(local_dir, 'webprotect_file_download_webdriver.py'))
+      instance_name,
+      os.path.join(local_dir, 'webprotect_file_download_webdriver.py'),
+    )
 
     self.assertIn('Encrypted blocked', output)
     self.assertIn('Large file blocked', output)

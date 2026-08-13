@@ -15,8 +15,10 @@ from test_util import getElementsFromShadowRoot
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
-    "account", None,
-    "Sign into the browser as this account before refreshing policies")
+  "account",
+  None,
+  "Sign into the browser as this account before refreshing policies",
+)
 flags.DEFINE_string("password", None, "Account password")
 
 _POLICY_CHROME_DATA_REGION_SETTING = "ChromeDataRegionSetting"
@@ -57,14 +59,30 @@ def main(argv):
       if not name:
         break
       if name == _POLICY_CHROME_DATA_REGION_SETTING:
-        print("value=" + getElementFromShadowRoot(
-            driver, group, 'div.policy.row > div.value').text)
-        print("source=" + getElementFromShadowRoot(
-            driver, group, 'div.policy.row > div.source').text)
-        print("scope=" + getElementFromShadowRoot(
-            driver, group, 'div.policy.row > div.scope').text)
-        print("status=" + getElementFromShadowRoot(
-            driver, group, 'div.policy.row > div.messages').text)
+        print(
+          "value="
+          + getElementFromShadowRoot(
+            driver, group, 'div.policy.row > div.value'
+          ).text
+        )
+        print(
+          "source="
+          + getElementFromShadowRoot(
+            driver, group, 'div.policy.row > div.source'
+          ).text
+        )
+        print(
+          "scope="
+          + getElementFromShadowRoot(
+            driver, group, 'div.policy.row > div.scope'
+          ).text
+        )
+        print(
+          "status="
+          + getElementFromShadowRoot(
+            driver, group, 'div.policy.row > div.messages'
+          ).text
+        )
         break
 
   finally:

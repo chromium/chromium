@@ -56,8 +56,9 @@ def _ValueTypeConstant(value_type):
     return value_type_mapping[value_type]
 
 
-def VerifyRegistryEntryExpectation(expectation_name, expectation,
-                                   variable_expander):
+def VerifyRegistryEntryExpectation(
+    expectation_name, expectation, variable_expander
+):
     """Verifies a registry key according to the |expectation|.
 
     Args:
@@ -98,17 +99,21 @@ def VerifyRegistryEntryExpectation(expectation_name, expectation,
             # Note that $MINI_INSTALLER_BITNESS == '64' for x64 and for ARM64.
             registry_view = winreg.KEY_WOW64_64KEY
 
-        key_handle = winreg.OpenKey(_RootKeyConstant(root_key), sub_key, 0,
-                                    winreg.KEY_QUERY_VALUE | registry_view)
+        key_handle = winreg.OpenKey(
+            _RootKeyConstant(root_key),
+            sub_key,
+            0,
+            winreg.KEY_QUERY_VALUE | registry_view,
+        )
     except WindowsError:
         # Key doesn't exist. See that it matches the expectation.
-        assert expectation['exists'] != 'required', ('Registry key %s is '
-                                                     'missing' % key)
+        assert expectation['exists'] != 'required', (
+            'Registry key %s is missing' % key
+        )
         # Values are not checked if the missing key's existence is optional.
         return
     # The key exists, see that it matches the expectation.
-    assert expectation['exists'] != 'forbidden', ('Registry key %s exists' %
-                                                  key)
+    assert expectation['exists'] != 'forbidden', 'Registry key %s exists' % key
 
     # Verify the expected values.
     if 'values' not in expectation:
@@ -122,19 +127,21 @@ def VerifyRegistryEntryExpectation(expectation_name, expectation,
         except WindowsError:
             # The value does not exist. See that this matches the expectation.
             assert 'type' not in value_expectation, (
-                'Value %s of registry key %s '
-                'is missing' % (value, key))
+                'Value %s of registry key %s is missing' % (value, key)
+            )
             continue
 
         assert 'type' in value_expectation, (
             'Value %s of registry key %s exists '
-            'with value %s' % (value, key, data))
+            'with value %s' % (value, key, data)
+        )
 
         # Verify the type of the value.
         expected_value_type = value_expectation['type']
-        assert _ValueTypeConstant(expected_value_type) == value_type, \
-            "Value '%s' of registry key %s has unexpected type '%s'" % (
-                value, key, expected_value_type)
+        assert _ValueTypeConstant(expected_value_type) == value_type, (
+            "Value '%s' of registry key %s has unexpected type '%s'"
+            % (value, key, expected_value_type)
+        )
 
         if 'data' not in value_expectation:
             return
@@ -143,10 +150,11 @@ def VerifyRegistryEntryExpectation(expectation_name, expectation,
         expected_data = value_expectation['data']
         if isinstance(expected_data, str):
             expected_data = variable_expander.Expand(expected_data)
-        assert expected_data == data, \
-            ("Value '%s' of registry key %s has unexpected data.\n"
-             "  Expected: %s\n"
-             "  Actual: %s" % (value, key, expected_data, data))
+        assert expected_data == data, (
+            "Value '%s' of registry key %s has unexpected data.\n"
+            "  Expected: %s\n"
+            "  Actual: %s" % (value, key, expected_data, data)
+        )
 
 
 def CleanRegistryEntry(expectation_name, expectation, variable_expander):
@@ -170,8 +178,9 @@ def CleanRegistryEntry(expectation_name, expectation, variable_expander):
     """
     key = variable_expander.Expand(expectation_name)
     assert not expectation['exists'] == 'required', (
-        'Invalid expectation for CleanRegistryEntry operation: \'exists\' ' +
-        'property for key %s must not be \'required\'' % key)
+        'Invalid expectation for CleanRegistryEntry operation: \'exists\' '
+        + 'property for key %s must not be \'required\'' % key
+    )
     root_key, sub_key = key.split('\\', 1)
 
     registry_view = winreg.KEY_WOW64_32KEY
@@ -184,8 +193,12 @@ def CleanRegistryEntry(expectation_name, expectation, variable_expander):
     try:
         # Query the Windows registry for the registry key. It will throw a
         # WindowsError if the key doesn't exist.
-        key_handle = winreg.OpenKey(_RootKeyConstant(root_key), sub_key, 0,
-                                    (winreg.KEY_SET_VALUE | registry_view))
+        key_handle = winreg.OpenKey(
+            _RootKeyConstant(root_key),
+            sub_key,
+            0,
+            (winreg.KEY_SET_VALUE | registry_view),
+        )
     except WindowsError:
         # There is nothing to clean if the key doesn't exist.
         return
@@ -197,26 +210,36 @@ def CleanRegistryEntry(expectation_name, expectation, variable_expander):
         # permissions, then delete the key by name.
         key_handle = None
         root_handle = winreg.OpenKey(
-            _RootKeyConstant(root_key), None, 0,
-            (win32con.DELETE | winreg.KEY_ENUMERATE_SUB_KEYS
-             | winreg.KEY_QUERY_VALUE | winreg.KEY_SET_VALUE
-             | registry_view))
+            _RootKeyConstant(root_key),
+            None,
+            0,
+            (
+                win32con.DELETE
+                | winreg.KEY_ENUMERATE_SUB_KEYS
+                | winreg.KEY_QUERY_VALUE
+                | winreg.KEY_SET_VALUE
+                | registry_view
+            ),
+        )
         win32api.RegDeleteTree(root_handle, sub_key)
         LOGGER.info('CleanRegistryEntry deleted key %s' % key)
         return
 
     assert 'values' in expectation and expectation['values'], (
-        'Invalid expectation for CleanRegistryEntry operation: a \'values\' ' +
-        'dictionary is required for optional key %s' % key)
+        'Invalid expectation for CleanRegistryEntry operation: a \'values\' '
+        + 'dictionary is required for optional key %s' % key
+    )
     for value, value_expectation in expectation['values'].items():
         value = variable_expander.Expand(value)
         assert 'type' not in value_expectation, (
-            'Invalid expectation for CleanRegistryEntry operation: value ' +
-            '%s\\%s must not specify a \'type\'' % (key, value))
+            'Invalid expectation for CleanRegistryEntry operation: value '
+            + '%s\\%s must not specify a \'type\'' % (key, value)
+        )
         try:
             winreg.DeleteValue(key_handle, value)
-            LOGGER.info('CleanRegistryEntry deleted value %s\\%s' %
-                        (key, value))
+            LOGGER.info(
+                'CleanRegistryEntry deleted value %s\\%s' % (key, value)
+            )
         except WindowsError as e:
             if e.winerror == winerror.ERROR_FILE_NOT_FOUND:
                 continue

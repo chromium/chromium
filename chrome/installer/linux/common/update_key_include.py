@@ -101,13 +101,15 @@ def main():
             KEY_FINGERPRINT,
         ]
         result = subprocess.run(
-            export_cmd, env=env, check=True, capture_output=True)
+            export_cmd, env=env, check=True, capture_output=True
+        )
         new_key_armored = result.stdout.decode("utf-8")
 
         # Get key info for comments
         list_cmd = ["gpg", "--list-keys", KEY_FINGERPRINT]
         result = subprocess.run(
-            list_cmd, env=env, check=True, capture_output=True)
+            list_cmd, env=env, check=True, capture_output=True
+        )
         key_info = result.stdout.decode("utf-8")
 
         with tempfile.TemporaryDirectory() as tmpdir2:
@@ -126,7 +128,8 @@ def main():
 
             list_cmd2 = ["gpg", "--with-colons", "--list-keys", KEY_FINGERPRINT]
             result = subprocess.run(
-                list_cmd2, env=env2, check=True, capture_output=True)
+                list_cmd2, env=env2, check=True, capture_output=True
+            )
             key_info_colons = result.stdout.decode("utf-8")
 
     subkeys = []
@@ -154,12 +157,15 @@ def main():
     raw_data = base64.b64decode("".join(data_lines))
     calculated_checksum = get_checksum(raw_data)
     if calculated_checksum != checksum:
-        raise ValueError(f"Calculated checksum {calculated_checksum} "
-                         f"does not match GPG checksum {checksum}")
+        raise ValueError(
+            f"Calculated checksum {calculated_checksum} "
+            f"does not match GPG checksum {checksum}"
+        )
 
     # Format key info as comments
     new_comments = "\n".join(
-        f"# {line}" for line in key_info.splitlines() if line.strip())
+        f"# {line}" for line in key_info.splitlines() if line.strip()
+    )
 
     # Update content
     output = KEY_INCLUDE_TEMPLATE.format(
@@ -178,17 +184,20 @@ def main():
 
 
 def update_repo_package_include(script_dir):
-    repo_include_path = os.path.join(script_dir, "..", "debian",
-                                     "repo_package.include")
+    repo_include_path = os.path.join(
+        script_dir, "..", "debian", "repo_package.include"
+    )
     if not os.path.exists(repo_include_path):
         raise FileNotFoundError(
-            f"repo_package.include not found at {repo_include_path}")
+            f"repo_package.include not found at {repo_include_path}"
+        )
     with open(repo_include_path, "r") as f:
         repo_content = f.read()
     repo_version_match = re.search(r"REPO_PACKAGE_VERSION=(\d+)", repo_content)
     if not repo_version_match:
         raise RuntimeError(
-            f"REPO_PACKAGE_VERSION not found in {repo_include_path}")
+            f"REPO_PACKAGE_VERSION not found in {repo_include_path}"
+        )
     new_repo_version = int(repo_version_match.group(1)) + 1
     new_timestamp = int(time.time())
     with open(repo_include_path, "w") as f:
@@ -197,17 +206,20 @@ def update_repo_package_include(script_dir):
                 version=new_repo_version,
                 timestamp=new_timestamp,
                 hash="DUMMY",
-            ))
+            )
+        )
     with tempfile.TemporaryDirectory() as tmpdir:
         new_hash = installer.compute_repo_package_hash_for_presubmit(
-            os.path.join(script_dir, ".."), tmpdir)
+            os.path.join(script_dir, ".."), tmpdir
+        )
     with open(repo_include_path, "w") as f:
         f.write(
             REPO_PACKAGE_INCLUDE_TEMPLATE.format(
                 version=new_repo_version,
                 timestamp=new_timestamp,
                 hash=new_hash,
-            ))
+            )
+        )
     print(f"Updated repo_package.include to version {new_repo_version}")
 
 

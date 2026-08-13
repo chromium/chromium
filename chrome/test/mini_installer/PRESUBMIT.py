@@ -29,7 +29,8 @@ def CommonChecks(input_api, output_api):
         input_api,
         output_api,
         disabled_warnings=disabled_warnings,
-        version='3.2')
+        version='3.2',
+    )
 
 
 def CheckChangeOnUpload(input_api, output_api):

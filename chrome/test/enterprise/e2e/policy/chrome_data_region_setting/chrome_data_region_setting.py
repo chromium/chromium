@@ -37,18 +37,21 @@ class ChromeDataRegionSettingTest(ChromeEnterpriseTestCase):
     # Domain: chromepizzatest.com / OrgUnit: CBCM-DRZ > No Preference
     # Enroll browser in OU with ChromeDataRegionSetting set to No Preference (0)
     path = "gs://%s/secrets/ChromeDataRegionSettingNoPref-enrollToken" % (
-        self.gsbucket)
+      self.gsbucket
+    )
     cmd = r'gsutil cat ' + path
     token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
-    self.SetPolicy('win2022-dc', r'CloudManagementEnrollmentToken', token,
-                   'String')
+    self.SetPolicy(
+      'win2022-dc', r'CloudManagementEnrollmentToken', token, 'String'
+    )
 
     instance_name = 'cbcmdrz-nopref'
     self.RunCommand(instance_name, 'gpupdate /force')
     d = os.path.dirname(os.path.abspath(__file__))
     output = self.RunWebDriverTest(
-        instance_name,
-        os.path.join(d, 'chrome_data_region_setting_webdriver_test.py'))
+      instance_name,
+      os.path.join(d, 'chrome_data_region_setting_webdriver_test.py'),
+    )
     logging.info('output: %s', output)
 
     # Assert that ChromeDataRegionSetting is set to No Preference (0)
@@ -62,18 +65,21 @@ class ChromeDataRegionSettingTest(ChromeEnterpriseTestCase):
     # Domain: chromepizzatest.com / OrgUnit: CBCM-DRZ > Europe
     # Enroll browser in OU with ChromeDataRegionSetting set to Europe (2)
     path = "gs://%s/secrets/ChromeDataRegionSettingEurope-enrollToken" % (
-        self.gsbucket)
+      self.gsbucket
+    )
     cmd = r'gsutil cat ' + path
     token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
-    self.SetPolicy('win2022-dc', r'CloudManagementEnrollmentToken', token,
-                   'String')
+    self.SetPolicy(
+      'win2022-dc', r'CloudManagementEnrollmentToken', token, 'String'
+    )
 
     instance_name = 'cbcmdrz-europe'
     self.RunCommand(instance_name, 'gpupdate /force')
     d = os.path.dirname(os.path.abspath(__file__))
     output = self.RunWebDriverTest(
-        instance_name,
-        os.path.join(d, 'chrome_data_region_setting_webdriver_test.py'))
+      instance_name,
+      os.path.join(d, 'chrome_data_region_setting_webdriver_test.py'),
+    )
 
     # Assert that ChromeDataRegionSetting is set to Europe (2)
     self.assertIn('value=2', output)
@@ -95,9 +101,10 @@ class ChromeDataRegionSettingTest(ChromeEnterpriseTestCase):
     instance_name = "drz-user-nopref"
     d = os.path.dirname(os.path.abspath(__file__))
     output = self.RunUITest(
-        instance_name,
-        os.path.join(d, "chrome_data_region_setting_webdriver_test.py"),
-        args=["--account", account, "--password", password])
+      instance_name,
+      os.path.join(d, "chrome_data_region_setting_webdriver_test.py"),
+      args=["--account", account, "--password", password],
+    )
 
     # Assert that ChromeDataRegionSetting is set to No Preference (0)
     self.assertIn("value=0", output)
@@ -118,9 +125,10 @@ class ChromeDataRegionSettingTest(ChromeEnterpriseTestCase):
     instance_name = "drz-user-europe"
     d = os.path.dirname(os.path.abspath(__file__))
     output = self.RunUITest(
-        instance_name,
-        os.path.join(d, "chrome_data_region_setting_webdriver_test.py"),
-        args=["--account", account, "--password", password])
+      instance_name,
+      os.path.join(d, "chrome_data_region_setting_webdriver_test.py"),
+      args=["--account", account, "--password", password],
+    )
 
     # Assert that ChromeDataRegionSetting is set to Europe (2)
     self.assertIn("value=2", output)

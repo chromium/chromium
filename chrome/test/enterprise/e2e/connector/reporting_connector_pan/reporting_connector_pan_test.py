@@ -56,5 +56,6 @@ class ReportingConnectorPanTest(ChromeReportingConnectorTestCase):
     # initial wait 5 mins for events from google central server to pan
     time.sleep(300)
     self.TryVerifyUntilTimeout(
-        verifyClass=panService,
-        content=VerifyContent(deviceId=deviceId, timestamp=testStartTime))
+      verifyClass=panService,
+      content=VerifyContent(deviceId=deviceId, timestamp=testStartTime),
+    )

@@ -27,8 +27,9 @@ _SAFE_BROWSING_REPORTING_URL = "chrome://safe-browsing/#tab-reporting"
 def main(argv):
   chrome_options = Options()
 
-  chrome_options.add_experimental_option("localState",
-                                         {"internal_only_uis_enabled": True})
+  chrome_options.add_experimental_option(
+    "localState", {"internal_only_uis_enabled": True}
+  )
   driver = create_chrome_webdriver(chrome_options=chrome_options)
   driver.implicitly_wait(10)
 
@@ -44,7 +45,7 @@ def main(argv):
     driver.get(FLAGS.url)
 
     if FLAGS.action == 'paste':
-      #use pyperclip to paste things in textbox
+      # use pyperclip to paste things in textbox
       # paste content from clipboard to the form
       form = driver.find_element(By.NAME, 'sensitive_data_scan')
       pyperclip.copy('block')
@@ -52,7 +53,7 @@ def main(argv):
       time.sleep(5)
 
     elif FLAGS.action == 'upload':
-      #Upload file into the website
+      # Upload file into the website
       # Create a text file with block keyword
       file_path = r'C:\temp\block.txt'
       with open(file_path, 'w') as f:
@@ -67,7 +68,7 @@ def main(argv):
       print("FILE_UPLOAD")
 
     elif FLAGS.action == 'print':
-      #Print a webpage which url has block
+      # Print a webpage which url has block
       # TODO(crbug.com/308885357) - upgrade to selenium 4 to support print
       print("EVENT_RESULT_BLOCKED")
       print("PAGE_PRINT")

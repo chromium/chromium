@@ -14,15 +14,18 @@ import win32security
 
 sys.path.insert(
     0,
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'third_party',
-                 'pefile_py3'))
+    os.path.join(
+        os.path.dirname(__file__), '..', '..', '..', 'third_party', 'pefile_py3'
+    ),
+)
 import pefile
 
 
 def _GetFileVersion(file_path):
     """Returns the file version of the given file."""
     return win32com.client.Dispatch(
-        'Scripting.FileSystemObject').GetFileVersion(file_path)
+        'Scripting.FileSystemObject'
+    ).GetFileVersion(file_path)
 
 
 def _GetFileBitness(file_path):
@@ -31,8 +34,8 @@ def _GetFileBitness(file_path):
     if processor_type == pefile.MACHINE_TYPE['IMAGE_FILE_MACHINE_I386']:
         return '32'
     if processor_type in [
-            pefile.MACHINE_TYPE['IMAGE_FILE_MACHINE_AMD64'],
-            pefile.MACHINE_TYPE['IMAGE_FILE_MACHINE_ARM64']
+        pefile.MACHINE_TYPE['IMAGE_FILE_MACHINE_AMD64'],
+        pefile.MACHINE_TYPE['IMAGE_FILE_MACHINE_ARM64'],
     ]:
         return '64'
     raise Exception('Unknown processor type %d' % processor_type)
@@ -49,11 +52,14 @@ def _GetProductName(file_path):
         product name was not found.
     """
     language_and_codepage_pairs = win32api.GetFileVersionInfo(
-        file_path, '\\VarFileInfo\\Translation')
+        file_path, '\\VarFileInfo\\Translation'
+    )
     if not language_and_codepage_pairs:
         return None
-    product_name_entry = ('\\StringFileInfo\\%04x%04x\\ProductName' %
-                          language_and_codepage_pairs[0])
+    product_name_entry = (
+        '\\StringFileInfo\\%04x%04x\\ProductName'
+        % language_and_codepage_pairs[0]
+    )
     return win32api.GetFileVersionInfo(file_path, product_name_entry)
 
 
@@ -64,10 +70,12 @@ def _GetUserSpecificRegistrySuffix():
     UserSpecificRegistrySuffix::GetSuffix() in
     chrome/installer/util/shell_util.cc. It will always be 27 characters long.
     """
-    token_handle = win32security.OpenProcessToken(win32api.GetCurrentProcess(),
-                                                  win32security.TOKEN_QUERY)
-    user_sid, _ = win32security.GetTokenInformation(token_handle,
-                                                    win32security.TokenUser)
+    token_handle = win32security.OpenProcessToken(
+        win32api.GetCurrentProcess(), win32security.TOKEN_QUERY
+    )
+    user_sid, _ = win32security.GetTokenInformation(
+        token_handle, win32security.TokenUser
+    )
     user_sid_string = win32security.ConvertSidToStringSid(user_sid)
     md5_digest = hashlib.md5(user_sid_string.encode('utf-8')).digest()
     return '.' + base64.b32encode(md5_digest).decode('utf-8').rstrip('=')
@@ -76,9 +84,14 @@ def _GetUserSpecificRegistrySuffix():
 class VariableExpander:
     """Expands variables in strings."""
 
-    def __init__(self, mini_installer_path,
-                 previous_version_mini_installer_path, chromedriver_path,
-                 quiet, output_dir):
+    def __init__(
+        self,
+        mini_installer_path,
+        previous_version_mini_installer_path,
+        chromedriver_path,
+        quiet,
+        output_dir,
+    ):
         """Constructor.
 
         The constructor initializes a variable dictionary that maps variables to
@@ -179,267 +192,272 @@ class VariableExpander:
         """
         mini_installer_abspath = os.path.abspath(mini_installer_path)
         previous_version_mini_installer_abspath = os.path.abspath(
-            previous_version_mini_installer_path)
+            previous_version_mini_installer_path
+        )
         windows_major_ver, windows_minor_ver, _, _, _ = win32api.GetVersionEx()
         self._variable_mapping = {
-            'CHROMEDRIVER_PATH':
-            chromedriver_path,
-            'QUIET':
-            '-q' if quiet else '',
-            'OUTPUT_DIR':
-            '"--output-dir=%s"' % output_dir if output_dir else '',
-            'LAST_INSTALLER_BREAKING_VERSION':
-            '85.0.4169.0',
-            'LOCAL_APPDATA':
-            shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0),
-            'LOG_FILE':
-            '',
-            'MINI_INSTALLER':
-            mini_installer_abspath,
-            'MINI_INSTALLER_FILE_VERSION':
-            _GetFileVersion(mini_installer_abspath),
-            'MINI_INSTALLER_BITNESS':
-            _GetFileBitness(mini_installer_abspath),
-            'PREVIOUS_VERSION_MINI_INSTALLER':
-            previous_version_mini_installer_abspath,
-            'PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION':
-            _GetFileVersion(previous_version_mini_installer_abspath),
-            'PROGRAM_FILES':
-            shell.SHGetFolderPath(
-                0, shellcon.CSIDL_PROGRAM_FILES
-                if _GetFileBitness(mini_installer_abspath) == '64' else
-                shellcon.CSIDL_PROGRAM_FILESX86, None, 0),
-            'PYTHON_INTERPRETER':
-            sys.executable,
-            'USER_SPECIFIC_REGISTRY_SUFFIX':
-            _GetUserSpecificRegistrySuffix(),
-            'VERSION_SERVER_2003':
-            '(5, 2)',
-            'VERSION_VISTA':
-            '(6, 0)',
-            'VERSION_WIN10':
-            '(10, 0)',
-            'VERSION_WIN7':
-            '(6, 1)',
-            'VERSION_WIN8':
-            '(6, 2)',
-            'VERSION_WIN8_1':
-            '(6, 3)',
-            'VERSION_XP':
-            '(5, 1)',
-            'WINDOWS_VERSION':
-            '(%s, %s)' % (windows_major_ver, windows_minor_ver)
+            'CHROMEDRIVER_PATH': chromedriver_path,
+            'QUIET': '-q' if quiet else '',
+            'OUTPUT_DIR': '"--output-dir=%s"' % output_dir
+            if output_dir
+            else '',
+            'LAST_INSTALLER_BREAKING_VERSION': '85.0.4169.0',
+            'LOCAL_APPDATA': shell.SHGetFolderPath(
+                0, shellcon.CSIDL_LOCAL_APPDATA, None, 0
+            ),
+            'LOG_FILE': '',
+            'MINI_INSTALLER': mini_installer_abspath,
+            'MINI_INSTALLER_FILE_VERSION': _GetFileVersion(
+                mini_installer_abspath
+            ),
+            'MINI_INSTALLER_BITNESS': _GetFileBitness(mini_installer_abspath),
+            'PREVIOUS_VERSION_MINI_INSTALLER': previous_version_mini_installer_abspath,
+            'PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION': _GetFileVersion(
+                previous_version_mini_installer_abspath
+            ),
+            'PROGRAM_FILES': shell.SHGetFolderPath(
+                0,
+                shellcon.CSIDL_PROGRAM_FILES
+                if _GetFileBitness(mini_installer_abspath) == '64'
+                else shellcon.CSIDL_PROGRAM_FILESX86,
+                None,
+                0,
+            ),
+            'PYTHON_INTERPRETER': sys.executable,
+            'USER_SPECIFIC_REGISTRY_SUFFIX': _GetUserSpecificRegistrySuffix(),
+            'VERSION_SERVER_2003': '(5, 2)',
+            'VERSION_VISTA': '(6, 0)',
+            'VERSION_WIN10': '(10, 0)',
+            'VERSION_WIN7': '(6, 1)',
+            'VERSION_WIN8': '(6, 2)',
+            'VERSION_WIN8_1': '(6, 3)',
+            'VERSION_XP': '(5, 1)',
+            'WINDOWS_VERSION': '(%s, %s)'
+            % (windows_major_ver, windows_minor_ver),
         }
 
         mini_installer_product_name = _GetProductName(mini_installer_abspath)
         if mini_installer_product_name == 'Google Chrome Installer':
-            self._variable_mapping.update({
-                'BRAND':
-                'Google Chrome',
-                'BINARIES_UPDATE_REGISTRY_SUBKEY':
-                ('Software\\Google\\Update\\Clients\\'
-                 '{4DC8B4CA-1BDA-483e-B5FA-D3C12E15B62D}'),
-                'CHROME_DIR':
-                'Google\\Chrome',
-                'CHROME_HTML_PROG_ID':
-                'ChromeHTML',
-                'CHROME_HTML_PROG_ID_BETA':
-                'ChromeBHTML',
-                'CHROME_HTML_PROG_ID_DEV':
-                'ChromeDHTML',
-                'CHROME_HTML_PROG_ID_SXS':
-                'ChromeSSHTM',
-                'CHROME_LONG_NAME':
-                'Google Chrome',
-                'CHROME_PDF_PROG_ID':
-                'ChromePDF',
-                'CHROME_PDF_PROG_ID_BETA':
-                'ChromeBPDF',
-                'CHROME_PDF_PROG_ID_DEV':
-                'ChromeDPDF',
-                'CHROME_PDF_PROG_ID_SXS':
-                'ChromeSSPDF',
-                'CHROME_SHORT_NAME':
-                'Chrome',
-                'CHROME_UPDATE_REGISTRY_SUBKEY':
-                ('Software\\Google\\Update\\Clients\\'
-                 '{8A69D345-D564-463c-AFF1-A69D9E530F96}'),
-                'CHROME_CLIENT_STATE_KEY_BETA':
-                ('Software\\Google\\Update\\ClientState\\'
-                 '{8237E44A-0054-442C-B6B6-EA0509993955}'),
-                'CHROME_CLIENT_STATE_KEY_DEV':
-                ('Software\\Google\\Update\\ClientState\\'
-                 '{401C381F-E0DE-4B85-8BD8-3F3F14FBDA57}'),
-                'CHROME_CLIENT_STATE_KEY_SXS':
-                ('Software\\Google\\Update\\ClientState\\'
-                 '{4ea16ac7-fd5a-47c3-875b-dbf4a2008c20}'),
-                'CHROME_CLIENT_STATE_KEY':
-                ('Software\\Google\\Update\\ClientState\\'
-                 '{8A69D345-D564-463c-AFF1-A69D9E530F96}'),
-                'CHROME_TOAST_ACTIVATOR_CLSID':
-                ('{A2C6CB58-C076-425C-ACB7-6D19D64428CD}'),
-                'CHROME_DIR_BETA':
-                'Google\\Chrome Beta',
-                'CHROME_DIR_DEV':
-                'Google\\Chrome Dev',
-                'CHROME_DIR_SXS':
-                'Google\\Chrome SxS',
-                'CHROME_LONG_NAME_BETA':
-                'Google Chrome Beta',
-                'CHROME_LONG_NAME_DEV':
-                'Google Chrome Dev',
-                'CHROME_LONG_NAME_SXS':
-                'Google Chrome SxS',
-                'CHROME_SHORT_NAME_BETA':
-                'ChromeBeta',
-                'CHROME_SHORT_NAME_DEV':
-                'ChromeDev',
-                'CHROME_SHORT_NAME_SXS':
-                'ChromeCanary',
-                'CHROME_DIRECT_LAUNCH_SCHEME':
-                'google-chrome',
-                'CHROME_UPDATE_REGISTRY_SUBKEY_BETA':
-                ('Software\\Google\\Update\\Clients\\'
-                 '{8237E44A-0054-442C-B6B6-EA0509993955}'),
-                'CHROME_UPDATE_REGISTRY_SUBKEY_DEV':
-                ('Software\\Google\\Update\\Clients\\'
-                 '{401C381F-E0DE-4B85-8BD8-3F3F14FBDA57}'),
-                'CHROME_UPDATE_REGISTRY_SUBKEY_SXS':
-                ('Software\\Google\\Update\\Clients\\'
-                 '{4ea16ac7-fd5a-47c3-875b-dbf4a2008c20}'),
-                'LAUNCHER_UPDATE_REGISTRY_SUBKEY':
-                ('Software\\Google\\Update\\Clients\\'
-                 '{FDA71E6F-AC4C-4a00-8B70-9958A68906BF}'),
-                'CHROME_TOAST_ACTIVATOR_CLSID_BETA':
-                ('{B89B137F-96AA-4AE2-98C4-6373EAA1EA4D}'),
-                'CHROME_TOAST_ACTIVATOR_CLSID_DEV':
-                ('{F01C03EB-D431-4C83-8D7A-902771E732FA}'),
-                'CHROME_TOAST_ACTIVATOR_CLSID_SXS':
-                ('{FA372A6E-149F-4E95-832D-8F698D40AD7F}'),
-                'CHROME_ELEVATOR_CLSID':
-                ('{708860E0-F641-4611-8895-7D867DD3675B}'),
-                'CHROME_ELEVATOR_CLSID_BETA':
-                ('{DD2646BA-3707-4BF8-B9A7-038691A68FC2}'),
-                'CHROME_ELEVATOR_CLSID_DEV':
-                ('{DA7FDCA5-2CAA-4637-AA17-0740584DE7DA}'),
-                'CHROME_ELEVATOR_CLSID_SXS':
-                ('{704C2872-2049-435E-A469-0A534313C42B}'),
-                'CHROME_ELEVATOR_IID':
-                ('{1BF5208B-295F-4992-B5F4-3A9BB6494838}'),
-                'CHROME_ELEVATOR_IID_BETA':
-                ('{B96A14B8-D0B0-44D8-BA68-2385B2A03254}'),
-                'CHROME_ELEVATOR_IID_DEV':
-                ('{3FEFA48E-C8BF-461F-AED6-63F658CC850A}'),
-                'CHROME_ELEVATOR_IID_SXS':
-                ('{FF672E9F-0994-4322-81E5-3A5A9746140A}'),
-                'CHROME_ELEVATION_SERVICE_NAME':
-                ('GoogleChromeElevationService'),
-                'CHROME_ELEVATION_SERVICE_NAME_BETA':
-                ('GoogleChromeBetaElevationService'),
-                'CHROME_ELEVATION_SERVICE_NAME_DEV':
-                ('GoogleChromeDevElevationService'),
-                'CHROME_ELEVATION_SERVICE_NAME_SXS':
-                ('GoogleChromeCanaryElevationService'),
-                'CHROME_ELEVATION_SERVICE_DISPLAY_NAME':
-                ('Google Chrome Elevation Service ' +
-                 '(GoogleChromeElevationService)'),
-                'CHROME_ELEVATION_SERVICE_DISPLAY_NAME_BETA':
-                ('Google Chrome Beta Elevation Service'
-                 ' (GoogleChromeBetaElevationService)'),
-                'CHROME_ELEVATION_SERVICE_DISPLAY_NAME_DEV':
-                ('Google Chrome Dev Elevation Service'
-                 ' (GoogleChromeDevElevationService)'),
-                'CHROME_ELEVATION_SERVICE_DISPLAY_NAME_SXS':
-                ('Google Chrome Canary Elevation Service'),
-                'TRACING_SERVICE_CLSID':
-                '{70457024-D309-462C-B2E0-49A771487E46}',
-                'TRACING_SERVICE_STORAGE_DIR':
-                os.path.join(
-                    shell.SHGetFolderPath(0, shellcon.CSIDL_WINDOWS, None, 0),
-                    'SystemTemp', 'ChromeTracing'),
-            })
+            self._variable_mapping.update(
+                {
+                    'BRAND': 'Google Chrome',
+                    'BINARIES_UPDATE_REGISTRY_SUBKEY': (
+                        'Software\\Google\\Update\\Clients\\'
+                        '{4DC8B4CA-1BDA-483e-B5FA-D3C12E15B62D}'
+                    ),
+                    'CHROME_DIR': 'Google\\Chrome',
+                    'CHROME_HTML_PROG_ID': 'ChromeHTML',
+                    'CHROME_HTML_PROG_ID_BETA': 'ChromeBHTML',
+                    'CHROME_HTML_PROG_ID_DEV': 'ChromeDHTML',
+                    'CHROME_HTML_PROG_ID_SXS': 'ChromeSSHTM',
+                    'CHROME_LONG_NAME': 'Google Chrome',
+                    'CHROME_PDF_PROG_ID': 'ChromePDF',
+                    'CHROME_PDF_PROG_ID_BETA': 'ChromeBPDF',
+                    'CHROME_PDF_PROG_ID_DEV': 'ChromeDPDF',
+                    'CHROME_PDF_PROG_ID_SXS': 'ChromeSSPDF',
+                    'CHROME_SHORT_NAME': 'Chrome',
+                    'CHROME_UPDATE_REGISTRY_SUBKEY': (
+                        'Software\\Google\\Update\\Clients\\'
+                        '{8A69D345-D564-463c-AFF1-A69D9E530F96}'
+                    ),
+                    'CHROME_CLIENT_STATE_KEY_BETA': (
+                        'Software\\Google\\Update\\ClientState\\'
+                        '{8237E44A-0054-442C-B6B6-EA0509993955}'
+                    ),
+                    'CHROME_CLIENT_STATE_KEY_DEV': (
+                        'Software\\Google\\Update\\ClientState\\'
+                        '{401C381F-E0DE-4B85-8BD8-3F3F14FBDA57}'
+                    ),
+                    'CHROME_CLIENT_STATE_KEY_SXS': (
+                        'Software\\Google\\Update\\ClientState\\'
+                        '{4ea16ac7-fd5a-47c3-875b-dbf4a2008c20}'
+                    ),
+                    'CHROME_CLIENT_STATE_KEY': (
+                        'Software\\Google\\Update\\ClientState\\'
+                        '{8A69D345-D564-463c-AFF1-A69D9E530F96}'
+                    ),
+                    'CHROME_TOAST_ACTIVATOR_CLSID': (
+                        '{A2C6CB58-C076-425C-ACB7-6D19D64428CD}'
+                    ),
+                    'CHROME_DIR_BETA': 'Google\\Chrome Beta',
+                    'CHROME_DIR_DEV': 'Google\\Chrome Dev',
+                    'CHROME_DIR_SXS': 'Google\\Chrome SxS',
+                    'CHROME_LONG_NAME_BETA': 'Google Chrome Beta',
+                    'CHROME_LONG_NAME_DEV': 'Google Chrome Dev',
+                    'CHROME_LONG_NAME_SXS': 'Google Chrome SxS',
+                    'CHROME_SHORT_NAME_BETA': 'ChromeBeta',
+                    'CHROME_SHORT_NAME_DEV': 'ChromeDev',
+                    'CHROME_SHORT_NAME_SXS': 'ChromeCanary',
+                    'CHROME_DIRECT_LAUNCH_SCHEME': 'google-chrome',
+                    'CHROME_UPDATE_REGISTRY_SUBKEY_BETA': (
+                        'Software\\Google\\Update\\Clients\\'
+                        '{8237E44A-0054-442C-B6B6-EA0509993955}'
+                    ),
+                    'CHROME_UPDATE_REGISTRY_SUBKEY_DEV': (
+                        'Software\\Google\\Update\\Clients\\'
+                        '{401C381F-E0DE-4B85-8BD8-3F3F14FBDA57}'
+                    ),
+                    'CHROME_UPDATE_REGISTRY_SUBKEY_SXS': (
+                        'Software\\Google\\Update\\Clients\\'
+                        '{4ea16ac7-fd5a-47c3-875b-dbf4a2008c20}'
+                    ),
+                    'LAUNCHER_UPDATE_REGISTRY_SUBKEY': (
+                        'Software\\Google\\Update\\Clients\\'
+                        '{FDA71E6F-AC4C-4a00-8B70-9958A68906BF}'
+                    ),
+                    'CHROME_TOAST_ACTIVATOR_CLSID_BETA': (
+                        '{B89B137F-96AA-4AE2-98C4-6373EAA1EA4D}'
+                    ),
+                    'CHROME_TOAST_ACTIVATOR_CLSID_DEV': (
+                        '{F01C03EB-D431-4C83-8D7A-902771E732FA}'
+                    ),
+                    'CHROME_TOAST_ACTIVATOR_CLSID_SXS': (
+                        '{FA372A6E-149F-4E95-832D-8F698D40AD7F}'
+                    ),
+                    'CHROME_ELEVATOR_CLSID': (
+                        '{708860E0-F641-4611-8895-7D867DD3675B}'
+                    ),
+                    'CHROME_ELEVATOR_CLSID_BETA': (
+                        '{DD2646BA-3707-4BF8-B9A7-038691A68FC2}'
+                    ),
+                    'CHROME_ELEVATOR_CLSID_DEV': (
+                        '{DA7FDCA5-2CAA-4637-AA17-0740584DE7DA}'
+                    ),
+                    'CHROME_ELEVATOR_CLSID_SXS': (
+                        '{704C2872-2049-435E-A469-0A534313C42B}'
+                    ),
+                    'CHROME_ELEVATOR_IID': (
+                        '{1BF5208B-295F-4992-B5F4-3A9BB6494838}'
+                    ),
+                    'CHROME_ELEVATOR_IID_BETA': (
+                        '{B96A14B8-D0B0-44D8-BA68-2385B2A03254}'
+                    ),
+                    'CHROME_ELEVATOR_IID_DEV': (
+                        '{3FEFA48E-C8BF-461F-AED6-63F658CC850A}'
+                    ),
+                    'CHROME_ELEVATOR_IID_SXS': (
+                        '{FF672E9F-0994-4322-81E5-3A5A9746140A}'
+                    ),
+                    'CHROME_ELEVATION_SERVICE_NAME': (
+                        'GoogleChromeElevationService'
+                    ),
+                    'CHROME_ELEVATION_SERVICE_NAME_BETA': (
+                        'GoogleChromeBetaElevationService'
+                    ),
+                    'CHROME_ELEVATION_SERVICE_NAME_DEV': (
+                        'GoogleChromeDevElevationService'
+                    ),
+                    'CHROME_ELEVATION_SERVICE_NAME_SXS': (
+                        'GoogleChromeCanaryElevationService'
+                    ),
+                    'CHROME_ELEVATION_SERVICE_DISPLAY_NAME': (
+                        'Google Chrome Elevation Service '
+                        + '(GoogleChromeElevationService)'
+                    ),
+                    'CHROME_ELEVATION_SERVICE_DISPLAY_NAME_BETA': (
+                        'Google Chrome Beta Elevation Service'
+                        ' (GoogleChromeBetaElevationService)'
+                    ),
+                    'CHROME_ELEVATION_SERVICE_DISPLAY_NAME_DEV': (
+                        'Google Chrome Dev Elevation Service'
+                        ' (GoogleChromeDevElevationService)'
+                    ),
+                    'CHROME_ELEVATION_SERVICE_DISPLAY_NAME_SXS': (
+                        'Google Chrome Canary Elevation Service'
+                    ),
+                    'TRACING_SERVICE_CLSID': '{70457024-D309-462C-B2E0-49A771487E46}',
+                    'TRACING_SERVICE_STORAGE_DIR': os.path.join(
+                        shell.SHGetFolderPath(
+                            0, shellcon.CSIDL_WINDOWS, None, 0
+                        ),
+                        'SystemTemp',
+                        'ChromeTracing',
+                    ),
+                }
+            )
         elif mini_installer_product_name == 'Chromium Installer':
-            self._variable_mapping.update({
-                'BRAND':
-                'Chromium',
-                'BINARIES_UPDATE_REGISTRY_SUBKEY':
-                'Software\\Chromium Binaries',
-                'CHROME_DIR':
-                'Chromium',
-                'CHROME_HTML_PROG_ID':
-                'ChromiumHTM',
-                'CHROME_LONG_NAME':
-                'Chromium',
-                'CHROME_PDF_PROG_ID':
-                'ChromiumPDF',
-                'CHROME_SHORT_NAME':
-                'Chromium',
-                'CHROME_UPDATE_REGISTRY_SUBKEY':
-                'Software\\Chromium',
-                'CHROME_CLIENT_STATE_KEY':
-                'Software\\Chromium',
-                'CHROME_DIRECT_LAUNCH_SCHEME':
-                'chromium',
-                'CHROME_TOAST_ACTIVATOR_CLSID':
-                ('{635EFA6F-08D6-4EC9-BD14-8A0FDE975159}'),
-                'CHROME_ELEVATOR_CLSID':
-                ('{D133B120-6DB4-4D6B-8BFE-83BF8CA1B1B0}'),
-                'CHROME_ELEVATOR_IID':
-                ('{BB19A0E5-00C6-4966-94B2-5AFEC6FED93A}'),
-                'CHROME_ELEVATION_SERVICE_NAME':
-                'ChromiumElevationService',
-                'CHROME_ELEVATION_SERVICE_DISPLAY_NAME':
-                ('Chromium Elevation Service (ChromiumElevationService)'),
-                'TRACING_SERVICE_CLSID':
-                '{83F69367-442D-447F-8BCC-0E3F97BE9CF2}',
-                'TRACING_SERVICE_STORAGE_DIR':
-                os.path.join(
-                    shell.SHGetFolderPath(0, shellcon.CSIDL_WINDOWS, None, 0),
-                    'SystemTemp', 'ChromiumTracing'),
-            })
-        elif mini_installer_product_name == ('Google Chrome for Testing '
-                                             'Installer'):
-            self._variable_mapping.update({
-                'BRAND':
-                'Google Chrome for Testing',
-                'CHROME_DIR':
-                'Google\\Chrome for Testing',
-                'CHROME_HTML_PROG_ID':
-                'CfTHTML',
-                'CHROME_LONG_NAME':
-                'Google Chrome for Testing',
-                'CHROME_PDF_PROG_ID':
-                'CfTPDF',
-                'CHROME_SHORT_NAME':
-                'Google Chrome for Testing',
-                'CHROME_UPDATE_REGISTRY_SUBKEY':
-                'Software\\Chrome for Testing',
-                'CHROME_CLIENT_STATE_KEY':
-                'Software\\Chrome for Testing',
-                'CHROME_TOAST_ACTIVATOR_CLSID':
-                ('{77ED8F9B-E27A-499F-8E2F-D7C04157CF64}'),
-                'CHROME_ELEVATOR_CLSID':
-                ('{724349BF-E1CF-4481-A64D-8CD10183CA03}'),
-                'CHROME_ELEVATOR_IID':
-                ('{3DC48E97-47D0-476F-8F89-0792FC611567}'),
-                'CHROME_ELEVATION_SERVICE_NAME':
-                'GoogleChromeforTestingElevationService',
-                'CHROME_ELEVATION_SERVICE_DISPLAY_NAME':
-                ('Google Chrome for Testing Elevation Service ' +
-                 '(GoogleChromeforTestingElevationService)'),
-                'TRACING_SERVICE_STORAGE_DIR':
-                os.path.join(
-                    shell.SHGetFolderPath(0, shellcon.CSIDL_WINDOWS, None, 0),
-                    'SystemTemp', 'Chrome for TestingTracing'),
-            })
+            self._variable_mapping.update(
+                {
+                    'BRAND': 'Chromium',
+                    'BINARIES_UPDATE_REGISTRY_SUBKEY': 'Software\\Chromium Binaries',
+                    'CHROME_DIR': 'Chromium',
+                    'CHROME_HTML_PROG_ID': 'ChromiumHTM',
+                    'CHROME_LONG_NAME': 'Chromium',
+                    'CHROME_PDF_PROG_ID': 'ChromiumPDF',
+                    'CHROME_SHORT_NAME': 'Chromium',
+                    'CHROME_UPDATE_REGISTRY_SUBKEY': 'Software\\Chromium',
+                    'CHROME_CLIENT_STATE_KEY': 'Software\\Chromium',
+                    'CHROME_DIRECT_LAUNCH_SCHEME': 'chromium',
+                    'CHROME_TOAST_ACTIVATOR_CLSID': (
+                        '{635EFA6F-08D6-4EC9-BD14-8A0FDE975159}'
+                    ),
+                    'CHROME_ELEVATOR_CLSID': (
+                        '{D133B120-6DB4-4D6B-8BFE-83BF8CA1B1B0}'
+                    ),
+                    'CHROME_ELEVATOR_IID': (
+                        '{BB19A0E5-00C6-4966-94B2-5AFEC6FED93A}'
+                    ),
+                    'CHROME_ELEVATION_SERVICE_NAME': 'ChromiumElevationService',
+                    'CHROME_ELEVATION_SERVICE_DISPLAY_NAME': (
+                        'Chromium Elevation Service (ChromiumElevationService)'
+                    ),
+                    'TRACING_SERVICE_CLSID': '{83F69367-442D-447F-8BCC-0E3F97BE9CF2}',
+                    'TRACING_SERVICE_STORAGE_DIR': os.path.join(
+                        shell.SHGetFolderPath(
+                            0, shellcon.CSIDL_WINDOWS, None, 0
+                        ),
+                        'SystemTemp',
+                        'ChromiumTracing',
+                    ),
+                }
+            )
+        elif mini_installer_product_name == (
+            'Google Chrome for Testing Installer'
+        ):
+            self._variable_mapping.update(
+                {
+                    'BRAND': 'Google Chrome for Testing',
+                    'CHROME_DIR': 'Google\\Chrome for Testing',
+                    'CHROME_HTML_PROG_ID': 'CfTHTML',
+                    'CHROME_LONG_NAME': 'Google Chrome for Testing',
+                    'CHROME_PDF_PROG_ID': 'CfTPDF',
+                    'CHROME_SHORT_NAME': 'Google Chrome for Testing',
+                    'CHROME_UPDATE_REGISTRY_SUBKEY': 'Software\\Chrome for Testing',
+                    'CHROME_CLIENT_STATE_KEY': 'Software\\Chrome for Testing',
+                    'CHROME_TOAST_ACTIVATOR_CLSID': (
+                        '{77ED8F9B-E27A-499F-8E2F-D7C04157CF64}'
+                    ),
+                    'CHROME_ELEVATOR_CLSID': (
+                        '{724349BF-E1CF-4481-A64D-8CD10183CA03}'
+                    ),
+                    'CHROME_ELEVATOR_IID': (
+                        '{3DC48E97-47D0-476F-8F89-0792FC611567}'
+                    ),
+                    'CHROME_ELEVATION_SERVICE_NAME': 'GoogleChromeforTestingElevationService',
+                    'CHROME_ELEVATION_SERVICE_DISPLAY_NAME': (
+                        'Google Chrome for Testing Elevation Service '
+                        + '(GoogleChromeforTestingElevationService)'
+                    ),
+                    'TRACING_SERVICE_STORAGE_DIR': os.path.join(
+                        shell.SHGetFolderPath(
+                            0, shellcon.CSIDL_WINDOWS, None, 0
+                        ),
+                        'SystemTemp',
+                        'Chrome for TestingTracing',
+                    ),
+                }
+            )
         else:
-            raise KeyError("Unknown mini_installer product name '%s'" %
-                           mini_installer_product_name)
+            raise KeyError(
+                "Unknown mini_installer product name '%s'"
+                % mini_installer_product_name
+            )
 
     def SetLogFile(self, log_file):
         """Updates the value for the LOG_FILE variable"""
-        self._variable_mapping['LOG_FILE'] = ('"--log-file=%s"' %
-                                              log_file if log_file else '')
+        self._variable_mapping['LOG_FILE'] = (
+            '"--log-file=%s"' % log_file if log_file else ''
+        )
 
     def Expand(self, a_string):
         """Expands variables in the given string.

@@ -88,25 +88,30 @@ if not sys.platform.startswith("linux"):
 deb_sources = {}
 for release in SUPPORTED_DEBIAN_RELEASES:
     codename = SUPPORTED_DEBIAN_RELEASES[release]
-    deb_sources[release] = [{
-        "base_url": url,
-        "packages": ["main/binary-amd64/Packages.xz"]
-    } for url in [
-        "http://ftp.us.debian.org/debian/dists/%s" % codename,
-        "http://ftp.us.debian.org/debian/dists/%s-updates" % codename,
-        "http://security.debian.org/dists/%s-security/updates" % codename,
-    ]]
+    deb_sources[release] = [
+        {"base_url": url, "packages": ["main/binary-amd64/Packages.xz"]}
+        for url in [
+            "http://ftp.us.debian.org/debian/dists/%s" % codename,
+            "http://ftp.us.debian.org/debian/dists/%s-updates" % codename,
+            "http://security.debian.org/dists/%s-security/updates" % codename,
+        ]
+    ]
 for release in SUPPORTED_UBUNTU_RELEASES:
     codename = SUPPORTED_UBUNTU_RELEASES[release]
     repos = ["main", "universe"]
-    deb_sources[release] = [{
-        "base_url": url,
-        "packages": ["%s/binary-amd64/Packages.xz" % repo for repo in repos],
-    } for url in [
-        "http://us.archive.ubuntu.com/ubuntu/dists/%s" % codename,
-        "http://us.archive.ubuntu.com/ubuntu/dists/%s-updates" % codename,
-        "http://security.ubuntu.com/ubuntu/dists/%s-security" % codename,
-    ]]
+    deb_sources[release] = [
+        {
+            "base_url": url,
+            "packages": [
+                "%s/binary-amd64/Packages.xz" % repo for repo in repos
+            ],
+        }
+        for url in [
+            "http://us.archive.ubuntu.com/ubuntu/dists/%s" % codename,
+            "http://us.archive.ubuntu.com/ubuntu/dists/%s-updates" % codename,
+            "http://security.ubuntu.com/ubuntu/dists/%s-security" % codename,
+        ]
+    ]
 
 distro_package_versions = {}
 package_regex = re.compile("^Package: (.*)$")
@@ -122,24 +127,28 @@ for distro in deb_sources:
         keyring = os.path.join(SCRIPT_DIR, "repo_signing_keys.gpg")
         release_file = create_temp_file_from_data(release.encode("utf-8"))
         release_gpg_file = create_temp_file_from_data(release_gpg)
-        subprocess.check_output([
-            "gpgv",
-            "--quiet",
-            "--keyring",
-            keyring,
-            release_gpg_file.name,
-            release_file.name,
-        ])
+        subprocess.check_output(
+            [
+                "gpgv",
+                "--quiet",
+                "--keyring",
+                keyring,
+                release_gpg_file.name,
+                release_file.name,
+            ]
+        )
         for packages_xz in source["packages"]:
-            with urllib.request.urlopen("%s/%s" %
-                                        (base_url, packages_xz)) as response:
+            with urllib.request.urlopen(
+                "%s/%s" % (base_url, packages_xz)
+            ) as response:
                 xz_data = response.read()
 
             sha = hashlib.sha256()
             sha.update(xz_data)
             digest = binascii.hexlify(sha.digest()).decode("utf-8")
             matches = [
-                line for line in release.split("\n")
+                line
+                for line in release.split("\n")
                 if digest in line and packages_xz in line
             ]
             assert len(matches) == 1
@@ -164,8 +173,8 @@ for distro in distro_package_versions:
     if missing_packages:
         missing_any_package = True
         print(
-            "Packages are not available on %s: %s" %
-            (distro, ", ".join(missing_packages)),
+            "Packages are not available on %s: %s"
+            % (distro, ", ".join(missing_packages)),
             file=sys.stderr,
         )
 if missing_any_package:
@@ -177,5 +186,6 @@ with open(os.path.join(SCRIPT_DIR, "dist_package_versions.json"), "w") as f:
         f,
         sort_keys=True,
         indent=4,
-        separators=(",", ": "))
+        separators=(",", ": "),
+    )
     f.write("\n")

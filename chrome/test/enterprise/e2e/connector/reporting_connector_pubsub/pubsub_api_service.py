@@ -10,6 +10,7 @@ from .. import Verifyable, VerifyContent
 
 class PubsubApiService(Verifyable):
   """This class handles retrieving and verifying pubsub messages"""
+
   project = ''
   subscription = ''
   messages = None
@@ -31,7 +32,7 @@ class PubsubApiService(Verifyable):
 
   def TryVerify(self, content: VerifyContent) -> bool:
     """This method will be called repeatedly until
-        success or timeout. Returns boolean"""
+    success or timeout. Returns boolean"""
     self.loadEvents()
     return self.doesEventExist(content.device_id)
 
@@ -51,19 +52,24 @@ class PubsubApiService(Verifyable):
 
   def loadEvents(self):
     with pubsub_v1.SubscriberClient() as subscriber:
-      subscription_path = subscriber.subscription_path(self.project,
-                                                       self.subscription)
-      response = subscriber.pull(request={
+      subscription_path = subscriber.subscription_path(
+        self.project, self.subscription
+      )
+      response = subscriber.pull(
+        request={
           "subscription": subscription_path,
           "max_messages": 500,
-      })
+        }
+      )
       print('Loaded messages :' + str(len(response.received_messages)))
       ack_ids = [msg.ack_id for msg in response.received_messages]
       self.messages = [
-          msg.message.data.decode() for msg in response.received_messages
+        msg.message.data.decode() for msg in response.received_messages
       ]
       if ack_ids:
-        subscriber.acknowledge(request={
+        subscriber.acknowledge(
+          request={
             "subscription": subscription_path,
             "ack_ids": ack_ids,
-        })
+          }
+        )

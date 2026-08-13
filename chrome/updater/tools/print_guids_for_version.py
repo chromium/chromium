@@ -18,17 +18,21 @@ import uuid
 def _Main():
     """Prints the COM IIDs/CLSIDs/LIBIDs."""
     cmd_parser = argparse.ArgumentParser(
-        description='Script to print the COM IIDs/CLSIDs/LIBIDs.')
+        description='Script to print the COM IIDs/CLSIDs/LIBIDs.'
+    )
 
-    cmd_parser.add_argument('--version',
-                            dest='version',
-                            type=str,
-                            required=True,
-                            help='updater version to print the GUIDs for.')
+    cmd_parser.add_argument(
+        '--version',
+        dest='version',
+        type=str,
+        required=True,
+        help='updater version to print the GUIDs for.',
+    )
     cmd_parser.add_argument(
         '--updater_product_full_name',
         default='GoogleUpdater',
-        help='can be `--updater_product_full_name ChromiumUpdater`')
+        help='can be `--updater_product_full_name ChromiumUpdater`',
+    )
     flags = cmd_parser.parse_args()
 
     # These GUIDs must depend on branding only.
@@ -58,10 +62,12 @@ def _Main():
         "028FEB84-44BC-4A73-A0CD-603678155CC3": "IUpdaterAppStateUser",
         "92631531-8044-46F4-B645-CDFBCCC7FA3B": "IUpdaterAppStateSystem",
         "EFE903C0-E820-4136-9FAE-FDCD7F256302": "IUpdaterAppStatesCallback",
-        "BCFCF95C-DE48-4F42-B0E9-D50DB407DB53":
-        "IUpdaterAppStatesCallbackUser",
-        "2CB8867E-495E-459F-B1B6-2DD7FFDBD462":
-        "IUpdaterAppStatesCallbackSystem",
+        "BCFCF95C-DE48-4F42-B0E9-D50DB407DB53": (
+            "IUpdaterAppStatesCallbackUser"
+        ),
+        "2CB8867E-495E-459F-B1B6-2DD7FFDBD462": (
+            "IUpdaterAppStatesCallbackSystem"
+        ),
     }
 
     # These GUIDs must depend on branding and version.
@@ -74,18 +80,21 @@ def _Main():
         "E690EB97-6E46-4361-AF8F-90A4F5496475": "IUpdaterInternalSystem",
         "D272C794-2ACE-4584-B993-3B90C622BE65": "IUpdaterInternalCallback",
         "618D9B82-9F51-4490-AF24-BB80489E1537": "IUpdaterInternalCallbackUser",
-        "7E806C73-B2A4-4BC5-BDAD-2249D87F67FC":
-        "IUpdaterInternalCallbackSystem",
+        "7E806C73-B2A4-4BC5-BDAD-2249D87F67FC": (
+            "IUpdaterInternalCallbackSystem"
+        ),
     }
 
     name = flags.updater_product_full_name
     for key, interface_name in branding_only_placeholder_guids.items():
-        print(interface_name, ":",
-              str(uuid.uuid5(uuid.UUID(key), name)).upper())
+        print(
+            interface_name, ":", str(uuid.uuid5(uuid.UUID(key), name)).upper()
+        )
     name = flags.updater_product_full_name + flags.version
     for key, interface_name in branding_version_placeholder_guids.items():
-        print(interface_name, ":",
-              str(uuid.uuid5(uuid.UUID(key), name)).upper())
+        print(
+            interface_name, ":", str(uuid.uuid5(uuid.UUID(key), name)).upper()
+        )
 
 
 if __name__ == '__main__':

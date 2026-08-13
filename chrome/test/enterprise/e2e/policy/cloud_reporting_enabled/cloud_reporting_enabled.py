@@ -27,7 +27,7 @@ class CloudReportingEnabledTest(ChromeEnterpriseTestCase):
 
   ADMIN_USER_EMAIL = 'admin@chromepizzatest.com'
   SCOPES = [
-      'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers'
+    'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers'
   ]
 
   @before_all
@@ -39,7 +39,8 @@ class CloudReportingEnabledTest(ChromeEnterpriseTestCase):
     """Obtains an access token using service account key and impersonation."""
 
     credentials = service_account.Credentials.from_service_account_info(
-        service_account_info, scopes=scopes, subject=admin_user_email)
+      service_account_info, scopes=scopes, subject=admin_user_email
+    )
 
     # Refresh the token if it's invalid
     if credentials.valid is False:
@@ -61,14 +62,16 @@ class CloudReportingEnabledTest(ChromeEnterpriseTestCase):
     cmd = f'gsutil cat gs://{self.gsbucket}/secrets/enrollToken'
     token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
 
-    self.SetPolicy(self.win_config['dc'], r'CloudManagementEnrollmentToken',
-                   token, 'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'CloudManagementEnrollmentToken', token, 'String'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     local_dir = os.path.dirname(os.path.abspath(__file__))
     # Run test on client which triggers enrollment, policy fetch, and a report
-    output = self.RunWebDriverTest(self.win_config['client'],
-                                   os.path.join(local_dir, '../cbcm_enroll.py'))
+    output = self.RunWebDriverTest(
+      self.win_config['client'], os.path.join(local_dir, '../cbcm_enroll.py')
+    )
     # Wait some more in case the report takes time to propagate through DM
     # server.
     time.sleep(10)
@@ -76,13 +79,14 @@ class CloudReportingEnabledTest(ChromeEnterpriseTestCase):
     # Get the device id of the browser
     index = output.find('DEVICE_ID=')
     self.assertGreater(index, 0)
-    device_id = output[index + len('DEVICE_ID='):].split()[0]
+    device_id = output[index + len('DEVICE_ID=') :].split()[0]
 
     # Get OAuth2 access token
     key = self.GetFileFromGCSBucket('secrets/cbcmapi.json')
     serviceAccountInfo = json.loads(key)
-    access_token = self.GetAccessToken(serviceAccountInfo,
-                                       self.ADMIN_USER_EMAIL, self.SCOPES)
+    access_token = self.GetAccessToken(
+      serviceAccountInfo, self.ADMIN_USER_EMAIL, self.SCOPES
+    )
     headers = {'Authorization': f'Bearer {access_token}'}
 
     # Query CBCM API with virtualDeviceId
@@ -94,11 +98,14 @@ class CloudReportingEnabledTest(ChromeEnterpriseTestCase):
     logging.info(json.dumps(json_object, indent=2))
 
     last_registration_time = datetime.fromisoformat(
-        json_object['browsers'][0]['lastRegistrationTime'])
+      json_object['browsers'][0]['lastRegistrationTime']
+    )
     last_policy_fetch_time = datetime.fromisoformat(
-        json_object['browsers'][0]['lastPolicyFetchTime'])
+      json_object['browsers'][0]['lastPolicyFetchTime']
+    )
     last_status_report_time = datetime.fromisoformat(
-        json_object['browsers'][0]['lastStatusReportTime'])
+      json_object['browsers'][0]['lastStatusReportTime']
+    )
 
     self.assertGreater(int(json_object['browsers'][0]['policyCount']), 0)
     self.assertGreater(last_policy_fetch_time, last_registration_time)

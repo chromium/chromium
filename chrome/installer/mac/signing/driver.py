@@ -13,8 +13,9 @@ import subprocess
 from signing import config_factory, commands, invoker, logger, model, pipeline
 
 
-def _create_config(config_args, development,
-                   embed_development_provisioning_profile):
+def _create_config(
+    config_args, development, embed_development_provisioning_profile
+):
     """Creates the |model.CodeSignConfig| for the signing operations.
 
     If |development| is True, the config will be modified to not require
@@ -39,7 +40,6 @@ def _create_config(config_args, development,
     if development:
 
         class DevelopmentCodeSignConfig(config_class):
-
             @property
             def codesign_requirements_basic(self):
                 return ''
@@ -96,40 +96,48 @@ def main(args):
         args: List of command line arguments.
     """
     parser = argparse.ArgumentParser(
-        description='Code sign and package Chrome for channel distribution.')
+        description='Code sign and package Chrome for channel distribution.'
+    )
     parser.add_argument(
         '--identity',
         required=True,
-        help='The identity to sign everything but PKGs with.')
+        help='The identity to sign everything but PKGs with.',
+    )
     parser.add_argument(
-        '--installer-identity', help='The identity to sign PKGs with.')
+        '--installer-identity', help='The identity to sign PKGs with.'
+    )
     parser.add_argument(
         '--development',
         action='store_true',
         help='The specified identity is for development. Certain codesign '
-        'requirements will be omitted.')
+        'requirements will be omitted.',
+    )
     parser.add_argument(
         '--input',
         required=True,
         help='Path to the input directory. The input directory should '
-        'contain the products to sign, as well as the Packaging directory.')
+        'contain the products to sign, as well as the Packaging directory.',
+    )
     parser.add_argument(
         '--output',
         required=True,
         help='Path to the output directory. The signed (possibly packaged) '
-        'products and installer tools will be placed here.')
+        'products and installer tools will be placed here.',
+    )
     parser.add_argument(
         '--disable-packaging',
         action='store_true',
         help='Disable creating any packaging (.dmg/.pkg) specified by the '
-        'configuration.')
+        'configuration.',
+    )
     parser.add_argument(
         '--skip-brand',
         dest='skip_brands',
         action='append',
         default=[],
         help='Causes any distribution whose brand code matches to be skipped. '
-        'A value of * matches all brand codes.')
+        'A value of * matches all brand codes.',
+    )
     parser.add_argument(
         '--channel',
         dest='channels',
@@ -137,7 +145,8 @@ def main(args):
         default=[],
         help='If provided, only the distributions matching the specified '
         'channel(s) will be produced. The string "stable" matches the None '
-        'channel.')
+        'channel.',
+    )
     parser.add_argument(
         '--notarize',
         nargs='?',
@@ -158,14 +167,16 @@ def main(args):
         'If the `--notarize` argument is not present, that is the equivalent '
         'of `--notarize none`. If the `--notarize` argument is present but '
         'has no option specified, that is the equivalent of `--notarize '
-        'staple`.')
+        'staple`.',
+    )
     parser.add_argument(
         '--embed-development-provisioning-profile',
         action=argparse.BooleanOptionalAction,
         default=None,
         help='Embed the development provisioning profile corresponding to the '
         'signing identity in the application bundle before signing. Only '
-        'applicable if --development is specified.')
+        'applicable if --development is specified.',
+    )
 
     invoker_cls = config_factory.get_invoker_class()
     invoker_cls.register_arguments(parser)
@@ -177,17 +188,23 @@ def main(args):
         # for compatibility with environments that use self-signed identities.
         # The default will change in the future to require opting out.
         args.embed_development_provisioning_profile = False
-    elif not args.development and \
-      args.embed_development_provisioning_profile is not None:
+    elif (
+        not args.development
+        and args.embed_development_provisioning_profile is not None
+    ):
         parser.error(
             "--[no-]embed-development-provisioning-profile cannot be specified "
-            "without --development")
+            "without --development"
+        )
 
-    config_args = model.pick(args, (
-        'identity',
-        'installer_identity',
-        'notarize',
-    ))
+    config_args = model.pick(
+        args,
+        (
+            'identity',
+            'installer_identity',
+            'notarize',
+        ),
+    )
 
     def _create_invoker(config):
         try:
@@ -196,8 +213,11 @@ def main(args):
             parser.error(str(e))
 
     config_args['invoker'] = _create_invoker
-    config = _create_config(config_args, args.development,
-                            args.embed_development_provisioning_profile)
+    config = _create_config(
+        config_args,
+        args.development,
+        args.embed_development_provisioning_profile,
+    )
     paths = model.Paths(args.input, args.output, None)
 
     if not commands.file_exists(paths.output):
@@ -211,4 +231,6 @@ def main(args):
             config,
             disable_packaging=args.disable_packaging,
             skip_brands=args.skip_brands,
-            channels=args.channels))
+            channels=args.channels,
+        )
+    )

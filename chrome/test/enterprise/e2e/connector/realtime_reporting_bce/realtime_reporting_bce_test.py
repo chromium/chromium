@@ -39,6 +39,8 @@ class RealTimeBCEReportingPipelineTest(ChromeReportingConnectorTestCase):
 
     # read service account private key from gs-bucket & write into local
     apiService = RealTimeReportingServer(
-        self.GetFileFromGCSBucket('secrets/ServiceAccountKey.json'))
+      self.GetFileFromGCSBucket('secrets/ServiceAccountKey.json')
+    )
     self.TryVerifyUntilTimeout(
-        verifyClass=apiService, content=VerifyContent(deviceId, testStartTime))
+      verifyClass=apiService, content=VerifyContent(deviceId, testStartTime)
+    )

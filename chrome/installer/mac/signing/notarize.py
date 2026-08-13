@@ -28,7 +28,6 @@ class NotarizationError(Exception):
 
 
 class Invoker(invoker.Base):
-
     @staticmethod
     def register_arguments(parser):
         parser.add_argument(
@@ -39,7 +38,8 @@ class Invoker(invoker.Base):
             'tool. If specified multiple times, the arguments are passed in '
             'the given order. These are passed to every invocation of the '
             'notarization tool and are intended to specify authentication '
-            'parameters.')
+            'parameters.',
+        )
 
     def __init__(self, args, config):
         self._notary_args = args.notary_arg
@@ -64,10 +64,13 @@ class Invoker(invoker.Base):
             uuid = plistlib.loads(output)['id']
         except:
             raise NotarizationError(
-                'xcrun notarytool returned output that could not be parsed: {}'
-                .format(output))
-        logger.info('Submitted %s for notarization, request UUID: %s.', path,
-                    uuid)
+                'xcrun notarytool returned output that could not be parsed: {}'.format(
+                    output
+                )
+            )
+        logger.info(
+            'Submitted %s for notarization, request UUID: %s.', path, uuid
+        )
 
         # Wait for notarization to complete.
         while True:
@@ -76,19 +79,27 @@ class Invoker(invoker.Base):
                 await asyncio.sleep(5)
                 continue
             elif result.status == Status.SUCCESS:
-                logger.info('Successfully notarized request %s. Log file: %s',
-                            uuid, result.log_file)
+                logger.info(
+                    'Successfully notarized request %s. Log file: %s',
+                    uuid,
+                    result.log_file,
+                )
                 return
             else:
                 logger.error(
                     'Failed to notarize request %s.\n'
                     'Output:\n%s\n'
-                    'Log file:\n%s', uuid, result.output, result.log_file)
+                    'Log file:\n%s',
+                    uuid,
+                    result.output,
+                    result.log_file,
+                )
                 raise NotarizationError(
                     'Notarization request {} failed with status: "{}".'.format(
                         uuid,
                         result.status_string,
-                    ))
+                    )
+                )
 
     async def get_result(self, uuid, config):
         command = [
@@ -133,6 +144,7 @@ async def submit(path, config):
 
 class Status(enum.Enum):
     """Enum representing the state of a notarization request."""
+
     SUCCESS = enum.auto()
     IN_PROGRESS = enum.auto()
     ERROR = enum.auto()
@@ -142,7 +154,8 @@ class Status(enum.Enum):
 notarization request.
 """
 NotarizationResult = collections.namedtuple(
-    'NotarizationResult', ['status', 'status_string', 'output', 'log_file'])
+    'NotarizationResult', ['status', 'status_string', 'output', 'log_file']
+)
 
 
 def staple_bundled_parts(parts, paths):
@@ -154,9 +167,7 @@ def staple_bundled_parts(parts, paths):
     """
     # Only staple the signed, bundled executables.
     part_paths = [
-        part.path
-        for part in parts
-        if part.path[-4:] in ('.app', '.xpc')
+        part.path for part in parts if part.path[-4:] in ('.app', '.xpc')
     ]
     # Reverse-sort the paths so that more nested paths are stapled before
     # less-nested ones.
@@ -179,7 +190,8 @@ def staple(path):
     while retry.keep_going():
         try:
             commands.run_command(
-                ['xcrun', 'stapler', 'staple', '--verbose', path])
+                ['xcrun', 'stapler', 'staple', '--verbose', path]
+            )
             return
         except subprocess.CalledProcessError as e:
             # Known bad codes:
@@ -188,7 +200,8 @@ def staple(path):
                 68,  # A server with the specified hostname could not be found.
             )
             if e.returncode in bad_codes and retry.failed_should_retry(
-                    f'Output: {e.output}'):
+                f'Output: {e.output}'
+            ):
                 continue
             raise e
 
@@ -207,10 +220,12 @@ class Retry(object):
                 raise e
     """
 
-    def __init__(self,
-                 desc,
-                 sleep_before_retry=False,
-                 max_tries=_NOTARY_SERVICE_DEFAULT_MAX_TRIES):
+    def __init__(
+        self,
+        desc,
+        sleep_before_retry=False,
+        max_tries=_NOTARY_SERVICE_DEFAULT_MAX_TRIES,
+    ):
         """Creates a retry state object.
 
         Args:
@@ -229,7 +244,8 @@ class Retry(object):
         if self._attempt < self._max_tries:
             return True
         raise RuntimeError(
-            'Loop should have terminated at failed_should_retry()')
+            'Loop should have terminated at failed_should_retry()'
+        )
 
     def failed_should_retry(self, msg=''):
         """If the operation failed and the caller wants to retry it, this
@@ -245,13 +261,19 @@ class Retry(object):
         """
         should_retry = self._attempt < self._max_tries - 1
         if should_retry:
-            delay = min((2**(self._attempt)) * _NOTARY_SERVICE_RETRY_DELAY,
-                        _NOTARY_SERVICE_MAX_RETRY_DELAY)
+            delay = min(
+                (2 ** (self._attempt)) * _NOTARY_SERVICE_RETRY_DELAY,
+                _NOTARY_SERVICE_MAX_RETRY_DELAY,
+            )
             retry_when_message = (
                 f'after {delay} second{"s" if delay != 1 else ""}'
-                if self._sleep_before_retry else 'immediately')
-            logger.warning(f'Error during notarization command {self._desc}. ' +
-                           f'Retrying {retry_when_message}. {msg}')
+                if self._sleep_before_retry
+                else 'immediately'
+            )
+            logger.warning(
+                f'Error during notarization command {self._desc}. '
+                + f'Retrying {retry_when_message}. {msg}'
+            )
             if self._sleep_before_retry:
                 time.sleep(delay)
         self._attempt += 1

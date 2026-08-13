@@ -13,15 +13,17 @@ from infra import ChromeEnterpriseTestCase
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
-    'enrollmentToken', None,
-    'The enrollment token to use, it overwrites the default token')
+  'enrollmentToken',
+  None,
+  'The enrollment token to use, it overwrites the default token',
+)
 
 
 @category("chrome_only")
 @environment(file="../policy_test.asset.textpb")
 class MergelistTest(ChromeEnterpriseTestCase):
   """Test the PolicyListMultipleSourceMergeList policy.
-    https://chromeenterprise.google/policies/?policy=PolicyListMultipleSourceMergeList"""
+  https://chromeenterprise.google/policies/?policy=PolicyListMultipleSourceMergeList"""
 
   _CHROMIUM_URL = 'https://chromium.org'
   _GOOGLE_URL = 'https://google.com'
@@ -40,8 +42,9 @@ class MergelistTest(ChromeEnterpriseTestCase):
       cmd = r'gsutil cat ' + path
       token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
 
-    self.SetPolicy(self.win_config['dc'], r'CloudManagementEnrollmentToken',
-                   token, 'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'CloudManagementEnrollmentToken', token, 'String'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
   def open_page(self, url):
@@ -49,8 +52,9 @@ class MergelistTest(ChromeEnterpriseTestCase):
 
     dir = os.path.dirname(os.path.abspath(__file__))
     logging.info('Opening page: %s' % url)
-    output = self.RunWebDriverTest(self.win_config['client'],
-                                   os.path.join(dir, '../open_page.py'), args)
+    output = self.RunWebDriverTest(
+      self.win_config['client'], os.path.join(dir, '../open_page.py'), args
+    )
     return output
 
   @test
@@ -58,13 +62,17 @@ class MergelistTest(ChromeEnterpriseTestCase):
     self.enroll_in_cbcm()
 
     # Configure PolicyListMultipleSourceMergeList.
-    self.SetPolicy(self.win_config['dc'],
-                   r'PolicyListMultipleSourceMergeList\1', 'URLBlocklist',
-                   'String')
+    self.SetPolicy(
+      self.win_config['dc'],
+      r'PolicyListMultipleSourceMergeList\1',
+      'URLBlocklist',
+      'String',
+    )
 
     # Configure URLBlocklist.
-    self.SetPolicy(self.win_config['dc'], r'URLBlocklist\1', self._GOOGLE_URL,
-                   'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'URLBlocklist\1', self._GOOGLE_URL, 'String'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     # Google is blocked by the blocklist policy set at the platform level.
@@ -79,13 +87,17 @@ class MergelistTest(ChromeEnterpriseTestCase):
   def test_PolicyListMultipleSourceMergeList_unset(self):
     self.enroll_in_cbcm()
 
-    self.SetPolicy(self.win_config['dc'],
-                   r'PolicyListMultipleSourceMergeList\1', 'placeholder',
-                   'String')
+    self.SetPolicy(
+      self.win_config['dc'],
+      r'PolicyListMultipleSourceMergeList\1',
+      'placeholder',
+      'String',
+    )
 
     # Configure URLBlocklist.
-    self.SetPolicy(self.win_config['dc'], r'URLBlocklist\1', self._GOOGLE_URL,
-                   'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'URLBlocklist\1', self._GOOGLE_URL, 'String'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     # Google is blocked by the blocklist policy set at the platform level.

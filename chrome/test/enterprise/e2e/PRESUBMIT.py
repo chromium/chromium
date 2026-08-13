@@ -13,39 +13,40 @@ _OTA_DOC_LINK = 'https://g3doc.corp.google.com/googleclient/chrome/enterprise/g3
 
 def CheckPylint(input_api, output_api):
   disabled_warnings = [
-      # TODO(crbug.com/413421824): Burn down this list over time.
-      'anomalous-backslash-in-string',
-      'bad-indentation',
-      'cell-var-from-loop',
-      'consider-using-enumerate',
-      'consider-using-from-import',
-      'cyclic-import',
-      'deprecated-module',
-      'duplicate-code',
-      'expression-not-assigned',
-      'implicit-str-concat',
-      'line-too-long',
-      'logging-format-interpolation',
-      'logging-fstring-interpolation',
-      'logging-not-lazy',
-      'missing-final-newline',
-      'missing-module-docstring',
-      'redefined-builtin',
-      'redefined-outer-name',
-      'singleton-comparison',
-      'superfluous-parens',
-      'undefined-variable',
-      'unspecified-encoding',
-      'unused-argument',
-      'unused-import',
-      'use-list-literal',
-      # No plans to fix these. Wildcards are part of the test discovery
-      # mechanism.
-      'wildcard-import',
-      'unused-wildcard-import',
+    # TODO(crbug.com/413421824): Burn down this list over time.
+    'anomalous-backslash-in-string',
+    'bad-indentation',
+    'cell-var-from-loop',
+    'consider-using-enumerate',
+    'consider-using-from-import',
+    'cyclic-import',
+    'deprecated-module',
+    'duplicate-code',
+    'expression-not-assigned',
+    'implicit-str-concat',
+    'line-too-long',
+    'logging-format-interpolation',
+    'logging-fstring-interpolation',
+    'logging-not-lazy',
+    'missing-final-newline',
+    'missing-module-docstring',
+    'redefined-builtin',
+    'redefined-outer-name',
+    'singleton-comparison',
+    'superfluous-parens',
+    'undefined-variable',
+    'unspecified-encoding',
+    'unused-argument',
+    'unused-import',
+    'use-list-literal',
+    # No plans to fix these. Wildcards are part of the test discovery
+    # mechanism.
+    'wildcard-import',
+    'unused-wildcard-import',
   ]
   check = input_api.canned_checks.GetPylint(
-      input_api, output_api, disabled_warnings=disabled_warnings, version='3.2')
+    input_api, output_api, disabled_warnings=disabled_warnings, version='3.2'
+  )
   return input_api.RunTests(check)
 
 
@@ -54,7 +55,7 @@ def CheckAccountsBelongToPool(input_api, output_api):
   user_pattern = input_api.re.compile(r'account\d+')
   bad_accounts, locations = [], []
   for affected_file in input_api.AffectedTestableFiles():
-    for (line_num, text) in affected_file.ChangedContents():
+    for line_num, text in affected_file.ChangedContents():
       account_match = account_pattern.search(text)
       if not account_match:
         continue
@@ -62,22 +63,24 @@ def CheckAccountsBelongToPool(input_api, output_api):
         bad_accounts.append(account_match.group())
         start_col, end_col = account_match.span()
         location = output_api.PresubmitResultLocation(
-            file_path=affected_file.LocalPath(),
-            start_line=line_num,
-            end_line=line_num,
-            start_col=start_col,
-            end_col=end_col)
+          file_path=affected_file.LocalPath(),
+          start_line=line_num,
+          end_line=line_num,
+          start_col=start_col,
+          end_col=end_col,
+        )
         locations.append(location)
 
   if not bad_accounts:
     return []
   return [
-      output_api.PresubmitPromptWarning(
-          message=(
-              "This CL appears to use accounts that aren't OTAs from the shared "
-              'pool. Please consider doing so to avoid blocked logins.'),
-          items=bad_accounts,
-          long_text=_OTA_DOC_LINK,
-          locations=locations,
-      )
+    output_api.PresubmitPromptWarning(
+      message=(
+        "This CL appears to use accounts that aren't OTAs from the shared "
+        'pool. Please consider doing so to avoid blocked logins.'
+      ),
+      items=bad_accounts,
+      long_text=_OTA_DOC_LINK,
+      locations=locations,
+    )
   ]

@@ -12,10 +12,10 @@ class Verifyable(ABC):
   @abstractmethod
   def TryVerify(self, content: VerifyContent) -> bool:
     """This method will be called repeatedly until
-        success or timeout. Returns boolean
+    success or timeout. Returns boolean
 
-        Args:
-        deviceId: A GUID device id that made the action.
-        timestamp: A datetime of the start time for the events
-        eventId: the id\name of the event to verify
+    Args:
+    deviceId: A GUID device id that made the action.
+    timestamp: A datetime of the start time for the events
+    eventId: the id\name of the event to verify
     """

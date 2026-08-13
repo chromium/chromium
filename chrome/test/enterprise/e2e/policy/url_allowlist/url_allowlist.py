@@ -40,8 +40,9 @@ class UrlAllowlistTest(ChromeEnterpriseTestCase):
 
     dir = os.path.dirname(os.path.abspath(__file__))
     logging.info('Opening page: %s' % url)
-    output = self.RunWebDriverTest(self.win_config['client'],
-                                   os.path.join(dir, '../open_page.py'), args)
+    output = self.RunWebDriverTest(
+      self.win_config['client'], os.path.join(dir, '../open_page.py'), args
+    )
     return output
 
   @test

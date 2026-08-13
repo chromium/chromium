@@ -30,7 +30,6 @@ def parse_to_json(source: str, pattern: str) -> Any:
 @category('chrome_only')
 @environment(file='../connector_test.asset.textpb')
 class DeviceTrustConnectorWindowsEnrollmentTest(ChromeEnterpriseTestCase):
-
   @before_all
   def setup(self):
     self.EnableUITest(self.win_config['client'])
@@ -47,8 +46,9 @@ class DeviceTrustConnectorWindowsEnrollmentTest(ChromeEnterpriseTestCase):
     cmd = r'gsutil cat ' + path
     token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
     # Enable two Policies
-    self.SetPolicy(self.win_config['dc'], r'CloudManagementEnrollmentToken',
-                   token, 'String')
+    self.SetPolicy(
+      self.win_config['dc'], r'CloudManagementEnrollmentToken', token, 'String'
+    )
 
     self.SetPolicy(self.win_config['dc'], r'SafeBrowsingEnabled', 1, 'DWORD')
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
@@ -59,29 +59,32 @@ class DeviceTrustConnectorWindowsEnrollmentTest(ChromeEnterpriseTestCase):
 
     # Run the UI test once to ensure enrollment
     self.RunUITest(
-        self.win_config['client'],
-        os.path.join(commonDir, 'common', 'device_trust_ui_test.py'),
-        timeout=600,
-        args=[
-            '--idp_matcher',
-            idp_matcher,
-            '--alsologtostderr',
-        ])
+      self.win_config['client'],
+      os.path.join(commonDir, 'common', 'device_trust_ui_test.py'),
+      timeout=600,
+      args=[
+        '--idp_matcher',
+        idp_matcher,
+        '--alsologtostderr',
+      ],
+    )
 
     # Trigger Google Updater via Task Scheduler
-    self.RunGoogleUpdaterTaskSchedulerCommand(self.win_config['client'],
-                                              'Start-ScheduledTask')
+    self.RunGoogleUpdaterTaskSchedulerCommand(
+      self.win_config['client'], 'Start-ScheduledTask'
+    )
     self.WaitForUpdateCheck(self.win_config['client'])
 
     output = self.RunUITest(
-        self.win_config['client'],
-        os.path.join(commonDir, 'common', 'device_trust_ui_test.py'),
-        timeout=600,
-        args=[
-            '--idp_matcher',
-            idp_matcher,
-            '--alsologtostderr',
-        ])
+      self.win_config['client'],
+      os.path.join(commonDir, 'common', 'device_trust_ui_test.py'),
+      timeout=600,
+      args=[
+        '--idp_matcher',
+        idp_matcher,
+        '--alsologtostderr',
+      ],
+    )
 
     # Assert on the information retrieved from output
     results = parse_to_json(output, '(?<=Results:).*')

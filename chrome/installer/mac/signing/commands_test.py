@@ -13,7 +13,6 @@ from signing import commands
 
 
 class TestCommands(unittest.TestCase):
-
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()
 
@@ -59,22 +58,37 @@ class TestCommands(unittest.TestCase):
         # a couple of times before doing any real work.
         self.assertEqual(
             commands.copy_dir_overwrite_and_count_changes(
-                source_dir, dest_dir, dry_run=True), 4)
+                source_dir, dest_dir, dry_run=True
+            ),
+            4,
+        )
         self.assertEqual(
             commands.copy_dir_overwrite_and_count_changes(
-                source_dir, dest_dir, dry_run=True), 4)
+                source_dir, dest_dir, dry_run=True
+            ),
+            4,
+        )
         self.assertEqual(
             commands.copy_dir_overwrite_and_count_changes(
-                source_dir, dest_dir, dry_run=False), 4)
+                source_dir, dest_dir, dry_run=False
+            ),
+            4,
+        )
 
         # Now test that a subsequent copy of the same thing doesn't report any
         # changes.
         self.assertEqual(
             commands.copy_dir_overwrite_and_count_changes(
-                source_dir, dest_dir, dry_run=True), 0)
+                source_dir, dest_dir, dry_run=True
+            ),
+            0,
+        )
         self.assertEqual(
             commands.copy_dir_overwrite_and_count_changes(
-                source_dir, dest_dir, dry_run=False), 0)
+                source_dir, dest_dir, dry_run=False
+            ),
+            0,
+        )
 
         self.assertTrue(os.path.isdir(dest_dir))
         self.assertTrue(os.path.isfile(os.path.join(dest_dir, 'file')))
@@ -82,14 +96,18 @@ class TestCommands(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(dest_dir, 'dir', 'file')))
 
         self.assertEqual(
-            os.path.getsize(os.path.join(dest_dir, 'dir', 'file')), 0)
+            os.path.getsize(os.path.join(dest_dir, 'dir', 'file')), 0
+        )
         with open(os.path.join(dest_dir, 'file')) as file:
             self.assertEqual(file.read(), 'contents')
 
         # No changes to source should result in no changes reported.
         self.assertEqual(
             commands.copy_dir_overwrite_and_count_changes(
-                source_dir, dest_dir, dry_run=False), 0)
+                source_dir, dest_dir, dry_run=False
+            ),
+            0,
+        )
 
         # Changing a timestamp isn't reported, but the timestamp does get
         # updated.
@@ -97,17 +115,24 @@ class TestCommands(unittest.TestCase):
 
         self.assertEqual(
             commands.copy_dir_overwrite_and_count_changes(
-                source_dir, dest_dir, dry_run=False), 0)
+                source_dir, dest_dir, dry_run=False
+            ),
+            0,
+        )
 
         self.assertEqual(
-            os.path.getmtime(os.path.join(dest_dir, 'dir', 'file')), 0)
+            os.path.getmtime(os.path.join(dest_dir, 'dir', 'file')), 0
+        )
 
         # Changing a file is reported.
         with open(os.path.join(source_dir, 'file'), 'w') as file:
             file.write('new contents')
         self.assertEqual(
             commands.copy_dir_overwrite_and_count_changes(
-                source_dir, dest_dir, dry_run=False), 1)
+                source_dir, dest_dir, dry_run=False
+            ),
+            1,
+        )
 
         with open(os.path.join(dest_dir, 'file')) as file:
             self.assertEqual(file.read(), 'new contents')
@@ -117,7 +142,10 @@ class TestCommands(unittest.TestCase):
             file.write('new_contents')
         self.assertEqual(
             commands.copy_dir_overwrite_and_count_changes(
-                source_dir, dest_dir, dry_run=False), 1)
+                source_dir, dest_dir, dry_run=False
+            ),
+            1,
+        )
 
         with open(os.path.join(dest_dir, 'file')) as file:
             self.assertEqual(file.read(), 'new_contents')
@@ -128,7 +156,10 @@ class TestCommands(unittest.TestCase):
 
         self.assertEqual(
             commands.copy_dir_overwrite_and_count_changes(
-                source_dir, dest_dir, dry_run=False), 2)
+                source_dir, dest_dir, dry_run=False
+            ),
+            2,
+        )
 
         self.assertTrue(os.path.isfile(os.path.join(dest_dir, 'new_file')))
         self.assertTrue(os.path.isdir(os.path.join(dest_dir, 'new_dir')))
@@ -141,7 +172,10 @@ class TestCommands(unittest.TestCase):
 
         self.assertEqual(
             commands.copy_dir_overwrite_and_count_changes(
-                source_dir, dest_dir, dry_run=False), 4)
+                source_dir, dest_dir, dry_run=False
+            ),
+            4,
+        )
 
         self.assertFalse(os.path.exists(os.path.join(dest_dir, 'new_file')))
         self.assertFalse(os.path.exists(os.path.join(dest_dir, 'new_dir')))
@@ -195,11 +229,14 @@ class TestCommands(unittest.TestCase):
     def test_run_command_with_default_stderr(self):
         r, w = os.pipe()
         try:
-            commands.run_command([
-                sys.executable, '-c',
-                'import sys; sys.stdout.write("Out."); sys.stdout.flush(); sys.stderr.write("Error."); sys.exit(33)'
-            ],
-                                 stdout=w)
+            commands.run_command(
+                [
+                    sys.executable,
+                    '-c',
+                    'import sys; sys.stdout.write("Out."); sys.stdout.flush(); sys.stderr.write("Error."); sys.exit(33)',
+                ],
+                stdout=w,
+            )
             self.fail('Should have thrown')
         except subprocess.CalledProcessError as e:
             os.close(w)
@@ -211,12 +248,15 @@ class TestCommands(unittest.TestCase):
         ro, wo = os.pipe()
         re, we = os.pipe()
         try:
-            commands.run_command([
-                sys.executable, '-c',
-                'import sys; sys.stdout.write("Out."); sys.stderr.write("Error."); sys.exit(19)'
-            ],
-                                 stdout=wo,
-                                 stderr=we)
+            commands.run_command(
+                [
+                    sys.executable,
+                    '-c',
+                    'import sys; sys.stdout.write("Out."); sys.stderr.write("Error."); sys.exit(19)',
+                ],
+                stdout=wo,
+                stderr=we,
+            )
             self.fail('Should have thrown')
         except subprocess.CalledProcessError as e:
             os.close(wo)
@@ -233,10 +273,13 @@ class TestCommands(unittest.TestCase):
 
     def test_run_command_output_with_default_stderr(self):
         try:
-            commands.run_command_output([
-                sys.executable, '-c',
-                'import sys; sys.stdout.write("Out."); sys.stdout.flush(); sys.stderr.write("Error."); sys.exit(10)'
-            ])
+            commands.run_command_output(
+                [
+                    sys.executable,
+                    '-c',
+                    'import sys; sys.stdout.write("Out."); sys.stdout.flush(); sys.stderr.write("Error."); sys.exit(10)',
+                ]
+            )
             self.fail('Should have thrown')
         except subprocess.CalledProcessError as e:
             self.assertEqual(10, e.returncode)
@@ -245,11 +288,14 @@ class TestCommands(unittest.TestCase):
     def test_run_command_output_with_stderr(self):
         r, w = os.pipe()
         try:
-            commands.run_command_output([
-                sys.executable, '-c',
-                'import sys; sys.stdout.write("Out."); sys.stderr.write("Error."); sys.exit(5)'
-            ],
-                                        stderr=w)
+            commands.run_command_output(
+                [
+                    sys.executable,
+                    '-c',
+                    'import sys; sys.stdout.write("Out."); sys.stderr.write("Error."); sys.exit(5)',
+                ],
+                stderr=w,
+            )
             self.fail('Should have thrown')
         except subprocess.CalledProcessError as e:
             os.close(w)
@@ -260,29 +306,33 @@ class TestCommands(unittest.TestCase):
 
     def test_lenient_run_command_output(self):
         # Successful command, output on stdout.
-        (returncode, stdout,
-         stderr) = commands.lenient_run_command_output(['echo', 'hello'])
+        (returncode, stdout, stderr) = commands.lenient_run_command_output(
+            ['echo', 'hello']
+        )
         self.assertEqual(returncode, 0)
         self.assertEqual(stdout, b'hello\n')
         self.assertEqual(stderr, b'')
 
         # Failure, error on stderr.
-        (returncode, stdout,
-         stderr) = commands.lenient_run_command_output(['cp'])
+        (returncode, stdout, stderr) = commands.lenient_run_command_output(
+            ['cp']
+        )
         self.assertNotEqual(returncode, 0)
         self.assertEqual(stdout, b'')
         self.assertTrue(b'usage: ' in stderr or b'cp: ' in stderr)
 
         # EACCES
-        (returncode, stdout,
-         stderr) = commands.lenient_run_command_output(['/etc/shells'])
+        (returncode, stdout, stderr) = commands.lenient_run_command_output(
+            ['/etc/shells']
+        )
         self.assertIsNone(returncode)
         self.assertIsNone(stdout)
         self.assertIsNone(stderr)
 
         # ENOENT
-        (returncode, stdout,
-         stderr) = commands.lenient_run_command_output(['/var/empty/enoent'])
+        (returncode, stdout, stderr) = commands.lenient_run_command_output(
+            ['/var/empty/enoent']
+        )
         self.assertIsNone(returncode)
         self.assertIsNone(stdout)
         self.assertIsNone(stderr)
@@ -290,7 +340,8 @@ class TestCommands(unittest.TestCase):
     def test_plist_context_xml(self):
         path = os.path.join(self.tempdir, 'plist.strings')
         with commands.PlistContext(
-                path, rewrite=True, create_new=True) as plist:
+            path, rewrite=True, create_new=True
+        ) as plist:
             plist['A'] = 'B'
             plist['C'] = 'D'
 
@@ -304,7 +355,8 @@ class TestCommands(unittest.TestCase):
     def test_plist_context_binary(self):
         path = os.path.join(self.tempdir, 'plist.strings')
         with commands.PlistContext(
-                path, rewrite=True, create_new=True, binary=True) as plist:
+            path, rewrite=True, create_new=True, binary=True
+        ) as plist:
             plist['A'] = 'B'
             plist['C'] = 'D'
 

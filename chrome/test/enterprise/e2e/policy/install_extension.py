@@ -18,11 +18,12 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('url', None, 'The url to open in Chrome.')
 flags.mark_flag_as_required('url')
 
+
 def main(argv):
   chrome_options = webdriver.ChromeOptions()
   chrome_options.add_argument("--force-renderer-accessibility")
-  #Always set useAutomationExtension as false to avoid failing launch Chrome
-  #https://bugs.chromium.org/p/chromedriver/issues/detail?id=2930
+  # Always set useAutomationExtension as false to avoid failing launch Chrome
+  # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2930
   chrome_options.add_experimental_option("useAutomationExtension", False)
   driver = create_chrome_webdriver(chrome_options=chrome_options)
   app = Application(backend="uia")
@@ -32,7 +33,8 @@ def main(argv):
 
   try:
     driver.find_element(
-        By.XPATH, "//div[contains(., 'Your admin has blocked this item')]")
+      By.XPATH, "//div[contains(., 'Your admin has blocked this item')]"
+    )
     print("blocked")
   except NoSuchElementException:
     print("Ok")

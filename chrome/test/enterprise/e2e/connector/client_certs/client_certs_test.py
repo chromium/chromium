@@ -22,7 +22,6 @@ from infra import ChromeEnterpriseTestCase
 @category('chrome_only')
 @environment(file='../connector_test.asset.textpb')
 class ClientCertsTest(ChromeEnterpriseTestCase):
-
   @before_all
   def setup(self):
     self.EnsureDirectory(self.win_config['dc'], r'c:\temp')
@@ -33,8 +32,9 @@ class ClientCertsTest(ChromeEnterpriseTestCase):
     self.InstallChrome(self.win_config['client'])
     self.EnableUITest(self.win_config['client'])
     server_ca_cert_path = self.download_file_into_vm(
-        self.win_config['client'],
-        f'gs://{self.gsbucket}/secrets/certs/server-ca.pem')
+      self.win_config['client'],
+      f'gs://{self.gsbucket}/secrets/certs/server-ca.pem',
+    )
     self.install_root_cert(self.win_config['client'], server_ca_cert_path)
 
   @test
@@ -50,58 +50,74 @@ class ClientCertsTest(ChromeEnterpriseTestCase):
     #   coverage for that policy, and is also more automation-friendly by not
     #   prompting the client to select a certificate to send to
     #   `test1.com:443`.
-    server_script = self.path_from_test_dir(os.pardir, 'common',
-                                            'echo_server.py')
+    server_script = self.path_from_test_dir(
+      os.pardir, 'common', 'echo_server.py'
+    )
     server_cert_path = self.download_file_into_vm(
-        self.win_config['dc'], f'gs://{self.gsbucket}/secrets/certs/server.pem')
+      self.win_config['dc'], f'gs://{self.gsbucket}/secrets/certs/server.pem'
+    )
     server_key_path = self.download_file_into_vm(
-        self.win_config['dc'], f'gs://{self.gsbucket}/secrets/certs/server.key')
+      self.win_config['dc'], f'gs://{self.gsbucket}/secrets/certs/server.key'
+    )
     google_ca_cert_path = self.download_file_into_vm(
-        self.win_config['dc'],
-        f'gs://{self.gsbucket}/secrets/certs/GoogleCertificateAuthority.pem')
+      self.win_config['dc'],
+      f'gs://{self.gsbucket}/secrets/certs/GoogleCertificateAuthority.pem',
+    )
 
     test_script = self.path_from_test_dir('client_certs_webdriver_test.py')
     password = self.GetFileFromGCSBucket('secrets/account0-password')
 
-    with self.RunScriptInBackground(self.win_config['dc'], server_script, [
+    with self.RunScriptInBackground(
+      self.win_config['dc'],
+      server_script,
+      [
         f'--cert={server_cert_path}',
         f'--key={server_key_path}',
         f'--verify_cert={google_ca_cert_path}',
-    ]):
+      ],
+    ):
       self.RunUITest(
-          self.win_config['client'],
-          test_script,
-          args=[
-              '--account=account0@chromepizzatest.com',
-              f'--password={password}',
-          ],
-          timeout=(15 * 60))
-    raw_results = self.RunCommand(self.win_config['client'],
-                                  r'Get-Content c:\temp\results.json')
+        self.win_config['client'],
+        test_script,
+        args=[
+          '--account=account0@chromepizzatest.com',
+          f'--password={password}',
+        ],
+        timeout=(15 * 60),
+      )
+    raw_results = self.RunCommand(
+      self.win_config['client'], r'Get-Content c:\temp\results.json'
+    )
     results = json.loads(raw_results)
 
     policies_by_name = results['policies']
-    self.assertEqual({
+    self.assertEqual(
+      {
         'value': '1',
         'scope': 'Current user',
         'source': 'Cloud',
-    }, policies_by_name['ProvisionManagedClientCertificateForUser'])
+      },
+      policies_by_name['ProvisionManagedClientCertificateForUser'],
+    )
     auto_select_cert_policy = policies_by_name['AutoSelectCertificateForUrls']
     patterns = json.loads(auto_select_cert_policy['value'])
     self.assertEqual(len(patterns), 1)
     self.assertEqual(
-        json.loads(patterns[0]), {
-            'pattern': 'https://test1.com:443',
-            'filter': {},
-        })
+      json.loads(patterns[0]),
+      {
+        'pattern': 'https://test1.com:443',
+        'filter': {},
+      },
+    )
     self.assertEqual(auto_select_cert_policy['scope'], 'Current user')
     self.assertEqual(auto_select_cert_policy['source'], 'Cloud')
 
     fingerprints = results['fingerprints']
     self.assertEqual(fingerprints['connectors'], fingerprints['cert-manager'])
     raw_client_cert = base64.b64decode(fingerprints['server'])
-    self.assertEqual(fingerprints['connectors'],
-                     self.get_fingerprint_from_der(raw_client_cert))
+    self.assertEqual(
+      fingerprints['connectors'], self.get_fingerprint_from_der(raw_client_cert)
+    )
 
   def disable_domain_firewall(self, instance_name: str):
     """Allow traffic to `instance_name` from other VMs in the AD domain."""
@@ -114,8 +130,10 @@ class ClientCertsTest(ChromeEnterpriseTestCase):
     Chrome automatically imports certificates from that store. The `cert_path`
     should be a path on the VM filesystem.
     """
-    cmd = (f'Import-Certificate -FilePath {cert_path} '
-           r'-CertStoreLocation cert:\\LocalMachine\Root')
+    cmd = (
+      f'Import-Certificate -FilePath {cert_path} '
+      r'-CertStoreLocation cert:\\LocalMachine\Root'
+    )
     self.clients[instance_name].RunPowershell(cmd)
 
   def download_file_into_vm(self, instance_name: str, gcs_url: str) -> str:

@@ -21,11 +21,33 @@ CHROMIUM_SRC = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..', '..'))
 
 def _GetReplayTestDirectories():
   directories = [
-      os.path.join(CHROMIUM_SRC, 'chrome', 'android', 'feed', 'core',
-                   'javatests', 'src', 'org', 'chromium', 'chrome', 'browser',
-                   'feed', 'wpr_tests'),
-      os.path.join(CHROMIUM_SRC, 'clank', 'javatests', 'src', 'org', 'chromium',
-                   'chrome', 'browser', 'wprtests', 'replays')
+    os.path.join(
+      CHROMIUM_SRC,
+      'chrome',
+      'android',
+      'feed',
+      'core',
+      'javatests',
+      'src',
+      'org',
+      'chromium',
+      'chrome',
+      'browser',
+      'feed',
+      'wpr_tests',
+    ),
+    os.path.join(
+      CHROMIUM_SRC,
+      'clank',
+      'javatests',
+      'src',
+      'org',
+      'chromium',
+      'chrome',
+      'browser',
+      'wprtests',
+      'replays',
+    ),
   ]
 
   return [d for d in directories if os.path.isdir(d)]
@@ -38,20 +60,25 @@ def _is_file_of_interest(f):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('action', choices=['download', 'upload'],
-                      help='Which action to perform')
-  parser.add_argument('--dry_run', action='store_true',
-                      default=False, help='Dry run for uploading')
+  parser.add_argument(
+    'action', choices=['download', 'upload'], help='Which action to perform'
+  )
+  parser.add_argument(
+    '--dry_run',
+    action='store_true',
+    default=False,
+    help='Dry run for uploading',
+  )
   args = parser.parse_args()
 
   if args.action == 'download':
     for d in _GetReplayTestDirectories():
-      download(d, _is_file_of_interest,
-               'WPR archives', STORAGE_BUCKET)
+      download(d, _is_file_of_interest, 'WPR archives', STORAGE_BUCKET)
   else:
     for d in _GetReplayTestDirectories():
-      upload(d, _is_file_of_interest,
-             'WPR archives', STORAGE_BUCKET, args.dry_run)
+      upload(
+        d, _is_file_of_interest, 'WPR archives', STORAGE_BUCKET, args.dry_run
+      )
 
 
 if __name__ == '__main__':

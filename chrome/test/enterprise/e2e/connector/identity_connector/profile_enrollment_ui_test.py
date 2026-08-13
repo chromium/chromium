@@ -20,6 +20,7 @@ flags.DEFINE_string('account', None, 'The 3rd party account for authentication')
 flags.DEFINE_string('password', None, 'The password')
 flags.DEFINE_string('auth_url', None, 'The URL for profile registration.')
 
+
 def enroll(driver):
   # Go to MSFT auth URL
   driver.get(FLAGS.auth_url)
@@ -53,28 +54,31 @@ def main(argv):
     time.sleep(30)  # Wait for the profile creation dialogue to show up
 
     window.child_window(
-        title="Continue", auto_id="proceed-button",
-        control_type="Button").click()  # Confirm the dialogue
+      title="Continue", auto_id="proceed-button", control_type="Button"
+    ).click()  # Confirm the dialogue
     time.sleep(10)  # Wait for the completion of work profile enrollment
     window.child_window(
-        title="Continue", auto_id="proceed-button",
-        control_type="Button").click()
+      title="Continue", auto_id="proceed-button", control_type="Button"
+    ).click()
     time.sleep(5)
 
     # Obtain the workprofile's UI window
     workprofile = app.top_window()
 
     workprofile.child_window(
-        title="Verify it's you", control_type="Button").click()
+      title="Verify it's you", control_type="Button"
+    ).click()
     # Check user identity status in the profile menu
     if "demo" in FLAGS.account:
       if workprofile.child_window(
-          title="Demo Test • Work", control_type="Text").exists():
+        title="Demo Test • Work", control_type="Text"
+      ).exists():
         logging.info("Icebreaker work profile created")
 
     if "enterprise" in FLAGS.account:
       if workprofile.child_window(
-          title="Enterprise Test • Work", control_type="Text").exists():
+        title="Enterprise Test • Work", control_type="Text"
+      ).exists():
         logging.info("Dasherless work profile created")
 
     # Check chrome policy page to see the cloud policies

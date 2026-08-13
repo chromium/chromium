@@ -8,17 +8,18 @@ from chrome_ent_test.infra.core import environment
 from chrome_ent_test.infra.core import test
 from infra import ChromeEnterpriseTestCase
 
+
 @environment(file="../policy_test.asset.textpb")
 class DefaultSearchProviderTest(ChromeEnterpriseTestCase):
   """Test the DefaultSearchProviderEnabled,
-              DefaultSearchProviderName,
-              DefaultSearchProviderSearchURL
+            DefaultSearchProviderName,
+            DefaultSearchProviderSearchURL
 
-    https://chromeenterprise.google/policies/?policy=DefaultSearchProviderEnabled
-    https://chromeenterprise.google/policies/?policy=DefaultSearchProviderName
-    https://chromeenterprise.google/policies/?policy=DefaultSearchProviderSearchURL
+  https://chromeenterprise.google/policies/?policy=DefaultSearchProviderEnabled
+  https://chromeenterprise.google/policies/?policy=DefaultSearchProviderName
+  https://chromeenterprise.google/policies/?policy=DefaultSearchProviderSearchURL
 
-    """
+  """
 
   @before_all
   def setup(self):
@@ -28,18 +29,25 @@ class DefaultSearchProviderTest(ChromeEnterpriseTestCase):
   def _get_search_url(self, instance_name):
     local_dir = os.path.dirname(os.path.abspath(__file__))
     output = self.RunUITest(
-        instance_name,
-        os.path.join(local_dir, 'default_search_provider_webdriver.py'))
+      instance_name,
+      os.path.join(local_dir, 'default_search_provider_webdriver.py'),
+    )
     return output
 
   @test
   def test_default_search_provider_bing(self):
-    self.SetPolicy(self.win_config['dc'], 'DefaultSearchProviderEnabled', 1,
-                   'DWORD')
-    self.SetPolicy(self.win_config['dc'], 'DefaultSearchProviderName', 'Bing',
-                   'String')
-    self.SetPolicy(self.win_config['dc'], 'DefaultSearchProviderSearchURL',
-                   '"https://www.bing.com/search?q={searchTerms}"', 'String')
+    self.SetPolicy(
+      self.win_config['dc'], 'DefaultSearchProviderEnabled', 1, 'DWORD'
+    )
+    self.SetPolicy(
+      self.win_config['dc'], 'DefaultSearchProviderName', 'Bing', 'String'
+    )
+    self.SetPolicy(
+      self.win_config['dc'],
+      'DefaultSearchProviderSearchURL',
+      '"https://www.bing.com/search?q={searchTerms}"',
+      'String',
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     output = self._get_search_url(self.win_config['client'])
@@ -47,13 +55,18 @@ class DefaultSearchProviderTest(ChromeEnterpriseTestCase):
 
   @test
   def test_default_search_provider_yahoo(self):
-    self.SetPolicy(self.win_config['dc'], 'DefaultSearchProviderEnabled', 1,
-                   'DWORD')
-    self.SetPolicy(self.win_config['dc'], 'DefaultSearchProviderName', 'Yahoo',
-                   'String')
-    self.SetPolicy(self.win_config['dc'], 'DefaultSearchProviderSearchURL',
-                   '"https://search.yahoo.com/search?p={searchTerms}"',
-                   'String')
+    self.SetPolicy(
+      self.win_config['dc'], 'DefaultSearchProviderEnabled', 1, 'DWORD'
+    )
+    self.SetPolicy(
+      self.win_config['dc'], 'DefaultSearchProviderName', 'Yahoo', 'String'
+    )
+    self.SetPolicy(
+      self.win_config['dc'],
+      'DefaultSearchProviderSearchURL',
+      '"https://search.yahoo.com/search?p={searchTerms}"',
+      'String',
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     output = self._get_search_url(self.win_config['client'])
@@ -61,8 +74,9 @@ class DefaultSearchProviderTest(ChromeEnterpriseTestCase):
 
   @test
   def test_default_search_provider_disabled(self):
-    self.SetPolicy(self.win_config['dc'], 'DefaultSearchProviderEnabled', 0,
-                   'DWORD')
+    self.SetPolicy(
+      self.win_config['dc'], 'DefaultSearchProviderEnabled', 0, 'DWORD'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     output = self._get_search_url(self.win_config['client'])

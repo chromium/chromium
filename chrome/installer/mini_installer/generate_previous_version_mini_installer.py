@@ -11,10 +11,11 @@ import sys
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--alternate_version_generator',
-                        help='Path to alternate_version_generator.')
-    parser.add_argument('--mini_installer',
-                        help='Path to input mini_installer')
+    parser.add_argument(
+        '--alternate_version_generator',
+        help='Path to alternate_version_generator.',
+    )
+    parser.add_argument('--mini_installer', help='Path to input mini_installer')
     parser.add_argument('--out', help='Path to the generated mini_installer.')
     parser.add_argument('--path_7za', help='Path to 7za.exe')
     args = parser.parse_args()
@@ -35,15 +36,15 @@ def main():
     try:
         # Run |cmd|, redirecting stderr to stdout in order for captured errors
         # to be inline with corresponding stdout.
-        output = subprocess.check_output(cmd,
-                                         stderr=subprocess.STDOUT,
-                                         encoding='utf-8',
-                                         text=True)
+        output = subprocess.check_output(
+            cmd, stderr=subprocess.STDOUT, encoding='utf-8', text=True
+        )
     except subprocess.CalledProcessError as e:
-        raise Exception("Error while running cmd: %s\n"
-                        "Exit code: %s\n"
-                        "Command output:\n%s" %
-                        (e.cmd, e.returncode, e.output))
+        raise Exception(
+            "Error while running cmd: %s\n"
+            "Exit code: %s\n"
+            "Command output:\n%s" % (e.cmd, e.returncode, e.output)
+        )
 
 
 if '__main__' == __name__:

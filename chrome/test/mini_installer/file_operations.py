@@ -48,12 +48,13 @@ def VerifyFileExpectation(expectation_name, expectation, variable_expander):
             pass
         if is_dir:
             assert expectation['exists'], (
-                'Directory %s exists with contents: %s\n' %
-                (file_path, GetDirContents(file_path)))
+                'Directory %s exists with contents: %s\n'
+                % (file_path, GetDirContents(file_path))
+            )
         else:
-            assert expectation['exists'], ('File %s exists' % file_path)
+            assert expectation['exists'], 'File %s exists' % file_path
     else:
-        assert not expectation['exists'], ('File %s is missing' % file_path)
+        assert not expectation['exists'], 'File %s is missing' % file_path
 
 
 def CleanFile(expectation_name, expectation, variable_expander):
@@ -72,7 +73,8 @@ def CleanFile(expectation_name, expectation, variable_expander):
     file_path = variable_expander.Expand(expectation_name)
     assert not expectation['exists'], (
         'Invalid expectation for CleanFile operation: \'exists\' property for '
-        + 'path %s must not be True' % file_path)
+        + 'path %s must not be True' % file_path
+    )
     try:
         if stat.S_ISDIR(os.lstat(file_path).st_mode):
             shutil.rmtree(file_path)
@@ -81,6 +83,8 @@ def CleanFile(expectation_name, expectation, variable_expander):
             os.remove(file_path)
             LOGGER.info('CleanFile deleted file %s' % file_path)
     except WindowsError as e:
-        if (e.winerror != winerror.ERROR_FILE_NOT_FOUND
-                and e.winerror != winerror.ERROR_PATH_NOT_FOUND):
+        if (
+            e.winerror != winerror.ERROR_FILE_NOT_FOUND
+            and e.winerror != winerror.ERROR_PATH_NOT_FOUND
+        ):
             raise

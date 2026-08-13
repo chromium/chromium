@@ -45,8 +45,16 @@ def main():
     # Use CreateProcess rather than subprocess.Popen to avoid side effects such
     # as handle inheritance.
     _, _, process_id, _ = win32process.CreateProcess(
-        None, chrome_path, None, None, 0, 0, None, None,
-        win32process.STARTUPINFO())
+        None,
+        chrome_path,
+        None,
+        None,
+        0,
+        0,
+        None,
+        None,
+        win32process.STARTUPINFO(),
+    )
     if not WaitForWindow(process_id, 'Chrome_WidgetWin_'):
         raise Exception('Could not launch Chrome.')
     return 0

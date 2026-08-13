@@ -14,15 +14,20 @@ from test_util import shutdown_chrome
 FLAGS = flags.FLAGS
 
 flags.DEFINE_enum(
-    'action', None, ['open_urls', 'start_chrome'], """The action to take.
+  'action',
+  None,
+  ['open_urls', 'start_chrome'],
+  """The action to take.
 
     - open_urls: start chrome, then open urls passed through --urls in tabs.
     - start_chrome: start chrome.
-    """)
+    """,
+)
 
 flags.DEFINE_multi_string('urls', None, "List of urls to open")
-flags.DEFINE_string('user_data_dir', None,
-                    "The user data directory used by chrome")
+flags.DEFINE_string(
+  'user_data_dir', None, "The user data directory used by chrome"
+)
 
 
 def _create_driver():

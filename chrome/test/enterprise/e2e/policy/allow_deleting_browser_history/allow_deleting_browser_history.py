@@ -14,8 +14,8 @@ from infra import ChromeEnterpriseTestCase
 class AllowDeletingBrowserHistory(ChromeEnterpriseTestCase):
   """Test the AllowDeletingBrowserHistory policy:
 
-    https://chromeenterprise.google/policies/?policy=AllowDeletingBrowserHistory.
-    """
+  https://chromeenterprise.google/policies/?policy=AllowDeletingBrowserHistory.
+  """
 
   @before_all
   def setup(self):
@@ -26,27 +26,33 @@ class AllowDeletingBrowserHistory(ChromeEnterpriseTestCase):
     """Returns true if AllowDeletingBrowserHistory is enabled."""
     directory = os.path.dirname(os.path.abspath(__file__))
     output = self.RunWebDriverTest(
-        self.win_config['client'],
-        os.path.join(directory,
-                     'allow_deleting_browser_history_webdriver_test.py'))
+      self.win_config['client'],
+      os.path.join(
+        directory, 'allow_deleting_browser_history_webdriver_test.py'
+      ),
+    )
     return 'ENABLED' in output
 
   @test
   def test_allow_deleting_browser_history_enabled(self):
-    self.SetPolicy(self.win_config['dc'], r'AllowDeletingBrowserHistory', 1,
-                   'DWORD')
+    self.SetPolicy(
+      self.win_config['dc'], r'AllowDeletingBrowserHistory', 1, 'DWORD'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     policy_enabled = self.allowDeletingBrowserHistoryEnabled(
-        self.win_config['client'])
+      self.win_config['client']
+    )
     self.assertTrue(policy_enabled)
 
   @test
   def test_allow_deleting_browser_history_disabled(self):
-    self.SetPolicy(self.win_config['dc'], r'AllowDeletingBrowserHistory', 0,
-                   'DWORD')
+    self.SetPolicy(
+      self.win_config['dc'], r'AllowDeletingBrowserHistory', 0, 'DWORD'
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     policy_enabled = self.allowDeletingBrowserHistoryEnabled(
-        self.win_config['client'])
+      self.win_config['client']
+    )
     self.assertFalse(policy_enabled)

@@ -30,15 +30,17 @@ class HomepageTest(ChromeEnterpriseTestCase):
 
   def _getHomepageLocation(self, instance_name):
     dir = os.path.dirname(os.path.abspath(__file__))
-    output = self.RunUITest(instance_name,
-                            os.path.join(dir, 'get_homepage_url.py'))
+    output = self.RunUITest(
+      instance_name, os.path.join(dir, 'get_homepage_url.py')
+    )
     m = re.search(r"homepage:([^ \r\n]+)", output)
     return m.group(1)
 
   def _isHomeButtonShown(self, instance_name):
     dir = os.path.dirname(os.path.abspath(__file__))
-    output = self.RunUITest(instance_name,
-                            os.path.join(dir, 'get_home_button.py'))
+    output = self.RunUITest(
+      instance_name, os.path.join(dir, 'get_home_button.py')
+    )
     return 'home button exists' in output
 
   @test
@@ -48,8 +50,12 @@ class HomepageTest(ChromeEnterpriseTestCase):
     # -  HomepageLocation is set
     # In this case, when a home page is opened, the HomepageLocation is used
     self.SetPolicy(self.win_config['dc'], 'HomepageIsNewTabPage', 0, 'DWORD')
-    self.SetPolicy(self.win_config['dc'], 'HomepageLocation',
-                   '"http://www.example.com/"', 'String')
+    self.SetPolicy(
+      self.win_config['dc'],
+      'HomepageLocation',
+      '"http://www.example.com/"',
+      'String',
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     # verify the home page is the value of HomepageLocation
@@ -61,8 +67,12 @@ class HomepageTest(ChromeEnterpriseTestCase):
     # Test the case when HomepageIsNewTabPage is true
     # In this case, when a home page is opened, the new tab page will be used.
     self.SetPolicy(self.win_config['dc'], 'HomepageIsNewTabPage', 1, 'DWORD')
-    self.SetPolicy(self.win_config['dc'], 'HomepageLocation',
-                   '"http://www.example.com/"', 'String')
+    self.SetPolicy(
+      self.win_config['dc'],
+      'HomepageLocation',
+      '"http://www.example.com/"',
+      'String',
+    )
     self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     # verify that the home page is the new tab page.

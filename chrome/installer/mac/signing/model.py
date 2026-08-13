@@ -27,7 +27,8 @@ def _get_unexpired_identities():
     matches = re.finditer(
         rb'\d+\) (?P<id>[0-9A-Fa-f]{40}) "[^"]+"( \((?P<error>[^\)]+)\))?',
         output,
-        flags=re.MULTILINE)
+        flags=re.MULTILINE,
+    )
 
     identities = set()
     for match in matches:
@@ -64,7 +65,8 @@ def _get_identity_hash(identity):
     output = commands.run_command_output(command)
 
     hashes = re.findall(
-        b'^SHA-1 hash: ([0-9A-Fa-f]{40})$', output, flags=re.MULTILINE)
+        b'^SHA-1 hash: ([0-9A-Fa-f]{40})$', output, flags=re.MULTILINE
+    )
     if not hashes:
         raise ValueError('Cannot find identity', identity)
 
@@ -78,15 +80,17 @@ def _get_identity_hash(identity):
 class CodeSignedProduct(object):
     """Represents a build product that will be signed with `codesign(1)`."""
 
-    def __init__(self,
-                 path,
-                 identifier,
-                 options=None,
-                 requirements=None,
-                 identifier_requirement=True,
-                 sign_with_identifier=False,
-                 entitlements=None,
-                 verify_options=None):
+    def __init__(
+        self,
+        path,
+        identifier,
+        options=None,
+        requirements=None,
+        identifier_requirement=True,
+        sign_with_identifier=False,
+        entitlements=None,
+        verify_options=None,
+    ):
         """A build product to be codesigned.
 
         Args:
@@ -144,14 +148,18 @@ class CodeSignedProduct(object):
         # Similarly, if no explicit requirements are available, let codesign
         # --sign use its defaults, which should be appropriate in any case where
         # requirement customization is unnecessary.
-        if config.identity == '-' or (not self.requirements and
-                                      not config.codesign_requirements_basic):
+        if config.identity == '-' or (
+            not self.requirements and not config.codesign_requirements_basic
+        ):
             return ''
 
         reqs = []
         if self.identifier_requirement:
-            reqs.append('designated => identifier "{identifier}"'.format(
-                identifier=self.identifier))
+            reqs.append(
+                'designated => identifier "{identifier}"'.format(
+                    identifier=self.identifier
+                )
+            )
         if self.requirements:
             reqs.append(self.requirements)
         if config.codesign_requirements_basic:
@@ -159,8 +167,10 @@ class CodeSignedProduct(object):
         return ' '.join(reqs)
 
     def __repr__(self):
-        return 'CodeSignedProduct(identifier={0.identifier}, ' \
-                'options={0.options}, path={0.path})'.format(self)
+        return (
+            'CodeSignedProduct(identifier={0.identifier}, '
+            'options={0.options}, path={0.path})'.format(self)
+        )
 
 
 class VerifyOptions(enum.Flag):
@@ -170,6 +180,7 @@ class VerifyOptions(enum.Flag):
     These options are passed to `codesign --verify` after the
     |CodeSignedProduct| has been signed.
     """
+
     DEEP = enum.auto()
     STRICT = enum.auto()
     NO_STRICT = enum.auto()
@@ -196,6 +207,7 @@ class CodeSignOptions(enum.Flag):
 
     These options are passed to `codesign --sign --options`.
     """
+
     RESTRICT = enum.auto()
     LIBRARY_VALIDATION = enum.auto()
     HARDENED_RUNTIME = enum.auto()
@@ -203,7 +215,8 @@ class CodeSignOptions(enum.Flag):
     # Specify the components of HARDENED_RUNTIME that are also available on
     # older macOS versions.
     FULL_HARDENED_RUNTIME_OPTIONS = (
-        RESTRICT | LIBRARY_VALIDATION | HARDENED_RUNTIME | KILL)
+        RESTRICT | LIBRARY_VALIDATION | HARDENED_RUNTIME | KILL
+    )
 
     def to_comma_delimited_string(self):
         result = []
@@ -234,6 +247,7 @@ class NotarizeAndStapleLevel(enum.Enum):
     notarization, wait for a reply, and staple the resulting notarization
     ticket.
     """
+
     NONE = 0
     WAIT_NOSTAPLE = 1
     STAPLE = 2
@@ -263,19 +277,21 @@ class Distribution(object):
     to have different file names, internal identifiers, and assets.
     """
 
-    def __init__(self,
-                 channel=None,
-                 branding_code=None,
-                 app_name_fragment=None,
-                 packaging_name_fragment=None,
-                 product_dirname=None,
-                 creator_code=None,
-                 channel_customize=False,
-                 package_as_dmg=True,
-                 package_as_pkg=False,
-                 package_as_zip=False,
-                 inflation_kilobytes=0,
-                 direct_launch_scheme=None):
+    def __init__(
+        self,
+        channel=None,
+        branding_code=None,
+        app_name_fragment=None,
+        packaging_name_fragment=None,
+        product_dirname=None,
+        creator_code=None,
+        channel_customize=False,
+        package_as_dmg=True,
+        package_as_pkg=False,
+        package_as_zip=False,
+        inflation_kilobytes=0,
+        direct_launch_scheme=None,
+    ):
         """Creates a new Distribution object. All arguments are optional.
 
         Args:
@@ -344,12 +360,20 @@ class Distribution(object):
         This is useful in the case where a non-branded app bundle needs to be
         created with otherwise the same configuration.
         """
-        return Distribution(self.channel, None, self.app_name_fragment,
-                            self.packaging_name_fragment, self.product_dirname,
-                            self.creator_code, self.channel_customize,
-                            self.package_as_dmg, self.package_as_pkg,
-                            self.package_as_zip, self.inflation_kilobytes,
-                            self.direct_launch_scheme)
+        return Distribution(
+            self.channel,
+            None,
+            self.app_name_fragment,
+            self.packaging_name_fragment,
+            self.product_dirname,
+            self.creator_code,
+            self.channel_customize,
+            self.package_as_dmg,
+            self.package_as_pkg,
+            self.package_as_zip,
+            self.inflation_kilobytes,
+            self.direct_launch_scheme,
+        )
 
     def to_config(self, base_config):
         """Produces a derived |config.CodeSignConfig| for the Distribution.
@@ -364,7 +388,6 @@ class Distribution(object):
         this = self
 
         class DistributionCodeSignConfig(base_config.__class__):
-
             @property
             def base_config(self):
                 return base_config
@@ -376,8 +399,9 @@ class Distribution(object):
             @property
             def app_product(self):
                 if this.channel_customize:
-                    return '{} {}'.format(base_config.app_product,
-                                          this.app_name_fragment)
+                    return '{} {}'.format(
+                        base_config.app_product, this.app_name_fragment
+                    )
                 return base_config.app_product
 
             @property
@@ -394,12 +418,14 @@ class Distribution(object):
                     return profile_basename
 
                 if this.channel_customize:
-                    profile_basename = '{}_{}'.format(profile_basename,
-                                                      this.app_name_fragment)
+                    profile_basename = '{}_{}'.format(
+                        profile_basename, this.app_name_fragment
+                    )
                 if base_config.identity:
                     profile_basename = '{}.{}'.format(
                         profile_basename,
-                        _get_identity_hash(base_config.identity))
+                        _get_identity_hash(base_config.identity),
+                    )
 
                 return profile_basename
 
@@ -407,14 +433,25 @@ class Distribution(object):
             def packaging_basename(self):
                 if this.packaging_name_fragment:
                     return '{}-{}-{}'.format(
-                        self.app_product.replace(' ', ''), self.version,
-                        this.packaging_name_fragment)
-                return super(DistributionCodeSignConfig,
-                             self).packaging_basename
+                        self.app_product.replace(' ', ''),
+                        self.version,
+                        this.packaging_name_fragment,
+                    )
+                return super(
+                    DistributionCodeSignConfig, self
+                ).packaging_basename
 
         return DistributionCodeSignConfig(
-            **pick(base_config, ('invoker', 'identity', 'installer_identity',
-                                 'codesign_requirements_basic')))
+            **pick(
+                base_config,
+                (
+                    'invoker',
+                    'identity',
+                    'installer_identity',
+                    'codesign_requirements_basic',
+                ),
+            )
+        )
 
 
 class Paths(object):
@@ -464,12 +501,18 @@ class Paths(object):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return (self._input == other._input and
-                self._output == other._output and self._work == other._work)
+        return (
+            self._input == other._input
+            and self._output == other._output
+            and self._work == other._work
+        )
 
     def __repr__(self):
-        return 'Paths(input={0.input}, output={0.output}, ' \
-                'work={0.work})'.format(self)
+        return (
+            'Paths(input={0.input}, output={0.output}, work={0.work})'.format(
+                self
+            )
+        )
 
 
 def pick(o, keys):

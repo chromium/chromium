@@ -34,8 +34,9 @@ def visit(window, url):
 
 def wait_element(driver, by_selector, selector, timeout=_TIMEOUT * 3):
   return WebDriverWait(driver, timeout).until(
-      EC.presence_of_element_located((by_selector, selector)),
-      'Could not find element with selector: "{}"'.format(selector))
+    EC.presence_of_element_located((by_selector, selector)),
+    'Could not find element with selector: "{}"'.format(selector),
+  )
 
 
 def main(argv):
@@ -72,8 +73,9 @@ def main(argv):
     status_box = driver.find_element(By.CSS_SELECTOR, 'status-box')
     el = getElementFromShadowRoot(driver, status_box, '.status-box-fields')
 
-    deviceId = el.find_element(By.CLASS_NAME,
-                               'machine-enrollment-device-id').text
+    deviceId = el.find_element(
+      By.CLASS_NAME, 'machine-enrollment-device-id'
+    ).text
 
     logging.info('Navigating to %s' % _UNSAFE_PAGE_LINK)
     visit(window, _UNSAFE_PAGE_LINK)
@@ -83,10 +85,13 @@ def main(argv):
 
     result['DeviceId'] = deviceId.strip()
 
-    hg = poll_histogram(driver, [
+    hg = poll_histogram(
+      driver,
+      [
         'Enterprise.ReportingEventUploadSuccess',
         'Enterprise.ReportingEventUploadFailure',
-    ])
+      ],
+    )
     if hg:
       result['Histogram'] = hg
 
