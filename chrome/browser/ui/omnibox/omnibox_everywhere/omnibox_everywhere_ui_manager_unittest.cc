@@ -686,3 +686,60 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuCommandEnablement) {
   EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
       omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll));
 }
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       RebuildWidgetOnEphemeralModelPrefChangeWhenVisible) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* original_widget = ui_manager->widget();
+  ASSERT_TRUE(original_widget);
+  EXPECT_TRUE(original_widget->IsVisible());
+
+  // Changing the ephemeral model pref should rebuild the widget.
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  views::Widget* rebuilt_widget = ui_manager->widget();
+  ASSERT_TRUE(rebuilt_widget);
+  EXPECT_TRUE(rebuilt_widget->IsVisible());
+  EXPECT_NE(original_widget, rebuilt_widget);
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       RebuildWidgetOnEphemeralModelPrefChangeWhenHidden) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(ui_manager->widget()->IsVisible());
+
+  // Hide the widget.
+  ui_manager->Close();
+  EXPECT_FALSE(ui_manager->widget()->IsVisible());
+
+  // Changing the ephemeral pref while hidden should clean up the old widget.
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  EXPECT_FALSE(ui_manager->widget());
+
+  // Showing again creates a new widget with the updated ephemeral settings.
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(ui_manager->widget()->IsVisible());
+
+  ui_manager->Shutdown();
+}

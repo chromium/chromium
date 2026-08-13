@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -167,6 +168,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void EnsureContentsWrapperInitialized(Profile* profile);
   void CreateAndInitWidget(gfx::NativeWindow context);
   void ActivateAndFocus();
+  void OnEphemeralModelPrefChanged();
 
   std::unique_ptr<WebUIContentsWrapper> CreateContentsWrapper(Profile* profile);
 
@@ -198,6 +200,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
+  PrefChangeRegistrar local_state_pref_change_registrar_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>

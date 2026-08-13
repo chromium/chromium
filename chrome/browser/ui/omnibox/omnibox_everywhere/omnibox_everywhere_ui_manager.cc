@@ -141,6 +141,14 @@ OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
 #if defined(USE_AURA)
   event_handler_ = std::make_unique<OmniboxEverywhereEventHandlerAura>(*this);
 #endif
+  if (g_browser_process && g_browser_process->local_state()) {
+    local_state_pref_change_registrar_.Init(g_browser_process->local_state());
+    local_state_pref_change_registrar_.Add(
+        prefs::kOmniboxEverywhereEphemeralModel,
+        base::BindRepeating(
+            &OmniboxEverywhereUIManager::OnEphemeralModelPrefChanged,
+            base::Unretained(this)));
+  }
 }
 
 OmniboxEverywhereUIManager::~OmniboxEverywhereUIManager() {
@@ -321,6 +329,19 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
   }
   if (web_contents()) {
     web_contents()->Focus();
+  }
+}
+
+void OmniboxEverywhereUIManager::OnEphemeralModelPrefChanged() {
+  if (!widget_) {
+    return;
+  }
+  bool was_visible = IsVisible();
+  Profile* profile = profile_;
+  CleanUpWidget();
+  if (was_visible) {
+    CHECK(profile);
+    ShowForProfile(profile);
   }
 }
 
