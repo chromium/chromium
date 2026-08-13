@@ -346,7 +346,10 @@ public class ShowNtpAtStartupTest {
                                     /* altText= */ null,
                                     /* animatedLogoUrl= */ null,
                                     /* darkAnimatedLogoUrl= */ null,
-                                    /* logUrl= */ null);
+                                    /* logUrl= */ null,
+                                    /* darkLogUrl= */ null,
+                                    /* ctaLogUrl= */ null,
+                                    /* darkCtaLogUrl= */ null);
                     logoView.updateLogo(logo);
                     logoView.endAnimationsForTesting();
 

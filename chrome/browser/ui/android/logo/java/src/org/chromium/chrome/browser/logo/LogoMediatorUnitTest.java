@@ -55,9 +55,13 @@ import org.chromium.ui.util.ColorUtils;
 public class LogoMediatorUnitTest {
 
     private static final String TEST_ANIMATED_LOGO_URL = "http://animated-logo.com";
+    private static final String TEST_DARK_ANIMATED_LOGO_URL = "http://dark-animated-logo.com";
     private static final String TEST_CLICK_URL = "http://click-url.com";
     private static final String TEST_LOG_URL = "http://log-url.com";
     private static final String TEST_LOG_URL_NETWORK = "http://log-url-network.com";
+    private static final String TEST_DARK_LOG_URL = "http://dark-log.com";
+    private static final String TEST_CTA_LOG_URL = "http://cta-log.com";
+    private static final String TEST_DARK_CTA_LOG_URL = "http://dark-cta-log.com";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
@@ -170,7 +174,10 @@ public class LogoMediatorUnitTest {
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
                         /* darkAnimatedLogoUrl= */ null,
-                        TEST_LOG_URL_NETWORK);
+                        TEST_LOG_URL_NETWORK,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
 
         logoMediator.updateVisibility(/* animationEnabled= */ false);
 
@@ -193,7 +200,10 @@ public class LogoMediatorUnitTest {
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
                         /* darkAnimatedLogoUrl= */ null,
-                        TEST_LOG_URL);
+                        TEST_LOG_URL,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
         when(mDoodleCache.getCachedDoodle(any())).thenReturn(cachedLogo);
 
         var histogramWatcher =
@@ -226,7 +236,10 @@ public class LogoMediatorUnitTest {
                         /* altText= */ null,
                         /* animatedLogoUrl= */ TEST_ANIMATED_LOGO_URL,
                         /* darkAnimatedLogoUrl= */ null,
-                        TEST_LOG_URL);
+                        TEST_LOG_URL,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
         when(mDoodleCache.getCachedDoodle(any())).thenReturn(cachedLogo);
 
         var histogramWatcher =
@@ -255,19 +268,21 @@ public class LogoMediatorUnitTest {
             logoMediator.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
             Logo cachedLogo =
                     new Logo(
-                            null,
-                            null,
+                            /* image= */ null,
+                            /* darkImage= */ null,
                             TEST_CLICK_URL,
-                            null,
+                            /* altText= */ null,
                             TEST_ANIMATED_LOGO_URL,
-                            "http://dark-animated-logo.com",
-                            /* logUrl= */ null);
+                            TEST_DARK_ANIMATED_LOGO_URL,
+                            /* logUrl= */ null,
+                            /* darkLogUrl= */ null,
+                            /* ctaLogUrl= */ null,
+                            /* darkCtaLogUrl= */ null);
             when(mDoodleCache.getCachedDoodle(any())).thenReturn(cachedLogo);
 
             logoMediator.updateVisibility(/* animationEnabled= */ true);
 
-            assertEquals(
-                    "http://dark-animated-logo.com", logoMediator.getAnimatedLogoUrlForTesting());
+            assertEquals(TEST_DARK_ANIMATED_LOGO_URL, logoMediator.getAnimatedLogoUrlForTesting());
         } finally {
             ColorUtils.setInNightModeForTesting(null);
         }
@@ -480,7 +495,10 @@ public class LogoMediatorUnitTest {
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
                         /* darkAnimatedLogoUrl= */ null,
-                        TEST_LOG_URL);
+                        TEST_LOG_URL,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
         Logo freshLogo =
                 new Logo(
                         /* image= */ null,
@@ -489,12 +507,141 @@ public class LogoMediatorUnitTest {
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
                         /* darkAnimatedLogoUrl= */ null,
-                        TEST_LOG_URL);
+                        TEST_LOG_URL,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
 
         mLogoObserverArgumentCaptor.getValue().onLogoAvailable(cachedLogo, true);
         mLogoObserverArgumentCaptor.getValue().onLogoAvailable(freshLogo, false);
 
         // Should only record impression once
         verify(mLogoBridge, times(1)).recordImpression(TEST_LOG_URL);
+    }
+
+    @Test
+    public void testGetImpressionLogUrl_LightMode() {
+        LogoMediator logoMediator = createMediator();
+        Logo logo =
+                new Logo(
+                        /* image= */ null,
+                        /* darkImage= */ null,
+                        /* onClickUrl= */ null,
+                        /* altText= */ null,
+                        /* animatedLogoUrl= */ null,
+                        /* darkAnimatedLogoUrl= */ null,
+                        TEST_LOG_URL,
+                        TEST_DARK_LOG_URL,
+                        TEST_CTA_LOG_URL,
+                        TEST_DARK_CTA_LOG_URL);
+
+        // Light mode prioritizes ctaLogUrl over logUrl
+        assertEquals(TEST_CTA_LOG_URL, logoMediator.getImpressionLogUrl(logo));
+
+        // Falls back to logUrl if ctaLogUrl is null
+        Logo logoNoCta =
+                new Logo(
+                        /* image= */ null,
+                        /* darkImage= */ null,
+                        /* onClickUrl= */ null,
+                        /* altText= */ null,
+                        /* animatedLogoUrl= */ null,
+                        /* darkAnimatedLogoUrl= */ null,
+                        TEST_LOG_URL,
+                        TEST_DARK_LOG_URL,
+                        /* ctaLogUrl= */ null,
+                        TEST_DARK_CTA_LOG_URL);
+        assertEquals(TEST_LOG_URL, logoMediator.getImpressionLogUrl(logoNoCta));
+    }
+
+    @Test
+    public void testGetImpressionLogUrl_NightMode() {
+        ColorUtils.setInNightModeForTesting(true);
+        try {
+            LogoMediator logoMediator = createMediator();
+            Logo logo =
+                    new Logo(
+                            /* image= */ null,
+                            /* darkImage= */ null,
+                            /* onClickUrl= */ null,
+                            /* altText= */ null,
+                            /* animatedLogoUrl= */ null,
+                            /* darkAnimatedLogoUrl= */ null,
+                            TEST_LOG_URL,
+                            TEST_DARK_LOG_URL,
+                            TEST_CTA_LOG_URL,
+                            TEST_DARK_CTA_LOG_URL);
+
+            // Night mode prioritizes darkCtaLogUrl
+            assertEquals(TEST_DARK_CTA_LOG_URL, logoMediator.getImpressionLogUrl(logo));
+
+            // Falls back to darkLogUrl if darkCtaLogUrl is null
+            Logo logoNoDarkCta =
+                    new Logo(
+                            /* image= */ null,
+                            /* darkImage= */ null,
+                            /* onClickUrl= */ null,
+                            /* altText= */ null,
+                            /* animatedLogoUrl= */ null,
+                            /* darkAnimatedLogoUrl= */ null,
+                            TEST_LOG_URL,
+                            TEST_DARK_LOG_URL,
+                            TEST_CTA_LOG_URL,
+                            /* darkCtaLogUrl= */ null);
+            assertEquals(TEST_DARK_LOG_URL, logoMediator.getImpressionLogUrl(logoNoDarkCta));
+
+            // Falls back to darkLogUrl if both CTA log URLs are null
+            Logo logoStaticDark =
+                    new Logo(
+                            /* image= */ null,
+                            /* darkImage= */ null,
+                            /* onClickUrl= */ null,
+                            /* altText= */ null,
+                            /* animatedLogoUrl= */ null,
+                            /* darkAnimatedLogoUrl= */ null,
+                            TEST_LOG_URL,
+                            TEST_DARK_LOG_URL,
+                            /* ctaLogUrl= */ null,
+                            /* darkCtaLogUrl= */ null);
+            assertEquals(TEST_DARK_LOG_URL, logoMediator.getImpressionLogUrl(logoStaticDark));
+
+            // Falls back to ctaLogUrl if no dark log URLs are present
+            Logo logoNoDark =
+                    new Logo(
+                            /* image= */ null,
+                            /* darkImage= */ null,
+                            /* onClickUrl= */ null,
+                            /* altText= */ null,
+                            /* animatedLogoUrl= */ null,
+                            /* darkAnimatedLogoUrl= */ null,
+                            TEST_LOG_URL,
+                            /* darkLogUrl= */ null,
+                            TEST_CTA_LOG_URL,
+                            /* darkCtaLogUrl= */ null);
+            assertEquals(TEST_CTA_LOG_URL, logoMediator.getImpressionLogUrl(logoNoDark));
+
+            // Falls back to logUrl if no dark log URLs and no ctaLogUrl are present
+            Logo logoOnlyLog =
+                    new Logo(
+                            /* image= */ null,
+                            /* darkImage= */ null,
+                            /* onClickUrl= */ null,
+                            /* altText= */ null,
+                            /* animatedLogoUrl= */ null,
+                            /* darkAnimatedLogoUrl= */ null,
+                            TEST_LOG_URL,
+                            /* darkLogUrl= */ null,
+                            /* ctaLogUrl= */ null,
+                            /* darkCtaLogUrl= */ null);
+            assertEquals(TEST_LOG_URL, logoMediator.getImpressionLogUrl(logoOnlyLog));
+        } finally {
+            ColorUtils.setInNightModeForTesting(null);
+        }
+    }
+
+    @Test
+    public void testGetImpressionLogUrl_NullLogo() {
+        LogoMediator logoMediator = createMediator();
+        Assert.assertNull(logoMediator.getImpressionLogUrl(null));
     }
 }

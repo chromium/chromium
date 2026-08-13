@@ -288,14 +288,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
             RecordHistogram.recordEnumeratedHistogram(
                     LOGO_SHOWN_FROM_CACHE_UMA_NAME, logoType, LogoShownId.LOGO_SHOWN_COUNT);
 
-            // Deduplicate impression pings. While the mHasLogoLoadedForCurrentSearchEngine flag
-            // usually prevents this block from running twice, edge cases like toggling the Default
-            // Search Engine will reset the flag while keeping this Mediator alive.
-            if (cachedDoodle.logUrl != null
-                    && !cachedDoodle.logUrl.equals(mRecordedImpressionUrl)) {
-                mLogoBridge.recordImpression(cachedDoodle.logUrl);
-                mRecordedImpressionUrl = cachedDoodle.logUrl;
-            }
+            recordImpression(cachedDoodle);
             return;
         }
 
@@ -500,21 +493,56 @@ public class LogoMediator implements TemplateUrlServiceObserver {
                         mOnLogoClickUrl = logo != null ? logo.onClickUrl : null;
                         mAnimatedLogoUrl = getAnimatedLogoUrl(logo);
 
-                        // The C++ LogoService fires this callback up to twice (once for disk cache,
-                        // once for network fetch). Deduplicate the impression pings to ensure we
-                        // only record exactly 1 impression per NTP session.
-                        if (logo != null
-                                && logo.logUrl != null
-                                && !logo.logUrl.equals(mRecordedImpressionUrl)) {
-                            mLogoBridge.recordImpression(logo.logUrl);
-                            mRecordedImpressionUrl = logo.logUrl;
-                        }
+                        recordImpression(logo);
 
                         logoObserver.onLogoAvailable(logo, fromCache);
                     }
                 };
 
         mLogoBridge.getCurrentLogo(wrapperCallback);
+    }
+
+    /**
+     * Resolves the impression log URL corresponding to the current visual state of the doodle logo.
+     *
+     * <p>In night mode, dark mode URLs are preferred ({@code darkCtaLogUrl}, then {@code
+     * darkLogUrl}). If no dark mode URLs are provided, or if in light mode, it falls back to light
+     * mode URLs ({@code ctaLogUrl}, then {@code logUrl}).
+     *
+     * @param logo The doodle logo containing impression URLs, or null.
+     * @return The impression URL string to ping, or null if unpopulated.
+     */
+    @VisibleForTesting
+    @Nullable
+    String getImpressionLogUrl(@Nullable Logo logo) {
+        if (logo == null) return null;
+
+        if (mIsNightMode) {
+            if (logo.darkCtaLogUrl != null) return logo.darkCtaLogUrl;
+            if (logo.darkLogUrl != null) return logo.darkLogUrl;
+        }
+
+        if (logo.ctaLogUrl != null) return logo.ctaLogUrl;
+        return logo.logUrl;
+    }
+
+    /**
+     * Records an impression for the given doodle logo if an impression URL is available and has not
+     * already been recorded in the current session.
+     *
+     * <p>Deduplicates impression pings across in-memory cache hits, C++ disk cache callbacks, and
+     * network fetch callbacks to ensure we record at most one impression per NTP session.
+     *
+     * @param logo The doodle logo struct containing impression URLs, or null.
+     */
+    private void recordImpression(@Nullable Logo logo) {
+        if (mLogoBridge == null || logo == null) return;
+
+        String impressionLogUrl = getImpressionLogUrl(logo);
+        if (impressionLogUrl != null && !impressionLogUrl.equals(mRecordedImpressionUrl)) {
+            mLogoBridge.recordImpression(impressionLogUrl);
+            mRecordedImpressionUrl = impressionLogUrl;
+        }
     }
 
     private @Nullable String getAnimatedLogoUrl(@Nullable Logo logo) {

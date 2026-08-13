@@ -110,7 +110,10 @@ public class LogoViewTest {
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
                         /* darkAnimatedLogoUrl= */ null,
-                        /* logUrl= */ null);
+                        /* logUrl= */ null,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
 
@@ -131,7 +134,10 @@ public class LogoViewTest {
                         /* altText= */ null,
                         /* animatedLogoUrl= */ ANIMATED_LOGO_URL,
                         /* darkAnimatedLogoUrl= */ null,
-                        /* logUrl= */ null);
+                        /* logUrl= */ null,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
 
@@ -153,7 +159,10 @@ public class LogoViewTest {
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
                         /* darkAnimatedLogoUrl= */ null,
-                        /* logUrl= */ null);
+                        /* logUrl= */ null,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
         mView.performClick();
@@ -170,7 +179,10 @@ public class LogoViewTest {
                         /* altText= */ ALT_TEXT,
                         /* animatedLogoUrl= */ null,
                         /* darkAnimatedLogoUrl= */ null,
-                        /* logUrl= */ null);
+                        /* logUrl= */ null,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
 
@@ -214,7 +226,10 @@ public class LogoViewTest {
                         /* altText= */ ALT_TEXT,
                         /* animatedLogoUrl= */ null,
                         /* darkAnimatedLogoUrl= */ null,
-                        /* logUrl= */ null);
+                        /* logUrl= */ null,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
         mView.updateLogo(logo);
 
         // With TransitionManager, layout params are updated immediately.
@@ -274,7 +289,10 @@ public class LogoViewTest {
                         /* altText= */ ALT_TEXT,
                         /* animatedLogoUrl= */ null,
                         /* darkAnimatedLogoUrl= */ null,
-                        /* logUrl= */ null);
+                        /* logUrl= */ null,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
         mView.updateLogo(logo);
         mView.endAnimationsForTesting();
         Assert.assertEquals(ImageView.ScaleType.FIT_CENTER, mView.getScaleType());
@@ -291,7 +309,10 @@ public class LogoViewTest {
                         null,
                         ANIMATED_LOGO_URL,
                         DARK_ANIMATED_LOGO_URL,
-                        /* logUrl= */ null);
+                        /* logUrl= */ null,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
 
         // Test Light Mode
         mView.setNightMode(false);
@@ -325,7 +346,17 @@ public class LogoViewTest {
     @Test
     public void testLogoView_DarkMode_WithoutDarkAsset() {
         Logo logo =
-                new Logo(mBitmap, null, null, null, ANIMATED_LOGO_URL, null, /* logUrl= */ null);
+                new Logo(
+                        mBitmap,
+                        null,
+                        null,
+                        null,
+                        ANIMATED_LOGO_URL,
+                        null,
+                        /* logUrl= */ null,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
 
         // Test Dark Mode Fallback
         mView.setNightMode(true);

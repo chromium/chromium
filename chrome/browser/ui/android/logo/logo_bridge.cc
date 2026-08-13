@@ -44,7 +44,10 @@ static ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
     const std::string& alt_text,
     const GURL& animated_url,
     const GURL& dark_animated_url,
-    const GURL& log_url) {
+    const GURL& log_url,
+    const GURL& dark_log_url,
+    const GURL& cta_log_url,
+    const GURL& dark_cta_log_url) {
   ScopedJavaLocalRef<jobject> j_bitmap = gfx::ConvertToJavaBitmap(bitmap);
 
   ScopedJavaLocalRef<jobject> j_dark_bitmap;
@@ -67,20 +70,36 @@ static ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
     j_animated_url = ConvertUTF8ToJavaString(env, animated_url.spec());
   }
 
-  ScopedJavaLocalRef<jstring> j_log_url;
-  if (log_url.is_valid()) {
-    j_log_url = ConvertUTF8ToJavaString(env, log_url.spec());
-  }
-
   ScopedJavaLocalRef<jstring> j_dark_animated_url;
   if (dark_animated_url.is_valid()) {
     j_dark_animated_url =
         ConvertUTF8ToJavaString(env, dark_animated_url.spec());
   }
 
-  return Java_LogoBridge_createLogo(env, j_bitmap, j_dark_bitmap,
-                                    j_on_click_url, j_alt_text, j_animated_url,
-                                    j_dark_animated_url, j_log_url);
+  ScopedJavaLocalRef<jstring> j_log_url;
+  if (log_url.is_valid()) {
+    j_log_url = ConvertUTF8ToJavaString(env, log_url.spec());
+  }
+
+  ScopedJavaLocalRef<jstring> j_dark_log_url;
+  if (dark_log_url.is_valid()) {
+    j_dark_log_url = ConvertUTF8ToJavaString(env, dark_log_url.spec());
+  }
+
+  ScopedJavaLocalRef<jstring> j_cta_log_url;
+  if (cta_log_url.is_valid()) {
+    j_cta_log_url = ConvertUTF8ToJavaString(env, cta_log_url.spec());
+  }
+
+  ScopedJavaLocalRef<jstring> j_dark_cta_log_url;
+  if (dark_cta_log_url.is_valid()) {
+    j_dark_cta_log_url = ConvertUTF8ToJavaString(env, dark_cta_log_url.spec());
+  }
+
+  return Java_LogoBridge_createLogo(
+      env, j_bitmap, j_dark_bitmap, j_on_click_url, j_alt_text, j_animated_url,
+      j_dark_animated_url, j_log_url, j_dark_log_url, j_cta_log_url,
+      j_dark_cta_log_url);
 }
 
 // Converts a C++ Logo to a Java Logo.
@@ -94,7 +113,9 @@ static ScopedJavaLocalRef<jobject> JNI_LogoBridge_ConvertLogoToJavaObject(
   return JNI_LogoBridge_MakeJavaLogo(
       env, logo->image, logo->dark_image, GURL(logo->metadata.on_click_url),
       logo->metadata.alt_text, GURL(logo->metadata.animated_url),
-      GURL(logo->metadata.dark_animated_url), GURL(logo->metadata.log_url));
+      GURL(logo->metadata.dark_animated_url), GURL(logo->metadata.log_url),
+      GURL(logo->metadata.dark_log_url), GURL(logo->metadata.cta_log_url),
+      GURL(logo->metadata.dark_cta_log_url));
 }
 
 class LogoObserverAndroid : public search_provider_logos::LogoObserver {

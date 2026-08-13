@@ -42,7 +42,10 @@ public class DoodleCacheUnitTest {
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
                         /* darkAnimatedLogoUrl= */ null,
-                        /* logUrl= */ null);
+                        /* logUrl= */ null,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
     }
 
     @After
@@ -97,7 +100,10 @@ public class DoodleCacheUnitTest {
                         /* altText= */ null,
                         /* animatedLogoUrl= */ null,
                         /* darkAnimatedLogoUrl= */ null,
-                        /* logUrl= */ null);
+                        /* logUrl= */ null,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
 
         mDoodleCache.updateCachedDoodle(logo2, keyword);
         assertEquals(logo2, mDoodleCache.getCachedDoodle(keyword));
