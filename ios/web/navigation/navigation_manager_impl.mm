@@ -205,7 +205,7 @@ NavigationManagerImpl::~NavigationManagerImpl() = default;
 
 void NavigationManagerImpl::RestoreFromProto(
     const proto::NavigationStorage& storage) {
-  std::vector<std::unique_ptr<NavigationItem>> items;
+  std::vector<std::unique_ptr<NavigationItemImpl>> items;
   items.reserve(storage.items_size());
 
   for (const auto& item_storage : storage.items()) {
@@ -214,7 +214,7 @@ void NavigationManagerImpl::RestoreFromProto(
     items.push_back(std::move(item));
   }
 
-  Restore(storage.last_committed_item_index(), std::move(items));
+  RestoreImpl(storage.last_committed_item_index(), std::move(items));
 }
 
 void NavigationManagerImpl::SerializeToProto(
@@ -660,7 +660,7 @@ void NavigationManagerImpl::GoTo(GoToParams params) {
   if (!web_view_cache_.IsAttachedToWebView()) {
     // GoTo(...) from detached mode is equivalent to restoring history with
     // `last_committed_item_index` updated to `index`.
-    Restore(index, web_view_cache_.ReleaseCachedItems());
+    RestoreImpl(index, web_view_cache_.ReleaseCachedItems());
     DCHECK(web_view_cache_.IsAttachedToWebView());
     return;
   }
@@ -977,13 +977,13 @@ void NavigationManagerImpl::LoadURLWithParams(
       // Loading a pending item from detached state is equivalent to replacing
       // all forward history after the cached current item with the new pending
       // item.
-      std::vector<std::unique_ptr<NavigationItem>> cached_items =
+      std::vector<std::unique_ptr<NavigationItemImpl>> cached_items =
           web_view_cache_.ReleaseCachedItems();
       int next_item_index = web_view_cache_.GetCurrentItemIndex() + 1;
       DCHECK_GT(next_item_index, 0);
       cached_items.resize(next_item_index + 1);
       cached_items[next_item_index] = std::move(pending_item_);
-      Restore(next_item_index, std::move(cached_items));
+      RestoreImpl(next_item_index, std::move(cached_items));
       DCHECK(web_view_cache_.IsAttachedToWebView());
       return;
     }
@@ -997,8 +997,8 @@ void NavigationManagerImpl::LoadIfNecessary() {
   if (!web_view_cache_.IsAttachedToWebView()) {
     // Loading from detached mode is equivalent to restoring cached history.
     // This can happen after clearing browsing data by removing the web view.
-    Restore(web_view_cache_.GetCurrentItemIndex(),
-            web_view_cache_.ReleaseCachedItems());
+    RestoreImpl(web_view_cache_.GetCurrentItemIndex(),
+                web_view_cache_.ReleaseCachedItems());
     DCHECK(web_view_cache_.IsAttachedToWebView());
   } else if (!native_restore_in_progress_) {
     delegate_->LoadIfNecessary();
@@ -1101,8 +1101,8 @@ void NavigationManagerImpl::Reload(ReloadType reload_type,
 
   if (!web_view_cache_.IsAttachedToWebView()) {
     // Reload from detached mode is equivalent to restoring history unchanged.
-    Restore(web_view_cache_.GetCurrentItemIndex(),
-            web_view_cache_.ReleaseCachedItems());
+    RestoreImpl(web_view_cache_.GetCurrentItemIndex(),
+                web_view_cache_.ReleaseCachedItems());
     DCHECK(web_view_cache_.IsAttachedToWebView());
     return;
   }
@@ -1169,6 +1169,21 @@ std::vector<NavigationItem*> NavigationManagerImpl::GetForwardItems() const {
 void NavigationManagerImpl::Restore(
     int last_committed_item_index,
     std::vector<std::unique_ptr<NavigationItem>> items) {
+  std::vector<std::unique_ptr<NavigationItemImpl>> impl_items;
+  impl_items.reserve(items.size());
+
+  for (std::unique_ptr<NavigationItem>& item : items) {
+    // SAFETY: NavigationItemImpl is the only sub-class of NavigationItem,
+    // so the down-cast of the pointer is valid.
+    impl_items.emplace_back(static_cast<NavigationItemImpl*>(item.release()));
+  }
+
+  RestoreImpl(last_committed_item_index, std::move(impl_items));
+}
+
+void NavigationManagerImpl::RestoreImpl(
+    int last_committed_item_index,
+    std::vector<std::unique_ptr<NavigationItemImpl>> items) {
   WillRestore(items.size());
 
   // Ensure that last_committed_item_index is in range [0; items.size()-1]
@@ -1219,12 +1234,12 @@ void NavigationManagerImpl::Restore(
     restored_visible_item_ = std::move(items[last_committed_item_index]);
   }
 
-  std::vector<std::unique_ptr<NavigationItem>> back_items;
+  std::vector<std::unique_ptr<NavigationItemImpl>> back_items;
   for (int index = 0; index < last_committed_item_index; index++) {
     back_items.push_back(std::move(items[index]));
   }
 
-  std::vector<std::unique_ptr<NavigationItem>> forward_items;
+  std::vector<std::unique_ptr<NavigationItemImpl>> forward_items;
   for (size_t index = last_committed_item_index + 1; index < items.size();
        index++) {
     forward_items.push_back(std::move(items[index]));
@@ -1262,7 +1277,7 @@ void NavigationManagerImpl::AppendSessionDataBlobFetcher(
 
 void NavigationManagerImpl::RestoreItemsState(
     RestoreItemListType list_type,
-    std::vector<std::unique_ptr<NavigationItem>> items_restored) {
+    std::vector<std::unique_ptr<NavigationItemImpl>> items_restored) {
   bool back_list = list_type == RestoreItemListType::kBackList;
   size_t current_item_index = web_view_cache_.GetCurrentItemIndex();
   size_t cache_offset = back_list ? 0 : current_item_index + 1;
@@ -1463,15 +1478,10 @@ void NavigationManagerImpl::WKWebViewCache::ResetToAttached() {
   attached_to_web_view_ = true;
 }
 
-std::vector<std::unique_ptr<NavigationItem>>
+std::vector<std::unique_ptr<NavigationItemImpl>>
 NavigationManagerImpl::WKWebViewCache::ReleaseCachedItems() {
   DCHECK(!IsAttachedToWebView());
-  std::vector<std::unique_ptr<NavigationItem>> result(cached_items_.size());
-  for (size_t index = 0; index < cached_items_.size(); index++) {
-    result[index] = std::move(cached_items_[index]);
-  }
-  cached_items_.clear();
-  return result;
+  return std::exchange(cached_items_, {});
 }
 
 size_t NavigationManagerImpl::WKWebViewCache::GetBackForwardListItemCount()

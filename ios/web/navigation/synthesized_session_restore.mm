@@ -40,7 +40,7 @@ namespace web {
 
 NSData* SynthesizedSessionRestore(
     int last_committed_item_index,
-    const std::vector<std::unique_ptr<NavigationItem>>& items,
+    const std::vector<std::unique_ptr<NavigationItemImpl>>& items,
     bool off_the_record) {
   DCHECK(last_committed_item_index >= 0 &&
          last_committed_item_index < static_cast<int>(items.size()));
