@@ -141,7 +141,7 @@ class ContentTranslateDriver : public TranslateDriver,
 
   mojom::TranslateAgent* GetTranslateAgent(int page_seq_no);
 
-  raw_ptr<TranslateManager, DanglingUntriaged> translate_manager_;
+  raw_ptr<TranslateManager> translate_manager_ = nullptr;
 
   base::ObserverList<TranslationObserver, true> translation_observers_;
 

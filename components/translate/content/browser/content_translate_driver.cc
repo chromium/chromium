@@ -92,6 +92,11 @@ ContentTranslateDriver::ContentTranslateDriver(
 }
 
 ContentTranslateDriver::~ContentTranslateDriver() {
+  // Reset `translate_manager_` first as a safeguard to ensure the raw pointer
+  // is cleared before dismantling user data and observer state during
+  // destruction.
+  translate_manager_ = nullptr;
+
   if (web_contents()) {
     web_contents()->RemoveUserData(kContentTranslateDriverUserDataKey);
   }

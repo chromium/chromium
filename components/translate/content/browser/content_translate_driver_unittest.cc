@@ -116,6 +116,9 @@ class ContentTranslateDriverTest : public content::RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    if (driver_) {
+      driver_->set_translate_manager(nullptr);
+    }
     translate_manager_.reset();
     mock_translate_client_.reset();
     driver_.reset();
@@ -153,6 +156,7 @@ TEST_F(ContentTranslateDriverTest, DestroyWithObserverStillRegistered) {
   // Intentionally NOT removing the observer before destroying the driver.
   // This simulates the race condition where WebContents destruction happens
   // before the Java-side observer cleanup.
+  driver_->set_translate_manager(nullptr);
   translate_manager_.reset();
   mock_translate_client_.reset();
   driver_.reset();
@@ -176,6 +180,7 @@ TEST_F(ContentTranslateDriverTest, DestroyWithMultipleObservers) {
   driver_->RemoveTranslationObserver(&observer2);
 
   // Destroy with observer1 and observer3 still registered.
+  driver_->set_translate_manager(nullptr);
   translate_manager_.reset();
   mock_translate_client_.reset();
   driver_.reset();
