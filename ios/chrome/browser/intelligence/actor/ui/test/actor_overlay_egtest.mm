@@ -11,7 +11,6 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -53,9 +52,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 @interface ActorOverlayTestCase : ChromeTestCase
 @end
 
-@implementation ActorOverlayTestCase {
-  std::unique_ptr<EarlGreyScopedBlockSwizzler> _glowLayerSwizzler;
-}
+@implementation ActorOverlayTestCase
 
 #pragma mark - ChromeTestCase
 
@@ -68,24 +65,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 - (void)setUp {
   [super setUp];
-  // The glow view uses a CAShapeLayer mask with an Even-Odd shadow path to draw
-  // the border glow. However, on the iOS Simulator, the CPU-bound snapshotting
-  // API `drawViewHierarchyInRect:afterScreenUpdates:` (used by EarlGrey's
-  // visibility checker) fails to render this mask correctly, rendering it as
-  // a solid opaque color that blocks all underlying views and fails tests.
-  // We disable the glow view in EG tests to work around this simulator bug.
-  _glowLayerSwizzler = std::make_unique<EarlGreyScopedBlockSwizzler>(
-      @"ActorOverlayGlowView", @"setupLayers",
-      ^{
-      });
-
   net::test_server::EmbeddedTestServer* testServer = self.testServer;
   testServer->RegisterRequestHandler(base::BindRepeating(&HandleRequest));
   GREYAssertTrue(testServer->Start(), @"Test server failed to start.");
 }
 
 - (void)tearDownHelper {
-  _glowLayerSwizzler.reset();
   [ActorAppInterface setActuating:NO forWebStateAtIndex:0];
   [ActorAppInterface setActuating:NO forWebStateAtIndex:1];
   [super tearDownHelper];

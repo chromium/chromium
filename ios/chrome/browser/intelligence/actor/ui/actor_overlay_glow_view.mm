@@ -9,10 +9,12 @@
 namespace {
 
 // The radius (thickness spread) of the inner shadow glow.
-constexpr CGFloat kGlowShadowRadius = 20.0f;
+constexpr CGFloat kGlowShadowRadius = 15.0f;
 
-// The margin used to extend the outer rect for the inverted shadow path.
-constexpr CGFloat kShadowMargin = 100.0f;
+// The stroke thickness used to create the single-contour shadow perimeter.
+// Controls the darkness/density of the shadow: a thicker stroke provides more
+// caster mass and results in a darker glow.
+constexpr CGFloat kStrokePerimeterWidth = 18.0f;
 
 }  // namespace
 
@@ -86,10 +88,10 @@ constexpr CGFloat kShadowMargin = 100.0f;
   self.layer.mask = _maskLayer;
 
   _glowShadowLayer = [CAShapeLayer layer];
-  _glowShadowLayer.fillRule = kCAFillRuleEvenOdd;
   _glowShadowLayer.shadowOffset = CGSizeZero;
   _glowShadowLayer.shadowRadius = kGlowShadowRadius;
   _glowShadowLayer.shadowOpacity = 1.0f;
+  _glowShadowLayer.fillColor = [UIColor clearColor].CGColor;
   [self updateGlowColors];
   [self.layer addSublayer:_glowShadowLayer];
 }
@@ -102,21 +104,21 @@ constexpr CGFloat kShadowMargin = 100.0f;
   UIBezierPath* innerPath = [self createGlowPath];
   _maskLayer.path = innerPath.CGPath;
 
-  CGRect outerRect = CGRectInset(bounds, -kShadowMargin, -kShadowMargin);
-  UIBezierPath* invertedPath = [UIBezierPath bezierPathWithRect:outerRect];
-  [invertedPath appendPath:innerPath];
-  invertedPath.usesEvenOddFillRule = YES;
+  // Convert the perimeter of the inner path into a closed ribbon stroke to
+  // serve as a single-contour shadow caster without holes.
+  CGPathRef strokedPath = CGPathCreateCopyByStrokingPath(
+      innerPath.CGPath, nullptr, kStrokePerimeterWidth, kCGLineCapRound,
+      kCGLineJoinRound, 0.0f);
 
   _glowShadowLayer.frame = bounds;
-  _glowShadowLayer.path = invertedPath.CGPath;
-  _glowShadowLayer.shadowPath = invertedPath.CGPath;
+  _glowShadowLayer.shadowPath = strokedPath;
+  CGPathRelease(strokedPath);
 }
 
 // Updates the glow colors to match the current trait collection.
 - (void)updateGlowColors {
   UIColor* resolvedColor =
       [_glowColor resolvedColorWithTraitCollection:self.traitCollection];
-  _glowShadowLayer.fillColor = resolvedColor.CGColor;
   _glowShadowLayer.shadowColor = resolvedColor.CGColor;
 }
 
