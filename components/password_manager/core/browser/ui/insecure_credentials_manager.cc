@@ -151,7 +151,6 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
           {InsecureType::kLeaked,
            InsecurityMetadata(base::Time(), IsMuted(false),
                               TriggerBackendNotification(false))});
-      continue;
     }
     if (weak_passwords_.contains(credential.password)) {
       credential.password_issues.insert(
