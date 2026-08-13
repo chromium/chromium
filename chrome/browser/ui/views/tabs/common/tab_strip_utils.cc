@@ -4,11 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 
-#include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
-#include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
-#include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -16,14 +13,7 @@ gfx::Rect GetTabStripViewTargetBounds(const views::View* view) {
   CHECK(view);
 
   const views::View* const parent = view->parent();
-  const auto has_animating_layout_manager = [](const views::View* container) {
-    // New clients of `TabCollectionAnimatingLayoutManager` should be added to
-    // this list as usage expands.
-    return views::IsViewClass<PinnedTabContainerView>(container) ||
-           views::IsViewClass<UnpinnedTabContainerView>(container) ||
-           views::IsViewClass<TabGroupView>(container);
-  };
-  if (!parent || !has_animating_layout_manager(parent)) {
+  if (!parent || !parent->GetProperty(kHasAnimatingLayoutManagerKey)) {
     return view->bounds();
   }
 

@@ -22,6 +22,8 @@
 DEFINE_UI_CLASS_PROPERTY_TYPE(
     TabCollectionAnimatingLayoutManager::SourceLayoutInfo*)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHasAnimatingLayoutManagerKey, false)
+
 namespace {
 
 // Views of removed TabCollectionNodes may temporarily remain in the View tree
@@ -246,6 +248,7 @@ void TabCollectionAnimatingLayoutManager::LayoutImpl() {
 
 void TabCollectionAnimatingLayoutManager::OnInstalled(views::View* host) {
   LayoutManagerBase::OnInstalled(host);
+  host->SetProperty(kHasAnimatingLayoutManagerKey, true);
   RecalculateTarget();
 }
 

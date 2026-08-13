@@ -214,4 +214,6 @@ class TabCollectionAnimatingLayoutManager
   const bool animate_host_size_ = false;
 };
 
+extern const ui::ClassProperty<bool>* const kHasAnimatingLayoutManagerKey;
+
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_COLLECTION_ANIMATING_LAYOUT_MANAGER_H_
