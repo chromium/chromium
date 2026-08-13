@@ -185,6 +185,6 @@ public class UrlBarContextMenuHelperUnitTest {
         assertEquals(
                 R.id.url_bar_always_show_ai_mode, model.get(ListMenuItemProperties.MENU_ITEM_ID));
         int expectedIcon = isChecked ? R.drawable.ic_done_blue : 0;
-        assertEquals(expectedIcon, model.get(ListMenuItemProperties.START_ICON_ID));
+        assertEquals(expectedIcon, model.get(ListMenuItemProperties.END_ICON_ID));
     }
 }

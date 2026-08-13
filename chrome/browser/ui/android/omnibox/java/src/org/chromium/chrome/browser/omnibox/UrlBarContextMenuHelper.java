@@ -119,7 +119,7 @@ class UrlBarContextMenuHelper {
                                     .withEnabled(item.isEnabled());
 
                     if (item.isCheckable() && item.isChecked()) {
-                        builder.withStartIconRes(R.drawable.ic_done_blue);
+                        builder.withEndIconRes(R.drawable.ic_done_blue);
                     }
                     mListItems.add(builder.build());
                 }
