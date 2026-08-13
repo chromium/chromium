@@ -93,9 +93,8 @@ class LevelDbPersistenceProviderUnitTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::map<std::string, origin_trials_pb::TrialTokenDbEntries> db_entries_;
 
-  raw_ptr<FakeDB<origin_trials_pb::TrialTokenDbEntries>, DanglingUntriaged>
-      fake_db_unretained_;
   std::unique_ptr<LevelDbPersistenceProvider> persistence_provider_;
+  raw_ptr<FakeDB<origin_trials_pb::TrialTokenDbEntries>> fake_db_unretained_;
 };
 
 TEST_F(LevelDbPersistenceProviderUnitTest, NormalStartupLogsHistograms) {
