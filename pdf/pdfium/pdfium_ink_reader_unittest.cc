@@ -70,48 +70,6 @@ TEST_P(PDFiumInkReaderTest, NoPage) {
   EXPECT_TRUE(results.empty());
 }
 
-INSTANTIATE_TEST_SUITE_P(All, PDFiumInkReaderTest, testing::Bool());
-
-class PDFiumInkReaderStrokeMarkedObjectsTests : public PDFiumInkReaderTest {
- public:
-  void ValidateStrokeMarkedObjectsCount(
-      const base::FilePath::CharType* pdf_name,
-      int expected_count) {
-    TestClient client(/*use_skia_renderer=*/GetParam());
-    std::unique_ptr<PDFiumEngine> engine = InitializeEngine(&client, pdf_name);
-    ASSERT_TRUE(engine);
-
-    std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
-    ASSERT_FALSE(saved_pdf_data.empty());
-
-    TestClient saved_client(/*use_skia_renderer=*/GetParam());
-    std::unique_ptr<PDFiumEngine> saved_engine =
-        InitializeEngineFromData(&saved_client, std::move(saved_pdf_data));
-    ASSERT_TRUE(saved_engine);
-
-    ASSERT_TRUE(saved_engine->doc());
-    EXPECT_EQ(GetPdfMarkObjCountForTesting(saved_engine->doc(),
-                                           kInkAnnotationIdentifierKeyV2),
-              expected_count);
-  }
-};
-
-TEST_P(PDFiumInkReaderStrokeMarkedObjectsTests, MarkedObjectsNoStrokeData) {
-  ValidateStrokeMarkedObjectsCount(FILE_PATH_LITERAL("blank.pdf"),
-                                   /*expected_count=*/0);
-}
-
-TEST_P(PDFiumInkReaderStrokeMarkedObjectsTests, MarkedObjectsHasStrokeData) {
-  ValidateStrokeMarkedObjectsCount(FILE_PATH_LITERAL("ink_v2.pdf"),
-                                   /*expected_count=*/1);
-}
-
-// There are no rendering concerns for counting marked objects, so only one
-// variation need be run.
-INSTANTIATE_TEST_SUITE_P(All,
-                         PDFiumInkReaderStrokeMarkedObjectsTests,
-                         testing::Values(false));
-
 TEST_P(PDFiumInkReaderTest, BasicTextAnnotation) {
   TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
@@ -209,5 +167,47 @@ TEST_P(PDFiumInkReaderTest, MultipleTextboxesOnOnePage) {
   ASSERT_EQ(1u, text_objects1.size());
   EXPECT_TRUE(text_objects1[0]);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, PDFiumInkReaderTest, testing::Bool());
+
+class PDFiumInkReaderStrokeMarkedObjectsTests : public PDFiumInkReaderTest {
+ public:
+  void ValidateStrokeMarkedObjectsCount(
+      const base::FilePath::CharType* pdf_name,
+      int expected_count) {
+    TestClient client(/*use_skia_renderer=*/GetParam());
+    std::unique_ptr<PDFiumEngine> engine = InitializeEngine(&client, pdf_name);
+    ASSERT_TRUE(engine);
+
+    std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
+    ASSERT_FALSE(saved_pdf_data.empty());
+
+    TestClient saved_client(/*use_skia_renderer=*/GetParam());
+    std::unique_ptr<PDFiumEngine> saved_engine =
+        InitializeEngineFromData(&saved_client, std::move(saved_pdf_data));
+    ASSERT_TRUE(saved_engine);
+
+    ASSERT_TRUE(saved_engine->doc());
+    EXPECT_EQ(GetPdfMarkObjCountForTesting(saved_engine->doc(),
+                                           kInkAnnotationIdentifierKeyV2),
+              expected_count);
+  }
+};
+
+TEST_P(PDFiumInkReaderStrokeMarkedObjectsTests, MarkedObjectsNoStrokeData) {
+  ValidateStrokeMarkedObjectsCount(FILE_PATH_LITERAL("blank.pdf"),
+                                   /*expected_count=*/0);
+}
+
+TEST_P(PDFiumInkReaderStrokeMarkedObjectsTests, MarkedObjectsHasStrokeData) {
+  ValidateStrokeMarkedObjectsCount(FILE_PATH_LITERAL("ink_v2.pdf"),
+                                   /*expected_count=*/1);
+}
+
+// There are no rendering concerns for counting marked objects, so only one
+// variation need be run.
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFiumInkReaderStrokeMarkedObjectsTests,
+                         testing::Values(false));
 
 }  // namespace chrome_pdf
