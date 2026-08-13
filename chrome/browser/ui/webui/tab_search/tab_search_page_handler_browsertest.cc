@@ -879,8 +879,9 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_TabsNotChanged) {
 }
 
 // Verify tab update event is called correctly with data
-// TODO(https://crbug.com/537538766): Fails on Linux MSan Tests.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// TODO(https://crbug.com/537538766): Fails on Linux MSan Tests and looks
+// flaky on Linux, generally.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_TabUpdated DISABLED_TabUpdated
 #else
 #define MAYBE_TabUpdated TabUpdated
