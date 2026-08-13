@@ -4,6 +4,7 @@
 
 source_set("model") {
   sources = [
+    "attestation_service.h",
     "ios_signals_aggregator_factory.h",
     "ios_signals_aggregator_factory.mm",
     "ios_system_signals_collector.h",
