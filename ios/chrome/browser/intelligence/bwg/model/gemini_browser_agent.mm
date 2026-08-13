@@ -2023,9 +2023,13 @@ void GeminiBrowserAgent::PropagatePageContextToProvider(
     }
   }
 
-  // Save the new active web state to attached tabs.
-  if (active_web_state && !IsTabGridVisible() &&
-      IsGeminiMultiTabContextEnabled()) {
+  // Save the active page context to `attached_tabs`. If we are on the tab
+  // grid, the active page context will be saved as `kBlocked` unless we have
+  // other tabs attached. This prevents the current tab from being erroneously
+  // showed as `kBlocked` when we open the Floaty on a different attached tab.
+  bool should_save_active_context = !IsTabGridVisible() || !HasSharedTabs();
+  if (IsGeminiMultiTabContextEnabled() && active_web_state &&
+      should_save_active_context) {
     SetAttachedPageContext(active_web_state->GetUniqueIdentifier(),
                            active_page_context);
   }
