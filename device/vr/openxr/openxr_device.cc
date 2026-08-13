@@ -147,8 +147,6 @@ void OpenXrDevice::RequestSession(
         options->renderer_information->render_frame_id;
   }
 #endif
-  create_info.needs_separate_activity =
-      OpenXrApiWrapper::NeedsSeparateActivity();
   platform_helper_->CreateInstanceWithCreateInfo(
       create_info,
       base::BindOnce(&OpenXrDevice::OnCreateInstanceResult,

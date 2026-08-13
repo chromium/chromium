@@ -18,6 +18,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webxr/android/openxr_device_provider.h"
+#include "components/webxr/android/openxr_platform_helper_android.h"
 #endif
 
 MockXRDeviceHookBase::MockXRDeviceHookBase() {
@@ -40,6 +41,7 @@ MockXRDeviceHookBase::MockXRDeviceHookBase() {
   service_test_hook_->SetTestHook(
       receiver_.BindNewPipeAndPassRemote(thread_->task_runner()));
 #elif BUILDFLAG(IS_ANDROID)
+  webxr::OpenXrPlatformHelperAndroid::SetXrHostActivityDisabledForTesting(true);
   mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
   webxr::OpenXrDeviceProvider::SetTestHook(
       receiver_.BindNewPipeAndPassRemote(thread_->task_runner()));

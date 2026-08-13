@@ -28,7 +28,6 @@ class OpenXrGraphicsBinding;
 struct OpenXrCreateInfo {
   network::RendererProcessId render_process_id;
   int render_frame_id = IPC::mojom::kRoutingIdNone;
-  bool needs_separate_activity = true;
 };
 
 // This class exists to help provide an interface for working with OpenXR
