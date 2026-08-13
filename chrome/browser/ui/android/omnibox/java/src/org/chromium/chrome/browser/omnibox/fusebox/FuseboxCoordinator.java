@@ -231,10 +231,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         .build();
 
         new AsyncLayoutInflater(mActivity)
-                .inflate(
-                        R.layout.fusebox_context_popup,
-                        /* parent= */ null,
-                        this::finishDeferredInitialization);
+                .inflate(R.layout.fusebox_context_popup, this::finishDeferredInitialization);
     }
 
     private void finishDeferredInitialization(View popupView) {

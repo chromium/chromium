@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatViewInflater;
 
@@ -23,6 +22,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A utility class for inflating layouts asynchronously using Chromium's TaskRunner.
@@ -55,17 +55,18 @@ public final class AsyncLayoutInflater {
      * Inflates a layout resource asynchronously on a background thread.
      *
      * @param resId The layout resource ID to inflate.
-     * @param parent Optional parent view.
      * @param callback Callback to be invoked on the UI thread when inflation finishes. Provides the
      *     inflated View.
      */
     @UiThread
-    public void inflate(@LayoutRes int resId, @Nullable ViewGroup parent, Callback<View> callback) {
+    public void inflate(@LayoutRes int resId, Callback<View> callback) {
         new AsyncTask<View>() {
             @Override
             protected View doInBackground() {
+                // Passing a value into the root, when not attached, possibly causes ANRs. See
+                // b/545256939.
                 return new AppCompatInflater(mContext)
-                        .inflate(resId, parent, /* attachToRoot= */ false);
+                        .inflate(resId, /* root= */ null, /* attachToRoot= */ false);
             }
 
             @Override
