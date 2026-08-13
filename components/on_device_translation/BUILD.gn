@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "features_unittest.cc",
     "metrics_unittest.cc",
     "public/language_pack_unittest.cc",
+    "service_controller_unittest.cc",
     "translation_manager_util_unittest.cc",
   ]
   deps = [
