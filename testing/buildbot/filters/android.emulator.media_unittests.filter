@@ -2,6 +2,10 @@
 # Not applicable to emulator due to not supporting fence sync
 -PaintCanvasVideoRendererWithGLTest.CopyVideoFrameTexturesToGLTexture*
 -PaintCanvasVideoRendererWithGLTest.CopyVideoFrameYUVDataToGLTexture*
+-PaintCanvasVideoRendererWithGLTest.PaintI420
+-PaintCanvasVideoRendererWithGLTest.PaintI420NotSubset
+-PaintCanvasVideoRendererWithGLTest.PaintNV12
+-PaintCanvasVideoRendererWithGLTest.PaintRGBA
 
 # crbug.com/328195295
 -AllNdkEncoderTests/NdkVideoEncoderAcceleratorTest.HandleEncodingError/h264_baseline__PIXEL_FORMAT_NV12
