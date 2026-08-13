@@ -1767,6 +1767,110 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
+     * Ensure granularity movement state is reset and properly re-initialized when selection in an
+     * editable node changes independently of granularity movement.
+     */
+    @Test
+    @SmallTest
+    public void testEvent_MovementAtGranularity_ResetOnSelectionChange() throws Throwable {
+        // Build a simple web page with an input and the text "Editable Text"
+        setupTestWithHTML("<input id=\"fn\" type=\"text\" value=\"Editable Text\">");
+
+        // Find a node in the accessibility tree with input type TYPE_CLASS_TEXT.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int editTextVirtualViewId =
+                waitForNodeMatching(sInputTypeMatcher, InputType.TYPE_CLASS_TEXT);
+        mNodeInfo = createAccessibilityNodeInfo(editTextVirtualViewId);
+        Assert.assertNotEquals(mNodeInfo, null);
+
+        focusNodeAndWaitForSelection(editTextVirtualViewId);
+
+        // 1. Move forward by 1 character with extended selection.
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
+
+        performTextActionOnUiThread(
+                editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(0, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(1, mTestData.getTraverseToIndex());
+        Assert.assertEquals(0, mTestData.getSelectionFromIndex());
+        Assert.assertEquals(1, mTestData.getSelectionToIndex());
+
+        // 2. Change selection independently (Select All: 0 to 13).
+        setAndAssertExtendedSelection(
+                rootVvid,
+                editTextVirtualViewId,
+                0,
+                OFFSET_TYPE_TEXT,
+                editTextVirtualViewId,
+                13,
+                OFFSET_TYPE_TEXT);
+
+        // Verify that moving forward at character granularity is now at the end of the text
+        // (index 13) and returns false rather than advancing from the stale index 1.
+        Assert.assertFalse(
+                performActionOnUiThread(
+                        editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args));
+    }
+
+    /**
+     * Ensure granularity movement state is reset and properly re-initialized when text in an
+     * editable node changes independently of granularity movement.
+     */
+    @Test
+    @SmallTest
+    public void testEvent_MovementAtGranularity_ResetOnTextChange() throws Throwable {
+        // Build a simple web page with an input and the text "Editable Text"
+        setupTestWithHTML("<input id=\"fn\" type=\"text\" value=\"Editable Text\">");
+
+        // Find a node in the accessibility tree with input type TYPE_CLASS_TEXT.
+        int editTextVirtualViewId =
+                waitForNodeMatching(sInputTypeMatcher, InputType.TYPE_CLASS_TEXT);
+        mNodeInfo = createAccessibilityNodeInfo(editTextVirtualViewId);
+        Assert.assertNotEquals(mNodeInfo, null);
+
+        focusNodeAndWaitForSelection(editTextVirtualViewId);
+
+        // 1. Move forward by 1 character with extended selection.
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
+
+        performTextActionOnUiThread(
+                editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(0, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(1, mTestData.getTraverseToIndex());
+        Assert.assertEquals(0, mTestData.getSelectionFromIndex());
+        Assert.assertEquals(1, mTestData.getSelectionToIndex());
+
+        // 2. Change the text content independently.
+        Bundle setTextBundle = new Bundle();
+        setTextBundle.putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "ABC");
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        editTextVirtualViewId,
+                        ACTION_SET_TEXT,
+                        setTextBundle,
+                        () ->
+                                "ABC"
+                                        .equals(
+                                                createAccessibilityNodeInfo(editTextVirtualViewId)
+                                                        .getText()
+                                                        .toString())));
+
+        // ACTION_SET_TEXT places the cursor at the end of the text (index 3).
+        // Verify that moving previous at character granularity starts from the updated cursor
+        // position and extends selection backwards 3 -> 2.
+        performTextActionOnUiThread(
+                editTextVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(2, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(3, mTestData.getTraverseToIndex());
+        Assert.assertEquals(3, mTestData.getSelectionFromIndex());
+        Assert.assertEquals(2, mTestData.getSelectionToIndex());
+    }
+
+    /**
      * Ensure traverse events are properly indexed when navigating a non-editable node by character.
      */
     @Test

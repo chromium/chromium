@@ -230,10 +230,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private static final int UNDEFINED_SELECTION_INDEX = -1;
 
     /**
-     * Start index of movement at granularity. When the accessibility focus is changed and there is
-     * an existing extended selection that ends at the accessibility focus node, this variable is
-     * initialized to the selection end offset, otherwise UNDEFINED_SELECTION_INDEX. The value is
-     * updated before and after movement at granularity actions.
+     * Start index of movement at granularity. When accessibility focus is changed and there is an
+     * existing extended selection that ends at the accessibility focus node, this variable is
+     * initialized to the selection end offset; otherwise UNDEFINED_SELECTION_INDEX. The value is
+     * also reset whenever the text or selection in the editable node changes independently of
+     * granularity movement. The value is updated before and after movement at granularity actions.
      */
     private int mMovementAtGranularityIndex = UNDEFINED_SELECTION_INDEX;
 
@@ -2363,6 +2364,22 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @CalledByNative
     private void handleTextSelectionChanged(int id) {
+        if (id == mAccessibilityFocusId) {
+            int selEnd =
+                    WebContentsAccessibilityImplJni.get()
+                            .getEditableTextSelectionEnd(mNativeObj, id);
+            // If the selection end does not match the last granularity movement destination,
+            // the selection was changed due to an action different from a granularity
+            // movement (e.g. Select All).
+            // Reset the `mMovementAtGranularityIndex` so that subsequent
+            // ACTION_PREVIOUS/NEXT_AT_MOVEMENT_GRANULARITY actions re-initialize from the new
+            // selection position.
+            // Note that we do not reset `mIsCurrentlyExtendingSelection` here, since the user may
+            // continue to extend the selection from the new position.
+            if (selEnd != mMovementAtGranularityIndex) {
+                mMovementAtGranularityIndex = UNDEFINED_SELECTION_INDEX;
+            }
+        }
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED);
     }
 
@@ -2371,6 +2388,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // is finalized and rolled into //third_party/android_sdk.
     @SuppressLint("NewApi")
     private void handleEditableTextChanged(int id, int subType) {
+        if (id == mAccessibilityFocusId) {
+            // Reset granularity movement state when text content changes, so that subsequent
+            // movements start from the updated text position.
+            // Note that in this case we reset `mIsCurrentlyExtendingSelection` as well, since the
+            // text is changed and nothing is selected in the editable anymore, hence selection
+            // should restart from the cursor position.
+            mMovementAtGranularityIndex = UNDEFINED_SELECTION_INDEX;
+            mIsCurrentlyExtendingSelection = false;
+        }
         AccessibilityEvent event =
                 buildAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
         if (event == null) return;
