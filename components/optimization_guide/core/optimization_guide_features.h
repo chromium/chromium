@@ -430,6 +430,11 @@ std::optional<base::TimeDelta> GetMainFrameGetAIPageContentTimeout();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::optional<base::TimeDelta> GetAIPageContentGetImageBytesTimeout();
 
+// Overrides the Optimization Guide Service URL that the PredictionModelFetcher
+// will request remote models and host features from.
+inline constexpr char kOptimizationGuideServiceGetModelsURLSwitch[] =
+    "optimization-guide-service-get-models-url";
+
 }  // namespace features
 }  // namespace optimization_guide
 

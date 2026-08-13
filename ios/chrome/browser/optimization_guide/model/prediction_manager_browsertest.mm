@@ -16,7 +16,6 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_prefs.h"
 #import "components/optimization_guide/core/optimization_guide_permissions_util.h"
-#import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/variations/hashing.h"
@@ -183,7 +182,8 @@ class PredictionManagerTestBase : public TestWithProfile {
     cmd->AppendSwitch(
         optimization_guide::kGoogleApiKeyConfigurationCheckOverrideSwitch);
     cmd->AppendSwitchASCII(
-        optimization_guide::switches::kOptimizationGuideServiceGetModelsURL,
+        optimization_guide::features::
+            kOptimizationGuideServiceGetModelsURLSwitch,
         models_server_->GetURL("/").spec());
 
     cmd->AppendSwitchASCII("force-variation-ids", "4");

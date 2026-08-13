@@ -12,22 +12,12 @@
 namespace optimization_guide {
 namespace switches {
 
-// Overrides the Optimization Guide Service URL that the PredictionModelFetcher
-// will request remote models and host features from.
-const char kOptimizationGuideServiceGetModelsURL[] =
-    "optimization-guide-service-get-models-url";
-
 // Overrides the Optimization Guide model execution URL.
 const char kOptimizationGuideServiceModelExecutionURL[] =
     "optimization-guide-service-model-execution-url";
 
 const char kOptimizationGuideServiceModelExecutionDefaultURL[] =
     "https://chromemodelexecution-pa.googleapis.com/v1:Execute";
-
-// Overrides the Optimization Guide Service API Key for remote requests to be
-// made.
-const char kOptimizationGuideServiceAPIKey[] =
-    "optimization-guide-service-api-key";
 
 // Purges the store containing prediction medels and host model features on
 // startup, so that it's guaranteed to be using fresh data.
