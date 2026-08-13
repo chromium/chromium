@@ -165,16 +165,9 @@ INSTANTIATE_TEST_SUITE_P(
         // Don't use Paint Preview (use CopyFromSurface instead).
         std::nullopt));
 
-#if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/526023956): Re-enable this test on Windows.
-#define MAYBE_TakesScreenshot DISABLED_TakesScreenshot
-#else
-#define MAYBE_TakesScreenshot TakesScreenshot
-#endif
-
 IN_PROC_BROWSER_TEST_P(
     ScreenshotBackendMultiSourcePageContextFetcherBrowserTest,
-    MAYBE_TakesScreenshot) {
+    TakesScreenshot) {
   base::HistogramTester histograms;
   GURL url = embedded_https_test_server().GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -250,9 +243,15 @@ class ScreenshotTimeoutMultiSourcePageContextFetcherBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/526023956): Re-enable this test on Windows.
+#define MAYBE_TakesScreenshot DISABLED_TakesScreenshot
+#else
+#define MAYBE_TakesScreenshot TakesScreenshot
+#endif
 IN_PROC_BROWSER_TEST_F(
     ScreenshotTimeoutMultiSourcePageContextFetcherBrowserTest,
-    TakesScreenshot) {
+    MAYBE_TakesScreenshot) {
   GURL url = embedded_https_test_server().GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
