@@ -260,22 +260,6 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MetricsTest) {
 // --gtest_filter=AppBoundEncryptionWinTest.MANUAL_Uninstall --run-manual.
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MANUAL_Uninstall) {}
 
-using AppBoundEncryptionWinTestNoService = InProcessBrowserTest;
-
-// TODO(crbug.com/542625348): This test is disabled as it is failing.
-IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestNoService, DISABLED_NoService) {
-  const std::string plaintext("plaintext");
-  std::string ciphertext;
-  DWORD last_error;
-
-  HRESULT hr =
-      EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
-                            plaintext, ciphertext, last_error);
-
-  EXPECT_EQ(REGDB_E_CLASSNOTREG, hr);
-  EXPECT_EQ(DWORD{ERROR_GEN_FAILURE}, last_error);
-}
-
 // This policy test is here and not in chrome/browser/policy/test as it requires
 // a fake system install to correctly show as kSupported, and this testing class
 // already has the scaffolding in place to achieve this.
