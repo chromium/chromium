@@ -721,6 +721,11 @@ void ExtensionService::CheckForUpdatesSoon() {
     return;
   }
 
+  // Avoid scheduling a redundant check if a full update check is in progress.
+  if (updater_->HasFullCheckInProgress()) {
+    return;
+  }
+
   updater_->CheckSoon();
 }
 

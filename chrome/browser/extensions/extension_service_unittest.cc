@@ -51,6 +51,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -8629,6 +8630,116 @@ TEST_F(ExtensionServiceTest, BlockDisabledExtensionNotification) {
   // Check that we didn't get unloading notification
   EXPECT_EQ(std::string(), observer.last_extension_unloaded);
   registry()->RemoveObserver(&observer);
+}
+
+// Verifies that ExtensionService::Init() does not trigger an update check when
+// no corrupted extensions are awaiting reinstall.
+TEST_F(ExtensionServiceTest,
+       CorruptedExtensionReinstallOnStartup_NoCorruption) {
+  ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_checks;
+  ExtensionServiceInitParams params;
+  params.autoupdate_enabled = true;
+  InitializeExtensionService(std::move(params));
+
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
+  ASSERT_TRUE(updater);
+
+  EXPECT_FALSE(CorruptedExtensionReinstaller::Get(profile())
+                   ->HasAnyReinstallForCorruption());
+  EXPECT_FALSE(updater->WillCheckSoon());
+
+  service()->Init();
+
+  EXPECT_FALSE(updater->WillCheckSoon());
+  updater->Stop();
+}
+
+// Verifies that ExtensionService::Init() triggers CheckForUpdatesSoon() when
+// corrupted extensions are awaiting reinstall and no update check is active.
+TEST_F(ExtensionServiceTest,
+       CorruptedExtensionReinstallOnStartup_TriggersCheck) {
+  ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_checks;
+  ExtensionServiceInitParams params;
+  params.autoupdate_enabled = true;
+  InitializeExtensionService(std::move(params));
+
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
+  ASSERT_TRUE(updater);
+
+  const ExtensionId kTestExtensionId = crx_file::id_util::GenerateId("test");
+  CorruptedExtensionReinstaller::Get(profile())->ExpectReinstallForCorruption(
+      kTestExtensionId, std::nullopt, mojom::ManifestLocation::kInternal);
+  EXPECT_TRUE(CorruptedExtensionReinstaller::Get(profile())
+                  ->HasAnyReinstallForCorruption());
+  EXPECT_FALSE(updater->WillCheckSoon());
+  EXPECT_FALSE(updater->HasFullCheckInProgress());
+
+  service()->Init();
+
+  EXPECT_TRUE(updater->WillCheckSoon());
+  updater->Stop();
+}
+
+// Verifies that ExtensionService::Init() skips scheduling an update check when
+// a full update check is already in progress (HasFullCheckInProgress is true).
+TEST_F(ExtensionServiceTest,
+       CorruptedExtensionReinstallOnStartup_FullCheckInProgress) {
+  ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_checks;
+  ExtensionServiceInitParams params;
+  params.autoupdate_enabled = true;
+  InitializeExtensionService(std::move(params));
+
+  ExtensionDownloaderTestHelper helper;
+  NullExtensionCache extension_cache;
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
+  ASSERT_TRUE(updater);
+  updater->SetExtensionDownloaderForTesting(helper.CreateDownloader());
+  updater->SetExtensionCacheForTesting(&extension_cache);
+
+  AddMockExternalProvider(ManifestLocation::kExternalPrefDownload);
+  const ExtensionId kExternalExtensionId =
+      crx_file::id_util::GenerateId("external");
+  GURL update_url(extension_urls::kChromeWebstoreUpdateURL);
+  external_provider_manager()->OnExternalExtensionUpdateUrlFound(
+      ExternalInstallInfoUpdateUrl(
+          kExternalExtensionId, /*install_parameter=*/"", update_url,
+          ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS,
+          /*mark_acknowledged=*/true),
+      /*force_update=*/true);
+
+  const ExtensionId kTestExtensionId = crx_file::id_util::GenerateId("test");
+  CorruptedExtensionReinstaller::Get(profile())->ExpectReinstallForCorruption(
+      kTestExtensionId, std::nullopt, mojom::ManifestLocation::kInternal);
+
+  service()->Init();
+
+  // During Init(), ExternalProviderManager started a full update check, so
+  // HasFullCheckInProgress is true, and Init() did not schedule a redundant
+  // background check.
+  EXPECT_TRUE(updater->HasFullCheckInProgress());
+  EXPECT_FALSE(updater->WillCheckSoon());
+
+  updater->SetExtensionDownloaderForTesting(nullptr);
+  updater->Stop();
+}
+
+// Verifies that ExtensionService::Init() handles the case when updater is
+// not enabled.
+TEST_F(ExtensionServiceTest,
+       CorruptedExtensionReinstallOnStartup_UpdaterDisabled) {
+  ExtensionServiceInitParams params;
+  params.autoupdate_enabled = false;
+  InitializeExtensionService(std::move(params));
+
+  const ExtensionId kTestExtensionId = crx_file::id_util::GenerateId("test");
+  CorruptedExtensionReinstaller::Get(profile())->ExpectReinstallForCorruption(
+      kTestExtensionId, std::nullopt, mojom::ManifestLocation::kInternal);
+
+  service()->Init();
+
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
+  ASSERT_TRUE(updater);
+  EXPECT_FALSE(updater->WillCheckSoon());
 }
 
 class ExternalExtensionPriorityTest

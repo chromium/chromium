@@ -2844,6 +2844,47 @@ TEST_F(ExtensionUpdaterTest, TestCheckSoon) {
   EXPECT_FALSE(updater.WillCheckSoon());
 }
 
+// Verifies that HasFullCheckInProgress() distinguishes full update checks from
+// targeted single-extension update checks, remaining false during targeted
+// checks and transitioning to true during full checks.
+TEST_F(ExtensionUpdaterTest, TestHasFullCheckInProgress) {
+  ExtensionDownloaderTestHelper helper;
+  TestDownloaderFactory factory(helper.url_loader_factory());
+  TestCrxInstallerFactory crx_installer_factory;
+  ExtensionList tmp;
+  CreateTestExtensions(2, 2, &tmp, nullptr, ManifestLocation::kInternal);
+  SetExtensions(tmp, ExtensionList());
+
+  ASSERT_EQ(2u, tmp.size());
+  ExtensionId id1 = tmp[0]->id();
+  ExtensionId id2 = tmp[1]->id();
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  ASSERT_TRUE(registry->enabled_extensions().GetByID(id1));
+  ASSERT_TRUE(registry->enabled_extensions().GetByID(id2));
+
+  ExtensionUpdater updater(profile());
+  updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                        nullptr, factory.GetDownloaderFactory());
+  updater.set_crx_installer_factory_for_test(&crx_installer_factory);
+
+  updater.Start();
+  EXPECT_FALSE(updater.HasFullCheckInProgress());
+
+  // A targeted check must not report as a full check.
+  ExtensionUpdater::CheckParams params;
+  params.ids = {id1};
+  updater.CheckNow(std::move(params));
+  EXPECT_FALSE(updater.HasFullCheckInProgress());
+
+  // A parameterless check covers all extensions and must report as a full
+  // check.
+  updater.CheckNow(ExtensionUpdater::CheckParams());
+  EXPECT_TRUE(updater.HasFullCheckInProgress());
+
+  updater.Stop();
+  EXPECT_FALSE(updater.HasFullCheckInProgress());
+}
+
 TEST_F(ExtensionUpdaterTest, TestUninstallWhileUpdateCheck) {
   ExtensionDownloaderTestHelper helper;
   TestDownloaderFactory factory(helper.url_loader_factory());

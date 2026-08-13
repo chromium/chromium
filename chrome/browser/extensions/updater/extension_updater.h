@@ -171,6 +171,10 @@ class ExtensionUpdater : public KeyedService,
   // code should just call CheckSoon().
   bool WillCheckSoon() const;
 
+  // Returns true iff an update check covering all installed and pending
+  // extensions is currently in progress.
+  bool HasFullCheckInProgress() const;
+
   // Creates an CrxInstaller to update an extension. Returns null if an update
   // is not possible. Eg: system shutdown or extension doesn't exist.
   // Public for testing.
@@ -253,6 +257,7 @@ class ExtensionUpdater : public KeyedService,
     InProgressCheck& operator=(const InProgressCheck&) = delete;
     ~InProgressCheck();
 
+    bool is_full_check = false;
     bool install_immediately = false;
     bool awaiting_update_service = false;
     UpdateFoundCallback update_found_callback;
