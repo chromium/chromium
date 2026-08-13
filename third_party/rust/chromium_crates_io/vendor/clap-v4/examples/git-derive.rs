@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::ffi::OsStr;
 use std::ffi::OsString;
 use std::path::PathBuf;
@@ -98,8 +99,48 @@ struct StashPushArgs {
     message: Option<String>,
 }
 
+fn aliases() -> HashMap<&'static str, Vec<&'static str>> {
+    HashMap::from([
+        ("last", vec!["diff", "HEAD~", "HEAD", "--"]),
+        ("stage", vec!["add"]),
+    ])
+}
+
+fn parse_aliases() -> Result<Cli, clap::Error> {
+    let args = Cli::try_parse()?;
+    expand_aliases(args, Vec::new())
+}
+
+fn expand_aliases(args: Cli, mut expanded: Vec<String>) -> Result<Cli, clap::Error> {
+    let Commands::External(external_args) = &args.command else {
+        return Ok(args);
+    };
+    let Some(name) = external_args.first().and_then(|name| name.to_str()) else {
+        return Ok(args);
+    };
+
+    let aliases = aliases();
+    let Some(alias) = aliases.get(name) else {
+        return Ok(args);
+    };
+    if expanded.iter().any(|expanded| expanded == name) {
+        return Err(clap::Error::raw(
+            clap::error::ErrorKind::InvalidSubcommand,
+            format!("recursive alias `{}`", expanded[0]),
+        ));
+    }
+    expanded.push(name.to_owned());
+
+    let mut alias_args = vec![OsString::from("git")];
+    alias_args.extend(alias.iter().map(OsString::from));
+    alias_args.extend(external_args.iter().skip(1).cloned());
+    let args = Cli::try_parse_from(alias_args)?;
+
+    expand_aliases(args, expanded)
+}
+
 fn main() {
-    let args = Cli::parse();
+    let args = parse_aliases().unwrap_or_else(|error| error.exit());
 
     match args.command {
         Commands::Clone { remote } => {

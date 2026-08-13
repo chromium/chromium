@@ -502,7 +502,7 @@ fn gather_direct_conflicts(cmd: &Command, id: &Id) -> Vec<Id> {
 }
 
 fn gather_arg_direct_conflicts(cmd: &Command, arg: &Arg) -> Vec<Id> {
-    let mut conf = arg.blacklist.clone();
+    let mut conf = arg.conflicts.clone();
     for group_id in cmd.groups_for_arg(arg.get_id()) {
         let group = cmd.find_group(&group_id).expect(INTERNAL_ERROR_MSG);
         conf.extend(group.conflicts.iter().cloned());

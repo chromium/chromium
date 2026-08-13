@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "clap_builder"
-version = "4.6.2"
+version = "4.6.6"
 build = false
 include = [
     "build.rs",

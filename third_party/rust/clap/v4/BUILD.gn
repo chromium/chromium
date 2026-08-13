@@ -69,6 +69,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/pacman.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/repl-derive.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/repl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/snapshots/pacman.txt",
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/tutorial_builder/01_quick.md",
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/tutorial_builder/01_quick.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/tutorial_builder/02_app_settings.md",
@@ -163,7 +164,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "clap"
   cargo_pkg_description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
   cargo_pkg_repository = "https://github.com/clap-rs/clap"
-  cargo_pkg_version = "4.6.4"
+  cargo_pkg_version = "4.6.6"
 
   allow_unsafe = false
 

@@ -81,3 +81,14 @@ For more information, try '--help'.
 Let's make a quick program to illustrate.
 
 </div>
+
+## Reviewing help output
+
+The test renders every command's long help.
+Each Markdown heading contains the complete command path.
+Generated `help` subcommands are skipped.
+`term_width(0)` prevents terminal-dependent wrapping.
+
+[`snapbox`](https://docs.rs/snapbox) compares this output with a snapshot.
+The resulting diff makes CLI changes easy to review.
+Set `SNAPSHOTS=overwrite` to accept intentional changes.

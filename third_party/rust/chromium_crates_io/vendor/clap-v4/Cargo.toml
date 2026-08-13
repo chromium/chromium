@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "clap"
-version = "4.6.4"
+version = "4.6.6"
 build = false
 include = [
     "build.rs",
@@ -486,6 +486,8 @@ required-features = ["derive"]
 [[example]]
 name = "pacman"
 path = "examples/pacman.rs"
+test = true
+doc-scrape-examples = true
 
 [[example]]
 name = "repl"
@@ -506,7 +508,7 @@ doc-scrape-examples = true
 required-features = ["derive"]
 
 [dependencies.clap_builder]
-version = "=4.6.2"
+version = "=4.6.6"
 default-features = false
 
 [dependencies.clap_derive]

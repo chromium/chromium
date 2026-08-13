@@ -63,7 +63,7 @@ pub struct Arg {
     pub(crate) long_help: Option<StyledStr>,
     pub(crate) action: Option<ArgAction>,
     pub(crate) value_parser: Option<super::ValueParser>,
-    pub(crate) blacklist: Vec<Id>,
+    pub(crate) conflicts: Vec<Id>,
     pub(crate) settings: ArgFlags,
     pub(crate) overrides: Vec<Id>,
     pub(crate) groups: Vec<Id>,
@@ -4006,9 +4006,9 @@ impl Arg {
     #[must_use]
     pub fn conflicts_with(mut self, arg_id: impl IntoResettable<Id>) -> Self {
         if let Some(arg_id) = arg_id.into_resettable().into_option() {
-            self.blacklist.push(arg_id);
+            self.conflicts.push(arg_id);
         } else {
-            self.blacklist.clear();
+            self.conflicts.clear();
         }
         self
     }
@@ -4073,7 +4073,7 @@ impl Arg {
     /// [`Arg::exclusive(true)`]: Arg::exclusive()
     #[must_use]
     pub fn conflicts_with_all(mut self, names: impl IntoIterator<Item = impl Into<Id>>) -> Self {
-        self.blacklist.extend(names.into_iter().map(Into::into));
+        self.conflicts.extend(names.into_iter().map(Into::into));
         self
     }
 
@@ -4721,8 +4721,17 @@ impl Arg {
         }
 
         debug_assert!(self.is_takes_value_set());
+        let min_vals = num_vals.min_values();
         for (n, val_name) in val_names.iter().enumerate() {
-            let arg_name = if self.is_positional() && (num_vals.min_values() == 0 || !required) {
+            let is_optional_val = min_vals == 0;
+            let is_past_min = min_vals <= n;
+            let is_optional = if self.is_positional() {
+                !required || is_past_min
+            } else {
+                // The caller already brackets an optional value; avoid `[[name]]`
+                !is_optional_val && is_past_min
+            };
+            let arg_name = if is_optional {
                 format!("[{val_name}]")
             } else {
                 format!("<{val_name}>")
@@ -4796,7 +4805,7 @@ impl fmt::Debug for Arg {
             .field("long_help", &self.long_help)
             .field("action", &self.action)
             .field("value_parser", &self.value_parser)
-            .field("blacklist", &self.blacklist)
+            .field("conflicts", &self.conflicts)
             .field("settings", &self.settings)
             .field("overrides", &self.overrides)
             .field("groups", &self.groups)
@@ -5003,7 +5012,45 @@ mod test {
             .value_names(["file", "name"]);
         o._build();
 
-        assert_eq!(o.to_string(), "-o <file> <name>...");
+        assert_eq!(o.to_string(), "-o <file> [name]...");
+    }
+
+    #[test]
+    fn option_display_partially_optional_values() {
+        let mut o = Arg::new("opt")
+            .long("example")
+            .action(ArgAction::Set)
+            .num_args(1..=2)
+            .value_names(["FOO", "BAR"]);
+        o._build();
+
+        assert_eq!(o.to_string(), "--example <FOO> [BAR]");
+    }
+
+    #[test]
+    fn option_display_partially_optional_values_require_equals() {
+        let mut o = Arg::new("opt")
+            .long("example")
+            .action(ArgAction::Set)
+            .num_args(1..=2)
+            .require_equals(true)
+            .value_delimiter(',')
+            .value_names(["FOO", "BAR"]);
+        o._build();
+
+        assert_eq!(o.to_string(), "--example=<FOO> [BAR]");
+    }
+
+    #[test]
+    fn option_display_partially_optional_values_with_extra_values() {
+        let mut o = Arg::new("opt")
+            .long("example")
+            .action(ArgAction::Set)
+            .num_args(1..=3)
+            .value_names(["A", "B"]);
+        o._build();
+
+        assert_eq!(o.to_string(), "--example <A> [B]...");
     }
 
     #[test]
@@ -5073,6 +5120,14 @@ mod test {
     #[test]
     fn positional_display_zero_or_more_values() {
         let mut p = Arg::new("pos").index(1).num_args(0..);
+        p._build();
+
+        assert_eq!(p.to_string(), "[pos]...");
+    }
+
+    #[test]
+    fn positional_display_zero_or_more_values_required() {
+        let mut p = Arg::new("pos").index(1).num_args(0..).required(true);
         p._build();
 
         assert_eq!(p.to_string(), "[pos]...");

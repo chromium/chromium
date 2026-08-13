@@ -3822,6 +3822,14 @@ impl Command {
         self.long_about.as_ref()
     }
 
+    /// Get the usage message specified via [`Command::override_usage`].
+    ///
+    /// [`Command::override_usage`]: Command::override_usage()
+    #[inline]
+    pub fn get_overridden_usage(&self) -> Option<&StyledStr> {
+        self.usage_str.as_ref()
+    }
+
     /// Get the custom section heading specified via [`Command::flatten_help`].
     #[inline]
     pub fn is_flatten_help_set(&self) -> bool {
@@ -4034,7 +4042,7 @@ impl Command {
             self.get_global_arg_conflicts_with(arg)
         } else {
             let mut result = Vec::new();
-            for id in arg.blacklist.iter() {
+            for id in arg.conflicts.iter() {
                 if let Some(arg) = self.find(id) {
                     result.push(arg);
                 } else if let Some(group) = self.find_group(id) {
@@ -4064,7 +4072,7 @@ impl Command {
     /// this `Command`.
     fn get_global_arg_conflicts_with(&self, arg: &Arg) -> Vec<&Arg> // FIXME: This could probably have been an iterator
     {
-        arg.blacklist
+        arg.conflicts
             .iter()
             .map(|id| {
                 self.args
@@ -4305,10 +4313,6 @@ impl Command {
 
 // Internally used only
 impl Command {
-    pub(crate) fn get_override_usage(&self) -> Option<&StyledStr> {
-        self.usage_str.as_ref()
-    }
-
     pub(crate) fn get_override_help(&self) -> Option<&StyledStr> {
         self.help_str.as_ref()
     }

@@ -28,11 +28,13 @@
 //!   - Optional subcommands
 //!   - Default subcommands
 //!   - [`last`][crate::Arg::last]
+//!   - Configurable command aliases
 //!
 //! pacman-like interface: [builder][pacman]
 //! - Topics:
 //!   - Flag subcommands
 //!   - Conflicting arguments
+//!   - Visualizing help output changes through snapshot testing
 //!
 //! Escaped positionals with `--`: [builder][escaped_positional], [derive][escaped_positional_derive]
 //!

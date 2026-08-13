@@ -74,7 +74,7 @@ impl<'cmd> Usage<'cmd> {
     // Creates a usage string (*without title*) if one was not provided by the user manually.
     fn write_usage_no_title(&self, styled: &mut StyledStr, used: &[Id]) -> bool {
         debug!("Usage::create_usage_no_title");
-        if let Some(u) = self.cmd.get_override_usage() {
+        if let Some(u) = self.cmd.get_overridden_usage() {
             styled.push_styled(u);
             true
         } else {

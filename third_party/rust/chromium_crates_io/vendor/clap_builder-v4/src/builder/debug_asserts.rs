@@ -228,8 +228,8 @@ pub(crate) fn assert_app(cmd: &Command) {
             );
         }
 
-        // blacklist
-        for req in &arg.blacklist {
+        // conflicts
+        for req in &arg.conflicts {
             assert!(
                 cmd.id_exists(req),
                 "Command {}: Argument or group '{}' specified in 'conflicts_with*' for '{}' does not exist",
@@ -697,7 +697,7 @@ fn assert_arg(arg: &Arg) {
     // Self conflict
     // TODO: this check should be recursive
     assert!(
-        !arg.blacklist.iter().any(|x| x == arg.get_id()),
+        !arg.conflicts.iter().any(|x| x == arg.get_id()),
         "Argument '{}' cannot conflict with itself",
         arg.get_id(),
     );

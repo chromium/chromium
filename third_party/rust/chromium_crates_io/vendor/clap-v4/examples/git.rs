@@ -1,7 +1,8 @@
+use std::collections::HashMap;
 use std::ffi::OsString;
 use std::path::PathBuf;
 
-use clap::{Command, arg};
+use clap::{ArgMatches, Command, arg};
 
 fn cli() -> Command {
     Command::new("git")
@@ -57,8 +58,56 @@ fn push_args() -> Vec<clap::Arg> {
     vec![arg!(-m --message <MESSAGE>)]
 }
 
+fn aliases() -> HashMap<&'static str, Vec<&'static str>> {
+    HashMap::from([
+        ("last", vec!["diff", "HEAD~", "HEAD", "--"]),
+        ("stage", vec!["add"]),
+    ])
+}
+
+fn parse_aliases() -> Result<ArgMatches, clap::Error> {
+    let matches = cli().try_get_matches()?;
+    expand_aliases(matches, Vec::new())
+}
+
+fn expand_aliases(
+    matches: ArgMatches,
+    mut expanded: Vec<String>,
+) -> Result<ArgMatches, clap::Error> {
+    let Some((name, sub_matches)) = matches.subcommand() else {
+        return Ok(matches);
+    };
+    if cli().find_subcommand(name).is_some() {
+        return Ok(matches);
+    }
+
+    let aliases = aliases();
+    let Some(alias) = aliases.get(name) else {
+        return Ok(matches);
+    };
+    let mut args = alias.iter().map(OsString::from).collect::<Vec<_>>();
+    args.extend(
+        sub_matches
+            .get_many::<OsString>("")
+            .into_iter()
+            .flatten()
+            .cloned(),
+    );
+    let matches = cli().no_binary_name(true).try_get_matches_from(args)?;
+    let new_name = matches.subcommand_name().expect("subcommand required");
+    expanded.push(name.to_owned());
+    if expanded.iter().any(|name| name == new_name) {
+        return Err(clap::Error::raw(
+            clap::error::ErrorKind::InvalidSubcommand,
+            format!("recursive alias `{}`", expanded[0]),
+        ));
+    }
+
+    expand_aliases(matches, expanded)
+}
+
 fn main() {
-    let matches = cli().get_matches();
+    let matches = parse_aliases().unwrap_or_else(|error| error.exit());
 
     match matches.subcommand() {
         Some(("clone", sub_matches)) => {

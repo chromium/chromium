@@ -133,6 +133,19 @@ Calling out to "custom-tool" with ["arg1", "--foo", "bar"]
 
 ```
 
+Configurable aliases:
+Aliases loaded from application configuration can expand into built-in commands
+and arguments. Built-in commands take precedence over configured aliases.
+
+```console
+$ git last ./src
+Diffing HEAD~..HEAD ./src (color=auto)
+
+$ git stage Cargo.toml Cargo.lock
+Adding ["Cargo.toml", "Cargo.lock"]
+
+```
+
 Last argument:
 ```console
 $ git diff --help
