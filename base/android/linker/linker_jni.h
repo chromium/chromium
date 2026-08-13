@@ -79,19 +79,30 @@ static const size_t kAddressSpaceReservationSize = 192 * 1024 * 1024;
 
 // A simple scoped UTF String class that can be initialized from
 // a Java jstring handle. Modeled like std::string, which cannot
-// be used here.
+// be used here. Employs Small String Optimization (SSO) with an inline
+// buffer to avoid heap allocations and ART memory copies.
 class String {
  public:
   String(JNIEnv* env, jstring str);
+  String(const String&) = delete;
+  String& operator=(const String&) = delete;
 
-  inline ~String() { ::free(ptr_); }
+  inline ~String() {
+    if (ptr_ != buffer_) {
+      ::free(ptr_);
+    }
+  }
 
   inline const char* c_str() const { return ptr_ ? ptr_ : ""; }
   inline size_t size() const { return size_; }
 
  private:
+  // Sized to hold the paths of apks and .so files as this is the only
+  // application of this string.
+  static constexpr size_t kInlineBufferSize = 512;
   char* ptr_;
   size_t size_;
+  char buffer_[kInlineBufferSize];
 };
 
 inline uintptr_t PageStart(size_t page_size, uintptr_t x) {

@@ -243,27 +243,37 @@ bool CallJniOnLoad(void* handle) {
 }  // namespace
 
 String::String(JNIEnv* env, jstring str) {
-  size_ = env->GetStringUTFLength(str);
-  ptr_ = static_cast<char*>(::malloc(size_ + 1));
+  if (!str) {
+    ptr_ = buffer_;
+    buffer_[0] = '\0';
+    size_ = 0;
+    return;
+  }
+
+  jsize len = env->GetStringLength(str);
+  size_ = static_cast<size_t>(env->GetStringUTFLength(str));
+  if (size_ < kInlineBufferSize) {
+    ptr_ = buffer_;
+  } else {
+    ptr_ = static_cast<char*>(::malloc(size_ + 1));
+  }
 
   // Note: This runs before browser native code is loaded, and so cannot
-  // rely on anything from base/. This means that we must use
-  // GetStringUTFChars() and not base::android::ConvertJavaStringToUTF8().
+  // rely on anything from base/. This means that we cannot use
+  // base::android::ConvertJavaStringToUTF8().
   //
-  // GetStringUTFChars() suffices because the only strings used here are
-  // paths to APK files or names of shared libraries, all of which are
-  // plain ASCII, defined and hard-coded by the Chromium Android build.
+  // GetStringUTFRegion() copies directly into our preallocated inline buffer
+  // (or fallback heap buffer) without allocating modified UTF-8 arrays inside
+  // ART or returning heap pointers.
+  //
+  // This suffices because the only strings used here are paths to APK files
+  // or names of shared libraries, all of which are plain ASCII, defined and
+  // hard-coded by the Chromium Android build.
   //
   // For more: see
   //   https://crbug.com/508876
-  //
-  // Note: GetStringUTFChars() returns Java UTF-8 bytes. This is good
-  // enough for the linker though.
-  const char* bytes = env->GetStringUTFChars(str, nullptr);
-  UNSAFE_TODO(::memcpy(ptr_, bytes, size_));
-  UNSAFE_TODO(ptr_[size_] = '\0');
-
-  env->ReleaseStringUTFChars(str, bytes);
+  env->GetStringUTFRegion(str, 0, len, ptr_);
+  ptr_[size_] = '\0';
 }
 
 bool IsValidAddress(int64_t address) {

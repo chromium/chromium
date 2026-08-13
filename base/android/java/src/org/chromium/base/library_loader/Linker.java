@@ -448,6 +448,7 @@ class Linker {
                             mRemoteLibInfo.mLoadAddress,
                             newRemote.mLoadAddress);
                 }
+                newRemote.close();
                 return;
             }
             mRemoteLibInfo = newRemote;
@@ -656,16 +657,7 @@ class Linker {
             mRelroStart = info.relroStart;
             mRelroSize = info.relroSize;
             if (info.fd != null) {
-                try {
-                    ParcelFileDescriptor fd = info.fd.dup();
-                    // If CreateSharedRelro fails, the OS file descriptor will be -1 and |fd| will
-                    // be null.
-                    if (fd != null) {
-                        mRelroFd = fd.detachFd();
-                    }
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to create LibInfo from aidl.", e);
-                }
+                mRelroFd = info.fd.detachFd();
             } else {
                 mRelroFd = -1;
             }
