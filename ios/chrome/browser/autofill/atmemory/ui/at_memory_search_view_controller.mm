@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_inline_notice_view.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -54,10 +55,13 @@ enum class ItemIdentifier {
 
 @implementation AtMemorySearchViewController {
   // The table view for this view controller.
-  UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
+  UITableViewDiffableDataSource<NSNumber*, id>* _dataSource;
   // Search controller for users to type a query for performing an AtMemory
   // search and filtering items.
   UISearchController* _searchController;
+
+  // Search results to display in the UI.
+  NSArray<AtMemorySearchItem*>* _searchResults;
 
   // Tells if the notice is visible.
   BOOL _noticeIsVisible;
@@ -108,12 +112,17 @@ enum class ItemIdentifier {
       initWithTableView:self.tableView
            cellProvider:^UITableViewCell*(UITableView* tableView,
                                           NSIndexPath* indexPath,
-                                          NSNumber* itemIdentifier) {
+                                          id itemIdentifier) {
+             if ([itemIdentifier isKindOfClass:[AtMemorySearchItem class]]) {
+               return [weakSelf searchItemCellForTableView:tableView
+                                                 indexPath:indexPath
+                                            itemIdentifier:itemIdentifier];
+             }
              return
                  [weakSelf cellForTableView:tableView
                                   indexPath:indexPath
                              itemIdentifier:static_cast<ItemIdentifier>(
-                                                itemIdentifier.integerValue)];
+                                                [itemIdentifier integerValue])];
            }];
   _dataSource.defaultRowAnimation = UITableViewRowAnimationFade;
   [self createSnapshotForInitialState];
@@ -151,9 +160,10 @@ enum class ItemIdentifier {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  ItemIdentifier itemIdentifier = static_cast<ItemIdentifier>(
-      [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
-  if (itemIdentifier == ItemIdentifier::kSearchItem) {
+  id item = [_dataSource itemIdentifierForIndexPath:indexPath];
+  if ([item isKindOfClass:[NSNumber class]] &&
+      static_cast<ItemIdentifier>([item integerValue]) ==
+          ItemIdentifier::kSearchItem) {
     [self.mutator startSearchWithQuery:_searchController.searchBar.text];
     [self createSnapshotForFetchingState];
   }
@@ -214,7 +224,8 @@ enum class ItemIdentifier {
 }
 
 - (void)setSearchResults:(NSArray<AtMemorySearchItem*>*)searchResults {
-  // TODO(crbug.com/543036121): Implement search results.
+  _searchResults = searchResults;
+  [self createSnapshotForSearchResultsState];
 }
 
 - (void)updateTableViewBackgroundStyle:(AtMemoryBackgroundStyle)style {
@@ -320,6 +331,22 @@ enum class ItemIdentifier {
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
+// Populates `snapshot` for the search results state.
+- (void)createSnapshotForSearchResultsState {
+  NSDiffableDataSourceSnapshot* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+
+  [self appendNoticeSectionToSnapshot:snapshot];
+  [snapshot appendSectionsWithIdentifiers:@[
+    @(static_cast<int>(SectionIdentifier::kSearchResultsSection))
+  ]];
+  [snapshot appendItemsWithIdentifiers:_searchResults
+             intoSectionWithIdentifier:
+                 @(static_cast<int>(SectionIdentifier::kSearchResultsSection))];
+
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
 // Appends the notice section and item to `snapshot` if the notice is visible.
 - (void)appendNoticeSectionToSnapshot:(NSDiffableDataSourceSnapshot*)snapshot {
   if (!_noticeIsVisible) {
@@ -344,7 +371,7 @@ enum class ItemIdentifier {
 
 // Reloads the snapshot for the cell with the given `itemIdentifier`.
 - (void)updateSnapshotForItemIdentifier:(ItemIdentifier)itemIdentifier {
-  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+  NSDiffableDataSourceSnapshot<NSNumber*, id>* snapshot =
       [_dataSource snapshot];
   if ([snapshot indexOfItemIdentifier:@(static_cast<int>(itemIdentifier))] ==
       NSNotFound) {
@@ -381,6 +408,34 @@ enum class ItemIdentifier {
       break;
   }
   CHECK(cell);
+  return cell;
+}
+
+// Returns the table view cell for an AtMemory search result item.
+- (UITableViewCell*)searchItemCellForTableView:(UITableView*)tableView
+                                     indexPath:(NSIndexPath*)indexPath
+                                itemIdentifier:
+                                    (AtMemorySearchItem*)itemIdentifier {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = itemIdentifier.title;
+  configuration.titleColor = [UIColor colorNamed:kTextPrimaryColor];
+  configuration.subtitle = itemIdentifier.subtitle;
+
+  if (itemIdentifier.icon) {
+    ColorfulSymbolContentConfiguration* symbolConfiguration =
+        [[ColorfulSymbolContentConfiguration alloc] init];
+    symbolConfiguration.symbolImage = itemIdentifier.icon;
+    symbolConfiguration.symbolTintColor =
+        [UIColor colorNamed:kTextSecondaryColor];
+    configuration.leadingConfiguration = symbolConfiguration;
+  }
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  cell.contentConfiguration = configuration;
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
   return cell;
 }
 
