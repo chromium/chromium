@@ -298,3 +298,60 @@ if (is_win || is_linux || is_chromeos) {
     ]
   }
 }
+
+if (is_win || is_mac || is_linux || is_chromeos) {
+  source_set("close_bubble_on_tab_activation_helper") {
+    public = [ "close_bubble_on_tab_activation_helper.h" ]
+    sources = [ "close_bubble_on_tab_activation_helper.cc" ]
+    public_deps = [ "//chrome/browser/ui/tabs:tab_strip" ]
+    deps = [
+      "//base",
+      "//ui/views",
+    ]
+  }
+}
+
+source_set("elevation_icon_setter") {
+  public = [ "elevation_icon_setter.h" ]
+  sources = [ "elevation_icon_setter.cc" ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//skia",
+    "//ui/views",
+  ]
+  if (is_win) {
+    deps += [
+      "//ui/display",
+      "//ui/gfx",
+    ]
+  }
+}
+
+if (use_aura) {
+  source_set("theme_profile_key") {
+    public = [ "theme_profile_key.h" ]
+    sources = [ "theme_profile_key.cc" ]
+    deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//ui/aura",
+      "//ui/base",
+    ]
+  }
+}
+
+source_set("media_picker_utils") {
+  public = [ "media_picker_utils.h" ]
+  sources = [ "media_picker_utils.cc" ]
+  public_deps = [ "//ui/gfx" ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/extensions",
+    "//components/constrained_window",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//ui/views",
+  ]
+}

@@ -53,6 +53,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/permission_bubble",
       "//chrome/browser/ui/views/permissions/chip",
+      "//components/favicon_base",
       "//components/media_effects",
       "//components/permissions",
       "//ui/base",

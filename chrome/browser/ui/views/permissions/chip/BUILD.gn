@@ -23,7 +23,7 @@ source_set("chip") {
   public_deps = [
     "//base",
     "//chrome/browser/ui/content_settings",
-    "//chrome/browser/ui/views/bubble",
+    "//chrome/browser/ui/views/bubble:reopen_suppressor",
 
     # Only the tiny, dependency-free :style sub-target -- NOT the full
     # :permissions, which itself depends on :chip for chip_controller.h

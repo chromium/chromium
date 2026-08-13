@@ -6,6 +6,15 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 import("//build/config/ui.gni")
 
+source_set("reopen_suppressor") {
+  public = [ "webui_bubble_reopen_suppressor.h" ]
+  sources = [ "webui_bubble_reopen_suppressor.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/views",
+  ]
+}
+
 source_set("bubble") {
   sources = [
     "webui_bubble_dialog_view.cc",
@@ -13,8 +22,6 @@ source_set("bubble") {
     "webui_bubble_manager.cc",
     "webui_bubble_manager.h",
     "webui_bubble_manager_observer.h",
-    "webui_bubble_reopen_suppressor.cc",
-    "webui_bubble_reopen_suppressor.h",
   ]
   public_deps = [
     "//base",
@@ -22,6 +29,7 @@ source_set("bubble") {
     "//chrome/browser:primitives",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views:close_bubble_on_tab_activation_helper",
     "//chrome/browser/ui/webui:webui_util",
     "//components/web_modal",
     "//content/public/browser",

@@ -33,6 +33,7 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views:media_picker_utils",
     "//components/constrained_window",
     "//components/web_modal",
     "//content/public/browser",
@@ -40,12 +41,4 @@ source_set("impl") {
     "//ui/gfx/geometry",
     "//ui/views",
   ]
-
-  # select_audio_output_views.cc includes
-  # chrome/browser/ui/views/media_picker_utils.h
-  # (CreateMediaPickerDialogWidget), which is still compiled in
-  # //chrome/browser/ui:ui and has no modular home yet. Reach it via
-  # browser_public_dependencies; the reverse edge is the
-  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
