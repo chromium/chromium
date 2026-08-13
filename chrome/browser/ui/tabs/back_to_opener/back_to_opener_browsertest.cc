@@ -139,10 +139,8 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
   EXPECT_TRUE(controller->CanGoBackToOpener());
 
   // Close opener tab
-  int opener_index =
-      browser()->tab_strip_model()->GetIndexOfWebContents(opener_contents);
-  browser()->tab_strip_model()->CloseWebContentsAt(opener_index,
-                                                   TabCloseTypes::CLOSE_NONE);
+  browser()->tab_strip_model()->CloseWebContents(opener_contents,
+                                                 TabCloseTypes::CLOSE_NONE);
 
   // Back button should be disabled
   EXPECT_FALSE(controller->HasValidOpener());
@@ -233,10 +231,8 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
       dest_tab->GetTabFeatures()->back_to_opener_controller();
 
   // Close opener
-  int opener_index =
-      browser()->tab_strip_model()->GetIndexOfWebContents(opener_contents);
-  browser()->tab_strip_model()->CloseWebContentsAt(opener_index,
-                                                   TabCloseTypes::CLOSE_NONE);
+  browser()->tab_strip_model()->CloseWebContents(opener_contents,
+                                                 TabCloseTypes::CLOSE_NONE);
 
   // Back button should still be enabled (has navigation history)
   EXPECT_FALSE(controller->HasValidOpener());

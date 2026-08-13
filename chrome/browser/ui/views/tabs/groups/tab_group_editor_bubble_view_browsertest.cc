@@ -37,6 +37,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -329,8 +331,9 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                        MoveGroupToNewWindowDisabledWhenOnlyGroup) {
   TabStripModel* tsm = browser()->tab_strip_model();
   for (int index = tsm->count() - 1; index >= 0; --index) {
-    if (tsm->GetTabAtIndex(index)->GetGroup() != group_) {
-      tsm->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
+    tabs::TabInterface* tab = tsm->GetTabAtIndex(index);
+    if (tab->GetGroup() != group_) {
+      tsm->CloseWebContents(tab->GetContents(), TabCloseTypes::CLOSE_NONE);
     }
   }
 

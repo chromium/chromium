@@ -33,6 +33,7 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -264,17 +265,17 @@ void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
       tab_strip_model_->ReverseTabsInSplit(split_id);
       break;
     case CommandId::kCloseSpecifiedTab:
-      CloseTabAtIndex(split_tab_index_.value());
+      CloseWebContents(
+          tab_strip_model_->GetWebContentsAt(split_tab_index_.value()));
       break;
     case CommandId::kCloseStartTab: {
       int startIndex = base::i18n::IsRTL() ? 1 : 0;
-      CloseTabAtIndex(
-          tab_strip_model_->GetIndexOfTab(tabs_in_split[startIndex]));
+      CloseWebContents(tabs_in_split[startIndex]->GetContents());
       break;
     }
     case CommandId::kCloseEndTab: {
       int endIndex = base::i18n::IsRTL() ? 0 : 1;
-      CloseTabAtIndex(tab_strip_model_->GetIndexOfTab(tabs_in_split[endIndex]));
+      CloseWebContents(tabs_in_split[endIndex]->GetContents());
       break;
     }
     case CommandId::kExitSplit:
@@ -349,10 +350,10 @@ split_tabs::SplitTabLayout SplitTabMenuModel::GetSplitLayout() const {
   return visual_data->split_layout();
 }
 
-void SplitTabMenuModel::CloseTabAtIndex(int index) {
-  tab_strip_model_->CloseWebContentsAt(
-      index, TabCloseTypes::CLOSE_USER_GESTURE |
-                 TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+void SplitTabMenuModel::CloseWebContents(content::WebContents* contents) {
+  tab_strip_model_->CloseWebContents(
+      contents, TabCloseTypes::CLOSE_USER_GESTURE |
+                    TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 void SplitTabMenuModel::SendFeedback() {

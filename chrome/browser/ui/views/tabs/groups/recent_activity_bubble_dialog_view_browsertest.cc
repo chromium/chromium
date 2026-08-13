@@ -32,6 +32,8 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -420,16 +422,12 @@ class RecentActivityBubbleDialogViewActionBrowserTest
   }
 
   void CloseTab(tabs::TabInterface* tab) {
-    browser()->tab_strip_model()->CloseWebContentsAt(TabIndex(tab),
-                                                     TabCloseTypes::CLOSE_NONE);
+    browser()->tab_strip_model()->CloseWebContents(tab->GetContents(),
+                                                   TabCloseTypes::CLOSE_NONE);
   }
 
   LocalTabID TabId(tabs::TabInterface* tab) {
     return tab->GetHandle().raw_value();
-  }
-
-  int TabIndex(tabs::TabInterface* tab) {
-    return browser()->tab_strip_model()->GetIndexOfTab(tab);
   }
 
   const TabGroupId CreateTabGroup(std::vector<tabs::TabInterface*> tabs) {
