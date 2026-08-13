@@ -736,6 +736,7 @@ class TabStripModel {
   // Returns iterators for traversing through all the tabs in the tabstrip.
   TabIterator begin() const;
   TabIterator end() const;
+  TabIterator at(tabs::TabInterface* tab) const;
 
   // Gets the root of the tab strip model. Used to traverse the tab topology.
   const tabs::TabCollection* Root() const;

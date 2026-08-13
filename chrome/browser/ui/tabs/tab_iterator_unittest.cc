@@ -149,3 +149,111 @@ TEST_F(TabCollectionIteratorTest, TabIteratorWithMixedTabsAndCollections) {
     EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(index));
   }
 }
+
+TEST_F(TabCollectionIteratorTest, TabIteratorBackwardIterationWithOnlyTabs) {
+  for (int i = 0; i < 5; i++) {
+    collection()->AddTab(
+        std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
+        collection()->ChildCount());
+  }
+
+  // Iterate backwards starting from end().
+  auto it = collection()->end();
+  for (int i = 4; i >= 0; i--) {
+    --it;
+    EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(i));
+  }
+  EXPECT_EQ(it, collection()->begin());
+
+  // Test postfix decrement.
+  it = collection()->end();
+  it--;
+  EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(4));
+}
+
+TEST_F(TabCollectionIteratorTest,
+       TabIteratorBackwardIterationWithMixedTabsAndCollections) {
+  TabGroupDesktop::Factory factory(profile());
+  std::unique_ptr<tabs::TabGroupTabCollection> group_one =
+      std::make_unique<tabs::TabGroupTabCollection>(
+          factory, tab_groups::TabGroupId::GenerateNew(),
+          tab_groups::TabGroupVisualData());
+
+  group_one->AddTab(
+      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
+      0);
+  group_one->AddTab(
+      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
+      0);
+  collection()->AddCollection(std::move(group_one), 0);
+
+  for (int i = 0; i < 5; i++) {
+    collection()->AddTab(
+        std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
+        collection()->ChildCount());
+  }
+
+  std::unique_ptr<tabs::TabGroupTabCollection> group_two =
+      std::make_unique<tabs::TabGroupTabCollection>(
+          factory, tab_groups::TabGroupId::GenerateNew(),
+          tab_groups::TabGroupVisualData());
+
+  group_two->AddTab(
+      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
+      0);
+  std::unique_ptr<tabs::SplitTabCollection> split_collection =
+      std::make_unique<tabs::SplitTabCollection>(
+          split_tabs::SplitTabId::GenerateNew(),
+          split_tabs::SplitTabVisualData());
+  split_collection->AddTab(
+      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
+      0);
+  split_collection->AddTab(
+      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
+      0);
+  group_two->AddCollection(std::move(split_collection), 1);
+  collection()->AddCollection(std::move(group_two), collection()->ChildCount());
+
+  // Iterate backwards from end() to begin().
+  auto it = collection()->end();
+  for (int i = 9; i >= 0; i--) {
+    --it;
+    EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(i));
+  }
+  EXPECT_EQ(it, collection()->begin());
+
+  // Test bidirectional stepping (forward then backward) across boundaries.
+  it = collection()->begin();
+  ++it;  // index 1 (group_one)
+  ++it;  // index 2 (loose tab)
+  EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(2));
+  --it;  // index 1 (group_one)
+  EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(1));
+  --it;  // index 0 (group_one)
+  EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(0));
+  EXPECT_EQ(it, collection()->begin());
+
+  // Test bidirectional stepping across group_two and split_collection
+  // boundaries.
+  for (int i = 0; i < 8; ++i) {
+    ++it;  // advance to index 8 (split_collection in group_two)
+  }
+  EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(8));
+  ++it;  // index 9 (split_collection)
+  EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(9));
+  --it;  // index 8 (split_collection)
+  EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(8));
+  --it;  // index 7 (group_two direct child tab)
+  EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(7));
+  --it;  // index 6 (loose tab)
+  EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(6));
+  ++it;  // index 7 (group_two direct child tab)
+  EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(7));
+
+  // Test constructing from tab and stepping backward.
+  tabs::TabInterface* middle_tab = collection()->GetTabAtIndexRecursive(5);
+  tabs::TabCollection::TabIterator mid_it(middle_tab);
+  EXPECT_EQ(*mid_it, middle_tab);
+  --mid_it;
+  EXPECT_EQ(*mid_it, collection()->GetTabAtIndexRecursive(4));
+}

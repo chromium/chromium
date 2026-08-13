@@ -2527,6 +2527,11 @@ TabStripModel::TabIterator TabStripModel::begin() const {
 TabStripModel::TabIterator TabStripModel::end() const {
   return contents_data_->end();
 }
+TabStripModel::TabIterator TabStripModel::at(tabs::TabInterface* tab) const {
+  CHECK(tab);
+  CHECK_NE(GetIndexOfTab(tab), kNoTab);
+  return TabIterator(tab);
+}
 
 const tabs::TabCollection* TabStripModel::Root() const {
   return contents_data_.get();

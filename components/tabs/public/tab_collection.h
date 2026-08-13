@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <cstddef>
+#include <iterator>
 #include <list>
 #include <memory>
 #include <optional>
@@ -52,7 +53,7 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
     STACK_ALLOCATED();
 
    public:
-    using iterator_category = std::forward_iterator_tag;
+    using iterator_category = std::bidirectional_iterator_tag;
     using value_type = tabs::TabInterface*;
     using difference_type = ptrdiff_t;
     using pointer = value_type;
@@ -80,6 +81,17 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
       return it;
     }
 
+    TabIterator& operator--() {
+      Prev();
+      return *this;
+    }
+
+    TabIterator operator--(int) {
+      TabIterator it(*this);
+      Prev();
+      return it;
+    }
+
     bool operator==(const TabIterator& other) const {
       return cur_ == other.cur_;
     }
@@ -87,6 +99,7 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
    private:
     TabIterator(const tabs::TabCollection* root, bool is_end);
     void Next();
+    void Prev();
 
     // Contains information of the index within a collection to access during
     // the tree traversal. Multiple frames can be stored in the stack which

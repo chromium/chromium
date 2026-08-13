@@ -7748,6 +7748,30 @@ TEST_F(TabStripModelTest, IteratorTestGroupOnlyTabs) {
   EXPECT_EQ(i, tabstrip()->count());
 }
 
+TEST_F(TabStripModelTest, IteratorTestAt) {
+  PrepareTabstripForSelectionTest(tabstrip(), 10, 2, {0});
+  tabstrip()->AddToNewGroup({4, 5, 6});
+
+  for (int start_index = 0; start_index < tabstrip()->count(); ++start_index) {
+    tabs::TabInterface* start_tab = tabstrip()->GetTabAtIndex(start_index);
+    TabStripModel::TabIterator it = tabstrip()->at(start_tab);
+    int current_index = start_index;
+    while (it != tabstrip()->end()) {
+      EXPECT_EQ(*it, tabstrip()->GetTabAtIndex(current_index++));
+      ++it;
+    }
+    EXPECT_EQ(current_index, tabstrip()->count());
+  }
+
+  // Iterate backwards from end() to begin().
+  auto it = tabstrip()->end();
+  for (int i = tabstrip()->count() - 1; i >= 0; --i) {
+    --it;
+    EXPECT_EQ(*it, tabstrip()->GetTabAtIndex(i));
+  }
+  EXPECT_EQ(it, tabstrip()->begin());
+}
+
 TEST_F(TabStripModelTest, GetTabsAtIndices) {
   // Add a bunch of tabs.
   PrepareTabstripForSelectionTest(tabstrip(), 7, 2, {0});
