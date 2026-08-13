@@ -76,7 +76,6 @@ class TabStripCollectionControllerBrowserTest
       override {
     auto enabled = VerticalTabsBrowserTestMixin<
         InProcessBrowserTest>::GetEnabledFeatures();
-    enabled.push_back({features::kTabGroupsCollapseFreezing, {}});
     enabled.push_back({tabs::kTabStripUnification, {}});
     return enabled;
   }
@@ -282,7 +281,6 @@ class TabGroupHoverCardTest
       override {
     auto enabled = VerticalTabsBrowserTestMixin<
         InProcessBrowserTest>::GetEnabledFeatures();
-    enabled.push_back({features::kTabGroupsCollapseFreezing, {}});
     enabled.push_back({features::kTabGroupHoverCards, {}});
     enabled.push_back({tabs::kTabStripUnification, {}});
     return enabled;

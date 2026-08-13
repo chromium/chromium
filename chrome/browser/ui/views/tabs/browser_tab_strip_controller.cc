@@ -689,14 +689,11 @@ void BrowserTabStripController::OnTabGroupChanged(
         gfx::Range tabs_in_group = ListTabsInGroup(change.group);
         for (auto i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
           tabstrip_->tab_at(i)->SetVisible(!new_visuals->is_collapsed());
-          if (base::FeatureList::IsEnabled(
-                  features::kTabGroupsCollapseFreezing)) {
-            if (new_visuals->is_collapsed()) {
-              tabstrip_->tab_at(i)->CreateFreezingVote(
-                  model_->GetWebContentsAt(i));
-            } else {
-              tabstrip_->tab_at(i)->ReleaseFreezingVote();
-            }
+          if (new_visuals->is_collapsed()) {
+            tabstrip_->tab_at(i)->CreateFreezingVote(
+                model_->GetWebContentsAt(i));
+          } else {
+            tabstrip_->tab_at(i)->ReleaseFreezingVote();
           }
         }
       }

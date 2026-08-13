@@ -366,8 +366,7 @@ void TabStripCollectionController::ToggleTabGroupCollapsedState(
         group->IsCustomized());
   }
 
-  if (should_toggle_group &&
-      base::FeatureList::IsEnabled(features::kTabGroupsCollapseFreezing)) {
+  if (should_toggle_group) {
     gfx::Range tabs_in_group = group->ListTabs();
     for (uint32_t i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
       views::View* const view =
