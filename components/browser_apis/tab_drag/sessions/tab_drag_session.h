@@ -91,6 +91,8 @@ class TabDragSession {
 
   bool IsDraggingEntireWindow() const;
   bool ShouldTearOff(const gfx::Point& screen_point) const;
+  void TransferDragToWindow(TabDragWindowId target_window_id,
+                            bool activate_target_window);
   void StartWindowDrag(TabDragWindowId window_id,
                        const gfx::Point& screen_point);
   void DetachAndStartWindowDrag(const gfx::Point& screen_point);

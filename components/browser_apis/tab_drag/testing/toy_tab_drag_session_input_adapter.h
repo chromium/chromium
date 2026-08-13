@@ -24,9 +24,13 @@ class ToyTabDragSessionInputAdapter : public TabDragSessionInputAdapter {
 
   // TabDragSessionInputAdapter overrides:
   base::expected<void, mojo_base::mojom::ErrorPtr> StartInputCapture(
-      EventCallback callback) override;
+      EventCallback callback,
+      TabDragWindowAdapter* initial_window) override;
 
   void ReleaseInputCapture() override;
+  void SuspendInputCapture() override;
+  void ResumeInputCapture() override;
+  void SetActiveWindowContext(TabDragWindowAdapter* new_window) override;
 
   void SendToyEvent(TabDragInputEvent::Type type,
                     const gfx::Point& screen_point = {});
@@ -37,7 +41,9 @@ class ToyTabDragSessionInputAdapter : public TabDragSessionInputAdapter {
  private:
   bool capture_started_ = false;
   bool capture_released_ = false;
+  bool suspended_ = false;
   EventCallback callback_;
+  raw_ptr<TabDragWindowAdapter> active_window_ = nullptr;
 };
 
 class TabDragSessionListener;

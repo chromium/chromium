@@ -13,6 +13,8 @@
 
 namespace tabs_api {
 
+class TabDragWindowAdapter;
+
 struct TabDragInputEvent {
   enum class Type {
     kMoved,
@@ -33,10 +35,20 @@ class TabDragSessionInputAdapter {
 
   // Starts capturing input on the platform.
   virtual base::expected<void, mojo_base::mojom::ErrorPtr> StartInputCapture(
-      EventCallback callback) = 0;
+      EventCallback callback,
+      TabDragWindowAdapter* initial_window) = 0;
 
   // Releases input capture.
   virtual void ReleaseInputCapture() = 0;
+
+  // Temporarily suspends input capture (e.g. during native window move loops).
+  virtual void SuspendInputCapture() {}
+
+  // Resumes input capture after suspension.
+  virtual void ResumeInputCapture() {}
+
+  // Updates the active window context being monitored during dragging.
+  virtual void SetActiveWindowContext(TabDragWindowAdapter* new_window) {}
 };
 
 }  // namespace tabs_api

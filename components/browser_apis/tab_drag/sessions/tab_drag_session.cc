@@ -33,16 +33,17 @@ TabDragSession::TabDragSession(TabDragSessionParams params,
 }
 
 base::expected<void, mojo_base::mojom::ErrorPtr> TabDragSession::Start() {
-  auto result =
-      injector_->GetInputAdapter().StartInputCapture(base::BindRepeating(
-          &TabDragSession::OnInputEvent, base::Unretained(this)));
+  TabDragWindowAdapter* window = registry()->Get(dragged_window_);
+  CHECK(window);
+
+  auto result = injector_->GetInputAdapter().StartInputCapture(
+      base::BindRepeating(&TabDragSession::OnInputEvent,
+                          base::Unretained(this)),
+      window);
   if (!result.has_value()) {
     return result;
   }
 
-  TabDragWindowAdapter* window = registry()->Get(dragged_window_);
-  CHECK(window);
-  window->SetCapture();
   injector_->GetSessionListener().OnSessionStarted(
       dragged_tabs_, dragged_window_, start_point_in_screen_,
       tab_original_offset_x_);
@@ -55,9 +56,6 @@ base::expected<void, mojo_base::mojom::ErrorPtr> TabDragSession::Start() {
 }
 
 TabDragSession::~TabDragSession() {
-  if (TabDragWindowAdapter* window = registry()->Get(dragged_window_)) {
-    window->ReleaseCapture();
-  }
   injector_->GetInputAdapter().ReleaseInputCapture();
 }
 
@@ -81,13 +79,18 @@ void TabDragSession::OnDropTargetRegistered(DropTargetId target_id,
 }
 
 void TabDragSession::UpdateDraggedWindow(TabDragWindowId new_window_id) {
-  CHECK(new_window_id);
-  if (TabDragWindowAdapter* window = registry()->Get(dragged_window_)) {
-    window->ReleaseCapture();
-  }
-  dragged_window_ = new_window_id;
-  if (TabDragWindowAdapter* window = registry()->Get(dragged_window_)) {
-    window->SetCapture();
+  TransferDragToWindow(new_window_id, /*activate_target_window=*/false);
+}
+
+void TabDragSession::TransferDragToWindow(TabDragWindowId target_window_id,
+                                          bool activate_target_window) {
+  CHECK(target_window_id);
+  dragged_window_ = target_window_id;
+  if (TabDragWindowAdapter* target_window = registry()->Get(dragged_window_)) {
+    injector_->GetInputAdapter().SetActiveWindowContext(target_window);
+    if (activate_target_window) {
+      target_window->Activate();
+    }
   }
 }
 
@@ -231,8 +234,7 @@ void TabDragSession::StartWindowDrag(TabDragWindowId window_id,
   TabDragWindowAdapter* window = registry()->Get(window_id);
   CHECK(window);
 
-  // Release widget capture so the OS move loop can take exclusive mouse grab.
-  window->ReleaseCapture();
+  injector_->GetInputAdapter().SuspendInputCapture();
 
   base::WeakPtr<TabDragSession> weak_this = weak_factory_.GetWeakPtr();
 
@@ -246,6 +248,8 @@ void TabDragSession::StartWindowDrag(TabDragWindowId window_id,
   if (!weak_this) {
     return;
   }
+
+  injector_->GetInputAdapter().ResumeInputCapture();
 
   if (drag_mode_ == DragMode::kWaitingToExitMoveLoop) {
     CompleteReattachment();
@@ -272,12 +276,7 @@ void TabDragSession::CompleteReattachment() {
     return;
   }
 
-  TabDragWindowAdapter* target_window = registry()->Get(target.window_id);
-  if (target_window) {
-    target_window->Activate();
-  }
-
-  UpdateDraggedWindow(target.window_id);
+  TransferDragToWindow(target.window_id, /*activate_target_window=*/true);
   drag_mode_ = DragMode::kAttachedToWindow;
   injector_->GetSessionListener().OnTargetChanged(target.target_id,
                                                   target.screen_point);
