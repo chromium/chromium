@@ -62,12 +62,11 @@ class FlashDeviceTest(unittest.TestCase):
 
     def test_update_required_logs_missing_image_dir(self) -> None:
         """Test |os_check|!='ignore' warns if image dir does not exist."""
-        with (
-            mock.patch('os.path.exists', return_value=False),
-            mock.patch('flash_device.find_image_in_sdk'),
-            mock.patch('flash_device._get_system_info'),
-            self.assertLogs() as logger,
-        ):
+        with mock.patch('os.path.exists', return_value=False), mock.patch(
+            'flash_device.find_image_in_sdk'
+        ), mock.patch(
+            'flash_device._get_system_info'
+        ), self.assertLogs() as logger:
             flash_device._update_required('update', 'some/image/dir', None)
             self.assertIn('image directory does not exist', logger.output[0])
 
@@ -75,13 +74,11 @@ class FlashDeviceTest(unittest.TestCase):
         self,
     ) -> None:
         """Test |os_check|!='ignore' searches for image dir in SDK."""
-        with (
-            mock.patch('os.path.exists', return_value=False),
-            mock.patch('flash_device.find_image_in_sdk') as mock_find,
-            mock.patch('flash_device._get_system_info'),
-            mock.patch('common.SDK_ROOT', 'path/to/sdk/dir'),
-            self.assertLogs(),
-        ):
+        with mock.patch('os.path.exists', return_value=False), mock.patch(
+            'flash_device.find_image_in_sdk'
+        ) as mock_find, mock.patch('flash_device._get_system_info'), mock.patch(
+            'common.SDK_ROOT', 'path/to/sdk/dir'
+        ), self.assertLogs():
             mock_find.return_value = 'path/to/image/dir'
             update_required, new_image_dir = flash_device._update_required(
                 'update', 'product-bundle', None, None
@@ -92,13 +89,11 @@ class FlashDeviceTest(unittest.TestCase):
 
     def test_update_required_raises_file_not_found_error(self) -> None:
         """Test |os_check|!='ignore' raises FileNotFoundError if no path."""
-        with (
-            mock.patch('os.path.exists', return_value=False),
-            mock.patch('flash_device.find_image_in_sdk', return_value=None),
-            mock.patch('common.SDK_ROOT', 'path/to/sdk/dir'),
-            self.assertLogs(),
-            self.assertRaises(FileNotFoundError),
-        ):
+        with mock.patch('os.path.exists', return_value=False), mock.patch(
+            'flash_device.find_image_in_sdk', return_value=None
+        ), mock.patch(
+            'common.SDK_ROOT', 'path/to/sdk/dir'
+        ), self.assertLogs(), self.assertRaises(FileNotFoundError):
             flash_device._update_required('update', 'product-bundle', None)
 
     def test_update_ignore(self) -> None:
@@ -130,12 +125,11 @@ class FlashDeviceTest(unittest.TestCase):
         """Test update when |os_check=check| catches boot_device exceptions."""
 
         self._swarming_mock.return_value = True
-        with (
-            mock.patch('os.path.exists', return_value=True),
-            mock.patch('flash_device.boot_device') as mock_boot,
-            mock.patch('flash_device.get_system_info') as mock_sys_info,
-            mock.patch('flash_device.subprocess.run'),
-        ):
+        with mock.patch('os.path.exists', return_value=True), mock.patch(
+            'flash_device.boot_device'
+        ) as mock_boot, mock.patch(
+            'flash_device.get_system_info'
+        ) as mock_sys_info, mock.patch('flash_device.subprocess.run'):
             mock_boot.side_effect = boot_device.StateTransitionError(
                 'Incorrect state'
             )
@@ -157,11 +151,9 @@ class FlashDeviceTest(unittest.TestCase):
         match."""
 
         self._swarming_mock.return_value = True
-        with (
-            mock.patch('os.path.exists', return_value=True),
-            mock.patch('flash_device.boot_device') as mock_boot,
-            mock.patch('flash_device.subprocess.run'),
-        ):
+        with mock.patch('os.path.exists', return_value=True), mock.patch(
+            'flash_device.boot_device'
+        ) as mock_boot, mock.patch('flash_device.subprocess.run'):
             self._ffx_mock.return_value.stdout = (
                 '{"build": {"version": "wrong.version", '
                 '"product": "wrong.product"}}'
@@ -183,11 +175,9 @@ class FlashDeviceTest(unittest.TestCase):
     def test_update_with_serial_num(self) -> None:
         """Test update when |serial_num| is specified."""
 
-        with (
-            mock.patch('time.sleep'),
-            mock.patch('os.path.exists', return_value=True),
-            mock.patch('flash_device.boot_device') as mock_boot,
-        ):
+        with mock.patch('time.sleep'), mock.patch(
+            'os.path.exists', return_value=True
+        ), mock.patch('flash_device.boot_device') as mock_boot:
             flash_device.update(_TEST_IMAGE_DIR, 'update', None, 'test_serial')
             mock_boot.assert_called_with(
                 mock.ANY, boot_device.BootMode.BOOTLOADER, 'test_serial'
@@ -197,12 +187,11 @@ class FlashDeviceTest(unittest.TestCase):
     def test_reboot_failure(self) -> None:
         """Test update when |serial_num| is specified."""
         self._ffx_mock.return_value.returncode = 1
-        with (
-            mock.patch('time.sleep'),
-            mock.patch('os.path.exists', return_value=True),
-            mock.patch('flash_device.running_unattended', return_value=True),
-            mock.patch('flash_device.boot_device'),
-        ):
+        with mock.patch('time.sleep'), mock.patch(
+            'os.path.exists', return_value=True
+        ), mock.patch(
+            'flash_device.running_unattended', return_value=True
+        ), mock.patch('flash_device.boot_device'):
             required, _ = flash_device._update_required(
                 'check', _TEST_IMAGE_DIR, None
             )
@@ -212,11 +201,10 @@ class FlashDeviceTest(unittest.TestCase):
         """Test update on swarming bots."""
 
         self._swarming_mock.return_value = True
-        with (
-            mock.patch('time.sleep'),
-            mock.patch('os.path.exists', return_value=True),
-            mock.patch('flash_device.boot_device') as mock_boot,
-            mock.patch('subprocess.run'),
+        with mock.patch('time.sleep'), mock.patch(
+            'os.path.exists', return_value=True
+        ), mock.patch('flash_device.boot_device') as mock_boot, mock.patch(
+            'subprocess.run'
         ):
             flash_device.update(_TEST_IMAGE_DIR, 'update', None, 'test_serial')
             mock_boot.assert_called_with(

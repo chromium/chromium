@@ -39,10 +39,9 @@ class CompatibleUtilsTest(unittest.TestCase):
             self.assertEqual(compatible_utils.get_host_arch(), 'x64')
             self.assertEqual(compatible_utils.get_host_arch(), 'arm64')
 
-        with (
-            mock.patch('platform.machine', return_value=['fake-arch']),
-            self.assertRaises(NotImplementedError),
-        ):
+        with mock.patch(
+            'platform.machine', return_value=['fake-arch']
+        ), self.assertRaises(NotImplementedError):
             compatible_utils.get_host_arch()
 
     def test_add_exec_to_file(self) -> None:
@@ -115,8 +114,7 @@ class CompatibleUtilsTest(unittest.TestCase):
 
     def test_get_sdk_hash_not_found(self) -> None:
         """Test |get_sdk_hash| fails if the product_bundle.json does not
-        exist.
-        """
+        exist."""
         with mock.patch('builtins.open', side_effect=IOError()):
             self.assertRaises(
                 IOError, compatible_utils.get_sdk_hash, 'some/image/dir'

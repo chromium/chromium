@@ -81,12 +81,11 @@ class LogManagerTest(unittest.TestCase):
     def test_log_with_symbols(self, mock_ffx) -> None:
         """Test symbols are used when pkg_paths are set."""
 
-        with (
-            mock.patch('os.path.isfile', return_value=True),
-            mock.patch('builtins.open'),
-            mock.patch('log_manager.run_symbolizer'),
-            log_manager.LogManager(_LOGS_DIR) as log,
-        ):
+        with mock.patch('os.path.isfile', return_value=True), mock.patch(
+            'builtins.open'
+        ), mock.patch('log_manager.run_symbolizer'), log_manager.LogManager(
+            _LOGS_DIR
+        ) as log:
             log_manager.start_system_log(log, False, pkg_paths=['test_pkg'])
         self.assertEqual(mock_ffx.call_count, 1)
         self.assertEqual(
@@ -257,10 +256,9 @@ class LogManagerTest(unittest.TestCase):
 
             fake_clock = FakeClock()
             start_time = fake_clock.time()
-            with (
-                mock.patch('time.time', side_effect=fake_clock.time),
-                mock.patch('time.sleep', side_effect=fake_clock.sleep),
-            ):
+            with mock.patch(
+                'time.time', side_effect=fake_clock.time
+            ), mock.patch('time.sleep', side_effect=fake_clock.sleep):
                 log._wait_for_pattern()
 
             duration = fake_clock.time() - start_time

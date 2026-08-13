@@ -363,12 +363,9 @@ def get_ssh_address(
     # The initial ffx target list command may return an empty list or without
     # the ipv4 address, wait for a while to allow it detecting the devices and
     # their addresses.
-    with (
-        monitors.time_consumption(
-            'ffx', 'get_ssh_address', ipv4_only and 'ipv4' or ''
-        ),
-        RepeatingLog("Waiting for the ssh address"),
-    ):
+    with monitors.time_consumption(
+        'ffx', 'get_ssh_address', ipv4_only and 'ipv4' or ''
+    ), RepeatingLog("Waiting for the ssh address"):
         for _ in range(60):
             target = json.loads(
                 run_ffx_command(

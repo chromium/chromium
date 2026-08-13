@@ -137,11 +137,8 @@ def main():
     )
 
     monitors.tag('fuchsia')
-    with (
-        ExitStack() as stack,
-        monitors.time_consumption(
-            'orchestrate' if use_orchestrate else 'homemade', 'run'
-        ),
+    with ExitStack() as stack, monitors.time_consumption(
+        'orchestrate' if use_orchestrate else 'homemade', 'run'
     ):
         if runner_args.logs_dir:
             # TODO(crbug.com/343242386): Find a way to upload metric output when

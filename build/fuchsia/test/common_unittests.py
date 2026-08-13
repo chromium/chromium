@@ -25,10 +25,11 @@ class CommonTest(unittest.TestCase):
         """Test |find_in_dir| returns files if searching for file, or None."""
         # Make the directory structure.
         with tempfile.TemporaryDirectory() as tmp_dir:
-            with (
-                tempfile.NamedTemporaryFile(dir=tmp_dir) as tmp_file,
-                tempfile.TemporaryDirectory(dir=tmp_dir) as inner_tmp_dir,
-            ):
+            with tempfile.NamedTemporaryFile(
+                dir=tmp_dir
+            ) as tmp_file, tempfile.TemporaryDirectory(
+                dir=tmp_dir
+            ) as inner_tmp_dir:
                 # Structure is now:
                 # temp_dir/
                 # temp_dir/inner_dir1

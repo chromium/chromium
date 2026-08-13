@@ -95,8 +95,7 @@ class ComponentStorage:
         self, remote_path: str, capability: Optional[str] = None
     ) -> None:
         """Lists files in |remote_path| on the target and prints out to
-        stdout.
-        """
+        stdout."""
         for file in self.list(remote_path, capability):
             print(file)
 
