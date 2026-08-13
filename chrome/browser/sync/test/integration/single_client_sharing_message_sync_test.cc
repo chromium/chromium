@@ -179,6 +179,8 @@ class SingleClientSharingMessageSyncTest
     return GetParam();
   }
 
+  bool TestReliesOnSharingMessage() const override { return true; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };

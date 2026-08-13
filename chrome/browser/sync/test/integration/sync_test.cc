@@ -559,6 +559,11 @@ SyncTest::SetupSyncMode SyncTest::GetSetupSyncMode() const {
   return SetupSyncMode::kSyncTheFeature;
 }
 
+bool SyncTest::TestReliesOnSharingMessage() const {
+  // Temporarily fix on macOS (crbug.com/501729852).
+  return !BUILDFLAG(IS_MAC);
+}
+
 GURL SyncTest::GetInitialURL() const {
   return GURL(url::kAboutBlankURL);
 }
@@ -1223,9 +1228,9 @@ bool SyncTest::WaitForAsyncChangesToBeCommitted(size_t profile_index) const {
   if (server_type_ != EXTERNAL_LIVE_SERVER) {
     // Wait for committing DeviceInfo with sharing_fields, it may happen
     // asynchronously due to FCM token registration.
-    if (GetSyncService(profile_index)
-            ->GetPreferredDataTypes()
-            .Has(syncer::SHARING_MESSAGE)) {
+    if (TestReliesOnSharingMessage() && GetSyncService(profile_index)
+                                            ->GetPreferredDataTypes()
+                                            .Has(syncer::SHARING_MESSAGE)) {
       if (!device_info_helper::WaitForFullDeviceInfoCommitted(
               GetCacheGuid(profile_index))) {
         return false;
