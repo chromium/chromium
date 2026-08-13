@@ -1385,6 +1385,9 @@ void ScrollView::ScrollToOffset(const gfx::PointF& offset) {
 }
 
 gfx::PointF ScrollView::CurrentOffset() const {
+  if (!contents_) {
+    return gfx::PointF();
+  }
   return ScrollsWithLayers() ? contents_->layer()->CurrentScrollOffset()
                              : gfx::PointF(-contents_->x(), -contents_->y());
 }

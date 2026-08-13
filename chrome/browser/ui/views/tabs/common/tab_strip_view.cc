@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view_layout.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_strip_overflow_indicator_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_scroll_bar.h"
 #include "components/tabs/public/tab_group.h"
@@ -540,6 +541,20 @@ void TabStripView::SetScrollViewProperties(views::ScrollView* scroll_view) {
     scroll_view->SetVerticalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
     scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
+
+    scroll_view->SetCustomOverflowIndicator(
+        views::OverflowIndicatorAlignment::kLeft,
+        std::make_unique<HorizontalTabStripOverflowIndicatorView>(
+            views::OverflowIndicatorAlignment::kLeft),
+        HorizontalTabStripOverflowIndicatorView::kTotalThickness,
+        /*fills_opaquely=*/false);
+
+    scroll_view->SetCustomOverflowIndicator(
+        views::OverflowIndicatorAlignment::kRight,
+        std::make_unique<HorizontalTabStripOverflowIndicatorView>(
+            views::OverflowIndicatorAlignment::kRight),
+        HorizontalTabStripOverflowIndicatorView::kTotalThickness,
+        /*fills_opaquely=*/false);
   }
   callback_subscriptions_.emplace_back(
       scroll_view->AddContentsScrolledCallback(base::BindRepeating(
@@ -671,8 +686,8 @@ void TabStripView::EnableOverflowVisuals(views::ScrollView* scroll_view) {
   // Override the post-layout callback to prevent any scheduled scroll requests
   // from running.
   scroll_view->RegisterPostLayoutCallback(base::DoNothing());
-  scroll_view->SetDrawOverflowIndicator(true);
   if (IsVerticalOrientation(collection_node_)) {
+    scroll_view->SetDrawOverflowIndicator(true);
     scroll_view->SetVerticalScrollBarMode(
         views::ScrollView::ScrollBarMode::kEnabled);
 
@@ -692,11 +707,10 @@ void TabStripView::EnableOverflowVisuals(views::ScrollView* scroll_view) {
 }
 
 void TabStripView::DisableOverflowVisuals(views::ScrollView* scroll_view) {
-  scroll_view->SetDrawOverflowIndicator(false);
-
   // If in the vertical orientation also hide scrollbar visuals. This is not
   // needed for horizontal since the scrollbar is not shown.
   if (IsVerticalOrientation(collection_node_)) {
+    scroll_view->SetDrawOverflowIndicator(false);
     scroll_view->SetVerticalScrollBarMode(
         views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 

@@ -99,6 +99,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/frame:glass_frame_service",
     "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
     "//chrome/browser/ui/views/tabs/groups",
+    "//chrome/browser/ui/views/tabs/horizontal",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/tabs/tab",
     "//chrome/browser/ui/views/tabs/vertical",
