@@ -549,7 +549,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling clusterfuzz-data
   # and whatever else without interference from each other.
-  'clusterfuzz_data_revision':'d8c8445bc732595b68ff92545d841c791813dd76',
+  'clusterfuzz_data_revision':'4521c2c3aff26184d8c0f29eea4ee9003328584c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling agents-internal
   # and whatever else without interference from each other.
