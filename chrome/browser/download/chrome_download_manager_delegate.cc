@@ -2373,9 +2373,7 @@ void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(
   DCHECK(download_item);
   DCHECK(download_item->IsSavePackageDownload());
 
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-     BUILDFLAG(IS_MAC)) &&                                                 \
-    BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   std::optional<enterprise_connectors::AnalysisSettings> settings =
       safe_browsing::ShouldUploadBinaryForDeepScanning(download_item);
 
@@ -2399,7 +2397,7 @@ void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(
       return;
     }
   }
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   std::move(callback).Run(true);
 }
 

@@ -256,7 +256,7 @@ class DownloadProtectionService {
   // Uploads a save package `item` for deep scanning. `save_package_file`
   // contains a mapping of on-disk files part of that save package to their
   // final paths.
-  void UploadSavePackageForDeepScanning(
+  virtual void UploadSavePackageForDeepScanning(
       download::DownloadItem* item,
       base::flat_map<base::FilePath, base::FilePath> save_package_files,
       CheckDownloadRepeatingCallback callback,
