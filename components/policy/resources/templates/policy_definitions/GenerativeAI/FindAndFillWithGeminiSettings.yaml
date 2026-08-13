@@ -39,9 +39,9 @@ schema:
   - 1
   - 2
   type: integer
-supported_on:
-- android:152-
-- chrome.*:152-
-- chrome_os:152-
+future_on:
+- android
+- chrome.*
+- chrome_os
 tags: []
 type: int-enum
