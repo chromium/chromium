@@ -9,7 +9,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -128,12 +127,18 @@ class LiveSignInTestBase : public LiveTest {
       }));
 };
 
-class LiveSignInTest : public base::test::WithFeatureOverride,
-                       public LiveSignInTestBase {
+class LiveSignInTest : public LiveSignInTestBase,
+                       public testing::WithParamInterface<bool> {
  public:
-  LiveSignInTest()
-      : base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos) {}
+  LiveSignInTest() {
+    feature_list_.InitWithFeatureStates({
+        {syncer::kReplaceSyncPromosWithSignInPromos, GetParam()},
+        {syncer::kReplaceSyncPromosWithSigninPromosNewSignin, GetParam()},
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
@@ -394,7 +399,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_CancelSync) {
   CHECK(test_account.has_value());
   sign_in_functions.SignInFromSettings(*test_account, 0);
 
-  if (IsParamFeatureEnabled()) {
+  if (GetParam()) {
     EXPECT_TRUE(login_ui_test_utils::RejectHistorySyncOptinDialog(
         browser(), kDialogTimeout));
   } else {
@@ -1072,10 +1077,10 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionsLiveSignInTest,
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LiveSignInTest);
+INSTANTIATE_TEST_SUITE_P(All, LiveSignInTest, testing::Bool());
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LiveSignInGaiaIntegrationTest);
+INSTANTIATE_TEST_SUITE_P(All, LiveSignInGaiaIntegrationTest, testing::Bool());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
