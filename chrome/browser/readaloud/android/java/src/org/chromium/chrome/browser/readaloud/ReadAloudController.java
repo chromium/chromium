@@ -1882,6 +1882,38 @@ public class ReadAloudController
             promise.reject(new Exception("missing profile"));
             return promise;
         }
+
+        // If native C++ Read Aloud is enabled and this is a classic article tab playback request,
+        // instantiate a NativePlayback session bridging UI controls to C++ via JNI.
+        // TODO(b/542260163): Support native Overview playback for standalone URLs.
+        // TODO(b/542261432): Support native Voice Preview sample playback.
+        if (ReadAloudFeatures.isNativeEnabled()
+                && mNativeBridge.isInitialized()
+                && args.isSourceUrl()
+                && args.getPlaybackMode() == PlaybackMode.CLASSIC) {
+            Tab activeTab = mActivePlaybackTabSupplier.get();
+            WebContents webContents = activeTab != null ? activeTab.getWebContents() : null;
+            // Resolve language from playback arguments, falling back to tab or default language.
+            String language = args.getLanguage();
+            if (language == null || language.isEmpty() || language.equals("und")) {
+                language = activeTab != null ? getLanguageForNewPlayback(activeTab) : "en";
+            }
+            language = getLanguage(language);
+            // Final safety check after locale stripping (e.g., if input was "und-US").
+            if (language.isEmpty() || language.equals("und")) {
+                language = "en";
+            }
+            Playback playback =
+                    new NativePlayback(
+                            mNativeBridge,
+                            webContents,
+                            language,
+                            args.getSource(),
+                            args.getPlaybackMode());
+            promise.fulfill(playback);
+            return promise;
+        }
+
         assumeNonNull(mPlaybackHooks)
                 .createPlayback(
                         args,
@@ -2282,24 +2314,23 @@ public class ReadAloudController
 
     // Called when the active article's metadata (title and publisher) is loaded.
     void onMetadataAvailable(String title, String publisher) {
-        // TODO: Update property model with title and publisher.
-        Log.d(TAG, "onMetadataAvailable: title = %s, publisher = %s", title, publisher);
+        if (mPlayback instanceof NativePlayback nativePlayback) {
+            nativePlayback.updateMetadata(title, publisher);
+        }
     }
 
     // Called periodically to report the current playback progress and total duration.
     void onPlaybackProgressUpdated(long elapsedNanos, long durationNanos) {
-        // TODO: Update property model with playback progress.
-        Log.d(
-                TAG,
-                "onPlaybackProgressUpdated: elapsedNanos = %d, durationNanos = %d",
-                elapsedNanos,
-                durationNanos);
+        if (mPlayback instanceof NativePlayback nativePlayback) {
+            nativePlayback.notifyPlaybackProgressUpdated(elapsedNanos, durationNanos);
+        }
     }
 
     // Called when the audio playback state transitions (e.g., playing, paused, stopped).
     void onPlaybackStateChanged(int playbackState) {
-        // TODO: Update property model with playback state.
-        Log.d(TAG, "onPlaybackStateChanged: playbackState = %d", playbackState);
+        if (mPlayback instanceof NativePlayback nativePlayback) {
+            nativePlayback.notifyPlaybackStateChanged(playbackState);
+        }
     }
 
     // Called when the list of available synthesis voices is loaded or changed.

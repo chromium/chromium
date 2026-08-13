@@ -480,6 +480,20 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    @EnableFeatures(AccessibilityFeatures.READ_ALOUD_NATIVE)
+    public void testCreatePlayback_nativeEnabled_createsNativePlayback() {
+        when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
+        mController.onProfileAvailable(mMockProfile);
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+
+        // Verify Java playback hooks are bypassed when native playback is active.
+        verify(mPlaybackHooks, never()).createPlayback(any(), any());
+        verify(mNativeBridgeNatives).play(eq(12345L), eq(mWebContents));
+    }
+
+    @Test
     public void testIsAvailable_offTheRecord() {
         when(mMockProfile.isOffTheRecord()).thenReturn(true);
         assertFalse(mController.isAvailable());
