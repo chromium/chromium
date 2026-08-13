@@ -1038,11 +1038,6 @@ export class AppElement extends AppElementBase {
   }
 
   protected onCloseComposebox_(e: CustomEvent<{composeboxText?: string}>) {
-    const composeboxDialog =
-        this.shadowRoot.querySelector<HTMLDialogElement>('#composeboxDialog');
-    assert(composeboxDialog);
-    composeboxDialog.close();
-
     const composeboxText = e.detail.composeboxText;
 
     if (composeboxText && composeboxText.trim()) {
@@ -1812,13 +1807,6 @@ export class AppElement extends AppElementBase {
   }
 
   private onShowComposeboxChange_() {
-    if (this.showComposebox_) {
-      const composeboxDialog =
-          this.shadowRoot.querySelector<HTMLDialogElement>('#composeboxDialog');
-      assert(composeboxDialog);
-      composeboxDialog.show();
-    }
-
     const notSelector =
         COMPOSEBOX_INERT_ALLOWLIST.map(s => `:not(${s})`).join('');
     const blockedElements = this.shadowRoot.querySelectorAll<HTMLElement>(

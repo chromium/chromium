@@ -63,11 +63,12 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
         context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
         .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
-        ?multi-line-enabled="${this.multiLineEnabled_}">
+        ?multi-line-enabled="${this.multiLineEnabled_}"
+        ?inert="${!this.realboxShown_}">
     </ntp-searchbox>
     <div id="dialogAnchor"></div>
     ${this.showComposebox_ ? html`
-      <dialog id="composeboxDialog">
+      <div id="composeboxDialog">
         <ntp-composebox id="composebox"
               searchbox-layout-mode="Compact"
               searchbox-next-enabled
@@ -90,7 +91,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
           <cr-threads-rail id="threadsRail">
           </cr-threads-rail>
         ` : ''}
-      </dialog>
+      </div>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`
       <ntp-lens-upload-dialog id="lensUploadDialog"
