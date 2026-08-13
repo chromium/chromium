@@ -106,6 +106,11 @@ void SystemViewShadowOnNinePatchLayer::SetRoundedCornerRadius(
   view_shadow_.SetRoundedCornerRadius(corner_radius);
 }
 
+void SystemViewShadowOnNinePatchLayer::SetRoundedCorners(
+    const gfx::RoundedCornersF& rounded_corners) {
+  view_shadow_.SetRoundedCorners(rounded_corners);
+}
+
 void SystemViewShadowOnNinePatchLayer::OnViewAddedToWidget(
     views::View* observed_view) {
   ObserveColorProviderSource(observed_view->GetWidget());

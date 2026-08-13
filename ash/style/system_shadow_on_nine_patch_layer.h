@@ -92,6 +92,7 @@ class SystemViewShadowOnNinePatchLayer : public SystemShadowOnNinePatchLayer,
 
   // SystemShadow:
   void SetRoundedCornerRadius(int corner_radius) override;
+  void SetRoundedCorners(const gfx::RoundedCornersF& rounded_corners) override;
 
   // views::ViewObserver:
   void OnViewAddedToWidget(views::View* observed_view) override;
