@@ -119,11 +119,6 @@ public class FuseboxSessionState implements UserData {
         return mWebContents;
     }
 
-    /** Returns whether the session is scoped to a specific AI task. */
-    public boolean isTaskScoped() {
-        return false;
-    }
-
     /** Returns the current {@link Profile} for this session. */
     public @Nullable Profile getProfile() {
         return mProfile;
@@ -252,7 +247,7 @@ public class FuseboxSessionState implements UserData {
 
         if (mComposeBoxQueryControllerBridge == null) {
             mComposeBoxQueryControllerBridge =
-                    ComposeboxQueryControllerBridge.create(mProfile, mWebContents, isTaskScoped());
+                    ComposeboxQueryControllerBridge.create(mProfile, mWebContents);
         }
 
         if (mComposeBoxQueryControllerBridge != null && mFuseboxAttachmentModelList == null) {
