@@ -604,14 +604,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.ShowRequestedToFirstPaint.{StartPoint}{Version}"
+    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.ShowRequestedToFirstPaint{Version}"
     units="ms" expires_after="2027-02-07">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the duration from the initial show/activation request of a new
     browser window to its first paint. {CreationSource} {ExistingWindow}
-    {Version}. {StartPoint}
+    {Version}.
 
     This metric is used to measure the impact of window show deferral. It is
     recorded only once per window lifecycle. If multiple windows are shown
@@ -623,7 +623,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="CreationSource" variants="CreationSource"/>
   <token key="ExistingWindow" variants="ExistingWindow"/>
-  <token key="StartPoint" variants="StartPoint"/>
   <token key="Version" variants="NewWindowMetricVersion"/>
 </histogram>
 
