@@ -244,7 +244,6 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   protected onInputKeydown_(e: KeyboardEvent) {
-    this.fire('input-keydown', {key: e.key});
     // Ignore this event if the input does not have any inline autocompletion.
     if (!this.lastInput_.inline) {
       return;

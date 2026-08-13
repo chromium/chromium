@@ -457,19 +457,20 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
-  protected onInputKeydown_(e: CustomEvent<{key: string}>) {
-    if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.detail.key)) {
+  override async onInputWrapperKeydown(e: KeyboardEvent) {
+    if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
       const input = this.getInputElement().inputElement;
       if (input.selectionStart === 0 &&
           input.selectionEnd === input.value.length) {
         this.showFullUrlOnDeselect_();
-        if (e.detail.key === 'ArrowLeft' || e.detail.key === 'Home') {
+        if (e.key === 'ArrowLeft' || e.key === 'Home') {
           input.setSelectionRange(0, 0);
         } else {
           input.setSelectionRange(input.value.length, input.value.length);
         }
       }
     }
+    await super.onInputWrapperKeydown(e);
   }
 
   protected onInputPaste_(e: ClipboardEvent) {
