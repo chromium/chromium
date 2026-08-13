@@ -22,7 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/password_manager/protos/list_affiliated_passwords_result.pb.h"
+#include "chrome/browser/password_manager/remote_actor/protos/remote_actor_list_affiliated_passwords_result.pb.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_request_helper.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
@@ -115,9 +115,8 @@ void RemoteActorCredentialStoreClient::UpdateCredential(
     base::TimeDelta ttl,
     UpdateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ListAffiliatedPasswordsResult::AffiliatedPassword proto;
-  *proto.mutable_password_data()->mutable_password_specifics_data() =
-      std::move(password_data);
+  RemoteActorListAffiliatedPasswordsResult::RemoteActorAffiliatedPassword proto;
+  *proto.mutable_password_data() = std::move(password_data);
   // Only username and password are needed by the remote actor.
   // TODO(crbug.com/540786152): consider alternative payload after teamfood.
   std::string serialized_proto;

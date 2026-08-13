@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
-#include "chrome/browser/password_manager/protos/list_affiliated_passwords_result.pb.h"
+#include "chrome/browser/password_manager/remote_actor/protos/remote_actor_list_affiliated_passwords_result.pb.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/protocol/password_specifics.pb.h"
@@ -101,16 +101,15 @@ TEST_F(RemoteActorCredentialStoreClientTest, UpdateCredentialSuccess) {
   std::string base64_payload = *credential_data_dict->FindString("data");
   std::string serialized_proto;
   ASSERT_TRUE(base::Base64Decode(base64_payload, &serialized_proto));
-  password_manager::ListAffiliatedPasswordsResult::AffiliatedPassword proto;
+  password_manager::RemoteActorListAffiliatedPasswordsResult::
+      RemoteActorAffiliatedPassword proto;
   ASSERT_TRUE(proto.ParseFromString(serialized_proto));
 
-  EXPECT_EQ(proto.password_data().password_specifics_data().signon_realm(),
-            kTestWebOrigin);
-  EXPECT_EQ(proto.password_data().password_specifics_data().origin(),
-            kTestWebOrigin);
-  EXPECT_EQ(proto.password_data().password_specifics_data().username_value(),
+  EXPECT_EQ(proto.password_data().signon_realm(), kTestWebOrigin);
+  EXPECT_EQ(proto.password_data().origin(), kTestWebOrigin);
+  EXPECT_EQ(proto.password_data().username_value(),
             base::UTF16ToUTF8(kTestUsername));
-  EXPECT_EQ(proto.password_data().password_specifics_data().password_value(),
+  EXPECT_EQ(proto.password_data().password_value(),
             base::UTF16ToUTF8(kTestPassword));
 
   // Respond to Passbox with 200 OK
