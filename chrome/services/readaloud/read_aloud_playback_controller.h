@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_READALOUD_READ_ALOUD_PLAYBACK_CONTROLLER_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -16,6 +17,7 @@
 #include "chrome/services/readaloud/prefetch/prefetch_manager.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -69,6 +71,17 @@ class ReadAloudPlaybackController
 
   // Resets active session state, clears segments, and resets playback rate.
   void ResetSession();
+
+  // Invoked by `prefetch_manager_` when an in-flight synthesis request is
+  // dispatched.
+  void OnPrefetchSynthesisRequest(uint32_t chunk_index,
+                                  std::u16string_view text);
+
+  // Callback for Mojo RequestSpeechSynthesis responses from the client.
+  void OnSpeechSynthesisResponse(uint64_t sequence_id,
+                                 uint32_t chunk_index,
+                                 mojo_base::BigBuffer response_bytes,
+                                 bool success);
 
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackControllerFactory>
       receiver_;

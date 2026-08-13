@@ -8,10 +8,15 @@
 #include <cstdint>
 #include <map>
 #include <optional>
+#include <set>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/common/readaloud/read_aloud.mojom-forward.h"
 #include "chrome/services/readaloud/chunking/text_chunker.h"
@@ -37,23 +42,36 @@ struct CachedCompressedSegment {
   std::vector<DecodedAudioSegment::WordTiming> timings;
 };
 
-// Manages document-bound caching of compressed speech synthesis audio and
-// coordinates prefetch sentence chunking with the active hysteresis mode.
+// Manages document-bound caching of compressed speech synthesis audio,
+// coordinates prefetch sentence chunking with the active hysteresis mode, and
+// throttles in-flight synthesis requests to prevent network saturation.
 class PrefetchManager {
  public:
+  static constexpr size_t kMaxConcurrentRequests = 3;
+
+  // Invoked when an in-flight prefetch request is dispatched.
+  using RequestSynthesisCallback =
+      base::RepeatingCallback<void(uint32_t chunk_index,
+                                   std::u16string_view text)>;
+
   PrefetchManager();
   PrefetchManager(const PrefetchManager&) = delete;
   PrefetchManager& operator=(const PrefetchManager&) = delete;
   ~PrefetchManager();
 
+  // Sets the callback invoked when a synthesis request is dispatched.
+  void SetRequestSynthesisCallback(RequestSynthesisCallback callback);
+
   // Document-bound lifecycle:
   // Sets new document text segments, uses ChunkText(..., GetChunkingMode()) to
-  // establish the sentence-level timeline, and purges session_cache_.
+  // establish the sentence-level timeline (0...N-1), purges session_cache_,
+  // increments session_sequence_id_, and clears in-flight/pending requests.
   void SetTextContent(
       const std::vector<read_aloud::mojom::TextSegmentPtr>& segments,
       std::optional<base::i18n::LanguageTag> locale_tag = std::nullopt);
 
-  // Clears all cached segments, resets the timeline, and resets mode scheduler.
+  // Clears all cached segments, resets the timeline, resets mode scheduler,
+  // increments session_sequence_id_, and clears in-flight/pending requests.
   void ResetSession();
 
   // Evaluates the current buffered audio duration against hysteresis thresholds
@@ -71,6 +89,18 @@ class PrefetchManager {
   // (15s for `kSpeed` mode, 50s for `kQuality` mode).
   base::TimeDelta GetTargetPrefetchDuration() const;
 
+  // Schedules prefetch synthesis for the given sentence chunk index.
+  // Throttles in-flight requests to kMaxConcurrentRequests.
+  void SchedulePrefetch(uint32_t chunk_index);
+
+  // Receives an asynchronous synthesis response. Discards stale or out-of-order
+  // responses if sequence_id does not match the current session sequence ID.
+  void OnSynthesisResponse(
+      uint64_t sequence_id,
+      uint32_t chunk_index,
+      scoped_refptr<media::DecoderBuffer> opus_buffer,
+      std::vector<DecodedAudioSegment::WordTiming> timings);
+
   // Cache accessors & modifiers:
   bool HasCachedSegment(int32_t chunk_index) const;
   const CachedCompressedSegment* GetCachedSegment(int32_t chunk_index) const;
@@ -80,13 +110,25 @@ class PrefetchManager {
       std::vector<DecodedAudioSegment::WordTiming> timings);
   void ClearCache();
 
-  // Timeline inspection:
+  // Timeline & scheduler inspection:
   size_t GetTimelineChunkCount() const;
   const std::vector<TextChunk>& GetTimelineChunks() const;
+  uint64_t GetCurrentSequenceId() const;
+  size_t GetInflightRequestCount() const;
+
+  base::WeakPtr<PrefetchManager> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
  private:
   // Manages hysteresis transitions between kSpeed and kQuality modes.
   PrefetchModeScheduler mode_scheduler_;
+
+  // Issues pending prefetch synthesis requests by executing
+  // `request_synthesis_callback_` for queued chunks while in-flight count is
+  // below max concurrency limit.
+  void MaybeIssueSynthesisRequest();
+
   // Maps 0-indexed canonical sentence chunk indices to compressed cache
   // entries.
   std::map<int32_t, CachedCompressedSegment> session_cache_;
@@ -94,7 +136,21 @@ class PrefetchManager {
   // Canonical sentence-level timeline generated from input segments.
   std::vector<TextChunk> timeline_;
 
+  // Callback invoked when a prefetch request is dispatched.
+  RequestSynthesisCallback request_synthesis_callback_;
+
+  // Currently in-flight sentence chunk indices.
+  std::set<uint32_t> inflight_requests_;
+
+  // FIFO queue of sentence chunk indices waiting for concurrency slots.
+  base::circular_deque<uint32_t> pending_requests_;
+
+  // Current document session generation sequence ID.
+  uint64_t session_sequence_id_ = 0;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<PrefetchManager> weak_factory_{this};
 };
 
 }  // namespace readaloud

@@ -4,6 +4,7 @@
 
 #include "chrome/services/readaloud/prefetch/prefetch_manager.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -37,9 +38,7 @@ void PrefetchManager::SetTextContent(
     const std::vector<read_aloud::mojom::TextSegmentPtr>& segments,
     std::optional<base::i18n::LanguageTag> locale_tag) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  timeline_.clear();
-  session_cache_.clear();
-  mode_scheduler_.Reset();
+  ResetSession();
 
   for (const read_aloud::mojom::TextSegmentPtr& segment : segments) {
     if (!segment || segment->text.empty()) {
@@ -63,6 +62,49 @@ void PrefetchManager::ResetSession() {
   timeline_.clear();
   session_cache_.clear();
   mode_scheduler_.Reset();
+  ++session_sequence_id_;
+  inflight_requests_.clear();
+  pending_requests_.clear();
+  weak_factory_.InvalidateWeakPtrs();
+}
+
+void PrefetchManager::SetRequestSynthesisCallback(
+    RequestSynthesisCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  request_synthesis_callback_ = std::move(callback);
+  MaybeIssueSynthesisRequest();
+}
+
+void PrefetchManager::SchedulePrefetch(uint32_t chunk_index) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (chunk_index >= timeline_.size()) {
+    return;
+  }
+  if (HasCachedSegment(chunk_index) ||
+      inflight_requests_.contains(chunk_index) ||
+      std::ranges::find(pending_requests_, chunk_index) !=
+          pending_requests_.end()) {
+    return;
+  }
+  pending_requests_.push_back(chunk_index);
+  MaybeIssueSynthesisRequest();
+}
+
+void PrefetchManager::OnSynthesisResponse(
+    uint64_t sequence_id,
+    uint32_t chunk_index,
+    scoped_refptr<media::DecoderBuffer> opus_buffer,
+    std::vector<DecodedAudioSegment::WordTiming> timings) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (sequence_id != session_sequence_id_) {
+    return;
+  }
+  if (!inflight_requests_.contains(chunk_index)) {
+    return;
+  }
+  inflight_requests_.erase(chunk_index);
+  InsertCachedSegment(chunk_index, std::move(opus_buffer), std::move(timings));
+  MaybeIssueSynthesisRequest();
 }
 
 ChunkingMode PrefetchManager::UpdatePrefetchMode(
@@ -134,6 +176,38 @@ size_t PrefetchManager::GetTimelineChunkCount() const {
 const std::vector<TextChunk>& PrefetchManager::GetTimelineChunks() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return timeline_;
+}
+
+uint64_t PrefetchManager::GetCurrentSequenceId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return session_sequence_id_;
+}
+
+size_t PrefetchManager::GetInflightRequestCount() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return inflight_requests_.size();
+}
+
+void PrefetchManager::MaybeIssueSynthesisRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!request_synthesis_callback_) {
+    return;
+  }
+  while (!pending_requests_.empty() &&
+         inflight_requests_.size() < kMaxConcurrentRequests) {
+    uint32_t next_index = pending_requests_.front();
+    pending_requests_.pop_front();
+
+    if (HasCachedSegment(next_index) ||
+        inflight_requests_.contains(next_index)) {
+      // Skip chunk indices that are already cached or currently in flight.
+      continue;
+    }
+    inflight_requests_.insert(next_index);
+    // Dispatch the synthesis request to the controller via the registered
+    // callback.
+    request_synthesis_callback_.Run(next_index, timeline_[next_index].text);
+  }
 }
 
 }  // namespace readaloud

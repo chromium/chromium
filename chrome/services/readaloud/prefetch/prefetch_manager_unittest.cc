@@ -8,7 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
@@ -18,7 +20,11 @@
 
 namespace readaloud {
 
-using PrefetchManagerTest = testing::Test;
+class PrefetchManagerTest : public testing::Test {
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
 
 TEST_F(PrefetchManagerTest, DefaultConstructor) {
   PrefetchManager manager;
@@ -26,6 +32,8 @@ TEST_F(PrefetchManagerTest, DefaultConstructor) {
   EXPECT_EQ(nullptr, manager.GetCachedSegment(0));
   EXPECT_EQ(0u, manager.GetTimelineChunkCount());
   EXPECT_TRUE(manager.GetTimelineChunks().empty());
+  EXPECT_EQ(0u, manager.GetCurrentSequenceId());
+  EXPECT_EQ(0u, manager.GetInflightRequestCount());
 }
 
 TEST_F(PrefetchManagerTest, InsertAndRetrieveCachedSegment) {
@@ -200,6 +208,212 @@ TEST_F(PrefetchManagerTest, InsertCachedSegmentIgnoresOutOfBoundsIndex) {
           std::vector<uint8_t>({0x4F, 0x67, 0x67, 0x53})),
       {});
   EXPECT_FALSE(manager.HasCachedSegment(1));
+}
+TEST_F(PrefetchManagerTest, SchedulePrefetchThrottlesToMaxConcurrentRequests) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  const std::vector<std::u16string> kTexts = {
+      u"Sentence zero.", u"Sentence one.", u"Sentence two.", u"Sentence three.",
+      u"Sentence four."};
+  for (size_t i = 0; i < kTexts.size(); ++i) {
+    read_aloud::mojom::TextSegmentPtr seg =
+        read_aloud::mojom::TextSegment::New();
+    seg->segment_index = i;
+    seg->text = kTexts[i];
+    segments.push_back(std::move(seg));
+  }
+  manager.SetTextContent(segments);
+
+  std::vector<uint32_t> dispatched_indices;
+  manager.SetRequestSynthesisCallback(base::BindRepeating(
+      [](std::vector<uint32_t>* out, uint32_t chunk_index,
+         std::u16string_view text) { out->push_back(chunk_index); },
+      &dispatched_indices));
+
+  for (int i = 0; i < 5; ++i) {
+    manager.SchedulePrefetch(i);
+  }
+
+  ASSERT_EQ(3u, dispatched_indices.size());
+  EXPECT_EQ(0u, dispatched_indices[0]);
+  EXPECT_EQ(1u, dispatched_indices[1]);
+  EXPECT_EQ(2u, dispatched_indices[2]);
+}
+
+TEST_F(PrefetchManagerTest,
+       OnSynthesisResponseRemovesInflightAndSchedulesNext) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  const std::vector<std::u16string> kTexts = {
+      u"Sentence zero.", u"Sentence one.", u"Sentence two.",
+      u"Sentence three."};
+  for (size_t i = 0; i < kTexts.size(); ++i) {
+    read_aloud::mojom::TextSegmentPtr seg =
+        read_aloud::mojom::TextSegment::New();
+    seg->segment_index = i;
+    seg->text = kTexts[i];
+    segments.push_back(std::move(seg));
+  }
+  manager.SetTextContent(segments);
+
+  std::vector<uint32_t> dispatched_indices;
+  manager.SetRequestSynthesisCallback(base::BindRepeating(
+      [](std::vector<uint32_t>* out, uint32_t chunk_index,
+         std::u16string_view text) { out->push_back(chunk_index); },
+      &dispatched_indices));
+
+  for (int i = 0; i < 4; ++i) {
+    manager.SchedulePrefetch(i);
+  }
+
+  EXPECT_EQ(3u, dispatched_indices.size());
+
+  uint64_t seq_id = manager.GetCurrentSequenceId();
+  manager.OnSynthesisResponse(
+      seq_id, 0,
+      media::DecoderBuffer::CopyFrom(
+          std::vector<uint8_t>({0x4F, 0x67, 0x67, 0x53})),
+      {});
+
+  EXPECT_TRUE(manager.HasCachedSegment(0));
+  ASSERT_EQ(4u, dispatched_indices.size());
+  EXPECT_EQ(3u, dispatched_indices[3]);
+}
+
+TEST_F(PrefetchManagerTest,
+       OnSynthesisResponseWithNullBufferReleasesInflightAndSchedulesNext) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  const std::vector<std::u16string> kTexts = {
+      u"Sentence zero.", u"Sentence one.", u"Sentence two.",
+      u"Sentence three."};
+  for (size_t i = 0; i < kTexts.size(); ++i) {
+    read_aloud::mojom::TextSegmentPtr seg =
+        read_aloud::mojom::TextSegment::New();
+    seg->segment_index = i;
+    seg->text = kTexts[i];
+    segments.push_back(std::move(seg));
+  }
+  manager.SetTextContent(segments);
+
+  std::vector<uint32_t> dispatched_indices;
+  manager.SetRequestSynthesisCallback(base::BindRepeating(
+      [](std::vector<uint32_t>* out, uint32_t chunk_index,
+         std::u16string_view text) { out->push_back(chunk_index); },
+      &dispatched_indices));
+
+  for (size_t i = 0; i <= PrefetchManager::kMaxConcurrentRequests; ++i) {
+    manager.SchedulePrefetch(static_cast<uint32_t>(i));
+  }
+
+  EXPECT_EQ(PrefetchManager::kMaxConcurrentRequests, dispatched_indices.size());
+
+  uint64_t seq_id = manager.GetCurrentSequenceId();
+  // Simulate synthesis error response with nullptr buffer.
+  manager.OnSynthesisResponse(seq_id, 0, nullptr, {});
+
+  // Chunk 0 should not be cached, but in-flight slot must be freed and chunk 3
+  // dispatched.
+  EXPECT_FALSE(manager.HasCachedSegment(0));
+  ASSERT_EQ(PrefetchManager::kMaxConcurrentRequests + 1,
+            dispatched_indices.size());
+  EXPECT_EQ(static_cast<uint32_t>(PrefetchManager::kMaxConcurrentRequests),
+            dispatched_indices.back());
+}
+
+TEST_F(PrefetchManagerTest, StaleOrOutOrderResponseIsDiscarded) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  read_aloud::mojom::TextSegmentPtr seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Hello Chromium.";
+  segments.push_back(std::move(seg));
+
+  manager.SetTextContent(segments);
+  uint64_t old_seq_id = manager.GetCurrentSequenceId();
+  manager.SchedulePrefetch(0);
+
+  manager.ResetSession();
+  EXPECT_EQ(old_seq_id + 1, manager.GetCurrentSequenceId());
+
+  manager.OnSynthesisResponse(
+      old_seq_id, 0,
+      media::DecoderBuffer::CopyFrom(
+          std::vector<uint8_t>({0x4F, 0x67, 0x67, 0x53})),
+      {});
+  EXPECT_FALSE(manager.HasCachedSegment(0));
+}
+
+TEST_F(PrefetchManagerTest, SchedulePrefetchIgnoresDuplicatePendingRequest) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  const std::vector<std::u16string> kTexts = {
+      u"Sentence zero.", u"Sentence one.", u"Sentence two.", u"Sentence three.",
+      u"Sentence four."};
+  for (size_t i = 0; i < kTexts.size(); ++i) {
+    read_aloud::mojom::TextSegmentPtr seg =
+        read_aloud::mojom::TextSegment::New();
+    seg->segment_index = i;
+    seg->text = kTexts[i];
+    segments.push_back(std::move(seg));
+  }
+  manager.SetTextContent(segments);
+
+  // Saturate the concurrency slots up to kMaxConcurrentRequests.
+  for (size_t i = 0; i < PrefetchManager::kMaxConcurrentRequests; ++i) {
+    manager.SchedulePrefetch(static_cast<uint32_t>(i));
+  }
+
+  // Attempt to schedule chunk 3 multiple times while slots are full.
+  manager.SchedulePrefetch(3);
+  manager.SchedulePrefetch(3);
+  manager.SchedulePrefetch(3);
+
+  int dispatch_count_3 = 0;
+  manager.SetRequestSynthesisCallback(base::BindRepeating(
+      [](int* count_3, uint32_t idx, std::u16string_view text) {
+        if (idx == 3) {
+          (*count_3)++;
+        }
+      },
+      &dispatch_count_3));
+
+  uint64_t seq_id = manager.GetCurrentSequenceId();
+  // Completing initial chunks sequentially opens concurrency slots.
+  for (size_t i = 0; i < PrefetchManager::kMaxConcurrentRequests; ++i) {
+    manager.OnSynthesisResponse(
+        seq_id, static_cast<uint32_t>(i),
+        media::DecoderBuffer::CopyFrom(
+            std::vector<uint8_t>({0x4F, 0x67, 0x67, 0x53})),
+        {});
+  }
+
+  // Chunk 3 should be dispatched exactly once, not three times.
+  EXPECT_EQ(1, dispatch_count_3);
+}
+
+TEST_F(PrefetchManagerTest,
+       SchedulePrefetchWithNullCallbackDoesNotLeakInflightSlots) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Sentence zero.";
+  segments.push_back(std::move(seg));
+  manager.SetTextContent(segments);
+
+  // Schedule prefetch without setting a request synthesis callback.
+  manager.SchedulePrefetch(0);
+
+  // Setting callback later should safely dispatch the pending request.
+  std::vector<uint32_t> dispatched_indices;
+  manager.SetRequestSynthesisCallback(base::BindRepeating(
+      [](std::vector<uint32_t>* out, uint32_t chunk_index,
+         std::u16string_view text) { out->push_back(chunk_index); },
+      &dispatched_indices));
+
+  ASSERT_EQ(1u, dispatched_indices.size());
+  EXPECT_EQ(0u, dispatched_indices[0]);
 }
 
 TEST_F(PrefetchManagerTest, UpdatePrefetchModeDelegatesToModeScheduler) {

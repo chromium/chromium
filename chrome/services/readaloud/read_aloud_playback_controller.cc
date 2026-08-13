@@ -8,6 +8,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/message.h"
 
@@ -21,6 +22,9 @@ ReadAloudPlaybackController::ReadAloudPlaybackController(
   receiver_.set_disconnect_handler(
       base::BindOnce(&ReadAloudPlaybackController::OnReceiverDisconnected,
                      factory_weak_factory_.GetWeakPtr()));
+  prefetch_manager_.SetRequestSynthesisCallback(base::BindRepeating(
+      &ReadAloudPlaybackController::OnPrefetchSynthesisRequest,
+      factory_weak_factory_.GetWeakPtr()));
 }
 
 ReadAloudPlaybackController::~ReadAloudPlaybackController() {
@@ -214,6 +218,40 @@ void ReadAloudPlaybackController::ResetSession() {
   segments_.clear();
   playback_rate_ = 1.0f;
   session_weak_factory_.InvalidateWeakPtrs();
+}
+
+void ReadAloudPlaybackController::OnPrefetchSynthesisRequest(
+    uint32_t chunk_index,
+    std::u16string_view text) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const uint64_t sequence_id = prefetch_manager_.GetCurrentSequenceId();
+  if (!client_.is_bound()) {
+    prefetch_manager_.OnSynthesisResponse(sequence_id, chunk_index, nullptr,
+                                          {});
+    return;
+  }
+  client_->RequestSpeechSynthesis(
+      std::u16string(text), sequence_id,
+      base::BindOnce(&ReadAloudPlaybackController::OnSpeechSynthesisResponse,
+                     session_weak_factory_.GetWeakPtr(), sequence_id,
+                     chunk_index));
+}
+
+void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
+    uint64_t sequence_id,
+    uint32_t chunk_index,
+    mojo_base::BigBuffer response_bytes,
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!success || response_bytes.size() == 0) {
+    prefetch_manager_.OnSynthesisResponse(sequence_id, chunk_index, nullptr,
+                                          {});
+    return;
+  }
+  scoped_refptr<media::DecoderBuffer> opus_buffer =
+      media::DecoderBuffer::CopyFrom(base::span(response_bytes));
+  prefetch_manager_.OnSynthesisResponse(sequence_id, chunk_index,
+                                        std::move(opus_buffer), {});
 }
 
 }  // namespace readaloud
