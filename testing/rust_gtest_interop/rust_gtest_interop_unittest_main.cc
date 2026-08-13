@@ -56,8 +56,7 @@ int main(int argc, char** argv) {
   // is being propagated to Gtest by using a test filter that matches on the
   // test suites/names.
   std::string filter =
-      "--gtest_filter=RustGTestInteropTest.*:"
-      "RustGTestInteropTestExactSuite.ExactTest";
+      "--gtest_filter=RustGTestInteropTest.*:ExactSuite.ExactTest";
 
   // SAFETY: argv has size argc, guaranteed by the OS.
   auto args = UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc)));
