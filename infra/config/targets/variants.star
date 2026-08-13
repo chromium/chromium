@@ -317,14 +317,14 @@ targets.variant(
 
 targets.variant(
     name = "SIM_IPAD_PRO_7TH_GEN_18_5",
-    identifier = "iPad Air (6th generation) 18.5",
+    identifier = "iPad Pro 13-inch (M4) 18.5",
     mixins = [
         "ios_runtime_cache_18_5",
         "use-ios-simulator-cache",
     ],
     args = [
         "--platform",
-        "iPad Air 11-inch (M2)",
+        "iPad Pro 13-inch (M4)",
         "--version",
         "18.5",
     ],

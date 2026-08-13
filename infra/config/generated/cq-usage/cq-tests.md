@@ -112,7 +112,7 @@
 * [win-arm64-compile-dbg](https://ci.chromium.org/ui/p/chromium/builders/try/win-arm64-compile-dbg) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-arm64-compile-dbg%5C%22%22))
 * [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
 
-### base_unittests iPad Air (6th generation) 18.5
+### base_unittests iPad Pro 13-inch (M4) 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### base_unittests iPhone 15 18.5
@@ -488,7 +488,7 @@
 * [win-arm64-compile-dbg](https://ci.chromium.org/ui/p/chromium/builders/try/win-arm64-compile-dbg) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-arm64-compile-dbg%5C%22%22))
 * [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
 
-### components_unittests iPad Air (6th generation) 18.5
+### components_unittests iPad Pro 13-inch (M4) 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### components_unittests iPhone 15 18.5
@@ -765,7 +765,7 @@
 * [win-arm64-compile-dbg](https://ci.chromium.org/ui/p/chromium/builders/try/win-arm64-compile-dbg) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-arm64-compile-dbg%5C%22%22))
 * [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
 
-### gfx_unittests iPad Air (6th generation) 18.5
+### gfx_unittests iPad Pro 13-inch (M4) 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### gfx_unittests iPhone 15 18.5
@@ -974,7 +974,7 @@
 ### ios_chrome_integration_eg2tests_module iPhone 16 26.0
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
-### ios_chrome_unittests iPad Air (6th generation) 18.5
+### ios_chrome_unittests iPad Pro 13-inch (M4) 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### ios_chrome_unittests iPhone 15 18.5
@@ -989,7 +989,7 @@
 ### ios_components_unittests iPhone 16 26.0
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
-### ios_credential_provider_extension_unittests iPad Air (6th generation) 18.5
+### ios_credential_provider_extension_unittests iPad Pro 13-inch (M4) 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### ios_credential_provider_extension_unittests iPhone 15 18.5
@@ -1010,7 +1010,7 @@
 ### ios_testing_unittests iPhone 16 26.0
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
-### ios_web_inttests iPad Air (6th generation) 18.5
+### ios_web_inttests iPad Pro 13-inch (M4) 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### ios_web_inttests iPhone 15 18.5
@@ -1025,7 +1025,7 @@
 ### ios_web_shell_eg2tests_module iPhone 16 26.0
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
-### ios_web_unittests iPad Air (6th generation) 18.5
+### ios_web_unittests iPad Pro 13-inch (M4) 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### ios_web_unittests iPhone 15 18.5
@@ -1034,7 +1034,7 @@
 ### ios_web_unittests iPhone 16 26.0
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
-### ios_web_view_inttests iPad Air (6th generation) 18.5
+### ios_web_view_inttests iPad Pro 13-inch (M4) 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### ios_web_view_inttests iPhone 15 18.5
@@ -1043,7 +1043,7 @@
 ### ios_web_view_inttests iPhone 16 26.0
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
-### ios_web_view_unittests iPad Air (6th generation) 18.5
+### ios_web_view_unittests iPad Pro 13-inch (M4) 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### ios_web_view_unittests iPhone 15 18.5
@@ -1527,7 +1527,7 @@
 * [win-arm64-compile-dbg](https://ci.chromium.org/ui/p/chromium/builders/try/win-arm64-compile-dbg) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-arm64-compile-dbg%5C%22%22))
 * [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
 
-### skia_unittests iPad Air (6th generation) 18.5
+### skia_unittests iPad Pro 13-inch (M4) 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### skia_unittests iPhone 15 18.5
@@ -1666,7 +1666,7 @@
 * [win-arm64-compile-dbg](https://ci.chromium.org/ui/p/chromium/builders/try/win-arm64-compile-dbg) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-arm64-compile-dbg%5C%22%22))
 * [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
 
-### ui_base_unittests iPad Air (6th generation) 18.5
+### ui_base_unittests iPad Pro 13-inch (M4) 18.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
 ### ui_base_unittests iPhone 15 18.5

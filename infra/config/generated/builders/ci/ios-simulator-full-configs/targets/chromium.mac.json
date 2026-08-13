@@ -117,7 +117,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--out-dir",
@@ -132,7 +132,7 @@
         },
         "module_name": "//base:base_unittests",
         "module_scheme": "gtest",
-        "name": "base_unittests iPad Air (6th generation) 18.5",
+        "name": "base_unittests iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -168,7 +168,7 @@
         },
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -553,7 +553,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--out-dir",
@@ -568,7 +568,7 @@
         },
         "module_name": "//components:components_unittests",
         "module_scheme": "gtest",
-        "name": "components_unittests iPad Air (6th generation) 18.5",
+        "name": "components_unittests iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -604,7 +604,7 @@
         },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -989,7 +989,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--out-dir",
@@ -1004,7 +1004,7 @@
         },
         "module_name": "//ui/gfx:gfx_unittests",
         "module_scheme": "gtest",
-        "name": "gfx_unittests iPad Air (6th generation) 18.5",
+        "name": "gfx_unittests iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1040,7 +1040,7 @@
         },
         "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -1594,7 +1594,7 @@
           "2",
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
@@ -1610,7 +1610,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
         "module_scheme": "xctest",
-        "name": "ios_chrome_integration_eg2tests_module iPad Air (6th generation) 18.5",
+        "name": "ios_chrome_integration_eg2tests_module iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1647,7 +1647,7 @@
         },
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -2503,7 +2503,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--out-dir",
@@ -2518,7 +2518,7 @@
         },
         "module_name": "//ios/chrome/test:ios_chrome_unittests",
         "module_scheme": "gtest",
-        "name": "ios_chrome_unittests iPad Air (6th generation) 18.5",
+        "name": "ios_chrome_unittests iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2554,7 +2554,7 @@
         },
         "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -2997,7 +2997,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--out-dir",
@@ -3012,7 +3012,7 @@
         },
         "module_name": "//ios/chrome/test/extensions:ios_credential_provider_extension_unittests",
         "module_scheme": "gtest",
-        "name": "ios_credential_provider_extension_unittests iPad Air (6th generation) 18.5",
+        "name": "ios_credential_provider_extension_unittests iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3048,7 +3048,7 @@
         },
         "test": "ios_credential_provider_extension_unittests",
         "test_id_prefix": "ninja://ios/chrome/test/extensions:ios_credential_provider_extension_unittests/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -3435,7 +3435,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--out-dir",
@@ -3450,7 +3450,7 @@
         },
         "module_name": "//ios/web:ios_web_inttests",
         "module_scheme": "gtest",
-        "name": "ios_web_inttests iPad Air (6th generation) 18.5",
+        "name": "ios_web_inttests iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3486,7 +3486,7 @@
         },
         "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -3653,7 +3653,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
@@ -3669,7 +3669,7 @@
         },
         "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module",
         "module_scheme": "xctest",
-        "name": "ios_web_shell_eg2tests_module iPad Air (6th generation) 18.5",
+        "name": "ios_web_shell_eg2tests_module iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3705,7 +3705,7 @@
         },
         "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -3875,7 +3875,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--out-dir",
@@ -3890,7 +3890,7 @@
         },
         "module_name": "//ios/web:ios_web_unittests",
         "module_scheme": "gtest",
-        "name": "ios_web_unittests iPad Air (6th generation) 18.5",
+        "name": "ios_web_unittests iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3926,7 +3926,7 @@
         },
         "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -4093,7 +4093,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--out-dir",
@@ -4108,7 +4108,7 @@
         },
         "module_name": "//ios/web_view/test:ios_web_view_inttests",
         "module_scheme": "gtest",
-        "name": "ios_web_view_inttests iPad Air (6th generation) 18.5",
+        "name": "ios_web_view_inttests iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4144,7 +4144,7 @@
         },
         "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_inttests/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -4311,7 +4311,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--out-dir",
@@ -4326,7 +4326,7 @@
         },
         "module_name": "//ios/web_view/test:ios_web_view_unittests",
         "module_scheme": "gtest",
-        "name": "ios_web_view_unittests iPad Air (6th generation) 18.5",
+        "name": "ios_web_view_unittests iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4362,7 +4362,7 @@
         },
         "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_unittests/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -4858,7 +4858,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--out-dir",
@@ -4873,7 +4873,7 @@
         },
         "module_name": "//skia:skia_unittests",
         "module_scheme": "gtest",
-        "name": "skia_unittests iPad Air (6th generation) 18.5",
+        "name": "skia_unittests iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4909,7 +4909,7 @@
         },
         "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
@@ -5185,7 +5185,7 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
-          "iPad Air 11-inch (M2)",
+          "iPad Pro 13-inch (M4)",
           "--version",
           "18.5",
           "--out-dir",
@@ -5200,7 +5200,7 @@
         },
         "module_name": "//ui/base:ui_base_unittests",
         "module_scheme": "gtest",
-        "name": "ui_base_unittests iPad Air (6th generation) 18.5",
+        "name": "ui_base_unittests iPad Pro 13-inch (M4) 18.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5236,7 +5236,7 @@
         },
         "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
-        "variant_id": "iPad Air (6th generation) 18.5"
+        "variant_id": "iPad Pro 13-inch (M4) 18.5"
       },
       {
         "args": [
