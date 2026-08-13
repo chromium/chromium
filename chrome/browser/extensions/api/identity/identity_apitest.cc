@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -329,8 +330,8 @@ std::unique_ptr<net::EmbeddedTestServer> LaunchHttpsServer() {
   std::unique_ptr<net::EmbeddedTestServer> https_server =
       std::make_unique<net::EmbeddedTestServer>(
           net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->ServeFilesFromSourceDirectory(
-      "chrome/test/data/extensions/api_test/identity");
+  https_server->AddDefaultHandlers(base::FilePath(
+      FILE_PATH_LITERAL("chrome/test/data/extensions/api_test/identity")));
   EXPECT_TRUE(https_server->Start());
 
   return https_server;
@@ -3697,7 +3698,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
 #endif
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, MAYBE_LoadTimedOut) {
   std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
-  GURL auth_url(https_server->GetURL("/interaction_required.html"));
+  GURL auth_url(https_server->GetURL("/hung"));
 
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
       CreateLaunchWebAuthFlowFunction();
@@ -3863,11 +3864,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
 
 #if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, CloseBrowser) {
-  std::unique_ptr<net::EmbeddedTestServer> https_server =
-      std::make_unique<net::EmbeddedTestServer>(
-          net::EmbeddedTestServer::TYPE_HTTPS);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  EXPECT_TRUE(https_server->Start());
+  std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
   // We want to interrupt the flow before `auth_url` gets loaded. To ensure that
   // an URL doesn't load prematurely, use a default test URL that never returns
   // a response.
@@ -3898,11 +3895,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, DestroyProfile) {
   Profile& profile2 =
       profiles::testing::CreateProfileSync(profile_manager, path_profile2);
 
-  std::unique_ptr<net::EmbeddedTestServer> https_server =
-      std::make_unique<net::EmbeddedTestServer>(
-          net::EmbeddedTestServer::TYPE_HTTPS);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  EXPECT_TRUE(https_server->Start());
+  std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
   // Make sure we can shutdown profile before getting response.
   GURL auth_url(https_server->GetURL("/hung"));
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
