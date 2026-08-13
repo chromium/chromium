@@ -1123,8 +1123,14 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
                 net::SchemefulSite::Deserialize("https://google.com")))));
 }
 
+// TODO(crbug.com/544649705): Flaky on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StartsMultipleSessions DISABLED_StartsMultipleSessions
+#else
+#define MAYBE_StartsMultipleSessions StartsMultipleSessions
+#endif
 IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
-                       StartsMultipleSessions) {
+                       MAYBE_StartsMultipleSessions) {
   const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   signin::MakeAccountAvailable(
