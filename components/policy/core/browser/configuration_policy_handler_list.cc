@@ -110,6 +110,10 @@ bool ConfigurationPolicyHandlerList::IsBlockedDesktopAndroidPolicy(
 // flag needs to be removed as soon as we feel comfortable about all exist
 // Android
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
+  if (!base::FeatureList::GetInstance()) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(features::kDesktopAndroidPolicy)) {
     return false;
   }
