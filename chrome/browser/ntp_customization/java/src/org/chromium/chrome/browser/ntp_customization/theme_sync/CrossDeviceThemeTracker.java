@@ -175,6 +175,28 @@ public class CrossDeviceThemeTracker {
         return CrossDeviceThemeTrackerJni.get().getThemes(mNativePtr, context);
     }
 
+    /**
+     * Returns the remote theme for the specified device GUID, or the best candidate theme if {@code
+     * deviceGuid} is null/empty.
+     *
+     * <p>If a specific non-empty {@code deviceGuid} is provided, only a theme from that specific
+     * device will be returned (or null if that device has no theme), avoiding combining preferences
+     * from one device with a theme from another. An empty string ({@code ""}) or null indicates
+     * that no specific device GUID is requested (i.e. no preferences are being imported) and
+     * candidate scoring across all available devices should be used.
+     *
+     * @param context The {@link Context}.
+     * @param deviceGuid The remote device GUID to retrieve a theme for, or null/empty if no
+     *     specific device GUID is requested.
+     * @return The matching or best candidate {@link NtpBackgroundDataBase}, or null if not found.
+     */
+    public @Nullable NtpBackgroundDataBase getThemeForDeviceGuid(
+            Context context, @Nullable String deviceGuid) {
+        if (mNativePtr == 0) return null;
+        return CrossDeviceThemeTrackerJni.get()
+                .getThemeForDeviceGuid(mNativePtr, context, deviceGuid == null ? "" : deviceGuid);
+    }
+
     /** Returns the current service status of the cross-device theme tracker. */
     public @ServiceStatus int getServiceStatus() {
         if (mNativePtr == 0) return ServiceStatus.SYNC_DISABLED;
@@ -259,6 +281,11 @@ public class CrossDeviceThemeTracker {
 
         List<NtpBackgroundDataBase> getThemes(
                 long nativeCrossDeviceThemeTrackerAndroid, Context context);
+
+        @Nullable NtpBackgroundDataBase getThemeForDeviceGuid(
+                long nativeCrossDeviceThemeTrackerAndroid,
+                Context context,
+                @JniType("std::string") String deviceGuid);
 
         @JniType("ServiceStatus")
         @ServiceStatus

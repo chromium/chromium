@@ -72,11 +72,12 @@ struct DeviceThemeInfo {
   ~DeviceThemeInfo() = default;
 
   bool operator==(const DeviceThemeInfo& other) const {
-    return device_name == other.device_name && os_type == other.os_type &&
-           form_factor == other.form_factor &&
+    return guid == other.guid && device_name == other.device_name &&
+           os_type == other.os_type && form_factor == other.form_factor &&
            ThemeComparer<LocalSpecifics>::Equals(theme, other.theme);
   }
 
+  std::string guid;
   std::string device_name;
   syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kUnknown;
   syncer::DeviceInfo::FormFactor form_factor =
@@ -307,6 +308,7 @@ class CrossDeviceThemeTracker : public KeyedService,
     for (const auto* device : device_info_tracker_->GetAllDeviceInfo()) {
       auto hash = syncer::ClientTagHash::FromUnhashed(type, device->guid());
       if (hash.value() == client_tag_hash_value) {
+        theme_info.guid = device->guid();
         theme_info.device_name = device->client_name();
         theme_info.form_factor = device->form_factor();
         theme_info.os_type = device->os_type();

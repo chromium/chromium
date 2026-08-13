@@ -641,6 +641,10 @@ TEST_F(SyncedSetUpUtilsTest, TestReturnsMostRecentObservedPrefChanges) {
     ASSERT_NE(it, result.end());
     EXPECT_EQ(it->second, pref_value);
   }
+
+  std::string best_guid = synced_set_up::GetBestMatchDeviceGuid(
+      &pref_tracker_, &device_info_tracker_, local_device.get());
+  EXPECT_EQ(best_guid, android_phone.get()->guid());
 }
 
 }  // namespace sync_preferences

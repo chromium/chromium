@@ -64,6 +64,14 @@ class CrossDeviceThemeTrackerAndroid
   jni_zero::ScopedJavaLocalRef<JList<JNtpBackgroundDataBase>> GetThemes(
       JNIEnv* env,
       const jni_zero::JavaRef<JContext>& jcontext);
+  // Retrieves the theme for the specified `device_guid`. If `device_guid` is
+  // non-empty, only returns a theme from that device (or nullptr if none found,
+  // preventing Frankensteining). If `device_guid` is empty (""), returns the
+  // best candidate theme based on platform scoring.
+  jni_zero::ScopedJavaLocalRef<jobject> GetThemeForDeviceGuid(
+      JNIEnv* env,
+      const jni_zero::JavaRef<JContext>& jcontext,
+      const std::string& device_guid);
   ServiceStatus GetServiceStatus(JNIEnv* env);
 
   // Returns the owned Java object.
@@ -73,6 +81,12 @@ class CrossDeviceThemeTrackerAndroid
   }
 
  private:
+  // Creates a single Java theme object from DeviceThemeInfo.
+  jni_zero::ScopedJavaLocalRef<jobject> CreateJavaTheme(
+      JNIEnv* env,
+      const jni_zero::JavaRef<JContext>& jcontext,
+      const DeviceThemeInfo<sync_pb::ThemeAndroidSpecifics>& theme_info);
+
   // Converts cached C++ theme info and calls Java to recreate Java theme
   // objects.
   void RecreateJavaThemes(JNIEnv* env,

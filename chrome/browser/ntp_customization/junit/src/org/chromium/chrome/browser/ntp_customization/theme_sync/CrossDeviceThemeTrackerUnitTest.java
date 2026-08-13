@@ -178,4 +178,25 @@ public class CrossDeviceThemeTrackerUnitTest {
 
         verify(observer).onThemesChanged();
     }
+
+    @Test
+    public void testGetThemeForDeviceGuid() throws Exception {
+        NtpBackgroundDataColor remoteColor =
+                new NtpBackgroundDataColor(
+                        mActivity, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_VIOLET, false);
+        when(mNatives.getThemeForDeviceGuid(eq(1L), any(), eq("test_guid_123")))
+                .thenReturn(remoteColor);
+        when(mNatives.getThemeForDeviceGuid(eq(1L), any(), eq(""))).thenReturn(remoteColor);
+
+        Method createMethod = CrossDeviceThemeTracker.class.getDeclaredMethod("create", long.class);
+        createMethod.setAccessible(true);
+        CrossDeviceThemeTracker tracker = (CrossDeviceThemeTracker) createMethod.invoke(null, 1L);
+
+        assertEquals(remoteColor, tracker.getThemeForDeviceGuid(mActivity, "test_guid_123"));
+        verify(mNatives).getThemeForDeviceGuid(1L, mActivity, "test_guid_123");
+
+        // Passing null should pass empty string ("") to native.
+        assertEquals(remoteColor, tracker.getThemeForDeviceGuid(mActivity, null));
+        verify(mNatives).getThemeForDeviceGuid(1L, mActivity, "");
+    }
 }

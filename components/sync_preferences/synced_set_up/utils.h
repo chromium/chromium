@@ -67,6 +67,14 @@ std::map<std::string_view, base::Value> GetCrossDevicePrefsFromRemoteDevice(
     const syncer::DeviceInfoTracker* device_info_tracker,
     const syncer::DeviceInfo* local_device);
 
+// Returns the device GUID corresponding to the "best match" remote device for
+// Synced Set Up, or an empty string ("") if no valid match exists or if
+// required dependencies are null.
+std::string GetBestMatchDeviceGuid(
+    const sync_preferences::CrossDevicePrefTracker* pref_tracker,
+    const syncer::DeviceInfoTracker* device_info_tracker,
+    const syncer::DeviceInfo* local_device);
+
 }  // namespace synced_set_up
 
 }  // namespace sync_preferences
