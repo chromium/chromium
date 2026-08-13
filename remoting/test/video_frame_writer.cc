@@ -12,7 +12,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -112,8 +111,11 @@ void VideoFrameWriter::HighlightRectInFrame(webrtc::DesktopFrame* frame,
 
 base::FilePath VideoFrameWriter::AppendCreationDateAndTime(
     const base::FilePath& file_path) {
-  return file_path.AppendASCII(base::UnlocalizedTimeFormatWithPattern(
-      instance_creation_time_, "y-M-d_H-m-s"));
+  base::Time::Exploded exploded;
+  instance_creation_time_.LocalExplode(&exploded);
+  return file_path.AppendASCII(base::StringPrintf(
+      "%d-%d-%d_%d-%d-%d", exploded.year, exploded.month, exploded.day_of_month,
+      exploded.hour, exploded.minute, exploded.second));
 }
 
 bool VideoFrameWriter::CreateDirectoryIfNotExists(
