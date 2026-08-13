@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -207,24 +208,30 @@ TEST_F(OmniboxEverywhereControllerTest, ControllerInitWithDisabledHotkeyPref) {
 }
 
 TEST_F(OmniboxEverywhereControllerTest,
-       IgnoresOffTheRecordProfileInSetTargetProfile) {
+       ResolvesOffTheRecordProfileToOriginalProfile) {
   omnibox_everywhere::OmniboxEverywhereController controller(
       base::BindRepeating(
           [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
             return std::make_unique<TestWebUIContentsWrapper>(profile);
           }));
 
-  // Off-the-record / Incognito profile is ignored when calling
-  // SetTargetProfile.
   Profile* otr_profile =
       profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(otr_profile);
-  controller.SetTargetProfile(otr_profile);
 
-  // Invoking for off-the-record profile should not show UI.
-  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
-                      otr_profile, GetContext());
-  EXPECT_FALSE(controller.IsVisible());
+  // SetTargetProfile with an off-the-record profile resolves to its original
+  // profile.
+  controller.SetTargetProfile(otr_profile);
+  EXPECT_EQ(&profile_, controller.target_profile());
+
+  // Activating an off-the-record browser window also resolves to its original
+  // profile.
+  MockBrowserWindowInterface otr_bwi;
+  EXPECT_CALL(otr_bwi, GetProfile())
+      .WillRepeatedly(testing::Return(otr_profile));
+
+  controller.OnBrowserActivated(&otr_bwi);
+  EXPECT_EQ(&profile_, controller.target_profile());
 }
 
 TEST_F(OmniboxEverywhereControllerTest,
@@ -244,4 +251,61 @@ TEST_F(OmniboxEverywhereControllerTest,
 
   // Normal regular profile is accepted when added.
   controller.OnProfileAdded(&profile_);
+}
+
+TEST_F(OmniboxEverywhereControllerTest,
+       IneligibleProfileInSetTargetProfileIsNoOp) {
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  // Initially set an eligible target profile.
+  controller.SetTargetProfile(&profile_);
+  EXPECT_EQ(&profile_, controller.target_profile());
+
+  // Passing an ineligible profile (e.g. missing service) is a NO-OP.
+  TestingProfile ineligible_profile;
+  controller.SetTargetProfile(&ineligible_profile);
+  EXPECT_EQ(&profile_, controller.target_profile());
+
+  // Explicitly passing nullptr clears target profile to nullptr.
+  controller.SetTargetProfile(nullptr);
+  EXPECT_EQ(nullptr, controller.target_profile());
+}
+
+TEST_F(OmniboxEverywhereControllerTest,
+       TargetProfileUpdatesOnBrowserActivation) {
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  TestingProfile profile2;
+  TemplateURLServiceFactoryTestUtil util2(&profile2);
+  util2.VerifyLoad();
+  TemplateURLData data;
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  util2.model()->SetUserSelectedDefaultSearchProvider(
+      util2.model()->Add(std::make_unique<TemplateURL>(data)));
+
+  MockBrowserWindowInterface bwi1;
+  EXPECT_CALL(bwi1, GetProfile()).WillRepeatedly(testing::Return(&profile_));
+
+  MockBrowserWindowInterface bwi2;
+  EXPECT_CALL(bwi2, GetProfile()).WillRepeatedly(testing::Return(&profile2));
+
+  // Activating bwi1 sets target profile to profile_.
+  controller.OnBrowserActivated(&bwi1);
+  EXPECT_EQ(&profile_, controller.target_profile());
+
+  // Activating bwi2 updates target profile to profile2.
+  controller.OnBrowserActivated(&bwi2);
+  EXPECT_EQ(&profile2, controller.target_profile());
+
+  // Re-activating bwi1 updates target profile back to profile_.
+  controller.OnBrowserActivated(&bwi1);
+  EXPECT_EQ(&profile_, controller.target_profile());
 }

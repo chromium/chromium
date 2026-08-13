@@ -9,6 +9,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -486,6 +487,49 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, BackgroundModeKeepAlive) {
     return !profile_manager->HasKeepAliveForTesting(
         profile, ProfileKeepAliveOrigin::kOmniboxEverywhere);
   }));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TargetProfileUpdatesOnBrowserActivation \
+  DISABLED_TargetProfileUpdatesOnBrowserActivation
+#else
+#define MAYBE_TargetProfileUpdatesOnBrowserActivation \
+  TargetProfileUpdatesOnBrowserActivation
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       MAYBE_TargetProfileUpdatesOnBrowserActivation) {
+  Profile* profile1 = browser()->GetProfile();
+  ASSERT_TRUE(profile1);
+
+  GlobalFeatures* features = g_browser_process->GetFeatures();
+  ASSERT_TRUE(features);
+  auto* controller = features->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  // Activating the first browser window sets controller's target profile to
+  // profile1.
+  controller->OnBrowserActivated(browser());
+  EXPECT_EQ(profile1, controller->target_profile());
+
+  // Create a secondary profile and browser window.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(profile_manager);
+  base::FilePath profile2_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  profiles::testing::CreateProfileSync(profile_manager, profile2_path);
+  Profile* profile2 = profile_manager->GetProfile(profile2_path);
+  ASSERT_TRUE(profile2);
+
+  Browser* browser2 = CreateBrowser(profile2);
+  ASSERT_TRUE(browser2);
+
+  // Activating browser2 updates controller's target profile to profile2.
+  controller->OnBrowserActivated(browser2);
+  EXPECT_EQ(profile2, controller->target_profile());
+
+  // Re-activating browser1 updates target profile back to profile1.
+  controller->OnBrowserActivated(browser());
+  EXPECT_EQ(profile1, controller->target_profile());
 }
 
 }  // namespace omnibox_everywhere

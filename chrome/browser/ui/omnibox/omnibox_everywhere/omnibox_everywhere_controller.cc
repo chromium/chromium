@@ -55,18 +55,37 @@ OmniboxEverywhereController::OmniboxEverywhereController(
       OnProfileAdded(profile);
     }
   }
+
+  if (GlobalBrowserCollection::GetInstance()) {
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
+  }
 }
 
 OmniboxEverywhereController::~OmniboxEverywhereController() {
+  browser_collection_observation_.Reset();
   if (listener_) {
     listener_->UnregisterAccelerators(this);
   }
 }
 
-void OmniboxEverywhereController::SetTargetProfile(Profile* profile) {
-  if (!IsProfileEligible(profile)) {
-    profile = nullptr;
+void OmniboxEverywhereController::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
+  if (browser) {
+    SetTargetProfile(browser->GetProfile());
   }
+}
+
+void OmniboxEverywhereController::SetTargetProfile(Profile* profile) {
+  if (profile) {
+    if (profile->IsOffTheRecord()) {
+      profile = profile->GetOriginalProfile();
+    }
+    if (!IsProfileEligible(profile)) {
+      return;
+    }
+  }
+
   if (target_profile_ == profile) {
     return;
   }
@@ -183,25 +202,8 @@ void OmniboxEverywhereController::ShutdownForProfile(Profile* profile) {
   }
 }
 
-Profile* OmniboxEverywhereController::GetTargetProfile() {
-  if (target_profile_) {
-    return target_profile_;
-  }
-
-  BrowserWindowInterface* active_bwi =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-  Profile* target_profile = active_bwi ? active_bwi->GetProfile() : nullptr;
-
-  // Only use the profile of the last active browser window. If no browser
-  // window is active (e.g. on the profile selection screen), return nullptr.
-  // Also check that the profile is eligible.
-  if (!IsProfileEligible(target_profile)) {
-    target_profile = nullptr;
-  }
-  if (target_profile) {
-    SetTargetProfile(target_profile);
-  }
-  return target_profile;
+Profile* OmniboxEverywhereController::GetTargetProfile() const {
+  return target_profile_;
 }
 
 void OmniboxEverywhereController::OnKeyPressed(

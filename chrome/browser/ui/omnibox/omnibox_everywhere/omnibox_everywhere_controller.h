@@ -12,6 +12,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
@@ -37,7 +39,8 @@ enum class InvocationSource {
 // Exists as a process-global singleton owned by GlobalFeatures.
 class OmniboxEverywhereController
     : public ui::GlobalAcceleratorListener::Observer,
-      public ProfileManagerObserver {
+      public ProfileManagerObserver,
+      public BrowserCollectionObserver {
  public:
   explicit OmniboxEverywhereController(
       OmniboxEverywhereUIManager::ContentsWrapperFactory
@@ -75,9 +78,15 @@ class OmniboxEverywhereController
   // background mode manager.
   void SetTargetProfile(Profile* profile);
 
+  // Returns the current target profile.
+  Profile* target_profile() const { return target_profile_; }
+
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
+
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
   // ui::GlobalAcceleratorListener::Observer:
   void OnKeyPressed(const ui::Accelerator& accelerator) override;
@@ -89,9 +98,8 @@ class OmniboxEverywhereController
   void OnProfilePicked(Profile* new_profile);
   void InvokeForActiveBrowserProfile(InvocationSource source);
 
-  // Resolves the target profile for the Omnibox Everywhere invocation.
-  // TODO(crbug.com/527183107): Implement a better profile selection heuristic.
-  Profile* GetTargetProfile();
+  // Returns the current target profile for Omnibox Everywhere.
+  Profile* GetTargetProfile() const;
 
   // Returns true if `profile` is eligible to be set as the target profile.
   bool IsProfileEligible(Profile* profile) const;
@@ -107,6 +115,8 @@ class OmniboxEverywhereController
   raw_ptr<Profile> target_profile_ = nullptr;
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   raw_ptr<ui::GlobalAcceleratorListener> listener_ = nullptr;
   base::WeakPtrFactory<OmniboxEverywhereController> weak_factory_{this};
 };
