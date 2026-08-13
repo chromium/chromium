@@ -22,6 +22,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.graphics.Rect;
+import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,6 +42,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.PopupCreator;
 import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -159,6 +161,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock MultiWindowUtils mMultiWindowUtils;
     @Mock ExclusiveAccessManager mExclusiveAccessManager;
     @Mock RenderFrameHost mRenderFrameHost;
+    @Mock private View mUrlBar;
+    @Mock private View mMenuButton;
+    @Mock private View mTabSwitcherButton;
 
     @Captor private ArgumentCaptor<CompletableFuture<Boolean>> mFutureCaptor;
 
@@ -485,5 +490,65 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         when(mExclusiveAccessManager.canEnterFullscreenModeForTab(mRenderFrameHost))
                 .thenReturn(false);
         assertFalse(mTabWebContentsDelegateAndroid.canEnterFullscreenModeForTab(mRenderFrameHost));
+    }
+
+    @Test
+    public void testTakeFocus_forward() {
+        when(mActivity.findViewById(R.id.url_bar)).thenReturn(mUrlBar);
+        when(mUrlBar.requestFocus(View.FOCUS_FORWARD)).thenReturn(true);
+
+        assertTrue(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ false));
+        verify(mUrlBar).requestFocus(View.FOCUS_FORWARD);
+    }
+
+    @Test
+    public void testTakeFocus_reverse_menuButton() {
+        when(mActivity.findViewById(R.id.menu_button)).thenReturn(mMenuButton);
+        when(mMenuButton.isShown()).thenReturn(true);
+        when(mMenuButton.requestFocus(View.FOCUS_BACKWARD)).thenReturn(true);
+
+        assertTrue(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
+        verify(mMenuButton).requestFocus(View.FOCUS_BACKWARD);
+    }
+
+    @Test
+    public void testTakeFocus_reverse_tabSwitcherButton() {
+        when(mActivity.findViewById(R.id.menu_button)).thenReturn(mMenuButton);
+        when(mMenuButton.isShown()).thenReturn(false);
+        when(mActivity.findViewById(R.id.tab_switcher_button)).thenReturn(mTabSwitcherButton);
+        when(mTabSwitcherButton.isShown()).thenReturn(true);
+        when(mTabSwitcherButton.requestFocus(View.FOCUS_BACKWARD)).thenReturn(true);
+
+        assertTrue(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
+        verify(mTabSwitcherButton).requestFocus(View.FOCUS_BACKWARD);
+    }
+
+    @Test
+    public void testTakeFocus_reverse_buttonsHidden() {
+        when(mActivity.findViewById(R.id.menu_button)).thenReturn(mMenuButton);
+        when(mMenuButton.isShown()).thenReturn(false);
+        when(mActivity.findViewById(R.id.tab_switcher_button)).thenReturn(mTabSwitcherButton);
+        when(mTabSwitcherButton.isShown()).thenReturn(false);
+
+        assertFalse(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
+        verify(mMenuButton, never()).requestFocus(anyInt());
+        verify(mTabSwitcherButton, never()).requestFocus(anyInt());
+    }
+
+    @Test
+    public void testTakeFocus_forward_requestFocusFails() {
+        when(mActivity.findViewById(R.id.url_bar)).thenReturn(mUrlBar);
+        when(mUrlBar.requestFocus(View.FOCUS_FORWARD)).thenReturn(false);
+
+        assertFalse(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ false));
+        verify(mUrlBar).requestFocus(View.FOCUS_FORWARD);
+    }
+
+    @Test
+    public void testTakeFocus_nullViews() {
+        when(mActivity.findViewById(anyInt())).thenReturn(null);
+
+        assertFalse(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ false));
+        assertFalse(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
     }
 }

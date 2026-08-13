@@ -448,16 +448,16 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (reverse) {
             View menuButton = mActivity.findViewById(R.id.menu_button);
             if (menuButton != null && menuButton.isShown()) {
-                return menuButton.requestFocus();
+                return menuButton.requestFocus(View.FOCUS_BACKWARD);
             }
 
             View tabSwitcherButton = mActivity.findViewById(R.id.tab_switcher_button);
             if (tabSwitcherButton != null && tabSwitcherButton.isShown()) {
-                return tabSwitcherButton.requestFocus();
+                return tabSwitcherButton.requestFocus(View.FOCUS_BACKWARD);
             }
         } else {
             View urlBar = mActivity.findViewById(R.id.url_bar);
-            if (urlBar != null) return urlBar.requestFocus();
+            if (urlBar != null) return urlBar.requestFocus(View.FOCUS_FORWARD);
         }
         return false;
     }
