@@ -99,6 +99,23 @@ TEST_F(ContextHubTabProviderDesktopTest, SwitchToTab_ActivatesTab) {
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 2);
 }
 
+TEST_F(ContextHubTabProviderDesktopTest, CloseTab_ClosesTab) {
+  AddTab(browser(), GURL("https://example.com/1"));
+  AddTab(browser(), GURL("https://example.com/2"));
+  AddTab(browser(), GURL("https://example.com/3"));
+
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
+
+  int64_t target_id = GetTabId(browser(), 1);
+  provider_->CloseTab(target_id);
+
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetVisibleURL(),
+            GURL("https://example.com/3"));
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibleURL(),
+            GURL("https://example.com/1"));
+}
+
 TEST_F(ContextHubTabProviderDesktopTest, GetTabs_MultipleWindows) {
   AddTab(browser(), GURL("https://example.com/w1_t1"));
   AddTab(browser(), GURL("https://example.com/w1_t2"));

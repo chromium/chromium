@@ -200,7 +200,9 @@ export class TodoItemElement extends CrLitElement {
   protected onCloseTabClick_(e: Event) {
     e.stopPropagation();
     this.$.menu.close();
-    // TODO(crbug.com/541016246): Implement close tab click.
+    if (this.tabId !== null) {
+      browserProxyFactory.getInstance().handler.closeTab(this.tabId);
+    }
   }
 
   protected onSaveClick_(e: Event) {

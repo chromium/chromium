@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -99,6 +100,35 @@ void ContextHubTabProviderDesktop::SwitchToTab(int64_t tab_id) {
         if (session_id.is_valid() && session_id.id() == tab_id) {
           tab_strip_model->ActivateTabAt(i);
           browser->GetWindow()->Show();
+          return false;
+        }
+      }
+    }
+    return true;
+  });
+}
+
+// Closes the tab matching the given session tab ID.
+void ContextHubTabProviderDesktop::CloseTab(int64_t tab_id) {
+  ProfileBrowserCollection* collection =
+      ProfileBrowserCollection::GetForProfile(profile_);
+  if (!collection) {
+    return;
+  }
+  collection->ForEach([&](BrowserWindowInterface* browser) {
+    TabStripModel* tab_strip_model = browser->GetTabStripModel();
+    if (!tab_strip_model) {
+      return true;
+    }
+    for (int i = 0; i < tab_strip_model->count(); ++i) {
+      content::WebContents* tab_contents = tab_strip_model->GetWebContentsAt(i);
+      if (tab_contents) {
+        SessionID session_id =
+            sessions::SessionTabHelper::IdForTab(tab_contents);
+        if (session_id.is_valid() && session_id.id() == tab_id) {
+          tab_strip_model->CloseWebContentsAt(
+              i, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                     TabCloseTypes::CLOSE_USER_GESTURE);
           return false;
         }
       }

@@ -210,6 +210,9 @@ interface PageHandler {
   // Switches to the specified tab.
   SwitchToTab(int64 tab_id);
 
+  // Closes the specified tab.
+  CloseTab(int64 tab_id);
+
   // Clears stored tab groups.
   [RuntimeFeature=kAutoTabGroups]
   ClearTabGroups() => ();

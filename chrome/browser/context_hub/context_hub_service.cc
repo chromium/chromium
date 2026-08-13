@@ -475,6 +475,16 @@ void ContextHubService::UpdateAutoTodo(
   auto_todos_store_->AddOrUpdateItem(std::move(item), std::move(callback));
 }
 
+void ContextHubService::DeleteAutoTodoByTabId(
+    int64_t tab_id,
+    AutoTodosStore::OperationCallback callback) {
+  if (!auto_todos_store_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  auto_todos_store_->DeleteItemByTabId(tab_id, std::move(callback));
+}
+
 void ContextHubService::SetTodoFeedback(
     browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback) {
   if (!feedback) {

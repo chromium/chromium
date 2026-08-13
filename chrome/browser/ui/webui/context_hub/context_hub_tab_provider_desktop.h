@@ -36,6 +36,7 @@ class ContextHubTabProviderDesktop : public ContextHubPageHandler::TabProvider {
   std::vector<content::WebContents*> GetTabs() override;
   std::vector<content::WebContents*> GetUngroupedTabs() override;
   void SwitchToTab(int64_t tab_id) override;
+  void CloseTab(int64_t tab_id) override;
   bool ConfirmTabGroups(
       base::span<const context_hub::TabGroupEntry> groups) override;
   void RemoveGroupFromTabstripIfOpen(const base::Uuid& saved_guid) override;

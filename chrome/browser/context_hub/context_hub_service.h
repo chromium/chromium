@@ -113,6 +113,11 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
   void UpdateAutoTodo(AutoTodoEntry item,
                       AutoTodosStore::OperationCallback callback);
 
+  // Deletes a third-party todo item matching the given tab ID from the
+  // AutoTodos store.
+  void DeleteAutoTodoByTabId(int64_t tab_id,
+                             AutoTodosStore::OperationCallback callback);
+
   // Stores or updates a todo feedback item in the in-memory cache.
   void SetTodoFeedback(
       browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback);

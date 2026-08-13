@@ -55,6 +55,7 @@ class MockTabProvider : public ContextHubPageHandler::TabProvider {
               (),
               (override));
   MOCK_METHOD(void, SwitchToTab, (int64_t), (override));
+  MOCK_METHOD(void, CloseTab, (int64_t), (override));
   MOCK_METHOD(bool,
               ConfirmTabGroups,
               (base::span<const context_hub::TabGroupEntry>),
@@ -901,6 +902,45 @@ TEST_F(ContextHubPageHandlerTest, SwitchToTab) {
   EXPECT_CALL(*mock_tab_provider_, SwitchToTab(42)).Times(1);
 
   handler_->SwitchToTab(42);
+}
+
+TEST_F(ContextHubPageHandlerTest, CloseTab) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  AutoTodoEntry entry;
+  entry.id = "tp_1";
+  entry.title = "Tab Todo";
+  entry.status = AutoTodoEntry::Status::kActive;
+  entry.data = ThirdPartyData{
+      .tab_id = 42,
+      .group_type = ThirdPartyData::GroupType::kNudgeToClose,
+  };
+
+  // Add the auto todo entry to cache.
+  base::test::TestFuture<bool> bool_future;
+  service->UpdateAutoTodo(std::move(entry), bool_future.GetCallback());
+  ASSERT_TRUE(bool_future.Get());
+  mock_page_.Flush();
+
+  EXPECT_CALL(*mock_tab_provider_, CloseTab(42)).Times(1);
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> notify_future;
+  EXPECT_CALL(mock_page_, OnAutoTodosChanged(_))
+      .WillOnce([&notify_future](const std::vector<AutoTodoEntry>& todos) {
+        notify_future.SetValue(todos);
+      });
+
+  handler_->CloseTab(42);
+
+  // Verify that the WebUI is notified with an empty list.
+  auto updated_todos = notify_future.Take();
+  EXPECT_TRUE(updated_todos.empty());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service->GetAutoTodos(get_future.GetCallback());
+  EXPECT_TRUE(get_future.Get().empty());
 }
 
 TEST_F(ContextHubPageHandlerTest, GetTabs_NoTabs) {

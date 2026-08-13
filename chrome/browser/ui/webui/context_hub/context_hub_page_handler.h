@@ -36,6 +36,7 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
     virtual std::vector<content::WebContents*> GetTabs() = 0;
     virtual std::vector<content::WebContents*> GetUngroupedTabs() = 0;
     virtual void SwitchToTab(int64_t tab_id) = 0;
+    virtual void CloseTab(int64_t tab_id) = 0;
     virtual bool ConfirmTabGroups(
         base::span<const context_hub::TabGroupEntry> groups) = 0;
     virtual void RemoveGroupFromTabstripIfOpen(
@@ -84,6 +85,7 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   void GetExistingTabGroupsAndChats(
       GetExistingTabGroupsAndChatsCallback callback) override;
   void SwitchToTab(int64_t tab_id) override;
+  void CloseTab(int64_t tab_id) override;
   void ClearTabGroups(ClearTabGroupsCallback callback) override;
   void ClearTabGroupChatHistory(
       ClearTabGroupChatHistoryCallback callback) override;

@@ -1087,6 +1087,39 @@ TEST_F(ContextHubServiceTest, UpdateAutoTodo) {
   EXPECT_EQ(items[0].status, AutoTodoEntry::Status::kCompleted);
 }
 
+TEST_F(ContextHubServiceTest, DeleteAutoTodoByTabId) {
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  AutoTodoEntry entry;
+  entry.id = "tp_todo_1";
+  entry.title = "Tab Todo";
+  entry.status = AutoTodoEntry::Status::kActive;
+  entry.data = ThirdPartyData{
+      .tab_id = 123,
+      .group_type = ThirdPartyData::GroupType::kNudgeToClose,
+  };
+
+  // Add the auto todo entry to cache.
+  base::test::TestFuture<bool> add_future;
+  service_.UpdateAutoTodo(entry, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get());
+
+  EXPECT_CALL(observer, OnAutoTodosChanged(IsEmpty()));
+
+  // Delete the auto todo entry by tab id.
+  base::test::TestFuture<bool> delete_future;
+  service_.DeleteAutoTodoByTabId(123, delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Get());
+
+  // Verify that the auto todo entry is deleted.
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service_.GetAutoTodos(get_future.GetCallback());
+  EXPECT_TRUE(get_future.Get().empty());
+}
+
 TEST_F(ContextHubServiceTest, GetAutoTodos) {
   base::test::TestFuture<std::vector<AutoTodoEntry>> get_empty_future;
   service_.GetAutoTodos(get_empty_future.GetCallback());
