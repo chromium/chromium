@@ -127,7 +127,7 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                         .tabSuggestions="${this.tabSuggestions}"
                         .recentTabId="${this.recentTabId}"
                         .hasImageFiles="${this.hasImageFiles()}"
-                        .disabledTabIds="${this.addedTabsIds}"
+                        .selectedTabIds="${this.addedTabsIds}"
                         .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
                         .fileNum="${this.files.size}"
                         .sharedTabs="${this.getSharedTabs()}"

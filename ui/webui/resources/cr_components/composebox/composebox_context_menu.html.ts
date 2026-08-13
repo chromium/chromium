@@ -48,7 +48,7 @@ export function getHtml(this: ComposeboxElement) {
         .tabSuggestionsState="${this.tabSuggestionsState}"
         .recentTabId="${this.recentTabId}"
         .hasImageFiles="${this.hasImageFiles()}"
-        .disabledTabIds="${this.addedTabsIds}"
+        .selectedTabIds="${this.addedTabsIds}"
         .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
         .fileNum="${this.files.size}"
         .nonTabFileNum="${this.getNonTabFileNum()}"

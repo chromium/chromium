@@ -85,7 +85,7 @@ suite('ContextualActionMenu', () => {
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
     Object.assign(actionMenu, {
       fileNum: 0,
-      disabledTabIds: new Map(),
+      selectedTabIds: new Map(),
       tabSuggestions: [],
       smartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
@@ -755,7 +755,7 @@ suite('ContextualActionMenu', () => {
     assertEquals('false', tabButton.getAttribute('aria-checked'));
 
     // Check with selection.
-    actionMenu.disabledTabIds = new Map([[tabInfo.tabId, '1']]);
+    actionMenu.selectedTabIds = new Map([[tabInfo.tabId, '1']]);
     await microtasksFinished();
     assertEquals('true', tabButton.getAttribute('aria-checked'));
   });
@@ -1225,7 +1225,7 @@ suite('ContextualActionMenu', () => {
       toolsSectionConfig: {header: ''},
       modelSectionConfig: {header: ''},
     });
-    actionMenu.disabledTabIds = new Map();
+    actionMenu.selectedTabIds = new Map();
     document.body.appendChild(actionMenu);
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -1235,12 +1235,12 @@ suite('ContextualActionMenu', () => {
     assertFalse(shareTabsTrigger.textContent.includes('1'));
 
     // Show tab counter when one tab is chosen.
-    actionMenu.disabledTabIds = new Map([[1, '1']]);
+    actionMenu.selectedTabIds = new Map([[1, '1']]);
     await microtasksFinished();
     assertTrue(!!shareTabsTrigger.querySelector('.share-tabs-arrow'));
 
     // No tab counter when no tab is selected.
-    actionMenu.disabledTabIds = new Map();
+    actionMenu.selectedTabIds = new Map();
     await microtasksFinished();
     assertFalse(shareTabsTrigger.textContent.includes('1'));
   });
@@ -1367,7 +1367,7 @@ suite('ContextualActionMenu', () => {
 
     actionMenu.tabSuggestions = [tab1, tab2, tab3, tab4];
     // Select 2 tabs to reach the limit of 2, so that unselected tabs (2 & 4) are disabled.
-    actionMenu.disabledTabIds = new Map([[1, 'uuid1'], [3, 'uuid3']]);
+    actionMenu.selectedTabIds = new Map([[1, 'uuid1'], [3, 'uuid3']]);
     actionMenu.inputState = new MockInputState({
       allowedInputTypes: [InputType.kBrowserTab],
     });
@@ -1640,7 +1640,7 @@ suite('ContextualActionMenu', () => {
     actionMenu.inputState = new MockInputState({
       allowedInputTypes: [InputType.kBrowserTab],
     });
-    actionMenu.disabledTabIds = new Map([[1, '1']]);
+    actionMenu.selectedTabIds = new Map([[1, '1']]);
     document.body.appendChild(actionMenu);
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
@@ -1760,7 +1760,7 @@ suite('ContextualActionMenu', () => {
         });
         actionMenu.tabSuggestions = [tabInfo1, tabInfo2];
         // Select tab 1.
-        actionMenu.disabledTabIds = new Map([[1, 'uuid-1']]);
+        actionMenu.selectedTabIds = new Map([[1, 'uuid-1']]);
 
         // inputState allows everything and disables nothing.
         actionMenu.inputState = new MockInputState({
@@ -2060,7 +2060,7 @@ suite('ContextualActionMenu', () => {
             document.createElement('cr-composebox-contextual-action-menu');
         Object.assign(actionMenu, {
           metricsSource_: 'NewTabPage',
-          disabledTabIds: new Map([[1, 'some-token']]),
+          selectedTabIds: new Map([[1, 'some-token']]),
           contextManagementInComposeboxEnabled: true,
         });
 
@@ -2100,7 +2100,7 @@ suite('ContextualActionMenu', () => {
             document.createElement('cr-composebox-contextual-action-menu');
         Object.assign(actionMenu, {
           metricsSource_: 'NewTabPage',
-          disabledTabIds: new Map([[1, 'some-token']]),
+          selectedTabIds: new Map([[1, 'some-token']]),
         });
 
         actionMenu.tabSuggestions = [tabInfo];
@@ -2393,8 +2393,8 @@ suite('ContextualActionMenu', () => {
 
   suite('getSelectedTabs_', () => {
     test(
-        'returns empty array when disabled and restored are empty', () => {
-          actionMenu.disabledTabIds = new Map();
+        'returns empty array when selected and restored are empty', () => {
+          actionMenu.selectedTabIds = new Map();
           actionMenu.aimThreadRestoredTabs = [];
           actionMenu.tabSuggestions = [
             createTabSuggestion({
@@ -2408,7 +2408,7 @@ suite('ContextualActionMenu', () => {
 
     test(
         'returns matched tabs in reverse order of' +
-            ' addition to disabled and concatenated with restored',
+            ' addition to selected and concatenated with restored',
         () => {
           const tab1 = createTabSuggestion({
             tabId: 1,
@@ -2427,10 +2427,10 @@ suite('ContextualActionMenu', () => {
 
           actionMenu.contextManagementInComposeboxEnabled = true;
           actionMenu.aimThreadRestoredTabs = [tab1];
-          const disabledTabIds = new Map();
-          disabledTabIds.set(2, 'token2');
-          disabledTabIds.set(3, 'token3');
-          actionMenu.disabledTabIds = disabledTabIds;
+          const selectedTabIds = new Map();
+          selectedTabIds.set(2, 'token2');
+          selectedTabIds.set(3, 'token3');
+          actionMenu.selectedTabIds = selectedTabIds;
 
           const selectedTabs = asInternal(actionMenu).getSelectedTabs_();
           assertEquals(3, selectedTabs.length);
@@ -2450,10 +2450,10 @@ suite('ContextualActionMenu', () => {
       actionMenu.tabSuggestions = [tab1];
 
       actionMenu.aimThreadRestoredTabs = [];
-      const disabledTabIds = new Map();
-      disabledTabIds.set(1, 'token1');
-      disabledTabIds.set(5, 'token5');
-      actionMenu.disabledTabIds = disabledTabIds;
+      const selectedTabIds = new Map();
+      selectedTabIds.set(1, 'token1');
+      selectedTabIds.set(5, 'token5');
+      actionMenu.selectedTabIds = selectedTabIds;
 
       const selectedTabs = asInternal(actionMenu).getSelectedTabs_();
       // Tab 5 is filtered out because it is not found in tabSuggestions.

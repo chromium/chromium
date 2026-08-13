@@ -41,7 +41,7 @@ export function getHtml(this: NtpComposeboxElement) {
       .searchboxLayoutMode="${this.searchboxLayoutMode}"
       .tabSuggestions="${this.tabSuggestions}"
       .hasImageFiles="${this.hasImageFiles()}"
-      .disabledTabIds="${this.addedTabsIds}"
+      .selectedTabIds="${this.addedTabsIds}"
       .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
       .fileNum="${this.files.size}"
       .sharedTabs="${this.getSharedTabs()}"

@@ -109,7 +109,7 @@ export class ContextualActionMenuElement extends
     return {
       fileNum: {type: Number},
       nonTabFileNum: {type: Number},
-      disabledTabIds: {type: Object},
+      selectedTabIds: {type: Object},
       aimThreadRestoredTabs: {type: Array},
       tabSuggestions: {type: Array},
       inputState: {type: Object},
@@ -149,7 +149,7 @@ export class ContextualActionMenuElement extends
   accessor recentTabId: number|null = null;
   accessor fileNum: number = 0;
   accessor nonTabFileNum: number = 0;
-  accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
+  accessor selectedTabIds: Map<number, UnguessableToken> = new Map();
   accessor aimThreadRestoredTabs: TabInfo[] = [];
   accessor tabSuggestions: TabInfo[] = [];
   accessor inputState: InputState|null = null;
@@ -270,9 +270,9 @@ export class ContextualActionMenuElement extends
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (!this.closeMenuOnSelect && changedProperties.has('disabledTabIds') &&
+    if (!this.closeMenuOnSelect && changedProperties.has('selectedTabIds') &&
         this.pendingTabAddId_ !== null) {
-      if (this.disabledTabIds.has(this.pendingTabAddId_)) {
+      if (this.selectedTabIds.has(this.pendingTabAddId_)) {
         // Tab was added. Start the timer now to ignore pointerleave.
         this.firstTabBeingAdded_ = true;
         WindowProxy.getInstance().setTimeout(() => {
@@ -290,7 +290,7 @@ export class ContextualActionMenuElement extends
     super.updated(changedProperties);
 
     if (this.contextManagementInComposeboxEnabled) {
-      if (changedProperties.has('disabledTabIds') ||
+      if (changedProperties.has('selectedTabIds') ||
           changedProperties.has('aimThreadRestoredTabs')) {
         this.updateSharingTabsText_();
       }
@@ -589,7 +589,7 @@ export class ContextualActionMenuElement extends
     const restoredCount = (this.aimThreadRestoredTabs?.length > 0) ?
         this.aimThreadRestoredTabs.length :
         0;
-    const totalTabs = this.disabledTabIds.size + restoredCount;
+    const totalTabs = this.selectedTabIds.size + restoredCount;
     if (!this.contextManagementInComposeboxEnabled || totalTabs === 0) {
       this.sharingTabsText_ = this.i18n('shareTabs');
       return;
@@ -658,7 +658,7 @@ export class ContextualActionMenuElement extends
           }
           return restoredTab.tabId === tabId;
         });
-    return this.disabledTabIds.has(tabId) || isAimThreadRestored;
+    return this.selectedTabIds.has(tabId) || isAimThreadRestored;
   }
 
   protected getSubmittedTabIds_(): Set<number> {
@@ -787,7 +787,7 @@ export class ContextualActionMenuElement extends
     }
 
     // Tabs selected in the current turn must remain enabled for deselection.
-    const isCurrentlySelected = this.disabledTabIds.has(tab.tabId);
+    const isCurrentlySelected = this.selectedTabIds.has(tab.tabId);
     if (isCurrentlySelected) {
       return false;
     }
@@ -801,7 +801,7 @@ export class ContextualActionMenuElement extends
       if (this.inputState && this.inputState.maxTotalInputs > 0) {
         maxTotal = this.inputState.maxTotalInputs;
       }
-      const totalSelected = this.nonTabFileNum + this.disabledTabIds.size +
+      const totalSelected = this.nonTabFileNum + this.selectedTabIds.size +
           (this.contextManagementInComposeboxEnabled ?
                (this.aimThreadRestoredTabs || []).length :
                0);
@@ -813,13 +813,13 @@ export class ContextualActionMenuElement extends
   }
 
   protected getSelectedTabs_(): TabInfo[] {
-    // Get the selected tab IDs from the `disabledTabIds` map and
+    // Get the selected tab IDs from the `selectedTabIds` map and
     // `aimThreadRestoredTabs`. Because of how maps work in JS, the order when
     // converting to an array is least recently added to most recently added.
     const suggestionsMap =
         new Map(this.tabSuggestions.map(tab => [tab.tabId, tab]));
     const allSelectedIds = [
-      ...this.disabledTabIds.keys(),
+      ...this.selectedTabIds.keys(),
     ];
 
     // Get selected tabs in the order they were added. But because the selected

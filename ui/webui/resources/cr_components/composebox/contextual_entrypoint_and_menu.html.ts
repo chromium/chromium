@@ -30,7 +30,7 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
         .fileNum="${this.fileNum}"
         .nonTabFileNum="${this.nonTabFileNum}"
         .isSidePanel="${this.isSidePanel}"
-        .disabledTabIds="${this.disabledTabIds}"
+        .selectedTabIds="${this.selectedTabIds}"
         .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
         .tabSuggestions="${this.tabSuggestions}"
         .recentTabId="${this.recentTabId}"
