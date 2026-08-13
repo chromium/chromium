@@ -424,6 +424,21 @@ class OmniboxAimWebUiInteractiveTestBase
         InAnyContext(WaitForAimSubmitEnabled(kAimPopupWebView)));
   }
 
+  auto WaitForAimPopupTallLayoutSettled() {
+    return Steps(
+        InAnyContext(
+            PollView(kAimPopupHeightState,
+                     OmniboxPopupPresenterBase::kRoundedResultsFrame,
+                     [](const views::View* view) { return view->height(); })),
+        WaitForState(kAimPopupHeightState, testing::Optional(testing::Gt(170))),
+        StopObservingState(kAimPopupHeightState));
+  }
+
+  auto ClickAimSubmit(const ui::ElementIdentifier& contents_id) {
+    return InAnyContext(ExecuteJsAt(contents_id, kAimSubmit, "el => el.click()")
+                            .SetMustRemainVisible(false));
+  }
+
   auto RemoveFocusFromPopup() {
     return Steps(InAnyContext(MoveMouseTo(kToolbarAppMenuButtonElementId)),
                  InSameContext(ClickMouse()),
@@ -489,7 +504,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       CheckJsResult(kAimPopupWebView, "() => document.hasFocus()", true),
       // Trigger a search.
       InputAimPopupText("foo"),
-      InSameContext(ClickElement(kAimPopupWebView, kAimSubmit)),
+      // Wait for the UI to settle.
+      WaitForAimPopupTallLayoutSettled(),
+      // Click Submit.
+      ClickAimSubmit(kAimPopupWebView),
       WaitForGoogleSearch(kNewTab, {{"q", "foo"}}),
       // Verify tab has focus and not the location bar.
       CheckJsResult(kNewTab, "() => document.hasFocus()", true),
@@ -637,17 +655,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       InSameContext(WaitForStateChange(kAimPopupWebView,
                                        submit_visible_and_layout_settled)),
       // Wait for the native view to resize.
-      InAnyContext(PollView(
-          kAimPopupHeightState, OmniboxPopupPresenterBase::kRoundedResultsFrame,
-          [](const views::View* view) { return view->height(); })),
-      WaitForState(kAimPopupHeightState, testing::Optional(testing::Gt(170))),
-      StopObservingState(kAimPopupHeightState),
+      WaitForAimPopupTallLayoutSettled(),
       InAnyContext(Screenshot(kAimPopupWebView, "AimPopupQueryWithTabContext",
                               "7751707")),
-      // Use JS click to avoid flakiness with simulated mouse clicks on Mac
-      // and focus issues on Windows/Linux when sending keys to the Omnibox.
-      InAnyContext(ExecuteJsAt(kAimPopupWebView, kAimSubmit, "el => el.click()")
-                       .SetMustRemainVisible(false)),
+      ClickAimSubmit(kAimPopupWebView),
 
       // 7. Verify navigation to Google Search with the query.
       WaitForGoogleSearch(kNewTab, {{"q", "foo"}}));
