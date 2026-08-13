@@ -39,6 +39,15 @@ private static let mojoPrefix = "{{module.namespace}}."
 {% include "enumerations.tmpl" %}
 {%- endif %}
 
+{%- if unions %}
+
+///
+/// Unions
+///
+{% include "unions.tmpl" %}
+
+{%- endif %}
+
 ///
 /// Generators
 ///

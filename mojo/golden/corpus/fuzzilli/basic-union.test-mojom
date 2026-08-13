@@ -1,0 +1,22 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module golden;
+
+interface Primary {
+  UseUnion(SimpleUnion param);
+  GetUnion(bool flag) => (SimpleUnion result);
+
+  [Sync]
+  SyncGetUnion(bool flag) => (SimpleUnion result);
+};
+
+union SimpleUnion {
+  array<int64> arr;
+  Token token;
+  bool flag;
+};
+
+struct Token {
+  uint8 data;
+};

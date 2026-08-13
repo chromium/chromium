@@ -16,8 +16,15 @@ struct LargeStruct {
   string value;
   SimpleStruct residence;
   bool valid;
+  SimpleUnion data;
 };
 
 struct SimpleStruct {
   string field;
+};
+
+union SimpleUnion {
+  array<int64> arr;
+  int16 val;
+  bool flag;
 };

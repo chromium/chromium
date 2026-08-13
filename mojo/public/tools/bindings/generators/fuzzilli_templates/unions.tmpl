@@ -1,0 +1,20 @@
+extension ILType {
+{%- for union in unions %}
+    fileprivate static let {{union|format_il_type}}: ILType =
+        OptionsBag.{{union|format_unique_name|to_camel(True)}}.group.instanceType
+{%- endfor %}
+}
+
+extension OptionsBag {
+{%- for union in unions %}
+    fileprivate static let {{union|format_unique_name|to_camel(True)}} = OptionsBag(
+        name: "{{union|fully_qualified_name}}",
+        properties: [
+        {%- for field in union.fields %}
+            "{{field.name}}": .{{field.kind|format_il_type}},
+        {%- endfor %}
+        ],
+        selectionMode: .exactlyOne,
+    )
+{%- endfor %}
+}

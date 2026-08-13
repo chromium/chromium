@@ -55,6 +55,7 @@ class Generator(generator.Generator):
     self.interface_receivers = {}
     self.arrays = {}
     self.enums = {}
+    self.unions = {}
     self.structs = {}
     self.response_structs = {}  # structs representing methods' return values
 
@@ -86,6 +87,7 @@ class Generator(generator.Generator):
         "interface_receivers": list(self.interface_receivers.values()),
         "arrays": list(self.arrays.values()),
         "enums": list(self.enums.values()),
+        "unions": list(self.unions.values()),
         "structs": list(self.structs.values()),
         "response_structs": list(self.response_structs.values()),
     }
@@ -107,6 +109,8 @@ class Generator(generator.Generator):
       self._CollectArray(kind, is_in_js)
     elif mojom.IsAnyInterfaceKind(kind):
       self._CollectInterface(kind, is_in_js)
+    elif mojom.IsUnionKind(kind):
+      self._CollectUnion(kind, is_in_js)
 
   def _CollectStruct(self, struct, is_in_js):
     name = self._FormatUniqueName(struct)
@@ -126,6 +130,14 @@ class Generator(generator.Generator):
   def _CollectEnum(self, enum):
     name = self._FormatUniqueName(enum)
     self.enums[name] = enum
+
+  def _CollectUnion(self, union, is_in_js):
+    name = self._FormatUniqueName(union)
+    if name in self.unions:
+      return
+    self.unions[name] = union
+    for field in union.fields:
+      self._CollectInterfaceAndTypes(field.kind, is_in_js)
 
   # Marks the interface as a remote or receiver depending on which "side"
   # (JS or browser) the interface is used from. The `is_in_js` parameter
@@ -208,7 +220,8 @@ class Generator(generator.Generator):
         kind):
       return f"{prefix}{self._FlattenKind(kind.kind)}"
 
-    if mojom.IsStructKind(kind) or mojom.IsEnumKind(kind):
+    if mojom.IsStructKind(kind) or mojom.IsEnumKind(kind) or mojom.IsUnionKind(
+        kind):
       return f"{prefix}{self._FlattenKind(kind)}"
 
     if mojom.IsInterfaceKind(kind):
@@ -230,7 +243,8 @@ class Generator(generator.Generator):
         return f"js{generator.ToCamel(name)}Element"
       return name
 
-    if mojom.IsStructKind(kind) or mojom.IsEnumKind(kind):
+    if mojom.IsStructKind(kind) or mojom.IsEnumKind(kind) or mojom.IsUnionKind(
+        kind):
       return f"js{self._FormatUniqueName(kind)}"
 
     if mojom.IsArrayKind(kind):
