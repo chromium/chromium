@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -169,8 +170,7 @@ std::vector<int64_t> TabMatcherAndroid::GetOpenAndroidTabs(
   }
 
   CHECK(input);
-  if (input->current_page_classification() ==
-          metrics::OmniboxEventProto_PageClassification_ANDROID_HUB &&
+  if (omnibox::IsAndroidHubOrTabSearch(input->current_page_classification()) &&
       profile_->IsRegularProfile()) {
     TabModel* archived_tab_model = TabModelList::GetArchivedTabModel();
     if (archived_tab_model) {
