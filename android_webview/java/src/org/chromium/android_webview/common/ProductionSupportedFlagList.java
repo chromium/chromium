@@ -225,6 +225,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.WEBVIEW_ACCELERATE_SMALL_CANVASES,
                 "Accelerate all canvases in webview."),
+        Flag.baseFeature("RustyJpegFeature", "Enables Rust-based JPEG image decoding."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES,
                 "Enables autoupgrades for audio/video/image mixed content when mixed content "

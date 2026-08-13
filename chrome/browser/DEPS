@@ -497,6 +497,7 @@ include_rules = [
   "+services/viz/public",
   "+services/viz/privileged",
   "+skia/ext",
+  "+skia/rusty_jpeg_feature.h",
   "+third_party/boringssl/src/include",
   "+third_party/content_analysis_sdk",
   "+third_party/crashpad",

@@ -9,6 +9,9 @@
 #include <optional>
 
 #include "base/notreached.h"
+#include "skia/rusty_jpeg_feature.h"
+#include "third_party/skia/experimental/rust_jpeg/decoder/SkJpegRustDecoder.h"
+#include "third_party/skia/experimental/rust_jpeg/encoder/SkJpegRustEncoder.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -18,6 +21,18 @@
 namespace gfx {
 
 // Encoder ---------------------------------------------------------------------
+
+namespace {
+
+bool RustEncoderSupportsOptions(const SkJpegEncoder::Options& options) {
+  // jpeg-encoder uses 4:2:0 below quality 90 and 4:4:4 otherwise. Fall back
+  // until SkJpegRustEncoder supports selecting the sampling factor explicitly.
+  return options.fQuality < 90
+             ? options.fDownsample == SkJpegEncoder::Downsample::k420
+             : options.fDownsample == SkJpegEncoder::Downsample::k444;
+}
+
+}  // namespace
 
 std::optional<std::vector<uint8_t>> JPEGCodec::Encode(
     const SkPixmap& input,
@@ -34,7 +49,11 @@ std::optional<std::vector<uint8_t>> JPEGCodec::Encode(
     options.xmpMetadata = xmp_metadata;
   }
 
-  if (!SkJpegEncoder::Encode(&dst, input, options)) {
+  if (skia::IsRustyJpegEnabled() && RustEncoderSupportsOptions(options)) {
+    if (!SkJpegRustEncoder::Encode(&dst, input, options)) {
+      return std::nullopt;
+    }
+  } else if (!SkJpegEncoder::Encode(&dst, input, options)) {
     return std::nullopt;
   }
 
@@ -79,7 +98,11 @@ std::optional<PreparationOutput> PrepareForJPEGDecode(
   auto stream = std::make_unique<SkMemoryStream>(input.data(), input.size(),
                                                  /*copyData=*/false);
   SkCodec::Result result;
-  output.codec = SkJpegDecoder::Decode(std::move(stream), &result);
+  if (skia::IsRustyJpegEnabled()) {
+    output.codec = SkJpegRustDecoder::Decode(std::move(stream), &result);
+  } else {
+    output.codec = SkJpegDecoder::Decode(std::move(stream), &result);
+  }
   if (!output.codec || result != SkCodec::kSuccess) {
     return std::nullopt;
   }

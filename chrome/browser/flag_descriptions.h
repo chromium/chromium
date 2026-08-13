@@ -4306,6 +4306,10 @@ inline constexpr char kRustyIcoName[] = "Rust-based ICO image handling";
 inline constexpr char kRustyIcoDescription[] =
     "When enabled, uses Rust `image` crate to decode ICO images.";
 
+inline constexpr char kRustyJpegName[] = "Rust-based JPEG image handling";
+inline constexpr char kRustyJpegDescription[] =
+    "When enabled, uses Rust crates to decode and encode JPEG images.";
+
 inline constexpr char kQuicName[] = "Experimental QUIC protocol";
 inline constexpr char kQuicDescription[] =
     "Enable experimental QUIC protocol support.";

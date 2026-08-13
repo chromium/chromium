@@ -261,6 +261,7 @@ component("skia") {
     "ext/skia_memory_dump_provider.h",
     "ext/skia_trace_memory_dump_impl.h",
     "ext/skia_utils_base.h",
+    "rusty_jpeg_feature.h",
   ]
   sources = [
     # Chrome sources.
@@ -292,6 +293,7 @@ component("skia") {
     "ext/skia_memory_dump_provider.cc",
     "ext/skia_trace_memory_dump_impl.cc",
     "ext/skia_utils_base.cc",
+    "rusty_jpeg_feature.cc",
   ]
   if (is_ios) {
     public += [ "ext/skia_utils_ios.h" ]
@@ -508,6 +510,7 @@ component("skia") {
     ":rust_exif_ffi",
     ":rust_icc_ffi",
     ":rust_ico_ffi",
+    ":rust_jpeg_ffi",
     ":skia_core_and_effects",
     ":skia_core_public_headers",
   ]
@@ -785,6 +788,53 @@ source_set("rust_ico_ffi_cpp") {
     ":rust_ico_ffi_cxx_generated_gen",
     ":rust_png_ffi",
   ]
+  check_includes =
+      false  # Logically part of skia, but split out for build reasons
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":skia_config",
+    ":skia_library_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
+}
+
+rust_static_library("rust_jpeg_ffi") {
+  visibility = [ ":*" ]
+  allow_unsafe = true  # For FFI
+  crate_root = skia_codec_rust_jpeg_ffi_crate_root
+  sources = skia_codec_rust_jpeg_ffi_rs_srcs
+  cxx_bindings = skia_codec_rust_jpeg_ffi_cxx_bridge_srcs
+  public_deps = [ ":rust_jpeg_ffi_cpp" ]
+  deps = [
+    ":rust_common_ffi",
+    "//third_party/rust/jpeg_encoder/v0_7:lib",
+    "//third_party/rust/zune_core/v0_5:lib",
+    "//third_party/rust/zune_jpeg/v0_5:lib",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":skia_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
+  no_clippy = true  # TODO(https://crbug.com/472355480)
+}
+
+source_set("rust_jpeg_ffi_cpp") {
+  visibility = [
+    ":*",
+    "//third_party/blink/renderer/platform/image-decoders:*",
+    "//ui/gfx/codec:*",
+  ]
+  public = skia_codec_rust_jpeg_public
+  public += skia_encode_rust_jpeg_public
+  sources = skia_codec_rust_jpeg
+  sources += skia_encode_rust_jpeg_srcs
+  public_deps = [
+    ":rust_common_ffi_cpp",
+    ":skia_core_public_headers",
+    "//build/rust:cxx_cppdeps",
+  ]
+  deps = [ ":rust_jpeg_ffi_cxx_generated_gen" ]
   check_includes =
       false  # Logically part of skia, but split out for build reasons
   configs -= [ "//build/config/compiler:chromium_code" ]

@@ -8,11 +8,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
+#include <utility>
+
 #include "base/barrier_closure.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "skia/rusty_jpeg_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gfx {
@@ -158,6 +163,21 @@ std::vector<uint8_t> MakeRGBAImage(int w, int h) {
   return result;
 }
 
+std::optional<uint8_t> GetLumaSamplingFactor(base::span<const uint8_t> jpeg) {
+  // A baseline SOF segment starts with FF C0, followed by its length, sample
+  // precision, dimensions, component count, then the first component's ID and
+  // sampling-factor byte.
+  constexpr uint8_t kMarkerPrefix = 0xFF;
+  constexpr uint8_t kStartOfFrameBaseline = 0xC0;
+  constexpr size_t kLumaSamplingFactorOffset = 11;
+  for (size_t i = 0; i + kLumaSamplingFactorOffset < jpeg.size(); ++i) {
+    if (jpeg[i] == kMarkerPrefix && jpeg[i + 1] == kStartOfFrameBaseline) {
+      return jpeg[i + kLumaSamplingFactorOffset];
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 TEST(JPEGCodec, EncodeDecodeRGBA) {
@@ -190,6 +210,55 @@ TEST(JPEGCodec, EncodeDecodeRGBA) {
   // Images must be approximately equal (compression will have introduced some
   // minor artifacts).
   ASSERT_GE(kJpegEqualityThreshold, AveragePixelDelta(original, decoded));
+}
+
+TEST(JPEGCodec, EncodeDecodeRGBAWithRustJpegFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(skia::kRustyJpegFeature);
+
+  constexpr int kWidth = 20;
+  constexpr int kHeight = 20;
+
+  std::vector<uint8_t> original = MakeRGBAImage(kWidth, kHeight);
+
+  SkImageInfo info = SkImageInfo::Make(kWidth, kHeight, kRGBA_8888_SkColorType,
+                                       kOpaque_SkAlphaType);
+  SkPixmap src(info, original.data(), kWidth * 4);
+  std::optional<std::vector<uint8_t>> encoded =
+      JPEGCodec::Encode(src, kJpegQuality, SkJpegEncoder::Downsample::k444);
+  ASSERT_TRUE(encoded);
+  EXPECT_GT(original.size(), encoded->size());
+
+  std::vector<uint8_t> decoded;
+  int outw, outh;
+  EXPECT_TRUE(JPEGCodec::Decode(encoded->data(), encoded->size(),
+                                kRGBA_8888_SkColorType, &decoded, &outw,
+                                &outh));
+  ASSERT_EQ(kWidth, outw);
+  ASSERT_EQ(kHeight, outh);
+  ASSERT_EQ(original.size(), decoded.size());
+
+  ASSERT_GE(kJpegEqualityThreshold, AveragePixelDelta(original, decoded));
+}
+
+TEST(JPEGCodec, EncodeHonorsDownsampleWithRustFeature) {
+  base::test::ScopedFeatureList scoped_feature_list(skia::kRustyJpegFeature);
+  constexpr int kWidth = 20;
+  constexpr int kHeight = 20;
+  std::vector<uint8_t> pixels = MakeRGBAImage(kWidth, kHeight);
+  SkImageInfo info = SkImageInfo::Make(kWidth, kHeight, kRGBA_8888_SkColorType,
+                                       kOpaque_SkAlphaType);
+  SkPixmap src(info, pixels.data(), kWidth * 4);
+
+  for (const auto [downsample, expected_sampling] : {
+           std::pair{SkJpegEncoder::Downsample::k420, uint8_t{0x22}},
+           std::pair{SkJpegEncoder::Downsample::k422, uint8_t{0x21}},
+           std::pair{SkJpegEncoder::Downsample::k444, uint8_t{0x11}},
+       }) {
+    std::optional<std::vector<uint8_t>> encoded =
+        JPEGCodec::Encode(src, kJpegQuality, downsample);
+    ASSERT_TRUE(encoded);
+    EXPECT_EQ(expected_sampling, GetLumaSamplingFactor(*encoded));
+  }
 }
 
 // Test that corrupted data decompression causes failures.

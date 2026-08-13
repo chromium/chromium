@@ -4,22 +4,30 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 
+#include <algorithm>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
+#include "skia/rusty_jpeg_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
+#include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_decoder_factory.h"
+#include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_rust_image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "ui/base/test/skia_gold_matching_algorithm.h"  // nogncheck
@@ -40,6 +48,89 @@ std::unique_ptr<JPEGImageDecoder> CreateJPEGDecoder(size_t max_decoded_bytes) {
 
 std::unique_ptr<ImageDecoder> CreateJPEGDecoder() {
   return CreateJPEGDecoder(ImageDecoder::kNoDecodedImageByteLimit);
+}
+
+std::unique_ptr<ImageDecoder> CreateCppJPEGDecoder() {
+  return std::make_unique<JPEGImageDecoder>(
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+      cc::AuxImage::kDefault, ImageDecoder::kNoDecodedImageByteLimit);
+}
+
+std::unique_ptr<ImageDecoder> CreateRustJPEGDecoder() {
+  return std::make_unique<JpegRustImageDecoder>(
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+      ImageDecoder::kNoDecodedImageByteLimit);
+}
+
+std::unique_ptr<ImageDecoder> CreateFactoryJPEGDecoder() {
+  return CreateJpegImageDecoder(
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+      cc::AuxImage::kDefault, ImageDecoder::kNoDecodedImageByteLimit);
+}
+
+enum class JPEGExpectedDifference {
+  kNone,
+  kSizeAvailability,
+  kDecodeFailure,
+};
+
+struct JPEGComparisonTestCase {
+  const char* path;
+  JPEGExpectedDifference expected_difference;
+  int max_channel_delta;
+  double average_channel_delta;
+  const char* description;
+};
+
+std::string JPEGComparisonTestName(
+    const testing::TestParamInfo<JPEGComparisonTestCase>& info) {
+  std::string name = info.param.path;
+  constexpr char kImagePrefix[] = "/images/";
+  if (base::StartsWith(name, kImagePrefix)) {
+    name.erase(0, std::size(kImagePrefix) - 1);
+  }
+  if (base::EndsWith(name, ".jpg")) {
+    name.erase(name.size() - 4);
+  }
+  // Parameterized test names may only contain alphanumeric characters or '_'.
+  std::ranges::replace_if(
+      name, std::not_fn([](char c) { return IsAsciiAlphanumeric(c); }), '_');
+  return name;
+}
+
+JPEGComparisonTestCase NoDifference(const char* path) {
+  return JPEGComparisonTestCase{path, JPEGExpectedDifference::kNone, 2, 1.0,
+                                nullptr};
+}
+
+JPEGComparisonTestCase SmallPixelDifference(const char* path,
+                                            int max_channel_delta,
+                                            const char* description) {
+  return JPEGComparisonTestCase{path, JPEGExpectedDifference::kNone,
+                                max_channel_delta, 1.0, description};
+}
+
+JPEGComparisonTestCase SizeAvailabilityDifference(const char* path,
+                                                  const char* description) {
+  return JPEGComparisonTestCase{path, JPEGExpectedDifference::kSizeAvailability,
+                                0, 0, description};
+}
+
+JPEGComparisonTestCase DecodeFailureDifference(const char* path,
+                                               const char* description) {
+  return JPEGComparisonTestCase{path, JPEGExpectedDifference::kDecodeFailure, 0,
+                                0, description};
+}
+
+JPEGComparisonTestCase ArithmeticDecodeDifference(const char* path) {
+  return DecodeFailureDifference(
+      path,
+      "The libjpeg-turbo build omits arithmetic decoding while zune-jpeg "
+      "decodes this image.");
+}
+
+int ChannelDelta(uint8_t a, uint8_t b) {
+  return std::abs(static_cast<int>(a) - static_cast<int>(b));
 }
 
 void Downsample(size_t max_decoded_bytes,
@@ -125,6 +216,23 @@ TEST(JPEGImageDecoderTest, tooBig) {
   std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder(100);
   EXPECT_FALSE(decoder->SetSize(10000u, 10000u));
   EXPECT_TRUE(decoder->Failed());
+}
+
+TEST(JPEGImageDecoderTest, RustFeaturePreservesDecodedMemoryBudget) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer("/images/resources/gracehopper.jpg");
+  ASSERT_TRUE(data);
+
+  auto decoder = CreateJpegImageDecoder(ImageDecoder::kAlphaNotPremultiplied,
+                                        ColorBehavior::kTransformToSRGB,
+                                        cc::AuxImage::kDefault, 40 * 40 * 4);
+  decoder->SetData(data.get(), true);
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(gfx::Size(32, 32), decoder->DecodedSize());
+  EXPECT_FALSE(decoder->Failed());
 }
 
 // Tests that the JPEG decoder can downsample image whose width and height are
@@ -239,11 +347,390 @@ TEST(JPEGImageDecoderTest, byteByByteProgressiveJPEG) {
                        1u, kAnimationNone);
 }
 
+TEST(JPEGImageDecoderTest, byteByByteProgressiveJPEGWithRustEnabled) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  TestByteByByteDecode(&CreateFactoryJPEGDecoder,
+                       "/images/resources/bug106024.jpg", 1u, kAnimationNone);
+}
+
 TEST(JPEGImageDecoderTest, byteByByteRGBJPEGWithAdobeMarkers) {
   TestByteByByteDecode(&CreateJPEGDecoder,
                        "/images/resources/rgb-jpeg-with-adobe-marker-only.jpg",
                        1u, kAnimationNone);
 }
+
+class JPEGDecoderComparisonTest
+    : public testing::TestWithParam<JPEGComparisonTestCase> {};
+
+TEST_P(JPEGDecoderComparisonTest, CompareDecoders) {
+  const JPEGComparisonTestCase& test_case = GetParam();
+  const char* jpeg_path = test_case.path;
+  if (test_case.description) {
+    SCOPED_TRACE(test_case.description);
+  }
+
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(jpeg_path);
+  ASSERT_NE(data.get(), nullptr) << "Unable to load: " << jpeg_path;
+  ASSERT_FALSE(data->empty());
+
+  std::unique_ptr<ImageDecoder> cpp_decoder = CreateCppJPEGDecoder();
+  std::unique_ptr<ImageDecoder> rust_decoder = CreateRustJPEGDecoder();
+
+  cpp_decoder->SetData(data.get(), true);
+  rust_decoder->SetData(data.get(), true);
+
+  bool cpp_size_available = cpp_decoder->IsSizeAvailable();
+  bool rust_size_available = rust_decoder->IsSizeAvailable();
+  if (test_case.expected_difference ==
+      JPEGExpectedDifference::kSizeAvailability) {
+    EXPECT_NE(cpp_size_available, rust_size_available)
+        << jpeg_path << ": expected IsSizeAvailable difference";
+    return;
+  }
+  EXPECT_EQ(cpp_size_available, rust_size_available)
+      << jpeg_path << ": IsSizeAvailable mismatch"
+      << " (JPEGImageDecoder: " << cpp_size_available
+      << ", JpegRustImageDecoder: " << rust_size_available << ")";
+  if (!cpp_size_available || !rust_size_available) {
+    return;
+  }
+
+  EXPECT_EQ(cpp_decoder->Size().width(), rust_decoder->Size().width())
+      << jpeg_path << ": Width mismatch";
+  EXPECT_EQ(cpp_decoder->Size().height(), rust_decoder->Size().height())
+      << jpeg_path << ": Height mismatch";
+
+  ImageFrame* cpp_frame = cpp_decoder->DecodeFrameBufferAtIndex(0);
+  ImageFrame* rust_frame = rust_decoder->DecodeFrameBufferAtIndex(0);
+
+  bool cpp_failed = cpp_decoder->Failed();
+  bool rust_failed = rust_decoder->Failed();
+  if (test_case.expected_difference == JPEGExpectedDifference::kDecodeFailure) {
+    EXPECT_NE(cpp_failed, rust_failed)
+        << jpeg_path << ": expected decode failure-state difference";
+    return;
+  }
+  EXPECT_EQ(cpp_failed, rust_failed)
+      << jpeg_path << ": Failed state mismatch after decode"
+      << " (JPEGImageDecoder: " << cpp_failed
+      << ", JpegRustImageDecoder: " << rust_failed << ")";
+  if (cpp_failed || rust_failed) {
+    return;
+  }
+
+  if (!cpp_frame || !rust_frame) {
+    EXPECT_EQ(cpp_frame == nullptr, rust_frame == nullptr)
+        << jpeg_path << ": Frame null mismatch";
+    return;
+  }
+
+  EXPECT_EQ(cpp_frame->GetStatus(), rust_frame->GetStatus())
+      << jpeg_path << ": Frame status mismatch";
+  if (cpp_frame->GetStatus() != ImageFrame::kFrameComplete ||
+      rust_frame->GetStatus() != ImageFrame::kFrameComplete) {
+    return;
+  }
+
+  const SkBitmap& cpp_bitmap = cpp_frame->Bitmap();
+  const SkBitmap& rust_bitmap = rust_frame->Bitmap();
+
+  EXPECT_EQ(cpp_bitmap.width(), rust_bitmap.width())
+      << jpeg_path << ": Bitmap width mismatch";
+  EXPECT_EQ(cpp_bitmap.height(), rust_bitmap.height())
+      << jpeg_path << ": Bitmap height mismatch";
+  ASSERT_EQ(cpp_bitmap.width(), rust_bitmap.width());
+  ASSERT_EQ(cpp_bitmap.height(), rust_bitmap.height());
+
+  uint64_t total_channel_delta = 0;
+  int max_channel_delta = 0;
+  for (int y = 0; y < cpp_bitmap.height(); ++y) {
+    for (int x = 0; x < cpp_bitmap.width(); ++x) {
+      SkColor cpp_color = cpp_bitmap.getColor(x, y);
+      SkColor rust_color = rust_bitmap.getColor(x, y);
+      int channel_deltas[] = {
+          ChannelDelta(SkColorGetA(cpp_color), SkColorGetA(rust_color)),
+          ChannelDelta(SkColorGetR(cpp_color), SkColorGetR(rust_color)),
+          ChannelDelta(SkColorGetG(cpp_color), SkColorGetG(rust_color)),
+          ChannelDelta(SkColorGetB(cpp_color), SkColorGetB(rust_color))};
+      for (int channel_delta : channel_deltas) {
+        total_channel_delta += channel_delta;
+        max_channel_delta = std::max(max_channel_delta, channel_delta);
+      }
+    }
+  }
+
+  const double average_channel_delta =
+      static_cast<double>(total_channel_delta) /
+      (cpp_bitmap.width() * cpp_bitmap.height() * 4);
+  EXPECT_LE(max_channel_delta, test_case.max_channel_delta)
+      << jpeg_path << ": maximum channel delta exceeds tolerance";
+  EXPECT_LE(average_channel_delta, test_case.average_channel_delta)
+      << jpeg_path << ": average channel delta exceeds tolerance";
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    JPEGComparison,
+    JPEGDecoderComparisonTest,
+    testing::Values(
+        NoDifference("/images/jpeg-suite/baseline/16x16x8_grayscale.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/1x1x8_grayscale.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/32x32x8_cmyk.jpg"),
+        NoDifference(
+            "/images/jpeg-suite/baseline/32x32x8_cmyk_interleaved.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/32x32x8_comment.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/32x32x8_comments.jpg"),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/baseline/32x32x8_dnl.jpg",
+            "DNL (Define Number of Lines) changes size discovery behavior: "
+            "libjpeg-turbo/Blink does not expose size up front here, while "
+            "zune-jpeg accepts the header."),
+        NoDifference("/images/jpeg-suite/baseline/32x32x8_grayscale.jpg"),
+        NoDifference(
+            "/images/jpeg-suite/baseline/32x32x8_grayscale_quantization.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/32x32x8_restarts.jpg"),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/baseline/32x32x8_rgb.jpg",
+            "RGB JPEG colorspace: libjpeg-turbo decodes this suite input, but "
+            "zune-jpeg currently reports a decode failure."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/baseline/32x32x8_rgb_interleaved.jpg",
+            "Interleaved RGB JPEG colorspace: libjpeg-turbo decodes this suite "
+            "input, but zune-jpeg currently reports a decode failure."),
+        NoDifference("/images/jpeg-suite/baseline/32x32x8_ycbcr.jpg"),
+        SmallPixelDifference(
+            "/images/jpeg-suite/baseline/32x32x8_ycbcr_2x2_1x1_1x1.jpg",
+            3,
+            "Non-interleaved mixed-sampling YCbCr is visually equivalent but "
+            "not bit-exact between libjpeg-turbo and zune-jpeg."),
+        SmallPixelDifference(
+            "/images/jpeg-suite/baseline/"
+            "32x32x8_ycbcr_2x2_1x1_1x1_interleaved.jpg",
+            3,
+            "Interleaved mixed-sampling YCbCr is visually equivalent but not "
+            "bit-exact between libjpeg-turbo and zune-jpeg."),
+        NoDifference(
+            "/images/jpeg-suite/baseline/32x32x8_ycbcr_2x2_2x1_1x2.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/"
+                     "32x32x8_ycbcr_2x2_2x1_1x2_interleaved.jpg"),
+        NoDifference(
+            "/images/jpeg-suite/baseline/32x32x8_ycbcr_interleaved.jpg"),
+        NoDifference(
+            "/images/jpeg-suite/baseline/32x32x8_ycbcr_quantization.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/5x5x8_grayscale.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/8x8x8_grayscale.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/8x8x8_grayscale_black.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/8x8x8_grayscale_white.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/"
+                     "8x8x8_grayscale_zero_coefficients.jpg"),
+        ArithmeticDecodeDifference("/images/jpeg-suite/extended_arithmetic/"
+                                   "32x32x8_conditioning_bounds_4_6.jpg"),
+        ArithmeticDecodeDifference(
+            "/images/jpeg-suite/extended_arithmetic/32x32x8_conditioning_kx_6."
+            "jpg"),
+        ArithmeticDecodeDifference(
+            "/images/jpeg-suite/extended_arithmetic/32x32x8_grayscale.jpg"),
+        ArithmeticDecodeDifference(
+            "/images/jpeg-suite/extended_arithmetic/32x32x8_ycbcr.jpg"),
+        ArithmeticDecodeDifference("/images/jpeg-suite/extended_arithmetic/"
+                                   "32x32x8_ycbcr_interleaved.jpg"),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/extended_huffman/32x32x12_grayscale.jpg",
+            "12-bit JPEG is supported by libjpeg-turbo header parsing but not "
+            "by zune-jpeg."),
+        NoDifference("/images/jpeg-suite/extended_huffman/32x32x8_cmyk.jpg"),
+        NoDifference(
+            "/images/jpeg-suite/extended_huffman/32x32x8_cmyk_interleaved.jpg"),
+        NoDifference(
+            "/images/jpeg-suite/extended_huffman/32x32x8_grayscale.jpg"),
+        NoDifference("/images/jpeg-suite/extended_huffman/"
+                     "32x32x8_grayscale_quantization.jpg"),
+        NoDifference(
+            "/images/jpeg-suite/extended_huffman/32x32x8_restarts.jpg"),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/extended_huffman/32x32x8_rgb.jpg",
+            "RGB JPEG colorspace: libjpeg-turbo decodes this suite input, but "
+            "zune-jpeg currently reports a decode failure."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/extended_huffman/32x32x8_rgb_interleaved.jpg",
+            "Interleaved RGB JPEG colorspace: libjpeg-turbo decodes this suite "
+            "input, but zune-jpeg currently reports a decode failure."),
+        NoDifference("/images/jpeg-suite/extended_huffman/32x32x8_ycbcr.jpg"),
+        SmallPixelDifference(
+            "/images/jpeg-suite/extended_huffman/"
+            "32x32x8_ycbcr_2x2_1x1_1x1.jpg",
+            3,
+            "Non-interleaved mixed-sampling YCbCr is visually equivalent but "
+            "not bit-exact between libjpeg-turbo and zune-jpeg."),
+        SmallPixelDifference(
+            "/images/jpeg-suite/extended_huffman/"
+            "32x32x8_ycbcr_2x2_1x1_1x1_interleaved.jpg",
+            3,
+            "Interleaved mixed-sampling YCbCr is visually equivalent but not "
+            "bit-exact between libjpeg-turbo and zune-jpeg."),
+        NoDifference("/images/jpeg-suite/extended_huffman/"
+                     "32x32x8_ycbcr_2x2_2x1_1x2.jpg"),
+        NoDifference("/images/jpeg-suite/extended_huffman/"
+                     "32x32x8_ycbcr_2x2_2x1_1x2_interleaved.jpg"),
+        NoDifference("/images/jpeg-suite/extended_huffman/"
+                     "32x32x8_ycbcr_interleaved.jpg"),
+        NoDifference("/images/jpeg-suite/extended_huffman/"
+                     "32x32x8_ycbcr_quantization.jpg"),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/lossless_arithmetic/32x32x8_grayscale.jpg",
+            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
+            "not by zune-jpeg."),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/lossless_arithmetic/32x32x8_ycbcr.jpg",
+            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
+            "not by zune-jpeg."),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/lossless_arithmetic/"
+            "32x32x8_ycbcr_interleaved.jpg",
+            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
+            "not by zune-jpeg."),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/lossless_huffman/32x32x16_grayscale.jpg",
+            "16-bit lossless JPEG is supported by libjpeg-turbo header parsing "
+            "but not by zune-jpeg."),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/lossless_huffman/32x32x8_grayscale.jpg",
+            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
+            "not by zune-jpeg."),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/lossless_huffman/"
+            "32x32x8_grayscale_predictor1.jpg",
+            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
+            "not by zune-jpeg."),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/lossless_huffman/"
+            "32x32x8_grayscale_predictor7.jpg",
+            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
+            "not by zune-jpeg."),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/lossless_huffman/32x32x8_ycbcr.jpg",
+            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
+            "not by zune-jpeg."),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/lossless_huffman/"
+            "32x32x8_ycbcr_interleaved.jpg",
+            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
+            "not by zune-jpeg."),
+        ArithmeticDecodeDifference(
+            "/images/jpeg-suite/progressive_arithmetic/32x32x8_grayscale.jpg"),
+        ArithmeticDecodeDifference("/images/jpeg-suite/progressive_arithmetic/"
+                                   "32x32x8_grayscale_spectral.jpg"),
+        ArithmeticDecodeDifference("/images/jpeg-suite/progressive_arithmetic/"
+                                   "32x32x8_grayscale_spectral_all.jpg"),
+        ArithmeticDecodeDifference(
+            "/images/jpeg-suite/progressive_arithmetic/"
+            "32x32x8_grayscale_spectral_all_reverse.jpg"),
+        ArithmeticDecodeDifference("/images/jpeg-suite/progressive_arithmetic/"
+                                   "32x32x8_grayscale_successive.jpg"),
+        ArithmeticDecodeDifference("/images/jpeg-suite/progressive_arithmetic/"
+                                   "32x32x8_grayscale_successive_ac.jpg"),
+        ArithmeticDecodeDifference("/images/jpeg-suite/progressive_arithmetic/"
+                                   "32x32x8_grayscale_successive_dc.jpg"),
+        ArithmeticDecodeDifference(
+            "/images/jpeg-suite/progressive_arithmetic/32x32x8_ycbcr.jpg"),
+        ArithmeticDecodeDifference("/images/jpeg-suite/progressive_arithmetic/"
+                                   "32x32x8_ycbcr_interleaved.jpg"),
+        SizeAvailabilityDifference(
+            "/images/jpeg-suite/progressive_huffman/32x32x12_grayscale.jpg",
+            "12-bit progressive JPEG is supported by libjpeg-turbo header "
+            "parsing but not by zune-jpeg."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/32x32x8_cmyk.jpg",
+            "Progressive CMYK JPEG: libjpeg-turbo reports decode failure in "
+            "Blink while zune-jpeg decodes the image."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/"
+            "32x32x8_cmyk_interleaved.jpg",
+            "Progressive interleaved CMYK JPEG: libjpeg-turbo reports decode "
+            "failure in Blink while zune-jpeg decodes the image."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/32x32x8_grayscale.jpg",
+            "Progressive Huffman grayscale JPEG: libjpeg-turbo reports decode "
+            "failure in Blink while zune-jpeg decodes the image."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/"
+            "32x32x8_grayscale_quantization.jpg",
+            "Progressive Huffman grayscale JPEG with quantization-table "
+            "variation: libjpeg-turbo reports decode failure in Blink while "
+            "zune-jpeg decodes the image."),
+        NoDifference("/images/jpeg-suite/progressive_huffman/"
+                     "32x32x8_grayscale_spectral.jpg"),
+        NoDifference("/images/jpeg-suite/progressive_huffman/"
+                     "32x32x8_grayscale_spectral_all.jpg"),
+        NoDifference("/images/jpeg-suite/progressive_huffman/"
+                     "32x32x8_grayscale_spectral_all_reverse.jpg"),
+        NoDifference("/images/jpeg-suite/progressive_huffman/"
+                     "32x32x8_grayscale_successive.jpg"),
+        NoDifference("/images/jpeg-suite/progressive_huffman/"
+                     "32x32x8_grayscale_successive_ac.jpg"),
+        NoDifference("/images/jpeg-suite/progressive_huffman/"
+                     "32x32x8_grayscale_successive_dc.jpg"),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/32x32x8_restarts.jpg",
+            "Progressive Huffman JPEG with restart markers: libjpeg-turbo "
+            "reports decode failure in Blink while zune-jpeg decodes the "
+            "image."),
+        NoDifference("/images/jpeg-suite/progressive_huffman/32x32x8_rgb.jpg"),
+        NoDifference("/images/jpeg-suite/progressive_huffman/"
+                     "32x32x8_rgb_interleaved.jpg"),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/32x32x8_ycbcr.jpg",
+            "Progressive Huffman YCbCr JPEG: libjpeg-turbo reports decode "
+            "failure in Blink while zune-jpeg decodes the image."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/"
+            "32x32x8_ycbcr_2x2_1x1_1x1.jpg",
+            "Progressive Huffman mixed-sampling YCbCr JPEG: libjpeg-turbo "
+            "reports decode failure in Blink while zune-jpeg decodes the "
+            "image."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/"
+            "32x32x8_ycbcr_2x2_1x1_1x1_interleaved.jpg",
+            "Progressive Huffman interleaved mixed-sampling YCbCr JPEG: "
+            "libjpeg-turbo reports decode failure in Blink while zune-jpeg "
+            "decodes the image."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/"
+            "32x32x8_ycbcr_2x2_2x1_1x2.jpg",
+            "Progressive Huffman mixed-sampling YCbCr JPEG: libjpeg-turbo "
+            "reports decode failure in Blink while zune-jpeg decodes the "
+            "image."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/"
+            "32x32x8_ycbcr_2x2_2x1_1x2_interleaved.jpg",
+            "Progressive Huffman interleaved mixed-sampling YCbCr JPEG: "
+            "libjpeg-turbo reports decode failure in Blink while zune-jpeg "
+            "decodes the image."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/"
+            "32x32x8_ycbcr_interleaved.jpg",
+            "Progressive Huffman interleaved YCbCr JPEG: libjpeg-turbo reports "
+            "decode failure in Blink while zune-jpeg decodes the image."),
+        DecodeFailureDifference(
+            "/images/jpeg-suite/progressive_huffman/"
+            "32x32x8_ycbcr_quantization.jpg",
+            "Progressive Huffman YCbCr JPEG with quantization-table variation: "
+            "libjpeg-turbo reports decode failure in Blink while zune-jpeg "
+            "decodes the image."),
+        SmallPixelDifference(
+            "/images/resources/gracehopper.jpg",
+            5,
+            "libjpeg-turbo and zune-jpeg are not bit-exact for this baseline "
+            "YCbCr image, but the average channel delta remains low."),
+        SmallPixelDifference(
+            "/images/resources/bug106024.jpg",
+            4,
+            "libjpeg-turbo and zune-jpeg are not bit-exact for this "
+            "progressive "
+            "image, but the average channel delta remains low."),
+        NoDifference(
+            "/images/resources/small-square-with-colorspin-profile.jpg"),
+        NoDifference("/images/resources/rgb-jpeg-with-adobe-marker-only.jpg")),
+    JPEGComparisonTestName);
 
 // This tests decoding a JPEG with many progressive scans.  Decoding should
 // fail, but not hang (crbug.com/642462).
@@ -623,11 +1110,12 @@ TEST(JPEGImageDecoderTest, PartialRgbDecodeBlocksYuvDecoding) {
 }
 
 TEST(JPEGImageDecoderTest, Gainmap) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
   const char* jpeg_file = "/images/resources/gainmap-trattore0.jpg";
   scoped_refptr<SharedBuffer> full_data = ReadFileToSharedBuffer(jpeg_file);
   ASSERT_TRUE(full_data);
 
-  auto base_decoder = CreateJPEGDecoder();
+  auto base_decoder = CreateFactoryJPEGDecoder();
   base_decoder->SetData(full_data.get(), true);
   ASSERT_TRUE(base_decoder->IsSizeAvailable());
   EXPECT_EQ(gfx::Size(134, 100), base_decoder->DecodedSize());
@@ -641,7 +1129,7 @@ TEST(JPEGImageDecoderTest, Gainmap) {
 
   // Ensure that the extracted gainmap image contains an appropriately-sized
   // image.
-  auto gainmap_decoder = std::make_unique<JPEGImageDecoder>(
+  auto gainmap_decoder = CreateJpegImageDecoder(
       ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
       cc::AuxImage::kGainmap, ImageDecoder::kNoDecodedImageByteLimit);
 
@@ -649,6 +1137,28 @@ TEST(JPEGImageDecoderTest, Gainmap) {
   ASSERT_TRUE(gainmap_decoder->IsSizeAvailable());
   EXPECT_FALSE(gainmap_decoder->Failed());
   EXPECT_EQ(gfx::Size(33, 25), gainmap_decoder->DecodedSize());
+}
+
+TEST(JPEGImageDecoderTest, RustMetadataWithoutGainmap) {
+  auto decoder = CreateRustJPEGDecoder();
+  EXPECT_EQ(String("jpg"), decoder->FilenameExtension());
+  EXPECT_EQ(AtomicString("image/jpeg"), decoder->MimeType());
+
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  EXPECT_FALSE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+
+  decoder->SetData(SegmentReader::CreateFromROBuffer(nullptr), true);
+  EXPECT_FALSE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+
+  decoder->SetData(SharedBuffer::Create(), true);
+  EXPECT_FALSE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+
+  scoped_refptr<SharedBuffer> jpeg_data =
+      ReadFileToSharedBuffer("/images/resources/green.jpg");
+  ASSERT_TRUE(jpeg_data);
+  decoder->SetData(std::move(jpeg_data), true);
+  EXPECT_FALSE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramSmall) {

@@ -263,6 +263,7 @@
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
+#include "skia/rusty_jpeg_feature.h"
 #include "storage/browser/blob/features.h"
 #include "storage/browser/quota/quota_features.h"
 #include "third_party/blink/public/common/buildflags.h"
@@ -5109,6 +5110,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-rusty-ico", flag_descriptions::kRustyIcoName,
      flag_descriptions::kRustyIcoDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kRustyIcoFeature)},
+    {"enable-rusty-jpeg", flag_descriptions::kRustyJpegName,
+     flag_descriptions::kRustyJpegDescription, kOsAll,
+     FEATURE_VALUE_TYPE(skia::kRustyJpegFeature)},
     {"soft-navigation-heuristics",
      flag_descriptions::kSoftNavigationHeuristicsName,
      flag_descriptions::kSoftNavigationHeuristicsDescription, kOsAll,

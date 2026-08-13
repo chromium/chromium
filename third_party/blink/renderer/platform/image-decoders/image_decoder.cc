@@ -43,7 +43,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_decoder_factory.h"
-#include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
+#include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_decoder_factory.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -332,8 +332,8 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
   mime_type = mime_type.ToAsciiLower();
   if (mime_type == "image/jpeg" || mime_type == "image/pjpeg" ||
       mime_type == "image/jpg") {
-    decoder = std::make_unique<JPEGImageDecoder>(alpha_option, color_behavior,
-                                                 aux_image, max_decoded_bytes);
+    decoder = CreateJpegImageDecoder(alpha_option, color_behavior, aux_image,
+                                     max_decoded_bytes);
   } else if (mime_type == "image/png" || mime_type == "image/x-png" ||
              mime_type == "image/apng") {
     decoder = std::make_unique<PngImageDecoder>(
