@@ -63,6 +63,11 @@ constexpr uint32_t kWarmStartHardFaultCountThreshold = 5;
 // was 126MB).
 constexpr uint32_t kColdStartHardFaultCountThreshold = 3500;
 
+// Range and bucket count for the HardFaultBytes histograms.
+constexpr int kHardFaultBytesMin = 1024;
+constexpr int kHardFaultBytesMax = 1073741824;  // 1 GiB
+constexpr int kHardFaultBytesBucketCount = 50;
+
 }  // namespace
 #endif
 
@@ -108,14 +113,14 @@ startup_metric_utils::StartupTemperature g_startup_temperature =
 // temperature. |histogram_function| is the histogram type, and corresponds to
 // an UMA function like base::UmaHistogramLongTimes. It must itself be a
 // function that only takes two parameters.
-// |basename| is the basename of the histogram. A histogram of this name will
-// always be recorded to. If the startup temperature is known then a value
-// will also be recorded to the histogram with name |basename| and suffix
-// ".ColdStart", ".WarmStart" as appropriate.
-// |value_expr| is an expression evaluating to the value to be recorded. This
-// will be evaluated exactly once and cached, so side effects are not an
-// issue. A metric logged using this function must have an affected-histogram
-// entry in the definition of the StartupTemperature suffix in histograms.xml.
+// |histogram_basename| is the basename of the histogram. A histogram of this
+// name will always be recorded to. If the startup temperature is known then a
+// value will also be recorded to the histogram with name |histogram_basename|
+// and suffix ".ColdStartup", ".LukewarmStartup", or ".WarmStartup" as
+// appropriate.
+// |value| is the value to be recorded. A metric logged using this function
+// must have an affected-histogram entry in the definition of the
+// StartupTemperature variants in histograms.xml.
 // This function must only be used in code that runs after
 // |g_startup_temperature| has been initialized.
 template <typename T>
@@ -125,7 +130,7 @@ void EmitHistogramWithTemperature(void (*histogram_function)(std::string_view,
                                   T value) {
   // Always record to the base histogram.
   (*histogram_function)(histogram_basename, value);
-  // Record to the cold/warm suffixed histogram as appropriate.
+  // Record to the cold/warm/lukewarm suffixed histogram as appropriate.
   switch (g_startup_temperature) {
     case startup_metric_utils::COLD_STARTUP_TEMPERATURE:
       (*histogram_function)(base::StrCat({histogram_basename, ".ColdStartup"}),
@@ -136,7 +141,8 @@ void EmitHistogramWithTemperature(void (*histogram_function)(std::string_view,
                             value);
       break;
     case startup_metric_utils::LUKEWARM_STARTUP_TEMPERATURE:
-      // No suffix emitted for lukewarm startups.
+      (*histogram_function)(
+          base::StrCat({histogram_basename, ".LukewarmStartup"}), value);
       break;
     case startup_metric_utils::UNDETERMINED_STARTUP_TEMPERATURE:
       break;
@@ -573,6 +579,23 @@ void BrowserStartupMetricRecorder::RecordBrowserWindowFirstPaint(
   }
   is_first_call = false;
   RecordBrowserWindowFirstPaintTicks(ticks);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Mirror Startup.BrowserMessageLoopStartHardFault{Count,Bytes} at the first
+  // paint checkpoint (using a higher 1M cap for Count to avoid saturation).
+  // We record this unconditionally (even if ShouldLogStartupHistogram() is
+  // false) so experiments altering page-in behavior (e.g., MacFrameworkPreRead)
+  // can compare all launches. See histogram descriptions for details.
+  if (const std::optional<uint32_t> hard_fault_count =
+          GetHardFaultCountForCurrentProcess()) {
+    base::UmaHistogramCounts1M("Startup.BrowserWindowFirstPaintHardFaultCount",
+                               *hard_fault_count);
+    base::UmaHistogramCustomCounts(
+        "Startup.BrowserWindowFirstPaintHardFaultBytes",
+        base::saturated_cast<int>(static_cast<uint64_t>(*hard_fault_count) *
+                                  base::GetPageSize()),
+        kHardFaultBytesMin, kHardFaultBytesMax, kHardFaultBytesBucketCount);
+  }
+#endif
   if (!ShouldLogStartupHistogram()) {
     return;
   }
@@ -608,11 +631,11 @@ void BrowserStartupMetricRecorder::RecordHardFaultHistogram() {
     base::UmaHistogramCustomCounts(
         "Startup.BrowserMessageLoopStartHardFaultCount",
         hard_fault_count.value(), 1, 40000, 50);
-    int hard_fault_bytes = base::saturated_cast<int>(hard_fault_count.value() *
-                                                     base::GetPageSize());
+    int hard_fault_bytes = base::saturated_cast<int>(
+        static_cast<uint64_t>(hard_fault_count.value()) * base::GetPageSize());
     base::UmaHistogramCustomCounts(
-        "Startup.BrowserMessageLoopStartHardFaultBytes", hard_fault_bytes, 1024,
-        1073741824, 50);
+        "Startup.BrowserMessageLoopStartHardFaultBytes", hard_fault_bytes,
+        kHardFaultBytesMin, kHardFaultBytesMax, kHardFaultBytesBucketCount);
 
     // Determine the startup type based on the number of observed hard faults.
     if (hard_fault_count < kWarmStartHardFaultCountThreshold) {

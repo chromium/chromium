@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="HardFaultCheckpoint">
+  <variant name="MessageLoopStart"
+      summary="from startup to the start of the main thread's message loop,
+               not including first runs of the browser"/>
+  <variant name="WindowFirstPaint"
+      summary="when the first browser window finishes painting, including
+               launches where ShouldLogStartupHistogram() is false"/>
+</variants>
+
 <variants name="StartActivityType">
   <variant name="Tabbed"
       summary="Chrome starts up with intent to ChromeTabbedActivity"/>
@@ -52,6 +61,9 @@ chromium-metrics-reviews@google.com.
   <variant name="" summary="All startups"/>
   <variant name=".ColdStartup"
       summary="Startup was cold (mostly hard faults)."/>
+  <variant name=".LukewarmStartup"
+      summary="Startup was lukewarm (hard-fault count between the warm and
+               cold thresholds)."/>
   <variant name=".WarmStartup"
       summary="Startup was warm (almost no hard faults)."/>
 </variants>
@@ -765,41 +777,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.BrowserMessageLoopStartHardFaultBytes" units="bytes"
-    expires_after="2027-07-08">
-  <owner>aattar@google.com</owner>
-  <owner>olivierli@chromium.org</owner>
-  <summary>
-    The number of bytes loaded via hard faults in the browser process from
-    startup to the start of the main thread's message loop, not including first
-    runs of the browser.
-
-    This is a normalized metric calculated as (HardFaultCount * OSPageSize) to
-    allow comparison between platforms with different page sizes (e.g. 16KB on
-    Apple Silicon Mac vs 4KB on Windows/Linux/Intel Mac).
-  </summary>
-</histogram>
-
-<histogram name="Startup.BrowserMessageLoopStartHardFaultCount" units="faults"
-    expires_after="never">
-<!-- expires-never: calibration metric for StartupTemperature, see
-     kColdStartHardFaultCountThreshold and WarmStartHardFaultCountThreshold in
-     startup_metric_utils.cc for details -->
-
-  <owner>chrisha@chromium.org</owner>
-  <owner>fdoray@chromium.org</owner>
-  <summary>
-    The number of hard faults incurred in the browser process from startup to
-    the start of the main thread's message loop, not including first runs of the
-    browser. On Windows this is derived from
-    SYSTEM_PROCESS_INFORMATION.HardFaultCount; on macOS from Mach task_info
-    (pageins); on Linux from getrusage (ru_majflt). Absolute values are not
-    directly comparable across platforms, and may not be comparable even between
-    OS versions (as changes to how the OS starts and times the startup of
-    applications can affect the metrics).
-  </summary>
-</histogram>
-
 <histogram name="Startup.BrowserMessageLoopStartTime.FirstRun" units="ms"
     expires_after="never">
 <!-- expires-never: only metric to ensure that first run doesn't regress -->
@@ -901,6 +878,49 @@ chromium-metrics-reviews@google.com.
 
     {StartupTemperature}
   </summary>
+</histogram>
+
+<histogram name="Startup.Browser{HardFaultCheckpoint}HardFaultBytes"
+    units="bytes" expires_after="2027-08-10">
+  <owner>aattar@google.com</owner>
+  <owner>olivierli@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Approximate number of bytes loaded via hard faults in the browser process
+    {HardFaultCheckpoint}.
+
+    This is a normalized metric calculated as (HardFaultCount * OSPageSize) to
+    allow comparison between platforms with different page sizes (e.g. 16KB on
+    Apple Silicon Mac vs 4KB on Windows/Linux/Intel Mac). Note that this is a
+    lower bound since a single page-in operation can read multiple pages.
+  </summary>
+  <token key="HardFaultCheckpoint" variants="HardFaultCheckpoint"/>
+</histogram>
+
+<histogram name="Startup.Browser{HardFaultCheckpoint}HardFaultCount"
+    units="faults" expires_after="never">
+<!-- expires-never: MessageLoopStart is calibration metric for
+     StartupTemperature, see kColdStartHardFaultCountThreshold and
+     WarmStartHardFaultCountThreshold in startup_metric_utils.cc for details -->
+
+  <owner>aattar@google.com</owner>
+  <owner>olivierli@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The cumulative number of hard faults (page-in operations) recorded in the
+    browser process {HardFaultCheckpoint}.
+
+    On Windows this is derived from SYSTEM_PROCESS_INFORMATION.HardFaultCount;
+    on macOS from Mach task_info (pageins); on Linux from getrusage (ru_majflt).
+    Absolute values are not directly comparable across platforms, and may not be
+    comparable even between OS versions (as changes to how the OS starts and
+    times the startup of applications can affect the metrics). This counts
+    OS-level page-in operations rather than individual pages. A single operation
+    may read multiple pages.
+  </summary>
+  <token key="HardFaultCheckpoint" variants="HardFaultCheckpoint"/>
 </histogram>
 
 <histogram name="Startup.ColdStartFromMain" units="ms"
