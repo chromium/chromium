@@ -5,27 +5,32 @@
 #ifndef MEDIA_MOJO_MOJOM_KEY_SYSTEM_CAPABILITY_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_KEY_SYSTEM_CAPABILITY_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "media/base/cdm_capability.h"
 #include "media/base/key_system_capability.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 
 namespace mojo {
 
 template <>
 struct StructTraits<media::mojom::KeySystemCapabilityDataView,
                     media::KeySystemCapability> {
-  static const std::optional<media::CdmCapability> sw_secure_capability(
-      const media::KeySystemCapability& input) {
+  static mojo::OptionalAsPointer<const media::CdmCapability>
+  sw_secure_capability(const media::KeySystemCapability& input) {
     return input.sw_cdm_capability_or_status.has_value()
-               ? std::optional(input.sw_cdm_capability_or_status.value())
-               : std::nullopt;
+               ? mojo::OptionalAsPointer(
+                     &input.sw_cdm_capability_or_status.value())
+               : nullptr;
   }
 
-  static const std::optional<media::CdmCapability> hw_secure_capability(
-      const media::KeySystemCapability& input) {
+  static mojo::OptionalAsPointer<const media::CdmCapability>
+  hw_secure_capability(const media::KeySystemCapability& input) {
     return input.hw_cdm_capability_or_status.has_value()
-               ? std::optional(input.hw_cdm_capability_or_status.value())
-               : std::nullopt;
+               ? mojo::OptionalAsPointer(
+                     &input.hw_cdm_capability_or_status.value())
+               : nullptr;
   }
 
   static const std::optional<media::CdmCapabilityQueryStatus>
