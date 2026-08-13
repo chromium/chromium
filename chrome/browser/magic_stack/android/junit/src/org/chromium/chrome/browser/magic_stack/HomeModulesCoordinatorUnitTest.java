@@ -26,7 +26,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
-import android.view.ContextMenu;
 import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.View.OnLongClickListener;
@@ -487,8 +486,7 @@ public class HomeModulesCoordinatorUnitTest {
         verify(mView).setOnCreateContextMenuListener(mOnCreateContextMenuListenerCaptor.capture());
         mOnCreateContextMenuListenerCaptor
                 .getValue()
-                .onCreateContextMenu(
-                        mock(ContextMenu.class), mView, mock(ContextMenu.ContextMenuInfo.class));
+                .onCreateContextMenu(/* menu= */ null, mView, /* menuInfo= */ null);
         verify(homeModulesContextMenuManager).displayMenu(eq(mView), eq(mModuleProvider));
     }
 
