@@ -93,9 +93,6 @@ class PeerConnectionProcess : public IPC::Listener,
   void DisconnectSession(protocol::ErrorCode error,
                          const std::string& error_details,
                          const SourceLocation& error_location) override;
-  void OnSessionServicesClientConnected(
-      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
-      override;
 
   void set_on_shutdown_for_testing(base::OnceClosure callback) {
     on_shutdown_for_testing_ = std::move(callback);
@@ -140,19 +137,17 @@ class PeerConnectionProcess : public IPC::Listener,
   mojo::Remote<mojom::PairingRequester> pairing_requester_remote_;
   std::unique_ptr<::remoting::PeerSession> peer_session_;
 
-  // Transport and session service messages may arrive from the NetworkProcess
-  // via Mojo before PeerConnectionProcess::Start() finishes initializing the
-  // PeerSession (e.g. while waiting for IPC channel setup or session creation).
-  // These members buffer incoming messages until Start() completes, at which
-  // point they are flushed to the underlying PeerSession and transport.
+  // Transport messages may arrive from the NetworkProcess via Mojo before
+  // PeerConnectionProcess::Start() finishes initializing the PeerSession (e.g.
+  // while waiting for IPC channel setup or session creation). These members
+  // buffer incoming messages until Start() completes, at which point they are
+  // flushed to the underlying PeerSession and transport.
   struct PendingStartTransport {
     std::string auth_key;
     mojo::PendingRemote<mojom::TransportEventHandler> transport_event_handler;
   };
   std::optional<PendingStartTransport> pending_start_transport_;
   std::vector<JingleTransportInfo> pending_transport_infos_;
-  std::vector<mojo::PendingReceiver<mojom::ChromotingSessionServices>>
-      pending_session_services_receivers_;
 
   base::OnceClosure on_shutdown_for_testing_;
 

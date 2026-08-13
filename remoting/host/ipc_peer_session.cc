@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -130,13 +131,10 @@ void IpcPeerSession::DisconnectSession(protocol::ErrorCode error,
 
 void IpcPeerSession::OnSessionServicesClientConnected(
     mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!remote_.is_bound()) {
-    LOG(WARNING) << "OnSessionServicesClientConnected called when PeerSession "
-                 << "remote is not bound.";
-    return;
-  }
-  remote_->OnSessionServicesClientConnected(std::move(receiver));
+  // In multi-process host, ChromotingSessionServices clients are connected
+  // directly to the PC process via DesktopSessionEvents by the Daemon process,
+  // so this method is never invoked on IpcPeerSession.
+  NOTREACHED();
 }
 
 protocol::Transport* IpcPeerSession::transport() {

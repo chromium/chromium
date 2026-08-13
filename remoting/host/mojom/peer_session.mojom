@@ -190,10 +190,6 @@ interface PeerSession {
   DisconnectSession(ProtocolErrorCode error,
                     string error_details,
                     SourceLocation error_location);
-
-  // Connects a ChromotingSessionServices client.
-  OnSessionServicesClientConnected(
-      pending_receiver<ChromotingSessionServices> receiver);
 };
 
 // Associated interface used by the Daemon to control the PC process.

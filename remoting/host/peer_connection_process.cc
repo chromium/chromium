@@ -189,11 +189,6 @@ void PeerConnectionProcess::Start(
                        desktop_environment_options, /*extensions=*/{},
                        session_policies, session_options);
 
-  for (auto& receiver : pending_session_services_receivers_) {
-    peer_session_->OnSessionServicesClientConnected(std::move(receiver));
-  }
-  pending_session_services_receivers_.clear();
-
   if (pending_start_transport_) {
     auto pending = std::move(*pending_start_transport_);
     pending_start_transport_.reset();
@@ -256,16 +251,6 @@ void PeerConnectionProcess::DisconnectSession(
   }
 }
 
-void PeerConnectionProcess::OnSessionServicesClientConnected(
-    mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (peer_session_) {
-    peer_session_->OnSessionServicesClientConnected(std::move(receiver));
-  } else {
-    pending_session_services_receivers_.push_back(std::move(receiver));
-  }
-}
-
 void PeerConnectionProcess::OnChannelError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(ERROR) << "Daemon channel error in PC process. Terminating.";
@@ -280,7 +265,6 @@ void PeerConnectionProcess::OnSessionDisconnected() {
   transport_event_handler_.reset();
   pending_start_transport_.reset();
   pending_transport_infos_.clear();
-  pending_session_services_receivers_.clear();
   Shutdown(0);
 }
 

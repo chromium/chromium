@@ -141,9 +141,6 @@ class MockPeerSessionReceiver : public mojom::PeerSession {
   void DisconnectSession(protocol::ErrorCode error,
                          const std::string& error_details,
                          const SourceLocation& error_location) override {}
-  void OnSessionServicesClientConnected(
-      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
-      override {}
 
   mojo::Remote<mojom::TransportEventHandler>& transport_event_handler() {
     return transport_event_handler_;
