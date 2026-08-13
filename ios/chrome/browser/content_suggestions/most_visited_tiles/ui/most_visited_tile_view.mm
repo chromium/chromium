@@ -47,6 +47,9 @@
         kMagicStackImageContainerWidth / 2;
     self.imageContainerView.layer.masksToBounds = NO;
     self.imageContainerView.clipsToBounds = YES;
+    if (IsNewTabPageUICleanupEnabled()) {
+      self.titleLabel.numberOfLines = 1;
+    }
 
     UIStackView* stackView = [[UIStackView alloc] init];
     stackView.translatesAutoresizingMaskIntoConstraints = NO;

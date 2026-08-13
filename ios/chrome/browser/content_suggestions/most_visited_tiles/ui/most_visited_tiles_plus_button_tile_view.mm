@@ -22,6 +22,9 @@
     self.imageBackgroundView.layer.cornerRadius =
         kMagicStackImageContainerWidth / 2;
     self.imageBackgroundView.clipsToBounds = YES;
+    if (IsNewTabPageUICleanupEnabled()) {
+      self.titleLabel.numberOfLines = 1;
+    }
     [self addGestureRecognizer:[[UITapGestureRecognizer alloc]
                                    initWithTarget:self
                                            action:@selector(handleTap)]];
