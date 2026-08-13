@@ -38,6 +38,50 @@ enum class WebUsbControlTransferPermissionOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(WebUsbStateChangeBlockedContext)
+enum class WebUsbStateChangeBlockedContext {
+  kUnknown = 0,
+  kDeviceStateChangeSameConnection = 1,
+  kDeviceStateChangeOtherConnection = 2,
+  kInterfaceStateChangeSameConnection = 3,
+  kMaxValue = kInterfaceStateChangeSameConnection,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebUsbStateChangeBlockedContext)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(WebUsbEndpointNotReadyReason)
+enum class WebUsbEndpointNotReadyReason {
+  kDeviceStateChangeInProgress = 0,
+  kDeviceNotOpen = 1,
+  kInterfaceNotClaimedOrInvalidEndpoint = 2,
+  kInterfaceStateChangeInProgress = 3,
+  kMaxValue = kInterfaceStateChangeInProgress,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebUsbEndpointNotReadyReason)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(WebUsbStateChangeBlockedMethod)
+enum class WebUsbStateChangeBlockedMethod {
+  kSetConfiguration = 0,
+  kClaimInterface = 1,
+  kReleaseInterface = 2,
+  kSetInterfaceAlternateSetting = 3,
+  kReset = 4,
+  kClearHalt = 5,
+  kControlTransferIn = 6,
+  kControlTransferOut = 7,
+  kGenericTransferIn = 8,
+  kGenericTransferOut = 9,
+  kIsochronousTransferIn = 10,
+  kIsochronousTransferOut = 11,
+  kMaxValue = kIsochronousTransferOut,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebUsbStateChangeBlockedMethod)
+
 // Implementation of the public Device interface. Instances of this class are
 // constructed by DeviceManagerImpl and are strongly bound to their MessagePipe
 // lifetime.
@@ -133,9 +177,15 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   // device::UsbDevice::Observer implementation:
   void OnDeviceRemoved(scoped_refptr<device::UsbDevice> device) override;
 
-  void OnInterfaceClaimed(ClaimInterfaceCallback callback, bool success);
+  void OnInterfaceClaimed(ClaimInterfaceCallback callback,
+                          uint8_t interface_number,
+                          bool success);
+  void OnInterfaceReleased(ReleaseInterfaceCallback callback,
+                           uint8_t interface_number,
+                           bool success);
   void OnSetInterfaceAlternateSettingComplete(
       SetInterfaceAlternateSettingCallback callback,
+      uint8_t interface_number,
       bool success);
   void OnSetConfigurationComplete(SetConfigurationCallback callback,
                                   bool success);
@@ -144,6 +194,24 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
 
   // Reject and report bad mojo messaage if `length` exceeds limit.
   bool ShouldRejectUsbTransferLengthAndReportBadMessage(size_t length);
+
+  // Returns whether the endpoint is ready for a transfer.
+  // A transfer is allowed if the device is open, the target interface is
+  // claimed, and neither a device-wide state change nor an interface-specific
+  // state change for the target interface is in progress.
+  // This is used for non-control transfers (Generic and Isochronous) and
+  // ClearHalt. Records UMA metrics if the endpoint is not ready.
+  bool IsEndpointReadyForTransfer(WebUsbStateChangeBlockedMethod method,
+                                  uint8_t endpoint_address);
+
+  bool IsInterfaceStateChangeInProgress(uint8_t interface_number) const;
+  bool any_interface_state_change_in_progress() const;
+  bool any_state_change_in_progress() const;
+  void SetInterfaceStateChangeInProgress(uint8_t interface_number,
+                                         bool in_progress);
+
+  void RecordStateChangeBlocked(WebUsbStateChangeBlockedMethod method,
+                                bool interface_in_progress);
 
   const scoped_refptr<device::UsbDevice> device_;
   base::ScopedObservation<device::UsbDevice, device::UsbDevice::Observer>
@@ -154,6 +222,16 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   // in progress.
   bool opening_ = false;
   scoped_refptr<UsbDeviceHandle> device_handle_;
+
+  // Tracks whether a device-wide state change (SetConfiguration or Reset) was
+  // initiated by THIS specific DeviceImpl instance. The shared lock on
+  // UsbDevice (device_->device_state_change_in_progress()) may be set by any
+  // connection to the device. This instance-local flag ensures that when this
+  // DeviceImpl is destroyed (e.g. tab closed while a state change is in
+  // flight), its destructor safely clears the shared lock if and only if this
+  // instance was the initiator.
+  bool device_state_change_in_progress_ = false;
+  base::flat_set<uint8_t> interface_state_changes_in_progress_;
 
   const base::flat_set<uint8_t> blocked_interface_classes_;
   const bool allow_security_key_requests_;

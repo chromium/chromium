@@ -28033,6 +28033,13 @@ This is true even if the type has been removed from the mojom file.
   <int value="3" label="Error: No configuration"/>
 </enum>
 
+<enum name="WebUsbEndpointNotReadyReason">
+  <int value="0" label="Device state change in progress"/>
+  <int value="1" label="Device not open"/>
+  <int value="2" label="Interface not claimed or invalid endpoint"/>
+  <int value="3" label="Interface state change in progress"/>
+</enum>
+
 <enum name="WebUsbNotificationClosed">
   <int value="0" label="Closed by system"/>
   <int value="1" label="Closed by user"/>
@@ -28045,6 +28052,28 @@ This is true even if the type has been removed from the mojom file.
   <int value="1" label="Revoked ephemeral permission by user"/>
   <int value="2" label="Revoked permission by website"/>
   <int value="3" label="Revoked ephemeral permission by website"/>
+</enum>
+
+<enum name="WebUsbStateChangeBlockedContext">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Device state change (Same Connection)"/>
+  <int value="2" label="Device state change (Other Connection)"/>
+  <int value="3" label="Interface state change (Same Connection)"/>
+</enum>
+
+<enum name="WebUsbStateChangeBlockedMethod">
+  <int value="0" label="SetConfiguration"/>
+  <int value="1" label="ClaimInterface"/>
+  <int value="2" label="ReleaseInterface"/>
+  <int value="3" label="SetInterfaceAlternateSetting"/>
+  <int value="4" label="Reset"/>
+  <int value="5" label="ClearHalt"/>
+  <int value="6" label="ControlTransferIn"/>
+  <int value="7" label="ControlTransferOut"/>
+  <int value="8" label="GenericTransferIn"/>
+  <int value="9" label="GenericTransferOut"/>
+  <int value="10" label="IsochronousTransferIn"/>
+  <int value="11" label="IsochronousTransferOut"/>
 </enum>
 
 <enum name="WhatsNewLoadEvent">

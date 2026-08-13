@@ -669,6 +669,7 @@ ScriptPromise<IDLUndefined> USBDevice::reset(ScriptState* script_state,
   auto promise = resolver->Promise();
 
   device_requests_.insert(resolver);
+  device_state_change_in_progress_ = true;
   device_->Reset(BindOnce(&USBDevice::AsyncReset, WrapPersistent(this),
                           WrapPersistent(resolver)));
   return promise;
@@ -1165,6 +1166,7 @@ void USBDevice::AsyncIsochronousTransferOut(
 void USBDevice::AsyncReset(ScriptPromiseResolver<IDLUndefined>* resolver,
                            bool success) {
   MarkRequestComplete(resolver);
+  device_state_change_in_progress_ = false;
 
   if (success) {
     resolver->Resolve();

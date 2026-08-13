@@ -8208,6 +8208,16 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebUsb.EndpointNotReadyReason"
+    enum="WebUsbEndpointNotReadyReason" expires_after="2027-08-01">
+  <owner>alvinji@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records why an endpoint operation in DeviceImpl failed the endpoint ready
+    check (IsEndpointReadyForTransfer).
+  </summary>
+</histogram>
+
 <histogram name="WebUsb.NotificationClosed" enum="WebUsbNotificationClosed"
     expires_after="never">
 <!-- expires-never: Used to monitor user interaction with the WebUSB API. -->
@@ -8227,6 +8237,28 @@ regressions. -->
   <summary>
     Records when the user revokes permission for an origin to connect to a USB
     device using the WebUSB API.
+  </summary>
+</histogram>
+
+<histogram name="WebUsb.StateChangeBlocked.Context"
+    enum="WebUsbStateChangeBlockedContext" expires_after="2027-08-01">
+  <owner>alvinji@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the connection context when a WebUSB operation in DeviceImpl is
+    blocked because a device or interface state change is in progress.
+    Differentiates between state changes initiated by the same device connection
+    vs another device connection.
+  </summary>
+</histogram>
+
+<histogram name="WebUsb.StateChangeBlocked.Method"
+    enum="WebUsbStateChangeBlockedMethod" expires_after="2027-08-01">
+  <owner>alvinji@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records which WebUSB Mojo method was blocked in DeviceImpl because a device
+    or interface state change was in progress.
   </summary>
 </histogram>
 
