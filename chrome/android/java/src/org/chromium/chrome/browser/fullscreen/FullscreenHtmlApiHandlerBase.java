@@ -95,6 +95,12 @@ public abstract class FullscreenHtmlApiHandlerBase
     // content view, i.e., if you navigate to a native page.
     private @Nullable WebContents mWebContentsInFullscreen;
     private @Nullable View mContentViewInFullscreen;
+
+    // Source of truth for whether Chrome is in HTML5 fullscreen mode and which tab owns the
+    // fullscreen session. When non-null, Chrome is in fullscreen for this tab. We actively drive
+    // Android system insets and status/navigation bars to align with this state. If a discrepancy
+    // occurs (e.g. uninitialized insets or transient swipe overlays), this field remains the
+    // authoritative state rather than raw insets.
     protected @Nullable Tab mTabInFullscreen;
     private @Nullable FullscreenOptions mFullscreenOptions;
 
@@ -798,9 +804,21 @@ public abstract class FullscreenHtmlApiHandlerBase
         final View contentView = tab.getContentView();
         assert contentView != null;
         if (isAlreadyInFullscreenOrNavigationHidden(contentView)) {
-            // We are already in fullscreen mode and the fullscreen options match what is
-            // needed; nothing to do.
-            if (hasDesiredStateForSystemBars(contentView, mFullscreenOptions)) return;
+            // mTabInFullscreen is the authoritative source of truth for whether Chrome is in
+            // fullscreen mode, and is only set to the current tab at the end of this method.
+            // When enterFullscreen is first called from normal browsing (mTabInFullscreen == null),
+            // root window insets can be uninitialized and report system bars as hidden/0-height.
+            // This causes isAlreadyInFullscreenOrNavigationHidden and hasDesiredStateForSystemBars
+            // to return true.
+            // If we returned early without checking mTabInFullscreen != null, the fullscreen
+            // transition would be aborted: mTabInFullscreen would remain null, system bars would
+            // not be requested to hide, and observers/toasts would never trigger.
+            // Early return is only valid when already in fullscreen (mTabInFullscreen != null) and
+            // the system bars already match the requested options.
+            if (hasDesiredStateForSystemBars(contentView, mFullscreenOptions)
+                    && mTabInFullscreen != null) {
+                return;
+            }
 
             resetEnterFullscreenLayoutChangeListener(contentView);
             adjustSystemBarsInFullscreenMode(contentView, mFullscreenOptions);

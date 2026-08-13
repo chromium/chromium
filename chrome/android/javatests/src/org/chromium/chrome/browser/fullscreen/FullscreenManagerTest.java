@@ -1209,7 +1209,6 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
-    @DisabledTest(message = "b/352829204 - flaky test")
     public void testFullscreenExitWithSelectionPopPresentLegacy() throws InterruptedException {
         WebPageStation page = mActivityTestRule.startOnUrl(FULLSCREEN_WITH_SELECTION_POPUP);
 
@@ -1241,7 +1240,9 @@ public class FullscreenManagerTest {
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         FullscreenTestUtils.waitForFullscreenFlag(tab, true, activity);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
-        Assert.assertTrue(controller.isSelectActionBarShowing());
+        CriteriaHelper.pollUiThread(
+                controller::isSelectActionBarShowing,
+                "Selection action bar should be showing in fullscreen.");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1251,7 +1252,9 @@ public class FullscreenManagerTest {
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         FullscreenTestUtils.waitForFullscreenFlag(tab, false, activity);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
-        Assert.assertTrue(controller.isSelectActionBarShowing());
+        CriteriaHelper.pollUiThread(
+                controller::isSelectActionBarShowing,
+                "Selection action bar should still be showing after exiting fullscreen.");
     }
 
     @Test
@@ -1261,7 +1264,6 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
-    @DisabledTest(message = "b/326041467 - flaky test")
     public void testFullscreenExitWithSelectionPopPresent_BackGestureRefactor()
             throws InterruptedException {
         WebPageStation page = mActivityTestRule.startOnUrl(FULLSCREEN_WITH_SELECTION_POPUP);
@@ -1294,7 +1296,9 @@ public class FullscreenManagerTest {
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         FullscreenTestUtils.waitForFullscreen(tab, true);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
-        Assert.assertTrue(controller.isSelectActionBarShowing());
+        CriteriaHelper.pollUiThread(
+                controller::isSelectActionBarShowing,
+                "Selection action bar should be showing in fullscreen.");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1304,7 +1308,9 @@ public class FullscreenManagerTest {
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         FullscreenTestUtils.waitForFullscreen(tab, false);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
-        Assert.assertTrue(controller.isSelectActionBarShowing());
+        CriteriaHelper.pollUiThread(
+                controller::isSelectActionBarShowing,
+                "Selection action bar should still be showing after exiting fullscreen.");
     }
 
     private void waitForEditableNodeToLoseFocus(final Tab tab) {
