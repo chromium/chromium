@@ -14,11 +14,7 @@
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
@@ -70,16 +66,6 @@ void MaybeLogEventDispatchError(
   }
 }
 #endif
-
-void DumpWithoutCrashingHelper(const std::string& message) {
-  std::ostringstream errorStream;
-  errorStream << message;
-  LOG(ERROR) << errorStream.str();
-  static auto* const crash_key = base::debug::AllocateCrashKeyString(
-      "chromevox_mv3_key_events", base::debug::CrashKeySize::Size1024);
-  base::debug::SetCrashKeyString(crash_key, errorStream.str());
-  base::debug::DumpWithoutCrashing();
-}
 
 }  // namespace
 
@@ -157,11 +143,9 @@ void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
     // This is unexpected: We have the correct session ID but the queue is
     // empty, so somehow the event was lost from the queue or the ChromeVox
     // extension sent the wrong event ID, indicating a bug.
-    DumpWithoutCrashingHelper(
-        base::StrCat({"AccessibilityEventRewriter: empty queue with correct "
-                      "session ID. Event ID: ",
-                      base::NumberToString(id),
-                      ", session ID: ", base::NumberToString(session_id)}));
+    LOG(ERROR) << "AccessibilityEventRewriter: empty queue with correct "
+                  "session ID. Event ID: "
+               << id << ", session ID: " << session_id;
     return;
   }
 
@@ -185,22 +169,18 @@ void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
     // This is unexpected: We have the correct session ID but the queue is
     // empty when we got to this ID, so somehow the event was lost from the
     // queue.
-    DumpWithoutCrashingHelper(
-        base::StrCat({"AccessibilityEventRewriter: emptied queue to reach "
-                      "event with correct session ID, but it was missing. "
-                      "Event ID: ",
-                      base::NumberToString(id),
-                      ", session ID: ", base::NumberToString(session_id)}));
+    LOG(ERROR) << "AccessibilityEventRewriter: emptied queue to reach "
+                  "event with correct session ID, but it was missing. "
+                  "Event ID: "
+               << id << ", session ID: " << session_id;
     return;
   }
 
   if (id != pending_key_events_.front().id) {
     // This is unexpected: it may happen if ChromeVox sends an event twice or
     // if the events are not ordered.
-    DumpWithoutCrashingHelper(base::StrCat(
-        {"AccessibilityEventRewriter: mismatched event ID. Expected: ",
-         base::NumberToString(pending_key_events_.front().id),
-         ", got: ", base::NumberToString(id)}));
+    LOG(ERROR) << "AccessibilityEventRewriter: mismatched event ID. Expected: "
+               << pending_key_events_.front().id << ", got: " << id;
     return;
   }
 
@@ -268,11 +248,10 @@ void AccessibilityEventRewriter::SetSpokenFeedbackMv3KeyHandlingEnabled(
     // However, it's not worth crashing over this since it is set in JS and the
     // user might change their system clock.
     if (session_id <= current_session_id_) {
-      DumpWithoutCrashingHelper(base::StrCat(
-          {"AccessibilityEventRewriter: Restarted with session ID less than "
-           "previous ID. New ID: ",
-           base::NumberToString(session_id),
-           ", old ID: ", base::NumberToString(current_session_id_)}));
+      LOG(ERROR)
+          << "AccessibilityEventRewriter: Restarted with session ID less than "
+             "previous ID. New ID: "
+          << session_id << ", old ID: " << current_session_id_;
     }
     current_session_id_ = session_id;
     // Immediately flush any leftover events from the old session.
@@ -339,9 +318,10 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
   if (::features::IsAccessibilityManifestV3EnabledForChromeVox() &&
       chromevox_mv3_key_handling_enabled_) {
     if (pending_key_events_.size() >= kMaxPendingEvents) {
-      DumpWithoutCrashingHelper(base::StrCat(
-          {"AccessibilityEventRewriter: dropping key event due to full queue: ",
-           rewritten_key_event->ToString()}));
+      LOG(ERROR)
+          << "AccessibilityEventRewriter: dropping key event due to full "
+             "queue: "
+          << rewritten_key_event->ToString();
       return true;
     }
 
