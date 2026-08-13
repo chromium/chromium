@@ -278,10 +278,6 @@ class WebMediaPlayer {
 
   virtual gfx::Size VisibleSize() const = 0;
 
-  virtual media::VideoTransformation GetVideoTransformation() const {
-    return media::kNoTransformation;
-  }
-
   // Spatial format of the video.
   virtual media::VideoSpatialFormat GetSpatialFormat() const { return {}; }
 

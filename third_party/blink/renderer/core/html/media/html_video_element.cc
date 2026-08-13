@@ -910,26 +910,6 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     return nullptr;
   }
 
-  media::VideoTransformation transform =
-      media_video_frame->metadata().transformation.value_or(
-          media::kNoTransformation);
-
-  // The underlying VideoFrame may have been stripped of its transformation
-  // metadata by the decoder or hardware buffer pipeline. If the frame lacks
-  // a rotation but the WebMediaPlayer's pipeline metadata knows it exists,
-  // we must inherit it.
-  if (transform.rotation == media::VIDEO_ROTATION_0) {
-    transform = wmp->GetVideoTransformation();
-  }
-
-  if (media_video_frame->visible_rect().size() == wmp->NaturalSize() &&
-      (transform.rotation == media::VIDEO_ROTATION_90 ||
-       transform.rotation == media::VIDEO_ROTATION_270)) {
-    // Clear the transformation metadata to prevent double rotation during
-    // paint
-    transform = media::kNoTransformation;
-  }
-
   viz::RasterContextProvider* raster_context_provider = nullptr;
   if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
     raster_context_provider =
@@ -942,8 +922,10 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
 
   std::optional<gfx::Size> dest_size = size;
   if (!dest_size && will_hard_flip) {
-    if (transform.rotation == media::VIDEO_ROTATION_90 ||
-        transform.rotation == media::VIDEO_ROTATION_270) {
+    const auto transform =
+        media_video_frame->metadata().transformation.value_or(
+            media::kNoTransformation);
+    if (transform.IsOrthogonal()) {
       dest_size = gfx::Size(media_video_frame->natural_size().height(),
                             media_video_frame->natural_size().width());
     }
@@ -981,11 +963,11 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   if (snapshot_provider_) {
     image = CreateAcceleratedImageFromVideoFrame(
         std::move(media_video_frame), snapshot_provider_.get(), video_renderer,
-        prefer_tagged_orientation, reinterpret_as_srgb, transform);
+        prefer_tagged_orientation, reinterpret_as_srgb);
   } else {
     image = CreateUnacceleratedImageFromVideoFrame(
         std::move(media_video_frame), cached_draw_info_.value(), video_renderer,
-        prefer_tagged_orientation, reinterpret_as_srgb, transform);
+        prefer_tagged_orientation, reinterpret_as_srgb);
   }
 
   if (image) {

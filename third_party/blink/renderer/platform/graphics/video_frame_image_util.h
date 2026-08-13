@@ -63,11 +63,6 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame();
 // If `reinterpret_video_as_srgb` true, then the video will be reinterpreted as
 // being originally having been in sRGB.
 //
-// If `transformation_override` is provided, it forces the rendering pipeline to
-// use the specified transformation (e.g., `media::kNoTransformation` to bypass
-// any intrinsic rotation). If nullopt, it falls back to the VideoFrame's
-// metadata.
-//
 // Returns nullptr if a StaticBitmapImage can't be created.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage>
 CreateAcceleratedImageFromVideoFrame(
@@ -75,9 +70,7 @@ CreateAcceleratedImageFromVideoFrame(
     CanvasNon2DResourceProvider* snapshot_provider,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     bool prefer_tagged_orientation = true,
-    bool reinterpret_video_as_srgb = false,
-    std::optional<media::VideoTransformation> transformation_override =
-        std::nullopt);
+    bool reinterpret_video_as_srgb = false);
 
 // Returns an unaccelerated StaticBitmapImage for the given frame.
 //
@@ -91,11 +84,6 @@ CreateAcceleratedImageFromVideoFrame(
 // If `reinterpret_video_as_srgb` true, then the video will be reinterpreted as
 // being originally having been in sRGB.
 //
-// If `transformation_override` is provided, it forces the rendering pipeline to
-// use the specified transformation (e.g., `media::kNoTransformation` to bypass
-// any intrinsic rotation). If nullopt, it falls back to the VideoFrame's
-// metadata.
-//
 // Returns nullptr if a StaticBitmapImage can't be created.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage>
 CreateUnacceleratedImageFromVideoFrame(
@@ -103,9 +91,7 @@ CreateUnacceleratedImageFromVideoFrame(
     const CanvasSnapshotInfo& draw_info,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     bool prefer_tagged_orientation = true,
-    bool reinterpret_video_as_srgb = false,
-    std::optional<media::VideoTransformation> transformation_override =
-        std::nullopt);
+    bool reinterpret_video_as_srgb = false);
 
 PLATFORM_EXPORT bool ShouldCreateAcceleratedImages(
     viz::RasterContextProvider* raster_context_provider);
