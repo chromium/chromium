@@ -329,6 +329,8 @@ OSStatus FakeKeychainV2::ItemUpdate(CFDictionaryRef query,
   CFStringRef query_account =
       base::apple::GetValueFromDictionary<CFStringRef>(query, kSecAttrAccount);
 
+  std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> new_items;
+  OSStatus result = errSecItemNotFound;
   for (base::apple::ScopedCFTypeRef<CFDictionaryRef>& item : items_) {
     if (query_application_label) {
       CFDataRef item_application_label =
@@ -336,6 +338,7 @@ OSStatus FakeKeychainV2::ItemUpdate(CFDictionaryRef query,
               item.get(), kSecAttrApplicationLabel);
       if (!item_application_label ||
           !CFEqual(query_application_label, item_application_label)) {
+        new_items.push_back(item);
         continue;
       }
     }
@@ -344,6 +347,7 @@ OSStatus FakeKeychainV2::ItemUpdate(CFDictionaryRef query,
           base::apple::GetValueFromDictionary<CFStringRef>(item.get(),
                                                            kSecAttrAccount);
       if (!item_account || !CFEqual(query_account, item_account)) {
+        new_items.push_back(item);
         continue;
       }
     }
@@ -354,12 +358,13 @@ OSStatus FakeKeychainV2::ItemUpdate(CFDictionaryRef query,
     [base::apple::CFToNSPtrCast(item_copy.get())
         addEntriesFromDictionary:base::apple::CFToNSPtrCast(
                                      attributes_to_update)];
-    item = item_copy;
-    // TODO(crbug.com/510320946): `ItemUpdate()` should support updating
-    // multiple values.
-    return errSecSuccess;
+    new_items.push_back(item_copy);
+    // Succeed if we replaced at least one item matching the query.
+    result = errSecSuccess;
   }
-  return errSecItemNotFound;
+
+  items_ = new_items;
+  return result;
 }
 
 base::expected<std::vector<uint8_t>, OSStatus>
