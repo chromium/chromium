@@ -22348,6 +22348,32 @@
             ]
         }
     ],
+    "ScrollJankHoldback": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Holdback_20260811",
+                    "params": {
+                        "max_resample_time": "20ms"
+                    },
+                    "enable_features": [
+                        "ResamplingScrollEvents"
+                    ],
+                    "disable_features": [
+                        "InputOnViz",
+                        "InputVizardSpeculativeTransfer",
+                        "ScrollPredictorRefinedHasPrediction",
+                        "UnthrottleAsyncTouchMoves",
+                        "UpdateScrollPredictorInputMapping",
+                        "WaitForLateScrollEvents"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScrollJankV4MetricFastScrollContinuityRequiresSameDirection": [
         {
             "platforms": [
@@ -25239,22 +25265,11 @@
     "UpdateScrollPredictorInputMapping": [
         {
             "platforms": [
-                "android",
                 "android_webview"
             ],
             "experiments": [
                 {
                     "name": "Enabled_WebView_20260629",
-                    "params": {
-                        "mode": "UseScrollPredictorForEmptyQueue"
-                    },
-                    "enable_features": [
-                        "UpdateScrollPredictorInputMapping",
-                        "WaitForLateScrollEvents"
-                    ]
-                },
-                {
-                    "name": "InputPredictorInputMappingEnabled_20251031",
                     "params": {
                         "mode": "UseScrollPredictorForEmptyQueue"
                     },
