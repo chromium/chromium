@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-#include "components/password_manager/core/browser/ui/passwords_provider.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 namespace extensions {

@@ -30,7 +30,6 @@ class WebContents;
 
 namespace password_manager {
 struct CredentialUIEntry;
-class PasswordsProvider;
 }
 
 namespace extensions {

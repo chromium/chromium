@@ -19,7 +19,6 @@
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "components/password_manager/core/browser/ui/passwords_provider.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 
@@ -49,8 +48,7 @@ class PasswordsGrouper;
 // Chrome) should not trigger a check.
 class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                                 public webauthn::PasskeyModel::Observer,
-                                public PasswordStoreConsumer,
-                                public PasswordsProvider {
+                                public PasswordStoreConsumer {
  public:
   // Observer interface. Clients can implement this to get notified about
   // changes to the list of saved passwords or if a given password was edited
@@ -182,10 +180,17 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void MoveCredentialsToAccount(
       const std::vector<CredentialUIEntry>& credentials);
 
-  // PasswordsProvider:
-  std::vector<CredentialUIEntry> GetSavedCredentials() const override;
+  // Returns all saved credentials across account, profile, and passkey stores,
+  // including standard passwords, passkeys, federated credentials, and blocked
+  // forms. Entries present in both account and profile stores are merged into a
+  // single entity.
+  std::vector<CredentialUIEntry> GetSavedCredentials() const;
+
+  // Returns all approved Actor Login permissions across stored credentials,
+  // deduplicated by domain info and username. Favicon URLs are populated via
+  // `sync_service` when available.
   base::flat_set<ActorLoginPermission> GetActorLoginPermissions(
-      const syncer::SyncService* sync_service) const override;
+      const syncer::SyncService* sync_service) const;
 
   // Returns a list of affiliated groups for the Password Manager.
   std::vector<AffiliatedGroup> GetAffiliatedGroups();
