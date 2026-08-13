@@ -106,6 +106,7 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DraggabilityProvider;
+import org.chromium.components.browser_ui.widget.search.SearchBoxProperties;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
@@ -899,10 +900,7 @@ public class BookmarkManagerMediatorTest {
 
         // Get the search text change callback from the search box row.
         Callback<String> searchTextChangeCallback =
-                mModelList
-                        .get(0)
-                        .model
-                        .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+                mModelList.get(0).model.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK);
 
         // Start a search on the tablet (in-place filter, stays in FOLDER mode).
         searchTextChangeCallback.onResult("3");
@@ -1611,11 +1609,7 @@ public class BookmarkManagerMediatorTest {
                 ViewType.IMPROVED_BOOKMARK_COMPACT);
 
         mModelList.addObserver(mListObserver);
-        mModelList
-                .get(0)
-                .model
-                .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK)
-                .onResult("3");
+        mModelList.get(0).model.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK).onResult("3");
         verifyCurrentViewTypes(ViewType.SEARCH_BOX, ViewType.IMPROVED_BOOKMARK_COMPACT);
         verify(mListObserver, never()).onItemRangeChanged(any(), eq(0), anyInt(), any());
         verify(mListObserver, never()).onItemRangeRemoved(any(), eq(0), anyInt());
@@ -1639,9 +1633,7 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(searchBoxModel);
 
         mModelList.addObserver(mListObserver);
-        searchBoxModel
-                .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK)
-                .onResult("3");
+        searchBoxModel.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK).onResult("3");
         verifyCurrentViewTypes(ViewType.SEARCH_BOX, ViewType.IMPROVED_BOOKMARK_COMPACT);
     }
 
@@ -1683,9 +1675,7 @@ public class BookmarkManagerMediatorTest {
         finishLoading();
         mMediator.openFolder(mFolderId1);
         PropertyModel searchBoxModel = mModelList.get(0).model;
-        searchBoxModel
-                .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK)
-                .onResult(queryString);
+        searchBoxModel.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK).onResult(queryString);
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
         verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3, mBookmarkId21);
 
@@ -1728,36 +1718,30 @@ public class BookmarkManagerMediatorTest {
 
         PropertyModel searchBoxModel = mModelList.get(0).model;
         Callback<String> searchTextChangeCallback =
-                searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+                searchBoxModel.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK);
         assertNotNull(searchTextChangeCallback);
 
         String searchText = "foo";
         searchTextChangeCallback.onResult(searchText);
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
-        assertEquals(searchText, searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
+        assertEquals(searchText, searchBoxModel.get(SearchBoxProperties.SEARCH_TEXT));
         verify(mBookmarkModel).searchBookmarks(eq(searchText), anyInt());
-        assertTrue(
-                searchBoxModel.get(
-                        BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
+        assertTrue(searchBoxModel.get(SearchBoxProperties.CLEAR_BUTTON_VISIBILITY));
         verifyNoInteractions(mHideKeyboardRunnable);
 
         searchText = "";
         searchTextChangeCallback.onResult(searchText);
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
-        assertEquals(searchText, searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
+        assertEquals(searchText, searchBoxModel.get(SearchBoxProperties.SEARCH_TEXT));
         verify(mBookmarkModel, never()).searchBookmarks(eq(searchText), anyInt());
-        assertFalse(
-                searchBoxModel.get(
-                        BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
+        assertFalse(searchBoxModel.get(SearchBoxProperties.CLEAR_BUTTON_VISIBILITY));
         verifyNoInteractions(mHideKeyboardRunnable);
 
         searchTextChangeCallback.onResult("bar");
         mMediator.onBackPressed();
         assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
-        assertEquals("", searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
-        assertFalse(
-                searchBoxModel.get(
-                        BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
+        assertEquals("", searchBoxModel.get(SearchBoxProperties.SEARCH_TEXT));
+        assertFalse(searchBoxModel.get(SearchBoxProperties.CLEAR_BUTTON_VISIBILITY));
         verify(mHideKeyboardRunnable).run();
     }
 
@@ -2219,17 +2203,15 @@ public class BookmarkManagerMediatorTest {
         OnScrollListener onScrollListener = mOnScrollListenerCaptor.getValue();
 
         PropertyModel searchBoxRowPropertyModel = mModelList.get(0).model;
-        searchBoxRowPropertyModel
-                .get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK)
-                .onResult(true);
-        assertTrue(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
+        searchBoxRowPropertyModel.get(SearchBoxProperties.FOCUS_CHANGED_CALLBACK).onResult(true);
+        assertTrue(searchBoxRowPropertyModel.get(SearchBoxProperties.HAS_FOCUS));
 
         onScrollListener.onScrolled(mRecyclerView, 0, -1);
         verifyNoInteractions(mHideKeyboardRunnable);
-        assertTrue(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
+        assertTrue(searchBoxRowPropertyModel.get(SearchBoxProperties.HAS_FOCUS));
 
         onScrollListener.onScrolled(mRecyclerView, 0, 1);
-        assertFalse(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
+        assertFalse(searchBoxRowPropertyModel.get(SearchBoxProperties.HAS_FOCUS));
         verify(mHideKeyboardRunnable).run();
     }
 
@@ -2242,16 +2224,12 @@ public class BookmarkManagerMediatorTest {
         assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
         PropertyModel searchBoxRowPropertyModel = mModelList.get(0).model;
 
-        searchBoxRowPropertyModel
-                .get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK)
-                .onResult(true);
-        assertTrue(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
+        searchBoxRowPropertyModel.get(SearchBoxProperties.FOCUS_CHANGED_CALLBACK).onResult(true);
+        assertTrue(searchBoxRowPropertyModel.get(SearchBoxProperties.HAS_FOCUS));
         verifyNoInteractions(mHideKeyboardRunnable);
 
-        searchBoxRowPropertyModel
-                .get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK)
-                .onResult(false);
-        assertFalse(searchBoxRowPropertyModel.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
+        searchBoxRowPropertyModel.get(SearchBoxProperties.FOCUS_CHANGED_CALLBACK).onResult(false);
+        assertFalse(searchBoxRowPropertyModel.get(SearchBoxProperties.HAS_FOCUS));
         verify(mHideKeyboardRunnable).run();
     }
 
@@ -2277,26 +2255,22 @@ public class BookmarkManagerMediatorTest {
 
         PropertyModel propertyModel = mModelList.get(0).model;
         Callback<String> searchTextCallback =
-                propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+                propertyModel.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK);
         assertNotNull(searchTextCallback);
         Runnable clearSearchTextRunnable =
-                propertyModel.get(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE);
+                propertyModel.get(SearchBoxProperties.CLEAR_SEARCH_TEXT_RUNNABLE);
         assertNotNull(clearSearchTextRunnable);
 
         String searchText = "foo";
         searchTextCallback.onResult(searchText);
-        assertEquals(searchText, propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
-        assertTrue(
-                propertyModel.get(
-                        BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
+        assertEquals(searchText, propertyModel.get(SearchBoxProperties.SEARCH_TEXT));
+        assertTrue(propertyModel.get(SearchBoxProperties.CLEAR_BUTTON_VISIBILITY));
         verify(mBookmarkModel, times(1)).searchBookmarks(anyString(), anyInt());
         verifyCurrentBookmarkIds(null, mFolderId1);
 
         clearSearchTextRunnable.run();
-        assertEquals("", propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
-        assertFalse(
-                propertyModel.get(
-                        BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
+        assertEquals("", propertyModel.get(SearchBoxProperties.SEARCH_TEXT));
+        assertFalse(propertyModel.get(SearchBoxProperties.CLEAR_BUTTON_VISIBILITY));
         // It shouldn't search again.
         verify(mBookmarkModel, times(1)).searchBookmarks(anyString(), anyInt());
         assertBookmarkListEmpty();
@@ -2310,10 +2284,7 @@ public class BookmarkManagerMediatorTest {
         verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3);
 
         Callback<String> searchTextChangeCallback =
-                mModelList
-                        .get(0)
-                        .model
-                        .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+                mModelList.get(0).model.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK);
         searchTextChangeCallback.onResult("foo");
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
 
@@ -2399,7 +2370,7 @@ public class BookmarkManagerMediatorTest {
         // Focusing the searchbox will start a search which will clear out existing bookmarks.
         when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
                 .thenReturn(Collections.singletonList(mFolderId1));
-        searchBoxModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
+        searchBoxModel.get(SearchBoxProperties.FOCUS_CHANGED_CALLBACK).onResult(true);
 
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
         assertBookmarkListEmpty();
@@ -2491,14 +2462,13 @@ public class BookmarkManagerMediatorTest {
 
         PropertyModel propertyModel = mModelList.get(0).model;
         Callback<String> searchTextCallback =
-                propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+                propertyModel.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK);
         assertNotNull(searchTextCallback);
 
         String queryWithWhitespace = " foo ";
         searchTextCallback.onResult(queryWithWhitespace);
         // Model queries should be trimmed, but the View property should still have whitespace.
-        assertEquals(
-                queryWithWhitespace, propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
+        assertEquals(queryWithWhitespace, propertyModel.get(SearchBoxProperties.SEARCH_TEXT));
         verify(mBookmarkModel).searchBookmarks(eq("foo"), anyInt());
     }
 
@@ -2510,10 +2480,8 @@ public class BookmarkManagerMediatorTest {
 
         when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
                 .thenReturn(Collections.singletonList(mFolderId1));
-        searchBoxModel
-                .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK)
-                .onResult("test");
-        searchBoxModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
+        searchBoxModel.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK).onResult("test");
+        searchBoxModel.get(SearchBoxProperties.FOCUS_CHANGED_CALLBACK).onResult(true);
 
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
         verifyCurrentBookmarkIds(null, mFolderId1);
@@ -2537,8 +2505,8 @@ public class BookmarkManagerMediatorTest {
 
         when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
                 .thenReturn(Collections.singletonList(mFolderId1));
-        searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK).onResult("");
-        searchBoxModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
+        searchBoxModel.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK).onResult("");
+        searchBoxModel.get(SearchBoxProperties.FOCUS_CHANGED_CALLBACK).onResult(true);
 
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
         assertBookmarkListEmpty();
@@ -2741,10 +2709,7 @@ public class BookmarkManagerMediatorTest {
 
         // Get the callback from the currently displayed search box model.
         Callback<String> searchTextChangeCallback =
-                mModelList
-                        .get(0)
-                        .model
-                        .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+                mModelList.get(0).model.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK);
 
         // Starting a search should enable back press.
         searchTextChangeCallback.onResult("test");
@@ -2769,10 +2734,7 @@ public class BookmarkManagerMediatorTest {
         assertTrue("Supplier should be true in a subfolder.", mBackPressStateSupplier.get());
 
         Callback<String> searchTextChangeCallback =
-                mModelList
-                        .get(0)
-                        .model
-                        .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+                mModelList.get(0).model.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK);
         searchTextChangeCallback.onResult("test");
         assertTrue(
                 "Supplier should remain true when searching in a subfolder.",

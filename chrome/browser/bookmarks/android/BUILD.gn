@@ -264,6 +264,7 @@ robolectric_library("junit") {
   deps = [
     "//chrome/android/junit:chrome_junit_tests_helper",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
+    "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
   ]
 }
@@ -302,6 +303,7 @@ android_library("javatests") {
     "//chrome/android/javatests:chrome_test_java_helper",
     "//chrome/browser/ui/side_ui/public:java",
     "//chrome/browser/user_education:java",
+    "//components/browser_ui/widget/android:java",
     "//ui/accessibility:ui_accessibility_test_support_java",
   ]
 }

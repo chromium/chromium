@@ -324,7 +324,8 @@ public class BookmarkManagerCoordinator
         bookmarkDelegateSupplier.set(/* object= */ mMediator);
 
         if (isDesktopLayoutEnabled) {
-            View searchBoxView = mMainView.findViewById(R.id.desktop_search_box_row);
+            BookmarkSearchBoxRow searchBoxView =
+                    mMainView.findViewById(R.id.desktop_search_box_row);
             PropertyModel searchBoxPropertyModel = mMediator.getOrCreateSearchBoxPropertyModel();
             mSearchBoxChangeProcessor =
                     PropertyModelChangeProcessor.create(
@@ -570,8 +571,8 @@ public class BookmarkManagerCoordinator
         return row;
     }
 
-    View buildSearchBoxRow(ViewGroup parent) {
-        return inflate(parent, R.layout.bookmark_search_box_row);
+    BookmarkSearchBoxRow buildSearchBoxRow(ViewGroup parent) {
+        return (BookmarkSearchBoxRow) inflate(parent, R.layout.bookmark_search_box_row);
     }
 
     View buildEmptyStateView(ViewGroup parent) {
@@ -712,7 +713,7 @@ public class BookmarkManagerCoordinator
     }
 
     private void updateDesktopSearchBoxMargins() {
-        View searchBoxView = mMainView.findViewById(R.id.desktop_search_box_row);
+        BookmarkSearchBoxRow searchBoxView = mMainView.findViewById(R.id.desktop_search_box_row);
         if (searchBoxView != null) {
             int padding =
                     mContext.getResources()

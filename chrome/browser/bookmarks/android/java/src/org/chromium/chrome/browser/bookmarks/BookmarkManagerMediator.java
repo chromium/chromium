@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
@@ -61,6 +62,7 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DraggabilityProvider;
+import org.chromium.components.browser_ui.widget.search.SearchBoxProperties;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
@@ -1394,14 +1396,22 @@ class BookmarkManagerMediator
             mSearchBoxPropertyModel =
                     new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
                             .with(
-                                    BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK,
+                                    SearchBoxProperties.TEXT_CHANGED_CALLBACK,
                                     this::onSearchTextChangeCallback)
                             .with(
-                                    BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE,
+                                    SearchBoxProperties.CLEAR_SEARCH_TEXT_RUNNABLE,
                                     this::onClearSearchTextRunnable)
                             .with(
-                                    BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
+                                    SearchBoxProperties.FOCUS_CHANGED_CALLBACK,
                                     this::onSearchBoxFocusChange)
+                            .with(
+                                    SearchBoxProperties.SEARCH_LOUPE_VISIBILITY,
+                                    BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                                            ? View.VISIBLE
+                                            : View.GONE)
+                            .with(
+                                    SearchBoxProperties.HINT_TEXT,
+                                    mContext.getString(R.string.bookmark_toolbar_search))
                             .with(
                                     BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES,
                                     R.drawable.notifications_active)
@@ -1774,10 +1784,9 @@ class BookmarkManagerMediator
 
     private void setSearchTextAndUpdateButtonVisibility(String searchText) {
         PropertyModel searchModel = assumeNonNull(getSearchBoxPropertyModel());
-        searchModel.set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);
+        searchModel.set(SearchBoxProperties.SEARCH_TEXT, searchText);
         boolean isVisible = !TextUtils.isEmpty(searchText);
-        searchModel.set(
-                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY, isVisible);
+        searchModel.set(SearchBoxProperties.CLEAR_BUTTON_VISIBILITY, isVisible);
     }
 
     private void onSearchBoxFocusChange(Boolean hasFocus) {
@@ -1787,7 +1796,7 @@ class BookmarkManagerMediator
 
     private void setSearchBoxFocusAndHideKeyboardIfNeeded(boolean hasFocus) {
         PropertyModel searchModel = assumeNonNull(getSearchBoxPropertyModel());
-        searchModel.set(BookmarkSearchBoxRowProperties.HAS_FOCUS, hasFocus);
+        searchModel.set(SearchBoxProperties.HAS_FOCUS, hasFocus);
         if (hasFocus) {
             // On phones, tapping the search box switches to a dedicated search UI. On tablets, the
             // search box is part of the folder view and doesn't switch modes.
@@ -1855,9 +1864,7 @@ class BookmarkManagerMediator
         // the state stack.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             PropertyModel searchModel = getSearchBoxPropertyModel();
-            return searchModel == null
-                    ? ""
-                    : searchModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT);
+            return searchModel == null ? "" : searchModel.get(SearchBoxProperties.SEARCH_TEXT);
         }
         BookmarkUiState state = mStateStack.peekLast();
         return state == null ? "" : state.mSearchText;

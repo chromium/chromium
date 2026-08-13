@@ -57,7 +57,7 @@ found in the LICENSE file.
         android:background="@macro/bookmark_desktop_content_pane_bg">
 
         <include
-            layout="@layout/bookmark_search_box_row_desktop"
+            layout="@layout/bookmark_search_box_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/bookmark_desktop_navigation_header_top_margin"

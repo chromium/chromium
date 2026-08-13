@@ -26,6 +26,15 @@ found in the LICENSE file.
   <dimen name="bookmark_popup_title_input_height">48dp</dimen>
   <dimen name="bookmark_popup_title_margin_bottom">24dp</dimen>
   <dimen name="bookmark_popup_width">412dp</dimen>
+  <dimen name="bookmark_search_box_bottom_margin_default">2dp</dimen>
+  <dimen name="bookmark_search_box_bottom_margin_desktop">0dp</dimen>
+  <dimen name="bookmark_search_box_height_default">40dp</dimen>
+  <dimen name="bookmark_search_box_height_desktop">48dp</dimen>
+  <dimen name="bookmark_search_box_padding_end_default">0dp</dimen>
+  <dimen name="bookmark_search_box_padding_horizontal_desktop">16dp</dimen>
+  <dimen name="bookmark_search_box_padding_start">16dp</dimen>
+  <dimen name="bookmark_search_box_row_margin_bottom_default">16dp</dimen>
+  <dimen name="bookmark_search_box_row_margin_bottom_desktop">0dp</dimen>
   <dimen name="bookmarks_bar_popup_max_width">420dp</dimen>
   <dimen name="bookmarks_bar_popup_min_height">182dp</dimen>
   <!-- go/keep-sorted end -->

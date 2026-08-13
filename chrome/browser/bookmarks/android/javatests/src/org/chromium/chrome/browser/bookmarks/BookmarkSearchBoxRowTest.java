@@ -57,6 +57,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.KeyUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.widget.search.SearchBoxProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -138,15 +139,13 @@ public class BookmarkSearchBoxRowTest {
                                             BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY,
                                             true)
                                     .with(
-                                            BookmarkSearchBoxRowProperties
-                                                    .SEARCH_TEXT_CHANGE_CALLBACK,
+                                            SearchBoxProperties.TEXT_CHANGED_CALLBACK,
                                             mSearchTextChangeCallback)
                                     .with(
-                                            BookmarkSearchBoxRowProperties
-                                                    .CLEAR_SEARCH_TEXT_RUNNABLE,
+                                            SearchBoxProperties.CLEAR_SEARCH_TEXT_RUNNABLE,
                                             mClearSearchTextRunnable)
                                     .with(
-                                            BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
+                                            SearchBoxProperties.FOCUS_CHANGED_CALLBACK,
                                             mFocusChangeCallback)
                                     .with(
                                             BookmarkSearchBoxRowProperties
@@ -187,7 +186,7 @@ public class BookmarkSearchBoxRowTest {
     @MediumTest
     public void testSearchTextAndChangeCallback() {
         String barText = "bar";
-        setProperty(BookmarkSearchBoxRowProperties.SEARCH_TEXT, barText);
+        setProperty(SearchBoxProperties.SEARCH_TEXT, barText);
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.getText(), withText(barText)));
         verifyNoInteractions(mSearchTextChangeCallback);
 
@@ -199,11 +198,11 @@ public class BookmarkSearchBoxRowTest {
     @Test
     @MediumTest
     public void testFocusChangeCallback() {
-        setProperty(BookmarkSearchBoxRowProperties.HAS_FOCUS, true);
+        setProperty(SearchBoxProperties.HAS_FOCUS, true);
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(true)));
         verifyNoInteractions(mFocusChangeCallback);
 
-        setProperty(BookmarkSearchBoxRowProperties.HAS_FOCUS, false);
+        setProperty(SearchBoxProperties.HAS_FOCUS, false);
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(false)));
         verifyNoInteractions(mFocusChangeCallback);
 
@@ -273,7 +272,7 @@ public class BookmarkSearchBoxRowTest {
     public void testClearSearchTextButtonAndRunnable() {
         onView(withId(R.id.clear_text_button)).check(matches(not(isDisplayed())));
 
-        setProperty(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY, true);
+        setProperty(SearchBoxProperties.CLEAR_BUTTON_VISIBILITY, true);
         onView(withId(R.id.clear_text_button)).check(matches(isDisplayed()));
 
         onView(withId(R.id.clear_text_button)).perform(click());
@@ -296,7 +295,7 @@ public class BookmarkSearchBoxRowTest {
                 });
 
         String searchText = "foo";
-        setProperty(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);
+        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.setText(searchText));
         verify(mSearchTextChangeCallback, times(1)).onResult(eq(searchText));
     }
 }
