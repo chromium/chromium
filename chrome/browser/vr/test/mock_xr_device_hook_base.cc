@@ -276,9 +276,3 @@ void MockXRDeviceHookBase::WaitGetVisibilityMask(
 
   std::move(callback).Run(std::move(mask));
 }
-
-void MockXRDeviceHookBase::TerminateDeviceServiceProcessForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
-  mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-  service_test_hook_->TerminateDeviceServiceProcessForTesting();
-}

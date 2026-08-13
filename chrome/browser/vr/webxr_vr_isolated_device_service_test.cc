@@ -10,8 +10,10 @@
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
+#include "content/public/browser/service_process_host.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/xr_test_utils.h"
+#include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 
 // Android doesn't use an isolated device service, so these tests don't need to
 // be built here.
@@ -38,7 +40,12 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestDeviceServiceDisconnect) {
   // number of device changes after this point.
   t->RunJavaScriptOrFail("resetDeviceChanges()");
 
-  device_hook->TerminateDeviceServiceProcessForTesting();
+  for (const auto& info :
+       content::ServiceProcessHost::GetRunningProcessInfo()) {
+    if (info.IsService<device::mojom::XRDeviceService>()) {
+      info.GetProcess().Terminate(/*exit_code=*/1, /*wait=*/false);
+    }
+  }
 
   // Ensure that we've actually exited the session.
   t->PollJavaScriptBooleanOrFail(

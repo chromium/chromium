@@ -21,14 +21,10 @@ class XRServiceTestHook final : public device_test::mojom::XRServiceTestHook {
   XRServiceTestHook();
   ~XRServiceTestHook() override;
 
-  using DeviceCrashCallback = device_test::mojom::XRServiceTestHook::
-      TerminateDeviceServiceProcessForTestingCallback;
   // device_test::mojom::XRServiceTestHook
   void SetTestHook(mojo::PendingRemote<device_test::mojom::XRTestHook> hook,
                    device_test::mojom::XRServiceTestHook::SetTestHookCallback
                        callback) override;
-  void TerminateDeviceServiceProcessForTesting(
-      DeviceCrashCallback callback) override;
 
  private:
   std::unique_ptr<webxr::XRTestHookWrapper> wrapper_;

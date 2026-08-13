@@ -5,7 +5,6 @@
 #include "content/services/isolated_xr_device/xr_service_test_hook.h"
 
 #include "base/functional/bind.h"
-#include "base/process/process.h"
 #include "components/webxr/xr_test_hook_wrapper.h"
 #include "device/vr/buildflags/buildflags.h"
 
@@ -47,11 +46,6 @@ void XRServiceTestHook::SetTestHook(
   wrapper_ = std::move(wrapper);
 
   std::move(callback).Run();
-}
-
-void XRServiceTestHook::TerminateDeviceServiceProcessForTesting(
-    DeviceCrashCallback callback) {
-  base::Process::TerminateCurrentProcessImmediately(1);
 }
 
 XRServiceTestHook::~XRServiceTestHook() {

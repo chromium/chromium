@@ -82,7 +82,6 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   void SimulateInstanceLost();
 
   // MockXRDeviceHookBase
-  void TerminateDeviceServiceProcessForTesting();
   void PopulateEvent(device_test::mojom::EventData data);
   void StopHooking();
   void SetCanCreateSession(bool can_create_session);

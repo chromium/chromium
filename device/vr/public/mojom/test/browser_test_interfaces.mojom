@@ -115,9 +115,4 @@ interface XRServiceTestHook {
   // debuggable manner, rather than relying on waiting for the async callback to
   // continue with the test.
   [Sync] SetTestHook(pending_remote<XRTestHook>? hook) => ();
-
-  // Called by tests to trigger a termination of the Device Service Process
-  // To test that the product can properly handle the service either crashing
-  // or (more expectedly) being terminated by some other running process.
-  [Sync] TerminateDeviceServiceProcessForTesting() => ();
 };
