@@ -6871,7 +6871,7 @@
   {
     "name": "malicious-apk-download-check",
     "owners": [ "yawfrempong@google.com", "//components/safe_browsing/OWNERS"],
-    "expiry_milestone": 153
+    "expiry_milestone": 156
   },
   {
     "name": "management-promotion-banner-flag",
