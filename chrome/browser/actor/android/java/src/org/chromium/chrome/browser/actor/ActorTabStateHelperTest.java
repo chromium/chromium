@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -20,11 +21,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,6 +62,7 @@ public class ActorTabStateHelperTest {
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private TabCreator mTabCreator;
     @Mock private Tab mPlaceholderTab;
+    @Mock private Callback<Tab> mOnTabDetaching;
 
     @Before
     public void setUp() {
@@ -102,7 +106,8 @@ public class ActorTabStateHelperTest {
         TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
 
         List<BackgroundSession> sessions =
-                ActorTabStateHelper.detachActiveBackgroundSessions(mTabModelSelector, 42);
+                ActorTabStateHelper.detachActiveBackgroundSessions(
+                        mTabModelSelector, 42, mOnTabDetaching);
 
         assertEquals(1, sessions.size());
         assertEquals(mTab, sessions.get(0).getLastActiveTab());
@@ -114,7 +119,10 @@ public class ActorTabStateHelperTest {
         assertEquals(0, sessions.get(0).getTabDataList().get(0).getOriginalTabIndex());
         assertEquals(42, sessions.get(0).getTabDataList().get(0).getTabWindowId());
 
-        verify(mTabRemover).removeTab(mTab, false);
+        InOrder inOrder = inOrder(mOnTabDetaching, mTabRemover);
+        inOrder.verify(mOnTabDetaching).onResult(mTab);
+        inOrder.verify(mTabRemover).removeTab(mTab, false);
+
         verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
         verify(mTabModel, never()).pinTab(anyInt(), anyBoolean());
     }
@@ -125,9 +133,11 @@ public class ActorTabStateHelperTest {
         when(mActorKeyedService.getActiveTaskIdOnTab(TAB_ID, false)).thenReturn(null);
 
         List<BackgroundSession> sessions =
-                ActorTabStateHelper.detachActiveBackgroundSessions(mTabModelSelector, 0);
+                ActorTabStateHelper.detachActiveBackgroundSessions(
+                        mTabModelSelector, 0, mOnTabDetaching);
 
         assertTrue(sessions.isEmpty());
+        verify(mOnTabDetaching, never()).onResult(any());
         verify(mTabRemover, never()).removeTab(any(), eq(false));
     }
 
@@ -148,7 +158,8 @@ public class ActorTabStateHelperTest {
         when(mActorKeyedService.getActiveTaskIdOnTab(102, false)).thenReturn(500);
 
         List<BackgroundSession> sessions =
-                ActorTabStateHelper.detachActiveBackgroundSessions(mTabModelSelector, 0);
+                ActorTabStateHelper.detachActiveBackgroundSessions(
+                        mTabModelSelector, 0, mOnTabDetaching);
 
         assertEquals(1, sessions.size());
         assertEquals(2, sessions.get(0).getTabs().size());
@@ -158,8 +169,11 @@ public class ActorTabStateHelperTest {
         assertEquals(0, sessions.get(0).getTabDataList().get(0).getOriginalTabIndex());
         assertEquals(1, sessions.get(0).getTabDataList().get(1).getOriginalTabIndex());
 
-        verify(mTabRemover).removeTab(mTab, false);
-        verify(mTabRemover).removeTab(tab2, false);
+        InOrder inOrder = inOrder(mOnTabDetaching, mTabRemover);
+        inOrder.verify(mOnTabDetaching).onResult(mTab);
+        inOrder.verify(mTabRemover).removeTab(mTab, false);
+        inOrder.verify(mOnTabDetaching).onResult(tab2);
+        inOrder.verify(mTabRemover).removeTab(tab2, false);
     }
 
     @Test

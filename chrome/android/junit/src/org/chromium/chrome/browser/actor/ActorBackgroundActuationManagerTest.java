@@ -44,6 +44,7 @@ import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 
 /** Unit tests for {@link ActorBackgroundActuationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -201,6 +202,11 @@ public class ActorBackgroundActuationManagerTest {
         when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
         when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(123);
 
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(123);
+        when(task.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
 
         // Verify offscreen rendering was started for the transitioned tab
@@ -237,12 +243,16 @@ public class ActorBackgroundActuationManagerTest {
         when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(123);
         when(mActorKeyedService.getActiveTaskIdOnTab(101, false)).thenReturn(123);
 
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(123);
+        when(task.getTabs()).thenReturn(new LinkedHashSet<>(Arrays.asList(100, 101)));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
 
-        // Verify offscreen rendering is started only for the most recent tab (tab2)
+        // Verify offscreen rendering is started for both tabs
+        verify(mOffscreenRenderingManager).startOffscreenRendering(eq(mTab), anyInt(), anyInt());
         verify(mOffscreenRenderingManager).startOffscreenRendering(eq(tab2), anyInt(), anyInt());
-        verify(mOffscreenRenderingManager, never())
-                .startOffscreenRendering(eq(mTab), anyInt(), anyInt());
 
         mManager.destroy();
         verify(mOffscreenRenderingManager).stopOffscreenRendering(tab2);

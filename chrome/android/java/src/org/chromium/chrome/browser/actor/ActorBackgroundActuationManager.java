@@ -133,15 +133,9 @@ public class ActorBackgroundActuationManager {
     public void transitionActiveTasksToBackground(TabModelSelector selector) {
         ThreadUtils.assertOnUiThread();
         int windowId = TabWindowManagerSingleton.getInstance().getWindowIdForSelector(selector);
-        List<BackgroundSession> sessions =
-                ActorTabStateHelper.detachActiveBackgroundSessions(selector, windowId);
-        for (BackgroundSession session : sessions) {
-            Tab tab = session.getLastActiveTab();
-            if (tab != null) {
-                startOffscreenRendering(tab);
-            }
-            mBackgroundSessions.add(session);
-        }
+        mBackgroundSessions.addAll(
+                ActorTabStateHelper.detachActiveBackgroundSessions(
+                        selector, windowId, this::startOffscreenRendering));
     }
 
     /**

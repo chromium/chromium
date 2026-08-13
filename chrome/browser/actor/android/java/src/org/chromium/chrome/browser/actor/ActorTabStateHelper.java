@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
@@ -37,10 +38,12 @@ public class ActorTabStateHelper {
      *
      * @param selector The TabModelSelector of the stopping activity.
      * @param windowId The window ID where the selector is located.
+     * @param onTabDetaching Callback invoked for each tab before it is removed from the TabModel,
+     *     e.g. to start offscreen rendering.
      * @return A list of prepared BackgroundSession objects.
      */
     public static List<BackgroundSession> detachActiveBackgroundSessions(
-            TabModelSelector selector, int windowId) {
+            TabModelSelector selector, int windowId, Callback<Tab> onTabDetaching) {
         ThreadUtils.assertOnUiThread();
         TabModel regularModel = selector.getModel(/* incognito= */ false);
         ActorKeyedService service = getActorKeyedService(regularModel);
@@ -49,7 +52,7 @@ public class ActorTabStateHelper {
             return Collections.emptyList();
         }
 
-        return findAndDetachActiveSessions(regularModel, service, windowId);
+        return findAndDetachActiveSessions(regularModel, service, windowId, onTabDetaching);
     }
 
     /**
@@ -57,7 +60,7 @@ public class ActorTabStateHelper {
      * Only creates and populates sessions for tabs whose placeholders were inserted correctly.
      */
     private static List<BackgroundSession> findAndDetachActiveSessions(
-            TabModel model, ActorKeyedService service, int windowId) {
+            TabModel model, ActorKeyedService service, int windowId, Callback<Tab> onTabDetaching) {
         List<BackgroundSession> sessions = new ArrayList<>();
 
         for (Tab originalTab : model) {
@@ -81,6 +84,7 @@ public class ActorTabStateHelper {
             } else {
                 sessions.add(new BackgroundSession(tabData, taskId));
             }
+            onTabDetaching.onResult(originalTab);
             // TODO(b/544014273) : Consider canceling the task if detaching tab was not successful
             model.getTabRemover().removeTab(originalTab, /* allowDialog= */ false);
         }
