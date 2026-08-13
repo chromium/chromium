@@ -34,7 +34,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {InputSource} from './fusebox_action.mojom-webui.js';
+import {InputSource, QueryActionOverride} from './fusebox_action.mojom-webui.js';
 import type {FuseboxAction} from './fusebox_action.mojom-webui.js';
 import {getCss} from './ntp_composebox.css.js';
 import {getHtml} from './ntp_composebox.html.js';
@@ -88,6 +88,9 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
+  // Chip suggestion shown as the input placeholder while a hint action is
+  // active. Set or replaced only by hint deliveries; ends with the element.
+  private chipHint_: string|null = null;
   protected accessor expanding_: boolean = true;
   protected accessor shouldRemainFolded_: boolean = true;
 
@@ -184,7 +187,22 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     return file;
   }
 
-  async handleFuseboxAction(action: FuseboxAction) {
+  // Keeps the active chip hint as the placeholder so that asynchronous
+  // inputState recomputes cannot clobber it.
+  override updateInputPlaceholder() {
+    if (this.chipHint_ !== null) {
+      this.inputPlaceholder = this.chipHint_;
+      return;
+    }
+    super.updateInputPlaceholder();
+  }
+
+  async handleFuseboxAction(action: FuseboxAction, suggestion?: string) {
+    if (action.queryActionOverride === QueryActionOverride.kHint &&
+        suggestion !== undefined) {
+      this.chipHint_ = suggestion;
+      this.updateInputPlaceholder();
+    }
     if (action.preselectedInputSource) {
       switch (action.preselectedInputSource) {
         case InputSource.kInputSourceGallery:

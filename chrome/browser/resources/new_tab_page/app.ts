@@ -984,12 +984,16 @@ export class AppElement extends AppElementBase {
       return;
     }
     const detail = e.detail;
-    if (this.isExplicitlyUnsupportedRoute_(detail.fuseboxAction)) {
+    if (this.isUnsupportedSearchboxSurface_(detail.fuseboxAction)) {
       return;
     }
     this.pageHandler_.onContextualSearchIPHEngaged();
+    // Minimal state mapping, not a route classifier: a hint suggestion is
+    // shown as the Composebox placeholder instead of populating the input.
+    const isHintAction =
+        detail.fuseboxAction?.queryActionOverride === QueryActionOverride.kHint;
     this.openComposebox_({
-      text: detail.suggestion,
+      text: isHintAction ? '' : detail.suggestion,
       files: detail.files,
       mode: detail.fuseboxAction?.preselectedTool ?? ToolMode.kUnspecified,
       model: detail.fuseboxAction?.preselectedModel ?? ModelMode.kUnspecified,
@@ -998,32 +1002,31 @@ export class AppElement extends AppElementBase {
       smartTabSharingActive: false,
       // </if>
     });
-    this.handleFuseboxAction_(detail.fuseboxAction);
+    this.handleFuseboxAction_(detail.fuseboxAction, detail.suggestion);
   }
 
-  // A route is explicitly unsupported when both override fields are set and
-  // their combination is not the supported kPaste + kComposebox. An action
-  // with either field missing keeps the compatible open-Composebox behavior.
-  private isExplicitlyUnsupportedRoute_(action?: FuseboxAction): boolean {
-    if (!action || action.queryActionOverride === null ||
-        action.searchboxOverride === null) {
+  // The Composebox is the only searchbox surface supported for action chip
+  // clicks; an explicit request for a different surface is a no-op. An action
+  // with the override missing keeps the compatible open-Composebox behavior.
+  private isUnsupportedSearchboxSurface_(action?: FuseboxAction): boolean {
+    if (!action || action.searchboxOverride === null) {
       return false;
     }
-    return action.queryActionOverride !== QueryActionOverride.kPaste ||
-        action.searchboxOverride !== SearchboxOverride.kComposebox;
+    return action.searchboxOverride !== SearchboxOverride.kComposebox;
   }
 
   protected onOpenComposebox_(e: CustomEvent<ComposeboxState>) {
     this.openComposebox_(e.detail);
   }
 
-  protected async handleFuseboxAction_(action?: FuseboxAction|null) {
+  protected async handleFuseboxAction_(
+      action: FuseboxAction|undefined, suggestion: string) {
     if (action) {
       await this.updateComplete;
       const composebox =
           this.shadowRoot?.querySelector<NtpComposeboxElement>('#composebox');
       if (composebox) {
-        await composebox.handleFuseboxAction(action);
+        await composebox.handleFuseboxAction(action, suggestion);
       }
     }
   }

@@ -3319,6 +3319,73 @@ suite('NewTabPageAppTest', () => {
               searchboxHandler.getArgs('setActiveModelMode')[0]);
         });
 
+    test(
+        'Explicit hint and composebox click passes the action and suggestion',
+        async () => {
+          let handleFuseboxActionCallCount = 0;
+          let handleFuseboxActionAction: FuseboxAction|null = null;
+          let handleFuseboxActionSuggestion: string|undefined;
+          const originalHandleFuseboxAction =
+              NtpComposeboxElement.prototype.handleFuseboxAction;
+          NtpComposeboxElement.prototype.handleFuseboxAction = function(
+              action: FuseboxAction, suggestion?: string) {
+            handleFuseboxActionCallCount++;
+            handleFuseboxActionAction = action;
+            handleFuseboxActionSuggestion = suggestion;
+            return originalHandleFuseboxAction.call(this, action, suggestion);
+          };
+          try {
+            const searchbox = $$(app, '#searchbox') as NtpSearchboxElement;
+            let setInputTextCallCount = 0;
+            searchbox.setInputText = () => setInputTextCallCount++;
+            const action: FuseboxAction = {
+              preselectedTool: ToolMode.kDeepSearch,
+              preferredInventory: SuggestInventory.kBrainstorm,
+              preselectedModel: ModelMode.kGeminiPro,
+              queryActionOverride: QueryActionOverride.kHint,
+              preselectedInputSource: null,
+              searchboxOverride: SearchboxOverride.kComposebox,
+            };
+
+            // Act.
+            app['onActionChipClick_'](new CustomEvent('action-chip-click', {
+              detail: {
+                suggestion: 'hint suggestion',
+                files: [{
+                  tabId: 1,
+                  url: 'https://example.com/test',
+                  title: 'Test Title',
+                  delayUpload: true,
+                  origin: TabUploadOrigin.ACTION_CHIP,
+                }],
+                fuseboxAction: action,
+              },
+            }));
+            await microtasksFinished();
+
+            // Assert: The composebox opened with an empty input and the child
+            // received the full action and raw suggestion once, without
+            // submitting or navigating.
+            const composebox =
+                app.shadowRoot.querySelector<NtpComposeboxElement>(
+                    '#composebox');
+            assertTrue(!!composebox);
+            assertEquals('', composebox.input);
+            assertEquals(1, handleFuseboxActionCallCount);
+            assertDeepEquals(action, handleFuseboxActionAction);
+            assertEquals('hint suggestion', handleFuseboxActionSuggestion);
+            assertEquals(1, searchboxHandler.getCallCount('addTabContext'));
+            assertEquals(
+                1, handler.getCallCount('onContextualSearchIPHEngaged'));
+            assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
+            assertEquals(0, windowProxy.getCallCount('navigate'));
+            assertEquals(0, setInputTextCallCount);
+          } finally {
+            NtpComposeboxElement.prototype.handleFuseboxAction =
+                originalHandleFuseboxAction;
+          }
+        });
+
     // Any click with a missing override field keeps the existing
     // open-Composebox behavior instead of being treated as an explicit zero
     // value or as an unsupported combination.
@@ -3360,11 +3427,12 @@ suite('NewTabPageAppTest', () => {
               if (fuseboxAction) {
                 const originalHandleFuseboxAction =
                     app['handleFuseboxAction_'].bind(app);
-                app['handleFuseboxAction_'] = (action?: FuseboxAction|null) => {
-                  handleFuseboxActionCallCount++;
-                  handleFuseboxActionArg = action;
-                  return originalHandleFuseboxAction(action);
-                };
+                app['handleFuseboxAction_'] =
+                    (action: FuseboxAction|undefined, suggestion: string) => {
+                      handleFuseboxActionCallCount++;
+                      handleFuseboxActionArg = action;
+                      return originalHandleFuseboxAction(action, suggestion);
+                    };
               }
 
               // Act.
@@ -3402,13 +3470,14 @@ suite('NewTabPageAppTest', () => {
       searchbox.setInputText = () => setInputTextCallCount++;
       let handleFuseboxActionCallCount = 0;
       const originalHandleFuseboxAction = app['handleFuseboxAction_'].bind(app);
-      app['handleFuseboxAction_'] = (action?: FuseboxAction|null) => {
-        handleFuseboxActionCallCount++;
-        return originalHandleFuseboxAction(action);
-      };
+      app['handleFuseboxAction_'] =
+          (action: FuseboxAction|undefined, suggestion: string) => {
+            handleFuseboxActionCallCount++;
+            return originalHandleFuseboxAction(action, suggestion);
+          };
 
-      // Act: Both override fields are explicitly set to a combination outside
-      // the supported kPaste + kComposebox.
+      // Act: The searchbox override is explicitly set to surfaces other than
+      // the Composebox.
       app['onActionChipClick_'](new CustomEvent('action-chip-click', {
         detail: {
           suggestion: 'unsupported suggestion',
@@ -3420,6 +3489,21 @@ suite('NewTabPageAppTest', () => {
             queryActionOverride: QueryActionOverride.kPaste,
             preselectedInputSource: null,
             searchboxOverride: SearchboxOverride.kUnspecified,
+          },
+        },
+      }));
+      await microtasksFinished();
+      app['onActionChipClick_'](new CustomEvent('action-chip-click', {
+        detail: {
+          suggestion: 'hint suggestion',
+          files: [],
+          fuseboxAction: {
+            preselectedTool: null,
+            preferredInventory: null,
+            preselectedModel: null,
+            queryActionOverride: QueryActionOverride.kHint,
+            preselectedInputSource: null,
+            searchboxOverride: SearchboxOverride.kRealbox,
           },
         },
       }));
@@ -3445,10 +3529,11 @@ suite('NewTabPageAppTest', () => {
           let handleFuseboxActionCallCount = 0;
           const originalHandleFuseboxAction =
               app['handleFuseboxAction_'].bind(app);
-          app['handleFuseboxAction_'] = (action?: FuseboxAction|null) => {
-            handleFuseboxActionCallCount++;
-            return originalHandleFuseboxAction(action);
-          };
+          app['handleFuseboxAction_'] =
+              (action: FuseboxAction|undefined, suggestion: string) => {
+                handleFuseboxActionCallCount++;
+                return originalHandleFuseboxAction(action, suggestion);
+              };
 
           // Act: Availability flips after the chips were rendered, then a
           // stale click for the supported combination arrives.
