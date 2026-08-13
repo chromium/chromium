@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] SVGAnimatedEnumeration, invalid values, SVGFEGaussianBlurElement.prototype.edgeMode (empty string)
+  Cannot read properties of undefined (reading 'baseVal')
+[FAIL] SVGAnimatedEnumeration, invalid values, SVGFEGaussianBlurElement.prototype.edgeMode (content attribute is not rewritten)
+  Cannot read properties of undefined (reading 'baseVal')
+Harness: the test ran to completion.
+

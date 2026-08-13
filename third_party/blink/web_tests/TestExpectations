@@ -2696,6 +2696,12 @@ crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/m
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-borders/corner-shape/corner-shape-superellipse-concave.html [ Failure ]
+external/wpt/css/css-borders/corner-shape/corner-shape-superellipse-convex.html [ Failure ]
+external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-012.html [ Failure ]
+virtual/disable-css-line-clamp-line-breaking-ellipsis/external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-012.html [ Failure ]
+virtual/disable-css-line-clamp-longhands/external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-012.html [ Failure ]
+virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-012.html [ Failure ]
 crbug.com/545678290 external/wpt/css/css-overflow/line-clamp/block-ellipsis-038.html [ Failure ]
 crbug.com/545678290 external/wpt/css/css-overflow/line-clamp/block-ellipsis-039.html [ Failure ]
 crbug.com/545678290 external/wpt/css/css-overflow/line-clamp/block-ellipsis-040.html [ Failure ]

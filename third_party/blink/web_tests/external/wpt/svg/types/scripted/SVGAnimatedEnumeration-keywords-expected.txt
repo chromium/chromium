@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] SVGAnimatedEnumeration, keyword values, SVGFEGaussianBlurElement.prototype.edgeMode (keywords)
+  Cannot read properties of undefined (reading 'baseVal')
+[FAIL] SVGAnimatedEnumeration, keyword values, SVGFEGaussianBlurElement.prototype.edgeMode (case-sensitive)
+  Cannot read properties of undefined (reading 'baseVal')
+Harness: the test ran to completion.
+

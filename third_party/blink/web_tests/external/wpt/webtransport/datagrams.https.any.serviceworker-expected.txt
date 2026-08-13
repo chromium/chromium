@@ -3,6 +3,8 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
 [FAIL] Successfully reading datagrams with BYOB reader.
   promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+[FAIL] Reading datagrams with BYOB reader without datagramsReadableType should fail.
+  assert_throws_js: function "() => { wt.datagrams.readable.getReader({ mode: 'byob' }) }" did not throw
 [FAIL] Reading datagrams with insufficient buffer should be rejected.
   promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
 [FAIL] Transfer max-size datagram

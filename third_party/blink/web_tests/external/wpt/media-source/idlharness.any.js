@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 // META: timeout=long
@@ -10,6 +11,13 @@ idl_test(
   ['media-source'],
   ['dom', 'html', 'url'],
   async idl_array => {
+    // Setting up a SourceBuffer object in a worker needs a media element on the
+    // main thread; only add objects in a Window. Interface exposure is checked
+    // in both scopes.
+    if (!GLOBAL.isWindow()) {
+      return;
+    }
+
     idl_array.add_objects({
       MediaSource: ['mediaSource'],
       SourceBuffer: ['sourceBuffer'],
