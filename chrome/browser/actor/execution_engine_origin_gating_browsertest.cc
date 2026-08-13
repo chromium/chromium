@@ -174,7 +174,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
     base::FilePath proto_path =
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("base_proto.pb"));
     ASSERT_TRUE(SetUpOptimizationGuideComponentBlocklist(
-        proto_path, "blocked.example.com"));
+        proto_path, "sensitive.example.com"));
     optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
         ->MaybeUpdateHintsComponent({base::Version("1"), proto_path});
 
@@ -530,12 +530,12 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingExplicitGrantBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
-                       ConfirmBlockedOriginWithUser_Granted) {
+                       ConfirmSensitiveOriginWithUser_Granted) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL blocked_url = embedded_https_test_server().GetURL(
-      "blocked.example.com", "/actor/blank.html");
+  const GURL sensitive_url = embedded_https_test_server().GetURL(
+      "sensitive.example.com", "/actor/blank.html");
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
@@ -547,14 +547,14 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", start_url)));
   ClickTarget("#link", mojom::ActionResultCode::kOk);
 
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", blocked_url)));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace("setLink($1);", sensitive_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
   RunTestSequence(VerifyUserConfirmationDialogRequest(
       base::test::ParseJsonDict(content::JsReplace(
           R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
-          url::Origin::Create(blocked_url)))));
+          url::Origin::Create(sensitive_url)))));
 
   // The first navigation should log that gating was not applied. The second
   // should log that gating was applied.
@@ -703,12 +703,12 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingUserPromptingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
-                       ConfirmBlockedOriginWithUser_Denied) {
+                       ConfirmSensitiveOriginWithUser_Denied) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL blocked_url = embedded_https_test_server().GetURL(
-      "blocked.example.com", "/actor/blank.html");
+  const GURL sensitive_url = embedded_https_test_server().GetURL(
+      "sensitive.example.com", "/actor/blank.html");
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
@@ -720,14 +720,14 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", start_url)));
   ClickTarget("#link", mojom::ActionResultCode::kOk);
 
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", blocked_url)));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace("setLink($1);", sensitive_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
   RunTestSequence(VerifyUserConfirmationDialogRequest(
       base::test::ParseJsonDict(content::JsReplace(
           R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
-          url::Origin::Create(blocked_url)))));
+          url::Origin::Create(sensitive_url)))));
 
   // Should log that permission was *denied* once.
   histogram_tester.ExpectUniqueSample(
@@ -843,42 +843,42 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
-                       BlockedNavigationNotAddedToAllowlist) {
+                       SensitiveNavigationNotAddedToAllowlist) {
   base::HistogramTester histogram_tester;
   const GURL start_url = embedded_https_test_server().GetURL(
       "www.example.com", "/actor/blank.html");
-  const GURL blocked_origin_url = embedded_https_test_server().GetURL(
-      "blocked.example.com", "/actor/blank.html");
-  const GURL blocked_origin_link_url = embedded_https_test_server().GetURL(
-      "blocked.example.com",
+  const GURL sensitive_origin_url = embedded_https_test_server().GetURL(
+      "sensitive.example.com", "/actor/blank.html");
+  const GURL sensitive_origin_link_url = embedded_https_test_server().GetURL(
+      "sensitive.example.com",
       base::StrCat({"/actor/link_full_page.html?href=",
-                    url::EncodeUriComponent(blocked_origin_url.spec())}));
+                    url::EncodeUriComponent(sensitive_origin_url.spec())}));
   const GURL link_page_url = embedded_https_test_server().GetURL(
       "www.example.com",
       base::StrCat({"/actor/link_full_page.html?href=",
-                    url::EncodeUriComponent(blocked_origin_url.spec())}));
+                    url::EncodeUriComponent(sensitive_origin_url.spec())}));
 
   // Start on example.com.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
 
-  // Navigate to blocked origin.
-  std::unique_ptr<ToolRequest> navigate_to_blocked =
-      MakeNavigateRequest(*active_tab(), blocked_origin_link_url.spec());
-  // Clicks on full-page link to blocked origin.
+  // Navigate to sensitive origin.
+  std::unique_ptr<ToolRequest> navigate_to_sensitive =
+      MakeNavigateRequest(*active_tab(), sensitive_origin_link_url.spec());
+  // Clicks on full-page link to sensitive origin.
   std::unique_ptr<ToolRequest> click_link_same_origin =
       MakeClickRequest(*active_tab(), gfx::Point(1, 1));
   // Navigate from back to start
   std::unique_ptr<ToolRequest> navigate_to_link_page =
       MakeNavigateRequest(*active_tab(), link_page_url.spec());
-  // Clicks on full-page link to blocked origin.
+  // Clicks on full-page link to sensitive origin.
   std::unique_ptr<ToolRequest> click_link_x_origin =
       MakeClickRequest(*active_tab(), gfx::Point(1, 1));
 
   RunTestSequence(CreateMockWebClientRequest(
       content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
   ActResultFuture result;
-  actor_task().Act(ToRequestList(navigate_to_blocked, click_link_same_origin,
+  actor_task().Act(ToRequestList(navigate_to_sensitive, click_link_same_origin,
                                  navigate_to_link_page, click_link_x_origin),
                    result.GetCallback());
   ExpectOkResult(result);
@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   RunTestSequence(VerifyUserConfirmationDialogRequest(
       base::test::ParseJsonDict(content::JsReplace(
           R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
-          url::Origin::Create(blocked_origin_url)))));
+          url::Origin::Create(sensitive_origin_url)))));
 
   // Trigger ExecutionEngine destructor for metrics.
   StopAllTasks();
@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
       histogram_tester.GetAllSamples("Actor.NavigationGating.AppliedGate"),
       base::BucketsAre(base::Bucket(false, 3), base::Bucket(true, 1)));
   // Permission should have been explicitly granted twice. Once for each
-  // navigation to blocked.
+  // navigation to sensitive origin.
   histogram_tester.ExpectBucketCount("Actor.NavigationGating.PermissionGranted",
                                      true, 1);
   // The allow-list should have 2 entries at the end of the task.
@@ -911,17 +911,17 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        SandboxedSiteDoesNotReprompt) {
   base::HistogramTester histogram_tester;
-  const GURL sandboxed_blocked_page = embedded_https_test_server().GetURL(
-      "blocked.example.com", "/actor/sandboxed_blank.html");
+  const GURL sandboxed_sensitive_page = embedded_https_test_server().GetURL(
+      "sensitive.example.com", "/actor/sandboxed_blank.html");
   const GURL blocked_page = embedded_https_test_server().GetURL(
-      "blocked.example.com", "/actor/blank.html");
+      "sensitive.example.com", "/actor/blank.html");
   const GURL normal_page_with_link = embedded_https_test_server().GetURL(
       "www.example.com",
       base::StrCat({"/actor/link_full_page.html?href=",
                     url::EncodeUriComponent(blocked_page.spec())}));
 
   // Start on sandboxed page.
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), sandboxed_blocked_page));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), sandboxed_sensitive_page));
   OpenGlicAndCreateTask();
 
   // Perform some action on the sandboxed site
@@ -1551,7 +1551,7 @@ class ExecutionEngineOriginGatingParamBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
-                       ConfirmBlockedOriginWithUserDisabled) {
+                       ConfirmSensitiveOriginWithUserDisabled) {
   if (prompt_user_for_sensitive_navigations_enabled()) {
     GTEST_SKIP() << "prompt_user_for_sensitive_navigations enabled already "
                     "tested in ExecutionEngineOriginGatingBrowserTest.";
@@ -1559,8 +1559,8 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
 
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL blocked_url = embedded_https_test_server().GetURL(
-      "blocked.example.com", "/actor/blank.html");
+  const GURL sensitive_url = embedded_https_test_server().GetURL(
+      "sensitive.example.com", "/actor/blank.html");
 
   OpenGlicAndCreateTask();
   RunTestSequence(CreateMockWebClientRequest(
@@ -1573,8 +1573,8 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
                               content::JsReplace("setLink($1);", start_url)));
   ClickTarget("#link", mojom::ActionResultCode::kOk);
 
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", blocked_url)));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace("setLink($1);", sensitive_url)));
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
 }
 
@@ -1656,7 +1656,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
                        ConfirmWithUserForTabAction) {
   base::HistogramTester histogram_tester;
   const GURL start_url = embedded_https_test_server().GetURL(
-      "blocked.example.com", "/actor/blank.html");
+      "sensitive.example.com", "/actor/blank.html");
 
   OpenGlicAndCreateTask();
 
@@ -1664,7 +1664,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
   RunTestSequence(CreateMockWebClientRequest(
       content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
 
-  // Start on blocked.example.com.
+  // Start on sensitive.example.com.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   // Clicks on full-page link to bar.com.
   std::unique_ptr<ToolRequest> click_link =
@@ -1809,28 +1809,26 @@ class ExecutionEngineOriginGatingSafetyDisabledBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingSafetyDisabledBrowserTest,
-                       IgnoreBlocklist) {
+                       IgnoreSensitiveUrlList) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL blocked_url = embedded_https_test_server().GetURL(
-      "blocked.example.com", "/actor/blank.html");
+  const GURL sensitive_url = embedded_https_test_server().GetURL(
+      "sensitive.example.com", "/actor/blank.html");
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
 
-  // Create a navigation request to the blocked URL.
-  std::unique_ptr<ToolRequest> navigate_to_blocked =
-      MakeNavigateRequest(*active_tab(), blocked_url.spec());
+  std::unique_ptr<ToolRequest> navigate_to_sensitive =
+      MakeNavigateRequest(*active_tab(), sensitive_url.spec());
 
   // Execute the navigation action.
   ActResultFuture result;
-  actor_task().Act(ToRequestList(navigate_to_blocked), result.GetCallback());
+  actor_task().Act(ToRequestList(navigate_to_sensitive), result.GetCallback());
 
   // The navigation should succeed because the safety checks are disabled.
   ExpectOkResult(result);
 
-  // Verify that the browser navigated to the blocked URL.
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), blocked_url);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), sensitive_url);
 }
 
 class ExecutionEngineSiteGatingBrowserTest
@@ -1925,16 +1923,16 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
-                       ConfirmListAlwaysUsesOrigin) {
+                       SensitiveSiteListAlwaysUsesOrigin) {
   base::HistogramTester histogram_tester;
   if (!should_gate_by_site()) {
-    GTEST_SKIP() << "Confirmlist already tested in "
+    GTEST_SKIP() << "SensitiveSiteList already tested in "
                     "ExecutionEngineOriginGatingBrowserTest.";
   }
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL confirmlist_url = embedded_https_test_server().GetURL(
-      "blocked.example.com", "/actor/blank.html");
+  const GURL sensitive_url = embedded_https_test_server().GetURL(
+      "sensitive.example.com", "/actor/blank.html");
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
@@ -1943,12 +1941,12 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
       content::JsReplace(kHandleUserConfirmationDialogTempl, false)));
 
   ASSERT_TRUE(content::ExecJs(
-      web_contents(), content::JsReplace("setLink($1);", confirmlist_url)));
+      web_contents(), content::JsReplace("setLink($1);", sensitive_url)));
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
   RunTestSequence(VerifyUserConfirmationDialogRequest(
       base::test::ParseJsonDict(content::JsReplace(
           R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
-          url::Origin::Create(confirmlist_url)))));
+          url::Origin::Create(sensitive_url)))));
 
   // Should log that permission was *denied* once.
   histogram_tester.ExpectBucketCount("Actor.NavigationGating.PermissionGranted",
@@ -2230,8 +2228,9 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingSlowResponseBrowserTest,
 
   ASSERT_TRUE(content::ExecJs(
       web_contents(),
-      content::JsReplace("setLink($1);", embedded_https_test_server().GetURL(
-                                             "blocked.example.com", "/slow"))));
+      content::JsReplace("setLink($1);",
+                         embedded_https_test_server().GetURL(
+                             "sensitive.example.com", "/slow"))));
 
   ActResultFuture act_result;
   content::TestNavigationObserver nav_observer(web_contents());
@@ -2443,11 +2442,11 @@ constexpr OutOfTurnTestParam kOutOfTurnTestParams[] = {
      .ui_prompt_type = UiPromptType::kNavConfirmation,
      .expects_permission_granted = false},
     {.test_name = "UserDialogAllowed",
-     .target_host = "blocked.example.com",
+     .target_host = "sensitive.example.com",
      .ui_prompt_type = UiPromptType::kUserConfirmationDialog,
      .expects_permission_granted = true},
     {.test_name = "UserDialogDenied",
-     .target_host = "blocked.example.com",
+     .target_host = "sensitive.example.com",
      .ui_prompt_type = UiPromptType::kUserConfirmationDialog,
      .expects_permission_granted = false},
     {.test_name = "Blocklisted",
@@ -2514,7 +2513,7 @@ constexpr OutOfTurnTaskStoppedTestParam kOutOfTurnTaskStoppedTestParams[] = {
      .target_host = "foo.com",
      .ui_prompt_type = UiPromptType::kNavConfirmation},
     {.test_name = "UserDialog",
-     .target_host = "blocked.example.com",
+     .target_host = "sensitive.example.com",
      .ui_prompt_type = UiPromptType::kUserConfirmationDialog},
 };
 
