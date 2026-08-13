@@ -853,6 +853,7 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [
+      "developer_tools_availability_list_policy_handler_unittest.cc",
       "developer_tools_policy_checker_factory_unittest.cc",
       "developer_tools_policy_checker_unittest.cc",
       "policy_path_parser_unittest.cc",
