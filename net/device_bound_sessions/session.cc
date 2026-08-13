@@ -648,6 +648,8 @@ void Session::InformOfRefreshResult(bool was_proactive,
     case kInvalidPreProvisionedKeyInitiatorMissing:
     case kPreProvisionedKeyAccessNotGranted:
     case kPreProvisionedKeyNotFound:
+    case kAttestationCertificationError:
+    case kAttestationSigningError:
       NOTREACHED();
   }
 

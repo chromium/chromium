@@ -2001,6 +2001,14 @@ String BuildProtocolDeviceBoundSessionFetchResult(
         kPreProvisionedKeyNotFound:
       return protocol::Network::DeviceBoundSessionFetchResultEnum::
           PreProvisionedKeyNotFound;
+    case net::device_bound_sessions::SessionError::ErrorType::
+        kAttestationCertificationError:
+      return protocol::Network::DeviceBoundSessionFetchResultEnum::
+          AttestationCertificationError;
+    case net::device_bound_sessions::SessionError::ErrorType::
+        kAttestationSigningError:
+      return protocol::Network::DeviceBoundSessionFetchResultEnum::
+          AttestationSigningError;
   }
 }
 // LINT.ThenChange(//third_party/blink/public/devtools_protocol/domains/Network.pdl:DeviceBoundSessionFetchResult)

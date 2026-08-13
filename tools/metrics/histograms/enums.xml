@@ -3140,6 +3140,8 @@ shown properly on the user-facing crash UI.
   <int value="85" label="Pre-provisioned key - initiator missing"/>
   <int value="86" label="Pre-provisioned key access not granted"/>
   <int value="87" label="Pre-provisioned key not found"/>
+  <int value="88" label="Attestation certification error"/>
+  <int value="89" label="Attestation signing error"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

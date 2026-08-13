@@ -210,6 +210,8 @@ enum DeviceBoundSessionError {
   kInvalidPreProvisionedKeyInitiatorMissing = 85,
   kPreProvisionedKeyAccessNotGranted = 86,
   kPreProvisionedKeyNotFound = 87,
+  kAttestationCertificationError = 88,
+  kAttestationSigningError = 89,
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError)
