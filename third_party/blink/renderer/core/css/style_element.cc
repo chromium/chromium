@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
-#include "third_party/blink/renderer/core/url/dom_url.h"
+#include "third_party/blink/renderer/core/url/url.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -323,7 +323,7 @@ void StyleElement::AddImportMapEntry(Element& element, const String& text) {
     StringUtf8Adaptor utf8(text, Utf8ConversionMode::kLenient);
     auto* blob = Blob::Create(base::as_byte_span(utf8), "text/css");
     CHECK(blob);
-    url_string = DOMURL::CreatePublicURL(context, blob);
+    url_string = URL::CreatePublicURL(context, blob);
   }
   KURL url(url_string);
   CHECK(url.IsValid());

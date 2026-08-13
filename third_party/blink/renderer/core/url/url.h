@@ -24,8 +24,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_URL_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_URL_URL_H_
 
 #include "base/notreached.h"
 #include "base/types/pass_key.h"
@@ -45,28 +45,28 @@ class ExecutionContext;
 class URLRegistrable;
 class URLSearchParams;
 
-class CORE_EXPORT DOMURL final : public ScriptWrappable,
-                                 public UrlUtils,
-                                 public DOMOriginUtils {
+class CORE_EXPORT URL final : public ScriptWrappable,
+                              public UrlUtils,
+                              public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using PassKey = base::PassKey<DOMURL>;
+  using PassKey = base::PassKey<URL>;
 
-  static DOMURL* Create(const String& url, ExceptionState& exception_state);
-  static DOMURL* Create(const String& url,
-                        const String& base,
-                        ExceptionState& exception_state);
+  static URL* Create(const String& url, ExceptionState& exception_state);
+  static URL* Create(const String& url,
+                     const String& base,
+                     ExceptionState& exception_state);
 
-  DOMURL(PassKey, const String& url, const KURL& base, ExceptionState&);
-  DOMURL(PassKey, const KURL& url);
-  ~DOMURL() override;
+  URL(PassKey, const String& url, const KURL& base, ExceptionState&);
+  URL(PassKey, const KURL& url);
+  ~URL() override;
 
   // DOMOriginUtils overrides:
   DOMOrigin* GetDOMOrigin(LocalDOMWindow*) const override;
 
-  static DOMURL* parse(const String& url);
-  static DOMURL* parse(const String& url, const String& base);
+  static URL* parse(const String& url);
+  static URL* parse(const String& url, const String& base);
 
   static bool canParse(const String& url);
   static bool canParse(const String& url, const String& base);
@@ -103,4 +103,4 @@ class CORE_EXPORT DOMURL final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_URL_URL_H_

@@ -24,7 +24,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/url/dom_url.h"
+#include "third_party/blink/renderer/core/url/url.h"
 
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -39,59 +39,57 @@
 namespace blink {
 
 // static
-DOMURL* DOMURL::Create(const String& url, ExceptionState& exception_state) {
-  return MakeGarbageCollected<DOMURL>(PassKey(), url, NullUrl(),
-                                      exception_state);
+URL* URL::Create(const String& url, ExceptionState& exception_state) {
+  return MakeGarbageCollected<URL>(PassKey(), url, NullUrl(), exception_state);
 }
 
 // static
-DOMURL* DOMURL::Create(const String& url,
-                       const String& base,
-                       ExceptionState& exception_state) {
+URL* URL::Create(const String& url,
+                 const String& base,
+                 ExceptionState& exception_state) {
   KURL base_url(base);
   if (!base_url.IsValid()) {
     exception_state.ThrowTypeError("Invalid base URL");
     return nullptr;
   }
-  return MakeGarbageCollected<DOMURL>(PassKey(), url, base_url,
-                                      exception_state);
+  return MakeGarbageCollected<URL>(PassKey(), url, base_url, exception_state);
 }
 
-DOMURL::DOMURL(PassKey,
-               const String& url,
-               const KURL& base,
-               ExceptionState& exception_state)
+URL::URL(PassKey,
+         const String& url,
+         const KURL& base,
+         ExceptionState& exception_state)
     : url_(base, url) {
-  if (!url_.IsValid())
+  if (!url_.IsValid()) {
     exception_state.ThrowTypeError("Invalid URL");
+  }
 }
 
-DOMURL::DOMURL(PassKey, const KURL& url): url_(url) {
-}
+URL::URL(PassKey, const KURL& url) : url_(url) {}
 
-DOMURL::~DOMURL() = default;
+URL::~URL() = default;
 
-DOMOrigin* DOMURL::GetDOMOrigin(LocalDOMWindow*) const {
+DOMOrigin* URL::GetDOMOrigin(LocalDOMWindow*) const {
   // No access check is required, as URLs are not accessible cross-origin.
   return DOMOrigin::Create(SecurityOrigin::Create(Url()));
 }
 
-void DOMURL::Trace(Visitor* visitor) const {
+void URL::Trace(Visitor* visitor) const {
   visitor->Trace(search_params_);
   ScriptWrappable::Trace(visitor);
 }
 
 // static
-DOMURL* DOMURL::parse(const String& str) {
+URL* URL::parse(const String& str) {
   KURL url(str);
   if (!url.IsValid()) {
     return nullptr;
   }
-  return MakeGarbageCollected<DOMURL>(PassKey(), url);
+  return MakeGarbageCollected<URL>(PassKey(), url);
 }
 
 // static
-DOMURL* DOMURL::parse(const String& str, const String& base) {
+URL* URL::parse(const String& str, const String& base) {
   KURL base_url(base);
   if (!base_url.IsValid()) {
     return nullptr;
@@ -100,21 +98,21 @@ DOMURL* DOMURL::parse(const String& str, const String& base) {
   if (!url.IsValid()) {
     return nullptr;
   }
-  return MakeGarbageCollected<DOMURL>(PassKey(), url);
+  return MakeGarbageCollected<URL>(PassKey(), url);
 }
 
 // static
-bool DOMURL::canParse(const String& url) {
+bool URL::canParse(const String& url) {
   return KURL(NullUrl(), url).IsValid();
 }
 
 // static
-bool DOMURL::canParse(const String& url, const String& base) {
+bool URL::canParse(const String& url, const String& base) {
   KURL base_url(base);
   return base_url.IsValid() && KURL(base_url, url).IsValid();
 }
 
-void DOMURL::setHref(const String& value, ExceptionState& exception_state) {
+void URL::setHref(const String& value, ExceptionState& exception_state) {
   KURL url(value);
   if (!url.IsValid()) {
     exception_state.ThrowTypeError("Invalid URL");
@@ -124,7 +122,7 @@ void DOMURL::setHref(const String& value, ExceptionState& exception_state) {
   Update();
 }
 
-void DOMURL::setSearch(const String& value) {
+void URL::setSearch(const String& value) {
   UrlUtils::setSearch(value);
   if (value.starts_with('?')) {
     UpdateSearchParams(value.substr(1));
@@ -133,17 +131,16 @@ void DOMURL::setSearch(const String& value) {
   }
 }
 
-String DOMURL::CreatePublicURL(ExecutionContext* execution_context,
-                               Blob* blob) {
+String URL::CreatePublicURL(ExecutionContext* execution_context, Blob* blob) {
   return execution_context->GetPublicURLManager().RegisterUrl(blob);
 }
 
-String DOMURL::CreatePublicURL(ExecutionContext* execution_context,
-                               URLRegistrable* registrable) {
+String URL::CreatePublicURL(ExecutionContext* execution_context,
+                            URLRegistrable* registrable) {
   return execution_context->GetPublicURLManager().RegisterUrl(registrable);
 }
 
-URLSearchParams* DOMURL::searchParams() {
+URLSearchParams* URL::searchParams() {
   if (!search_params_) {
     search_params_ = URLSearchParams::Create(Url().Query().ToString(), this);
   }
@@ -151,13 +148,14 @@ URLSearchParams* DOMURL::searchParams() {
   return search_params_.Get();
 }
 
-void DOMURL::Update() {
+void URL::Update() {
   UpdateSearchParams(Url().Query().ToString());
 }
 
-void DOMURL::UpdateSearchParams(const String& query_string) {
-  if (!search_params_)
+void URL::UpdateSearchParams(const String& query_string) {
+  if (!search_params_) {
     return;
+  }
 
   base::AutoReset<bool> scope(&is_in_update_, true);
 #if DCHECK_IS_ON()

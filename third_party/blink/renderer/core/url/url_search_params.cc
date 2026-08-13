@@ -10,7 +10,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequencesequence_usvstringusvstringrecord.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/url/dom_url.h"
+#include "third_party/blink/renderer/core/url/url.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -93,7 +93,7 @@ URLSearchParams* URLSearchParams::Create(const Vector<Vector<String>>& init,
   return instance;
 }
 
-URLSearchParams::URLSearchParams(const String& query_string, DOMURL* url_object)
+URLSearchParams::URLSearchParams(const String& query_string, URL* url_object)
     : url_object_(url_object) {
   if (!query_string.empty())
     SetInputWithoutUpdate(query_string);
@@ -118,7 +118,7 @@ void URLSearchParams::Trace(Visitor* visitor) const {
 }
 
 #if DCHECK_IS_ON()
-DOMURL* URLSearchParams::UrlObject() const {
+URL* URLSearchParams::UrlObject() const {
   return url_object_;
 }
 #endif

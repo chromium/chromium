@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
-#include "third_party/blink/renderer/core/url/dom_url.h"
+#include "third_party/blink/renderer/core/url/url.h"
 #include "third_party/blink/renderer/modules/mediasource/attachment_creation_pass_key_provider.h"
 #include "third_party/blink/renderer/modules/mediasource/cross_thread_media_source_attachment.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
@@ -89,7 +89,7 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
   // for further detail.
   DCHECK(attachment->HasOneRef());
 
-  String url = DOMURL::CreatePublicURL(execution_context, attachment);
+  String url = URL::CreatePublicURL(execution_context, attachment);
 
   // If attachment's registration failed, release its start-at-one reference to
   // let it be destructed.

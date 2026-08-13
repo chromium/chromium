@@ -21,8 +21,8 @@
 
 namespace blink {
 
-class DOMURL;
 class ExceptionState;
+class URL;
 class V8UnionUSVStringOrUSVStringSequenceSequenceOrUSVStringUSVStringRecord;
 
 using URLSearchParamsInit =
@@ -42,11 +42,11 @@ class CORE_EXPORT URLSearchParams final
                                  ExceptionState&);
 
   static URLSearchParams* Create(const String& query_string,
-                                 DOMURL* url_object = nullptr) {
+                                 URL* url_object = nullptr) {
     return MakeGarbageCollected<URLSearchParams>(query_string, url_object);
   }
 
-  explicit URLSearchParams(const String&, DOMURL* = nullptr);
+  explicit URLSearchParams(const String&, URL* = nullptr);
   ~URLSearchParams() override;
 
   // URLSearchParams interface methods
@@ -73,7 +73,7 @@ class CORE_EXPORT URLSearchParams final
   const Vector<std::pair<String, String>>& Params() const { return params_; }
 
 #if DCHECK_IS_ON()
-  DOMURL* UrlObject() const;
+  URL* UrlObject() const;
 #endif
 
   void Trace(Visitor*) const override;
@@ -89,7 +89,7 @@ class CORE_EXPORT URLSearchParams final
 
   Vector<std::pair<String, String>> params_;
 
-  WeakMember<DOMURL> url_object_;
+  WeakMember<URL> url_object_;
 };
 
 }  // namespace blink
