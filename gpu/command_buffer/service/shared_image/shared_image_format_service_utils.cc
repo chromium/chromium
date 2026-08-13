@@ -417,7 +417,7 @@ GLenum GLFormatCaps::GetFallbackFormatIfNotSupported(GLenum gl_format) const {
   // Fallback to GL_LUMINANCE16F for R16F format based on extensions and ES3
   // support.
   if (gl_format == GL_R16F_EXT &&
-      (!is_atleast_gles3_ || !enable_texture_half_float_linear_)) {
+      (!is_atleast_gles3_ && !enable_texture_half_float_linear_)) {
     return GL_LUMINANCE16F_EXT;
   }
   // No fallback for RG16F format without texture_rg extension.
