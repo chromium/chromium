@@ -120,8 +120,8 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
   void MaybeAppendPersonalContextNotice(
       std::vector<Suggestion>& suggestions) const;
 
-  // Creates the AI disclosure suggestion.
-  static Suggestion CreateAiDisclosureSuggestion();
+  // Appends the AI disclosure to the suggestions if necessary.
+  static void MaybeAppendAiDisclosure(std::vector<Suggestion>& suggestions);
 
   // Creates the fetching / loading throbber suggestion. `index` determines
   // which string from the fetching cycle is used.
@@ -168,11 +168,35 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
   // Advances to the next fetching suggestion message and updates the UI.
   void AdvanceFetchingSuggestion();
 
-  // Shows the fetching suggestion in the UI.
-  void ShowFetchingSuggestion();
+  // Shows all the suggestions in the empty state.
+  // These suggestions will be in order:
+  // * kPersonalContextNotice (optional)
+  void ShowEmptyQuerySuggestions();
 
-  // Clears all currently shown suggestions in the UI.
-  void ClearSuggestions();
+  // Shows all the suggestions in the query typing state.
+  // These suggestions will be in order:
+  // * kAtMemorySearchAffordance | kAtMemoryNoConnection
+  // * kAtMemoryAiDisclosure | kPersonalContextNotice
+  void ShowQueryTypingSuggestions(const std::u16string& query);
+
+  // Shows all the suggestions in the fetching state.
+  // These suggestions will be in order:
+  // * kAtMemoryFetching
+  // * kPersonalContextNotice (optional)
+  void ShowFetchingStateSuggestions();
+
+  // Shows all the suggestions in the results retrieved state.
+  // These suggestions will be in order:
+  // * kPersonalContextNotice (optional)
+  // * kAtMemorySearchResult (repeated)
+  void ShowResultsRetrievedStateSuggestions(const MemorySearchResults& result);
+
+  // Shows all the suggestions in the no results retrieved state.
+  // These suggestions will be in order:
+  // * kPersonalContextNotice (optional)
+  // * suggestion describing the error
+  void ShowNoResultsStateSuggestions(const std::u16string& query,
+                                     const MemorySearchResults& result);
 
   // Fills the unmasked IBAN value after fetching it. Returns `IsAsync(true)` if
   // the operation involves reauthentication or server communication.
