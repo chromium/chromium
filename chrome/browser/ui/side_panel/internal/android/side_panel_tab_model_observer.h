@@ -34,6 +34,9 @@ class SidePanelTabModelObserver final : public TabModelObserver {
   void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override;
   void DidRemoveTabForClosure(TabAndroid* tab) override;
   void TabRemoved(TabAndroid* tab) override;
+  void WillCloseTabs(const std::vector<TabAndroid*>& tabs,
+                     bool is_all_tabs,
+                     bool allow_undo) override;
   void AllTabsAreClosing() override;
   void OnTabModelDestroyed(TabModel& tab_model) override;
 
