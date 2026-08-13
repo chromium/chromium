@@ -20,7 +20,7 @@ TEST(PageContentAnnotationsFeaturesTest, InvalidPageContentRAPPORMetrics) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotations,
+      features::kPageContentAnnotationsValidation,
       {{"num_bits_for_rappor_metrics", "-1"},
        {"noise_prob_for_rappor_metrics", "-.5"}});
   EXPECT_EQ(1, features::NumBitsForRAPPORMetrics());
@@ -31,7 +31,7 @@ TEST(PageContentAnnotationsFeaturesTest, ValidPageContentRAPPORMetrics) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotations,
+      features::kPageContentAnnotationsValidation,
       {{"num_bits_for_rappor_metrics", "2"},
        {"noise_prob_for_rappor_metrics", ".2"}});
   EXPECT_EQ(2, features::NumBitsForRAPPORMetrics());

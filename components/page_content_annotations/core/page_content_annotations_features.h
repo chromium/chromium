@@ -16,8 +16,6 @@
 namespace page_content_annotations::features {
 
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-BASE_DECLARE_FEATURE(kPageContentAnnotations);
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageContentAnnotationsValidation);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
@@ -141,10 +139,6 @@ BASE_DECLARE_FEATURE(kOnDeviceCategoryClassifier);
 // Returns whether page content annotations should be enabled.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 bool ShouldEnablePageContentAnnotations();
-
-// Whether we should write content annotations to History Service.
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-bool ShouldWriteContentAnnotationsToHistoryService();
 
 // Returns the max size of the MRU Cache of content that has been requested
 // for annotation.

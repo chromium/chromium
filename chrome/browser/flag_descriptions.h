@@ -4017,11 +4017,6 @@ inline constexpr char kOverscrollHistoryNavigationName[] =
 inline constexpr char kOverscrollHistoryNavigationDescription[] =
     "History navigation in response to horizontal overscroll.";
 
-inline constexpr char kPageContentAnnotationsName[] =
-    "Page content annotations";
-inline constexpr char kPageContentAnnotationsDescription[] =
-    "Enables page content to be annotated on-device.";
-
 inline constexpr char kPageContentCacheName[] = "Page content cache";
 inline constexpr char kPageContentCacheDescription[] =
     "Enables caching of the annotated page content and screenshot";

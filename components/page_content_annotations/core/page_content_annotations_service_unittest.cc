@@ -8,6 +8,7 @@
 #include <array>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -46,7 +47,8 @@ const TemplateURLService::Initializer kTemplateURLData[] = {
      "Not Default"},
 };
 
-constexpr base::TimeDelta kWaitForTitleDelay = base::Milliseconds(4999);
+constexpr base::TimeDelta kWaitForTitleDelay = base::Milliseconds(5000);
+constexpr base::TimeDelta kBatchTimeout = base::Seconds(1);
 
 class MockHistoryService : public history::HistoryService {
  public:
@@ -158,16 +160,8 @@ class PageContentAnnotationsServiceTest : public testing::Test {
   PageContentAnnotationsServiceTest()
       : search_engines_test_environment_(
             {.template_url_service_initializer = kTemplateURLData}) {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPageContentAnnotations,
-          {
-              {"write_to_history_service", "true"},
-              {"pca_service_wait_for_title_delay_in_milliseconds",
-               base::NumberToString(kWaitForTitleDelay.InMilliseconds())},
-              {"annotate_visit_batch_size", "1"},
-          }}},
-        /*disabled_features=*/{
-            optimization_guide::features::kPreventLongRunningPredictionModels});
+    scoped_feature_list_.InitAndDisableFeature(
+        optimization_guide::features::kPreventLongRunningPredictionModels);
   }
   ~PageContentAnnotationsServiceTest() override = default;
 
@@ -262,7 +256,8 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitNonSearch) {
            /*local_navigation_id=*/1,
            /*is_synced_visit=*/false);
 
-  task_environment_.FastForwardBy(kWaitForTitleDelay + base::Milliseconds(1));
+  task_environment_.FastForwardBy(kWaitForTitleDelay + kBatchTimeout +
+                                  base::Milliseconds(1));
 }
 
 TEST_F(PageContentAnnotationsServiceTest, NonHTTPUrlIgnored) {
@@ -276,7 +271,8 @@ TEST_F(PageContentAnnotationsServiceTest, NonHTTPUrlIgnored) {
            /*local_navigation_id=*/1,
            /*is_synced_visit=*/false);
 
-  task_environment_.FastForwardBy(kWaitForTitleDelay + base::Milliseconds(1));
+  task_environment_.FastForwardBy(kWaitForTitleDelay + kBatchTimeout +
+                                  base::Milliseconds(1));
 }
 
 TEST_F(PageContentAnnotationsServiceTest, VisitWith404ResponseIgnored) {
@@ -292,7 +288,8 @@ TEST_F(PageContentAnnotationsServiceTest, VisitWith404ResponseIgnored) {
            /*timestamp=*/base::Time(),
            history::VisitResponseCodeCategory::k404);
 
-  task_environment_.FastForwardBy(kWaitForTitleDelay + base::Milliseconds(1));
+  task_environment_.FastForwardBy(kWaitForTitleDelay + kBatchTimeout +
+                                  base::Milliseconds(1));
 }
 
 TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsNonSearch) {
@@ -307,7 +304,8 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsNonSearch) {
            /*local_navigation_id=*/1,
            /*is_synced_visit=*/true);
 
-  task_environment_.FastForwardBy(kWaitForTitleDelay + base::Milliseconds(1));
+  task_environment_.FastForwardBy(kWaitForTitleDelay + kBatchTimeout +
+                                  base::Milliseconds(1));
 }
 
 TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitsSearch) {
@@ -325,7 +323,8 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitsSearch) {
            visit_id, /*local_navigation_id=*/1,
            /*is_synced_visit=*/false);
 
-  task_environment_.FastForwardBy(kWaitForTitleDelay + base::Milliseconds(1));
+  task_environment_.FastForwardBy(kWaitForTitleDelay + kBatchTimeout +
+                                  base::Milliseconds(1));
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted",
@@ -346,7 +345,8 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsSearch) {
            visit_id, /*local_navigation_id=*/1,
            /*is_synced_visit=*/true);
 
-  task_environment_.FastForwardBy(kWaitForTitleDelay + base::Milliseconds(1));
+  task_environment_.FastForwardBy(kWaitForTitleDelay + kBatchTimeout +
+                                  base::Milliseconds(1));
 }
 
 #if defined(ARCH_CPU_ARMEL)
@@ -355,12 +355,6 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsSearch) {
 #define MAYBE_BatchLimitTriggersJob BatchLimitTriggersJob
 #endif
 TEST_F(PageContentAnnotationsServiceTest, MAYBE_BatchLimitTriggersJob) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{features::kPageContentAnnotations,
-        {{"annotate_visit_batch_size", "5"}}}},
-      {});
-
   EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, _))
       .Times(5);
 
@@ -380,12 +374,6 @@ TEST_F(PageContentAnnotationsServiceTest, MAYBE_BatchLimitTriggersJob) {
 #define MAYBE_BatchSizeTimeout BatchSizeTimeout
 #endif
 TEST_F(PageContentAnnotationsServiceTest, MAYBE_BatchSizeTimeout) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{features::kPageContentAnnotations,
-        {{"annotate_visit_batch_size", "5"}}}},
-      {});
-
   history::VisitID visit_id = 1;
 
   EXPECT_CALL(*history_service_,
@@ -395,7 +383,8 @@ TEST_F(PageContentAnnotationsServiceTest, MAYBE_BatchSizeTimeout) {
            /*local_navigation_id=*/1,
            /*is_synced_visit=*/false);
 
-  task_environment_.FastForwardBy(base::Seconds(35));
+  task_environment_.FastForwardBy(kWaitForTitleDelay + kBatchTimeout +
+                                  base::Milliseconds(1));
 }
 
 #if defined(ARCH_CPU_ARMEL)
@@ -404,49 +393,47 @@ TEST_F(PageContentAnnotationsServiceTest, MAYBE_BatchSizeTimeout) {
 #define MAYBE_OlderVisitsDropped OlderVisitsDropped
 #endif
 TEST_F(PageContentAnnotationsServiceTest, MAYBE_OlderVisitsDropped) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{features::kPageContentAnnotations,
-        {{"annotate_visit_batch_size", "2"}}}},
-      {});
-
-  // First 2 visits are always processed, then the next 4 are queued and the
-  // most recent 2 are annotated.
+  // First 5 visits are processed, then the next 6 are queued and the
+  // most recent 5 are annotated (the oldest queued visit is dropped).
   constexpr base::Time kTestTime = base::Time() + base::Days(1000);
-  constexpr std::array<base::Time, 6> kTimestamps = {
-      // Queue not full, gets annotated.
-      kTestTime + base::Days(12),
-      kTestTime,
+  constexpr std::array<base::Time, 11> kTimestamps = {
+      // First batch of 5:
+      kTestTime + base::Days(1),
+      kTestTime + base::Days(2),
+      kTestTime + base::Days(3),
+      kTestTime + base::Days(4),
+      kTestTime + base::Days(5),
 
-      // Annotation is running, 2 more gets queued.
+      // Second batch queued while batch 1 is active:
       kTestTime + base::Days(14),
       kTestTime + base::Days(8),
-
-      // Annotation is running, queue is full, replaces the less recent entry.
       kTestTime + base::Days(13),
-      // Annotation is running, queue is full, discarded since its the oldest.
+      kTestTime + base::Days(15),
+      kTestTime + base::Days(12),
+
+      // Arrives while queue is full, discarded since it's the oldest queued:
       kTestTime + base::Days(6),
   };
-  base::flat_map<std::string, double> titles_to_score = {
-      {"test0", 0.5}, {"test1", 0.6}, {"test2", 0.7},
-      {"test3", 0.8}, {"test4", 0.9}, {"test5", 1.0},
-  };
+  base::flat_map<std::string, double> titles_to_score;
+  for (int i = 0; i < 11; ++i) {
+    titles_to_score[base::StrCat({"test", base::NumberToString(i)})] =
+        0.5 + i * 0.05;
+  }
   test_annotator_->UseVisibilityScores(std::nullopt, titles_to_score);
 
-  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 2));
-  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 1));
-  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 5));
-  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 3));
+  for (int i = 1; i <= 10; ++i) {
+    EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, i));
+  }
 
-  for (int i = 0; i < 6; ++i) {
+  for (int i = 0; i < 11; ++i) {
     // history::kInvalidVisitID is 0, so we use i+1 for our visit IDs.
     VisitURL(GURL("https://example.com"),
-             base::UTF8ToUTF16((titles_to_score.begin() + i)->first),
+             base::UTF8ToUTF16(base::StrCat({"test", base::NumberToString(i)})),
              /*visit_id=*/i + 1,
              /*local_navigation_id=*/i,
              /*is_synced_visit=*/false, kTimestamps[i]);
   }
-  task_environment_.FastForwardBy(base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(15));
 }
 
 TEST_F(PageContentAnnotationsServiceTest, RegistersType) {
@@ -502,7 +489,8 @@ TEST_F(PageContentAnnotationsServiceTest, CategoryClassifierObserver) {
 #endif
 
   VisitURL(url, u"test", visit_id, /*local_navigation_id=*/1);
-  task_environment_.FastForwardBy(kWaitForTitleDelay + base::Milliseconds(1));
+  task_environment_.FastForwardBy(kWaitForTitleDelay + kBatchTimeout +
+                                  base::Milliseconds(1));
 
   std::vector<Category> categories = {
       {CategoryType::kEducation, 0.5},

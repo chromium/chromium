@@ -205,11 +205,10 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     on_device_category_classifier_->AddObserver(this);
   }
 
-  std::vector<optimization_guide::proto::OptimizationType> optimization_types;
-  optimization_types.emplace_back(optimization_guide::proto::PAGE_ENTITIES);
-  optimization_types.emplace_back(optimization_guide::proto::SALIENT_IMAGE);
   if (optimization_guide_decider_) {
-    optimization_guide_decider_->RegisterOptimizationTypes(optimization_types);
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::PAGE_ENTITIES,
+         optimization_guide::proto::SALIENT_IMAGE});
   }
   validator_ =
       PageContentAnnotationsValidator::MaybeCreateAndStartTimer(annotator_);
@@ -505,10 +504,6 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
       PageContentAnnotationsResult::CreateContentVisibilityScoreResult(
           content_annotations->visibility_score));
 
-  if (!features::ShouldWriteContentAnnotationsToHistoryService()) {
-    return;
-  }
-
   if (visit.visit_id != history::kInvalidVisitID) {
     // If the visit ID is known, directly add the annotations for that visit
     // rather than querying history for the closest match.
@@ -609,10 +604,6 @@ void PageContentAnnotationsService::OnRelatedSearchesExtracted(
   }
 
   if (related_searches.empty()) {
-    return;
-  }
-
-  if (!features::ShouldWriteContentAnnotationsToHistoryService()) {
     return;
   }
 

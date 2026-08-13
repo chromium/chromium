@@ -1329,29 +1329,6 @@ const FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
 };
 #endif  // BUILDFLAG(IS_WIN)
 
-const FeatureEntry::FeatureParam kPageContentAnnotationsContentParams[] = {
-    {"annotate_title_instead_of_page_content", "false"},
-    {"extract_related_searches", "true"},
-    {"max_size_for_text_dump_in_bytes", "5120"},
-    {"write_to_history_service", "true"},
-};
-const FeatureEntry::FeatureParam kPageContentAnnotationsTitleParams[] = {
-    {"annotate_title_instead_of_page_content", "true"},
-    {"extract_related_searches", "true"},
-    {"write_to_history_service", "true"},
-};
-const FeatureEntry::FeatureParam
-    kPageContentAnnotationsTimeoutDurationParams[] = {
-        {"PageContentAnnotationBatchSizeTimeoutDuration", "0"},
-};
-const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
-    {"All Annotations and Persistence on Content",
-     kPageContentAnnotationsContentParams, nullptr},
-    {"All Annotations and Persistence on Title",
-     kPageContentAnnotationsTitleParams, nullptr},
-    {"Annotation timeout duration 0 seconds",
-     kPageContentAnnotationsTimeoutDurationParams, nullptr}};
-
 #if !BUILDFLAG(IS_ANDROID)
 constexpr FeatureEntry::FeatureParam
     kHappinessTrackingSurveysForDesktopDemoWithoutAutoPrompt[] = {
@@ -7116,14 +7093,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(page_content_annotations::features::
                             kExtractRelatedSearchesFromPrefetchedZPSResponse)},
-
-    {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
-     flag_descriptions::kPageContentAnnotationsDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         page_content_annotations::features::kPageContentAnnotations,
-         kPageContentAnnotationsVariations,
-         "PageContentAnnotations")},
 
     {"page-content-cache", flag_descriptions::kPageContentCacheName,
      flag_descriptions::kPageContentCacheDescription, kOsAndroid,

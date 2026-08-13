@@ -1671,11 +1671,6 @@ inline constexpr char kPageActionMenuDescription[] =
     "When enabled, the entry point for the Page Action Menu becomes available "
     "for actions relating to the web page.";
 
-inline constexpr char kPageContentAnnotationsName[] =
-    "Page content annotations";
-inline constexpr char kPageContentAnnotationsDescription[] =
-    "Enables page content to be annotated on-device.";
-
 inline constexpr char kPageContextIPCOptimizationName[] =
     "PageContextIPCOptimization";
 inline constexpr char kPageContextIPCOptimizationDescription[] =

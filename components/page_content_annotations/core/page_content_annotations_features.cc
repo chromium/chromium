@@ -99,9 +99,6 @@ bool IsSupportedCountry(const std::string& country_code,
 
 }  // namespace
 
-// Enables page content to be annotated.
-BASE_FEATURE(kPageContentAnnotations, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPageContentAnnotationsValidation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -185,30 +182,21 @@ BASE_FEATURE(kPageSettledMonitorSkipAwaitVisualStateForHiddenTabs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
-  return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
-      kPageContentAnnotations,
-      "pca_service_wait_for_title_delay_in_milliseconds", 5000));
+  return base::Milliseconds(5000);
 }
 
 bool ShouldEnablePageContentAnnotations() {
+  // Remote page metadata is permanently enabled without a feature flag, so
+  // the service should always be enabled.
   return true;
 }
 
-bool ShouldWriteContentAnnotationsToHistoryService() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kPageContentAnnotations, "write_to_history_service", true);
-}
-
 size_t MaxContentAnnotationRequestsCached() {
-  return GetFieldTrialParamByFeatureAsInt(
-      kPageContentAnnotations, "max_content_annotation_requests_cached", 50);
+  return 50;
 }
-
-const base::FeatureParam<bool> kContentAnnotationsExtractRelatedSearchesParam{
-    &kPageContentAnnotations, "extract_related_searches", true};
 
 bool ShouldExtractRelatedSearches() {
-  return kContentAnnotationsExtractRelatedSearchesParam.Get();
+  return true;
 }
 
 bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {
@@ -242,14 +230,14 @@ bool ShouldExecuteOnDeviceCategoryClassifierOnPageContent(
 int NumBitsForRAPPORMetrics() {
   // The number of bits must be at least 1.
   return std::max(
-      1, GetFieldTrialParamByFeatureAsInt(kPageContentAnnotations,
+      1, GetFieldTrialParamByFeatureAsInt(kPageContentAnnotationsValidation,
                                           "num_bits_for_rappor_metrics", 4));
 }
 
 double NoiseProbabilityForRAPPORMetrics() {
   // The noise probability must be between 0 and 1.
   return std::max(0.0, std::min(1.0, GetFieldTrialParamByFeatureAsDouble(
-                                         kPageContentAnnotations,
+                                         kPageContentAnnotationsValidation,
                                          "noise_prob_for_rappor_metrics", .5)));
 }
 
@@ -259,9 +247,7 @@ size_t AnnotateVisitBatchSize() {
   // `kDefaultBatchSize` entries are annotated when new visits are synced. Set
   // the limit to 5 since up to 5 URLs are shown on tab resume module.
   constexpr int kDefaultBatchSize = 5;
-  return std::max(1, GetFieldTrialParamByFeatureAsInt(
-                         kPageContentAnnotations, "annotate_visit_batch_size",
-                         kDefaultBatchSize));
+  return kDefaultBatchSize;
 }
 
 base::TimeDelta PageContentAnnotationValidationStartupDelay() {
@@ -278,14 +264,11 @@ size_t PageContentAnnotationsValidationBatchSize() {
 }
 
 base::TimeDelta PageContentAnnotationBatchSizeTimeoutDuration() {
-  return base::Seconds(GetFieldTrialParamByFeatureAsInt(
-      kPageContentAnnotations, "batch_annotations_timeout_seconds", 1));
+  return base::Seconds(1);
 }
 
 size_t MaxVisitAnnotationCacheSize() {
-  int batch_size = GetFieldTrialParamByFeatureAsInt(
-      kPageContentAnnotations, "max_visit_annotation_cache_size", 50);
-  return std::max(1, batch_size);
+  return 50;
 }
 
 size_t MaxRelatedSearchesCacheSize() {
