@@ -717,7 +717,6 @@ static_library("ui") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/browser_window/internal",
-    "//chrome/browser/ui/cookie_controls",
     "//chrome/browser/ui/file_system_access",
     "//chrome/browser/ui/file_system_access:impl",
     "//chrome/browser/ui/find_bar",

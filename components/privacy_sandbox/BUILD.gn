@@ -33,25 +33,6 @@ component("features") {
   public_deps = [ "//base" ]
 }
 
-source_set("tracking_protection_settings") {
-  sources = [
-    "tracking_protection_settings.cc",
-    "tracking_protection_settings.h",
-  ]
-
-  deps = [
-    ":features",
-    ":privacy_sandbox_prefs",
-    "//components/content_settings/core/browser",
-    "//components/content_settings/core/browser:cookie_settings",
-    "//components/content_settings/core/common",
-    "//components/pref_registry",
-    "//components/prefs",
-  ]
-
-  public_deps = [ "//base" ]
-}
-
 # These sources depend on targets from "//content/browser", which means they can
 # only be loaded on Blink builds.
 # NOTE: If/when targets used on iOS are refactored into a separate BUILD file,
@@ -136,14 +117,13 @@ if (use_blink) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "tracking_protection_settings_unittest.cc" ]
+  sources = []
 
   data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
 
   deps = [
     ":features",
     ":privacy_sandbox_prefs",
-    ":tracking_protection_settings",
     "//base/test:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",

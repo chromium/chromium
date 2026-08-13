@@ -59,7 +59,6 @@ class QwacWebContentsObserver;
 class ReadAnythingController;
 class ReadAnythingSidePanelController;
 class RecordReplayPageActionController;
-class RollBackModeBInfoBarController;
 class SearchPromotionNavigationObserver;
 class SidePanelRegistry;
 class TabResourceUsageTabHelper;
@@ -626,9 +625,6 @@ class TabFeatures {
 
   std::unique_ptr<lens::TabContextualizationController>
       tab_contextualization_controller_;
-
-  std::unique_ptr<RollBackModeBInfoBarController>
-      roll_back_mode_b_infobar_controller_;
 
   std::unique_ptr<BookmarkBarPreloadPipelineManager>
       bookmarkbar_preload_pipeline_manager_;

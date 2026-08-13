@@ -86,36 +86,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/settings/histograms.xml:Profile) -->
 
-<histogram name="Privacy.3PCD.RollbackNotice.Action"
-    enum="RollBack3pcdNoticeAction" expires_after="2026-12-27">
-  <owner>fmacintosh@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the user action, if any, taken on the 3PCD rollback notice.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.3PCD.RollbackNotice.AutomaticallyDismissed"
-    enum="Boolean" expires_after="2026-11-01">
-  <owner>fmacintosh@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Logged when the 3PCD rollback notice is dismissed. Records whether this
-    dismissal was automatic or the result of a user action.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.3PCD.RollbackNotice.ShouldShow" enum="Boolean"
-    expires_after="2026-11-01">
-  <owner>fmacintosh@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Logged at startup after the user is removed from the 3PCD 1% experiment.
-    Records whether or not the user should be notified of this rollback via a
-    rollback notice.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.AFP.BlockList.CheckResult"
     enum="AntiFingerprintingBlockListResult" expires_after="2024-04-01">
   <owner>thesalsa@google.com</owner>

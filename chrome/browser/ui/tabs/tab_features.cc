@@ -62,7 +62,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/context_highlight/context_highlight_tab_feature.h"
-#include "chrome/browser/ui/cookie_controls/roll_back_mode_b_infobar_controller.h"
 #include "chrome/browser/ui/focus_tab_after_navigation_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -325,9 +324,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                   ->GetImageFetcher(
                       image_fetcher::ImageFetcherConfig::kNetworkOnly),
               side_panel_registry_.get());
-
-      roll_back_mode_b_infobar_controller_ =
-          std::make_unique<RollBackModeBInfoBarController>(tab.GetContents());
     }
 
     contextual_cueing_helper_ = glic::ContextualCueingHelper::MaybeCreate(&tab);
@@ -728,12 +724,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     permission_indicators_tab_data_ =
         std::make_unique<permissions::PermissionIndicatorsTabData>(
             new_contents);
-  }
-
-  if (roll_back_mode_b_infobar_controller_) {
-    roll_back_mode_b_infobar_controller_.reset();
-    roll_back_mode_b_infobar_controller_ =
-        std::make_unique<RollBackModeBInfoBarController>(new_contents);
   }
 
   if (bookmarkbar_preload_pipeline_manager_) {

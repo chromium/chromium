@@ -6,17 +6,13 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSettingsBridge.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java" ]
 }
 
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxReferrer.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSettingsBridge.java",
   ]
   deps = [
     ":java_resources",
@@ -119,10 +115,7 @@ android_library("test_support_java") {
 }
 
 android_resources("java_resources") {
-  sources = [
-    "java/res/drawable/cookie_24dp.xml",
-    "java/res/drawable/ic_filter_list_24dp.xml",
-  ]
+  sources = [ "java/res/drawable/ic_filter_list_24dp.xml" ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/settings/android:java_resources",
@@ -137,8 +130,5 @@ android_resources("java_resources") {
 }
 
 java_cpp_enum("privacy_sandbox_enums") {
-  sources = [
-    "//chrome/browser/privacy_sandbox/privacy_sandbox_utils.h",
-    "//chrome/browser/privacy_sandbox/roll_back_3pcd_notice_action.h",
-  ]
+  sources = [ "//chrome/browser/privacy_sandbox/privacy_sandbox_utils.h" ]
 }

@@ -166,7 +166,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandbox3pcdRollbackMessageController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIphController;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -351,8 +350,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable LayoutManagerImpl mLayoutManager;
     private @Nullable CommerceSubscriptionsService mCommerceSubscriptionsService;
     private @Nullable UndoGroupSnackbarController mUndoGroupSnackbarController;
-    private @Nullable PrivacySandbox3pcdRollbackMessageController
-            mPrivacySandbox3pcdRollbackMessageController;
     private @Nullable GestureUserEducationIphController mGestureUserEducationIphController;
     private @Nullable GlicButtonContextMenuCoordinator mGlicButtonContextMenuCoordinator;
     private @Nullable ToolbarControlContainer mControlContainer;
@@ -905,11 +902,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mAdvancedProtectionCoordinator != null) {
             mAdvancedProtectionCoordinator.destroy();
             mAdvancedProtectionCoordinator = null;
-        }
-
-        if (mPrivacySandbox3pcdRollbackMessageController != null) {
-            mPrivacySandbox3pcdRollbackMessageController.destroy();
-            mPrivacySandbox3pcdRollbackMessageController = null;
         }
 
         if (mTipsOptInCoordinator != null) {
@@ -2658,14 +2650,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (ChoiceDialogCoordinator.maybeShow(
                 mActivity, mModalDialogManagerSupplier.get(), mActivityLifecycleDispatcher)) {
-            return true;
-        }
-
-        assert mMessageDispatcher != null;
-        mPrivacySandbox3pcdRollbackMessageController =
-                new PrivacySandbox3pcdRollbackMessageController(
-                        mActivity, profile, mActivityTabProvider, mMessageDispatcher);
-        if (mPrivacySandbox3pcdRollbackMessageController.maybeShow()) {
             return true;
         }
 

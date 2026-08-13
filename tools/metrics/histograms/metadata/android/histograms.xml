@@ -172,7 +172,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".IntranetRedirect"/>
   <variant name=".KnownInterceptionDisclosure"/>
   <variant name=".MerchantTrust"/>
-  <variant name=".ModeBRollbackMessage"/>
   <variant name=".MultiInstanceCreationLimit"/>
   <variant name=".NearOomReduction"/>
   <variant name=".NotificationBlocked"/>

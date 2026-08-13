@@ -71,14 +71,8 @@ source_set("impl") {
   ]
 
   if (is_android) {
-    sources += [
-      "android/privacy_sandbox_bridge.cc",
-      "android/tracking_protection_settings_bridge.cc",
-    ]
-    deps += [
-      "android:jni_headers",
-      "//components/privacy_sandbox:tracking_protection_settings",
-    ]
+    sources += [ "android/privacy_sandbox_bridge.cc" ]
+    deps += [ "android:jni_headers" ]
   }
 
   if (is_chromeos) {
@@ -89,10 +83,6 @@ source_set("impl") {
       "//chromeos/components/mgs",
     ]
   }
-}
-
-source_set("roll_back_3pcd_notice_action") {
-  public = [ "roll_back_3pcd_notice_action.h" ]
 }
 
 if (!is_android) {
