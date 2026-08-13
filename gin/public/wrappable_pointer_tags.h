@@ -63,6 +63,7 @@ enum WrappablePointerTag : uint16_t {
   kPostMessageScriptableObject,  // extensions::(anonymous)::ScriptableObject
   kReadAnythingAppController,    // ReadAnythingAppController
   kRemoteObject,                 // blink::RemoteObject
+  kScriptState,                  // blink::ScriptState
   kSearchBoxBindings,            // SearchBoxBindings
   kSecurityInterstitialPageController,  // SecurityInterstitialPageController
   kSessionStorageArea,                  // extensions::SessionStorageArea
