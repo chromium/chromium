@@ -10485,6 +10485,39 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <!-- /Vertical Tab Strings -->
 
+      <!-- Tab Scroll Strings -->
+      <if expr="use_titlecase">
+        <then>
+          <message name="IDS_TAB_SCROLL_AUTO_SHOW_ON_OVERFLOW" desc="In Title Case: Text of the setting to automatically show scroll buttons on tab overflow.">
+            Automatically Show Tab Scroll Buttons When Needed
+          </message>
+          <message name="IDS_TAB_SCROLL_HIDE_BUTTONS" desc="In Title Case: Text of the context menu item or button to hide scroll buttons.">
+            Hide Scroll Buttons
+          </message>
+          <message name="IDS_TAB_SCROLL_PIN_BUTTONS" desc="In Title Case: Text of the context menu item to pin scroll buttons.">
+            Pin Scroll Buttons
+          </message>
+        </then>
+        <else>
+          <message name="IDS_TAB_SCROLL_AUTO_SHOW_ON_OVERFLOW" desc="Text of the setting to automatically show scroll buttons on tab overflow.">
+            Automatically show tab scroll buttons when needed
+          </message>
+          <message name="IDS_TAB_SCROLL_HIDE_BUTTONS" desc="Text of the context menu item or button to hide scroll buttons.">
+            Hide scroll buttons
+          </message>
+          <message name="IDS_TAB_SCROLL_PIN_BUTTONS" desc="Text of the context menu item to pin scroll buttons.">
+            Pin scroll buttons
+          </message>
+        </else>
+      </if>
+      <message name="IDS_TAB_SCROLL_IPH_TITLE" desc="Title of the in-product help promo educating users on tab scrolling.">
+        See all your tabs
+      </message>
+      <message name="IDS_TAB_SCROLL_IPH_BODY" desc="Body text of the in-product help promo educating users on tab scrolling.">
+        You can scroll or use your mouse wheel to see all your tabs
+      </message>
+      <!-- /Tab Scroll Strings -->
+
       <!-- Organizer Panel Strings -->
       <if expr="use_titlecase">
         <then>
