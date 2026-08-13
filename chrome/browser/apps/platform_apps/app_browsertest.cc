@@ -32,7 +32,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -123,7 +123,7 @@ class PlatformAppContextMenu : public RenderViewContextMenu {
 // "done" (i.e. won't block on Wait()) once |observations| tabs have been added.
 class TabsAddedObserver : public TabStripModelObserver {
  public:
-  TabsAddedObserver(Browser* browser, size_t observations)
+  TabsAddedObserver(BrowserWindowInterface* browser, size_t observations)
       : observations_(observations) {
     browser->tab_strip_model()->AddObserver(this);
   }

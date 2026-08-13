@@ -14,7 +14,7 @@
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/wm/public/activation_client.h"
 #include "url/gurl.h"
@@ -66,7 +67,7 @@ void WebsiteMetricsBrowserTestMixin::SetUpOnMainThread() {
       app_service_proxy->AppCapabilityAccessCache());
 }
 
-Browser* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
+BrowserWindowInterface* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
   auto* const profile = ProfileManager::GetPrimaryUserProfile();
   CHECK(profile);
@@ -74,8 +75,8 @@ Browser* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
 
   // Create a new browser instance. The subsequent `BrowserWindow` that was
   // created as part of this instantiation will own the browser instance.
-  Browser* const browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* const browser =
+      CreateBrowserWindow(std::move(params));
   browser->GetWindow()->Show();
   auto* const window = browser->GetWindow()->GetNativeWindow();
   wm::GetActivationClient(window->GetRootWindow())->ActivateWindow(window);
@@ -83,7 +84,7 @@ Browser* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
 }
 
 ::content::WebContents* WebsiteMetricsBrowserTestMixin::NavigateAndWait(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::string& url,
     WindowOpenDisposition disposition) {
   NavigateParams params(browser, GURL(url),
@@ -99,20 +100,21 @@ Browser* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
   return contents;
 }
 
-void WebsiteMetricsBrowserTestMixin::NavigateActiveTab(Browser* browser,
-                                                       const std::string& url) {
+void WebsiteMetricsBrowserTestMixin::NavigateActiveTab(
+    BrowserWindowInterface* browser,
+    const std::string& url) {
   NavigateAndWait(browser, url, WindowOpenDisposition::CURRENT_TAB);
 }
 
 ::content::WebContents* WebsiteMetricsBrowserTestMixin::InsertForegroundTab(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::string& url) {
   return NavigateAndWait(browser, url,
                          WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
 ::content::WebContents* WebsiteMetricsBrowserTestMixin::InsertBackgroundTab(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::string& url) {
   return NavigateAndWait(browser, url,
                          WindowOpenDisposition::NEW_BACKGROUND_TAB);

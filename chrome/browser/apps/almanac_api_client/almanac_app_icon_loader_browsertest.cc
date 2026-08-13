@@ -5,7 +5,6 @@
 #include "chrome/browser/apps/almanac_api_client/almanac_app_icon_loader.h"
 
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"

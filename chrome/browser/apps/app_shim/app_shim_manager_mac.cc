@@ -52,14 +52,13 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -79,6 +78,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/filename_util.h"
+#include "ui/base/base_window.h"
 
 namespace {
 
@@ -1465,11 +1465,9 @@ void AppShimManager::OpenAppURLInBrowserWindow(
                       BrowserWindowInterface::CreationStatus::kOk) {
     return;
   }
-  Browser* browser =
-      CreateBrowserWindow(
-          BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
-                                    profile, true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+          BrowserWindowInterface::TYPE_NORMAL, profile, true));
   browser->GetWindow()->Show();
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.tabstrip_add_types = AddTabTypes::ADD_ACTIVE;

@@ -39,7 +39,6 @@ namespace base {
 class TickClock;
 }
 
-class Browser;
 class Profile;
 
 namespace webapps {

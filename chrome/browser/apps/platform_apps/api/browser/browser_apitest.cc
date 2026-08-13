@@ -4,7 +4,7 @@
 
 #include "chrome/browser/apps/platform_apps/api/browser/browser_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(AppsBrowserApiTest,
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
   // Create an incognito browser window.
-  Browser* incognito_browser = CreateIncognitoBrowser(profile());
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile());
   ASSERT_TRUE(incognito_browser);
 
   // Close the main browser window. This leaves the incognito window as the

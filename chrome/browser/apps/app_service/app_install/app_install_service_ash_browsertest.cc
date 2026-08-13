@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/app_service/app_install/test_app_install_server.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog_test_helpers.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_switches.h"

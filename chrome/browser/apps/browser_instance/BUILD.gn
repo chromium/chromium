@@ -15,6 +15,7 @@ source_set("browser_instance") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",

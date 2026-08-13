@@ -18,6 +18,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
@@ -26,8 +27,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "components/webapps/common/web_app_id.h"
@@ -289,8 +290,6 @@ class AppShimManager
   void LoadAndLaunchAppForTesting(const webapps::AppId& app_id);
 
  protected:
-  typedef std::set<Browser*> BrowserSet;
-
   // Virtual for tests.
   virtual void IsAcceptablyCodeSigned(
       audit_token_t audit_token,

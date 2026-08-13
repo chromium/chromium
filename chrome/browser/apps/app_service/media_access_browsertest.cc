@@ -12,7 +12,7 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -162,10 +162,9 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
 
 IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
                        RequestAccessingForChromeInNewBrowsers) {
-  Browser* browser1 =
-      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
-                                                    /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   ASSERT_TRUE(browser1);
   ASSERT_NE(browser(), browser1);
 

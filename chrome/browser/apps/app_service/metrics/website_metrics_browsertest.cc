@@ -18,9 +18,8 @@
 #include "chrome/browser/apps/app_service/metrics/website_metrics_browser_test_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -42,6 +41,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 #include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
 
@@ -139,34 +139,34 @@ class WebsiteMetricsBrowserTest : public MixinBasedInProcessBrowserTest {
     command_line->AppendSwitch(::switches::kNoStartupWindow);
   }
 
-  Browser* CreateBrowser() {
+  BrowserWindowInterface* CreateBrowser() {
     return website_metrics_browser_test_mixin_.CreateBrowser();
   }
 
-  Browser* CreateAppBrowser(const std::string& app_id) {
+  BrowserWindowInterface* CreateAppBrowser(const std::string& app_id) {
     auto params = BrowserWindowCreateParams::CreateForApp(
         "_crx_" + app_id, /*trusted_source=*/true,
         gfx::Rect(), /*window_bounds*/
         profile(), /*user_gesture=*/true);
-    Browser* browser =
-        CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+    BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
     browser->GetWindow()->Show();
     return browser;
   }
 
-  ::content::WebContents* InsertForegroundTab(Browser* browser,
+  ::content::WebContents* InsertForegroundTab(BrowserWindowInterface* browser,
                                               const std::string& url) {
     return website_metrics_browser_test_mixin_.InsertForegroundTab(browser,
                                                                    url);
   }
 
-  ::content::WebContents* InsertBackgroundTab(Browser* browser,
+  ::content::WebContents* InsertBackgroundTab(BrowserWindowInterface* browser,
                                               const std::string& url) {
     return website_metrics_browser_test_mixin_.InsertBackgroundTab(browser,
                                                                    url);
   }
 
-  void NavigateActiveTab(Browser* browser, const std::string& url) {
+  void NavigateActiveTab(BrowserWindowInterface* browser,
+                         const std::string& url) {
     return website_metrics_browser_test_mixin_.NavigateActiveTab(browser, url);
   }
 
@@ -281,7 +281,7 @@ class WebsiteMetricsBrowserTest : public MixinBasedInProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   InstallWebAppOpeningAsTab("https://a.example.org");
 
-  Browser* browser = CreateBrowser();
+  BrowserWindowInterface* browser = CreateBrowser();
   auto* window = browser->GetWindow()->GetNativeWindow();
   EXPECT_EQ(1u, window_to_web_contents().size());
 
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ForegroundTabNavigate) {
-  Browser* browser = CreateBrowser();
+  BrowserWindowInterface* browser = CreateBrowser();
   auto* window = browser->GetWindow()->GetNativeWindow();
   EXPECT_EQ(1u, window_to_web_contents().size());
 
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToBackgroundTab) {
   website_metrics_browser_test_mixin_.metrics_service()
       ->SetWebsiteMetricsForTesting(std::move(website_metrics_ptr));
 
-  Browser* browser = CreateBrowser();
+  BrowserWindowInterface* browser = CreateBrowser();
   auto* window = browser->GetWindow()->GetNativeWindow();
   EXPECT_EQ(1u, window_to_web_contents().size());
   // Open a tab in foreground.
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ActiveBackgroundTab) {
   website_metrics_browser_test_mixin_.metrics_service()
       ->SetWebsiteMetricsForTesting(std::move(website_metrics_ptr));
 
-  Browser* browser = CreateBrowser();
+  BrowserWindowInterface* browser = CreateBrowser();
   auto* window = browser->GetWindow()->GetNativeWindow();
   EXPECT_EQ(1u, window_to_web_contents().size());
   // Open a tab in foreground.
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToUrlWithManifest) {
   website_metrics_browser_test_mixin_.metrics_service()
       ->SetWebsiteMetricsForTesting(std::move(website_metrics_ptr));
 
-  Browser* browser = CreateBrowser();
+  BrowserWindowInterface* browser = CreateBrowser();
   auto* window = browser->GetWindow()->GetNativeWindow();
   EXPECT_EQ(1u, window_to_web_contents().size());
 
@@ -986,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, WindowedWebApp) {
   std::string app_id = InstallWebAppOpeningAsWindow("https://d.example.org");
 
   // Open app D in a window (configured to open in a window).
-  Browser* browser = CreateAppBrowser(app_id);
+  BrowserWindowInterface* browser = CreateAppBrowser(app_id);
   InsertForegroundTab(browser, "https://d.example.org");
 
   // Verify there is no window, web contents recorded.

@@ -8,10 +8,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
+
+class BrowserWindowInterface;
 
 namespace apps {
 
@@ -33,25 +34,26 @@ class WebsiteMetricsBrowserTestMixin : public InProcessBrowserTestMixin {
 
   // Creates and activates a browser window with the primary user profile.
   // Returns a pointer to the created browser instance.
-  Browser* CreateBrowser();
+  BrowserWindowInterface* CreateBrowser();
 
   // Navigates to a given URL in the specified browser instance using the given
   // disposition.
-  ::content::WebContents* NavigateAndWait(Browser* browser,
+  ::content::WebContents* NavigateAndWait(BrowserWindowInterface* browser,
                                           const std::string& url,
                                           WindowOpenDisposition disposition);
 
   // Navigates to the given URL in the specified browser instance active tab.
-  void NavigateActiveTab(Browser* browser, const std::string& url);
+  void NavigateActiveTab(BrowserWindowInterface* browser,
+                         const std::string& url);
 
   // Inserts a new tab in the foreground and navigates to the given URL in the
   // specified browser instance.
-  ::content::WebContents* InsertForegroundTab(Browser* browser,
+  ::content::WebContents* InsertForegroundTab(BrowserWindowInterface* browser,
                                               const std::string& url);
 
   // Inserts a new background tab and navigates to the given URL in the
   // specified browser instance.
-  ::content::WebContents* InsertBackgroundTab(Browser* browser,
+  ::content::WebContents* InsertBackgroundTab(BrowserWindowInterface* browser,
                                               const std::string& url);
 
   // Returns the `AppPlatformMetricsService` component if initialized.

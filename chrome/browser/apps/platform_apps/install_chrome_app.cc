@@ -10,12 +10,12 @@
 #include "chrome/browser/extensions/webstore_install_with_prompt.h"
 #include "chrome/browser/extensions/webstore_standalone_installer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/webstore_install_result.h"
 #include "extensions/common/manifest_constants.h"
+#include "ui/base/base_window.h"
 
 using extensions::ExtensionRegistry;
 

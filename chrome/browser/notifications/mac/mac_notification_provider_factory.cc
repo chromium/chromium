@@ -8,10 +8,12 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/child_process_host_flags.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/services/mac_notifications/mac_notification_provider_impl.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"

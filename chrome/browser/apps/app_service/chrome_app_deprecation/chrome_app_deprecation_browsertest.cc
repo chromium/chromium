@@ -7,7 +7,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
 #include "ui/message_center/message_center.h"
 

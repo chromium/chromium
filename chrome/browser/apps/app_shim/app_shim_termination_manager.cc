@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"

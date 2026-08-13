@@ -16,7 +16,7 @@
 #include "chrome/browser/extensions/chrome_app_deprecation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -97,7 +97,7 @@ void PlatformAppBrowserTest::TearDownOnMainThread() {
 
 // static
 AppWindow* PlatformAppBrowserTest::GetFirstAppWindowForBrowser(
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   AppWindowRegistry* app_registry =
       AppWindowRegistry::Get(browser->GetProfile());
   const AppWindowRegistry::AppWindowList& app_windows =
