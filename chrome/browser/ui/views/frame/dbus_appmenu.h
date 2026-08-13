@@ -32,7 +32,6 @@ class Accelerator;
 class PlatformWindow;
 }  // namespace ui
 
-class Browser;
 class GlobalBrowserCollection;
 class BrowserView;
 struct DbusAppmenuCommand;
@@ -148,7 +147,7 @@ class DbusAppmenu : public AvatarMenuObserver,
                                   ui::Accelerator* accelerator) const override;
 
   // State for the browser window we're tracking.
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<Profile> profile_;
   raw_ptr<BrowserView> browser_view_;
   raw_ptr<ui::PlatformWindow> platform_window_;

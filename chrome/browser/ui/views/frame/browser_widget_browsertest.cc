@@ -195,7 +195,8 @@ class BrowserWidgetColorProviderTest : public BrowserWidgetTest {
   }
 
  protected:
-  ui::ColorProviderKey GetColorProviderKey(Browser* browser) {
+  ui::ColorProviderKey GetColorProviderKey(
+      const BrowserWindowInterface* browser) {
     return GetBrowserWidget(browser)->GetColorProviderKeyForTesting();
   }
 
@@ -231,7 +232,7 @@ class BrowserWidgetColorProviderTest : public BrowserWidgetTest {
     GetThemeService(profile)->SetBrowserColorVariant(color_variant);
   }
 
-  BrowserWidget* GetBrowserWidget(Browser* browser) {
+  BrowserWidget* GetBrowserWidget(const BrowserWindowInterface* browser) {
     return static_cast<BrowserWidget*>(
         BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
   }

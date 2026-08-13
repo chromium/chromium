@@ -87,7 +87,7 @@ class BrowserViewLayoutDelegateImplBrowsertest
   }
   ~BrowserViewLayoutDelegateImplBrowsertest() override = default;
 
-  void ApplyWindowState(Browser* browser) {
+  void ApplyWindowState(BrowserWindowInterface* browser) {
     switch (GetParam()) {
       case WindowState::kNormal:
         break;

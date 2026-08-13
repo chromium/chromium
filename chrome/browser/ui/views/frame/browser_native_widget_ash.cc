@@ -18,6 +18,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_init_state.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -41,7 +42,8 @@ namespace {
 // request (Shift+F4/F4).
 class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
  public:
-  explicit BrowserWindowStateDelegate(Browser* browser) : browser_(browser) {
+  explicit BrowserWindowStateDelegate(BrowserWindowInterface* browser)
+      : browser_(browser) {
     DCHECK(browser_);
   }
 
@@ -68,7 +70,7 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
   }
 
  private:
-  raw_ptr<Browser> browser_;  // not owned.
+  raw_ptr<BrowserWindowInterface> browser_;  // not owned.
 };
 
 }  // namespace
@@ -81,7 +83,7 @@ BrowserNativeWidgetAsh::BrowserNativeWidgetAsh(BrowserWidget* browser_widget,
     : views::NativeWidgetAura(browser_widget), browser_view_(browser_view) {
   widget_observation_.Observe(browser_widget);
   GetNativeWindow()->SetName("BrowserNativeWidgetAsh");
-  Browser* browser = browser_view->browser();
+  BrowserWindowInterface* browser = browser_view->browser();
 
   created_from_drag_ = browser_widget->tab_drag_kind() != TabDragKind::kNone;
 
@@ -99,7 +101,7 @@ BrowserNativeWidgetAsh::~BrowserNativeWidgetAsh() = default;
 // BrowserNativeWidgetAsh, views::NativeWidgetAura overrides:
 
 void BrowserNativeWidgetAsh::OnWidgetInitDone() {
-  Browser* browser = browser_view_->browser();
+  BrowserWindowInterface* browser = browser_view_->browser();
   ash::WindowState* window_state = ash::WindowState::Get(GetNativeWindow());
   window_state->SetDelegate(
       std::make_unique<BrowserWindowStateDelegate>(browser));
@@ -190,7 +192,7 @@ views::Widget::InitParams BrowserNativeWidgetAsh::GetWidgetParams(
   params.native_widget = this;
   params.context = ash::Shell::GetPrimaryRootWindow();
 
-  Browser* browser = browser_view_->browser();
+  BrowserWindowInterface* browser = browser_view_->browser();
   const int32_t restore_id =
       BrowserInitState::From(browser)->create_params().restore_id;
   params.init_properties_container.SetProperty(app_restore::kWindowIdKey,

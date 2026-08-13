@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/ui/browser_init_state.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -43,7 +44,7 @@ views::Widget::InitParams BrowserNativeWidgetAuraLinux::GetWidgetParams(
   // Set up a custom WM_CLASS for some sorts of window types. This allows
   // task switchers in X11 environments to distinguish between main browser
   // windows and e.g app windows.
-  const Browser& browser = *browser_view()->browser();
+  const BrowserWindowInterface& browser = *browser_view()->browser();
   params.wm_class_name =
       (browser.GetType() == BrowserWindowInterface::Type::TYPE_APP ||
        browser.GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP)

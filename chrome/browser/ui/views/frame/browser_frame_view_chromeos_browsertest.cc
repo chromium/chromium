@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PopupHasToolbar) {
   SetUpWebApp();
 
-  Browser* popup_browser;
+  BrowserWindowInterface* popup_browser = nullptr;
   {
     NavigateParams navigate_params(app_browser_, GetAppURL(),
                                    ui::PAGE_TRANSITION_LINK);
@@ -841,7 +841,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PopupHasToolbar) {
     navigation_observer.StartWatchingNewWebContents();
     Navigate(&navigate_params);
     navigation_observer.WaitForNavigationFinished();
-    popup_browser = navigate_params.browser->GetBrowserForMigrationOnly();
+    popup_browser = navigate_params.browser;
   }
 
   BrowserView* browser_view =
@@ -1957,10 +1957,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshAvatarTest,
 
   // We use a DevTools window here as a representative example of a non-tabbed
   // browser window that renders a native title in its frame.
-  Browser* non_tabbed_browser =
-      CreateBrowserWindow(
-          BrowserWindowCreateParams::CreateForDevTools(primary_user_profile))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* non_tabbed_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams::CreateForDevTools(primary_user_profile));
   non_tabbed_browser->GetWindow()->Show();
 
   BrowserView* browser_view =
@@ -2145,9 +2143,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
               WindowOpenDisposition::CURRENT_TAB,
               apps::LaunchSource::kFromTest));
   ASSERT_TRUE(web_contents);
-  Browser* browser = GlobalBrowserCollection::GetInstance()
-                         ->FindBrowserWithTab(web_contents)
-                         ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   auto* contents_web_view =
       BrowserView::GetBrowserViewForBrowser(browser)->contents_web_view();
 

@@ -16,7 +16,7 @@
 #include "ui/views/layout/layout_manager.h"
 
 class BookmarkBarView;
-class Browser;
+class BrowserWindowInterface;
 class BrowserViewLayoutDelegate;
 class InfoBarContainerView;
 class MultiContentsView;
@@ -119,7 +119,7 @@ class BrowserViewLayout : public views::LayoutManager {
   // etc.
   static std::unique_ptr<BrowserViewLayout> CreateLayout(
       std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       BrowserViewLayoutViews views);
 
   // Sets or updates views that are not available when |this| is initialized.
@@ -151,13 +151,13 @@ class BrowserViewLayout : public views::LayoutManager {
  protected:
   // |browser| may be null in tests.
   BrowserViewLayout(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-                    Browser* browser,
+                    BrowserWindowInterface* browser,
                     BrowserViewLayoutViews views);
 
   const BrowserViewLayoutViews& views() const { return views_; }
 
-  Browser* browser() { return browser_; }
-  const Browser* browser() const { return browser_; }
+  BrowserWindowInterface* browser() { return browser_; }
+  const BrowserWindowInterface* browser() const { return browser_; }
   BrowserViewLayoutDelegate& delegate() { return *delegate_; }
   const BrowserViewLayoutDelegate& delegate() const { return *delegate_; }
 
@@ -175,7 +175,7 @@ class BrowserViewLayout : public views::LayoutManager {
   std::unique_ptr<BrowserViewLayoutDelegate> delegate_;
 
   // The owning browser view.
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   // The collection of Views associated with the browser.
   BrowserViewLayoutViews views_;

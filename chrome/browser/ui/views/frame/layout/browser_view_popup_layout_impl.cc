@@ -11,7 +11,7 @@
 
 BrowserViewPopupLayoutImpl::BrowserViewPopupLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     BrowserViewLayoutViews views)
     : BrowserViewLayoutImpl(std::move(delegate), browser, std::move(views)) {
   // Some elements may be visible when they should not be. Remove them.

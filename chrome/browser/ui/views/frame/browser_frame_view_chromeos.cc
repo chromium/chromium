@@ -23,7 +23,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -97,7 +96,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(BrowserFrameViewChromeOS*,
 
 // Returns true if the header should be painted so that it looks the same as
 // the header used for packaged apps.
-bool UsePackagedAppHeaderStyle(const Browser* browser) {
+bool UsePackagedAppHeaderStyle(const BrowserWindowInterface* browser) {
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_POPUP &&
        !WindowFeatureController::From(browser)->IsTrustedSource())) {
@@ -185,7 +184,7 @@ BrowserFrameViewChromeOS* BrowserFrameViewChromeOS::Get(aura::Window* window) {
 }
 
 void BrowserFrameViewChromeOS::Init() {
-  Browser* browser = GetBrowserView()->browser();
+  BrowserWindowInterface* browser = GetBrowserView()->browser();
 
   auto* const app_controller = web_app::AppBrowserController::From(browser);
   const bool is_close_button_enabled =
@@ -297,7 +296,7 @@ int BrowserFrameViewChromeOS::GetTopInset(bool restored) const {
     return 0;
   }
 
-  Browser* browser = GetBrowserView()->browser();
+  BrowserWindowInterface* browser = GetBrowserView()->browser();
 
   int header_height = frame_header_->GetHeaderHeight();
   const gfx::Size toolbar_size =
@@ -773,7 +772,7 @@ void BrowserFrameViewChromeOS::OnImmersiveFullscreenExited() {
 }
 
 void BrowserFrameViewChromeOS::OnAppUpdate(const apps::AppUpdate& update) {
-  Browser* browser = GetBrowserView()->browser();
+  BrowserWindowInterface* browser = GetBrowserView()->browser();
 
   if (!web_app::AppBrowserController::From(browser) ||
       web_app::AppBrowserController::From(browser)->app_id() !=
@@ -946,7 +945,7 @@ void BrowserFrameViewChromeOS::OnAddedToOrRemovedFromOverview() {
 std::unique_ptr<chromeos::FrameHeader>
 BrowserFrameViewChromeOS::CreateFrameHeader() {
   std::unique_ptr<chromeos::FrameHeader> header;
-  Browser* browser = GetBrowserView()->browser();
+  BrowserWindowInterface* browser = GetBrowserView()->browser();
   if (!UsePackagedAppHeaderStyle(browser)) {
     header = std::make_unique<BrowserFrameHeaderChromeOS>(
         browser_widget(), this, this, caption_button_container_);
@@ -979,7 +978,7 @@ bool BrowserFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
   // We only show the profile indicator for the teleported browser windows
   // between multi-user sessions. Note that you can't teleport an incognito
   // window.
-  Browser* browser = GetBrowserView()->browser();
+  BrowserWindowInterface* browser = GetBrowserView()->browser();
   if (browser->GetProfile()->IsIncognitoProfile()) {
     return false;
   }

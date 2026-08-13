@@ -26,7 +26,7 @@ using SupportsForTest =
 
 namespace {
 
-gfx::Size GetWindowSize(Browser* browser) {
+gfx::Size GetWindowSize(const BrowserWindowInterface* browser) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
   const BrowserNativeWidget* const native_widget =
@@ -37,7 +37,8 @@ gfx::Size GetWindowSize(Browser* browser) {
   return bounds.size();
 }
 
-void VerifyColorsForFrameType(Browser* browser, bool use_custom_frame) {
+void VerifyColorsForFrameType(BrowserWindowInterface* browser,
+                              bool use_custom_frame) {
   ThemeService* theme_service =
       ThemeServiceFactory::GetForProfile(browser->GetProfile());
   EXPECT_EQ(use_custom_frame, theme_service->ShouldUseCustomFrame());
@@ -123,8 +124,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetAuraLinuxTest, NewWindowSize) {
   ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
   Profile* profile = browser()->GetProfile();
   BrowserWindowCreateParams params(profile, /*from_user_gesture=*/true);
-  Browser* browser2 =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(std::move(params));
   browser2->GetWindow()->Show();
 
   // The first window saves its placement on losing the active state, then the

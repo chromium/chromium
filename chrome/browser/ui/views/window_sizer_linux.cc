@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/window_sizer_linux.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -17,7 +17,7 @@
 void WindowSizer::GetBrowserWindowBoundsAndShowState(
     std::unique_ptr<StateProvider> state_provider,
     const gfx::Rect& specified_bounds,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) {
   DCHECK(bounds);
@@ -31,7 +31,7 @@ void WindowSizer::GetBrowserWindowBoundsAndShowState(
 
 WindowSizerLinux::WindowSizerLinux(
     std::unique_ptr<StateProvider> state_provider,
-    Browser* browser)
+    BrowserWindowInterface* browser)
     : WindowSizer(std::move(state_provider), browser) {}
 
 WindowSizerLinux::~WindowSizerLinux() = default;

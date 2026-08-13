@@ -846,7 +846,7 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
-void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser,
+void InProcessBrowserTest::AddBlankTabAndShow(BrowserWindowInterface* browser,
                                               bool wait_for_activation) {
   content::WebContents* blank_tab = chrome::AddSelectedTabWithURL(
       browser, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);

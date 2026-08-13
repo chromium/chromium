@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/ui/browser_init_state.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -48,7 +49,7 @@ BrowserWindowPropertyManager::~BrowserWindowPropertyManager() {
 }
 
 void BrowserWindowPropertyManager::UpdateWindowProperties() {
-  const Browser* browser = view_->browser();
+  const BrowserWindowInterface* browser = view_->browser();
   Profile* profile = const_cast<Profile*>(browser->GetProfile());
 
   // Set the app user model id for this application to that of the application

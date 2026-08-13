@@ -81,7 +81,7 @@ gfx::Rect GetBoundsBetweenExclusionZones(const BrowserLayoutParams& params) {
 
 BrowserViewAppLayoutImpl::BrowserViewAppLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     BrowserViewLayoutViews views)
     : BrowserViewLayoutImpl(std::move(delegate), browser, std::move(views)) {}
 

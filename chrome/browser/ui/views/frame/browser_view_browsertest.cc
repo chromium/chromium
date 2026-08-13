@@ -129,8 +129,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, DynamicStatePropagation) {
   BrowserWindowCreateParams params(
       BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile(),
       /*from_user_gesture=*/true);
-  Browser* pip_browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* pip_browser = CreateBrowserWindow(std::move(params));
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
       BrowserView::GetBrowserViewForBrowser(pip_browser);
@@ -155,8 +154,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, InitialStateVerification) {
   BrowserWindowCreateParams params(
       BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile(),
       /*from_user_gesture=*/true);
-  Browser* pip_browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* pip_browser = CreateBrowserWindow(std::move(params));
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
       BrowserView::GetBrowserViewForBrowser(pip_browser);
@@ -185,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipDisabledTest, FeatureFlagEnforcement) {
   BrowserWindowCreateParams params(
       BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile(),
       /*from_user_gesture=*/true);
-  Browser* pip_browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* pip_browser = CreateBrowserWindow(std::move(params));
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
       BrowserView::GetBrowserViewForBrowser(pip_browser);
@@ -223,8 +220,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, NewWindowInitializationIsolation) {
   BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
                                    browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
-  Browser* new_normal_browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* new_normal_browser =
+      CreateBrowserWindow(std::move(params));
   new_normal_browser->GetWindow()->Show();
 
   BrowserView* new_normal_view =
@@ -400,33 +397,31 @@ class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
 // Additionally when one of the tabs is destroyed NotifyNavigationStateChanged()
 // is invoked on the other.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabs) {
-  Browser* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
-                                                    /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::AddTabAt(browser2, GURL(), -1, true);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   TestWebContentsObserver observer(
-      browser2->tab_strip_model()->GetWebContentsAt(0),
-      browser2->tab_strip_model()->GetWebContentsAt(1));
+      browser2->GetTabStripModel()->GetWebContentsAt(0),
+      browser2->GetTabStripModel()->GetWebContentsAt(1));
   BrowserView::GetBrowserViewForBrowser(browser2)->GetWidget()->CloseNow();
 }
 
 // Same as CloseWithTabs, but activates the first tab, which is the first tab
 // BrowserView will destroy.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
-  Browser* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
-                                                    /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::AddTabAt(browser2, GURL(), -1, true);
   chrome::AddTabAt(browser2, GURL(), -1, true);
-  browser2->tab_strip_model()->ActivateTabAt(
+  browser2->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   TestWebContentsObserver observer(
-      browser2->tab_strip_model()->GetWebContentsAt(0),
-      browser2->tab_strip_model()->GetWebContentsAt(1));
+      browser2->GetTabStripModel()->GetWebContentsAt(0),
+      browser2->GetTabStripModel()->GetWebContentsAt(1));
   BrowserView::GetBrowserViewForBrowser(browser2)->GetWidget()->CloseNow();
 }
 
@@ -539,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsUndockedUpdatesBrowserWindow) {
   EXPECT_EQ(full_bounds, contents_web_view()->bounds());
 }
 
-void SetDevToolsWindowSizePrefs(Browser* browser,
+void SetDevToolsWindowSizePrefs(BrowserWindowInterface* browser,
                                 int left,
                                 int right,
                                 int top,
@@ -557,7 +552,8 @@ void SetDevToolsWindowSizePrefs(Browser* browser,
   wp_prefs.Set(DevToolsWindow::kDevToolsApp, std::move(dev_tools_defaults));
 }
 
-const base::DictValue& GetDevToolsWindowSizePrefs(Browser* browser) {
+const base::DictValue& GetDevToolsWindowSizePrefs(
+    BrowserWindowInterface* browser) {
   PrefService* prefs = browser->GetProfile()->GetPrefs();
   return prefs->GetDict(prefs::kAppWindowPlacement)
       .Find(DevToolsWindow::kDevToolsApp)

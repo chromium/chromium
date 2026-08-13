@@ -13,12 +13,14 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 
+class BrowserWindowInterface;
+
 // Provides a specialized layout implementation for PWA browser windows.
 // Should not be used for other types of windows.
 class BrowserViewAppLayoutImpl : public BrowserViewLayoutImpl {
  public:
   BrowserViewAppLayoutImpl(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-                           Browser* browser,
+                           BrowserWindowInterface* browser,
                            BrowserViewLayoutViews views);
   ~BrowserViewAppLayoutImpl() override;
 

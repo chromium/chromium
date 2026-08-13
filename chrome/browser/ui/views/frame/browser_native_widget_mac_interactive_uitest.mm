@@ -9,8 +9,8 @@
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -239,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
   auto [glass1, tint1] = GetGlassViews(first_content_view);
   EXPECT_NE(glass1, nil);
 
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   GlassFrameService::GetInstance()->OnBrowserActivated(second_browser);
   EXPECT_EQ(1.0, [[first_window backgroundColor] alphaComponent]);
   EXPECT_TRUE(first_view->GetWidget()->GetLayer()->fills_bounds_opaquely());
@@ -247,7 +248,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
       GetGlassViews(first_content_view);
   EXPECT_EQ(glass1_ineligible, nil);
 
-  Browser* third_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* third_browser =
+      CreateBrowser(browser()->GetProfile());
   GlassFrameService::GetInstance()->OnBrowserActivated(third_browser);
   NSWindow* second_window =
       BrowserView::GetBrowserViewForBrowser(second_browser)

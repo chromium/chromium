@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
@@ -127,7 +126,7 @@ std::string BrowserViewLayoutImpl::ProposedLayout::ToString(int depth) const {
 
 BrowserViewLayoutImpl::BrowserViewLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     BrowserViewLayoutViews views)
     : BrowserViewLayout(std::move(delegate), browser, std::move(views)) {
 #if BUILDFLAG(IS_MAC)

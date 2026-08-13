@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -78,7 +77,7 @@ bool CanOpenBrowserForProfile(const AvatarMenu::Item& profile_item) {
 
 AvatarMenu::AvatarMenu(ProfileAttributesStorage* profile_storage,
                        AvatarMenuObserver* observer,
-                       Browser* browser)
+                       BrowserWindowInterface* browser)
     : profile_list_(std::make_unique<ProfileListDesktop>(profile_storage)),
       profile_storage_(profile_storage->AsWeakPtr()),
       observer_(observer),

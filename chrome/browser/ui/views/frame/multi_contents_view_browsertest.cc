@@ -102,8 +102,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
           "AppName",
           /*trusted_source=*/true, gfx::Rect(), browser()->GetProfile(),
           /*user_gesture=*/false);
-  Browser* app_browser = CreateBrowserWindow(std::move(app_browser_params))
-                             ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* app_browser =
+      CreateBrowserWindow(std::move(app_browser_params));
 
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(app_browser)
                    ->multi_contents_view()

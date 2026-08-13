@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
-ImmersiveModeTester::ImmersiveModeTester(Browser* browser) : browser_(browser) {
+ImmersiveModeTester::ImmersiveModeTester(BrowserWindowInterface* browser)
+    : browser_(browser) {
   scoped_observation_.Observe(GetController());
 }
 
@@ -33,7 +34,7 @@ void ImmersiveModeTester::RunCommand(int command, int expected_index) {
 void ImmersiveModeTester::VerifyTabIndexAfterReveal(int expected_index) {
   WaitForRevealEnded();
   EXPECT_TRUE(reveal_ended_);
-  EXPECT_EQ(expected_index, browser_->tab_strip_model()->active_index());
+  EXPECT_EQ(expected_index, browser_->GetTabStripModel()->active_index());
 }
 
 void ImmersiveModeTester::WaitForFullscreenToEnter() {

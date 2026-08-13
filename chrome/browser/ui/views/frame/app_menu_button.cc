@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"

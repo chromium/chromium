@@ -21,7 +21,6 @@
 #include "ui/gfx/image/image.h"
 
 class AvatarMenuObserver;
-class Browser;
 class BrowserWindowInterface;
 class ProfileAttributesStorage;
 class ProfileListDesktop;
@@ -86,7 +85,7 @@ class AvatarMenu : public SupervisedUserServiceObserver,
   // will be created if an action requires it.
   AvatarMenu(ProfileAttributesStorage* profile_storage,
              AvatarMenuObserver* observer,
-             Browser* browser);
+             BrowserWindowInterface* browser);
 
   AvatarMenu(const AvatarMenu&) = delete;
   AvatarMenu& operator=(const AvatarMenu&) = delete;

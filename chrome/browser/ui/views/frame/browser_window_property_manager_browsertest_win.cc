@@ -58,7 +58,7 @@ std::wstring AddIdToIconPath(const std::wstring& path) {
 // Checks that the relaunch name, relaunch command and app icon for the given
 // |browser| are correct.
 void ValidateBrowserWindowProperties(
-    const Browser* browser,
+    const BrowserWindowInterface* browser,
     const std::u16string& expected_profile_name) {
   // Let shortcut creation finish before we validate the results.
   content::RunAllTasksUntilIdle();
@@ -240,8 +240,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
       BrowserWindowCreateParams::CreateForPictureInPicture(
           app_name, /*trusted_source=*/true, browser()->GetProfile(),
           /*user_gesture=*/true);
-  Browser* pip_browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* pip_browser = CreateBrowserWindow(std::move(params));
   ASSERT_EQ(pip_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
   ASSERT_EQ(app_name,
@@ -273,8 +272,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
       BrowserWindowCreateParams::CreateForPictureInPicture(
           "", /*trusted_source=*/true, browser()->GetProfile(),
           /*user_gesture=*/true);
-  Browser* pip_browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* pip_browser = CreateBrowserWindow(std::move(params));
   ASSERT_EQ(pip_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
   ASSERT_TRUE(

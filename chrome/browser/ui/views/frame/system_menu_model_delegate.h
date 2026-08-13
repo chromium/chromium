@@ -6,24 +6,25 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_MODEL_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/menus/simple_menu_model.h"
 
+class BrowserWindowInterface;
 class ExpandOnHoverLock;
 
 // Provides the SimpleMenuModel::Delegate implementation for system context
 // menus.
 class SystemMenuModelDelegate : public ui::SimpleMenuModel::Delegate {
  public:
-  SystemMenuModelDelegate(ui::AcceleratorProvider* provider, Browser* browser);
+  SystemMenuModelDelegate(ui::AcceleratorProvider* provider,
+                          BrowserWindowInterface* browser);
 
   SystemMenuModelDelegate(const SystemMenuModelDelegate&) = delete;
   SystemMenuModelDelegate& operator=(const SystemMenuModelDelegate&) = delete;
 
   ~SystemMenuModelDelegate() override;
 
-  Browser* browser() { return browser_; }
+  BrowserWindowInterface* browser() { return browser_; }
 
   // Overridden from ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
@@ -42,7 +43,7 @@ class SystemMenuModelDelegate : public ui::SimpleMenuModel::Delegate {
   std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
 
   const raw_ptr<ui::AcceleratorProvider> provider_;  // weak
-  const raw_ptr<Browser> browser_;                   // weak
+  const raw_ptr<BrowserWindowInterface> browser_;    // weak
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_MODEL_DELEGATE_H_

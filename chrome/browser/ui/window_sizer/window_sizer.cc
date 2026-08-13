@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -64,7 +63,8 @@ ui::BaseWindow* FindMostRecentWindow(
 // and persistent state from the browser window and the user's profile.
 class DefaultStateProvider : public WindowSizer::StateProvider {
  public:
-  explicit DefaultStateProvider(Browser* browser) : browser_(browser) {}
+  explicit DefaultStateProvider(BrowserWindowInterface* browser)
+      : browser_(browser) {}
 
   DefaultStateProvider(const DefaultStateProvider&) = delete;
   DefaultStateProvider& operator=(const DefaultStateProvider&) = delete;
@@ -203,13 +203,13 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
   std::string app_name_;
 
   // If set, is used as the reference browser for GetLastActiveWindowState.
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 };
 
 }  // namespace
 
 WindowSizer::WindowSizer(std::unique_ptr<StateProvider> state_provider,
-                         Browser* browser)
+                         BrowserWindowInterface* browser)
     : state_provider_(std::move(state_provider)), browser_(browser) {}
 
 WindowSizer::~WindowSizer() = default;
@@ -217,7 +217,7 @@ WindowSizer::~WindowSizer() = default;
 // static
 void WindowSizer::GetBrowserWindowBoundsAndShowState(
     const gfx::Rect& specified_bounds,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     gfx::Rect* window_bounds,
     ui::mojom::WindowShowState* show_state) {
   return GetBrowserWindowBoundsAndShowState(
@@ -231,7 +231,7 @@ void WindowSizer::GetBrowserWindowBoundsAndShowState(
 void WindowSizer::GetBrowserWindowBoundsAndShowState(
     std::unique_ptr<StateProvider> state_provider,
     const gfx::Rect& specified_bounds,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) {
   DCHECK(bounds);
@@ -442,7 +442,7 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
 
 // static
 ui::mojom::WindowShowState WindowSizer::GetWindowDefaultShowState(
-    Browser* browser) {
+    const BrowserWindowInterface* browser) {
   if (!browser) {
     return ui::mojom::WindowShowState::kDefault;
   }

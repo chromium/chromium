@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/immersive/immersive_mode_controller.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <tuple>
@@ -11,8 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
@@ -39,7 +41,7 @@
 
 class ScopedAlwaysShowToolbar {
  public:
-  ScopedAlwaysShowToolbar(Browser* browser, bool always_show) {
+  ScopedAlwaysShowToolbar(BrowserWindowInterface* browser, bool always_show) {
     prefs_ = browser->GetProfile()->GetPrefs();
     original_ = prefs_->GetBoolean(prefs::kShowFullscreenToolbar);
     prefs_->SetBoolean(prefs::kShowFullscreenToolbar, always_show);

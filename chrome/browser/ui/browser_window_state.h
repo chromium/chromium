@@ -13,7 +13,7 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace base {
 class CommandLine;
@@ -27,7 +27,7 @@ class PrefService;
 
 namespace chrome {
 
-std::string GetWindowName(const Browser* browser);
+std::string GetWindowName(const BrowserWindowInterface* browser);
 // A "window placement dictionary" holds information about the size and location
 // of the window that is stored in the given PrefService. If the `window_name`
 // isn't the name of a registered preference it is assumed to be the name of an
@@ -47,25 +47,26 @@ const base::DictValue* GetWindowPlacementDictionaryReadOnly(
     const std::string& window_name,
     PrefService* prefs);
 
-bool ShouldSaveWindowPlacement(const Browser* browser);
+bool ShouldSaveWindowPlacement(const BrowserWindowInterface* browser);
 
 // Returns true if the saved bounds for this window should be treated as the
 // bounds of the content area, not the whole window.
-bool SavedBoundsAreContentBounds(const Browser* browser);
+bool SavedBoundsAreContentBounds(const BrowserWindowInterface* browser);
 
-void SaveWindowPlacement(Browser* browser,
+void SaveWindowPlacement(BrowserWindowInterface* browser,
                          const gfx::Rect& bounds,
                          ui::mojom::WindowShowState show_state);
 
-void SaveWindowWorkspace(Browser* browser, const std::string& workspace);
+void SaveWindowWorkspace(BrowserWindowInterface* browser,
+                         const std::string& workspace);
 
-void SaveWindowVisibleOnAllWorkspaces(Browser* browser,
+void SaveWindowVisibleOnAllWorkspaces(BrowserWindowInterface* browser,
                                       bool visible_on_all_workspaces);
 
 // Return the |bounds| for the browser window to be used upon creation.
 // The |show_state| variable will receive the desired initial show state for
 // the window.
-void GetSavedWindowBoundsAndShowState(Browser* browser,
+void GetSavedWindowBoundsAndShowState(BrowserWindowInterface* browser,
                                       gfx::Rect* bounds,
                                       ui::mojom::WindowShowState* show_state);
 

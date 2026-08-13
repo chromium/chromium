@@ -17,6 +17,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/chrome_dll_resource.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -158,7 +159,7 @@ BrowserFrameViewWin::BrowserFrameViewWin(BrowserWidget* widget,
   // is true. Everything else here is only used when
   // ShouldBrowserCustomDrawTitlebar() is true.
 
-  Browser* browser = browser_view->browser();
+  BrowserWindowInterface* browser = browser_view->browser();
   bool supports_title_bar =
       WindowFeatureController::From(browser)->SupportsWindowFeature(
           WindowFeatureController::WindowFeature::kFeatureTitleBar);

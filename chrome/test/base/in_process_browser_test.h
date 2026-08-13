@@ -329,7 +329,8 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // browser activation happens, which should be true in most of the case unless
   // the caller knows that it won't happen (e.g. when the browser is created
   // with minimized window).
-  void AddBlankTabAndShow(Browser* browser, bool wait_for_activation = true);
+  void AddBlankTabAndShow(BrowserWindowInterface* browser,
+                          bool wait_for_activation = true);
 
 #if !BUILDFLAG(IS_MAC)
   // Return a CommandLine object that is used to relaunch the browser_test
