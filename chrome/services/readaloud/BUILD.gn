@@ -9,6 +9,7 @@ source_set("readaloud") {
     "chunking/text_chunker.h",
     "decoded_audio_segment.h",
     "prefetch/prefetch_manager.h",
+    "prefetch/prefetch_mode_scheduler.h",
     "read_aloud_playback_controller.h",
   ]
   sources = [
@@ -17,6 +18,7 @@ source_set("readaloud") {
     "chunking/text_chunker.cc",
     "decoded_audio_segment.cc",
     "prefetch/prefetch_manager.cc",
+    "prefetch/prefetch_mode_scheduler.cc",
     "read_aloud_playback_controller.cc",
   ]
 
@@ -41,6 +43,7 @@ source_set("unit_tests") {
     "decoded_audio_segment_unittest.cc",
     "mock_read_aloud_playback_controller_unittest.cc",
     "prefetch/prefetch_manager_unittest.cc",
+    "prefetch/prefetch_mode_scheduler_unittest.cc",
     "read_aloud_playback_controller_unittest.cc",
   ]
   deps = [

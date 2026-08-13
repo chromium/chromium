@@ -16,6 +16,7 @@
 #include "chrome/common/readaloud/read_aloud.mojom-forward.h"
 #include "chrome/services/readaloud/chunking/text_chunker.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
+#include "chrome/services/readaloud/prefetch/prefetch_mode_scheduler.h"
 #include "media/base/decoder_buffer.h"
 
 namespace readaloud {
@@ -36,7 +37,8 @@ struct CachedCompressedSegment {
   std::vector<DecodedAudioSegment::WordTiming> timings;
 };
 
-// Manages document-bound caching of compressed speech synthesis audio.
+// Manages document-bound caching of compressed speech synthesis audio and
+// coordinates prefetch sentence chunking with the active hysteresis mode.
 class PrefetchManager {
  public:
   PrefetchManager();
@@ -45,14 +47,29 @@ class PrefetchManager {
   ~PrefetchManager();
 
   // Document-bound lifecycle:
-  // Sets new document text segments, uses ChunkText(..., kSpeed) to establish
-  // the canonical sentence-level timeline (0...N-1), and purges session_cache_.
+  // Sets new document text segments, uses ChunkText(..., GetChunkingMode()) to
+  // establish the sentence-level timeline, and purges session_cache_.
   void SetTextContent(
       const std::vector<read_aloud::mojom::TextSegmentPtr>& segments,
       std::optional<base::i18n::LanguageTag> locale_tag = std::nullopt);
 
-  // Clears all cached segments and resets the timeline.
+  // Clears all cached segments, resets the timeline, and resets mode scheduler.
   void ResetSession();
+
+  // Evaluates the current buffered audio duration against hysteresis thresholds
+  // and updates the active prefetch mode (`kSpeed` or `kQuality`).
+  // Delegated directly to `PrefetchModeScheduler`.
+  // Note: Mode upgrades to `kQuality` group adjacent sentences for upcoming
+  // uncached lookahead requests without re-chunking or invalidating existing
+  // `session_cache_` entries.
+  ChunkingMode UpdatePrefetchMode(base::TimeDelta current_buffered_duration);
+
+  // Returns the current prefetch chunking mode (`kSpeed` or `kQuality`).
+  ChunkingMode GetChunkingMode() const;
+
+  // Returns the target prefetch audio duration threshold for the active mode
+  // (15s for `kSpeed` mode, 50s for `kQuality` mode).
+  base::TimeDelta GetTargetPrefetchDuration() const;
 
   // Cache accessors & modifiers:
   bool HasCachedSegment(int32_t chunk_index) const;
@@ -68,6 +85,8 @@ class PrefetchManager {
   const std::vector<TextChunk>& GetTimelineChunks() const;
 
  private:
+  // Manages hysteresis transitions between kSpeed and kQuality modes.
+  PrefetchModeScheduler mode_scheduler_;
   // Maps 0-indexed canonical sentence chunk indices to compressed cache
   // entries.
   std::map<int32_t, CachedCompressedSegment> session_cache_;

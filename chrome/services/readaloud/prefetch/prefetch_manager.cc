@@ -39,6 +39,7 @@ void PrefetchManager::SetTextContent(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timeline_.clear();
   session_cache_.clear();
+  mode_scheduler_.Reset();
 
   for (const read_aloud::mojom::TextSegmentPtr& segment : segments) {
     if (!segment || segment->text.empty()) {
@@ -50,7 +51,7 @@ void PrefetchManager::SetTextContent(
     // ChunkingMode::kQuality, retain them within paragraph groupings for
     // natural prosody and pauses.
     std::vector<TextChunk> sentence_chunks =
-        ChunkText(segment->text, ChunkingMode::kSpeed, locale_tag);
+        ChunkText(segment->text, GetChunkingMode(), locale_tag);
     timeline_.insert(timeline_.end(),
                      std::make_move_iterator(sentence_chunks.begin()),
                      std::make_move_iterator(sentence_chunks.end()));
@@ -61,6 +62,23 @@ void PrefetchManager::ResetSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timeline_.clear();
   session_cache_.clear();
+  mode_scheduler_.Reset();
+}
+
+ChunkingMode PrefetchManager::UpdatePrefetchMode(
+    base::TimeDelta current_buffered_duration) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return mode_scheduler_.UpdateMode(current_buffered_duration);
+}
+
+ChunkingMode PrefetchManager::GetChunkingMode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return mode_scheduler_.GetChunkingMode();
+}
+
+base::TimeDelta PrefetchManager::GetTargetPrefetchDuration() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return mode_scheduler_.GetTargetPrefetchDuration();
 }
 
 bool PrefetchManager::HasCachedSegment(int32_t chunk_index) const {
@@ -105,6 +123,7 @@ void PrefetchManager::InsertCachedSegment(
 void PrefetchManager::ClearCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   session_cache_.clear();
+  mode_scheduler_.Reset();
 }
 
 size_t PrefetchManager::GetTimelineChunkCount() const {

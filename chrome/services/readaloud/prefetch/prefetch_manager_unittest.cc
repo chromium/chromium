@@ -202,4 +202,16 @@ TEST_F(PrefetchManagerTest, InsertCachedSegmentIgnoresOutOfBoundsIndex) {
   EXPECT_FALSE(manager.HasCachedSegment(1));
 }
 
+TEST_F(PrefetchManagerTest, UpdatePrefetchModeDelegatesToModeScheduler) {
+  PrefetchManager manager;
+  EXPECT_EQ(ChunkingMode::kSpeed, manager.GetChunkingMode());
+
+  EXPECT_EQ(ChunkingMode::kQuality,
+            manager.UpdatePrefetchMode(base::Seconds(15)));
+  EXPECT_EQ(ChunkingMode::kQuality, manager.GetChunkingMode());
+
+  manager.ResetSession();
+  EXPECT_EQ(ChunkingMode::kSpeed, manager.GetChunkingMode());
+}
+
 }  // namespace readaloud
