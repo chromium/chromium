@@ -17,6 +17,21 @@ import type {MemoryBankEntry} from '../context_hub.mojom-webui.js';
 import {getCss} from './memory_banks.css.js';
 import {getHtml} from './memory_banks.html.js';
 
+function downloadFile(filename: string, content: string) {
+  if (!content) {
+    return;
+  }
+  const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export class MemoryBanksElement extends CrLitElement {
   static get is() {
     return 'memory-banks';
@@ -148,17 +163,12 @@ export class MemoryBanksElement extends CrLitElement {
     }
   }
 
-  protected onDownloadClick_() {
-    const textToDownload = this.getSelectedEntriesAsText_();
-    const blob = new Blob([textToDownload], {type: 'text/plain;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'memory_banks_entries.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  protected onDownloadSelectedEntriesClick_() {
+    downloadFile('memory_banks_entries.txt', this.getSelectedEntriesAsText_());
+  }
+
+  protected onDownloadGeminiResponseClick_() {
+    downloadFile('gemini_response.txt', this.geminiResponse_);
   }
 
   protected async onDeleteClick_() {

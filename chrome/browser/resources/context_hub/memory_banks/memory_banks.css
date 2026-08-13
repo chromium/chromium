@@ -265,6 +265,17 @@ h2 {
   margin-bottom: 4px;
 }
 
+.gemini-response-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gemini-response-actions cr-icon-button {
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-margin-end: 0;
+}
+
 .gemini-response p {
   white-space: pre-wrap;
   margin: 8px 0 0 0;

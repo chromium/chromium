@@ -41,7 +41,7 @@ export function getHtml(this: MemoryBanksElement) {
                     Copy selected
                   </cr-button>
                   <cr-button ?disabled="${this.selectedIds.size === 0}"
-                      @click="${this.onDownloadClick_}">
+                      @click="${this.onDownloadSelectedEntriesClick_}">
                     Download selected
                   </cr-button>
                   <cr-button ?disabled="${this.selectedIds.size === 0}"
@@ -91,11 +91,19 @@ export function getHtml(this: MemoryBanksElement) {
                     <div class="gemini-response">
                       <div class="gemini-response-header">
                         <strong>Gemini:</strong>
-                        <cr-icon-button
-                            iron-icon="cr:close"
-                            title="Close"
-                            @click="${this.onCloseResponseClick_}">
-                        </cr-icon-button>
+                        <div class="gemini-response-actions">
+                          <cr-icon-button
+                              id="download-gemini-response"
+                              iron-icon="cr:download"
+                              title="Download response"
+                              @click="${this.onDownloadGeminiResponseClick_}">
+                          </cr-icon-button>
+                          <cr-icon-button
+                              iron-icon="cr:close"
+                              title="Close"
+                              @click="${this.onCloseResponseClick_}">
+                          </cr-icon-button>
+                        </div>
                       </div>
                       <p>${this.geminiResponse_}</p>
                     </div>
