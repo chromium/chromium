@@ -1286,12 +1286,10 @@ void CloudPolicyClient::UploadChromeProfileReport(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
-void CloudPolicyClient::UploadSecurityEvent(bool include_device_info,
-                                            UploadEventsRequest request,
-                                            ResultCallback callback) {
-  DCHECK(base::FeatureList::IsEnabled(
-      policy::kUploadRealtimeReportingEventsUsingProto));
-
+void CloudPolicyClient::UploadSecurityEvent(
+    bool include_device_info,
+    ::chrome::cros::reporting::proto::UploadEventsRequest request,
+    ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_registered() || !service() || !service()->configuration()) {
@@ -1305,25 +1303,6 @@ void CloudPolicyClient::UploadSecurityEvent(bool include_device_info,
       service()->configuration()->GetRealtimeReportingServerUrl(),
       include_device_info, std::move(callback));
 }
-
-// TODO(crbug.com/478929452): Delete this method after the proto-based reporting
-// launch.
-void CloudPolicyClient::UploadSecurityEventReport(bool include_device_info,
-                                                  base::DictValue report,
-                                                  ResultCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!is_registered() || !service() || !service()->configuration()) {
-    std::move(callback).Run(CloudPolicyClient::Result(NotRegistered()));
-    return;
-  }
-
-  CreateNewRealtimeReportingJobDeprecated(
-      std::move(report),
-      service()->configuration()->GetRealtimeReportingServerUrl(),
-      include_device_info, std::move(callback));
-}
-
 
 void CloudPolicyClient::FetchRemoteCommands(
     std::unique_ptr<RemoteCommandJob::UniqueIDType> last_command_id,
@@ -1383,23 +1362,7 @@ DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
   return request_jobs_.back().get();
 }
 
-DeviceManagementService::Job*
-CloudPolicyClient::CreateNewRealtimeReportingJobDeprecated(
-    base::DictValue report,
-    const std::string& server_url,
-    bool include_device_info,
-    ResultCallback callback) {
-  std::unique_ptr<RealtimeReportingJobConfiguration> config =
-      std::make_unique<RealtimeReportingJobConfiguration>(
-          this, server_url, include_device_info,
-          base::BindOnce(
-              &CloudPolicyClient::OnRealtimeReportUploadCompletedDeprecated,
-              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
-  config->AddReportDeprecated(std::move(report));
-  request_jobs_.push_back(service_->CreateJob(std::move(config)));
-  return request_jobs_.back().get();
-}
 
 void CloudPolicyClient::GetDeviceAttributeUpdatePermission(
     DMAuth auth,
@@ -2042,27 +2005,6 @@ void CloudPolicyClient::OnRealtimeReportUploadCompleted(
   } else {
     std::move(callback).Run(CloudPolicyClient::Result::CreateForRealtimeUpload(
         status, response_code, upload_request));
-  }
-
-  RemoveJob(job);
-}
-
-void CloudPolicyClient::OnRealtimeReportUploadCompletedDeprecated(
-    ResultCallback callback,
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int response_code,
-    std::optional<base::DictValue> response) {
-  last_dm_status_ = status;
-  if (status != DM_STATUS_SUCCESS) {
-    NotifyClientError();
-  }
-
-  if (response.has_value()) {
-    std::move(callback).Run(CloudPolicyClient::Result(
-        status, response_code, std::move(response.value())));
-  } else {
-    std::move(callback).Run(CloudPolicyClient::Result(status, response_code));
   }
 
   RemoveJob(job);

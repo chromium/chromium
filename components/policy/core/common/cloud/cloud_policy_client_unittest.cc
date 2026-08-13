@@ -535,25 +535,6 @@ class CloudPolicyClientTest : public testing::Test {
     CreateClient("", "", kFlexSysVendor, kFlexProductName, kFlexProductVersion);
   }
 
-  base::DictValue MakeDefaultRealtimeReport() {
-    base::DictValue context;
-    context.SetByDottedPath("profile.gaiaEmail", "name@gmail.com");
-    context.SetByDottedPath("browser.userAgent", "User-Agent");
-    context.SetByDottedPath("profile.profileName", "Profile 1");
-    context.SetByDottedPath("profile.profilePath", "C:\\User Data\\Profile 1");
-
-    base::DictValue event;
-    event.Set("time", "2019-05-22T13:01:45Z");
-    event.SetByDottedPath("foo.prop1", "value1");
-    event.SetByDottedPath("foo.prop2", "value2");
-    event.SetByDottedPath("foo.prop3", "value3");
-
-    base::ListValue event_list;
-    event_list.Append(std::move(event));
-    return policy::RealtimeReportingJobConfiguration::BuildReport(
-        std::move(event_list), std::move(context));
-  }
-
   ::chrome::cros::reporting::proto::UploadEventsRequest
   MakeDefaultUploadEventsRequest() {
     ::chrome::cros::reporting::proto::UploadEventsRequest request;

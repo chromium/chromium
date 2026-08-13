@@ -501,11 +501,6 @@ class POLICY_EXPORT CloudPolicyClient {
       ::chrome::cros::reporting::proto::UploadEventsRequest request,
       ResultCallback callback);
 
-  // DEPRECATED: Use |UploadSecurityEvent| instead.
-  virtual void UploadSecurityEventReport(bool include_device_info,
-                                         base::DictValue report,
-                                         ResultCallback callback);
-
   // Attempts to fetch remote commands, with `last_command_id` being the ID of
   // the last command that finished execution, `command_results` being
   // results for previous commands which have not been reported yet,
@@ -839,16 +834,6 @@ class POLICY_EXPORT CloudPolicyClient {
       const ::chrome::cros::reporting::proto::UploadEventsRequest&
           upload_request);
 
-  // Callback for realtime report upload requests - JSON format.
-  // TODO(crbug.com/478929452): Delete this callback after the proto-based
-  // reporting launch.
-  void OnRealtimeReportUploadCompletedDeprecated(
-      ResultCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int response_code,
-      std::optional<base::DictValue> response);
-
   // Callback for remote command fetch requests.
   void OnRemoteCommandsFetched(RemoteCommandCallback callback,
                                DMServerJobResult result);
@@ -984,12 +969,6 @@ class POLICY_EXPORT CloudPolicyClient {
       bool include_device_info,
       ResultCallback callback);
 
-  // DEPRECATED: Use CreateNewRealtimeReportingJob instead.
-  DeviceManagementService::Job* CreateNewRealtimeReportingJobDeprecated(
-      base::DictValue report,
-      const std::string& server_url,
-      bool include_device_info,
-      ResultCallback callback);
 
   void SetClientId(const std::string& client_id);
   // Fills in the common fields of a DeviceRegisterRequest for |Register| and
