@@ -24,6 +24,7 @@ NSString* const kBackgroundShadowColor = @"background_shadow_color";
 NSString* const kMDCInkColor = @"mdc_ink_color";
 NSString* const kMDCSecondaryInkColor = @"mdc_secondary_ink_color";
 NSString* const kPlaceholderImageTintColor = @"placeholder_image_tint_color";
+NSString* const kSurfaceContainerColor = @"surface_container_color";
 NSString* const kPrimaryBackgroundColor = @"primary_background_color";
 NSString* const kInvertedPrimaryBackgroundColor =
     @"inverted_primary_background_color";

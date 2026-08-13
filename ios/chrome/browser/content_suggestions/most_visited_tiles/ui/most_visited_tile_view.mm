@@ -222,10 +222,13 @@
   [self.faviconView configureWithAttributes:configuration.attributes];
 
   if (colorPalette) {
-    self.imageContainerView.backgroundColor = colorPalette.tertiaryColor;
+    self.imageContainerView.backgroundColor = IsNewTabPageUICleanupEnabled()
+                                                  ? colorPalette.primaryColor
+                                                  : colorPalette.tertiaryColor;
   } else {
-    self.imageContainerView.backgroundColor =
-        [UIColor colorNamed:kGrey100Color];
+    self.imageContainerView.backgroundColor = [UIColor
+        colorNamed:IsNewTabPageUICleanupEnabled() ? kSurfaceContainerColor
+                                                  : kGrey100Color];
   }
 }
 

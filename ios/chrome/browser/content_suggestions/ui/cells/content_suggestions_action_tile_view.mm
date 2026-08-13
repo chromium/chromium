@@ -82,6 +82,30 @@ const CGFloat kCountBorderWidth = 24;
   self.alpha = config.disabled ? 0.3 : 1.0;
 }
 
+- (void)applyBackgroundTheme {
+  BOOL hasImageBackground =
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+
+  if (hasImageBackground) {
+    self.imageBackgroundView.tintColor = [UIColor colorNamed:kGrey100Color];
+    self.iconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+    // Don't create count label if it's not already created.
+    _countLabel.backgroundColor = [UIColor colorNamed:kBlueColor];
+  } else if (colorPalette) {
+    self.imageBackgroundView.tintColor = colorPalette.tertiaryColor;
+    self.iconView.tintColor = colorPalette.tintColor;
+    // Don't create count label if it's not already created.
+    _countLabel.backgroundColor = colorPalette.tintColor;
+  } else {
+    self.imageBackgroundView.tintColor = [UIColor colorNamed:kBlueHaloColor];
+    self.iconView.tintColor = nil;
+    // Don't create count label if it's not already created.
+    _countLabel.backgroundColor = [UIColor colorNamed:kBlueColor];
+  }
+}
+
 - (UILabel*)countLabel {
   if (!_countLabel) {
     _countContainer = [[UIView alloc] init];
@@ -157,32 +181,6 @@ const CGFloat kCountBorderWidth = 24;
 // Update the `titleLabel` font when the device's content size changes.
 - (void)updateTitleLabelFontOnTraitChange {
   self.titleLabel.font = [self titleLabelFont];
-}
-
-// Sets the background using the current background image state, color palette,
-// or defaults if none is set.
-- (void)applyBackgroundTheme {
-  BOOL hasImageBackground =
-      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
-  NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForNewTabPageTrait];
-
-  if (hasImageBackground) {
-    self.imageBackgroundView.tintColor = [UIColor colorNamed:kGrey100Color];
-    self.iconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-    // Don't create count label if it's not already created.
-    _countLabel.backgroundColor = [UIColor colorNamed:kBlueColor];
-  } else if (colorPalette) {
-    self.imageBackgroundView.tintColor = colorPalette.tertiaryColor;
-    self.iconView.tintColor = colorPalette.tintColor;
-    // Don't create count label if it's not already created.
-    _countLabel.backgroundColor = colorPalette.tintColor;
-  } else {
-    self.imageBackgroundView.tintColor = [UIColor colorNamed:kBlueHaloColor];
-    self.iconView.tintColor = nil;
-    // Don't create count label if it's not already created.
-    _countLabel.backgroundColor = [UIColor colorNamed:kBlueColor];
-  }
 }
 
 @end

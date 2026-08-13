@@ -35,6 +35,10 @@
 // Updates the configuration for this view to the new `config`.
 - (void)updateConfiguration:(ContentSuggestionsActionItem*)config;
 
+// Sets the background using the current background image state, color palette,
+// or defaults if none is set.
+- (void)applyBackgroundTheme;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_CONTENT_SUGGESTIONS_ACTION_TILE_VIEW_H_
