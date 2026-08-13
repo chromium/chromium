@@ -3912,6 +3912,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-isolated-web-app-fast-update-check",
+    "owners": [ "simonha@google.com", "iwa-team@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-isolated-web-app-inline-update",
     "owners": [ "simonha@google.com", "iwa-team@google.com" ],
     "expiry_milestone": 170

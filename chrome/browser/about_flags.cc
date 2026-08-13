@@ -5691,6 +5691,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableIsolatedWebAppDevModeName,
      flag_descriptions::kEnableIsolatedWebAppDevModeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIsolatedWebAppDevMode)},
+    {"enable-isolated-web-app-fast-update-check",
+     flag_descriptions::kEnableIsolatedWebAppFastUpdateCheckName,
+     flag_descriptions::kEnableIsolatedWebAppFastUpdateCheckDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(features::kIsolatedWebAppFastUpdateCheck)},
 #if BUILDFLAG(IS_WIN)
     {"enable-process-isolation-ui",
      flag_descriptions::kEnableProcessIsolationUiName,

@@ -8638,6 +8638,7 @@ from previous Chrome versions.
   <int value="-1871540097" label="CaptionsOnBrailleDisplay:enabled"/>
   <int value="-1871472551" label="PwaRestoreUi:enabled"/>
   <int value="-1871389939" label="DeskButton:enabled"/>
+  <int value="-1871203540" label="IsolatedWebAppFastUpdateCheck:enabled"/>
   <int value="-1871185948" label="VrLaunchIntents:disabled"/>
   <int value="-1871034583" label="EnablePixPayments:disabled"/>
   <int value="-1870961970" label="enable-filemanager-mtp"/>
@@ -17620,6 +17621,7 @@ from previous Chrome versions.
   <int value="948521531" label="StylusHandwriting:disabled"/>
   <int value="948682684" label="BorealisDGPU:disabled"/>
   <int value="948833749" label="WinPdfUseFontProxy:disabled"/>
+  <int value="948894902" label="IsolatedWebAppFastUpdateCheck:disabled"/>
   <int value="950322839" label="TemplateUrlReconciliation:enabled"/>
   <int value="951048852" label="IOSPromoPasswordBubble:enabled"/>
   <int value="951111587" label="MediaAppPhotosIntegrationVideo:disabled"/>

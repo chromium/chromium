@@ -2229,6 +2229,12 @@ inline constexpr char kEnableIsolatedWebAppDevModeName[] =
 inline constexpr char kEnableIsolatedWebAppDevModeDescription[] =
     "Enables the installation of unverified Isolated Web Apps";
 
+inline constexpr char kEnableIsolatedWebAppFastUpdateCheckName[] =
+    "Enable Isolated Web App Fast Update Check";
+inline constexpr char kEnableIsolatedWebAppFastUpdateCheckDescription[] =
+    "Enables fast update checks for Isolated Web Apps, reducing the update "
+    "check interval to 1 minute.";
+
 inline constexpr char kEnableIwaKeyDistributionComponentName[] =
     "Enable the Iwa Key Distribution component";
 inline constexpr char kEnableIwaKeyDistributionComponentDescription[] =

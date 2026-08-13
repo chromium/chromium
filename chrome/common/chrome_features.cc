@@ -1380,6 +1380,10 @@ BASE_FEATURE(kIsolatedWebAppDevMode, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the chrome://iwa-dev WebUI page.
 BASE_FEATURE(kIsolatedWebAppDevUi, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables fast update checks for Isolated Web Apps, reducing the update check
+// interval to 1 minute.
+BASE_FEATURE(kIsolatedWebAppFastUpdateCheck, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables users on unmanaged devices to install Isolated Web Apps.
 BASE_FEATURE(kIsolatedWebAppUnmanagedInstall,
 #if BUILDFLAG(IS_CHROMEOS)

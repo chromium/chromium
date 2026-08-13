@@ -48,6 +48,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -443,6 +444,16 @@ void IsolatedWebAppUpdateManager::DelayedStart() {
   task_queue_.MaybeStartNextTask();
 
   QueueUpdateDiscoverAndPrepareTasks();
+
+  if (base::FeatureList::IsEnabled(features::kIsolatedWebAppFastUpdateCheck)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            base::IgnoreResult(&IsolatedWebAppUpdateManager::
+                                   QueueUpdateDiscoverAndPrepareTasks),
+            weak_factory_.GetWeakPtr()),
+        base::Minutes(1));
+  }
 }
 
 void IsolatedWebAppUpdateManager::Shutdown() {
