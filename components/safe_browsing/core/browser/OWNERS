@@ -1,7 +1,10 @@
 # CSD model
 per-file client_side_*=nwokedi@chromium.org
+per-file client_side_*=jdh@chromium.org
 per-file csd_*=nwokedi@chromium.org
+per-file csd_*=jdh@chromium.org
 per-file credit_card_form*=nwokedi@chromium.org
+per-file credit_card_form*=jdh@chromium.org
 per-file credit_card_form*=bcb@chromium.org
 
 per-file suspicious_site_warning_allowlist*=richche@google.com

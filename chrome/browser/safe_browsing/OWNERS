@@ -14,6 +14,7 @@ per-file BUILD.gn=jacastro@chromium.org
 per-file safe_browsing_pref_change_handler*=jacastro@chromium.org
 
 per-file *client_side_detection*=nwokedi@chromium.org
+per-file *client_side_detection*=jdh@chromium.org
 per-file *client_side_detection*=andysjlim@chromium.org #{LAST_RESORT_SUGGESTION}
 
 per-file *notification_content_detection*=skrakowi@chromium.org

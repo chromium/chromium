@@ -8,3 +8,4 @@ per-file features.h=file://components/safe_browsing/core/common/SAFE_BROWSING_FE
 per-file proto/csd.proto=file://components/safe_browsing/core/common/SAFE_BROWSING_FEATURE_OWNERS
 
 per-file visual_utils*=nwokedi@chromium.org
+per-file visual_utils*=jdh@chromium.org

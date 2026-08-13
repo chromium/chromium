@@ -2,4 +2,5 @@ per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 per-file visual_utils*=nwokedi@chromium.org
+per-file visual_utils*=jdh@chromium.org
 per-file visual_utils*=andysjlim@chromium.org #{LAST_RESORT_SUGGESTION}

@@ -1,6 +1,8 @@
 file://components/safe_browsing/OWNERS
 
 per-file *phishing_classifier*=nwokedi@chromium.org
+per-file *phishing_classifier*=jdh@chromium.org
 per-file *phishing_classifier*=andysjlim@chromium.org #{LAST_RESORT_SUGGESTION}
 per-file *phishing_dom_utils*=nwokedi@chromium.org
+per-file *phishing_dom_utils*=jdh@chromium.org
 per-file *phishing_dom_utils*=andysjlim@chromium.org #{LAST_RESORT_SUGGESTION}
