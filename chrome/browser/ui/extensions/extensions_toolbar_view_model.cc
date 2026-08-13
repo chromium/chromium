@@ -312,7 +312,8 @@ ExtensionsToolbarViewModel::RequestAccessButtonParams
 ExtensionsToolbarViewModel::GetRequestAccessButtonParams(
     content::WebContents* web_contents) const {
   RequestAccessButtonParams params;
-  if (!web_contents || !permissions_manager_observation_.IsObserving()) {
+  if (!web_contents || !permissions_manager_observation_.IsObserving() ||
+      !actions_model_) {
     return params;
   }
 
@@ -610,6 +611,19 @@ void ExtensionsToolbarViewModel::OnShowAccessRequestsInToolbarChanged(
 void ExtensionsToolbarViewModel::OnToolbarActionsModelShutdown() {
   actions_model_observation_.Reset();
   actions_model_ = nullptr;
+
+  // Notify observers for each action being removed so views can be safely
+  // detached and destroyed while their action view models are still valid.
+  std::vector<ToolbarActionsModel::ActionId> action_ids;
+  action_ids.reserve(actions_.size());
+  for (const auto& [action_id, _] : actions_) {
+    action_ids.push_back(action_id);
+  }
+  for (const auto& action_id : action_ids) {
+    OnToolbarActionRemoved(action_id);
+  }
+  // All actions_ elements should be erased in the OnToolbarActionRemoved calls
+  // above, but we clear them here as well just to be safe.
   actions_.clear();
 }
 

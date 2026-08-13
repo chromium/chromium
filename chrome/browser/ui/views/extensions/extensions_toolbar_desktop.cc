@@ -834,8 +834,11 @@ void ExtensionsToolbarDesktop::OnActionRemoved(
     UndoPopOut();
   }
 
-  RemoveChildViewT(GetViewForId(action_id));
-  icons_.erase(action_id);
+  ToolbarActionView* action_view = GetViewForId(action_id);
+  if (action_view) {
+    RemoveChildViewT(action_view);
+    icons_.erase(action_id);
+  }
 
   UpdateContainerVisibilityAfterAnimation();
   UpdateControlsVisibility();

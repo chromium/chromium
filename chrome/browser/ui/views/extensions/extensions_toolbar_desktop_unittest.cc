@@ -1273,6 +1273,28 @@ TEST_F(ExtensionsToolbarDesktopWithPermittedSitesUnitTest,
   // not.
 }
 
+// Tests that when ToolbarActionsModel shuts down, extensions_container detaches
+// and destroys all ToolbarActionView instances before the action view models
+// are freed, preventing Use-After-Free crashes.
+TEST_F(ExtensionsToolbarDesktopUnitTest,
+       OnToolbarActionsModelShutdown_DetachesActionViews) {
+  auto extension = InstallExtension("Extension");
+  auto* toolbar_model = ToolbarActionsModel::Get(profile());
+  toolbar_model->SetActionVisibility(extension->id(), true);
+  WaitForAnimation();
+
+  ToolbarActionView* action_view =
+      extensions_container()->GetViewForId(extension->id());
+  ASSERT_TRUE(action_view);
+
+  extensions_container()
+      ->GetToolbarViewModel()
+      ->OnToolbarActionsModelShutdown();
+
+  // Verify that action_view was safely removed from the extensions container.
+  EXPECT_EQ(nullptr, extensions_container()->GetViewForId(extension->id()));
+}
+
 class ExtensionsToolbarDesktopAccessControlDisabledUnitTest
     : public ExtensionsToolbarUnitTest {
  public:
