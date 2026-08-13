@@ -19,6 +19,7 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller_types.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -52,38 +53,6 @@ class ImageData;
 class LensComposeboxController;
 enum LensOverlaySelectionType : int;
 struct ImageCropAndBitmap;
-
-// Data struct representing content data to be sent to the Lens server.
-struct PageContent {
-  PageContent();
-  PageContent(std::vector<uint8_t> bytes, lens::MimeType content_type);
-  PageContent(const PageContent& other);
-  ~PageContent();
-
- public:
-  std::vector<uint8_t> bytes_;
-  lens::MimeType content_type_;
-};
-
-// Callback type alias for the lens overlay full image response.
-using LensOverlayFullImageResponseCallback =
-    base::RepeatingCallback<void(std::vector<lens::mojom::OverlayObjectPtr>,
-                                 lens::mojom::TextPtr,
-                                 bool)>;
-// Callback type alias for the lens overlay url response.
-using LensOverlayUrlResponseCallback =
-    base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>;
-// Callback type alias for the lens overlay interaction response.
-using LensOverlayInteractionResponseCallback =
-    base::RepeatingCallback<void(lens::mojom::TextPtr)>;
-// Callback type alias for the thumbnail image creation.
-using LensOverlayThumbnailCreatedCallback =
-    base::RepeatingCallback<void(const std::string&, const SkBitmap&)>;
-// Callback type alias for the OAuth headers created.
-using OAuthHeadersCreatedCallback =
-    base::OnceCallback<void(std::vector<std::string>)>;
-using UploadProgressCallback =
-    base::RepeatingCallback<void(uint64_t position, uint64_t total)>;
 
 // Manages queries on behalf of a Lens overlay.
 class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {

@@ -306,13 +306,6 @@ lens::Payload CreatePageContentPayload(
 
 }  // namespace
 
-PageContent::PageContent() : content_type_(lens::MimeType::kUnknown) {}
-PageContent::PageContent(std::vector<uint8_t> bytes,
-                         lens::MimeType content_type)
-    : bytes_(bytes), content_type_(content_type) {}
-PageContent::PageContent(const PageContent& other) = default;
-PageContent::~PageContent() = default;
-
 LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayFullImageResponseCallback full_image_callback,
     LensOverlayUrlResponseCallback url_callback,

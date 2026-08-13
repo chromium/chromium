@@ -12,7 +12,7 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
-#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller_types.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace lens {
+class LensOverlayQueryController;
 class LensSessionMetricsLogger;
 class LensOverlayEventHandler;
 class LensOverlayGen204Controller;
