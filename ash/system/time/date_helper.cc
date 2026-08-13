@@ -10,6 +10,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/i18n/icubridge/calendar.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
@@ -210,10 +211,9 @@ base::Time DateHelper::GetLocalMidnight(base::Time date) {
 }
 
 DateHelper::DateHelper()
-    : week_title_formatter_(CreateSimpleDateFormatter("EEEEE")),
-      // Note: "yyyy" represents a four-digit calendar year (e.g. "2023"),
-      // while "YYYY" represents a so called 'week year' (which might be "2022"
-      // if the first day is on the last week of 2022).
+    :  // Note: "yyyy" represents a four-digit calendar year (e.g. "2023"),
+       // while "YYYY" represents a so called 'week year' (which might be "2022"
+       // if the first day is on the last week of 2022).
       year_formatter_(CreateSimpleDateFormatter("yyyy")),
       twelve_hour_clock_hours_formatter_(CreateHoursFormatter("h:mm a")),
       twenty_four_hour_clock_hours_formatter_(CreateHoursFormatter("HH:mm")),
@@ -245,7 +245,6 @@ DateHelper::~DateHelper() {
 }
 
 void DateHelper::ResetFormatters() {
-  week_title_formatter_ = CreateSimpleDateFormatter("EEEEE");
   year_formatter_ = CreateSimpleDateFormatter("yyyy");
   twelve_hour_clock_hours_formatter_ = CreateHoursFormatter("h:mm a");
   twenty_four_hour_clock_hours_formatter_ = CreateHoursFormatter("HH:mm");
@@ -295,7 +294,8 @@ void DateHelper::CalculateLocalWeekTitles() {
 
   for (int i = 0; i < calendar_utils::kDateInOneWeek; ++i) {
     week_titles_.push_back(
-        GetFormattedTime(&week_title_formatter_, start_date));
+        base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+            start_date, base::i18n::datetime_options::E::Short()));
     start_date += base::Days(1);
   }
 }
