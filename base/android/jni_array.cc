@@ -30,12 +30,12 @@ ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(JNIEnv* env,
 ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(
     JNIEnv* env,
     base::span<const uint8_t> bytes) {
-  jbyteArray byte_array = env->NewByteArray(checked_cast<jsize>(bytes.size()));
+  jbyteArray byte_array =
+      env->NewByteArray(checked_cast<int32_t>(bytes.size()));
   CheckException(env);
   DCHECK(byte_array);
 
-  env->SetByteArrayRegion(byte_array, jsize{0},
-                          checked_cast<jsize>(bytes.size()),
+  env->SetByteArrayRegion(byte_array, 0, checked_cast<int32_t>(bytes.size()),
                           reinterpret_cast<const int8_t*>(bytes.data()));
   CheckException(env);
 
@@ -67,12 +67,12 @@ ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(
 ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(JNIEnv* env,
                                                      span<const bool> bools) {
   jbooleanArray boolean_array =
-      env->NewBooleanArray(checked_cast<jsize>(bools.size()));
+      env->NewBooleanArray(checked_cast<int32_t>(bools.size()));
   CheckException(env);
   DCHECK(boolean_array);
 
-  env->SetBooleanArrayRegion(boolean_array, jsize{0},
-                             checked_cast<jsize>(bools.size()),
+  env->SetBooleanArrayRegion(boolean_array, 0,
+                             checked_cast<int32_t>(bools.size()),
                              reinterpret_cast<const jboolean*>(bools.data()));
   CheckException(env);
 
@@ -81,11 +81,11 @@ ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(JNIEnv* env,
 
 ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
                                              base::span<const int32_t> ints) {
-  jintArray int_array = env->NewIntArray(checked_cast<jsize>(ints.size()));
+  jintArray int_array = env->NewIntArray(checked_cast<int32_t>(ints.size()));
   CheckException(env);
   DCHECK(int_array);
 
-  env->SetIntArrayRegion(int_array, jsize{0}, checked_cast<jsize>(ints.size()),
+  env->SetIntArrayRegion(int_array, 0, checked_cast<int32_t>(ints.size()),
                          reinterpret_cast<const int32_t*>(ints.data()));
   CheckException(env);
 
@@ -96,12 +96,12 @@ ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
 BASE_EXPORT ScopedJavaLocalRef<jlongArray> ToJavaLongArray(
     JNIEnv* env,
     base::span<const int64_t> longs) {
-  jlongArray long_array = env->NewLongArray(checked_cast<jsize>(longs.size()));
+  jlongArray long_array =
+      env->NewLongArray(checked_cast<int32_t>(longs.size()));
   CheckException(env);
   DCHECK(long_array);
 
-  env->SetLongArrayRegion(long_array, jsize{0},
-                          checked_cast<jsize>(longs.size()),
+  env->SetLongArrayRegion(long_array, 0, checked_cast<int32_t>(longs.size()),
                           reinterpret_cast<const int64_t*>(longs.data()));
   CheckException(env);
 
@@ -112,12 +112,12 @@ BASE_EXPORT ScopedJavaLocalRef<jfloatArray> ToJavaFloatArray(
     JNIEnv* env,
     base::span<const float> floats) {
   jfloatArray float_array =
-      env->NewFloatArray(checked_cast<jsize>(floats.size()));
+      env->NewFloatArray(checked_cast<int32_t>(floats.size()));
   CheckException(env);
   DCHECK(float_array);
 
-  env->SetFloatArrayRegion(float_array, jsize{0},
-                           checked_cast<jsize>(floats.size()),
+  env->SetFloatArrayRegion(float_array, 0,
+                           checked_cast<int32_t>(floats.size()),
                            reinterpret_cast<const float*>(floats.data()));
   CheckException(env);
 
@@ -128,12 +128,12 @@ BASE_EXPORT ScopedJavaLocalRef<jdoubleArray> ToJavaDoubleArray(
     JNIEnv* env,
     base::span<const double> doubles) {
   jdoubleArray double_array =
-      env->NewDoubleArray(checked_cast<jsize>(doubles.size()));
+      env->NewDoubleArray(checked_cast<int32_t>(doubles.size()));
   CheckException(env);
   DCHECK(double_array);
 
-  env->SetDoubleArrayRegion(double_array, jsize{0},
-                            checked_cast<jsize>(doubles.size()),
+  env->SetDoubleArrayRegion(double_array, 0,
+                            checked_cast<int32_t>(doubles.size()),
                             reinterpret_cast<const double*>(doubles.data()));
   CheckException(env);
 
@@ -145,11 +145,11 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
     jclass clazz,
     base::span<const ScopedJavaLocalRef<jobject>> v) {
   jobjectArray joa =
-      env->NewObjectArray(checked_cast<jsize>(v.size()), clazz, nullptr);
+      env->NewObjectArray(checked_cast<int32_t>(v.size()), clazz, nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
-    env->SetObjectArrayElement(joa, checked_cast<jsize>(i), v[i].obj());
+    env->SetObjectArrayElement(joa, checked_cast<int32_t>(i), v[i].obj());
   }
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
 }
@@ -163,12 +163,12 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
     JNIEnv* env,
     base::span<const ScopedJavaGlobalRef<jobject>> v) {
-  jobjectArray joa = env->NewObjectArray(checked_cast<jsize>(v.size()),
+  jobjectArray joa = env->NewObjectArray(checked_cast<int32_t>(v.size()),
                                          jni_zero::g_object_class, nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
-    env->SetObjectArrayElement(joa, checked_cast<jsize>(i), v[i].obj());
+    env->SetObjectArrayElement(joa, checked_cast<int32_t>(i), v[i].obj());
   }
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
 }
@@ -178,11 +178,11 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
     base::span<const ScopedJavaLocalRef<jobject>> v,
     jclass type) {
   jobjectArray joa =
-      env->NewObjectArray(checked_cast<jsize>(v.size()), type, nullptr);
+      env->NewObjectArray(checked_cast<int32_t>(v.size()), type, nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
-    env->SetObjectArrayElement(joa, checked_cast<jsize>(i), v[i].obj());
+    env->SetObjectArrayElement(joa, checked_cast<int32_t>(i), v[i].obj());
   }
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
 }
@@ -192,11 +192,11 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
     base::span<const ScopedJavaGlobalRef<jobject>> v,
     jclass type) {
   jobjectArray joa =
-      env->NewObjectArray(checked_cast<jsize>(v.size()), type, nullptr);
+      env->NewObjectArray(checked_cast<int32_t>(v.size()), type, nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
-    env->SetObjectArrayElement(joa, checked_cast<jsize>(i), v[i].obj());
+    env->SetObjectArrayElement(joa, checked_cast<int32_t>(i), v[i].obj());
   }
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
 }
@@ -205,13 +205,14 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
     JNIEnv* env,
     base::span<const std::string> v) {
   ScopedJavaLocalRef<jclass> byte_array_clazz = GetClass(env, "[B");
-  jobjectArray joa = env->NewObjectArray(checked_cast<jsize>(v.size()),
+  jobjectArray joa = env->NewObjectArray(checked_cast<int32_t>(v.size()),
                                          byte_array_clazz.obj(), nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
     ScopedJavaLocalRef<jbyteArray> byte_array = ToJavaByteArray(env, v[i]);
-    env->SetObjectArrayElement(joa, checked_cast<jsize>(i), byte_array.obj());
+    env->SetObjectArrayElement(joa, checked_cast<int32_t>(i),
+                               byte_array.obj());
   }
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
 }
@@ -220,13 +221,14 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
     JNIEnv* env,
     base::span<const std::vector<uint8_t>> v) {
   ScopedJavaLocalRef<jclass> byte_array_clazz = GetClass(env, "[B");
-  jobjectArray joa = env->NewObjectArray(checked_cast<jsize>(v.size()),
+  jobjectArray joa = env->NewObjectArray(checked_cast<int32_t>(v.size()),
                                          byte_array_clazz.obj(), nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
     ScopedJavaLocalRef<jbyteArray> byte_array = ToJavaByteArray(env, v[i]);
-    env->SetObjectArrayElement(joa, checked_cast<jsize>(i), byte_array.obj());
+    env->SetObjectArrayElement(joa, checked_cast<int32_t>(i),
+                               byte_array.obj());
   }
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
 }
@@ -234,13 +236,13 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
 ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
     JNIEnv* env,
     base::span<const std::string> v) {
-  jobjectArray joa = env->NewObjectArray(checked_cast<jsize>(v.size()),
+  jobjectArray joa = env->NewObjectArray(checked_cast<int32_t>(v.size()),
                                          jni_zero::g_string_class, nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
     ScopedJavaLocalRef<jstring> item = ConvertUTF8ToJavaString(env, v[i]);
-    env->SetObjectArrayElement(joa, checked_cast<jsize>(i), item.obj());
+    env->SetObjectArrayElement(joa, checked_cast<int32_t>(i), item.obj());
   }
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
 }
@@ -251,14 +253,15 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
   ScopedJavaLocalRef<jclass> string_array_clazz =
       GetClass(env, "[Ljava/lang/String;");
 
-  jobjectArray joa = env->NewObjectArray(checked_cast<jsize>(vec_outer.size()),
-                                         string_array_clazz.obj(), nullptr);
+  jobjectArray joa =
+      env->NewObjectArray(checked_cast<int32_t>(vec_outer.size()),
+                          string_array_clazz.obj(), nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < vec_outer.size(); ++i) {
     ScopedJavaLocalRef<jobjectArray> inner =
         ToJavaArrayOfStrings(env, vec_outer[i]);
-    env->SetObjectArrayElement(joa, checked_cast<jsize>(i), inner.obj());
+    env->SetObjectArrayElement(joa, checked_cast<int32_t>(i), inner.obj());
   }
 
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
@@ -270,14 +273,15 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
   ScopedJavaLocalRef<jclass> string_array_clazz =
       GetClass(env, "[Ljava/lang/String;");
 
-  jobjectArray joa = env->NewObjectArray(checked_cast<jsize>(vec_outer.size()),
-                                         string_array_clazz.obj(), nullptr);
+  jobjectArray joa =
+      env->NewObjectArray(checked_cast<int32_t>(vec_outer.size()),
+                          string_array_clazz.obj(), nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < vec_outer.size(); ++i) {
     ScopedJavaLocalRef<jobjectArray> inner =
         ToJavaArrayOfStrings(env, vec_outer[i]);
-    env->SetObjectArrayElement(joa, checked_cast<jsize>(i), inner.obj());
+    env->SetObjectArrayElement(joa, checked_cast<int32_t>(i), inner.obj());
   }
 
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
@@ -286,13 +290,13 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
 ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
     JNIEnv* env,
     base::span<const std::u16string> v) {
-  jobjectArray joa = env->NewObjectArray(checked_cast<jsize>(v.size()),
+  jobjectArray joa = env->NewObjectArray(checked_cast<int32_t>(v.size()),
                                          jni_zero::g_string_class, nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
     ScopedJavaLocalRef<jstring> item = ConvertUTF16ToJavaString(env, v[i]);
-    env->SetObjectArrayElement(joa, checked_cast<jsize>(i), item.obj());
+    env->SetObjectArrayElement(joa, checked_cast<int32_t>(i), item.obj());
   }
   return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
 }
@@ -304,17 +308,17 @@ void AppendJavaStringArrayToStringVector(JNIEnv* env,
   if (!array) {
     return;
   }
-  size_t len = SafeGetArrayLength(env, array);
+  int32_t len = array.GetLength(env);
   if (!len) {
     return;
   }
-  out->resize(out->size() + len);
-  span<std::u16string> back = span(*out).last(len);
-  for (size_t i = 0; i < len; ++i) {
+  out->resize(out->size() + static_cast<size_t>(len));
+  span<std::u16string> back = span(*out).last(static_cast<size_t>(len));
+  for (int32_t i = 0; i < len; ++i) {
     auto str = ScopedJavaLocalRef<jstring>::Adopt(
         env, static_cast<jstring>(env->GetObjectArrayElement(
-                 array.obj(), checked_cast<jsize>(i))));
-    ConvertJavaStringToUTF16(env, str.obj(), &back[i]);
+                 array.obj(), i)));
+    ConvertJavaStringToUTF16(env, str.obj(), &back[static_cast<size_t>(i)]);
   }
 }
 
@@ -325,17 +329,17 @@ void AppendJavaStringArrayToStringVector(JNIEnv* env,
   if (!array) {
     return;
   }
-  size_t len = SafeGetArrayLength(env, array);
+  int32_t len = array.GetLength(env);
   if (!len) {
     return;
   }
-  out->resize(out->size() + len);
-  span<std::string> back = span(*out).last(len);
-  for (size_t i = 0; i < len; ++i) {
+  out->resize(out->size() + static_cast<size_t>(len));
+  span<std::string> back = span(*out).last(static_cast<size_t>(len));
+  for (int32_t i = 0; i < len; ++i) {
     auto str = ScopedJavaLocalRef<jstring>::Adopt(
         env, static_cast<jstring>(env->GetObjectArrayElement(
-                 array.obj(), checked_cast<jsize>(i))));
-    ConvertJavaStringToUTF8(env, str.obj(), &back[i]);
+                 array.obj(), i)));
+    ConvertJavaStringToUTF8(env, str.obj(), &back[static_cast<size_t>(i)]);
   }
 }
 
@@ -346,15 +350,14 @@ void AppendJavaByteArrayToByteVector(JNIEnv* env,
   if (!byte_array) {
     return;
   }
-  size_t len = SafeGetArrayLength(env, byte_array);
+  int32_t len = byte_array.GetLength(env);
   if (!len) {
     return;
   }
-  out->resize(out->size() + len);
-  span<uint8_t> back = span(*out).last(len);
+  out->resize(out->size() + static_cast<size_t>(len));
+  span<uint8_t> back = span(*out).last(static_cast<size_t>(len));
 
-  env->GetByteArrayRegion(byte_array.obj(), jsize{0},
-                          checked_cast<jsize>(back.size()),
+  env->GetByteArrayRegion(byte_array.obj(), 0, len,
                           reinterpret_cast<int8_t*>(back.data()));
 }
 
@@ -371,13 +374,12 @@ size_t JavaByteArrayToByteSpan(JNIEnv* env,
                                const JavaRef<jbyteArray>& byte_array,
                                base::span<uint8_t> dest) {
   CHECK(byte_array);
-  size_t len = SafeGetArrayLength(env, byte_array);
-  span<uint8_t> copy_dest = dest.first(len);
+  int32_t len = byte_array.GetLength(env);
+  span<uint8_t> copy_dest = dest.first(static_cast<size_t>(len));
 
-  env->GetByteArrayRegion(byte_array.obj(), jsize{0},
-                          checked_cast<jsize>(copy_dest.size()),
+  env->GetByteArrayRegion(byte_array.obj(), 0, len,
                           reinterpret_cast<int8_t*>(copy_dest.data()));
-  return len;
+  return static_cast<size_t>(len);
 }
 
 void JavaByteArrayToString(JNIEnv* env,
@@ -385,12 +387,12 @@ void JavaByteArrayToString(JNIEnv* env,
                            std::string* out) {
   DCHECK(out);
   CHECK(byte_array);
-  jsize jlen = byte_array.GetLength(env);
-  out->resize(static_cast<size_t>(jlen));
-  if (!jlen) {
+  int32_t len = byte_array.GetLength(env);
+  out->resize(static_cast<size_t>(len));
+  if (!len) {
     return;
   }
-  env->GetByteArrayRegion(byte_array.obj(), jsize{0}, jlen,
+  env->GetByteArrayRegion(byte_array.obj(), 0, len,
                           reinterpret_cast<int8_t*>(out->data()));
   CheckException(env);
 }
@@ -402,28 +404,31 @@ void JavaBooleanArrayToBoolVector(JNIEnv* env,
   if (!boolean_array) {
     return;
   }
-  size_t len = SafeGetArrayLength(env, boolean_array);
-  out->resize(len);
+  int32_t len = boolean_array.GetLength(env);
+  out->resize(static_cast<size_t>(len));
   if (!len) {
     return;
   }
   if (len <= 1024) {
     std::array<jboolean, 1024> values;
-    env->GetBooleanArrayRegion(boolean_array.obj(), jsize{0},
-                               checked_cast<jsize>(len), values.data());
+    env->GetBooleanArrayRegion(boolean_array.obj(), 0, len,
+                               values.data());
     CheckException(env);
-    base::span<jboolean> values_span = base::span<jboolean>(values).first(len);
-    for (size_t i = 0; i < len; ++i) {
-      (*out)[i] = static_cast<bool>(values_span[i]);
+    base::span<jboolean> values_span =
+        base::span<jboolean>(values).first(static_cast<size_t>(len));
+    for (int32_t i = 0; i < len; ++i) {
+      (*out)[static_cast<size_t>(i)] =
+          static_cast<bool>(values_span[static_cast<size_t>(i)]);
     }
   } else {
-    std::vector<jboolean> values(len);
-    env->GetBooleanArrayRegion(boolean_array.obj(), jsize{0},
-                               checked_cast<jsize>(len), values.data());
+    std::vector<jboolean> values(static_cast<size_t>(len));
+    env->GetBooleanArrayRegion(boolean_array.obj(), 0, len,
+                               values.data());
     CheckException(env);
     base::span<jboolean> values_span(values);
-    for (size_t i = 0; i < len; ++i) {
-      (*out)[i] = static_cast<bool>(values_span[i]);
+    for (int32_t i = 0; i < len; ++i) {
+      (*out)[static_cast<size_t>(i)] =
+          static_cast<bool>(values_span[static_cast<size_t>(i)]);
     }
   }
 }
@@ -432,13 +437,12 @@ void JavaIntArrayToIntVector(JNIEnv* env,
                              const JavaRef<jintArray>& int_array,
                              std::vector<int>* out) {
   DCHECK(out);
-  size_t len = SafeGetArrayLength(env, int_array);
-  out->resize(len);
+  int32_t len = int_array.GetLength(env);
+  out->resize(static_cast<size_t>(len));
   if (!len) {
     return;
   }
-  env->GetIntArrayRegion(int_array.obj(), jsize{0}, checked_cast<jsize>(len),
-                         out->data());
+  env->GetIntArrayRegion(int_array.obj(), 0, len, out->data());
 }
 
 void JavaLongArrayToInt64Vector(JNIEnv* env,
@@ -452,52 +456,49 @@ void JavaLongArrayToLongVector(JNIEnv* env,
                                const JavaRef<jlongArray>& long_array,
                                std::vector<int64_t>* out) {
   DCHECK(out);
-  size_t len = SafeGetArrayLength(env, long_array);
-  out->resize(len);
+  int32_t len = long_array.GetLength(env);
+  out->resize(static_cast<size_t>(len));
   if (!len) {
     return;
   }
-  env->GetLongArrayRegion(long_array.obj(), jsize{0}, checked_cast<jsize>(len),
-                          out->data());
+  env->GetLongArrayRegion(long_array.obj(), 0, len, out->data());
 }
 
 void JavaFloatArrayToFloatVector(JNIEnv* env,
                                  const JavaRef<jfloatArray>& float_array,
                                  std::vector<float>* out) {
   DCHECK(out);
-  size_t len = SafeGetArrayLength(env, float_array);
-  out->resize(len);
+  int32_t len = float_array.GetLength(env);
+  out->resize(static_cast<size_t>(len));
   if (!len) {
     return;
   }
-  env->GetFloatArrayRegion(float_array.obj(), jsize{0},
-                           checked_cast<jsize>(len), out->data());
+  env->GetFloatArrayRegion(float_array.obj(), 0, len, out->data());
 }
 
 void JavaDoubleArrayToDoubleVector(JNIEnv* env,
                                    const JavaRef<jdoubleArray>& double_array,
                                    std::vector<double>* out) {
   DCHECK(out);
-  size_t len = SafeGetArrayLength(env, double_array);
-  out->resize(len);
+  int32_t len = double_array.GetLength(env);
+  out->resize(static_cast<size_t>(len));
   if (!len) {
     return;
   }
-  env->GetDoubleArrayRegion(double_array.obj(), jsize{0},
-                            checked_cast<jsize>(len), out->data());
+  env->GetDoubleArrayRegion(double_array.obj(), 0, len, out->data());
 }
 
 void JavaArrayOfByteArrayToStringVector(JNIEnv* env,
                                         const JavaRef<jobjectArray>& array,
                                         std::vector<std::string>* out) {
   DCHECK(out);
-  size_t len = SafeGetArrayLength(env, array);
-  out->resize(len);
-  for (size_t i = 0; i < len; ++i) {
+  int32_t len = array.GetLength(env);
+  out->resize(static_cast<size_t>(len));
+  for (int32_t i = 0; i < len; ++i) {
     auto bytes_array = ScopedJavaLocalRef<jbyteArray>::Adopt(
         env, static_cast<jbyteArray>(env->GetObjectArrayElement(
-                 array.obj(), checked_cast<jsize>(i))));
-    JavaByteArrayToString(env, bytes_array, &(*out)[i]);
+                 array.obj(), i)));
+    JavaByteArrayToString(env, bytes_array, &(*out)[static_cast<size_t>(i)]);
   }
 }
 
@@ -505,13 +506,13 @@ void JavaArrayOfByteArrayToBytesVector(JNIEnv* env,
                                        const JavaRef<jobjectArray>& array,
                                        std::vector<std::vector<uint8_t>>* out) {
   DCHECK(out);
-  const size_t len = SafeGetArrayLength(env, array);
-  out->resize(len);
-  for (size_t i = 0; i < len; ++i) {
+  const int32_t len = array.GetLength(env);
+  out->resize(static_cast<size_t>(len));
+  for (int32_t i = 0; i < len; ++i) {
     auto bytes_array = ScopedJavaLocalRef<jbyteArray>::Adopt(
         env, static_cast<jbyteArray>(env->GetObjectArrayElement(
-                 array.obj(), checked_cast<jsize>(i))));
-    JavaByteArrayToByteVector(env, bytes_array, &(*out)[i]);
+                 array.obj(), i)));
+    JavaByteArrayToByteVector(env, bytes_array, &(*out)[static_cast<size_t>(i)]);
   }
 }
 
@@ -520,15 +521,16 @@ void Java2dStringArrayTo2dStringVector(
     const JavaRef<jobjectArray>& array,
     std::vector<std::vector<std::u16string>>* out) {
   DCHECK(out);
-  size_t len = SafeGetArrayLength(env, array);
-  out->resize(len);
-  for (size_t i = 0; i < len; ++i) {
+  int32_t len = array.GetLength(env);
+  out->resize(static_cast<size_t>(len));
+  for (int32_t i = 0; i < len; ++i) {
     auto strings_array = ScopedJavaLocalRef<jobjectArray>::Adopt(
         env, static_cast<jobjectArray>(env->GetObjectArrayElement(
-                 array.obj(), checked_cast<jsize>(i))));
+                 array.obj(), i)));
 
-    (*out)[i].clear();
-    AppendJavaStringArrayToStringVector(env, strings_array, &(*out)[i]);
+    (*out)[static_cast<size_t>(i)].clear();
+    AppendJavaStringArrayToStringVector(env, strings_array,
+                                        &(*out)[static_cast<size_t>(i)]);
   }
 }
 
@@ -537,15 +539,16 @@ void Java2dStringArrayTo2dStringVector(
     const JavaRef<jobjectArray>& array,
     std::vector<std::vector<std::string>>* out) {
   DCHECK(out);
-  size_t len = SafeGetArrayLength(env, array);
-  out->resize(len);
-  for (size_t i = 0; i < len; ++i) {
+  int32_t len = array.GetLength(env);
+  out->resize(static_cast<size_t>(len));
+  for (int32_t i = 0; i < len; ++i) {
     auto strings_array = ScopedJavaLocalRef<jobjectArray>::Adopt(
         env, static_cast<jobjectArray>(env->GetObjectArrayElement(
-                 array.obj(), checked_cast<jsize>(i))));
+                 array.obj(), i)));
 
-    (*out)[i].clear();
-    AppendJavaStringArrayToStringVector(env, strings_array, &(*out)[i]);
+    (*out)[static_cast<size_t>(i)].clear();
+    AppendJavaStringArrayToStringVector(env, strings_array,
+                                        &(*out)[static_cast<size_t>(i)]);
   }
 }
 
@@ -553,13 +556,13 @@ void JavaArrayOfIntArrayToIntVector(JNIEnv* env,
                                     const JavaRef<jobjectArray>& array,
                                     std::vector<std::vector<int>>* out) {
   DCHECK(out);
-  size_t len = SafeGetArrayLength(env, array);
-  out->resize(len);
-  for (size_t i = 0; i < len; ++i) {
+  int32_t len = array.GetLength(env);
+  out->resize(static_cast<size_t>(len));
+  for (int32_t i = 0; i < len; ++i) {
     auto int_array = ScopedJavaLocalRef<jintArray>::Adopt(
         env, static_cast<jintArray>(env->GetObjectArrayElement(
-                 array.obj(), checked_cast<jsize>(i))));
-    JavaIntArrayToIntVector(env, int_array, &(*out)[i]);
+                 array.obj(), i)));
+    JavaIntArrayToIntVector(env, int_array, &(*out)[static_cast<size_t>(i)]);
   }
 }
 

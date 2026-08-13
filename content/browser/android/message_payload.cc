@@ -28,9 +28,8 @@ namespace {
 class JavaArrayBuffer : public blink::WebMessageArrayBufferPayload {
  public:
   explicit JavaArrayBuffer(const base::android::JavaRef<jbyteArray>& array)
-      : length_(base::android::SafeGetArrayLength(
-            base::android::AttachCurrentThread(),
-            array)),
+      : length_(static_cast<size_t>(
+            array.GetLength(base::android::AttachCurrentThread()))),
         array_(array) {}
 
   size_t GetLength() const override { return length_; }

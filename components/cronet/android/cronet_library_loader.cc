@@ -97,8 +97,7 @@ std::optional<net::NetLogCaptureMode> g_trace_net_log_capture_mode;
       cronet::Java_CronetLibraryLoader_getBaseFeatureOverrides(env);
   CHECK(serializedProto);
 
-  const auto serializedProtoSize =
-      base::android::SafeGetArrayLength(env, serializedProto);
+  const int32_t serializedProtoSize = serializedProto.GetLength(env);
   ::org::chromium::net::httpflags::BaseFeatureOverrides overrides;
   void* const serializedProtoArray =
       env->GetPrimitiveArrayCritical(serializedProto.obj(), /*isCopy=*/nullptr);

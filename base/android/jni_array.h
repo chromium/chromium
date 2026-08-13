@@ -9,29 +9,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
 namespace base::android {
-
-// As |GetArrayLength| makes no guarantees about the returned value (e.g., it
-// may be -1 if |array| is not a valid Java array), provide a safe wrapper
-// that always returns a valid, non-negative size.
-// Returns the length of Java array.
-template <typename JavaArrayType>
-BASE_EXPORT size_t SafeGetArrayLength(JNIEnv* env,
-                                      const JavaRef<JavaArrayType>& jarray) {
-  DCHECK(jarray);
-  jsize length = env->GetArrayLength(jarray.obj());
-  DCHECK_GE(length, 0) << "Invalid array length: " << length;
-  return static_cast<size_t>(std::max(0, length));
-}
 
 // Returns a new Java byte array converted from the given bytes array.
 // PRECONDITIONS: `bytes` must point to `len` valid bytes.

@@ -98,9 +98,9 @@ std::vector<SkBitmap> FakeModalDialogManagerBridge::GetMenuItemIcons() {
 
   std::vector<SkBitmap> icons;
   if (java_icons) {
-    size_t len = base::android::SafeGetArrayLength(env, java_icons);
-    icons.reserve(len);
-    for (size_t i = 0; i < len; ++i) {
+    int32_t len = java_icons.GetLength(env);
+    icons.reserve(static_cast<size_t>(len));
+    for (int32_t i = 0; i < len; ++i) {
       base::android::ScopedJavaLocalRef<jobject> java_bitmap =
           jni_zero::AdoptRef(env,
                              env->GetObjectArrayElement(java_icons.obj(), i));

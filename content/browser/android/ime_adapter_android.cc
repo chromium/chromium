@@ -424,13 +424,13 @@ bool ImeAdapterAndroid::InsertMediaFromBytes(
     return false;
   }
 
-  size_t size = base::android::SafeGetArrayLength(env, bytes);
+  int32_t size = bytes.GetLength(env);
 
   if (size == 0) {
     return false;
   }
 
-  mojo_base::BigBuffer big_buffer(size);
+  mojo_base::BigBuffer big_buffer(static_cast<size_t>(size));
   base::android::JavaByteArrayToByteSpan(env, bytes, big_buffer);
 
   input_handler->PasteFromImageBytes(
