@@ -365,8 +365,8 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   // mode preference. This prevents UI flicker.
   std::optional<bool> is_dark_mode = contextual_tasks::GetDarkModeFromUrl(url);
   if (is_dark_mode.has_value()) {
-    ui_url = net::AppendQueryParameter(ui_url, "cs",
-                                       is_dark_mode.value() ? "1" : "0");
+    ui_url = net::AppendOrReplaceQueryParameter(
+        ui_url, "cs", is_dark_mode.value() ? "1" : "0");
   }
 
   content::WebContents* contextual_task_web_contents = nullptr;
@@ -2188,6 +2188,19 @@ GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
 
   url = net::AppendQueryParameter(url, kTaskQueryParam,
                                   task_id.AsLowercaseString());
+
+  // Copy the 'cs' parameter, if it exists, from the task's creation URL to
+  // the WebUI host URL so that the WebUI theme matches the target page theme
+  // immediately.
+  std::optional<GURL> creation_url = GetCreationUrlForTask(task_id);
+  if (creation_url) {
+    std::optional<bool> is_dark_mode =
+        contextual_tasks::GetDarkModeFromUrl(*creation_url);
+    if (is_dark_mode.has_value()) {
+      url = net::AppendOrReplaceQueryParameter(
+          url, "cs", is_dark_mode.value() ? "1" : "0");
+    }
+  }
 
   omnibox::ChromeAimEntryPoint entry_point =
       GetInitialEntryPointForTask(task_id);
