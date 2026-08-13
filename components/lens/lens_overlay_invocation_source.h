@@ -96,7 +96,10 @@ enum class LensOverlayInvocationSource {
   // The everywhere omnibox contextual composebox.
   kOmniboxEverywhereComposebox = 23,
 
-  kMaxValue = kOmniboxEverywhereComposebox
+  // The popup button in the omnibox.
+  kOmniboxPopupButton = 24,
+
+  kMaxValue = kOmniboxPopupButton
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 // When adding a value here, also update:

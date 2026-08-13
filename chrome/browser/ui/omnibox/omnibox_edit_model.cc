@@ -881,7 +881,9 @@ void OmniboxEditModel::OpenLensSearch() {
   if (omnibox::kAskGLensChipRoute.Get()) {
     if (auto* client =
             autocomplete_controller()->autocomplete_provider_client()) {
-      client->OpenLensOverlay(/*show=*/true);
+      client->OpenLensOverlay(
+          /*show=*/true,
+          lens::LensOverlayInvocationSource::kOmniboxPopupButton);
     }
     return;
   }

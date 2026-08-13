@@ -166,7 +166,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
               OpenLensOverlay(
                   lens::LensOverlayInvocationSource::kOmniboxPageAction, true))
       .Times(1);
-  GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/true);
+  GetAutocompleteProviderClient()->OpenLensOverlay(
+      /*show=*/true, lens::LensOverlayInvocationSource::kOmniboxPageAction);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
@@ -175,7 +176,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
       *GetLensSearchController(),
       StartContextualization(lens::LensOverlayInvocationSource::kOmnibox))
       .Times(1);
-  GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/false);
+  GetAutocompleteProviderClient()->OpenLensOverlay(
+      /*show=*/false, lens::LensOverlayInvocationSource::kOmniboxPageAction);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
@@ -332,16 +334,18 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGLensChipRouteTest,
               OpenLensOverlay(
                   lens::LensOverlayInvocationSource::kOmniboxPageAction, false))
       .Times(1);
-  GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/true);
+  GetAutocompleteProviderClient()->OpenLensOverlay(
+      /*show=*/true, lens::LensOverlayInvocationSource::kOmniboxPageAction);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGLensChipRouteTest,
                        OmniboxEditModelOpenLensSearch_BypassesAction) {
   // When kAskGLensChipRoute is enabled, OpenLensSearch should bypass the action
   // and call OpenLensOverlay directly (which will hide CSB).
-  EXPECT_CALL(*GetLensSearchController(),
-              OpenLensOverlay(
-                  lens::LensOverlayInvocationSource::kOmniboxPageAction, false))
+  EXPECT_CALL(
+      *GetLensSearchController(),
+      OpenLensOverlay(lens::LensOverlayInvocationSource::kOmniboxPopupButton,
+                      false))
       .Times(1);
 
   GetOmniboxEditModel()->OpenLensSearch();

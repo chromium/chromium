@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/buildflags.h"
@@ -108,7 +109,9 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
 
     // Opens the lens overlay. If `show` is true, the overlay UI is presented
     // and if it's false then lens is used to contextualize without showing UI.
-    virtual void OpenLensOverlay(bool show) = 0;
+    virtual void OpenLensOverlay(
+        bool show,
+        lens::LensOverlayInvocationSource invocation_source) = 0;
 
     // Returns true if the client should open the Cobrowse panel (bypassing
     // Lens).

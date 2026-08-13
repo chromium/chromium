@@ -104,6 +104,8 @@ bool UseNonBlockingPrivacyNotice(
           invocation_source ==
               lens::LensOverlayInvocationSource::kOmniboxPageAction ||
           invocation_source ==
+              lens::LensOverlayInvocationSource::kOmniboxPopupButton ||
+          invocation_source ==
               lens::LensOverlayInvocationSource::kHomeworkActionChip ||
           invocation_source ==
               lens::LensOverlayInvocationSource::kOmniboxContextualQuery ||

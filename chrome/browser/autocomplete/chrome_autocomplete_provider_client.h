@@ -153,7 +153,9 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   void CloseIncognitoWindows() override;
   void PromptPageTranslation() override;
   bool OpenJourneys(const std::string& query) override;
-  void OpenLensOverlay(bool show) override;
+  void OpenLensOverlay(
+      bool show,
+      lens::LensOverlayInvocationSource invocation_source) override;
   bool ShouldOpenCoBrowsePanel() const override;
   void OpenCoBrowsePanel() override;
   bool ShouldOpenComposeboxForAskG() const override;

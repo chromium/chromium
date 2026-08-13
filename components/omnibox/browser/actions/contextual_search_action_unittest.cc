@@ -68,7 +68,7 @@ TEST_F(ContextualSearchActionTest, Execute_RoutesToCoBrowse) {
       .WillRepeatedly(Return(false));
   EXPECT_CALL(client, ShouldOpenCoBrowsePanel()).WillOnce(Return(true));
   EXPECT_CALL(client, OpenCoBrowsePanel()).Times(1);
-  EXPECT_CALL(client, OpenLensOverlay(_)).Times(0);
+  EXPECT_CALL(client, OpenLensOverlay(_, _)).Times(0);
   action->Execute(context);
 
   testing::Mock::VerifyAndClearExpectations(&client);
@@ -79,7 +79,7 @@ TEST_F(ContextualSearchActionTest, Execute_RoutesToCoBrowse) {
       .WillRepeatedly(Return(false));
   EXPECT_CALL(client, ShouldOpenCoBrowsePanel()).WillOnce(Return(false));
   EXPECT_CALL(client, OpenCoBrowsePanel()).Times(0);
-  EXPECT_CALL(client, OpenLensOverlay(true)).Times(1);
+  EXPECT_CALL(client, OpenLensOverlay(true, _)).Times(1);
   action->Execute(context);
 }
 
@@ -99,7 +99,7 @@ TEST_F(ContextualSearchActionTest, Execute_RoutesToComposeBoxForAskG) {
   EXPECT_CALL(client, ShouldOpenComposeboxForAskG()).WillOnce(Return(true));
   EXPECT_CALL(client, OpenComposeboxForAskG()).Times(1);
   EXPECT_CALL(client, OpenCoBrowsePanel()).Times(0);
-  EXPECT_CALL(client, OpenLensOverlay(_)).Times(0);
+  EXPECT_CALL(client, OpenLensOverlay(_, _)).Times(0);
   action->Execute(context);
 
   testing::Mock::VerifyAndClearExpectations(&client);

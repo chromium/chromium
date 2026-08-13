@@ -1213,7 +1213,10 @@ TEST_F(WebuiOmniboxHandlerTest, OpenLensSearch) {
       omnibox::kWebUIOmniboxAskGAboutThisPage,
       {{"Omnibox_AskGLensChipRoute", "true"}});
 
-  EXPECT_CALL(*mock_client_ptr, OpenLensOverlay(true)).Times(1);
+  EXPECT_CALL(*mock_client_ptr,
+              OpenLensOverlay(
+                  true, lens::LensOverlayInvocationSource::kOmniboxPopupButton))
+      .Times(1);
 
   handler_->OpenLensSearch();
 }
@@ -1532,7 +1535,10 @@ TEST_F(OmniboxComposeboxHandlerTest, OpenLensSearch) {
 
   auto client = std::make_unique<MockAutocompleteProviderClient>();
   auto* client_ptr = client.get();
-  EXPECT_CALL(*client_ptr, OpenLensOverlay(true)).Times(1);
+  EXPECT_CALL(*client_ptr,
+              OpenLensOverlay(
+                  true, lens::LensOverlayInvocationSource::kOmniboxPopupButton))
+      .Times(1);
 
   auto autocomplete_controller = std::make_unique<AutocompleteController>(
       std::move(client), AutocompleteControllerConfig{});

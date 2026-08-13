@@ -157,6 +157,7 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="NTP Action Chips"/>
   <int value="22" label="App Bar AIM Button"/>
   <int value="23" label="Omnibox Everywhere Composebox"/>
+  <int value="24" label="Omnibox Popup Button"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->

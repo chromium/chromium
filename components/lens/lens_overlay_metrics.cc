@@ -71,6 +71,8 @@ std::string InvocationSourceToString(
       return "AppBarAimButton";
     case LensOverlayInvocationSource::kOmniboxEverywhereComposebox:
       return "OmniboxEverywhereComposebox";
+    case LensOverlayInvocationSource::kOmniboxPopupButton:
+      return "OmniboxPopupButton";
   }
 }
 
@@ -484,6 +486,7 @@ void RecordTimeToFirstInteraction(
       event.SetOmnibox(time_to_first_interaction.InMilliseconds());
       break;
     case lens::LensOverlayInvocationSource::kOmniboxPageAction:
+    case lens::LensOverlayInvocationSource::kOmniboxPopupButton:
       event.SetOmniboxPageAction(time_to_first_interaction.InMilliseconds());
       break;
     case lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion:

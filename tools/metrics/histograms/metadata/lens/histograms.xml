@@ -62,6 +62,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OmniboxContextualQuery"/>
   <variant name="OmniboxContextualSuggestion"/>
   <variant name="OmniboxPageAction"/>
+  <variant name="OmniboxPopupButton"/>
   <variant name="Toolbar"/>
   <variant name="Unknown"/>
 </variants>
