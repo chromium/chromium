@@ -237,9 +237,12 @@ TEST_F(PersistentHistogramAllocatorTest, MAYBE_FileReadonlyRecovery) {
 
   EXPECT_FALSE(it.GetNext());
 
+#if !defined(THREAD_SANITIZER)
   // Verify that attempting to write/add a sample to a read-only histogram
   // is intercepted by OS page protection and crashes the process with SIGSEGV.
+  // Death tests are notoriously slow/flaky under TSan.
   EXPECT_DEATH_IF_SUPPORTED(recovered->Add(100), "");
+#endif
 }
 
 TEST_F(PersistentHistogramAllocatorTest, ConstructPaths) {
