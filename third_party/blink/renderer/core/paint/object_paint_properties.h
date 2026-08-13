@@ -119,58 +119,59 @@ class CORE_EXPORT ObjectPaintProperties
     kPaintOffsetTranslation = kFirstTransform,
     kStickyTranslation = 1,
     kAnchorPositionScrollTranslation = 2,
+    kElementCanvasTransform = 3,
     // Transform nodes for CSS transform operations.
-    kFirstCSSTransform = 3,
+    kFirstCSSTransform = 4,
     kTranslate = kFirstCSSTransform,
-    kRotate = 4,
-    kScale = 5,
-    kOffset = 6,
-    kTransform = 7,
+    kRotate = 5,
+    kScale = 6,
+    kOffset = 7,
+    kTransform = 8,
     kLastCSSTransform = kTransform,
     // End of Transform nodes for CSS transform operations.
-    kContentTranslation = 8,
-    kPerspective = 9,
-    kReplacedContentTransform = 10,
-    kScrollTranslation = 11,
-    kUnboundedWrapperTransform = 12,
-    kUnboundedInnerTransform = 13,
+    kContentTranslation = 9,
+    kPerspective = 10,
+    kReplacedContentTransform = 11,
+    kScrollTranslation = 12,
+    kUnboundedWrapperTransform = 13,
+    kUnboundedInnerTransform = 14,
     kLastTransform = kUnboundedInnerTransform,
-    kTransformAlias = 14,
+    kTransformAlias = 15,
 
-    kScroll = 15,
+    kScroll = 16,
     kFirstScroll = kScroll,
     kLastScroll = kScroll,
 
     // Effects
-    kFirstEffect = 16,
+    kFirstEffect = 17,
     kElementCaptureEffect = kFirstEffect,
-    kViewTransitionScopeRootEffect = 17,
-    kViewTransitionEffect = 18,
-    kUnboundedWrapperEffect = 19,
-    kEffect = 20,
-    kFilter = 21,
-    kMask = 22,
-    kClipPathMask = 23,
-    kVerticalScrollbarEffect = 24,
-    kHorizontalScrollbarEffect = 25,
-    kScrollCornerEffect = 26,
+    kViewTransitionScopeRootEffect = 18,
+    kViewTransitionEffect = 19,
+    kUnboundedWrapperEffect = 20,
+    kEffect = 21,
+    kFilter = 22,
+    kMask = 23,
+    kClipPathMask = 24,
+    kVerticalScrollbarEffect = 25,
+    kHorizontalScrollbarEffect = 26,
+    kScrollCornerEffect = 27,
     kLastEffect = kScrollCornerEffect,
-    kEffectAlias = 27,
+    kEffectAlias = 28,
 
     // Clips
-    kFirstClip = 28,
+    kFirstClip = 29,
     kClipPathClip = kFirstClip,
-    kMaskClip = 29,
-    kCssClip = 30,
-    kOverflowControlsClip = 31,
-    kBackgroundClip = 32,
-    kPixelMovingFilterClipExpander = 33,
-    kInnerBorderRadiusClip = 34,
-    kOverflowClip = 35,
-    kCssClipFixedPosition = 36,
-    kInnerBorderShapeClip = 37,
+    kMaskClip = 30,
+    kCssClip = 31,
+    kOverflowControlsClip = 32,
+    kBackgroundClip = 33,
+    kPixelMovingFilterClipExpander = 34,
+    kInnerBorderRadiusClip = 35,
+    kOverflowClip = 36,
+    kCssClipFixedPosition = 37,
+    kInnerBorderShapeClip = 38,
     kLastClip = kInnerBorderShapeClip,
-    kClipAlias = 38,
+    kClipAlias = 39,
 
     // Should be updated whenever a higher value NodeType is added.
     kNumFields = kClipAlias + 1,
@@ -199,6 +200,10 @@ class CORE_EXPORT ObjectPaintProperties
   // |
   // +-[ AnchorPositionScrollTranslation ]
   //  /    This applies the scrolling offset induced by CSS anchor positioning.
+  // |
+  // +-[ ElementCanvasTransform ]
+  //  /    This applies the transform mapping the element's border box to canvas
+  // |     coordinate space for HTML-in-Canvas children.
   // |
   // +-[ Translate ]
   //   |   The transform from CSS 'translate' (including the effects of
@@ -298,6 +303,7 @@ class CORE_EXPORT ObjectPaintProperties
   ADD_TRANSFORM(StickyTranslation, NodeId::kStickyTranslation)
   ADD_TRANSFORM(AnchorPositionScrollTranslation,
                 NodeId::kAnchorPositionScrollTranslation)
+  ADD_TRANSFORM(ElementCanvasTransform, NodeId::kElementCanvasTransform)
   ADD_TRANSFORM(Translate, NodeId::kTranslate)
   ADD_TRANSFORM(Rotate, NodeId::kRotate)
   ADD_TRANSFORM(Scale, NodeId::kScale)

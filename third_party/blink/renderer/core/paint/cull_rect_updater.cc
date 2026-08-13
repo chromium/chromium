@@ -145,8 +145,9 @@ bool ShouldUseInfiniteCullRect(
     }
 
     const TransformPaintPropertyNode* transform_nodes[] = {
-        properties->Transform(), properties->Offset(), properties->Scale(),
-        properties->Rotate(), properties->Translate()};
+        properties->Transform(), properties->Offset(),
+        properties->Scale(),     properties->Rotate(),
+        properties->Translate(), properties->ElementCanvasTransform()};
     for (const auto* transform : transform_nodes) {
       if (!transform)
         continue;

@@ -282,6 +282,7 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateStickyTranslation(
       const PhysicalOffset& sticky_offset);
   ALWAYS_INLINE void UpdateAnchorPositionScrollTranslation();
+  ALWAYS_INLINE void UpdateElementCanvasTransform();
 
   void UpdateIndividualTransform(
       bool (*needs_property)(const LayoutObject&, CompositingReasons),
@@ -586,6 +587,22 @@ static bool NeedsAnchorPositionScrollTranslation(const LayoutObject& object) {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(object))
     return box->NeedsAnchorPositionScrollAdjustment();
   return false;
+}
+
+static bool NeedsElementCanvasTransform(const LayoutObject& object) {
+  // TODO(crbug.com/532229486): Support element canvas transform for SVG.
+  if (object.IsText() || object.IsSVGChild() || !object.IsBox()) {
+    return false;
+  }
+  const auto* element = DynamicTo<Element>(object.GetNode());
+  if (!element || !element->IsInCanvasSubtree()) {
+    return false;
+  }
+  if (!RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
+          object.GetDocument().GetExecutionContext())) {
+    return false;
+  }
+  return element->HasCanvasTransform();
 }
 
 static bool NeedsPaintOffsetTranslation(
@@ -1093,6 +1110,31 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
   }
 }
 
+void FragmentPaintPropertyTreeBuilder::UpdateElementCanvasTransform() {
+  DCHECK(properties_);
+  if (NeedsPaintPropertyUpdate()) {
+    if (NeedsElementCanvasTransform(object_)) {
+      const auto& element = *To<Element>(object_.GetNode());
+      const auto* canvas_transform = element.GetCanvasTransformInternal();
+      DCHECK(canvas_transform);
+      TransformPaintPropertyNode::State state{{*canvas_transform}};
+      state.flattens_inherited_transform =
+          context_.should_flatten_inherited_transform;
+      state.rendering_context_id = context_.rendering_context_id;
+      state.compositor_element_id = GetCompositorElementId(
+          CompositorElementIdNamespace::kElementCanvasTransform);
+      OnUpdateTransform(properties_->UpdateElementCanvasTransform(
+          *context_.current.transform, std::move(state)));
+    } else {
+      OnClearTransform(properties_->ClearElementCanvasTransform());
+    }
+  }
+
+  if (properties_->ElementCanvasTransform()) {
+    context_.current.transform = properties_->ElementCanvasTransform();
+  }
+}
+
 // Directly updates the associated cc transform node if possible, and
 // downgrades the |PaintPropertyChangeType| if successful.
 static void DirectlyUpdateCcTransform(
@@ -1196,6 +1238,7 @@ FragmentPaintPropertyTreeBuilder::TransformAndOriginForSVGChild() const {
 // SVG does not use the general transform update of |UpdateTransform|, instead
 // creating a transform node for SVG-specific transforms without 3D.
 // TODO(crbug.com/1278452): Merge SVG handling into the primary codepath.
+// TODO(crbug.com/532229486): Support element canvas transform for SVG.
 void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
     CompositingReasons direct_compositing_reasons) {
   DCHECK(properties_);
@@ -4204,6 +4247,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
       // TODO(crbug.com/1278452): Merge SVG handling into the primary codepath.
       UpdateTransformForSVGChild(full_context_.direct_compositing_reasons);
     } else {
+      UpdateElementCanvasTransform();
       UpdateTranslate();
       UpdateRotate();
       UpdateScale();
@@ -4360,6 +4404,7 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
                                    context_.painting_layer) ||
        NeedsStickyTranslation(object_) ||
        NeedsAnchorPositionScrollTranslation(object_) ||
+       NeedsElementCanvasTransform(object_) ||
        NeedsTranslate(object_, context_.direct_compositing_reasons) ||
        NeedsRotate(object_, context_.direct_compositing_reasons) ||
        NeedsScale(object_, context_.direct_compositing_reasons) ||

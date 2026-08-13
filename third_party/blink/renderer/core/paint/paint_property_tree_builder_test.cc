@@ -8149,4 +8149,26 @@ TEST_P(PaintPropertyTreeBuilderTest, ScrollAxisLockPropagatesToCc) {
   EXPECT_TRUE(cc_scroll_node->prevent_scroll_axis_locking);
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, ElementCanvasTransformPropertyTree) {
+  SetBodyInnerHTML(R"HTML(
+    <canvas layoutsubtree id="canvas">
+      <div id="target" style="translate: 10px 20px"></div>
+    </canvas>
+  )HTML");
+
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  target_element->SetCanvasTransformInternal(
+      gfx::Transform::MakeTranslation(50, 60));
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  const auto* canvas_transform = properties->ElementCanvasTransform();
+  ASSERT_TRUE(canvas_transform);
+  EXPECT_EQ(gfx::Transform::MakeTranslation(50, 60),
+            canvas_transform->Matrix());
+  EXPECT_EQ(properties->PaintOffsetTranslation(), canvas_transform->Parent());
+  EXPECT_EQ(canvas_transform, properties->Translate()->Parent());
+}
+
 }  // namespace blink

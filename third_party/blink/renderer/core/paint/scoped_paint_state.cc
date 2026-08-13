@@ -101,6 +101,7 @@ void ScopedPaintState::AdjustForPaintProperties(const LayoutObject& object) {
     new_chunk_properties.SetTransform(*transform);
     needs_new_chunk_properties = true;
   }
+  DCHECK(!properties->ElementCanvasTransform());
   DCHECK(!properties->Translate());
   DCHECK(!properties->Rotate());
   DCHECK(!properties->Scale());

@@ -2141,4 +2141,33 @@ TEST_P(VisualRectMappingTest,
   EXPECT_LT(slow_path_enclosing.height(), slow_path_enclosing.width());
 }
 
+TEST_P(VisualRectMappingTest, ElementCanvasTransformVisualRectMapping) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; }</style>
+    <canvas layoutsubtree id="canvas" style="width: 200px; height: 200px">
+      <div id="target" style="width: 100px; height: 100px"></div>
+    </canvas>
+  )HTML");
+
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  auto* canvas_element = GetDocument().getElementById(AtomicString("canvas"));
+  auto* target = target_element->GetLayoutObject();
+  auto* canvas = canvas_element->GetLayoutObject();
+
+  target_element->SetCanvasTransformInternal(
+      gfx::Transform::MakeTranslation(50, 60));
+  UpdateAllLifecyclePhasesForTest();
+
+  PhysicalRect local_rect(0, 0, 100, 100);
+  PhysicalRect mapper_rect = local_rect;
+  ASSERT_TRUE(target->MapToVisualRectInAncestorSpace(
+      To<LayoutBoxModelObject>(canvas), mapper_rect,
+      {VisualRectFlag::kUseGeometryMapper}));
+  PhysicalRect slow_rect = local_rect;
+  ASSERT_TRUE(target->MapToVisualRectInAncestorSpace(
+      To<LayoutBoxModelObject>(canvas), slow_rect, {}));
+  EXPECT_EQ(mapper_rect, PhysicalRect(50, 60, 100, 100));
+  EXPECT_EQ(mapper_rect, slow_rect);
+}
+
 }  // namespace blink
