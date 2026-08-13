@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -19,7 +18,6 @@
 #include "base/version.h"
 #include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
-#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -34,13 +32,13 @@
 #include "extensions/browser/install_observer.h"
 #include "extensions/browser/install_tracker.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/browser/update_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -131,53 +129,6 @@ class ExtensionInstallErrorObserver : public extensions::InstallObserver {
   const extensions::ExtensionId extension_id_;
   base::ScopedObservation<extensions::InstallTracker, InstallObserver>
       observation_{this};
-};
-
-// Observer that allows waiting until the specified version of the given
-// extension/app gets available for an update.
-class ExtensionUpdateAvailabilityObserver final
-    : public extensions::UpdateObserver {
- public:
-  ExtensionUpdateAvailabilityObserver(Profile* profile,
-                                      const std::string& extension_id,
-                                      const base::Version& awaited_version)
-      : profile_(profile),
-        extension_id_(extension_id),
-        awaited_version_(awaited_version) {
-    update_observation_.Observe(extensions::ExtensionUpdater::Get(profile_));
-  }
-
-  ExtensionUpdateAvailabilityObserver(
-      const ExtensionUpdateAvailabilityObserver&) = delete;
-  ExtensionUpdateAvailabilityObserver& operator=(
-      const ExtensionUpdateAvailabilityObserver&) = delete;
-
-  ~ExtensionUpdateAvailabilityObserver() override = default;
-
-  // Should be called no more than once.
-  void Wait() {
-    // Note that the expected event could have already been observed before this
-    // point, in which case the run loop will exit immediately.
-    run_loop_.Run();
-  }
-
-  void OnAppUpdateAvailable(const extensions::Extension& extension) override {
-    if (extension.id() == extension_id_ &&
-        extension.version() == awaited_version_) {
-      run_loop_.Quit();
-    }
-  }
-
-  void OnChromeUpdateAvailable() override {}
-
- private:
-  const raw_ptr<Profile> profile_;
-  const extensions::ExtensionId extension_id_;
-  const base::Version awaited_version_;
-  base::RunLoop run_loop_;
-  base::ScopedObservation<extensions::ExtensionUpdater,
-                          extensions::UpdateObserver>
-      update_observation_{this};
 };
 
 // Class for testing sign-in profile apps/extensions.
@@ -497,11 +448,6 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
         std::make_unique<extensions::TestExtensionRegistryObserver>(
             extensions::ExtensionRegistry::Get(GetInitialProfile()),
             kNoImmediateUpdateExtensionId);
-    test_extension_latest_version_update_available_observer_ =
-        std::make_unique<ExtensionUpdateAvailabilityObserver>(
-            GetInitialProfile(), kNoImmediateUpdateExtensionId,
-            base::Version(kNoImmediateUpdateExtensionLatestVersion));
-
     const std::string version = content::IsPreTest()
                                     ? kNoImmediateUpdateExtensionOlderVersion
                                     : kNoImmediateUpdateExtensionLatestVersion;
@@ -513,17 +459,12 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
   }
 
   void TearDownOnMainThread() override {
-    test_extension_latest_version_update_available_observer_.reset();
     test_extension_registry_observer_.reset();
     SigninProfileExtensionsPolicyTest::TearDownOnMainThread();
   }
 
   void WaitForTestExtensionLoaded() {
     test_extension_registry_observer_->WaitForExtensionLoaded();
-  }
-
-  void WaitForTestExtensionLatestVersionUpdateAvailable() {
-    test_extension_latest_version_update_available_observer_->Wait();
   }
 
   base::Version GetTestExtensionVersion() const {
@@ -538,8 +479,6 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
  private:
   std::unique_ptr<extensions::TestExtensionRegistryObserver>
       test_extension_registry_observer_;
-  std::unique_ptr<ExtensionUpdateAvailabilityObserver>
-      test_extension_latest_version_update_available_observer_;
 };
 
 // This is the first preparation step for the actual test. Here the old version
@@ -569,6 +508,9 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, PRE_Test) {
   // fetch this version due to the retry mechanism when the fetch request to the
   // update servers was failing. We verify that the new version eventually gets
   // fetched and becomes available for an update.
+  ExtensionTestMessageListener update_available_listener(
+      kNoImmediateUpdateExtensionLatestVersion);
+  update_available_listener.set_extension_id(kNoImmediateUpdateExtensionId);
   EXPECT_TRUE(extension_force_install_mixin_.UpdateFromSourceDir(
       GetNoImmediateUpdateExtensionPath(
           kNoImmediateUpdateExtensionLatestVersion),
@@ -576,15 +518,13 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, PRE_Test) {
       ExtensionForceInstallMixin::UpdateWaitMode::kNone));
   extension_force_install_mixin_.SetServerErrorMode(
       ExtensionForceInstallMixin::ServerErrorMode::kNone);
-  WaitForTestExtensionLatestVersionUpdateAvailable();
 
-  // The running extension should stay at the older version, since it ignores
-  // update notifications and never idles, and also the browser is expected to
-  // not force immediate updates.
-  // Note: There's no reliable way to test that the preliminary autoupdate
-  // doesn't happen, but doing RunUntilIdle() at this point should make the test
-  // at least flaky in case a bug is introduced somewhere.
-  base::RunLoop().RunUntilIdle();
+  // The running extension reports the offered version after handling the
+  // update notification. It should remain on the old version until Chrome
+  // restarts.
+  ASSERT_TRUE(update_available_listener.WaitUntilSatisfied());
+  EXPECT_EQ(kNoImmediateUpdateExtensionLatestVersion,
+            update_available_listener.message());
   EXPECT_EQ(GetTestExtensionVersion(),
             base::Version(kNoImmediateUpdateExtensionOlderVersion));
 }
