@@ -3539,31 +3539,6 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   }));
 }
 
-// TODO(crbug.com/539404714): Deflake and re-enable.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
-                       DISABLED_RightClickSplitTabsButton) {
-  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  PinButton(browser(), web_view, prefs::kPinSplitTabButton);
-  EXPECT_TRUE(
-      WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
-  EXPECT_TRUE(
-      content::ExecJs(web_view->GetWebContents(),
-                      DispatchEventScript(kSplitTabsSelector, "MouseEvent",
-                                          "contextmenu", "button: 2")));
-
-  WebUISplitTabsControl* split_tabs_control =
-      &webui_toolbar_view->split_tabs_control_;
-
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return split_tabs_control->menu_runner_ &&
-           split_tabs_control->menu_runner_->IsRunning();
-  }));
-
-  // Clean up
-  split_tabs_control->menu_runner_->Cancel();
-}
-
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
                        ClickSplitTabsButtonWhileSplit) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
@@ -4645,25 +4620,6 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
   }
 }
 
-// TODO(crbug.com/539404714): Deflake and re-enable.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
-                       DISABLED_RightClickHomeButton) {
-  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
-  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
-                              DispatchEventScript(kHomeSelector, "MouseEvent",
-                                                  "contextmenu", "button: 2")));
-
-  WebUIHomeControl* home_control = &webui_toolbar_view->home_control_;
-
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return home_control->menu_runner_ &&
-           home_control->menu_runner_->IsRunning();
-  }));
-
-  // Clean up
-  home_control->menu_runner_->Cancel();
-}
 
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,

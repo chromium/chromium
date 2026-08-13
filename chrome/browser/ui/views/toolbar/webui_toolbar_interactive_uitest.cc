@@ -90,6 +90,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/metrics.h"
@@ -2291,3 +2292,68 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveUiTest,
   }
 }
 
+enum class ControlType {
+  kHome,
+  kSplitTabs,
+};
+
+struct RightClickContextMenuTestParam {
+  const char* test_name;
+  ControlType control_type;
+  const char* button_pref;
+  const char* button_selector;
+};
+
+class WebUIToolbarRightClickContextMenuTest
+    : public WebUIToolbarWebViewTestBase,
+      public testing::WithParamInterface<RightClickContextMenuTestParam> {};
+
+IN_PROC_BROWSER_TEST_P(WebUIToolbarRightClickContextMenuTest,
+                       RightClickShowsContextMenu) {
+  const auto& param = GetParam();
+
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  PinButton(browser(), web_view, param.button_pref);
+  EXPECT_TRUE(
+      WaitForButtonVisible(web_view->GetWebContents(), param.button_selector));
+  EXPECT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      DispatchEventScript(param.button_selector, "MouseEvent",
+                                          "contextmenu", "button: 2")));
+
+  const std::unique_ptr<views::MenuRunner>* menu_runner = nullptr;
+  switch (param.control_type) {
+    case ControlType::kHome:
+      menu_runner = &webui_toolbar_view->home_control_.menu_runner_;
+      break;
+    case ControlType::kSplitTabs:
+      menu_runner = &webui_toolbar_view->split_tabs_control_.menu_runner_;
+      break;
+  }
+
+  EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+    return menu_runner->get() && (*menu_runner)->IsRunning();
+  }));
+
+  // Clean up
+  if (menu_runner->get()) {
+    (*menu_runner)->Cancel();
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebUIToolbarRightClickContextMenuTest,
+    testing::Values(
+        RightClickContextMenuTestParam{.test_name = "HomeButton",
+                                       .control_type = ControlType::kHome,
+                                       .button_pref = prefs::kShowHomeButton,
+                                       .button_selector = "#home"},
+        RightClickContextMenuTestParam{.test_name = "SplitTabsButton",
+                                       .control_type = ControlType::kSplitTabs,
+                                       .button_pref = prefs::kPinSplitTabButton,
+                                       .button_selector = "split-tabs-button"}),
+    [](const testing::TestParamInfo<RightClickContextMenuTestParam>& info) {
+      return info.param.test_name;
+    });

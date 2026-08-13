@@ -59,8 +59,8 @@ class WebUIHomeControl {
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckHomeButtonColor);
-  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
-                           RightClickHomeButton);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarRightClickContextMenuTest,
+                           RightClickShowsContextMenu);
   FRIEND_TEST_ALL_PREFIXES(WebUIHomeControlInteractiveUiTest,
                            LongPressHomeButton);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarButtonPressAndDragTest,

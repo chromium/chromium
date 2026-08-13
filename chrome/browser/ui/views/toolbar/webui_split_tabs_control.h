@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_SPLIT_TABS_CONTROL_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_SPLIT_TABS_CONTROL_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
@@ -56,8 +57,8 @@ class WebUISplitTabsControl : public TabStripModelObserver {
                            CheckSplitTabsButtonColor);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewSplitTabsBrowserTest,
                            CheckSplitTabsButtonSourceType);
-  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewSplitTabsBrowserTest,
-                           RightClickSplitTabsButton);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarRightClickContextMenuTest,
+                           RightClickShowsContextMenu);
 
   void UpdateVisibility(
       const toolbar_ui_api::mojom::SplitTabsControlState* state);

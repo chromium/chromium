@@ -370,10 +370,8 @@ class WebUIToolbarWebView
                            CheckBatterySaverButtonShowHide);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewSplitTabsBrowserTest,
                            CheckSplitTabsButtonSourceType);
-  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewSplitTabsBrowserTest,
-                           RightClickSplitTabsButton);
-  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
-                           RightClickHomeButton);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarRightClickContextMenuTest,
+                           RightClickShowsContextMenu);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
                            LongPressHomeButton);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
