@@ -180,12 +180,8 @@ if (use_fuzzing_engine_with_lpm) {
     deps = [
       ":reporting",
       "//base",
-      "//testing/libfuzzer:libfuzzer_base_wrappers",
-
-      # TODO(crbug.com/335294371): Remove dependency on //chrome/browser to
-      # implement the proper fix.
-      "//chrome/browser",
       "//components/exo/wayland:ui_controls_protocol_stub",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
   }
 }
