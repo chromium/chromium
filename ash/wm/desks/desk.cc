@@ -27,15 +27,12 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/flat_set.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/compositor/layer.h"
@@ -889,18 +886,6 @@ void Desk::RestackAllDeskWindows() {
       DCHECK(adw.window);
 
       if (adw.window->parent() != container) {
-        // TODO(b/295371112): Clean this up when the root cause has been
-        // resolved. When this function is called, `this` is going to be the
-        // active desk and it is expected that all all-desk windows have been
-        // moved to this desk. If this branch is taken, we have an ADW that is
-        // *not* on the current desk and we must not try to stack it.
-        SCOPED_CRASH_KEY_NUMBER(
-            "Restack", "adw_app_type",
-            static_cast<int>(adw.window->GetProperty(chromeos::kAppTypeKey)));
-        SCOPED_CRASH_KEY_STRING32("Restack", "adw_app_id",
-                                  full_restore::GetAppId(adw.window));
-
-        base::debug::DumpWithoutCrashing();
         continue;
       }
 
