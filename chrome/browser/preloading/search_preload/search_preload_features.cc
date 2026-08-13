@@ -44,11 +44,11 @@ const base::FeatureParam<DsePreload2PrefetchPriorityPolicy>
 BASE_FEATURE(kDsePreload2OnPress, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kDsePreload2OnPressMouseDown{
-    &kDsePreload2, "kDsePreload2OnPressMouseDown", true};
+    &kDsePreload2OnPress, "kDsePreload2OnPressMouseDown", true};
 const base::FeatureParam<bool> kDsePreload2OnPressUpOrDownArrowButton{
-    &kDsePreload2, "kDsePreload2OnPressUpOrDownArrowButton", true};
+    &kDsePreload2OnPress, "kDsePreload2OnPressUpOrDownArrowButton", true};
 const base::FeatureParam<bool> kDsePreload2OnPressTouchDown{
-    &kDsePreload2, "kDsePreload2OnPressTouchDown", true};
+    &kDsePreload2OnPress, "kDsePreload2OnPressTouchDown", true};
 
 BASE_FEATURE(kDsePreload2OnPressIncognito, base::FEATURE_DISABLED_BY_DEFAULT);
 
