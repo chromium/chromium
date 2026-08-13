@@ -697,10 +697,17 @@ void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
     secondary_view = std::make_unique<ProfileMenuNewBadge>();
   }
 
-  features_container_->AddChildView(CreateMenuRowButton(
+  std::unique_ptr<HoverButton> button = CreateMenuRowButton(
       std::move(action),
       std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio), text,
-      /*icon_offset=*/0, std::move(secondary_view)));
+      /*icon_offset=*/0, std::move(secondary_view));
+
+  if (is_new) {
+    button->AddExtraAccessibleText(
+        l10n_util::GetStringUTF16(IDS_NEW_BADGE_SCREEN_READER_MESSAGE));
+  }
+
+  features_container_->AddChildView(std::move(button));
 }
 
 void ProfileMenuViewBase::SetProfileManagementHeading(
