@@ -139,6 +139,16 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     }
 
     private void onTextChanged(String text) {
+        // Keep mUrlBarData synchronized with user-typed text during an active input session.
+        // This ensures mUrlBarData accurately reflects the current editor content so that
+        // setUrlBarData() can safely deduplicate redundant updates without incorrectly dropping
+        // legitimate changes (e.g. when tapping the Delete button to clear typed text).
+        if (isInInputSession()) {
+            UrlBarData typedData = UrlBarData.forNonUrlText(text);
+            if (!isNewTextEquivalentToExistingText(mUrlBarData, typedData)) {
+                mUrlBarData = typedData;
+            }
+        }
         if (mTextChangeListener != null) {
             mTextChangeListener.onResult(text);
         }
@@ -191,9 +201,14 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
             }
         }
 
-        if (!isInInputSession()
-                && isNewTextEquivalentToExistingText(mUrlBarData, data)
-                && mScrollType == scrollType) {
+        boolean textEquivalent = isNewTextEquivalentToExistingText(mUrlBarData, data);
+        boolean scrollTypeEquivalent =
+                (mScrollType == scrollType)
+                        || (TextUtils.isEmpty(data.displayText)
+                                && TextUtils.isEmpty(mUrlBarData.displayText));
+        boolean selectionEquivalent = !isInInputSession() || mSelection.equals(selection);
+
+        if (textEquivalent && scrollTypeEquivalent && selectionEquivalent) {
             return false;
         }
 
@@ -263,19 +278,24 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         if (TextUtils.isEmpty(newCharSequence)) return true;
 
         // When not focused, compare the emphasis spans applied to the text to determine
-        // equality.  Internally, TextView applies many additional spans that need to be
+        // equality. Internally, TextView applies many additional spans that need to be
         // ignored for this comparison to be useful, so this is scoped to only the span types
         // applied by our UI.
-        if (!(newCharSequence instanceof Spanned) || !(existingCharSequence instanceof Spanned)) {
-            return false;
-        }
+        UrlEmphasisSpan[] currentSpans =
+                existingCharSequence instanceof Spanned
+                        ? ((Spanned) existingCharSequence)
+                                .getSpans(0, existingCharSequence.length(), UrlEmphasisSpan.class)
+                        : new UrlEmphasisSpan[0];
+        UrlEmphasisSpan[] newSpans =
+                newCharSequence instanceof Spanned
+                        ? ((Spanned) newCharSequence)
+                                .getSpans(0, newCharSequence.length(), UrlEmphasisSpan.class)
+                        : new UrlEmphasisSpan[0];
+        if (currentSpans.length != newSpans.length) return false;
+        if (currentSpans.length == 0) return true;
 
         Spanned currentText = (Spanned) existingCharSequence;
         Spanned newText = (Spanned) newCharSequence;
-        UrlEmphasisSpan[] currentSpans =
-                currentText.getSpans(0, currentText.length(), UrlEmphasisSpan.class);
-        UrlEmphasisSpan[] newSpans = newText.getSpans(0, newText.length(), UrlEmphasisSpan.class);
-        if (currentSpans.length != newSpans.length) return false;
         for (int i = 0; i < currentSpans.length; i++) {
             UrlEmphasisSpan currentSpan = currentSpans[i];
             UrlEmphasisSpan newSpan = newSpans[i];
@@ -286,6 +306,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
                 return false;
             }
         }
+
         return true;
     }
 
