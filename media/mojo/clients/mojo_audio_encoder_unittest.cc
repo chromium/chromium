@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::base::test::RunOnceCallback;
@@ -40,6 +41,19 @@ using ::testing::Return;
 using ::testing::StrictMock;
 
 namespace media {
+
+namespace {
+
+AudioEncoder::Options MakeOptions() {
+  AudioEncoder::Options options;
+  options.codec = AudioCodec::kOpus;
+  options.bitrate = 128000;
+  options.channels = 2;
+  options.sample_rate = 44000;
+  return options;
+}
+
+}  // namespace
 
 // Tests MojoAudioEncoder (client) and MojoAudioEncoderService (service).
 class MojoAudioEncoderTest : public ::testing::Test {
@@ -93,15 +107,6 @@ class MojoAudioEncoderTest : public ::testing::Test {
       std::ranges::fill(channel, seed);
     }
     return result;
-  }
-
-  AudioEncoder::Options MakeOptions() {
-    AudioEncoder::Options options;
-    options.codec = AudioCodec::kOpus;
-    options.bitrate = 128000;
-    options.channels = 2;
-    options.sample_rate = 44000;
-    return options;
   }
 
   base::TimeTicks FromMilliseconds(int ms) {
@@ -473,6 +478,67 @@ TEST_F(MojoAudioEncoderTest, MojoErrorCallsAllDoneCallbacks) {
 
   run_loop.Run();
   EXPECT_EQ(error_count, input_count);
+}
+
+TEST(MojoAudioEncoderServiceTest, ServiceRejectsInvalidInputs) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  // Helper to initialize a fresh service instance and verify that sending an
+  // invalid buffer triggers a mojo bad message report.
+  auto test_invalid_buffer = [&](mojom::AudioBufferPtr buffer) {
+    // Boilerplate service setup and initialization.
+    auto mock_encoder = std::make_unique<StrictMock<MockAudioEncoder>>();
+    EXPECT_CALL(*mock_encoder, Initialize(_, _, _))
+        .WillOnce(RunOnceCallback<2>(EncoderStatus::Codes::kOk));
+    EXPECT_CALL(*mock_encoder, OnDestruct());
+
+    auto service =
+        std::make_unique<MojoAudioEncoderService>(std::move(mock_encoder));
+    mojo::Remote<mojom::AudioEncoder> remote;
+    auto receiver = std::make_unique<mojo::Receiver<mojom::AudioEncoder>>(
+        service.get(), remote.BindNewPipeAndPassReceiver());
+
+    mojo::PendingAssociatedRemote<mojom::AudioEncoderClient> client_remote;
+    auto client_receiver = client_remote.InitWithNewEndpointAndPassReceiver();
+    base::RunLoop init_loop;
+    remote->Initialize(std::move(client_remote), MakeOptions(),
+                       base::BindLambdaForTesting([&](const EncoderStatus& s) {
+                         EXPECT_TRUE(s.is_ok());
+                         init_loop.Quit();
+                       }));
+    init_loop.Run();
+
+    // Intercept bad message reports.
+    bool bad_message_received = false;
+    base::RunLoop bad_message_loop;
+    mojo::SetDefaultProcessErrorHandler(
+        base::BindLambdaForTesting([&](const std::string& error) {
+          bad_message_received = true;
+          bad_message_loop.Quit();
+        }));
+
+    // Send the invalid buffer and verify a bad message is reported.
+    remote->Encode(std::move(buffer), base::DoNothing());
+    bad_message_loop.Run();
+    EXPECT_TRUE(bad_message_received);
+
+    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+  };
+
+  // Test bitstream format input.
+  auto bitstream_buffer = mojom::AudioBuffer::New();
+  bitstream_buffer->sample_format = SampleFormat::kSampleFormatAc3;
+  bitstream_buffer->channel_layout = CHANNEL_LAYOUT_STEREO;
+  bitstream_buffer->channel_count = 2;
+  bitstream_buffer->sample_rate = 44000;
+  bitstream_buffer->frame_count = 100;
+  bitstream_buffer->data = std::vector<uint8_t>(10);
+  test_invalid_buffer(std::move(bitstream_buffer));
+
+  // Test End-Of-Stream input.
+  auto eos_buffer = mojom::AudioBuffer::New();
+  eos_buffer->end_of_stream = true;
+  test_invalid_buffer(std::move(eos_buffer));
 }
 
 }  // namespace media

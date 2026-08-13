@@ -965,4 +965,30 @@ TEST(AudioBufferTest, AudioBufferMemoryPoolPlanar) {
   b1 = nullptr;
 }
 
+TEST(AudioBufferTest, WrapOrCopyToAudioBus_BitstreamDecoupledFrameCount) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr int kChannelCount = 2;
+  constexpr int kFrameCount = 100000;
+  constexpr uint8_t kTinyData[] = {0x42};
+
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CopyBitstreamFrom(
+      kSampleFormatAc3, kChannelLayout, kChannelCount, kSampleRate, kFrameCount,
+      kTinyData, base::Microseconds(1));
+  ASSERT_TRUE(buffer);
+  EXPECT_EQ(kFrameCount, buffer->frame_count());
+  EXPECT_EQ(sizeof(kTinyData), buffer->data_size());
+  EXPECT_TRUE(buffer->IsBitstreamFormat());
+
+  std::unique_ptr<AudioBus> bus = AudioBuffer::WrapOrCopyToAudioBus(buffer);
+  ASSERT_TRUE(bus);
+  EXPECT_TRUE(bus->is_bitstream_format());
+  EXPECT_EQ(static_cast<size_t>(kFrameCount), bus->frames());
+  EXPECT_EQ(sizeof(kTinyData), bus->bitstream_data().size());
+  EXPECT_EQ(kFrameCount, bus->GetBitstreamFrames());
+
+  auto dest = AudioBus::Create(kChannelCount, kFrameCount);
+  EXPECT_DEATH_IF_SUPPORTED(
+      bus->CopyPartialFramesTo(0, kFrameCount, 0, dest.get()), "");
+}
+
 }  // namespace media

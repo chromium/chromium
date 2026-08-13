@@ -261,6 +261,11 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
   }
 
   if (IsBitstream(input->sample_format)) {
+    if (input->data.empty()) {
+      DLOG(ERROR)
+          << "Received invalid bitstream AudioBuffer, replace it with EOS.";
+      return media::AudioBuffer::CreateEOSBuffer();
+    }
     return media::AudioBuffer::CopyBitstreamFrom(
         input->sample_format, input->channel_layout, input->channel_count,
         input->sample_rate, input->frame_count, input->data, input->timestamp);

@@ -304,7 +304,7 @@ void AudioBus::CopyTo(AudioBus* dest) const {
 }
 
 void AudioBus::CopyAndClipTo(AudioBus* dest) const {
-  DCHECK(!is_bitstream_format_);
+  CHECK(!is_bitstream_format_);
   CHECK_EQ(channels(), dest->channels());
   CHECK_LE(frames(), dest->frames());
   for (auto [src_ch, dest_ch] :
@@ -317,7 +317,7 @@ void AudioBus::CopyPartialFramesTo(int source_start_frame,
                                    int frame_count,
                                    int dest_start_frame,
                                    AudioBus* dest) const {
-  DCHECK(!is_bitstream_format_);
+  CHECK(!is_bitstream_format_);
   CHECK_EQ(channels(), dest->channels());
 
   const size_t source_offset = base::checked_cast<size_t>(source_start_frame);
@@ -336,7 +336,7 @@ void AudioBus::CopyPartialFramesTo(int source_start_frame,
 }
 
 void AudioBus::Scale(float volume) {
-  DCHECK(!is_bitstream_format_);
+  CHECK(!is_bitstream_format_);
   if (volume > 0 && volume != 1) {
     for (auto channel : channel_data_) {
       vector_math::FMUL(channel, volume, channel);
@@ -347,7 +347,7 @@ void AudioBus::Scale(float volume) {
 }
 
 void AudioBus::SwapChannels(int a, int b) {
-  DCHECK(!is_bitstream_format_);
+  CHECK(!is_bitstream_format_);
   DCHECK(a < channels() && a >= 0);
   DCHECK(b < channels() && b >= 0);
   DCHECK_NE(a, b);

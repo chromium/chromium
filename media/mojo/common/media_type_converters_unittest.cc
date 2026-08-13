@@ -387,4 +387,20 @@ TEST(MediaTypeConvertersTest, ConvertDecryptConfig_RejectsUnboundedSubsamples) {
   EXPECT_FALSE(decrypt_config);
 }
 
+TEST(MediaTypeConvertersTest, ConvertAudioBuffer_BitstreamEmptyData) {
+  auto ptr = mojom::AudioBuffer::New();
+  ptr->sample_format = SampleFormat::kSampleFormatAc3;
+  ptr->channel_layout = CHANNEL_LAYOUT_STEREO;
+  ptr->channel_count = 2;
+  ptr->sample_rate = 48000;
+  ptr->frame_count = 100;
+  // Explicitly provide empty data for a bitstream buffer.
+  ptr->data = std::vector<uint8_t>();
+
+  auto result = ptr.To<scoped_refptr<AudioBuffer>>();
+  // Bitstream buffers with empty data should be replaced with EOS.
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->end_of_stream());
+}
+
 }  // namespace media

@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "media/mojo/common/media_type_converters.h"
+#include "mojo/public/cpp/bindings/message.h"
 
 namespace media {
 
@@ -49,6 +50,12 @@ void MojoAudioEncoderService::Encode(mojom::AudioBufferPtr buffer,
   }
 
   auto audio_buffer = buffer.To<scoped_refptr<AudioBuffer>>();
+  if (!audio_buffer || audio_buffer->end_of_stream() ||
+      audio_buffer->IsBitstreamFormat()) {
+    std::move(callback).Run(EncoderStatus::Codes::kInvalidInputFrame);
+    mojo::ReportBadMessage("Invalid audio buffer passed to Encode().");
+    return;
+  }
   auto audio_bus = AudioBuffer::WrapOrCopyToAudioBus(audio_buffer);
   encoder_->Encode(std::move(audio_bus),
                    base::TimeTicks() + audio_buffer->timestamp(),
