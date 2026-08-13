@@ -95,7 +95,8 @@ public class NativeMessagingManagerTest {
 
     @Test
     public void testConnectAndDisconnectService() {
-        String error = mManager.connect(TARGET_PACKAGE, EXTENSION_ID);
+        String error =
+                mManager.addPort(TARGET_PACKAGE, EXTENSION_ID, new NativeMessageAndroidPort());
         Assert.assertNull(error);
 
         NativeMessagingConnection connection = mManager.getConnectionForTesting(TARGET_PACKAGE);
@@ -126,7 +127,8 @@ public class NativeMessagingManagerTest {
 
     @Test
     public void testConnectNullBinding() {
-        String error = mManager.connect(TARGET_PACKAGE, EXTENSION_ID);
+        String error =
+                mManager.addPort(TARGET_PACKAGE, EXTENSION_ID, new NativeMessageAndroidPort());
         Assert.assertNull(error);
 
         NativeMessagingConnection connection = mManager.getConnectionForTesting(TARGET_PACKAGE);
@@ -143,7 +145,9 @@ public class NativeMessagingManagerTest {
     public void testConnectAppDoesNotExist() {
         mTestContext.setBindServiceResult(false);
 
-        String error = mManager.connect("com.nonexistent.app", EXTENSION_ID);
+        String error =
+                mManager.addPort(
+                        "com.nonexistent.app", EXTENSION_ID, new NativeMessageAndroidPort());
         Assert.assertNotNull(error);
         Assert.assertEquals("Error: Unable to connect to com.nonexistent.app", error);
         Assert.assertNull(mManager.getConnectionForTesting("com.nonexistent.app"));

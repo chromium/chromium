@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 
+import androidx.annotation.Nullable;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -92,6 +94,11 @@ public class NativeMessagingConnectionTest {
                 };
     }
 
+    private static @Nullable String connectExtension(
+            NativeMessagingConnection connection, String extensionId) {
+        return connection.addPort(extensionId, new NativeMessageAndroidPort());
+    }
+
     // Test that:
     // - An extension connection can be initiated before the service is
     //   connected, and the connection goes through once the service is
@@ -104,14 +111,14 @@ public class NativeMessagingConnectionTest {
         Assert.assertTrue(connection.isBound());
 
         // 1. Request extension before service is connected.
-        String error1 = connection.connectExtension(EXT_1);
+        String error1 = connectExtension(connection, EXT_1);
         Assert.assertNull(error1);
 
         var session = connection.getSessionForTesting(EXT_1);
         Assert.assertNotNull(session);
 
         // 2. Duplicate call should no-op.
-        String error2 = connection.connectExtension(EXT_1);
+        String error2 = connectExtension(connection, EXT_1);
         Assert.assertNull(error2);
         Assert.assertEquals(session, connection.getSessionForTesting(EXT_1));
 
@@ -134,8 +141,8 @@ public class NativeMessagingConnectionTest {
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
 
         // 2. Connect two distinct extensions.
-        Assert.assertNull(connection.connectExtension(EXT_1));
-        Assert.assertNull(connection.connectExtension(EXT_2));
+        Assert.assertNull(connectExtension(connection, EXT_1));
+        Assert.assertNull(connectExtension(connection, EXT_2));
 
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -161,7 +168,7 @@ public class NativeMessagingConnectionTest {
         Assert.assertTrue(connection.isBound());
 
         // 1. Connect extension that will fail auth (returns null).
-        Assert.assertNull(connection.connectExtension(EXT_FAIL));
+        Assert.assertNull(connectExtension(connection, EXT_FAIL));
 
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
@@ -183,8 +190,8 @@ public class NativeMessagingConnectionTest {
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
 
         // Connect valid extension and failing extension.
-        Assert.assertNull(connection.connectExtension(EXT_1));
-        Assert.assertNull(connection.connectExtension(EXT_FAIL));
+        Assert.assertNull(connectExtension(connection, EXT_1));
+        Assert.assertNull(connectExtension(connection, EXT_FAIL));
 
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -210,7 +217,7 @@ public class NativeMessagingConnectionTest {
         Assert.assertTrue(connection.isBound());
 
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
-        Assert.assertNull(connection.connectExtension(EXT_1));
+        Assert.assertNull(connectExtension(connection, EXT_1));
         RobolectricUtil.runAllBackgroundAndUi();
 
         Assert.assertNotNull(connection.getSessionForTesting(EXT_1));

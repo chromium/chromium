@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.os.RemoteException;
 
 import androidx.annotation.IntDef;
 
@@ -24,7 +25,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /** Manages a single ServiceConnection to an Android app. */
 @NullMarked
@@ -55,7 +58,7 @@ public class NativeMessagingConnection implements ServiceConnection {
         mIsBound = context.bindService(intent, this, Context.BIND_AUTO_CREATE);
 
         if (!mIsBound) {
-            Log.e(TAG, "Failed to bind to service for package: " + mPackageName);
+            Log.w(TAG, "Failed to bind to service for package: " + mPackageName);
         }
     }
 
@@ -63,9 +66,7 @@ public class NativeMessagingConnection implements ServiceConnection {
         return mIsBound;
     }
 
-    // TODO(crbug.com/515159909): Rename this "addPort" and potentially add a
-    // callback param since `session.connectExtension` is asynchronous.
-    public @Nullable String connectExtension(String extensionId) {
+    public @Nullable String addPort(String extensionId, NativeMessageAndroidPort port) {
         if (!mIsBound) {
             return "Could not add port: not connected to app " + mPackageName;
         }
@@ -76,21 +77,24 @@ public class NativeMessagingConnection implements ServiceConnection {
             mSessions.put(extensionId, session);
 
             if (mService != null) {
-                session.connectExtension(mService);
+                session.authenticateExtensionAndConnectPorts(mService);
             }
         }
 
+        session.addPort(port);
         return null;
     }
 
     public void unbind() {
-        if (mIsBound) {
-            try {
-                ContextUtils.getApplicationContext().unbindService(this);
-            } catch (IllegalArgumentException e) {
-                Log.w(TAG, "Service was not registered during unbind", e);
-            }
-            mIsBound = false;
+        if (!mIsBound) {
+            return;
+        }
+        mIsBound = false;
+
+        try {
+            ContextUtils.getApplicationContext().unbindService(this);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "Service was not registered during unbind", e);
         }
         mService = null;
 
@@ -112,7 +116,7 @@ public class NativeMessagingConnection implements ServiceConnection {
     public void onServiceConnected(ComponentName name, IBinder service) {
         mService = IBrowserNativeMessageService.Stub.asInterface(service);
         for (ExtensionSession session : mSessions.values()) {
-            session.connectExtension(mService);
+            session.authenticateExtensionAndConnectPorts(mService);
         }
     }
 
@@ -159,7 +163,7 @@ public class NativeMessagingConnection implements ServiceConnection {
         return mService;
     }
 
-    static class ExtensionSession {
+    static class ExtensionSession implements NativeMessageAndroidPort.Observer {
         // Tracks the state of this ExtensionSession.
         @IntDef({
             ConnectionState.DISCONNECTED,
@@ -177,25 +181,29 @@ public class NativeMessagingConnection implements ServiceConnection {
             int CONNECTED = 2;
         }
 
-        private static class ConnectionResult {
-            public final @Nullable IExtensionNativeMessageService service;
+        private static class ConnectionResult<T> {
+            public final @Nullable T remote;
             public final @Nullable String errorMessage;
 
-            public ConnectionResult(
-                    @Nullable IExtensionNativeMessageService service,
-                    @Nullable String errorMessage) {
-                this.service = service;
+            public ConnectionResult(@Nullable T remote, @Nullable String errorMessage) {
+                this.remote = remote;
                 this.errorMessage = errorMessage;
             }
 
             public boolean isSuccess() {
-                return service != null;
+                return remote != null && errorMessage == null;
             }
         }
 
         private final String mExtensionId;
         private @Nullable IExtensionNativeMessageService mExtensionService;
         private @ConnectionState int mState = ConnectionState.DISCONNECTED;
+
+        // Ports waiting for the service to bind and authenticate.
+        private final Set<NativeMessageAndroidPort> mPendingPorts = new LinkedHashSet<>();
+
+        // Ports that are connecting or have connected to the app.
+        private final Set<NativeMessageAndroidPort> mActivePorts = new LinkedHashSet<>();
 
         private final NativeMessagingConnection mConnection;
 
@@ -204,9 +212,32 @@ public class NativeMessagingConnection implements ServiceConnection {
             mConnection = connection;
         }
 
-        public void connectExtension(IBrowserNativeMessageService browserService) {
+        @Override
+        public void onPortDestroying(NativeMessageAndroidPort port) {
+            mPendingPorts.remove(port);
+            mActivePorts.remove(port);
+        }
+
+        private boolean isSessionConnected() {
+            return mState == ConnectionState.CONNECTED && mExtensionService != null;
+        }
+
+        public void addPort(NativeMessageAndroidPort port) {
+            port.setObserver(this);
+
+            if (isSessionConnected()) {
+                connectPort(port);
+            } else {
+                mPendingPorts.add(port);
+            }
+        }
+
+        public void authenticateExtensionAndConnectPorts(
+                IBrowserNativeMessageService browserService) {
             if (mState != ConnectionState.DISCONNECTED) {
-                assert mExtensionService != null;
+                // No-op on repeated calls. Check that `mExtensionService` is
+                // set if and only if ConnectionState CONNECTED.
+                assert mState != ConnectionState.CONNECTED || mExtensionService != null;
                 return;
             }
 
@@ -214,32 +245,34 @@ public class NativeMessagingConnection implements ServiceConnection {
             PostTask.postTask(
                     TaskTraits.USER_VISIBLE_MAY_BLOCK,
                     () -> {
-                        ConnectionResult result =
+                        ConnectionResult<IExtensionNativeMessageService> result =
                                 authenticateExtensionInBackground(browserService, mExtensionId);
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT, () -> onConnectExtensionResult(result));
                     });
         }
 
-        private static ConnectionResult authenticateExtensionInBackground(
-                IBrowserNativeMessageService browserService, String extensionId) {
+        private static ConnectionResult<IExtensionNativeMessageService>
+                authenticateExtensionInBackground(
+                        IBrowserNativeMessageService browserService, String extensionId) {
             ThreadUtils.assertOnBackgroundThread();
             try {
                 IExtensionNativeMessageService service =
                         browserService.connectExtension(extensionId, null);
                 if (service != null) {
-                    return new ConnectionResult(service, null);
+                    return new ConnectionResult<>(service, null);
                 }
-                return new ConnectionResult(
+                return new ConnectionResult<>(
                         null, "connectExtension returned null for " + extensionId);
             } catch (Exception e) {
-                Log.e(TAG, "Exception during connectExtension for " + extensionId, e);
+                Log.w(TAG, "Exception during connectExtension for " + extensionId, e);
                 String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-                return new ConnectionResult(null, errorMsg);
+                return new ConnectionResult<>(null, errorMsg);
             }
         }
 
-        private void onConnectExtensionResult(ConnectionResult result) {
+        private void onConnectExtensionResult(
+                ConnectionResult<IExtensionNativeMessageService> result) {
             if (mState != ConnectionState.PENDING) {
                 // Connection was closed/unbound while background task was in
                 // flight.
@@ -247,9 +280,12 @@ public class NativeMessagingConnection implements ServiceConnection {
             }
 
             if (result.isSuccess()) {
-                mExtensionService = result.service;
+                mExtensionService = result.remote;
                 mState = ConnectionState.CONNECTED;
-                Log.i(TAG, "Extension session connected for " + mExtensionId);
+                for (NativeMessageAndroidPort port : new ArrayList<>(mPendingPorts)) {
+                    connectPort(port);
+                }
+                assert mPendingPorts.isEmpty();
             } else {
                 Log.w(
                         TAG,
@@ -261,12 +297,105 @@ public class NativeMessagingConnection implements ServiceConnection {
             }
         }
 
+        private void connectPort(NativeMessageAndroidPort port) {
+            if (mExtensionService == null) {
+                port.closeChannel("Session is not connected.");
+                return;
+            }
+
+            mActivePorts.add(port);
+            mPendingPorts.remove(port);
+            final IExtensionNativeMessageService service = mExtensionService;
+
+            // Construct the Callback here and link it to `port` because the
+            // external app might send a message BEFORE returning a
+            // IExtensionNativeMessagePort.
+            final NativeMessageAndroidPort.Callback portCallback =
+                    new NativeMessageAndroidPort.Callback(port);
+
+            PostTask.postTask(
+                    TaskTraits.USER_VISIBLE_MAY_BLOCK,
+                    () -> {
+                        ConnectionResult<IExtensionNativeMessagePort> result =
+                                connectPortInBackground(service, portCallback, mExtensionId);
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT, () -> onConnectPortResult(port, result));
+                    });
+        }
+
+        private static ConnectionResult<IExtensionNativeMessagePort> connectPortInBackground(
+                IExtensionNativeMessageService service,
+                NativeMessageAndroidPort.Callback callback,
+                String extensionId) {
+            ThreadUtils.assertOnBackgroundThread();
+            try {
+                IExtensionNativeMessagePort remotePort = service.connectPort(callback);
+                if (remotePort != null) {
+                    return new ConnectionResult<>(remotePort, null);
+                }
+                return new ConnectionResult<>(null, "Native host returned null port.");
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to connect port for extension: " + extensionId, e);
+                String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
+                return new ConnectionResult<>(null, errorMsg);
+            }
+        }
+
+        private void onConnectPortResult(
+                NativeMessageAndroidPort port,
+                ConnectionResult<IExtensionNativeMessagePort> result) {
+            // The port connected successfully if:
+            // - The app returns a valid `IExtensionNativeMessagePort`.
+            // - The extension is still connected to the app.
+            // - The `NativeMessageAndroidPort` itself is still active in the
+            //   browser.
+            if (result.isSuccess() && isSessionConnected() && mActivePorts.contains(port)) {
+                assert result.remote != null; // Needed for NullAway.
+                port.onConnected(result.remote);
+                return;
+            }
+
+            // Close the port with an error if it is still active and was not already closed while
+            // the connection attempt was in flight.
+            if (mActivePorts.remove(port)) {
+                String error =
+                        result.errorMessage != null
+                                ? result.errorMessage
+                                : "Native host rejected port connection.";
+                port.closeChannel(error);
+            }
+
+            // If the app returns a valid `IExtensionNativeMessagePort` but the
+            // browser is not in a state to connect, tell it to disconnect.
+            if (result.remote != null) {
+                try {
+                    result.remote.disconnect();
+                } catch (RemoteException e) {
+                    Log.w(TAG, "Failed to disconnect aborted remote port", e);
+                }
+            }
+        }
+
         private void disconnect(@Nullable String errorMessage) {
             if (errorMessage != null) {
                 Log.w(TAG, "Disconnecting session for " + mExtensionId + ": " + errorMessage);
             }
             mExtensionService = null;
             mState = ConnectionState.DISCONNECTED;
+
+            // TODO(crbug.com/515159909): In the future, port teardown and error propagation
+            // should be coordinated with the C++ NativeMessageAndroidPort layer.
+            String closeReason = errorMessage != null ? errorMessage : "Session disconnected.";
+            for (NativeMessageAndroidPort port : new ArrayList<>(mPendingPorts)) {
+                port.closeChannel(closeReason);
+            }
+            mPendingPorts.clear();
+
+            for (NativeMessageAndroidPort port : new ArrayList<>(mActivePorts)) {
+                port.closeChannel(closeReason);
+            }
+            mActivePorts.clear();
+
             mConnection.onSessionDisconnected(mExtensionId);
         }
 
