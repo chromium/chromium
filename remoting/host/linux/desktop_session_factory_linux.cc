@@ -15,6 +15,7 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -76,6 +77,27 @@ base::FilePath GetRemoteDisplaysConfigFilePath() {
   return config_dir.Append("remote_displays.json");
 }
 
+// Returns the path to `cgroup.procs` for the given logind session. Under
+// systemd's cgroup hierarchy specification (`systemd.slice(5)` and
+// https://systemd.io/CONTROL_GROUP_INTERFACE/), a session scope unit
+// `session-<id>.scope` inside the user slice `user-<uid>.slice` maps to
+// `/sys/fs/cgroup/user.slice/user-<uid>.slice/session-<id>.scope/cgroup.procs`.
+base::FilePath GetSessionCgroupProcsPath(uid_t uid,
+                                         std::string_view session_id) {
+  // Check cgroup v2 path.
+  base::FilePath cgroup_v2_path(base::StringPrintf(
+      "/sys/fs/cgroup/user.slice/user-%u.slice/session-%s.scope/cgroup.procs",
+      uid, session_id.data()));
+  if (base::PathExists(cgroup_v2_path)) {
+    return cgroup_v2_path;
+  }
+  // Check cgroup v1 systemd hierarchy fallback.
+  return base::FilePath(base::StringPrintf(
+      "/sys/fs/cgroup/systemd/user.slice/user-%u.slice/session-%s.scope/"
+      "cgroup.procs",
+      uid, session_id.data()));
+}
+
 }  // namespace
 
 class DesktopSessionFactoryLinux::DesktopSessionLinux
@@ -135,6 +157,8 @@ class DesktopSessionFactoryLinux::DesktopSessionLinux
   bool IsSessionUsernameAllowed(
       const RemoteDisplaySessionManager::RemoteDisplaySession& session);
 
+  void AttachProcessToSession(int32_t pid);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::string display_name_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -145,6 +169,8 @@ class DesktopSessionFactoryLinux::DesktopSessionLinux
   base::OnceClosure remove_from_factory_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<WorkerProcessLauncher> launcher_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  std::string current_session_id_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::optional<uid_t> current_uid_ GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::AssociatedReceiver<mojom::DesktopSessionRequestHandler>
       desktop_session_request_handler_ GUARDED_BY_CONTEXT(sequence_checker_){
           this};
@@ -184,8 +210,12 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::
     // Session is not ready yet, or is detached. Kill the desktop process if
     // it is running.
     launcher_.reset();
+    current_session_id_.clear();
+    current_uid_.reset();
     return;
   }
+  current_session_id_ = info.session_info->session_id;
+  current_uid_ = info.user_info->uid;
 
   if (!IsSessionUsernameAllowed(info)) {
     TerminateSession(
@@ -287,6 +317,8 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::OnChannelConnected(
 
   VLOG(1) << "IPC: daemon <- desktop (" << peer_pid << ")";
 
+  AttachProcessToSession(peer_pid);
+
   desktop_process_control_.reset();
   launcher_->GetRemoteAssociatedInterface(
       desktop_process_control_.BindNewEndpointAndPassReceiver());
@@ -304,6 +336,35 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::OnWorkerProcessStopped() {
 
   desktop_process_control_.reset();
   desktop_session_request_handler_.reset();
+}
+
+void DesktopSessionFactoryLinux::DesktopSessionLinux::AttachProcessToSession(
+    int32_t pid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (current_session_id_.empty() || !current_uid_.has_value()) {
+    LOG(WARNING) << "Cannot attach process " << pid
+                 << " to logind session: session info is not set.";
+    return;
+  }
+
+  base::FilePath cgroup_procs_path =
+      GetSessionCgroupProcsPath(*current_uid_, current_session_id_);
+  if (!base::PathExists(cgroup_procs_path)) {
+    LOG(WARNING) << "cgroup.procs path does not exist: " << cgroup_procs_path;
+    return;
+  }
+
+  HOST_LOG << "Attaching desktop process " << pid << " to session cgroup "
+           << cgroup_procs_path;
+
+  std::string pid_str = base::NumberToString(pid);
+  if (!base::WriteFile(cgroup_procs_path, pid_str)) {
+    PLOG(WARNING) << "Failed to write PID " << pid << " to "
+                  << cgroup_procs_path;
+    return;
+  }
+  HOST_LOG << "Successfully attached desktop process " << pid
+           << " to session cgroup " << cgroup_procs_path;
 }
 
 void DesktopSessionFactoryLinux::DesktopSessionLinux::
