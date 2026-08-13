@@ -616,6 +616,7 @@ public class StripLayoutHelperManager
                         glicClickHandler,
                         glicKeyboardFocusHandler,
                         this::isNormalHelperGlicIphShowing,
+                        open -> toolbarManager.getTopToolbarCoordinator().setGlicPanelIsOpen(open),
                         this::updateHelperEndMargins);
 
         mTabHoverCardViewStub = tabHoverCardViewStub;

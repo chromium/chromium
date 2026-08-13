@@ -405,4 +405,13 @@ public class TopToolbarCoordinatorUnitTest {
         when(mToolbarLayout.getGlicActionChipView()).thenReturn(mGlicActionChipView);
         assertEquals(mGlicActionChipView, mCoordinator.getGlicActionChipView());
     }
+
+    @Test
+    public void testSetGlicPanelIsOpen() {
+        mCoordinator.setGlicPanelIsOpen(true);
+        verify(mToolbarLayout).setGlicPanelIsOpen(true);
+
+        mCoordinator.setGlicPanelIsOpen(false);
+        verify(mToolbarLayout).setGlicPanelIsOpen(false);
+    }
 }

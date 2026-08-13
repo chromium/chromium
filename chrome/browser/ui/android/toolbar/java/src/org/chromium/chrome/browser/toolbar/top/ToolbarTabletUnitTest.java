@@ -1492,6 +1492,47 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
+    public void testSetGlicPanelIsOpen_updatesTooltipAndContentDescription() {
+        View.OnClickListener mockClickListener = mock(View.OnClickListener.class);
+        View.OnLongClickListener mockLongClickListener = mock(View.OnLongClickListener.class);
+
+        // Show the Glic action chip.
+        mToolbarTablet.setGlicActionChipVisibility(
+                /* visible= */ true, mockClickListener, mockLongClickListener);
+
+        View glicChip = mToolbarTablet.getGlicActionChipView();
+        assertNotNull("Glic action chip should be inflated and non-null.", glicChip);
+
+        // Verify initial closed state tooltip / content description.
+        assertEquals(
+                "Initial content description should be default tooltip.",
+                mActivity.getString(R.string.glic_tab_strip_button_tooltip),
+                glicChip.getContentDescription().toString());
+
+        // Open Glic UI Panel.
+        mToolbarTablet.setGlicPanelIsOpen(true);
+        assertEquals(
+                "Content description should update to close tooltip when panel is open.",
+                mActivity.getString(R.string.glic_tab_strip_button_tooltip_close),
+                glicChip.getContentDescription().toString());
+        assertEquals(
+                "Tooltip text should update to close tooltip when panel is open.",
+                mActivity.getString(R.string.glic_tab_strip_button_tooltip_close),
+                glicChip.getTooltipText());
+
+        // Close Glic UI Panel.
+        mToolbarTablet.setGlicPanelIsOpen(false);
+        assertEquals(
+                "Content description should restore to default tooltip when panel is closed.",
+                mActivity.getString(R.string.glic_tab_strip_button_tooltip),
+                glicChip.getContentDescription().toString());
+        assertEquals(
+                "Tooltip text should restore to default tooltip when panel is closed.",
+                mActivity.getString(R.string.glic_tab_strip_button_tooltip),
+                glicChip.getTooltipText());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testSetGlicActionChipVisibility_invokesOnWidthConsumerVisibilityChanged() {
         View.OnClickListener mockClickListener = mock(View.OnClickListener.class);

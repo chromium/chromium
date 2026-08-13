@@ -1264,6 +1264,13 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         return null;
     }
 
+    /** Notifies the top toolbar whether the Glic UI panel is currently open. */
+    public void setGlicPanelIsOpen(boolean isOpen) {
+        if (mToolbarLayout instanceof ToolbarTablet tabletLayout) {
+            tabletLayout.setGlicPanelIsOpen(isOpen);
+        }
+    }
+
     private void onGlicVisibilityNeedsUpdate(boolean state) {
         if (mToolbarLayout instanceof ToolbarTablet tabletLayout) {
             tabletLayout.setGlicActionChipVisibility(

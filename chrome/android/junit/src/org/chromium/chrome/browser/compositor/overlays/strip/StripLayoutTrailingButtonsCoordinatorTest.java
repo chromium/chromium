@@ -37,6 +37,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.UnownedUserDataHost;
@@ -112,6 +113,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private TabModel mIncognitoTabModel;
     @Mock private GlicSplitButtonDelegateBridge.Natives mGlicSplitButtonDelegateBridgeJniMock;
     @Mock private SideUiStateProvider mSideUiStateProvider;
+    @Mock private Callback<Boolean> mGlicPanelStateObserver;
 
     @Captor private ArgumentCaptor<List<Animator>> mAnimatorsListCaptor;
 
@@ -181,6 +183,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         mGlicClickHandler,
                         (isFocused, view) -> {},
                         () -> mGlicIphShowing,
+                        mGlicPanelStateObserver,
                         mObserver);
         ShadowLooper.idleMainLooper();
         mCoordinator.onProfileAvailable(mProfile);
@@ -1184,5 +1187,20 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 "Glic button should be visible again after pinning.",
                 mCoordinator.shouldGlicBeVisible());
         assertTrue("Glic button visible property should be true.", mGlicButton.isVisible());
+    }
+
+    @Test
+    public void testSetGlicPanelIsOpen_notifiesObserver() {
+        GlicSplitButtonDelegate splitButtonDelegate =
+                mCoordinator.getGlicSplitButtonDelegateForTesting();
+        assertNotNull("Split button delegate should be created.", splitButtonDelegate);
+
+        // Open the panel.
+        splitButtonDelegate.setGlicPanelIsOpen(true);
+        verify(mGlicPanelStateObserver).onResult(true);
+
+        // Close the panel.
+        splitButtonDelegate.setGlicPanelIsOpen(false);
+        verify(mGlicPanelStateObserver).onResult(false);
     }
 }

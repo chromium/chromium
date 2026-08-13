@@ -19,6 +19,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -160,6 +161,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private @Nullable GlicTaskMenuCoordinator mGlicTaskMenuCoordinator;
     private @Nullable GlicButtonStateController mStateController;
     private final View mToolbarControlContainer;
+    private final Callback<Boolean> mGlicPanelStateObserver;
 
     private final GlicSplitButtonDelegate mGlicSplitButtonDelegate =
             new GlicSplitButtonDelegate() {
@@ -212,6 +214,9 @@ public class StripLayoutTrailingButtonsCoordinator {
                         mGlicButton.setHighlighted(open);
                         mRenderHost.requestRender();
                     }
+
+                    // This allows VT and HT to share one GlicSplitButtonDelegate and Bridge.
+                    mGlicPanelStateObserver.onResult(open);
                 }
             };
     private final GlicSplitButtonDelegateBridge mGlicSplitButtonDelegateBridge =
@@ -326,6 +331,7 @@ public class StripLayoutTrailingButtonsCoordinator {
      *     Glic button.
      * @param glicIphShowingSupplier The supplier returning whether the tab strip Glic IPH is
      *     showing.
+     * @param glicPanelStateObserver Callback notified when the Glic UI panel open state changes.
      * @param observer The {@link StripLayoutTrailingButtonsObserver} for layout state changes.
      */
     public StripLayoutTrailingButtonsCoordinator(
@@ -347,6 +353,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             GlicButtonDelegate glicClickHandler,
             StripLayoutViewOnKeyboardFocusHandler glicKeyboardFocusHandler,
             BooleanSupplier glicIphShowingSupplier,
+            Callback<Boolean> glicPanelStateObserver,
             StripLayoutTrailingButtonsObserver observer) {
         mContext = context;
         mUpdateHost = updateHost;
@@ -361,6 +368,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         mModelSelectorButtonKeyboardFocusHandler = modelSelectorKeyboardFocusHandler;
         mGlicClickHandler = glicClickHandler;
         mGlicIphShowingSupplier = glicIphShowingSupplier;
+        mGlicPanelStateObserver = glicPanelStateObserver;
         mObserver = observer;
         mWindowAndroid = windowAndroid;
         mToolbarControlContainer = toolbarControlContainer;
