@@ -79,8 +79,8 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
     @VisibleForTesting final @Nullable ListenableFuture<AppSearchSession> mSessionFuture;
 
     @CalledByNative
-    public AuxiliarySearchDonationServiceBridge() {
-        mSessionFuture = setUpSessionFuture();
+    public AuxiliarySearchDonationServiceBridge(boolean isBrowsingDataDonationEnabled) {
+        mSessionFuture = setUpSessionFuture(isBrowsingDataDonationEnabled);
     }
 
     @CalledByNative
@@ -185,7 +185,8 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
                 .build();
     }
 
-    private static @Nullable ListenableFuture<AppSearchSession> setUpSessionFuture() {
+    private static @Nullable ListenableFuture<AppSearchSession> setUpSessionFuture(
+            boolean isBrowsingDataDonationEnabled) {
         // Check for available consumer apps to ensure this gets optimised out by R8 if it can
         // statically determine that there are no consumers of this data.
         AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
@@ -215,13 +216,16 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
                 sessionFuture,
                 session ->
                         Futures.transform(
-                                session.setSchemaAsync(createSetSchemaRequest()),
+                                session.setSchemaAsync(
+                                        createSetSchemaRequest(isBrowsingDataDonationEnabled)),
                                 _ -> session,
                                 MoreExecutors.directExecutor()),
                 MoreExecutors.directExecutor());
     }
 
-    private static SetSchemaRequest createSetSchemaRequest() throws AppSearchException {
+    @VisibleForTesting
+    static SetSchemaRequest createSetSchemaRequest(boolean isBrowsingDataDonationEnabled)
+            throws AppSearchException {
         var builder = new SetSchemaRequest.Builder();
         // Delete old documents incompatible with the new schema.
         builder.setForceOverride(true);
@@ -247,13 +251,16 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
         // schemas too as we only store `ChromeWebPage` and no other schemas.
         builder.setSchemaTypeDisplayedBySystem(CHROME_WEB_PAGE_SCHEMA_NAME, /* displayed= */ false);
 
-        // Always inlined by R8 - this method is only called by `setUpSessionFuture` if `hooks` is
-        // non-null.
-        AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
-        assumeNonNull(hooks);
-        for (PackageIdentifier packageIdentifier : hooks.getPackagesForBrowsingDataVisibility()) {
-            builder.setSchemaTypeVisibilityForPackage(
-                    CHROME_WEB_PAGE_SCHEMA_NAME, /* visible= */ true, packageIdentifier);
+        if (isBrowsingDataDonationEnabled) {
+            // Always inlined by R8 - this method is only called by `setUpSessionFuture` if `hooks`
+            // is non-null.
+            AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
+            assumeNonNull(hooks);
+            for (PackageIdentifier packageIdentifier :
+                    hooks.getPackagesForBrowsingDataVisibility()) {
+                builder.setSchemaTypeVisibilityForPackage(
+                        CHROME_WEB_PAGE_SCHEMA_NAME, /* visible= */ true, packageIdentifier);
+            }
         }
         return builder.build();
     }

@@ -103,7 +103,8 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
     @Test
     public void testConstructor_unsupportedAndroidVersion() {
         // mMockFactory.createSearchSessionAsync returns null by default.
-        var bridge = new AuxiliarySearchDonationServiceBridge();
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertNull(bridge.mSessionFuture);
@@ -115,7 +116,8 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
                 .thenReturn(Futures.immediateFuture(mMockSession));
         when(mMockSession.setSchemaAsync(any())).thenReturn(Futures.immediateFuture(null));
 
-        var bridge = new AuxiliarySearchDonationServiceBridge();
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertTrue(bridge.mSessionFuture.isDone());
@@ -182,6 +184,30 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
     }
 
     @Test
+    public void testConstructor_setsSchema_browsingDataDonationDisabled() {
+        when(mMockFactory.createSearchSessionAsync(anyString()))
+                .thenReturn(Futures.immediateFuture(mMockSession));
+        when(mMockSession.setSchemaAsync(any())).thenReturn(Futures.immediateFuture(null));
+
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(
+                        /* isBrowsingDataDonationEnabled= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(bridge.mSessionFuture.isDone());
+        verify(mMockFactory)
+                .createSearchSessionAsync(eq(AuxiliarySearchDonationServiceBridge.DATABASE_NAME));
+        verify(mMockSession).setSchemaAsync(mSetSchemaRequestCaptor.capture());
+        SetSchemaRequest request = mSetSchemaRequestCaptor.getValue();
+        assertTrue(
+                request.getSchemasVisibleToPackages()
+                        .getOrDefault(
+                                AuxiliarySearchDonationServiceBridge.CHROME_WEB_PAGE_SCHEMA_NAME,
+                                Set.of())
+                        .isEmpty());
+    }
+
+    @Test
     public void testDonateHistory() throws AppSearchException {
         when(mMockFactory.createSearchSessionAsync(anyString()))
                 .thenReturn(Futures.immediateFuture(mMockSession));
@@ -190,7 +216,8 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
                 .thenReturn(
                         Futures.immediateFuture(
                                 new AppSearchBatchResult.Builder<String, Void>().build()));
-        var bridge = new AuxiliarySearchDonationServiceBridge();
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
         WebPage page =
                 AuxiliarySearchDonationServiceBridge.createHistoryDocument(
@@ -222,7 +249,8 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
     @Test
     public void testDonateHistory_unsupportedAndroidVersion() {
         // mMockFactory.createSearchSessionAsync returns null by default.
-        var bridge = new AuxiliarySearchDonationServiceBridge();
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
         WebPage page =
                 AuxiliarySearchDonationServiceBridge.createHistoryDocument(
@@ -238,7 +266,8 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
     public void testDonateHistory_emptyPages() {
         when(mMockFactory.createSearchSessionAsync(anyString()))
                 .thenReturn(Futures.immediateFuture(mMockSession));
-        var bridge = new AuxiliarySearchDonationServiceBridge();
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
 
         bridge.donateHistory(List.of(), /* coreAccountInfo= */ null);
@@ -256,7 +285,8 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
                 .thenReturn(
                         Futures.immediateFuture(
                                 new AppSearchBatchResult.Builder<String, Void>().build()));
-        var bridge = new AuxiliarySearchDonationServiceBridge();
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
         WebPage page =
                 AuxiliarySearchDonationServiceBridge.createHistoryDocument(
@@ -301,7 +331,8 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
                 .thenReturn(Futures.immediateFailedFuture(new RuntimeException("IPC error")));
         // Suppress log spam in tests.
         ShadowLog.stream = null;
-        var bridge = new AuxiliarySearchDonationServiceBridge();
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
 
         WebPage page =
@@ -332,7 +363,8 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
                         .setFailure(TEST_ID, AppSearchResult.RESULT_INTERNAL_ERROR, "Disk full")
                         .build();
         when(mMockSession.putAsync(any())).thenReturn(Futures.immediateFuture(failedBatchResult));
-        var bridge = new AuxiliarySearchDonationServiceBridge();
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
 
         WebPage page =
@@ -357,7 +389,8 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
         when(mMockFactory.createSearchSessionAsync(anyString()))
                 .thenReturn(Futures.immediateFuture(mMockSession));
         when(mMockSession.setSchemaAsync(any())).thenReturn(Futures.immediateFuture(null));
-        var bridge = new AuxiliarySearchDonationServiceBridge();
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
 
         bridge.close();
@@ -369,7 +402,8 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
     @Test
     public void testClose_unsupportedAndroidVersion() {
         // mMockFactory.createSearchSessionAsync returns null by default.
-        var bridge = new AuxiliarySearchDonationServiceBridge();
+        var bridge =
+                new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
 
         bridge.close();

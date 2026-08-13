@@ -18,7 +18,8 @@ struct CoreAccountInfo;
 class AuxiliarySearchDonationServiceBridge
     : public AuxiliarySearchDonationService::Delegate {
  public:
-  AuxiliarySearchDonationServiceBridge();
+  explicit AuxiliarySearchDonationServiceBridge(
+      bool is_browsing_data_donation_enabled);
   ~AuxiliarySearchDonationServiceBridge() override;
 
   void DonateHistoryEntries(

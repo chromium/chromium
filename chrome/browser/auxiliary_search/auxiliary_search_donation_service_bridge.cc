@@ -46,9 +46,11 @@ ToJniType<AuxiliarySearchDonationService::HistoryData>(
 
 }  // namespace jni_zero
 
-AuxiliarySearchDonationServiceBridge::AuxiliarySearchDonationServiceBridge()
+AuxiliarySearchDonationServiceBridge::AuxiliarySearchDonationServiceBridge(
+    bool is_browsing_data_donation_enabled)
     : bridge_(AuxiliarySearchDonationServiceBridgeJni::New(
-          base::android::AttachCurrentThread())) {}
+          base::android::AttachCurrentThread(),
+          is_browsing_data_donation_enabled)) {}
 AuxiliarySearchDonationServiceBridge::~AuxiliarySearchDonationServiceBridge() {
   if (bridge_) {
     bridge_->close(base::android::AttachCurrentThread());

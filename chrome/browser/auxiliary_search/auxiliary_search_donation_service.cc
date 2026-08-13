@@ -132,7 +132,9 @@ AuxiliarySearchDonationService::AuxiliarySearchDonationService(
               // object will be alive for any callback.
               base::Unretained(this)))) {
   if (!testing_delegate) {
-    testing_delegate = std::make_unique<AuxiliarySearchDonationServiceBridge>();
+    testing_delegate = std::make_unique<AuxiliarySearchDonationServiceBridge>(
+        pref_service_->GetBoolean(
+            prefs::kAuxiliarySearchBrowsingDataDonationEnabled));
   }
   delegate_ = std::move(testing_delegate);
   page_content_annotations_service_->AddObserver(
