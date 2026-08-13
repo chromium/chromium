@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/signin/features.gni")
+
+# Not a blanket assert(enable_dice_support) for the whole file: the rest of
+# //chrome/browser/ui/views/profiles/ is not gated on enable_dice_support,
+# so a future file in this directory that isn't either would break the
+# build on platforms where it's false.
+if (enable_dice_support) {
+  source_set("metrics") {
+    sources = [
+      "feature_showcase_constants.h",
+      "feature_showcase_metrics.cc",
+      "feature_showcase_metrics.h",
+    ]
+    deps = [ "//base" ]
+  }
+}

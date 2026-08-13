@@ -2332,8 +2332,8 @@ static_library("ui") {
       ]
 
       deps += [
-        ":feature_showcase_metrics",
         "webui/signin/batch_upload:mojo_bindings",
+        "//chrome/browser/ui/views/profiles/feature_showcase:metrics",
         "//chrome/browser/ui/webui/feature_showcase",
         "//services/audio/public/cpp",
       ]
@@ -4250,16 +4250,6 @@ if (use_aura) {
   }
 }
 
-if (enable_dice_support) {
-  source_set("feature_showcase_metrics") {
-    sources = [
-      "views/profiles/feature_showcase/feature_showcase_constants.h",
-      "views/profiles/feature_showcase/feature_showcase_metrics.cc",
-      "views/profiles/feature_showcase/feature_showcase_metrics.h",
-    ]
-    deps = [ "//base" ]
-  }
-}
 source_set("status_bubble") {
   public = [ "status_bubble.h" ]
   public_deps = [ "//url" ]
