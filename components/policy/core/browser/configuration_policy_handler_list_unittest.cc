@@ -202,32 +202,6 @@ TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithFuturePolicy) {
   VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
 }
 
-// Future policy will be filter out unless it's whitelisted by
-// kEnableExperimentalPolicies or the feature kFuturePoliciesOnDesktopAndroid is
-// enabled.
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-TEST_F(ConfigurationPolicyHandlerListTest,
-       ApplySettingsWithFuturePolicyOnDesktopAndroid) {
-  AddSimplePolicy();
-  details()->is_future = true;
-
-  ApplySettings();
-
-  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false,
-                      /*in_deprecated=*/false, /*in_future=*/true);
-
-  // Future policy will not be filtered out if kFuturePoliciesOnDesktopAndroid
-  // is enabled (for Desktop Android dogfooders, see
-  // https://crbug.com/452666657).
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFuturePoliciesOnDesktopAndroid);
-
-  ApplySettings();
-
-  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
-}
-#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
-
 TEST_F(ConfigurationPolicyHandlerListTest,
        ApplySettingsWithoutFutureFilterPolicy) {
   CreateHandlerList(true);

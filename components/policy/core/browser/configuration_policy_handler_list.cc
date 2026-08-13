@@ -227,13 +227,6 @@ bool ConfigurationPolicyHandlerList::IsBlockedFuturePolicy(
     const base::flat_set<std::string>& future_policies_allowed,
     const PolicyDetails& policy_details,
     PolicyMap::const_reference entry) const {
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kFuturePoliciesOnDesktopAndroid) &&
-      policy_details.is_future) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
-
   return !are_future_policies_allowed_by_default_ && policy_details.is_future &&
          !future_policies_allowed.contains(entry.first);
 }

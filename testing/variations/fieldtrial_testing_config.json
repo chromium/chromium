@@ -12083,21 +12083,6 @@
             ]
         }
     ],
-    "FuturePoliciesOnDesktopAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FuturePoliciesOnDesktopAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "GCMUseDedicatedNetworkThread": [
         {
             "platforms": [
