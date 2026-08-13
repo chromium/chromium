@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_bitmap_provider.h"
@@ -3259,6 +3260,66 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
   // The drawImage Operation is supposed to trigger a flush, which means that
   // There should not be any Recorded ops at this point.
   EXPECT_FALSE(Context2D()->Recorder()->HasRecordedDrawOps());
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_RotatedVideoFrame) {
+  V8TestingScope scope;
+
+  CreateContext(kNonOpaque);
+  Context2D()->InitializeResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+
+  gfx::Size visible_size(16, 8);
+  scoped_refptr<media::VideoFrame> media_frame =
+      media::VideoFrame::WrapVideoFrame(
+          media::VideoFrame::CreateBlackFrame(/*size=*/gfx::Size(16, 16)),
+          media::PIXEL_FORMAT_I420,
+          /*visible_rect=*/gfx::Rect(visible_size),
+          /*natural_size=*/visible_size);
+  media_frame->metadata().transformation =
+      media::VideoTransformation(media::VIDEO_ROTATION_90);
+  media_frame->set_timestamp(base::Microseconds(1000));
+
+  VideoFrame* frame = MakeGarbageCollected<VideoFrame>(std::move(media_frame),
+                                                       GetExecutionContext());
+  NonThrowableExceptionState exception_state;
+
+  EXPECT_EQ(frame->displayWidth(), 8u);
+  EXPECT_EQ(frame->displayHeight(), 16u);
+
+  auto* v8_frame = MakeGarbageCollected<V8CanvasImageSource>(frame);
+  Context2D()->drawImage(v8_frame, 0, 0, 8, 16, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+
+  Context2D()->drawImage(frame, 0, 0, 8, 16, 0, 0, 10, 20, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+
+  // Also test drawing an SkImage-backed VideoFrame (as produced by
+  // ImageDecoder).
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 8);
+  bitmap.eraseColor(SkColors::kRed);
+  sk_sp<SkImage> sk_image = SkImages::RasterFromBitmap(bitmap);
+
+  scoped_refptr<media::VideoFrame> media_frame2 =
+      media::VideoFrame::WrapVideoFrame(
+          media::VideoFrame::CreateBlackFrame(/*size=*/gfx::Size(16, 16)),
+          media::PIXEL_FORMAT_I420,
+          /*visible_rect=*/gfx::Rect(visible_size),
+          /*natural_size=*/visible_size);
+  media_frame2->metadata().transformation =
+      media::VideoTransformation(media::VIDEO_ROTATION_90);
+
+  auto handle = base::MakeRefCounted<VideoFrameHandle>(
+      media_frame2, sk_image, std::nullopt, GetExecutionContext());
+  VideoFrame* sk_frame = MakeGarbageCollected<VideoFrame>(std::move(handle));
+  auto* v8_sk_frame = MakeGarbageCollected<V8CanvasImageSource>(sk_frame);
+
+  Context2D()->drawImage(v8_sk_frame, 0, 0, 8, 16, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+
+  Context2D()->drawImage(v8_sk_frame, 0, 0, 8, 17, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
 }
 
 TEST_P(CanvasRenderingContext2DTest, FlushRestoresClipStack) {

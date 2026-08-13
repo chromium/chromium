@@ -6714,8 +6714,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   // Orient the destination rect based on the frame's transform.
   const auto& visible_rect = media_video_frame->visible_rect();
   auto dest_rect = gfx::Rect(visible_rect.size());
-  if (transform.rotation == media::VIDEO_ROTATION_90 ||
-      transform.rotation == media::VIDEO_ROTATION_270) {
+  if (transform.IsOrthogonal()) {
     dest_rect.Transpose();
   }
 

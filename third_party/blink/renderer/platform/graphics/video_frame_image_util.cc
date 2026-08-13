@@ -308,8 +308,14 @@ void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
 
   media::PaintCanvasVideoRenderer video_renderer;
   media::PaintCanvasVideoRenderer::PaintParams params;
-  params.dest_rect =
-      gfx::RectF(frame->natural_size().width(), frame->natural_size().height());
+  gfx::SizeF dest_size(frame->natural_size());
+  if (!ignore_video_transformation &&
+      frame->metadata()
+          .transformation.value_or(media::kNoTransformation)
+          .IsOrthogonal()) {
+    dest_size.Transpose();
+  }
+  params.dest_rect = gfx::RectF(dest_size);
   params.transformation =
       ignore_video_transformation
           ? media::kNoTransformation
@@ -329,7 +335,14 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
 CanvasSnapshotInfo CreateSnapshotProviderInfoForVideoFrame(
     const media::VideoFrame& frame,
     std::optional<gfx::Size> scaled_size,
-    bool reinterpret_video_as_srgb) {
+    bool reinterpret_video_as_srgb,
+    bool prefer_tagged_orientation) {
+  const auto transform =
+      frame.metadata().transformation.value_or(media::kNoTransformation);
+  gfx::Size size = scaled_size.value_or(frame.natural_size());
+  if (!prefer_tagged_orientation && !scaled_size && transform.IsOrthogonal()) {
+    size.Transpose();
+  }
   return {
       .alpha_type = media::IsOpaque(frame.format()) ? kOpaque_SkAlphaType
                                                     : kPremul_SkAlphaType,
@@ -339,7 +352,7 @@ CanvasSnapshotInfo CreateSnapshotProviderInfoForVideoFrame(
       // TODO(https://crbug.com/40230609): N32 may be incorrect when drawing
       // high bit depth frames destined for a high bit depth canvas.
       .format = GetN32FormatForCanvas(),
-      .size = scaled_size.value_or(frame.natural_size()),
+      .size = size,
   };
 }
 

@@ -2197,23 +2197,12 @@ void Canvas2DRecorderContext::DrawImageInternal(
     bool ignore_transformation =
         RespectImageOrientationInternal(image_source) ==
         kDoNotRespectImageOrientation;
-    gfx::RectF corrected_src_rect = src_rect;
-
-    if (!ignore_transformation) {
-      auto orientation_enum = VideoTransformationToImageOrientation(
-          media_frame->metadata().transformation.value_or(
-              media::kNoTransformation));
-      if (ImageOrientation(orientation_enum).UsesWidthAsHeight()) {
-        corrected_src_rect = gfx::TransposeRect(src_rect);
-      }
-    }
-
     c->save();
     c->clipRect(gfx::RectFToSkRect(dst_rect));
     c->translate(dst_rect.x(), dst_rect.y());
-    c->scale(dst_rect.width() / corrected_src_rect.width(),
-             dst_rect.height() / corrected_src_rect.height());
-    c->translate(-corrected_src_rect.x(), -corrected_src_rect.y());
+    c->scale(dst_rect.width() / src_rect.width(),
+             dst_rect.height() / src_rect.height());
+    c->translate(-src_rect.x(), -src_rect.y());
     DrawVideoFrameIntoCanvas(std::move(media_frame), c, image_flags,
                              ignore_transformation);
   } else {

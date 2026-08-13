@@ -916,23 +916,13 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
         wrapper->ContextProvider().RasterContextProvider();
   }
 
-  bool is_accelerated = ShouldCreateAcceleratedImages(raster_context_provider);
-  bool will_hard_flip =
-      is_accelerated || respect_orientation == kDoNotRespectImageOrientation;
-
-  std::optional<gfx::Size> dest_size = size;
-  if (!dest_size && will_hard_flip) {
-    const auto transform =
-        media_video_frame->metadata().transformation.value_or(
-            media::kNoTransformation);
-    if (transform.IsOrthogonal()) {
-      dest_size = gfx::Size(media_video_frame->natural_size().height(),
-                            media_video_frame->natural_size().width());
-    }
-  }
+  const bool is_accelerated =
+      ShouldCreateAcceleratedImages(raster_context_provider);
+  const bool prefer_tagged_orientation =
+      !is_accelerated && respect_orientation == kRespectImageOrientation;
 
   auto required_provider_info = CreateSnapshotProviderInfoForVideoFrame(
-      *media_video_frame, dest_size, reinterpret_as_srgb);
+      *media_video_frame, size, reinterpret_as_srgb, prefer_tagged_orientation);
 
   bool cached_info_matches_required_info =
       cached_draw_info_ &&
@@ -940,7 +930,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   if (!cached_info_matches_required_info) {
     snapshot_provider_.reset();
 
-    if (ShouldCreateAcceleratedImages(raster_context_provider)) {
+    if (is_accelerated) {
       snapshot_provider_ = CanvasNon2DResourceProvider::Create(
           required_provider_info.size, required_provider_info.format,
           required_provider_info.alpha_type, required_provider_info.color_space,
@@ -957,8 +947,6 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
                                      FROM_HERE);
 
-  bool prefer_tagged_orientation =
-      respect_orientation == kRespectImageOrientation;
   scoped_refptr<StaticBitmapImage> image;
   if (snapshot_provider_) {
     image = CreateAcceleratedImageFromVideoFrame(

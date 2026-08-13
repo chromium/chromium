@@ -120,13 +120,14 @@ GetRasterContextProvider();
 //   color_space: If `reinterpret_video_as_srgb` was true, then this
 //   is sRGB, otherwise frame.CompatRGBColorSpace().
 //
-//   format: Always GetN32FormatForCanvas() at the time of writing.
-//
-//   size: Set to frame.natural_size() unless `scaled_size` is provided.
+//   size: Set to frame.natural_size() unless `scaled_size` is provided. If
+//   `prefer_tagged_orientation` is false and the transformation is orthogonal,
+//   `size` is transposed.
 PLATFORM_EXPORT CanvasSnapshotInfo CreateSnapshotProviderInfoForVideoFrame(
     const media::VideoFrame& frame,
     std::optional<gfx::Size> scaled_size = std::nullopt,
-    bool reinterpret_video_as_srgb = false);
+    bool reinterpret_video_as_srgb = false,
+    bool prefer_tagged_orientation = false);
 
 }  // namespace blink
 
