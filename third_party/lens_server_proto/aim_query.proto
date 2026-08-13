@@ -40,6 +40,10 @@ message LensImageQueryData {
   // The upload type of the contextual input.
   LensOverlayContextualInputUploadType contextual_input_upload_type = 9;
 
+  // Optional Google Drive document/file ID of the contextual input snippet
+  // representing the upload.
+  string drive_id = 10;
+
   // Deprecated fields to match the Silk LensImageQueryData.
   reserved 3, 5;
 }

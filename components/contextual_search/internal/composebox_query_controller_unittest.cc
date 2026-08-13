@@ -3758,6 +3758,49 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequestWithUploadedPdf) {
             kTestSearchSessionId);
 }
 
+TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequest_WithDriveId) {
+  CreateController(/*send_lns_surface=*/false);
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kUnknown;
+  input_data->mime_type_string = "application/vnd.google-apps.document";
+  input_data->drive_id = "test_drive_id";
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kUnknown));
+  input_data->upload_type = lens::LensOverlayContextualInputUploadType::
+      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kUnknown);
+
+  std::unique_ptr<CreateClientToAimRequestInfo> client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  client_to_aim_request_info->query_text = "hello";
+  client_to_aim_request_info->file_tokens.push_back(file_token);
+  client_to_aim_request_info->query_start_time = kTestQueryStartTime;
+  std::optional<lens::ClientToAimMessage> client_to_aim_request =
+      controller().CreateClientToAimRequest(
+          std::move(client_to_aim_request_info));
+
+  ASSERT_TRUE(client_to_aim_request.has_value());
+  ASSERT_EQ(client_to_aim_request->submit_query()
+                .payload()
+                .lens_image_query_data_size(),
+            1);
+  EXPECT_EQ(client_to_aim_request->submit_query()
+                .payload()
+                .lens_image_query_data(0)
+                .drive_id(),
+            "test_drive_id");
+}
+
 TEST_F(ComposeboxQueryControllerTest,
        CreateClientToAimRequest_IncludesToolModeAndModelMode) {
   // Act: Start the session.

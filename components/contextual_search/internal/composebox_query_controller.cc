@@ -1040,6 +1040,12 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
         }
       }
 
+      if (file_info->input_data &&
+          file_info->input_data->drive_id.has_value() &&
+          !file_info->input_data->drive_id->empty()) {
+        lens_image_query_data->set_drive_id(*file_info->input_data->drive_id);
+      }
+
       // Only force interaction data for region searches when the overlay is
       // open.
       std::optional<lens::LensOverlayVisualSearchInteractionData>
