@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -18,11 +19,13 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -156,8 +159,14 @@ void OmniboxEverywhereBackgroundModeManager::OnStatusIconClicked() {
 void OmniboxEverywhereBackgroundModeManager::ExecuteCommand(int command_id,
                                                             int event_flags) {
   switch (command_id) {
-    case 0:
-      Reset();
+    case IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE:
+      if (show_ui_callback_) {
+        show_ui_callback_.Run();
+      }
+      break;
+    case IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT:
+    case IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS:
+      // Placeholders for now.
       break;
     default:
       NOTREACHED();
@@ -169,10 +178,25 @@ void OmniboxEverywhereBackgroundModeManager::UpdateStatusIconContextMenu() {
     return;
   }
 
-  // TODO(crbug.com/527183107): Add status icon context menu items.
   auto menu = std::make_unique<StatusIconMenuModel>(this);
-  menu->AddItem(0, l10n_util::GetStringUTF16(
-                       IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT));
+
+  ui::Accelerator hotkey = GetHotkey();
+  menu->AddItem(IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE,
+                l10n_util::GetStringUTF16(
+                    IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE));
+  menu->SetAcceleratorForCommandId(
+      IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &hotkey);
+  menu->SetForceShowAcceleratorForItemAt(0, true);
+
+  menu->AddItem(
+      IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT,
+      l10n_util::GetStringUTF16(
+          IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT));
+
+  menu->AddItem(IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS,
+                l10n_util::GetStringUTF16(
+                    IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS));
+
   status_icon_->SetContextMenu(std::move(menu));
 }
 

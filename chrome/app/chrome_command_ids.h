@@ -547,6 +547,11 @@
 #define IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU               54019
 #define IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING                 54020
 
+// Omnibox Everywhere status tray icon menu
+#define IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE                      54030
+#define IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT 54031
+#define IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS                    54032
+
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx
 

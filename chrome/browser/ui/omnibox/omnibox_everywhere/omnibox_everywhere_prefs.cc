@@ -7,8 +7,17 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
-namespace omnibox_everywhere::prefs {
+namespace omnibox_everywhere {
+
+ui::Accelerator GetHotkey() {
+  // TODO(crbug.com/546111112): Add support for customizable hotkey.
+  return ui::Accelerator(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
+}
+
+namespace prefs {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kHotkeyEnabled, true);
@@ -21,4 +30,5 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterFilePathPref(kLastTargetProfileDir, base::FilePath());
 }
 
-}  // namespace omnibox_everywhere::prefs
+}  // namespace prefs
+}  // namespace omnibox_everywhere

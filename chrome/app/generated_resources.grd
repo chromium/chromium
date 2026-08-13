@@ -7526,9 +7526,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_TOOLTIP" desc="Tooltip text for the Omnibox Everywhere status tray icon." translateable="false">
         Omnibox Everywhere
       </message>
-      <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT" desc="Label for the exit item in the Omnibox Everywhere status tray context menu." translateable="false">
-        Exit
+      <!-- TODO(crbug.com/532187976): Make strings translateable once finalized. -->
+      <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" desc="Label for customizing keyboard shortcut item in the Omnibox Everywhere status tray context menu." translateable="false">
+        Customize keyboard shortcut
       </message>
+      <if expr="is_macosx">
+        <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS" desc="Label for settings item in the Omnibox Everywhere status tray context menu [With ellipsis]." translateable="false">
+          Settings...
+        </message>
+      </if>
+      <if expr="not is_macosx">
+        <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS" desc="Label for settings item in the Omnibox Everywhere status tray context menu." translateable="false">
+          Settings
+        </message>
+      </if>
 
 
       <!-- NTP -->

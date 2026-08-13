@@ -7,7 +7,16 @@
 
 class PrefRegistrySimple;
 
-namespace omnibox_everywhere::prefs {
+namespace ui {
+class Accelerator;
+}
+
+namespace omnibox_everywhere {
+
+// Returns the global hotkey accelerator for Omnibox Everywhere.
+ui::Accelerator GetHotkey();
+
+namespace prefs {
 
 // Boolean preference specifying whether the global hotkey for Omnibox
 // Everywhere is enabled.
@@ -30,6 +39,7 @@ inline constexpr char kLastTargetProfileDir[] =
 // Registers Local State preferences for Omnibox Everywhere.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-}  // namespace omnibox_everywhere::prefs
+}  // namespace prefs
+}  // namespace omnibox_everywhere
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_PREFS_H_

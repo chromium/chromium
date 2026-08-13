@@ -3147,6 +3147,10 @@ Chromium is unable to recover your settings.
       <message name="IDS_GLIC_STATUS_ICON_MENU_TOGGLE" translateable="false" desc="This is the menu item for toggling the glic UI.">
         Toggle Gemini in Chromium
       </message>
+      <!-- TODO(crbug.com/532187976): Make strings translateable once finalized. -->
+      <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE" desc="Label for the toggle item in the Omnibox Everywhere status tray context menu." translateable="false">
+        Toggle Search in Chromium
+      </message>
       <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE" translateable="false" desc="This is the text of the glic ineligible profile notice.">
         To use Gemini in Chromium, sign in with a different Google Account
       </message>

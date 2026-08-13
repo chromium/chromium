@@ -10,7 +10,10 @@ source_set("prefs") {
   sources = [ "omnibox_everywhere_prefs.cc" ]
   public = [ "omnibox_everywhere_prefs.h" ]
   public_deps = [ "//base" ]
-  deps = [ "//components/prefs" ]
+  deps = [
+    "//components/prefs",
+    "//ui/base",
+  ]
 }
 
 # Omnibox Everywhere public interface headers.

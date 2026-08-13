@@ -37,6 +37,8 @@ class OmniboxEverywhereBackgroundModeManager
   // Sets the profile for which to hold a profile keep alive.
   void SetProfile(Profile* profile);
 
+  StatusIcon* status_icon_for_testing() { return status_icon_; }
+
  private:
   void OnPrefChanged();
 

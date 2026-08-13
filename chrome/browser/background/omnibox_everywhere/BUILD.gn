@@ -16,6 +16,7 @@ source_set("omnibox_everywhere") {
 
   deps = [
     "//build:branding_buildflags",
+    "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles/keep_alive",
