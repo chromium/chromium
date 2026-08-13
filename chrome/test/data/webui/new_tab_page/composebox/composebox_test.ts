@@ -957,6 +957,30 @@ suite(`NewTabPageComposeboxTest`, () => {
       });
 
   test(
+      'handleFuseboxAction triggers voice search for kInputSourceVoice',
+      async () => {
+        const composebox = new NtpComposeboxElement();
+        document.body.appendChild(composebox);
+        await microtasksFinished();
+
+        let voiceSearchClicked = false;
+        composebox.onVoiceSearchButtonClick = () => {
+          voiceSearchClicked = true;
+        };
+
+        await composebox.handleFuseboxAction({
+          preselectedTool: null,
+          preferredInventory: null,
+          preselectedModel: null,
+          queryActionOverride: null,
+          preselectedInputSource: InputSource.kInputSourceVoice,
+          searchboxOverride: null,
+        });
+
+        assertTrue(voiceSearchClicked);
+      });
+
+  test(
       'hint action sets the placeholder and survives input state updates',
       async () => {
         const composebox = new NtpComposeboxElement();

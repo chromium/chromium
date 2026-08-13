@@ -23,6 +23,7 @@ enum InputSource {
   kInputSourceFilePicker = 3,
   kInputSourceDrive = 4,
   kInputSourceTabPicker = 5,
+  kInputSourceVoice = 6,
 };
 
 enum SearchboxOverride {
@@ -40,7 +41,6 @@ enum SearchboxOverride {
 // message in //third_party/omnibox_proto/suggest_template_info.proto. A null
 // field means this action does not specify the corresponding setting or
 // behavior, which is distinct from an explicit zero value.
-// TODO(crbug.com/539651790): Add more fields to FuseboxAction.
 struct FuseboxAction {
   // The tool to preselect, if specified.
   composebox_query.mojom.ToolMode? preselected_tool;

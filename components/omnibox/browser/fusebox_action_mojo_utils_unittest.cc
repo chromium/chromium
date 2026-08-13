@@ -69,6 +69,7 @@ TEST(FuseboxActionMojoUtilsTest, MapsInputSourceValuesToMojo) {
       {omnibox::INPUT_SOURCE_DRIVE, mojom::InputSource::kInputSourceDrive},
       {omnibox::INPUT_SOURCE_TAB_PICKER,
        mojom::InputSource::kInputSourceTabPicker},
+      {omnibox::INPUT_SOURCE_VOICE, mojom::InputSource::kInputSourceVoice},
   };
   for (const auto& test_case : kCases) {
     omnibox::SuggestTemplateInfo::FuseboxAction proto;

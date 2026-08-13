@@ -218,6 +218,9 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
         case InputSource.kInputSourceTabPicker:
           await this.openTabPicker();
           break;
+        case InputSource.kInputSourceVoice:
+          this.onVoiceSearchButtonClick();
+          break;
         default:
           break;
       }
