@@ -10,6 +10,7 @@
 #include "base/android/android_info.h"
 #include "base/check.h"
 #include "base/i18n/char_iterator.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/web_contents_accessibility_android.h"
@@ -1096,8 +1097,14 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
   BrowserAccessibilityAndroid* parent_node =
       static_cast<BrowserAccessibilityAndroid*>(
           GetFromAXNode(target_node->GetUnignoredParent()));
-  // TODO(crbug.com/498376490): Find a test case that triggers this behavior.
+
+  // `parent_node` cannot be null because tree positions only occur on anchors
+  // with children, resolving `target_node` to a child, and
+  // `GetUnignoredParent()` walks up to the nearest unignored ancestor (up to
+  // RootWebArea). Childless root nodes are treated as leaves by
+  // `AXNodePosition` and handled earlier in the text position branch.
   if (!parent_node) {
+    DUMP_WILL_BE_NOTREACHED();
     return std::nullopt;
   }
 
