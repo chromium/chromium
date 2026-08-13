@@ -182,7 +182,8 @@ SystemNudgeView::SystemNudgeView(
     const AnchoredNudgeData& nudge_data,
     base::RepeatingCallback<void(/*is_hovered_or_has_focus=*/bool)>
         hover_or_focus_changed_callback)
-    : shadow_(SystemShadow::CreateShadowOnTextureLayer(
+    : shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+          this,
           SystemShadow::Type::kElevation4)),
       is_corner_anchored_(CalculateIsCornerAnchored(nudge_data.arrow)),
       hover_changed_callback_(std::move(nudge_data.hover_changed_callback)),
@@ -447,12 +448,6 @@ SystemNudgeView::~SystemNudgeView() {
 
 void SystemNudgeView::AddedToWidget() {
   GetWidget()->AddObserver(this);
-
-  // Attach the shadow at the bottom of the parent layer.
-  auto* shadow_layer = shadow_->GetLayer();
-  auto* parent_layer = layer()->parent();
-  parent_layer->Add(shadow_layer);
-  parent_layer->StackAtBottom(shadow_layer);
 }
 
 void SystemNudgeView::RemovedFromWidget() {
@@ -472,9 +467,6 @@ void SystemNudgeView::OnMouseExited(const ui::MouseEvent& event) {
 
 void SystemNudgeView::OnWidgetBoundsChanged(views::Widget* widget,
                                             const gfx::Rect& new_bounds) {
-  // `shadow_` should have the same bounds as the view's layer.
-  shadow_->SetContentBounds(layer()->bounds());
-
   if (anchor_view_tracker_ && anchor_view_tracker_->view() &&
       is_corner_anchored_) {
     SetNudgeRoundedCornerRadius(CalculatePointyAnchoredNudgeCorners(
