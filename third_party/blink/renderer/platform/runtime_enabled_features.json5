@@ -3567,6 +3567,12 @@
       status: "stable",
     },
     {
+      // Enables the switch attribute on <input type="checkbox">.
+      // https://open-ui.org/components/switch.attribute.explainer/
+      name: "HTMLSwitchAttribute",
+      status: "experimental",
+    },
+    {
       name: "ICUCapitalization",
       status: "experimental",
     },
