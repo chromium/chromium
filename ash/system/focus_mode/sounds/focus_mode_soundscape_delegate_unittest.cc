@@ -129,6 +129,44 @@ TEST_F(FocusModeSoundscapeDelegateTest, GetNextTrack) {
   EXPECT_THAT(GetOneTrack(), testing::Optional(testing::Eq(last_track)));
 }
 
+TEST_F(FocusModeSoundscapeDelegateTest, HandleConfigurationResetsTracker) {
+  SoundscapePlaylist playlist1;
+  playlist1.uuid = base::Uuid::ParseLowercase(kTestUuid);
+  playlist1.tracks.push_back(TestSong(0));
+  fake_downloader()->SetPlaylistResponse(playlist1);
+
+  base::RunLoop loop1;
+  delegate()->GetPlaylists(
+      base::IgnoreArgs<const std::vector<FocusModeSoundsDelegate::Playlist>&>(
+          loop1.QuitClosure()));
+
+  SoundscapePlaylist playlist2;
+  playlist2.uuid = base::Uuid::ParseLowercase(kTestUuid);
+  playlist2.tracks.push_back(TestSong(99));
+  fake_downloader()->SetPlaylistResponse(playlist2);
+
+  base::RunLoop loop2;
+  delegate()->GetPlaylists(
+      base::IgnoreArgs<const std::vector<FocusModeSoundsDelegate::Playlist>&>(
+          loop2.QuitClosure()));
+
+  // Process the first configuration download.
+  loop1.Run();
+
+  // Populate the tracker with track from configuration 1.
+  std::optional<FocusModeSoundsDelegate::Track> track1 = GetOneTrack();
+  ASSERT_TRUE(track1);
+  EXPECT_EQ("0", track1->title);
+
+  // Process the second configuration download, which should reset the tracker.
+  loop2.Run();
+
+  // GetOneTrack should now return track from configuration 2.
+  std::optional<FocusModeSoundsDelegate::Track> track2 = GetOneTrack();
+  ASSERT_TRUE(track2);
+  EXPECT_EQ("99", track2->title);
+}
+
 }  // namespace
 
 void PrintTo(const FocusModeSoundsDelegate::Track& track, std::ostream* os) {
