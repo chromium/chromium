@@ -6,9 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
 #import <memory>
 
-#import "base/command_line.h"
 #import "base/feature_list.h"
 #import "base/numerics/safe_conversions.h"
 #import "base/run_loop.h"
@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
+#import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_java_script_feature.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -635,4 +636,26 @@ TEST_F(ChromeWebClientTest, IsPointingToSameDocumentEmpty) {
   GURL online_url = GURL("http://chromium.org/foo");
 
   EXPECT_FALSE(web_client.IsPointingToSameDocument(GURL(), online_url));
+}
+
+// Tests that GetJavaScriptFeatures includes or excludes
+// ClientSideDetectionJavaScriptFeature based on the feature flag.
+TEST_F(ChromeWebClientTest, GetJavaScriptFeatures_ClientSideDetection) {
+  ChromeWebClient web_client;
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        safe_browsing::kClientSideDetectionEnabledIos);
+    auto features = web_client.GetJavaScriptFeatures(profile());
+    EXPECT_TRUE(std::ranges::contains(
+        features, ClientSideDetectionJavaScriptFeature::GetInstance()));
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        safe_browsing::kClientSideDetectionEnabledIos);
+    auto features = web_client.GetJavaScriptFeatures(profile());
+    EXPECT_FALSE(std::ranges::contains(
+        features, ClientSideDetectionJavaScriptFeature::GetInstance()));
+  }
 }
