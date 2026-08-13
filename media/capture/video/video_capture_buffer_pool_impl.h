@@ -70,6 +70,7 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
   double GetBufferPoolUtilization() const override;
   void HoldForConsumers(int buffer_id, int num_clients) override;
   void RelinquishConsumerHold(int buffer_id, int num_clients) override;
+  void InvalidateBuffers() override;
 
  private:
   ~VideoCaptureBufferPoolImpl() override;
@@ -96,6 +97,11 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
 
   // The ID of the next buffer.
   int next_buffer_id_ GUARDED_BY(lock_) = 0;
+
+  // The ID of the most recently invalidated buffer. Buffers with IDs less than
+  // or equal to this are dropped instead of being returned to the pool.
+  int last_invalidated_id_ GUARDED_BY(lock_) =
+      VideoCaptureBufferPool::kInvalidId;
 
   // The buffers, indexed by the first parameter, a buffer id.
   std::map<int, std::unique_ptr<VideoCaptureBufferTracker>> trackers_

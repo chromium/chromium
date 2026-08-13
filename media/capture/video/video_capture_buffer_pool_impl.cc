@@ -148,7 +148,8 @@ VideoCaptureBufferPoolImpl::ReserveIdForExternalBuffer(
       continue;
     }
 
-    if (tracker->IsSameGpuMemoryBuffer(buffer.handle)) {
+    if (it->first > last_invalidated_id_ &&
+        tracker->IsSameGpuMemoryBuffer(buffer.handle)) {
       tracker->SetHeldByProducer(true);
       tracker->UpdateExternalData(std::move(buffer));
       *buffer_id = it->first;
@@ -243,6 +244,11 @@ double VideoCaptureBufferPoolImpl::GetBufferPoolUtilization() const {
   return static_cast<double>(num_buffers_held) / count_;
 }
 
+void VideoCaptureBufferPoolImpl::InvalidateBuffers() {
+  base::AutoLock lock(lock_);
+  last_invalidated_id_ = next_buffer_id_ - 1;
+}
+
 VideoCaptureDevice::Client::ReserveResult
 VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
     const gfx::Size& dimensions,
@@ -262,7 +268,8 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
   for (auto it = trackers_.begin(); it != trackers_.end(); ++it) {
     VideoCaptureBufferTracker* const tracker = it->second.get();
     if (!tracker->IsHeldByProducerOrConsumer()) {
-      if (tracker->IsReusableForFormat(dimensions, pixel_format, strides)) {
+      if (it->first > last_invalidated_id_ &&
+          tracker->IsReusableForFormat(dimensions, pixel_format, strides)) {
         // Reuse this buffer
         tracker->SetHeldByProducer(true);
         tracker->set_frame_feedback_id(frame_feedback_id);

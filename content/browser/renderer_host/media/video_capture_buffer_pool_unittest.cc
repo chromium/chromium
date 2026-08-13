@@ -328,6 +328,53 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
   buffer4.reset();
 }
 
+TEST_P(VideoCaptureBufferPoolTest, InvalidateBuffers) {
+  media::VideoPixelFormat pixel_format = GetPixelFormat();
+
+  const gfx::Size size_lo = gfx::Size(10, 10);
+
+  ExpectDroppedId(media::VideoCaptureBufferPool::kInvalidId);
+
+  std::unique_ptr<Buffer> buffer1 = ReserveBuffer(size_lo, pixel_format);
+  std::unique_ptr<Buffer> buffer2 = ReserveBuffer(size_lo, pixel_format);
+  std::unique_ptr<Buffer> buffer3 = ReserveBuffer(size_lo, pixel_format);
+
+  ASSERT_NE(nullptr, buffer1);
+  ASSERT_NE(nullptr, buffer2);
+  ASSERT_NE(nullptr, buffer3);
+
+  int id1 = buffer1->id();
+  int id2 = buffer2->id();
+  int id3 = buffer3->id();
+
+  pool_->InvalidateBuffers();
+
+  buffer1.reset();
+  buffer2.reset();
+  buffer3.reset();
+
+  // Now, allocate new buffers. They should not reuse id1, id2, id3.
+  // Instead, allocating new buffers will cause the old ones to be dropped,
+  // since the pool capacity is reached.
+
+  int buffer_id = media::VideoCaptureBufferPool::kInvalidId;
+  int buffer_id_to_drop = media::VideoCaptureBufferPool::kInvalidId;
+
+  auto reserve_result = pool_->ReserveForProducer(
+      size_lo, pixel_format, nullptr, 0, &buffer_id, &buffer_id_to_drop);
+  ASSERT_EQ(reserve_result,
+            media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
+
+  // Verify that it didn't reuse the old IDs
+  EXPECT_NE(id1, buffer_id);
+  EXPECT_NE(id2, buffer_id);
+  EXPECT_NE(id3, buffer_id);
+
+  // Verify that it dropped one of the old IDs
+  EXPECT_TRUE(buffer_id_to_drop == id1 || buffer_id_to_drop == id2 ||
+              buffer_id_to_drop == id3);
+}
+
 #if BUILDFLAG(IS_WIN)
 namespace {
 

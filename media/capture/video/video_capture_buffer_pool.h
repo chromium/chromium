@@ -129,6 +129,9 @@ class CAPTURE_EXPORT VideoCaptureBufferPool
   // done, a buffer is returned to the pool for reuse.
   virtual void RelinquishConsumerHold(int buffer_id, int num_clients) = 0;
 
+  // Drop all buffers currently in the pool.
+  virtual void InvalidateBuffers() = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<VideoCaptureBufferPool>;
   virtual ~VideoCaptureBufferPool() = default;
