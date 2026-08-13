@@ -17,6 +17,19 @@ namespace autofill {
 
 class EntityInstance;
 
+// Resolves the string ID among the branded arms for the Wallet Pass 2026
+// experiment based on `kAutofillAiWalletPassBranding2026StringVariant`.
+//
+// The experiment has 4 arms total across branding options, and this function
+// resolves the string ID for the branded arms 2 through 4:
+// - Arm 1 (Flag disabled / unbranded): uses the unbranded entity string ID.
+// - Arm 2 (Flag enabled, no variant): uses `default_branded_id`.
+// - Arm 3 (Flag enabled, variant 1): uses `variant_1_id`.
+// - Arm 4 (Flag enabled, variant 2): uses `variant_2_id`.
+int ResolveStringIdsForWalletPass2026Experiment(int default_branded_id,
+                                                int variant_1_id,
+                                                int variant_2_id);
+
 // Returns the i18n string representation of the "<entity type>s". For example,
 // for passport for "en-US", this function should return "Passports".
 std::string GetEntityTypeSectionTitleStringForI18n(EntityType entity_type);

@@ -12,11 +12,25 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
+
+int ResolveStringIdsForWalletPass2026Experiment(int default_branded_id,
+                                                int variant_1_id,
+                                                int variant_2_id) {
+  switch (features::kAutofillAiWalletPassBranding2026StringVariant.Get()) {
+    case 1:
+      return variant_1_id;
+    case 2:
+      return variant_2_id;
+    default:
+      return default_branded_id;
+  }
+}
 
 namespace {
 
@@ -36,7 +50,10 @@ EntityTypeResources GetResourcesForType(EntityTypeName type_name) {
           .add_entity_id = IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-          .add_entity_branded_id = IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_BRANDED,
+          .add_entity_branded_id = ResolveStringIdsForWalletPass2026Experiment(
+              IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY),
 #endif
           .edit_entity_id = IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY,
           .delete_entity_id = IDS_AUTOFILL_AI_DELETE_DRIVERS_LICENSE_ENTITY,
@@ -47,8 +64,10 @@ EntityTypeResources GetResourcesForType(EntityTypeName type_name) {
           .add_entity_id = IDS_AUTOFILL_AI_ADD_KNOWN_TRAVELER_NUMBER_ENTITY,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-          .add_entity_branded_id =
+          .add_entity_branded_id = ResolveStringIdsForWalletPass2026Experiment(
               IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY),
 #endif
           .edit_entity_id = IDS_AUTOFILL_AI_EDIT_KNOWN_TRAVELER_NUMBER_ENTITY,
           .delete_entity_id =
@@ -60,8 +79,10 @@ EntityTypeResources GetResourcesForType(EntityTypeName type_name) {
           .add_entity_id = IDS_AUTOFILL_AI_ADD_NATIONAL_ID_CARD_ENTITY,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-          .add_entity_branded_id =
+          .add_entity_branded_id = ResolveStringIdsForWalletPass2026Experiment(
               IDS_AUTOFILL_AI_SAVE_ID_CARD_ENTITY_DIALOG_TITLE_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_ID_CARD_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_ID_CARD_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY),
 #endif
           .edit_entity_id = IDS_AUTOFILL_AI_EDIT_NATIONAL_ID_CARD_ENTITY,
           .delete_entity_id = IDS_AUTOFILL_AI_DELETE_NATIONAL_ID_CARD_ENTITY,
@@ -72,8 +93,10 @@ EntityTypeResources GetResourcesForType(EntityTypeName type_name) {
           .add_entity_id = IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-          .add_entity_branded_id =
+          .add_entity_branded_id = ResolveStringIdsForWalletPass2026Experiment(
               IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY),
 #endif
           .edit_entity_id = IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY,
           .delete_entity_id = IDS_AUTOFILL_AI_DELETE_PASSPORT_ENTITY,
@@ -84,8 +107,10 @@ EntityTypeResources GetResourcesForType(EntityTypeName type_name) {
           .add_entity_id = IDS_AUTOFILL_AI_ADD_REDRESS_NUMBER_ENTITY,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-          .add_entity_branded_id =
+          .add_entity_branded_id = ResolveStringIdsForWalletPass2026Experiment(
               IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY),
 #endif
           .edit_entity_id = IDS_AUTOFILL_AI_EDIT_REDRESS_NUMBER_ENTITY,
           .delete_entity_id = IDS_AUTOFILL_AI_DELETE_REDRESS_NUMBER_ENTITY,
@@ -96,8 +121,10 @@ EntityTypeResources GetResourcesForType(EntityTypeName type_name) {
           .add_entity_id = IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-          .add_entity_branded_id =
+          .add_entity_branded_id = ResolveStringIdsForWalletPass2026Experiment(
               IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED,
+              IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY),
 #endif
           .edit_entity_id = IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY,
           .delete_entity_id = IDS_AUTOFILL_AI_DELETE_VEHICLE_ENTITY,
@@ -133,10 +160,10 @@ std::string GetEntityTypeSectionTitleStringForI18n(EntityType entity_type) {
 std::string GetAddEntityTypeStringForI18n(EntityType entity_type,
                                           bool is_wallet_branded) {
   EntityTypeResources resources = GetResourcesForType(entity_type.name());
-  return GetStringResource(
-      is_wallet_branded && resources.add_entity_branded_id != 0
-          ? resources.add_entity_branded_id
-          : resources.add_entity_id);
+  int string_id = (is_wallet_branded && resources.add_entity_branded_id != 0)
+                      ? resources.add_entity_branded_id
+                      : resources.add_entity_id;
+  return GetStringResource(string_id);
 }
 
 std::string GetEditEntityTypeStringForI18n(EntityType entity_type) {
