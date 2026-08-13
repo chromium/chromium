@@ -83,7 +83,6 @@ mojom_component("isolated_xr_service") {
   public_deps = [
     ":vr_service",
     ":xr_common",
-    "//device/vr/public/mojom/test:test_mojom",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",

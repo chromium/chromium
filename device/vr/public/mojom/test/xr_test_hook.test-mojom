@@ -100,19 +100,3 @@ interface XRTestHook {
   [Sync] WaitGetVisibilityMask(uint32 view_index)
       => (device.mojom.XRVisibilityMask? mask);
 };
-
-// Interface exposed by IsolatedXRService to allow browser tests to hook VR APIs
-// It is always hosted in the XRDevice process, but only has effects while
-// running in browser tests with mock implementations of runtimes.
-interface XRServiceTestHook {
-  // We want to ensure that the test hook is set before attempting to request a
-  // session, so that we can deterministically guarantee that we're using the
-  // test runtime (and when), and not accidentally getting the product runtime
-  // or returning garbage data from the test runtime. Thus this method needs to
-  // remain sync, since this is a different mojo pipe than is used to create the
-  // session, so ordering of the method calls would not otherwise be guaranteed.
-  // This allows the tests to be written in a more straightforward and easily
-  // debuggable manner, rather than relying on waiting for the async callback to
-  // continue with the test.
-  [Sync] SetTestHook(pending_remote<XRTestHook>? hook) => ();
-};

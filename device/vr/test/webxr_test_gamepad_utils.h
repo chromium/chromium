@@ -102,11 +102,11 @@ constexpr std::optional<size_t> RequiredGamepadAxesSizeFromButtonId(
 
 // Returns a pointer to the GamepadButton for the specified XrButtonId, or
 // nullptr if the gamepad is null or index is out of bounds.
-COMPONENT_EXPORT(VR_TEST_HOOK)
+COMPONENT_EXPORT(VR_TEST_UTILS)
 device::GamepadButton* GetGamepadButton(device::mojom::Gamepad* gamepad,
                                         XrButtonId id);
 
-COMPONENT_EXPORT(VR_TEST_HOOK)
+COMPONENT_EXPORT(VR_TEST_UTILS)
 const device::GamepadButton* GetGamepadButton(
     const device::mojom::Gamepad* gamepad,
     XrButtonId id);

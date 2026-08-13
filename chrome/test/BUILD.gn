@@ -1695,7 +1695,7 @@ if (is_android) {
         "//device/vr",
         "//device/vr:openxr_data",
         "//device/vr:openxr_test_helper",
-        "//device/vr:vr_test_hook",
+        "//device/vr:vr_test_utils",
         "//device/vr/buildflags",
         "//device/vr/orientation",
         "//device/vr/public/mojom:isolated_xr_service",

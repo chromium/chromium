@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_PUBLIC_MOJOM_TEST_BROWSER_TEST_INTERFACES_MOJOM_TRAITS_H_
-#define DEVICE_VR_PUBLIC_MOJOM_TEST_BROWSER_TEST_INTERFACES_MOJOM_TRAITS_H_
+#ifndef DEVICE_VR_PUBLIC_MOJOM_TEST_XR_TEST_HOOK_MOJOM_TRAITS_H_
+#define DEVICE_VR_PUBLIC_MOJOM_TEST_XR_TEST_HOOK_MOJOM_TRAITS_H_
 
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
-#include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
 #include "device/vr/public/mojom/test/controller_frame_data.h"
 #include "device/vr/public/mojom/test/device_config.h"
 #include "device/vr/public/mojom/test/layer_data.h"
 #include "device/vr/public/mojom/test/view_data.h"
+#include "device/vr/public/mojom/test/xr_test_hook.test-mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_hand_tracking_data.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -164,4 +164,4 @@ struct StructTraits<device_test::mojom::ControllerFrameDataDataView,
 
 }  // namespace mojo
 
-#endif  // DEVICE_VR_PUBLIC_MOJOM_TEST_BROWSER_TEST_INTERFACES_MOJOM_TRAITS_H_
+#endif  // DEVICE_VR_PUBLIC_MOJOM_TEST_XR_TEST_HOOK_MOJOM_TRAITS_H_

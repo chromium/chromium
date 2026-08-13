@@ -20,7 +20,7 @@
 #include "device/vr/openxr/openxr_platform_helper.h"
 #include "device/vr/openxr/test/fake_openxr_impl_api.h"
 #include "device/vr/openxr/test/openxr_test_helper.h"
-#include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
+#include "device/vr/public/mojom/test/xr_test_hook.test-mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 

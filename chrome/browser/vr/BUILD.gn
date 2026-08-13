@@ -459,7 +459,7 @@ if (enable_vr) {
         "//chrome/common:constants",
         "//chrome/test:xr_browser_tests_common",
         "//device/vr",
-        "//device/vr:vr_test_hook",
+        "//device/vr:vr_test_utils",
         "//device/vr/buildflags",
         "//device/vr/orientation",
         "//device/vr/public/mojom:isolated_xr_service",

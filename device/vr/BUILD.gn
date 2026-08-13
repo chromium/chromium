@@ -322,8 +322,10 @@ if (enable_vr) {
     }
   }
 
-  component("vr_test_hook") {
-    defines = [ "IS_VR_TEST_HOOK_IMPL" ]
+  component("vr_test_utils") {
+    testonly = true
+
+    defines = [ "IS_VR_TEST_UTILS_IMPL" ]
 
     sources = [
       "test/webxr_test_gamepad_utils.cc",
@@ -433,7 +435,7 @@ if (enable_openxr) {
         ":openxr_data",
         ":vr",
         ":vr_base",
-        ":vr_test_hook",
+        ":vr_test_utils",
         "//base",
         "//components/version_info",
         "//device/gamepad/public/cpp:shared_with_blink",

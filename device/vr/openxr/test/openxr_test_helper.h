@@ -16,7 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
-#include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
+#include "device/vr/public/mojom/test/xr_test_hook.test-mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
