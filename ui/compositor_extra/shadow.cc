@@ -4,6 +4,8 @@
 
 #include "ui/compositor_extra/shadow.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -17,6 +19,11 @@ namespace {
 
 // Duration for opacity animation in milliseconds.
 constexpr int kShadowAnimationDurationMs = 100;
+
+bool IsValidRoundedCorners(const gfx::RoundedCornersF& radii) {
+  return radii.upper_left() >= 0.0f && radii.upper_right() >= 0.0f &&
+         radii.lower_right() >= 0.0f && radii.lower_left() >= 0.0f;
+}
 
 }  // namespace
 
@@ -85,6 +92,7 @@ void Shadow::SetRoundedCornerRadius(int rounded_corner_radius) {
 }
 
 void Shadow::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
+  CHECK(IsValidRoundedCorners(radii));
   if (rounded_corners_ == radii) {
     return;
   }
@@ -149,40 +157,53 @@ void Shadow::UpdateShadowAppearance() {
   if (content_bounds_.IsEmpty())
     return;
 
+  const int smaller_dimension =
+      std::min(content_bounds_.width(), content_bounds_.height());
+
+  // Corner radii cannot exceed half of the smaller dimension of the content
+  // bounds. Clamp each corner radius to avoid invalid ninebox geometry.
+  const float max_radius = std::floor(smaller_dimension / 2.0f);
+  const gfx::RoundedCornersF size_adjusted_rounded_corners(
+      std::min(rounded_corners_.upper_left(), max_radius),
+      std::min(rounded_corners_.upper_right(), max_radius),
+      std::min(rounded_corners_.lower_right(), max_radius),
+      std::min(rounded_corners_.lower_left(), max_radius));
+
   // The ninebox assumption breaks down when the window is too small for the
   // desired elevation. The height/width of |blur_region| will be 4 * elevation
   // (see ShadowDetails::Get), so cap elevation at the most we can handle.
-  const int smaller_dimension =
-      std::min(content_bounds_.width(), content_bounds_.height());
   const bool is_pill_shaped =
-      (smaller_dimension / 2 == rounded_corners_.upper_left() ||
-       smaller_dimension / 2 == rounded_corners_.upper_right() ||
-       smaller_dimension / 2 == rounded_corners_.lower_right() ||
-       smaller_dimension / 2 == rounded_corners_.lower_left());
+      (max_radius == size_adjusted_rounded_corners.upper_left() ||
+       max_radius == size_adjusted_rounded_corners.upper_right() ||
+       max_radius == size_adjusted_rounded_corners.lower_right() ||
+       max_radius == size_adjusted_rounded_corners.lower_left());
   const int max_safe_elevation =
-      is_pill_shaped ? smaller_dimension / 4
-                     : (smaller_dimension -
-                        2 * std::max({rounded_corners_.upper_left(),
-                                      rounded_corners_.upper_right(),
-                                      rounded_corners_.lower_right(),
-                                      rounded_corners_.lower_left()})) /
-                           4;
+      is_pill_shaped
+          ? smaller_dimension / 4
+          : (smaller_dimension -
+             2 * std::max({size_adjusted_rounded_corners.upper_left(),
+                           size_adjusted_rounded_corners.upper_right(),
+                           size_adjusted_rounded_corners.lower_right(),
+                           size_adjusted_rounded_corners.lower_left()})) /
+                4;
   const int size_adjusted_elevation =
       std::min(max_safe_elevation, static_cast<int>(desired_elevation_));
+  CHECK_GE(size_adjusted_elevation, 0);
 
   auto iter = color_map_.find(desired_elevation_);
   const auto& details =
       (iter == color_map_.end())
-          ? gfx::ShadowDetails::Get(size_adjusted_elevation, rounded_corners_,
+          ? gfx::ShadowDetails::Get(size_adjusted_elevation,
+                                    size_adjusted_rounded_corners,
                                     is_pill_shaped, style_)
-          : gfx::ShadowDetails::Get(size_adjusted_elevation, rounded_corners_,
-                                    /*key_color=*/iter->second.first,
-                                    /*ambient_color=*/iter->second.second,
-                                    is_pill_shaped, style_);
+          : gfx::ShadowDetails::Get(
+                size_adjusted_elevation, size_adjusted_rounded_corners,
+                /*key_color=*/iter->second.first,
+                /*ambient_color=*/iter->second.second, is_pill_shaped, style_);
 
   const gfx::Insets aperture_insets =
-      gfx::ShadowDetails::GetNineboxApertureInsets(details.values,
-                                                   rounded_corners_);
+      gfx::ShadowDetails::GetNineboxApertureInsets(
+          details.values, size_adjusted_rounded_corners);
 
   // Update |shadow_layer()| if details changed and it has been updated in
   // the past (|details_| is set), or elevation is non-zero.
@@ -234,8 +255,8 @@ void Shadow::UpdateShadowAppearance() {
   // Occlude the region inside the bounding box. Occlusion uses shadow layer
   // space. See nine_patch_layer.h for more context on what's going on here.
   gfx::Rect occlusion_bounds(shadow_layer_bounds.size());
-  gfx::Insets corner_insets =
-      gfx::ShadowDetails::GetInsetsForRoundedCorners(rounded_corners_);
+  gfx::Insets corner_insets = gfx::ShadowDetails::GetInsetsForRoundedCorners(
+      size_adjusted_rounded_corners);
   occlusion_bounds.Inset(-margins + corner_insets);
   shadow_layer()->UpdateNinePatchOcclusion(occlusion_bounds);
 

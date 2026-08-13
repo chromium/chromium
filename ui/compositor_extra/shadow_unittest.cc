@@ -239,6 +239,28 @@ TEST_F(ShadowTest, AdjustRoundedCorners) {
             shadow.details_for_testing()->nine_patch_image.size());
 }
 
+// Test that rounded corners are size-adjusted using floor precision when
+// content bounds are small to support rounded corners.
+TEST_F(ShadowTest, SizeAdjustedRoundedCorners) {
+  Shadow shadow;
+  shadow.Init(kElevationSmall);
+
+  // Set rounded corners where some corners exceed half the smaller dimension
+  // of the content bounds below (smaller_dimension = 39, half = 19.5).
+  gfx::RoundedCornersF radii(10, 24, 24, 24);
+  shadow.SetRoundedCorners(radii);
+
+  // Set small content bounds (width = 50, height = 39, smaller_dimension = 39).
+  // Max radius with floor precision: std::floor(39 / 2.0f) = 19.0.
+  gfx::Rect small_content_bounds(100, 100, 50, 39);
+  shadow.SetContentBounds(small_content_bounds);
+
+  const gfx::RoundedCornersF expected_adjusted_radii(10, 19, 19, 19);
+  EXPECT_EQ(GetNineboxImageSize(kElevationSmall, expected_adjusted_radii,
+                                /*is_pill_shaped=*/true),
+            shadow.details_for_testing()->nine_patch_image.size());
+}
+
 // Test that the uniquely owned shadow image is evicted from the cache when new
 // shadow details are created.
 TEST_F(ShadowTest, EvictUniquelyOwnedDetail) {
