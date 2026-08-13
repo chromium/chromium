@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <array>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -21,6 +22,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_test_helper.h"
 
 namespace content {
 
@@ -67,6 +69,63 @@ IN_PROC_BROWSER_TEST_P(ProgressiveAccessibilityTest, AccessibilityOnReveal) {
 
   // The original WebContents should be unaffected.
   EXPECT_EQ(shell()->web_contents()->GetAccessibilityMode(), ui::kAXModeBasic);
+}
+
+// Tests that starting accessibility event recording on a hidden WebContents
+// does not crash, and that recording mode is applied once revealed.
+IN_PROC_BROWSER_TEST_P(ProgressiveAccessibilityTest, RecordEventsWhileHidden) {
+  if (ui::AXInspectTestHelper::EventTestPasses().empty()) {
+    GTEST_SKIP() << "Event recording is not supported on this platform.";
+  }
+
+  // Create a second WebContents and hide it.
+  Shell* shell_2 =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL(), nullptr, gfx::Size());
+  shell_2->web_contents()->WasHidden();
+
+  // The hidden WebContents has no accessibility mode initially.
+  EXPECT_EQ(shell_2->web_contents()->GetAccessibilityMode(), ui::AXMode());
+
+  // Start recording events on the hidden WebContents. This must not crash.
+  shell_2->web_contents()->RecordAccessibilityEvents(
+      /*start_recording=*/true, base::DoNothing());
+
+  // Mode should still be empty while hidden.
+  EXPECT_EQ(shell_2->web_contents()->GetAccessibilityMode(), ui::AXMode());
+
+  // Reveal the WebContents.
+  shell_2->web_contents()->WasShown();
+
+  // Accessibility basic mode should now be active on the revealed WebContents.
+  EXPECT_EQ(shell_2->web_contents()->GetAccessibilityMode(), ui::kAXModeBasic);
+
+  // Stop recording.
+  shell_2->web_contents()->RecordAccessibilityEvents(
+      /*start_recording=*/false, std::nullopt);
+}
+
+// Tests that starting and then stopping accessibility event recording on a
+// hidden WebContents before it is shown works cleanly.
+IN_PROC_BROWSER_TEST_P(ProgressiveAccessibilityTest, StopRecordingWhileHidden) {
+  // Create a second WebContents and hide it.
+  Shell* shell_2 =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL(), nullptr, gfx::Size());
+  shell_2->web_contents()->WasHidden();
+
+  // Start and then stop recording while hidden.
+  shell_2->web_contents()->RecordAccessibilityEvents(
+      /*start_recording=*/true, base::DoNothing());
+  EXPECT_EQ(shell_2->web_contents()->GetAccessibilityMode(), ui::AXMode());
+
+  shell_2->web_contents()->RecordAccessibilityEvents(
+      /*start_recording=*/false, std::nullopt);
+  EXPECT_EQ(shell_2->web_contents()->GetAccessibilityMode(), ui::AXMode());
+
+  // Reveal the WebContents and verify accessibility mode is not left on.
+  shell_2->web_contents()->WasShown();
+  EXPECT_EQ(shell_2->web_contents()->GetAccessibilityMode(), ui::AXMode());
 }
 
 // Tests that accessibility is disabled for a hidden WebContents after five

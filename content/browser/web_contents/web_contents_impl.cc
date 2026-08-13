@@ -2226,6 +2226,15 @@ void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
         }
         return FrameIterationAction::kSkipChildren;
       });
+
+  // Start recording if a request to record events has been received and this is
+  // the first time that at least kNativeAPIs has been requested.
+  if (pending_recording_ &&
+      accessibility_mode_.has_mode(ui::AXMode::kNativeAPIs)) {
+    PendingRecording pending = *std::exchange(pending_recording_, std::nullopt);
+    StartRecordingAccessibilityEvents(pending.api_type,
+                                      std::move(pending.callback));
+  }
 }
 
 void WebContentsImpl::DidCapturedSurfaceControl() {
@@ -6385,24 +6394,37 @@ void WebContentsImpl::RecordAccessibilityEvents(
     recording_mode_ =
         BrowserAccessibilityState::GetInstance()
             ->CreateScopedModeForWebContents(this, ui::kAXModeBasic);
-    auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
-    CHECK(ax_mgr);
-    base::ProcessId pid = base::Process::Current().Pid();
-    gfx::AcceleratedWidget widget =
-        ax_mgr->GetBrowserAccessibilityRoot()
-            ->GetTargetForNativeAccessibilityEvent();
-
-    DCHECK(std::ranges::contains(AXInspectFactory::SupportedApis(), api_type));
-    event_recorder_ = content::AXInspectFactory::CreateRecorder(
-        api_type, ax_mgr, pid, ui::AXTreeSelector(widget));
-    event_recorder_->ListenToEvents(*callback);
+    if (accessibility_mode_.has_mode(ui::AXMode::kNativeAPIs)) {
+      StartRecordingAccessibilityEvents(api_type, *std::move(callback));
+    } else {
+      // The WebContents must be hidden. Defer starting the recording until
+      // accessibility is enabled once it is shown.
+      pending_recording_ = PendingRecording{.api_type = api_type,
+                                            .callback = *std::move(callback)};
+    }
   } else {
+    pending_recording_.reset();
     if (event_recorder_) {
       event_recorder_->WaitForDoneRecording();
       event_recorder_.reset(nullptr);
     }
     recording_mode_.reset();
   }
+}
+
+void WebContentsImpl::StartRecordingAccessibilityEvents(
+    ui::AXApiType::Type api_type,
+    ui::AXEventCallback callback) {
+  auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
+  CHECK(ax_mgr);
+  base::ProcessId pid = base::Process::Current().Pid();
+  gfx::AcceleratedWidget widget = ax_mgr->GetBrowserAccessibilityRoot()
+                                      ->GetTargetForNativeAccessibilityEvent();
+
+  DCHECK(std::ranges::contains(AXInspectFactory::SupportedApis(), api_type));
+  event_recorder_ = content::AXInspectFactory::CreateRecorder(
+      api_type, ax_mgr, pid, ui::AXTreeSelector(widget));
+  event_recorder_->ListenToEvents(std::move(callback));
 }
 
 void WebContentsImpl::UnrecoverableAccessibilityError() {
