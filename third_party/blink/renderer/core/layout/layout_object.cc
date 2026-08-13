@@ -1053,66 +1053,88 @@ void LayoutObject::SetDepthIncludingDescendants(unsigned depth) {
   }
 }
 
-LayoutObject* LayoutObject::CommonAncestor(const LayoutObject& other,
-                                           CommonAncestorData* data) const {
-  NOT_DESTROYED();
-  if (this == &other)
-    return const_cast<LayoutObject*>(this);
+namespace {
 
-  const wtf_size_t depth = Depth();
-  const wtf_size_t other_depth = other.Depth();
-  const LayoutObject* iterator = this;
-  const LayoutObject* other_iterator = &other;
+struct CommonAncestorResult {
+  STACK_ALLOCATED();
+
+ public:
+  const LayoutObject* common_ancestor = nullptr;
+  // The last objects before reaching the common ancestor.
   const LayoutObject* last = nullptr;
   const LayoutObject* other_last = nullptr;
-  if (depth > other_depth) {
-    for (wtf_size_t i = depth - other_depth; i; --i) {
-      last = iterator;
-      iterator = iterator->Parent();
-    }
-  } else if (other_depth > depth) {
-    for (wtf_size_t i = other_depth - depth; i; --i) {
-      other_last = other_iterator;
-      other_iterator = other_iterator->Parent();
-    }
+};
+
+CommonAncestorResult CommonAncestorInternal(const LayoutObject* object,
+                                            const LayoutObject* other_object) {
+  unsigned depth = object->Depth();
+  unsigned other_depth = other_object->Depth();
+
+  // Jump up to the same level in the tree.
+  while (depth > other_depth) {
+    object = object->Parent();
+    --depth;
   }
-  while (iterator) {
-    DCHECK(other_iterator);
-    if (iterator == other_iterator) {
-      if (data) {
-        data->last = const_cast<LayoutObject*>(last);
-        data->other_last = const_cast<LayoutObject*>(other_last);
-      }
-      return const_cast<LayoutObject*>(iterator);
-    }
-    last = iterator;
-    iterator = iterator->Parent();
-    other_last = other_iterator;
-    other_iterator = other_iterator->Parent();
+  while (other_depth > depth) {
+    other_object = other_object->Parent();
+    --other_depth;
   }
-  DCHECK(!other_iterator);
-  return nullptr;
+
+  // Walk up until we hit the same object.
+  const LayoutObject* last = nullptr;
+  const LayoutObject* other_last = nullptr;
+  while (object != other_object) {
+    last = object;
+    other_last = other_object;
+    object = object->Parent();
+    other_object = other_object->Parent();
+  }
+
+  return {object, last, other_last};
+}
+
+}  // namespace
+
+const LayoutObject* LayoutObject::CommonAncestor(
+    const LayoutObject& other) const {
+  NOT_DESTROYED();
+  return CommonAncestorInternal(this, &other).common_ancestor;
 }
 
 bool LayoutObject::IsBeforeInPreOrder(const LayoutObject& other) const {
   NOT_DESTROYED();
   DCHECK_NE(this, &other);
-  CommonAncestorData data;
-  const LayoutObject* common_ancestor = CommonAncestor(other, &data);
-  DCHECK(common_ancestor);
-  DCHECK(data.last || data.other_last);
-  if (!data.last)
-    return true;  // |this| is the ancestor of |other|.
-  if (!data.other_last)
-    return false;  // |other| is the ancestor of |this|.
-  for (const LayoutObject* child = common_ancestor->SlowFirstChild(); child;
-       child = child->NextSibling()) {
-    if (child == data.last)
-      return true;
-    if (child == data.other_last)
-      return false;
+  CommonAncestorResult result = CommonAncestorInternal(this, &other);
+
+  // Check if `this` is a direct ancestor of `other`.
+  if (this == result.common_ancestor) {
+    return true;
   }
-  NOTREACHED();
+  // Check if `other` is a direct ancestor of `this`.
+  if (&other == result.common_ancestor) {
+    return false;
+  }
+
+  DCHECK(result.last);
+  DCHECK(result.other_last);
+
+  // Try and walk towards each other, if we encounter the other we are before.
+  const LayoutObject* forward = result.last;
+  const LayoutObject* backward = result.other_last;
+  while (forward && backward) {
+    forward = forward->NextSibling();
+    if (forward && forward == backward) {
+      return true;
+    }
+    backward = backward->PreviousSibling();
+    if (forward && forward == backward) {
+      return true;
+    }
+  }
+
+  // Either `forward` or `backward` are null, we didn't hit the other object so
+  // `this` must be after `other`.
+  return false;
 }
 
 static void AddLayers(LayoutObject* obj,

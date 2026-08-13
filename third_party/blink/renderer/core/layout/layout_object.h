@@ -444,17 +444,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void SetDepthIncludingDescendants(unsigned);
 
  public:
-  struct CommonAncestorData {
-    STACK_ALLOCATED();
-
-   public:
-    // The last object before reaching the common ancestor from |this| and
-    // |other|.
-    LayoutObject* last = nullptr;
-    LayoutObject* other_last = nullptr;
-  };
-  LayoutObject* CommonAncestor(const LayoutObject& other,
-                               CommonAncestorData* data = nullptr) const;
+  const LayoutObject* CommonAncestor(const LayoutObject& other) const;
 
   bool IsBeforeInPreOrder(const LayoutObject& other) const;
 
