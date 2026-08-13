@@ -91,19 +91,6 @@ DXGI_FORMAT SharedImageFormatToDXGIFormat(viz::SharedImageFormat format) {
   return DXGI_FORMAT_UNKNOWN;
 }
 
-bool IsRec709(const gfx::ColorSpace& color_space) {
-  return color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::BT709 &&
-         color_space.GetTransferID() == gfx::ColorSpace::TransferID::BT709 &&
-         color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709;
-}
-
-bool IsRec601(const gfx::ColorSpace& color_space) {
-  return color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::SMPTE170M &&
-         color_space.GetTransferID() ==
-             gfx::ColorSpace::TransferID::SMPTE170M &&
-         color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::SMPTE170M;
-}
-
 gfx::ColorSpace GetEncoderOutputColorSpaceFromInputColorSpace(
     const gfx::ColorSpace& input_color_space) {
   gfx::ColorSpace output_color_space = input_color_space;
