@@ -1346,6 +1346,22 @@ const FeatureEntry::FeatureVariation kNewTabPageUICleanupVariations[] = {
     {" - Preferred Padding", kNewTabPageUICleanupPreferredPadding, nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kGeminiContextualSuggestionsCuesWithOnDeviceClassifierCPU[] = {
+        {kGeminiContextualSuggestionsCuesOnDeviceClassifierParam, "true"},
+        {kGeminiContextualSuggestionsCuesAllowGpuExecutionParam, "false"}};
+const FeatureEntry::FeatureParam
+    kGeminiContextualSuggestionsCuesWithOnDeviceClassifierGPU[] = {
+        {kGeminiContextualSuggestionsCuesOnDeviceClassifierParam, "true"},
+        {kGeminiContextualSuggestionsCuesAllowGpuExecutionParam, "true"}};
+
+const FeatureEntry::FeatureVariation
+    kGeminiContextualSuggestionsCuesVariations[] = {
+        {"with on-device classifier (CPU)",
+         kGeminiContextualSuggestionsCuesWithOnDeviceClassifierCPU, nullptr},
+        {"with on-device classifier (GPU / ANE)",
+         kGeminiContextualSuggestionsCuesWithOnDeviceClassifierGPU, nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2807,7 +2823,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"gemini-contextual-suggestions-cues",
      flag_descriptions::kGeminiContextualSuggestionsCuesName,
      flag_descriptions::kGeminiContextualSuggestionsCuesDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kGeminiContextualSuggestionsCues)},
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiContextualSuggestionsCues,
+                                    kGeminiContextualSuggestionsCuesVariations,
+                                    "GeminiContextualSuggestionsCues")},
     {"infobar-banner-revamp", flag_descriptions::kInfobarBannerRevampName,
      flag_descriptions::kInfobarBannerRevampDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kInfobarBannerRevamp)},

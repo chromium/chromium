@@ -740,11 +740,39 @@ bool IsAppSwitcherAISummarizationEnabled() {
 BASE_FEATURE(kGeminiContextualSuggestionsCues,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kGeminiContextualSuggestionsCuesOnDeviceClassifierParam[] =
+    "enable_on_device_classifier";
+
+BASE_FEATURE_PARAM(bool,
+                   kGeminiContextualSuggestionsCuesOnDeviceClassifier,
+                   &kGeminiContextualSuggestionsCues,
+                   kGeminiContextualSuggestionsCuesOnDeviceClassifierParam,
+                   false);
+
+const char kGeminiContextualSuggestionsCuesAllowGpuExecutionParam[] =
+    "allow_gpu_execution";
+
+BASE_FEATURE_PARAM(bool,
+                   kGeminiContextualSuggestionsCuesAllowGpuExecution,
+                   &kGeminiContextualSuggestionsCues,
+                   kGeminiContextualSuggestionsCuesAllowGpuExecutionParam,
+                   false);
+
 bool IsGeminiContextualSuggestionsCuesEnabled() {
   if (!IsPageActionMenuEnabled()) {
     return false;
   }
   return base::FeatureList::IsEnabled(kGeminiContextualSuggestionsCues);
+}
+
+bool IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled() {
+  return IsGeminiContextualSuggestionsCuesEnabled() &&
+         kGeminiContextualSuggestionsCuesOnDeviceClassifier.Get();
+}
+
+bool IsGeminiContextualSuggestionsCuesAllowGpuExecutionEnabled() {
+  return IsGeminiContextualSuggestionsCuesEnabled() &&
+         kGeminiContextualSuggestionsCuesAllowGpuExecution.Get();
 }
 
 #pragma mark - Debugging Features

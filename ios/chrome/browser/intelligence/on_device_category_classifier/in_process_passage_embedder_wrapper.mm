@@ -9,6 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/passage_embeddings/core/passage_embeddings_features.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 
 InProcessPassageEmbedderWrapper::InProcessPassageEmbedderWrapper(
     scoped_refptr<base::UpdateableSequencedTaskRunner> background_task_runner,
@@ -27,7 +28,8 @@ void InProcessPassageEmbedderWrapper::EnsurePassageEmbedder() {
 
   auto params = passage_embeddings::mojom::PassageEmbedderParams::New();
   params->execute_for_gemma = false;
-  params->allow_gpu_execution = false;
+  params->allow_gpu_execution =
+      IsGeminiContextualSuggestionsCuesAllowGpuExecutionEnabled();
   params->user_initiated_priority_num_threads = 4;
   params->urgent_priority_num_threads = 2;
   params->passive_priority_num_threads = 1;

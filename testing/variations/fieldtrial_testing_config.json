@@ -14387,6 +14387,25 @@
             ]
         }
     ],
+    "IOSGeminiContextualSuggestionsCues": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_ANE_execution",
+                    "params": {
+                        "allow_gpu_execution": "true",
+                        "enable_on_device_classifier": "true"
+                    },
+                    "enable_features": [
+                        "GeminiContextualSuggestionsCues"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSHelios": [
         {
             "platforms": [

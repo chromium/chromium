@@ -372,6 +372,22 @@ BASE_DECLARE_FEATURE(kGeminiContextualSuggestionsCues);
 // Returns true if Gemini contextual suggestions cues framework is enabled.
 bool IsGeminiContextualSuggestionsCuesEnabled();
 
+// Feature parameter for enabling on-device category classifier in Gemini
+// contextual suggestions cues.
+extern const char kGeminiContextualSuggestionsCuesOnDeviceClassifierParam[];
+
+// Returns true if on-device category classifier is enabled for Gemini
+// contextual suggestions cues.
+bool IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled();
+
+// Feature parameter for allowing GPU / Neural Engine execution in Gemini
+// contextual suggestions cues.
+extern const char kGeminiContextualSuggestionsCuesAllowGpuExecutionParam[];
+
+// Returns true if GPU / Neural Engine execution is allowed for Gemini
+// contextual suggestions cues.
+bool IsGeminiContextualSuggestionsCuesAllowGpuExecutionEnabled();
+
 #pragma mark - Debugging Features
 
 // Holds the variations of the BWG Promo Consent flow for debugging.

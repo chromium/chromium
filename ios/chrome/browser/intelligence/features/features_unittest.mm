@@ -248,3 +248,49 @@ TEST_F(ActorFeaturesTest, IsGeminiLuminousEnabled_FeatureFlagDisabled) {
   scoped_feature_list.InitWithFeatures({kPageActionMenu}, {kGeminiLuminous});
   EXPECT_FALSE(IsGeminiLuminousEnabled());
 }
+
+TEST_F(ActorFeaturesTest,
+       IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled) {
+  base::FieldTrialParams params;
+  params[kGeminiContextualSuggestionsCuesOnDeviceClassifierParam] = "true";
+
+  // Disabled without PageActionMenu dependency.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kGeminiContextualSuggestionsCues, params);
+    EXPECT_FALSE(IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled());
+  }
+
+  // Enabled when PageActionMenu and feature with param are enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kPageActionMenu, {}}, {kGeminiContextualSuggestionsCues, params}},
+        {});
+    EXPECT_TRUE(IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled());
+  }
+}
+
+TEST_F(ActorFeaturesTest,
+       IsGeminiContextualSuggestionsCuesAllowGpuExecutionEnabled) {
+  base::FieldTrialParams params;
+  params[kGeminiContextualSuggestionsCuesAllowGpuExecutionParam] = "true";
+
+  // Disabled without PageActionMenu dependency.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kGeminiContextualSuggestionsCues, params);
+    EXPECT_FALSE(IsGeminiContextualSuggestionsCuesAllowGpuExecutionEnabled());
+  }
+
+  // Enabled when PageActionMenu and feature with param are enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kPageActionMenu, {}}, {kGeminiContextualSuggestionsCues, params}},
+        {});
+    EXPECT_TRUE(IsGeminiContextualSuggestionsCuesAllowGpuExecutionEnabled());
+  }
+}
