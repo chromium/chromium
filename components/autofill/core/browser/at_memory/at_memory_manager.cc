@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -66,6 +67,14 @@
 namespace autofill {
 
 namespace {
+
+// Duration between advances of the fetching suggestion message.
+constexpr base::TimeDelta kFetchingMessageInterval = base::Seconds(3);
+
+constexpr auto kFetchingStringIds = std::to_array<int>({
+    IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS,
+    IDS_AUTOFILL_AT_MEMORY_FETCHING_PUTTING_IT_TOGETHER,
+});
 
 // Returns the primary type name label for `entry`. For AutofillAi
 // entities and attributes, this resolves to the Entity name.
@@ -778,8 +787,13 @@ void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {
   }
 
   session_state_->is_searching = true;
+  fetching_string_index_ = 0;
   // Notify the UI that search has started.
   ShowFetchingSuggestion();
+  fetching_timer_.Start(
+      FROM_HERE, kFetchingMessageInterval,
+      base::BindRepeating(&AtMemoryManager::AdvanceFetchingSuggestion,
+                          query_weak_ptr_factory_.GetWeakPtr()));
   query_service->Query(
       filter, client_->GetLastCommittedPrimaryMainFrameURL(),
       client_->GetPageTitle(),
@@ -822,9 +836,10 @@ Suggestion AtMemoryManager::CreateAiDisclosureSuggestion() {
   return suggestion;
 }
 
-Suggestion AtMemoryManager::CreateFetchingSuggestion() {
+Suggestion AtMemoryManager::CreateFetchingSuggestion(size_t index) {
+  size_t string_index = index % kFetchingStringIds.size();
   Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_FETCHING),
+      l10n_util::GetStringUTF16(kFetchingStringIds[string_index]),
       SuggestionType::kAtMemoryFetching);
   suggestion.acceptability =
       Suggestion::Acceptability::kSelectableButUnacceptable;
@@ -856,6 +871,8 @@ Suggestion AtMemoryManager::CreateNoConnectionSuggestion(std::u16string query) {
 }
 
 void AtMemoryManager::CancelPendingQueries() {
+  fetching_timer_.Stop();
+  fetching_string_index_ = 0;
   query_weak_ptr_factory_.InvalidateWeakPtrs();
   if (session_state_) {
     session_state_->is_searching = false;
@@ -870,9 +887,14 @@ void AtMemoryManager::SendSuggestions(std::vector<Suggestion> suggestions) {
   }
 }
 
+void AtMemoryManager::AdvanceFetchingSuggestion() {
+  fetching_string_index_++;
+  ShowFetchingSuggestion();
+}
+
 void AtMemoryManager::ShowFetchingSuggestion() {
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(CreateFetchingSuggestion());
+  suggestions.emplace_back(CreateFetchingSuggestion(fetching_string_index_));
   SendSuggestions(std::move(suggestions));
 }
 

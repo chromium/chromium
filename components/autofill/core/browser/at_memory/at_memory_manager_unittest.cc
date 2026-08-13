@@ -93,6 +93,7 @@ using ::testing::WithParamInterface;
 constexpr size_t kVisibleSuffixLength = 4;
 constexpr std::u16string_view kDots = u"\u2022\u2060\u2006\u2060";
 constexpr std::string_view kFormUrl = "https://myform.com/form.html";
+constexpr base::TimeDelta kFetchingMessageInterval = base::Seconds(3);
 
 class MockAutofillClient : public TestAutofillClient {
  public:
@@ -2143,6 +2144,115 @@ TEST_F(AtMemoryManagerTest, FetchingState_Suggestions_NoticeAccepted) {
   manager().OnFilterChanged(u"");
 
   EXPECT_TRUE(suggestions.empty());
+}
+
+// Tests that during search execution, the fetching suggestion message iterates
+// over all configured strings in a loop at each interval.
+TEST_F(AtMemoryManagerTest,
+       FetchingState_CyclesThroughFetchingStringsAndLoops) {
+  SeeFormAndShowPopup();
+
+  {
+    InSequence seq;
+    // Notify the UI that search has started.
+    EXPECT_CALL(
+        update_callback_,
+        Run(ElementsAre(EqualsSuggestion(
+                SuggestionType::kAtMemoryFetching,
+                l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
+            AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+    // Query is sent to the service.
+    EXPECT_CALL(mock_query_service(),
+                Query(std::u16string_view(u"query"), _, _, _));
+    // First timer tick advances to next message.
+    EXPECT_CALL(
+        update_callback_,
+        Run(ElementsAre(EqualsSuggestion(
+                SuggestionType::kAtMemoryFetching,
+                l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_AT_MEMORY_FETCHING_PUTTING_IT_TOGETHER))),
+            AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+    // Second timer tick loops back to the first string.
+    EXPECT_CALL(
+        update_callback_,
+        Run(ElementsAre(EqualsSuggestion(
+                SuggestionType::kAtMemoryFetching,
+                l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
+            AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+  }
+
+  manager().OnSearchSubmitted(u"query");
+
+  task_environment_.FastForwardBy(kFetchingMessageInterval);
+  task_environment_.FastForwardBy(kFetchingMessageInterval);
+}
+
+// Tests that when search results arrive, the fetching timer is cancelled.
+TEST_F(AtMemoryManagerTest, FetchingState_TimerStopsWhenResultsReceived) {
+  SeeFormAndShowPopup();
+
+  base::RepeatingCallback<void(MemorySearchResults)> search_callback;
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _))
+      .WillOnce(SaveArg<3>(&search_callback));
+
+  EXPECT_CALL(
+      update_callback_,
+      Run(ElementsAre(EqualsSuggestion(
+              SuggestionType::kAtMemoryFetching,
+              l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
+          AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+
+  manager().OnSearchSubmitted(u"query");
+
+  // Advance once.
+  EXPECT_CALL(
+      update_callback_,
+      Run(ElementsAre(EqualsSuggestion(
+              SuggestionType::kAtMemoryFetching,
+              l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_AT_MEMORY_FETCHING_PUTTING_IT_TOGETHER))),
+          AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+  task_environment_.FastForwardBy(kFetchingMessageInterval);
+
+  // Return search results.
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(Field(&Suggestion::type,
+                                    SuggestionType::kAtMemorySearchResult)),
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+  MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
+                           u"123 Main St");
+  search_callback.Run(MemorySearchResults(
+      MemorySearchStatus::kFinalResponseSuccess, {std::move(entry)}));
+
+  // Fast forward further: `update_callback_` should NOT be called again.
+  task_environment_.FastForwardBy(kFetchingMessageInterval * 5);
+}
+
+// Tests that when popup is hidden, the fetching timer is stopped.
+TEST_F(AtMemoryManagerTest, FetchingState_TimerStopsOnPopupHidden) {
+  SeeFormAndShowPopup();
+
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _));
+
+  EXPECT_CALL(
+      update_callback_,
+      Run(ElementsAre(EqualsSuggestion(
+              SuggestionType::kAtMemoryFetching,
+              l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS))),
+          AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+
+  manager().OnSearchSubmitted(u"query");
+
+  manager().OnPopupHidden();
+
+  // Fast forward: `update_callback_` should NOT be called again.
+  task_environment_.FastForwardBy(kFetchingMessageInterval * 5);
 }
 
 // Tests that when Glic is enabled and search returns `kUnsupportedQuery`,

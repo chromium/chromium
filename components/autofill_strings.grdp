@@ -850,6 +850,12 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_FETCHING" desc="Descriptor for the loading state when enhanced autofill is fetching results. 'Gemini' is a brand name and should match standard branding guidelines across languages.">
     Find and fill with Gemini
   </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS" desc="Loading message shown while reviewing info from connected apps during enhanced autofill search." translateable="false">
+    Reviewing info from Connected Apps
+  </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_FETCHING_PUTTING_IT_TOGETHER" desc="Loading message shown while putting information together during enhanced autofill search." translateable="false">
+    Putting it all together
+  </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE" desc="This error message is to help users understand that enhanced autofill wasn't able to find and fill relevant info. The technical reason is that the query is not supported by enhanced autofill. It appears on the query results empty state.">
     Couldn't find this info
   </message>

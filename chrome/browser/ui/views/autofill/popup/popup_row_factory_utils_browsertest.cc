@@ -180,7 +180,7 @@ const AtMemoryTestParam kAtMemorySuggestions[] = {
     {"AtMemory_source_attribution",
      base::BindRepeating(&AtMemoryManager::CreateSourceAttributionSuggestion)},
     {"AtMemory_fetching",
-     base::BindRepeating(&AtMemoryManager::CreateFetchingSuggestion)},
+     base::BindRepeating(&AtMemoryManager::CreateFetchingSuggestion, 0)},
     {"AtMemory_search_affordance", base::BindRepeating([]() {
        return AtMemoryManager::CreateSearchAffordanceSuggestion(u"passport");
      })},

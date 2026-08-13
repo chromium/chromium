@@ -17,6 +17,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
@@ -122,8 +124,9 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
   // Creates the AI disclosure suggestion.
   static Suggestion CreateAiDisclosureSuggestion();
 
-  // Creates the fetching / loading throbber suggestion.
-  static Suggestion CreateFetchingSuggestion();
+  // Creates the fetching / loading throbber suggestion. `index` determines
+  // which string from the fetching cycle is used.
+  static Suggestion CreateFetchingSuggestion(size_t index = 0);
 
   // Creates a catch-all suggestion to display when AtMemory search fails due to
   // an unexpected or generic error.
@@ -162,6 +165,9 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
 
   // Sends the given suggestions to the UI.
   void SendSuggestions(std::vector<Suggestion> suggestions);
+
+  // Advances to the next fetching suggestion message and updates the UI.
+  void AdvanceFetchingSuggestion();
 
   // Shows the fetching suggestion in the UI.
   void ShowFetchingSuggestion();
@@ -275,6 +281,10 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
 
   // Origin of the target field for the active search session.
   url::Origin target_field_origin_;
+  // Timer used to rotate the fetching suggestions.
+  base::RepeatingTimer fetching_timer_;
+  // Index of the current fetching message to display.
+  size_t fetching_string_index_ = 0;
   // Factory for search queries, used to identify currently active query and
   // discard the old ones.
   base::WeakPtrFactory<AtMemoryManager> query_weak_ptr_factory_{this};
