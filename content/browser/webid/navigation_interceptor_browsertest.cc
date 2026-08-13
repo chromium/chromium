@@ -257,8 +257,8 @@ IN_PROC_BROWSER_TEST_F(NavigationInterceptorBrowserTest,
       ExecJs(web_contents(), "document.getElementById('link').click();"));
 
   Shell* new_shell = new_shell_observer.GetShell();
+  ASSERT_TRUE(new_shell);
   run_loop.Run();
-  new_shell->web_contents()->Close();
 }
 
 // Scenario 3: Normal same-window navigation.
@@ -324,7 +324,6 @@ IN_PROC_BROWSER_TEST_F(NavigationInterceptorBrowserTest, Popup) {
   Shell* new_shell = new_shell_observer.GetShell();
   ASSERT_TRUE(new_shell);
   run_loop.Run();
-  new_shell->web_contents()->Close();
 }
 
 // Scenario 5: Normal same-window navigation with Federation-Initiate-Request.
