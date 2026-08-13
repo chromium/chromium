@@ -36,7 +36,9 @@ GeminiCapabilitiesManagerFactory::GetInstance() {
 
 GeminiCapabilitiesManagerFactory::GeminiCapabilitiesManagerFactory()
     : ProfileKeyedServiceFactoryIOS("GeminiCapabilitiesManager",
-                                    ProfileSelection::kNoInstanceInIncognito) {
+                                    ProfileSelection::kNoInstanceInIncognito,
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(GeminiServiceFactory::GetInstance());
 }
