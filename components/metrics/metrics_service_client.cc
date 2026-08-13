@@ -23,13 +23,54 @@ namespace metrics {
 
 namespace {
 
-// We use raised limits for Android Chrome per experiment results that show
-// these reduce data loss. We could consider raising limits for other platforms
-// as well, but that would require additional experimentation.
+// Dictates default limits applied to UMA log queues and log sizes.
+// We use raised limits for Android Chrome and Desktop (Windows, Mac, Linux,
+// ChromeOS) per experiment results that show these reduce data loss. Other
+// platforms (such as iOS) have not yet been tested with raised limits and
+// retain the baseline limits.
 //
 // Note: Android WebView does not use these limits, per the implementation in
 // android_webview/browser/metrics/aw_metrics_service_client.cc.
-constexpr bool use_android_limits = BUILDFLAG(IS_ANDROID);
+struct LogTrimmingDefaults {
+  size_t initial_log_count_trim_threshold;
+  size_t ongoing_log_count_trim_threshold;
+  size_t log_bytes_trim_threshold;
+  size_t max_ongoing_log_size_bytes;
+};
+
+constexpr LogTrimmingDefaults GetLogTrimmingDefaults() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return {
+      .initial_log_count_trim_threshold = 20,
+      .ongoing_log_count_trim_threshold = 8,
+      .log_bytes_trim_threshold = 3 * 1024 * 1024,  // 3 MiB
+      .max_ongoing_log_size_bytes = 1024 * 1024,    // 1 MiB
+  };
+#elif BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS has higher limits to reduce data loss, but the trim threshold is
+  // standard for historical reasons, see crrev.com/c/2904327.
+  return {
+      .initial_log_count_trim_threshold = 20,
+      .ongoing_log_count_trim_threshold = 8,
+      .log_bytes_trim_threshold = 300 * 1024,     // 300 KiB
+      .max_ongoing_log_size_bytes = 1024 * 1024,  // 1 MiB
+  };
+#elif BUILDFLAG(IS_ANDROID)
+  return {
+      .initial_log_count_trim_threshold = 40,
+      .ongoing_log_count_trim_threshold = 16,
+      .log_bytes_trim_threshold = 600 * 1024,    // 600 KiB
+      .max_ongoing_log_size_bytes = 200 * 1024,  // 200 KiB
+  };
+#else
+  return {
+      .initial_log_count_trim_threshold = 20,
+      .ongoing_log_count_trim_threshold = 8,
+      .log_bytes_trim_threshold = 300 * 1024,    // 300 KiB
+      .max_ongoing_log_size_bytes = 100 * 1024,  // 100 KiB
+  };
+#endif
+}
 
 // The number of initial/ongoing logs to persist in the queue before logs are
 // dropped.
@@ -52,10 +93,10 @@ constexpr bool use_android_limits = BUILDFLAG(IS_ANDROID);
 // logs are dropped.
 const base::FeatureParam<size_t> kInitialLogCountTrimThreshold{
     &features::kMetricsLogTrimming, "initial_log_count_trim_threshold",
-    use_android_limits ? 40 : 20};
+    GetLogTrimmingDefaults().initial_log_count_trim_threshold};
 const base::FeatureParam<size_t> kOngoingLogCountTrimThreshold{
     &features::kMetricsLogTrimming, "ongoing_log_count_trim_threshold",
-    use_android_limits ? 16 : 8};
+    GetLogTrimmingDefaults().ongoing_log_count_trim_threshold};
 
 // The number bytes of the queue to be persisted before logs are dropped. This
 // will be applied to both log queues (initial/ongoing). This ensures that a
@@ -69,9 +110,7 @@ const base::FeatureParam<size_t> kOngoingLogCountTrimThreshold{
 // logs are dropped.
 const base::FeatureParam<size_t> kLogBytesTrimThreshold{
     &features::kMetricsLogTrimming, "log_bytes_trim_threshold",
-    use_android_limits ? 600 * 1024  // 600 KiB
-                       : 300 * 1024  // 300 KiB
-};
+    GetLogTrimmingDefaults().log_bytes_trim_threshold};
 
 // If an initial/ongoing metrics log upload fails, and the transmission is over
 // this byte count, then we will discard the log, and not try to retransmit it.
@@ -83,14 +122,7 @@ const base::FeatureParam<size_t> kMaxInitialLogSizeBytes{
 };
 const base::FeatureParam<size_t> kMaxOngoingLogSizeBytes{
     &features::kMetricsLogTrimming, "max_ongoing_log_size_bytes",
-#if BUILDFLAG(IS_CHROMEOS)
-    // Increase CrOS limit to accommodate SampledProfile data (crbug/1210595).
-    1024 * 1024  // 1 MiB
-#else
-    use_android_limits ? 200 * 1024  // 200 KiB
-                       : 100 * 1024  // 100 KiB
-#endif  // BUILDFLAG(IS_CHROMEOS)
-};
+    GetLogTrimmingDefaults().max_ongoing_log_size_bytes};
 
 // The minimum time in seconds between consecutive metrics report uploads.
 constexpr int kMetricsUploadIntervalSecMinimum = 20;
