@@ -1,5 +1,6 @@
 include_rules = [
   "+components/personal_context/core",
+  "+components/personal_context/first_run",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/personal_context/model",
 ]

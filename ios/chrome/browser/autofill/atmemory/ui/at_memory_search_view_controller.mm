@@ -118,6 +118,7 @@ enum class ItemIdentifier {
                              itemIdentifier:static_cast<ItemIdentifier>(
                                                 itemIdentifier.integerValue)];
            }];
+  _dataSource.defaultRowAnimation = UITableViewRowAnimationFade;
   [self createSnapshotForInitialState];
 }
 
@@ -527,8 +528,7 @@ enum class ItemIdentifier {
   UITableViewCell* cell =
       [AtMemoryInlineNoticeConfiguration dequeueTableViewCell:tableView];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.backgroundColor = [UIColor clearColor];
-  cell.contentView.backgroundColor = [UIColor clearColor];
+  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
   AtMemoryInlineNoticeConfiguration* config =
       [[AtMemoryInlineNoticeConfiguration alloc] init];

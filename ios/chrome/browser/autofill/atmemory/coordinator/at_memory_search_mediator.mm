@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -13,6 +14,7 @@
 #import "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
+#import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/web/public/web_state.h"
 
@@ -21,6 +23,8 @@
   raw_ptr<autofill::AtMemoryQueryService> _atMemoryQueryService;
   // The WebState for the active tab.
   base::WeakPtr<web::WebState> _webState;
+  // Service for managing the first-run notice state.
+  raw_ptr<personal_context::PersonalContextFirstRunService> _firstRunService;
 
   // Results from the AtMemory query service.
   std::optional<autofill::MemorySearchResults> _searchResults;
@@ -29,13 +33,22 @@
   BOOL _noticeIsVisible;
 }
 
-- (instancetype)initWithAtMemoryQueryService:
-                    (autofill::AtMemoryQueryService*)atMemoryQueryService
-                                    webState:(web::WebState*)webState {
+- (instancetype)
+    initWithAtMemoryQueryService:
+        (autofill::AtMemoryQueryService*)atMemoryQueryService
+                        webState:(web::WebState*)webState
+                 firstRunService:
+                     (personal_context::PersonalContextFirstRunService*)
+                         firstRunService {
   self = [super init];
   if (self) {
     _atMemoryQueryService = atMemoryQueryService;
     _webState = webState ? webState->GetWeakPtr() : nullptr;
+    _firstRunService = firstRunService;
+
+    _noticeIsVisible =
+        _firstRunService &&
+        _firstRunService->ShouldShowPersonalContextAtMemoryNotice();
   }
   return self;
 }
@@ -43,6 +56,7 @@
 - (void)disconnect {
   _atMemoryQueryService = nullptr;
   _webState = nullptr;
+  _firstRunService = nullptr;
   _searchResults.reset();
 }
 
@@ -56,7 +70,7 @@
 
   [_consumer setNoticeVisible:_noticeIsVisible];
   [_consumer
-      updateTableViewBackgroundStyle:[self initialTableViewBackgroundStyle]];
+      updateTableViewBackgroundStyle:[self currentTableViewBackgroundStyle]];
 }
 
 #pragma mark - AtMemorySearchMutator
@@ -79,7 +93,12 @@
 }
 
 - (void)acknowledgePrivacyNotice {
-  // TODO(crbug.com/541207744): Handle notice acknowledgment.
+  CHECK(_firstRunService);
+  _firstRunService->MarkPersonalContextInAtMemoryNoticeAsAcknowledged();
+  _noticeIsVisible = NO;
+  [self.consumer setNoticeVisible:NO];
+  [self.consumer
+      updateTableViewBackgroundStyle:[self currentTableViewBackgroundStyle]];
 }
 
 #pragma mark - Private
@@ -114,13 +133,13 @@
   // to the consumer. If the array is nil, there was an error.
 }
 
-- (AtMemoryBackgroundStyle)initialTableViewBackgroundStyle {
+- (AtMemoryBackgroundStyle)currentTableViewBackgroundStyle {
   // TODO(crbug.com/540877897): Verify if there are any recent fills. If yes,
   // show kDefaultStyle.
-  if (_noticeIsVisible) {
-    return AtMemoryBackgroundStyle::kDefaultStyle;
+  if (!_noticeIsVisible && !_searchResults.has_value()) {
+    return AtMemoryBackgroundStyle::kEmptyStyle;
   }
-  return AtMemoryBackgroundStyle::kEmptyStyle;
+  return AtMemoryBackgroundStyle::kDefaultStyle;
 }
 
 @end

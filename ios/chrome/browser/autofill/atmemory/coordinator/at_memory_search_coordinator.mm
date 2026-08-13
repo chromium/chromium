@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_search_coordinator.h"
 
+#import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_search_mediator.h"
 #import "ios/chrome/browser/autofill/atmemory/model/ios_at_memory_query_service_factory.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_view_controller.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_first_run_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -46,9 +48,13 @@
       IOSAtMemoryQueryServiceFactory::GetForProfile(self.browser->GetProfile());
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
+  personal_context::PersonalContextFirstRunService* firstRunService =
+      IOSPersonalContextFirstRunServiceFactory::GetForProfile(
+          self.browser->GetProfile());
   _mediator = [[AtMemorySearchMediator alloc]
       initWithAtMemoryQueryService:atMemoryQueryService
-                          webState:webState];
+                          webState:webState
+                   firstRunService:firstRunService];
   _mediator.fillHandler = self.fillHandler;
   _mediator.consumer = _atMemorySearchViewController;
   _atMemorySearchViewController.mutator = _mediator;

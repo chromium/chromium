@@ -19,11 +19,13 @@ source_set("coordinator") {
   ]
   deps = [
     "//components/autofill/core/browser",
+    "//components/personal_context/first_run",
     "//ios/chrome/browser/autofill/atmemory/model",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/ui",
     "//ios/chrome/browser/autofill/atmemory/utils",
     "//ios/chrome/browser/autofill/manual_fill/public",
+    "//ios/chrome/browser/personal_context/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
@@ -42,6 +44,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/personal_context/first_run",
     "//ios/chrome/browser/autofill/atmemory/ui",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
