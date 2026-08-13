@@ -16,7 +16,7 @@
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"

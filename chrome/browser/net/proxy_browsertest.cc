@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -50,7 +50,7 @@
 namespace {
 
 // Verify kPACScript is installed as the PAC script.
-void VerifyProxyScript(Browser* browser) {
+void VerifyProxyScript(BrowserWindowInterface* browser) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser, GURL("https://google.com")));
 

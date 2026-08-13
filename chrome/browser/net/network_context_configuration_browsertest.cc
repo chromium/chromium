@@ -31,7 +31,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -735,7 +735,8 @@ class NetworkContextConfigurationBrowserTest
     FlushNetworkInterface();
   }
 
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> incognito_ =
+      nullptr;
 
   net::EmbeddedTestServer https_server_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>

@@ -24,7 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/public/cpp/network_quality_tracker.h"
+
 #include <memory>
 
 #include "base/check_op.h"
@@ -15,7 +17,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,7 +33,6 @@
 #include "net/nqe/network_quality_estimator.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
 namespace network {

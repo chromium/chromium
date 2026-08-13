@@ -43,7 +43,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
   ASSERT_TRUE(
       AddCertificateToDatabaseAndWaitForVerifierUpdate(std::move(cert_info)));
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
 
   // We don't clear test roots; the distrusted addition in the user db should
   // override the test root trust, even for incognito.
@@ -700,8 +700,8 @@ IN_PROC_BROWSER_TEST_F(CertVerifierMultiProfileUserSettingsTest,
         profile_2(), std::move(user_root_info)));
   }
 
-  Browser* browser_for_profile_1 = CreateBrowser(profile_1());
-  Browser* browser_for_profile_2 = CreateBrowser(profile_2());
+  BrowserWindowInterface* browser_for_profile_1 = CreateBrowser(profile_1());
+  BrowserWindowInterface* browser_for_profile_2 = CreateBrowser(profile_2());
 
   // profile 1 can load page using root 1 successfully.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

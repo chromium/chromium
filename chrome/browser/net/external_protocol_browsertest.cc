@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <vector>
-
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -16,7 +15,7 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -112,7 +111,8 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
 
 // Navigates to the |target_url| and waits until that same URL is observed at
 // the ExternalProtocolHandler.
-void InvokeUrlAndWaitForExternalHandler(Browser* browser, GURL target_url) {
+void InvokeUrlAndWaitForExternalHandler(BrowserWindowInterface* browser,
+                                        GURL target_url) {
   FakeProtocolHandlerDelegate external_handler_delegate;
   ExternalProtocolHandler::SetDelegateForTesting(&external_handler_delegate);
 

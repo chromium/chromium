@@ -4,10 +4,9 @@
 
 #include <string>
 
-#include "base/metrics/field_trial_param_associator.h"
-
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_param_associator.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,7 +14,7 @@
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"

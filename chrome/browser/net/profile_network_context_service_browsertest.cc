@@ -43,8 +43,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -1175,7 +1175,7 @@ IN_PROC_BROWSER_TEST_F(CacheEncryptionEnabledByPolicyTest,
                   .empty());
 
   // Create a browser for the new profile and navigate to trigger cache init.
-  Browser* new_browser = CreateBrowser(&new_profile);
+  BrowserWindowInterface* new_browser = CreateBrowser(&new_profile);
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, url));
   content::RunAllTasksUntilIdle();

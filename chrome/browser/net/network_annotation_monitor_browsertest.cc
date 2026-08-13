@@ -12,7 +12,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/regmon/regmon_client.h"
 #include "components/policy/policy_constants.h"
