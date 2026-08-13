@@ -29,14 +29,17 @@ class MenuMutationObserver : public MutationObserver::Delegate {
                        HeapHashSet<Member<Node>>& visited_nodes);
   void CheckRemovedNodes(MutationRecord* record);
   void TraverseNodeDescendants(const Node* node,
-                               HeapHashSet<Member<Node>>& visited_nodes);
+                               HeapHashSet<Member<Node>>& visited_nodes,
+                               const Node* disconnected_parent = nullptr);
   void AddDescendantDisallowedErrorToNode(
       Node& node,
-      HeapHashSet<Member<Node>>& visited_nodes);
-  ElementAccessibilityIssueReason CheckForIssue(
-      const Node& descendant,
+      HeapHashSet<Member<Node>>& visited_nodes,
       const Node* disconnected_root = nullptr,
       const Node* disconnected_parent = nullptr);
+  ElementAccessibilityIssueReason CheckForIssue(
+      const Node& descendant,
+      const Node* disconnected_root,
+      const Node* disconnected_parent);
 
   Member<HTMLMenuOwnerElement> menu_owner_;
   Member<MutationObserver> observer_;

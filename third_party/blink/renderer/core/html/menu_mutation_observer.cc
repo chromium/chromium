@@ -131,14 +131,15 @@ void MenuMutationObserver::CheckAddedNodes(
       continue;
     }
 
-    AddDescendantDisallowedErrorToNode(*descendant, visited_nodes);
+    AddDescendantDisallowedErrorToNode(*descendant, visited_nodes, descendant,
+                                       record->target());
 
     if (IsA<HTMLMenuOwnerElement>(*descendant)) {
       // Violations in this submenu don't affect our count, so skip it.
       continue;
     }
 
-    TraverseNodeDescendants(descendant, visited_nodes);
+    TraverseNodeDescendants(descendant, visited_nodes, record->target());
   }
 }
 
@@ -182,10 +183,12 @@ void MenuMutationObserver::CheckRemovedNodes(MutationRecord* record) {
 
 void MenuMutationObserver::TraverseNodeDescendants(
     const Node* node,
-    HeapHashSet<Member<Node>>& visited_nodes) {
+    HeapHashSet<Member<Node>>& visited_nodes,
+    const Node* disconnected_parent) {
   for (Node* descendant = NodeTraversal::FirstWithin(*node); descendant;) {
     if (!SelectMutationObserver::IsWhitespaceOrEmpty(*descendant)) {
-      AddDescendantDisallowedErrorToNode(*descendant, visited_nodes);
+      AddDescendantDisallowedErrorToNode(*descendant, visited_nodes, node,
+                                         disconnected_parent);
     }
 
     DCHECK_NE(descendant, menu_owner_) << "No cycles";
@@ -199,12 +202,15 @@ void MenuMutationObserver::TraverseNodeDescendants(
 
 void MenuMutationObserver::AddDescendantDisallowedErrorToNode(
     Node& node,
-    HeapHashSet<Member<Node>>& visited_nodes) {
+    HeapHashSet<Member<Node>>& visited_nodes,
+    const Node* disconnected_root,
+    const Node* disconnected_parent) {
   if (visited_nodes.Contains(&node)) {
     return;
   }
   visited_nodes.insert(&node);
-  if (CheckForIssue(node) != ElementAccessibilityIssueReason::kValidChild) {
+  if (CheckForIssue(node, disconnected_root, disconnected_parent) !=
+      ElementAccessibilityIssueReason::kValidChild) {
     menu_owner_->IncreaseContentModelViolationCount();
   }
 }
@@ -256,10 +262,15 @@ ElementAccessibilityIssueReason MenuMutationObserver::CheckForIssue(
         }
       }
     }
-    // We only reach here if this is a transient mutation removal and the node
-    // was in violation.
+    // We reach here if the node is in a detached subtree and we reached the
+    // root of that subtree without finding a <menuitem> or <legend>. (e.g.
+    // external/wpt/html/semantics/menu/tentative/menu-content-model-violation.html
+    // -- "Removing a node from a detached valid subtree should not crash")
+    // Because the subtree is detached, we do not increment or decrement the
+    // menu's violation count for mutations happening entirely within it.
+    // Return kValidChild so that these detached mutations are ignored.
     DCHECK(disconnected_root);
-    return kPlaceholderIssue;
+    return ElementAccessibilityIssueReason::kValidChild;
   }
 
   return ElementAccessibilityIssueReason::kValidChild;
