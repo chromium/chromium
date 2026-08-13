@@ -23,6 +23,9 @@ namespace safe_browsing {
 
 enum class SubresourceFilterType : int { ABUSIVE = 0, BETTER_ADS = 1 };
 
+// Levels of enforcement for subresource filtering. These values must remain
+// ordered by increasing severity (e.g. ENFORCE is more severe than WARN)
+// because comparisons rely on this ordering.
 enum class SubresourceFilterLevel : int { WARN = 0, ENFORCE = 1 };
 
 using SubresourceFilterMatch =

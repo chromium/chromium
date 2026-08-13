@@ -426,6 +426,15 @@ TEST_F(V5SearchHashesUtilTest,
           static_cast<int>(config1.v5_type), config1.severity_rank,
           static_cast<int>(config2.v5_type), config2.severity_rank));
 
+      // Pairs of subresource filter threats merge metadata and are tested
+      // in DetermineMostSevereThreat_SubresourceFilterMetadataMerging.
+      if (config1.expected_sb_type ==
+              SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER &&
+          config2.expected_sb_type ==
+              SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
+        continue;
+      }
+
       V5::FullHash::FullHashDetail detail2 =
           CreateHashDetail(config2.v5_type, config2.attributes);
 
@@ -448,6 +457,81 @@ TEST_F(V5SearchHashesUtilTest,
         EXPECT_EQ(res2_1, res2);
       }
     }
+  }
+}
+
+TEST_F(V5SearchHashesUtilTest,
+       DetermineMostSevereThreat_SubresourceFilterMetadataMerging) {
+  V5::FullHash::FullHashDetail bas_enforce =
+      CreateHashDetail(V5::ThreatType::BETTER_ADS_VIOLATION);
+  V5::FullHash::FullHashDetail bas_warn = CreateHashDetail(
+      V5::ThreatType::BETTER_ADS_VIOLATION, {V5::ThreatAttribute::CANARY});
+  V5::FullHash::FullHashDetail abs_enforce =
+      CreateHashDetail(V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION);
+  V5::FullHash::FullHashDetail abs_warn =
+      CreateHashDetail(V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+                       {V5::ThreatAttribute::CANARY});
+  V5::FullHash::FullHashDetail soceng =
+      CreateHashDetail(V5::ThreatType::SOCIAL_ENGINEERING);
+
+  // 1. Both BETTER_ADS and ABUSIVE with ENFORCE -> both present.
+  {
+    ThreatResult result =
+        DetermineMostSevereThreat({&bas_enforce, &abs_enforce});
+    EXPECT_EQ(result.threat_type,
+              SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
+    EXPECT_EQ(result.metadata.subresource_filter_match.size(), 2u);
+    EXPECT_EQ(result.metadata
+                  .subresource_filter_match[SubresourceFilterType::BETTER_ADS],
+              SubresourceFilterLevel::ENFORCE);
+    EXPECT_EQ(result.metadata
+                  .subresource_filter_match[SubresourceFilterType::ABUSIVE],
+              SubresourceFilterLevel::ENFORCE);
+  }
+
+  // 2. BETTER_ADS WARN and ABUSIVE ENFORCE -> both present.
+  {
+    ThreatResult result = DetermineMostSevereThreat({&bas_warn, &abs_enforce});
+    EXPECT_EQ(result.threat_type,
+              SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
+    EXPECT_EQ(result.metadata.subresource_filter_match.size(), 2u);
+    EXPECT_EQ(result.metadata
+                  .subresource_filter_match[SubresourceFilterType::BETTER_ADS],
+              SubresourceFilterLevel::WARN);
+    EXPECT_EQ(result.metadata
+                  .subresource_filter_match[SubresourceFilterType::ABUSIVE],
+              SubresourceFilterLevel::ENFORCE);
+  }
+
+  // 3. Same threat type with different levels -> ENFORCE replaces WARN.
+  {
+    ThreatResult result = DetermineMostSevereThreat({&bas_warn, &bas_enforce});
+    EXPECT_EQ(result.threat_type,
+              SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
+    EXPECT_EQ(result.metadata.subresource_filter_match.size(), 1u);
+    EXPECT_EQ(result.metadata
+                  .subresource_filter_match[SubresourceFilterType::BETTER_ADS],
+              SubresourceFilterLevel::ENFORCE);
+  }
+
+  // 4. Same as #3 above but opposite call order.
+  {
+    ThreatResult result = DetermineMostSevereThreat({&bas_enforce, &bas_warn});
+    EXPECT_EQ(result.threat_type,
+              SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
+    EXPECT_EQ(result.metadata.subresource_filter_match.size(), 1u);
+    EXPECT_EQ(result.metadata
+                  .subresource_filter_match[SubresourceFilterType::BETTER_ADS],
+              SubresourceFilterLevel::ENFORCE);
+  }
+
+  // 5. Subresource filter and higher-severity threat (SOCIAL_ENGINEERING) ->
+  // SOCIAL_ENGINEERING wins and metadata is empty.
+  {
+    ThreatResult result =
+        DetermineMostSevereThreat({&bas_enforce, &abs_enforce, &soceng});
+    EXPECT_EQ(result.threat_type, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    EXPECT_EQ(result.metadata, ThreatMetadata());
   }
 }
 
