@@ -7,6 +7,11 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  display: block;
+  width: 100%;
+}
+
 #tabstrip {
   /* Make the window frame draggable.
   * Children elements need to use "app-region: no-drag" to

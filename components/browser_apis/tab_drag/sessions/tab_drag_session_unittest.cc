@@ -463,4 +463,52 @@ TEST_F(TabDragSessionTest, SingleTabDragReattachesToTargetWindow) {
             ToyTabDragSessionListener::Event::Type::kDropped);
   EXPECT_EQ(listener.events()[2].point, gfx::Point(250, 50));
 }
+
+TEST_F(TabDragSessionTest, DetachWindowOffset) {
+  ToyTabDragSessionInputAdapter toy_adapter;
+  base::MockOnceClosure end_callback;
+  ToyTabDragSessionListener listener;
+  ToyDropTargetRegistry registry;
+  registry.set_source_window(&dummy_window_);
+  ToyTabDragSessionInjector injector(toy_adapter, listener, registry,
+                                     &registry_);
+
+  constexpr int kDropTargetX = 80;
+  constexpr int kDropTargetY = 5;
+  constexpr int kDropTargetWidth = 300;
+  constexpr int kDropTargetHeight = 30;
+  constexpr int kTabOriginalOffsetX = 25;
+
+  dummy_window_.set_tab_count(3);
+  registry.UpdateTargetBounds(registry.source_id(),
+                              gfx::Rect(kDropTargetX, kDropTargetY,
+                                        kDropTargetWidth, kDropTargetHeight));
+
+  std::vector<tabs_api::NodeId> tab_ids = {
+      NodeId(NodeId::Type::kContent, "tab1"),
+      NodeId(NodeId::Type::kContent, "tab2")};
+  const gfx::Point start_point(kDropTargetX + 50, kDropTargetY + 5);
+  TabDragSessionParams params{.source_window_id = dummy_window_.GetWindowId(),
+                              .source_tab_ids = tab_ids,
+                              .start_point = start_point,
+                              .tab_original_offset_x = kTabOriginalOffsetX,
+                              .end_callback = end_callback.Get()};
+  TabDragSession session(std::move(params), &injector);
+
+  EXPECT_TRUE(session.Start().has_value());
+
+  // Move horizontally past the drop target boundary to trigger tear-off.
+  EXPECT_CALL(end_callback, Run()).Times(1);
+  const gfx::Point tear_point(kDropTargetX + kDropTargetWidth + 50,
+                              kDropTargetY + 10);
+  toy_adapter.SendToyEvent(TabDragInputEvent::Type::kMoved, tear_point);
+
+  EXPECT_TRUE(dummy_window_.detach_to_new_window_called());
+  // Horizontal stretch detachment: tab becomes 1st tab at drop_target_x.
+  EXPECT_EQ(
+      dummy_window_.last_detach_drag_offset(),
+      gfx::Vector2d(kDropTargetX + kTabOriginalOffsetX,
+                    start_point.y() - dummy_window_.GetBoundsInScreen().y()));
+}
+
 }  // namespace tabs_api
