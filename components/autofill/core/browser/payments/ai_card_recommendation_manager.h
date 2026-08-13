@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AI_CARD_RECOMMENDATION_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AI_CARD_RECOMMENDATION_MANAGER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -14,6 +16,7 @@
 
 namespace autofill {
 class BrowserAutofillManager;
+class CreditCard;
 }  // namespace autofill
 
 namespace autofill::payments {
@@ -23,8 +26,6 @@ namespace autofill::payments {
 // suggestions based on the cards' benefits.
 // This class is initialized when the user accepts the "Maximize rewards"
 // suggestion, and is destroyed on user navigation or page refresh.
-// TODO(crbug.com/539582738): Improve the lifecycle of this class to align with
-// similar features.
 class AiCardRecommendationManager : public AutofillManager::Observer {
  public:
   explicit AiCardRecommendationManager(
@@ -33,6 +34,11 @@ class AiCardRecommendationManager : public AutofillManager::Observer {
   AiCardRecommendationManager& operator=(const AiCardRecommendationManager&) =
       delete;
   ~AiCardRecommendationManager() override;
+
+  // Returns whether the "Maximize rewards" suggestion should be shown.
+  static bool ShouldShowMaximizeCreditCardBenefitsSuggestion(
+      const std::vector<CreditCard>& cards_to_suggest,
+      bool is_card_number_field_empty);
 
   // Initializes the AI-based card recommendation flow, which includes calling
   // AI amount extraction and calling Gemini via `RemoteModelExecutor`.

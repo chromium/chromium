@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/payments/ai_card_recommendation_manager.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
@@ -53,26 +54,6 @@ namespace autofill {
 
 namespace {
 
-bool ShouldShowMaximizeCreditCardBenefitsSuggestion(
-    const std::vector<CreditCard>& cards_to_suggest,
-    bool is_card_number_field_empty) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableAiCardRecommendation)) {
-    return false;
-  }
-
-  // This ensures the credit card field is empty before we show the
-  // "Maximize rewards" suggestion so that, upon suggestion acceptance, AI
-  // amount extraction isn't able to see the credit card number.
-  if (!is_card_number_field_empty) {
-    return false;
-  }
-  size_t eligible_cards_count =
-      std::ranges::count_if(cards_to_suggest, [](const CreditCard& card) {
-        return !card.product_description().empty();
-      });
-  return eligible_cards_count >= 2;
-}
 
 Suggestion CreateBnplFootnoteSuggestion() {
   Suggestion bnpl_footnote = Suggestion(SuggestionType::kBnplFootnote);
@@ -332,8 +313,9 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
   }
 
   const bool should_append_maximize_credit_card_benefits_suggestion =
-      ShouldShowMaximizeCreditCardBenefitsSuggestion(
-          cards_to_suggest, is_card_number_field_empty);
+      payments::AiCardRecommendationManager::
+          ShouldShowMaximizeCreditCardBenefitsSuggestion(
+              cards_to_suggest, is_card_number_field_empty);
 
   base::Extend(suggestions,
                GetCreditCardFooterSuggestions(
