@@ -5376,6 +5376,11 @@
     "expiry_milestone": 180
   },
   {
+    "name": "gemini-fre-experiment",
+    "owners": [ "hamzamoh@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "gemini-fre-refactor",
     "owners": [ "hamzamoh@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 160
@@ -5452,11 +5457,6 @@
       "bling-alchemy-eng@google.com"
     ],
     "expiry_milestone": 156
-  },
-  {
-    "name": "gemini-visual-rich-fre",
-    "owners": [ "hamzamoh@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 160
   },
   {
     "name": "gemma4-for-built-in-ai",

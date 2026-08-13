@@ -1050,6 +1050,16 @@ const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
     {"Force FRE", kForceBWGFirstTimeRun, nullptr},
     {"Skip new user delay", kSkipNewUserDelay, nullptr}};
 
+const FeatureEntry::FeatureParam kGeminiFREExperimentVisualRich[] = {
+    {kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}};
+const FeatureEntry::FeatureParam kGeminiFREExperimentLightweight[] = {
+    {kGeminiFREExperimentParam, kGeminiFREExperimentParamLightweight}};
+
+const FeatureEntry::FeatureVariation kGeminiFREExperimentVariations[] = {
+    {"Visual Rich", kGeminiFREExperimentVisualRich, nullptr},
+    {"Lightweight", kGeminiFREExperimentLightweight, nullptr},
+};
+
 const FeatureEntry::FeatureParam kPageActionMenuDirectEntryPoint[] = {
     {kPageActionMenuDirectEntryPointParam, "true"},
 };
@@ -2418,12 +2428,14 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"gemini-updated-consent", flag_descriptions::kGeminiUpdatedConsentName,
      flag_descriptions::kGeminiUpdatedConsentDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiUpdatedConsent)},
+    {"gemini-fre-experiment", flag_descriptions::kGeminiFREExperimentName,
+     flag_descriptions::kGeminiFREExperimentDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiFREExperiment,
+                                    kGeminiFREExperimentVariations,
+                                    "GeminiFREExperiment")},
     {"gemini-fre-refactor", flag_descriptions::kGeminiFRERefactorName,
      flag_descriptions::kGeminiFRERefactorDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiFRERefactor)},
-    {"gemini-visual-rich-fre", flag_descriptions::kGeminiVisualRichFREName,
-     flag_descriptions::kGeminiVisualRichFREDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kGeminiVisualRichFRE)},
     {"gemini-coordinator-teardown-fix",
      flag_descriptions::kGeminiCoordinatorTeardownFixName,
      flag_descriptions::kGeminiCoordinatorTeardownFixDescription,

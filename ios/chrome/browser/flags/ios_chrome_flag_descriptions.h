@@ -871,6 +871,10 @@ inline constexpr char kGeminiCoordinatorTeardownFixName[] =
 inline constexpr char kGeminiCoordinatorTeardownFixDescription[] =
     "Enables the teardown crash fix for Gemini First Run Coordinator.";
 
+inline constexpr char kGeminiFREExperimentName[] = "Gemini FRE Experiment";
+inline constexpr char kGeminiFREExperimentDescription[] =
+    "Enables the experimental Gemini First Run Experience";
+
 inline constexpr char kGeminiFRERefactorName[] = "Gemini FRE Refactor";
 inline constexpr char kGeminiFRERefactorDescription[] =
     "Enables the refactored Gemini First Run Experience UI.";
@@ -926,10 +930,6 @@ inline constexpr char kGeminiUpdatedEligibilityName[] =
     "Gemini Updated Eligibility";
 inline constexpr char kGeminiUpdatedEligibilityDescription[] =
     "Enables the updated eligibility checks for Gemini users.";
-
-inline constexpr char kGeminiVisualRichFREName[] = "Gemini Visual Rich FRE";
-inline constexpr char kGeminiVisualRichFREDescription[] =
-    "Enables the Visual Rich experimental flow in Gemini First Run Experience.";
 
 inline constexpr char kGeneralizedGeminiEntryFlowName[] =
     "Generalized Gemini Entry Flow";

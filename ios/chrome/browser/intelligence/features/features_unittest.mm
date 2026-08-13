@@ -294,3 +294,43 @@ TEST_F(ActorFeaturesTest,
     EXPECT_TRUE(IsGeminiContextualSuggestionsCuesAllowGpuExecutionEnabled());
   }
 }
+
+TEST_F(ActorFeaturesTest, GeminiFREExperimentVariants) {
+  // Disabled by default.
+  EXPECT_FALSE(IsGeminiFREExperimentEnabled());
+  EXPECT_FALSE(IsGeminiVisualRichFREEnabled());
+  EXPECT_FALSE(IsGeminiLightweightFREEnabled());
+
+  // Enabled with no parameters defaults to Visual Rich.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(kGeminiFREExperiment);
+    EXPECT_TRUE(IsGeminiFREExperimentEnabled());
+    EXPECT_TRUE(IsGeminiVisualRichFREEnabled());
+    EXPECT_FALSE(IsGeminiLightweightFREEnabled());
+  }
+
+  // Enabled with explicit "visual-rich" parameter.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    base::FieldTrialParams params;
+    params[kGeminiFREExperimentParam] = kGeminiFREExperimentParamVisualRich;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(kGeminiFREExperiment,
+                                                           params);
+    EXPECT_TRUE(IsGeminiFREExperimentEnabled());
+    EXPECT_TRUE(IsGeminiVisualRichFREEnabled());
+    EXPECT_FALSE(IsGeminiLightweightFREEnabled());
+  }
+
+  // Enabled with "lightweight" parameter (mutually exclusive with Visual Rich).
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    base::FieldTrialParams params;
+    params[kGeminiFREExperimentParam] = kGeminiFREExperimentParamLightweight;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(kGeminiFREExperiment,
+                                                           params);
+    EXPECT_TRUE(IsGeminiFREExperimentEnabled());
+    EXPECT_FALSE(IsGeminiVisualRichFREEnabled());
+    EXPECT_TRUE(IsGeminiLightweightFREEnabled());
+  }
+}

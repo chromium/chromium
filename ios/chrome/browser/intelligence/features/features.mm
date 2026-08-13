@@ -853,10 +853,32 @@ bool IsGeminiCoordinatorTeardownFixEnabled() {
   return base::FeatureList::IsEnabled(kGeminiCoordinatorTeardownFix);
 }
 
-BASE_FEATURE(kGeminiVisualRichFRE, base::FEATURE_DISABLED_BY_DEFAULT);
+const char kGeminiFREExperimentParam[] = "variant";
+const char kGeminiFREExperimentParamVisualRich[] = "visual-rich";
+const char kGeminiFREExperimentParamLightweight[] = "lightweight";
+
+BASE_FEATURE(kGeminiFREExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiFREExperimentEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiFREExperiment);
+}
 
 bool IsGeminiVisualRichFREEnabled() {
-  return base::FeatureList::IsEnabled(kGeminiVisualRichFRE);
+  if (!base::FeatureList::IsEnabled(kGeminiFREExperiment)) {
+    return false;
+  }
+  std::string variant = base::GetFieldTrialParamValueByFeature(
+      kGeminiFREExperiment, kGeminiFREExperimentParam);
+  return variant.empty() || variant == kGeminiFREExperimentParamVisualRich;
+}
+
+bool IsGeminiLightweightFREEnabled() {
+  if (!base::FeatureList::IsEnabled(kGeminiFREExperiment)) {
+    return false;
+  }
+  std::string variant = base::GetFieldTrialParamValueByFeature(
+      kGeminiFREExperiment, kGeminiFREExperimentParam);
+  return variant == kGeminiFREExperimentParamLightweight;
 }
 
 BASE_FEATURE(kPageContextScreenshotSensitivePaymentRedaction,

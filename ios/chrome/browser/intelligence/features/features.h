@@ -442,11 +442,22 @@ BASE_DECLARE_FEATURE(kGeminiCoordinatorTeardownFix);
 // Returns true if the Gemini coordinator teardown crash fix is enabled.
 bool IsGeminiCoordinatorTeardownFixEnabled();
 
-// Feature flag to enable the Gemini Visual Rich FRE experiment.
-BASE_DECLARE_FEATURE(kGeminiVisualRichFRE);
+// Feature flag to enable the Gemini FRE experiment.
+BASE_DECLARE_FEATURE(kGeminiFREExperiment);
 
-// Returns true if the Gemini Visual Rich FRE experiment is enabled.
+// Feature parameter for Gemini FRE experiment variations.
+extern const char kGeminiFREExperimentParam[];
+extern const char kGeminiFREExperimentParamVisualRich[];
+extern const char kGeminiFREExperimentParamLightweight[];
+
+// Returns true if the Gemini FRE experiment is enabled (any variation).
+bool IsGeminiFREExperimentEnabled();
+
+// Returns true if the Visual Rich variant is enabled.
 bool IsGeminiVisualRichFREEnabled();
+
+// Returns true if the Lightweight variant is enabled.
+bool IsGeminiLightweightFREEnabled();
 
 // Controls whether blacked out bounding boxes for sensitive payment fields are
 // applied to the screenshot in `PageContext`. Matches Blink's
