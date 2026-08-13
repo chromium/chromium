@@ -704,8 +704,9 @@ protocol::Response PWAHandler::OpenCurrentPageInApp(
                       " cannot be opened in its app. Check if the app is "
                       "correctly installed."}));
   }
-  Browser* browser = provider->ui_manager().ReparentAppTabToWindow(
-      contents, app_id, shortcut_created);
+  BrowserWindowInterface* browser =
+      provider->ui_manager().ReparentAppTabToWindow(contents, app_id,
+                                                    shortcut_created);
   if (browser == nullptr) {
     return protocol::Response::InvalidRequest(base::StrCat(
         {"The current page ", contents->GetLastCommittedURL().spec(),

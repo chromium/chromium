@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -447,13 +446,11 @@ BrowserWindowInterface* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
   return AppBrowserController::FindForWebApp(*profile_, params_->app_id);
 }
 
-Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
+BrowserWindowInterface* WebAppLaunchProcess::CreateBrowserForLaunch() {
   if (params_->container == apps::LaunchContainer::kLaunchContainerTab) {
-    return CreateBrowserWindow(
-               BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
-                                         &profile_.get(),
-                                         /*from_user_gesture=*/true))
-        ->GetBrowserForMigrationOnly();
+    return CreateBrowserWindow(BrowserWindowCreateParams(
+        BrowserWindowInterface::TYPE_NORMAL, &profile_.get(),
+        /*from_user_gesture=*/true));
   }
 
   BrowserWindowCreateParams browser_params = web_app::CreateParamsForApp(

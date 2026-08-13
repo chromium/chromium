@@ -16,7 +16,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -245,7 +244,7 @@ void OnWebAppInstalled(WebAppInstalledCallback callback,
 
 }  // namespace
 
-bool CanCreateWebApp(Browser* browser) {
+bool CanCreateWebApp(BrowserWindowInterface* browser) {
   // Check whether user is allowed to install web app.
   if (!WebAppProvider::GetForWebApps(browser->GetProfile()) ||
       !AreWebAppsUserInstallable(browser->GetProfile())) {
@@ -273,7 +272,7 @@ bool CanPopOutWebApp(Profile* profile) {
          !profile->IsOffTheRecord();
 }
 
-void CreateWebAppFromCurrentWebContents(Browser* browser,
+void CreateWebAppFromCurrentWebContents(BrowserWindowInterface* browser,
                                         WebAppInstallFlow flow) {
   DCHECK(CanCreateWebApp(browser));
 

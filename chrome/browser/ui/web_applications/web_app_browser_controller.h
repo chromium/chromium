@@ -33,7 +33,6 @@
 #include "components/content_relationship_verification/digital_asset_links_handler.h"  // nogncheck
 #endif
 
-class Browser;
 class SkBitmap;
 
 #if BUILDFLAG(IS_CHROMEOS)

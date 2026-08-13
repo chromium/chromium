@@ -124,7 +124,7 @@ bool FakeWebAppUiManager::CanReparentAppTabToWindow(
   return true;
 }
 
-Browser* FakeWebAppUiManager::ReparentAppTabToWindow(
+BrowserWindowInterface* FakeWebAppUiManager::ReparentAppTabToWindow(
     content::WebContents* contents,
     const webapps::AppId& app_id,
     bool shortcut_created) {
@@ -132,7 +132,7 @@ Browser* FakeWebAppUiManager::ReparentAppTabToWindow(
   return nullptr;
 }
 
-Browser* FakeWebAppUiManager::ReparentAppTabToWindow(
+BrowserWindowInterface* FakeWebAppUiManager::ReparentAppTabToWindow(
     content::WebContents* contents,
     const webapps::AppId& app_id,
     base::OnceCallback<void(content::WebContents*)> completion_callback) {
@@ -140,7 +140,6 @@ Browser* FakeWebAppUiManager::ReparentAppTabToWindow(
   std::move(completion_callback).Run(contents);
   return nullptr;
 }
-
 
 void FakeWebAppUiManager::ShowSubAppsInstallDialog(
     content::WebContents* initiating_web_contents,
@@ -321,7 +320,7 @@ void FakeWebAppUiManager::MaybeRemoveWebAppBlockedMigrationInfoBar(
     content::WebContents* web_contents) {}
 
 void FakeWebAppUiManager::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     Profile* profile,
     const std::string& app_id) {}
 

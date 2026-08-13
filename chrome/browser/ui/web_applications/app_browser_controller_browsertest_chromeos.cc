@@ -14,7 +14,6 @@
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
@@ -47,7 +46,7 @@
 #include "ui/display/types/display_constants.h"
 
 namespace {
-SkColor GetFrameColor(Browser* browser) {
+SkColor GetFrameColor(BrowserWindowInterface* browser) {
   CustomThemeSupplier* theme =
       web_app::AppBrowserController::From(browser)->GetThemeSupplier();
   SkColor result;
@@ -61,7 +60,8 @@ namespace web_app {
 class LoadFinishedWaiter : public TabStripModelObserver,
                            public content::WebContentsObserver {
  public:
-  explicit LoadFinishedWaiter(Browser* browser) : browser_(browser) {
+  explicit LoadFinishedWaiter(BrowserWindowInterface* browser)
+      : browser_(browser) {
     browser_->tab_strip_model()->AddObserver(this);
   }
 
@@ -93,7 +93,7 @@ class LoadFinishedWaiter : public TabStripModelObserver,
   }
 
  private:
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   SkColor color_at_navigation_;
   base::RunLoop run_loop_;
 };
@@ -120,7 +120,7 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
     test_system_web_app_installation_->WaitForAppInstall();
   }
 
-  Browser* LaunchMockApp() {
+  BrowserWindowInterface* LaunchMockApp() {
     app_browser_ = web_app::LaunchWebAppBrowser(
         profile(), test_system_web_app_installation_->GetAppId());
     tabbed_app_url_ = test_system_web_app_installation_->GetAppUrl();
@@ -140,12 +140,10 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
     ash::BrowserDelegate* delegate = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
         test_system_web_app_installation_->GetAppUrl(), *params);
-    app_browser_ = delegate
-                       ? delegate->GetBrowser().GetBrowserForMigrationOnly()
-                       : nullptr;
+    app_browser_ = delegate ? &delegate->GetBrowser() : nullptr;
   }
 
-  Browser* LaunchMockSWA() {
+  BrowserWindowInterface* LaunchMockSWA() {
     auto params = ash::CreateSystemWebAppLaunchParams(
         profile(), test_system_web_app_installation_->GetType(),
         display::kInvalidDisplayId);
@@ -155,11 +153,10 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
     ash::BrowserDelegate* delegate = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
         test_system_web_app_installation_->GetAppUrl(), *params);
-    return delegate ? delegate->GetBrowser().GetBrowserForMigrationOnly()
-                    : nullptr;
+    return delegate ? &delegate->GetBrowser() : nullptr;
   }
 
-  Browser* InstallAndLaunchMockApp() {
+  BrowserWindowInterface* InstallAndLaunchMockApp() {
     InstallMockSystemWebApp();
     return LaunchMockApp();
   }
@@ -169,7 +166,7 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
     LaunchMockPopup();
   }
 
-  Browser* InstallAndLaunchMockSWA() {
+  BrowserWindowInterface* InstallAndLaunchMockSWA() {
     InstallMockSystemWebApp();
     return LaunchMockSWA();
   }
@@ -181,7 +178,8 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
   }
 
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_ = nullptr;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> app_browser_ =
+      nullptr;
   GURL tabbed_app_url_;
 
  private:
@@ -347,12 +345,12 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs,
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs,
                        OpenMultipleBrowsersForMultiWindowSWA) {
-  Browser* first_browser = InstallAndLaunchMockSWA();
+  BrowserWindowInterface* first_browser = InstallAndLaunchMockSWA();
   // We should have the original browser for this BrowserTest, plus a new one,
   // offset by a tasteful amount.
   EXPECT_NE(nullptr, first_browser);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
-  Browser* second_browser = LaunchMockSWA();
+  BrowserWindowInterface* second_browser = LaunchMockSWA();
   EXPECT_NE(nullptr, second_browser);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 3u);
 
@@ -365,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs,
   bool hit_the_bottom_right = false;
   gfx::Rect previous_bounds = bounds2;
   for (int i = 0; i < 10; i++) {
-    Browser* next_browser = LaunchMockSWA();
+    BrowserWindowInterface* next_browser = LaunchMockSWA();
     if (previous_bounds == next_browser->GetWindow()->GetRestoredBounds()) {
       hit_the_bottom_right = true;
       break;

@@ -88,14 +88,12 @@ IN_PROC_BROWSER_TEST_P(ReparentWebContentsTest, ReparentToAppAndBack) {
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   // Reparent into the app browser.
-  Browser* app_browser;
+  BrowserWindowInterface* app_browser;
   {
-    app_browser =
-        CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
-                                GenerateApplicationNameFromAppId(app_id),
-                                /*trusted_source=*/true, gfx::Rect(), profile(),
-                                /*user_gesture=*/true))
-            ->GetBrowserForMigrationOnly();
+    app_browser = CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
+        GenerateApplicationNameFromAppId(app_id),
+        /*trusted_source=*/true, gfx::Rect(), profile(),
+        /*user_gesture=*/true));
     // If the current url isn't in scope, then set the initial url on the
     // AppBrowserController so that the 'x' button still shows up.
     CHECK(web_app::AppBrowserController::From(app_browser));
@@ -105,8 +103,8 @@ IN_PROC_BROWSER_TEST_P(ReparentWebContentsTest, ReparentToAppAndBack) {
   ReparentWebContentsIntoBrowserImpl(browser(), to_reparent, app_browser);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, app_browser->tab_strip_model()->count());
-  EXPECT_EQ(app_browser->tab_strip_model()->GetWebContentsAt(0), to_reparent);
+  EXPECT_EQ(1, app_browser->GetTabStripModel()->count());
+  EXPECT_EQ(app_browser->GetTabStripModel()->GetWebContentsAt(0), to_reparent);
   EXPECT_TRUE(WebAppBrowserController::IsForWebApp(app_browser, app_id));
 
   switch (GetReparentingUrlType()) {

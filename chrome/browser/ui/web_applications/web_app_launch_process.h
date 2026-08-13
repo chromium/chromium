@@ -11,7 +11,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 
-class Browser;
 class BrowserWindowInterface;
 enum class WindowOpenDisposition;
 class GURL;
@@ -74,7 +73,7 @@ class WebAppLaunchProcess {
 
   // Returns nullptr if these is no existing browser to be used for the launch.
   BrowserWindowInterface* MaybeFindBrowserForLaunch() const;
-  Browser* CreateBrowserForLaunch();
+  BrowserWindowInterface* CreateBrowserForLaunch();
 
   const raw_ref<Profile> profile_;
   const raw_ref<WebAppRegistrar> registrar_;

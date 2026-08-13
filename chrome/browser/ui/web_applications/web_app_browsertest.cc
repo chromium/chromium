@@ -2452,7 +2452,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, PopupLocationBar) {
       /*is_popup=*/true,
       /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(), profile(),
       /*user_gesture=*/true);
-  Browser* popup_browser =
+  BrowserWindowInterface* popup_browser =
       web_app::CreateWebAppWindowMaybeWithHomeTab(app_id, std::move(params));
   popup_browser->GetWindow()->Show();
   ui_test_utils::WaitUntilBrowserBecomeActive(popup_browser);
@@ -3074,8 +3074,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink, Reparenting) {
   EXPECT_TRUE(ShowingAppManagementLink(app_browser));
 
   // Move back into tabbed browser: should keep showing the app settings link.
-  BrowserWindowInterface* tabbed_browser =
-      chrome::OpenInChrome(app_browser->GetBrowserForMigrationOnly());
+  BrowserWindowInterface* tabbed_browser = chrome::OpenInChrome(app_browser);
   EXPECT_TRUE(ShowingAppManagementLink(tabbed_browser));
 }
 

@@ -21,7 +21,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 class Profile;
-class Browser;
 struct BrowserWindowCreateParams;
 class BrowserWindowInterface;
 class GURL;
@@ -59,7 +58,8 @@ enum class LaunchedAppType {
   kMaxValue = kCrafted,
 };
 
-std::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser);
+std::optional<webapps::AppId> GetWebAppForActiveTab(
+    const BrowserWindowInterface* browser);
 
 // Clears navigation history prior to user entering app scope.
 void PrunePreScopeNavigationHistory(const GURL& scope,
@@ -68,7 +68,8 @@ void PrunePreScopeNavigationHistory(const GURL& scope,
 // Invokes ReparentWebContentsIntoAppBrowser() for the active tab for the
 // web app that has the tab's URL in its scope. Does nothing if there is no web
 // app in scope.
-BrowserWindowInterface* ReparentWebAppForActiveTab(Browser* browser);
+BrowserWindowInterface* ReparentWebAppForActiveTab(
+    BrowserWindowInterface* browser);
 
 // Reparents `contents` into a standalone web app window for `app_id`.
 // - If the web app has a launch_handler set to reuse existing windows and there
@@ -103,7 +104,7 @@ void MaybeAddPinnedHomeTab(BrowserWindowInterface* browser,
 // the IPH is permitted to show).
 void MaybeShowNavigationCaptureIph(webapps::AppId app_id,
                                    Profile* profile,
-                                   Browser* browser);
+                                   BrowserWindowInterface* browser);
 
 // This creates appropriate CreateParams for creating a PWA window or PWA popup
 // window.
@@ -114,8 +115,9 @@ BrowserWindowCreateParams CreateParamsForApp(const webapps::AppId& app_id,
                                              Profile* profile,
                                              bool user_gesture);
 
-Browser* CreateWebAppWindowMaybeWithHomeTab(const webapps::AppId& app_id,
-                                            BrowserWindowCreateParams params);
+BrowserWindowInterface* CreateWebAppWindowMaybeWithHomeTab(
+    const webapps::AppId& app_id,
+    BrowserWindowCreateParams params);
 
 // Report UMA metrics and updates  app's last launch time, site engagement
 // stats, etc.

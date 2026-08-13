@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -28,10 +28,10 @@ bool IsTabClosable(const TabStripModel* tab_strip_model, int index) {
          tab_strip_model->count() == 1;
 }
 
-bool IsHomeTabUrl(const Browser* browser, const GURL& url) {
+bool IsHomeTabUrl(const BrowserWindowInterface* browser, const GURL& url) {
   auto* const app_controller =
       browser ? web_app::AppBrowserController::From(browser) : nullptr;
-  return app_controller && HasPinnedHomeTab(browser->tab_strip_model()) &&
+  return app_controller && HasPinnedHomeTab(browser->GetTabStripModel()) &&
          app_controller->IsUrlInHomeTabScope(url);
 }
 

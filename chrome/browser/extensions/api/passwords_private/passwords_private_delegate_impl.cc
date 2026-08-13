@@ -900,8 +900,7 @@ void PasswordsPrivateDelegateImpl::ShowAddShortcutDialog(
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   DCHECK(browser);
   web_app::CreateWebAppFromCurrentWebContents(
-      browser->GetBrowserForMigrationOnly(),
-      web_app::WebAppInstallFlow::kInstallSite);
+      browser, web_app::WebAppInstallFlow::kInstallSite);
   base::UmaHistogramEnumeration(
       "PasswordManager.ShortcutMetric",
       password_manager::metrics_util::PasswordManagerShortcutMetric::

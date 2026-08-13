@@ -13,9 +13,9 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -46,7 +46,7 @@
 
 namespace {
 
-bool ShouldAllowOpenInChrome(Browser* browser) {
+bool ShouldAllowOpenInChrome(BrowserWindowInterface* browser) {
   // Isolated Web Apps shouldn't be opened in Chrome.
   const bool is_isolated_web_app =
       web_app::AppBrowserController::IsIsolatedWebApp(browser);

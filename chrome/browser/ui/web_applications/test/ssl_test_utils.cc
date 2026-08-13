@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
 
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/security_state/core/security_state.h"
 #include "net/cert/x509_certificate.h"
@@ -24,18 +24,18 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
 
 namespace web_app {
 
-void CheckMixedContentLoaded(Browser* browser) {
+void CheckMixedContentLoaded(BrowserWindowInterface* browser) {
   DCHECK(browser);
   ssl_test_util::CheckSecurityState(
-      browser->tab_strip_model()->GetActiveWebContents(),
+      browser->GetTabStripModel()->GetActiveWebContents(),
       ssl_test_util::CertError::NONE, security_state::WARNING,
       ssl_test_util::AuthState::DISPLAYED_INSECURE_CONTENT);
 }
 
-void CheckMixedContentFailedToLoad(Browser* browser) {
+void CheckMixedContentFailedToLoad(BrowserWindowInterface* browser) {
   DCHECK(browser);
   ssl_test_util::CheckSecurityState(
-      browser->tab_strip_model()->GetActiveWebContents(),
+      browser->GetTabStripModel()->GetActiveWebContents(),
       ssl_test_util::CertError::NONE, security_state::SECURE,
       ssl_test_util::AuthState::NONE);
 }

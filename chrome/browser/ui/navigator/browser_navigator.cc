@@ -210,16 +210,13 @@ bool AdjustNavigateParamsForURL(NavigateParams* params) {
     params->window_action = NavigateParams::WindowAction::kShowWindow;
   }
 
-  Browser* browser_for_migration =
-      params->browser ? params->browser->GetBrowserForMigrationOnly() : nullptr;
-
   // Clicking a link to the home tab in a tabbed web app should always open the
   // link in the home tab.
-  if (web_app::IsHomeTabUrl(browser_for_migration, params->url)) {
-    browser_for_migration->tab_strip_model()->ActivateTabAt(0);
+  if (web_app::IsHomeTabUrl(params->browser, params->url)) {
+    params->browser->GetTabStripModel()->ActivateTabAt(0);
     // If the navigation URL is the same as the current home tab URL, skip the
     // navigation.
-    if (browser_for_migration->tab_strip_model()
+    if (params->browser->GetTabStripModel()
             ->GetActiveWebContents()
             ->GetLastCommittedURL() == params->url) {
       return false;

@@ -571,11 +571,9 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
           apps::test::DisableLinkCapturingByUser(profile(), parent_app_id),
           base::ok());
     }
-    BrowserWindowInterface* const popup_browser =
-        OpenPopupAndWait(GlobalBrowserCollection::GetInstance()
-                             ->FindBrowserWithTab(parent_app)
-                             ->GetBrowserForMigrationOnly(),
-                         GetParentAppUrl(), size);
+    BrowserWindowInterface* const popup_browser = OpenPopupAndWait(
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(parent_app),
+        GetParentAppUrl(), size);
 
     BrowserCreatedObserver browser_created_observer;
     ClickLinkAndWait(popup_browser->GetTabStripModel()->GetActiveWebContents(),

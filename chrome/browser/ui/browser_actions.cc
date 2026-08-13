@@ -2047,8 +2047,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 base::RecordAction(
                     base::UserMetricsAction("InstallWebAppFromMenu"));
                 web_app::CreateWebAppFromCurrentWebContents(
-                    bwi->GetBrowserForMigrationOnly(),
-                    web_app::WebAppInstallFlow::kInstallSite);
+                    bwi, web_app::WebAppInstallFlow::kInstallSite);
               },
               bwi))
           .SetActionId(kActionInstallPwa)
@@ -2740,8 +2739,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                  actions::ActionInvocationContext context) {
                 base::RecordAction(
                     base::UserMetricsAction("OpenActiveTabInPwaWindow"));
-                web_app::ReparentWebAppForActiveTab(
-                    bwi->GetBrowserForMigrationOnly());
+                web_app::ReparentWebAppForActiveTab(bwi);
               },
               bwi))
           .SetActionId(kActionOpenInPwaWindow)
@@ -3580,8 +3578,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                     bwi->GetBrowserForMigrationOnly());
 #else
                 web_app::CreateWebAppFromCurrentWebContents(
-                    bwi->GetBrowserForMigrationOnly(),
-                    web_app::WebAppInstallFlow::kCreateShortcut);
+                    bwi, web_app::WebAppInstallFlow::kCreateShortcut);
 #endif
               },
               bwi))

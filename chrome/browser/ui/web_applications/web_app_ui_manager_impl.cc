@@ -33,7 +33,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -384,24 +383,21 @@ bool WebAppUiManagerImpl::CanReparentAppTabToWindow(
 #endif
 }
 
-Browser* WebAppUiManagerImpl::ReparentAppTabToWindow(
+BrowserWindowInterface* WebAppUiManagerImpl::ReparentAppTabToWindow(
     content::WebContents* contents,
     const webapps::AppId& app_id,
     bool shortcut_created) {
   DCHECK(CanReparentAppTabToWindow(app_id, shortcut_created, contents));
   // Reparent the tab into an app window immediately.
-  BrowserWindowInterface* browser =
-      ReparentWebContentsIntoAppBrowser(contents, app_id);
-  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
+  return ReparentWebContentsIntoAppBrowser(contents, app_id);
 }
 
-Browser* WebAppUiManagerImpl::ReparentAppTabToWindow(
+BrowserWindowInterface* WebAppUiManagerImpl::ReparentAppTabToWindow(
     content::WebContents* contents,
     const webapps::AppId& app_id,
     base::OnceCallback<void(content::WebContents*)> completion_callback) {
-  BrowserWindowInterface* browser = ReparentWebContentsIntoAppBrowser(
-      contents, app_id, std::move(completion_callback));
-  return browser == nullptr ? nullptr : browser->GetBrowserForMigrationOnly();
+  return ReparentWebContentsIntoAppBrowser(contents, app_id,
+                                           std::move(completion_callback));
 }
 
 void WebAppUiManagerImpl::ShowWebAppFileLaunchDialog(
@@ -746,7 +742,7 @@ void WebAppUiManagerImpl::MaybeRemoveWebAppBlockedMigrationInfoBar(
 }
 
 void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     Profile* profile,
     const std::string& app_id) {
   if (!apps::features::IsNavigationCapturingOnByDefault()) {
@@ -784,11 +780,10 @@ void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
   }
 
   web_app::PostCallbackOnBrowserActivation(
-      app_browser->GetBrowserForMigrationOnly(), kToolbarAppMenuButtonElementId,
+      app_browser, kToolbarAppMenuButtonElementId,
       base::BindOnce(
           &WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing,
-          weak_ptr_factory_.GetWeakPtr(),
-          app_browser->GetBrowserForMigrationOnly(), app_id));
+          weak_ptr_factory_.GetWeakPtr(), app_browser, app_id));
 }
 
 void WebAppUiManagerImpl::OnBrowserCreated(BrowserWindowInterface* browser) {
@@ -1035,7 +1030,7 @@ const base::Feature& GetPromoFeatureEngagementFromBrowser(
 }
 
 void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const webapps::AppId& app_id,
     bool is_activated) {
   if (!browser || !is_activated) {
@@ -1065,7 +1060,7 @@ void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
   if (&feature ==
       &feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab) {
     content::WebContents* const active_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
     if (!active_contents) {
       return;
     }

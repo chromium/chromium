@@ -111,7 +111,7 @@ void ViewVisibleInActiveWidgetNotifier::RunCallback(bool conditions_met) {
 }
 
 void PostCallbackOnBrowserActivation(
-    const Browser* browser,
+    const BrowserWindowInterface* browser,
     ui::ElementIdentifier id,
     base::OnceCallback<void(bool)> view_and_element_activated_callback) {
   views::Widget* widget =

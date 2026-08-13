@@ -18,8 +18,8 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -135,7 +135,7 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
  public:
   UpdateDialogDelegate(const webapps::AppId& app_id,
                        UpdateReviewDialogCallback callback,
-                       Browser& browser)
+                       BrowserWindowInterface& browser)
       : app_id_(app_id), callback_(std::move(callback)), browser_(browser) {
     install_manager_observation_.Observe(
         &WebAppProvider::GetForWebApps(browser_->GetProfile())
@@ -234,7 +234,7 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
  private:
   const webapps::AppId app_id_;
   UpdateReviewDialogCallback callback_;
-  raw_ref<Browser> browser_;
+  raw_ref<BrowserWindowInterface> browser_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
@@ -253,7 +253,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kWebAppUpdateReviewIgnoreButton);
 
 void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
                                   const WebAppIdentityUpdate& update,
-                                  Browser* browser,
+                                  BrowserWindowInterface* browser,
                                   base::TimeTicks start_time,
                                   UpdateReviewDialogCallback callback) {
   CHECK(!callback.is_null());

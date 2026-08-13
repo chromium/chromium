@@ -20,8 +20,6 @@
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/common/web_app_id.h"
 
-class Browser;
-
 namespace base {
 class FilePath;
 }  // namespace base
@@ -78,10 +76,11 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const webapps::AppId& app_id,
       bool shortcut_created,
       content::WebContents* web_contents) const override;
-  Browser* ReparentAppTabToWindow(content::WebContents* contents,
-                                  const webapps::AppId& app_id,
-                                  bool shortcut_created) override;
-  Browser* ReparentAppTabToWindow(
+  BrowserWindowInterface* ReparentAppTabToWindow(
+      content::WebContents* contents,
+      const webapps::AppId& app_id,
+      bool shortcut_created) override;
+  BrowserWindowInterface* ReparentAppTabToWindow(
       content::WebContents* contents,
       const webapps::AppId& app_id,
       base::OnceCallback<void(content::WebContents*)> completion_callback)
@@ -197,7 +196,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
       content::WebContents* web_contents) override;
 
   void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       Profile* profile,
       const std::string& app_id) override;
 

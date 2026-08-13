@@ -1384,7 +1384,7 @@ void TestDeclineDialogCallback(
 
 // TODO(b/329703817): Make this smarter by waiting for a specific dialog, and
 // then triggering accept on the dialog.
-webapps::AppId InstallPwaForCurrentUrl(Browser* browser) {
+webapps::AppId InstallPwaForCurrentUrl(BrowserWindowInterface* browser) {
   // Depending on the installability criteria, different dialogs can be used.
   base::AutoReset<web_app::InstallDialogTestResponse> auto_accept =
       web_app::SetPwaInstallationAutoRespondForTesting(

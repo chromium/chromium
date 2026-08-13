@@ -19,7 +19,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "ui/base/window_open_disposition.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 struct NavigateParams;
 
@@ -41,7 +41,7 @@ class NavigationCapturingOverride {
   // Current navigation will proceed in the given `browser`.
   static NavigationCapturingOverride CreateForNavigateNew(
       base::PassKey<NavigationCapturingProcess>,
-      Browser* browser);
+      BrowserWindowInterface* browser);
 
   // Current navigation will be aborted; the target URL will be enqueued in
   // `window.launchQueue` for the given `web_contents`.
@@ -54,7 +54,7 @@ class NavigationCapturingOverride {
   // guaranteed to exist.
   static NavigationCapturingOverride CreateForNavigateExisting(
       base::PassKey<NavigationCapturingProcess>,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       int tab_index);
 
   ~NavigationCapturingOverride();
@@ -64,16 +64,16 @@ class NavigationCapturingOverride {
   NavigationCapturingOverride& operator=(
       const NavigationCapturingOverride& other) = default;
 
-  Browser* browser() const { return browser_; }
+  BrowserWindowInterface* browser() const { return browser_; }
   const std::optional<int>& tab_index() const { return tab_index_; }
 
  private:
   explicit NavigationCapturingOverride(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       std::optional<int> tab_index = std::nullopt);
 
   // `browser` will always be used to override `params.browser`.
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
 
   // The overrides below will only be applied if they're explicitly set.
   std::optional<int> tab_index_;
@@ -211,7 +211,7 @@ class NavigationCapturingProcess
   struct ClientModeAndBrowser {
     LaunchHandler::ClientMode effective_client_mode =
         LaunchHandler::ClientMode::kNavigateNew;
-    raw_ptr<Browser> browser = nullptr;
+    raw_ptr<BrowserWindowInterface> browser = nullptr;
     std::optional<int> tab_index;
   };
   ClientModeAndBrowser GetEffectiveClientModeAndBrowser(
@@ -224,27 +224,29 @@ class NavigationCapturingProcess
   MaybeNavigationCapturingOverride CapturingDisabled();
   MaybeNavigationCapturingOverride CancelInitialNavigation(
       NavigationCapturingInitialResult result);
-  MaybeNavigationCapturingOverride NoCapturingOverrideBrowser(Browser* browser);
+  MaybeNavigationCapturingOverride NoCapturingOverrideBrowser(
+      BrowserWindowInterface* browser);
   MaybeNavigationCapturingOverride AuxiliaryContext();
   MaybeNavigationCapturingOverride AuxiliaryContextInAppWindow(
-      Browser* app_browser);
+      BrowserWindowInterface* app_browser);
   MaybeNavigationCapturingOverride NoInitialActionRedirectionHandlingEligible();
   MaybeNavigationCapturingOverride ForcedNewAppContext(
       blink::mojom::DisplayMode app_display_mode,
-      Browser* host_browser);
+      BrowserWindowInterface* host_browser);
   MaybeNavigationCapturingOverride ForcedNewIwaAppContextWithScopeExtendedUrl(
       blink::mojom::DisplayMode app_display_mode);
   MaybeNavigationCapturingOverride CapturedNewClient(
       blink::mojom::DisplayMode app_display_mode,
-      Browser* host_browser);
+      BrowserWindowInterface* host_browser);
   MaybeNavigationCapturingOverride CapturedNewIwaClientWithScopeExtendedUrl(
       blink::mojom::DisplayMode app_display_mode);
   MaybeNavigationCapturingOverride CapturedNavigateExisting(
-      Browser* app_browser,
+      BrowserWindowInterface* app_browser,
       int browser_tab);
-  MaybeNavigationCapturingOverride CapturedFocusExisting(Browser* browser,
-                                                         int browser_tab,
-                                                         const GURL& url);
+  MaybeNavigationCapturingOverride CapturedFocusExisting(
+      BrowserWindowInterface* browser,
+      int browser_tab,
+      const GURL& url);
 
   // Updates the `launched_app_id_` field, and if this process as already been
   // attached to a `NavigationHandle`, also creates or updates the
@@ -281,7 +283,7 @@ class NavigationCapturingProcess
   const std::optional<webapps::AppId> source_tab_app_id_;
   const GURL navigation_params_url_;
   const WindowOpenDisposition disposition_;
-  const raw_ptr<Browser> navigation_params_browser_;
+  const raw_ptr<BrowserWindowInterface> navigation_params_browser_;
   std::optional<webapps::AppId> first_navigation_app_id_;
   std::optional<blink::mojom::DisplayMode> first_navigation_app_display_mode_;
 

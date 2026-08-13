@@ -32,7 +32,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/native_ui_types.h"
 
-class Browser;
 class BrowserWindow;
 class Profile;
 class GlobalBrowserCollection;
@@ -93,10 +92,11 @@ class WebAppUiManagerImpl : public BrowserCollectionObserver,
       const webapps::AppId& app_id,
       bool shortcut_created,
       content::WebContents* web_contents) const override;
-  Browser* ReparentAppTabToWindow(content::WebContents* contents,
-                                  const webapps::AppId& app_id,
-                                  bool shortcut_created) override;
-  Browser* ReparentAppTabToWindow(
+  BrowserWindowInterface* ReparentAppTabToWindow(
+      content::WebContents* contents,
+      const webapps::AppId& app_id,
+      bool shortcut_created) override;
+  BrowserWindowInterface* ReparentAppTabToWindow(
       content::WebContents* contents,
       const webapps::AppId& app_id,
       base::OnceCallback<void(content::WebContents*)> completion_callback)
@@ -212,7 +212,7 @@ class WebAppUiManagerImpl : public BrowserCollectionObserver,
       content::NavigationHandle* navigation_handle) override;
 
   void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       Profile* profile,
       const std::string& app_id) override;
 
@@ -272,9 +272,10 @@ class WebAppUiManagerImpl : public BrowserCollectionObserver,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  void ShowIPHPromoForAppsLaunchedViaLinkCapturing(Browser* browser,
-                                                   const webapps::AppId& app_id,
-                                                   bool is_activated);
+  void ShowIPHPromoForAppsLaunchedViaLinkCapturing(
+      BrowserWindowInterface* browser,
+      const webapps::AppId& app_id,
+      bool is_activated);
   void OnIPHPromoResponseForLinkCapturing(BrowserWindowInterface* browser,
                                           const webapps::AppId& app_id);
 

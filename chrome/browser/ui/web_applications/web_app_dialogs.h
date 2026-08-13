@@ -27,9 +27,9 @@
 static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
               BUILDFLAG(IS_CHROMEOS));
 
+class BrowserWindowInterface;
 class GURL;
 class Profile;
-class Browser;
 
 namespace base {
 class FilePath;
@@ -87,7 +87,7 @@ void ShowCreateShortcutDialog(
 // See the `WebAppIdentityUpdateResult` type for the possible responses.
 void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
                                   const WebAppIdentityUpdate& update,
-                                  Browser* browser,
+                                  BrowserWindowInterface* browser,
                                   base::TimeTicks start_time,
                                   UpdateReviewDialogCallback callback);
 
@@ -245,7 +245,7 @@ void FocusIsolatedWebAppInstaller(
     IsolatedWebAppInstallerCoordinator* coordinator);
 
 void PostCallbackOnBrowserActivation(
-    const Browser* browser,
+    const BrowserWindowInterface* browser,
     ui::ElementIdentifier id,
     base::OnceCallback<void(bool)> view_and_element_activated_callback);
 

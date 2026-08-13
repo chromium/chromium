@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_TABBED_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_TABBED_UTILS_H_
 
-class Browser;
+class BrowserWindowInterface;
 class GURL;
 class TabStripModel;
 
@@ -22,7 +22,7 @@ bool IsTabClosable(const TabStripModel* tab_strip_model, int index);
 
 // Returns whether the browser has a home tab and the given URL is within the
 // home tab scope.
-bool IsHomeTabUrl(const Browser* browser, const GURL& url);
+bool IsHomeTabUrl(const BrowserWindowInterface* browser, const GURL& url);
 
 }  // namespace web_app
 

@@ -25,7 +25,6 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "ui/gfx/native_ui_types.h"
 
-class Browser;
 class BrowserWindow;
 class BrowserWindowInterface;
 class Profile;
@@ -183,14 +182,15 @@ class WebAppUiManager {
       content::WebContents* web_contents) const = 0;
   // Reparents the |contents| to a new browser window, returns a nullptr if the
   // operation failed.
-  virtual Browser* ReparentAppTabToWindow(content::WebContents* contents,
-                                          const webapps::AppId& app_id,
-                                          bool shortcut_created) = 0;
+  virtual BrowserWindowInterface* ReparentAppTabToWindow(
+      content::WebContents* contents,
+      const webapps::AppId& app_id,
+      bool shortcut_created) = 0;
 
   // Reparents the `contents` to a new browser window, returns a nullptr if the
   // operation failed. Runs `completion_callback` with the web contents of the
   // newly reparented app window.
-  virtual Browser* ReparentAppTabToWindow(
+  virtual BrowserWindowInterface* ReparentAppTabToWindow(
       content::WebContents* contents,
       const webapps::AppId& app_id,
       base::OnceCallback<void(content::WebContents*)> completion_callback) = 0;
@@ -379,7 +379,7 @@ class WebAppUiManager {
   // Creates the IPH bubble for apps that are launched via link capturing being
   // enabled.
   virtual void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       Profile* profile,
       const std::string& app_id) = 0;
 

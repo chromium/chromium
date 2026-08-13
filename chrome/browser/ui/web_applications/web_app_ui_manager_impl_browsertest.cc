@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   BrowserWindowInterface* const app_browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  BrowserWaiter waiter(app_browser->GetBrowserForMigrationOnly());
+  BrowserWaiter waiter(app_browser);
   // Uninstalling should close the |app_browser|, but keep the browser
   // object alive long enough to complete the uninstall.
   test::UninstallWebApp(app_browser->GetProfile(), foo_app_id);

@@ -98,15 +98,16 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
                                         const GURL& url);
 
   // Returns whether the installable check passed.
-  static bool NavigateAndAwaitInstallabilityCheck(Browser* browser,
-                                                  const GURL& url);
+  static bool NavigateAndAwaitInstallabilityCheck(
+      BrowserWindowInterface* browser,
+      const GURL& url);
 
   Browser* NavigateInNewWindowAndAwaitInstallabilityCheck(const GURL&);
 
   std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url);
 
   // Opens |url| in a new popup window with the dimensions |popup_size|.
-  Browser* OpenPopupAndWait(Browser* browser,
+  Browser* OpenPopupAndWait(BrowserWindowInterface* browser,
                             const GURL& url,
                             const gfx::Size& popup_size);
 
