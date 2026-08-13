@@ -170,9 +170,8 @@ TEST_F(DictationOverlayViewTest, SubviewSizingAndMargin) {
   ASSERT_NE(waveform_view, nullptr);
   ASSERT_NE(finalizing_image, nullptr);
 
-  // Subviews are sized to 20x20.
+  // Subviews are sized to 20x20 when active.
   EXPECT_EQ(mic_button->GetPreferredSize(), gfx::Size(20, 20));
-  EXPECT_EQ(waveform_view->GetPreferredSize(), gfx::Size(20, 20));
   EXPECT_EQ(finalizing_image->GetPreferredSize(), gfx::Size(20, 20));
 
   // Inactive state overlay preferred size is a 32x32 circle (20px content +
@@ -181,6 +180,7 @@ TEST_F(DictationOverlayViewTest, SubviewSizingAndMargin) {
 
   // Transcribing state overlay preferred size remains a 32x32 circle.
   overlay->SetState(UiState::kTranscribing);
+  EXPECT_EQ(waveform_view->GetPreferredSize(), gfx::Size(20, 20));
   EXPECT_EQ(contents_view->GetPreferredSize(), gfx::Size(32, 32));
 }
 

@@ -146,7 +146,6 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     StartSession(),
     ObserveSessionStateChanges(),
     WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
-    WaitForShow(DictationBubbleUi::kWaveformElementIdForTesting),
 
     // kStreamInitializing.
     CheckResult(GetSessionState(), SessionState::kStreamInitializing),
@@ -157,6 +156,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
 
     // kTranscribing.
     ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    WaitForShow(DictationBubbleUi::kWaveformElementIdForTesting),
     CheckResult(GetSessionState(), SessionState::kTranscribing),
     CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
                       &views::LabelButton::GetText, u"Done"),
