@@ -14,6 +14,7 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
@@ -178,37 +179,21 @@ std::vector<Instruction> MaybeSkipOptionalFooter(
   return std::vector<Instruction>(iter, instructions.end());
 }
 
-#if BUILDFLAG(USE_CLANG_COVERAGE) || BUILDFLAG(CLANG_PROFILING)
-bool MatchPrefix(const std::vector<Instruction>& haystack,
-                 const base::span<const Instruction>& needle) {
-  for (size_t i = 0; i < needle.size(); i++) {
-    if (i >= haystack.size() || needle[i] != haystack[i]) {
-      return false;
-    }
-  }
-  return true;
-}
-
-std::vector<Instruction> DropUntilMatch(
-    std::vector<Instruction> haystack,
-    const base::span<const Instruction>& needle) {
-  while (!haystack.empty() && !MatchPrefix(haystack, needle)) {
-    haystack.erase(haystack.begin());
-  }
-  return haystack;
-}
-
-#endif  // USE_CLANG_COVERAGE || BUILDFLAG(CLANG_PROFILING)
-
-std::vector<Instruction> MaybeSkipCoverageHook(
-    std::vector<Instruction> instructions) {
+span<const Instruction> MaybeSkipCoverageHook(
+    span<const Instruction> instructions) {
 #if BUILDFLAG(USE_CLANG_COVERAGE) || BUILDFLAG(CLANG_PROFILING)
   // Warning: it is not illegal for the entirety of the expected crash sequence
   // to appear as a subsequence of the coverage hook code. If that happens, this
   // code will falsely exit early, having not found the real expected crash
   // sequence, so this may not adequately ensure that the immediate crash
   // sequence is present. We do check when not under coverage, at least.
-  return DropUntilMatch(instructions, span(kRequiredBody));
+  while (instructions.size() >= kRequiredBody.size()) {
+    if (instructions.first<kRequiredBody.size()>() == kRequiredBody) {
+      return instructions;
+    }
+    instructions.take_first<1u>();
+  }
+  return {};
 #else
   return instructions;
 #endif  // USE_CLANG_COVERAGE || BUILDFLAG(CLANG_PROFILING)
@@ -246,10 +231,11 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   it++;
 
   body = std::vector<Instruction>(it, body.end());
-  std::optional<std::vector<Instruction>> result = MaybeSkipCoverageHook(body);
+  std::optional<std::vector<Instruction>> result =
+      ToVector(MaybeSkipCoverageHook(body));
   result = ExpectImmediateCrashInvocation(result.value());
   result = MaybeSkipOptionalFooter(result.value());
-  result = MaybeSkipCoverageHook(result.value());
+  result = ToVector(MaybeSkipCoverageHook(result.value()));
   result = ExpectImmediateCrashInvocation(result.value());
   ASSERT_TRUE(result);
 #endif  // defined(OFFICIAL_BUILD)
