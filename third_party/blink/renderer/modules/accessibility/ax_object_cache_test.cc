@@ -1223,4 +1223,16 @@ TEST_F(AccessibilityTest,
   EXPECT_EQ(cache->GetActiveAriaModalDialog(), dialog);
 }
 
+TEST_F(AccessibilityTest, AriaOwnsWithUnmappedOrDetachedChildDoesNotCrash) {
+  // Test case based on ClusterFuzz issue 521081377 reproducer.
+  SetBodyInnerHTML(R"HTML(
+    <select></textarea><div aria-owns="z1 z2">
+      <select><<drow id="z1"><applet>>
+      <div id="z2"><
+  )HTML");
+  // Simply accessing AXObjectCache to process clean layout/aria-owns should not
+  // crash.
+  GetAXObjectCache().UpdateAXForAllDocuments();
+}
+
 }  // namespace blink

@@ -792,8 +792,9 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
   DCHECK(!owner->IsDetached());
   for (AXID added_child_id : child_ids) {
     AXObject* added_child = ObjectFromAXID(added_child_id);
-    DCHECK(added_child);
-    DCHECK(!added_child->IsDetached());
+    if (!added_child || added_child->IsDetached()) {
+      continue;
+    }
 
     // Invalidating ensures that cached "included in tree" state is recomputed
     // on objects with changed ownership -- owned children must always be
@@ -1028,11 +1029,27 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   Vector<AXID> unparented_child_ids;
   UnmapOwnedChildrenWithCleanLayout(owner, previously_owned_child_ids,
                                     unparented_child_ids);
+
+  // Update the mapping from the owner to the list of child IDs first, so that
+  // if any child or its descendants are removed during
+  // MapOwnedChildrenWithCleanLayout (e.g. via RemoveSubtree),
+  // RemoveOwnedRelation() will find the owner in
+  // aria_owner_to_children_mapping_.
+  if (validated_owned_child_axids.empty()) {
+    aria_owner_to_children_mapping_.erase(owner->AXObjectID());
+  } else {
+    aria_owner_to_children_mapping_.Set(owner->AXObjectID(),
+                                        validated_owned_child_axids);
+  }
+
   MapOwnedChildrenWithCleanLayout(owner, validated_owned_child_axids);
 
 #if DCHECK_IS_ON()
   // Owned children must be in tree to avoid serialization issues.
   for (AXObject* child : validated_owned_children_result) {
+    if (!child || child->IsDetached()) {
+      continue;
+    }
     DCHECK(IsAriaOwned(child));
     DCHECK(child->ComputeIsIgnoredButIncludedInTree())
         << "Owned child not in tree: " << child
@@ -1040,14 +1057,6 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
         << child->ComputeIsIgnoredButIncludedInTree();
   }
 #endif
-
-  // Finally, update the mapping from the owner to the list of child IDs.
-  if (validated_owned_child_axids.empty()) {
-    aria_owner_to_children_mapping_.erase(owner->AXObjectID());
-  } else {
-    aria_owner_to_children_mapping_.Set(owner->AXObjectID(),
-                                        validated_owned_child_axids);
-  }
 
   // Ensure that objects that have lost their parent have one, or that their
   // subtree is pruned if there is no available parent.
