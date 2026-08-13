@@ -661,9 +661,15 @@ void PasswordSaveUpdateView::UpdateBubbleUIElements() {
       SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
       bool is_update = controller_.IsCurrentStateUpdate();
-      std::u16string ok_text = l10n_util::GetStringUTF16(
-          is_update ? IDS_PASSWORD_MANAGER_SHORT_UPDATE_BUTTON
-                    : IDS_PASSWORD_MANAGER_SAVE_BUTTON);
+      std::u16string ok_text;
+      if (IsTrustedVaultErrorResolutionEnabled() &&
+          controller_.IsSavingBlockedByTrustedVaultError()) {
+        ok_text = l10n_util::GetStringUTF16(IDS_CONTINUE);
+      } else {
+        ok_text = l10n_util::GetStringUTF16(
+            is_update ? IDS_PASSWORD_MANAGER_SHORT_UPDATE_BUTTON
+                      : IDS_PASSWORD_MANAGER_SAVE_BUTTON);
+      }
       bool ok_enabled = IsDialogButtonEnabled(ui::mojom::DialogButton::kOk);
 
       if (custom_button_row_) {
