@@ -2721,30 +2721,6 @@ constexpr char kListenerAdded[] = "listener-added";
 using ServiceWorkerWebRequestEarlyListenerTest =
     ServiceWorkerWithEarlyMessageListenerTest<kListenerAdded>;
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestEarlyListenerTest,
-                       PRE_WebRequestAfterRestart) {
-  base::FilePath extension_path = test_data_dir_.AppendASCII("service_worker")
-                                      .AppendASCII("worker_based_background")
-                                      .AppendASCII("web_request_after_restart");
-  const Extension* extension =
-      LoadExtension(extension_path, {.wait_for_registration_stored = true});
-  ASSERT_TRUE(extension);
-  EXPECT_TRUE(WaitForMessage());
-}
-
-// After browser restarts, this test step ensures that navigating a tab fires
-// the webRequest listener.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestEarlyListenerTest,
-                       WebRequestAfterRestart) {
-  // Wait for the page to load.
-  EXPECT_TRUE(WaitForMessage());
-  // Navigate and expect the listener in the extension to be triggered.
-  ResultCatcher catcher;
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
-                            embedded_test_server()->GetURL("/empty.html")));
-  EXPECT_TRUE(catcher.GetNextResult()) << message_;
-}
-
 // Disabled on win due to flakiness: https://crbug.com/40718882.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_FilteredEventsAfterRestart \
@@ -2814,10 +2790,6 @@ class ServiceWorkerWebRequestPersistFilteredEventsTest
   WebRequestEventRouter* web_request_router() {
     return WebRequestEventRouter::Get(profile());
   }
-
- private:
-  base::AutoReset<bool> disable_lazy_context_spinup_ =
-      ExtensionRegistrar::DisableLazyContextSpinupForTest();
 };
 
 // Test that persisted webRequest filters are restored after browser restart.

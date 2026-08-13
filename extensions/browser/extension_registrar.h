@@ -346,11 +346,6 @@ class ExtensionRegistrar : public KeyedService,
   void GreylistExtensionForTest(const std::string& extension_id,
                                 const BitMapBlocklistState& state);
 
-  // Disables the automatic spin-up of lazy contexts. This should only be used
-  // in tests.
-  [[nodiscard]]
-  static base::AutoReset<bool> DisableLazyContextSpinupForTest();
-
   // Deactivates the extension, adding its id to the list of terminated
   // extensions.
   void TerminateExtension(const ExtensionId& extension_id);

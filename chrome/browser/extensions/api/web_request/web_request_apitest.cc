@@ -6492,7 +6492,8 @@ IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
   // Load an extension that listens for webRequest events.
   ASSERT_TRUE(StartEmbeddedTestServer());
   const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("webrequest_persistent"));
+      LoadExtension(test_data_dir_.AppendASCII("webrequest_persistent"),
+                    {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
 
   // Navigate to example.com (a site the extension has access to).
@@ -6521,12 +6522,23 @@ IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
   }
   ASSERT_TRUE(extension);
   WaitForExtensionViewsToLoad();
-  WaitForReadyMessage();
+  // Non-service workers with webRequest permissions start up immediately on
+  // browser restart. Service workers with webRequest lazy listeners remain
+  // dormant until a matching request occurs.
+  if (GetContextType() != ContextType::kServiceWorker) {
+    WaitForReadyMessage();
+  }
 
   // Navigate once more to example.com.
   ASSERT_TRUE(NavigateToURL(
       GetActiveWebContents(),
       embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  // Now that a matching network request has occurred, the dormant service
+  // worker is woken up on demand and executes its background script.
+  if (GetContextType() == ContextType::kServiceWorker) {
+    WaitForReadyMessage();
+  }
 
   // We should now have two records seen by the extension.
   base::Value request_count = BackgroundScriptExecutor::ExecuteScript(

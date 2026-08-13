@@ -56,8 +56,6 @@ namespace {
 BASE_FEATURE(kExtensionUpdatesImmediatelyUnregisterWorker,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool g_disable_lazy_context_spinup_for_test = false;
-
 // The browser version at the time a component extension was last added.
 // Component extensions are packaged with the browser, so their code can
 // change whenever the browser updates, even if the version in their manifest
@@ -998,12 +996,6 @@ void ExtensionRegistrar::GreylistExtensionForTest(
   }
 }
 
-// static
-base::AutoReset<bool> ExtensionRegistrar::DisableLazyContextSpinupForTest() {
-  CHECK_IS_TEST();
-  return base::AutoReset<bool>(&g_disable_lazy_context_spinup_for_test, true);
-}
-
 void ExtensionRegistrar::OnUnpackedExtensionReloadFailed(
     const base::FilePath& path) {
   failed_to_reload_unpacked_extensions_.insert(path);
@@ -1337,10 +1329,6 @@ void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
                                                 bool is_newly_added) {
   DCHECK(BackgroundInfo::HasLazyContext(extension));
 
-  if (g_disable_lazy_context_spinup_for_test) {
-    return;
-  }
-
   // For orphaned devtools, we will reconnect devtools to it later in
   // DidCreateMainFrameForBackgroundPage().
   bool has_orphaned_dev_tools = orphaned_dev_tools_.contains(extension->id());
@@ -1350,19 +1338,6 @@ void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
   // background page.
   bool is_component_extension =
       Manifest::IsComponentLocation(extension->location());
-
-  // TODO(crbug.com/40107353): This is either a workaround or something
-  // that will be part of the permanent solution for service worker-
-  // based extensions.
-  // We spin up extensions with the webRequest permission so their
-  // listeners are reconstructed on load.
-  // Event page-based extension cannot have the webRequest permission, but
-  // a bug allowed them to specify it in optional permissions, so filter
-  // out those extensions. See crbug.com/40912377.
-  bool needs_spinup_for_web_request =
-      extension->permissions_data()->HasAPIPermission(
-          mojom::APIPermissionID::kWebRequest) &&
-      BackgroundInfo::IsServiceWorkerBased(extension);
 
   // It's possible that the worker has been registered but hasn't fully run yet,
   // as in the case where a service worker may have been interrupted during it's
@@ -1377,23 +1352,17 @@ void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
 
   // If there aren't any special cases, we're done.
   if (!has_orphaned_dev_tools && !is_component_extension &&
-      !needs_spinup_for_web_request && !needs_spinup_because_hasnt_started) {
-    return;
-  }
-
-  // If the extension's not being reloaded (`is_newly_added` == true),
-  // only wake it up if it has the webRequest permission or hasn't fully
-  // started.
-  if (is_newly_added && !needs_spinup_for_web_request &&
       !needs_spinup_because_hasnt_started) {
     return;
   }
 
-  // Wake up the extension by posting a no-op task. In the case of a service
-  // worker-based extension with the webRequest permission that's being newly
-  // installed, this will result in a no-op task that's not necessary, since
-  // this is really only needed for a previously-installed extension. However,
-  // that cost is minimal, since the worker is already active.
+  // If the extension's not being reloaded (`is_newly_added` == true),
+  // only wake it up if it hasn't fully started.
+  if (is_newly_added && !needs_spinup_because_hasnt_started) {
+    return;
+  }
+
+  // Wake up the extension by posting a no-op task.
   const auto context_id =
       LazyContextId::ForExtension(browser_context_, extension);
   context_id.GetTaskQueue()->AddPendingTask(context_id, base::DoNothing());
