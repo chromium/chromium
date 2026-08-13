@@ -62,6 +62,10 @@ class TabHoverCardController : public views::ViewObserver,
 
   const HoverCardAnchorTarget* target_tab() const { return target_tab_.get(); }
 
+  bool hover_card_memory_usage_enabled() const {
+    return hover_card_memory_usage_enabled_;
+  }
+
   TabHoverCardBubbleView* hover_card_for_testing() { return hover_card_.get(); }
 
   size_t hover_cards_seen_count_for_testing() const {

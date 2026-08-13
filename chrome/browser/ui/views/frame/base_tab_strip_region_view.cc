@@ -381,6 +381,10 @@ views::View* BaseTabStripRegionView::GetTabStripView() {
   return tab_strip_view_;
 }
 
+TabHoverCardController* BaseTabStripRegionView::GetHoverCardController() {
+  return hover_card_controller_.get();
+}
+
 bool BaseTabStripRegionView::TraverseUsingUpDownKeys() {
   return orientation_ == TabStripOrientation::kVertical;
 }

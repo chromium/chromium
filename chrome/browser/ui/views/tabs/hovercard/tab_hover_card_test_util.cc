@@ -49,7 +49,7 @@ TabHoverCardController* TabHoverCardTestUtil::GetHoverCardController(
                : nullptr;
   }
   auto* tab_strip = browser_view->horizontal_tab_strip_for_testing();
-  return tab_strip ? tab_strip->hover_card_controller_for_testing() : nullptr;
+  return tab_strip ? tab_strip->hover_card_controller() : nullptr;
 }
 
 // static
