@@ -596,6 +596,11 @@ interface Page {
   //  OmniboxViewViews and can be eliminated once we have full webui popup.
   OpenCurrentSelection(ui.mojom.WindowOpenDisposition disposition);
 
+  // Resets the popup selection to the initial state.
+  // TODO(crbug.com/483117840): This is driven by interaction with
+  //  OmniboxViewViews and can be eliminated once we have full webui popup.
+  ResetPopupToInitialState();
+
   // Updates visibility of the AIM button (on right side of OmniboxViewViews).
   // TODO(crbug.com/483117840): This is driven by interaction with
   //  OmniboxViewViews and can be eliminated once we have full webui popup.

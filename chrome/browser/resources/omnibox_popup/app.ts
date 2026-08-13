@@ -140,6 +140,8 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
               this.stepSelection_.bind(this)),
           this.searchboxBrowserProxy_.callbackRouter.openCurrentSelection
               .addListener(this.openCurrentSelection_.bind(this)),
+          this.searchboxBrowserProxy_.callbackRouter.resetPopupToInitialState
+              .addListener(this.resetPopupToInitialState_.bind(this)),
           this.searchboxBrowserProxy_.callbackRouter.setAimButtonVisible
               .addListener((visible: boolean) => {
                 this.isAimButtonVisible_ = visible;
@@ -205,11 +207,11 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
         state: SelectionLineState.kNormal,
       };
       if (result.matches[0]?.allowedToBeDefaultMatch) {
-        this.setSelection(available[0] || kDefaultSelection);
+        this.setSelection(available[0] || kDefaultSelection, false);
       } else if (available.some(s => selectionsEqual(s, sameLineSelection))) {
-        this.setSelection(sameLineSelection);
+        this.setSelection(sameLineSelection, false);
       } else {
-        this.setSelection(kDefaultSelection);
+        this.setSelection(kDefaultSelection, false);
       }
       return;
     }
@@ -244,9 +246,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
 
   private onUpdateSelection_(
       oldSelection: OmniboxPopupSelection, selection: OmniboxPopupSelection) {
-    if (this.webuiOmniboxPopupSelectionControlEnabled_) {
-      this.setSelection(selection, false);
-    } else {
+    if (!this.webuiOmniboxPopupSelectionControlEnabled_) {
       this.getDropdown().updateSelection(oldSelection, selection);
     }
   }
@@ -278,8 +278,10 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
     if (!this.result_) {
       return;
     }
+    const nextSelection =
+        this.getNextSelection(this.result_, this.selection, direction, step);
     this.setSelection(
-        this.getNextSelection(this.result_, this.selection, direction, step));
+        nextSelection, !selectionsEqual(this.selection, nextSelection));
   }
 
   // Opens the current popup selection (the one visually indicated by the
@@ -296,6 +298,18 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
           `openCurrentSelection_ called for unsupported selection: ${
               selectionToString(this.selection)}`);
     }
+  }
+
+  // Resets the popup selection to the initial state.
+  private resetPopupToInitialState_() {
+    if (!this.result_) {
+      return;
+    }
+    const available = this.getAvailableSelections(this.result_);
+    const initialSelection = this.result_.matches[0]?.allowedToBeDefaultMatch ?
+        (available[0] || kDefaultSelection) :
+        kDefaultSelection;
+    this.setSelection(initialSelection, false);
   }
 
   protected onHasSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {

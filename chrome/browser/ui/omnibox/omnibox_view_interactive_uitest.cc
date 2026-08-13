@@ -576,27 +576,32 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PopupAccelerators) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
+  chrome::FocusLocationBar(browser());
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchKeywordKeys));
-  ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
   // Trigger keyword mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
-  ASSERT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
   // Backspace without search text should bring back keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-  ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
   // Trigger keyword mode again.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
-  ASSERT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
   // Input something as search text.
@@ -768,6 +773,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_EnterToSearch) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, EscapeToDefaultMatch) {
+  chrome::FocusLocationBar(browser());
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
@@ -789,8 +795,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, EscapeToDefaultMatch) {
       GetOmniboxController()->autocomplete_controller()->result().size();
   while (GetOmniboxEditModel()->GetPopupSelection().line < size - 1) {
     ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DOWN, 0));
-    ASSERT_NE(old_selected_line,
-              GetOmniboxEditModel()->GetPopupSelection().line);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return old_selected_line !=
+             GetOmniboxEditModel()->GetPopupSelection().line;
+    }));
     if (old_text != omnibox_view->GetText()) {
       break;
     }
@@ -800,8 +808,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, EscapeToDefaultMatch) {
 
   // Escape shall revert back to the default match item.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_ESCAPE, 0));
-  EXPECT_EQ(old_text, omnibox_view->GetText());
-  EXPECT_EQ(old_selected_line, GetOmniboxEditModel()->GetPopupSelection().line);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return old_text == omnibox_view->GetText() &&
+           old_selected_line == GetOmniboxEditModel()->GetPopupSelection().line;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
@@ -1166,6 +1176,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DeleteItem) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, TabAcceptKeyword) {
+  chrome::FocusLocationBar(browser());
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
@@ -1173,19 +1184,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, TabAcceptKeyword) {
 
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchKeywordKeys));
-  ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(text, GetOmniboxEditModel()->keyword());
   ASSERT_EQ(text, omnibox_view->GetText());
 
   // Trigger keyword mode by tab.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
-  ASSERT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(text, GetOmniboxEditModel()->keyword());
   ASSERT_TRUE(omnibox_view->GetText().empty());
 
   // Revert to keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-  ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(text, GetOmniboxEditModel()->keyword());
   ASSERT_EQ(text, omnibox_view->GetText());
 
@@ -1194,30 +1208,35 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, TabAcceptKeyword) {
 
   // Trigger keyword mode by tab.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
-  ASSERT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(text, GetOmniboxEditModel()->keyword());
   ASSERT_TRUE(omnibox_view->GetText().empty());
 
   // Revert to keyword hint mode with SHIFT+TAB.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN));
-  ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(text, GetOmniboxEditModel()->keyword());
   ASSERT_EQ(text, omnibox_view->GetText());
   ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
+  chrome::FocusLocationBar(browser());
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchKeywordKeys));
-  ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
   // Trigger keyword mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
-  ASSERT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
   // Create a new tab.
@@ -1280,9 +1299,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, UndoRedo) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return omnibox_view->GetText() == url::kAboutBlankURL16 &&
+           omnibox_view->IsSelectAll();
+  }));
   std::u16string old_text = omnibox_view->GetText();
-  EXPECT_EQ(url::kAboutBlankURL16, old_text);
-  EXPECT_TRUE(omnibox_view->IsSelectAll());
 
   // Delete the text, then undo.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));

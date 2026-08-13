@@ -188,6 +188,17 @@ void OmniboxPopupViewWebUI::OpenCurrentSelection(
   }
 }
 
+void OmniboxPopupViewWebUI::ResetPopupToInitialState() {
+  auto* controller =
+      presenter()->GetWebUIContent()->contents_wrapper()->GetWebUIController();
+  if (auto* handler = controller ? controller->omnibox_handler() : nullptr) {
+    handler->SetAimButtonVisible(omnibox_view_->AimButtonVisible());
+    if (!omnibox::ShouldUseWebUIOmniboxFullHandler()) {
+      static_cast<WebuiOmniboxHandler*>(handler)->ResetPopupToInitialState();
+    }
+  }
+}
+
 bool OmniboxPopupViewWebUI::IsSelectionPopupControlled() const {
   return base::FeatureList::IsEnabled(
              omnibox::kWebUIOmniboxPopupSelectionControl) &&

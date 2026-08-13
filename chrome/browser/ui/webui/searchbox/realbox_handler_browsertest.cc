@@ -112,6 +112,7 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
                searchbox::mojom::SelectionStep),
               (override));
   MOCK_METHOD(void, OpenCurrentSelection, (WindowOpenDisposition), (override));
+  MOCK_METHOD(void, ResetPopupToInitialState, (), (override));
   MOCK_METHOD(void, SetAimButtonVisible, (bool visible), (override));
   MOCK_METHOD(
       void,

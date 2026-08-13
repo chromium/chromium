@@ -74,6 +74,9 @@ class OmniboxPopupView {
   // Informs the popup of user intent to open its current selection.
   virtual void OpenCurrentSelection(WindowOpenDisposition disposition) {}
 
+  // Informs the popup to reset its selection to the initial state.
+  virtual void ResetPopupToInitialState() {}
+
   // Saves state to the given tab.
   virtual void SaveStateToTab(content::WebContents* contents) {}
 
