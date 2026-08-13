@@ -33,8 +33,11 @@ import logging
 import os
 import sys
 
-sys.path.append(os.path.join(
-    os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
+sys.path.append(
+  os.path.join(
+    os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'
+  )
+)
 # pylint: disable=wrong-import-position,import-error
 import devil_chromium
 from devil.android import device_errors
@@ -54,22 +57,25 @@ ALREADY_UNINSTALLED_ERROR_MESSAGE = "DELETE_FAILED_INTERNAL_ERROR"
 
 
 def FindFilePath(device, file_name):
-  paths = device.RunShellCommand(['find', '/product', '-iname', file_name],
-                                 check_return=True)
-  assert len(paths) <= 1, ('Found multiple paths %s for %s' %
-                           (str(paths), file_name))
+  paths = device.RunShellCommand(
+    ['find', '/product', '-iname', file_name], check_return=True
+  )
+  assert len(paths) <= 1, 'Found multiple paths %s for %s' % (
+    str(paths),
+    file_name,
+  )
   return paths
 
 
 def FindSystemAPKFiles(device, apk_name):
   """The expected structure of WebViewGoogle system APK is one of the following:
-    On most Q+ devices and emulators:
-    /product/app/WebViewGoogle/WebViewGoogle.apk.gz
-    /product/app/WebViewGoogle-Stub/WebViewGoogle-Stub.apk
-    On Q and R emulators:
-    /product/app/WebViewGoogle/WebViewGoogle.apk
+  On most Q+ devices and emulators:
+  /product/app/WebViewGoogle/WebViewGoogle.apk.gz
+  /product/app/WebViewGoogle-Stub/WebViewGoogle-Stub.apk
+  On Q and R emulators:
+  /product/app/WebViewGoogle/WebViewGoogle.apk
 
-    Others Trichrome system APKs follow a similar structure.
+  Others Trichrome system APKs follow a similar structure.
   """
   paths = []
   paths.extend(FindFilePath(device, apk_name + '.apk.gz'))
@@ -110,8 +116,9 @@ def UninstallTrichromePackages(device):
       is_trichrome_library_installed = False
   if is_trichrome_library_installed:
     raise device_errors.CommandFailedError(
-        '{} is still installed on the device'.format(TRICHROME_LIBRARY_PACKAGE),
-        device)
+      '{} is still installed on the device'.format(TRICHROME_LIBRARY_PACKAGE),
+      device,
+    )
 
 
 def UninstallWebViewSystemImages(device):
@@ -132,8 +139,11 @@ def UninstallWebViewUpdates(device):
     except device_errors.AdbCommandFailedError:
       # This can happen if the app is on the system image but there are no
       # updates installed on top of that.
-      logging.info('No update to uninstall for %s on %s', webview_package,
-                   device.serial)
+      logging.info(
+        'No update to uninstall for %s on %s',
+        webview_package,
+        device.serial,
+      )
 
 
 def CheckWebViewIsUninstalled(device):
@@ -141,16 +151,18 @@ def CheckWebViewIsUninstalled(device):
   for webview_package in WEBVIEW_PACKAGES:
     if device.IsApplicationInstalled(webview_package):
       raise device_errors.CommandFailedError(
-          '{} is still installed on the device'.format(webview_package),
-          device)
+        '{} is still installed on the device'.format(webview_package),
+        device,
+      )
 
 
 def RemovePreinstalledWebViews(device):
   device.EnableRoot()
   try:
     if device.build_version_sdk >= version_codes.Q:
-      logging.warning('This is a Q+ device, so both WebView and Chrome will be '
-                      'removed.')
+      logging.warning(
+        'This is a Q+ device, so both WebView and Chrome will be removed.'
+      )
       RemoveTrichromeSystemAPKs(device)
       UninstallTrichromePackages(device)
     else:
@@ -162,18 +174,23 @@ def RemovePreinstalledWebViews(device):
       # Point the user to documentation, since there's a good chance they can
       # workaround this. Use lots of newlines to make sure this message doesn't
       # get lost.
-      logging.error('Did you start the emulator with "-writable-system?"\n'
-                    'See https://chromium.googlesource.com/chromium/src/+/'
-                    'main/docs/android_emulator.md#writable-system-partition'
-                    '\n')
+      logging.error(
+        'Did you start the emulator with "-writable-system?"\n'
+        'See https://chromium.googlesource.com/chromium/src/+/'
+        'main/docs/android_emulator.md#writable-system-partition'
+        '\n'
+      )
     raise
   device.SetWebViewFallbackLogic(False)  # Allow standalone WebView on N+
 
+
 def main():
-  parser = argparse.ArgumentParser(description="""
+  parser = argparse.ArgumentParser(
+    description="""
 Removes the preinstalled WebView APKs to avoid signature mismatches during
 development.
-""")
+"""
+  )
 
   script_common.AddEnvironmentArguments(parser)
   script_common.AddDeviceArguments(parser)

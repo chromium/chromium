@@ -102,8 +102,10 @@ class CTSUtilsTest(unittest.TestCase):
     archs = cts_config.get_archs(platform)
     self.assertTrue(archs)
 
-  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
-                   "doesn't work in Windows.")
+  @unittest.skipIf(
+    os.name == "nt",
+    "Opening NamedTemporaryFile by name doesn't work in Windows.",
+  )
   def testCTSConfig(self):
     with tempfile.NamedTemporaryFile('w+t') as configFile:
       configFile.writelines(CONFIG_DATA['json'])

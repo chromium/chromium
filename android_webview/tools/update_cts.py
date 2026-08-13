@@ -12,9 +12,15 @@ import re
 import sys
 
 sys.path.append(
-    os.path.join(
-        os.path.dirname(__file__), os.pardir, os.pardir, 'third_party',
-        'catapult', 'devil'))
+  os.path.join(
+    os.path.dirname(__file__),
+    os.pardir,
+    os.pardir,
+    'third_party',
+    'catapult',
+    'devil',
+  )
+)
 # pylint: disable=wrong-import-position,import-error
 from devil.utils import cmd_helper
 from devil.utils import logging_common
@@ -25,8 +31,9 @@ import cts_utils
 def _query_git_for_cts_tags():
   cts_git_url = 'https://android.googlesource.com/platform/cts/'
 
-  tags = cmd_helper.GetCmdOutput(['git', 'ls-remote', '--tags',
-                                  cts_git_url]).splitlines()
+  tags = cmd_helper.GetCmdOutput(
+    ['git', 'ls-remote', '--tags', cts_git_url]
+  ).splitlines()
 
   print('[Updating CTS versions] Retrieved the CTS git tags')
 
@@ -54,8 +61,9 @@ class UpdateCTS:
     self._repo_root = os.path.abspath(repo_root)
     helper = cts_utils.ChromiumRepoHelper(self._repo_root)
     self._repo_helper = helper
-    self._cts_config_path = helper.rebase(cts_utils.TOOLS_DIR,
-                                          cts_utils.CONFIG_FILE)
+    self._cts_config_path = helper.rebase(
+      cts_utils.TOOLS_DIR, cts_utils.CONFIG_FILE
+    )
     self._CTSConfig = cts_utils.CTSConfig(self._cts_config_path)
 
   def _check_for_latest_cts_versions(self, cts_tags):
@@ -65,16 +73,18 @@ class UpdateCTS:
     for each CTS version and looking for the latest
     """
 
-    prefixes = [(platform, self._CTSConfig.get_git_tag_prefix(platform))
-                for platform in self._CTSConfig.iter_platforms()]
+    prefixes = [
+      (platform, self._CTSConfig.get_git_tag_prefix(platform))
+      for platform in self._CTSConfig.iter_platforms()
+    ]
     release_versions = dict()
 
     tag_prefix_regexes = {
-        # Do a forward lookup for the tag prefix plus an '_r'
-        # Eg: 'android-cts-7.0_r2'
-        # Then retrieve the digits after this
-        tag_prefix: re.compile('(?<=/%s_r)\\d*' % re.escape(tag_prefix))
-        for _, tag_prefix in prefixes
+      # Do a forward lookup for the tag prefix plus an '_r'
+      # Eg: 'android-cts-7.0_r2'
+      # Then retrieve the digits after this
+      tag_prefix: re.compile('(?<=/%s_r)\\d*' % re.escape(tag_prefix))
+      for _, tag_prefix in prefixes
     }
 
     for tag in cts_tags:
@@ -90,12 +100,13 @@ class UpdateCTS:
     return release_versions
 
   def _update_cts_config_file_download_origins(self, release_versions):
-    """ Update the CTS release version for each architecture
+    """Update the CTS release version for each architecture
     and then save the config json
     """
     for platform, arch in self._CTSConfig.iter_platform_archs():
-      self._CTSConfig.set_release_version(platform, arch,
-                                          release_versions[platform])
+      self._CTSConfig.set_release_version(
+        platform, arch, release_versions[platform]
+      )
 
     self._CTSConfig.save()
 
@@ -118,22 +129,25 @@ Please create a new branch, then edit the
 file with updated origin and file name before running this script.
 
 After performing all steps, perform git add then commit.""".format(
-    os.path.join(cts_utils.TOOLS_DIR, cts_utils.CONFIG_FILE))
+  os.path.join(cts_utils.TOOLS_DIR, cts_utils.CONFIG_FILE)
+)
 
 UPDATE_CONFIG = 'update-config'
 
 
 def main():
   parser = argparse.ArgumentParser(
-      description=DESC, formatter_class=argparse.RawTextHelpFormatter)
+    description=DESC, formatter_class=argparse.RawTextHelpFormatter
+  )
 
   logging_common.AddLoggingArguments(parser)
 
   subparsers = parser.add_subparsers(dest='cmd')
 
   subparsers.add_parser(
-      UPDATE_CONFIG,
-      help='Update the CTS config to the newest release versions.')
+    UPDATE_CONFIG,
+    help='Update the CTS config to the newest release versions.',
+  )
 
   args = parser.parse_args()
   logging_common.InitializeLogging(args)

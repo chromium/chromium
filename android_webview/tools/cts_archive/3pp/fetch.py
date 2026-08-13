@@ -13,28 +13,28 @@ def do_latest():
 
 def get_download_url():
   filenames = [
-      "android-cts-10_r16-linux_x86-arm.zip",
-      "android-cts-10_r16-linux_x86-x86.zip",
-      "android-cts-11_r16-linux_x86-arm.zip",
-      "android-cts-11_r16-linux_x86-x86.zip",
-      "android-cts-12_r16-linux_x86-arm.zip",
-      "android-cts-12_r16-linux_x86-x86.zip",
-      "android-cts-13_r14-linux_x86-arm.zip",
-      "android-cts-13_r14-linux_x86-x86.zip",
-      "android-cts-14_r10-linux_x86-arm.zip",
-      "android-cts-14_r10-linux_x86-x86.zip",
-      "android-cts-15_r6-linux_x86-arm.zip",
-      "android-cts-15_r6-linux_x86-x86.zip",
-      "android-cts-16_r3-linux_x86-arm.zip",
-      "android-cts-16_r3-linux_x86-x86.zip",
+    "android-cts-10_r16-linux_x86-arm.zip",
+    "android-cts-10_r16-linux_x86-x86.zip",
+    "android-cts-11_r16-linux_x86-arm.zip",
+    "android-cts-11_r16-linux_x86-x86.zip",
+    "android-cts-12_r16-linux_x86-arm.zip",
+    "android-cts-12_r16-linux_x86-x86.zip",
+    "android-cts-13_r14-linux_x86-arm.zip",
+    "android-cts-13_r14-linux_x86-x86.zip",
+    "android-cts-14_r10-linux_x86-arm.zip",
+    "android-cts-14_r10-linux_x86-x86.zip",
+    "android-cts-15_r6-linux_x86-arm.zip",
+    "android-cts-15_r6-linux_x86-x86.zip",
+    "android-cts-16_r3-linux_x86-arm.zip",
+    "android-cts-16_r3-linux_x86-x86.zip",
   ]
   url_prefix = "https://dl.google.com/dl/android/cts/"
   urls = [url_prefix + f for f in filenames]
 
   partial_manifest = {
-      'url': urls,
-      'name': filenames,
-      'ext': '.zip',
+    'url': urls,
+    'name': filenames,
+    'ext': '.zip',
   }
   print(json.dumps(partial_manifest))
 

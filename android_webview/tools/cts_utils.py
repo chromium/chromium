@@ -8,7 +8,8 @@ import os
 import re
 
 SRC_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+  os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+)
 
 TOOLS_DIR = os.path.join('android_webview', 'tools')
 
@@ -59,13 +60,14 @@ class CTSConfig:
     pattern = re.compile(r'(?<=_r)\d*')
 
     def update_release_version(field):
-      return pattern.sub(str(release),
-                         self._config[platform]['arch'][arch][field])
+      return pattern.sub(
+        str(release), self._config[platform]['arch'][arch][field]
+      )
 
     self._config[platform]['arch'][arch] = {
-        'filename': update_release_version('filename'),
-        '_origin': update_release_version('_origin'),
-        'unzip_dir': update_release_version('unzip_dir'),
+      'filename': update_release_version('filename'),
+      '_origin': update_release_version('_origin'),
+      'unzip_dir': update_release_version('unzip_dir'),
     }
 
 

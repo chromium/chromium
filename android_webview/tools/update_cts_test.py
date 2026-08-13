@@ -10,9 +10,16 @@ import unittest
 from mock import patch  # pylint: disable=import-error
 
 sys.path.append(
-    os.path.join(
-        os.path.dirname(__file__), os.pardir, os.pardir, 'third_party',
-        'catapult', 'common', 'py_utils'))
+  os.path.join(
+    os.path.dirname(__file__),
+    os.pardir,
+    os.pardir,
+    'third_party',
+    'catapult',
+    'common',
+    'py_utils',
+  )
+)
 # pylint: disable=wrong-import-position,import-error
 from py_utils import tempfile_ext
 
@@ -28,7 +35,6 @@ class UpdateCTSTest(unittest.TestCase):
   @patch('devil.utils.cmd_helper.GetCmdOutput')
   def testUpdateCtsConfigFileOrigins(self, cmd_mock):
     with tempfile_ext.NamedTemporaryDirectory() as repoRoot:
-
       cmd_mock.return_value = """
       hash        refs/tags/platform-1.0_r6
       hash        refs/tags/platform-1.0_r7
@@ -38,18 +44,22 @@ class UpdateCTSTest(unittest.TestCase):
       """
 
       expected_config_file = json.loads(CONFIG_DATA['json'])
-      expected_config_file['platform1']['arch']['arch1'][
-          'unzip_dir'] = 'arch1/path/platform1_r9'
-      expected_config_file['platform1']['arch']['arch2'][
-          'unzip_dir'] = 'arch1/path/platform1_r9'
-      expected_config_file['platform2']['arch']['arch1'][
-          'unzip_dir'] = 'arch1/path/platform2_r3'
-      expected_config_file['platform2']['arch']['arch2'][
-          'unzip_dir'] = 'arch1/path/platform2_r3'
+      expected_config_file['platform1']['arch']['arch1']['unzip_dir'] = (
+        'arch1/path/platform1_r9'
+      )
+      expected_config_file['platform1']['arch']['arch2']['unzip_dir'] = (
+        'arch1/path/platform1_r9'
+      )
+      expected_config_file['platform2']['arch']['arch1']['unzip_dir'] = (
+        'arch1/path/platform2_r3'
+      )
+      expected_config_file['platform2']['arch']['arch2']['unzip_dir'] = (
+        'arch1/path/platform2_r3'
+      )
 
-
-      config_path = os.path.join(repoRoot, cts_utils.TOOLS_DIR,
-                                 cts_utils.CONFIG_FILE)
+      config_path = os.path.join(
+        repoRoot, cts_utils.TOOLS_DIR, cts_utils.CONFIG_FILE
+      )
       os.makedirs(os.path.dirname(config_path))
       with open(config_path, 'w') as f:
         f.write(CONFIG_DATA['json'])

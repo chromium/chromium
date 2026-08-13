@@ -20,8 +20,10 @@ import sys
 import time
 
 sys.path.append(
-    os.path.join(
-        os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
+  os.path.join(
+    os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'
+  )
+)
 # pylint: disable=wrong-import-position,import-error
 import devil_chromium
 from devil.android import device_errors
@@ -44,10 +46,11 @@ def _WaitUntilCtrlC():
 def CheckAppNotRunning(device, package_name, force):
   is_running = bool(device.GetApplicationPids(package_name))
   if is_running:
-    msg = ('Netlog requires setting commandline flags, which only works if the '
-           'application ({}) is not already running. Please kill the app and '
-           'restart the script.'.format(
-               package_name))
+    msg = (
+      'Netlog requires setting commandline flags, which only works if the '
+      'application ({}) is not already running. Please kill the app and '
+      'restart the script.'.format(package_name)
+    )
     if force:
       logging.warning(msg)
     else:
@@ -57,23 +60,27 @@ def CheckAppNotRunning(device, package_name, force):
 
 
 def main():
-  parser = argparse.ArgumentParser(description="""
+  parser = argparse.ArgumentParser(
+    description="""
 Configures WebView to start recording a netlog. This script chooses a suitable
 netlog filename for the application, and will pull the netlog off the device
 when the user terminates the script (with ctrl-C). For a more complete usage
 guide, open your web browser to:
 https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/net-debugging.md
-""")
+"""
+  )
   parser.add_argument(
-      '--package',
-      required=True,
-      type=str,
-      help='Package name of the application you intend to use.')
+    '--package',
+    required=True,
+    type=str,
+    help='Package name of the application you intend to use.',
+  )
   parser.add_argument(
-      '--force',
-      default=False,
-      action='store_true',
-      help='Suppress user checks.')
+    '--force',
+    default=False,
+    action='store_true',
+    help='Suppress user checks.',
+  )
 
   script_common.AddEnvironmentArguments(parser)
   script_common.AddDeviceArguments(parser)
@@ -91,18 +98,24 @@ https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/net-d
     raise device_errors.MultipleDevicesError(devices)
 
   if device.build_type == 'user':
-    device_setup_url = ('https://chromium.googlesource.com/chromium/src/+/HEAD/'
-                        'android_webview/docs/device-setup.md')
-    raise RuntimeError('It appears your device is a "user" build. We only '
-                       'support capturing netlog on userdebug/eng builds. See '
-                       '{} to configure a development device or set up an '
-                       'emulator.'.format(device_setup_url))
+    device_setup_url = (
+      'https://chromium.googlesource.com/chromium/src/+/HEAD/'
+      'android_webview/docs/device-setup.md'
+    )
+    raise RuntimeError(
+      'It appears your device is a "user" build. We only '
+      'support capturing netlog on userdebug/eng builds. See '
+      '{} to configure a development device or set up an '
+      'emulator.'.format(device_setup_url)
+    )
 
   package_name = args.package
   device_netlog_file_name = 'netlog.json'
   device_netlog_path = posixpath.join(
-      device.GetApplicationDataDirectory(package_name), 'app_webview',
-      device_netlog_file_name)
+    device.GetApplicationDataDirectory(package_name),
+    'app_webview',
+    device_netlog_file_name,
+  )
 
   CheckAppNotRunning(device, package_name, args.force)
 
@@ -114,10 +127,13 @@ https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/net-d
   new_flags.append('--log-net-log={}'.format(device_netlog_path))
 
   logging.info('Running with flags %r', new_flags)
-  with flag_changer.CustomCommandLineFlags(device, WEBVIEW_COMMAND_LINE,
-                                           new_flags):
-    print('Netlog will start recording as soon as app starts up. Press ctrl-C '
-          'to stop recording.')
+  with flag_changer.CustomCommandLineFlags(
+    device, WEBVIEW_COMMAND_LINE, new_flags
+  ):
+    print(
+      'Netlog will start recording as soon as app starts up. Press ctrl-C '
+      'to stop recording.'
+    )
     _WaitUntilCtrlC()
 
   host_netlog_path = 'netlog.json'
@@ -130,8 +146,9 @@ https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/net-d
     device.RemovePath(device_netlog_path, as_root=True)
   else:
     raise RuntimeError(
-        'Unable to find a netlog file in the "{}" app data directory. '
-        'Did you restart and run the app?'.format(package_name))
+      'Unable to find a netlog file in the "{}" app data directory. '
+      'Did you restart and run the app?'.format(package_name)
+    )
 
 
 if __name__ == '__main__':
