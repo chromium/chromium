@@ -44,6 +44,19 @@ VideoTransformationToImageOrientation(media::VideoTransformation transform);
 PLATFORM_EXPORT media::VideoTransformation
 ImageOrientationToVideoTransformation(ImageOrientationEnum orientation);
 
+// Controls whether orientation is baked into the generated image ("hard flip")
+// or tagged on the image metadata ("soft flip").
+enum class VideoOrientationBehavior {
+  kHardFlip,
+  kTagOrientation,
+};
+
+// Controls whether the video frame's color space is reinterpreted as sRGB.
+enum class VideoColorSpaceInterpretation {
+  kPreserve,
+  kReinterpretAsSRGB,
+};
+
 // Returns true if CreateImageFromVideoFrame() expects to create an
 // AcceleratedStaticBitmapImage. Note: This may be overridden if a software
 // `snapshot_provider` is given to CreateImageFromVideoFrame().
@@ -56,12 +69,12 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame();
 // `video_renderer` may optionally be provided in cases where the same frame may
 // end up repeatedly converted.
 //
-// If `prefer_tagged_orientation` is true, the method will just tag the
+// If `orientation_behavior` is kTagOrientation, the method will just tag the
 // StaticBitmapImage with the correct orientation ("soft flip") instead of
 // drawing the frame with the correct orientation ("hard flip").
 //
-// If `reinterpret_video_as_srgb` true, then the video will be reinterpreted as
-// being originally having been in sRGB.
+// If `color_space_interpretation` is kReinterpretAsSRGB, then the video will be
+// reinterpreted as being originally having been in sRGB.
 //
 // Returns nullptr if a StaticBitmapImage can't be created.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage>
@@ -69,20 +82,22 @@ CreateAcceleratedImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     CanvasNon2DResourceProvider* snapshot_provider,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
-    bool prefer_tagged_orientation = true,
-    bool reinterpret_video_as_srgb = false);
+    VideoOrientationBehavior orientation_behavior =
+        VideoOrientationBehavior::kTagOrientation,
+    VideoColorSpaceInterpretation color_space_interpretation =
+        VideoColorSpaceInterpretation::kPreserve);
 
 // Returns an unaccelerated StaticBitmapImage for the given frame.
 //
 // `video_renderer` may optionally be provided in cases where the same frame may
 // end up repeatedly converted.
 //
-// If `prefer_tagged_orientation` is true, the method will just tag the
+// If `orientation_behavior` is kTagOrientation, the method will just tag the
 // StaticBitmapImage with the correct orientation ("soft flip") instead of
 // drawing the frame with the correct orientation ("hard flip").
 //
-// If `reinterpret_video_as_srgb` true, then the video will be reinterpreted as
-// being originally having been in sRGB.
+// If `color_space_interpretation` is kReinterpretAsSRGB, then the video will be
+// reinterpreted as being originally having been in sRGB.
 //
 // Returns nullptr if a StaticBitmapImage can't be created.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage>
@@ -90,8 +105,10 @@ CreateUnacceleratedImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     const CanvasSnapshotInfo& draw_info,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
-    bool prefer_tagged_orientation = true,
-    bool reinterpret_video_as_srgb = false);
+    VideoOrientationBehavior orientation_behavior =
+        VideoOrientationBehavior::kTagOrientation,
+    VideoColorSpaceInterpretation color_space_interpretation =
+        VideoColorSpaceInterpretation::kPreserve);
 
 PLATFORM_EXPORT bool ShouldCreateAcceleratedImages(
     viz::RasterContextProvider* raster_context_provider);
@@ -117,17 +134,19 @@ GetRasterContextProvider();
 //   alpha_type: kOpaque_SkAlphaType for opaque frames, kPremul_SkAlphaType
 //   otherwise.
 //
-//   color_space: If `reinterpret_video_as_srgb` was true, then this
-//   is sRGB, otherwise frame.CompatRGBColorSpace().
+//   color_space: If `color_space_interpretation` is kReinterpretAsSRGB, then
+//   this is sRGB, otherwise frame.CompatRGBColorSpace().
 //
 //   size: Set to frame.natural_size() unless `scaled_size` is provided. If
-//   `prefer_tagged_orientation` is false and the transformation is orthogonal,
+//   `orientation_behavior` is kHardFlip and the transformation is orthogonal,
 //   `size` is transposed.
 PLATFORM_EXPORT CanvasSnapshotInfo CreateSnapshotProviderInfoForVideoFrame(
     const media::VideoFrame& frame,
     std::optional<gfx::Size> scaled_size = std::nullopt,
-    bool reinterpret_video_as_srgb = false,
-    bool prefer_tagged_orientation = false);
+    VideoColorSpaceInterpretation color_space_interpretation =
+        VideoColorSpaceInterpretation::kPreserve,
+    VideoOrientationBehavior orientation_behavior =
+        VideoOrientationBehavior::kHardFlip);
 
 }  // namespace blink
 

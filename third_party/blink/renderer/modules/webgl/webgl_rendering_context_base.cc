@@ -6718,10 +6718,14 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     dest_rect.Transpose();
   }
 
-  const bool reinterpret_video_as_srgb = !params.unpack_colorspace_conversion;
+  const auto color_space_interpretation =
+      !params.unpack_colorspace_conversion
+          ? VideoColorSpaceInterpretation::kReinterpretAsSRGB
+          : VideoColorSpaceInterpretation::kPreserve;
 
   auto info = CreateSnapshotProviderInfoForVideoFrame(
-      *media_video_frame, dest_rect.size(), reinterpret_video_as_srgb);
+      *media_video_frame, dest_rect.size(), color_space_interpretation,
+      VideoOrientationBehavior::kHardFlip);
 
   CanvasNon2DResourceProvider* provider = nullptr;
   if (can_upload_via_gpu) {
@@ -6739,17 +6743,16 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   }
 
   // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
-  // handle tagged orientation, we set |prefer_tagged_orientation| to false.
-  const bool kPreferTaggedOrientation = false;
+  // handle tagged orientation, we use VideoOrientationBehavior::kHardFlip.
   scoped_refptr<StaticBitmapImage> image;
   if (!provider) {
     image = CreateUnacceleratedImageFromVideoFrame(
         std::move(media_video_frame), info, video_renderer,
-        kPreferTaggedOrientation, reinterpret_video_as_srgb);
+        VideoOrientationBehavior::kHardFlip, color_space_interpretation);
   } else {
     image = CreateAcceleratedImageFromVideoFrame(
         std::move(media_video_frame), provider, video_renderer,
-        kPreferTaggedOrientation, reinterpret_video_as_srgb);
+        VideoOrientationBehavior::kHardFlip, color_space_interpretation);
   }
 
   if (!image) {

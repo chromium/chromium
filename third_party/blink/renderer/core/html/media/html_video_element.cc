@@ -918,11 +918,17 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
 
   const bool is_accelerated =
       ShouldCreateAcceleratedImages(raster_context_provider);
-  const bool prefer_tagged_orientation =
-      !is_accelerated && respect_orientation == kRespectImageOrientation;
+  const auto orientation_behavior =
+      !is_accelerated && respect_orientation == kRespectImageOrientation
+          ? VideoOrientationBehavior::kTagOrientation
+          : VideoOrientationBehavior::kHardFlip;
+  const auto color_space_interpretation =
+      reinterpret_as_srgb ? VideoColorSpaceInterpretation::kReinterpretAsSRGB
+                          : VideoColorSpaceInterpretation::kPreserve;
 
   auto required_provider_info = CreateSnapshotProviderInfoForVideoFrame(
-      *media_video_frame, size, reinterpret_as_srgb, prefer_tagged_orientation);
+      *media_video_frame, size, color_space_interpretation,
+      orientation_behavior);
 
   bool cached_info_matches_required_info =
       cached_draw_info_ &&
@@ -951,11 +957,11 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   if (snapshot_provider_) {
     image = CreateAcceleratedImageFromVideoFrame(
         std::move(media_video_frame), snapshot_provider_.get(), video_renderer,
-        prefer_tagged_orientation, reinterpret_as_srgb);
+        orientation_behavior, color_space_interpretation);
   } else {
     image = CreateUnacceleratedImageFromVideoFrame(
         std::move(media_video_frame), cached_draw_info_.value(), video_renderer,
-        prefer_tagged_orientation, reinterpret_as_srgb);
+        orientation_behavior, color_space_interpretation);
   }
 
   if (image) {
