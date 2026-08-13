@@ -21,7 +21,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {WindowOpenDisposition} from '//resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
 import {getCss} from './app.css.js';
@@ -84,21 +83,14 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
         reflect: true,
       },
 
-      result_: {type: Object},
-      searchboxLayoutMode_: {reflect: true, type: String},
       showContextEntrypoint_: {
         type: Boolean,
         reflect: true,
       },
-      isContentSharingEnabled_: {type: Boolean},
-      isLensSearchEnabled_: {type: Boolean},
-      isLensSearchEligible_: {type: Boolean},
-      isAimPopupEligible_: {type: Boolean},
+
+      result_: {type: Object},
       isAimButtonVisible_: {type: Boolean},
-      isLensIconEnabled_: {type: Boolean},
-      isLensIconEligible_: {type: Boolean},
       webuiOmniboxPopupSelectionControlEnabled_: {type: Boolean},
-      inputState_: {type: Object},
     };
   }
 
@@ -107,35 +99,28 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
   accessor hasSecondarySide: boolean = false;
   accessor isDebug: boolean = false;
   protected accessor hasVisibleMatches_: boolean = false;
-  protected accessor result_: AutocompleteResult|null = null;
-  protected accessor searchboxLayoutMode_: string =
-      loadTimeData.getString('searchboxLayoutMode');
   protected accessor showContextEntrypoint_: boolean = false;
-  protected accessor isContentSharingEnabled_: boolean = false;
-  protected accessor isLensSearchEnabled_: boolean =
-      loadTimeData.getBoolean('composeboxShowLensSearchChip');
+  protected accessor result_: AutocompleteResult|null = null;
   protected accessor webuiOmniboxPopupSelectionControlEnabled_: boolean =
       loadTimeData.getBoolean('webuiOmniboxPopupSelectionControlEnabled');
-  protected accessor isLensSearchEligible_: boolean = false;
-  protected accessor isAimPopupEligible_: boolean = false;
   protected accessor isAimButtonVisible_: boolean = false;
-  protected accessor isLensIconEnabled_: boolean =
-      loadTimeData.getBoolean('composeboxShowLensIcon');
-  protected accessor isLensIconEligible_: boolean = false;
-  protected accessor inputState_: InputState|null = null;
 
   override get isAimButtonVisible(): boolean {
     return this.isAimButtonVisible_;
   }
 
   override get showContextEntrypoint(): boolean {
-    return this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_();
+    const show = this.shadowRoot
+                     ?.querySelector<OmniboxPopupContextualEntrypointElement>(
+                         'omnibox-popup-contextual-entrypoint')
+                     ?.showContextEntrypoint ??
+        false;
+    this.showContextEntrypoint_ = show;
+    return show;
   }
 
   private searchboxBrowserProxy_: SearchboxBrowserProxy;
   private eventTracker_ = new EventTracker();
-  private hideContextButton_: boolean =
-      loadTimeData.getBoolean('hideClassicContextButton');
   private listenerIds_: number[] = [];
 
   constructor() {
@@ -145,7 +130,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
     ColorChangeUpdater.forDocument().start();
   }
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     // Force an initial refresh to avoid the race condition where the profile
     // theme loads after the page, but before the listener is ready.
@@ -156,27 +141,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
           .addListener(this.onAutocompleteResultChanged_.bind(this)),
       this.searchboxBrowserProxy_.callbackRouter.updateSelection.addListener(
           this.onUpdateSelection_.bind(this)),
-      this.searchboxBrowserProxy_.callbackRouter.updateLensSearchEligibility
-          .addListener((eligible: boolean) => {
-            this.isLensSearchEligible_ = this.isLensSearchEnabled_ && eligible;
-            this.isLensIconEligible_ = this.isLensIconEnabled_ && eligible;
-          }),
-      this.searchboxBrowserProxy_.callbackRouter.updateContentSharingPolicy
-          .addListener((enabled: boolean) => {
-            this.isContentSharingEnabled_ = enabled;
-          }),
-      this.searchboxBrowserProxy_.callbackRouter.onInputStateChanged
-          .addListener((inputState: InputState) => {
-            this.inputState_ = inputState;
-          }),
     ];
-    if (!this.hideContextButton_) {
-      this.listenerIds_.push(
-          this.searchboxBrowserProxy_.callbackRouter.updateAimPopupEligibility
-              .addListener((eligible: boolean) => {
-                this.isAimPopupEligible_ = eligible;
-              }));
-    }
     if (this.webuiOmniboxPopupSelectionControlEnabled_) {
       this.listenerIds_.push(
           this.searchboxBrowserProxy_.callbackRouter.stepSelection.addListener(
@@ -188,8 +153,6 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
                 this.isAimButtonVisible_ = visible;
               }));
     }
-    this.inputState_ =
-        (await this.searchboxBrowserProxy_.handler.getInputState()).state;
     this.eventTracker_.add(
         canShowSecondarySideMediaQueryList, 'change',
         this.onCanShowSecondarySideChanged_.bind(this));
@@ -221,13 +184,6 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
       this.hasVisibleMatches_ =
           this.result_?.matches.some(match => !match.isHidden) ?? false;
     }
-
-    if (changedPrivateProperties.has('isAimPopupEligible_') ||
-        changedPrivateProperties.has('searchboxLayoutMode_') ||
-        changedPrivateProperties.has('result_') ||
-        changedPrivateProperties.has('isLensSearchEligible_')) {
-      this.showContextEntrypoint_ = this.computeShowContextEntrypoint_();
-    }
   }
 
   getDropdown(): SearchboxDropdownElement {
@@ -235,26 +191,6 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
     // exclusively shown, should always query the DOM to get the relevant one
     // and can't use this.$ to access it.
     return this.shadowRoot.querySelector('cr-searchbox-dropdown')!;
-  }
-
-  protected shouldHideEntrypointButton_(): boolean {
-    return this.searchboxLayoutMode_ === 'Compact';
-  }
-
-  private computeShowContextEntrypoint_(): boolean {
-    if (this.hideContextButton_ || !this.isAimPopupEligible_) {
-      return false;
-    }
-
-    if (this.searchboxLayoutMode_.startsWith('Tall')) {
-      return true;
-    }
-
-    if (this.searchboxLayoutMode_ === 'Compact') {
-      return this.isLensSearchEligible_;
-    }
-
-    return false;
   }
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
@@ -295,14 +231,11 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
 
   private getContextualEntrypointButton_():
       OmniboxPopupContextualEntrypointButtonElement|null {
-    if (this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_()) {
-      return this.shadowRoot
-                 .querySelector<OmniboxPopupContextualEntrypointElement>(
-                     'omnibox-popup-contextual-entrypoint')
-                 ?.getContextEntrypointElement() ??
-          null;
-    }
-    return null;
+    return this.shadowRoot
+               .querySelector<OmniboxPopupContextualEntrypointElement>(
+                   'omnibox-popup-contextual-entrypoint')
+               ?.getContextEntrypointElement() ??
+        null;
   }
 
   protected onDropdownDomChange_() {

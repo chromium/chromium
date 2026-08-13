@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createDefaultInputState, TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
@@ -118,10 +118,17 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
   });
 
   test('CompactModeHidesEntrypointButton', async () => {
-    element.searchboxLayoutMode = 'Compact';
+    loadTimeData.overrideValues({
+      searchboxLayoutMode: 'Compact',
+    });
+
+    const newElement =
+        document.createElement('omnibox-popup-contextual-entrypoint');
+    document.body.appendChild(newElement);
+    testProxy.initVisibilityPrefs();
     await microtasksFinished();
 
-    const entrypointButton = element.getContextEntrypointElement();
+    const entrypointButton = newElement.getContextEntrypointElement();
     assertFalse(!!entrypointButton);
   });
 
@@ -156,6 +163,7 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
     const newElement =
         document.createElement('omnibox-popup-contextual-entrypoint');
     document.body.appendChild(newElement);
+    testProxy.initVisibilityPrefs();
     await microtasksFinished();
 
     const button =
@@ -165,7 +173,6 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
     assertTrue(!!button);
     assertTrue(button.applyContextButtonBackground ?? false);
     assertTrue(button.isOblongShape ?? false);
-    newElement.remove();
   });
 
   test('PecApiInputTypeFiltering', async () => {
@@ -211,6 +218,20 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
 
     currentTabChip = $$<HTMLElement>(newElement, '#currentTabChip');
     assertTrue(!!currentTabChip);
-    newElement.remove();
+  });
+
+  test('UpdateAimPopupEligibility', async () => {
+    testProxy.page.updateAimPopupEligibility(true);
+    await microtasksFinished();
+
+    let entrypointButton = element.getContextEntrypointElement();
+    assertTrue(!!entrypointButton);
+    assertTrue(isVisible(entrypointButton));
+
+    testProxy.page.updateAimPopupEligibility(false);
+    await microtasksFinished();
+
+    entrypointButton = element.getContextEntrypointElement();
+    assertFalse(!!entrypointButton);
   });
 });

@@ -404,8 +404,10 @@ class OmniboxAimWebUiInteractiveTestBase
     state_ready.event = kAimStateReady;
     state_ready.where = {"omnibox-popup-app"};
     state_ready.test_function =
-        "(el) => el && el.isAimPopupEligible_ && el.inputState_ && "
-        "el.inputState_.allowedTools.length > 0";
+        "(el) => { const ep = "
+        "el?.shadowRoot?.querySelector('omnibox-popup-contextual-entrypoint'); "
+        "return ep && ep.isAimPopupEligible && ep.inputState && "
+        "ep.inputState.allowedTools.length > 0; }";
     return WaitForStateChange(contents_id, state_ready);
   }
 

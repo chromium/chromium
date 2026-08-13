@@ -19,13 +19,13 @@ import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-
 import {createDefaultInputState, TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 function getContextualEntrypointButton(appElement: OmniboxPopupAppElement):
-    OmniboxPopupContextualEntrypointButtonElement {
+    OmniboxPopupContextualEntrypointButtonElement|null {
   const popupEntrypoint = $$(appElement, 'omnibox-popup-contextual-entrypoint');
-  assertTrue(!!popupEntrypoint);
-  const contextualEntrypoint =
-      $$(popupEntrypoint, 'omnibox-popup-contextual-entrypoint-button');
-  assertTrue(!!contextualEntrypoint);
-  return contextualEntrypoint as OmniboxPopupContextualEntrypointButtonElement;
+  if (!popupEntrypoint) {
+    return null;
+  }
+  return $$<OmniboxPopupContextualEntrypointButtonElement>(
+      popupEntrypoint, 'omnibox-popup-contextual-entrypoint-button');
 }
 
 suite('AppTest', function() {
@@ -254,7 +254,7 @@ suite('AppTest', function() {
     test('ContextMenuEntrypointHiddenWhenDisabled', async () => {
       testProxy.page.updateAimPopupEligibility(false);
       await microtasksFinished();
-      assertFalse(!!$$(localApp, 'omnibox-popup-contextual-entrypoint'));
+      assertFalse(!!getContextualEntrypointButton(localApp));
     });
 
     // TODO(b/539623520): Move to
@@ -263,6 +263,7 @@ suite('AppTest', function() {
     test('OnShowCallsBlur', async () => {
       // Arrange: Focus the button and confirm it's focused.
       const contextualEntrypoint = getContextualEntrypointButton(localApp);
+      assertTrue(!!contextualEntrypoint);
       await microtasksFinished();
       const innerEntrypoint = $$(
           contextualEntrypoint, 'cr-composebox-contextual-entrypoint-button');
@@ -283,6 +284,7 @@ suite('AppTest', function() {
 
     test('HideClassicContextButton', async () => {
       const contextualEntrypoint = getContextualEntrypointButton(localApp);
+      assertTrue(!!contextualEntrypoint);
       assertTrue(isVisible(contextualEntrypoint));
 
       // Re-create app with `hideClassicContextButton` set to true.
@@ -298,7 +300,7 @@ suite('AppTest', function() {
       testProxy.page.updateAimPopupEligibility(true);
       await microtasksFinished();
 
-      assertFalse(!!$$(localApp, 'omnibox-popup-contextual-entrypoint'));
+      assertFalse(!!getContextualEntrypointButton(localApp));
     });
 
     // TODO(b/539623520): Move to
@@ -306,6 +308,7 @@ suite('AppTest', function() {
     // to verify refactor (b/539624759).
     test('ShowContextButtonText', async () => {
       let contextualEntrypoint = getContextualEntrypointButton(localApp);
+      assertTrue(!!contextualEntrypoint);
       const innerEntrypoint = $$(
           contextualEntrypoint, 'cr-composebox-contextual-entrypoint-button');
       assertTrue(!!innerEntrypoint);
@@ -327,6 +330,7 @@ suite('AppTest', function() {
       await microtasksFinished();
 
       contextualEntrypoint = getContextualEntrypointButton(localApp);
+      assertTrue(!!contextualEntrypoint);
       const newInnerEntrypoint = $$(
           contextualEntrypoint, 'cr-composebox-contextual-entrypoint-button');
       assertTrue(!!newInnerEntrypoint);
@@ -340,6 +344,7 @@ suite('AppTest', function() {
     // to verify refactor (b/539624759).
     test('ContextMenuEntrypointMenuOpenWorkaround', async () => {
       const contextualEntrypoint = getContextualEntrypointButton(localApp);
+      assertTrue(!!contextualEntrypoint);
       const innerEntrypoint = $$(
           contextualEntrypoint, 'cr-composebox-contextual-entrypoint-button');
       assertTrue(!!innerEntrypoint);
@@ -377,18 +382,19 @@ suite('AppTest', function() {
     test('AimEligibility', async () => {
       testProxy.page.updateAimPopupEligibility(false);
       await microtasksFinished();
-      let popupEntrypoint = $$(localApp, 'omnibox-popup-contextual-entrypoint');
-      assertFalse(!!popupEntrypoint);
+      let contextualEntrypoint = getContextualEntrypointButton(localApp);
+      assertFalse(!!contextualEntrypoint);
 
       testProxy.page.updateAimPopupEligibility(true);
       await microtasksFinished();
-      const contextualEntrypoint = getContextualEntrypointButton(localApp);
+      contextualEntrypoint = getContextualEntrypointButton(localApp);
+      assertTrue(!!contextualEntrypoint);
       assertTrue(isVisible(contextualEntrypoint));
 
       testProxy.page.updateAimPopupEligibility(false);
       await microtasksFinished();
-      popupEntrypoint = $$(localApp, 'omnibox-popup-contextual-entrypoint');
-      assertFalse(!!popupEntrypoint);
+      contextualEntrypoint = getContextualEntrypointButton(localApp);
+      assertFalse(!!contextualEntrypoint);
     });
 
     test('DisallowedInputsHidesEntrypoint', async () => {
@@ -409,12 +415,7 @@ suite('AppTest', function() {
       });
       await microtasksFinished();
 
-      const popupEntrypoint =
-          $$(localApp, 'omnibox-popup-contextual-entrypoint');
-      assertTrue(!!popupEntrypoint);
-      const contextualEntrypoint =
-          $$(popupEntrypoint, 'omnibox-popup-contextual-entrypoint-button');
-      assertFalse(!!contextualEntrypoint);
+      assertFalse(!!getContextualEntrypointButton(localApp));
     });
   });
 });
