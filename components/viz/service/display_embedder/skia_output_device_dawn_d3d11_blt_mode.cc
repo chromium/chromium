@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display_embedder/skia_output_device_dawn_d3d11_blt_mode.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -110,7 +111,8 @@ wgpu::Texture SkiaOutputDeviceDawnD3D11BltMode::AcquireSwapChainTexture() {
   desc.initialized = initialized_;
   desc.nextInChain = &swapchain_begin_state;
 
-  if (!shared_texture_memory_.BeginAccess(texture_, &desc)) {
+  if (shared_texture_memory_.BeginAccess(texture_, &desc) !=
+      wgpu::Status::Success) {
     LOG(ERROR) << "Failed to begin access for backbuffer texture.";
     return nullptr;
   }
