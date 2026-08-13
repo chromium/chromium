@@ -30,6 +30,9 @@ source_set("unit_tests") {
   deps = [
     ":web_performance_metrics",
     "//base",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 

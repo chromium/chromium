@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature.h"
 
+#import <limits>
+
 #import "base/ios/ios_util.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
@@ -139,18 +141,24 @@ void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstContentfulPaint(
   if (is_main_frame) {
     // Finds the earliest First Contentful Paint time across
     // main and subframes and logs that time to UMA.
+    const double main_frame_absolute =
+        web_performance_metrics::CalculateAbsoluteFirstContentfulPaint(
+            frame_navigation_start_time, relative_first_contentful_paint);
     web_performance_metrics::FirstContentfulPaint frame = {
         frame_navigation_start_time, relative_first_contentful_paint,
-        web_performance_metrics::CalculateAbsoluteFirstContentfulPaint(
-            frame_navigation_start_time, relative_first_contentful_paint)};
+        main_frame_absolute};
+
     base::TimeDelta aggregate_first_contentful_paint =
         web_performance_metrics::CalculateAggregateFirstContentfulPaint(
             aggregate, frame);
-
     UmaHistogramCustomTimes(
         "PageLoad.PaintTiming.NavigationToFirstContentfulPaint",
         aggregate_first_contentful_paint, kTimeRangePaintHistogramMin,
         kTimeRangePaintHistogramMax, kTimeRangePaintHistogramBucketCount);
+
+    if (main_frame_absolute < aggregate) {
+      tab_helper->SetAggregateAbsoluteFirstContentfulPaint(main_frame_absolute);
+    }
   } else if (aggregate == std::numeric_limits<double>::max()) {
     tab_helper->SetAggregateAbsoluteFirstContentfulPaint(
         web_performance_metrics::CalculateAbsoluteFirstContentfulPaint(

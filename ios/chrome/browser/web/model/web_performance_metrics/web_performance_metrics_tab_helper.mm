@@ -28,6 +28,14 @@ void WebPerformanceMetricsTabHelper::WebStateDestroyed(
   web_state_observation_.Reset();
 }
 
+void WebPerformanceMetricsTabHelper::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebPerformanceMetricsTabHelper::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 double
 WebPerformanceMetricsTabHelper::GetAggregateAbsoluteFirstContentfulPaint()
     const {
@@ -37,6 +45,13 @@ WebPerformanceMetricsTabHelper::GetAggregateAbsoluteFirstContentfulPaint()
 void WebPerformanceMetricsTabHelper::SetAggregateAbsoluteFirstContentfulPaint(
     double absolute_first_contentful_paint) {
   aggregate_absolute_first_contentful_paint_ = absolute_first_contentful_paint;
+
+  // Only notify if we have a valid first contentful paint time.
+  if (absolute_first_contentful_paint != std::numeric_limits<double>::max()) {
+    for (auto& observer : observers_) {
+      observer.OnFirstContentfulPaint(this, absolute_first_contentful_paint);
+    }
+  }
 }
 
 bool WebPerformanceMetricsTabHelper::GetFirstInputDelayLoggingStatus() const {

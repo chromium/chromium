@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature.h"
 
 #import <limits>
+#import <memory>
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature_util.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 
 using WebPerformanceMetricsJavaScriptFeatureTest = PlatformTest;
@@ -99,4 +102,68 @@ TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
             test_case.params.frame.relative_time));
     EXPECT_EQ(result, test_case.expected);
   }
+}
+
+class MockObserver : public WebPerformanceMetricsTabHelper::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnFirstContentfulPaint,
+              (WebPerformanceMetricsTabHelper * tab_helper,
+               double absolute_first_contentful_paint),
+              (override));
+};
+
+// Test that observers registered with WebPerformanceMetricsTabHelper receive
+// notifications when the aggregate First Contentful Paint is updated.
+TEST_F(WebPerformanceMetricsJavaScriptFeatureTest, TabHelperObserver) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  WebPerformanceMetricsTabHelper::CreateForWebState(web_state.get());
+  WebPerformanceMetricsTabHelper* tab_helper =
+      WebPerformanceMetricsTabHelper::FromWebState(web_state.get());
+  ASSERT_THAT(tab_helper, testing::NotNull());
+
+  MockObserver observer;
+  tab_helper->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnFirstContentfulPaint(tab_helper, 200.0));
+  tab_helper->SetAggregateAbsoluteFirstContentfulPaint(200.0);
+
+  WebPerformanceMetricsJavaScriptFeature* feature =
+      WebPerformanceMetricsJavaScriptFeature::GetInstance();
+  EXPECT_CALL(observer, OnFirstContentfulPaint(tab_helper, 150.0)).Times(1);
+  feature->LogAggregateFirstContentfulPaint(web_state.get(), 100.0, 50.0, true);
+
+  tab_helper->RemoveObserver(&observer);
+}
+
+// Test that LogAggregateFirstContentfulPaint updates the stored aggregate
+// FCP time when a main frame reports an earlier absolute paint time.
+TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
+       LogAggregateFirstContentfulPaintUpdatesAggregate) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  WebPerformanceMetricsTabHelper::CreateForWebState(web_state.get());
+  WebPerformanceMetricsTabHelper* tab_helper =
+      WebPerformanceMetricsTabHelper::FromWebState(web_state.get());
+  ASSERT_THAT(tab_helper, testing::NotNull());
+
+  // Set initial aggregate
+  tab_helper->SetAggregateAbsoluteFirstContentfulPaint(200.0);
+
+  WebPerformanceMetricsJavaScriptFeature* feature =
+      WebPerformanceMetricsJavaScriptFeature::GetInstance();
+
+  // Main frame reports FCP earlier than current aggregate (150 < 200)
+  // navigation_start = 100, relative_fcp = 50 -> absolute_fcp = 150
+  feature->LogAggregateFirstContentfulPaint(web_state.get(), 100.0, 50.0, true);
+
+  EXPECT_DOUBLE_EQ(tab_helper->GetAggregateAbsoluteFirstContentfulPaint(),
+                   150.0);
+
+  // Main frame reports FCP later than current aggregate (180 > 150)
+  // navigation_start = 100, relative_fcp = 80 -> absolute_fcp = 180
+  feature->LogAggregateFirstContentfulPaint(web_state.get(), 100.0, 80.0, true);
+
+  // Should NOT be updated because 180 > 150
+  EXPECT_DOUBLE_EQ(tab_helper->GetAggregateAbsoluteFirstContentfulPaint(),
+                   150.0);
 }

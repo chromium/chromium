@@ -7,6 +7,8 @@
 
 #include <limits>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature_util.h"
 #include "ios/web/public/web_state_observer.h"
@@ -30,6 +32,22 @@ class WebPerformanceMetricsTabHelper
       const WebPerformanceMetricsTabHelper&) = delete;
 
   ~WebPerformanceMetricsTabHelper() override;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    ~Observer() override = default;
+
+    // Called when the aggregate absolute First Contentful Paint time is
+    // updated for the WebState. `absolute_first_contentful_paint` is measured
+    // in milliseconds since the Unix epoch.
+    virtual void OnFirstContentfulPaint(
+        WebPerformanceMetricsTabHelper* tab_helper,
+        double absolute_first_contentful_paint) {}
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Returns the absolute first contentful paint time aggregated across iframes.
   double GetAggregateAbsoluteFirstContentfulPaint() const;
@@ -78,6 +96,8 @@ class WebPerformanceMetricsTabHelper
   // Stores whether the WebState has been hidden at any point since the most
   // recent navigation started.
   bool has_been_hidden_since_navigation_started_ = false;
+
+  base::ObserverList<Observer> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_WEB_PERFORMANCE_METRICS_WEB_PERFORMANCE_METRICS_TAB_HELPER_H_
