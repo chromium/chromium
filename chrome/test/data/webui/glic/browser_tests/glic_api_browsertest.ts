@@ -602,25 +602,6 @@ class ApiTests extends ApiTestFixtureBase {
 
     assertEquals(this.host.getPinnedTabs().getCurrentValue()?.length, 2);
   }
-
-  async testPinTabsStatePersistWhenClientRestarts() {
-    const isFirstRun: boolean = this.testParams.isFirstRun;
-
-    if (isFirstRun) {
-      assertDefined(this.host.pinTabs);
-      assertDefined(this.host.getPinnedTabs);
-
-      const tabId = this.testParams.tabId;
-      const activeTabId = this.getActiveTabId();
-
-      assertTrue(await this.host.pinTabs([activeTabId, tabId]));
-      const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
-      await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 2);
-    } else {
-      assertEquals(this.host.getPinnedTabs?.().getCurrentValue()?.length, 2);
-    }
-  }
-
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

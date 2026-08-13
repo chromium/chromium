@@ -1529,24 +1529,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsStatePersistWhenClientRestarts) {
-  NavigateTabAndOpenGlicFloating();
-  const int tab_id =
-      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
-  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
-
-  ExecuteJsTest(
-      {.params = base::Value(base::DictValue()
-                                 .Set("tabId", base::NumberToString(tab_id))
-                                 .Set("isFirstRun", true))});
-
-  WebUIStateListener listener(GetHost());
-  ReloadGlicWebui();
-  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
-
-  ExecuteJsTest(
-      {.params = base::Value(base::DictValue().Set("isFirstRun", false))});
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
   NavigateTabAndOpenGlicFloating();
