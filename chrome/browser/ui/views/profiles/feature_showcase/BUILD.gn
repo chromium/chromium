@@ -17,4 +17,93 @@ if (enable_dice_support) {
     ]
     deps = [ "//base" ]
   }
+
+  source_set("feature_showcase") {
+    sources = [
+      "default_browser_step_eligibility_checker.cc",
+      "default_browser_step_eligibility_checker.h",
+      "feature_showcase_eligibility_tracker.cc",
+      "feature_showcase_eligibility_tracker.h",
+      "feature_showcase_step_eligibility_checker.cc",
+      "feature_showcase_step_eligibility_checker.h",
+      "gemini_step_eligibility_checker.cc",
+      "gemini_step_eligibility_checker.h",
+      "google_lens_step_eligibility_checker.cc",
+      "google_lens_step_eligibility_checker.h",
+      "password_manager_feature_showcase_eligibility_checker.cc",
+      "password_manager_feature_showcase_eligibility_checker.h",
+      "themes_and_customization_step_eligibility_checker.cc",
+      "themes_and_customization_step_eligibility_checker.h",
+    ]
+
+    public_deps = [
+      ":metrics",
+      "//chrome/browser:shell_integration",
+      "//components/signin/public/identity_manager",
+      "//components/sync/service",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/glic",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/common",
+      "//components/password_manager/core/common",
+      "//components/prefs",
+      "//components/variations/service",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "default_browser_step_eligibility_checker_unittest.cc",
+      "feature_showcase_eligibility_tracker_unittest.cc",
+      "gemini_step_eligibility_checker_unittest.cc",
+      "google_lens_step_eligibility_checker_unittest.cc",
+      "password_manager_feature_showcase_eligibility_checker_unittest.cc",
+      "themes_and_customization_step_eligibility_checker_unittest.cc",
+    ]
+
+    deps = [
+      ":feature_showcase",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/search_engines:test_support",
+      "//chrome/browser/signin:test_support",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/actions",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/test:test_support",
+      "//components/lens:lens_url_utils",
+      "//components/metrics",
+      "//components/metrics:test_support",
+      "//components/password_manager/core/common",
+      "//components/prefs",
+      "//components/prefs:test_support",
+      "//components/search_engines",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//components/sync/service",
+      "//components/sync_preferences:test_support",
+      "//components/themes:prefs",
+      "//components/variations",
+      "//components/variations/service",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/actions",
+    ]
+  }
 }
