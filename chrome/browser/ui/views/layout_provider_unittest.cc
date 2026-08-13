@@ -16,7 +16,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_list.h"
-#include "ui/gfx/font_util.h"
 #include "ui/strings/grit/app_locale_settings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -60,7 +59,6 @@ class LayoutProviderTest : public testing::Test {
 
  protected:
   static void SetUpTestSuite() {
-    gfx::InitializeFonts();
     // Some previous test may have left the default font description set to an
     // unexpected state.
     gfx::FontList::SetDefaultFontDescription(std::string());

@@ -35,6 +35,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
 #include "ui/base/ui_base_paths.h"
+#include "ui/gfx/font_util.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -155,6 +156,8 @@ void ChromeUnitTestSuite::Initialize() {
   RegisterInProcessThreads();
 
   ChromeTestSuite::Initialize();
+
+  gfx::InitializeFonts();
 
   // This needs to run after ChromeTestSuite::Initialize which calls content's
   // intialization which calls base's which initializes ICU.
