@@ -70,9 +70,15 @@ bool IsVBRSupported(ID3D12VideoDevice3* video_device,
   return SUCCEEDED(hr) && vbr.IsSupported;
 }
 
-DXGI_FORMAT GetDxgiInputFormat(VideoCodecProfile output_profile) {
+DXGI_FORMAT GetDxgiInputFormat(VideoCodecProfile output_profile,
+                               VideoPixelFormat input_format) {
+  // H.264 high10 and HEVC main10 are 10 bit by definition, while AV1 main
+  // covers both 8 and 10 bit, so for AV1 main the input format is what decides
+  // the coded bit depth.
   if (output_profile == H264PROFILE_HIGH10PROFILE ||
-      output_profile == HEVCPROFILE_MAIN10) {
+      output_profile == HEVCPROFILE_MAIN10 ||
+      (output_profile == AV1PROFILE_PROFILE_MAIN &&
+       input_format == PIXEL_FORMAT_P010LE)) {
     return DXGI_FORMAT_P010;
   } else if (output_profile == AV1PROFILE_PROFILE_HIGH) {
     return DXGI_FORMAT_AYUV;
@@ -226,7 +232,7 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
   input_size_.Width = config.input_visible_size.width();
   input_size_.Height = config.input_visible_size.height();
 
-  input_format_ = GetDxgiInputFormat(output_profile_);
+  input_format_ = GetDxgiInputFormat(output_profile_, config.input_format);
   processed_input_frame_.Reset();
 
   bitrate_allocation_ = AllocateBitrateForDefaultEncoding(config);

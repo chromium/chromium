@@ -160,8 +160,16 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 }
 
 VideoPixelFormat InputPixelFormat(VideoCodecProfile profile,
+                                  const VideoEncoder::Options& opts,
                                   VideoPixelFormat default_format) {
   if (profile == HEVCPROFILE_MAIN10) {
+    return PIXEL_FORMAT_P010LE;
+  }
+  // AV1 profile 0 covers both 8 and 10 bit, so the requested bit depth is what
+  // decides the input format, and the input format is in turn what tells the
+  // platform encoder which bit depth to code at. AV1 profile 1 is excluded: its
+  // 4:4:4 input format is 8 bit AYUV.
+  if (profile == AV1PROFILE_PROFILE_MAIN && opts.bit_depth.value_or(8) == 10) {
     return PIXEL_FORMAT_P010LE;
   }
   return default_format;
@@ -506,7 +514,8 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   if (gpu_supported_pixel_formats_.empty()) {
     gpu_supported_pixel_formats_.push_back(kDefaultPixelFormat);
   }
-  input_pixel_format_ = InputPixelFormat(profile_, kDefaultPixelFormat);
+  input_pixel_format_ =
+      InputPixelFormat(profile_, options, kDefaultPixelFormat);
   if (!std::ranges::contains(gpu_supported_pixel_formats_,
                              input_pixel_format_)) {
     std::move(done_cb).Run(
