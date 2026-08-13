@@ -40,20 +40,18 @@ class PixAccountLinkingManager : public NativeAccountLinkingHandler {
   virtual void MaybeShowPixAccountLinkingPrompt(
       const url::Origin& pix_payment_page_origin);
 
-  // Sets the internal UI state and triggers dismissal.
-  void DismissPrompt() override;
-
  protected:
   std::optional<AccountLinkingParams> CreateAccountLinkingParams() override;
   // NativeAccountLinkingHandler:
   std::string_view GetHistogramSuffix() const override;
+  strike_database::StrikeDatabaseIntegratorBase* GetStrikeDatabase() override;
+  bool IsUserPrefEnabled() const override;
   base::DictValue GetPayloadForGetDetailsForCreatePaymentInstrument() override;
   void DoOnClientTokenReceived(
       const std::vector<uint8_t>& client_token) override;
   void DoOnGetDetailsForCreatePaymentInstrumentResponse(
       bool is_eligible) override;
   void DoOnAccepted() override;
-  void DoOnDeclined() override;
   void DoOnAccountLinkingResult(AccountLinkingResult result) override;
   base::WeakPtr<NativeAccountLinkingHandler> GetWeakPtr() override;
 

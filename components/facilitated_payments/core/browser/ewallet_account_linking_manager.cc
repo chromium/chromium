@@ -53,6 +53,15 @@ EwalletAccountLinkingManager::CreateAccountLinkingParams() {
   return params;
 }
 
+strike_database::StrikeDatabaseIntegratorBase*
+EwalletAccountLinkingManager::GetStrikeDatabase() {
+  return nullptr;
+}
+
+bool EwalletAccountLinkingManager::IsUserPrefEnabled() const {
+  return true;
+}
+
 void EwalletAccountLinkingManager::DoOnAccountLinkingResult(
     AccountLinkingResult result) {
   DVLOG(1) << "Ewallet account linking result: " << result.is_successful;

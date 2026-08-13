@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/account_linking_params.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
+#include "components/strike_database/strike_database_integrator_base.h"
 
 namespace payments::facilitated {
 
@@ -38,6 +39,14 @@ class NativeAccountLinkingHandler {
   NativeAccountLinkingHandler& operator=(const NativeAccountLinkingHandler&) =
       delete;
 
+  // Starts fetching the client token from GMSCore.
+  void FetchClientToken();
+
+  // Checks if the user preference is enabled, if the strike database allows
+  // prompting, and if screenlock/biometrics are set up. Handles nullptr strike
+  // database gracefully (e.g., in Incognito).
+  bool CanPromptUser();
+
   // Called when the user accepts the account linking prompt.
   virtual void OnAccepted();
 
@@ -52,8 +61,12 @@ class NativeAccountLinkingHandler {
   virtual void DismissPrompt();
 
  protected:
-  // Starts fetching the client token from GMSCore.
-  void FetchClientToken();
+  // Hook to get the strike database. Should return nullptr in Incognito.
+  virtual strike_database::StrikeDatabaseIntegratorBase*
+  GetStrikeDatabase() = 0;
+
+  // Hook to check if the user preference for this FOP is enabled.
+  virtual bool IsUserPrefEnabled() const = 0;
   // Virtual hook for subclasses to provide specific prompt configuration data.
   // Return std::nullopt to prevent the generic prompt from showing (useful
   // for subclasses that manage their own UI flows entirely).
@@ -74,7 +87,6 @@ class NativeAccountLinkingHandler {
   // Virtual hooks for subclass-specific prompt acceptance and decline
   // side-effects.
   virtual void DoOnAccepted() {}
-  virtual void DoOnDeclined() {}
 
   // Virtual hook to handle subclass-specific UI updates on completion.
   virtual void DoOnAccountLinkingResult(AccountLinkingResult result) = 0;
@@ -100,7 +112,7 @@ class NativeAccountLinkingHandler {
   // DoOnAccountLinkingResult virtual method.
   void OnAccountLinkingResult(AccountLinkingResult result);
 
-  FacilitatedPaymentsClient* client() { return &*client_; }
+  FacilitatedPaymentsClient* client() const { return &*client_; }
 
   // Instantiates/retrieves the FacilitatedPaymentsApiClient.
   FacilitatedPaymentsApiClient* GetApiClient();
@@ -108,6 +120,15 @@ class NativeAccountLinkingHandler {
   // Track if the prompt UI is showing. Subclasses are responsible for updating
   // this state when they show the prompt.
   bool is_prompt_showing_ = false;
+
+  // Helper for test APIs to set the cached action token.
+  void SetActionTokenForTesting(std::vector<uint8_t> action_token) {
+    action_token_ = std::move(action_token);
+  }
+
+  // Subclasses must provide a WeakPtr to the base class since a WeakPtrFactory
+  // can only exist on the leaf descendant class.
+  virtual base::WeakPtr<NativeAccountLinkingHandler> GetWeakPtr() = 0;
 
  private:
   // Callback invoked when the client token is received.
@@ -132,9 +153,6 @@ class NativeAccountLinkingHandler {
 
   // Cached action token used for invoking the instrument manager GMSCore API.
   std::vector<uint8_t> action_token_;
-  // Subclasses must provide a WeakPtr to the base class since a WeakPtrFactory
-  // can only exist on the leaf descendant class.
-  virtual base::WeakPtr<NativeAccountLinkingHandler> GetWeakPtr() = 0;
 };
 
 }  // namespace payments::facilitated

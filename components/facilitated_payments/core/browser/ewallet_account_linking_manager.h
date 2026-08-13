@@ -19,8 +19,7 @@
 
 namespace payments::facilitated {
 
-// TODO: b/520063014 - Add strike database logic when
-// NativeAccountLinkingHandler supports it.
+// TODO: b/520063014 - Implement strike database for Ewallet.
 class EwalletAccountLinkingManager : public NativeAccountLinkingHandler {
  public:
   EwalletAccountLinkingManager(
@@ -42,9 +41,6 @@ class EwalletAccountLinkingManager : public NativeAccountLinkingHandler {
   EwalletAccountLinkingManager& operator=(const EwalletAccountLinkingManager&) =
       delete;
 
- private:
-  friend class EwalletAccountLinkingManagerTestApi;
-
  protected:
   // NativeAccountLinkingHandler:
   void DoOnClientTokenReceived(
@@ -55,9 +51,13 @@ class EwalletAccountLinkingManager : public NativeAccountLinkingHandler {
       bool is_eligible) override;
   base::DictValue GetPayloadForGetDetailsForCreatePaymentInstrument() override;
   std::string_view GetHistogramSuffix() const override;
+  strike_database::StrikeDatabaseIntegratorBase* GetStrikeDatabase() override;
+  bool IsUserPrefEnabled() const override;
   base::WeakPtr<NativeAccountLinkingHandler> GetWeakPtr() override;
 
  private:
+  friend class EwalletAccountLinkingManagerTestApi;
+
   const autofill::Ewallet ewallet_creation_option_;
 
   base::WeakPtrFactory<EwalletAccountLinkingManager> weak_ptr_factory_{this};

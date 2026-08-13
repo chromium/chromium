@@ -14,11 +14,14 @@
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/strike_database/simple_strike_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,6 +30,29 @@ namespace {
 
 using ::testing::_;
 using ::testing::Return;
+
+struct TestNativeAccountLinkingStrikeDatabaseTraits {
+  static constexpr std::string_view kName = "TestNativeAccountLinking";
+  static constexpr std::optional<size_t> kMaxStrikeEntities = std::nullopt;
+  static constexpr std::optional<size_t> kMaxStrikeEntitiesAfterCleanup =
+      std::nullopt;
+  static constexpr size_t kMaxStrikeLimit = 3;
+  static constexpr std::optional<base::TimeDelta> kExpiryTimeDelta =
+      std::nullopt;
+  static constexpr bool kUniqueIdRequired = false;
+};
+
+class TestNativeAccountLinkingStrikeDatabase
+    : public strike_database::SimpleStrikeDatabase<
+          TestNativeAccountLinkingStrikeDatabaseTraits> {
+ public:
+  using SimpleStrikeDatabase::SimpleStrikeDatabase;
+
+  std::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
+      const override {
+    return base::Days(7);
+  }
+};
 
 class TestNativeAccountLinkingHandler : public NativeAccountLinkingHandler {
  public:
@@ -57,6 +83,21 @@ class TestNativeAccountLinkingHandler : public NativeAccountLinkingHandler {
               (),
               (override));
 
+  strike_database::StrikeDatabaseIntegratorBase* GetStrikeDatabase() override {
+    return strike_database_;
+  }
+
+  bool IsUserPrefEnabled() const override { return is_user_pref_enabled_; }
+
+  void set_strike_database(
+      strike_database::StrikeDatabaseIntegratorBase* strike_db) {
+    strike_database_ = strike_db;
+  }
+
+  void set_is_user_pref_enabled(bool enabled) {
+    is_user_pref_enabled_ = enabled;
+  }
+
   std::string_view GetHistogramSuffix() const override { return "TestFop"; }
 
   base::DictValue GetPayloadForGetDetailsForCreatePaymentInstrument() override {
@@ -70,6 +111,9 @@ class TestNativeAccountLinkingHandler : public NativeAccountLinkingHandler {
   bool is_prompt_showing() const { return is_prompt_showing_; }
 
  private:
+  raw_ptr<strike_database::StrikeDatabaseIntegratorBase> strike_database_ =
+      nullptr;
+  bool is_user_pref_enabled_ = true;
   base::WeakPtrFactory<TestNativeAccountLinkingHandler> weak_ptr_factory_{this};
 };
 
@@ -94,6 +138,12 @@ class NativeAccountLinkingHandlerTest : public testing::Test {
         .WillByDefault(
             Return(payments_data_manager_.GetAccountInfoForPaymentsServer()));
 
+    test_strike_database_service_ =
+        std::make_unique<autofill::TestStrikeDatabase>();
+    test_strike_database_ =
+        std::make_unique<TestNativeAccountLinkingStrikeDatabase>(
+            test_strike_database_service_.get());
+
     api_client_ = std::make_unique<MockFacilitatedPaymentsApiClient>();
     api_client_ptr_ = api_client_.get();
 
@@ -101,6 +151,7 @@ class NativeAccountLinkingHandlerTest : public testing::Test {
         &client_,
         base::BindRepeating(&NativeAccountLinkingHandlerTest::CreateApiClient,
                             base::Unretained(this)));
+    handler_->set_strike_database(test_strike_database_.get());
   }
 
   void TearDown() override {
@@ -118,6 +169,8 @@ class NativeAccountLinkingHandlerTest : public testing::Test {
   autofill::TestPaymentsDataManager payments_data_manager_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<PrefService> pref_service_;
+  std::unique_ptr<autofill::TestStrikeDatabase> test_strike_database_service_;
+  std::unique_ptr<TestNativeAccountLinkingStrikeDatabase> test_strike_database_;
   MockFacilitatedPaymentsNetworkInterface payments_network_interface_{
       *identity_test_env_.identity_manager(), payments_data_manager_};
 
@@ -499,6 +552,139 @@ TEST_F(NativeAccountLinkingHandlerTest, ShowAccountLinkingPrompt_FopNullopt) {
   EXPECT_CALL(client_, ShowAccountLinkingPrompt(_, _, _, _)).Times(0);
   handler_->ShowAccountLinkingPrompt();
   EXPECT_FALSE(handler_->is_prompt_showing());
+}
+
+TEST_F(NativeAccountLinkingHandlerTest,
+       CanPromptUser_MaxStrikesReached_ReturnsFalseAndLogsHistogram) {
+  test_strike_database_->AddStrike();
+  test_strike_database_->AddStrike();
+  test_strike_database_->AddStrike();
+  handler_->set_is_user_pref_enabled(true);
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
+      .WillRepeatedly(Return(true));
+
+  EXPECT_FALSE(handler_->CanPromptUser());
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kMaxStrikes, 1);
+}
+
+TEST_F(NativeAccountLinkingHandlerTest,
+       CanPromptUser_RequiredDelayNotPassed_ReturnsFalseAndLogsHistogram) {
+  test_strike_database_->AddStrike();
+  handler_->set_is_user_pref_enabled(true);
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
+      .WillRepeatedly(Return(true));
+
+  EXPECT_FALSE(handler_->CanPromptUser());
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kRequiredDelayNotPassed, 1);
+
+  task_environment_.FastForwardBy(base::Days(6) + base::Hours(23));
+  EXPECT_FALSE(handler_->CanPromptUser());
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_TRUE(handler_->CanPromptUser());
+}
+
+TEST_F(NativeAccountLinkingHandlerTest,
+       CanPromptUser_UserPrefDisabled_ReturnsFalseAndLogsHistogram) {
+  handler_->set_is_user_pref_enabled(false);
+  EXPECT_FALSE(handler_->CanPromptUser());
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kUserOptedOut, 1);
+}
+
+TEST_F(NativeAccountLinkingHandlerTest,
+       CanPromptUser_NoScreenlockOrBiometrics_ReturnsFalseAndLogsHistogram) {
+  handler_->set_is_user_pref_enabled(true);
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
+      .WillOnce(Return(false));
+  EXPECT_FALSE(handler_->CanPromptUser());
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kNoScreenlockOrBiometricSetup, 1);
+}
+
+TEST_F(NativeAccountLinkingHandlerTest, CanPromptUser_AllConditionsMet_ReturnsTrue) {
+  handler_->set_is_user_pref_enabled(true);
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
+      .WillOnce(Return(true));
+  EXPECT_TRUE(handler_->CanPromptUser());
+  histogram_tester_.ExpectTotalCount(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason", 0);
+}
+
+TEST_F(NativeAccountLinkingHandlerTest,
+       CanPromptUser_StrictCheckOrder_StrikeLimitTakesPrecedence) {
+  test_strike_database_->AddStrike();
+  test_strike_database_->AddStrike();
+  test_strike_database_->AddStrike();
+  handler_->set_is_user_pref_enabled(false);
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
+      .WillRepeatedly(Return(false));
+
+  EXPECT_FALSE(handler_->CanPromptUser());
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kMaxStrikes, 1);
+}
+
+TEST_F(NativeAccountLinkingHandlerTest,
+       CanPromptUser_IncognitoNullStrikeDatabase_ReturnsTrue) {
+  handler_->set_strike_database(nullptr);
+  handler_->set_is_user_pref_enabled(true);
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
+      .WillOnce(Return(true));
+  EXPECT_TRUE(handler_->CanPromptUser());
+  histogram_tester_.ExpectTotalCount(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason", 0);
+}
+
+TEST_F(NativeAccountLinkingHandlerTest,
+       OnAccepted_IncognitoNullStrikeDatabase_DoesNotCrash) {
+  handler_->set_strike_database(nullptr);
+  handler_->OnAccepted();
+}
+
+TEST_F(NativeAccountLinkingHandlerTest,
+       OnDeclined_IncognitoNullStrikeDatabase_DoesNotCrash) {
+  handler_->set_strike_database(nullptr);
+  handler_->OnDeclined();
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kUserDeclined, 1);
+}
+
+TEST_F(NativeAccountLinkingHandlerTest, OnAccepted_ClearsStrikesInDatabase) {
+  test_strike_database_->AddStrike();
+  test_strike_database_->AddStrike();
+  ASSERT_EQ(test_strike_database_->GetStrikes(), 2);
+
+  handler_->OnAccepted();
+  EXPECT_EQ(test_strike_database_->GetStrikes(), 0);
+}
+
+TEST_F(NativeAccountLinkingHandlerTest, OnDeclined_RecordsStrikeInDatabase) {
+  ASSERT_EQ(test_strike_database_->GetStrikes(), 0);
+
+  handler_->OnDeclined();
+  EXPECT_EQ(test_strike_database_->GetStrikes(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kUserDeclined, 1);
+}
+
+TEST_F(NativeAccountLinkingHandlerTest, OnDismissed_DoesNotRecordStrike) {
+  ASSERT_EQ(test_strike_database_->GetStrikes(), 0);
+
+  handler_->OnDismissed();
+  EXPECT_EQ(test_strike_database_->GetStrikes(), 0);
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kScreenClosedByUser, 1);
 }
 
 }  // namespace

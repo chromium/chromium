@@ -19,7 +19,6 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
-#include "components/strike_database/strike_database.h"
 #include "url/origin.h"
 
 namespace payments::facilitated {
@@ -104,35 +103,7 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt(
   Reset();
   pix_payment_page_origin_ = pix_payment_page_origin;
 
-  if (auto* strike_database = GetOrCreateStrikeDatabase()) {
-    auto decision = strike_database->GetStrikeDatabaseDecision();
-    switch (decision) {
-      case PixAccountLinkingStrikeDatabase::kDoNotBlock:
-        break;
-      case PixAccountLinkingStrikeDatabase::kMaxStrikeLimitReached:
-        LogAccountLinkingFlowExitedReason(
-            kPixFopSuffix, AccountLinkingFlowExitedReason::kMaxStrikes);
-        return;
-      case PixAccountLinkingStrikeDatabase::kRequiredDelayNotPassed:
-        LogAccountLinkingFlowExitedReason(
-            kPixFopSuffix,
-            AccountLinkingFlowExitedReason::kRequiredDelayNotPassed);
-        return;
-    }
-  }
-
-  if (!client()
-           ->GetPaymentsDataManager()
-           ->IsFacilitatedPaymentsPixAccountLinkingUserPrefEnabled()) {
-    LogAccountLinkingFlowExitedReason(
-        kPixFopSuffix, AccountLinkingFlowExitedReason::kUserOptedOut);
-    return;
-  }
-
-  if (!client()->HasScreenlockOrBiometricSetup()) {
-    LogAccountLinkingFlowExitedReason(
-        kPixFopSuffix,
-        AccountLinkingFlowExitedReason::kNoScreenlockOrBiometricSetup);
+  if (!CanPromptUser()) {
     return;
   }
 
@@ -234,22 +205,19 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptAfterDelay() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PixAccountLinkingManager::DismissPrompt() {
-  NativeAccountLinkingHandler::DismissPrompt();
+strike_database::StrikeDatabaseIntegratorBase*
+PixAccountLinkingManager::GetStrikeDatabase() {
+  return GetOrCreateStrikeDatabase();
+}
+
+bool PixAccountLinkingManager::IsUserPrefEnabled() const {
+  return client()
+      ->GetPaymentsDataManager()
+      ->IsFacilitatedPaymentsPixAccountLinkingUserPrefEnabled();
 }
 
 void PixAccountLinkingManager::DoOnAccepted() {
   is_prompt_accepted_ = true;
-  // Clear strikes when user accepts the prompt.
-  if (auto* strike_database = GetOrCreateStrikeDatabase()) {
-    strike_database->ClearStrikes();
-  }
-}
-
-void PixAccountLinkingManager::DoOnDeclined() {
-  if (auto* strike_database = GetOrCreateStrikeDatabase()) {
-    strike_database->AddStrike();
-  }
 }
 
 void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {

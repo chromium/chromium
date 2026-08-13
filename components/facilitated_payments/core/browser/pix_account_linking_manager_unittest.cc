@@ -988,4 +988,57 @@ TEST_F(PixAccountLinkingManagerTest, CreateAccountLinkingParams) {
   EXPECT_FALSE(test_api().CreateAccountLinkingParams().has_value());
 }
 
+TEST_F(PixAccountLinkingManagerTest, GetStrikeDatabase_ReturnsValidInstance) {
+  auto* strike_db = test_api().GetStrikeDatabase();
+  ASSERT_NE(strike_db, nullptr);
+  EXPECT_EQ(strike_db->GetStrikes(), 0);
+}
+
+TEST_F(PixAccountLinkingManagerTest, GetStrikeDatabase_IncognitoReturnsNullptr) {
+  EXPECT_CALL(client(), GetStrikeDatabase).WillOnce(testing::Return(nullptr));
+  EXPECT_EQ(test_api().GetStrikeDatabase(), nullptr);
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       MaybeShowPixAccountLinkingPrompt_IncognitoNullStrikeDatabase_PromptShown) {
+  EXPECT_CALL(client(), GetStrikeDatabase).WillRepeatedly(testing::Return(nullptr));
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  task_environment_.FastForwardBy(kShowPromptDelay);
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       OnAccepted_IncognitoNullStrikeDatabase_DoesNotCrash) {
+  EXPECT_CALL(client(), GetStrikeDatabase).WillRepeatedly(testing::Return(nullptr));
+  test_api().OnAccepted();
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       OnDeclined_IncognitoNullStrikeDatabase_DoesNotCrash) {
+  EXPECT_CALL(client(), GetStrikeDatabase).WillRepeatedly(testing::Return(nullptr));
+  test_api().OnDeclined();
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       MaybeShowPixAccountLinkingPrompt_StrictCheckOrder_StrikeLimitTakesPrecedence) {
+  base::HistogramTester histogram_tester;
+  // Set up 3 strikes (max limit) AND disable user preference AND disable screenlock.
+  PixAccountLinkingStrikeDatabase strike_database(test_strike_database_.get());
+  strike_database.AddStrikes(3);
+  autofill::prefs::SetFacilitatedPaymentsPixAccountLinking(pref_service_.get(),
+                                                           false);
+  EXPECT_CALL(client(), HasScreenlockOrBiometricSetup)
+      .WillRepeatedly(testing::Return(false));
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  task_environment_.FastForwardBy(kShowPromptDelay);
+
+  // Verifies strict check order: only kMaxStrikes is logged.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/AccountLinkingFlowExitedReason::kMaxStrikes,
+      /*expected_bucket_count=*/1);
+}
+
 }  // namespace payments::facilitated
