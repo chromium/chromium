@@ -1154,7 +1154,8 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
       }
     }
 
-    if (!patch_target.empty() && !patch->is_buffered()) {
+    if (!patch_target.empty() && !patch->is_buffered() &&
+        !patch->IsExternal()) {
       return;
     }
 
