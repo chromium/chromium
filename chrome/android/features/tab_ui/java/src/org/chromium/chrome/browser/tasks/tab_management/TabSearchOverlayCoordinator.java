@@ -395,10 +395,11 @@ public class TabSearchOverlayCoordinator
     }
 
     private void setupEmptyStateView(View emptyStateView) {
-        @DrawableRes int emptyImageResId = R.drawable.tablet_tab_switcher_empty_state_illustration;
+        @DrawableRes int emptyImageResId = R.drawable.tab_search_empty_state;
         ImageView icon = emptyStateView.findViewById(R.id.empty_state_icon);
         icon.setImageResource(emptyImageResId);
         TextView title = emptyStateView.findViewById(R.id.empty_state_text_title);
+        title.setTextAppearance(R.style.TextAppearance_TextLarge_Secondary);
         title.setText(R.string.search_in_settings_no_match);
         TextView description = emptyStateView.findViewById(R.id.empty_state_text_description);
         description.setVisibility(View.GONE);

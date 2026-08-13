@@ -75,6 +75,7 @@ android_resources("java_resources") {
     "java/res/drawable/tab_label_background.xml",
     "java/res/drawable/tab_label_icon_background.xml",
     "java/res/drawable/tab_list_editor_share_icon.xml",
+    "java/res/drawable/tab_search_empty_state.xml",
     "java/res/drawable/tab_search_overlay_panel_bg.xml",
     "java/res/drawable/tab_strip_fading_edge_end.xml",
     "java/res/drawable/tab_strip_fading_edge_start.xml",

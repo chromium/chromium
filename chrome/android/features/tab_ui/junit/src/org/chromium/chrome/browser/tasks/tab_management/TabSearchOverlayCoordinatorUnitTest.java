@@ -21,12 +21,15 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -241,6 +244,31 @@ public class TabSearchOverlayCoordinatorUnitTest {
                 .setUrlBarHintText(
                         mActivity.getResources().getString(R.string.hub_search_empty_hint));
         verify(mUrlBar).setTextAppearance(R.style.TextAppearance_TextMedium);
+    }
+
+    @Test
+    public void testEmptyStateViewSetup() {
+        ImageView emptyStateIcon = mPanelContainer.findViewById(R.id.empty_state_icon);
+        TextView emptyStateTitle = mPanelContainer.findViewById(R.id.empty_state_text_title);
+        TextView emptyStateDescription =
+                mPanelContainer.findViewById(R.id.empty_state_text_description);
+
+        assertNotNull(emptyStateIcon);
+        assertNotNull(emptyStateTitle);
+        assertNotNull(emptyStateDescription);
+
+        Drawable drawable = emptyStateIcon.getDrawable();
+        assertNotNull(drawable);
+        assertEquals(
+                R.drawable.tab_search_empty_state,
+                Shadows.shadowOf(drawable).getCreatedFromResId());
+        assertEquals(
+                mActivity.getResources().getString(R.string.search_in_settings_no_match),
+                emptyStateTitle.getText().toString());
+        assertEquals(View.GONE, emptyStateDescription.getVisibility());
+
+        float expectedSize = mActivity.getResources().getDimension(R.dimen.text_size_large);
+        assertEquals(expectedSize, emptyStateTitle.getTextSize(), 0.01f);
     }
 
     @Test
