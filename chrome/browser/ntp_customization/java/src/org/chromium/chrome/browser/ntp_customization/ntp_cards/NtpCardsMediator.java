@@ -151,17 +151,6 @@ public class NtpCardsMediator {
 
     @VisibleForTesting
     void updateUserPrefs() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)) {
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
-                Log.i(
-                        TAG,
-                        "NtpCardsMediator:updateUserPrefs - HomeModulePrefRefactor was off, return"
-                                + " early");
-            }
-            return;
-        }
-
         @Nullable Profile profile = mProfileSupplier.get();
         if (profile == null) {
             if (ChromeFeatureList.isEnabled(

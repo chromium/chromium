@@ -5949,11 +5949,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "home-module-pref-refactor",
-    "owners": [ "jhimawan@google.com", "clank-app-team@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "http-cache-custom-backend",
     "owners": ["horo@chromium.org", "net-dev@chromium.org"],
     "expiry_milestone": 160
@@ -10485,11 +10480,6 @@
     "name": "writer-api",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
     "expiry_milestone": 154
-  },
-  {
-    "name": "xplat-synced-setup",
-    "owners": ["jhimawan@google.com", "clank-app-team@google.com"],
-    "expiry_milestone": 160
   },
   {
     "name": "xplat-synced-setup-themes",

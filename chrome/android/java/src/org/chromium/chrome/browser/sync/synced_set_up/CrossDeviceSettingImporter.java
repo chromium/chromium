@@ -187,10 +187,6 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     private void onTabChangeOrGainFocus(@Nullable Tab currentTab, boolean availableImmediately) {
-        if (!ChromeFeatureList.sXplatSyncedSetup.isEnabled()) {
-            return;
-        }
-
         if (currentTab == null) return;
 
         @Nullable Profile profile = currentTab.getProfile();

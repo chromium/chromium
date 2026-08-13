@@ -15,10 +15,8 @@ import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 
-import org.chromium.base.FeatureList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -63,10 +61,7 @@ public class FullscreenSigninView extends RelativeLayout {
         mFooter = findViewById(R.id.signin_fre_footer);
         mSigninProgressSpinner = findViewById(R.id.fre_signin_progress_spinner);
         mSigninProgressText = findViewById(R.id.fre_signin_progress_text);
-        if (FeatureList.isNativeInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.XPLAT_SYNCED_SETUP)) {
-            mSigninProgressText.setText(R.string.fre_signing_in_2);
-        }
+        mSigninProgressText.setText(R.string.fre_signing_in_2);
         mPrivacyDisclaimer = findViewById(R.id.privacy_disclaimer);
     }
 

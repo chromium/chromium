@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -79,8 +78,7 @@ public class ModuleRegistry {
     @ModuleType
     public Set<Integer> getEnabledModuleSet() {
         @ModuleType Set<Integer> enabledModuleList = new HashSet<>();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
-                && !mHomeModulesConfigManager.getPrefAllCardsEnabled()) {
+        if (!mHomeModulesConfigManager.getPrefAllCardsEnabled()) {
             return enabledModuleList;
         }
 

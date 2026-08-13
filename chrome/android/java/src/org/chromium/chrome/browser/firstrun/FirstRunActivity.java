@@ -550,13 +550,9 @@ public class FirstRunActivity extends FirstRunActivityBase
 
         assert FeatureList.isNativeInitialized()
                 : "Expected feature list to be initialized during FRE.";
-        if (ChromeFeatureList.sXplatSyncedSetup.isEnabled()) {
-            SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
-            prefManager.writeBoolean(
-                    ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX, false);
-            prefManager.writeBoolean(
-                    ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS, false);
-        }
+        SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
+        prefManager.writeBoolean(ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX, false);
+        prefManager.writeBoolean(ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS, false);
     }
 
     private void onNativeDependenciesFullyInitialized() {

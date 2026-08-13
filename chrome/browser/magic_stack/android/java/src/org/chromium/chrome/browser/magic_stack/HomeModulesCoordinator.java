@@ -23,7 +23,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils.PaddingStyle;
@@ -98,10 +97,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
                     @Override
                     public void allCardsConfigChanged(boolean isEnabled) {
-                        if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)) {
-                            mRecyclerView.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
-                        }
+                        mRecyclerView.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
                     }
                 };
         mHomeModulesConfigManager.addListener(mHomeModulesStateListener);

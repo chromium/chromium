@@ -50,7 +50,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -74,7 +73,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link NtpCardsMediator} */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
 @DisableFeatures(ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)
 public class NtpCardsMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -245,15 +243,6 @@ public class NtpCardsMediatorUnitTest {
 
         // Verify that UserPrefs.setBoolean is called for the "all cards" switch.
         verify(mPrefService).setBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED, true);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
-    public void updateUserPrefsTest_FeatureDisabled() {
-        mNtpCardsMediator.updateUserPrefs();
-
-        // Verify that UserPrefs.setBoolean is not called.
-        verify(mPrefService, never()).setBoolean(anyString(), anyBoolean());
     }
 
     @Test

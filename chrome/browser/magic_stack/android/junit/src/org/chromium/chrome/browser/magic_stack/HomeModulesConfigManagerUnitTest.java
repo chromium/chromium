@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.HOME_MODULE_PREF_REFACTOR;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettingsPreferenceKey;
 
 import com.google.android.apps.common.testing.accessibility.framework.replacements.TextUtils;
@@ -27,7 +26,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager.HomeModulesStateListener;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -121,7 +119,6 @@ public class HomeModulesConfigManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(HOME_MODULE_PREF_REFACTOR)
     public void testSetPrefAllCardsEnabled() {
         mHomeModulesConfigManager.setPrefAllCardsEnabled(false);
         assertFalse(

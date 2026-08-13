@@ -6172,13 +6172,6 @@ inline constexpr char kHistoryPaneAndroidName[] = "History Pane Android";
 inline constexpr char kHistoryPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays History.";
 
-inline constexpr char kHomeModulePrefRefactorName[] =
-    "Home module pref refactor";
-inline constexpr char kHomeModulePrefRefactorDescription[] =
-    "Use UserPrefs for home module customization settings (for the "
-    "NTP).";
-
-
 inline constexpr char kLongScreenshotsLenientMemoryCheckName[] =
     "Long Screenshots Lenient Memory Check";
 inline constexpr char kLongScreenshotsLenientMemoryCheckDescription[] =
@@ -6584,16 +6577,11 @@ inline constexpr char kTextClassifierTimeoutDescription[] =
     "Enable timeout for TextClassifier calls. The timeout is configurable with "
     "a default of 200ms.";
 
-inline constexpr char kXplatSyncedSetupName[] = "Cross-platform synced setup";
-inline constexpr char kXplatSyncedSetupDescription[] =
-    "Enables the Cross-platform synced setup feature.";
-
 inline constexpr char kXplatSyncedSetupThemesName[] =
     "Cross-platform synced setup themes";
 inline constexpr char kXplatSyncedSetupThemesDescription[] =
     "Allows users to import themes from another device as part of the one-time "
     "synced setup experience.";
-
 inline constexpr char kXsurfaceMetricsReportingName[] =
     "Xsurface Metrics Reporting";
 inline constexpr char kXsurfaceMetricsReportingDescription[] =
