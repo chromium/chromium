@@ -10,6 +10,13 @@ assert(enable_extensions_core)
 
 grit_strings("strings") {
   source = "extensions_strings.grd"
+  inputs = [
+    "extensions_chromium_strings.grdp",
+    "extensions_google_chrome_strings.grdp",
+  ]
+  inputs +=
+      process_file_template(xtb_locales,
+                            [ "extensions_strings_{{source_name_part}}.xtb" ])
   outputs = [ "grit/extensions_strings.h" ]
   output_prefix = "extensions_strings_"
 }
