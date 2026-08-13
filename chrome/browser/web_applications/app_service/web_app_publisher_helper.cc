@@ -1452,8 +1452,9 @@ void WebAppPublisherHelper::MaybeSetSupportedLinksPreference(
     bool are_other_apps_preferred =
         AreOtherAppsPreferredForLinks(proxy, app_id, intent_filters);
     bool iwa_capture_links_set_default =
-        proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id) ||
-        (!app_had_supported_links && !are_other_apps_preferred);
+        !are_other_apps_preferred &&
+        (proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id) ||
+         !app_had_supported_links);
     if (iwa_capture_links_set_default) {
       proxy->SetSupportedLinksPreference(app_id);
     }
