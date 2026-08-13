@@ -26,4 +26,5 @@ if __name__ == '__main__':
         project='protocolbuffers/protobuf',
         install_scripts=[_3PP_DIR / 'install.sh'],
         artifact_extension='.zip',
-        artifact_regex=_get_artifact_regex(os.environ['_3PP_PLATFORM']))
+        artifact_regex=_get_artifact_regex(os.environ['_3PP_PLATFORM']),
+        include_deps_hash=False)
