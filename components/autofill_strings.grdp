@@ -1867,21 +1867,21 @@
     Your content will not be used to improve AI. Your organization may change these settings at any time.
   </message>
 
-  <!-- Personal Context Notice in Ambient Autofill/AtMemory Popup on Desktop -->
+<!-- Personal Context Notice in Ambient Autofill/AtMemory Popup on Desktop -->
   <if expr="not is_android and not is_ios">
-    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE" translateable="false" desc="Title for the personal context notice in Ambient Autofill/AtMemory popup.">
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE" desc="Headline of an informational notice introducing a new enhanced autofill feature. 'Gmail' is a proper branding name and should remain unlocalized and match standard guidelines across languages.">
       Now you can find and fill info from Gmail and more.
     </message>
-    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT" translateable="false" desc="Context text for the default personal context notice in AmbientAutofill popup or in AtMemory popup when the logging is disabled by policy.">
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE" desc="Body text of an informational notice introducing a new enhanced autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should remain unlocalized and match standard guidelines across languages.">
       Powered by Personal Intelligence with Gemini.
     </message>
-    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING" translateable="false" desc="Context text for the personal context notice in AtMemory popup when the logging is enabled.">
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE_WITH_LOGGING" desc="Body text of an informational notice introducing a new enhanced autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should remain unlocalized and match standard guidelines across languages.">
       Powered by Personal Intelligence with Gemini. Your requests, page titles, and URLs may be reviewed to improve enhanced autofill.
     </message>
-    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT" translateable="false" desc="Link text for the personal context notice in Ambient Autofill/AtMemory popup.">
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT" desc="Link that navigates the user to the Chrome settings page to adjust their preferences.">
       Manage settings
     </message>
-    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" translateable="false" desc="Got it button text for the personal context notice in Ambient Autofill/AtMemory popup.">
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" desc="Standard acknowledgment button label to dismiss the informational notice.">
       OK
     </message>
     <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_LINK_TEXT" desc="Link text for the private inference notice in Autofill AI popup.">

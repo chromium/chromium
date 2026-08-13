@@ -432,7 +432,7 @@ std::unique_ptr<PopupNoticeView> CreatePersonalContextNoticeView(
   std::u16string title_text = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
   std::u16string subtitle_text = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE);
   std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
   std::u16string accept_button_text = l10n_util::GetStringUTF16(
@@ -441,7 +441,7 @@ std::unique_ptr<PopupNoticeView> CreatePersonalContextNoticeView(
     if (controller->GetMainFillingProduct() == FillingProduct::kAtMemory &&
         !IsLoggingDisabledByPolicy(controller.get())) {
       subtitle_text = l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING);
+          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE_WITH_LOGGING);
     }
   }
   auto on_link_clicked = base::BindRepeating(

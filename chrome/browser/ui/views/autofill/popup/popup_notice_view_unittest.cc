@@ -606,7 +606,7 @@ TEST_F(PopupNoticeViewTest,
       AutofillMetrics::PopupNoticeInteractions::kShown, 1);
   EXPECT_NE(
       test_api(*view).description()->GetText().find(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING)),
+          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE_WITH_LOGGING)),
       std::u16string::npos);
 }
 
@@ -630,7 +630,7 @@ TEST_F(PopupNoticeViewTest,
   ASSERT_TRUE(view);
   EXPECT_NE(
       test_api(*view).description()->GetText().find(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT)),
+          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE)),
       std::u16string::npos);
 }
 
