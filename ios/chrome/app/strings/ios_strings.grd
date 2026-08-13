@@ -1519,6 +1519,18 @@
       <message name="IDS_IOS_BWG_PAGE_CONTENT_SHARING_ALERT_TITLE" desc="The title of the alert asking a user to turn on Page Content sharing.">
           Turn on tab sharing
       </message>
+      <message name="IDS_IOS_BWG_PROMO_CAROUSEL_GEMINI_IN_CHROME" desc="Product branding suffix text for the Gemini Promo carousel slide titles.">
+          Gemini in Chrome
+      </message>
+      <message name="IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_TITLE" desc="Planning slide title text prefix for the Gemini Promo carousel.">
+          Plan your weekend with
+      </message>
+      <message name="IDS_IOS_BWG_PROMO_CAROUSEL_SHOPPING_TITLE" desc="Shopping slide title text prefix for the Gemini Promo carousel.">
+          Shop confidently with
+      </message>
+      <message name="IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_TITLE" desc="Summarize slide title text prefix for the Gemini Promo carousel.">
+          Sum it up with
+      </message>
       <message name="IDS_IOS_BWG_PROMO_FIRST_BOX_BODY" desc="First box body text for the Gemini Promo page.">
           Get relevant answers based on the content of the page you're on
       </message>

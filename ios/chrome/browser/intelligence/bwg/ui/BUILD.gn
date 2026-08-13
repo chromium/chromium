@@ -13,6 +13,10 @@ source_set("ui") {
     "gemini_consent_view_controller_delegate.h",
     "gemini_container_view_controller.h",
     "gemini_container_view_controller.mm",
+    "gemini_first_run_carousel_slide_view.h",
+    "gemini_first_run_carousel_slide_view.mm",
+    "gemini_first_run_carousel_view.h",
+    "gemini_first_run_carousel_view.mm",
     "gemini_first_run_mutator.h",
     "gemini_first_run_page_view_controller.h",
     "gemini_first_run_page_view_controller.mm",
@@ -87,7 +91,21 @@ source_set("eg2_tests") {
 }
 
 bundle_data("bwg_lottie_resources") {
-  sources = [ "resources/FRE_Banner.json" ]
+  sources = [
+    "resources/FRE_Banner.json",
+    "resources/FRE_Planning_Slide.json",
+    "resources/FRE_Planning_Slide_Dark.json",
+    "resources/FRE_Planning_Slide_Dark_RTL.json",
+    "resources/FRE_Planning_Slide_RTL.json",
+    "resources/FRE_Shopping_Slide.json",
+    "resources/FRE_Shopping_Slide_Dark.json",
+    "resources/FRE_Shopping_Slide_Dark_RTL.json",
+    "resources/FRE_Shopping_Slide_RTL.json",
+    "resources/FRE_Summarize_Slide.json",
+    "resources/FRE_Summarize_Slide_Dark.json",
+    "resources/FRE_Summarize_Slide_Dark_RTL.json",
+    "resources/FRE_Summarize_Slide_RTL.json",
+  ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
 
