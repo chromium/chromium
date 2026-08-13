@@ -106,11 +106,6 @@ class CONTENT_EXPORT PrePrefetchServiceImpl : public PrePrefetchService {
   StartPrePrefetchRequestForTesting(
       std::unique_ptr<const PrefetchRequest> prefetch_request);
 
-  // Sets the URLLoaderFactory for testing. The caller must keep the ownership
-  // of the factory during the test.
-  static void SetURLLoaderFactoryForTesting(
-      network::SharedURLLoaderFactory* url_loader_factory);
-
   // Prohibits `URLLoaderFactory` refresh for testing.
   static void SetShouldProhibitURLLoaderFactoryRefreshForTesting(
       bool should_prohibit);

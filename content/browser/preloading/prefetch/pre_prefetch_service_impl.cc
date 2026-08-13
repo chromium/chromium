@@ -20,7 +20,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
-#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_container.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_handle_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
@@ -35,7 +34,6 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/constants.h"
-#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -43,50 +41,12 @@
 namespace content {
 
 namespace {
-static network::SharedURLLoaderFactory* g_url_loader_factory_for_testing =
-    nullptr;
 static std::atomic<bool>
     g_should_prohibit_url_loader_factory_refresh_for_testing{false};
 
 void RecordPrePrefetchStartResultHistogram(PrePrefetchStartResult result) {
   base::UmaHistogramEnumeration("Preloading.Prefetch.PrePrefetch.StartResult",
                                 result);
-}
-
-mojo::PendingRemote<network::mojom::URLLoaderFactory>
-CreateURLLoaderFactoryOnUI(BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(browser_context);
-
-  // This is the same default network context that should be used in normal
-  // prefetch's `URLLoaderFactory` on the UI thread, created via
-  // `PrefetchContainer::GetOrCreateDefaultNetworkContextURLLoaderFactory()`.
-  network::mojom::NetworkContext* network_context =
-      browser_context->GetDefaultStoragePartition()->GetNetworkContext();
-
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory;
-  if (g_url_loader_factory_for_testing) {
-    CHECK_IS_TEST();
-    g_url_loader_factory_for_testing->Clone(
-        pending_factory.InitWithNewPipeAndPassReceiver());
-  } else {
-    // Unlike `CreatePrefetchURLLoaderFactory()`, this does use
-    // `url_loader_factory::HeaderClientOption::kDisallow` and null
-    // `url_loader_factory::ContentClientParams`. The interceptors that would be
-    // added by `ContentClientParams` will be added/executed when the
-    // PrePrefetch is consumed by a `PrefetchContainer`.
-    pending_factory = url_loader_factory::CreatePendingRemote(
-        ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
-        url_loader_factory::TerminalParams::ForNetworkContext(
-            network_context,
-            CreatePrefetchURLLoaderFactoryParams(
-                // Pre-prefetches are browser-initiated without a referring
-                // frame/context, so no creator restrictions apply.
-                network::GetNoOpNetworkRestrictionsId()),
-            url_loader_factory::HeaderClientOption::kDisallow),
-        /*content_client_params=*/std::nullopt);
-  }
-  return pending_factory;
 }
 
 network::HttpRequestHeadersUpdateParams PreCalculatePrePrefetchHeadersOnUI(
@@ -252,10 +212,10 @@ class PrePrefetchServiceCore {
         base::BindOnce(
             [](base::WeakPtr<BrowserContext> browser_context) {
               DCHECK_CURRENTLY_ON(BrowserThread::UI);
-              return browser_context
-                         ? CreateURLLoaderFactoryOnUI(browser_context.get())
-                         : mojo::PendingRemote<
-                               network::mojom::URLLoaderFactory>();
+              return browser_context ? CreatePrePrefetchURLLoaderFactoryOnUI(
+                                           browser_context.get())
+                                     : mojo::PendingRemote<
+                                           network::mojom::URLLoaderFactory>();
             },
             browser_context_weak_on_ui_thread_),
         base::BindOnce(&PrePrefetchServiceCore::UpdateURLLoaderFactory,
@@ -373,7 +333,7 @@ PrePrefetchServiceImpl::PrePrefetchServiceImpl(
   browser_context_weak_on_ui_thread_ = browser_context->GetWeakPtr();
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory =
-      CreateURLLoaderFactoryOnUI(browser_context);
+      CreatePrePrefetchURLLoaderFactoryOnUI(browser_context);
 
   // Pre-calculate headers based on the hints. If we can utilize this upon
   // PrePrefetch happening on the UI thread, we can save a thread hop to the UI
@@ -469,12 +429,6 @@ PrePrefetchServiceImpl::StartPrePrefetchRequestInternal(
       timer.Elapsed());
 
   return handle;
-}
-
-// static
-void PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(  // IN-TEST
-    network::SharedURLLoaderFactory* url_loader_factory) {
-  g_url_loader_factory_for_testing = url_loader_factory;
 }
 
 // static

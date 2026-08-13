@@ -398,12 +398,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
 
     SetTerminalPrefetchURLLoaderFactoryForTesting(
         test_shared_url_loader_factory_.get());
-    // `PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting()` is called for
-    // catching network requests in:
-    // - PrePrefetch-related tests, and
-    // - Tests with `kPrefetchOffTheMainThreadForceForTesting` enabled.
-    PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(
-        test_shared_url_loader_factory_.get());
 
     PrefetchService::SetHostNonUniqueFilterForTesting(
         [](std::string_view) { return false; });
@@ -419,7 +413,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     mock_navigation_handle_.reset();
 
     SetTerminalPrefetchURLLoaderFactoryForTesting(nullptr);
-    PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(nullptr);
 
     PrefetchService::SetHostNonUniqueFilterForTesting(nullptr);
     PrefetchService::SetServiceWorkerContextForTesting(nullptr);

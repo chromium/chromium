@@ -4,12 +4,15 @@
 
 #include "content/browser/preloading/prefetch/prefetch_url_loader_factory_utils.h"
 
+#include "base/check_is_test.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -80,7 +83,9 @@ scoped_refptr<network::SharedURLLoaderFactory> CreatePrefetchURLLoaderFactory(
     }
 
     // Intercept the request for testing, if any (but not for
-    // PrePrefetch-promoted cases, see the method comment in the header).
+    // PrePrefetch-promoted cases (which is done in
+    // `CreatePrePrefetchURLLoaderFactoryOnUI()` below), see the method comment
+    // in the header).
     if (g_url_loader_factory_for_testing) {
       return url_loader_factory::TerminalParams::ForNonNetwork(
           base::WrapRefCounted(g_url_loader_factory_for_testing),
@@ -102,6 +107,42 @@ scoped_refptr<network::SharedURLLoaderFactory> CreatePrefetchURLLoaderFactory(
           referring_render_process_id,
           prefetch_request.referring_origin().value_or(url::Origin()),
           net::IsolationInfo(), ukm_source_id, &bypass_redirect_checks));
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+CreatePrePrefetchURLLoaderFactoryOnUI(BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(browser_context);
+
+  // This is the same default network context that should be used in normal
+  // prefetch's `URLLoaderFactory` on the UI thread, created via
+  // `PrefetchContainer::GetOrCreateDefaultNetworkContextURLLoaderFactory()`.
+  network::mojom::NetworkContext* network_context =
+      browser_context->GetDefaultStoragePartition()->GetNetworkContext();
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory;
+  if (g_url_loader_factory_for_testing) {
+    CHECK_IS_TEST();
+    g_url_loader_factory_for_testing->Clone(
+        pending_factory.InitWithNewPipeAndPassReceiver());
+  } else {
+    // Unlike `CreatePrefetchURLLoaderFactory()`, this does use
+    // `url_loader_factory::HeaderClientOption::kDisallow` and null
+    // `url_loader_factory::ContentClientParams`. The interceptors that would be
+    // added by `ContentClientParams` will be added/executed when the
+    // PrePrefetch is consumed by a `PrefetchContainer`.
+    pending_factory = url_loader_factory::CreatePendingRemote(
+        ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
+        url_loader_factory::TerminalParams::ForNetworkContext(
+            network_context,
+            CreatePrefetchURLLoaderFactoryParams(
+                // Pre-prefetches are browser-initiated without a referring
+                // frame/context, so no creator restrictions apply.
+                network::GetNoOpNetworkRestrictionsId()),
+            url_loader_factory::HeaderClientOption::kDisallow),
+        /*content_client_params=*/std::nullopt);
+  }
+  return pending_factory;
 }
 
 }  // namespace content

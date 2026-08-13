@@ -19,6 +19,7 @@ class NetworkContext;
 
 namespace content {
 
+class BrowserContext;
 class PrefetchRequest;
 
 // Creates the common factory params used for prefetching, including by
@@ -40,12 +41,19 @@ CreatePrefetchURLLoaderFactory(network::mojom::NetworkContext* network_context,
                                scoped_refptr<network::SharedURLLoaderFactory>
                                    pre_prefetch_url_loader_factory = nullptr);
 
+// Creates a `URLLoaderFactory` to be used for pre-prefetch requests.
+// This must be called/created on the UI thread and then will be passed to/used
+// on the `PrePrefetchServiceCore` sequence.
+CONTENT_EXPORT mojo::PendingRemote<network::mojom::URLLoaderFactory>
+CreatePrePrefetchURLLoaderFactoryOnUI(BrowserContext* browser_context);
+
 // Sets the URLLoaderFactory to intercept *network requests* just before being
-// sent to a NetworkContext. This intercepts both Default and Isolated network
-// requests, but does NOT intercept PrePrefetch-backed prefetches, because the
-// request doesn't go to the network. Use
-// `PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting()` for intercepting
-// PrePrefetch requests just before going to the network instead.
+// sent to a NetworkContext. This intercepts all prefetch-related requests:
+// - Default network main-thread prefetches
+// - Isolated network main-thread prefetches
+// - Default network off-the-main-thread preprefetches
+// but does NOT intercept PrePrefetch-backed prefetches, because the request
+// doesn't go to the network.
 //
 // This is inserted at the last step of the URLLoaderFactory chain and not e.g.
 // at `PrefetchService::GetURLLoaderFactoryForCurrentPrefetch()`, to fully
