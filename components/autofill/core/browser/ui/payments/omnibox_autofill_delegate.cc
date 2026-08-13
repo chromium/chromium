@@ -435,6 +435,10 @@ void OmniboxAutofillDelegate::OnTabSelected(TabbedPaneTabType tab_type) {
   NOTREACHED();
 }
 
+FieldGlobalId OmniboxAutofillDelegate::GetQueriedFieldId() const {
+  return trigger_field_global_id_;
+}
+
 void OmniboxAutofillDelegate::OnFieldBecameVisible() {
   // Log that the field became visible to the user's viewport.
   LogOmniboxAutofillShowChipDecisionPart2(

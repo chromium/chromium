@@ -877,13 +877,16 @@ ChromeAutofillClient::ShowAutofillSuggestions(
   // guarantees the IPH will be hidden by the time the Autofill Popup will
   // attempt to open. This works because the tasks of hiding the IPH and showing
   // the Autofill Popup are posted on the same thread (UI thread).
+  const FieldGlobalId expected_field_id =
+      delegate ? delegate->GetQueriedFieldId() : FieldGlobalId();
+
   const SuggestionUiSessionId session_id =
       AutofillSuggestionController::GenerateSuggestionUiSessionId();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ChromeAutofillClient::ShowAutofillSuggestionsImpl,
                      weak_ptr_factory_.GetWeakPtr(), session_id, open_args,
-                     delegate));
+                     delegate, expected_field_id));
   return session_id;
 }
 
@@ -1376,7 +1379,15 @@ void ChromeAutofillClient::ShowEmailVerificationPopup(
 void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
     SuggestionUiSessionId session_id,
     const PopupOpenArgs& open_args,
-    base::WeakPtr<AutofillSuggestionDelegate> delegate) {
+    base::WeakPtr<AutofillSuggestionDelegate> delegate,
+    FieldGlobalId expected_field_id) {
+  if (expected_field_id &&
+      (!delegate || delegate->GetQueriedFieldId() != expected_field_id) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillCheckTriggeringFieldDoesNotChangeDuringFilling)) {
+    return;
+  }
+
   // Convert element_bounds to be in screen space.
   const gfx::Rect client_area = web_contents()->GetContainerBounds();
   const gfx::RectF element_bounds_in_screen_space =

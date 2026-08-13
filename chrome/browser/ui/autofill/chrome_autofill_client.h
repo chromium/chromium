@@ -393,7 +393,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void ShowAutofillSuggestionsImpl(
       SuggestionUiSessionId session_id,
       const PopupOpenArgs& open_args,
-      base::WeakPtr<AutofillSuggestionDelegate> delegate);
+      base::WeakPtr<AutofillSuggestionDelegate> delegate,
+      FieldGlobalId expected_field_id);
 
   // Called when an actor task is created or an existing one changes state. It
   // may be called for actors unrelated to the current tab. If an update is

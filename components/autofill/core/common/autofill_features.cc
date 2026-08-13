@@ -566,6 +566,13 @@ BASE_FEATURE(kAutofillAtMemoryTypedFetchPlan, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Check that between the time a filling flow is triggered and the popup being
+// displayed, the field id to anchor the popup on did not change.
+// TODO(crbug.com/8233280): This is a kill-switch feature, remove once we are
+// sure no bug was introduced.
+BASE_FEATURE(kAutofillCheckTriggeringFieldDoesNotChangeDuringFilling,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, deduce country of a new address profile based on the phone
 // number if not explicitly observed.
 BASE_FEATURE(kAutofillComplementCountryUsingPhoneNumber,

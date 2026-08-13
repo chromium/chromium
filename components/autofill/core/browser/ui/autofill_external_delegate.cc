@@ -434,6 +434,10 @@ const AutofillField* AutofillExternalDelegate::GetQueriedField() const {
   return GetQueriedFormAndField().second;
 }
 
+FieldGlobalId AutofillExternalDelegate::GetQueriedFieldId() const {
+  return last_query_.field_id;
+}
+
 std::pair<const FormStructure*, const AutofillField*>
 AutofillExternalDelegate::GetQueriedFormAndField() const {
   auto [form, field] =

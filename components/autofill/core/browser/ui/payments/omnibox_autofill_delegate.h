@@ -68,6 +68,7 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   void ClearPreviewedForm() override;
   FillingProduct GetMainFillingProduct() const override;
   void OnTabSelected(TabbedPaneTabType tab_type) override;
+  FieldGlobalId GetQueriedFieldId() const override;
 
   // mojom::AutofillVisibilityObserver:
   void OnFieldBecameVisible() override;

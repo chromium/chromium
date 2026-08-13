@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace password_manager {
 class PasswordManagerDriver;
@@ -111,6 +112,9 @@ class AutofillSuggestionDelegate {
   // Called when `tab_type` is opened in the tabbed pane config of the autofill
   // dropdown.
   virtual void OnTabSelected(TabbedPaneTabType tab_type) = 0;
+
+  // Returns the global ID of the field for which suggestions are being queried.
+  virtual FieldGlobalId GetQueriedFieldId() const = 0;
 };
 
 }  // namespace autofill
