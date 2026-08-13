@@ -2005,6 +2005,11 @@ inline constexpr char kViewCertificateInformationName[] =
 inline constexpr char kViewCertificateInformationDescription[] =
     "Enables viewing detailed certificate information in Page Info.";
 
+inline constexpr char kVoiceSearchMicPermissionsName[] =
+    "Voice Search Microphone Permissions";
+inline constexpr char kVoiceSearchMicPermissionsDescription[] =
+    "Enables microphone permissions optimizations for voice search.";
+
 inline constexpr char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";

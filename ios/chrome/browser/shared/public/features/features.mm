@@ -1255,3 +1255,9 @@ bool IsNextOldDesignEnabled() {
   }
   return base::FeatureList::IsEnabled(kNextOldDesign);
 }
+
+BASE_FEATURE(kVoiceSearchMicPermissions, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsVoiceSearchMicPermissionsEnabled() {
+  return base::FeatureList::IsEnabled(kVoiceSearchMicPermissions);
+}

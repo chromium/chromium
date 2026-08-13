@@ -1009,4 +1009,10 @@ BASE_DECLARE_FEATURE(kNextOldDesign);
 // Returns true if the NextOldDesign feature is enabled.
 bool IsNextOldDesignEnabled();
 
+// Feature to enable mic permissions for voice search.
+BASE_DECLARE_FEATURE(kVoiceSearchMicPermissions);
+
+// Returns true if VoiceSearchMicPermissions is enabled.
+bool IsVoiceSearchMicPermissionsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

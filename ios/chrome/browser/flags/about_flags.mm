@@ -2888,6 +2888,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kPrepopulatedEnginesShadowVariantsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(switches::kPrepopulatedEnginesShadowVariants)},
+    {"voice-search-mic-permissions",
+     flag_descriptions::kVoiceSearchMicPermissionsName,
+     flag_descriptions::kVoiceSearchMicPermissionsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kVoiceSearchMicPermissions)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
