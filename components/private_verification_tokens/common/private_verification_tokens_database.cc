@@ -30,7 +30,7 @@
 namespace {
 
 // Version number of the database.
-const int kCurrentVersionNumber = 4;
+const int kCurrentVersionNumber = 5;
 
 static constexpr char kDatabaseTag[] = "PrivateVerificationTokens";
 
@@ -42,7 +42,6 @@ static constexpr char kCreateTokensTableSql[] =
       "key_id INTEGER NOT NULL,"
       "expiration INTEGER NOT NULL,"
       "token BLOB NOT NULL,"
-      "redeemed INTEGER NOT NULL DEFAULT 0,"
       "version INTEGER NOT NULL,"
       "creation_time INTEGER NOT NULL)";
 
@@ -53,20 +52,15 @@ static constexpr char kInsertTokenSql[] =
 
 static constexpr char kGetTokenSql[] =
     "SELECT id,issuer,key_id,expiration,token,version,creation_time "
-    "FROM tokens WHERE redeemed = 0 AND issuer = ?";
+    "FROM tokens WHERE issuer = ?";
 
 static constexpr char kGetAllTokensSql[] =
     "SELECT id,issuer,key_id,expiration,token,version,creation_time,COUNT(*) "
-    "FROM tokens WHERE redeemed = 0 "
+    "FROM tokens "
     "GROUP BY issuer";
 
-static constexpr char kSetTokenRedeemedSql[] =
-    "UPDATE tokens "
-    "SET redeemed = 1 "
-    "WHERE id = ?";
-
-static constexpr char kDeleteRedeemedTokensSql[] =
-    "DELETE FROM tokens WHERE redeemed = 1";
+static constexpr char kDeleteTokenSql[] =
+    "DELETE FROM tokens WHERE id = ?";
 
 // SQLite in Chromium has a limit of 32k placeholders per query. We use
 // anywhere between 0-2 placeholders for the time range, plus one for
@@ -251,17 +245,6 @@ TokensAndCounts PrivateVerificationTokensDatabase::GetTokensFromEach() {
   return TokensAndCounts(std::move(tokens), std::move(counts));
 }
 
-bool PrivateVerificationTokensDatabase::DeleteRedeemedTokens() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!EnsureDBInitialized()) {
-    return false;
-  }
-  sql::Statement statement(
-      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteRedeemedTokensSql));
-  DCHECK(statement.is_valid());
-  return statement.Run();
-}
-
 bool PrivateVerificationTokensDatabase::DeleteTokens(
     base::Time delete_begin,
     base::Time delete_end,
@@ -332,13 +315,13 @@ bool PrivateVerificationTokensDatabase::DeleteTokenBatch(
   return statement.Run();
 }
 
-bool PrivateVerificationTokensDatabase::SetRedeemed(int64_t token_id) {
+bool PrivateVerificationTokensDatabase::DeleteToken(int64_t token_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return false;
   }
   sql::Statement statement(
-      database_->GetCachedStatement(SQL_FROM_HERE, kSetTokenRedeemedSql));
+      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteTokenSql));
   DCHECK(statement.is_valid());
   statement.BindInt64(0, token_id);
   return statement.Run();

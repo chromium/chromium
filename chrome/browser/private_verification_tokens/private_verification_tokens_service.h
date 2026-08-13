@@ -79,8 +79,7 @@ class PrivateVerificationTokensService : public KeyedService {
   std::optional<std::pair<int64_t, std::string>> GetTokenForRedemption(
       const url::Origin& redeemer_origin);
 
-  // Deletes the token with `token_id` from the cache and marks it as redeemed
-  // in the database.
+  // Deletes the token with `token_id` from the cache and database.
   void DeleteToken(int64_t token_id, base::OnceClosure callback);
 
   // Returns true if the redeemer origin is registered in the config.

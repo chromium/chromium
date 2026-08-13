@@ -145,7 +145,7 @@ void PrivateVerificationTokensStore::OnTokensStored(base::OnceClosure callback,
 
 void PrivateVerificationTokensStore::DeleteToken(int64_t token_id,
                                                  base::OnceClosure callback) {
-  database_.AsyncCall(&PrivateVerificationTokensDatabase::SetRedeemed)
+  database_.AsyncCall(&PrivateVerificationTokensDatabase::DeleteToken)
       .WithArgs(token_id)
       .Then(base::BindOnce(&PrivateVerificationTokensStore::OnTokenDeleted,
                            weak_ptr_factory_.GetWeakPtr(),

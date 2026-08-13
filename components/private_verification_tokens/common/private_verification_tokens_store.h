@@ -73,7 +73,7 @@ class PrivateVerificationTokensStore {
   // database.
   std::map<url::Origin, TokenWithId> tokens_;
 
-  // Holds the count of unredeemed tokens for each issuer.
+  // Holds the count of tokens for each issuer.
   std::map<url::Origin, size_t> token_counts_;
 
   bool initialized_ = false;

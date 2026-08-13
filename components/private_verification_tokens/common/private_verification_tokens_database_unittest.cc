@@ -79,14 +79,6 @@ class PrivateVerificationTokensDatabaseTest : public testing::Test {
     EXPECT_EQ(count, got_count);
   }
 
-  size_t CountRedeemedTokens(sql::Database& db) {
-    static const char kCountSQL[] =
-        "SELECT COUNT(*) FROM tokens WHERE redeemed = 1";
-    sql::Statement s(db.GetUniqueStatement(kCountSQL));
-    EXPECT_TRUE(s.Step());
-    return s.ColumnInt(0);
-  }
-
   std::vector<PrivateVerificationTokensToken> GetAllTokens(sql::Database& db) {
     sql::Statement statement(db.GetUniqueStatement(
         "SELECT issuer, token, key_id, "
@@ -224,9 +216,9 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
 
   // meta and tokens tables
   EXPECT_EQ(2u, sql::test::CountSQLTables(&database));
-  EXPECT_EQ(4, VersionFromMetaTable(database));
+  EXPECT_EQ(5, VersionFromMetaTable(database));
 
-  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
+  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
   VerifyTableRowCount(database, kTokenTableName, 0u);
 }
 
@@ -253,8 +245,8 @@ TEST_F(PrivateVerificationTokensDatabaseTest, StoreTokens_SingleToken_Success) {
 
   // meta and tokens tables
   EXPECT_EQ(2u, sql::test::CountSQLTables(&database));
-  EXPECT_EQ(4, VersionFromMetaTable(database));
-  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
+  EXPECT_EQ(5, VersionFromMetaTable(database));
+  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
   VerifyTableRowCount(database, kTokenTableName, 1);
 }
 
@@ -282,7 +274,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   EXPECT_TRUE(base::PathExists(db_path_));
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
+  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
   std::vector<PrivateVerificationTokensToken> got_tokens =
       GetAllTokens(database);
   EXPECT_THAT(got_tokens, testing::UnorderedElementsAreArray(tokens_to_store));
@@ -336,7 +328,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest, GetToken_NoTokens_Failure) {
   database.Close();
 }
 
-TEST_F(PrivateVerificationTokensDatabaseTest, SetRedeemed_ValidId_Success) {
+TEST_F(PrivateVerificationTokensDatabaseTest, DeleteToken_ValidId_Success) {
   EXPECT_FALSE(base::PathExists(db_path_));
   CreateDatabase(db_path_);
   EXPECT_FALSE(base::PathExists(db_path_));
@@ -353,18 +345,17 @@ TEST_F(PrivateVerificationTokensDatabaseTest, SetRedeemed_ValidId_Success) {
 
   auto a_token = pvt_database_->GetToken(kOriginA);
   ASSERT_TRUE(a_token.has_value());
-  EXPECT_TRUE(pvt_database_->SetRedeemed(a_token->id));
+  EXPECT_TRUE(pvt_database_->DeleteToken(a_token->id));
   pvt_database_.reset();
 
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
-  VerifyTableRowCount(database, kTokenTableName, 4u);
-  EXPECT_EQ(1u, CountRedeemedTokens(database));
+  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
+  VerifyTableRowCount(database, kTokenTableName, 3u);
   database.Close();
 }
 
-TEST_F(PrivateVerificationTokensDatabaseTest, SetRedeemed_NonExistentId_NoOp) {
+TEST_F(PrivateVerificationTokensDatabaseTest, DeleteToken_NonExistentId_NoOp) {
   CreateDatabase(db_path_);
 
   const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(7);
@@ -378,56 +369,13 @@ TEST_F(PrivateVerificationTokensDatabaseTest, SetRedeemed_NonExistentId_NoOp) {
   ASSERT_TRUE(token1.has_value());
   ASSERT_LT(token1->id, std::numeric_limits<int64_t>::max());
   // token with id (token1->id + 1) does not exist.
-  EXPECT_TRUE(pvt_database_->SetRedeemed(token1->id + 1));
+  EXPECT_TRUE(pvt_database_->DeleteToken(token1->id + 1));
   pvt_database_.reset();
 
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(0u, CountRedeemedTokens(database));
+  VerifyTableRowCount(database, kTokenTableName, 1u);
 }
-
-TEST_F(PrivateVerificationTokensDatabaseTest,
-       DeleteRedeemedTokens_MultipleRedeemed_Success) {
-  CreateDatabase(db_path_);
-
-  uint32_t key_id = 678;
-  const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(7);
-  uint32_t version = 1;
-  std::map<url::Origin, std::vector<SerializedToken>> all_tokens = {
-      {kOriginA, {{1, 2, 3}, {11, 12, 13}, {14, 15, 16}}},
-      {kOriginB, {{4, 5, 6}}},
-      {kOriginC, {{7, 8, 9}, {47, 48, 49}}},
-      {kOriginD, {{10, 11, 12}, {20, 12, 13}, {30, 15, 16}, {40, 41, 42}}},
-  };
-  EXPECT_TRUE(pvt_database_->StoreTokens(
-      CreateTokens(all_tokens, key_id, expiration, version)));
-
-  auto token1 = pvt_database_->GetToken(kOriginA);
-  ASSERT_TRUE(token1.has_value());
-  EXPECT_TRUE(pvt_database_->SetRedeemed(token1->id));
-
-  auto token2 = pvt_database_->GetToken(kOriginA);
-  ASSERT_TRUE(token2.has_value());
-  EXPECT_TRUE(pvt_database_->SetRedeemed(token2->id));
-
-  auto token3 = pvt_database_->GetToken(kOriginB);
-  ASSERT_TRUE(token3.has_value());
-  EXPECT_TRUE(pvt_database_->SetRedeemed(token3->id));
-
-  EXPECT_TRUE(pvt_database_->DeleteRedeemedTokens());
-  // no tokens for b.com left
-  EXPECT_FALSE(pvt_database_->GetToken(kOriginB).has_value());
-  pvt_database_.reset();
-
-  sql::Database database(sql::test::kTestTag);
-  EXPECT_TRUE(database.Open(db_path_));
-  // started with 10 tokens, 3 tokens are redeemed and deleted.
-  VerifyTableRowCount(database, kTokenTableName, 7);
-  EXPECT_EQ(0u, CountRedeemedTokens(database));
-  database.Close();
-}
-
-
 
 TEST_F(PrivateVerificationTokensDatabaseTest,
        InitializeDB_CorruptedFile_RazedAndReinitialized) {
@@ -464,7 +412,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   // database has one token.
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
+  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
   VerifyTableRowCount(database, kTokenTableName, 1u);
 }
 
@@ -521,7 +469,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path_));
     sql::MetaTable meta_table;
-    ASSERT_TRUE(meta_table.Init(&db, 5, 5));
+    ASSERT_TRUE(meta_table.Init(&db, 6, 6));
   }
 
   CreateDatabase(db_path_);
@@ -539,7 +487,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
 
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
+  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
   VerifyTableRowCount(database, kTokenTableName, 1u);
 }
 

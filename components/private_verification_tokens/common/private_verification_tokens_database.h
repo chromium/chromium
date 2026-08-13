@@ -35,7 +35,7 @@ struct TokenWithId {
   PrivateVerificationTokensToken token;
 };
 
-// Holds the cached tokens and the count of unredeemed tokens per issuer.
+// Holds the cached tokens and the count of tokens per issuer.
 struct TokensAndCounts {
   TokensAndCounts();
   TokensAndCounts(std::map<url::Origin, TokenWithId> tokens,
@@ -93,16 +93,12 @@ class PrivateVerificationTokensDatabase {
   // Store given tokens in the database.
   bool StoreTokens(const std::vector<PrivateVerificationTokensToken>& tokens);
 
-  // Returns a single unredeemed token for the given `issuer`, or
-  // `std::nullopt` if none exist. Calling this successively without calling
-  // `SetRedeemed()` on the returned token might return the same token.
+  // Returns a single token for the given `issuer`, or `std::nullopt` if none
+  // exist.
   std::optional<TokenWithId> GetToken(const url::Origin& issuer);
 
   // Get one token and the total token count from each distinct issuer.
   TokensAndCounts GetTokensFromEach();
-
-  // Delete all tokens that are marked as redeemed.
-  bool DeleteRedeemedTokens();
 
   // Delete tokens filtered by creation time range [delete_begin, delete_end)
   // and a list of issuer origins. If `issuers` is std::nullopt all rows that
@@ -112,8 +108,8 @@ class PrivateVerificationTokensDatabase {
                     base::Time delete_end,
                     base::optional_ref<const std::vector<url::Origin>> issuers);
 
-  // Mark token with the given id as redeemed.
-  bool SetRedeemed(int64_t token_id);
+  // Delete token with the given id.
+  bool DeleteToken(int64_t token_id);
 
   const base::FilePath& PathToDatabase() const;
 

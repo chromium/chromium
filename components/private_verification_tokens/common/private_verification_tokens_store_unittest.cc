@@ -560,23 +560,23 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteToken_Success) {
   EXPECT_TRUE(store()->tokens().contains(kOriginBTri));
   EXPECT_TRUE(store()->tokens().contains(kOriginCEee));
 
-  // Verify that both tokens are marked redeemed in the database.
+  // Verify that both tokens are deleted from the database.
   store_.reset();
   base::ThreadPoolInstance::Get()->FlushForTesting();
   {
     sql::Database database(sql::test::kTestTag);
     ASSERT_TRUE(database.Open(database_path));
     sql::Statement s1(database.GetUniqueStatement(
-        "SELECT redeemed FROM tokens WHERE id = ?"));
+        "SELECT COUNT(*) FROM tokens WHERE id = ?"));
     s1.BindInt64(0, first_token_id_a);
     ASSERT_TRUE(s1.Step());
-    EXPECT_EQ(s1.ColumnInt(0), 1);
+    EXPECT_EQ(s1.ColumnInt(0), 0);
 
     sql::Statement s2(database.GetUniqueStatement(
-        "SELECT redeemed FROM tokens WHERE id = ?"));
+        "SELECT COUNT(*) FROM tokens WHERE id = ?"));
     s2.BindInt64(0, second_token_id_a);
     ASSERT_TRUE(s2.Step());
-    EXPECT_EQ(s2.ColumnInt(0), 1);
+    EXPECT_EQ(s2.ColumnInt(0), 0);
   }
 }
 
