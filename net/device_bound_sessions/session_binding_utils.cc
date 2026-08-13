@@ -101,6 +101,51 @@ std::optional<std::string> CreateHeaderAndPayload(
 
 }  // namespace
 
+base::DictValue CreateAttestationValue(
+    const crypto::AttestationStatement& attestation_statement) {
+  std::string_view format;
+  switch (attestation_statement.format) {
+    case crypto::AttestationStatement::Format::kTpm:
+      format = "TPM";
+      break;
+    case crypto::AttestationStatement::Format::kSecureEnclave:
+      format = "SECURE_ENCLAVE";
+      break;
+  }
+  return base::DictValue()
+      .Set("fmt", format)
+      .Set("stmt", Base64UrlEncode(
+                       base::as_string_view(attestation_statement.statement)))
+      .Set("sig", Base64UrlEncode(
+                      base::as_string_view(attestation_statement.signature)));
+}
+
+std::optional<std::string> CreateOuterRegistrationHeaderAndPayload(
+    std::string_view inner_jws,
+    crypto::SignatureVerifier::SignatureAlgorithm aik_algorithm,
+    base::span<const uint8_t> aik_pubkey_spki,
+    std::string_view aud,
+    const crypto::AttestationStatement& attestation_stmt) {
+  base::DictValue jwk = ConvertPkeySpkiToJwk(aik_algorithm, aik_pubkey_spki);
+  if (jwk.empty()) {
+    DVLOG(1) << "Unexpected error when converting the SPKI to a JWK";
+    return std::nullopt;
+  }
+
+  auto header = base::DictValue()
+                    .Set("alg", SignatureAlgorithmToString(aik_algorithm))
+                    .Set("typ", "dbsc+aik")
+                    .Set("cty", "jwt")
+                    .Set("jwk", std::move(jwk));
+
+  auto payload = base::DictValue()
+                     .Set("aud", aud)
+                     .Set("jti", inner_jws)
+                     .Set("att", CreateAttestationValue(attestation_stmt));
+
+  return CombineHeaderAndPayload(header, payload);
+}
+
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
     std::optional<std::string> challenge,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,

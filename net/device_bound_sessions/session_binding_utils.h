@@ -11,7 +11,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/values.h"
 #include "crypto/signature_verifier.h"
+#include "crypto/unexportable_key.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_usage.h"
@@ -23,6 +25,19 @@ class Time;
 }
 
 namespace net::device_bound_sessions {
+
+// Formats an attestation statement into a dictionary.
+base::DictValue NET_EXPORT CreateAttestationValue(
+    const crypto::AttestationStatement& attestation_statement);
+
+// Creates outer header and payload parts of a nested registration JWT. This is
+// needed for sessions including an attestation key.
+std::optional<std::string> NET_EXPORT CreateOuterRegistrationHeaderAndPayload(
+    std::string_view inner_jws,
+    crypto::SignatureVerifier::SignatureAlgorithm aik_algorithm,
+    base::span<const uint8_t> aik_pubkey_spki,
+    std::string_view aud,
+    const crypto::AttestationStatement& attestation_stmt);
 
 // Creates header and payload parts of a registration JWT.
 std::optional<std::string> NET_EXPORT CreateKeyRegistrationHeaderAndPayload(

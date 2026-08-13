@@ -13,17 +13,25 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/time/time.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
 #include "crypto/signature_verifier.h"
 #include "net/device_bound_sessions/test_support.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace net::device_bound_sessions {
 
 namespace {
+
+using ::testing::Eq;
+using ::testing::Pointee;
+
+using enum crypto::AttestationStatement::Format;
+using enum crypto::SignatureVerifier::SignatureAlgorithm;
 
 constexpr auto kValidDerSignature = std::to_array<uint8_t>(
     {0x30, 0x45, 0x02, 0x20, 0x74, 0xa0, 0x6f, 0x6b, 0x2b, 0x0e, 0x82, 0x0e,
@@ -58,8 +66,7 @@ TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
   auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
 
   std::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
-      "test_challenge",
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256, spki,
+      "test_challenge", RSA_PKCS1_SHA256, spki,
       /*authorization=*/"auth");
   ASSERT_TRUE(result.has_value());
 
@@ -91,8 +98,7 @@ TEST(SessionBindingUtilsTest,
   auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
 
   std::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
-      "test_challenge",
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256, spki,
+      "test_challenge", RSA_PKCS1_SHA256, spki,
       /*authorization=*/std::nullopt);
   ASSERT_TRUE(result.has_value());
 
@@ -123,9 +129,7 @@ TEST(SessionBindingUtilsTest,
   auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
 
   std::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
-      /*challenge=*/std::nullopt,
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256, spki,
-      "authorization");
+      /*challenge=*/std::nullopt, RSA_PKCS1_SHA256, spki, "authorization");
   ASSERT_TRUE(result.has_value());
 
   std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
@@ -151,9 +155,8 @@ TEST(SessionBindingUtilsTest,
 }
 
 TEST(SessionBindingUtilsTest, CreateKeyRefreshHeaderAndPayload) {
-  std::optional<std::string> result = CreateKeyRefreshHeaderAndPayload(
-      "test_challenge",
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256);
+  std::optional<std::string> result =
+      CreateKeyRefreshHeaderAndPayload("test_challenge", RSA_PKCS1_SHA256);
   ASSERT_TRUE(result.has_value());
 
   std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
@@ -175,8 +178,7 @@ TEST(SessionBindingUtilsTest, CreateKeyRefreshHeaderAndPayload) {
 
 TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayload) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
-      "abc.efg",
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+      "abc.efg", RSA_PKCS1_SHA256,
       /*pubkey_spki=*/{}, std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, "abc.efg.AQID");
 }
@@ -188,22 +190,21 @@ TEST(SessionBindingUtilsTest,
       "VYkU-jQsFGjN5jQ";
 
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
-      "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-      kValidP256Spki, kValidDerSignature);
+      "abc.efg", ECDSA_SHA256, kValidP256Spki, kValidDerSignature);
   EXPECT_EQ(result, base::StrCat({"abc.efg.", kRawSignatureBase64UrlEncoded}));
 }
 
 TEST(SessionBindingUtilsTest,
      AppendSignatureToHeaderAndPayloadInvalidECDSASignature) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
-      "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-      kValidP256Spki, /*signature=*/std::vector<uint8_t>({1, 2, 3}));
+      "abc.efg", ECDSA_SHA256, kValidP256Spki,
+      /*signature=*/std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, std::nullopt);
 }
 
 TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayloadInvalidSpki) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
-      "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+      "abc.efg", ECDSA_SHA256,
       /*pubkey_spki=*/std::vector<uint8_t>({1, 2, 3}), kValidDerSignature);
   EXPECT_EQ(result, std::nullopt);
 }
@@ -265,6 +266,74 @@ TEST(SessionBindingUtilsTest, TestMaybeIncreaseSessionUsage) {
                             SessionUsage::kInScopeRefreshNotAllowed);
   EXPECT_EQ(request.usage_map[key1], SessionUsage::kDeferred);
   EXPECT_EQ(request.usage_map[key2], SessionUsage::kInScopeRefreshNotAllowed);
+}
+
+TEST(SessionBindingUtilsTest, CreateAttestationValue_Tpm) {
+  base::DictValue result = CreateAttestationValue(
+      {.format = kTpm, .statement = {1, 2, 3}, .signature = {4, 5, 6}});
+
+  EXPECT_THAT(result.FindString("fmt"), Pointee(Eq("TPM")));
+  // base64url of {1, 2, 3}
+  EXPECT_THAT(result.FindString("stmt"), Pointee(Eq("AQID")));
+  // base64url of {4, 5, 6}
+  EXPECT_THAT(result.FindString("sig"), Pointee(Eq("BAUG")));
+}
+
+TEST(SessionBindingUtilsTest, CreateAttestationValue_SecureEnclave) {
+  base::DictValue result = CreateAttestationValue({
+      .format = kSecureEnclave,
+      .statement = {1, 2, 3},
+      .signature = {4, 5, 6},
+  });
+
+  EXPECT_THAT(result.FindString("fmt"), Pointee(Eq("SECURE_ENCLAVE")));
+  EXPECT_THAT(result.FindString("stmt"), Pointee(Eq("AQID")));
+  EXPECT_THAT(result.FindString("sig"), Pointee(Eq("BAUG")));
+}
+
+TEST(SessionBindingUtilsTest, CreateOuterRegistrationHeaderAndPayload_Success) {
+  auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
+
+  ASSERT_OK_AND_ASSIGN(
+      std::string result,
+      CreateOuterRegistrationHeaderAndPayload(
+          "inner_jws", RSA_PKCS1_SHA256, spki, "aud",
+          {.format = kTpm, .statement = {1, 2, 3}, .signature = {4, 5, 6}}));
+
+  ASSERT_OK_AND_ASSIGN((auto [header, payload]),
+                       base::SplitStringOnce(result, '.'));
+  base::Value actual_header = Base64UrlEncodedJsonToValue(header);
+  base::Value actual_payload = Base64UrlEncodedJsonToValue(payload);
+
+  base::DictValue expected_header =
+      base::DictValue()
+          .Set("alg", "RS256")
+          .Set("typ", "dbsc+aik")
+          .Set("cty", "jwt")
+          .Set("jwk",
+               base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                   .value());
+  base::DictValue expected_payload = base::DictValue()
+                                         .Set("aud", "aud")
+                                         .Set("jti", "inner_jws")
+                                         .Set("att", CreateAttestationValue({
+                                                         .format = kTpm,
+                                                         .statement = {1, 2, 3},
+                                                         .signature = {4, 5, 6},
+                                                     }));
+
+  EXPECT_EQ(actual_header, expected_header);
+  EXPECT_EQ(actual_payload, expected_payload);
+}
+
+TEST(SessionBindingUtilsTest,
+     CreateOuterRegistrationHeaderAndPayload_InvalidSpki) {
+  std::vector<uint8_t> invalid_spki = {1, 2, 3};
+  EXPECT_EQ(
+      CreateOuterRegistrationHeaderAndPayload(
+          "inner_jws", RSA_PKCS1_SHA256, invalid_spki, "aud",
+          {.format = kTpm, .statement = {1, 2, 3}, .signature = {4, 5, 6}}),
+      std::nullopt);
 }
 
 }  // namespace net::device_bound_sessions
