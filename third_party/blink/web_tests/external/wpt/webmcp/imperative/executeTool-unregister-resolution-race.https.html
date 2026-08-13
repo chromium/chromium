@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP executeTool unregistration and resolution race</title>
+<link rel="author" href="mailto:dom@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(async t => {
+  const ac = new AbortController();
+
+  await document.modelContext.registerTool({
+    name: "racy_tool",
+    description: "a racy tool",
+    execute: async () => {
+      return new Promise(resolve => {
+        resolve({status: "resolved"});
+        // Synchronously unregister the tool after resolving the promise.
+        // Because promise resolution runs in a microtask, but AbortSignal
+        // algorithms run synchronously, the unregistration should win the race,
+        // and executeTool() should reject.
+        ac.abort();
+      });
+    }
+  }, {signal: ac.signal});
+
+  const [tool] = await document.modelContext.getTools();
+  const execute_promise = document.modelContext.executeTool(tool, '{}');
+
+  // The executeTool promise should reject with UnknownError because the tool
+  // was unregistered before the execute promise microtasks could run.
+  await promise_rejects_dom(t, 'UnknownError', execute_promise);
+}, 'executeTool rejects when tool is unregistered synchronously after its promise resolves');
+</script>
+</body>
+</html>

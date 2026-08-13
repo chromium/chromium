@@ -445,7 +445,6 @@ bool WebDocument::ExecuteScriptTool(
     web_tool_declaration->untrusted_content =
         script_tool_declaration->untrusted_content;
   }
-  // TODO(481899636): PLUMB SIGNAL TO THE BROWSER SIDE!
   return model_context->ExecuteTool(
       invocation_id, name, input_arguments,
       blink::BindOnce(

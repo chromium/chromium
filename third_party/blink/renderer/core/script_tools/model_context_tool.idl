@@ -22,8 +22,12 @@ dictionary ToolAnnotations {
   boolean untrustedContentHint = false;
 };
 
+dictionary ToolExecuteCallbackOptions {
+  required AbortSignal signal;
+};
+
 // The structure of `input` is expected to match the structure described in
 // `ModelContextTool#inputSchema` above. This is currently not enforced upon
 // tool execution, but will likely be when
 // https://github.com/webmachinelearning/webmcp/issues/92 is addressed.
-callback ToolExecuteCallback = Promise<any>(object input);
+callback ToolExecuteCallback = Promise<any>(object input, ToolExecuteCallbackOptions options);

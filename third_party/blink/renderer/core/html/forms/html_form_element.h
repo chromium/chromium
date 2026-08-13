@@ -298,6 +298,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
         const base::UnguessableToken& invocation_id,
         String input_arguments,
         base::OnceCallback<void(McpToolCallbackResult)> done_callback) override;
+    void CancelTool() override;
     // Fill form controls with data as provided by `input_arguments`.
     //
     // If no error is returned, then all specified tool parameters (form

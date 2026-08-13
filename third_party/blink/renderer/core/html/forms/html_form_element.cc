@@ -221,6 +221,13 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
   }
 }
 
+void HTMLFormElement::HTMLFormMcpTool::CancelTool() {
+  CHECK(is_currently_running_);
+  CallDoneCallback(base::unexpected(
+      ScriptToolError(ScriptToolErrorCode::kToolCancelled,
+                      "Tool execution cancelled by abort signal")));
+}
+
 std::optional<ScriptToolError>
 HTMLFormElement::HTMLFormMcpTool::FillFormControls(
     const String& input_arguments,

@@ -139,10 +139,8 @@ Invoked {
     toolName : abortable_tool
 }
 Responded {
+    errorText :
     invocationId : <string 7>
-    output : {
-        text_was : hello
-    }
-    status : Completed
+    status : Canceled
 }
 

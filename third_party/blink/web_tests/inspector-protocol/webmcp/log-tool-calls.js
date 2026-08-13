@@ -56,11 +56,7 @@
 
         async function abortable_tool(obj) {
           return new Promise((resolve, reject) => {
-            // TODO(https://crbug.com/481899636): Revert this back to the longer
-            // (10-second) timeout once support for tool execution abort signals
-            // has been implemented, and the test no longer expects this
-            // would-be "long-running tool" to actually run to completion.
-            setTimeout(() => resolve({text_was: obj.text}), 50);
+            setTimeout(() => resolve({text_was: obj.text}), 10000);
           });
         }
         document.modelContext.registerTool({

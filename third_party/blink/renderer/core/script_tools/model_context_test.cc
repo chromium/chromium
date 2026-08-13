@@ -110,6 +110,8 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
       ExecuteRemoteScriptToolCallback callback) override {
     std::move(callback).Run(String(), false);
   }
+  void CancelRemoteScriptTool(
+      const base::UnguessableToken& invocation_id) override {}
 
   const Vector<String>& registered_tools() const { return registered_tools_; }
 
@@ -1293,6 +1295,153 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
   run_loop.Run();
 }
 
+TEST_F(ModelContextTest, CancelToolNonExistent) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"(<body></body>)");
+
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
+  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  // Cancel invocation that has not been executed.
+  EXPECT_FALSE(model_context->CancelTool(invocation_id));
+}
+
+TEST_F(ModelContextTest, CancelToolAfterFinished) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"(
+    <body>
+    <script>
+    document.modelContext.registerTool({
+      execute: async (obj) => "done",
+      name: "echo",
+      description: "echo",
+    });
+  </script>
+)");
+
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
+  base::RunLoop run_loop;
+
+  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  bool success = model_context->ExecuteTool(
+      invocation_id, "echo", "{}",
+      base::BindLambdaForTesting(
+          [&](base::expected<String, ScriptToolError> res) {
+            EXPECT_TRUE(res.has_value());
+            EXPECT_EQ(res.value(), "done");
+            run_loop.Quit();
+          }));
+
+  ASSERT_TRUE(success);
+  run_loop.Run();  // Wait for tool to finish successfully.
+
+  // Now that the tool has completed, it is no longer in pending_executions_.
+  // CancelTool should return false.
+  EXPECT_FALSE(model_context->CancelTool(invocation_id));
+}
+
+TEST_F(ModelContextTest, CancelToolUnregistered) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"(
+    <body>
+    <script>
+    async function hang(obj) {
+      return new Promise(() => {});
+    }
+
+    document.modelContext.registerTool({
+      execute: hang,
+      name: "hang",
+      description: "never resolves",
+    });
+  </script>
+)");
+
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
+  base::RunLoop run_loop;
+
+  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  bool success = model_context->ExecuteTool(
+      invocation_id, "hang", "{}",
+      base::BindLambdaForTesting(
+          [&](base::expected<String, ScriptToolError> res) {
+            EXPECT_FALSE(res.has_value());
+            EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolCancelled);
+            run_loop.Quit();
+          }));
+
+  ASSERT_TRUE(success);
+
+  // Unregister the tool while execution is pending.
+  model_context->UnregisterTool("hang");
+
+  // Attempting to cancel should still succeed and clean up the pending
+  // execution.
+  EXPECT_TRUE(model_context->CancelTool(invocation_id));
+  run_loop.Run();
+}
+
+TEST_F(ModelContextTest, CancelToolDetachesDocument) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest iframe_resource("https://example.com/iframe.html", "text/html");
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"(
+    <body>
+    <iframe id="test_iframe" src="iframe.html"></iframe>
+    </body>
+  )");
+
+  iframe_resource.Complete(R"(
+    <body>
+    <script>
+    async function hang(obj) {
+      return new Promise(() => {});
+    }
+
+    document.modelContext.registerTool({
+      execute: hang,
+      name: "hang",
+      description: "never resolves",
+    });
+
+    window.addEventListener('toolcancel', () => {
+      // Detach this document by removing the iframe from the parent document.
+      parent.document.querySelector('#test_iframe').remove();
+    });
+    </script>
+    </body>
+  )");
+
+  // Get the subframe's Document.
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+  Document* child_doc = child_frame->GetDocument();
+  ASSERT_TRUE(child_doc);
+
+  auto* child_model_context = ModelContextSupplement::modelContext(*child_doc);
+  ASSERT_TRUE(child_model_context);
+
+  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+
+  bool success = child_model_context->ExecuteTool(invocation_id, "hang", "{}",
+                                                  base::DoNothing());
+
+  ASSERT_TRUE(success);
+
+  // Trigger cancellation, which will synchronously detach the frame during
+  // toolcancel event. This must not crash.
+  child_model_context->CancelTool(invocation_id);
+
+  // Verify the child frame is now detached.
+  EXPECT_FALSE(GetDocument().GetFrame()->Tree().FirstChild());
+}
+
 class MockDeclarativeTool : public GarbageCollected<MockDeclarativeTool>,
                             public DeclarativeWebMCPTool {
  public:
@@ -1301,6 +1450,8 @@ class MockDeclarativeTool : public GarbageCollected<MockDeclarativeTool>,
       String input_arguments,
       base::OnceCallback<void(base::expected<String, ScriptToolError>)>
           done_callback) override {}
+
+  void CancelTool() override {}
 
   String ToolName() const override { return "test_tool"; }
   String ToolDescription() const override { return "description"; }
