@@ -652,8 +652,8 @@ public class PdfCoordinatorUnitTest {
         ShadowLooper.idleMainLooper();
 
         // viewportWidth = 1000. contentWidth = 200.
-        // expectedZoom = (1000 * 0.8) / 200 = 800 / 200 = 4.0f
-        assertEquals(4.0f, shadowPdfView.mZoom, 0.001f);
+        // expectedZoom = (1000 * 0.6) / 200 = 600 / 200 = 3.0f
+        assertEquals(3.0f, shadowPdfView.mZoom, 0.001f);
     }
 
     @Test

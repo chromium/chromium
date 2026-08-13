@@ -899,7 +899,7 @@ public class PdfCoordinator
                                         pageInfo,
                                         /* fitToPageHeight= */ false,
                                         pdfView,
-                                        /* zoomRatio= */ viewportWidthDp >= 600 ? 0.8f : 1.0f);
+                                        /* zoomRatio= */ viewportWidthDp >= 600 ? 0.6f : 1.0f);
                         pdfView.post(
                                 () -> {
                                     pdfView.setZoom(newZoom);
