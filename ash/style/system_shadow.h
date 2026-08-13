@@ -5,7 +5,10 @@
 #ifndef ASH_STYLE_SYSTEM_SHADOW_H_
 #define ASH_STYLE_SYSTEM_SHADOW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
+#include "base/functional/callback.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -17,7 +20,10 @@ class Window;
 
 namespace ui {
 class ColorProvider;
+class ColorProviderSource;
 class Layer;
+class LayerNinePatch;
+class Shadow;
 }  // namespace ui
 
 namespace views {
@@ -26,8 +32,9 @@ class View;
 
 namespace ash {
 
-// SystemShadow is an interface to generate shadow with system shadow style for
-// different types of UI surfaces.
+// SystemShadow generates a shadow with system shadow style for different types
+// of UI surfaces. It is based on `ui::Shadow` which paints the shadow on a nine
+// patch layer.
 class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
  public:
   // Shadow types of system UI components. The shadows with different elevations
@@ -83,29 +90,23 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
   // Change shadow type and update shadow elevation and appearance. Note that to
   // avoid inconsistency of shadow type and elevation. Always change system
   // shadow elevation with `SetType`.
-  virtual void SetType(Type type) = 0;
+  void SetType(Type type);
 
-  virtual void SetContentBounds(const gfx::Rect& bounds) = 0;
+  void SetContentBounds(const gfx::Rect& bounds);
 
-  virtual void SetRoundedCorners(
-      const gfx::RoundedCornersF& rounded_corners) = 0;
+  void SetRoundedCorners(const gfx::RoundedCornersF& rounded_corners);
 
-  virtual const gfx::Rect& GetContentBounds() = 0;
+  const gfx::Rect& GetContentBounds();
 
-  // Return the layer of the shadow. This function can be used by any types of
-  // shadow. The layer is commonly used for setting layer hierarchy, visibility,
-  // and transformation.
-  virtual ui::Layer* GetLayer() = 0;
+  // Return the layer of the shadow. The layer is commonly used for setting
+  // layer hierarchy, visibility, and transformation.
+  ui::Layer* GetLayer();
 
-  // Return the nine patch layer of the shadow. This function is only used by
-  // ui::Shadow based implementations. The nine patch layer is a child layer of
-  // the shadow's layer painted with the shadow image. Normally, set the
-  // hierarchy, visibility and transformation on the shadow's layer instead of
-  // the nine patch layer.
-  virtual ui::Layer* GetNinePatchLayer() = 0;
-
-  // Return the shadow values of the shadow for testing.
-  virtual const gfx::ShadowValues GetShadowValuesForTesting() const = 0;
+  // Return the nine patch layer of the shadow. The nine patch layer is a child
+  // layer of the shadow's layer painted with the shadow image. Normally, set
+  // the hierarchy, visibility and transformation on the shadow's layer instead
+  // of the nine patch layer.
+  ui::LayerNinePatch* GetNinePatchLayer();
 
   // Observe the given color provider source to update the shadow colors.
   void ObserveColorProviderSource(
@@ -114,9 +115,16 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
   // ui::ColorProviderSourceObserver:
   void OnColorProviderChanged() override;
 
+  // Return the shadow values of the shadow for testing.
+  const gfx::ShadowValues GetShadowValuesForTesting() const;
+
+ protected:
+  virtual ui::Shadow* shadow() = 0;
+  virtual const ui::Shadow* shadow() const = 0;
+
  private:
   // Update shadow colors with given color provider.
-  virtual void UpdateShadowColors(const ui::ColorProvider* color_provider) = 0;
+  void UpdateShadowColors(const ui::ColorProvider* color_provider);
 };
 
 }  // namespace ash

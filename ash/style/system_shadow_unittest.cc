@@ -19,13 +19,11 @@ namespace ash {
 
 namespace {
 
-// Different types of SystemShadow extensions.
+// Different types of SystemShadow implementations.
 enum class SystemShadowType {
-  kShadowOnNinePatchLayer,        // Instance of `SystemShadowOnNinePatchLayer`.
-  kViewShadowOnNinePatchLayer,    // Instance of
-                                  // `SystemViewShadowOnNinePatchLayer`.
-  kWindowShadowOnNinePatchLayer,  // Instance of
-                                  // `SystemWindowShadowOnNinePatchLayer`.
+  kShadowOnNinePatchLayer,        // Instance of standard `SystemShadowImpl`.
+  kViewShadowOnNinePatchLayer,    // Instance of `SystemViewShadow`.
+  kWindowShadowOnNinePatchLayer,  // Instance of `SystemWindowShadow`.
 };
 
 // Gets the key and ambient shadow colors from a shadow.
@@ -90,7 +88,7 @@ class SystemShadowColorTest
   }
 
  private:
-  // Creates an instance of `SystemShadowOnNinePatchLayer`.
+  // Creates an instance of `SystemShadowImpl`.
   std::unique_ptr<SystemShadow> MakeShadowOnNinePatchLayer(
       SystemShadow::Type type) {
     auto shadow = SystemShadow::CreateShadowOnNinePatchLayer(
@@ -99,7 +97,7 @@ class SystemShadowColorTest
     return shadow;
   }
 
-  // Creates an instance of `SystemViewShadowOnNinePatchLayer`.
+  // Creates an instance of `SystemViewShadow`.
   std::unique_ptr<SystemShadow> MakeViewShadowOnNinePatchLayer(
       SystemShadow::Type type) {
     auto shadow = SystemShadow::CreateShadowOnNinePatchLayerForView(
@@ -107,7 +105,7 @@ class SystemShadowColorTest
     return shadow;
   }
 
-  // Creates an instance of `SystemWindowShadowOnNinePatchLayer`.
+  // Creates an instance of `SystemWindowShadow`.
   std::unique_ptr<SystemShadow> MakeWindowShadowOnNinePatchLayer(
       SystemShadow::Type type) {
     auto shadow = SystemShadow::CreateShadowOnNinePatchLayerForWindow(

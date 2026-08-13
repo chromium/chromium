@@ -1566,8 +1566,6 @@ component("ash") {
     "style/system_dialog_delegate_view.h",
     "style/system_shadow.cc",
     "style/system_shadow.h",
-    "style/system_shadow_on_nine_patch_layer.cc",
-    "style/system_shadow_on_nine_patch_layer.h",
     "style/system_textfield.cc",
     "style/system_textfield.h",
     "style/system_textfield_controller.cc",
