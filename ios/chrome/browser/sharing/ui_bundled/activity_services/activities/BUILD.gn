@@ -39,7 +39,6 @@ source_set("activities") {
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/sharing/ui_bundled/activity_services/data",
     "//ios/chrome/browser/web/model",
-    "//ios/public/provider/chrome/browser/device_resources:device_resources_api",
     "//ios/web/common:user_agent",
     "//ios/web/public",
     "//ui/base",

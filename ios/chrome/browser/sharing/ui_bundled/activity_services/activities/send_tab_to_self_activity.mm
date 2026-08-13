@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_to_data.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/device_resources/device_resources_api.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -34,6 +33,18 @@ constexpr size_t kMaxShareSheetTargetDevices = 2;
 
 NSString* const kSendTabToSelfActivityType =
     @"com.google.chrome.sendTabToSelfActivity";
+
+// Returns the SF Symbol corresponding to the device form factor.
+Symbol GetSFSymbolForFormFactor(syncer::DeviceInfo::FormFactor form_factor) {
+  switch (form_factor) {
+    case syncer::DeviceInfo::FormFactor::kPhone:
+      return SymbolIPhone;
+    case syncer::DeviceInfo::FormFactor::kTablet:
+      return SymbolIPad;
+    default:
+      return SymbolLaptop;
+  }
+}
 
 // Returns the sorted list of target devices if the Send Tab to Self model is
 // ready and the feature flag is enabled.
@@ -61,11 +72,14 @@ std::vector<send_tab_to_self::TargetDeviceInfo> GetTargetDevices(
 
 }  // namespace
 
-@implementation SendTabToSelfActivity {
- @protected
-  ShareToData* _data;
-  __weak id<SendTabToSelfCommands> _handler;
-}
+@interface SendTabToSelfActivity ()
+// The data object targeted by this activity.
+@property(nonatomic, strong, readonly) ShareToData* data;
+// The handler to be invoked when the activity is performed.
+@property(nonatomic, weak, readonly) id<SendTabToSelfCommands> handler;
+@end
+
+@implementation SendTabToSelfActivity
 
 - (instancetype)initWithData:(ShareToData*)data
                      handler:(id<SendTabToSelfCommands>)handler {
@@ -114,8 +128,7 @@ std::vector<send_tab_to_self::TargetDeviceInfo> GetTargetDevices(
                                            activityTitle:activityTitle
                                                cacheGUID:cacheGuid
                                               deviceName:deviceName
-                                              formFactor:device.form_factor
-                                                  osType:device.os_type];
+                                              formFactor:device.form_factor];
     [activities addObject:deviceActivity];
   }
 
@@ -137,7 +150,7 @@ std::vector<send_tab_to_self::TargetDeviceInfo> GetTargetDevices(
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
-  return _data.canSendTabToSelf;
+  return self.data.canSendTabToSelf;
 }
 
 + (UIActivityCategory)activityCategory {
@@ -146,36 +159,41 @@ std::vector<send_tab_to_self::TargetDeviceInfo> GetTargetDevices(
 
 - (void)performActivity {
   [self activityDidFinish:YES];
-  [_handler showSendTabToSelfUI:_data.shareURL
-                          title:_data.title
-                     entryPoint:send_tab_to_self::ShareEntryPoint::kShareSheet];
+  [self.handler
+      showSendTabToSelfUI:self.data.shareURL
+                    title:self.data.title
+               entryPoint:send_tab_to_self::ShareEntryPoint::kShareSheet];
 }
 
 @end
 
 #pragma mark - SendTabToSelfShareActivity
 
-@implementation SendTabToSelfShareActivity {
-  NSString* _activityTitleOverride;
-  NSString* _cacheGUID;
-  NSString* _deviceName;
-  syncer::DeviceInfo::FormFactor _formFactor;
-  syncer::DeviceInfo::OsType _osType;
-}
+@interface SendTabToSelfShareActivity ()
+// The custom display title containing the target device name.
+@property(nonatomic, strong, readonly) NSString* activityTitleOverride;
+// The cache GUID of the specific target device.
+@property(nonatomic, strong, readonly) NSString* cacheGUID;
+// The display name of the specific target device.
+@property(nonatomic, strong, readonly) NSString* deviceName;
+// The form factor of the specific target device.
+@property(nonatomic, assign, readonly)
+    syncer::DeviceInfo::FormFactor formFactor;
+@end
+
+@implementation SendTabToSelfShareActivity
 
 - (instancetype)initWithData:(ShareToData*)data
                      handler:(id<SendTabToSelfCommands>)handler
                activityTitle:(NSString*)activityTitle
                    cacheGUID:(NSString*)cacheGUID
                   deviceName:(NSString*)deviceName
-                  formFactor:(syncer::DeviceInfo::FormFactor)formFactor
-                      osType:(syncer::DeviceInfo::OsType)osType {
+                  formFactor:(syncer::DeviceInfo::FormFactor)formFactor {
   if ((self = [super initWithData:data handler:handler])) {
     _activityTitleOverride = activityTitle;
     _cacheGUID = cacheGUID;
     _deviceName = deviceName;
     _formFactor = formFactor;
-    _osType = osType;
   }
   return self;
 }
@@ -183,11 +201,12 @@ std::vector<send_tab_to_self::TargetDeviceInfo> GetTargetDevices(
 #pragma mark - UIActivity Overrides
 
 - (NSString*)activityTitle {
-  return _activityTitleOverride;
+  return self.activityTitleOverride;
 }
 
 - (UIImage*)activityImage {
-  return ios::provider::GetDeviceTypeIcon(_formFactor, _osType);
+  Symbol symbol = GetSFSymbolForFormFactor(self.formFactor);
+  return SymbolWithPointSize(symbol, kSymbolActionPointSize);
 }
 
 + (UIActivityCategory)activityCategory {
@@ -196,12 +215,12 @@ std::vector<send_tab_to_self::TargetDeviceInfo> GetTargetDevices(
 
 - (void)performActivity {
   [self activityDidFinish:YES];
-  [_handler sendTabToSelfToDeviceWithURL:_data.shareURL
-                                   title:_data.title
-                                deviceID:_cacheGUID
-                              deviceName:_deviceName
-                              entryPoint:send_tab_to_self::ShareEntryPoint::
-                                             kShareSheetDirectShare];
+  [self.handler sendTabToSelfToDeviceWithURL:self.data.shareURL
+                                       title:self.data.title
+                                    deviceID:self.cacheGUID
+                                  deviceName:self.deviceName
+                                  entryPoint:send_tab_to_self::ShareEntryPoint::
+                                                 kShareSheetDirectShare];
 }
 
 @end
