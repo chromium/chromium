@@ -297,6 +297,9 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.BAKLAVA,
+            message = "Flaky on android-16 bots, crbug.com/543240915")
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/545205792
     public void testRenderGrid_PinnedTabs() throws IOException {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
@@ -327,7 +330,7 @@ public class TabSwitcherLayoutPTTest {
     @Feature({"RenderTest"})
     @DisableIf.Build(
             sdk_equals = Build.VERSION_CODES.BAKLAVA,
-            message = "Flaky on android-16 bots, crbug.com/543240915")
+            message = "Flaky on android-16 bots, crbug.com/546050424")
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/545205792
     public void testRenderGrid_PinnedTabs_Scrolled() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
