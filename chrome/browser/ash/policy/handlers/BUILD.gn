@@ -126,11 +126,6 @@ static_library("test_support") {
   deps = [
     ":handlers",
     "//base",
-
-    # Handling transitive dependency error.
-    # TODO: split ash::UpdateEngineClient::Observer into a dedicated file
-    # by renaming ash::UpdateEngineClientObserver should resolve this.
-    "//chromeos/ash/components/dbus",
   ]
 }
 
