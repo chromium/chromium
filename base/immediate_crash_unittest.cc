@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <optional>
 
 #include "base/base_paths.h"
@@ -46,8 +47,8 @@ using Instruction = uint8_t;
 constexpr Instruction kRet = 0xc3;
 // INT3 ; UD2
 
-constexpr Instruction kRequiredBody[] = {0xcc, 0x0f, 0x0b};
-constexpr Instruction kOptionalFooter[] = {};
+constexpr auto kRequiredBody = std::to_array<Instruction>({0xcc, 0x0f, 0x0b});
+constexpr auto kOptionalFooter = std::array<Instruction, 0u>{};
 #endif  // defined(OFFICIAL_BUILD)
 
 #elif defined(ARCH_CPU_ARMEL)
@@ -59,8 +60,8 @@ using Instruction = uint16_t;
 constexpr Instruction kRet = 0x4770;
 
 // BKPT #0; UDF #0
-constexpr Instruction kRequiredBody[] = {0xbe00, 0xde00};
-constexpr Instruction kOptionalFooter[] = {};
+constexpr auto kRequiredBody = std::to_array<Instruction>({0xbe00, 0xde00});
+constexpr auto kOptionalFooter = std::array<Instruction, 0u>{};
 #endif  // defined(OFFICIAL_BUILD)
 
 #elif defined(ARCH_CPU_ARM64)
@@ -83,20 +84,20 @@ enum : Instruction {
 
 #if BUILDFLAG(IS_WIN)
 
-constexpr Instruction kRequiredBody[] = {kBrkF000, kBrk1};
-constexpr Instruction kOptionalFooter[] = {};
+constexpr auto kRequiredBody = std::to_array<Instruction>({kBrkF000, kBrk1});
+constexpr auto kOptionalFooter = std::array<Instruction, 0u>{};
 
 #elif BUILDFLAG(IS_MAC)
 
-constexpr Instruction kRequiredBody[] = {kBrk0, kHlt0};
+constexpr auto kRequiredBody = std::to_array<Instruction>({kBrk0, kHlt0});
 // Some clangs emit a BRK #1 for __builtin_unreachable(), but some do not, so
 // it is allowed but not required to occur.
-constexpr Instruction kOptionalFooter[] = {kBrk1};
+constexpr auto kOptionalFooter = std::to_array<Instruction>({kBrk1});
 
 #else
 
-constexpr Instruction kRequiredBody[] = {kBrk0, kHlt0};
-constexpr Instruction kOptionalFooter[] = {};
+constexpr auto kRequiredBody = std::to_array<Instruction>({kBrk0, kHlt0});
+constexpr auto kOptionalFooter = std::array<Instruction, 0u>{};
 
 #endif
 
