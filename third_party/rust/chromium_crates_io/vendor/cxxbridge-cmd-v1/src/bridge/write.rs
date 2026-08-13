@@ -40,11 +40,11 @@ pub(super) fn generate(apis: &[Api], types: &Types, opt: &Opt, header: bool) -> 
 fn write_macros(out: &mut OutFile, apis: &[Api]) {
     let mut needs_default_value = false;
     for api in apis {
-        if let Api::Struct(strct) = api {
-            if !out.types.cxx.contains(&strct.name.rust) {
-                for field in &strct.fields {
-                    needs_default_value |= primitive::kind(&field.ty).is_some();
-                }
+        if let Api::Struct(strct) = api
+            && !out.types.cxx.contains(&strct.name.rust)
+        {
+            for field in &strct.fields {
+                needs_default_value |= primitive::kind(&field.ty).is_some();
             }
         }
     }
@@ -97,13 +97,13 @@ fn write_forward_declarations(out: &mut OutFile, apis: &[Api]) {
 fn write_data_structures<'a>(out: &mut OutFile<'a>, apis: &'a [Api]) {
     let mut methods_for_type = Map::new();
     for api in apis {
-        if let Api::CxxFunction(efn) | Api::RustFunction(efn) = api {
-            if let Some(self_type) = efn.self_type() {
-                methods_for_type
-                    .entry(self_type)
-                    .or_insert_with(Vec::new)
-                    .push(efn);
-            }
+        if let Api::CxxFunction(efn) | Api::RustFunction(efn) = api
+            && let Some(self_type) = efn.self_type()
+        {
+            methods_for_type
+                .entry(self_type)
+                .or_insert_with(Vec::new)
+                .push(efn);
         }
     }
 
@@ -155,10 +155,10 @@ fn write_data_structures<'a>(out: &mut OutFile<'a>, apis: &'a [Api]) {
 
     out.next_section();
     for api in apis {
-        if let Api::TypeAlias(ety) = api {
-            if let Some(reasons) = out.types.required_trivial.get(&ety.name.rust) {
-                check_trivial_extern_type(out, ety, reasons);
-            }
+        if let Api::TypeAlias(ety) = api
+            && let Some(reasons) = out.types.required_trivial.get(&ety.name.rust)
+        {
+            check_trivial_extern_type(out, ety, reasons);
         }
     }
 }
@@ -196,28 +196,28 @@ fn write_std_specializations(out: &mut OutFile, apis: &[Api]) {
     out.begin_block(Block::Namespace("std"));
 
     for api in apis {
-        if let Api::Struct(strct) = api {
-            if derive::contains(&strct.derives, Trait::Hash) {
-                out.next_section();
-                out.include.cstddef = true;
-                out.include.functional = true;
-                out.pragma.dollar_in_identifier = true;
-                let qualified = strct.name.to_fully_qualified();
-                writeln!(out, "template <> struct hash<{}> {{", qualified);
-                writeln!(
-                    out,
-                    "  ::std::size_t operator()({} const &self) const noexcept {{",
-                    qualified,
-                );
-                let link_name = mangle::operator(&strct.name, "hash");
-                write!(out, "    return ::");
-                for name in &strct.name.namespace {
-                    write!(out, "{}::", name);
-                }
-                writeln!(out, "{}(self);", link_name);
-                writeln!(out, "  }}");
-                writeln!(out, "}};");
+        if let Api::Struct(strct) = api
+            && derive::contains(&strct.derives, Trait::Hash)
+        {
+            out.next_section();
+            out.include.cstddef = true;
+            out.include.functional = true;
+            out.pragma.dollar_in_identifier = true;
+            let qualified = strct.name.to_fully_qualified();
+            writeln!(out, "template <> struct hash<{}> {{", qualified);
+            writeln!(
+                out,
+                "  ::std::size_t operator()({} const &self) const noexcept {{",
+                qualified,
+            );
+            let link_name = mangle::operator(&strct.name, "hash");
+            write!(out, "    return ::");
+            for name in &strct.name.namespace {
+                write!(out, "{}::", name);
             }
+            writeln!(out, "{}(self);", link_name);
+            writeln!(out, "  }}");
+            writeln!(out, "}};");
         }
     }
 
@@ -917,10 +917,10 @@ fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
         write_type(out, &arg.ty);
     }
     write!(out, ")");
-    if let Some(receiver) = efn.receiver() {
-        if !receiver.mutable {
-            write!(out, " const");
-        }
+    if let Some(receiver) = efn.receiver()
+        && !receiver.mutable
+    {
+        write!(out, " const");
     }
     write!(out, " = ");
     match efn.self_type() {
@@ -1170,10 +1170,10 @@ fn write_rust_function_shim_decl(
         write!(out, "void *extern$");
     }
     write!(out, ")");
-    if let FnKind::Method(receiver) = &sig.kind {
-        if !receiver.mutable {
-            write!(out, " const");
-        }
+    if let FnKind::Method(receiver) = &sig.kind
+        && !receiver.mutable
+    {
+        write!(out, " const");
     }
     if !sig.throws {
         write!(out, " noexcept");
@@ -1299,12 +1299,11 @@ fn write_rust_function_shim_impl(
         write!(out, "extern$");
     }
     write!(out, ")");
-    if !indirect_return {
-        if let Some(Type::RustBox(_) | Type::UniquePtr(_) | Type::Str(_) | Type::SliceRef(_)) =
+    if !indirect_return
+        && let Some(Type::RustBox(_) | Type::UniquePtr(_) | Type::Str(_) | Type::SliceRef(_)) =
             &sig.ret
-        {
-            write!(out, ")");
-        }
+    {
+        write!(out, ")");
     }
     writeln!(out, ";");
     if sig.throws {

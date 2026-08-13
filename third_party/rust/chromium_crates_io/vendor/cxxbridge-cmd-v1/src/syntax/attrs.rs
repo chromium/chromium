@@ -213,10 +213,10 @@ mod kw {
 fn parse_doc_attribute(meta: &Meta) -> Result<DocAttribute> {
     match meta {
         Meta::NameValue(meta) => {
-            if let Expr::Lit(expr) = &meta.value {
-                if let Lit::Str(lit) = &expr.lit {
-                    return Ok(DocAttribute::Doc(lit.clone()));
-                }
+            if let Expr::Lit(expr) = &meta.value
+                && let Lit::Str(lit) = &expr.lit
+            {
+                return Ok(DocAttribute::Doc(lit.clone()));
             }
         }
         Meta::List(meta) => {
@@ -233,11 +233,11 @@ fn parse_derive_attribute(cx: &mut Errors, input: ParseStream) -> Result<Vec<Der
 
     let mut derives = Vec::new();
     for path in paths {
-        if let Some(ident) = path.get_ident() {
-            if let Some(derive) = Derive::from(ident) {
-                derives.push(derive);
-                continue;
-            }
+        if let Some(ident) = path.get_ident()
+            && let Some(derive) = Derive::from(ident)
+        {
+            derives.push(derive);
+            continue;
         }
         cx.error(path, "unsupported derive");
     }

@@ -132,16 +132,15 @@ fn expr_to_discriminant(expr: &Expr) -> Result<(Discriminant, Option<Atom>)> {
 }
 
 fn insert(set: &mut DiscriminantSet, discriminant: Discriminant) -> Result<Discriminant> {
-    if let Some(expected_repr) = set.repr {
-        if let Some(limits) = Limits::of(expected_repr) {
-            if discriminant < limits.min || limits.max < discriminant {
-                let msg = format!(
-                    "discriminant value `{}` is outside the limits of {}",
-                    discriminant, expected_repr,
-                );
-                return Err(Error::new(Span::call_site(), msg));
-            }
-        }
+    if let Some(expected_repr) = set.repr
+        && let Some(limits) = Limits::of(expected_repr)
+        && (discriminant < limits.min || limits.max < discriminant)
+    {
+        let msg = format!(
+            "discriminant value `{}` is outside the limits of {}",
+            discriminant, expected_repr,
+        );
+        return Err(Error::new(Span::call_site(), msg));
     }
     set.values.insert(discriminant);
     set.previous = Some(discriminant);

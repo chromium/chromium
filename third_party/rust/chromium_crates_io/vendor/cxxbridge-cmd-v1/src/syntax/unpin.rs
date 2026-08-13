@@ -29,32 +29,34 @@ pub(crate) fn required_unpin_reasons<'a>(
     };
 
     for (ty, _cfgs) in all {
-        if let Type::SliceRef(slice) = ty {
-            if let Type::Ident(inner) = &slice.inner {
-                if slice.mutable && is_extern_type_alias(inner) {
-                    reasons.insert(&inner.rust, UnpinReason::Slice(slice));
-                }
-            }
+        if let Type::SliceRef(slice) = ty
+            && let Type::Ident(inner) = &slice.inner
+            && slice.mutable
+            && is_extern_type_alias(inner)
+        {
+            reasons.insert(&inner.rust, UnpinReason::Slice(slice));
         }
     }
 
     for api in apis {
-        if let Api::CxxFunction(efn) | Api::RustFunction(efn) = api {
-            if let Some(receiver) = efn.receiver() {
-                if receiver.mutable && !receiver.pinned && is_extern_type_alias(&receiver.ty) {
-                    reasons.insert(&receiver.ty.rust, UnpinReason::Receiver(receiver));
-                }
-            }
+        if let Api::CxxFunction(efn) | Api::RustFunction(efn) = api
+            && let Some(receiver) = efn.receiver()
+            && receiver.mutable
+            && !receiver.pinned
+            && is_extern_type_alias(&receiver.ty)
+        {
+            reasons.insert(&receiver.ty.rust, UnpinReason::Receiver(receiver));
         }
     }
 
     for (ty, _cfg) in all {
-        if let Type::Ref(ty) = ty {
-            if let Type::Ident(inner) = &ty.inner {
-                if ty.mutable && !ty.pinned && is_extern_type_alias(inner) {
-                    reasons.insert(&inner.rust, UnpinReason::Ref(ty));
-                }
-            }
+        if let Type::Ref(ty) = ty
+            && let Type::Ident(inner) = &ty.inner
+            && ty.mutable
+            && !ty.pinned
+            && is_extern_type_alias(inner)
+        {
+            reasons.insert(&inner.rust, UnpinReason::Ref(ty));
         }
     }
 

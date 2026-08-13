@@ -18,7 +18,7 @@
 //!
 //! <br>
 //!
-//! *Compiler support: requires rustc 1.85+ and c++11 or newer*<br>
+//! *Compiler support: requires rustc 1.88+ and c++11 or newer*<br>
 //! *[Release notes](https://github.com/dtolnay/cxx/releases)*
 //!
 //! <br>
@@ -363,7 +363,7 @@
 //! </table>
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/cxx/1.0.198")]
+#![doc(html_root_url = "https://docs.rs/cxx/1.0.199")]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(
     improper_ctypes,

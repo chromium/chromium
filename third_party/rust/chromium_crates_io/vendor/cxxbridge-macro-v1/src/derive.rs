@@ -138,7 +138,7 @@ fn struct_clone(strct: &Struct, span: Span) -> TokenStream {
     quote_spanned! {span=>
         #cfg_and_lint_attrs
         #[automatically_derived]
-        #[allow(clippy::expl_impl_clone_on_copy)]
+        #[allow(clippy::clone_on_copy, clippy::expl_impl_clone_on_copy)]
         impl #generics ::cxx::core::clone::Clone for #ident #generics {
             fn clone(&self) -> Self {
                 #body

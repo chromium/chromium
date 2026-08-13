@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [nightly, beta, stable, 1.85.0]
+        rust: [nightly, beta, stable, 1.88.0]
         os: [ubuntu]
         cc: [g++]
         flags: ['']
@@ -181,7 +181,12 @@ jobs:
           targets: wasm32-unknown-emscripten
           components: rust-src
       - uses: emscripten-core/setup-emsdk@v16
-      - run: cargo build --target=wasm32-unknown-emscripten --manifest-path=demo/Cargo.toml --release -Zbuild-std
+      - run: cargo build
+          --manifest-path=demo/Cargo.toml
+          --target=wasm32-unknown-emscripten
+          --release
+          -Zbuild-std
+          --config='target.wasm32-unknown-emscripten.linker="em++"'
         env:
           RUSTFLAGS: -Clink-arg=--emrun ${{env.RUSTFLAGS}}
       - name: Create demo.html for demo.js

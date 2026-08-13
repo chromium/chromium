@@ -1,4 +1,5 @@
 #![allow(
+    clippy::assert_is_empty,
     clippy::cast_sign_loss,
     clippy::doc_markdown,
     clippy::elidable_lifetime_names,

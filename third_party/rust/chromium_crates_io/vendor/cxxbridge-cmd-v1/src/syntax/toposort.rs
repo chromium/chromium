@@ -36,13 +36,12 @@ fn visit<'a>(
     }
     let mut result = Ok(());
     for field in &strct.fields {
-        if let Type::Ident(ident) = &field.ty {
-            if let Some(inner) = types.structs.get(&ident.rust) {
-                if visit(cx, inner, sorted, marks, types).is_err() {
-                    cx.error(field, "unsupported cyclic data structure");
-                    result = Err(());
-                }
-            }
+        if let Type::Ident(ident) = &field.ty
+            && let Some(inner) = types.structs.get(&ident.rust)
+            && visit(cx, inner, sorted, marks, types).is_err()
+        {
+            cx.error(field, "unsupported cyclic data structure");
+            result = Err(());
         }
     }
     marks.insert(strct, Mark::Visited);

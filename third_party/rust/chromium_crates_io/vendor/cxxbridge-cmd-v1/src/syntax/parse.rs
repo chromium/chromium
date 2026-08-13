@@ -441,12 +441,11 @@ fn parse_foreign_mod(
     if let (Some(single_type), None) = (types.next(), types.next()) {
         let single_type = single_type.clone();
         for item in &mut items {
-            if let Api::CxxFunction(efn) | Api::RustFunction(efn) = item {
-                if let Some(receiver) = efn.sig.receiver_mut() {
-                    if receiver.ty.rust == "Self" {
-                        receiver.ty.rust = single_type.rust.clone();
-                    }
-                }
+            if let Api::CxxFunction(efn) | Api::RustFunction(efn) = item
+                && let Some(receiver) = efn.sig.receiver_mut()
+                && receiver.ty.rust == "Self"
+            {
+                receiver.ty.rust = single_type.rust.clone();
             }
         }
     }
@@ -630,22 +629,22 @@ fn parse_extern_fn(
                     }
                     ReceiverKind::Typed(colon_token, ty) => {
                         let ty = parse_type(ty)?;
-                        if let Type::Ref(reference) = ty {
-                            if let Type::Ident(ident) = reference.inner {
-                                receiver = Some(Receiver {
-                                    pinned: reference.pinned,
-                                    ampersand: reference.ampersand,
-                                    lifetime: reference.lifetime,
-                                    mutable: reference.mutable,
-                                    var: Token![self](ident.rust.span()),
-                                    colon_token: *colon_token,
-                                    ty: ident,
-                                    shorthand: false,
-                                    pin_tokens: reference.pin_tokens,
-                                    mutability: reference.mutability,
-                                });
-                                continue;
-                            }
+                        if let Type::Ref(reference) = ty
+                            && let Type::Ident(ident) = reference.inner
+                        {
+                            receiver = Some(Receiver {
+                                pinned: reference.pinned,
+                                ampersand: reference.ampersand,
+                                lifetime: reference.lifetime,
+                                mutable: reference.mutable,
+                                var: Token![self](ident.rust.span()),
+                                colon_token: *colon_token,
+                                ty: ident,
+                                shorthand: false,
+                                pin_tokens: reference.pin_tokens,
+                                mutability: reference.mutability,
+                            });
+                            continue;
                         }
                     }
                     _ => {}
@@ -1097,13 +1096,13 @@ fn parse_impl(cx: &mut Errors, imp: ItemImpl) -> Result<Api> {
     let mut self_ty = *imp.self_ty;
     if let RustType::Verbatim(ty) = &self_ty {
         let mut iter = ty.clone().into_iter();
-        if let Some(TokenTree::Punct(punct)) = iter.next() {
-            if punct.as_char() == '!' {
-                let ty = iter.collect::<TokenStream>();
-                if !ty.is_empty() {
-                    negative_token = Some(Token![!](punct.span()));
-                    self_ty = syn::parse2(ty)?;
-                }
+        if let Some(TokenTree::Punct(punct)) = iter.next()
+            && punct.as_char() == '!'
+        {
+            let ty = iter.collect::<TokenStream>();
+            if !ty.is_empty() {
+                negative_token = Some(Token![!](punct.span()));
+                self_ty = syn::parse2(ty)?;
             }
         }
     }
@@ -1481,14 +1480,14 @@ fn parse_return_type(
         if ty.qself.is_none() && path.leading_colon.is_none() && path.segments.len() == 1 {
             let segment = &path.segments[0];
             let ident = segment.ident.clone();
-            if let PathArguments::AngleBracketed(generic) = &segment.arguments {
-                if ident == "Result" && generic.args.len() == 1 {
-                    if let GenericArgument::Type(arg) = &generic.args[0] {
-                        ret = arg;
-                        *throws_tokens =
-                            Some((kw::Result(ident.span()), generic.lt_token, generic.gt_token));
-                    }
-                }
+            if let PathArguments::AngleBracketed(generic) = &segment.arguments
+                && ident == "Result"
+                && generic.args.len() == 1
+                && let GenericArgument::Type(arg) = &generic.args[0]
+            {
+                ret = arg;
+                *throws_tokens =
+                    Some((kw::Result(ident.span()), generic.lt_token, generic.gt_token));
             }
         }
     }

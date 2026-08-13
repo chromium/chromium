@@ -31,14 +31,14 @@ fn main() {
     println!("cargo:rustc-check-cfg=cfg(cxx_experimental_no_alloc)");
     println!("cargo:rustc-check-cfg=cfg(skip_ui_tests)");
 
-    if let Some(rustc) = rustc_version() {
-        if rustc.minor < 85 {
-            println!("cargo:warning=The cxx crate requires a rustc version 1.85.0 or newer.");
-            println!(
-                "cargo:warning=You appear to be building with: {}",
-                rustc.version,
-            );
-        }
+    if let Some(rustc) = rustc_version()
+        && rustc.minor < 88
+    {
+        println!("cargo:warning=The cxx crate requires a rustc version 1.88.0 or newer.");
+        println!(
+            "cargo:warning=You appear to be building with: {}",
+            rustc.version,
+        );
     }
 
     if let (Some(manifest_links), Some(pkg_version_major)) = (

@@ -214,10 +214,10 @@ impl<'a> Types<'a> {
         }
 
         for api in apis {
-            if let Api::Impl(imp) = api {
-                if let Some(key) = imp.ty.impl_key(&resolutions) {
-                    impls.insert(key, ConditionalImpl::from(imp));
-                }
+            if let Api::Impl(imp) = api
+                && let Some(key) = imp.ty.impl_key(&resolutions)
+            {
+                impls.insert(key, ConditionalImpl::from(imp));
             }
         }
 
