@@ -172,4 +172,32 @@ TEST_F(CRWWebViewContentViewTest,
   EXPECT_EQ(1, insetCallCount);
 }
 
+// Tests that setting obscuredInsets forwards directly when not animating.
+TEST_F(CRWWebViewContentViewTest, ObscuredInsetsWithoutAnimation) {
+  if (@available(iOS 26, *)) {
+    CRWWebView* webView = [[CRWWebView alloc] initWithFrame:CGRectZero];
+    UIScrollView* scrollView = [[UIScrollView alloc] init];
+    [webView addSubview:scrollView];
+    id mockWebView = OCMPartialMock(webView);
+
+    CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+        initWithWebView:webView
+             scrollView:scrollView
+        fullscreenState:CrFullscreenState::kNotInFullScreen];
+    contentView.webViewResizingType = WebViewResizingType::kContentInset;
+
+    UIEdgeInsets insets = UIEdgeInsetsMake(10, 20, 30, 40);
+    __block int callCount = 0;
+    [[[mockWebView stub] andDo:^(NSInvocation* invocation) {
+      callCount++;
+    }] setObscuredContentInsets:insets];
+
+    contentView.obscuredInsets = insets;
+    EXPECT_EQ(1, callCount);
+    EXPECT_TRUE(
+        UIEdgeInsetsEqualToEdgeInsets(insets, contentView.obscuredInsets));
+    EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(insets, scrollView.contentInset));
+  }
+}
+
 }  // namespace

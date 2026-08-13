@@ -15,6 +15,7 @@
 #import "ios/web/common/crw_web_view_resizing_type.h"
 #import "ios/web/public/content_type_util.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web/web_state/ui/crw_viewport_insets_animator.h"
 
 namespace {
 
@@ -67,6 +68,7 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   UIEdgeInsets _maxViewportInset;
   BOOL _hasPendingViewportInsets;
   std::string _mimeTypeString;
+  CRWViewportInsetsAnimator* _insetsAnimator;
 }
 @end
 
@@ -126,6 +128,19 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 
 - (instancetype)initWithFrame:(CGRect)frame {
   NOTREACHED();
+}
+
+- (void)dealloc {
+  [_insetsAnimator stop];
+  _insetsAnimator = nil;
+}
+
+- (void)willMoveToWindow:(UIWindow*)newWindow {
+  [super willMoveToWindow:newWindow];
+  if (!newWindow) {
+    [_insetsAnimator stop];
+    _insetsAnimator = nil;
+  }
 }
 
 - (void)didMoveToSuperview {
@@ -205,12 +220,15 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 }
 
 - (UIEdgeInsets)obscuredInsets {
+  if (_insetsAnimator) {
+    return _insetsAnimator.currentInsets;
+  }
   return _obscuredInsets;
 }
 
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
   BOOL insetsEqual =
-      UIEdgeInsetsEqualToEdgeInsets(_obscuredInsets, obscuredInsets);
+      UIEdgeInsetsEqualToEdgeInsets(self.obscuredInsets, obscuredInsets);
   BOOL scrollInsetsEqual = YES;
   if (self.webViewResizingType == WebViewResizingType::kContentInset) {
     scrollInsetsEqual =
@@ -221,28 +239,58 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   }
   switch (self.webViewResizingType) {
     case WebViewResizingType::kContentInset: {
-      UIEdgeInsets oldInsets = _scrollView.contentInset;
-      _scrollView.contentInsetAdjustmentBehavior =
-          UIScrollViewContentInsetAdjustmentNever;
-      _scrollView.contentInset = obscuredInsets;
-      CGFloat topDelta = obscuredInsets.top - oldInsets.top;
-      // If the top inset changed, and the scroll view was scrolled to the very
-      // top, adjust the contentOffset to the new top boundary to prevent the
-      // page from appearing pre-scrolled.
-      if (!web::IsContentTypePdf(_mimeTypeString) && topDelta != 0 &&
-          fabs(_scrollView.contentOffset.y - (-oldInsets.top)) < 0.1) {
-        CGPoint offset = _scrollView.contentOffset;
-        offset.y = -obscuredInsets.top;
-        _scrollView.contentOffset = offset;
-      }
-      if (@available(iOS 26, *)) {
-        [_webView setObscuredContentInsets:obscuredInsets];
+      NSTimeInterval duration = [UIView inheritedAnimationDuration];
+      if (duration > 0) {
+        if (_insetsAnimator) {
+          if (UIEdgeInsetsEqualToEdgeInsets(_insetsAnimator.targetInsets,
+                                            obscuredInsets)) {
+            return;
+          }
+          _obscuredInsets = _insetsAnimator.currentInsets;
+          [_insetsAnimator stop];
+          _insetsAnimator = nil;
+        }
+        __weak __typeof(self) weakSelf = self;
+        _insetsAnimator = [[CRWViewportInsetsAnimator alloc]
+            initWithWebView:_webView
+                 scrollView:_scrollView
+                startInsets:_obscuredInsets
+               targetInsets:obscuredInsets
+                   duration:duration
+                 completion:^{
+                   [weakSelf
+                       insetsAnimationDidCompleteWithInsets:obscuredInsets];
+                 }];
+        [_insetsAnimator start];
       } else {
-        NOTREACHED();
+        if (_insetsAnimator) {
+          _obscuredInsets = _insetsAnimator.currentInsets;
+          [_insetsAnimator stop];
+          _insetsAnimator = nil;
+        }
+        _scrollView.contentInsetAdjustmentBehavior =
+            UIScrollViewContentInsetAdjustmentNever;
+        UIEdgeInsets oldInsets = _scrollView.contentInset;
+        _scrollView.contentInset = obscuredInsets;
+        CGFloat topDelta = obscuredInsets.top - oldInsets.top;
+        if (!web::IsContentTypePdf(_mimeTypeString) && topDelta != 0 &&
+            fabs(_scrollView.contentOffset.y - (-oldInsets.top)) < 0.1) {
+          CGPoint offset = _scrollView.contentOffset;
+          offset.y = -obscuredInsets.top;
+          _scrollView.contentOffset = offset;
+        }
+        if (@available(iOS 26, *)) {
+          [_webView setObscuredContentInsets:obscuredInsets];
+        }
+        _obscuredInsets = obscuredInsets;
       }
       break;
     }
-    case WebViewResizingType::kFrame:
+    case WebViewResizingType::kFrame: {
+      if (_insetsAnimator) {
+        [_insetsAnimator stop];
+        _insetsAnimator = nil;
+      }
       if (web::IsContentTypePdf(_mimeTypeString)) {
         _scrollView.contentInsetAdjustmentBehavior =
             UIScrollViewContentInsetAdjustmentNever;
@@ -274,9 +322,10 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
       }
       // Update the frame.
       _webView.frame = UIEdgeInsetsInsetRect(self.frame, obscuredInsets);
+      _obscuredInsets = obscuredInsets;
       break;
+    }
   }
-  _obscuredInsets = obscuredInsets;
 }
 
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset
@@ -343,6 +392,15 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 // TODO(crbug.com/40123534): Implement.
 - (void)updateMinViewportInsets:(UIEdgeInsets)minInsets
               maxViewportInsets:(UIEdgeInsets)maxInsets {
+}
+
+#pragma mark - Private
+
+// Called when an insets animation completes, recording the final insets and
+// clearing the animator instance.
+- (void)insetsAnimationDidCompleteWithInsets:(UIEdgeInsets)obscuredInsets {
+  _obscuredInsets = obscuredInsets;
+  _insetsAnimator = nil;
 }
 
 @end

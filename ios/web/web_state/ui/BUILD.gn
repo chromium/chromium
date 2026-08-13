@@ -69,6 +69,8 @@ source_set("ui") {
     "crw_media_capture_permission_request.h",
     "crw_media_capture_permission_request.mm",
     "crw_touch_tracking_recognizer.mm",
+    "crw_viewport_insets_animator.h",
+    "crw_viewport_insets_animator.mm",
     "crw_web_controller.mm",
     "crw_web_controller_container_view.h",
     "crw_web_controller_container_view.mm",
