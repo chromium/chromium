@@ -75,6 +75,7 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       net::ClientCertIdentityList client_certs,
       std::unique_ptr<content::ClientCertificateDelegate> delegate) override;
   bool ShouldEnableStrictSiteIsolation() override;
+  bool ShouldIsolateErrorPage(bool in_main_frame) override;
   bool ShouldAllowProcessPerSiteForMultipleMainFrames(
       content::BrowserContext* context) override;
   std::unique_ptr<content::DigitalIdentityProvider>

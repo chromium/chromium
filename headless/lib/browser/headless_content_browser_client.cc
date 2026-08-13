@@ -399,6 +399,12 @@ bool HeadlessContentBrowserClient::ShouldEnableStrictSiteIsolation() {
   return false;
 }
 
+bool HeadlessContentBrowserClient::ShouldIsolateErrorPage(bool in_main_frame) {
+  // Explicitly turn off subframe error page isolation, since headless tests
+  // currently rely on not having OOPIFs.
+  return in_main_frame;
+}
+
 bool HeadlessContentBrowserClient::
     ShouldAllowProcessPerSiteForMultipleMainFrames(
         content::BrowserContext* context) {
