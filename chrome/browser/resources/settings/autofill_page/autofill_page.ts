@@ -28,13 +28,6 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
-import type {AutofillManagerProxy, PersonalDataChangedListener} from './autofill_manager_proxy.js';
-import {AutofillManagerImpl} from './autofill_manager_proxy.js';
-import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './entity_data_manager_proxy.js';
-import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
-import {PasswordManagerImpl, PasswordManagerPage} from './password_manager_proxy.js';
-import {PaymentsManagerImpl} from './payments_manager_proxy.js';
-import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, SuggestionsFromGeminiEntryPoint, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from '../metrics_browser_proxy.js';
@@ -42,8 +35,15 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
-import type {DataCategoryClickEvent, DataChipClickEvent} from './category_reference_card.js';
+import type {AutofillManagerProxy, PersonalDataChangedListener} from './autofill_manager_proxy.js';
+import {AutofillManagerImpl} from './autofill_manager_proxy.js';
 import {getTemplate} from './autofill_page.html.js';
+import type {DataCategoryClickEvent, DataChipClickEvent} from './category_reference_card.js';
+import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './entity_data_manager_proxy.js';
+import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
+import {PasswordManagerImpl, PasswordManagerPage} from './password_manager_proxy.js';
+import {PaymentsManagerImpl} from './payments/payments_manager_proxy.js';
+import type {PaymentsManagerProxy} from './payments/payments_manager_proxy.js';
 import {DataManagementSurvey, SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
 
 type AddressEntry = chrome.autofillPrivate.AddressEntry;

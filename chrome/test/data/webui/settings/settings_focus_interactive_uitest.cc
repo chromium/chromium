@@ -19,12 +19,12 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, ContactInfoPageFocus) {
   RunTest("settings/contact_info_page_focus_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsFocusTest, PaymentsSectionInteractive) {
-  RunTest("settings/payments_section_interactive_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsFocusTest, PaymentsPageInteractive) {
+  RunTest("settings/payments_page_interactive_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsFocusTest, PaymentsSectionFocus) {
-  RunTest("settings/payments_section_focus_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsFocusTest, PaymentsPageFocus) {
+  RunTest("settings/payments_page_focus_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, SettingsViewMixin) {

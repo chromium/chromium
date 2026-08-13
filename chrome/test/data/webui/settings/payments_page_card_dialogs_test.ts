@@ -15,11 +15,11 @@ import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/te
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createCreditCardEntry, createEmptyCreditCardEntry} from './autofill_fake_data.js';
-import {createPaymentsSection, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot} from './payments_section_utils.js';
+import {createPaymentsPage, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot} from './payments_page_test_utils.js';
 
 // clang-format on
 
-suite('PaymentsSectionCardDialogs', function() {
+suite('PaymentsPageCardDialogs', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
@@ -469,12 +469,12 @@ suite('PaymentsSectionCardDialogs', function() {
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     const menuButton =
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
@@ -482,14 +482,13 @@ suite('PaymentsSectionCardDialogs', function() {
     menuButton.click();
     flush();
 
-    assertFalse(section.$.menuRemoveCreditCard.hidden);
-    section.$.menuRemoveCreditCard.click();
+    assertFalse(page.$.menuRemoveCreditCard.hidden);
+    page.$.menuRemoveCreditCard.click();
     flush();
 
     const confirmationDialog =
-        section.shadowRoot!
-            .querySelector<SettingsSimpleConfirmationDialogElement>(
-                '#localCardDeleteConfirmDialog');
+        page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+            '#localCardDeleteConfirmDialog');
     assertTrue(!!confirmationDialog);
     await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
 
@@ -517,12 +516,12 @@ suite('PaymentsSectionCardDialogs', function() {
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     const menuButton =
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
@@ -530,12 +529,12 @@ suite('PaymentsSectionCardDialogs', function() {
     menuButton.click();
     flush();
 
-    assertFalse(section.$.menuRemoveCreditCard.hidden);
-    section.$.menuRemoveCreditCard.click();
+    assertFalse(page.$.menuRemoveCreditCard.hidden);
+    page.$.menuRemoveCreditCard.click();
     flush();
 
-    const confirmationDialog = section.shadowRoot!.querySelector(
-        'settings-simple-confirmation-dialog');
+    const confirmationDialog =
+        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
     assertTrue(!!confirmationDialog);
     await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
 

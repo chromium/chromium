@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsPaymentsSectionElement, SettingsCreditCardListEntryElement, SettingsIbanListEntryElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsPaymentsPageElement, SettingsCreditCardListEntryElement, SettingsIbanListEntryElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue, assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -20,14 +20,14 @@ import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 // clang-format on
 
 /**
- * Creates the payments autofill section for the given list.
+ * Creates the payments autofill page for the given list.
  * @param {!Object} prefValues
  */
-export async function createPaymentsSection(
+export async function createPaymentsPage(
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
     ibans: chrome.autofillPrivate.IbanEntry[],
     payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
-    prefValues: unknown): Promise<SettingsPaymentsSectionElement> {
+    prefValues: unknown): Promise<SettingsPaymentsPageElement> {
   // Override the PaymentsManagerImpl for testing.
   const paymentsManager = new TestPaymentsManager();
   paymentsManager.data.creditCards = creditCards;
@@ -39,8 +39,8 @@ export async function createPaymentsSection(
   // </if>
   PaymentsManagerImpl.setInstance(paymentsManager);
 
-  const section = document.createElement('settings-payments-section');
-  section.prefs = {
+  const page = document.createElement('settings-payments-page');
+  page.prefs = {
     autofill: {
       credit_card_enabled: {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -49,10 +49,10 @@ export async function createPaymentsSection(
       ...(prefValues as Record<string, unknown>),
     },
   };
-  document.body.appendChild(section);
+  document.body.appendChild(page);
   await flushTasks();
 
-  return section;
+  return page;
 }
 
 /**
@@ -81,7 +81,7 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
  * Returns an array containing the local and server credit card items.
  */
 export function getLocalAndServerCreditCardListItems() {
-  return document.body.querySelector('settings-payments-section')!.shadowRoot!
+  return document.body.querySelector('settings-payments-page')!.shadowRoot!
       .querySelector('#paymentsList')!.shadowRoot!.querySelectorAll(
           'settings-credit-card-list-entry');
 }
@@ -110,8 +110,8 @@ export const enum PaymentMethod {
  * See `SettingsPaymentsListElement` for the format of the ids.
  */
 export function getPaymentMethodEntry(
-    section: SettingsPaymentsSectionElement, id: string): PaymentEntryElement {
-  const container = section.$.paymentsList.shadowRoot;
+    page: SettingsPaymentsPageElement, id: string): PaymentEntryElement {
+  const container = page.$.paymentsList.shadowRoot;
   assertTrue(
       !!container,
       'the list element is expected to render its content in the shadowRoot');
@@ -124,8 +124,7 @@ export function getPaymentMethodEntry(
  * method sub list (identified by the `type` argument).
  */
 async function executeUiManipulationsToDeletePaymentMethod(
-    section: SettingsPaymentsSectionElement, type: PaymentMethod,
-    index: number) {
+    page: SettingsPaymentsPageElement, type: PaymentMethod, index: number) {
   const id =
       type === PaymentMethod.CREDIT_CARD ? `card-${index}` : `iban-${index}`;
   const deleteButtonSelector = type === PaymentMethod.CREDIT_CARD ?
@@ -133,21 +132,21 @@ async function executeUiManipulationsToDeletePaymentMethod(
       '#menuRemoveIban';
 
   // Open the dots menu:
-  const entry = getPaymentMethodEntry(section, id);
+  const entry = getPaymentMethodEntry(page, id);
   assertTrue(!!entry.dotsMenu);
   entry.dotsMenu.click();
   flush();
 
   // Click the Delete button:
-  const deleteButton = section.shadowRoot!.querySelector<HTMLButtonElement>(
-      deleteButtonSelector);
+  const deleteButton =
+      page.shadowRoot!.querySelector<HTMLButtonElement>(deleteButtonSelector);
   assertTrue(!!deleteButton);
   deleteButton.click();
   flush();
 
   // Confirm the deletion in the dialog:
   const confirmationDialog =
-      section.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+      page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
   assertTrue(!!confirmationDialog);
   await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
   const closePromise = eventToPromise('close', confirmationDialog.$.dialog);
@@ -161,7 +160,7 @@ async function executeUiManipulationsToDeletePaymentMethod(
  * the respective (`type`) sub list.
  */
 export async function deletePaymentMethod(
-    section: SettingsPaymentsSectionElement, manager: TestPaymentsManager,
+    page: SettingsPaymentsPageElement, manager: TestPaymentsManager,
     type: PaymentMethod, index: number) {
   const deleteMethod =
       type === PaymentMethod.CREDIT_CARD ? 'removeCreditCard' : 'removeIban';
@@ -170,7 +169,7 @@ export async function deletePaymentMethod(
 
   // Ensure manager's deleteMethod call is caused by UI manipulations here.
   manager.resetResolver(deleteMethod);
-  await executeUiManipulationsToDeletePaymentMethod(section, type, index);
+  await executeUiManipulationsToDeletePaymentMethod(page, type, index);
   await manager.whenCalled(deleteMethod);
 
   // Create a copy to make sure all the Polymer updates get triggered.

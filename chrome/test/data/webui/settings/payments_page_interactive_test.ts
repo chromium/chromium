@@ -8,14 +8,14 @@ import 'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrButtonElement} from 'chrome://settings/settings.js';
 import {loadTimeData, MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
-import type {CrInputElement, SettingsCreditCardEditDialogElement, SettingsIbanEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
+import type {CrInputElement, SettingsCreditCardEditDialogElement, SettingsIbanEditDialogElement, SettingsPaymentsPageElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCreditCardEntry, createIbanEntry, TestPaymentsManager} from './autofill_fake_data.js';
-import {verifyBooleanHistogramRecorded} from './payments_section_utils.js';
+import {verifyBooleanHistogramRecorded} from './payments_page_test_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 // clang-format on
 
@@ -39,7 +39,7 @@ async function ibanValidated(paymentsManager: TestPaymentsManager) {
   await microtasksFinished();
 }
 
-suite('PaymentsSectionCreditCardEditDialogTest', function() {
+suite('PaymentsPageCreditCardEditDialogTest', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
@@ -49,50 +49,50 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   /**
-   * Creates the payments section for the given credit card and IBAN list.
+   * Creates the payments page for the given credit card and IBAN list.
    */
-  async function createPaymentsSection(
+  async function createPaymentsPage(
       creditCards: chrome.autofillPrivate.CreditCardEntry[],
       ibans: chrome.autofillPrivate.IbanEntry[]):
-      Promise<SettingsPaymentsSectionElement> {
+      Promise<SettingsPaymentsPageElement> {
     // Override the PaymentsManagerImpl for testing.
     const paymentsManager = new TestPaymentsManager();
     paymentsManager.data.creditCards = creditCards;
     paymentsManager.data.ibans = ibans;
     PaymentsManagerImpl.setInstance(paymentsManager);
 
-    const section = document.createElement('settings-payments-section');
-    section.prefs = {
+    const page = document.createElement('settings-payments-page');
+    page.prefs = {
       autofill: {
         credit_card_enabled: {value: true},
         payment_methods_mandatory_reauth: {value: true},
         payment_cvc_storage: {value: true},
       },
     };
-    document.body.appendChild(section);
+    document.body.appendChild(page);
     await flushTasks();
-    return section;
+    return page;
   }
 
   /**
    * Creates the Add Credit Card dialog. Simulate clicking "Add" button in
-   * payments section.
+   * payments page.
    */
   async function createAddCreditCardDialog(
       existingCards?: chrome.autofillPrivate.CreditCardEntry[]):
       Promise<SettingsCreditCardEditDialogElement> {
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         existingCards !== undefined ? existingCards : [], /*ibans=*/[]);
-    // Simulate clicking "Add" button in payments section.
-    assertFalse(!!section.shadowRoot!.querySelector(
-        'settings-credit-card-edit-dialog'));
+    // Simulate clicking "Add" button in payments page.
+    assertFalse(
+        !!page.shadowRoot!.querySelector('settings-credit-card-edit-dialog'));
     const addCreditCardButton =
-        section.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCreditCardButton);
     addCreditCardButton.click();
     flush();
     const creditCardDialog =
-        section.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
+        page.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
     assertTrue(!!creditCardDialog);
     return creditCardDialog;
   }
@@ -103,26 +103,25 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
    */
   async function createAddCreditCardDialogFromDropdown():
       Promise<SettingsCreditCardEditDialogElement> {
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         /*creditCards=*/[], /*ibans=*/[]);
-    // Simulate clicking "Add" button in payments section.
-    assertFalse(!!section.shadowRoot!.querySelector(
-        'settings-credit-card-edit-dialog'));
+    // Simulate clicking "Add" button in payments page.
+    assertFalse(
+        !!page.shadowRoot!.querySelector('settings-credit-card-edit-dialog'));
     const dropdownAddPaymentMethodsButton =
-        section.shadowRoot!.querySelector<CrButtonElement>(
-            '#addPaymentMethods');
+        page.shadowRoot!.querySelector<CrButtonElement>('#addPaymentMethods');
     assertTrue(!!dropdownAddPaymentMethodsButton);
     dropdownAddPaymentMethodsButton.click();
     flush();
 
     // Simulate clicking the 'Credit/Debit card' option in the menu.
     const addCardOption =
-        section.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCardOption);
     addCardOption.click();
     flush();
     const creditCardDialog =
-        section.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
+        page.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
     assertTrue(!!creditCardDialog);
     return creditCardDialog;
   }
@@ -133,26 +132,25 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
    */
   async function createAddIbanDialogFromDropdown():
       Promise<SettingsIbanEditDialogElement> {
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         /*creditCards=*/[], /*ibans=*/[]);
-    // Simulate clicking "Add" button in payments section.
-    assertFalse(!!section.shadowRoot!.querySelector(
-        'settings-credit-card-edit-dialog'));
+    // Simulate clicking "Add" button in payments page.
+    assertFalse(
+        !!page.shadowRoot!.querySelector('settings-credit-card-edit-dialog'));
     const addpaymentMethodsButton =
-        section.shadowRoot!.querySelector<CrButtonElement>(
-            '#addPaymentMethods');
+        page.shadowRoot!.querySelector<CrButtonElement>('#addPaymentMethods');
     assertTrue(!!addpaymentMethodsButton);
     addpaymentMethodsButton.click();
     flush();
 
     // Simulate clicking the 'IBAN' option in the menu.
     const addIbanOption =
-        section.shadowRoot!.querySelector<CrButtonElement>('#addIban');
+        page.shadowRoot!.querySelector<CrButtonElement>('#addIban');
     assertTrue(!!addIbanOption);
     addIbanOption.click();
     flush();
     const ibanDialog =
-        section.shadowRoot!.querySelector('settings-iban-edit-dialog');
+        page.shadowRoot!.querySelector('settings-iban-edit-dialog');
     assertTrue(!!ibanDialog);
     ibanDialog.$.saveButton.disabled = false;
     return ibanDialog;
@@ -166,10 +164,10 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   async function createEditCreditCardDialog(
       creditCards: chrome.autofillPrivate.CreditCardEntry[]):
       Promise<SettingsCreditCardEditDialogElement> {
-    const section = await createPaymentsSection(creditCards, /*ibans=*/[]);
+    const page = await createPaymentsPage(creditCards, /*ibans=*/[]);
     // Simulate clicking three-dots menu button for the first card in the list.
     const rowShadowRoot =
-        section.$.paymentsList.shadowRoot!
+        page.$.paymentsList.shadowRoot!
             .querySelector('settings-credit-card-list-entry')!.shadowRoot!;
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     const menuButton =
@@ -179,10 +177,10 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     flush();
 
     // Simulate clicking the 'Edit' button in the menu.
-    section.$.menuEditCreditCard.click();
+    page.$.menuEditCreditCard.click();
     await flushTasks();
     const creditCardDialog =
-        section.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
+        page.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
     assertTrue(!!creditCardDialog);
     return creditCardDialog;
   }
@@ -195,10 +193,10 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   async function createEditIbanDialog(
       ibans: chrome.autofillPrivate.IbanEntry[]):
       Promise<SettingsIbanEditDialogElement> {
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         /*creditCards=*/[], /*ibans=*/ ibans);
     // Simulate clicking three-dots menu button for the first IBAN in the list.
-    const firstEntry = section.$.paymentsList.shadowRoot!.querySelector(
+    const firstEntry = page.$.paymentsList.shadowRoot!.querySelector(
         'settings-iban-list-entry');
     assertTrue(!!firstEntry);
     assertFalse(!!firstEntry.shadowRoot!.querySelector('#remoteIbanLink'));
@@ -211,12 +209,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // Simulate clicking the 'Edit' button in the menu.
     const menuEditIban =
-        section.shadowRoot!.querySelector<HTMLElement>('#menuEditIban');
+        page.shadowRoot!.querySelector<HTMLElement>('#menuEditIban');
     assertTrue(!!menuEditIban);
     menuEditIban.click();
     flush();
     const ibanDialog =
-        section.shadowRoot!.querySelector('settings-iban-edit-dialog');
+        page.shadowRoot!.querySelector('settings-iban-edit-dialog');
     assertTrue(!!ibanDialog);
     ibanDialog.$.saveButton.disabled = false;
     return ibanDialog;
@@ -762,5 +760,4 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertEquals(saveEvent.detail.value, 'DE75512108001245126199');
     assertEquals(saveEvent.detail.nickname, 'My brother\'s IBAN');
   });
-
 });

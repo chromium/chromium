@@ -14,7 +14,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry} from './autofill_fake_data.js';
 // clang-format on
 
-suite('PaymentsSectionPaymentsList', function() {
+suite('PaymentsPagePaymentsList', function() {
   let paymentsList: SettingsPaymentsListElement;
 
   setup(function() {

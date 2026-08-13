@@ -14,11 +14,11 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createPayOverTimeIssuerEntry} from './autofill_fake_data.js';
-import {createPaymentsSection} from './payments_section_utils.js';
+import {createPaymentsPage} from './payments_page_test_utils.js';
 
 // clang-format on
 
-suite('PaymentsSectionPayOverTime', function() {
+suite('PaymentsPagePayOverTime', function() {
   let openWindowProxy: TestOpenWindowProxy;
 
   setup(function() {
@@ -46,12 +46,12 @@ suite('PaymentsSectionPayOverTime', function() {
   }
 
   test('verifyPayOverTimeToggleIsShown', async function() {
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
           credit_card_enabled: {value: true},
         });
     const payOverTimeToggle =
-        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#payOverTimeToggle');
 
     assertTrue(!!payOverTimeToggle);
@@ -70,23 +70,23 @@ suite('PaymentsSectionPayOverTime', function() {
           shouldShowPayOverTimeSettings: false,
         });
 
-        const section = await createPaymentsSection(
+        const page = await createPaymentsPage(
             /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
               credit_card_enabled: {value: true},
             });
 
-        assertFalse(!!section.shadowRoot!.querySelector('#payOverTimeToggle'));
+        assertFalse(!!page.shadowRoot!.querySelector('#payOverTimeToggle'));
       });
 
   test(
       'verifyPayOverTimeToggleIsDisabledWhenCreditCardEnabledIsOff',
       async function() {
-        const section = await createPaymentsSection(
+        const page = await createPaymentsPage(
             /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
               credit_card_enabled: {value: false},
             });
         const payOverTimeToggle =
-            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
                 '#payOverTimeToggle');
 
         assertTrue(!!payOverTimeToggle);
@@ -94,12 +94,12 @@ suite('PaymentsSectionPayOverTime', function() {
       });
 
   test('verifyPayOverTimeToggleSublabelLinkClickOpensUrl', async function() {
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
           credit_card_enabled: {value: true},
         });
     const payOverTimeToggle =
-        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#payOverTimeToggle');
     assertTrue(!!payOverTimeToggle);
 
@@ -113,13 +113,13 @@ suite('PaymentsSectionPayOverTime', function() {
   });
 
   test('verifyPayOverTimePrefIsFalseWhenToggleIsOff', async function() {
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
           credit_card_enabled: {value: true},
           bnpl_enabled: {value: true},
         });
     const payOverTimeToggle =
-        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#payOverTimeToggle');
     assertTrue(!!payOverTimeToggle);
     assertTrue(payOverTimeToggle.checked);
@@ -194,8 +194,8 @@ suite('PaymentsSectionPayOverTime', function() {
       assertTrue(!!img);
       assertTrue(source.srcset.includes(
           'IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_DARK_SMALL'));
-      assertTrue(img.srcset.includes(
-          'IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_SMALL'));
+      assertTrue(
+          img.srcset.includes('IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_SMALL'));
     } else {
       const textIndicator =
           entry.shadowRoot!.querySelector('#paymentsIndicator .sub-label');
@@ -217,10 +217,8 @@ suite('PaymentsSectionPayOverTime', function() {
       const img = paymentsIcon.querySelector('img');
       assertTrue(!!source);
       assertTrue(!!img);
-      assertTrue(source.srcset.includes(
-          'IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL'));
-      assertTrue(img.srcset.includes(
-          'IDR_AUTOFILL_GOOGLE_PAY_SMALL'));
+      assertTrue(source.srcset.includes('IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL'));
+      assertTrue(img.srcset.includes('IDR_AUTOFILL_GOOGLE_PAY_SMALL'));
     } else {
       const textIndicator =
           entry.shadowRoot!.querySelector('#paymentsIndicator .sub-label');

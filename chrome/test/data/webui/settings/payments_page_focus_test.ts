@@ -10,12 +10,12 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createCreditCardEntry, createIbanEntry} from './autofill_fake_data.js';
-import {createPaymentsSection, getPaymentMethodEntry, PaymentMethod, deletePaymentMethod} from './payments_section_utils.js';
+import {createPaymentsPage, getPaymentMethodEntry, PaymentMethod, deletePaymentMethod} from './payments_page_test_utils.js';
 
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 // clang-format on
 
-suite('PaymentSectionFocusTests', function() {
+suite('PaymentsPageFocusTest', function() {
   setup(function() {
     loadTimeData.overrideValues({
       showIbansSettings: true,
@@ -23,7 +23,7 @@ suite('PaymentSectionFocusTests', function() {
   });
 
   test('FocusLocationAfterDeletion', async function() {
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [
           createCreditCardEntry(),
           createCreditCardEntry(),
@@ -34,9 +34,8 @@ suite('PaymentSectionFocusTests', function() {
         /*payOverTimeIssuers=*/[], {credit_card_enabled: {value: true}});
 
     // Ensure the subpage's back button is focused before continuing further.
-    await waitAfterNextRender(section);
-    const subpageElement =
-        section.shadowRoot!.querySelector('settings-subpage');
+    await waitAfterNextRender(page);
+    const subpageElement = page.shadowRoot!.querySelector('settings-subpage');
     assertTrue(!!subpageElement);
     // Note: Using assertTrue instead of assertEquals on purpose, because Mocha
     // in case of failure tries to serialize the arguments, which in turn throws
@@ -46,22 +45,22 @@ suite('PaymentSectionFocusTests', function() {
 
     const manager = (PaymentsManagerImpl.getInstance() as TestPaymentsManager);
 
-    const addButton = section.shadowRoot!.querySelector('#addPaymentMethods');
+    const addButton = page.shadowRoot!.querySelector('#addPaymentMethods');
     assertTrue(!!addButton);
 
-    await deletePaymentMethod(section, manager, PaymentMethod.CREDIT_CARD, 1);
+    await deletePaymentMethod(page, manager, PaymentMethod.CREDIT_CARD, 1);
     assertTrue(
-        getPaymentMethodEntry(section, 'iban-0').matches(':focus-within'),
+        getPaymentMethodEntry(page, 'iban-0').matches(':focus-within'),
         'The focus should go to the first IBAN entry after removing ' +
             'the latest credit card.');
 
-    await deletePaymentMethod(section, manager, PaymentMethod.IBAN, 0);
+    await deletePaymentMethod(page, manager, PaymentMethod.IBAN, 0);
     assertTrue(
-        getPaymentMethodEntry(section, 'card-0').matches(':focus-within'),
+        getPaymentMethodEntry(page, 'card-0').matches(':focus-within'),
         'The focus should be set on the preceding entry as the removed IBAN ' +
             'was the latest payment method in the list.');
 
-    await deletePaymentMethod(section, manager, PaymentMethod.CREDIT_CARD, 0);
+    await deletePaymentMethod(page, manager, PaymentMethod.CREDIT_CARD, 0);
     assertTrue(
         addButton.matches(':focus-within'),
         'No payment methods in the list, the focus goes to the Add button');

@@ -11,13 +11,13 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createCreditCardEntry, STUB_USER_ACCOUNT_INFO} from './autofill_fake_data.js';
-import {createPaymentsSection, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot} from './payments_section_utils.js';
+import {createPaymentsPage, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot} from './payments_page_test_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
-suite('PaymentsSectionCardRows', function() {
+suite('PaymentsPageCardRows', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   interface BenefitsTestCase {
@@ -44,10 +44,10 @@ suite('PaymentsSectionCardRows', function() {
 
   test('verifyCreditCardFields', async function() {
     const creditCard = createCreditCardEntry();
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     assertTrue(isVisible(rowShadowRoot.querySelector<HTMLElement>('#label')));
     assertTrue(isVisible(
         rowShadowRoot.querySelector<HTMLElement>('#expirationLabel')));
@@ -64,10 +64,10 @@ suite('PaymentsSectionCardRows', function() {
   test('verifyCreditCardRowButtonIsDropdownWhenLocal', async function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = true;
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertTrue(!!menuButton);
     const outlinkButton =
@@ -78,10 +78,10 @@ suite('PaymentsSectionCardRows', function() {
   test('verifyCreditCardMoreDetailsTitle', async function() {
     let creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = true;
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     const menuButton =
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
@@ -135,10 +135,10 @@ suite('PaymentsSectionCardRows', function() {
   test('verifyCreditCardRowButtonIsOutlinkWhenRemote', async function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertFalse(!!menuButton);
     const outlinkButton =
@@ -153,10 +153,10 @@ suite('PaymentsSectionCardRows', function() {
         creditCard.metadata!.isLocal = false;
         creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
         creditCard.metadata!.isVirtualCardEnrolled = false;
-        const section = await createPaymentsSection(
+        const page = await createPaymentsPage(
             [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
             /*prefValues=*/ {});
-        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
         const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
         assertTrue(!!menuButton);
         const outlinkButton =
@@ -175,21 +175,20 @@ suite('PaymentsSectionCardRows', function() {
         creditCard.metadata!.isLocal = false;
         creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
         creditCard.metadata!.isVirtualCardEnrolled = false;
-        const section = await createPaymentsSection(
+        const page = await createPaymentsPage(
             [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
             /*prefValues=*/ {});
-        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
         const menuButton =
             rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
         assertTrue(!!menuButton);
 
         menuButton.click();
         flush();
-        assertTrue(isVisible(section.$.menuEditCreditCard));
+        assertTrue(isVisible(page.$.menuEditCreditCard));
 
         assertEquals(
-            'Edit in Google Pay',
-            section.$.menuEditCreditCard.textContent.trim());
+            'Edit in Google Pay', page.$.menuEditCreditCard.textContent.trim());
       });
 
   test(
@@ -203,21 +202,21 @@ suite('PaymentsSectionCardRows', function() {
         creditCard.metadata!.isLocal = false;
         creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
         creditCard.metadata!.isVirtualCardEnrolled = false;
-        const section = await createPaymentsSection(
+        const page = await createPaymentsPage(
             [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
             /*prefValues=*/ {});
-        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
         const menuButton =
             rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
         assertTrue(!!menuButton);
 
         menuButton.click();
         flush();
-        assertTrue(isVisible(section.$.menuEditCreditCard));
+        assertTrue(isVisible(page.$.menuEditCreditCard));
 
         assertEquals(
             'Edit in Google Wallet',
-            section.$.menuEditCreditCard.textContent.trim());
+            page.$.menuEditCreditCard.textContent.trim());
       });
 
   test('verifyCreditCardGooglePayOutlinkText', async function() {
@@ -227,10 +226,10 @@ suite('PaymentsSectionCardRows', function() {
 
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-external');
     assertTrue(!!outlinkButton);
@@ -245,10 +244,10 @@ suite('PaymentsSectionCardRows', function() {
 
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-external');
     assertTrue(!!outlinkButton);
@@ -261,26 +260,26 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isLocal = false;
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
-    const creditCardList = section.$.paymentsList;
+    const creditCardList = page.$.paymentsList;
     assertTrue(!!creditCardList);
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
-    assertFalse(getCardRowShadowRoot(section.$.paymentsList)
+    assertFalse(getCardRowShadowRoot(page.$.paymentsList)
                     .querySelector<HTMLElement>('#paymentsIndicator')!.hidden);
   });
 
   test('verifyCardImage', async function() {
     const creditCard = createCreditCardEntry();
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
 
-    const creditCardList = section.$.paymentsList;
+    const creditCardList = page.$.paymentsList;
     assertTrue(!!creditCardList);
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
-    const cardImage = getCardRowShadowRoot(section.$.paymentsList)
+    const cardImage = getCardRowShadowRoot(page.$.paymentsList)
                           .querySelector<HTMLImageElement>('#cardImage');
     assertTrue(!!cardImage);
     assertTrue(isVisible(cardImage));
@@ -296,13 +295,13 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // Local credit cards will show the overflow menu.
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     const menuButton =
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
@@ -312,12 +311,12 @@ suite('PaymentsSectionCardRows', function() {
     flush();
 
     // Menu should have 2 options.
-    assertFalse(section.$.menuEditCreditCard.hidden);
-    assertFalse(section.$.menuRemoveCreditCard.hidden);
-    assertTrue(section.$.menuAddVirtualCard.hidden);
-    assertTrue(section.$.menuRemoveVirtualCard.hidden);
+    assertFalse(page.$.menuEditCreditCard.hidden);
+    assertFalse(page.$.menuRemoveCreditCard.hidden);
+    assertTrue(page.$.menuAddVirtualCard.hidden);
+    assertTrue(page.$.menuRemoveVirtualCard.hidden);
 
-    section.$.creditCardSharedMenu.close();
+    page.$.creditCardSharedMenu.close();
     flush();
   });
 
@@ -328,13 +327,13 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // No overflow menu for VCN-ineligible server cards.
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     assertTrue(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     assertFalse(!!rowShadowRoot.querySelector('#creditCardMenu'));
   });
@@ -346,14 +345,14 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // Server cards that are eligible for virtual card enrollment should show
     // the overflow menu.
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     const menuButton =
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
@@ -363,12 +362,12 @@ suite('PaymentsSectionCardRows', function() {
     flush();
 
     // Menu should have 2 options.
-    assertFalse(section.$.menuEditCreditCard.hidden);
-    assertTrue(section.$.menuRemoveCreditCard.hidden);
-    assertFalse(section.$.menuAddVirtualCard.hidden);
-    assertTrue(section.$.menuRemoveVirtualCard.hidden);
+    assertFalse(page.$.menuEditCreditCard.hidden);
+    assertTrue(page.$.menuRemoveCreditCard.hidden);
+    assertFalse(page.$.menuAddVirtualCard.hidden);
+    assertTrue(page.$.menuRemoveVirtualCard.hidden);
 
-    section.$.creditCardSharedMenu.close();
+    page.$.creditCardSharedMenu.close();
     flush();
   });
 
@@ -379,14 +378,14 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
     creditCard.metadata!.isVirtualCardEnrolled = true;
 
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // Server cards that are eligible for virtual card enrollment should show
     // the overflow menu.
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     const menuButton =
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
@@ -396,12 +395,12 @@ suite('PaymentsSectionCardRows', function() {
     flush();
 
     // Menu should have 2 options.
-    assertFalse(section.$.menuEditCreditCard.hidden);
-    assertTrue(section.$.menuRemoveCreditCard.hidden);
-    assertTrue(section.$.menuAddVirtualCard.hidden);
-    assertFalse(section.$.menuRemoveVirtualCard.hidden);
+    assertFalse(page.$.menuEditCreditCard.hidden);
+    assertTrue(page.$.menuRemoveCreditCard.hidden);
+    assertTrue(page.$.menuAddVirtualCard.hidden);
+    assertFalse(page.$.menuRemoveVirtualCard.hidden);
 
-    section.$.creditCardSharedMenu.close();
+    page.$.creditCardSharedMenu.close();
     flush();
   });
 
@@ -412,12 +411,12 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     const menuButton =
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
@@ -425,8 +424,8 @@ suite('PaymentsSectionCardRows', function() {
     menuButton.click();
     flush();
 
-    assertFalse(section.$.menuAddVirtualCard.hidden);
-    section.$.menuAddVirtualCard.click();
+    assertFalse(page.$.menuAddVirtualCard.hidden);
+    page.$.menuAddVirtualCard.click();
     flush();
 
     const paymentsManager =
@@ -442,12 +441,12 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
     creditCard.metadata!.isVirtualCardEnrolled = true;
 
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     const menuButton =
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
@@ -455,8 +454,8 @@ suite('PaymentsSectionCardRows', function() {
     menuButton.click();
     flush();
 
-    assertFalse(section.$.menuRemoveVirtualCard.hidden);
-    section.$.menuRemoveVirtualCard.click();
+    assertFalse(page.$.menuRemoveVirtualCard.hidden);
+    page.$.menuRemoveVirtualCard.click();
     flush();
 
     const menu =
@@ -469,28 +468,28 @@ suite('PaymentsSectionCardRows', function() {
       async function() {
         const creditCard = createCreditCardEntry();
 
-        const section = await createPaymentsSection(
+        const page = await createPaymentsPage(
             [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
             /*prefValues=*/ {});
 
-        const creditCardList = section.$.paymentsList;
+        const creditCardList = page.$.paymentsList;
         assertTrue(!!creditCardList);
         assertEquals(1, getLocalAndServerCreditCardListItems().length);
-        assertTrue(isVisible(getCardRowShadowRoot(section.$.paymentsList)
+        assertTrue(isVisible(getCardRowShadowRoot(page.$.paymentsList)
                                  .querySelector<HTMLElement>('#label')));
         assertEquals(
             creditCard.metadata!.summaryLabel,
-            getCardRowShadowRoot(section.$.paymentsList)
+            getCardRowShadowRoot(page.$.paymentsList)
                 .querySelector<HTMLElement>('#label')!.textContent.trim());
         assertTrue(
-            isVisible(getCardRowShadowRoot(section.$.paymentsList)
+            isVisible(getCardRowShadowRoot(page.$.paymentsList)
                           .querySelector<HTMLElement>('#expirationLabel')));
         assertTrue(!!creditCard.expirationMonth);
         assertTrue(!!creditCard.expirationYear);
         assertEquals(
             '· ' + parseInt(creditCard.expirationMonth, 10) + '/' +
                 creditCard.expirationYear.substring(2),
-            getCardRowShadowRoot(section.$.paymentsList)
+            getCardRowShadowRoot(page.$.paymentsList)
                 .querySelector<HTMLElement>(
                     '#expirationLabel')!.textContent.trim());
       });
@@ -500,14 +499,14 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isLocal = false;
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
 
-    const creditCardList = section.$.paymentsList;
+    const creditCardList = page.$.paymentsList;
     assertTrue(!!creditCardList);
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
-    assertFalse(getCardRowShadowRoot(section.$.paymentsList)
+    assertFalse(getCardRowShadowRoot(page.$.paymentsList)
                     .querySelector<HTMLElement>('#summarySublabel')!.hidden);
   });
 
@@ -518,27 +517,27 @@ suite('PaymentsSectionCardRows', function() {
         creditCard.metadata!.isLocal = false;
         creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
         creditCard.metadata!.isVirtualCardEnrolled = false;
-        const section = await createPaymentsSection(
+        const page = await createPaymentsPage(
             [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
             /*prefValues=*/ {});
 
-        const creditCardList = section.$.paymentsList;
+        const creditCardList = page.$.paymentsList;
         assertTrue(!!creditCardList);
         assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
-        assertTrue(isVisible(getCardRowShadowRoot(section.$.paymentsList)
+        assertTrue(isVisible(getCardRowShadowRoot(page.$.paymentsList)
                                  .querySelector<HTMLElement>('#label')));
         assertTrue(
-            isVisible(getCardRowShadowRoot(section.$.paymentsList)
+            isVisible(getCardRowShadowRoot(page.$.paymentsList)
                           .querySelector<HTMLElement>('#expirationLabel')));
         assertEquals(
             creditCard.metadata!.summaryLabel,
-            getCardRowShadowRoot(section.$.paymentsList)
+            getCardRowShadowRoot(page.$.paymentsList)
                 .querySelector<HTMLElement>('#label')!.textContent.trim());
         assertEquals(
             '· ' + parseInt(creditCard.expirationMonth!, 10) + '/' +
                 creditCard.expirationYear!.substring(2),
-            getCardRowShadowRoot(section.$.paymentsList)
+            getCardRowShadowRoot(page.$.paymentsList)
                 .querySelector<HTMLElement>(
                     '#expirationLabel')!.textContent.trim());
       });
@@ -550,19 +549,19 @@ suite('PaymentsSectionCardRows', function() {
         creditCard.metadata!.isLocal = false;
         creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
         creditCard.metadata!.isVirtualCardEnrolled = true;
-        const section = await createPaymentsSection(
+        const page = await createPaymentsPage(
             [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
             /*prefValues=*/ {});
 
-        const creditCardList = section.$.paymentsList;
+        const creditCardList = page.$.paymentsList;
         assertTrue(!!creditCardList);
         assertEquals(1, getLocalAndServerCreditCardListItems().length);
         assertFalse(
-            getCardRowShadowRoot(section.$.paymentsList)
+            getCardRowShadowRoot(page.$.paymentsList)
                 .querySelector<HTMLElement>('#summarySublabel')!.hidden);
         assertEquals(
             'Virtual card turned on',
-            getCardRowShadowRoot(section.$.paymentsList)
+            getCardRowShadowRoot(page.$.paymentsList)
                 .querySelector<HTMLElement>(
                     '#summarySublabel')!.textContent.trim());
       });
@@ -579,20 +578,20 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = true;
     creditCard.cvc = '***';
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
 
-    const creditCardList = section.$.paymentsList;
+    const creditCardList = page.$.paymentsList;
     assertTrue(!!creditCardList);
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
-    assertFalse(getCardRowShadowRoot(section.$.paymentsList)
+    assertFalse(getCardRowShadowRoot(page.$.paymentsList)
                     .querySelector<HTMLElement>('#summarySublabel')!.hidden);
 
     assertEquals(
         'Virtual card turned on | ' +
             loadTimeData.getString('cvcTagForCreditCardListEntry'),
-        getCardRowShadowRoot(section.$.paymentsList)
+        getCardRowShadowRoot(page.$.paymentsList)
             .querySelector<HTMLElement>(
                 '#summarySublabel')!.textContent.trim());
   });
@@ -635,7 +634,7 @@ suite('PaymentsSectionCardRows', function() {
       if (benefitsAvailable && productTermsUrlAvailable) {
         creditCard.productTermsUrl = 'https://google.com/';
       }
-      await createPaymentsSection(
+      await createPaymentsPage(
           [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
           /*prefValues=*/ {});
 
@@ -643,8 +642,8 @@ suite('PaymentsSectionCardRows', function() {
 
       assertTrue(!!paymentsList);
       assertEquals(1, paymentsList.length);
-      assertTrue(
-          isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+      assertTrue(isVisible(
+          paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
               '#summarySublabel')));
 
       // Build the expected resulting sublabel based on which features are
@@ -668,8 +667,8 @@ suite('PaymentsSectionCardRows', function() {
         assertTrue(!!termsLink);
         assertEquals(creditCard.productTermsUrl, termsLink.href);
       } else {
-        assertFalse(
-            isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+        assertFalse(isVisible(
+            paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
                 '#summaryTermsLink')));
       }
     });
@@ -700,7 +699,7 @@ suite('PaymentsSectionCardRows', function() {
       if (benefitsAvailable && productTermsUrlAvailable) {
         creditCard.productTermsUrl = 'https://google.com/';
       }
-      await createPaymentsSection(
+      await createPaymentsPage(
           [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
           /*prefValues=*/ {});
 
@@ -708,8 +707,8 @@ suite('PaymentsSectionCardRows', function() {
 
       assertTrue(!!paymentsList);
       assertEquals(1, paymentsList.length);
-      assertTrue(
-          isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+      assertTrue(isVisible(
+          paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
               '#summarySublabel')));
 
       // Build the expected resulting sublabel based on which features are
@@ -734,8 +733,8 @@ suite('PaymentsSectionCardRows', function() {
         assertTrue(!!termsLink);
         assertEquals(creditCard.productTermsUrl, termsLink.href);
       } else {
-        assertFalse(
-            isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+        assertFalse(isVisible(
+            paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
                 '#summaryTermsLink')));
       }
     });
@@ -762,7 +761,7 @@ suite('PaymentsSectionCardRows', function() {
       if (benefitsAvailable && productTermsUrlAvailable) {
         serverCreditCard.productTermsUrl = 'https://google.com/';
       }
-      await createPaymentsSection(
+      await createPaymentsPage(
           [serverCreditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
           /*prefValues=*/ {});
 
@@ -826,7 +825,7 @@ suite('PaymentsSectionCardRows', function() {
       if (benefitsAvailable && productTermsUrlAvailable) {
         serverCreditCard.productTermsUrl = 'https://google.com/';
       }
-      await createPaymentsSection(
+      await createPaymentsPage(
           [serverCreditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
           /*prefValues=*/ {});
 
@@ -882,7 +881,7 @@ suite('PaymentsSectionCardRows', function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
     creditCard.productTermsUrl = 'https://google.com/';
-    await createPaymentsSection(
+    await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
 
@@ -890,8 +889,8 @@ suite('PaymentsSectionCardRows', function() {
 
     assertTrue(!!paymentsList);
     assertEquals(1, paymentsList.length);
-    assertTrue(
-        isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+    assertTrue(isVisible(
+        paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
             '#summarySublabel')));
     const termsLink =
         paymentsList[0]!.shadowRoot!.querySelector<HTMLAnchorElement>(
@@ -927,7 +926,7 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrolled = true;
     creditCard.cvc = '***';
 
-    await createPaymentsSection(
+    await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
 
@@ -968,7 +967,7 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isVirtualCardEnrolled = true;
     creditCard.cvc = '***';
 
-    await createPaymentsSection(
+    await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
 
@@ -1006,7 +1005,7 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.metadata!.isLocal = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
-    await createPaymentsSection(
+    await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
 
@@ -1043,7 +1042,7 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.network = 'Visa';
     creditCard.metadata!.isLocal = false;
     creditCard.productTermsUrl = 'https://google.com/';
-    await createPaymentsSection(
+    await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
 
@@ -1080,7 +1079,7 @@ suite('PaymentsSectionCardRows', function() {
           } else {
             localCreditCard.cvc = '***';
           }
-          await createPaymentsSection(
+          await createPaymentsPage(
               [serverCreditCard, localCreditCard], /*ibans=*/[],
               /*payOverTimeIssuers=*/[],
               /*prefValues=*/ {});
@@ -1164,10 +1163,10 @@ suite('PaymentsSectionCardRows', function() {
     });
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     const paymentsIcon = rowShadowRoot.querySelector('#paymentsIcon');
     // #paymentsIcon is only present in Google Chrome branded builds.
     if (paymentsIcon) {
@@ -1177,8 +1176,8 @@ suite('PaymentsSectionCardRows', function() {
       assertTrue(!!img);
       assertTrue(source.srcset.includes(
           'IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_DARK_SMALL'));
-      assertTrue(img.srcset.includes(
-          'IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_SMALL'));
+      assertTrue(
+          img.srcset.includes('IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_SMALL'));
     } else {
       const textIndicator =
           rowShadowRoot.querySelector('#paymentsIndicator .sub-label');
@@ -1193,10 +1192,10 @@ suite('PaymentsSectionCardRows', function() {
     });
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     const paymentsIcon = rowShadowRoot.querySelector('#paymentsIcon');
     // #paymentsIcon is only present in Google Chrome branded builds.
     if (paymentsIcon) {
@@ -1204,10 +1203,8 @@ suite('PaymentsSectionCardRows', function() {
       const img = paymentsIcon.querySelector('img');
       assertTrue(!!source);
       assertTrue(!!img);
-      assertTrue(source.srcset.includes(
-          'IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL'));
-      assertTrue(img.srcset.includes(
-          'IDR_AUTOFILL_GOOGLE_PAY_SMALL'));
+      assertTrue(source.srcset.includes('IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL'));
+      assertTrue(img.srcset.includes('IDR_AUTOFILL_GOOGLE_PAY_SMALL'));
     } else {
       const textIndicator =
           rowShadowRoot.querySelector('#paymentsIndicator .sub-label');
@@ -1217,7 +1214,7 @@ suite('PaymentsSectionCardRows', function() {
   });
 });
 
-suite('PaymentsSectionEditCreditCardLink', function() {
+suite('PaymentsPageEditCreditCardLink', function() {
   let openWindowProxy: TestOpenWindowProxy;
 
   setup(function() {
@@ -1237,11 +1234,11 @@ suite('PaymentsSectionEditCreditCardLink', function() {
     creditCard.metadata!.isLocal = false;
     creditCard.instrumentId = '123';
 
-    const section = await createPaymentsSection(
+    const page = await createPaymentsPage(
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
 
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertFalse(!!menuButton);
 
@@ -1265,11 +1262,11 @@ suite('PaymentsSectionEditCreditCardLink', function() {
         creditCard.metadata!.isLocal = false;
         creditCard.instrumentId = '';
 
-        const section = await createPaymentsSection(
+        const page = await createPaymentsPage(
             [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
             /*prefValues=*/ {});
 
-        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
         const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
         assertFalse(!!menuButton);
 
@@ -1292,11 +1289,11 @@ suite('PaymentsSectionEditCreditCardLink', function() {
         creditCard.metadata!.isVirtualCardEnrolled = false;
         creditCard.instrumentId = '123';
 
-        const section = await createPaymentsSection(
+        const page = await createPaymentsPage(
             [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
             /*prefValues=*/ {});
 
-        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
         assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
         const menuButton =
             rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
@@ -1304,8 +1301,8 @@ suite('PaymentsSectionEditCreditCardLink', function() {
         menuButton.click();
         flush();
 
-        assertTrue(isVisible(section.$.menuEditCreditCard));
-        section.$.menuEditCreditCard.click();
+        assertTrue(isVisible(page.$.menuEditCreditCard));
+        page.$.menuEditCreditCard.click();
 
         const url = await openWindowProxy.whenCalled('openUrl');
         assertEquals(

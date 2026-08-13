@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-payments-section' is the section containing saved
+ * @fileoverview 'settings-payments-page' is the page containing saved
  * credit cards for use in autofill and payments APIs.
  */
 
@@ -15,17 +15,19 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '/shared/settings/prefs/prefs.js';
-import '../controls/settings_toggle_button.js';
-import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
-import '../simple_confirmation_dialog.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared.css.js';
+import '../../simple_confirmation_dialog.js';
+import '../autofill_shared.css.js';
+import '../passwords_shared.css.js';
 import './credit_card_edit_dialog.js';
 import './iban_edit_dialog.js';
-import './passwords_shared.css.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';
-import './autofill_shared.css.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -35,20 +37,18 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
-import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {loadTimeData} from '../i18n_setup.js';
-import {CvcDeletionUserAction, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
-import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
+import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import {CvcDeletionUserAction, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../../metrics_browser_proxy.js';
+import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+import type {SettingsSimpleConfirmationDialogElement} from '../../simple_confirmation_dialog.js';
+import type {PersonalDataChangedListener} from '../autofill_manager_proxy.js';
 
-import type {PersonalDataChangedListener} from './autofill_manager_proxy.js';
 import type {DotsIbanMenuClickEvent, RemoteIbanMenuClickEvent} from './iban_list_entry.js';
 import type {SettingsPaymentsListElement} from './payments_list.js';
 import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments_manager_proxy.js';
-import {getTemplate} from './payments_section.html.js';
+import {getTemplate} from './payments_page.html.js';
 
 type DotsCardMenuiClickEvent = CustomEvent<{
   creditCard: chrome.autofillPrivate.CreditCardEntry,
@@ -67,7 +67,7 @@ declare global {
   }
 }
 
-export interface SettingsPaymentsSectionElement {
+export interface SettingsPaymentsPageElement {
   $: {
     autofillCreditCardToggle: SettingsToggleButtonElement,
     canMakePaymentToggle: SettingsToggleButtonElement,
@@ -83,13 +83,13 @@ export interface SettingsPaymentsSectionElement {
   };
 }
 
-const SettingsPaymentsSectionElementBase =
+const SettingsPaymentsPageElementBase =
     PrefsMixin(SettingsViewMixin(I18nMixin(PolymerElement)));
 
-export class SettingsPaymentsSectionElement extends
-    SettingsPaymentsSectionElementBase {
+export class SettingsPaymentsPageElement extends
+    SettingsPaymentsPageElementBase {
   static get is() {
-    return 'settings-payments-section';
+    return 'settings-payments-page';
   }
 
   static get template() {
@@ -770,9 +770,9 @@ export class SettingsPaymentsSectionElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-payments-section': SettingsPaymentsSectionElement;
+    'settings-payments-page': SettingsPaymentsPageElement;
   }
 }
 
 customElements.define(
-    SettingsPaymentsSectionElement.is, SettingsPaymentsSectionElement);
+    SettingsPaymentsPageElement.is, SettingsPaymentsPageElement);

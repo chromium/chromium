@@ -348,40 +348,40 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PasskeyEditDialog) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSection) {
-  RunTest("settings/payments_section_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsPage) {
+  RunTest("settings/payments_page_test.js", "mocha.run()");
 }
 
 // TODO(crbug.com/448517054): Flaky on Linux debug builds.
 #if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
-#define MAYBE_PaymentsSectionCardDialogs DISABLED_PaymentsSectionCardDialogs
+#define MAYBE_PaymentsPageCardDialogs DISABLED_PaymentsPageCardDialogs
 #else
-#define MAYBE_PaymentsSectionCardDialogs PaymentsSectionCardDialogs
+#define MAYBE_PaymentsPageCardDialogs PaymentsPageCardDialogs
 #endif
-IN_PROC_BROWSER_TEST_F(SettingsTest, MAYBE_PaymentsSectionCardDialogs) {
-  RunTest("settings/payments_section_card_dialogs_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, MAYBE_PaymentsPageCardDialogs) {
+  RunTest("settings/payments_page_card_dialogs_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionCardRows) {
-  RunTest("settings/payments_section_card_rows_test.js",
-          "runMochaSuite('PaymentsSectionCardRows')");
+IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsPageCardRows) {
+  RunTest("settings/payments_page_card_rows_test.js",
+          "runMochaSuite('PaymentsPageCardRows')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionEditCreditCardLink) {
-  RunTest("settings/payments_section_card_rows_test.js",
-          "runMochaSuite('PaymentsSectionEditCreditCardLink')");
+IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsPageEditCreditCardLink) {
+  RunTest("settings/payments_page_card_rows_test.js",
+          "runMochaSuite('PaymentsPageEditCreditCardLink')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionIban) {
-  RunTest("settings/payments_section_iban_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsPageIban) {
+  RunTest("settings/payments_page_iban_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionPayOverTime) {
-  RunTest("settings/payments_section_pay_over_time_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsPagePayOverTime) {
+  RunTest("settings/payments_page_pay_over_time_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionPaymentsList) {
-  RunTest("settings/payments_section_payments_list_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsPagePaymentsList) {
+  RunTest("settings/payments_page_payments_list_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, PerformancePageIndex) {
