@@ -74,8 +74,8 @@ class OmniboxEverywhereController
   // Called during profile teardown to synchronously close the widget.
   void ShutdownForProfile(Profile* profile);
 
-  // Sets the current target profile for Omnibox Everywhere and notifies the
-  // background mode manager.
+  // Sets the current target profile for Omnibox Everywhere and updates
+  // background mode manager and local state prefs.
   void SetTargetProfile(Profile* profile);
 
   // Returns the current target profile.
@@ -103,6 +103,12 @@ class OmniboxEverywhereController
 
   // Returns true if `profile` is eligible to be set as the target profile.
   bool IsProfileEligible(Profile* profile) const;
+
+  // Reads the persisted profile path from Local State preferences.
+  base::FilePath GetPersistedTargetProfilePath() const;
+
+  // Persists or clears the target profile path in Local State preferences.
+  void PersistTargetProfilePath(const base::FilePath& path);
 
   // Registers or unregisters the global hotkey accelerator according to feature
   // flag and preference settings.

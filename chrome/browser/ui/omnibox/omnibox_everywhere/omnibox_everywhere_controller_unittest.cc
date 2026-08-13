@@ -234,8 +234,76 @@ TEST_F(OmniboxEverywhereControllerTest,
   EXPECT_EQ(&profile_, controller.target_profile());
 }
 
+TEST_F(OmniboxEverywhereControllerTest, TargetProfilePersistedToPref) {
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  // Setting target profile should update prefs::kLastTargetProfileDir.
+  controller.SetTargetProfile(&profile_);
+  EXPECT_EQ(local_state->GetFilePath(
+                omnibox_everywhere::prefs::kLastTargetProfileDir),
+            profile_.GetPath());
+}
+
+TEST_F(OmniboxEverywhereControllerTest, RestoresTargetProfileOnStartup) {
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  local_state->SetFilePath(omnibox_everywhere::prefs::kLastTargetProfileDir,
+                           profile_.GetPath());
+
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  // Simulating OnProfileAdded with matching profile path should restore it as
+  // target_profile().
+  controller.OnProfileAdded(&profile_);
+  EXPECT_EQ(&profile_, controller.target_profile());
+  EXPECT_EQ(local_state->GetFilePath(
+                omnibox_everywhere::prefs::kLastTargetProfileDir),
+            profile_.GetPath());
+}
+
+TEST_F(OmniboxEverywhereControllerTest,
+       RestoresMatchingPersistedProfileWhenMultipleProfilesAdded) {
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  TestingProfile profile1;
+
+  // Persist profile_'s path as the target profile.
+  local_state->SetFilePath(omnibox_everywhere::prefs::kLastTargetProfileDir,
+                           profile_.GetPath());
+
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  // Adding profile1 (non-matching) should NOT set it as target profile.
+  controller.OnProfileAdded(&profile1);
+  EXPECT_NE(&profile1, controller.target_profile());
+  EXPECT_EQ(nullptr, controller.target_profile());
+
+  // Adding profile_ (matching eligible profile) should restore it as target
+  // profile.
+  controller.OnProfileAdded(&profile_);
+  EXPECT_EQ(&profile_, controller.target_profile());
+}
+
 TEST_F(OmniboxEverywhereControllerTest,
        IgnoresOffTheRecordProfileOnProfileAdded) {
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+
   omnibox_everywhere::OmniboxEverywhereController controller(
       base::BindRepeating(
           [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
@@ -248,9 +316,14 @@ TEST_F(OmniboxEverywhereControllerTest,
 
   // OnProfileAdded ignores off-the-record profile.
   controller.OnProfileAdded(otr_profile);
+  EXPECT_EQ(nullptr, controller.target_profile());
+  EXPECT_TRUE(
+      local_state->GetFilePath(omnibox_everywhere::prefs::kLastTargetProfileDir)
+          .empty());
 
   // Normal regular profile is accepted when added.
   controller.OnProfileAdded(&profile_);
+  EXPECT_EQ(&profile_, controller.target_profile());
 }
 
 TEST_F(OmniboxEverywhereControllerTest,

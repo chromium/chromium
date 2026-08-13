@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -17,6 +18,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 #else
   registry->RegisterBooleanPref(kOmniboxEverywhereEphemeralModel, false);
 #endif
+  registry->RegisterFilePathPref(kLastTargetProfileDir, base::FilePath());
 }
 
 }  // namespace omnibox_everywhere::prefs

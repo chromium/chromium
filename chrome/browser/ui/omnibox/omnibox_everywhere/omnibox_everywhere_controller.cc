@@ -89,18 +89,27 @@ void OmniboxEverywhereController::SetTargetProfile(Profile* profile) {
   if (target_profile_ == profile) {
     return;
   }
-  // TODO(crbug.com/532190282): Persist target profile across sessions.
+
   target_profile_ = profile;
   background_mode_manager_->SetProfile(target_profile_);
+
+  if (target_profile_) {
+    PersistTargetProfilePath(target_profile_->GetPath());
+  }
 }
 
 void OmniboxEverywhereController::OnProfileAdded(Profile* profile) {
-  if (!IsProfileEligible(profile) || target_profile_) {
+  if (target_profile_ || !IsProfileEligible(profile)) {
     return;
   }
+
   // TODO(crbug.com/532190282): Handle locked profiles (e.g. show profile picker
-  // if locked).
-  SetTargetProfile(profile);
+  // if locked) and deleted (or no longer eligible) profiles (e.g. clear the
+  // persisted target profile pref).
+  const base::FilePath persisted_path = GetPersistedTargetProfilePath();
+  if (persisted_path.empty() || profile->GetPath() == persisted_path) {
+    SetTargetProfile(profile);
+  }
 }
 
 void OmniboxEverywhereController::OnProfileManagerDestroying() {
@@ -111,6 +120,29 @@ bool OmniboxEverywhereController::IsProfileEligible(Profile* profile) const {
   return profile && !profile->IsOffTheRecord() &&
          omnibox::IsOmniboxEverywhereEnabled(profile) &&
          OmniboxEverywhereServiceFactory::GetForProfile(profile);
+}
+
+base::FilePath OmniboxEverywhereController::GetPersistedTargetProfilePath()
+    const {
+  if (g_browser_process && g_browser_process->local_state()) {
+    return g_browser_process->local_state()->GetFilePath(
+        prefs::kLastTargetProfileDir);
+  }
+  return base::FilePath();
+}
+
+void OmniboxEverywhereController::PersistTargetProfilePath(
+    const base::FilePath& path) {
+  if (!g_browser_process || !g_browser_process->local_state()) {
+    return;
+  }
+
+  if (path.empty()) {
+    g_browser_process->local_state()->ClearPref(prefs::kLastTargetProfileDir);
+  } else {
+    g_browser_process->local_state()->SetFilePath(prefs::kLastTargetProfileDir,
+                                                  path);
+  }
 }
 
 void OmniboxEverywhereController::UpdateHotkeyRegistration() {

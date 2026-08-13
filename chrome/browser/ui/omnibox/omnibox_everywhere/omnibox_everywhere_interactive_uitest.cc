@@ -496,6 +496,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, BackgroundModeKeepAlive) {
 #define MAYBE_TargetProfileUpdatesOnBrowserActivation \
   TargetProfileUpdatesOnBrowserActivation
 #endif
+
 IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
                        MAYBE_TargetProfileUpdatesOnBrowserActivation) {
   Profile* profile1 = browser()->GetProfile();
@@ -530,6 +531,46 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
   // Re-activating browser1 updates target profile back to profile1.
   controller->OnBrowserActivated(browser());
   EXPECT_EQ(profile1, controller->target_profile());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       PRE_RestoresTargetProfileAcrossRestart) {
+  Profile* profile = browser()->GetProfile();
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(profile);
+  ASSERT_TRUE(local_state);
+
+  GlobalFeatures* features = g_browser_process->GetFeatures();
+  ASSERT_TRUE(features);
+  auto* controller = features->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  // Set target profile to profile1 in initial session.
+  controller->SetTargetProfile(profile);
+
+  // Verify profile1 path was persisted in local state.
+  EXPECT_EQ(local_state->GetFilePath(prefs::kLastTargetProfileDir),
+            profile->GetPath());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       RestoresTargetProfileAcrossRestart) {
+  Profile* profile = browser()->GetProfile();
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(profile);
+  ASSERT_TRUE(local_state);
+
+  GlobalFeatures* features = g_browser_process->GetFeatures();
+  ASSERT_TRUE(features);
+  auto* controller = features->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  // Verify local state persisted profile1 path across restart.
+  EXPECT_EQ(local_state->GetFilePath(prefs::kLastTargetProfileDir),
+            profile->GetPath());
+
+  // Verify controller restored profile1 as target profile on startup.
+  EXPECT_EQ(profile, controller->target_profile());
 }
 
 }  // namespace omnibox_everywhere
