@@ -17,6 +17,9 @@
 // Called when the user acknowledges the informational notice.
 - (void)acknowledgePrivacyNotice;
 
+// Called when the user clicks the Settings link in the notice.
+- (void)didTapSettingsLink;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_UI_AT_MEMORY_SEARCH_MUTATOR_H_

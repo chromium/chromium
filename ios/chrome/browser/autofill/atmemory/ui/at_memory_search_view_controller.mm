@@ -544,7 +544,7 @@ enum class ItemIdentifier {
 }
 
 - (void)inlineNoticeViewDidTapSettings:(AtMemoryInlineNoticeView*)view {
-  [self.atMemoryHandler openAutofillSettings];
+  [self.mutator didTapSettingsLink];
 }
 
 @end

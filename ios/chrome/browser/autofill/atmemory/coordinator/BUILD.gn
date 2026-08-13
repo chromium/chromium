@@ -45,6 +45,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/personal_context/first_run",
+    "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/ui",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

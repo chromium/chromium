@@ -7,8 +7,11 @@
 #import <string>
 
 #import "base/test/gmock_callback_support.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
+#import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -208,4 +211,101 @@ TEST_F(AtMemorySearchMediatorTest, AcknowledgeNoticeAcksServiceAndUpdatesUI) {
   EXPECT_TRUE(first_run_service.acknowledged());
   EXPECT_OCMOCK_VERIFY(mock_consumer);
   [mediator disconnect];
+}
+
+// Tests that setting the consumer logs the "Shown" metric if eligible.
+TEST_F(AtMemorySearchMediatorTest, LogsShownMetric) {
+  FakePersonalContextFirstRunService first_run_service;
+  first_run_service.set_should_show_at_memory_notice(true);
+  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
+
+  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
+      initWithAtMemoryQueryService:&mock_query_service_
+                          webState:&web_state_
+                   firstRunService:&first_run_service];
+
+  base::HistogramTester histogram_tester;
+
+  mediator.consumer = mock_consumer;
+
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.AtMemory.NoticeInteractions",
+      autofill::AutofillMetrics::PopupNoticeInteractions::kShown, 1);
+
+  [mediator disconnect];
+}
+
+// Tests that acknowledging the notice logs the "Acknowledged" metric.
+TEST_F(AtMemorySearchMediatorTest, LogsAcknowledgedMetric) {
+  FakePersonalContextFirstRunService first_run_service;
+  first_run_service.set_should_show_at_memory_notice(true);
+  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
+
+  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
+      initWithAtMemoryQueryService:&mock_query_service_
+                          webState:&web_state_
+                   firstRunService:&first_run_service];
+  mediator.consumer = mock_consumer;
+
+  base::HistogramTester histogram_tester;
+
+  [mediator acknowledgePrivacyNotice];
+
+  histogram_tester.ExpectBucketCount(
+      "PersonalContext.AtMemory.NoticeInteractions",
+      autofill::AutofillMetrics::PopupNoticeInteractions::kAcknowledged, 1);
+
+  [mediator disconnect];
+}
+
+// Tests that clicking the settings link logs the "LinkButtonClicked" metric and
+// calls the handler.
+TEST_F(AtMemorySearchMediatorTest,
+       LogsSettingsLinkClickedMetricAndCallsHandler) {
+  FakePersonalContextFirstRunService first_run_service;
+  first_run_service.set_should_show_at_memory_notice(true);
+  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
+  id mock_handler = OCMProtocolMock(@protocol(AtMemoryCommands));
+
+  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
+      initWithAtMemoryQueryService:&mock_query_service_
+                          webState:&web_state_
+                   firstRunService:&first_run_service];
+  mediator.consumer = mock_consumer;
+  mediator.atMemoryHandler = mock_handler;
+
+  OCMExpect([mock_handler openAutofillSettings]);
+
+  base::HistogramTester histogram_tester;
+
+  [mediator didTapSettingsLink];
+
+  histogram_tester.ExpectBucketCount(
+      "PersonalContext.AtMemory.NoticeInteractions",
+      autofill::AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked,
+      1);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+  [mediator disconnect];
+}
+
+// Tests that disconnecting without interacting logs the "Dismissed" metric.
+TEST_F(AtMemorySearchMediatorTest, LogsDismissedMetricOnDisconnect) {
+  FakePersonalContextFirstRunService first_run_service;
+  first_run_service.set_should_show_at_memory_notice(true);
+  id mock_consumer = OCMProtocolMock(@protocol(AtMemorySearchConsumer));
+
+  AtMemorySearchMediator* mediator = [[AtMemorySearchMediator alloc]
+      initWithAtMemoryQueryService:&mock_query_service_
+                          webState:&web_state_
+                   firstRunService:&first_run_service];
+  mediator.consumer = mock_consumer;
+
+  base::HistogramTester histogram_tester;
+
+  [mediator disconnect];
+
+  histogram_tester.ExpectBucketCount(
+      "PersonalContext.AtMemory.NoticeInteractions",
+      autofill::AutofillMetrics::PopupNoticeInteractions::kDismissed, 1);
 }
