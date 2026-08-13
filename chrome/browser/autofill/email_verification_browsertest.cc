@@ -93,7 +93,7 @@ class EmailVerificationBrowserTest : public InProcessBrowserTest {
                  const net::SchemefulSite&,
                  const std::u16string&,
                  base::OnceCallback<void(
-                     AutofillClient::EmailVerificationPermissionUiResult)>),
+                     AutofillClient::EmailVerificationPermissionUiStatus)>),
                 (override));
 
     EmailVerifierDelegate& email_verifier_delegate() {
@@ -214,10 +214,14 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
   result.signing_alg_values_supported.push_back("RS256");
 
   EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _))
-      .WillOnce(RunOnceCallback<1>(result));
+      .WillOnce(RunOnceCallback<1>(
+          result, blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(100)));
 
   EXPECT_CALL(*verifier_ptr, Verify(_, "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>(kTestToken));
+      .WillOnce(RunOnceCallback<2>(
+          kTestToken, blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(200)));
 
   BrowserAutofillManager* manager = GetBrowserAutofillManager(main_frame);
 
@@ -244,10 +248,10 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
       .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
                     const std::u16string&,
                     base::OnceCallback<void(
-                        AutofillClient::EmailVerificationPermissionUiResult)>
+                        AutofillClient::EmailVerificationPermissionUiStatus)>
                         callback) {
         std::move(callback).Run(
-            AutofillClient::EmailVerificationPermissionUiResult::kAccepted);
+            AutofillClient::EmailVerificationPermissionUiStatus::kAllowed);
         popup_run_loop.Quit();
       });
   EXPECT_CALL(*mock_client,
@@ -311,7 +315,9 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   testing::InSequence s;
 
   EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _))
-      .WillOnce(RunOnceCallback<1>(result1));
+      .WillOnce(RunOnceCallback<1>(
+          result1, blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(100)));
 
   BrowserAutofillManager* manager = GetBrowserAutofillManager(main_frame);
 
@@ -335,10 +341,10 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
       .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
                     const std::u16string&,
                     base::OnceCallback<void(
-                        AutofillClient::EmailVerificationPermissionUiResult)>
+                        AutofillClient::EmailVerificationPermissionUiStatus)>
                         callback) {
         std::move(callback).Run(
-            AutofillClient::EmailVerificationPermissionUiResult::kAccepted);
+            AutofillClient::EmailVerificationPermissionUiStatus::kAllowed);
         popup_run_loop1.Quit();
       });
 
@@ -346,7 +352,9 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
       *verifier_ptr,
       Verify(testing::Field(&EmailVerifier::Result::email, "test@example.com"),
              "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>(kTestToken1));
+      .WillOnce(RunOnceCallback<2>(
+          kTestToken1, blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(200)));
 
   ASSERT_EQ(&manager->client(), mock_client);
 
@@ -361,16 +369,18 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   base::RunLoop popup_run_loop2;
 
   EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("other@example.com", _))
-      .WillOnce(RunOnceCallback<1>(result2));
+      .WillOnce(RunOnceCallback<1>(
+          result2, blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(100)));
 
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
       .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
                     const std::u16string&,
                     base::OnceCallback<void(
-                        AutofillClient::EmailVerificationPermissionUiResult)>
+                        AutofillClient::EmailVerificationPermissionUiStatus)>
                         callback) {
         std::move(callback).Run(
-            AutofillClient::EmailVerificationPermissionUiResult::kAccepted);
+            AutofillClient::EmailVerificationPermissionUiStatus::kAllowed);
         popup_run_loop2.Quit();
       });
 
@@ -378,7 +388,9 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
       *verifier_ptr,
       Verify(testing::Field(&EmailVerifier::Result::email, "other@example.com"),
              "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>(kTestToken2));
+      .WillOnce(RunOnceCallback<2>(
+          kTestToken2, blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(200)));
 
   EXPECT_CALL(*mock_client, ShowEmailVerifiedToast);
 
@@ -434,13 +446,17 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowAutocomplete) {
   result.signing_alg_values_supported.push_back("RS256");
 
   EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _))
-      .WillOnce(RunOnceCallback<1>(result));
+      .WillOnce(RunOnceCallback<1>(
+          result, blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(100)));
 
   EXPECT_CALL(
       *verifier_ptr,
       Verify(testing::Field(&EmailVerifier::Result::email, "test@example.com"),
              "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>(kTestToken));
+      .WillOnce(RunOnceCallback<2>(
+          kTestToken, blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(200)));
 
   BrowserAutofillManager* manager = GetBrowserAutofillManager(main_frame);
 
@@ -463,10 +479,10 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowAutocomplete) {
       .WillOnce([&](const gfx::RectF&, const net::SchemefulSite&,
                     const std::u16string&,
                     base::OnceCallback<void(
-                        AutofillClient::EmailVerificationPermissionUiResult)>
+                        AutofillClient::EmailVerificationPermissionUiStatus)>
                         callback) {
         std::move(callback).Run(
-            AutofillClient::EmailVerificationPermissionUiResult::kAccepted);
+            AutofillClient::EmailVerificationPermissionUiStatus::kAllowed);
         popup_run_loop.Quit();
       });
   EXPECT_CALL(*mock_client, ShowEmailVerifiedToast);

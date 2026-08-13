@@ -4802,6 +4802,57 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.EmailVerificationProtocol">
+  <owner>npm@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records metrics for the Email Verification Protocol (EVP) flow. Surfaced
+    once per EVP request attempt when the request flow finishes.
+  </summary>
+  <metric name="Autofill.FlowResult" enum="EvpAutofillFlowResult">
+    <summary>
+      Records the outcomes and failure reasons of the high-level Email
+      Verification Protocol (EVP) flow from autofill side. Recorded once per
+      autofill attempt when the verification flow finishes.
+    </summary>
+  </metric>
+  <metric name="PermissionUi.Status" enum="EvpPermissionUiStatus">
+    <summary>
+      Records the outcome and dismissal reasons of the Email Verification
+      Permission UI. Recorded once per permission UI showing when it is
+      dismissed or accepted.
+    </summary>
+  </metric>
+  <metric name="Status.IsVerifiable" enum="EvpRequestStatus">
+    <summary>
+      Records the status of the IsVerifiable stage of an Email Verification
+      Protocol (EVP) request. Recorded once per request when the IsVerifiable
+      check completes.
+    </summary>
+  </metric>
+  <metric name="Status.Verify" enum="EvpRequestStatus">
+    <summary>
+      Records the status of the Verify stage of an Email Verification Protocol
+      (EVP) request. Recorded once per request when the Verify operation
+      completes.
+    </summary>
+  </metric>
+  <metric name="Timing.IsVerifiable">
+    <summary>
+      Records the time taken (in milliseconds) from the start of checking if an
+      email is verifiable until the pre-prompt background verification check
+      completes.
+    </summary>
+  </metric>
+  <metric name="Timing.Verify">
+    <summary>
+      Records the time taken (in milliseconds) from the start of the token
+      verification call until the post-prompt token verification and fetch
+      completes.
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.FedCm">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>

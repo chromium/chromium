@@ -45,13 +45,13 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
   ~EmailVerificationPopupController() override;
 
   // Shows the email verification popup anchored to the element bounds.
-  // `callback` is invoked with the user's decision
-  // (AutofillClient::EmailVerificationPermissionUiResult).
+  // `callback` is invoked with the permission UI dismissal status
+  // (`AutofillClient::EmailVerificationPermissionUiStatus`).
   void Show(const gfx::RectF& element_bounds,
             const net::SchemefulSite& issuer,
             const std::u16string& email,
             base::OnceCallback<void(
-                AutofillClient::EmailVerificationPermissionUiResult)> callback);
+                AutofillClient::EmailVerificationPermissionUiStatus)> callback);
 
   // AutofillPopupViewDelegate:
   void Hide(SuggestionHidingReason reason) override;
@@ -77,23 +77,6 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
           const std::u16string& email,
           base::OnceCallback<void(bool)> callback)>;
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(EvpPermissionUiStatus)
-  enum class EvpPermissionUiStatus {
-    kAllowed = 0,
-    kDeclined = 1,
-    kUserAborted = 2,            // e.g. ESC key or clicking outside
-    kNavigation = 3,             // page navigated
-    kTabGone = 4,                // tab closed or hidden
-    kWidgetChanged = 5,          // e.g. window resized
-    kOverlappingPrompt = 6,      // overlapped by another prompt/pip
-    kOther = 7,                  // any other reason
-    kViewDestroyedDirectly = 8,  // view destroyed without explicit Hide()
-    kMaxValue = kViewDestroyedDirectly,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:EvpPermissionUiStatus)
-
   void set_view_factory_for_testing(ViewFactoryForTesting factory) {
     view_factory_for_testing_ = std::move(factory);
   }
@@ -101,15 +84,14 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
  private:
   void OnConfirm();
   void OnCancel();
-  void HideImpl(AutofillClient::EmailVerificationPermissionUiResult result,
-                EvpPermissionUiStatus status);
+  void HideImpl(AutofillClient::EmailVerificationPermissionUiStatus status);
   bool OverlapsWithPictureInPictureWindow() const;
 
   // The bounds of the element that triggered the popup.
   gfx::RectF element_bounds_;
 
   // The callback to invoke with the user's decision.
-  base::OnceCallback<void(AutofillClient::EmailVerificationPermissionUiResult)>
+  base::OnceCallback<void(AutofillClient::EmailVerificationPermissionUiStatus)>
       callback_;
 
   // The view representing the popup.

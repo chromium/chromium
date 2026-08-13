@@ -272,15 +272,6 @@ EmailVerificationRequest::EmailVerificationRequest(
       render_frame_host_(render_frame_host.GetWeakPtr()) {}
 
 EmailVerificationRequest::~EmailVerificationRequest() {
-  observers_.Notify(&Observer::OnRequestDestroyed);
-}
-
-void EmailVerificationRequest::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void EmailVerificationRequest::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 // The email verification process starts once the user
@@ -291,9 +282,11 @@ void EmailVerificationRequest::RemoveObserver(Observer* observer) {
 void EmailVerificationRequest::CheckIfVerifiable(
     const std::string& email,
     EmailVerifier::IsVerifiableCallback callback) {
-  observers_.Notify(&Observer::OnIsVerifiableStart);
+  is_verifiable_start_time_ = base::TimeTicks::Now();
   if (!render_frame_host_) {
-    std::move(callback).Run(std::nullopt);
+    CompleteIsVerifiableRequest(
+        std::move(callback), std::nullopt,
+        EmailVerificationRequestResult::kRpOriginIsOpaque);
     return;
   }
 
@@ -331,7 +324,9 @@ void EmailVerificationRequest::OnDnsRequestComplete(
     EmailVerifier::IsVerifiableCallback callback,
     const std::optional<std::vector<std::string>>& text_records) {
   if (!render_frame_host_) {
-    std::move(callback).Run(std::nullopt);
+    CompleteIsVerifiableRequest(
+        std::move(callback), std::nullopt,
+        EmailVerificationRequestResult::kRpOriginIsOpaque);
     return;
   }
   // Step 3.2: when the DNS response is received, the browser
@@ -537,9 +532,10 @@ void EmailVerificationRequest::Verify(
     const EmailVerifier::Result& result,
     const std::string& nonce,
     EmailVerifier::OnEmailVerifiedCallback callback) {
-  observers_.Notify(&Observer::OnVerifyStart);
+  verify_start_time_ = base::TimeTicks::Now();
   if (!render_frame_host_) {
-    std::move(callback).Run(std::nullopt);
+    CompleteVerifyRequest(std::move(callback), std::nullopt,
+                          EmailVerificationRequestResult::kRpOriginIsOpaque);
     return;
   }
   // Both conditions are met! Proceed to generate keypair and send request.
@@ -638,7 +634,8 @@ void EmailVerificationRequest::OnTokenAndKeysFetchComplete(
     const std::string& email,
     EmailVerifier::OnEmailVerifiedCallback callback) {
   if (!render_frame_host_) {
-    std::move(callback).Run(std::nullopt);
+    CompleteVerifyRequest(std::move(callback), std::nullopt,
+                          EmailVerificationRequestResult::kRpOriginIsOpaque);
     return;
   }
   // Step 5: Token Presentation
@@ -747,24 +744,28 @@ void EmailVerificationRequest::CompleteIsVerifiableRequest(
     EmailVerifier::IsVerifiableCallback callback,
     std::optional<EmailVerifier::Result> response,
     blink::mojom::EmailVerificationRequestResult status) {
+  CHECK(!is_verifiable_start_time_.is_null());
+  base::TimeDelta duration = base::TimeTicks::Now() - is_verifiable_start_time_;
   base::UmaHistogramEnumeration("Blink.Evp.Status.IsVerifiable", status);
-  observers_.Notify(&Observer::OnIsVerifiableComplete, status);
+  base::UmaHistogramMediumTimes("Blink.Evp.Timing.IsVerifiable", duration);
   if (status != EmailVerificationRequestResult::kSuccess) {
     MaybeAddDevToolsIssue(status);
   }
-  std::move(callback).Run(std::move(response));
+  std::move(callback).Run(std::move(response), status, duration);
 }
 
 void EmailVerificationRequest::CompleteVerifyRequest(
     EmailVerifier::OnEmailVerifiedCallback callback,
     std::optional<std::string> response,
     blink::mojom::EmailVerificationRequestResult status) {
+  CHECK(!verify_start_time_.is_null());
+  base::TimeDelta duration = base::TimeTicks::Now() - verify_start_time_;
   base::UmaHistogramEnumeration("Blink.Evp.Status.Verify", status);
-  observers_.Notify(&Observer::OnVerifyComplete, status);
+  base::UmaHistogramMediumTimes("Blink.Evp.Timing.Verify", duration);
   if (status != EmailVerificationRequestResult::kSuccess) {
     MaybeAddDevToolsIssue(status);
   }
-  std::move(callback).Run(std::move(response));
+  std::move(callback).Run(std::move(response), status, duration);
 }
 
 void EmailVerificationRequest::MaybeAddDevToolsIssue(

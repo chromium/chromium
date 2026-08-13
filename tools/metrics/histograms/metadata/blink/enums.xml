@@ -271,7 +271,7 @@ Called by update_document_policy_enum.py.-->
   <int value="8" label="ViewDestroyedDirectly"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/autofill/email_verification_popup_controller.h:EvpPermissionUiStatus) -->
+<!-- LINT.ThenChange(//components/autofill/core/browser/foundations/autofill_client.h:EvpPermissionUiStatus) -->
 
 <!-- LINT.IfChange(EvpRequestStatus) -->
 

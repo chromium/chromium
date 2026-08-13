@@ -1359,9 +1359,9 @@ void ChromeAutofillClient::ShowEmailVerificationPopup(
     const gfx::RectF& element_bounds,
     const net::SchemefulSite& issuer_site,
     const std::u16string& email,
-    base::OnceCallback<void(EmailVerificationPermissionUiResult)> callback) {
+    base::OnceCallback<void(EmailVerificationPermissionUiStatus)> callback) {
 #if BUILDFLAG(IS_ANDROID)
-  std::move(callback).Run(EmailVerificationPermissionUiResult::kIgnored);
+  std::move(callback).Run(EmailVerificationPermissionUiStatus::kOther);
 #else
   if (!email_verification_popup_controller_) {
     email_verification_popup_controller_ =

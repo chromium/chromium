@@ -5313,21 +5313,27 @@ class ConnectionAllowlistEmailVerificationTest
 
   std::optional<webid::EmailVerifier::Result> RunCheckIfVerifiable(
       const std::string& email = "jane@example.com") {
-    base::test::TestFuture<std::optional<webid::EmailVerifier::Result>> future;
+    base::test::TestFuture<std::optional<webid::EmailVerifier::Result>,
+                           blink::mojom::EmailVerificationRequestResult,
+                           base::TimeDelta>
+        future;
     webid::EmailVerifier::GetOrCreateForFrame(
         shell()->web_contents()->GetPrimaryMainFrame())
         ->CheckIfVerifiable(email, future.GetCallback());
-    return future.Get();
+    return future.Get<0>();
   }
 
   std::optional<std::string> RunVerify(
       const webid::EmailVerifier::Result& result,
       const std::string& nonce = "test_nonce") {
-    base::test::TestFuture<std::optional<std::string>> future;
+    base::test::TestFuture<std::optional<std::string>,
+                           blink::mojom::EmailVerificationRequestResult,
+                           base::TimeDelta>
+        future;
     webid::EmailVerifier::GetOrCreateForFrame(
         shell()->web_contents()->GetPrimaryMainFrame())
         ->Verify(result, nonce, future.GetCallback());
-    return future.Get();
+    return future.Get<0>();
   }
 
   // Returns the request URLs that are expected once `RunCheckIfVerifiable` is
@@ -5476,7 +5482,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
 
   // Check if the email address is verifiable, which initiates requests to the
   // above 4 URLs.
-  base::test::TestFuture<std::optional<webid::EmailVerifier::Result>> future;
+  base::test::TestFuture<std::optional<webid::EmailVerifier::Result>,
+                         blink::mojom::EmailVerificationRequestResult,
+                         base::TimeDelta>
+      future;
   webid::EmailVerifier::GetOrCreateForFrame(
       shell()->web_contents()->GetPrimaryMainFrame())
       ->CheckIfVerifiable("jane@example.com", future.GetCallback());
@@ -5489,7 +5498,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
 
   // All 4 URLs are allowed by the connection allowlist, including the DNS
   // request which has been redirected.
-  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_TRUE(future.Get<0>().has_value());
 
   ExpectRequestsSucceeded(monitor, GetCheckIfVerifiableURLs());
 }
@@ -5540,7 +5549,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
       embedded_https_test_server().GetURL(kIdpHost, "/another/dns");
   URLLoaderMonitor monitor(ToSet(GetCheckIfVerifiableURLs()));
 
-  base::test::TestFuture<std::optional<webid::EmailVerifier::Result>> future;
+  base::test::TestFuture<std::optional<webid::EmailVerifier::Result>,
+                         blink::mojom::EmailVerificationRequestResult,
+                         base::TimeDelta>
+      future;
   base::HistogramTester histogram_tester;
   webid::EmailVerifier::GetOrCreateForFrame(
       shell()->web_contents()->GetPrimaryMainFrame())
@@ -5553,7 +5565,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
   controllable_response.Done();
 
   // The redirect is blocked by the connection allowlist.
-  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_FALSE(future.Get<0>().has_value());
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Status.IsVerifiable",
       EmailVerificationRequestResult::kDnsFetchFailed, 1);

@@ -146,6 +146,7 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/browser:test_support",
+    "//components/ukm:test_support",
     "//components/version_info",
     "//content/public/browser",
     "//content/public/common",

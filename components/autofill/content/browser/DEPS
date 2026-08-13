@@ -14,6 +14,7 @@ include_rules = [
   "+crypto/random.h",
   "+gpu/config/gpu_info.h",
   "+services/device/public",
+  "+services/metrics/public/cpp",
   "+services/network/public/cpp/permissions_policy",
   "+services/network/public/mojom/permissions_policy",
   "+services/service_manager/public/mojom",
@@ -25,6 +26,7 @@ include_rules = [
 
 specific_include_rules = {
   '(.*_[a-z]*test\\.cc|test_.*\\.h)': [
+    "+components/ukm",
     "+content/public/test",
   ],
 }

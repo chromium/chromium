@@ -37,6 +37,9 @@
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace autofill {
@@ -114,7 +117,6 @@ void EmailVerifierDelegate::Verify(
   manager->driver().UpdateEmailVerificationState(
       email_field_id, mojom::EmailVerificationState::kLoading);
 
-  in_flight_verify_count_++;
   verifier->Verify(
       result, nonce,
       base::BindOnce(&EmailVerifierDelegate::OnVerificationResponseReceived,
@@ -128,13 +130,19 @@ void EmailVerifierDelegate::OnVerificationResponseReceived(
     std::string display_email,
     FieldGlobalId token_field_id,
     net::SchemefulSite issuer_site,
-    std::optional<std::string> token) {
-  if (in_flight_verify_count_ == 0) {
+    std::optional<std::string> token,
+    blink::mojom::EmailVerificationRequestResult status,
+    base::TimeDelta verify_duration) {
+  auto it = pending_request_metrics_.find(email_field_id);
+  if (it == pending_request_metrics_.end()) {
     // Navigation already completed this flow and recorded
     // kPageNavigatedDuringVerification.
     return;
   }
-  in_flight_verify_count_--;
+  RequestMetrics& metrics = it->second;
+  metrics.verify_status = status;
+  metrics.verify_duration = verify_duration;
+
   if (!manager) {
     NotifyFlowCompleted(manager.get(), email_field_id,
                         EvpAutofillFlowResult::kManagerDestroyed);
@@ -165,7 +173,16 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
     FieldGlobalId token_field_id,
     std::string nonce,
     content::webid::EmailVerifier::Result result,
-    AutofillClient::EmailVerificationPermissionUiResult ui_result) {
+    AutofillClient::EmailVerificationPermissionUiStatus ui_status) {
+  auto it = pending_request_metrics_.find(email_field_id);
+  if (it == pending_request_metrics_.end()) {
+    // Navigation already completed this flow and recorded
+    // kPageNavigatedDuringVerification.
+    return;
+  }
+  RequestMetrics& metrics = it->second;
+  metrics.permission_ui_status = ui_status;
+
   if (!manager) {
     NotifyFlowCompleted(manager.get(), email_field_id,
                         EvpAutofillFlowResult::kManagerDestroyed);
@@ -179,8 +196,8 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
   }
 
   PrefService* prefs = manager->client().GetPrefs();
-  switch (ui_result) {
-    case AutofillClient::EmailVerificationPermissionUiResult::kAccepted: {
+  switch (ui_status) {
+    case AutofillClient::EmailVerificationPermissionUiStatus::kAllowed: {
       if (prefs) {
         // Remember that the user allows this email address.
         ScopedDictPrefUpdate update(prefs,
@@ -208,7 +225,7 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
       }
       break;
     }
-    case AutofillClient::EmailVerificationPermissionUiResult::kDeclined: {
+    case AutofillClient::EmailVerificationPermissionUiStatus::kDeclined: {
       if (manager->client().GetStrikeDatabase()) {
         EmailVerificationStrikeDatabase strike_db(
             manager->client().GetStrikeDatabase());
@@ -219,7 +236,15 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
                           EvpAutofillFlowResult::kUserDeclinedPermissionPrompt);
       break;
     }
-    case AutofillClient::EmailVerificationPermissionUiResult::kIgnored: {
+    case AutofillClient::EmailVerificationPermissionUiStatus::kUserAborted:
+    case AutofillClient::EmailVerificationPermissionUiStatus::kNavigation:
+    case AutofillClient::EmailVerificationPermissionUiStatus::kTabGone:
+    case AutofillClient::EmailVerificationPermissionUiStatus::kWidgetChanged:
+    case AutofillClient::EmailVerificationPermissionUiStatus::
+        kOverlappingPrompt:
+    case AutofillClient::EmailVerificationPermissionUiStatus::kOther:
+    case AutofillClient::EmailVerificationPermissionUiStatus::
+        kViewDestroyedDirectly: {
       NotifyFlowCompleted(manager.get(), email_field_id,
                           EvpAutofillFlowResult::kUserIgnoredPermissionPrompt);
       break;
@@ -235,7 +260,23 @@ void EmailVerifierDelegate::OnIsVerifiable(
     std::u16string email,
     std::string nonce,
     bool already_allowed,
-    std::optional<content::webid::EmailVerifier::Result> result) {
+    std::optional<content::webid::EmailVerifier::Result> result,
+    blink::mojom::EmailVerificationRequestResult status,
+    base::TimeDelta is_verifiable_duration) {
+  auto it = pending_request_metrics_.find(email_field_id);
+  if (it == pending_request_metrics_.end()) {
+    // Navigation already completed this flow and recorded
+    // kPageNavigatedDuringVerification.
+    return;
+  }
+  RequestMetrics& metrics = it->second;
+  // Prevent double logging
+  if (metrics.is_verifiable_status) {
+    return;
+  }
+  metrics.is_verifiable_status = status;
+  metrics.is_verifiable_duration = is_verifiable_duration;
+
   if (!manager) {
     NotifyFlowCompleted(manager.get(), email_field_id,
                         EvpAutofillFlowResult::kManagerDestroyed);
@@ -293,15 +334,54 @@ EmailVerifierDelegate::MetricsObserver::MetricsObserver() = default;
 EmailVerifierDelegate::MetricsObserver::~MetricsObserver() = default;
 
 void EmailVerifierDelegate::MetricsObserver::OnFlowCompleted(
-    EvpAutofillFlowResult result) {
-  base::UmaHistogramEnumeration("Blink.Evp.Autofill.FlowResult", result);
+    const RequestMetrics& metrics) {
+  if (metrics.ukm_source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  ukm::builders::Blink_EmailVerificationProtocol builder(metrics.ukm_source_id);
+  if (metrics.autofill_flow_result) {
+    builder.SetAutofill_FlowResult(
+        static_cast<int64_t>(*metrics.autofill_flow_result));
+  }
+  if (metrics.permission_ui_status) {
+    builder.SetPermissionUi_Status(
+        static_cast<int64_t>(*metrics.permission_ui_status));
+  }
+  if (metrics.is_verifiable_status) {
+    builder.SetStatus_IsVerifiable(
+        static_cast<int64_t>(*metrics.is_verifiable_status));
+  }
+  if (metrics.is_verifiable_duration) {
+    builder.SetTiming_IsVerifiable(ukm::GetExponentialBucketMinForUserTiming(
+        metrics.is_verifiable_duration->InMilliseconds()));
+  }
+  if (metrics.verify_status) {
+    builder.SetStatus_Verify(static_cast<int64_t>(*metrics.verify_status));
+  }
+  if (metrics.verify_duration) {
+    builder.SetTiming_Verify(ukm::GetExponentialBucketMinForUserTiming(
+        metrics.verify_duration->InMilliseconds()));
+  }
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
-void EmailVerifierDelegate::NotifyFlowCompleted(
-    AutofillManager* manager,
-    const std::optional<FieldGlobalId>& field_id,
-    EvpAutofillFlowResult result) {
-  if (manager && field_id) {
+void EmailVerifierDelegate::NotifyFlowCompleted(AutofillManager* manager,
+                                                FieldGlobalId field_id,
+                                                EvpAutofillFlowResult result) {
+  base::UmaHistogramEnumeration("Blink.Evp.Autofill.FlowResult", result);
+
+  if (auto it = pending_request_metrics_.find(field_id);
+      it != pending_request_metrics_.end()) {
+    RequestMetrics metrics = std::move(it->second);
+    pending_request_metrics_.erase(it);
+    metrics.autofill_flow_result = result;
+    for (Observer& observer : observers_) {
+      observer.OnFlowCompleted(metrics);
+    }
+  }
+
+  if (manager) {
     mojom::EmailVerificationState state = mojom::EmailVerificationState::kNone;
     bool should_update = false;
     switch (result) {
@@ -335,11 +415,8 @@ void EmailVerifierDelegate::NotifyFlowCompleted(
         break;
     }
     if (should_update) {
-      manager->driver().UpdateEmailVerificationState(*field_id, state);
+      manager->driver().UpdateEmailVerificationState(field_id, state);
     }
-  }
-  for (Observer& observer : observers_) {
-    observer.OnFlowCompleted(result);
   }
 }
 
@@ -347,13 +424,19 @@ void EmailVerifierDelegate::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame() &&
       navigation_handle->HasCommitted()) {
-    if (!navigation_handle->IsSameDocument() && in_flight_verify_count_ > 0) {
-      for (size_t i = 0; i < in_flight_verify_count_; ++i) {
+    if (!navigation_handle->IsSameDocument() &&
+        !pending_request_metrics_.empty()) {
+      // Create a copy of keys because NotifyFlowCompleted erases from the map.
+      std::vector<FieldGlobalId> pending_field_ids;
+      pending_field_ids.reserve(pending_request_metrics_.size());
+      for (const auto& [email_field_id, metrics] : pending_request_metrics_) {
+        pending_field_ids.push_back(email_field_id);
+      }
+      for (const FieldGlobalId& email_field_id : pending_field_ids) {
         NotifyFlowCompleted(
-            nullptr, std::nullopt,
+            nullptr, email_field_id,
             EvpAutofillFlowResult::kPageNavigatedDuringVerification);
       }
-      in_flight_verify_count_ = 0;
     }
     // `HasCommitted` returns true even for same document commits, e.g.
     // if the state is cleared on pushState() or #anchor navigations.
@@ -536,6 +619,15 @@ void EmailVerifierDelegate::TriggerVerification(
     return;
   }
 
+  pending_request_metrics_[email_field.global_id()] = RequestMetrics();
+  RequestMetrics& metrics = pending_request_metrics_[email_field.global_id()];
+  content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
+      *static_cast<ContentAutofillClient&>(manager.client()).web_contents(),
+      email_field.host_frame());
+  if (rfh) {
+    metrics.ukm_source_id = rfh->GetPageUkmSourceId();
+  }
+
   if (token_field->nonce().empty()) {
     NotifyFlowCompleted(&manager, email_field.global_id(),
                         EvpAutofillFlowResult::kTokenFieldHasNoNonce);
@@ -549,9 +641,6 @@ void EmailVerifierDelegate::TriggerVerification(
     return;
   }
 
-  content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
-      *static_cast<ContentAutofillClient&>(manager.client()).web_contents(),
-      email_field.host_frame());
   content::webid::EmailVerifier* verifier =
       GetOrCreateEmailVerifier(manager.client(), rfh);
   if (!verifier) {

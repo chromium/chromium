@@ -46,11 +46,11 @@ class CONTENT_EXPORT EmailVerifierImpl : public EmailVerifier {
               const std::string& nonce,
               EmailVerifier::OnEmailVerifiedCallback callback) override;
  private:
-  void OnRequestComplete(
-      std::unique_ptr<EmailVerificationRequest> request,
-      EmailVerifier::OnEmailVerifiedCallback callback,
-      std::unique_ptr<EmailVerificationRequest::Observer> observer,
-      std::optional<std::string> result);
+  void OnRequestComplete(std::unique_ptr<EmailVerificationRequest> request,
+                         EmailVerifier::OnEmailVerifiedCallback callback,
+                         std::optional<std::string> result,
+                         blink::mojom::EmailVerificationRequestResult status,
+                         base::TimeDelta duration);
 
   RequestBuilder request_builder_;
 
