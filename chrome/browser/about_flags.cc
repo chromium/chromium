@@ -4080,9 +4080,29 @@ constexpr char kWebiumFlag[] = "webium";
 constexpr char kWebiumFeatures[] =
     "Webium,SurfaceEmbed,ExtensionsMenuAccessControl";
 constexpr char kWebUIToolbarFlag[] = "webui-toolbar";
-constexpr char kWebUIToolbarFeatures[] =
+constexpr char kWebUIToolbarEnableFeatures[] =
+    "InitialWebUI:high_stream_priority/true,"
+    "WebUIReloadButton:WebUIReloadButtonDeferBrowserViewShow/false/"
+    "WebUIReloadButtonKeepVisibleUntilPaint/true/"
+    "WebUIReloadButtonRestartUnresponsive/true/"
+    "WebUIReloadButtonRestartUnresponsiveRenderersTimeout/5s/"
+    "WebUIReloadButtonPrewarmWebUI/true/"
+    "WebUIReloadButtonPrewarmWebUIPreNavigate/true,"
+    "WebUIToolbar,"
+    "SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,"
+    "InitialWebUISyncNavStartToCommit,InitialWebUIWithoutExtensions,"
+    "WebUIBundledCodeCache,"
+    "InitialWebUISurfaceSync:deadline_in_frames/12000/"
+    "renderer_commit_delay_ms/100000,"
+    "BypassOutdatedSurfaceActivation,SendGPUChannelEarly";
+constexpr char kWebUIToolbarDisableFeatures[] =
     "InitialWebUI,WebUIReloadButton,WebUIBackForwardButton,WebUIHomeButton,"
-    "WebUISplitTabsButton";
+    "WebUIToolbar,WebUILocationBar,"
+    "WebUISplitTabsButton,SkipIPCChannelPausingForNonGuests,"
+    "WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit,"
+    "InitialWebUIWithoutExtensions,WebUIBundledCodeCache,"
+    "InitialWebUISurfaceSync,BypassOutdatedSurfaceActivation,"
+    "SendGPUChannelEarly";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kMobileNTPPromoOnDesktopGeneral[] = {
@@ -13488,9 +13508,9 @@ const FeatureEntry kFeatureEntries[] = {
     {kWebUIToolbarFlag, flag_descriptions::kWebUIToolbarName,
      flag_descriptions::kWebUIToolbarDescription, kOsWin | kOsMac | kOsLinux,
      ENABLE_DISABLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
-                                         kWebUIToolbarFeatures,
+                                         kWebUIToolbarEnableFeatures,
                                          switches::kDisableFeatures,
-                                         kWebUIToolbarFeatures)},
+                                         kWebUIToolbarDisableFeatures)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
