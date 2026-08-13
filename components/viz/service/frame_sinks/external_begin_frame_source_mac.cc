@@ -18,6 +18,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/features.h"
 
 namespace viz {
 namespace {
@@ -203,7 +204,7 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
 
     if (update_vsync_params_callback_ &&
         last_min_interval != min_refresh_interval_) {
-      update_vsync_params_callback_.Run(base::TimeTicks::Now(),
+      update_vsync_params_callback_.Run(last_frame_time_,
                                         min_refresh_interval_);
     }
 
@@ -462,18 +463,18 @@ void ExternalBeginFrameSourceMac::OnTimerTick() {
 void ExternalBeginFrameSourceMac::SetPreferredInterval(
     base::TimeDelta interval) {
   if (interval.is_zero()) {
-    if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    if (display_link_mac_ || base::FeatureList::IsEnabled(
+                                 features::kUseDisplayRefreshRateForTimer)) {
       interval = min_refresh_interval_;
     } else {
-      interval = display_link_mac_ ? min_refresh_interval_
-                                   : BeginFrameArgs::DefaultInterval();
+      interval = BeginFrameArgs::DefaultInterval();
     }
   }
   preferred_interval_ = interval;
 
   VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
                      << "::SetPreferredInterval: ID: " << display_id_
-                     << ", Interval: " << interval;
+                     << ", preferred_interval_: " << preferred_interval_;
 
   if (!display_link_mac_) {
     DCHECK(time_source_);
@@ -510,22 +511,29 @@ scoped_refptr<ui::DisplayLinkMac> ExternalBeginFrameSourceMac::GetForDisplay(
 }
 
 base::TimeDelta ExternalBeginFrameSourceMac::GetMinimumFrameInterval() {
-  if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+  base::TimeDelta min_interval;
+
+  if (display_link_mac_) {
     // Calling CoreGraphics to get the refresh rate is expensive, so we return
     // the last known or default refresh interval instead. If the refresh rate
     // has changed, OnDisplayLinkCallback() will receive the updated interval
     // and invoke update_vsync_params_callback_ to update FrameIntervalDecider.
-    return min_refresh_interval_;
-  }
-
-  if (display_link_mac_) {
-    min_refresh_interval_ = display_link_mac_->GetRefreshInterval();
+    if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+      min_interval = min_refresh_interval_;
+    } else {
+      min_interval = display_link_mac_->GetRefreshInterval();
+    }
   } else {
-    // If no display link is active, fall back to a timer-based interval.
-    min_refresh_interval_ = BeginFrameArgs::DefaultInterval();
+    // fall back to a timer-based interval.
+    if (base::FeatureList::IsEnabled(
+            features::kUseDisplayRefreshRateForTimer)) {
+      min_interval = min_refresh_interval_;
+    } else {
+      min_interval = BeginFrameArgs::DefaultInterval();
+    }
   }
 
-  return min_refresh_interval_;
+  return min_interval;
 }
 
 void ExternalBeginFrameSourceMac::SetUpdateVSyncParametersCallback(
@@ -622,6 +630,26 @@ void ExternalBeginFrameSourceMac::OnSuspend() {
 
   if (display_link_mac_) {
     display_link_mac_->OnSuspend();
+  }
+}
+
+void ExternalBeginFrameSourceMac::UpdateRefreshRate(float refresh_rate) {
+  // Only for the timer. Just exit for DisplayLink as it updates the refresh
+  // rate in OnDisplayLinkCallback().
+  if (display_link_mac_ || !time_source_ || refresh_rate <= 0 ||
+      !base::FeatureList::IsEnabled(features::kUseDisplayRefreshRateForTimer)) {
+    return;
+  }
+
+  base::TimeDelta min_refresh_interval = base::Hertz(refresh_rate);
+  if (AlmostEqual(min_refresh_interval_, min_refresh_interval)) {
+    return;
+  }
+
+  min_refresh_interval_ = min_refresh_interval;
+
+  if (update_vsync_params_callback_) {
+    update_vsync_params_callback_.Run(last_frame_time_, min_refresh_interval_);
   }
 }
 

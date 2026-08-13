@@ -10,6 +10,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "components/viz/common/features.h"
 #include "components/viz/test/begin_frame_source_test.h"
 #include "components/viz/test/fake_delay_based_time_source.h"
 #include "components/viz/test/fake_skia_output_surface.h"
@@ -144,7 +145,7 @@ class ExternalBeginFrameSourceMacTest : public testing::Test {
  public:
   ExternalBeginFrameSourceMacTest() {
     enable_feature.InitAndEnableFeature(
-        display::features::kCADisplayLinkInBrowser);
+        features::kUseDisplayRefreshRateForTimer);
     output_surface_ = FakeSkiaOutputSurface::Create3d();
   }
 

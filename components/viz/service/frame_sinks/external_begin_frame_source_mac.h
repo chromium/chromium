@@ -59,6 +59,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   base::TimeDelta GetMinimumFrameInterval() override;
   base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
       base::TimeDelta interval) override;
+  void UpdateRefreshRate(float refresh_rate) override;
 
   // CVDisplayLink Callback on the Viz thread.
   void OnDisplayLinkCallback(ui::VSyncParamsMac params);
