@@ -38,6 +38,7 @@ import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -2921,6 +2922,24 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
                 BookmarkBarUtils.toggleShowBookmarksBar(
                         mProfileSupplier.asNonNull().get(), /* fromKeyboardShortcut= */ true);
+                return true;
+            }
+        } else if (id == R.id.bookmark_bar_state_always_show_menu_id) {
+            if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
+                if (!getBookmarkBarVisibility()) {
+                    BookmarkBarUtils.toggleShowBookmarksBar(
+                            mProfileSupplier.asNonNull().get(), /* fromKeyboardShortcut= */ false);
+                    RecordUserAction.record("MobileMenuBookmarkBarAlwaysShow");
+                }
+                return true;
+            }
+        } else if (id == R.id.bookmark_bar_state_always_hide_menu_id) {
+            if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
+                if (getBookmarkBarVisibility()) {
+                    BookmarkBarUtils.toggleShowBookmarksBar(
+                            mProfileSupplier.asNonNull().get(), /* fromKeyboardShortcut= */ false);
+                    RecordUserAction.record("MobileMenuBookmarkBarAlwaysHide");
+                }
                 return true;
             }
         } else if (id == R.id.close_window) {

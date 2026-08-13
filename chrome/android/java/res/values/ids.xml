@@ -180,6 +180,9 @@ found in the LICENSE file.
     <item type="id" name="auto_dark_web_contents_check_id" />
     <item type="id" name="auto_dark_web_contents_id" />
     <item type="id" name="back_menu_id" />
+    <item type="id" name="bookmark_bar_parent_menu_id" />
+    <item type="id" name="bookmark_bar_state_always_hide_menu_id" />
+    <item type="id" name="bookmark_bar_state_always_show_menu_id" />
     <item type="id" name="bookmark_folder_menu_id" />
     <item type="id" name="bookmark_menu_id" />
     <item type="id" name="bookmark_this_page_id" />

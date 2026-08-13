@@ -29882,6 +29882,20 @@ should be able to be added at any place in this file.
   <description>User pressed the back icon in the app menu.</description>
 </action>
 
+<action name="MobileMenuBookmarkBarAlwaysHide">
+  <owner>massan@google.com</owner>
+  <description>
+    User pressed 'Always hide' in the 'Bookmark bar' submenu in the app menu.
+  </description>
+</action>
+
+<action name="MobileMenuBookmarkBarAlwaysShow">
+  <owner>massan@google.com</owner>
+  <description>
+    User pressed 'Always show' in the 'Bookmark bar' submenu in the app menu.
+  </description>
+</action>
+
 <action name="MobileMenuBookmarkThisPage">
   <owner>massan@google.com</owner>
   <description>User pressed 'Bookmark this page' in the app menu.</description>

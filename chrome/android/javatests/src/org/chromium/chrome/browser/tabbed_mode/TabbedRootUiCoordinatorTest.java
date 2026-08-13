@@ -42,6 +42,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayer;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.metrics.UmaSessionStatsJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -554,5 +556,87 @@ public class TabbedRootUiCoordinatorTest {
         verify(mUmaSessionStatsJniMock)
                 .registerSyntheticFieldTrial(
                         "VerticalTabsAndroid", "Disabled", SyntheticTrialAnnotationMode.NEXT_LOG);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testBookmarkBarMenuAction_AlwaysShowAndHide() {
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+
+        UserActionTester userActionTester = new UserActionTester();
+        try {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        // Reset testing override so that actual preference logic is evaluated.
+                        BookmarkBarUtils.setBookmarkBarVisibleForTesting(null);
+                        final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+                        final Profile profile =
+                                activity.getProfileProviderSupplier().get().getOriginalProfile();
+                        if (BookmarkBarUtils.shouldUseProfileUserPrefs()) {
+                            BookmarkBarUtils.setUserPrefsShowBookmarksBar(
+                                    profile, false, /* fromKeyboardShortcut= */ false);
+                        } else {
+                            BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                                    false, /* fromKeyboardShortcut= */ false);
+                        }
+
+                        // Initial state: hidden and 0 actions recorded.
+                        assertFalse(mTabbedRootUiCoordinator.getBookmarkBarVisibility());
+                        assertEquals(
+                                0,
+                                userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysShow"));
+                        assertEquals(
+                                0,
+                                userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysHide"));
+
+                        // 1. "Always show": shows bookmark bar and records action.
+                        assertTrue(
+                                mTabbedRootUiCoordinator.handleMenuOrKeyboardAction(
+                                        R.id.bookmark_bar_state_always_show_menu_id,
+                                        /* fromMenu= */ true));
+                        assertTrue(mTabbedRootUiCoordinator.getBookmarkBarVisibility());
+                        assertEquals(
+                                1,
+                                userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysShow"));
+
+                        // Redundant "Always show": stays visible, no new action recorded.
+                        assertTrue(
+                                mTabbedRootUiCoordinator.handleMenuOrKeyboardAction(
+                                        R.id.bookmark_bar_state_always_show_menu_id,
+                                        /* fromMenu= */ true));
+                        assertTrue(mTabbedRootUiCoordinator.getBookmarkBarVisibility());
+                        assertEquals(
+                                1,
+                                userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysShow"));
+
+                        // 2. "Always hide": hides bookmark bar and records action.
+                        assertTrue(
+                                mTabbedRootUiCoordinator.handleMenuOrKeyboardAction(
+                                        R.id.bookmark_bar_state_always_hide_menu_id,
+                                        /* fromMenu= */ true));
+                        assertFalse(mTabbedRootUiCoordinator.getBookmarkBarVisibility());
+                        assertEquals(
+                                1,
+                                userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysHide"));
+
+                        // Redundant "Always hide": stays hidden, no new action recorded.
+                        assertTrue(
+                                mTabbedRootUiCoordinator.handleMenuOrKeyboardAction(
+                                        R.id.bookmark_bar_state_always_hide_menu_id,
+                                        /* fromMenu= */ true));
+                        assertFalse(mTabbedRootUiCoordinator.getBookmarkBarVisibility());
+                        assertEquals(
+                                1,
+                                userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysHide"));
+                    });
+
+            assertEquals(1, userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysShow"));
+            assertEquals(1, userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysHide"));
+        } finally {
+            userActionTester.tearDown();
+        }
     }
 }
