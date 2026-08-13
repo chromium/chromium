@@ -156,7 +156,7 @@ bool LocalTargetsUIHandler::AllowDevToolsFor(DevToolsAgentHost* host) {
   return local_presentation_manager_->IsLocalPresentation(
              host->GetWebContents()) ||
          (Profile::FromBrowserContext(host->GetBrowserContext()) == profile_ &&
-          DevToolsWindow::AllowDevToolsFor(profile_, host->GetWebContents()));
+          DevToolsWindow::AllowDevToolsFor(profile_, host));
 }
 
 // AdbTargetsUIHandler --------------------------------------------------------

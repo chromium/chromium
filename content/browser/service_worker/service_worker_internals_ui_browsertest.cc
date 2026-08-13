@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/browser/devtools_manager_delegate.h"
+#include "content/public/browser/devtools_agent_host.h"
+#include "content/browser/devtools/devtools_manager.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -370,8 +374,8 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
         const elementToObserve = document.getElementById("serviceworker-list");
 
         function checkStatus() {
-          const statusNode = elementToObserve.querySelector('%s');
-          return !!statusNode && statusNode.textContent === '%s';
+          const statusNode = elementToObserve.querySelector(`%s`);
+          return !!statusNode && statusNode.textContent === `%s`;
         }
 
         if (checkStatus()) {
@@ -394,7 +398,7 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
 
     EXPECT_TRUE(
         content::EvalJs(web_contents()->GetPrimaryMainFrame(),
-                        base::StringPrintf(kScript, css_selector, expected))
+                        base::StringPrintf(kScript, css_selector.c_str(), expected.c_str()))
             .ExtractBool());
   }
 
@@ -402,11 +406,23 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
     static constexpr char kScript[] = R"(
       (function() {
         const list = document.getElementById("serviceworker-list");
-        return list.querySelector('%s') === null;
+        return list.querySelector(`%s`) === null;
       })()
     )";
     EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                       base::StringPrintf(kScript, css_selector))
+                       base::StringPrintf(kScript, css_selector.c_str()))
+                    .ExtractBool());
+  }
+
+  void AssertNodeExists(std::string css_selector) {
+    static constexpr char kScript[] = R"(
+      (function() {
+        const list = document.getElementById("serviceworker-list");
+        return list.querySelector(`%s`) !== null;
+      })()
+    )";
+    EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                       base::StringPrintf(kScript, css_selector.c_str()))
                     .ExtractBool());
   }
 
@@ -581,6 +597,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   AssertTextShown(
       ".serviceworker-registration .serviceworker-running-status .value",
       "RUNNING");
+  AssertNodeExists(
+      ".serviceworker-registration cr-button[data-command='inspect']:not([disabled])");
 
   // Tests that a stopping service worker is reflected on internal UI.
   wrapper()->StopAllServiceWorkers(base::DoNothing());
@@ -647,6 +665,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest, InternalUIOptions) {
   AssertTextShown(
       ".serviceworker-registration .serviceworker-running-status .value",
       "RUNNING");
+  AssertNodeExists(
+      ".serviceworker-registration cr-button[data-command='inspect']:not([disabled])");
 
   // Test the unregister option on the service worker internal UI.
   SetActiveWindow(sw_internal_ui_window);
@@ -660,6 +680,72 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest, InternalUIOptions) {
             sw_on_registration_deleted_observer->RegistrationID());
 
   // Leave a clean state.
+  TearDownWindow(sw_registration_window);
+  TearDownWindow(sw_internal_ui_window);
+}
+
+namespace {
+class DisallowDevToolsManagerDelegate : public DevToolsManagerDelegate {
+ public:
+  bool AllowInspectingTarget(DevToolsAgentHost* agent_host) override {
+    return false;
+  }
+};
+
+class DisallowDevToolsBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  std::unique_ptr<DevToolsManagerDelegate> CreateDevToolsManagerDelegate()
+      override {
+    return std::make_unique<DisallowDevToolsManagerDelegate>();
+  }
+};
+}  // namespace
+
+class ServiceWorkerInternalsUIDisallowDevToolsBrowserTest
+    : public ServiceWorkerInternalsUIBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    test_client_ = std::make_unique<DisallowDevToolsBrowserClient>();
+    content::DevToolsAgentHost::StopRemoteDebuggingServer();
+    DevToolsManager::ShutdownForTests();
+    ServiceWorkerInternalsUIBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    ServiceWorkerInternalsUIBrowserTest::TearDownOnMainThread();
+    test_client_.reset();
+    content::DevToolsAgentHost::StopRemoteDebuggingServer();
+    DevToolsManager::ShutdownForTests();
+  }
+
+ private:
+  std::unique_ptr<DisallowDevToolsBrowserClient> test_client_;
+};
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIDisallowDevToolsBrowserTest,
+                       InspectButtonDisabledByPolicy) {
+  Shell* sw_internal_ui_window = CreateNewWindow();
+  NavigateToServiceWorkerInternalUI();
+
+  // Register the service worker to populate on the internal UI.
+  Shell* sw_registration_window = CreateNewWindow();
+  auto sw_state_observer = base::MakeRefCounted<SWStateObserver>(
+      wrapper(), ServiceWorkerVersion::ACTIVATED);
+  sw_state_observer->Init();
+  RegisterServiceWorker();
+  sw_state_observer->Wait();
+
+  // Inspect button should be disabled because the delegate returned false.
+  SetActiveWindow(sw_internal_ui_window);
+  AssertTextShown(".serviceworker-registration .serviceworker-status .value",
+                  "ACTIVATED");
+  AssertTextShown(
+      ".serviceworker-registration .serviceworker-running-status .value",
+      "RUNNING");
+  AssertNodeExists(
+      ".serviceworker-registration cr-button[data-command='inspect'][disabled]");
+
   TearDownWindow(sw_registration_window);
   TearDownWindow(sw_internal_ui_window);
 }

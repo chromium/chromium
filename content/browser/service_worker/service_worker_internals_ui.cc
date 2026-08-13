@@ -18,8 +18,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -154,6 +156,18 @@ base::DictValue UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
   info.Set("process_host_id", version.process_id.value());
   info.Set("thread_id", version.thread_id);
   info.Set("devtools_agent_route_id", version.devtools_agent_route_id);
+
+  bool devtools_allowed = true;
+  scoped_refptr<ServiceWorkerDevToolsAgentHost> agent_host(
+      ServiceWorkerDevToolsManager::GetInstance()
+          ->GetDevToolsAgentHostForWorker(version.process_id,
+                                          version.devtools_agent_route_id));
+  if (agent_host && DevToolsManager::GetInstance()->delegate()) {
+    devtools_allowed = DevToolsManager::GetInstance()
+                           ->delegate()
+                           ->AllowInspectingTarget(agent_host.get());
+  }
+  info.Set("devtools_allowed", devtools_allowed);
 
   base::ListValue clients;
   for (auto& it : version.clients) {

@@ -116,6 +116,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // only checks for |profile| in general.
   static bool AllowDevToolsFor(Profile* profile,
                                content::WebContents* web_contents);
+  static bool AllowDevToolsFor(Profile* profile,
+                               content::DevToolsAgentHost* agent_host);
 
   // Return the DevToolsWindow for the given WebContents if one exists,
   // otherwise nullptr.

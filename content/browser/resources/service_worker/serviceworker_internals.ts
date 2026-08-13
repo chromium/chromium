@@ -39,6 +39,7 @@ interface Client {
 
 interface Version {
   clients: Client[];
+  devtools_allowed?: boolean;
   devtools_agent_route_id: number;
   fetch_handler_existence: string;
   fetch_handler_type: string;
@@ -141,6 +142,8 @@ function getVersionHtml(version: Version, partitionId: number) {
             Stop
           </cr-button>
           <cr-button data-command="inspect"
+              ?disabled="${!version.devtools_allowed}"
+              title="${!version.devtools_allowed ? 'Disabled by enterprise policy' : ''}"
               @click="${onButtonClick.bind(null, {
                 process_host_id: version.process_host_id,
                 devtools_agent_route_id: version.devtools_agent_route_id,
