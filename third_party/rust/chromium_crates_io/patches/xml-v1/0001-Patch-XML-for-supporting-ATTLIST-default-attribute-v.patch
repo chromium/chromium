@@ -1,0 +1,316 @@
+From 8d787d9d990d6e96c106ce1a8a97348f67fab106 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Dominik=20R=C3=B6ttsches?= <drott@chromium.org>
+Date: Wed, 12 Aug 2026 12:08:45 +0300
+Subject: [PATCH] Patch XML for supporting ATTLIST default attribute value
+ definitions
+
+Fixes upstreamm issue #86,
+compare https://github.com/kornelski/xml-rs/pull/87
+---
+ .../vendor/xml-v1/src/reader/parser.rs        |  40 +++-
+ .../src/reader/parser/inside_doctype.rs       | 172 +++++++++++++++++-
+ .../src/reader/parser/inside_reference.rs     |   5 +-
+ 3 files changed, 213 insertions(+), 4 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+index 593ff1fdbf417..74d1d12089044 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+@@ -4,7 +4,7 @@ use crate::common::{is_xml10_char, is_xml11_char, is_xml11_char_not_restricted,
+ use crate::common::{Position, TextPosition, XmlVersion};
+ use crate::attribute::OwnedAttribute;
+ use crate::name::OwnedName;
+-use crate::namespace::NamespaceStack;
++use crate::namespace::{self, NamespaceStack};
+ use crate::reader::config::ParserConfig;
+ use crate::reader::error::{Error, ImmutableEntitiesError, SyntaxError};
+ use crate::reader::events::XmlEvent;
+@@ -77,6 +77,9 @@ pub(crate) struct PullParser {
+ 
+     /// From DTD internal subset
+     entities: HashMap<String, String>,
++    default_attributes: HashMap<String, Vec<OwnedAttribute>>,
++    attlist_element_name: Option<String>,
++    attlist_attr_name: Option<OwnedName>,
+ 
+     nst: NamespaceStack,
+ 
+@@ -128,6 +131,9 @@ impl PullParser {
+             buf: String::with_capacity(STRING_RESERVE_CAPACITY),
+             qualified_name_buf: String::with_capacity(STRING_RESERVE_CAPACITY),
+             entities: HashMap::new(),
++            default_attributes: HashMap::new(),
++            attlist_element_name: None,
++            attlist_attr_name: None,
+             nst: NamespaceStack::default(),
+ 
+             data: MarkupData {
+@@ -265,6 +271,12 @@ pub(crate) enum DoctypeSubstate {
+     PI(ProcessingInstructionSubstate),
+     SkipDeclaration,
+     Comment,
++    AttlistElementName,
++    AttlistInside,
++    AttlistAttributeName,
++    AttlistType,
++    AttlistDefaultDeclKeyword,
++    AttlistDefaultValue,
+ }
+ 
+ #[derive(Copy, Clone, PartialEq, Debug)]
+@@ -676,7 +688,31 @@ impl PullParser {
+     fn emit_start_element(&mut self, emit_end_element: bool) -> Option<Result> {
+         let mut name = self.data.take_element_name()?;
+         let mut attributes = self.data.take_attributes();
+-        let attribute_positions = self.data.take_attribute_positions();
++        let mut attribute_positions = self.data.take_attribute_positions();
++
++        // Apply default attributes defined in DTD ATTLIST declarations for this element.
++        let elem_repr = name.borrow().to_repr();
++        if let Some(defaults) = self.default_attributes.get(&elem_repr) {
++            for default_attr in defaults {
++                let is_present = attributes.iter().any(|attr| {
++                    attr.name.local_name == default_attr.name.local_name
++                        && attr.name.prefix == default_attr.name.prefix
++                });
++                if !is_present {
++                    if default_attr.name.prefix.as_deref() == Some(namespace::NS_XMLNS_PREFIX) {
++                        self.nst.put(default_attr.name.local_name.clone(), default_attr.value.clone());
++                    } else if default_attr.name.prefix.is_none() && default_attr.name.local_name == namespace::NS_XMLNS_PREFIX {
++                        self.nst.put(namespace::NS_NO_PREFIX, default_attr.value.clone());
++                    } else {
++                        if attributes.len() >= self.config.max_attributes {
++                            return Some(self.error(SyntaxError::ExceededConfiguredLimit));
++                        }
++                        attributes.push(default_attr.clone());
++                        attribute_positions.push(self.lexer.position());
++                    }
++                }
++            }
++        }
+ 
+         // check whether the name prefix is bound and fix its namespace
+         match self.nst.get(name.borrow().prefix_repr()) {
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs
+index 7e038a70274ee..4e8fe75cbb880 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs
+@@ -1,6 +1,8 @@
+ use std::fmt::Write;
+ 
++use crate::attribute::OwnedAttribute;
+ use crate::common::{is_name_char, is_name_start_char, is_pubid_char, is_whitespace_char};
++use crate::name::OwnedName;
+ use crate::reader::error::SyntaxError;
+ use crate::reader::lexer::Token;
+ use crate::reader::XmlEvent;
+@@ -211,7 +213,10 @@ impl PullParser {
+                         "ENTITY" => self.into_state_continue(State::InsideDoctype(
+                             DoctypeSubstate::BeforeEntityName,
+                         )),
+-                        "NOTATION" | "ELEMENT" | "ATTLIST" => self.into_state_continue(
++                        "ATTLIST" => self.into_state_continue(State::InsideDoctype(
++                            DoctypeSubstate::AttlistElementName,
++                        )),
++                        "NOTATION" | "ELEMENT" => self.into_state_continue(
+                             State::InsideDoctype(DoctypeSubstate::SkipDeclaration),
+                         ),
+                         _ => Some(self.error(SyntaxError::UnknownMarkupDeclaration(self.buf.as_str().into()))),
+@@ -419,6 +424,171 @@ impl PullParser {
+                 }
+                 _ => None,
+             },
++            DoctypeSubstate::AttlistElementName => match t {
++                Token::Character(c) if is_whitespace_char(c) => {
++                    if self.buf.is_empty() {
++                        None
++                    } else {
++                        self.attlist_element_name = Some(self.take_buf());
++                        self.into_state_continue(State::InsideDoctype(
++                            DoctypeSubstate::AttlistInside,
++                        ))
++                    }
++                }
++                Token::Character(c) if is_name_char(c) => {
++                    if self.buf.len() > self.config.max_name_length {
++                        return Some(self.error(SyntaxError::ExceededConfiguredLimit));
++                    }
++                    self.buf.push(c);
++                    None
++                }
++                Token::TagEnd => {
++                    self.buf.clear();
++                    self.attlist_element_name = None;
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::InternalSubset,
++                    ))
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::AttlistInside => match t {
++                Token::Character(c) if is_whitespace_char(c) => None,
++                Token::TagEnd => {
++                    self.attlist_element_name = None;
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::InternalSubset,
++                    ))
++                }
++                Token::Character(c) if is_name_start_char(c) => {
++                    self.buf.push(c);
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::AttlistAttributeName,
++                    ))
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::AttlistAttributeName => match t {
++                Token::Character(c) if is_name_char(c) => {
++                    if self.buf.len() > self.config.max_name_length {
++                        return Some(self.error(SyntaxError::ExceededConfiguredLimit));
++                    }
++                    self.buf.push(c);
++                    None
++                }
++                Token::Character(c) if is_whitespace_char(c) => {
++                    let attr_name_str = self.take_buf();
++                    match attr_name_str.parse::<OwnedName>() {
++                        Ok(name) => {
++                            self.attlist_attr_name = Some(name);
++                            self.into_state_continue(State::InsideDoctype(
++                                DoctypeSubstate::AttlistType,
++                            ))
++                        }
++                        Err(()) => Some(self.error(SyntaxError::InvalidQualifiedName(attr_name_str.into()))),
++                    }
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::AttlistType => match t {
++                Token::Character('#') => {
++                    self.buf.push('#');
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::AttlistDefaultDeclKeyword,
++                    ))
++                }
++                Token::SingleQuote | Token::DoubleQuote => {
++                    self.data.quote = QuoteToken::from_token(t);
++                    self.buf.clear();
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::AttlistDefaultValue,
++                    ))
++                }
++                Token::TagEnd => {
++                    self.attlist_attr_name = None;
++                    self.attlist_element_name = None;
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::InternalSubset,
++                    ))
++                }
++                _ => None,
++            },
++            DoctypeSubstate::AttlistDefaultDeclKeyword => match t {
++                Token::Character(c) if is_name_char(c) => {
++                    if self.buf.len() > self.config.max_name_length {
++                        return Some(self.error(SyntaxError::ExceededConfiguredLimit));
++                    }
++                    self.buf.push(c);
++                    None
++                }
++                Token::Character(c) if is_whitespace_char(c) => {
++                    let kw = self.take_buf();
++                    if kw == "#FIXED" {
++                        self.into_state_continue(State::InsideDoctype(
++                            DoctypeSubstate::AttlistType,
++                        ))
++                    } else {
++                        self.attlist_attr_name = None;
++                        self.into_state_continue(State::InsideDoctype(
++                            DoctypeSubstate::AttlistInside,
++                        ))
++                    }
++                }
++                Token::TagEnd => {
++                    self.buf.clear();
++                    self.attlist_attr_name = None;
++                    self.attlist_element_name = None;
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::InternalSubset,
++                    ))
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::AttlistDefaultValue => match t {
++                Token::SingleQuote if self.data.quote != Some(QuoteToken::SingleQuoteToken) => {
++                    self.buf.push('\'');
++                    None
++                }
++                Token::DoubleQuote if self.data.quote != Some(QuoteToken::DoubleQuoteToken) => {
++                    self.buf.push('"');
++                    None
++                }
++                Token::SingleQuote | Token::DoubleQuote => {
++                    self.data.quote = None;
++                    let val = self.take_buf();
++                    if let (Some(ref elem_name), Some(attr_name)) = (&self.attlist_element_name, self.attlist_attr_name.take()) {
++                        let list = self.default_attributes.entry(elem_name.clone()).or_default();
++                        if !list.iter().any(|attr| attr.name.local_name == attr_name.local_name && attr.name.prefix == attr_name.prefix) {
++                            list.push(OwnedAttribute {
++                                name: attr_name,
++                                value: val,
++                            });
++                        }
++                    }
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::AttlistInside,
++                    ))
++                }
++                Token::ReferenceStart | Token::Character('&') => {
++                    self.data.ref_data.clear();
++                    self.state_after_reference = self.st;
++                    self.into_state_continue(State::InsideReference)
++                }
++                Token::Character(c) if !self.is_valid_xml_char(c) => {
++                    Some(self.error(SyntaxError::InvalidCharacterEntity(c as u32)))
++                }
++                Token::Character(c) => {
++                    if self.buf.len() > self.config.max_attribute_length {
++                        return Some(self.error(SyntaxError::ExceededConfiguredLimit));
++                    }
++                    if is_whitespace_char(c) {
++                        self.buf.push(' ');
++                    } else {
++                        self.buf.push(c);
++                    }
++                    None
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
+         }
+     }
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_reference.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_reference.rs
+index 2dd1c018c3493..89b50e804213e 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_reference.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_reference.rs
+@@ -13,7 +13,8 @@ impl PullParser {
+                 None
+             },
+ 
+-            Token::ReferenceEnd => {
++            // Character(';') is matched when used in DTD mode, where ';' is emitted as a character token inside quoted strings.
++            Token::ReferenceEnd | Token::Character(';') => {
+                 let name = self.data.take_ref_data();
+                 if name.is_empty() {
+                     return Some(self.error(SyntaxError::EmptyEntity));
+@@ -46,6 +47,8 @@ impl PullParser {
+                         // so it can't be fed to the lexer
+                         self.buf.push_str(v);
+                     }
++                } else if self.config.replace_unknown_entity_references {
++                    self.buf.push('\u{fffd}');
+                 } else {
+                     return Some(self.error(SyntaxError::UnexpectedEntity(name.into())));
+                 }
+-- 
+2.55.0.679.g6767b8d81c-goog
+

@@ -4,7 +4,7 @@ use crate::common::{is_xml10_char, is_xml11_char, is_xml11_char_not_restricted, 
 use crate::common::{Position, TextPosition, XmlVersion};
 use crate::attribute::OwnedAttribute;
 use crate::name::OwnedName;
-use crate::namespace::NamespaceStack;
+use crate::namespace::{self, NamespaceStack};
 use crate::reader::config::ParserConfig;
 use crate::reader::error::{Error, ImmutableEntitiesError, SyntaxError};
 use crate::reader::events::XmlEvent;
@@ -77,6 +77,9 @@ pub(crate) struct PullParser {
 
     /// From DTD internal subset
     entities: HashMap<String, String>,
+    default_attributes: HashMap<String, Vec<OwnedAttribute>>,
+    attlist_element_name: Option<String>,
+    attlist_attr_name: Option<OwnedName>,
 
     nst: NamespaceStack,
 
@@ -128,6 +131,9 @@ impl PullParser {
             buf: String::with_capacity(STRING_RESERVE_CAPACITY),
             qualified_name_buf: String::with_capacity(STRING_RESERVE_CAPACITY),
             entities: HashMap::new(),
+            default_attributes: HashMap::new(),
+            attlist_element_name: None,
+            attlist_attr_name: None,
             nst: NamespaceStack::default(),
 
             data: MarkupData {
@@ -265,6 +271,12 @@ pub(crate) enum DoctypeSubstate {
     PI(ProcessingInstructionSubstate),
     SkipDeclaration,
     Comment,
+    AttlistElementName,
+    AttlistInside,
+    AttlistAttributeName,
+    AttlistType,
+    AttlistDefaultDeclKeyword,
+    AttlistDefaultValue,
 }
 
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -676,7 +688,31 @@ impl PullParser {
     fn emit_start_element(&mut self, emit_end_element: bool) -> Option<Result> {
         let mut name = self.data.take_element_name()?;
         let mut attributes = self.data.take_attributes();
-        let attribute_positions = self.data.take_attribute_positions();
+        let mut attribute_positions = self.data.take_attribute_positions();
+
+        // Apply default attributes defined in DTD ATTLIST declarations for this element.
+        let elem_repr = name.borrow().to_repr();
+        if let Some(defaults) = self.default_attributes.get(&elem_repr) {
+            for default_attr in defaults {
+                let is_present = attributes.iter().any(|attr| {
+                    attr.name.local_name == default_attr.name.local_name
+                        && attr.name.prefix == default_attr.name.prefix
+                });
+                if !is_present {
+                    if default_attr.name.prefix.as_deref() == Some(namespace::NS_XMLNS_PREFIX) {
+                        self.nst.put(default_attr.name.local_name.clone(), default_attr.value.clone());
+                    } else if default_attr.name.prefix.is_none() && default_attr.name.local_name == namespace::NS_XMLNS_PREFIX {
+                        self.nst.put(namespace::NS_NO_PREFIX, default_attr.value.clone());
+                    } else {
+                        if attributes.len() >= self.config.max_attributes {
+                            return Some(self.error(SyntaxError::ExceededConfiguredLimit));
+                        }
+                        attributes.push(default_attr.clone());
+                        attribute_positions.push(self.lexer.position());
+                    }
+                }
+            }
+        }
 
         // check whether the name prefix is bound and fix its namespace
         match self.nst.get(name.borrow().prefix_repr()) {

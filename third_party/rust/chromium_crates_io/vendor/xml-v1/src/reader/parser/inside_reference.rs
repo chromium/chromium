@@ -13,7 +13,8 @@ impl PullParser {
                 None
             },
 
-            Token::ReferenceEnd => {
+            // Character(';') is matched when used in DTD mode, where ';' is emitted as a character token inside quoted strings.
+            Token::ReferenceEnd | Token::Character(';') => {
                 let name = self.data.take_ref_data();
                 if name.is_empty() {
                     return Some(self.error(SyntaxError::EmptyEntity));
@@ -46,6 +47,8 @@ impl PullParser {
                         // so it can't be fed to the lexer
                         self.buf.push_str(v);
                     }
+                } else if self.config.replace_unknown_entity_references {
+                    self.buf.push('\u{fffd}');
                 } else {
                     return Some(self.error(SyntaxError::UnexpectedEntity(name.into())));
                 }
