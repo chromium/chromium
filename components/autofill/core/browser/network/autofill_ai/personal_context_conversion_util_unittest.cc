@@ -22,6 +22,7 @@ namespace autofill {
 namespace {
 
 using enum AttributeTypeName;
+using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
 
 // Helper to check the string value of an attribute.
 void ExpectAttributeValue(const EntityInstance& entity,
@@ -396,6 +397,91 @@ TEST(AutofillAiPersonalContextConverters, ConvertKnownTravelerNumber_Unmasked) {
   EXPECT_EQ(result.type().name(), EntityTypeName::kKnownTravelerNumber);
   ExpectAttributeValue(result, kKnownTravelerNumberName, u"Charlie Brown");
   ExpectAttributeValue(result, kKnownTravelerNumberNumber, u"KTN12345");
+}
+
+TEST(AutofillAiPersonalContextConverters, ConvertEntityWithGmailSource) {
+  personal_context::proto::Passport passport;
+  passport.set_name("Jane Doe");
+
+  personal_context::proto::Entity entity;
+  *entity.mutable_passport() = passport;
+  personal_context::proto::SourceReference* source =
+      entity.add_source_references();
+  source->mutable_gmail()->set_message_url(
+      "https://mail.google.com/mail/u/0/#inbox/123");
+  source->mutable_gmail()->set_subject("Passport Information");
+
+  std::optional<EntityInstance> opt_result =
+      PersonalContextEntityToEntityInstance(entity);
+
+  ASSERT_TRUE(opt_result.has_value());
+  const EntityInstance& result = opt_result.value();
+  EntityInstance::PersonalContextRecordTypePayload payload{
+      .sources = {
+          Source{.type = Source::Type::kGmail,
+                 .url = "https://mail.google.com/mail/u/0/#inbox/123"}}};
+  EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
+                result.record_type_data()),
+            payload);
+}
+
+TEST(AutofillAiPersonalContextConverters, ConvertEntityWithPhotosSource) {
+  personal_context::proto::DriversLicense dl;
+  dl.set_name("John Smith");
+
+  personal_context::proto::Entity entity;
+  *entity.mutable_drivers_license() = dl;
+  personal_context::proto::SourceReference* source =
+      entity.add_source_references();
+  source->mutable_photos()->set_photos_url(
+      "https://photos.google.com/photo/abc");
+
+  std::optional<EntityInstance> opt_result =
+      PersonalContextEntityToEntityInstance(entity);
+
+  ASSERT_TRUE(opt_result.has_value());
+  const EntityInstance& result = opt_result.value();
+  EntityInstance::PersonalContextRecordTypePayload payload{
+      .sources = {Source{.type = Source::Type::kPhotos,
+                         .url = "https://photos.google.com/photo/abc"}}};
+  EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
+                result.record_type_data()),
+            payload);
+}
+
+TEST(AutofillAiPersonalContextConverters, ConvertEntityWithMultipleSources) {
+  personal_context::proto::Order order;
+  order.set_order_id("ORD-001");
+
+  personal_context::proto::Entity entity;
+  *entity.mutable_order() = order;
+
+  personal_context::proto::SourceReference* gmail_source =
+      entity.add_source_references();
+  gmail_source->mutable_gmail()->set_message_url(
+      "https://mail.google.com/mail/u/0/#inbox/123");
+
+  personal_context::proto::SourceReference* photos_source =
+      entity.add_source_references();
+  photos_source->mutable_photos()->set_photos_url(
+      "https://photos.google.com/photo/abc");
+
+  // Add empty source.
+  entity.add_source_references();
+
+  std::optional<EntityInstance> opt_result =
+      PersonalContextEntityToEntityInstance(entity);
+
+  ASSERT_TRUE(opt_result.has_value());
+  const EntityInstance& result = opt_result.value();
+  EntityInstance::PersonalContextRecordTypePayload payload{
+      .sources = {Source{.type = Source::Type::kGmail,
+                         .url = "https://mail.google.com/mail/u/0/#inbox/123"},
+                  Source{.type = Source::Type::kPhotos,
+                         .url = "https://photos.google.com/photo/abc"}}};
+  EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
+                result.record_type_data()),
+            payload);
 }
 
 TEST(AutofillAiPersonalContextConverters,
