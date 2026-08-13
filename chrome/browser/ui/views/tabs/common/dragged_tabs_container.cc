@@ -240,7 +240,7 @@ void DraggedTabsContainer::InitializeDragStartAnimation(
   // the start of the drag, and the position they're expected to be at this
   // moment.
   const bool should_compute_x_offset = IsHorizontalDragSupported();
-  const bool should_compute_y_offset = drag_axes_ != DragAxes::kHorizontalOnly;
+  const bool should_compute_y_offset = IsVerticalDragSupported();
   for (const auto& [dragging_view, visual_data] : dragging_views_) {
     auto start_offset_from_source =
         drag_handler.GetOffsetFromSourceAtDragStart(dragging_view);
@@ -360,6 +360,8 @@ void DraggedTabsContainer::AddViewToHorizontalDragLayout(
 
   dragging_views_bounds_.set_width(dragging_views_bounds_.width() +
                                    bounds.width());
+  dragging_views_bounds_.set_height(
+      std::max(dragging_views_bounds_.height(), bounds.height()));
 
   if (is_source_dragged_view) {
     dragging_views_bounds_.Offset({-1 * bounds.x(), -1 * bounds.y()});
@@ -447,8 +449,10 @@ gfx::Vector2d DraggedTabsContainer::GetDraggingViewPositionForBounds(
     const gfx::Vector2d& target_offset) const {
   gfx::Vector2d target(IsHorizontalDragSupported()
                            ? dragging_views_bounding_box.x() + target_offset.x()
-                           : 0,
-                       dragging_views_bounding_box.y() + target_offset.y());
+                           : target_offset.x(),
+                       IsVerticalDragSupported()
+                           ? dragging_views_bounding_box.y() + target_offset.y()
+                           : target_offset.y());
   double value = drag_start_animation_.GetCurrentValue();
   if (drag_start_animation_.is_animating()) {
     if (auto it = animating_views_start_offsets_.find(dragging_view);
@@ -531,6 +535,10 @@ DraggedTabsContainer::GetVisualDataForDraggedView(
 
 bool DraggedTabsContainer::IsHorizontalDragSupported() const {
   return drag_axes_ != DragAxes::kVerticalOnly;
+}
+
+bool DraggedTabsContainer::IsVerticalDragSupported() const {
+  return drag_axes_ != DragAxes::kHorizontalOnly;
 }
 
 bool DraggedTabsContainer::HasMinimumOverlap(
@@ -643,7 +651,8 @@ const TabCollectionNode* DraggedTabsContainer::GetTargetForTabDrag(
     // drag falls on. Once the row is found, delegate to
     // `GetTargetForTabDragInRow` to find the exact node within the row.
     if (IsHorizontalDragSupported()) {
-      if (dragged_tab_bounds.y() > child_layout.bounds.CenterPoint().y()) {
+      if (IsVerticalDragSupported() &&
+          dragged_tab_bounds.y() > child_layout.bounds.CenterPoint().y()) {
         continue;
       }
 

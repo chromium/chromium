@@ -178,6 +178,7 @@ class DraggedTabsContainer : public TabDragTarget,
   void UpdateDraggingViewTransforms(const gfx::Point& point_in_container);
 
   bool IsHorizontalDragSupported() const;
+  bool IsVerticalDragSupported() const;
 
   // Returns the bounds of the box containing all dragged views, adjusted to
   // the point `point_in_container` and clamped to the bounds of the
