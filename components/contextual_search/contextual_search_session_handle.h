@@ -288,6 +288,10 @@ class ContextualSearchSessionHandle {
   // confirmation that they are available on the server.
   std::vector<base::UnguessableToken> GetSubmittedContextTokens() const;
 
+  // Returns true if any context tokens were submitted in any query in this
+  // session.
+  bool has_submitted_context() const { return has_submitted_context_; }
+
   // Clears the list of submitted context tokens for this particular instance of
   // the session. This is intended to be invoked when the server has responded
   // that it has received the submitted context.
@@ -365,6 +369,9 @@ class ContextualSearchSessionHandle {
   // instance of the session handle, meaning that it is unique per instance of
   // the contextual tasks ui.
   std::vector<base::UnguessableToken> submitted_context_tokens_;
+
+  // Whether any context tokens were submitted in a query in this session.
+  bool has_submitted_context_ = false;
 
   // Map of tab session IDs to their latest submitted token and request ID.
   // Tracks active tabs in the session to detect their deletion or removal.

@@ -129,6 +129,14 @@ std::optional<lens::ContextualInputData> OmniboxClient::GetContextualInputData()
   return std::nullopt;
 }
 
+bool OmniboxClient::HasPreviousSubmittedThreadContext() const {
+  return false;
+}
+
+bool OmniboxClient::HasAutoSuggestedTab() const {
+  return false;
+}
+
 void OmniboxClient::ProcessExtensionMatch(const std::u16string& text,
                                           const TemplateURL* template_url,
                                           const AutocompleteMatch& match,

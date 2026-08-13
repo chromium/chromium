@@ -1907,4 +1907,38 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_TRUE(local_handle->persisted_tabs().empty());
 }
 
+TEST_F(ContextualSearchSessionHandleTest, HasSubmittedContext) {
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  MockContextualSearchContextController* mock_controller_ptr =
+      mock_controller.get();
+
+  auto local_handle =
+      service_->CreateSessionForTesting(std::move(mock_controller), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  // Initially false.
+  EXPECT_FALSE(local_handle->has_submitted_context());
+
+  // Uploading context without submitting query does not set
+  // has_submitted_context.
+  base::UnguessableToken file_token = local_handle->CreateContextToken();
+  EXPECT_FALSE(local_handle->has_submitted_context());
+
+  // Submitting a query with file tokens sets has_submitted_context to true.
+  auto request_info = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+  request_info->file_tokens.push_back(file_token);
+
+  EXPECT_CALL(*mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+  local_handle->CreateClientToAimRequest(std::move(request_info));
+
+  EXPECT_TRUE(local_handle->has_submitted_context());
+
+  // Clearing submitted context tokens does not reset has_submitted_context.
+  local_handle->ClearSubmittedContextTokens();
+  EXPECT_TRUE(local_handle->has_submitted_context());
+}
+
 }  // namespace contextual_search

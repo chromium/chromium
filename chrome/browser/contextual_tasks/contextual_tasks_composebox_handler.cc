@@ -240,10 +240,17 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
   // Set the callback for getting suggest inputs from the session.
   // The session is owned by WebUI controller and accessed via callback.
   // It is safe to use Unretained because omnibox client is owned by `this`.
-  static_cast<ContextualTasksOmniboxClient*>(client())
-      ->SetSuggestInputsCallback(base::BindRepeating(
-          &ContextualTasksComposeboxHandler::GetSuggestInputs,
-          base::Unretained(this)));
+  auto* omnibox_client = static_cast<ContextualTasksOmniboxClient*>(client());
+  omnibox_client->SetSuggestInputsCallback(
+      base::BindRepeating(&ContextualTasksComposeboxHandler::GetSuggestInputs,
+                          base::Unretained(this)));
+  omnibox_client->SetHasPreviousSubmittedThreadContextCallback(
+      base::BindRepeating(&ContextualTasksComposeboxHandler::
+                              SessionHandleHasPreviousSubmittedThreadContext,
+                          base::Unretained(this)));
+  omnibox_client->SetHasAutoSuggestedTabCallback(base::BindRepeating(
+      &ContextualTasksComposeboxHandler::HasAutoSuggestedTab,
+      base::Unretained(this)));
 
   InitializeInputStateModel();
 }
@@ -1149,6 +1156,12 @@ void ContextualTasksComposeboxHandler::DeleteContext(
   } else if (deleted_tab_url.has_value()) {
     auto_suggestion_manager->OnTabContextRemoved(deleted_tab_url.value());
   }
+}
+
+bool ContextualTasksComposeboxHandler::HasAutoSuggestedTab() {
+  auto* auto_suggestion_manager = web_ui_interface_->GetAutoSuggestionManager();
+  return auto_suggestion_manager &&
+         auto_suggestion_manager->GetCurrentSuggestion() != nullptr;
 }
 
 void ContextualTasksComposeboxHandler::MaybeTriggerLens() {

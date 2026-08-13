@@ -123,6 +123,8 @@ class ContextualTasksComposeboxHandler
 
   std::vector<int32_t> GetSelectedTabIds() const override;
 
+  bool HasAutoSuggestedTab();
+
   void ClearFiles(bool should_block_auto_suggested_tabs) override;
 #if !BUILDFLAG(IS_ANDROID)
   void HandleLensButtonClick() override;

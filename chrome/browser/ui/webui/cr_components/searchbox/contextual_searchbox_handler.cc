@@ -212,6 +212,18 @@ ContextualOmniboxClient::GetLensOverlaySuggestInputs() const {
                                   : std::nullopt;
 }
 
+bool ContextualOmniboxClient::HasPreviousSubmittedThreadContext() const {
+  return has_previous_submitted_thread_context_callback_
+             ? has_previous_submitted_thread_context_callback_.Run()
+             : false;
+}
+
+bool ContextualOmniboxClient::HasAutoSuggestedTab() const {
+  return has_auto_suggested_tab_callback_
+             ? has_auto_suggested_tab_callback_.Run()
+             : false;
+}
+
 int ContextualSearchboxHandler::GetContextMenuMaxTabSuggestions() {
   omnibox::InputState input_state = GetValidInputState();
   if (auto it = input_state.max_inputs_by_type.find(
@@ -674,6 +686,15 @@ ContextualSearchboxHandler::GetSuggestInputs() {
   return contextual_session_handle
              ? contextual_session_handle->GetSuggestInputs()
              : std::nullopt;
+}
+
+bool ContextualSearchboxHandler::
+    SessionHandleHasPreviousSubmittedThreadContext() {
+  auto* contextual_session_handle = GetContextualSessionHandle();
+  if (!contextual_session_handle) {
+    return false;
+  }
+  return contextual_session_handle->has_submitted_context();
 }
 
 omnibox::InputState ContextualSearchboxHandler::GetInputState() const {

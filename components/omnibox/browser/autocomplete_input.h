@@ -405,6 +405,20 @@ class AutocompleteInput {
     input_method_ = input_method;
   }
 
+  bool has_previous_submitted_thread_context() const {
+    return has_previous_submitted_thread_context_;
+  }
+  void set_has_previous_submitted_thread_context(
+      bool has_previous_submitted_thread_context) {
+    has_previous_submitted_thread_context_ =
+        has_previous_submitted_thread_context;
+  }
+
+  bool has_auto_suggested_tab() const { return has_auto_suggested_tab_; }
+  void set_has_auto_suggested_tab(bool has_auto_suggested_tab) {
+    has_auto_suggested_tab_ = has_auto_suggested_tab;
+  }
+
   // Resets all internal variables to the null-constructed state.
   void Clear();
 
@@ -500,6 +514,8 @@ class AutocompleteInput {
   // for composebox inputs.
   std::optional<omnibox::metrics::ChromeSearchboxStats::InputMethod>
       input_method_;
+  bool has_previous_submitted_thread_context_ = false;
+  bool has_auto_suggested_tab_ = false;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_INPUT_H_
