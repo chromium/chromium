@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("feedback_enum") {
@@ -131,7 +133,7 @@ source_set("feedback_impl") {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/views/web_dialogs",
       "//chrome/browser/ui/webui/feedback",
       "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
       "//chrome/browser/ui/webui/top_chrome",
@@ -142,6 +144,7 @@ source_set("feedback_impl") {
       "//components/performance_manager",
       "//components/safe_browsing/content/browser:client_side_detection",
       "//components/supervised_user/core/browser",
+      "//components/tabs:public",
       "//extensions/browser",
       "//extensions/browser/api/feedback_private",
       "//extensions/browser/api/power",
@@ -257,6 +260,10 @@ if (!is_android) {
     if (is_chromeos) {
       sources += [ "show_feedback_page_browsertest.cc" ]
       deps += [ "//chromeos/ash/components/dbus/spaced" ]
+    }
+
+    if (use_aura) {
+      deps += [ "//ui/aura" ]
     }
   }
 

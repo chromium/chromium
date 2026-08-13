@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest,
           FocusElement(kDialogWebviewId),
           ScreenshotSurface(kDialogWebviewId,
                             /*screenshot_name=*/"ReportUnsafeSiteDialog",
-                            /*baseline_cl=*/"7674204")),
+                            /*baseline_cl=*/"8231164")),
       CloseDialog());
 }
 

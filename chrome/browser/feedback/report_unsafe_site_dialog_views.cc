@@ -4,19 +4,20 @@
 
 #include "chrome/browser/feedback/report_unsafe_site_dialog_views.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/feedback/report_unsafe_site/screenshot_taker.h"
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/web_dialogs/chrome_webui_dialog.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -24,13 +25,13 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/webview/webview.h"
-#include "ui/views/view_class_properties.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace feedback {
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kReportUnsafeSiteWebviewElementId);
@@ -44,69 +45,27 @@ void OnWidgetClose(std::unique_ptr<views::Widget> widget,
   widget.reset();
 }
 
-// Report-unsafe-site WebUIBubbleDialogView.
-class ReportUnsafeSiteDialogView : public WebUIBubbleDialogView {
-  METADATA_HEADER(ReportUnsafeSiteDialogView, WebUIBubbleDialogView)
-
- public:
-  ReportUnsafeSiteDialogView(
-      std::unique_ptr<WebUIContentsWrapper> contents_wrapper,
-      tabs::TabInterface* tab_interface)
-      : WebUIBubbleDialogView(/*anchor_view=*/nullptr,
-                              contents_wrapper->GetWeakPtr()),
-        contents_wrapper_(std::move(contents_wrapper)),
-        tab_interface_(tab_interface->GetWeakPtr()) {
-    set_parent_window(platform_util::GetViewForWindow(
-        tab_interface->GetBrowserWindowInterface()
-            ->GetWindow()
-            ->GetNativeWindow()));
-    set_close_on_deactivate(false);
-    set_esc_should_cancel_dialog_override(false);
-    SetShowCloseButton(false);
-    SetProperty(views::kElementIdentifierKey,
-                ReportUnsafeSiteDialogViews::kReportUnsafeSiteDialogId);
-    web_view()->SetProperty(views::kElementIdentifierKey,
-                            feedback::kReportUnsafeSiteWebviewElementId);
+// Serves the Safe Browsing policy links, which branded builds open in a tab.
+content::WebContents* OpenLinkInBrowser(
+    base::WeakPtr<tabs::TabInterface> tab_interface,
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture) {
+  if (!tab_interface || !user_gesture) {
+    return nullptr;
   }
-  ~ReportUnsafeSiteDialogView() override = default;
-
-  // WebUIContentsWrapper::Host:
-  void ShowUI() override {
-    if (!tab_interface_ || !GetWidget()) {
-      return;
-    }
-    tab_interface_->GetTabFeatures()->tab_dialog_manager()->ShowDialog(
-        GetWidget(), std::make_unique<tabs::TabDialogManager::Params>());
+  if (disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
+      disposition != WindowOpenDisposition::NEW_POPUP) {
+    return nullptr;
   }
-
-  content::WebContents* AddNewContents(
-      content::WebContents* source,
-      std::unique_ptr<content::WebContents> new_contents,
-      const GURL& target_url,
-      WindowOpenDisposition disposition,
-      const blink::mojom::WindowFeatures& window_features,
-      bool user_gesture,
-      bool* was_blocked) override {
-    if (!tab_interface_ || !user_gesture) {
-      return nullptr;
-    }
-    if (disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
-        disposition != WindowOpenDisposition::NEW_POPUP) {
-      return nullptr;
-    }
-    return chrome::AddWebContents(
-        tab_interface_->GetBrowserWindowInterface(), source,
-        std::move(new_contents), target_url, disposition, window_features,
-        NavigateParams::WindowAction::kShowWindow, user_gesture);
-  }
-
- private:
-  std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
-  const base::WeakPtr<tabs::TabInterface> tab_interface_;
-};
-
-BEGIN_METADATA(ReportUnsafeSiteDialogView)
-END_METADATA
+  return chrome::AddWebContents(
+      tab_interface->GetBrowserWindowInterface(), source,
+      std::move(new_contents), target_url, disposition, window_features,
+      NavigateParams::WindowAction::kShowWindow, user_gesture);
+}
 
 }  // anonymous namespace
 
@@ -156,12 +115,24 @@ void ReportUnsafeSiteDialog::Show(Browser* browser) {
   feedback_ui->set_triggering_web_contents(web_contents);
   feedback_ui->set_screenshot_taker(
       ScreenshotTaker::Start(web_contents->GetPrimaryMainFrame()->GetView()));
-  auto bubble_dialog = std::make_unique<ReportUnsafeSiteDialogView>(
-      std::move(contents_wrapper), tab_interface);
-  std::unique_ptr<views::Widget> widget =
-      base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
-          std::move(bubble_dialog),
-          views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+
+  webui_dialog::WebDialogSpec spec;
+  spec.modal_type = ui::mojom::ModalType::kChild;
+  spec.parent_tab = tab_interface->GetWeakPtr();
+  // Sizing is left unconstrained; this dialog has always been content-sized.
+  //
+  // The page draws its own buttons, so ESC must not report a cancel.
+  spec.esc_should_cancel_dialog_override = false;
+  spec.dialog_element_identifier =
+      ReportUnsafeSiteDialogViews::kReportUnsafeSiteDialogId;
+  spec.element_identifier = kReportUnsafeSiteWebviewElementId;
+  spec.add_new_contents_callback =
+      base::BindRepeating(&OpenLinkInBrowser, tab_interface->GetWeakPtr());
+  std::unique_ptr<views::Widget> widget = webui_dialog::ChromeWebUIDialog::Show(
+      tab_interface->GetBrowserWindowInterface()
+          ->GetWindow()
+          ->GetNativeWindow(),
+      std::move(contents_wrapper), spec);
   feedback_ui->set_dialog_widget(widget.get());
 
   widget->MakeCloseSynchronous(

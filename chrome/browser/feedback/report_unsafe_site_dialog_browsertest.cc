@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,6 +32,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
+
+#if !BUILDFLAG(IS_MAC)
+#include "ui/aura/window.h"
+#endif
 
 // Browser tests for report-unsafe-site dialog.
 class ReportUnsafeSiteDialogBrowserTest : public PlatformBrowserTest {
@@ -195,8 +200,16 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest, CloseReason_Escape) {
   base::StatisticsRecorder::HistogramWaiter histogram_waiter(kHistogramName);
 
   content::WebContents* dialog_contents = OpenDialogAndGetWebContents();
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-      dialog_contents->GetTopLevelNativeWindow());
+#if BUILDFLAG(IS_MAC)
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeView(dialog_contents->GetNativeView());
+#else
+  views::Widget* widget = nullptr;
+  for (gfx::NativeView view = dialog_contents->GetNativeView(); view && !widget;
+       view = view->parent()) {
+    widget = views::Widget::GetWidgetForNativeView(view);
+  }
+#endif
   ui::Accelerator esc(ui::VKEY_ESCAPE, 0);
   EXPECT_TRUE(widget->client_view()->AcceleratorPressed(esc));
 
