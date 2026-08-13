@@ -10,6 +10,7 @@
 #include "base/functional/function_ref.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -95,7 +96,7 @@ const AutofillField* FindField(
 void EmailVerifierDelegate::Verify(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
-    std::string email_utf8,
+    std::string display_email,
     FieldGlobalId token_field_id,
     const std::string& nonce,
     const content::webid::EmailVerifier::Result& result) {
@@ -118,13 +119,13 @@ void EmailVerifierDelegate::Verify(
       result, nonce,
       base::BindOnce(&EmailVerifierDelegate::OnVerificationResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(), manager, email_field_id,
-                     email_utf8, token_field_id, result.issuer_site));
+                     display_email, token_field_id, result.issuer_site));
 }
 
 void EmailVerifierDelegate::OnVerificationResponseReceived(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
-    std::string email,
+    std::string display_email,
     FieldGlobalId token_field_id,
     net::SchemefulSite issuer_site,
     std::optional<std::string> token) {
@@ -151,7 +152,7 @@ void EmailVerifierDelegate::OnVerificationResponseReceived(
     return;
   }
   issuers_[token_field_id] = issuer_site.GetURL();
-  manager->driver().SendEmailVerificationToken(email_field_id, email,
+  manager->driver().SendEmailVerificationToken(email_field_id, display_email,
                                                token_field_id, *token);
   NotifyFlowCompleted(manager.get(), email_field_id,
                       EvpAutofillFlowResult::kTokenSentToRenderer);
@@ -160,7 +161,7 @@ void EmailVerifierDelegate::OnVerificationResponseReceived(
 void EmailVerifierDelegate::OnEmailVerificationDecision(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
-    std::string email_utf8,
+    std::string display_email,
     FieldGlobalId token_field_id,
     std::string nonce,
     content::webid::EmailVerifier::Result result,
@@ -187,23 +188,23 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
         base::DictValue email_dict;
         if (const base::DictValue* existing =
                 prefs->GetDict(prefs::kAutofillEmailVerificationState)
-                    .FindDict(email_utf8)) {
+                    .FindDict(display_email)) {
           email_dict = existing->Clone();
         }
         email_dict.Set("allowed", true);
         email_dict.Set("issuer_site", result.issuer_site.Serialize());
         email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
-        update->Set(email_utf8, std::move(email_dict));
+        update->Set(display_email, std::move(email_dict));
       }
 
-      Verify(manager, email_field_id, email_utf8, token_field_id, nonce,
+      Verify(manager, email_field_id, display_email, token_field_id, nonce,
              result);
 
       if (manager->client().GetStrikeDatabase()) {
         EmailVerificationStrikeDatabase strike_db(
             manager->client().GetStrikeDatabase());
         strike_db.ClearStrikes(
-            EmailVerificationStrikeDatabase::GetId(email_utf8));
+            EmailVerificationStrikeDatabase::GetId(display_email));
       }
       break;
     }
@@ -211,7 +212,8 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
       if (manager->client().GetStrikeDatabase()) {
         EmailVerificationStrikeDatabase strike_db(
             manager->client().GetStrikeDatabase());
-        strike_db.AddStrike(EmailVerificationStrikeDatabase::GetId(email_utf8));
+        strike_db.AddStrike(
+            EmailVerificationStrikeDatabase::GetId(display_email));
       }
       NotifyFlowCompleted(manager.get(), email_field_id,
                           EvpAutofillFlowResult::kUserDeclinedPermissionPrompt);
@@ -252,19 +254,19 @@ void EmailVerifierDelegate::OnIsVerifiable(
     return;
   }
 
+  std::string display_email = base::ToLowerASCII(base::UTF16ToUTF8(email));
   if (already_allowed) {
-    Verify(manager, email_field_id, base::UTF16ToUTF8(email), token_field_id,
-           nonce, *result);
+    Verify(manager, email_field_id, display_email, token_field_id, nonce,
+           *result);
     return;
   }
 
   net::SchemefulSite issuer_site = result->issuer_site;
   manager->client().ShowEmailVerificationPopup(
-      email_field_bounds, issuer_site, email,
+      email_field_bounds, issuer_site, base::UTF8ToUTF16(display_email),
       base::BindOnce(&EmailVerifierDelegate::OnEmailVerificationDecision,
                      weak_ptr_factory_.GetWeakPtr(), manager, email_field_id,
-                     base::UTF16ToUTF8(email), token_field_id, nonce,
-                     std::move(*result)));
+                     display_email, token_field_id, nonce, std::move(*result)));
 }
 
 EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client) {
@@ -491,11 +493,13 @@ void EmailVerifierDelegate::OnFieldLostFocus(AutofillManager& manager,
     return;
   }
 
+  std::string lowercase_value = base::ToLowerASCII(base::UTF16ToUTF8(value));
+
   // Check 4: Deduplication (LRU Cache)
   auto it = std::ranges::find_if(last_verified_values_, [&](const auto& pair) {
     return pair.first == field_id;
   });
-  if (it != last_verified_values_.end() && it->second == value) {
+  if (it != last_verified_values_.end() && it->second == lowercase_value) {
     // Value is same, deduplicate. Move to back to update LRU status.
     auto pair = *it;
     last_verified_values_.erase(it);
@@ -507,7 +511,7 @@ void EmailVerifierDelegate::OnFieldLostFocus(AutofillManager& manager,
   if (it != last_verified_values_.end()) {
     last_verified_values_.erase(it);
   }
-  last_verified_values_.push_back({field_id, value});
+  last_verified_values_.push_back({field_id, lowercase_value});
   if (last_verified_values_.size() > 5) {
     last_verified_values_.erase(last_verified_values_.begin());
   }
@@ -564,13 +568,14 @@ void EmailVerifierDelegate::TriggerVerification(
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
       rfh, blink::mojom::WebFeature::kEmailVerificationProtocol);
 
-  std::string email_utf8 = base::UTF16ToUTF8(email_value);
+  std::string display_email =
+      base::ToLowerASCII(base::UTF16ToUTF8(email_value));
 
   if (manager.client().GetStrikeDatabase()) {
     EmailVerificationStrikeDatabase strike_db(
         manager.client().GetStrikeDatabase());
     if (strike_db.ShouldBlockFeature(
-            EmailVerificationStrikeDatabase::GetId(email_utf8))) {
+            EmailVerificationStrikeDatabase::GetId(display_email))) {
       NotifyFlowCompleted(&manager, email_field.global_id(),
                           EvpAutofillFlowResult::kStrikeDatabaseBlock);
       return;
@@ -579,12 +584,12 @@ void EmailVerifierDelegate::TriggerVerification(
 
   const base::DictValue& state =
       prefs->GetDict(prefs::kAutofillEmailVerificationState);
-  const base::DictValue* email_data = state.FindDict(email_utf8);
+  const base::DictValue* email_data = state.FindDict(display_email);
   const bool already_allowed =
       email_data && email_data->FindBool("allowed").value_or(false);
 
   verifier->CheckIfVerifiable(
-      email_utf8,
+      display_email,
       base::BindOnce(&EmailVerifierDelegate::OnIsVerifiable,
                      weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr(),
                      email_field.global_id(), token_field->global_id(),

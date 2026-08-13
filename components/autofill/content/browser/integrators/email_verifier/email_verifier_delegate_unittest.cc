@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/browser/integrators/email_verifier/email_verifier_delegate.h"
 
+#include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +31,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/test_metrics_web_contents_observer_embedder.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/common/content_features.h"
@@ -1251,6 +1253,208 @@ TEST_F(EmailVerifierDelegateTest, UpdateEmailVerificationStateFailed) {
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Autofill.FlowResult",
       EvpAutofillFlowResult::kVerificationFailed, 1);
+}
+
+// Verifies that declining a mixed-case email records a strike against the
+// lowercased email, and filling the email in any casing later correctly blocks
+// on reaching the strike limit.
+TEST_F(EmailVerifierDelegateTest,
+       MixedCaseEmailDeclinedAddsStrikeAndBlocksLaterFills) {
+  base::test::ScopedFeatureList feature_list{
+      ::features::kEmailVerificationProtocol};
+
+  FormStructure* form = SetUpValidForm();
+  std::string lower_email = "mixedcase@example.com";
+
+  client().set_test_strike_database(std::make_unique<TestStrikeDatabase>());
+  EmailVerificationStrikeDatabase strike_db(client().GetStrikeDatabase());
+  std::string strike_id = EmailVerificationStrikeDatabase::GetId(lower_email);
+
+  // 1. Decline with mixed-case email (u"MixedCase@Example.COM").
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(lower_email, _))
+      .WillOnce(RunOnceCallback<1>(CreateVerifiableResult(lower_email)));
+  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+      .WillOnce(RunOnceCallback<3>(
+          AutofillClient::EmailVerificationPermissionUiResult::kDeclined));
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(EMAIL_ADDRESS, u"MixedCase@Example.COM");
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
+
+  // Strike is recorded against lowercased email ID.
+  EXPECT_EQ(strike_db.GetStrikes(strike_id), 1);
+
+  // 2. Add strikes to reach the block limit.
+  strike_db.AddStrikes(2, strike_id);
+  ASSERT_TRUE(strike_db.ShouldBlockFeature(strike_id));
+
+  // 3. Filling lowercase "mixedcase@example.com" is blocked by strikes.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_CALL(email_verifier(), Verify).Times(0);
+    EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+
+    profile.SetRawInfo(EMAIL_ADDRESS, u"mixedcase@example.com");
+    delegate().OnFillOrPreviewForm(
+        manager(), form->global_id(), form->field(0)->global_id(),
+        mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+        &profile);
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Evp.Autofill.FlowResult",
+        EvpAutofillFlowResult::kStrikeDatabaseBlock, 1);
+  }
+
+  // 4. Filling uppercase "MIXEDCASE@EXAMPLE.COM" is also blocked by strikes.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_CALL(email_verifier(), Verify).Times(0);
+    EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+
+    profile.SetRawInfo(EMAIL_ADDRESS, u"MIXEDCASE@EXAMPLE.COM");
+    delegate().OnFillOrPreviewForm(
+        manager(), form->global_id(), form->field(0)->global_id(),
+        mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+        &profile);
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Evp.Autofill.FlowResult",
+        EvpAutofillFlowResult::kStrikeDatabaseBlock, 1);
+  }
+}
+
+// Verifies that if a lowercased email is already in
+// kAutofillEmailVerificationState, autofilling a mixed-case email bypasses the
+// permission prompt and directly triggers Verify.
+TEST_F(EmailVerifierDelegateTest,
+       MixedCaseEmailBypassesPromptIfAlreadyInPrefs) {
+  base::test::ScopedFeatureList feature_list{
+      ::features::kEmailVerificationProtocol};
+
+  FormStructure* form = SetUpValidForm();
+  std::string lower_email = "mixedcase@example.com";
+
+  PrefService* prefs = client().GetPrefs();
+  ASSERT_TRUE(prefs);
+  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
+  base::DictValue email_dict;
+  email_dict.Set("allowed", true);
+  email_dict.Set("issuer_site", "https://example.com");
+  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
+  update->Set(lower_email, std::move(email_dict));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(lower_email, _))
+      .WillOnce(RunOnceCallback<1>(CreateVerifiableResult(lower_email)));
+
+  // Prompt must NOT be shown.
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+
+  base::RunLoop verify_called_run_loop;
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(
+          DoAll(base::test::RunClosure(verify_called_run_loop.QuitClosure()),
+                RunOnceCallback<2>("test_token")));
+
+  EXPECT_CALL(driver(), SendEmailVerificationToken(
+                            form->field(0)->global_id(), lower_email,
+                            form->field(1)->global_id(), "test_token"));
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(EMAIL_ADDRESS, u"MixedCase@Example.COM");
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
+
+  verify_called_run_loop.Run();
+}
+
+// Verifies that ShowEmailVerificationPopup receives the lowercased email
+// address, and on acceptance the lowercased email is saved to prefs.
+TEST_F(EmailVerifierDelegateTest,
+       MixedCaseEmail_ShowPopupReceivesLowercasedEmailAndSavesToPrefs) {
+  base::test::ScopedFeatureList feature_list{
+      ::features::kEmailVerificationProtocol};
+
+  FormStructure* form = SetUpValidForm();
+  std::string lower_email = "mixedcase@example.com";
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(lower_email, _))
+      .WillOnce(RunOnceCallback<1>(CreateVerifiableResult(lower_email)));
+
+  EXPECT_CALL(client(), ShowEmailVerificationPopup(
+                            _, _, std::u16string(u"mixedcase@example.com"), _))
+      .WillOnce(RunOnceCallback<3>(
+          AutofillClient::EmailVerificationPermissionUiResult::kAccepted));
+
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>("test_token"));
+
+  EXPECT_CALL(driver(), SendEmailVerificationToken(
+                            form->field(0)->global_id(), lower_email,
+                            form->field(1)->global_id(), "test_token"));
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(EMAIL_ADDRESS, u"MixedCase@Example.COM");
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
+
+  PrefService* prefs = client().GetPrefs();
+  ASSERT_TRUE(prefs);
+  const base::DictValue& state =
+      prefs->GetDict(prefs::kAutofillEmailVerificationState);
+  EXPECT_TRUE(state.contains(lower_email));
+  EXPECT_FALSE(state.contains("MixedCase@Example.COM"));
+}
+
+// Verifies that OnFieldLostFocus deduplicates email values case-insensitively.
+TEST_F(EmailVerifierDelegateTest,
+       OnFieldLostFocus_DeduplicatesCaseInsensitive) {
+  FormStructure* form = SetUpValidForm();
+  std::string lower_email = "mixedcase@example.com";
+
+  // Expect exactly ONE verification trigger.
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(lower_email, _))
+      .WillOnce(RunOnceCallback<1>(CreateVerifiableResult(lower_email)));
+
+  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+      .WillOnce(RunOnceCallback<3>(
+          AutofillClient::EmailVerificationPermissionUiResult::kAccepted));
+
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>("test_token"));
+
+  // 1. Edit with mixed-case and lose focus -> triggers verification.
+  form->field(0)->set_value(u"MixedCase@Example.COM");
+  form->field(0)->AddFieldModifier(FieldModifier::kUser);
+
+  delegate().OnAfterFocusOnFormField(manager(), form->global_id(),
+                                     form->field(0)->global_id());
+  delegate().OnAfterFocusOnNonFormField(manager());
+
+  // 2. Change casing to UPPERCASE and lose focus -> deduplicated (no second
+  // trigger).
+  form->field(0)->set_value(u"MIXEDCASE@EXAMPLE.COM");
+  form->field(0)->AddFieldModifier(FieldModifier::kUser);
+
+  delegate().OnAfterFocusOnFormField(manager(), form->global_id(),
+                                     form->field(0)->global_id());
+  delegate().OnAfterFocusOnNonFormField(manager());
 }
 
 }  // namespace autofill
