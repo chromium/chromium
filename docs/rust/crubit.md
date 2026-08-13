@@ -56,8 +56,13 @@ Other notes:
 
 ## Known issues
 
-* https://crbug.com/536539387:
-  Crubit support libraries may trigger `-Wnullability-completeness`
+* https://crbug.com/545486505:
+  Crubit link failure: `lld-link: error: undefined symbol: ___crubit_thunk_foo_bar_baz`
+    - `cpp_api_from_rust`-generated APIs cannot be called from another build
+      component (another `.so` or `.dll`) than the one that contains the
+      Crubit-generated `source_set`.
+    - A workaround is to define and call out-of-line functions.  See for example
+      https://crbug.com/545486505#comment2
 
 ## Using `cpp_api_from_rust` in Chromium
 
