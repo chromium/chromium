@@ -464,7 +464,10 @@ void OmniboxPopupPresenterBase::OnEmbeddedPermissionDialogChanged(
     const gfx::Size& prompt_size) {
   SetPermissionPromptShowing(is_showing);
   if (!is_showing) {
-    // Set dismissal handling flag so `kBlur` does not close Omnibox popup.
+    // Set dismissal handling flag to ensure Omnibox popup does not close due to
+    // `kBlur` while dismissal cleanup finishes running. (The prompt is not
+    // showing during dismissal, so `is_showing` is false and does not prevent
+    // Omnibox popup from closing via `SetPermissionPromptShowing`).
     // Do not call `FocusLocation()` here, as refocusing the omnibox on
     // PEPC dismissal re-triggers WebUI media access requests.
     is_handling_prompt_dismissal_ = true;
@@ -541,6 +544,11 @@ void OmniboxPopupPresenterBase::OnFileSelectionClosed() {}
 
 void OmniboxPopupPresenterBase::SetPermissionPromptShowing(bool showing) {
   is_prompt_showing_ = showing;
+}
+
+void OmniboxPopupPresenterBase::ResetPermissionPromptShowingState() {
+  is_prompt_showing_ = false;
+  is_handling_prompt_dismissal_ = false;
 }
 
 void OmniboxPopupPresenterBase::HandlePermissionPromptDismissal() {

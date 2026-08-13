@@ -251,6 +251,7 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
 }
 
 void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus() {
+  ResetPermissionPromptShowingState();
   const bool user_input_in_progress =
       controller()->edit_model()->user_input_in_progress();
   const std::u16string& user_text = controller()->edit_model()->user_text();
