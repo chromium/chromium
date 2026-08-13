@@ -5767,13 +5767,6 @@
       status: "stable",
     },
     {
-      // Fix for notifying changed slots in different shadow roots during
-      // manual assignment. crbug.com/517322978
-      // Enabled in M151, safe to remove in M153.
-      name: "SlotAssignNotifyDifferentShadowRoots",
-      status: "stable",
-    },
-    {
       name: "SmallerViewportUnits",
       status: "stable",
     },
