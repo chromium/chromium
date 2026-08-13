@@ -6,12 +6,15 @@
 
 #include <fcntl.h>
 #include <limits.h>
-#include <memory>
 #include <stdlib.h>
-#include <string_view>
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
+
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -30,6 +33,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "remoting/base/logging.h"
@@ -80,6 +84,30 @@ void KillTmuxSession(int32_t id) {
 void TerminateProcessInBackground(base::Process process) {
   process.Terminate(0, false);
   base::EnsureProcessTerminated(std::move(process));
+}
+
+std::optional<pid_t> GetTmuxPaneShellPid(int32_t id) {
+  base::FilePath tmux_path = FindTmuxOrTmx2Path();
+  if (tmux_path.empty()) {
+    return std::nullopt;
+  }
+
+  std::string output;
+  std::vector<std::string> args = {
+      tmux_path.value(), "-L", std::string(kTmuxSocketName),
+      "display-message", "-p", "-t",
+      GetTmuxSessionName(id), "-F", "#{pane_pid}"};
+
+  if (!base::GetAppOutput(args, &output)) {
+    return std::nullopt;
+  }
+
+  output = base::TrimWhitespaceASCII(output, base::TRIM_ALL);
+  int int_pid;
+  if (base::StringToInt(output, &int_pid) && int_pid > 0) {
+    return static_cast<pid_t>(int_pid);
+  }
+  return std::nullopt;
 }
 
 // PreExecDelegate to set up the PTY session in the child process. It creates
@@ -346,6 +374,19 @@ class TerminalSessionLinux : public TerminalSession {
     ssize_t bytes_read =
         HANDLE_EINTR(read(pty_fd_.get(), buffer, sizeof(buffer)));
     if (bytes_read > 0) {
+      // Retrieve the shell PID if it hasn't been retrieved yet.
+      // This is done once when output is first received since that means that
+      // the tmux pane has been successfully created.
+      if (!shell_pid_retrieval_started_) {
+        shell_pid_retrieval_started_ = true;
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE,
+            {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+            base::BindOnce(&GetTmuxPaneShellPid, id_),
+            base::BindOnce(&TerminalSessionLinux::OnShellPidRetrieved,
+                           weak_factory_.GetWeakPtr()));
+      }
       output_callback_.Run(id_, std::string(buffer, bytes_read));
     } else {
       if (bytes_read < 0) {
@@ -360,6 +401,18 @@ class TerminalSessionLinux : public TerminalSession {
     }
   }
 
+  void OnShellPidRetrieved(std::optional<pid_t> pid) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (pid) {
+      shell_pid_ = *pid;
+      HOST_LOG << "Retrieved shell PID " << *pid
+               << " for terminal session " << id_;
+      // TODO(kraphael): Start monitoring the shell process.
+    } else {
+      LOG(WARNING) << "Failed to retrieve shell PID for tmux terminal " << id_;
+    }
+  }
+
   base::ScopedFD pty_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::Process process_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<base::FileDescriptorWatcher::Controller> output_watcher_
@@ -371,6 +424,9 @@ class TerminalSessionLinux : public TerminalSession {
   bool detached_ = false;
   bool terminated_ = false;
   scoped_refptr<base::SequencedTaskRunner> writer_task_runner_;
+  std::optional<pid_t> shell_pid_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool shell_pid_retrieval_started_
+      GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
