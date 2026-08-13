@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 
+#include "base/check_deref.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_proxy.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace ash {
@@ -62,8 +64,8 @@ CupsPrintersManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  std::unique_ptr<CupsPrintersManager> manager =
-      CupsPrintersManager::Create(profile);
+  std::unique_ptr<CupsPrintersManager> manager = CupsPrintersManager::Create(
+      CHECK_DEREF(g_browser_process->local_state()), profile);
   if (ProfileHelper::IsPrimaryProfile(profile)) {
     proxy_->SetManager(manager.get());
   }

@@ -78,7 +78,8 @@ class CupsPrintersManager : public PrinterInstallationManager,
       base::OnceCallback<void(const chromeos::CupsPrinterStatus&)>;
 
   // Factory function.
-  static std::unique_ptr<CupsPrintersManager> Create(Profile* profile);
+  static std::unique_ptr<CupsPrintersManager> Create(PrefService& local_state,
+                                                     Profile* profile);
 
   // Factory function that allows injected dependencies, for testing.  Ownership
   // is not taken of any of the raw-pointer arguments.

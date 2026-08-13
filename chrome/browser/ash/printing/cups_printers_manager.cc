@@ -1324,6 +1324,7 @@ class CupsPrintersManagerImpl
 
 // static
 std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
+    PrefService& local_state,
     Profile* profile) {
   return std::make_unique<CupsPrintersManagerImpl>(
       SyncedPrintersManagerFactory::GetInstance()->GetForBrowserContext(
@@ -1331,7 +1332,7 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
       UsbPrinterDetector::Create(), ZeroconfPrinterDetector::Create(),
       CreatePpdProvider(profile), DlcserviceClient::Get(),
       UsbPrinterNotificationController::Create(profile),
-      PrintServersManager::Create(profile),
+      PrintServersManager::Create(local_state, profile),
       EnterprisePrintersProvider::Create(CrosSettings::Get(), profile),
       PrinterEventTrackerFactory::GetInstance()->GetForBrowserContext(profile),
       profile->GetPrefs());

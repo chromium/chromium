@@ -2861,7 +2861,8 @@ ExtensionFunction::ResponseAction AutotestPrivateGetPrinterListFunction::Run() {
   DVLOG(1) << "AutotestPrivateGetPrinterListFunction";
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  printers_manager_ = ash::CupsPrintersManager::Create(profile);
+  printers_manager_ = ash::CupsPrintersManager::Create(
+      CHECK_DEREF(g_browser_process->local_state()), profile);
   printers_manager_->AddObserver(this);
 
   // Set up a timer to finish waiting after 10 seconds

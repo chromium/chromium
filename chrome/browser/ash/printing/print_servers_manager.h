@@ -17,6 +17,7 @@
 
 class PrefRegistrySimple;
 class Profile;
+class PrefService;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -59,7 +60,8 @@ class PrintServersManager {
   };
 
   // Factory function.
-  static std::unique_ptr<PrintServersManager> Create(Profile* profile);
+  static std::unique_ptr<PrintServersManager> Create(PrefService& local_state,
+                                                     Profile* profile);
 
   // Factory function that allows injected dependencies, for testing.
   static std::unique_ptr<PrintServersManager> CreateForTesting(
