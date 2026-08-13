@@ -196,6 +196,7 @@ function_registration("api_registration") {
     "//chrome/browser/ash/extensions/input_method_api.h",
     "//chrome/browser/ash/extensions/login_screen_ui/login_screen_ui_api.h",
     "//chrome/browser/ash/extensions/media_player_api.h",
+    "//chrome/browser/ash/extensions/speech/speech_recognition_private_api.h",
     "//chrome/browser/ash/extensions/users_private/users_private_api.h",
     "//chrome/browser/extensions/api/enterprise_login/enterprise_login_api.h",
     "certificate_provider/certificate_provider_api.h",

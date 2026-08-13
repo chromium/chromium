@@ -13,6 +13,7 @@ language_settings_private.webidl
 login_state.idl
 quick_unlock_private.idl
 settings_private.idl
+speech_recognition_private.idl
 tabs.json
 # TODO(b/290700654): Used by https://chromium.googlesource.com/apps/libapps/
 terminal_private.json

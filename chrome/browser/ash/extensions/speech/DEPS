@@ -18,4 +18,5 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/speech",
   "+chrome/browser/ui/browser.h",
+  "+chrome/common/extensions/api",
 ]

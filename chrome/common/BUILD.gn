@@ -324,10 +324,6 @@ static_library("common_lib") {
         "//services/device/public/cpp/usb",
       ]
     }
-    if (is_chromeos) {
-      assert(enable_extensions)
-      deps += [ "//chromeos/ash/experiences/extensions" ]
-    }
   }
 
   if (is_mac) {

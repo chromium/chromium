@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager_factory.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
-#include "chromeos/ash/experiences/extensions/api/speech_recognition_private.h"
+#include "chrome/common/extensions/api/speech_recognition_private.h"
 #include "content/public/browser/browser_context.h"
 
 namespace extensions {
