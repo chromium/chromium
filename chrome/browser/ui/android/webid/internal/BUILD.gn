@@ -167,6 +167,9 @@ android_library("javatests") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+
+    # TODO(majidvp): Remove this dependency after test clean up. https://crbug.com/40184145
+    "//chrome/android:chrome_java",
     "//chrome/android/javatests:chrome_test_java_helper",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
