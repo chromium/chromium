@@ -113,9 +113,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             };
 
     private @Nullable Tab mObservedTab;
-    private @Nullable CrossDevicePrefTracker mTrackerBeingObserved;
-    private @Nullable CrossDevicePrefTrackerObserver mTrackerObserver;
     private @Nullable Runnable mLocalStateObserver;
+    private @Nullable CrossDevicePrefTracker mPrefTrackerBeingObserved;
+    private @Nullable CrossDevicePrefTrackerObserver mPrefTrackerObserver;
 
     private final Callback<@Nullable Tab> mTabChangeCallback =
             new Callback<@Nullable Tab>() {
@@ -161,19 +161,19 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         onTabChangeOrGainFocus(mActivityTabSupplier.get());
     }
 
-    private void stopObservingTracker() {
-        if (mTrackerObserver != null && mTrackerBeingObserved != null) {
-            mTrackerBeingObserved.removeObserver(mTrackerObserver);
-        }
-        mTrackerObserver = null;
-        mTrackerBeingObserved = null;
-    }
-
     private void stopObservingLocalState() {
         if (mLocalStateObserver != null) {
             LocalStatePrefs.removeObserver(mLocalStateObserver);
         }
         mLocalStateObserver = null;
+    }
+
+    private void stopObservingPrefTracker() {
+        if (mPrefTrackerObserver != null && mPrefTrackerBeingObserved != null) {
+            mPrefTrackerBeingObserved.removeObserver(mPrefTrackerObserver);
+        }
+        mPrefTrackerObserver = null;
+        mPrefTrackerBeingObserved = null;
     }
 
     /**
@@ -192,52 +192,70 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         @Nullable Profile profile = currentTab.getProfile();
         if (profile == null) return;
 
+        boolean localStateReady = LocalStatePrefs.areNativePrefsLoaded();
+
         @Nullable CrossDevicePrefTracker crossDevicePrefTracker =
                 CrossDevicePrefTrackerFactory.getForProfile(profile);
         if (crossDevicePrefTracker == null) return;
-
         @ServiceStatus int status = crossDevicePrefTracker.getServiceStatus();
-        boolean trackerReady = !NOT_READY_YET_STATES.contains(status);
-        boolean localStateReady = LocalStatePrefs.areNativePrefsLoaded();
+        boolean prefTrackerReady = !NOT_READY_YET_STATES.contains(status);
+
         if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
             Log.i(
                     TAG,
-                    "onTabChangeOrGainFocus - trackerReady = "
-                            + trackerReady
-                            + ", localStateReady = "
-                            + localStateReady);
+                    "onTabChangeOrGainFocus - localStateReady = "
+                            + localStateReady
+                            + ", prefTrackerReady = "
+                            + prefTrackerReady);
         }
 
         // If both dependencies are ready, stop any active observation and proceed to import.
-        if (trackerReady && localStateReady) {
-            stopObservingTracker();
+        if (localStateReady && prefTrackerReady) {
             stopObservingLocalState();
+            stopObservingPrefTracker();
             onCrossDevicePrefTrackerAndLocalStateReady(
                     crossDevicePrefTracker, status, profile, currentTab, availableImmediately);
             return;
         }
 
         // Otherwise, defer the logic by observing whichever dependency is not yet ready.
-        if (!trackerReady) {
-            ensureObservingTracker(crossDevicePrefTracker, profile);
-        } else {
-            stopObservingTracker();
-        }
-
         if (!localStateReady) {
             ensureObservingLocalState();
         } else {
             stopObservingLocalState();
         }
+
+        if (!prefTrackerReady) {
+            ensureObservingPrefTracker(crossDevicePrefTracker, profile);
+        } else {
+            stopObservingPrefTracker();
+        }
     }
 
-    private void ensureObservingTracker(CrossDevicePrefTracker tracker, Profile profile) {
-        if (mTrackerBeingObserved != null && mTrackerBeingObserved != tracker) {
-            stopObservingTracker();
-        }
-        if (mTrackerObserver != null) return;
+    private void ensureObservingLocalState() {
+        if (mLocalStateObserver != null) return;
 
-        mTrackerObserver =
+        if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+            Log.i(TAG, "Started observing local state");
+        }
+        mLocalStateObserver =
+                () -> {
+                    if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+                        Log.i(TAG, "Local state readiness observer was triggered");
+                    }
+                    onTabChangeOrGainFocus(
+                            mActivityTabSupplier.get(), /* availableImmediately= */ false);
+                };
+        LocalStatePrefs.addObserver(mLocalStateObserver);
+    }
+
+    private void ensureObservingPrefTracker(CrossDevicePrefTracker prefTracker, Profile profile) {
+        if (mPrefTrackerBeingObserved != null && mPrefTrackerBeingObserved != prefTracker) {
+            stopObservingPrefTracker();
+        }
+        if (mPrefTrackerObserver != null) return;
+
+        mPrefTrackerObserver =
                 new CrossDevicePrefTrackerObserver() {
                     @Override
                     public void onRemotePrefChanged(
@@ -261,25 +279,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                         onTabChangeOrGainFocus(currentTab, /* availableImmediately= */ false);
                     }
                 };
-        mTrackerBeingObserved = tracker;
-        tracker.addObserver(mTrackerObserver);
-    }
-
-    private void ensureObservingLocalState() {
-        if (mLocalStateObserver != null) return;
-
-        if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
-            Log.i(TAG, "Started observing local state");
-        }
-        mLocalStateObserver =
-                () -> {
-                    if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
-                        Log.i(TAG, "Local state readiness observer was triggered");
-                    }
-                    onTabChangeOrGainFocus(
-                            mActivityTabSupplier.get(), /* availableImmediately= */ false);
-                };
-        LocalStatePrefs.addObserver(mLocalStateObserver);
+        mPrefTrackerBeingObserved = prefTracker;
+        prefTracker.addObserver(mPrefTrackerObserver);
     }
 
     /**
@@ -755,7 +756,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             mObservedTab.removeObserver(mTabObserver);
             mObservedTab = null;
         }
-        stopObservingTracker();
         stopObservingLocalState();
+        stopObservingPrefTracker();
     }
 }
