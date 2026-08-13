@@ -3009,9 +3009,10 @@ TEST_F(OpusPipelineIntegrationTest, BasicPlayback_Opus441kHz) {
 // Tests that we signal ended even when audio runs longer than video track.
 TEST_F(PipelineIntegrationTest, BasicPlaybackAudioLongerThanVideo) {
   ASSERT_EQ(PIPELINE_OK, Start("bear_audio_longer_than_video_vp8.ogv"));
-  // Audio track is 2000ms. Video track is 1001ms. Duration should be higher
-  // of the two.
-  EXPECT_EQ(2000, pipeline_->GetMediaDuration().InMilliseconds());
+  // Video track is 1001ms. Audio track payload is 2000ms, but has a container
+  // duration of 2002ms due to the -2.67ms Vorbis priming offset. Duration
+  // should be the higher of the two.
+  EXPECT_EQ(2002, pipeline_->GetMediaDuration().InMilliseconds());
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 }
@@ -3019,9 +3020,10 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackAudioLongerThanVideo) {
 // Tests that we signal ended even when audio runs shorter than video track.
 TEST_F(PipelineIntegrationTest, BasicPlaybackAudioShorterThanVideo) {
   ASSERT_EQ(PIPELINE_OK, Start("bear_audio_shorter_than_video_vp8.ogv"));
-  // Audio track is 500ms. Video track is 1001ms. Duration should be higher of
-  // the two.
-  EXPECT_EQ(1001, pipeline_->GetMediaDuration().InMilliseconds());
+  // Audio track is 500ms. Video track is 1001ms. Container duration is 1003ms
+  // because it spans from the audio stream's -2.67ms Vorbis priming offset
+  // to the video track's 1001ms end timestamp.
+  EXPECT_EQ(1003, pipeline_->GetMediaDuration().InMilliseconds());
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 }

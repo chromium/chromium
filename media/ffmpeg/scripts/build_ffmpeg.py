@@ -443,7 +443,7 @@ def BuildFFmpeg(target_os, target_arch, host_os, host_arch, parallel_jobs,
         return
 
     shutil.rmtree(config_dir, ignore_errors=True)
-    os.makedirs(config_dir)
+    os.makedirs(os.path.join(config_dir, 'ffbuild'))
 
     PrintAndCheckCall([os.path.join(FFMPEG_DIR, 'configure')] +
                       configure_flags,
@@ -496,11 +496,19 @@ def BuildFFmpeg(target_os, target_arch, host_os, host_arch, parallel_jobs,
             (r'(#define HAVE_EBP_AVAILABLE [01])',
              r'/* \1 -- ebp selection is done by the chrome build */'),
             (r'(#define HAVE_X86_32_7REGS [01])',
-             r'#define HAVE_X86_32_7REGS 0 /* \1 -- forced to 0 to avoid inline asm register exhaustion */')
+             r'#define HAVE_X86_32_7REGS 0 /* \1 -- forced to 0 to avoid inline asm register exhaustion */'),
+            (r'(#define HAVE_X86_6REGS [01])',
+             r'#define HAVE_X86_6REGS 0 /* \1 -- forced to 0 to avoid inline asm register exhaustion */'),
+            (r'(#define HAVE_X86_7REGS [01])',
+             r'#define HAVE_X86_7REGS 0 /* \1 -- forced to 0 to avoid inline asm register exhaustion */')
         ]
         pre_make_asm_rewrites += [
             (r'(%define HAVE_X86_32_7REGS [01])',
-             r'%define HAVE_X86_32_7REGS 0 ; \1 -- forced to 0 to avoid inline asm register exhaustion')
+             r'%define HAVE_X86_32_7REGS 0 ; \1 -- forced to 0 to avoid inline asm register exhaustion'),
+            (r'(%define HAVE_X86_6REGS [01])',
+             r'%define HAVE_X86_6REGS 0 ; \1 -- forced to 0 to avoid inline asm register exhaustion'),
+            (r'(%define HAVE_X86_7REGS [01])',
+             r'%define HAVE_X86_7REGS 0 ; \1 -- forced to 0 to avoid inline asm register exhaustion')
         ]
 
     RewriteFile(os.path.join(config_dir, 'config.h'), pre_make_rewrites)
@@ -819,9 +827,6 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch,
                     '--sysroot=' +
                     os.path.join(CHROMIUM_ROOT_DIR,
                                  'build/linux/debian_bullseye_arm64-sysroot'),
-                    # See crbug.com/1467681. These could be removed eventually
-                    '--disable-dotprod',
-                    '--disable-i8mm',
                 ])
             configure_flags['Common'].extend([
                 '--arch=aarch64',

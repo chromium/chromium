@@ -73,7 +73,7 @@ TEST(AudioVideoMetadataExtractorTest, InvalidFile) {
 
 TEST(AudioVideoMetadataExtractorTest, AudioOGG) {
   std::unique_ptr<AudioVideoMetadataExtractor> extractor =
-      GetExtractor("9ch.ogg", true, true, 0.1, -1, -1);
+      GetExtractor("9ch.ogg", true, true, 0.102667, -1, -1);
   EXPECT_EQ("Processed by SoX", extractor->comment());
 
   EXPECT_EQ("ogg", extractor->stream_infos()[0].type);

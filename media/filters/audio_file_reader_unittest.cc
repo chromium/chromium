@@ -228,11 +228,13 @@ TEST_P(AudioFileReaderTest, FLAC_WithMask) {
 }
 
 TEST_P(AudioFileReaderTest, Vorbis) {
-  // oggdec produces 15435 samples, but the last 629 samples are silence
-  // corresponding to discard padding. FFmpeg applies this discard padding,
-  // resulting in 15307 samples.
+  // oggdec produces 15435 samples. FFmpeg assigns a -2.902ms (-128 samples at
+  // 44.1kHz) start timestamp offset for the priming packet, leading to an
+  // estimated container duration of 352903us (~15564 frames). After trimming
+  // the priming audio and applying 629 samples of discard padding at the end,
+  // FFmpeg outputs 15307 samples (15435 - 128 = 15307).
   RunTest("sfx.ogg", "3.95,3.02,3.98,5.14,5.65,5.13,", 1, 44100,
-          base::Microseconds(350001), 15436, 15307);
+          base::Microseconds(352903), 15564, 15307);
 }
 
 TEST_P(AudioFileReaderTest, WaveU8) {
@@ -316,7 +318,7 @@ TEST_P(AudioFileReaderTest, VorbisValidChannelLayout) {
   }
   // The total samples should be 4800 after applying discard padding.
   RunTest("9ch.ogg", "102.08,12.51,57.91,56.94,63.05,17.30,", 9, 48000,
-          base::Microseconds(100001), 4801, 4800);
+          base::Microseconds(102668), 4929, 4800);
 }
 
 TEST_P(AudioFileReaderTest, WaveValidFourChannelLayout) {
