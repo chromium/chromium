@@ -1,0 +1,9 @@
+---
+# Global settings
+BasedOnStyle: Chromium
+---
+Language: JavaScript
+ColumnLimit: 80
+IndentWidth: 2
+AllowShortIfStatementsOnASingleLine: WithoutElse
+BreakBeforeTernaryOperators: true

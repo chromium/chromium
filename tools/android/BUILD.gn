@@ -16,6 +16,8 @@ group("android_tools") {
     "//tools/android/forwarder2",
     "//tools/android/io_benchmark",
     "//tools/android/kerberos/SpnegoAuthenticator:spnego_authenticator_apk",
+    "//tools/android/layout_inspector:layout_inspector_py",
+    "//tools/android/layout_inspector:run_layout_inspector_test",
     "//tools/android/memconsumer:memconsumer_apk",
     "//tools/android/memdump",
     "//tools/android/memtrack_helper",

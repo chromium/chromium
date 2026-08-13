@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+import("//build/util/generate_wrapper.gni")
+
+python_library("layout_inspector_py") {
+  pydeps_file = "run_server.pydeps"
+  data = [
+    "static/index.html",
+    "static/style.css",
+    "static/app.js",
+    "static/model.js",
+  ]
+}
+
+python_library("layout_inspector_test_py") {
+  testonly = true
+  pydeps_file = "run_server_test.pydeps"
+  data_deps = [ ":layout_inspector_py" ]
+}
+
+generate_wrapper("run_layout_inspector_test") {
+  testonly = true
+  executable = "run_server_test.py"
+  wrapper_script = "$root_out_dir/bin/run_layout_inspector_test"
+  data_deps = [ ":layout_inspector_test_py" ]
+}
