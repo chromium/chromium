@@ -65,6 +65,54 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="DevTools.Comments.ChangeRecorded" units="count"
+    expires_after="2027-08-12">
+  <owner>nharshunova@google.com</owner>
+  <owner>yulunz@google.com</owner>
+  <summary>The number of changes made by the agent in one turn.</summary>
+</histogram>
+
+<histogram name="DevTools.Comments.ChangeSharedWithAgent" units="count"
+    expires_after="2027-08-12">
+  <owner>nharshunova@google.com</owner>
+  <owner>yulunz@google.com</owner>
+  <summary>The number of changes shared with the AI agent in one turn.</summary>
+</histogram>
+
+<histogram name="DevTools.Comments.CommentCreated" units="count"
+    expires_after="2027-08-12">
+  <owner>nharshunova@google.com</owner>
+  <owner>yulunz@google.com</owner>
+  <summary>The number of comments created in one turn.</summary>
+</histogram>
+
+<histogram name="DevTools.Comments.CommentResolvedBy{Resolver}" units="count"
+    expires_after="2027-08-12">
+  <owner>nharshunova@google.com</owner>
+  <owner>yulunz@google.com</owner>
+  <summary>The number of comments resolved by {Resolver} in one turn.</summary>
+  <token key="Resolver">
+    <variant name="Agent" summary="the AI agent"/>
+    <variant name="User" summary="the user"/>
+  </token>
+</histogram>
+
+<histogram name="DevTools.Comments.CommentSharedWithAgent" units="count"
+    expires_after="2027-08-12">
+  <owner>nharshunova@google.com</owner>
+  <owner>yulunz@google.com</owner>
+  <summary>
+    The number of comments shared with the AI agent in one turn.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Comments.CommentSize" units="characters"
+    expires_after="2027-08-12">
+  <owner>nharshunova@google.com</owner>
+  <owner>yulunz@google.com</owner>
+  <summary>The length of a comment in characters when created.</summary>
+</histogram>
+
 <histogram name="DevTools.DeveloperResourceLoaded"
     enum="DevToolsDeveloperResourceLoaded" expires_after="2026-12-27">
   <owner>bmeurer@google.com</owner>
