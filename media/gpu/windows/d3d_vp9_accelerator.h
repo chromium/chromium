@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_WINDOWS_D3D11_VP9_ACCELERATOR_H_
-#define MEDIA_GPU_WINDOWS_D3D11_VP9_ACCELERATOR_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D_VP9_ACCELERATOR_H_
+#define MEDIA_GPU_WINDOWS_D3D_VP9_ACCELERATOR_H_
 
 #include <d3d11_1.h>
 #include <d3d9.h>
@@ -17,14 +17,14 @@
 
 namespace media {
 
-class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
+class D3DVP9Accelerator : public VP9Decoder::VP9Accelerator {
  public:
-  D3D11VP9Accelerator(D3D11VideoDecoderClient* client, MediaLog* media_log);
+  D3DVP9Accelerator(D3D11VideoDecoderClient* client, MediaLog* media_log);
 
-  D3D11VP9Accelerator(const D3D11VP9Accelerator&) = delete;
-  D3D11VP9Accelerator& operator=(const D3D11VP9Accelerator&) = delete;
+  D3DVP9Accelerator(const D3DVP9Accelerator&) = delete;
+  D3DVP9Accelerator& operator=(const D3DVP9Accelerator&) = delete;
 
-  ~D3D11VP9Accelerator() override;
+  ~D3DVP9Accelerator() override;
 
   scoped_refptr<VP9Picture> CreateVP9Picture() override;
 
@@ -70,4 +70,4 @@ class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_WINDOWS_D3D11_VP9_ACCELERATOR_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D_VP9_ACCELERATOR_H_

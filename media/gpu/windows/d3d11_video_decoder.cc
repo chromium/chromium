@@ -175,7 +175,7 @@ bool D3D11VideoDecoder::InitializeAcceleratedDecoder(
   profile_ = config.profile();
   if (config.codec() == VideoCodec::kVP9) {
     accelerated_video_decoder_ = std::make_unique<VP9Decoder>(
-        std::make_unique<D3D11VP9Accelerator>(this, media_log_.get()), profile_,
+        std::make_unique<D3DVP9Accelerator>(this, media_log_.get()), profile_,
         config.color_space_info());
   } else if (config.codec() == VideoCodec::kH264) {
     accelerated_video_decoder_ = std::make_unique<H264Decoder>(

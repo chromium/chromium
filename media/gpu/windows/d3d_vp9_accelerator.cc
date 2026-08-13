@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/windows/d3d11_vp9_accelerator.h"
+#include "media/gpu/windows/d3d_vp9_accelerator.h"
 
 #include <string>
 #include <utility>
@@ -16,27 +16,28 @@ namespace media {
 
 using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
 
-D3D11VP9Accelerator::D3D11VP9Accelerator(D3D11VideoDecoderClient* client,
-                                         MediaLog* media_log)
+D3DVP9Accelerator::D3DVP9Accelerator(D3D11VideoDecoderClient* client,
+                                     MediaLog* media_log)
     : media_log_(media_log->Clone()), client_(client), status_feedback_(0) {
   DCHECK(client_);
 }
 
-D3D11VP9Accelerator::~D3D11VP9Accelerator() = default;
+D3DVP9Accelerator::~D3DVP9Accelerator() = default;
 
-scoped_refptr<VP9Picture> D3D11VP9Accelerator::CreateVP9Picture() {
+scoped_refptr<VP9Picture> D3DVP9Accelerator::CreateVP9Picture() {
   D3D11PictureBuffer* picture_buffer = client_->GetPicture();
-  if (!picture_buffer)
+  if (!picture_buffer) {
     return nullptr;
+  }
   return base::MakeRefCounted<D3D11VP9Picture>(picture_buffer, client_);
 }
 
-bool D3D11VP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
+bool D3DVP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
   return client_->GetWrapper()->WaitForFrameBegins(pic.picture_buffer());
 }
 
-void D3D11VP9Accelerator::CopyFrameParams(const D3D11VP9Picture& pic,
-                                          DXVA_PicParams_VP9* pic_params) {
+void D3DVP9Accelerator::CopyFrameParams(const D3D11VP9Picture& pic,
+                                        DXVA_PicParams_VP9* pic_params) {
 #define SET_PARAM(a, b) pic_params->a = pic.frame_hdr->b
 #define COPY_PARAM(a) SET_PARAM(a, a)
 
@@ -86,7 +87,7 @@ void D3D11VP9Accelerator::CopyFrameParams(const D3D11VP9Picture& pic,
   last_show_frame_ = pic.frame_hdr->show_frame;
 }
 
-void D3D11VP9Accelerator::CopyReferenceFrames(
+void D3DVP9Accelerator::CopyReferenceFrames(
     const D3D11VP9Picture& pic,
     DXVA_PicParams_VP9* pic_params,
     const Vp9ReferenceFrameVector& ref_frames) {
@@ -112,8 +113,8 @@ void D3D11VP9Accelerator::CopyReferenceFrames(
   }
 }
 
-void D3D11VP9Accelerator::CopyFrameRefs(DXVA_PicParams_VP9* pic_params,
-                                        const D3D11VP9Picture& pic) {
+void D3DVP9Accelerator::CopyFrameRefs(DXVA_PicParams_VP9* pic_params,
+                                      const D3D11VP9Picture& pic) {
   for (size_t i = 0; i < std::size(pic_params->frame_refs); i++) {
     UNSAFE_TODO(pic_params->frame_refs[i]) =
         UNSAFE_TODO(pic_params->ref_frame_map[pic.frame_hdr->ref_frame_idx[i]]);
@@ -125,7 +126,7 @@ void D3D11VP9Accelerator::CopyFrameRefs(DXVA_PicParams_VP9* pic_params,
   }
 }
 
-void D3D11VP9Accelerator::CopyLoopFilterParams(
+void D3DVP9Accelerator::CopyLoopFilterParams(
     DXVA_PicParams_VP9* pic_params,
     const Vp9LoopFilterParams& loop_filter_params) {
 #define SET_PARAM(a, b) pic_params->a = loop_filter_params.b
@@ -151,8 +152,8 @@ void D3D11VP9Accelerator::CopyLoopFilterParams(
   }
 }
 
-void D3D11VP9Accelerator::CopyQuantParams(DXVA_PicParams_VP9* pic_params,
-                                          const D3D11VP9Picture& pic) {
+void D3DVP9Accelerator::CopyQuantParams(DXVA_PicParams_VP9* pic_params,
+                                        const D3D11VP9Picture& pic) {
 #define SET_PARAM(a, b) pic_params->a = pic.frame_hdr->quant_params.b
   SET_PARAM(base_qindex, base_q_idx);
   SET_PARAM(y_dc_delta_q, delta_q_y_dc);
@@ -161,7 +162,7 @@ void D3D11VP9Accelerator::CopyQuantParams(DXVA_PicParams_VP9* pic_params,
 #undef SET_PARAM
 }
 
-void D3D11VP9Accelerator::CopySegmentationParams(
+void D3DVP9Accelerator::CopySegmentationParams(
     DXVA_PicParams_VP9* pic_params,
     const Vp9SegmentationParams& segmentation_params) {
 #define SET_PARAM(a, b) pic_params->stVP9Segments.a = segmentation_params.b
@@ -191,8 +192,8 @@ void D3D11VP9Accelerator::CopySegmentationParams(
 #undef SET_PARAM
 }
 
-void D3D11VP9Accelerator::CopyHeaderSizeAndID(DXVA_PicParams_VP9* pic_params,
-                                              const D3D11VP9Picture& pic) {
+void D3DVP9Accelerator::CopyHeaderSizeAndID(DXVA_PicParams_VP9* pic_params,
+                                            const D3D11VP9Picture& pic) {
   pic_params->uncompressed_header_size_byte_aligned =
       static_cast<USHORT>(pic.frame_hdr->uncompressed_header_size);
   pic_params->first_partition_size =
@@ -202,7 +203,7 @@ void D3D11VP9Accelerator::CopyHeaderSizeAndID(DXVA_PicParams_VP9* pic_params,
   pic_params->StatusReportFeedbackNumber = ++status_feedback_;
 }
 
-bool D3D11VP9Accelerator::SubmitDecoderBuffer(
+bool D3DVP9Accelerator::SubmitDecoderBuffer(
     const DXVA_PicParams_VP9& pic_params,
     const D3D11VP9Picture& pic) {
   auto pic_params_buffer =
@@ -228,15 +229,16 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
   return ok && client_->GetWrapper()->SubmitSlice();
 }
 
-DecodeStatus D3D11VP9Accelerator::SubmitDecode(
+DecodeStatus D3DVP9Accelerator::SubmitDecode(
     scoped_refptr<VP9Picture> picture,
     const Vp9SegmentationParams& segmentation_params,
     const Vp9LoopFilterParams& loop_filter_params,
     const Vp9ReferenceFrameVector& reference_frames) {
   D3D11VP9Picture* pic = static_cast<D3D11VP9Picture*>(picture.get());
 
-  if (!BeginFrame(*pic))
+  if (!BeginFrame(*pic)) {
     return DecodeStatus::kFail;
+  }
 
   DXVA_PicParams_VP9 pic_params = {};
   CopyFrameParams(*pic, &pic_params);
@@ -247,8 +249,9 @@ DecodeStatus D3D11VP9Accelerator::SubmitDecode(
   CopySegmentationParams(&pic_params, segmentation_params);
   CopyHeaderSizeAndID(&pic_params, *pic);
 
-  if (!SubmitDecoderBuffer(pic_params, *pic))
+  if (!SubmitDecoderBuffer(pic_params, *pic)) {
     return DecodeStatus::kFail;
+  }
 
   if (!client_->GetWrapper()->SubmitDecode()) {
     return DecodeStatus::kFail;
@@ -257,7 +260,7 @@ DecodeStatus D3D11VP9Accelerator::SubmitDecode(
   return DecodeStatus::kOk;
 }
 
-bool D3D11VP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> picture) {
+bool D3DVP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> picture) {
   D3D11VP9Picture* pic = static_cast<D3D11VP9Picture*>(picture.get());
   return client_->OutputResult(picture.get(), pic->picture_buffer());
 }
