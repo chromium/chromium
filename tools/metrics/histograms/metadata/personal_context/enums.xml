@@ -52,7 +52,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Settings link/button clicked"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/android/autofill/internal/java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java:NoticeInteraction, //chrome/browser/touch_to_fill/autofill/android/internal/java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillMediator.java:NoticeInteraction, //ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_mediator.mm:PopupNoticeInteractions) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/android/autofill/internal/java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java:NoticeInteraction, //chrome/browser/touch_to_fill/autofill/android/internal/java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillMediator.java:NoticeInteraction, //ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_mediator.mm:PopupNoticeInteractions, //ios/chrome/browser/autofill/model/forms_ai_private_inference_infobar_delegate_ios.mm:PopupNoticeInteractions) -->
 
 </enums>
 

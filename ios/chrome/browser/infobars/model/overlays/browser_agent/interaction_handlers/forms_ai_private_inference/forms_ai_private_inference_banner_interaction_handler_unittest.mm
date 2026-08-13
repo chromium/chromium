@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/forms_ai_private_inference/forms_ai_private_inference_banner_interaction_handler.h"
 
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/autofill/model/forms_ai_private_inference_infobar_delegate_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
@@ -17,9 +18,24 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+namespace {
+
+class FakeFormsAiPrivateInferenceInfoBarDelegateIOS
+    : public FormsAiPrivateInferenceInfoBarDelegateIOS {
+ public:
+  FakeFormsAiPrivateInferenceInfoBarDelegateIOS()
+      : FormsAiPrivateInferenceInfoBarDelegateIOS(nullptr) {}
+
+  MOCK_METHOD(void, OnSettingsLinkClicked, (), (override));
+  MOCK_METHOD(void, InfoBarDismissed, (), (override));
+};
+
+}  // namespace
 
 // Test fixture for FormsAiPrivateInferenceBannerInteractionHandler.
 class FormsAiPrivateInferenceBannerInteractionHandlerTest
@@ -51,12 +67,13 @@ TEST_F(FormsAiPrivateInferenceBannerInteractionHandlerTest,
 
   FormsAiPrivateInferenceBannerInteractionHandler handler(dispatcher);
 
-  std::unique_ptr<MockInfobarDelegate> delegate =
-      std::make_unique<MockInfobarDelegate>();
-  MockInfobarDelegate* mock_delegate = delegate.get();
+  std::unique_ptr<FakeFormsAiPrivateInferenceInfoBarDelegateIOS> delegate =
+      std::make_unique<FakeFormsAiPrivateInferenceInfoBarDelegateIOS>();
+  FakeFormsAiPrivateInferenceInfoBarDelegateIOS* mock_delegate = delegate.get();
   InfoBarIOS infobar(InfobarType::kInfobarTypeFormsAiPrivateInference,
                      std::move(delegate));
 
+  EXPECT_CALL(*mock_delegate, OnSettingsLinkClicked());
   EXPECT_CALL(*mock_delegate, InfoBarDismissed());
   handler.ShowModalButtonTapped(&infobar, &web_state_);
 

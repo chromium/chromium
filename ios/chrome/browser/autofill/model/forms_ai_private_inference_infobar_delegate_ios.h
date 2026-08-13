@@ -28,8 +28,14 @@ class FormsAiPrivateInferenceInfoBarDelegateIOS
   bool Accept() override;
   void InfoBarDismissed() override;
 
+  // Called when the settings link is clicked.
+  virtual void OnSettingsLinkClicked();
+
  private:
-  raw_ptr<PrefService> prefs_;
+  raw_ptr<PrefService> prefs_ = nullptr;
+  // Tracks whether an interaction was logged (Accept or Settings click),
+  // preventing double logging of the "Dismissed" metric.
+  bool interaction_logged_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_FORMS_AI_PRIVATE_INFERENCE_INFOBAR_DELEGATE_IOS_H_

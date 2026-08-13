@@ -10,6 +10,7 @@ source_set("forms_ai_private_inference") {
   deps = [
     "//base",
     "//components/infobars/core",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays",
@@ -30,6 +31,7 @@ source_set("unit_tests") {
     ":forms_ai_private_inference",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays",

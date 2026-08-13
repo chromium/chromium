@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
+#import "ios/chrome/browser/autofill/model/forms_ai_private_inference_infobar_delegate_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -42,6 +43,12 @@ void FormsAiPrivateInferenceBannerInteractionHandler::ShowModalButtonTapped(
       InfobarType::kInfobarTypeFormsAiPrivateInference) {
     return;
   }
+  auto* private_inference_delegate =
+      static_cast<FormsAiPrivateInferenceInfoBarDelegateIOS*>(
+          infobar->delegate()->AsConfirmInfoBarDelegate());
+  DCHECK(private_inference_delegate);
+  private_inference_delegate->OnSettingsLinkClicked();
+
   id<SettingsCommands> settings_commands_handler =
       HandlerForProtocol(dispatcher_, SettingsCommands);
   [settings_commands_handler showAutofillSettingsFromNotice];
