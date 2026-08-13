@@ -36,6 +36,7 @@ namespace {
 // - `icon` -> `iconId` (mapped via ResourceMapper)
 // - `type` -> `suggestionType`
 // - `children` -> `children`
+// - `is_loading` -> `isLoading`
 // TODO(crbug.com/536821036): Add support for `payload` and pass name of the
 // type there.
 base::android::ScopedJavaLocalRef<jobject> CreateJavaSuggestion(
@@ -75,7 +76,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaSuggestion(
   return Java_AtMemoryBottomSheetBridge_createAutofillSuggestion(
       env, label, secondary_label, sub_label, android_icon_id,
       std::to_underlying(suggestion.type), children, suggestion.IsAcceptable(),
-      ShouldApplyDeactivatedStyle(suggestion));
+      ShouldApplyDeactivatedStyle(suggestion), *suggestion.is_loading);
 }
 
 }  // namespace

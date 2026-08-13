@@ -325,6 +325,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                 .with(
                         SuggestionItemProperties.APPLY_DEACTIVATED_STYLE,
                         suggestion.applyDeactivatedStyle())
+                .with(SuggestionItemProperties.IS_LOADING, suggestion.isLoading())
                 .with(
                         SuggestionItemProperties.ON_SUGGESTION_CLICKED,
                         () -> onSuggestionClicked(suggestion, position))

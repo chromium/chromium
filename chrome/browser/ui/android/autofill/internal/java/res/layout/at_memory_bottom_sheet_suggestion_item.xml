@@ -26,6 +26,14 @@ found in the LICENSE file.
         android:scaleType="fitCenter"
         android:importantForAccessibility="no" />
 
+    <org.chromium.ui.widget.LoadingView
+        android:id="@+id/suggestion_loading_view"
+        android:layout_width="@dimen/at_memory_suggestion_icon_size"
+        android:layout_height="@dimen/at_memory_suggestion_icon_size"
+        android:layout_marginEnd="@dimen/at_memory_suggestion_default_margin"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -73,7 +73,8 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
             int suggestionType,
             @JniType("std::vector") List<AutofillSuggestion> children,
             boolean isAcceptable,
-            boolean hasDeactivatedStyle) {
+            boolean hasDeactivatedStyle,
+            boolean isLoading) {
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
                 .setSecondaryLabel(secondaryLabel)
@@ -83,6 +84,7 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
                 .setChildren(children)
                 .setIsAcceptable(isAcceptable)
                 .setApplyDeactivatedStyle(hasDeactivatedStyle)
+                .setIsLoading(isLoading)
                 .build();
     }
 

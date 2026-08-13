@@ -19,6 +19,7 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.constraintlayout.helper.widget.Flow;
@@ -51,6 +52,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.LoadingView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -404,12 +406,13 @@ public class AtMemoryBottomSheetViewTest {
     }
 
     @Test
-    public void testSuggestionWithDeactivatedStyle() {
+    public void testLoadingSuggestionWithDeactivatedStyle() {
         ModelList modelList = new ModelList();
         PropertyModel suggestionModel =
                 new PropertyModel.Builder(SuggestionItemProperties.ALL_KEYS)
                         .with(SuggestionItemProperties.TITLE, "Couldn't find this info")
                         .with(SuggestionItemProperties.APPLY_DEACTIVATED_STYLE, true)
+                        .with(SuggestionItemProperties.IS_LOADING, true)
                         .build();
 
         modelList.add(new ListItem(HomeProperties.ItemType.SUGGESTION, suggestionModel));
@@ -424,6 +427,12 @@ public class AtMemoryBottomSheetViewTest {
                 (AtMemoryBottomSheetSuggestionView) recyclerView.getChildAt(0);
 
         assertFalse(suggestionView.isEnabled());
+
+        ImageView icon = suggestionView.findViewById(R.id.icon_view);
+        LoadingView loadingView = suggestionView.findViewById(R.id.suggestion_loading_view);
+
+        assertEquals(View.GONE, icon.getVisibility());
+        assertEquals(View.VISIBLE, loadingView.getVisibility());
     }
 
     private List<ChipView> getChipViews(ViewGroup viewGroup) {

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.ui.widget.LoadingView;
 
 /** View for an individual suggestion in the AtMemory bottom sheet. */
 @NullMarked
@@ -23,6 +24,7 @@ public class AtMemoryBottomSheetSuggestionView extends LinearLayout {
     private static final float COMPLETE_OPACITY_ALPHA = 1.0f;
 
     private ImageView mIconView;
+    private LoadingView mLoadingView;
     private TextView mTitleView;
     private TextView mDetailsView;
     private View mArrowView;
@@ -37,6 +39,7 @@ public class AtMemoryBottomSheetSuggestionView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mIconView = findViewById(R.id.icon_view);
+        mLoadingView = findViewById(R.id.suggestion_loading_view);
         mTitleView = findViewById(R.id.title_text);
         mDetailsView = findViewById(R.id.details_text);
         mArrowView = findViewById(R.id.arrow_view);
@@ -93,6 +96,16 @@ public class AtMemoryBottomSheetSuggestionView extends LinearLayout {
             mDetailsView.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
             mIconView.setAlpha(COMPLETE_OPACITY_ALPHA);
             mTrailingView.setAlpha(COMPLETE_OPACITY_ALPHA);
+        }
+    }
+
+    public void setIsLoading(boolean isLoading) {
+        if (isLoading) {
+            mIconView.setVisibility(View.GONE);
+            mLoadingView.showLoadingUi(/* skipDelay= */ true);
+        } else {
+            mIconView.setVisibility(View.VISIBLE);
+            mLoadingView.hideLoadingUi(/* skipDelay= */ true);
         }
     }
 }

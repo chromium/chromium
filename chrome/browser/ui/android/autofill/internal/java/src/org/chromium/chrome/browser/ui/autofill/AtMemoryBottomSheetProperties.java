@@ -169,8 +169,10 @@ class AtMemoryBottomSheetProperties {
         // Resource ID for trailing icon in the suggestion item (0 if hidden).
         static final ReadableIntPropertyKey TRAILING_ICON_ID = new ReadableIntPropertyKey();
         // Indicates whether the suggestion item should be deactivated.
-        static final WritableBooleanPropertyKey APPLY_DEACTIVATED_STYLE =
-                new WritableBooleanPropertyKey();
+        static final ReadableBooleanPropertyKey APPLY_DEACTIVATED_STYLE =
+                new ReadableBooleanPropertyKey();
+        // Indicates whether the suggestion should show the loading indicator.
+        static final ReadableBooleanPropertyKey IS_LOADING = new ReadableBooleanPropertyKey();
 
         static final PropertyKey[] ALL_KEYS = {
             ICON,
@@ -180,7 +182,8 @@ class AtMemoryBottomSheetProperties {
             ON_SUGGESTION_CLICKED,
             ON_FLYOUT_CLICKED,
             IS_FLYOUT_VISIBLE,
-            APPLY_DEACTIVATED_STYLE
+            APPLY_DEACTIVATED_STYLE,
+            IS_LOADING
         };
 
         private SuggestionItemProperties() {}

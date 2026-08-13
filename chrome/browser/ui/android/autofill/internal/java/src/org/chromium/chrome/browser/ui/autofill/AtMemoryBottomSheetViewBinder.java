@@ -157,6 +157,8 @@ class AtMemoryBottomSheetViewBinder {
             view.setTrailingIcon(model.get(SuggestionItemProperties.TRAILING_ICON_ID));
         } else if (propertyKey == SuggestionItemProperties.APPLY_DEACTIVATED_STYLE) {
             view.applyDeactivatedStyle(model.get(SuggestionItemProperties.APPLY_DEACTIVATED_STYLE));
+        } else if (propertyKey == SuggestionItemProperties.IS_LOADING) {
+            view.setIsLoading(model.get(SuggestionItemProperties.IS_LOADING));
         } else {
             assert false : "Unhandled property: " + propertyKey;
         }
