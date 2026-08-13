@@ -2699,7 +2699,10 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable,
   WaitForApplyFieldAction();
 
   // 2. Verify the trigger was replaced.
-  EXPECT_EQ(ce.TextContent().Utf16(), u"Prefix Suffix");
+  // \xA0 is a non-breaking whitespace. Blink replaces the whitespace the
+  // original whitespace with a non-breaking one to prevent whitespace
+  // collapsing.
+  EXPECT_EQ(ce.TextContent().Utf16(), u"Prefix\xA0Suffix");
 
   // 3. Verify the cursor position (at the end of "Prefix Suffix").
   blink::WebRange selection =

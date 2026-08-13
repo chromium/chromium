@@ -367,24 +367,9 @@ void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement element,
   }
 
   if (info->caused_by_trigger_string && ShouldTriggerAtMemorySearch(element)) {
-    // TODO(crbug.com/538102446): Instead of adjusting the selection, eliminate
-    // the trigger string.
-    const WebString trigger = WebString::FromUtf8(GetTriggerString());
-    if (auto form_control = element.DynamicTo<WebFormControlElement>()) {
-      const size_t offset = form_control.SelectionStart();
-      if (offset >= trigger.length()) {
-        form_control.SetSelectionRange(offset - trigger.length(), offset);
-      }
-    } else if (auto* frame = agent_->unsafe_render_frame()) {
-      const WebRange selection = frame->GetWebFrame()
-                                     ->GetInputMethodController()
-                                     ->GetSelectionOffsets();
-      const size_t offset =
-          base::saturated_cast<size_t>(selection.StartOffset());
-      if (offset >= trigger.length()) {
-        frame->GetWebFrame()->SetEditableSelectionOffsets(
-            base::saturated_cast<int>(offset - trigger.length()), offset);
-      }
+    if (WebLocalFrame* frame = element.GetDocument().GetFrame()) {
+      frame->DeleteSurroundingText(/*before=*/GetTriggerString().size(),
+                                   /*after=*/0);
     }
   }
 
