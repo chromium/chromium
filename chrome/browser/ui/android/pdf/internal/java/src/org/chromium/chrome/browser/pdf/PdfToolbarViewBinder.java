@@ -98,9 +98,9 @@ class PdfToolbarViewBinder {
                         return true;
                     });
 
-        } else if (PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON == key) {
+        } else if (PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON == key) {
             ImageView fitToPageButton = view.findViewById(R.id.fit_to_page_button);
-            if (model.get(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON)) {
+            if (model.get(PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON)) {
                 fitToPageButton.setImageResource(R.drawable.ic_fit_page_height_24dp);
             } else {
                 fitToPageButton.setImageResource(R.drawable.ic_fit_page_width_24dp);

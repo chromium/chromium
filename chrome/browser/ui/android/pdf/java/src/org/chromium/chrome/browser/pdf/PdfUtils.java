@@ -81,8 +81,8 @@ public class PdfUtils {
         PdfToolbarAction.OTHER,
         PdfToolbarAction.ZOOM_IN,
         PdfToolbarAction.ZOOM_OUT,
-        PdfToolbarAction.FIT_TO_PAGE_VERTICAL,
-        PdfToolbarAction.FIT_TO_PAGE_HORIZONTAL,
+        PdfToolbarAction.FIT_TO_PAGE,
+        PdfToolbarAction.FIT_TO_WIDTH,
         PdfToolbarAction.PAGE_NAVIGATION,
         PdfToolbarAction.PRINT,
         PdfToolbarAction.TWO_PAGE_VIEW,
@@ -95,8 +95,8 @@ public class PdfUtils {
         int OTHER = 0;
         int ZOOM_IN = 1;
         int ZOOM_OUT = 2;
-        int FIT_TO_PAGE_VERTICAL = 3;
-        int FIT_TO_PAGE_HORIZONTAL = 4;
+        int FIT_TO_PAGE = 3;
+        int FIT_TO_WIDTH = 4;
         int PAGE_NAVIGATION = 5;
         int PRINT = 6;
         int TWO_PAGE_VIEW = 7;

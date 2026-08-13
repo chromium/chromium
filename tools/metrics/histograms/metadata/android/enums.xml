@@ -312,8 +312,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Other"/>
   <int value="1" label="Zoom In"/>
   <int value="2" label="Zoom Out"/>
-  <int value="3" label="Fit To Page Vertical"/>
-  <int value="4" label="Fit To Page Horizontal"/>
+  <int value="3" label="Fit To Page"/>
+  <int value="4" label="Fit To Width"/>
   <int value="5" label="Page Navigation"/>
   <int value="6" label="Print"/>
   <int value="7" label="Two-page view"/>

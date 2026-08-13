@@ -31,12 +31,12 @@ public interface PdfToolbarActionsDelegate {
     void setEditMode(boolean editMode);
 
     /**
-     * Toggles between "fit to page height" and "fit to page width" modes.
+     * Toggles between "fit to page" and "fit to page width" modes.
      *
-     * @param fitToPageHeight Whether to fit to page height or fit to page width.
+     * @param fitToPage Whether to fit to page or fit to page width.
      * @param pageIndex The 0-based index of the page to navigate to.
      */
-    void toggleFitToPage(boolean fitToPageHeight, int pageIndex);
+    void toggleFitToPage(boolean fitToPage, int pageIndex);
 
     /**
      * Toggles whether the PDF viewer should display two pages per row.

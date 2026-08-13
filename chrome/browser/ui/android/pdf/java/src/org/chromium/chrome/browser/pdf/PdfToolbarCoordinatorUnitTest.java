@@ -223,19 +223,19 @@ public class PdfToolbarCoordinatorUnitTest {
     public void testFitToPageToggle_recordsMetric() {
         View fitToPageButton = mPdfPageView.findViewById(R.id.fit_to_page_button);
 
-        // First click (vertical)
-        var histogramWatcherVertical =
+        // First click (fit to page)
+        var histogramWatcherFitToPage =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Pdf.ToolbarAction", PdfToolbarAction.FIT_TO_PAGE_VERTICAL);
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.FIT_TO_PAGE);
         fitToPageButton.performClick();
-        histogramWatcherVertical.assertExpected();
+        histogramWatcherFitToPage.assertExpected();
 
-        // Second click (horizontal)
-        var histogramWatcherHorizontal =
+        // Second click (fit to width)
+        var histogramWatcherFitToWidth =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Pdf.ToolbarAction", PdfToolbarAction.FIT_TO_PAGE_HORIZONTAL);
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.FIT_TO_WIDTH);
         fitToPageButton.performClick();
-        histogramWatcherHorizontal.assertExpected();
+        histogramWatcherFitToWidth.assertExpected();
     }
 
     @Test
@@ -256,7 +256,7 @@ public class PdfToolbarCoordinatorUnitTest {
             View itemView = listView.getAdapter().getView(i, null, listView);
             TextView textView = itemView.findViewById(R.id.menu_item_text);
             String text = textView.getText().toString();
-            if (text.equals(mActivity.getString(R.string.pdf_fit_height))
+            if (text.equals(mActivity.getString(R.string.pdf_fit_page))
                     || text.equals(mActivity.getString(R.string.pdf_fit_width))) {
                 fitItemView = itemView;
                 break;
@@ -266,7 +266,7 @@ public class PdfToolbarCoordinatorUnitTest {
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Pdf.ToolbarAction", PdfToolbarAction.FIT_TO_PAGE_VERTICAL);
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.FIT_TO_PAGE);
         fitItemView.performClick();
         histogramWatcher.assertExpected();
     }
@@ -302,11 +302,11 @@ public class PdfToolbarCoordinatorUnitTest {
         // Default current page is 99 (1-indexed), so pageIndex should be 98.
         View fitToPageButton = mPdfPageView.findViewById(R.id.fit_to_page_button);
 
-        // Initial state: click triggers fit-to-height and changes state to fit-to-width.
+        // Initial state: click triggers fit-to-page and changes state to fit-to-width.
         fitToPageButton.performClick();
         verify(mDelegate).toggleFitToPage(true, 98);
 
-        // Second click triggers fit-to-width and changes state back to fit-to-height.
+        // Second click triggers fit-to-width and changes state back to fit-to-page.
         fitToPageButton.performClick();
         verify(mDelegate).toggleFitToPage(false, 98);
     }
