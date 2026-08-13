@@ -4,6 +4,9 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge_linux.h"
 
+#include <fcntl.h>
+#include <sys/mman.h>
+
 #include <algorithm>
 #include <cstdint>
 #include <memory>
@@ -19,9 +22,13 @@
 #include "base/barrier_closure.h"
 #include "base/callback_list.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
+#include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -30,8 +37,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/nix/xdg_util.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -62,6 +71,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/hash.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -75,14 +85,35 @@
 
 namespace {
 
+// TODO(thomasanderson): Remove this feature flag in the future.
+BASE_FEATURE(kWebNotificationPortalFallback,
+             "WebNotificationPortalFallback",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // DBus name / path.
 const char kFreedesktopNotificationsName[] = "org.freedesktop.Notifications";
 const char kFreedesktopNotificationsPath[] = "/org/freedesktop/Notifications";
+
+// DBus name / path / interface for portal notifications.
+const char kPortalDesktopName[] = "org.freedesktop.portal.Desktop";
+const char kPortalDesktopPath[] = "/org/freedesktop/portal/desktop";
+const char kPortalNotificationInterface[] =
+    "org.freedesktop.portal.Notification";
 
 // DBus methods.
 const char kMethodCloseNotification[] = "CloseNotification";
 const char kMethodGetCapabilities[] = "GetCapabilities";
 const char kMethodNotify[] = "Notify";
+const char kMethodAddNotification[] = "AddNotification";
+const char kMethodRemoveNotification[] = "RemoveNotification";
+
+// DBus properties / interfaces.
+const char kDBusPropertiesInterface[] = "org.freedesktop.DBus.Properties";
+const char kMethodGet[] = "Get";
+const char kPropertyVersion[] = "version";
+
+// Portal interface versions.
+const uint32_t kPortalMinVersion = 1;
 
 // DBus signals.
 const char kSignalActivationToken[] = "ActivationToken";
@@ -112,6 +143,11 @@ const char kSettingsButtonId[] = "settings";
 const int kMaxImageWidth = 200;
 const int kMaxImageHeight = 100;
 
+// Max portal icon size (square). xdg-desktop-portal enforces an icon size
+// limit of 128x128 pixels. Oversized icons cause the AddNotification call to
+// be rejected by the portal.
+const int kMaxPortalIconSize = 128;
+
 // Notification on-screen time, in milliseconds.
 const int32_t kExpireTimeout = 25000;
 
@@ -138,12 +174,22 @@ enum class ConnectionInitializationStatusCode {
   NUM_ITEMS
 };
 
-struct NotificationTempFiles {
+struct NotificationResources {
+  // Directory containing temporary image files for FDO notifications.
   base::FilePath dir_path;
   base::SequenceBound<base::ScopedTempDir> dir;
+
+  // Whether temporary image files were successfully written for FDO
+  // notifications.
   bool has_logo = false;
   bool has_icon = false;
   bool has_image = false;
+
+  // Icon PNG bytes used for Portal v1 notifications.
+  scoped_refptr<base::RefCountedMemory> icon_bytes;
+
+  // Sealed memfd holding icon PNG bytes used for Portal v2+ notifications.
+  base::ScopedFD icon_fd;
 };
 
 std::u16string CreateNotificationTitle(
@@ -155,6 +201,28 @@ std::u16string CreateNotificationTitle(
   }
   title += notification.title();
   return title;
+}
+
+std::string CreateContextDisplayText(
+    const message_center::Notification& notification) {
+  if (!notification.UseOriginAsContextMessage()) {
+    return base::UTF16ToUTF8(notification.context_message());
+  }
+
+  std::string context_display_text =
+      base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
+          notification.origin_url(),
+          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+  if (context_display_text.size() > kMaxAllowedOriginLength) {
+    std::string domain_and_registry =
+        net::registry_controlled_domains::GetDomainAndRegistry(
+            notification.origin_url(),
+            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+    if (!domain_and_registry.empty()) {
+      return domain_and_registry;
+    }
+  }
+  return context_display_text;
 }
 
 void EscapeUnsafeCharacters(std::string* message) {
@@ -181,9 +249,9 @@ uint8_t NotificationPriorityToFdoUrgency(int priority) {
   }
 }
 
-// Constrain |image|'s size to |kMaxImageWidth|x|kMaxImageHeight|. If
+// Constrain `image`'s size to `kMaxImageWidth`x`kMaxImageHeight`. If
 // the image does not need to be resized, or the image is empty,
-// returns |image| directly.
+// returns `image` directly.
 gfx::Image ResizeImageToFdoMaxSize(const gfx::Image& image) {
   if (image.IsEmpty()) {
     return image;
@@ -202,6 +270,27 @@ gfx::Image ResizeImageToFdoMaxSize(const gfx::Image& image) {
       gfx::ImageSkia::CreateFrom1xBitmap(skia::ImageOperations::Resize(
           *image_bitmap, skia::ImageOperations::RESIZE_LANCZOS3, width,
           height)));
+}
+
+// Constrain `image`'s size to `kMaxPortalIconSize`x`kMaxPortalIconSize`.
+gfx::Image ResizeImageToPortalMaxSize(const gfx::Image& image) {
+  if (image.IsEmpty()) {
+    return image;
+  }
+  int width = image.Width();
+  int height = image.Height();
+  if (width <= kMaxPortalIconSize && height <= kMaxPortalIconSize) {
+    return image;
+  }
+  const SkBitmap* image_bitmap = image.ToSkBitmap();
+  double scale = std::min(static_cast<double>(kMaxPortalIconSize) / width,
+                          static_cast<double>(kMaxPortalIconSize) / height);
+  int new_width = std::clamp<int>(scale * width, 1, kMaxPortalIconSize);
+  int new_height = std::clamp<int>(scale * height, 1, kMaxPortalIconSize);
+  return gfx::Image(
+      gfx::ImageSkia::CreateFrom1xBitmap(skia::ImageOperations::Resize(
+          *image_bitmap, skia::ImageOperations::RESIZE_LANCZOS3, new_width,
+          new_height)));
 }
 
 bool ShouldAddCloseButton(const std::string& server_name,
@@ -264,11 +353,11 @@ bool WriteImageFile(scoped_refptr<base::RefCountedMemory> image,
 }
 
 // Must be called on an IO task runner.
-NotificationTempFiles WriteNotificationResourceFiles(
+NotificationResources WriteNotificationResourceFiles(
     scoped_refptr<base::RefCountedMemory> logo,
     scoped_refptr<base::RefCountedMemory> icon,
     scoped_refptr<base::RefCountedMemory> image) {
-  NotificationTempFiles result;
+  NotificationResources result;
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
     return result;
@@ -279,6 +368,24 @@ NotificationTempFiles WriteNotificationResourceFiles(
   result.has_logo = WriteImageFile(logo, dir_path.Append("logo.png"));
   result.has_icon = WriteImageFile(icon, dir_path.Append("icon.png"));
   result.has_image = WriteImageFile(image, dir_path.Append("image.png"));
+  if (result.has_icon) {
+    result.icon_bytes = icon;
+    if (icon && icon->size() > 0) {
+      int memfd =
+          memfd_create("notification_icon", MFD_CLOEXEC | MFD_ALLOW_SEALING);
+      if (memfd >= 0) {
+        base::ScopedFD fd(memfd);
+        if (base::WriteFileDescriptor(fd.get(), *icon)) {
+          if (fcntl(fd.get(), F_ADD_SEALS,
+                    F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE) == 0) {
+            if (lseek(fd.get(), 0, SEEK_SET) == 0) {
+              result.icon_fd = std::move(fd);
+            }
+          }
+        }
+      }
+    }
+  }
 
   result.dir_path = dir_path;
   result.dir = base::SequenceBound<base::ScopedTempDir>(
@@ -341,6 +448,9 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       const message_center::Notification& notification,
       std::unique_ptr<NotificationCommon::Metadata> metadata) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (!connected_.value_or(false) || !notification_proxy_) {
+      return;
+    }
     std::string profile_id = GetProfileId(profile);
     bool is_incognito = profile->IsOffTheRecord();
     auto copy_notification =
@@ -359,17 +469,23 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
 
     // Prepare resource files.
-    gfx::Image product_logo(
-        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_PRODUCT_LOGO_64));
+    gfx::Image icon(copy_notification->icon().Rasterize(nullptr));
+    gfx::Image notification_icon = using_portal_
+                                       ? ResizeImageToPortalMaxSize(icon)
+                                       : ResizeImageToFdoMaxSize(icon);
 
-    gfx::Image notification_icon = ResizeImageToFdoMaxSize(
-        gfx::Image(copy_notification->icon().Rasterize(nullptr)));
-
+    gfx::Image product_logo;
     gfx::Image notification_image;
-    if (copy_notification->type() == message_center::NOTIFICATION_TYPE_IMAGE &&
-        capabilities_.contains(kCapabilityBodyImages)) {
-      notification_image = ResizeImageToFdoMaxSize(copy_notification->image());
+    if (!using_portal_) {
+      product_logo =
+          gfx::Image(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_PRODUCT_LOGO_64));
+      if (copy_notification->type() ==
+              message_center::NOTIFICATION_TYPE_IMAGE &&
+          capabilities_.contains(kCapabilityBodyImages)) {
+        notification_image =
+            ResizeImageToFdoMaxSize(copy_notification->image());
+      }
     }
 
     file_task_runner_->PostTaskAndReplyWithResult(
@@ -400,7 +516,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         displayed.insert(data->notification_id);
       }
     }
-    std::move(callback).Run(std::move(displayed), true);
+    std::move(callback).Run(std::move(displayed), !using_portal_);
   }
 
   void GetDisplayedForOrigin(
@@ -417,7 +533,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         displayed.insert(data->notification_id);
       }
     }
-    std::move(callback).Run(std::move(displayed), true);
+    std::move(callback).Run(std::move(displayed), !using_portal_);
   }
 
   void SetReadyCallback(NotificationBridgeReadyCallback callback) override {
@@ -433,9 +549,21 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
   void CleanUp() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (using_portal_ && notification_proxy_) {
+      for (const auto& pair : notifications_) {
+        NotificationData* data = pair.first;
+        dbus_utils::CallMethod<"s", "">(
+            notification_proxy_, kPortalNotificationInterface,
+            kMethodRemoveNotification,
+            base::BindOnce([](dbus_utils::CallMethodResult<>) {}),
+            data->portal_id);
+      }
+    }
     notification_proxy_ = nullptr;
     bus_.reset();
     notifications_.clear();
+    using_portal_ = false;
+    portal_version_ = kPortalMinVersion;
     weak_factory_.InvalidateWeakPtrs();
   }
 
@@ -450,11 +578,20 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
           notification_id(notification_id),
           profile_id(profile_id),
           is_incognito(is_incognito),
-          origin_url(origin_url) {}
+          origin_url(origin_url) {
+      const std::string raw_id =
+          base::StrCat({base::NumberToString(profile_id.size()), ":",
+                        profile_id, is_incognito ? "1" : "0", notification_id});
+      portal_id =
+          base::HexEncode(crypto::hash::Sha256(base::as_byte_span(raw_id)));
+    }
 
-    // The ID used by the notification server.  Will be 0 until the
-    // first "Notify" message completes.
+    // The ID used by the notification server. Will be 0 until the
+    // first "Notify" message completes (for org.freedesktop.Notifications).
     uint32_t dbus_id = 0;
+
+    // The ID used by org.freedesktop.portal.Notification.
+    std::string portal_id;
 
     // Same parameters used by NotificationPlatformBridge::Display().
     NotificationHandler::Type notification_type;
@@ -462,21 +599,30 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     const std::string profile_id;
     const bool is_incognito;
 
+    // Copy of notification for retry if AddNotification fails.
+    std::unique_ptr<message_center::Notification> notification;
+
+    // Index of button marked with im.reply-with-text, if any.
+    std::optional<size_t> portal_inline_reply_button_index;
+
     // A copy of the origin_url from the underlying
     // message_center::Notification.  Used to pass back to
     // NotificationDisplayService.
     const GURL origin_url;
 
     // Used to keep track of the IDs of the buttons currently displayed
-    // on this notification.  The valid range of action IDs is
-    // [action_start, action_end).
-    size_t action_start = 0;
-    size_t action_end = 0;
+    // on this notification. The valid range of action IDs for the FDO path
+    // is [fdo_action_start, fdo_action_end).
+    size_t fdo_action_start = 0;
+    size_t fdo_action_end = 0;
+
+    // The number of buttons for the portal path.
+    size_t portal_button_count = 0;
 
     // Temporary resource files associated with the notification that
     // should be cleaned up when the notification is closed or on
     // shutdown.
-    NotificationTempFiles files;
+    NotificationResources files;
   };
 
   void OnAppTerminating() {
@@ -488,9 +634,8 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
   void OnServiceStarted(std::optional<bool> service_started) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     if (!service_started.value_or(false)) {
-      OnConnectionInitializationFinished(
-          ConnectionInitializationStatusCode::
-              NATIVE_NOTIFICATIONS_NOT_SUPPORTED);
+      InitPortal(ConnectionInitializationStatusCode::
+                     NATIVE_NOTIFICATIONS_NOT_SUPPORTED);
       return;
     }
     notification_proxy_ =
@@ -509,8 +654,8 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       dbus_utils::CallMethodResult<std::vector<std::string>> result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     if (!result.has_value()) {
-      OnConnectionInitializationFinished(
-          ConnectionInitializationStatusCode::MISSING_REQUIRED_CAPABILITIES);
+      InitPortal(ConnectionInitializationStatusCode::
+                     NATIVE_NOTIFICATIONS_NOT_SUPPORTED);
       return;
     }
 
@@ -520,7 +665,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
     if (!capabilities_.contains(kCapabilityBody) ||
         !capabilities_.contains(kCapabilityActions)) {
-      OnConnectionInitializationFinished(
+      InitPortal(
           ConnectionInitializationStatusCode::MISSING_REQUIRED_CAPABILITIES);
       return;
     }
@@ -588,22 +733,156 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
   }
+
+  void InitPortal(ConnectionInitializationStatusCode fallback_reason) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (using_portal_ ||
+        !base::FeatureList::IsEnabled(kWebNotificationPortalFallback)) {
+      OnConnectionInitializationFinished(fallback_reason);
+      return;
+    }
+    using_portal_ = true;
+    portal_fallback_reason_ = fallback_reason;
+    capabilities_.clear();
+    notification_proxy_ = nullptr;
+    dbus_utils::CheckForServiceAndStart(
+        bus_, kPortalDesktopName,
+        base::BindOnce(
+            &NotificationPlatformBridgeLinuxImpl::OnPortalServiceStarted,
+            weak_factory_.GetWeakPtr()));
+  }
+
+  void OnPortalServiceStarted(std::optional<bool> service_started) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (!service_started.value_or(false)) {
+      OnConnectionInitializationFinished(portal_fallback_reason_.value_or(
+          ConnectionInitializationStatusCode::
+              NATIVE_NOTIFICATIONS_NOT_SUPPORTED));
+      return;
+    }
+    notification_proxy_ = bus_->GetObjectProxy(
+        kPortalDesktopName, dbus::ObjectPath(kPortalDesktopPath));
+
+    dbus_utils::CallMethod<"ss", "v">(
+        notification_proxy_, kDBusPropertiesInterface, kMethodGet,
+        base::BindOnce(
+            &NotificationPlatformBridgeLinuxImpl::OnPortalVersionResponse,
+            weak_factory_.GetWeakPtr()),
+        kPortalNotificationInterface, kPropertyVersion);
+  }
+
+  void OnPortalVersionResponse(
+      dbus_utils::CallMethodResult<dbus_utils::Variant> result) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (!result.has_value()) {
+      OnConnectionInitializationFinished(portal_fallback_reason_.value_or(
+          ConnectionInitializationStatusCode::
+              NATIVE_NOTIFICATIONS_NOT_SUPPORTED));
+      return;
+    }
+    auto& [variant] = result.value();
+    auto version_opt = std::move(variant).Take<uint32_t>();
+    if (!version_opt || *version_opt < kPortalMinVersion) {
+      OnConnectionInitializationFinished(portal_fallback_reason_.value_or(
+          ConnectionInitializationStatusCode::
+              NATIVE_NOTIFICATIONS_NOT_SUPPORTED));
+      return;
+    }
+    portal_version_ = *version_opt;
+
+    if (PortalSupportsSupportedOptions()) {
+      dbus_utils::CallMethod<"ss", "v">(
+          notification_proxy_, kDBusPropertiesInterface, kMethodGet,
+          base::BindOnce(&NotificationPlatformBridgeLinuxImpl::
+                             OnPortalSupportedOptionsResponse,
+                         weak_factory_.GetWeakPtr()),
+          kPortalNotificationInterface, "SupportedOptions");
+      return;
+    }
+
+    OnPortalInitializationComplete();
+  }
+
+  void OnPortalSupportedOptionsResponse(
+      dbus_utils::CallMethodResult<dbus_utils::Variant> result) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (result.has_value()) {
+      auto& [variant] = result.value();
+      auto options_opt =
+          std::move(variant).Take<std::map<std::string, dbus_utils::Variant>>();
+      if (options_opt) {
+        auto cat_it = options_opt->find("category");
+        if (cat_it != options_opt->end()) {
+          auto categories_opt =
+              std::move(cat_it->second).Take<std::vector<std::string>>();
+          if (categories_opt) {
+            for (auto& cat : *categories_opt) {
+              supported_portal_categories_.insert(std::move(cat));
+            }
+          }
+        }
+        auto purp_it = options_opt->find("button-purpose");
+        if (purp_it != options_opt->end()) {
+          auto purposes_opt =
+              std::move(purp_it->second).Take<std::vector<std::string>>();
+          if (purposes_opt) {
+            for (auto& purp : *purposes_opt) {
+              supported_portal_button_purposes_.insert(std::move(purp));
+            }
+          }
+        }
+      }
+    }
+    OnPortalInitializationComplete();
+  }
+
+  void OnPortalInitializationComplete() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    dbus_utils::ConnectToSignal<"ssav">(
+        notification_proxy_, kPortalNotificationInterface, kSignalActionInvoked,
+        base::BindRepeating(
+            &NotificationPlatformBridgeLinuxImpl::OnPortalActionInvoked,
+            weak_factory_.GetWeakPtr()),
+        base::BindOnce(
+            &NotificationPlatformBridgeLinuxImpl::OnPortalSignalConnected,
+            weak_factory_.GetWeakPtr()));
+  }
+
+  void OnPortalSignalConnected(const std::string& interface_name,
+                               const std::string& signal_name,
+                               bool success) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    OnConnectionInitializationFinished(
+        success ? ConnectionInitializationStatusCode::SUCCESS
+                : portal_fallback_reason_.value_or(
+                      ConnectionInitializationStatusCode::
+                          COULD_NOT_CONNECT_TO_SIGNALS));
+  }
+
   void OnFilesWrittenForDisplay(
       NotificationHandler::Type notification_type,
       const std::string& profile_id,
       bool is_incognito,
       std::unique_ptr<message_center::Notification> notification,
       uint32_t dbus_id,
-      NotificationTempFiles files) {
+      NotificationResources files) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     NotificationData* data =
         FindNotificationData(notification->id(), profile_id, is_incognito);
-    if (!data) {
+    if (!data || !notification_proxy_) {
+      if (data) {
+        notifications_.erase(data);
+      }
       return;
     }
-
     data->files = std::move(files);
+
+    if (using_portal_) {
+      DisplayPortal(notification_type, profile_id, is_incognito,
+                    std::move(notification), data);
+      return;
+    }
 
     std::string app_name(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME));
 
@@ -615,27 +894,9 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     std::string summary(
         base::UTF16ToUTF8(CreateNotificationTitle(*notification)));
 
-    std::string context_display_text;
-    bool linkify_context_if_possible = false;
-    if (notification->UseOriginAsContextMessage()) {
-      context_display_text =
-          base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
-              notification->origin_url(),
-              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
-      if (context_display_text.size() > kMaxAllowedOriginLength) {
-        std::string domain_and_registry =
-            net::registry_controlled_domains::GetDomainAndRegistry(
-                notification->origin_url(),
-                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-        // localhost, raw IPs etc. are not handled by GetDomainAndRegistry.
-        if (!domain_and_registry.empty()) {
-          context_display_text = domain_and_registry;
-        }
-      }
-      linkify_context_if_possible = true;
-    } else {
-      context_display_text = base::UTF16ToUTF8(notification->context_message());
-    }
+    std::string context_display_text = CreateContextDisplayText(*notification);
+    bool linkify_context_if_possible =
+        notification->UseOriginAsContextMessage();
 
     const bool has_support_for_kde_origin_name =
         capabilities_.contains(kCapabilityXKdeOriginName);
@@ -702,7 +963,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       const bool has_support_for_inline_reply =
           connected_to_notification_replied_signal_ &&
           capabilities_.contains(kCapabilityInlineReply);
-      data->action_start = data->action_end;
+      data->fdo_action_start = data->fdo_action_end;
 
       for (const auto& button_info : notification->buttons()) {
         const std::string label = base::UTF16ToUTF8(button_info.title);
@@ -721,7 +982,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         // FDO notification buttons can contain either an icon or a label,
         // but not both, and the type of all buttons must be the same (all
         // labels or all icons), so always use labels.
-        const std::string id = base::NumberToString(data->action_end++);
+        const std::string id = base::NumberToString(data->fdo_action_end++);
         actions.emplace_back(id);
         actions.emplace_back(label);
       }
@@ -801,6 +1062,231 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         expire_timeout);
   }
 
+  void DisplayPortal(NotificationHandler::Type notification_type,
+                     const std::string& profile_id,
+                     bool is_incognito,
+                     std::unique_ptr<message_center::Notification> notification,
+                     NotificationData* data) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    std::map<std::string, dbus_utils::Variant> portal_dict;
+
+    std::string summary(
+        base::UTF16ToUTF8(CreateNotificationTitle(*notification)));
+    portal_dict.emplace("title", dbus_utils::Variant::Wrap<"s">(summary));
+
+    std::string context_display_text = CreateContextDisplayText(*notification);
+
+    std::ostringstream plain_body;
+    if (!context_display_text.empty()) {
+      plain_body << context_display_text << "\n\n";
+    }
+    std::string message = base::UTF16ToUTF8(notification->message());
+    if (!message.empty()) {
+      plain_body << message << "\n";
+    }
+    if (notification->type() == message_center::NOTIFICATION_TYPE_MULTIPLE) {
+      for (const auto& item : notification->items()) {
+        plain_body << base::UTF16ToUTF8(item.title()) << " - "
+                   << base::UTF16ToUTF8(item.message()) << "\n";
+      }
+    }
+    std::string plain_body_str = plain_body.str();
+    base::TrimString(plain_body_str, "\n", &plain_body_str);
+    if (!plain_body_str.empty()) {
+      portal_dict.emplace("body",
+                          dbus_utils::Variant::Wrap<"s">(plain_body_str));
+    }
+
+    // `markup-body` is a v2 feature. Note: newlines in markup-body are stripped
+    // by xdg-desktop-portal, so use visible inline formatting instead of
+    // newlines.
+    if (PortalSupportsMarkupBody()) {
+      std::ostringstream markup_body;
+      if (!context_display_text.empty()) {
+        std::string escaped_context = context_display_text;
+        EscapeUnsafeCharacters(&escaped_context);
+        if (notification->UseOriginAsContextMessage()) {
+          markup_body << "<a href=\""
+                      << base::EscapeForHTML(notification->origin_url().spec())
+                      << "\">" << escaped_context << "</a>";
+        } else {
+          markup_body << escaped_context;
+        }
+      }
+      std::string escaped_message = message;
+      EscapeUnsafeCharacters(&escaped_message);
+      if (!escaped_message.empty()) {
+        if (markup_body.tellp() > 0) {
+          markup_body << " - ";
+        }
+        markup_body << escaped_message;
+      }
+      if (notification->type() == message_center::NOTIFICATION_TYPE_MULTIPLE) {
+        for (const auto& item : notification->items()) {
+          std::string item_title = base::UTF16ToUTF8(item.title());
+          std::string item_message = base::UTF16ToUTF8(item.message());
+          EscapeUnsafeCharacters(&item_title);
+          EscapeUnsafeCharacters(&item_message);
+          if (markup_body.tellp() > 0) {
+            markup_body << " - ";
+          }
+          markup_body << "<b>" << item_title << "</b> " << item_message;
+        }
+      }
+      std::string markup_body_str = markup_body.str();
+      if (!markup_body_str.empty()) {
+        portal_dict.emplace("markup-body",
+                            dbus_utils::Variant::Wrap<"s">(markup_body_str));
+      }
+    }
+
+    // NOTIFICATION_TYPE_IMAGE content is ignored as portal notifications do not
+    // currently support image attachments.
+
+    if (data->files.has_icon) {
+      if (PortalSupportsIconFd() && data->files.icon_fd.is_valid()) {
+        auto icon_tuple = std::make_tuple(
+            std::string("file-descriptor"),
+            dbus_utils::Variant::Wrap<"h">(std::move(data->files.icon_fd)));
+        portal_dict.emplace(
+            "icon", dbus_utils::Variant::Wrap<"(sv)">(std::move(icon_tuple)));
+      } else if (data->files.icon_bytes) {
+        base::span<const uint8_t> span = base::span(*data->files.icon_bytes);
+        std::vector<uint8_t> bytes(span.begin(), span.end());
+        auto icon_tuple =
+            std::make_tuple(std::string("bytes"),
+                            dbus_utils::Variant::Wrap<"ay">(std::move(bytes)));
+        portal_dict.emplace(
+            "icon", dbus_utils::Variant::Wrap<"(sv)">(std::move(icon_tuple)));
+      }
+    }
+
+    std::string priority_str;
+    switch (notification->priority()) {
+      case message_center::MIN_PRIORITY:
+      case message_center::LOW_PRIORITY:
+        priority_str = "low";
+        break;
+      case message_center::HIGH_PRIORITY:
+        priority_str = "high";
+        break;
+      case message_center::MAX_PRIORITY:
+        priority_str = "urgent";
+        break;
+      case message_center::DEFAULT_PRIORITY:
+      default:
+        priority_str = "normal";
+        break;
+    }
+    portal_dict.emplace("priority",
+                        dbus_utils::Variant::Wrap<"s">(priority_str));
+
+    if (PortalSupportsSound() && notification->silent()) {
+      portal_dict.emplace("sound", dbus_utils::Variant::Wrap<"s">("silent"));
+    }
+
+    portal_dict.emplace("default-action",
+                        dbus_utils::Variant::Wrap<"s">(kDefaultButtonId));
+
+    std::vector<std::map<std::string, dbus_utils::Variant>> buttons_list;
+    data->portal_button_count = notification->buttons().size();
+    data->portal_inline_reply_button_index.reset();
+
+    bool has_inline_reply = false;
+    for (size_t i = 0; i < notification->buttons().size(); ++i) {
+      const auto& button_info = notification->buttons()[i];
+      const std::string label = base::UTF16ToUTF8(button_info.title);
+      std::map<std::string, dbus_utils::Variant> button_map;
+      button_map.emplace(
+          "action", dbus_utils::Variant::Wrap<"s">(base::NumberToString(i)));
+      button_map.emplace("label", dbus_utils::Variant::Wrap<"s">(label));
+      if (button_info.placeholder && PortalSupportsButtonPurposes() &&
+          supported_portal_button_purposes_.contains("im.reply-with-text") &&
+          !has_inline_reply) {
+        button_map.emplace(
+            "purpose", dbus_utils::Variant::Wrap<"s">("im.reply-with-text"));
+        has_inline_reply = true;
+        data->portal_inline_reply_button_index = i;
+      }
+      buttons_list.push_back(std::move(button_map));
+    }
+
+    if (notification->should_show_settings_button()) {
+      std::map<std::string, dbus_utils::Variant> button_map;
+      button_map.emplace("action",
+                         dbus_utils::Variant::Wrap<"s">(kSettingsButtonId));
+      button_map.emplace(
+          "label", dbus_utils::Variant::Wrap<"s">(l10n_util::GetStringUTF8(
+                       IDS_NOTIFICATION_BUTTON_SETTINGS)));
+      buttons_list.push_back(std::move(button_map));
+    }
+
+    if (!buttons_list.empty()) {
+      portal_dict.emplace("buttons", dbus_utils::Variant::Wrap<"aa{sv}">(
+                                         std::move(buttons_list)));
+    }
+
+    if (PortalSupportsDisplayHint()) {
+      std::vector<std::string> display_hints;
+      if (notification->renotify()) {
+        display_hints.push_back("show-as-new");
+      }
+      if (!display_hints.empty()) {
+        portal_dict.emplace("display-hint",
+                            dbus_utils::Variant::Wrap<"as">(display_hints));
+      }
+    }
+
+    if (PortalSupportsCategory()) {
+      if (supported_portal_categories_.contains("browser.web-notification")) {
+        portal_dict.emplace("category", dbus_utils::Variant::Wrap<"s">(
+                                            "browser.web-notification"));
+      }
+    }
+
+    // Keep notification copy in case AddNotification fails and needs a retry.
+    data->notification = std::move(notification);
+
+    dbus_utils::CallMethod<"sa{sv}", "">(
+        notification_proxy_, kPortalNotificationInterface,
+        kMethodAddNotification,
+        base::BindOnce(&NotificationPlatformBridgeLinuxImpl::
+                           OnPortalAddNotificationResponse,
+                       weak_factory_.GetWeakPtr(), data->notification_id,
+                       profile_id, is_incognito),
+        data->portal_id, std::move(portal_dict));
+  }
+
+  void OnPortalAddNotificationResponse(const std::string& notification_id,
+                                       const std::string& profile_id,
+                                       bool is_incognito,
+                                       dbus_utils::CallMethodResult<> result) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    NotificationData* data =
+        FindNotificationData(notification_id, profile_id, is_incognito);
+    if (!data) {
+      return;
+    }
+    if (result.has_value()) {
+      data->notification.reset();
+    } else {
+      LOG(ERROR) << "AddNotification failed: status="
+                 << static_cast<int>(result.error().status) << " "
+                 << result.error().error_name << ": "
+                 << result.error().error_message;
+      if (data->files.has_icon && data->notification) {
+        // Retry without the icon in case the icon caused the failure
+        // (e.g., exceeding xdg-desktop-portal's icon size/dimension limits).
+        data->files.has_icon = false;
+        DisplayPortal(data->notification_type, profile_id, is_incognito,
+                      std::move(data->notification), data);
+        return;
+      }
+      notifications_.erase(data);
+    }
+  }
+
   void OnNotifyResponse(const std::string& notification_id,
                         const std::string& profile_id,
                         bool is_incognito,
@@ -822,7 +1308,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
   }
 
-  // Makes the "CloseNotification" call to D-Bus.
+  // Makes the "CloseNotification" or "RemoveNotification" call to D-Bus.
   void CloseImpl(const std::string& profile_id,
                  const std::string& notification_id) {
     std::vector<NotificationData*> to_erase;
@@ -830,11 +1316,19 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       NotificationData* data = pair.first;
       if (data->notification_id == notification_id &&
           data->profile_id == profile_id) {
-        dbus_utils::CallMethod<"u", "">(
-            notification_proxy_, kFreedesktopNotificationsName,
-            kMethodCloseNotification,
-            base::BindOnce([](dbus_utils::CallMethodResult<>) {}),
-            data->dbus_id);
+        if (using_portal_) {
+          dbus_utils::CallMethod<"s", "">(
+              notification_proxy_, kPortalNotificationInterface,
+              kMethodRemoveNotification,
+              base::BindOnce([](dbus_utils::CallMethodResult<>) {}),
+              data->portal_id);
+        } else {
+          dbus_utils::CallMethod<"u", "">(
+              notification_proxy_, kFreedesktopNotificationsName,
+              kMethodCloseNotification,
+              base::BindOnce([](dbus_utils::CallMethodResult<>) {}),
+              data->dbus_id);
+        }
         to_erase.push_back(data);
       }
     }
@@ -871,6 +1365,113 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       }
     }
     return nullptr;
+  }
+
+  NotificationData* FindNotificationDataWithPortalId(
+      const std::string& portal_id) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (portal_id.empty()) {
+      return nullptr;
+    }
+    for (const auto& pair : notifications_) {
+      NotificationData* data = pair.first;
+      if (data->portal_id == portal_id) {
+        return data;
+      }
+    }
+    return nullptr;
+  }
+
+  void OnPortalActionInvoked(
+      dbus_utils::ConnectToSignalResultSig<"ssav"> result) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (!result.has_value()) {
+      LOG(ERROR) << "Error parsing ActionInvoked portal signal";
+      return;
+    }
+    auto& [portal_id, action, parameters] = result.value();
+    NotificationData* data = FindNotificationDataWithPortalId(portal_id);
+    if (!data) {
+      return;
+    }
+
+    std::optional<std::string> activation_token;
+    std::optional<std::u16string> reply_text;
+
+    size_t platform_data_index = parameters.size();
+    for (size_t i = 0; i < parameters.size(); ++i) {
+      if (parameters[i].signature() == "a{sv}") {
+        platform_data_index = i;
+        auto platform_data_opt =
+            std::move(parameters[i])
+                .Take<std::map<std::string, dbus_utils::Variant>>();
+        if (platform_data_opt) {
+          auto it = platform_data_opt->find("activation-token");
+          if (it != platform_data_opt->end()) {
+            auto token_opt = std::move(it->second).Take<std::string>();
+            if (token_opt) {
+              activation_token = std::move(token_opt);
+            }
+          }
+        }
+        break;
+      }
+    }
+
+    if (platform_data_index + 1 < parameters.size() &&
+        parameters[platform_data_index + 1].signature() == "s") {
+      auto str_opt =
+          std::move(parameters[platform_data_index + 1]).Take<std::string>();
+      if (str_opt) {
+        reply_text = base::UTF8ToUTF16(*str_opt);
+      }
+    }
+
+    if (activation_token) {
+      base::nix::SetActivationToken(*activation_token);
+    }
+
+    // The org.freedesktop.portal.Notification interface does not provide a
+    // signal when a user dismisses a notification without interacting with an
+    // action. Thus, notifications dismissed by user gestures remain in
+    // notifications_ until closed or overwritten.
+    if (action == kDefaultButtonId) {
+      ForwardNotificationOperation(
+          NotificationOperation::kClick, data->notification_type,
+          data->origin_url, data->notification_id,
+          /*action_index=*/std::nullopt, /*by_user=*/std::nullopt,
+          /*reply=*/std::nullopt, data->profile_id, data->is_incognito);
+    } else if (action == kSettingsButtonId) {
+      ForwardNotificationOperation(
+          NotificationOperation::kSettings, data->notification_type,
+          data->origin_url, data->notification_id,
+          /*action_index=*/std::nullopt, /*by_user=*/std::nullopt,
+          /*reply=*/std::nullopt, data->profile_id, data->is_incognito);
+    } else if (action == kCloseButtonId) {
+      ForwardNotificationOperation(
+          NotificationOperation::kClose, data->notification_type,
+          data->origin_url, data->notification_id,
+          /*action_index=*/std::nullopt, /*by_user=*/true,
+          /*reply=*/std::nullopt, data->profile_id, data->is_incognito);
+      CloseImpl(data->profile_id, data->notification_id);
+    } else {
+      size_t button_index;
+      if (!base::StringToSizeT(action, &button_index)) {
+        return;
+      }
+      if (button_index >= data->portal_button_count) {
+        return;
+      }
+      std::optional<std::u16string> reply_for_action;
+      if (data->portal_inline_reply_button_index == button_index) {
+        reply_for_action = std::move(reply_text);
+      }
+      ForwardNotificationOperation(NotificationOperation::kClick,
+                                   data->notification_type, data->origin_url,
+                                   data->notification_id, button_index,
+                                   /*by_user=*/std::nullopt, reply_for_action,
+                                   data->profile_id, data->is_incognito);
+    }
   }
 
   void OnActivationToken(dbus_utils::ConnectToSignalResultSig<"us"> result) {
@@ -920,8 +1521,8 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       if (!base::StringToSizeT(action, &id)) {
         return;
       }
-      size_t n_buttons = data->action_end - data->action_start;
-      size_t id_zero_based = id - data->action_start;
+      size_t n_buttons = data->fdo_action_end - data->fdo_action_start;
+      size_t id_zero_based = id - data->fdo_action_start;
       if (id_zero_based >= n_buttons) {
         return;
       }
@@ -1005,6 +1606,14 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     connected_signals_barrier_.Run();
   }
 
+  bool PortalSupportsSupportedOptions() const { return portal_version_ >= 2; }
+  bool PortalSupportsMarkupBody() const { return portal_version_ >= 2; }
+  bool PortalSupportsIconFd() const { return portal_version_ >= 2; }
+  bool PortalSupportsSound() const { return portal_version_ >= 2; }
+  bool PortalSupportsButtonPurposes() const { return portal_version_ >= 2; }
+  bool PortalSupportsDisplayHint() const { return portal_version_ >= 2; }
+  bool PortalSupportsCategory() const { return portal_version_ >= 2; }
+
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
   base::CallbackListSubscription on_app_terminating_subscription_;
@@ -1027,6 +1636,18 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
   base::Version server_version_;
 
   base::RepeatingClosure connected_signals_barrier_;
+
+  // Whether org.freedesktop.portal.Notification is being used as fallback.
+  bool using_portal_ = false;
+
+  // The fallback reason when falling back to portal initialization.
+  std::optional<ConnectionInitializationStatusCode> portal_fallback_reason_;
+
+  // The version of the org.freedesktop.portal.Notification interface.
+  uint32_t portal_version_ = kPortalMinVersion;
+
+  std::unordered_set<std::string> supported_portal_categories_;
+  std::unordered_set<std::string> supported_portal_button_purposes_;
 
   // Whether the NotificationReplied signal could be connected to
   // and as such whether inline-reply support should be checked.
