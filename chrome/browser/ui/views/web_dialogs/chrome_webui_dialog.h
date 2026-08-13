@@ -160,6 +160,10 @@ class ChromeWebUIDialog : public views::DialogDelegate,
   views::WebView* web_view() { return web_view_; }
 
  private:
+  // Shows the widget, registering a tab-modal dialog with its
+  // TabDialogManager. Safe to call repeatedly.
+  void ShowWidget();
+
   const WebDialogSpec spec_;
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
 

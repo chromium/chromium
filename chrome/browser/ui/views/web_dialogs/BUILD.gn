@@ -15,6 +15,7 @@ source_set("web_dialogs") {
   ]
 
   deps = [
+    "//chrome/browser/ui/tabs:tabs_public",
     "//components/constrained_window",
     "//components/tabs:public",
     "//content/public/browser",
@@ -31,6 +32,7 @@ source_set("unit_tests") {
     ":web_dialogs",
     "//base",
     "//chrome/test:test_support",
+    "//content/public/common",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",
