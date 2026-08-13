@@ -135,6 +135,10 @@ NotificationCounterView::NotificationCounterView(
 
 NotificationCounterView::~NotificationCounterView() = default;
 
+void NotificationCounterView::ResetController() {
+  controller_ = nullptr;
+}
+
 void NotificationCounterView::Update() {
   if (message_center_utils::GetNotificationCount() == 0 ||
       !ShouldShowCounterView()) {

@@ -52,6 +52,9 @@ class ASH_EXPORT NotificationCounterView : public TrayItemView {
 
   int count_for_display_for_testing() const { return count_for_display_; }
 
+  // Resets the controller pointer when the controller is destroyed.
+  void ResetController();
+
  private:
   // The type / number of the icon that is currently set to the image view.
   // 0 indicates no icon is drawn yet.
@@ -59,7 +62,7 @@ class ASH_EXPORT NotificationCounterView : public TrayItemView {
   // |kTrayNotificationMaxCount| + 1 indicates the plus icon.
   int count_for_display_ = 0;
 
-  const raw_ptr<NotificationIconsController, DanglingUntriaged> controller_;
+  raw_ptr<NotificationIconsController> controller_ = nullptr;
 };
 
 // A do-not-distrub icon view in UnifiedSystemTray button.
