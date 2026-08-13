@@ -4,6 +4,11 @@
 
 #include "chrome/browser/dictation/target.h"
 
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/dictation/features.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/render_frame_host.h"
@@ -22,6 +27,13 @@ std::u16string RemovePrefix(const std::u16string& text,
     prefix_len++;
   }
   return text.substr(prefix_len);
+}
+
+void CompleteAsync(base::OnceClosure on_complete) {
+  if (on_complete) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_complete));
+  }
 }
 
 }  // namespace
@@ -66,6 +78,44 @@ content::RenderWidgetHost* Target::GetRenderWidgetHost() const {
 }
 
 void Target::SetComposition(const std::u16string& text, bool is_final) {
+  QueuedOperation op{
+      .type = is_final ? QueuedOperation::Type::kSetFinalComposition
+                       : QueuedOperation::Type::kSetPartialComposition,
+      .text = text,
+  };
+  if (is_waiting_on_operation_completion_) {
+    // Intentionally overwrites any other pending operation.
+    CHECK(!queued_operation_ || !queued_operation_->on_commit_complete);
+    queued_operation_ = std::move(op);
+    return;
+  }
+
+  ExecuteOperation(std::move(op));
+}
+
+void Target::CommitComposition(const std::u16string& text,
+                               base::OnceClosure on_commit_complete) {
+  QueuedOperation op{
+      .type = QueuedOperation::Type::kCommitComposition,
+      .text = text,
+      .on_commit_complete = std::move(on_commit_complete),
+  };
+  if (is_waiting_on_operation_completion_) {
+    // Intentionally overwrites any other pending operation.
+    CHECK(!queued_operation_ || !queued_operation_->on_commit_complete);
+    queued_operation_ = std::move(op);
+    return;
+  }
+
+  ExecuteOperation(std::move(op));
+}
+
+void Target::ExecuteSetComposition(const std::u16string& text,
+                                   bool is_final,
+                                   base::OnceClosure operation_complete) {
+  base::ScopedClosureRunner scoped_operation_complete(
+      std::move(operation_complete));
+
   if (!is_final && !kShowPartials.Get()) {
     return;
   }
@@ -87,7 +137,8 @@ void Target::SetComposition(const std::u16string& text, bool is_final) {
     // want to show partial transcripts.
     paste_fallback_required_ = true;
     last_sent_composition_ = u"";
-    CommitExternallySourcedComposition(u"");
+    CommitExternallySourcedComposition(u"",
+                                       scoped_operation_complete.Release());
     return;
   }
 
@@ -102,12 +153,15 @@ void Target::SetComposition(const std::u16string& text, bool is_final) {
 
   last_sent_composition_ = text;
 
-  SetExternallySourcedComposition(text, {text_span});
+  SetExternallySourcedComposition(text, {text_span},
+                                  scoped_operation_complete.Release());
 }
 
-void Target::CommitComposition(const std::u16string& text) {
+void Target::ExecuteCommitComposition(const std::u16string& text,
+                                      base::OnceClosure operation_complete) {
   if (paste_fallback_required_) {
     PasteIntoNode(text);
+    CompleteAsync(std::move(operation_complete));
     return;
   }
 
@@ -123,23 +177,67 @@ void Target::CommitComposition(const std::u16string& text) {
 
   if (richly_editable() && text_to_commit.find(u'\n') != std::u16string::npos) {
     PasteIntoNode(text_to_commit);
+    CompleteAsync(std::move(operation_complete));
     return;
   }
 
-  CommitExternallySourcedComposition(text_to_commit);
+  CommitExternallySourcedComposition(text_to_commit,
+                                     std::move(operation_complete));
+}
+
+void Target::ExecuteOperation(QueuedOperation op) {
+  is_waiting_on_operation_completion_ = true;
+
+  base::OnceClosure operation_complete =
+      base::BindOnce(&Target::OnOperationComplete, weak_factory_.GetWeakPtr(),
+                     std::move(op.on_commit_complete));
+
+  switch (op.type) {
+    case QueuedOperation::Type::kSetPartialComposition:
+      ExecuteSetComposition(op.text, /*is_final=*/false,
+                            std::move(operation_complete));
+      break;
+    case QueuedOperation::Type::kSetFinalComposition:
+      ExecuteSetComposition(op.text, /*is_final=*/true,
+                            std::move(operation_complete));
+      break;
+    case QueuedOperation::Type::kCommitComposition:
+      ExecuteCommitComposition(op.text, std::move(operation_complete));
+      break;
+  }
+}
+
+void Target::OnOperationComplete(base::OnceClosure on_commit_complete) {
+  is_waiting_on_operation_completion_ = false;
+
+  CompleteAsync(std::move(on_commit_complete));
+
+  if (queued_operation_.has_value()) {
+    QueuedOperation op = std::move(*queued_operation_);
+    queued_operation_.reset();
+    ExecuteOperation(std::move(op));
+  }
 }
 
 void Target::SetExternallySourcedComposition(
     const std::u16string& text,
-    const std::vector<ui::ImeTextSpan>& spans) {
+    const std::vector<ui::ImeTextSpan>& spans,
+    base::OnceClosure on_complete) {
   if (content::RenderWidgetHost* rwh = GetRenderWidgetHost()) {
-    rwh->SetExternallySourcedComposition(text, spans, global_dom_node_id());
+    rwh->SetExternallySourcedComposition(text, spans, global_dom_node_id(),
+                                         std::move(on_complete));
+  } else {
+    CompleteAsync(std::move(on_complete));
   }
 }
 
-void Target::CommitExternallySourcedComposition(const std::u16string& text) {
+void Target::CommitExternallySourcedComposition(const std::u16string& text,
+                                                base::OnceClosure on_complete) {
   if (content::RenderWidgetHost* rwh = GetRenderWidgetHost()) {
-    rwh->CommitExternallySourcedComposition(text, global_dom_node_id());
+    rwh->CommitExternallySourcedComposition(text, global_dom_node_id(),
+                                            std::move(on_complete));
+  } else {
+    CompleteAsync(std::move(on_complete));
   }
 }
 

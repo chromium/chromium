@@ -2729,7 +2729,8 @@ TEST_F(RenderWidgetHostTest, SetAndCommitExternallySourcedComposition) {
   ui::ImeTextSpan ime_text_span;
   ime_text_span.end_offset = length;
   ime_text_span.underline_style = ui::ImeTextSpan::UnderlineStyle::kDot;
-  host_->SetExternallySourcedComposition(text, {ime_text_span}, node_id);
+  host_->SetExternallySourcedComposition(text, {ime_text_span}, node_id,
+                                         /*on_complete=*/base::OnceClosure());
 
   {
     MockWidgetInputHandler::MessageVector dispatched_messages =
@@ -2744,7 +2745,8 @@ TEST_F(RenderWidgetHostTest, SetAndCommitExternallySourcedComposition) {
         blink::mojom::ImeState::kNone, node_id.target_element_dom_id));
   }
 
-  host_->CommitExternallySourcedComposition(text, node_id);
+  host_->CommitExternallySourcedComposition(
+      text, node_id, /*on_complete=*/base::OnceClosure());
 
   {
     MockWidgetInputHandler::MessageVector dispatched_messages =

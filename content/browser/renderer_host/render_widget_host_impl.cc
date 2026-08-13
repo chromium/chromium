@@ -2473,20 +2473,22 @@ void RenderWidgetHostImpl::ImeCancelComposition() {
 void RenderWidgetHostImpl::SetExternallySourcedComposition(
     const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
-    const GlobalDOMNodeId& target_dom_node_id) {
+    const GlobalDOMNodeId& target_dom_node_id,
+    base::OnceClosure on_complete) {
   int length = text.length();
   GetWidgetInputHandler()->ImeSetComposition(
       text, ime_text_spans, gfx::Range::InvalidRange(), length, length,
       blink::mojom::ImeState::kNone, target_dom_node_id.target_element_dom_id,
-      base::OnceClosure());
+      std::move(on_complete));
 }
 
 void RenderWidgetHostImpl::CommitExternallySourcedComposition(
     const std::u16string& text,
-    const GlobalDOMNodeId& target_dom_node_id) {
+    const GlobalDOMNodeId& target_dom_node_id,
+    base::OnceClosure on_complete) {
   GetWidgetInputHandler()->ImeCommitText(
       text, std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0,
-      target_dom_node_id.target_element_dom_id, base::OnceClosure());
+      target_dom_node_id.target_element_dom_id, std::move(on_complete));
 }
 
 void RenderWidgetHostImpl::PasteIntoNode(

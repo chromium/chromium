@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/dictation/dictation_context_fetcher.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
@@ -190,33 +191,42 @@ void ListenerStreamProvider::OnTranscriptionUpdated(const std::string& data,
   // element is no longer valid.
 
   target_->SetComposition(base::UTF8ToUTF16(data), is_final);
-
-  if (update_callback_for_testing_) {
-    update_callback_for_testing_.Run();
-  }
 }
 
 void ListenerStreamProvider::OnStreamStateChanged(StreamState state) {
+  if (state == StreamState::kComplete) {
+    VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__
+                             << " Complete pending commit";
+    target_->CommitComposition(
+        base::UTF8ToUTF16(latest_transcription_),
+        base::BindOnce(&ListenerStreamProvider::OnPendingInsertionsComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+    // Once the extension informs us that the steam is complete, we need to wait
+    // for our target to finish inserting text, before marking this stream
+    // provider complete. Otherwise this provider would be deleted while having
+    // uncommitted text.
+    return;
+  }
+
   VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__
                            << " " << state_ << " --> " << state;
+
   // TODO(crbug.com/502587072): Assert state transitions are correct.
   StreamState old_state = state_;
   state_ = state;
 
   delegate_->DidUpdateStreamProviderState(*this, old_state);
-
-  if (state == StreamState::kComplete) {
-    target_->CommitComposition(base::UTF8ToUTF16(latest_transcription_));
-  }
-
-  if (update_callback_for_testing_) {
-    update_callback_for_testing_.Run();
-  }
 }
 
-void ListenerStreamProvider::SetOnUpdateForTesting(  // IN-TEST
-    base::RepeatingClosure callback) {
-  update_callback_for_testing_ = std::move(callback);
+void ListenerStreamProvider::OnPendingInsertionsComplete() {
+  VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__
+                           << " " << state_ << " --> "
+                           << StreamState::kComplete;
+
+  StreamState old_state = state_;
+  state_ = StreamState::kComplete;
+
+  delegate_->DidUpdateStreamProviderState(*this, old_state);
 }
 
 const std::string&
