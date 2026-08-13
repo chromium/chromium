@@ -603,6 +603,10 @@ void GeolocationProviderImpl::OnSystemPermissionUpdated(
 
 void GeolocationProviderImpl::OnPermissionManagerShuttingDown() {
   geolocation_permission_observation_.Reset();
+  g_geolocation_system_permission_manager = nullptr;
+  if (location_provider_manager_) {
+    location_provider_manager_->OnPermissionManagerShuttingDown();
+  }
 }
 
 void GeolocationProviderImpl::NotifyClientsSystemPermissionDenied() {

@@ -64,6 +64,7 @@ class LocationProviderManager : public LocationProvider {
   void StopProvider() override;
   const mojom::GeopositionResult* GetPosition() override;
   void OnPermissionGranted() override;
+  void OnPermissionManagerShuttingDown() override;
 
  protected:
   // These functions are useful for injection of dependencies in derived
@@ -95,21 +96,8 @@ class LocationProviderManager : public LocationProvider {
 
   const CustomLocationProviderCallback custom_location_provider_getter_;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, `GeolocationSystemPermissionManager`
-  // is reset in `ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun`.
-  // This can happen before `LocationProviderManager` is destroyed, creating a
-  // dangling pointer situation.
-  // TODO(crbug.com/474434915): Remove DanglingUntriaged for ChromeOS.
-  const raw_ptr<GeolocationSystemPermissionManager, DanglingUntriaged>
-      geolocation_system_permission_manager_;
-#else
-  // On macOS or Windows, `GeolocationSystemPermissionManager` is never torn
-  // down, ensuring its lifetime exceeds that of `this` object. Hence, it is
-  // safe to remove the `DanglingUntriaged` annotation.
-  const raw_ptr<GeolocationSystemPermissionManager>
-      geolocation_system_permission_manager_;
-#endif
+  raw_ptr<GeolocationSystemPermissionManager>
+      geolocation_system_permission_manager_ = nullptr;
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::string api_key_;

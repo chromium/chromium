@@ -131,6 +131,10 @@ void LocationProviderManager::OnPermissionGranted() {
   }
 }
 
+void LocationProviderManager::OnPermissionManagerShuttingDown() {
+  geolocation_system_permission_manager_ = nullptr;
+}
+
 void LocationProviderManager::StartProvider(bool enable_high_accuracy) {
   // Ensure a provider is created successfully before starting.
   if (!InitializeProvider()) {
