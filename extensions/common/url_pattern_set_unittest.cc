@@ -455,4 +455,34 @@ TEST(URLPatternSetTest, MatchesHost) {
   EXPECT_TRUE(set.MatchesHost(GURL("http://anything.ca"), true));
 }
 
+TEST(URLPatternSetTest, CaseInsensitiveMatchesURL) {
+  URLPatternSet set;
+  AddPattern(&set, "chrome-extension://*/path.html");
+
+  GURL lowercase_url(
+      "chrome-extension://abcdefghijklmnoabcdefghijklmno/path.html");
+  GURL uppercase_url(
+      "chrome-extension://abcdefghijklmnoabcdefghijklmno/Path.html");
+
+  EXPECT_TRUE(set.MatchesURL(lowercase_url));
+  EXPECT_FALSE(set.MatchesURL(uppercase_url));
+
+  EXPECT_TRUE(set.MatchesURL(lowercase_url, /*case_sensitive=*/false));
+  EXPECT_TRUE(set.MatchesURL(uppercase_url, /*case_sensitive=*/false));
+
+  URLPatternSet utf_set;
+  AddPattern(&utf_set, "chrome-extension://*/caf%C3%A9.html");
+
+  GURL lowercase_utf_url(
+      "chrome-extension://abcdefghijklmnoabcdefghijklmno/caf%C3%A9.html");
+  GURL uppercase_utf_url(
+      "chrome-extension://abcdefghijklmnoabcdefghijklmno/CAF%C3%89.html");
+
+  EXPECT_TRUE(utf_set.MatchesURL(lowercase_utf_url));
+  EXPECT_FALSE(utf_set.MatchesURL(uppercase_utf_url));
+
+  EXPECT_TRUE(utf_set.MatchesURL(lowercase_utf_url, /*case_sensitive=*/false));
+  EXPECT_TRUE(utf_set.MatchesURL(uppercase_utf_url, /*case_sensitive=*/false));
+}
+
 }  // namespace extensions

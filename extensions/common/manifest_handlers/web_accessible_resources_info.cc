@@ -192,7 +192,8 @@ bool IsResourceWebAccessibleImpl(
 
   // Look for the first match in the array of web accessible resources.
   for (const auto& entry : info->web_accessible_resources) {
-    if (extension.ResourceMatches(entry.resources, relative_path)) {
+    if (extension.ResourceMatches(entry.resources, relative_path,
+                                  /*case_sensitive=*/true)) {
       bool result = true;
 
       // Prior to MV3, web-accessible resources were accessible by any site.
@@ -298,7 +299,8 @@ bool WebAccessibleResourcesInfo::ShouldUseDynamicUrl(const Extension* extension,
     return false;
   }
   for (const auto& entry : info->web_accessible_resources) {
-    if (extension->ResourceMatches(entry.resources, path) &&
+    if (extension->ResourceMatches(entry.resources, path,
+                                   /*case_sensitive=*/true) &&
         entry.use_dynamic_url) {
       return true;
     }

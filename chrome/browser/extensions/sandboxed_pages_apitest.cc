@@ -556,6 +556,83 @@ IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, PercentEncodedSandboxedPagePath) {
       extension->id(), frame_host->GetProcess()->GetID()));
 }
 
+// Verifies that requesting a sandboxed page using case-variant path (e.g.
+// "Sandboxed.html") is still recognized as a sandboxed page.
+// Regression test for https://crbug.com/542355360.
+IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, CaseInsensitiveSandboxedPagePath) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Case-insensitive sandboxed page test",
+           "version": "0.1",
+           "manifest_version": 3,
+           "sandbox": { "pages": ["sandboxed.html", "café.html"] }
+         })";
+  static constexpr char kSandboxedHtml[] =
+      R"(<html><body>Sandboxed Page</body></html>)";
+  static constexpr char kCafeHtml[] =
+      R"(<html>
+           <head><meta charset="utf-8"></head><body>Café Page</body>
+         </html>)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  // Write the case-variant files first so that on case-sensitive filesystems
+  // (like Linux) the files exist to be loaded, but on case-insensitive
+  // filesystems (macOS, Windows) the canonical lowercase files are written
+  // second.
+  test_dir.WriteFile(FILE_PATH_LITERAL("Sandboxed.html"), kSandboxedHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("sandboxed.html"), kSandboxedHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("CAFÉ.html"), kCafeHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("café.html"), kCafeHtml);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Test ASCII case mismatch.
+  {
+    // Note: Deliberately don't use Extension::GetResourceURL(), which goes
+    // through additional sanitization checks.
+    GURL uppercase_url = extension->url().Resolve("Sandboxed.html");
+    ASSERT_TRUE(NavigateToURL(web_contents, uppercase_url));
+
+    // The page should load, but should be properly sandboxed: it shouldn't
+    // have extension APIs or be hosted in a trusted process.
+    content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
+    ASSERT_TRUE(frame_host);
+    EXPECT_FALSE(frame_host->IsErrorDocument());
+    EXPECT_EQ("Sandboxed Page",
+              content::EvalJs(web_contents, "document.body.innerText"));
+    EXPECT_EQ("null", frame_host->GetLastCommittedOrigin().Serialize());
+    EXPECT_EQ("undefined",
+              content::EvalJs(web_contents, "typeof chrome.runtime"));
+    EXPECT_FALSE(ProcessMap::Get(profile())->Contains(
+        extension->id(), frame_host->GetProcess()->GetID()));
+  }
+
+  // Test non-ASCII / Unicode UTF-8 case mismatch.
+  {
+    // Note: Deliberately don't use Extension::GetResourceURL(), which goes
+    // through additional sanitization checks.
+    GURL uppercase_url = extension->url().Resolve("CAFÉ.html");
+    ASSERT_TRUE(NavigateToURL(web_contents, uppercase_url));
+
+    // The page should load, but should be properly sandboxed: it shouldn't
+    // have extension APIs or be hosted in a trusted process.
+    content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
+    ASSERT_TRUE(frame_host);
+    EXPECT_FALSE(frame_host->IsErrorDocument());
+    EXPECT_EQ("Café Page",
+              content::EvalJs(web_contents, "document.body.innerText"));
+    EXPECT_EQ("null", frame_host->GetLastCommittedOrigin().Serialize());
+    EXPECT_EQ("undefined",
+              content::EvalJs(web_contents, "typeof chrome.runtime"));
+    EXPECT_FALSE(ProcessMap::Get(profile())->Contains(
+        extension->id(), frame_host->GetProcess()->GetID()));
+  }
+}
+
 // Pages that are sandboxed with the HTML5 `sandbox` attribute are treated
 // differently from pages specified in the "sandbox" attribute in the manifest.
 // These pages *do* get extension APIs.

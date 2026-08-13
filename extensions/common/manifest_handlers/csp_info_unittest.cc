@@ -77,6 +77,10 @@ TEST_F(CSPInfoUnitTest, SandboxedPages) {
   EXPECT_EQ(kDefaultSandboxedPageCSP, CSPInfo::GetResourceContentSecurityPolicy(
                                           extension1.get(), "/t%65st"));
   EXPECT_TRUE(SandboxedPageInfo::IsSandboxedPage(extension1.get(), "/t%65st"));
+  EXPECT_EQ(kDefaultSandboxedPageCSP, CSPInfo::GetResourceContentSecurityPolicy(
+                                          extension1.get(), "/Test"));
+  EXPECT_TRUE(SandboxedPageInfo::IsSandboxedPage(extension1.get(), "/Test"));
+  EXPECT_TRUE(SandboxedPageInfo::IsSandboxedPage(extension1.get(), "/tEsT"));
   EXPECT_EQ(
       kDefaultExtensionPagesCSP,
       CSPInfo::GetResourceContentSecurityPolicy(extension1.get(), "/none"));
@@ -97,6 +101,12 @@ TEST_F(CSPInfoUnitTest, SandboxedPages) {
                                                       "/path/test%2Eext"));
   EXPECT_TRUE(
       SandboxedPageInfo::IsSandboxedPage(extension5.get(), "/path/test%2Eext"));
+  EXPECT_EQ(kDefaultSandboxedPageCSP, CSPInfo::GetResourceContentSecurityPolicy(
+                                          extension5.get(), "/PATH/TEST.EXT"));
+  EXPECT_TRUE(
+      SandboxedPageInfo::IsSandboxedPage(extension5.get(), "/PATH/TEST.EXT"));
+  EXPECT_TRUE(
+      SandboxedPageInfo::IsSandboxedPage(extension5.get(), "/path/TEST.ext"));
   EXPECT_EQ(
       kDefaultExtensionPagesCSP,
       CSPInfo::GetResourceContentSecurityPolicy(extension5.get(), "/test"));
@@ -104,6 +114,30 @@ TEST_F(CSPInfoUnitTest, SandboxedPages) {
                                      extension6.get(), "/test"));
   EXPECT_EQ(kDefaultSandboxedPageCSP, CSPInfo::GetResourceContentSecurityPolicy(
                                           extension7.get(), "/test"));
+
+  static constexpr char kManifestUtf8Sandboxed[] =
+      R"({
+           "name": "UTF-8 Sandboxed Page Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "sandbox": {
+             "pages": ["café.html"]
+           }
+         })";
+  ManifestData manifest_data_utf8(
+      base::test::ParseJsonDict(kManifestUtf8Sandboxed));
+  scoped_refptr<const Extension> extension_utf8 =
+      LoadAndExpectSuccess(manifest_data_utf8);
+  EXPECT_EQ(kDefaultSandboxedPageCSP, CSPInfo::GetResourceContentSecurityPolicy(
+                                          extension_utf8.get(), "/café.html"));
+  EXPECT_TRUE(
+      SandboxedPageInfo::IsSandboxedPage(extension_utf8.get(), "/café.html"));
+  EXPECT_EQ(kDefaultSandboxedPageCSP, CSPInfo::GetResourceContentSecurityPolicy(
+                                          extension_utf8.get(), "/CAFÉ.html"));
+  EXPECT_TRUE(
+      SandboxedPageInfo::IsSandboxedPage(extension_utf8.get(), "/CAFÉ.html"));
+  EXPECT_TRUE(
+      SandboxedPageInfo::IsSandboxedPage(extension_utf8.get(), "/Café.html"));
 
   const Testcase testcases[] = {
       Testcase("sandboxed_pages_invalid_1.json",

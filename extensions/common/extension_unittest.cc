@@ -15,9 +15,11 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/switches.h"
+#include "extensions/common/url_pattern_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::mojom::ManifestLocation;
@@ -407,6 +409,30 @@ TEST(ExtensionTest, ExtensionShortNameSanitization) {
 
   EXPECT_EQ(std::string("SecUpdate") + "\xE2\x80\xAE" + "\xE2\x80\xAC",
             extension->short_name());
+}
+
+TEST(ExtensionTest, ResourceMatchesCaseSensitivity) {
+  scoped_refptr<const Extension> extension = ExtensionBuilder("test").Build();
+  ASSERT_TRUE(extension);
+
+  URLPatternSet pattern_set;
+  URLPattern pattern(URLPattern::SCHEME_EXTENSION);
+  ASSERT_EQ(URLPattern::ParseResult::kSuccess,
+            pattern.Parse(extension->url().spec() + "path.html"));
+  pattern_set.AddPattern(pattern);
+
+  // Exact match succeeds for both case_sensitive = true and false.
+  EXPECT_TRUE(extension->ResourceMatches(pattern_set, "path.html",
+                                         /*case_sensitive=*/true));
+  EXPECT_TRUE(extension->ResourceMatches(pattern_set, "path.html",
+                                         /*case_sensitive=*/false));
+
+  // Case mismatch fails when case_sensitive = true, and succeeds when
+  // case_sensitive = false.
+  EXPECT_FALSE(extension->ResourceMatches(pattern_set, "Path.html",
+                                          /*case_sensitive=*/true));
+  EXPECT_TRUE(extension->ResourceMatches(pattern_set, "Path.html",
+                                         /*case_sensitive=*/false));
 }
 
 }  // namespace extensions

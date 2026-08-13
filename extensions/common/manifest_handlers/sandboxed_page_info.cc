@@ -45,8 +45,9 @@ const URLPatternSet& SandboxedPageInfo::GetPages(const Extension* extension) {
 }
 
 bool SandboxedPageInfo::IsSandboxedPage(const Extension* extension,
-                                    const std::string& relative_path) {
-  return extension->ResourceMatches(GetPages(extension), relative_path);
+                                        const std::string& relative_path) {
+  return extension->ResourceMatches(GetPages(extension), relative_path,
+                                    /*case_sensitive=*/false);
 }
 
 SandboxedPageHandler::SandboxedPageHandler() = default;

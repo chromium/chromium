@@ -124,8 +124,10 @@ class URLPatternSet {
   // Returns true if any pattern in this set encompasses `pattern`.
   bool ContainsPattern(const URLPattern& pattern) const;
 
-  // Test if the extent contains a URL.
+  // Test if the extent contains a URL. If `case_sensitive` is false, path
+  // matching is done case-insensitively using Unicode case folding.
   bool MatchesURL(const GURL& url) const;
+  bool MatchesURL(const GURL& url, bool case_sensitive) const;
 
   // Test if the extent matches all URLs (for example, <all_urls>).
   bool MatchesAllURLs() const;

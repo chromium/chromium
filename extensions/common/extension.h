@@ -194,9 +194,12 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
     return GetResourceURL(url(), relative_url);
   }
 
-  // Returns true if the resource matches a pattern in the pattern_set.
+  // Returns true if the resource matches a pattern in the pattern_set. If
+  // `case_sensitive` is false, matching is performed case-insensitively using
+  // Unicode case folding.
   bool ResourceMatches(const URLPatternSet& pattern_set,
-                       std::string_view resource) const;
+                       std::string_view resource,
+                       bool case_sensitive) const;
 
   // Returns an extension resource object. `relative_path` should be UTF8
   // encoded.

@@ -1355,4 +1355,38 @@ TEST(ExtensionURLPatternTest, ValidSchemeAndPatternIntersection) {
   EXPECT_EQ(std::nullopt, intersection2);
 }
 
+TEST(ExtensionURLPatternTest, CaseInsensitiveMatch) {
+  URLPattern pattern(URLPattern::SCHEME_EXTENSION);
+  EXPECT_EQ(URLPattern::ParseResult::kSuccess,
+            pattern.Parse("chrome-extension://*/path.html"));
+
+  GURL lowercase_url(
+      "chrome-extension://abcdefghijklmnoabcdefghijklmno/path.html");
+  GURL uppercase_url(
+      "chrome-extension://abcdefghijklmnoabcdefghijklmno/Path.html");
+
+  // By default (case_sensitive = true), matching is case-sensitive.
+  EXPECT_TRUE(pattern.MatchesURL(lowercase_url));
+  EXPECT_FALSE(pattern.MatchesURL(uppercase_url));
+  EXPECT_TRUE(pattern.MatchesPath("/path.html"));
+  EXPECT_FALSE(pattern.MatchesPath("/Path.html"));
+
+  // When case_sensitive = false, path matching is case-insensitive.
+  EXPECT_TRUE(pattern.MatchesURL(lowercase_url, /*case_sensitive=*/false));
+  EXPECT_TRUE(pattern.MatchesURL(uppercase_url, /*case_sensitive=*/false));
+  EXPECT_TRUE(pattern.MatchesPath("/path.html", /*case_sensitive=*/false));
+  EXPECT_TRUE(pattern.MatchesPath("/Path.html", /*case_sensitive=*/false));
+
+  // Test Unicode / non-ASCII UTF-8 case folding.
+  URLPattern utf_pattern(URLPattern::SCHEME_EXTENSION);
+  EXPECT_EQ(URLPattern::ParseResult::kSuccess,
+            utf_pattern.Parse("chrome-extension://*/café.html"));
+
+  EXPECT_TRUE(utf_pattern.MatchesPath("/café.html"));
+  EXPECT_FALSE(utf_pattern.MatchesPath("/CAFÉ.html"));
+  EXPECT_TRUE(utf_pattern.MatchesPath("/café.html", /*case_sensitive=*/false));
+  EXPECT_TRUE(utf_pattern.MatchesPath("/CAFÉ.html", /*case_sensitive=*/false));
+  EXPECT_TRUE(utf_pattern.MatchesPath("/Café.html", /*case_sensitive=*/false));
+}
+
 }  // namespace

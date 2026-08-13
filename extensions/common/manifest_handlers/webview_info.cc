@@ -79,8 +79,8 @@ bool WebviewInfo::IsResourceWebviewAccessible(
 
   for (const auto& item : webview_info->partition_items_) {
     if (item->Matches(partition_id) &&
-        extension->ResourceMatches(item->accessible_resources(),
-                                   relative_path)) {
+        extension->ResourceMatches(item->accessible_resources(), relative_path,
+                                   /*case_sensitive=*/true)) {
       return true;
     }
   }

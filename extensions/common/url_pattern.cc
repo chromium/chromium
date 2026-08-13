@@ -10,11 +10,14 @@
 #include <ostream>
 #include <string_view>
 
+#include "base/i18n/case_conversion.h"
+#include "base/strings/escape.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -419,6 +422,10 @@ bool URLPattern::SetPort(std::string_view port) {
 }
 
 bool URLPattern::MatchesURL(const GURL& test) const {
+  return MatchesURL(test, /*case_sensitive=*/true);
+}
+
+bool URLPattern::MatchesURL(const GURL& test, bool case_sensitive) const {
   // Invalid URLs can never match.
   if (!test.is_valid()) {
     return false;
@@ -456,7 +463,7 @@ bool URLPattern::MatchesURL(const GURL& test) const {
   }
 
   return MatchesSecurityOriginHelper(*test_url) &&
-         MatchesPath(path_for_request);
+         MatchesPath(path_for_request, case_sensitive);
 }
 
 bool URLPattern::MatchesSecurityOrigin(const GURL& test) const {
@@ -575,16 +582,44 @@ bool URLPattern::MatchesSingleOrigin() const {
 }
 
 bool URLPattern::MatchesPath(std::string_view test) const {
-  // Make the behaviour of OverlapsWith consistent with MatchesURL, which is
-  // need to match hosted apps on e.g. 'google.com' also run on 'google.com/'.
-  // The below if is a no-copy way of doing (test + "/*" == path_escaped_).
-  if (path_escaped_.length() == test.length() + 2 &&
-      base::StartsWith(path_escaped_.c_str(), test) &&
-      base::EndsWith(path_escaped_, "/*")) {
+  return MatchesPath(test, /*case_sensitive=*/true);
+}
+
+bool URLPattern::MatchesPath(std::string_view test, bool case_sensitive) const {
+  if (case_sensitive) {
+    // Make the behaviour of OverlapsWith consistent with MatchesURL, which
+    // is needed to ensure hosted apps on e.g. 'google.com' also run on
+    // 'google.com/'. The below if is a no-copy way of doing (test + "/*" ==
+    // path_escaped_).
+    if (path_escaped_.length() == test.length() + 2 &&
+        base::StartsWith(path_escaped_, test) &&
+        base::EndsWith(path_escaped_, "/*")) {
+      return true;
+    }
+
+    return base::MatchPattern(test, path_escaped_);
+  }
+
+  std::string unescaped_test =
+      base::UnescapeURLComponent(test, base::UnescapeRule::NORMAL);
+  std::string unescaped_pattern =
+      base::UnescapeURLComponent(path_escaped_, base::UnescapeRule::NORMAL);
+
+  // We can't just use base::ToLowerASCII() (because this might not be ASCII).
+  // Instead, we use i18n::FoldCase(), which will fold these into a canonical
+  // case for each character.
+  std::u16string test_u16 =
+      base::i18n::FoldCase(base::UTF8ToUTF16(unescaped_test));
+  std::u16string pattern_u16 =
+      base::i18n::FoldCase(base::UTF8ToUTF16(unescaped_pattern));
+
+  if (pattern_u16.length() == test_u16.length() + 2 &&
+      base::StartsWith(pattern_u16, test_u16) &&
+      base::EndsWith(pattern_u16, u"/*")) {
     return true;
   }
 
-  return base::MatchPattern(test, path_escaped_);
+  return base::MatchPattern(test_u16, pattern_u16);
 }
 
 const std::string& URLPattern::GetAsString() const {

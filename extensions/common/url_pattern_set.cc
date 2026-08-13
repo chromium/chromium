@@ -222,8 +222,12 @@ bool URLPatternSet::ContainsPattern(const URLPattern& pattern) const {
 }
 
 bool URLPatternSet::MatchesURL(const GURL& url) const {
+  return MatchesURL(url, /*case_sensitive=*/true);
+}
+
+bool URLPatternSet::MatchesURL(const GURL& url, bool case_sensitive) const {
   for (const auto& pattern : patterns_) {
-    if (pattern.MatchesURL(url)) {
+    if (pattern.MatchesURL(url, case_sensitive)) {
       return true;
     }
   }

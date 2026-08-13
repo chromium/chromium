@@ -577,6 +577,7 @@ static_library("common") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
