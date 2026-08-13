@@ -402,7 +402,7 @@ TEST_F(ExtensionAlarmsLogTest, CreateDelayBelowMinimum) {
             local_frame.last_level());
   EXPECT_THAT(local_frame.last_message(),
               testing::HasSubstr(
-                  "delay is less than the minimum duration of 30 seconds"));
+                  "delay is less than the minimum duration of 1 second"));
 }
 
 // TODO(crbug.com/445720439): Clean up this test after long alarm name
@@ -739,7 +739,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, ReleasedExtensionPollsInfrequently) {
                     .Build());
   test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(300));
   CreateAlarm("[\"a\", {\"when\": 300010}]");
-  CreateAlarm("[\"b\", {\"when\": 340000}]");
+  CreateAlarm("[\"b\", {\"when\": 300020}]");
 
   // On startup (when there's no "last poll"), we let alarms fire as
   // soon as they're scheduled.
@@ -747,13 +747,12 @@ TEST_F(ExtensionAlarmsSchedulingTest, ReleasedExtensionPollsInfrequently) {
       300010, alarm_manager_->next_poll_time_.InMillisecondsFSinceUnixEpoch());
 
   alarm_manager_->last_poll_times_[extension()->id()] =
-      base::Time::FromSecondsSinceUnixEpoch(290);
-  // In released extensions, we set the granularity to at least 30
-  // seconds, which makes AddAlarm schedule the next poll after the
-  // extension requested.
+      base::Time::FromSecondsSinceUnixEpoch(300);
+  // In packed extensions, we set the granularity to at least 1 second, which
+  // makes AddAlarm schedule the next poll after the extension requested.
   alarm_manager_->ScheduleNextPoll();
   EXPECT_DOUBLE_EQ(
-      (alarm_manager_->last_poll_times_[extension()->id()] + base::Seconds(30))
+      (alarm_manager_->last_poll_times_[extension()->id()] + base::Seconds(1))
           .InMillisecondsFSinceUnixEpoch(),
       alarm_manager_->next_poll_time_.InMillisecondsFSinceUnixEpoch());
 }
@@ -777,74 +776,18 @@ TEST_F(ExtensionAlarmsSchedulingTest, MinimumGranularity) {
                     .Build());
   test_clock_.SetNow(base::Time::UnixEpoch());
   CreateAlarm("[\"a\", {\"periodInMinutes\": 2}]");
-  test_clock_.Advance(base::Seconds(1));
+  test_clock_.Advance(base::Milliseconds(500));
   CreateAlarm("[\"b\", {\"periodInMinutes\": 2}]");
   test_clock_.Advance(base::Minutes(2));
 
   alarm_manager_->last_poll_times_[extension()->id()] =
       base::Time::FromSecondsSinceUnixEpoch(2 * 60);
-  // In released extensions, we set the granularity to at least 30
-  // seconds, which makes scheduler set it to 30 seconds, rather than
-  // 1 second later (when b is supposed to go off).
+  // In packed extensions, we set the granularity to at least 1 second, which
+  // makes the scheduler set it to 1 second, rather than 500 milliseconds later
+  // (when b is supposed to go off).
   alarm_manager_->ScheduleNextPoll();
   EXPECT_DOUBLE_EQ(
-      (alarm_manager_->last_poll_times_[extension()->id()] + base::Seconds(30))
-          .InMillisecondsFSinceUnixEpoch(),
-      alarm_manager_->next_poll_time_.InMillisecondsFSinceUnixEpoch());
-}
-
-TEST_F(ExtensionAlarmsSchedulingTest, DifferentMinimumGranularities) {
-  test_clock_.SetNow(base::Time::UnixEpoch());
-  // Create an alarm to go off in 12 seconds. This uses the default, unpacked
-  // extension - so there is no minimum granularity.
-  CreateAlarm("[\"a\", {\"periodInMinutes\": 0.2}]");  // 12 seconds.
-
-  // Create a new extension, which is packed, and has a granularity of 30
-  // seconds. CreateAlarm() uses extension_, so keep a ref of the old one
-  // around, and repopulate extension_.
-  scoped_refptr<const Extension> unpacked_extension(extension_ref());
-  scoped_refptr<const Extension> packed_extension =
-      ExtensionBuilder("Test")
-          .SetLocation(mojom::ManifestLocation::kInternal)
-          .Build();
-  set_extension(packed_extension);
-
-  CreateAlarm("[\"b\", {\"periodInMinutes\": 2}]");
-
-  alarm_manager_->last_poll_times_[unpacked_extension->id()] =
-      base::Time::UnixEpoch();
-  alarm_manager_->last_poll_times_[packed_extension->id()] =
-      base::Time::UnixEpoch();
-  alarm_manager_->ScheduleNextPoll();
-
-  // The next poll time should be 12 seconds from now - the time at which the
-  // first alarm should go off.
-  EXPECT_DOUBLE_EQ(
-      (alarm_manager_->last_poll_times_[unpacked_extension->id()] +
-       base::Seconds(12))
-          .InMillisecondsFSinceUnixEpoch(),
-      alarm_manager_->next_poll_time_.InMillisecondsFSinceUnixEpoch());
-
-  // An alarm from the packed extension scheduled for 1 second from now cannot
-  // fire until the extension's minimum granularity (30 seconds) has elapsed.
-  // The unpacked extension's alarm at 12 seconds should still be the next poll.
-  CreateAlarm("[\"c\", {\"when\": 1000}]");  // 1 second.
-  alarm_manager_->ScheduleNextPoll();
-  EXPECT_DOUBLE_EQ(
-      (alarm_manager_->last_poll_times_[unpacked_extension->id()] +
-       base::Seconds(12))
-          .InMillisecondsFSinceUnixEpoch(),
-      alarm_manager_->next_poll_time_.InMillisecondsFSinceUnixEpoch());
-
-  // If the unpacked extension's alarm is removed, the packed extension's alarm
-  // should now be scheduled at 30 seconds (its minimum granularity from the
-  // last poll time), not at 1 second.
-  set_extension(unpacked_extension);
-  RemoveAlarm("a");
-  alarm_manager_->ScheduleNextPoll();
-  EXPECT_DOUBLE_EQ(
-      (alarm_manager_->last_poll_times_[packed_extension->id()] +
-       base::Seconds(30))
+      (alarm_manager_->last_poll_times_[extension()->id()] + base::Seconds(1))
           .InMillisecondsFSinceUnixEpoch(),
       alarm_manager_->next_poll_time_.InMillisecondsFSinceUnixEpoch());
 }

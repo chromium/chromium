@@ -41,11 +41,11 @@ constexpr char kMaxAlarmsError[] =
     "An extension cannot have more than %d active alarms.";
 
 constexpr char kWarningMinimumDevDelay[] =
-    "Alarm %s is less than the minimum duration of %zu seconds."
+    "Alarm %s is less than the minimum duration of %zu %s."
     " In packed extensions, alarm \"%s\" will fire after the minimum duration.";
 
 constexpr char kWarningMinimumReleaseDelay[] =
-    "Alarm %s is less than the minimum duration of %zu seconds."
+    "Alarm %s is less than the minimum duration of %zu %s."
     " Alarm \"%s\" will fire after the minimum duration.";
 
 constexpr size_t kMaximumNameLength = 1024;
@@ -96,26 +96,36 @@ bool ValidateAlarmCreateInfo(const alarms::AlarmCreateInfo& create_info,
   const bool is_unpacked = Manifest::IsUnpackedLocation(extension->location());
   if (create_info.delay_in_minutes) {
     if (base::Minutes(*create_info.delay_in_minutes) < min_packed_delay) {
-      if (is_unpacked) {
-        warnings->push_back(base::StringPrintf(kWarningMinimumDevDelay, "delay",
-                                               min_packed_delay.InSeconds(),
-                                               create_info.name->c_str()));
+      if (is_unpacked && extension->manifest_version() == 2) {
+        warnings->push_back(base::StringPrintf(
+            kWarningMinimumDevDelay, "delay", min_packed_delay.InSeconds(),
+            min_packed_delay.InSeconds() == 1 ? "second" : "seconds",
+            create_info.name->c_str()));
       } else {
+        // Manifest V3 has the same delay for packed and unpacked extensions, so
+        // it is fine to use the packed delay here even though we may be in this
+        // case for an unpacked MV3 item.
         warnings->push_back(base::StringPrintf(
             kWarningMinimumReleaseDelay, "delay", min_packed_delay.InSeconds(),
+            min_packed_delay.InSeconds() == 1 ? "second" : "seconds",
             create_info.name->c_str()));
       }
     }
   }
   if (create_info.period_in_minutes) {
     if (base::Minutes(*create_info.period_in_minutes) < min_packed_delay) {
-      if (is_unpacked) {
+      if (is_unpacked && extension->manifest_version() == 2) {
         warnings->push_back(base::StringPrintf(
             kWarningMinimumDevDelay, "period", min_packed_delay.InSeconds(),
+            min_packed_delay.InSeconds() == 1 ? "second" : "seconds",
             create_info.name->c_str()));
       } else {
+        // Manifest V3 has the same delay for packed and unpacked extensions, so
+        // it is fine to use the packed delay here even though we may be in this
+        // case for an unpacked MV3 item.
         warnings->push_back(base::StringPrintf(
             kWarningMinimumReleaseDelay, "period", min_packed_delay.InSeconds(),
+            min_packed_delay.InSeconds() == 1 ? "second" : "seconds",
             create_info.name->c_str()));
       }
     }
