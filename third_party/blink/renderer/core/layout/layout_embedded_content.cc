@@ -402,20 +402,16 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRectFrom(
 
 void LayoutEmbeddedContent::UpdateOnEmbeddedContentViewChange() {
   NOT_DESTROYED();
-  if (!Style())
-    return;
 
   if (EmbeddedContentView* embedded_content_view = GetEmbeddedContentView()) {
     if (!NeedsLayout()) {
       UpdateGeometry(*embedded_content_view);
     }
-    if (Style()) {
-      PropagateZoomFactor(StyleRef().EffectiveZoom());
-      if (StyleRef().Visibility() != EVisibility::kVisible) {
-        embedded_content_view->Hide();
-      } else {
-        embedded_content_view->Show();
-      }
+    PropagateZoomFactor(StyleRef().EffectiveZoom());
+    if (StyleRef().Visibility() != EVisibility::kVisible) {
+      embedded_content_view->Hide();
+    } else {
+      embedded_content_view->Show();
     }
   }
 
