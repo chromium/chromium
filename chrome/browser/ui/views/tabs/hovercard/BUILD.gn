@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("hovercard_helpers") {
+  public = [
+    "fade_label_view.h",
+    "fade_view.h",
+    "filename_elider.h",
+    "tab_hover_card_thumbnail_observer.h",
+  ]
+
+  sources = [
+    "fade_label_view.cc",
+    "filename_elider.cc",
+    "tab_hover_card_thumbnail_observer.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/thumbnails",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//base:i18n",
+    "//chrome/browser/ui/tabs",
+    "//skia",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}

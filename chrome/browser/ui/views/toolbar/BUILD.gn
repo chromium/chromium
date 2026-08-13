@@ -83,6 +83,7 @@ source_set("toolbar") {
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/glic",
     "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/tabs/hovercard:hovercard_helpers",
     "//chrome/browser/ui/webui/webui_toolbar",
     "//chrome/browser/ui/webui/webui_toolbar/adapters",
     "//chrome/browser/ui/webui/webui_toolbar/utils",

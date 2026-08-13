@@ -3,13 +3,15 @@
 # found in the LICENSE file.
 
 source_set("groups") {
+  public = [
+    "avatar_container_view.h",
+    "manage_sharing_row.h",
+    "tab_group_editor_bubble_tracker.h",
+  ]
   sources = [
     "avatar_container_view.cc",
-    "avatar_container_view.h",
     "manage_sharing_row.cc",
-    "manage_sharing_row.h",
     "tab_group_editor_bubble_tracker.cc",
-    "tab_group_editor_bubble_tracker.h",
   ]
 
   public_deps = [
@@ -51,3 +53,4 @@ source_set("interactive_ui_tests") {
     "//ui/views:test_support",
   ]
 }
+
