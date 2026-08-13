@@ -916,4 +916,105 @@ suite('TrackedElementTest', function() {
         handler.getArgs('trackedElementCustomEvent')[1][0]);
     assertEquals(eventName, handler.getArgs('trackedElementCustomEvent')[1][1]);
   });
+
+  test(
+      'deduplicates unchanged bounds and visibility notifications',
+      async () => {
+        manager.startTracking(
+            element, ELEMENT_ID.nativeIdentifier,
+            {secondaryId: ELEMENT_ID.secondaryIdentifier});
+        await waitForVisibilityEvents();
+        const initialCallCount =
+            handler.getCallCount('trackedElementVisibilityChanged');
+        assertGT(initialCallCount, 0);
+
+        // Trigger a scroll event (which debounces updateAllBounds).
+        document.dispatchEvent(new Event('scroll'));
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await waitForVisibilityEvents();
+
+        // Call count should NOT have increased because bounds and visibility
+        // did not change.
+        assertEquals(
+            initialCallCount,
+            handler.getCallCount('trackedElementVisibilityChanged'));
+      });
+
+  test('sends update when element bounds change', async () => {
+    manager.startTracking(
+        element, ELEMENT_ID.nativeIdentifier,
+        {secondaryId: ELEMENT_ID.secondaryIdentifier});
+    await waitForVisibilityEvents();
+    handler.reset();
+
+    // Change element size.
+    element.style.width = '50px';
+    await waitForVisibilityEvents();
+
+    assertGT(handler.getCallCount('trackedElementVisibilityChanged'), 0);
+    const args = handler.getArgs('trackedElementVisibilityChanged');
+    const lastCall = args[args.length - 1];
+    assertDeepEquals(ELEMENT_ID, lastCall[0]);
+    assertTrue(lastCall[1]);
+    const rect = element.getBoundingClientRect();
+    assertDeepEquals(
+        {x: rect.x, y: rect.y, width: rect.width, height: rect.height},
+        lastCall[2]);
+  });
+
+  test(
+      'resizing one element triggers position update for sibling element',
+      async () => {
+        // Create a flex container with two elements side-by-side.
+        const container = document.createElement('div');
+        container.style.display = 'flex';
+        const child1 = document.createElement('div');
+        child1.style.width = '20px';
+        child1.style.height = '20px';
+        const child2 = document.createElement('div');
+        child2.style.width = '20px';
+        child2.style.height = '20px';
+        container.appendChild(child1);
+        container.appendChild(child2);
+        document.body.appendChild(container);
+
+        manager.startTracking(
+            child1, ELEMENT_ID.nativeIdentifier,
+            {secondaryId: ELEMENT_ID.secondaryIdentifier});
+        manager.startTracking(
+            child2, OTHER_ELEMENT_SAME_ID.nativeIdentifier,
+            {secondaryId: OTHER_ELEMENT_SAME_ID.secondaryIdentifier});
+        await waitForVisibilityEvents();
+        handler.reset();
+
+        const initialChild2Rect = child2.getBoundingClientRect();
+
+        // Resize child1, which pushes child2 to the right in the flex layout
+        // without mutating child2 directly.
+        child1.style.width = '100px';
+
+        // Wait for the debounced updateAllBounds_ (50ms) and visibility events.
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await waitForVisibilityEvents();
+
+        const allArgs = handler.getArgs('trackedElementVisibilityChanged');
+        const child2Args = allArgs.filter(
+            a => a[0].secondaryIdentifier ===
+                OTHER_ELEMENT_SAME_ID.secondaryIdentifier);
+        assertGT(child2Args.length, 0);
+
+        const lastCall = child2Args[child2Args.length - 1];
+        assertDeepEquals(OTHER_ELEMENT_SAME_ID, lastCall[0]);
+        assertTrue(lastCall[1]);  // visible
+        const newChild2Rect = child2.getBoundingClientRect();
+        assertGT(newChild2Rect.x, initialChild2Rect.x);
+        assertDeepEquals(
+            {
+              x: newChild2Rect.x,
+              y: newChild2Rect.y,
+              width: newChild2Rect.width,
+              height: newChild2Rect.height,
+            },
+            lastCall[2]);
+      });
 });

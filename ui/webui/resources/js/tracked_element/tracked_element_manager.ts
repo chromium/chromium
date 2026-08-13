@@ -187,6 +187,8 @@ interface TrackedElementData {
   bounds: RectF;
   onVisibilityChanged?: TrackedElementVisibilityChangedCallback;
   onHighlightChanged?: HighlightChangedCallback;
+  lastReportedVisible?: boolean;
+  lastReportedBounds?: RectF;
 }
 
 /**
@@ -205,6 +207,14 @@ class ElementData {
 
 const NATIVE_ELEMENT_IDENTIFIER_KEY = 'nativeId';
 const SECONDARY_ELEMENT_IDENTIFIER_KEY = 'secondaryId';
+
+function areBoundsEqual(a?: RectF, b?: RectF): boolean {
+  if (!a || !b) {
+    return a === b;
+  }
+  return a.x === b.x && a.y === b.y && a.width === b.width &&
+      a.height === b.height;
+}
 
 function parseOptions(options?: Options) {
   if (!options) {
@@ -286,12 +296,14 @@ export class TrackedElementManager {
 
     this.resizeObserver_ =
         new ResizeObserver(entries => entries.forEach(({target}) => {
-          if (target === document.body) {
-            this.debouncedUpdateAllBoundsCallback_();
-          } else {
+          // A resize of any element can potentially cause layout shifts in any
+          // other elements. Send an update to the resized element immediately
+          // and use debounced updates for all other elements.
+          if (target !== document.body) {
             this.onElementVisibilityChanged_(
                 target as HTMLElement, computeIsVisible(target));
           }
+          this.debouncedUpdateAllBoundsCallback_();
         }));
     this.fixedElementObserver_ = new IntersectionObserver(
         entries => entries.forEach(
@@ -588,7 +600,6 @@ export class TrackedElementManager {
     const bounds: RectF = visible ? this.getElementBounds_(element) :
                                     {x: 0, y: 0, width: 0, height: 0};
 
-
     const update = {visible, bounds, element};
 
     // Invoke specific visibility changed event.
@@ -600,6 +611,15 @@ export class TrackedElementManager {
     this.trackedElements_.get(trackedElement.nativeId)!.eventTarget
         .dispatchEvent(new CustomEvent(
             TRACKED_ELEMENT_VISIBILITY_CHANGED_EVENT, {detail: update}));
+
+    // Deduplicate TS -> C++ updates if visibility and bounds haven't changed.
+    if (trackedElement.lastReportedVisible === visible &&
+        areBoundsEqual(trackedElement.lastReportedBounds, bounds)) {
+      return;
+    }
+
+    trackedElement.lastReportedVisible = visible;
+    trackedElement.lastReportedBounds = bounds;
 
     const wasVisible = trackedElement.visible;
     trackedElement.visible = visible;
