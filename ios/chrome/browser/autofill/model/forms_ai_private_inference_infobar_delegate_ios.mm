@@ -10,9 +10,11 @@
 #import "components/grit/components_scaled_resources.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/models/image_model.h"
+#import "ui/gfx/image/image.h"
 
 namespace {
 
@@ -46,7 +48,9 @@ FormsAiPrivateInferenceInfoBarDelegateIOS::GetIdentifier() const {
 }
 
 ui::ImageModel FormsAiPrivateInferenceInfoBarDelegateIOS::GetIcon() const {
-  return ui::ImageModel::FromResourceId(IDR_INFOBAR_AUTOFILL_CC);
+  UIImage* image =
+      SymbolWithPointSize(SymbolChromeProduct, kInfobarSymbolPointSize);
+  return ui::ImageModel::FromImage(gfx::Image(image));
 }
 
 std::u16string FormsAiPrivateInferenceInfoBarDelegateIOS::GetTitleText() const {
