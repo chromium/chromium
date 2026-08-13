@@ -132,6 +132,7 @@ class ElementIntersectionObserverData;
 class ExceptionState;
 class FocusOptions;
 class GetAnimationsOptions;
+class HTMLCanvasElement;
 class HTMLElement;
 class HTMLSubmitButtonBehavior;
 class HTMLTemplateElement;
@@ -1173,6 +1174,7 @@ class CORE_EXPORT Element : public ContainerNode {
   bool IsCanvasOrInCanvasSubtree() const;
   // Called when `IsInCanvasSubtree()` changes.
   virtual void DidChangeIsInCanvasSubtree();
+  HTMLCanvasElement* CanvasForDrawing() const;
 
   DOMMatrix* getCanvasTransform();
   void setCanvasTransform(DOMMatrixInit* matrix,

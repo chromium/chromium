@@ -4414,6 +4414,153 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayers) {
   EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_bdf"));
 }
 
+TEST_P(CompositingSimTest, CanvasDrawDescendantsLayers) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      div { width: 100px; height: 100px; will-change: transform; }
+    </style>
+    <canvas id="canvas" width="300" height="300" layoutsubtree>
+      <div id="a">
+        <div id="aa" drawable style="background: red;">
+          <div id="aaa">a1</div>
+          <div id="aab" drawable style="background: green;">
+            <div id="aaba">a2</div>
+          </div>
+          <div id="aac">a3</div>
+        </div>
+        <div id="ab">b1</div>
+      </div>
+      <div id="b" drawable style="background: blue;">
+        <div id="ba" drawable></div>
+      </div>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+
+  // Drawable elements (including nested drawable elements) should all have
+  // layers.
+  auto* aa_layer = CcLayerByDOMElementId("aa");
+  EXPECT_TRUE(aa_layer);
+  auto* aab_layer = CcLayerByDOMElementId("aab");
+  EXPECT_TRUE(aab_layer);
+  auto* b_layer = CcLayerByDOMElementId("b");
+  EXPECT_TRUE(b_layer);
+  auto* ba_layer = CcLayerByDOMElementId("ba");
+  EXPECT_TRUE(ba_layer);
+
+  // Non-drawable elements (even with will-change: transform) should not have
+  // layers because their content is merged into the layer for their nearest
+  // drawable ancestor.
+
+  // TODO(paint-dev): Uncomment this check when we stop treating immediate
+  // children of canvas as implicitly drawable.
+  // EXPECT_FALSE(CcLayerByDOMElementId("a"));
+  EXPECT_FALSE(CcLayerByDOMElementId("aaa"));
+  EXPECT_FALSE(CcLayerByDOMElementId("aaba"));
+  EXPECT_FALSE(CcLayerByDOMElementId("aac"));
+  EXPECT_FALSE(CcLayerByDOMElementId("ab"));
+
+  // Ensure canvas_child_id is set correctly for all layers.
+  Element* el = GetElementById("aa");
+  auto el_id = CompositorElementIdFromDOMNodeId(el->GetDomNodeId());
+  EXPECT_EQ(aa_layer->canvas_child_id(), el_id);
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      el->GetDomNodeId()));
+
+  el = GetElementById("aab");
+  el_id = CompositorElementIdFromDOMNodeId(el->GetDomNodeId());
+  EXPECT_EQ(aab_layer->canvas_child_id(), el_id);
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      el->GetDomNodeId()));
+
+  el = GetElementById("b");
+  el_id = CompositorElementIdFromDOMNodeId(el->GetDomNodeId());
+  EXPECT_EQ(b_layer->canvas_child_id(), el_id);
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      el->GetDomNodeId()));
+
+  el = GetElementById("ba");
+  el_id = CompositorElementIdFromDOMNodeId(el->GetDomNodeId());
+  EXPECT_EQ(ba_layer->canvas_child_id(), el_id);
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      el->GetDomNodeId()));
+
+  // Verify non-drawable elements do not have paint records of their own.
+
+  // TODO(paint-dev): Uncomment this check when we stop treating immediate
+  // children of canvas as implicitly drawable.
+  // EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  //    GetElementById("a")->GetDomNodeId()));
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("aaa")->GetDomNodeId()));
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("aaba")->GetDomNodeId()));
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("aac")->GetDomNodeId()));
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("ab")->GetDomNodeId()));
+
+  // Remove drawable attribute and re-verify
+  el = GetElementById("aab");
+  el->toggleAttribute(html_names::kDrawableAttr.LocalName(),
+                      ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(CcLayerByDOMElementId("aab"));
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      el->GetDomNodeId()));
+}
+
+TEST_P(CompositingSimTest, NestedDrawableOverlapPaintRecordLoss) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <canvas id="canvas" width="300" height="300" layoutsubtree>
+      <div id="parent" drawable style="width: 200px; height: 200px; background: red;">
+        <div id="child" drawable style="width: 100px; height: 100px; background: green;"></div>
+        <div id="sibling" style="width: 100px; height: 100px; background: blue; position: relative; margin-top: -50px;"></div>
+      </div>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto parent_record = paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("parent")->GetDomNodeId());
+  ASSERT_TRUE(parent_record);
+  auto child_record = paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("child")->GetDomNodeId());
+  ASSERT_TRUE(child_record);
+
+  // #parent has two chunks: red background (chunk 0) and blue background of
+  // #sibling (chunk 2). Because #sibling overlaps #child, if layer merging
+  // fails or overwrites the layer map, the paint record will only contain one
+  // of the chunks instead of all non-drawable content of #parent.
+  auto count_rects = [](const cc::PaintRecord& record) -> size_t {
+    size_t draw_rect_count = 0;
+    for (const cc::PaintOp& op : record) {
+      if (op.GetType() == cc::PaintOpType::kDrawRecord) {
+        const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
+        for (const cc::PaintOp& inner_op : record_op.record) {
+          if (inner_op.GetType() == cc::PaintOpType::kDrawRect ||
+              inner_op.GetType() == cc::PaintOpType::kDrawColor) {
+            draw_rect_count++;
+          }
+        }
+      }
+      if (op.GetType() == cc::PaintOpType::kDrawRect ||
+          op.GetType() == cc::PaintOpType::kDrawColor) {
+        draw_rect_count++;
+      }
+    }
+    return draw_rect_count;
+  };
+  EXPECT_GE(count_rects(parent_record->record), 2u);
+  EXPECT_GE(count_rects(child_record->record), 1u);
+}
+
 TEST_P(CompositingSimTest, NestedCanvasDrawElementLayers) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
 

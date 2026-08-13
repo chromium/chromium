@@ -588,16 +588,6 @@ static bool NeedsAnchorPositionScrollTranslation(const LayoutObject& object) {
   return false;
 }
 
-static HTMLCanvasElement* FindCanvasParent(const LayoutObject& object) {
-  const Element* element = DynamicTo<Element>(object.GetNode());
-  if (!element) {
-    return nullptr;
-  }
-  const Element* parent =
-      FlatTreeTraversal::ParentElementSkippingSlots(*element);
-  return DynamicTo<HTMLCanvasElement>(const_cast<Element*>(parent));
-}
-
 static bool NeedsPaintOffsetTranslation(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons,
@@ -625,10 +615,12 @@ static bool NeedsPaintOffsetTranslation(
 
   // TODO(crbug.com/349835587): Should Element or LayoutObject have a public
   // IsCanvasDrawElementImage() function?
-  if (FindCanvasParent(object)) {
-    // The object may be drawn with drawElementImage and should ignore the paint
-    // offset.
-    return true;
+  if (auto* element = DynamicTo<Element>(object.GetNode())) {
+    if (element->CanvasForDrawing()) {
+      // The object may be drawn with drawElementImage and should ignore the
+      // paint offset.
+      return true;
+    }
   }
 
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
@@ -1959,8 +1951,10 @@ static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
 static void PopulateCanvasChildState(const LayoutObject& object,
                                      EffectPaintPropertyNode::State& state) {
   CHECK(IsA<LayoutBox>(object));
-  HTMLCanvasElement* canvas = FindCanvasParent(object);
+  CHECK(object.GetNode());
+  HTMLCanvasElement* canvas = To<Element>(object.GetNode())->CanvasForDrawing();
   CHECK(canvas && canvas->GetLayoutObject());
+
   auto& canvas_fragment = canvas->GetLayoutObject()->FirstFragment();
 
   gfx::RectF reference_box(To<LayoutBox>(object).PhysicalBorderBoxRect());
@@ -2105,7 +2099,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
 
       EffectPaintPropertyNode::State state;
       state.is_in_tainted_subtree = context_.is_in_tainted_subtree;
-      state.is_in_canvas_subtree = context_.is_in_canvas_subtree;
+      state.is_in_drawable_canvas_subtree =
+          context_.is_in_drawable_canvas_subtree;
       state.local_transform_space = context_.current.transform;
       if (EffectCanUseCurrentClipAsOutputClip())
         state.output_clip = context_.current.clip;
@@ -2218,7 +2213,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       if (mask_clip) {
         EffectPaintPropertyNode::State mask_state;
         mask_state.is_in_tainted_subtree = context_.is_in_tainted_subtree;
-        mask_state.is_in_canvas_subtree = context_.is_in_canvas_subtree;
+        mask_state.is_in_drawable_canvas_subtree =
+            context_.is_in_drawable_canvas_subtree;
         mask_state.local_transform_space = context_.current.transform;
         mask_state.output_clip = context_.current.clip;
         mask_state.blend_mode = SkBlendMode::kDstIn;
@@ -2243,7 +2239,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       if (needs_mask_based_clip_path_) {
         EffectPaintPropertyNode::State clip_path_state;
         clip_path_state.is_in_tainted_subtree = context_.is_in_tainted_subtree;
-        clip_path_state.is_in_canvas_subtree = context_.is_in_canvas_subtree;
+        clip_path_state.is_in_drawable_canvas_subtree =
+            context_.is_in_drawable_canvas_subtree;
         clip_path_state.local_transform_space = context_.current.transform;
         clip_path_state.output_clip = context_.current.clip;
         clip_path_state.blend_mode = SkBlendMode::kDstIn;
@@ -2305,7 +2302,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCaptureEffect() {
   CHECK(context_.current.transform);
   EffectPaintPropertyNode::State state;
   state.is_in_tainted_subtree = context_.is_in_tainted_subtree;
-  state.is_in_canvas_subtree = context_.is_in_canvas_subtree;
+  state.is_in_drawable_canvas_subtree = context_.is_in_drawable_canvas_subtree;
   state.direct_compositing_reasons = {CompositingReason::kElementCapture};
   state.local_transform_space = context_.current.transform;
   state.output_clip = context_.current.clip;
@@ -2326,7 +2323,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionScopeRootEffect() {
     if (transition) {
       EffectPaintPropertyNode::State state;
       state.is_in_tainted_subtree = context_.is_in_tainted_subtree;
-      state.is_in_canvas_subtree = context_.is_in_canvas_subtree;
+      state.is_in_drawable_canvas_subtree =
+          context_.is_in_drawable_canvas_subtree;
       state.local_transform_space = context_.current.transform;
       state.output_clip = context_.current.clip;
       state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
@@ -2386,7 +2384,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
 
       EffectPaintPropertyNode::State state;
       state.is_in_tainted_subtree = context_.is_in_tainted_subtree;
-      state.is_in_canvas_subtree = context_.is_in_canvas_subtree;
+      state.is_in_drawable_canvas_subtree =
+          context_.is_in_drawable_canvas_subtree;
       state.direct_compositing_reasons = {
           CompositingReason::kViewTransitionElement};
       state.local_transform_space = context_.current.transform;
@@ -2556,7 +2555,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
     if (NeedsFilter(object_, full_context_)) {
       EffectPaintPropertyNode::State state;
       state.is_in_tainted_subtree = context_.is_in_tainted_subtree;
-      state.is_in_canvas_subtree = context_.is_in_canvas_subtree;
+      state.is_in_drawable_canvas_subtree =
+          context_.is_in_drawable_canvas_subtree;
       state.local_transform_space = context_.current.transform;
       EffectPaintPropertyNode::FilterInfo filter_info;
       UpdateFilterEffect(object_, properties_->Filter(), filter_info);
@@ -3625,13 +3625,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlEffects() {
     if (needs_effect_node) {
       EffectPaintPropertyNode::State effect_state;
       effect_state.is_in_tainted_subtree = context_.is_in_tainted_subtree;
-      effect_state.is_in_canvas_subtree = context_.is_in_canvas_subtree;
+      effect_state.is_in_drawable_canvas_subtree =
+          context_.is_in_drawable_canvas_subtree;
       effect_state.local_transform_space = context_.current.transform;
       effect_state.output_clip = output_clip;
       effect_state.compositor_element_id =
           scrollable_area->GetScrollbarElementId(orientation);
 
-      if (scrollbar_is_overlay && !effect_state.is_in_canvas_subtree) {
+      if (scrollbar_is_overlay && !effect_state.is_in_drawable_canvas_subtree) {
         effect_state.direct_compositing_reasons = {
             CompositingReason::kActiveOpacityAnimation};
       }
@@ -3672,7 +3673,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlEffects() {
     // are only painted for non-overlay scrollbars.
     EffectPaintPropertyNode::State effect_state;
     effect_state.is_in_tainted_subtree = context_.is_in_tainted_subtree;
-    effect_state.is_in_canvas_subtree = context_.is_in_canvas_subtree;
+    effect_state.is_in_drawable_canvas_subtree =
+        context_.is_in_drawable_canvas_subtree;
     effect_state.local_transform_space = context_.current.transform;
     effect_state.output_clip = output_clip;
     effect_state.compositor_element_id =
@@ -4194,7 +4196,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   if (properties_) {
     if (full_context_.direct_compositing_reasons.Has(
             CompositingReason::kCanvasChild)) {
-      context_.is_in_canvas_subtree = true;
+      context_.is_in_drawable_canvas_subtree = true;
     }
     UpdateStickyTranslation(sticky_offset);
     UpdateAnchorPositionScrollTranslation();

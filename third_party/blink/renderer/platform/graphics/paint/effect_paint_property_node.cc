@@ -70,7 +70,7 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
       needs_effect_for_2d_scale_transform !=
           other.needs_effect_for_2d_scale_transform ||
       is_in_tainted_subtree != other.is_in_tainted_subtree ||
-      is_in_canvas_subtree != other.is_in_canvas_subtree) {
+      is_in_drawable_canvas_subtree != other.is_in_drawable_canvas_subtree) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
   bool opacity_changed = opacity != other.opacity;
@@ -269,8 +269,8 @@ std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {
     json->SetString("compositorElementId",
                     state_.compositor_element_id.ToString().c_str());
   }
-  if (state_.is_in_canvas_subtree) {
-    json->SetBoolean("is_in_canvas_subtree", true);
+  if (state_.is_in_drawable_canvas_subtree) {
+    json->SetBoolean("is_in_drawable_canvas_subtree", true);
   }
   return json;
 }

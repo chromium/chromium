@@ -170,7 +170,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
 
     bool is_in_tainted_subtree = false;
 
-    bool is_in_canvas_subtree = false;
+    bool is_in_drawable_canvas_subtree = false;
 
     PaintPropertyChangeType ComputeChange(
         const State& other,
@@ -308,7 +308,9 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
 
   bool IsInTaintedSubtree() const { return state_.is_in_tainted_subtree; }
 
-  bool IsInCanvasSubtree() const { return state_.is_in_canvas_subtree; }
+  bool IsInDrawableCanvasSubtree() const {
+    return state_.is_in_drawable_canvas_subtree;
+  }
 
   bool FlattensAtLeafOf3DScene() const {
     return state_.direct_compositing_reasons.Has(

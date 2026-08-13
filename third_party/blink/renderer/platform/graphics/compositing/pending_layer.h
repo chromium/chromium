@@ -39,6 +39,7 @@ class PLATFORM_EXPORT PendingLayer {
 
   PendingLayer(const PaintArtifact&,
                const PaintChunk& first_chunk,
+               DOMNodeId canvas_child_id = kInvalidDOMNodeId,
                CompositingType = kOther);
 
   void Trace(Visitor*) const;
@@ -91,6 +92,8 @@ class PLATFORM_EXPORT PendingLayer {
                ? content_layer_client_->canvas_child_paint_state()
                : nullptr;
   }
+
+  DOMNodeId CanvasChildId() const { return canvas_child_id_; }
 
   using IsCompositedScrollFunction =
       PropertyTreeState::IsCompositedScrollFunction;
@@ -274,6 +277,7 @@ class PLATFORM_EXPORT PendingLayer {
   // For metrics.
   int merged_across_compositing_boundary_count_ = 0;
 
+  DOMNodeId canvas_child_id_ = kInvalidDOMNodeId;
   bool has_text_ = false;
   bool draws_content_ = false;
   bool text_known_to_be_on_opaque_background_ = false;

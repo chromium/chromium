@@ -746,23 +746,6 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
   }
 }
 
-// https://github.com/WICG/html-in-canvas
-// The `layoutsubtree` attribute ... causes the direct children of the <canvas>
-// to have a stacking context and become a containing block for all descendants.
-static bool ForceStackingAndContainingBlockForCanvasLayoutSubtree(
-    const Element* element) {
-  if (element && element->IsCanvasOrInCanvasSubtree() &&
-      RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          element->GetExecutionContext())) {
-    const Element* parent =
-        FlatTreeTraversal::ParentElementSkippingSlots(*element);
-    if (const auto* canvas = DynamicTo<HTMLCanvasElement>(parent)) {
-      return canvas->layoutSubtree();
-    }
-  }
-  return false;
-}
-
 static bool IsCanvasWithDrawElements(const Element* element) {
   if (!element || !element->IsCanvasOrInCanvasSubtree() ||
       !RuntimeEnabledFeatures::CanvasDrawElementEnabled(
@@ -783,7 +766,7 @@ void StyleAdjuster::AdjustStyleForDisplay(
     const Element* element,
     Document* document) {
   bool force_canvas_child_layout_subtree_styles =
-      ForceStackingAndContainingBlockForCanvasLayoutSubtree(element);
+      element && element->CanvasForDrawing();
 
   if ((layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) ||
       force_canvas_child_layout_subtree_styles) {
@@ -1266,11 +1249,17 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   builder.SetForcesStackingContext(false);
 
+  // https://github.com/WICG/html-in-canvas
+  // The `layoutsubtree` attribute ... causes descendants of the <canvas> with
+  // the `drawable` attribute to have a stacking context and become a containing
+  // block for all descendants.
+  bool is_drawable_canvas_descendant = element && element->CanvasForDrawing();
+
   // z-index is only applicable if positioned, or if a flex/grid/etc item.
   if (builder.GetPosition() != EPosition::kStatic ||
       LayoutParentStyleForcesZIndexToCreateStackingContext(
           layout_parent_style) ||
-      ForceStackingAndContainingBlockForCanvasLayoutSubtree(element)) {
+      is_drawable_canvas_descendant) {
     builder.SetAllowsZIndex(true);
     if (!builder.HasAutoZIndex()) {
       builder.SetForcesStackingContext(true);

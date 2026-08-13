@@ -527,7 +527,7 @@ TEST_P(PendingLayerTextOpaquenessTest, UnitedClippedToOpaque) {
 
 TEST(PendingLayerTest, MergeCanvasSubtreeIncompatiblePropertyTreeState) {
   EffectPaintPropertyNode::State canvas_effect_state;
-  canvas_effect_state.is_in_canvas_subtree = true;
+  canvas_effect_state.is_in_drawable_canvas_subtree = true;
   auto* canvas_effect =
       EffectPaintPropertyNode::Create(e0(), std::move(canvas_effect_state));
 
@@ -550,8 +550,10 @@ TEST(PendingLayerTest, MergeCanvasSubtreeIncompatiblePropertyTreeState) {
 
   // Inside canvas subtree: force merge succeeds despite incompatible backface
   // visibility.
-  PendingLayer canvas_layer_a(artifact, artifact.GetPaintChunks()[0]);
-  PendingLayer canvas_layer_b(artifact, artifact.GetPaintChunks()[1]);
+  PendingLayer canvas_layer_a(artifact, artifact.GetPaintChunks()[0],
+                              /*canvas_child_id*/ 1);
+  PendingLayer canvas_layer_b(artifact, artifact.GetPaintChunks()[1],
+                              /*canvas_child_id*/ 1);
 
   EXPECT_FALSE(canvas_layer_a.GetPropertyTreeState()
                    .CanUpcastWith(canvas_layer_b.GetPropertyTreeState(),

@@ -2408,7 +2408,7 @@ TEST_P(PaintPropertyTreeUpdateTest, CanvasSubtreePseudoElementFilter) {
   // Initially, the pseudo-element is inside the layoutsubtree canvas,
   // so its filter effect node should have is_in_canvas_subtree set to true.
   const auto* filter_effect = properties->Filter();
-  EXPECT_TRUE(filter_effect->IsInCanvasSubtree());
+  EXPECT_TRUE(filter_effect->IsInDrawableCanvasSubtree());
 
   // Now, dynamically move the target out of the canvas.
   GetDocument().body()->appendChild(target);
@@ -2419,7 +2419,7 @@ TEST_P(PaintPropertyTreeUpdateTest, CanvasSubtreePseudoElementFilter) {
   before_layout = before->GetLayoutObject();
   properties = before_layout->FirstFragment().PaintProperties();
   filter_effect = properties->Filter();
-  EXPECT_FALSE(filter_effect->IsInCanvasSubtree());
+  EXPECT_FALSE(filter_effect->IsInDrawableCanvasSubtree());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, CanvasScriptsDisabled) {

@@ -43,6 +43,7 @@ void PreserveNearIntegralBounds(gfx::RectF& bounds) {
 
 PendingLayer::PendingLayer(const PaintArtifact& artifact,
                            const PaintChunk& first_chunk,
+                           DOMNodeId canvas_child_id,
                            CompositingType compositing_type)
     : chunks_(artifact, first_chunk),
       property_tree_state_(first_chunk.properties.Unalias()),
@@ -52,6 +53,7 @@ PendingLayer::PendingLayer(const PaintArtifact& artifact,
           first_chunk.background_color.is_solid_color ? 0 : kNotFound),
       compositing_type_(compositing_type),
       hit_test_opaqueness_(first_chunk.hit_test_opaqueness),
+      canvas_child_id_(canvas_child_id),
       has_text_(first_chunk.has_text),
       draws_content_(first_chunk.DrawsContent()),
       text_known_to_be_on_opaque_background_(
@@ -203,18 +205,6 @@ bool PendingLayer::Matches(const PendingLayer& old_pending_layer) const {
 // merged_area - (home_area + guest_area) <= kMergeSparsityAreaTolerance
 static constexpr float kMergeSparsityAreaTolerance = 10000;
 
-static DOMNodeId GetCanvasChildId(const EffectPaintPropertyNode& effect) {
-  if (!effect.IsInCanvasSubtree()) {
-    return kInvalidDOMNodeId;
-  }
-  for (const auto* e = &effect; e; e = e->UnaliasedParent()) {
-    if (e->HasCanvasChildState()) {
-      return e->CanvasChildId();
-    }
-  }
-  return kInvalidDOMNodeId;
-}
-
 bool PendingLayer::CanMerge(const PendingLayer& guest,
                             LCDTextPreference lcd_text_preference,
                             float device_pixel_ratio,
@@ -226,23 +216,15 @@ bool PendingLayer::CanMerge(const PendingLayer& guest,
                             wtf_size_t& merged_solid_color_chunk_index,
                             cc::HitTestOpaqueness& merged_hit_test_opaqueness,
                             bool& scroll_range_dependent) const {
-  DOMNodeId home_canvas_child_id =
-      GetCanvasChildId(GetPropertyTreeState().Effect());
-  DOMNodeId guest_canvas_child_id =
-      GetCanvasChildId(guest.GetPropertyTreeState().Effect());
-  if (home_canvas_child_id != guest_canvas_child_id &&
-      (home_canvas_child_id != kInvalidDOMNodeId ||
-       guest_canvas_child_id != kInvalidDOMNodeId)) {
+  if (canvas_child_id_ != guest.canvas_child_id_) {
     return false;
   }
 
   // Force merge all content under canvas so that it can be drawn using
   // html-in-canvas APIs, and so that it is not drawn as a regular
   // cc::Layer.
-  bool force_merge =
-      GetPropertyTreeState().Effect().IsInCanvasSubtree() &&
-      guest.GetPropertyTreeState().Effect().IsInCanvasSubtree() &&
-      home_canvas_child_id == guest_canvas_child_id;
+  bool force_merge = (canvas_child_id_ == guest.canvas_child_id_ &&
+                      canvas_child_id_ != kInvalidDOMNodeId);
 
   std::optional<PropertyTreeState::UpcastResult> upcast_result =
       CanUpcastWith(guest, guest.GetPropertyTreeState(), is_composited_scroll);
@@ -531,6 +513,9 @@ bool PendingLayer::PropertyTreeStateChanged(
 }
 
 bool PendingLayer::MightOverlap(const PendingLayer& other) const {
+  if (canvas_child_id_ != other.canvas_child_id_) {
+    return false;
+  }
   return GeometryMapper::MightOverlapForCompositing(
       bounds_, GetPropertyTreeState(), other.bounds_,
       other.GetPropertyTreeState());

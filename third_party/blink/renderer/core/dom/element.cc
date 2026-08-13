@@ -3854,6 +3854,10 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       SetNeedsStyleRecalc(kLocalStyleChange,
                           StyleChangeReasonForTracing::FromAttribute(name));
     }
+  } else if (name == html_names::kDrawableAttr) {
+    if (auto* layout_object = GetLayoutObject()) {
+      layout_object->SetNeedsPaintPropertyUpdate();
+    }
   } else if (IsStyledElement()) {
     if (name == html_names::kStyleAttr) {
       if (params.old_value == params.new_value) {
@@ -10546,6 +10550,34 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   }
 
   return style.Display() == EDisplay::kContents;
+}
+
+HTMLCanvasElement* Element::CanvasForDrawing() const {
+  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          GetDocument().GetExecutionContext())) {
+    return nullptr;
+  }
+  if (!isConnected() || !IsInCanvasSubtree()) {
+    return nullptr;
+  }
+
+  // TODO(paint-dev): The check for `drawable` purposely skips immediate
+  // canvas children, to ease migration. Ultimately it must apply to
+  // immediate children as well.
+  Element* ancestor = FlatTreeTraversal::ParentElementSkippingSlots(*this);
+  if (auto* ancestor_canvas = DynamicTo<HTMLCanvasElement>(ancestor)) {
+    return ancestor_canvas->layoutSubtree() ? ancestor_canvas : nullptr;
+  }
+  if (!FastHasAttribute(html_names::kDrawableAttr)) {
+    return nullptr;
+  }
+  while (ancestor) {
+    ancestor = FlatTreeTraversal::ParentElementSkippingSlots(*ancestor);
+    if (auto* ancestor_canvas = DynamicTo<HTMLCanvasElement>(ancestor)) {
+      return ancestor_canvas->layoutSubtree() ? ancestor_canvas : nullptr;
+    }
+  }
+  return nullptr;
 }
 
 AtomicString Element::ComputeInheritedLanguage() const {

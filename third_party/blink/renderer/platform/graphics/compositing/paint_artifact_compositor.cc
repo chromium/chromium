@@ -429,7 +429,8 @@ PendingLayer::CompositingType PaintArtifactCompositor::ChunkCompositingType(
       if (const auto* scroll_translation = scrollbar->ScrollTranslation()) {
         if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
             NeedsCompositedScrolling(*scroll_translation)) {
-          CHECK(!chunk.properties.Effect().Unalias().IsInCanvasSubtree());
+          CHECK(
+              !chunk.properties.Effect().Unalias().IsInDrawableCanvasSubtree());
           return PendingLayer::kScrollbarLayer;
         }
       }
@@ -716,7 +717,9 @@ class PaintArtifactCompositor::Layerizer {
   // recursion, the layerization of the subgroup may be tested for merge &
   // overlap with other chunks in the parent group, if grouping requirement
   // can be satisfied (and the effect node has no direct reason).
-  void LayerizeGroup(const EffectPaintPropertyNode&, bool force_draws_content);
+  void LayerizeGroup(const EffectPaintPropertyNode&,
+                     DOMNodeId canvas_child_id,
+                     bool force_draws_content);
   bool DecompositeEffect(const EffectPaintPropertyNode& parent_effect,
                          wtf_size_t first_layer_in_parent_group_index,
                          const EffectPaintPropertyNode& effect,
@@ -830,7 +833,11 @@ bool PaintArtifactCompositor::Layerizer::DecompositeEffect(
 
 void PaintArtifactCompositor::Layerizer::LayerizeGroup(
     const EffectPaintPropertyNode& current_group,
+    DOMNodeId canvas_child_id,
     bool force_draws_content) {
+  if (current_group.CanvasChildId() != kInvalidDOMNodeId) {
+    canvas_child_id = current_group.CanvasChildId();
+  }
   wtf_size_t first_layer_in_current_group = pending_layers_.size();
   // The worst case time complexity of the algorithm is O(pqd), where
   // p = the number of paint chunks.
@@ -860,7 +867,7 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
       compositor_.UpdatePaintedScrollTranslationsBeforeLayerization(
           artifact_, chunk_cursor_);
       pending_layers_.emplace_back(
-          artifact_, *chunk_cursor_,
+          artifact_, *chunk_cursor_, canvas_child_id,
           compositor_.ChunkCompositingType(artifact_, *chunk_cursor_));
       UNSAFE_TODO(++chunk_cursor_);
       // force_draws_content doesn't apply to pending layers that require own
@@ -879,7 +886,8 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
       // Case C: The following chunks belong to a subgroup. Process them by
       //         a recursion call.
       wtf_size_t first_layer_in_subgroup = pending_layers_.size();
-      LayerizeGroup(*subgroup, force_draws_content || subgroup->DrawsContent());
+      LayerizeGroup(*subgroup, canvas_child_id,
+                    force_draws_content || subgroup->DrawsContent());
       // The above LayerizeGroup generated new layers in pending_layers_
       // [first_layer_in_subgroup .. pending_layers.size() - 1]. If it
       // generated 2 or more layer that we already know can't be merged
@@ -949,7 +957,9 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
 }
 
 PendingLayers PaintArtifactCompositor::Layerizer::Layerize() {
-  LayerizeGroup(EffectPaintPropertyNode::Root(), /*force_draws_content=*/false);
+  LayerizeGroup(EffectPaintPropertyNode::Root(),
+                /*canvas_child_id=*/kInvalidDOMNodeId,
+                /*force_draws_content=*/false);
   DCHECK(chunk_cursor_ == artifact_.GetPaintChunks().end());
   pending_layers_.ShrinkToReasonableCapacity();
   return std::move(pending_layers_);
@@ -1281,7 +1291,7 @@ void PaintArtifactCompositor::Update(
     } else {
       // All layers under canvas children should be merged into the
       // canvas child's layer.
-      CHECK(!effect.IsInCanvasSubtree());
+      CHECK(!effect.IsInDrawableCanvasSubtree());
     }
 
     if (layer.subtree_property_changed())

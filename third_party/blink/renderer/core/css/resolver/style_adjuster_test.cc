@@ -392,4 +392,40 @@ TEST_F(StyleAdjusterTest, AdjustForSVGCrash) {
             text->GetComputedStyle()->CssDominantBaseline());
 }
 
+TEST_F(StyleAdjusterTest, AdjustForCanvasDrawableDescendant) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div { width: 100px; height: 100px; }
+    </style>
+    <canvas id="canvas" width="300" height="300" layoutsubtree>
+      <div id="a">
+        <div id="aa" drawable style="background: red;">
+          <div id="aaa">a1</div>
+          <div id="aab" drawable style="background: green;">
+            <div id="aaba">a2</div>
+          </div>
+          <div id="aac">a3</div>
+        </div>
+        <div id="ab">b1</div>
+      </div>
+      <div id="b" drawable style="background: blue;">
+        <div id="ba" drawable></div>
+      </div>
+    </canvas>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // TODO(paint-dev): Uncomment this check when we stop treating direct children
+  // of a canvas as implicitly `drawable`.
+  // EXPECT_FALSE(GetLayoutObjectByElementId("a")->IsStackingContenxt());
+  EXPECT_TRUE(GetLayoutObjectByElementId("aa")->IsStackingContext());
+  EXPECT_FALSE(GetLayoutObjectByElementId("aaa")->IsStackingContext());
+  EXPECT_TRUE(GetLayoutObjectByElementId("aab")->IsStackingContext());
+  EXPECT_FALSE(GetLayoutObjectByElementId("aaba")->IsStackingContext());
+  EXPECT_FALSE(GetLayoutObjectByElementId("aac")->IsStackingContext());
+  EXPECT_FALSE(GetLayoutObjectByElementId("ab")->IsStackingContext());
+  EXPECT_TRUE(GetLayoutObjectByElementId("b")->IsStackingContext());
+  EXPECT_TRUE(GetLayoutObjectByElementId("ba")->IsStackingContext());
+}
+
 }  // namespace blink

@@ -223,7 +223,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
   // Set to true when we visit a canvas child and is propagated to all
   // descendant effects.
-  bool is_in_canvas_subtree = false;
+  bool is_in_drawable_canvas_subtree = false;
 
   // Whether newly created children should flatten their inherited transform
   // (equivalently, draw into the plane of their parent). Should generally

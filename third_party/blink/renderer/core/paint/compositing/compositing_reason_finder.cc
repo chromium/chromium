@@ -387,22 +387,25 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   CompositingReasons reasons;
 
   auto* element = DynamicTo<Element>(object.GetNode());
-  if (element && RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-                     object.GetDocument().GetExecutionContext())) {
-    if (element->IsInCanvasSubtree() &&
-        !object.StyleRef().IsRenderedInTopLayer(*element)) [[unlikely]] {
-      const Element* parent =
-          FlatTreeTraversal::ParentElementSkippingSlots(*element);
-      auto* canvas_parent = DynamicTo<HTMLCanvasElement>(parent);
-      if (IsA<LayoutBox>(object) && canvas_parent &&
-          canvas_parent->layoutSubtree() && canvas_parent->GetLayoutObject() &&
-          canvas_parent->GetLayoutObject()->IsCanvas()) {
-        reasons.Put(CompositingReason::kCanvasChild);
-      } else {
-        // Disable compositing for elements in canvas subtrees other than the
-        // direct children of canvas elements.
-        return {};
+
+  if (element &&
+      RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          object.GetDocument().GetExecutionContext()) &&
+      element->IsInCanvasSubtree() &&
+      !object.StyleRef().IsRenderedInTopLayer(*element)) [[unlikely]] {
+    if (IsA<LayoutBox>(object)) {
+      if (auto* canvas = element->CanvasForDrawing()) {
+        if (auto* canvas_layout_object = canvas->GetLayoutObject()) {
+          if (canvas_layout_object->IsCanvas()) {
+            reasons.Put(CompositingReason::kCanvasChild);
+          }
+        }
       }
+    }
+    if (!reasons.Has(CompositingReason::kCanvasChild)) {
+      // Disable compositing for elements in canvas subtrees other than the
+      // direct children of canvas elements.
+      return {};
     }
   }
 

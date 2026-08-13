@@ -921,15 +921,6 @@ bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
     Element* element,
     const String& func_name,
     ExceptionState& exception_state) const {
-  const Element* parent =
-      FlatTreeTraversal::ParentElementSkippingSlots(*element);
-  if (parent != this) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Only immediate children of the <canvas> element can be passed to " +
-            func_name + ".");
-    return false;
-  }
   if (!layoutSubtree()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -937,6 +928,29 @@ bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
             " requires the canvas to have the layoutsubtree attribute.");
     return false;
   }
+
+  const Element* parent =
+      FlatTreeTraversal::ParentElementSkippingSlots(*element);
+  bool is_direct_child = parent == this;
+  if (!is_direct_child && element->CanvasForDrawing() != this) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The element can only be drawn into its nearest ancestor <canvas>.");
+    return false;
+  }
+
+  // TODO(paint-dev): The check for `drawable` purposely skips immediate
+  // canvas children, to ease migration. Ultimately it must apply to
+  // immediate children as well.
+  if (!is_direct_child &&
+      !element->FastHasAttribute(html_names::kDrawableAttr)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Descendants passed to " + func_name +
+            " must have the 'drawable' attribute.");
+    return false;
+  }
+
   return true;
 }
 
