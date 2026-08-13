@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 @NullMarked
 public class ComposeplateUtils {
 
-    private static boolean sIsEnabledForTesting;
+    private static @Nullable Boolean sIsEnabledForTesting;
 
     /**
      * Returns whether the composeplate can be enabled.
@@ -38,7 +38,9 @@ public class ComposeplateUtils {
      * @param profile The current profile.
      */
     public static boolean isComposeplateEnabled(Profile profile) {
-        if (sIsEnabledForTesting) return true;
+        if (sIsEnabledForTesting != null) {
+            return sIsEnabledForTesting;
+        }
 
         return ComposeplateUtilsJni.get().isAimEntrypointEligible(profile);
     }
@@ -151,8 +153,8 @@ public class ComposeplateUtils {
         view.setBackground(background);
     }
 
-    public static void setIsEnabledForTesting(boolean isEnabledForTesting) {
-        boolean oldValue = sIsEnabledForTesting;
+    public static void setIsEnabledForTesting(@Nullable Boolean isEnabledForTesting) {
+        @Nullable Boolean oldValue = sIsEnabledForTesting;
         sIsEnabledForTesting = isEnabledForTesting;
         ResettersForTesting.register(() -> sIsEnabledForTesting = oldValue);
     }
