@@ -397,18 +397,16 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     super.currentRouteChanged(newRoute, oldRoute);
 
     const router = Router.getInstance();
-    if (router.getCurrentRoute() === router.getRoutes().SYNC) {
+    if (router.getRoutes().SYNC.contains(router.getCurrentRoute())) {
       if (!this.shouldShowSyncPage_()) {
         this.onNavigateAwayFromPage_();
-        Router.getInstance().navigateTo(routes.PEOPLE);
+        if (router.getCurrentRoute() === router.getRoutes().SYNC) {
+          Router.getInstance().navigateTo(routes.PEOPLE);
+        }
         return;
       }
 
       this.onNavigateToPage_();
-      return;
-    }
-
-    if (router.getRoutes().SYNC.contains(router.getCurrentRoute())) {
       return;
     }
 
@@ -453,7 +451,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   private onNavigateToPage_() {
     const router = Router.getInstance();
-    assert(router.getCurrentRoute() === router.getRoutes().SYNC);
+    assert(router.getRoutes().SYNC.contains(router.getCurrentRoute()));
     if (this.beforeunloadCallback_) {
       return;
     }
