@@ -613,6 +613,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="FileDoesNotExist"/>
   <int value="2" label="GenericRemovalError"/>
   <int value="3" label="kFileReadFailure"/>
+  <int value="4" label="kLastModifiedTimestampMismatch"/>
 </enum>
 
 <enum name="AutofillSuggestionAcceptedMethod">

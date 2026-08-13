@@ -26,7 +26,6 @@ namespace auto_deletion {
 class ScheduledFile {
  public:
   ScheduledFile(const base::FilePath& filepath,
-                const std::string& hash,
                 base::Time download_time);
   ScheduledFile(const ScheduledFile& file);
   ScheduledFile& operator=(const ScheduledFile& file);
@@ -43,14 +42,11 @@ class ScheduledFile {
 
   // Returns the filepath of the file.
   const base::FilePath& filepath() const { return filepath_; }
-  // Returns the hash of the file.
-  const std::string& hash() const { return hash_; }
   // Returns a timestamp of the date the file was downloaded.
   const base::Time download_time() const { return download_time_; }
 
  private:
   base::FilePath filepath_;
-  std::string hash_;
   base::Time download_time_;
 };
 

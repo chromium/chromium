@@ -14,8 +14,6 @@ namespace {
 // Test file name.
 const base::FilePath::CharType kTestFileName[] =
     FILE_PATH_LITERAL("test_filepath.txt");
-// Arbitrary hash string.
-const std::string kTestHashValue = "test_hash_value";
 
 }  // namespace
 
@@ -31,7 +29,7 @@ void PopulateSchedulerWithAutoDeletionSchedule(
     base::Time download_time = now - download_time_offset;
 
     base::FilePath path = base::FilePath(kTestFileName);
-    auto_deletion::ScheduledFile file(path, kTestHashValue, download_time);
+    auto_deletion::ScheduledFile file(path, download_time);
     scheduler.ScheduleFile(std::move(file));
   }
 }

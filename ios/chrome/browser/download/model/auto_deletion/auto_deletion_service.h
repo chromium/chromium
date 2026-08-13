@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/files/file.h"
 #import "base/files/file_path.h"
 #import "base/functional/callback_forward.h"
 #import "base/memory/raw_ref.h"
@@ -40,10 +41,10 @@ enum class DeletionEnrollmentStatus {
 struct DownloadTaskDetails {
   // The DeletionEnrollmentStatus associated with the web::DownloadTask.
   DeletionEnrollmentStatus enrollment_status;
-  // The data contained within DownloadTask
-  NSData* file_content;
   // The filepath at which the downloaded content is located.
   base::FilePath path;
+  // A boolean indicating that the DownloadTask finished.
+  bool download_complete = false;
 };
 
 // Service responsible for the orchestration of the various functionality within
@@ -83,12 +84,11 @@ class AutoDeletionService : public web::DownloadTaskObserver {
   base::ScopedObservation<web::DownloadTask, web::DownloadTaskObserver>
       download_task_observation_{this};
 
-  // Invoked after the download task data is read from data. It finishes
-  // scheduling the file for deletion.
-  void SetFileContent(NSData* data);
-
   // Schedules the download task for auto-deletion if all preconditions are met.
   void MaybeScheduleFileForDeletion();
+
+  // Schedules the download task for auto-deletion.
+  void ScheduleFileForDeletion(std::optional<base::File::Info> info);
 
   // Notifies the Scheduler to remove its expired ScheduledFiles.
   void OnFilesDeletedFromDisk(base::Time instant, base::OnceClosure closure);
