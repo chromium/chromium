@@ -373,10 +373,9 @@ gfx::Rect HandoffButtonController::GetHandoffButtonBounds() {
       anchor_bounds.x() + (anchor_bounds.width() - preferred_size.width()) / 2;
 
   // Calculate the Y coordinate based on tab strip visibility.
-  bool is_tab_strip_visible =
-      tab_interface_
-          ? tab_interface_->GetBrowserWindowInterface()->IsTabStripVisible()
-          : false;
+  BrowserWindowInterface* bwi =
+      tab_interface_ ? tab_interface_->GetBrowserWindowInterface() : nullptr;
+  bool is_tab_strip_visible = bwi && bwi->IsTabStripVisible();
 
   const int y =
       is_tab_strip_visible
@@ -423,11 +422,13 @@ void HandoffButtonController::OnButtonPressed() {
     if (ownership_ == kActor) {
       tab_controller->SetActorTaskPaused();
       BrowserWindowInterface* bwi = tab_interface_->GetBrowserWindowInterface();
-      auto* glic_service =
-          glic::GlicKeyedServiceFactory::GetGlicKeyedService(bwi->GetProfile());
-      if (glic_service) {
-        glic_service->ToggleUI(bwi, /*prevent_close=*/true,
-                               glic::mojom::InvocationSource::kHandoffButton);
+      if (bwi) {
+        auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+            bwi->GetProfile());
+        if (glic_service) {
+          glic_service->ToggleUI(bwi, /*prevent_close=*/true,
+                                 glic::mojom::InvocationSource::kHandoffButton);
+        }
       }
     } else {
       tab_controller->SetActorTaskResume();

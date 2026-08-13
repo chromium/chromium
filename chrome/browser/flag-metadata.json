@@ -5694,6 +5694,15 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-handoff-button-hide-when-modal-ui-shown",
+    "owners": [
+      "rosiey@google.com",
+      "sauski@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-horizontal-tab-toolbar-button",
     "owners": [
       "lugli@google.com",

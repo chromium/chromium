@@ -12468,6 +12468,8 @@ from previous Chrome versions.
   <int value="-677858590" label="cast-streaming-force-enable-hardware-av1"/>
   <int value="-676736440" label="ResetShortcutCustomizations:disabled"/>
   <int value="-676252846" label="ShimlessRMASkuDescription:disabled"/>
+  <int value="-675133817"
+      label="GlicHandoffButtonHideWhenModalUIShown:enabled"/>
   <int value="-674988697" label="BrowsingHistoryActorIntegrationM3:enabled"/>
   <int value="-674804217" label="SoleIntegration:enabled"/>
   <int value="-674265959" label="AppPreloadService:enabled"/>
@@ -13140,6 +13142,8 @@ from previous Chrome versions.
       label="OminboxUIExperimentUseGenericSearchEngineIcon:enabled"/>
   <int value="-462404204" label="CryptAuthV2DeviceSync:disabled"/>
   <int value="-462205750" label="enable-service-worker-sync"/>
+  <int value="-461925111"
+      label="GlicHandoffButtonHideWhenModalUIShown:disabled"/>
   <int value="-461713516" label="ArcEnableVirtioBlkForData:enabled"/>
   <int value="-461631357" label="AndroidFreLayoutUpdate:enabled"/>
   <int value="-461568027" label="EcheSWADebugMode:disabled"/>

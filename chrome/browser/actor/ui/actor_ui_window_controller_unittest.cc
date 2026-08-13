@@ -81,5 +81,9 @@ TEST_F(ActorUiContentsContainerControllerTest,
 }
 #endif
 
+TEST(ActorUiWindowControllerTest, FromNullWindow) {
+  EXPECT_EQ(nullptr, ActorUiWindowController::From(nullptr));
+}
+
 }  // namespace
 }  // namespace actor::ui

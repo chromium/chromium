@@ -51,4 +51,8 @@ TEST_F(ActorBorderViewControllerTest, NotifiesOnGlowEnabledChanged) {
   actor_border_view_controller()->SetGlowEnabled(&mock_tab_, false);
 }
 
+TEST_F(ActorBorderViewControllerTest, FromNullWindow) {
+  EXPECT_EQ(nullptr, ActorBorderViewController::From(nullptr));
+}
+
 }  // namespace

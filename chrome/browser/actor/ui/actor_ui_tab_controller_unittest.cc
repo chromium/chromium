@@ -133,6 +133,13 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
 
     ON_CALL(mock_tab_, GetContents).WillByDefault(Return(mock_web_contents_));
     ON_CALL(mock_tab_, IsSelected).WillByDefault(Return(true));
+    ON_CALL(mock_tab_, CanShowModalUI()).WillByDefault(Return(true));
+    ON_CALL(mock_tab_, RegisterModalUIChanged)
+        .WillByDefault(
+            [this](base::RepeatingCallback<void(tabs::TabInterface*)> cb) {
+              modal_ui_changed_callback_ = cb;
+              return base::CallbackListSubscription();
+            });
     ON_CALL(*mock_web_contents_, IncrementCapturerCount)
         .WillByDefault(ReturnNewScopedClosureRunner());
 
@@ -255,8 +262,14 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
   MockFunction<void(bool, ActorOverlayState, base::OnceClosure)>
       mock_overlay_callback_;
 
+  const base::RepeatingCallback<void(tabs::TabInterface*)>&
+  modal_ui_changed_callback() const {
+    return modal_ui_changed_callback_;
+  }
+
  private:
   ::ui::UnownedUserDataHost user_data_host_;
+  base::RepeatingCallback<void(tabs::TabInterface*)> modal_ui_changed_callback_;
   MockTabInterface mock_tab_;
   MockBrowserWindowInterface mock_browser_window_interface_;
   std::unique_ptr<MockImmersiveModeController> immersive_mode_controller_;
@@ -297,6 +310,65 @@ TEST_F(ActorUiTabControllerTest,
               UpdateState(handoff_button_state, true, _));
 
   UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
+  tab_controller()->OnUiTabStateChange(ui_tab_state, base::DoNothing());
+}
+
+TEST_F(ActorUiTabControllerTest, UpdateButtonVisibility_FalseWhenModalUIShown) {
+  HandoffButtonState handoff_button_state(
+      true, HandoffButtonState::ControlOwnership::kActor);
+  UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
+
+  ON_CALL(mock_tab(), CanShowModalUI()).WillByDefault(Return(false));
+  EXPECT_CALL(*handoff_button_controller(),
+              UpdateState(handoff_button_state, /*is_visible=*/false, _));
+
+  tab_controller()->OnUiTabStateChange(ui_tab_state, base::DoNothing());
+}
+
+TEST_F(ActorUiTabControllerTest,
+       UpdateButtonVisibility_RespondsToModalUIChanged) {
+  HandoffButtonState handoff_button_state(
+      true, HandoffButtonState::ControlOwnership::kActor);
+  UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
+  tab_controller()->OnUiTabStateChange(ui_tab_state, base::DoNothing());
+
+  ASSERT_TRUE(modal_ui_changed_callback());
+
+  // Modal UI is shown on active tab (CanShowModalUI returns false).
+  ON_CALL(mock_tab(), CanShowModalUI()).WillByDefault(Return(false));
+  EXPECT_CALL(*handoff_button_controller(),
+              UpdateState(handoff_button_state, /*is_visible=*/false, _));
+  modal_ui_changed_callback().Run(&mock_tab());
+
+  // Modal UI closes on active tab (CanShowModalUI returns true).
+  ON_CALL(mock_tab(), CanShowModalUI()).WillByDefault(Return(true));
+  EXPECT_CALL(*handoff_button_controller(),
+              UpdateState(handoff_button_state, /*is_visible=*/true, _));
+  modal_ui_changed_callback().Run(&mock_tab());
+}
+
+class ActorUiTabControllerFeatureDisabledTest
+    : public ActorUiTabControllerTest {
+ public:
+  ActorUiTabControllerFeatureDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGlicHandoffButtonHideWhenModalUIShown);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ActorUiTabControllerFeatureDisabledTest,
+       UpdateButtonVisibility_TrueWhenModalUIShown_FlagDisabled) {
+  HandoffButtonState handoff_button_state(
+      true, HandoffButtonState::ControlOwnership::kActor);
+  UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
+
+  ON_CALL(mock_tab(), CanShowModalUI()).WillByDefault(Return(false));
+  EXPECT_CALL(*handoff_button_controller(),
+              UpdateState(handoff_button_state, /*is_visible=*/true, _));
+
   tab_controller()->OnUiTabStateChange(ui_tab_state, base::DoNothing());
 }
 

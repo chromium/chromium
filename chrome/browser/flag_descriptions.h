@@ -1619,6 +1619,10 @@ inline constexpr char kGlassFrameDescription[] =
 
 inline constexpr char kGlicActorName[] = "Glic actor";
 inline constexpr char kGlicActorDescription[] = "Enables the Glic actor.";
+inline constexpr char kGlicHandoffButtonHideWhenModalUIShownName[] =
+    "Glic handoff button hide when modal UI shown";
+inline constexpr char kGlicHandoffButtonHideWhenModalUIShownDescription[] =
+    "Hides the Glic handoff button when a tab-modal UI is active.";
 inline constexpr char kGlicExperimentalTriggeringName[] =
     "Glic experimental triggering";
 inline constexpr char kGlicExperimentalTriggeringDescription[] =

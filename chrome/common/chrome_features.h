@@ -239,6 +239,8 @@ BASE_DECLARE_FEATURE(kGlicHandoffButtonResetFocusAndHoverStatus);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicHandoffButtonHideWhenOmniboxPopupOpened);
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicHandoffButtonHideWhenModalUIShown);
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorUiMagicCursor);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<double> kGlicActorUiMagicCursorSpeed;

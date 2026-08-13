@@ -17,6 +17,9 @@ ActorBorderViewController::~ActorBorderViewController() = default;
 // static
 ActorBorderViewController* ActorBorderViewController::From(
     BrowserWindowInterface* browser_window_interface) {
+  if (!browser_window_interface) {
+    return nullptr;
+  }
   return ui::ScopedUnownedUserData<ActorBorderViewController>::Get(
       browser_window_interface->GetUnownedUserDataHost());
 }

@@ -347,6 +347,10 @@ BASE_FEATURE(kGlicHandoffButtonResetFocusAndHoverStatus,
 BASE_FEATURE(kGlicHandoffButtonHideWhenOmniboxPopupOpened,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, hide handoff button when tab modal UI is shown.
+BASE_FEATURE(kGlicHandoffButtonHideWhenModalUIShown,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, the magic cursor is shown during actuation for mouse movements
 // and clicks.
 BASE_FEATURE(kGlicActorUiMagicCursor, base::FEATURE_ENABLED_BY_DEFAULT);

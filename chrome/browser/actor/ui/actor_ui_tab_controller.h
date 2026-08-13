@@ -72,6 +72,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
 #if !BUILDFLAG(IS_ANDROID)
   // Called when the omnibox's popup visibility changes.
   void OnWindowOmniboxPopupVisibilityChanged() override;
+  // Called when tab modal UI showing state changes.
+  void OnModalUIChanged(tabs::TabInterface* tab);
 #endif
 
   // Sets the Tab Indicator visibility.

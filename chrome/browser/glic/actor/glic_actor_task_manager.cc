@@ -53,6 +53,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace glic {
@@ -494,11 +495,15 @@ void GlicActorClientSession::PerformActions(
       actions.has_skip_async_observation_collection() &&
       actions.skip_async_observation_collection();
 
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback),
+      base::unexpected(mojom::PerformActionsErrorReason::kUnknown));
+
   actor_keyed_service().PerformActions(
       task_id, std::move(requests.value()), actor::ActorTaskMetadata(actions),
       base::BindOnce(&GlicActorClientSession::PerformActionsFinished,
-                     GetWeakPtr(), std::move(callback), task_id, start_time,
-                     skip_async_observation_information,
+                     GetWeakPtr(), std::move(wrapped_callback), task_id,
+                     start_time, skip_async_observation_information,
                      actor::GetScreenshotCollectionOptions(actions)));
 }
 
