@@ -122,7 +122,6 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
                                         const AtomicString& highlight_name);
 
   HighlightRegistryMap highlights_;
-  Member<LocalFrame> frame_;
   // Active iteration sources that need to be notified of mutations.
   // WeakMember ensures GC automatically cleans up unreferenced iterators.
   HeapHashSet<WeakMember<RegistryLiveIterator>> active_iterators_;
@@ -147,6 +146,14 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
   HighlightRegistryMap::iterator GetMapIterator(const AtomicString& key) const {
     return highlights_.Find<HighlightRegistryMapEntryNameTranslator>(key);
   }
+
+  // The frame of the window this registry supplements, or null once that
+  // window has been detached from its frame. A registry can be created for an
+  // already detached window, because script can reach the CSS.highlights of a
+  // destroyed document through a saved reference to its CSS namespace object.
+  // Such a registry has nothing to paint or hit test.
+  LocalFrame* GetFrame() const;
+  Document* GetDocument() const;
 
   bool GetMapEntry(ScriptState*,
                    const String& key,

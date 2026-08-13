@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -920,6 +921,45 @@ TEST_F(HighlightRegistryFrameTest, AdoptedStaticRangePaintsInCurrentDocument) {
   DocumentMarkerVector markers = ChildDocument().Markers().MarkersFor(
       *text, DocumentMarker::MarkerTypes::CustomHighlight());
   EXPECT_FALSE(markers.empty());
+}
+
+TEST_F(HighlightRegistryFrameTest, MutateRegistryOfDetachedWindowDoesNotCrash) {
+  SetBodyInnerHTML("<iframe id='f'></iframe><span id='span'>text</span>");
+  SetChildFrameHTML("");
+  auto* child_window = ChildDocument().domWindow();
+  ASSERT_TRUE(child_window->GetFrame());
+
+  // Detach the child frame without ever creating its HighlightRegistry, so the
+  // registry below is created for a window that no longer has a frame.
+  GetDocument().getElementById(AtomicString("f"))->remove();
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(child_window->GetFrame());
+
+  auto* span = GetDocument().getElementById(AtomicString("span"));
+  auto* text = To<Text>(span->firstChild());
+  HeapVector<Member<AbstractRange>> ranges;
+  ranges.push_back(
+      MakeGarbageCollected<Range>(GetDocument(), text, 0, text, 1));
+  auto* highlight = Highlight::Create(ranges);
+
+  auto* registry = HighlightRegistry::From(*child_window);
+  AtomicString name("h");
+  registry->SetForTesting(name, highlight);
+  EXPECT_EQ(registry->size(), 1u);
+
+  // Modifying a Highlight registered in the registry schedules a repaint on it
+  // too.
+  highlight->setPriority(1);
+
+  // Hit testing has no frame to resolve coordinates against.
+  EXPECT_TRUE(registry->highlightsFromPoint(0, 0, nullptr).empty());
+
+  registry->RemoveForTesting(name, highlight);
+  EXPECT_EQ(registry->size(), 0u);
+
+  registry->SetForTesting(name, highlight);
+  registry->clearForBinding(nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(registry->size(), 0u);
 }
 
 TEST_F(HighlightsFromPointTest, HighlightsFromPoint) {

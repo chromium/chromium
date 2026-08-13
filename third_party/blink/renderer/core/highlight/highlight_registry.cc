@@ -80,7 +80,7 @@ HighlightRegistry* HighlightRegistry::From(LocalDOMWindow& window) {
 }
 
 HighlightRegistry::HighlightRegistry(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), frame_(window.GetFrame()) {}
+    : Supplement<LocalDOMWindow>(window) {}
 
 HighlightRegistry::~HighlightRegistry() = default;
 
@@ -88,12 +88,20 @@ const char HighlightRegistry::kSupplementName[] = "HighlightRegistry";
 
 void HighlightRegistry::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlights_);
-  visitor->Trace(frame_);
   visitor->Trace(active_iterators_);
   visitor->Trace(active_highlights_in_node_);
   visitor->Trace(active_highlights_in_replaced_element_);
   ScriptWrappable::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
+}
+
+LocalFrame* HighlightRegistry::GetFrame() const {
+  return GetSupplementable()->GetFrame();
+}
+
+Document* HighlightRegistry::GetDocument() const {
+  LocalFrame* frame = GetFrame();
+  return frame ? frame->GetDocument() : nullptr;
 }
 
 HighlightRegistry* HighlightRegistry::GetHighlightRegistry(const Node* node) {
@@ -140,7 +148,7 @@ bool HighlightRegistry::IsAbstractRangePaintable(AbstractRange* abstract_range,
 // Deletes all HighlightMarkers and rebuilds them with the contents of
 // highlights_.
 void HighlightRegistry::ValidateHighlightMarkers() {
-  Document* document = frame_->GetDocument();
+  Document* document = GetDocument();
   if (!document)
     return;
 
@@ -323,8 +331,12 @@ const HashSet<AtomicString>& HighlightRegistry::GetActiveHighlights(
 }
 
 void HighlightRegistry::ScheduleRepaint() {
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    return;
+  }
   force_markers_validation_ = true;
-  if (LocalFrameView* local_frame_view = frame_->View()) {
+  if (LocalFrameView* local_frame_view = frame->View()) {
     local_frame_view->ScheduleVisualUpdateForVisualOverflowIfNeeded();
   }
 }
@@ -481,7 +493,8 @@ HeapVector<Member<HighlightHitResult>> HighlightRegistry::highlightsFromPoint(
     float x,
     float y,
     const HighlightsFromPointOptions* options) {
-  Document* document = frame_->GetDocument();
+  LocalFrame* frame = GetFrame();
+  Document* document = frame ? frame->GetDocument() : nullptr;
   if (!document || !document->GetLayoutView()) {
     return HeapVector<Member<HighlightHitResult>>();
   }
@@ -558,7 +571,7 @@ HeapVector<Member<HighlightHitResult>> HighlightRegistry::highlightsFromPoint(
   // |x| and |y| are in CSS pixels, which need to be converted to physical
   // pixels to determine if they're inside layout rectangles.
   gfx::PointF hit_point(x, y);
-  hit_point.Scale(frame_->DevicePixelRatio());
+  hit_point.Scale(frame->DevicePixelRatio());
 
   HeapVector<Member<HighlightHitResult>> highlight_hit_results;
   for (const AtomicString& highlight_name : highlight_names_at_hit_node) {
