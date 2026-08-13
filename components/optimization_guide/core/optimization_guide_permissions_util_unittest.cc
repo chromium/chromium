@@ -23,7 +23,7 @@ class OptimizationGuidePermissionsUtilTest : public testing::Test {
         pref_service_.registry());
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kGoogleApiKeyConfigurationCheckOverride);
+        kGoogleApiKeyConfigurationCheckOverrideSwitch);
   }
 
   void SetUrlKeyedAnonymizedDataCollectionEnabled(bool enabled) {

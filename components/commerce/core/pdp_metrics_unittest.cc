@@ -13,7 +13,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,8 +29,8 @@ class PDPMetricsTest : public ShoppingServiceTestBase {
  public:
   PDPMetricsTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        optimization_guide::switches::
-            kDisableCheckingUserPermissionsForTesting);
+        optimization_guide::
+            kDisableCheckingUserPermissionsForTestingSwitch);
   }
   PDPMetricsTest(const PDPMetricsTest&) = delete;
   PDPMetricsTest operator=(const PDPMetricsTest&) = delete;

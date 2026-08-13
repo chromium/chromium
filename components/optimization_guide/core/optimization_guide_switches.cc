@@ -33,9 +33,6 @@ const char kOptimizationGuideServiceAPIKey[] =
 // startup, so that it's guaranteed to be using fresh data.
 const char kPurgeModelAndFeaturesStore[] = "purge-model-and-features-store";
 
-const char kDisableCheckingUserPermissionsForTesting[] =
-    "disable-checking-optimization-guide-user-permissions";
-
 const char kDisableModelDownloadVerificationForTesting[] =
     "disable-model-download-verification";
 
@@ -97,10 +94,6 @@ const char kEnableModelQualityDogfoodLogging[] =
 const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[] =
     "optimization-guide-get-free-disk-space-with-user-visible-priority-task";
 
-// Enables overriding Google API key configuration check for permissions.
-const char kGoogleApiKeyConfigurationCheckOverride[] =
-    "optimization-guide-google-api-key-configuration-check-override";
-
 std::string GetModelQualityServiceAPIKey() {
   // Command line override takes priority.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -121,11 +114,6 @@ bool IsDebugLogsEnabled() {
   static bool enabled =
       base::CommandLine::ForCurrentProcess()->HasSwitch(kDebugLoggingEnabled);
   return enabled;
-}
-
-bool ShouldOverrideCheckingUserPermissionsToFetchHintsForTesting() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(kDisableCheckingUserPermissionsForTesting);
 }
 
 bool ShouldSkipModelDownloadVerificationForTesting() {
@@ -170,11 +158,6 @@ std::optional<base::FilePath> GetOnDeviceValidationWriteToFile() {
 bool ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kGetFreeDiskSpaceWithUserVisiblePriorityTask);
-}
-
-bool ShouldSkipGoogleApiKeyConfigurationCheck() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(kGoogleApiKeyConfigurationCheckOverride);
 }
 
 GURL GetModelExecutionServiceURL() {

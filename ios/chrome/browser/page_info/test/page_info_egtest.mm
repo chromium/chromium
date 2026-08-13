@@ -12,7 +12,7 @@
 #import "components/content_settings/core/browser/content_settings_uma_util.h"
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "components/optimization_guide/core/optimization_guide_switches.h"
+#import "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #import "components/page_info/core/page_info_action.h"
 #import "components/strings/grit/components_branded_strings.h"
 #import "components/strings/grit/components_strings.h"
@@ -154,7 +154,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
   config.additional_args.push_back(
       std::string("-") +
-      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
+      optimization_guide::kDisableCheckingUserPermissionsForTestingSwitch);
   return config;
 }
 

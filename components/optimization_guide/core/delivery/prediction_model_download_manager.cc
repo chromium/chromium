@@ -29,6 +29,7 @@
 #include "components/optimization_guide/core/delivery/prediction_model_store.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/prefs/pref_service.h"
@@ -205,7 +206,7 @@ bool PredictionModelDownloadManager::ShouldFetchModels() const {
           ::switches::kEnableBenchmarking)) {
     return false;
   }
-  return (switches::ShouldSkipGoogleApiKeyConfigurationCheck() ||
+  return (ShouldSkipGoogleApiKeyConfigurationCheck() ||
           google_apis::HasAPIKeyConfigured()) &&
          local_state_->GetBoolean(prefs::kComponentUpdatesEnabled);
 }

@@ -27,8 +27,8 @@
 #include "components/commerce/core/proto/product_category.pb.h"
 #include "components/commerce/core/proto/shopping_page_types.pb.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -458,7 +458,7 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
       tab_restore_service_(
           std::make_unique<testing::NiceMock<MockTabRestoreService>>()) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
+      optimization_guide::kDisableCheckingUserPermissionsForTestingSwitch);
   MockAccountChecker::RegisterCommercePrefs(pref_service_->registry());
   pref_service_->registry()->RegisterBooleanPref(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);

@@ -32,8 +32,8 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/proto_database_provider_test_base.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -1751,7 +1751,7 @@ TEST_F(HintsManagerFetchingTest, BatchUpdateFetcherCleanup) {
 TEST_F(HintsManagerFetchingTest,
        HintsFetchNotAllowedIfFeatureIsEnabledButUserNotAllowed) {
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   CreateHintsManager(/*top_host_provider=*/nullptr);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -1768,7 +1768,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        NoRegisteredOptimizationTypesAndHintsFetchNotAttempted) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   CreateHintsManager(std::make_unique<FakeTopHostProvider>(
       std::vector<std::string>({"example1.com", "example2.com"})));
 
@@ -1796,7 +1796,7 @@ TEST_F(HintsManagerFetchingTest,
                          /*is_allowlist=*/true, &config);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   CreateHintsManager(std::make_unique<FakeTopHostProvider>(
       std::vector<std::string>({"example1.com", "example2.com"})));
   ProcessHints(config, "1.0.0.0");
@@ -1817,7 +1817,7 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsOrUrlsToFetch) {
   auto scoped_feature_list = SetUpDeferStartupActiveTabsHintsFetch(false);
   base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   CreateHintsManager(
       std::make_unique<FakeTopHostProvider>(std::vector<std::string>({})));
 
@@ -1851,7 +1851,7 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
   auto scoped_feature_list = SetUpDeferStartupActiveTabsHintsFetch(false);
   base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   CreateHintsManager(
       std::make_unique<FakeTopHostProvider>(std::vector<std::string>({})));
 
@@ -1902,7 +1902,7 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherTimerFetchOnStartup) {
   auto scoped_feature_list = SetUpDeferStartupActiveTabsHintsFetch(false);
   base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
 
   CreateHintsManager(
       std::make_unique<FakeTopHostProvider>(std::vector<std::string>({})));
@@ -1948,7 +1948,7 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherDeferredStartup) {
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
 
   CreateHintsManager(
       std::make_unique<FakeTopHostProvider>(std::vector<std::string>({})));
@@ -1988,7 +1988,7 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherDeferredStartup) {
 TEST_F(HintsManagerFetchingTest,
        HintsFetched_RegisteredOptimizationTypes_AllWithOptFilter) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::LITE_PAGE_REDIRECT});
 
   proto::Configuration config;
@@ -2021,7 +2021,7 @@ TEST_F(HintsManagerFetchingTest,
 
 TEST_F(HintsManagerFetchingTest, HintsFetchedAtNavigationTime) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -2047,7 +2047,7 @@ TEST_F(HintsManagerFetchingTest, HintsFetchedAtNavigationTime) {
 TEST_F(HintsManagerFetchingTest,
        HintsFetchedAtNavigationTime_FetchNotAttempted) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -2075,7 +2075,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        HintsFetchedAtNavigationTime_HasComponentHintButNotFetched) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -2118,7 +2118,7 @@ TEST_F(HintsManagerFetchingTest,
   CreateHintsManager(/*top_host_provider=*/nullptr);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
 
   auto navigation_data =
@@ -2149,7 +2149,7 @@ TEST_F(HintsManagerFetchingTest,
 
 TEST_F(HintsManagerFetchingTest, URLHintsNotFetchedAtNavigationTime) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -2209,7 +2209,7 @@ TEST_F(HintsManagerFetchingTest, URLHintsNotFetchedAtNavigationTime) {
 
 TEST_F(HintsManagerFetchingTest, URLWithNoHintsNotRefetchedAtNavigationTime) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -2259,7 +2259,7 @@ TEST_F(HintsManagerFetchingTest, URLWithNoHintsNotRefetchedAtNavigationTime) {
 
 TEST_F(HintsManagerFetchingTest, CanApplyOptimizationCalledMidFetch) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -2278,7 +2278,7 @@ TEST_F(HintsManagerFetchingTest, CanApplyOptimizationCalledMidFetch) {
 TEST_F(HintsManagerFetchingTest,
        CanApplyOptimizationCalledPostFetchButNoHintsCameBack) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -2303,7 +2303,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        CanApplyOptimizationCalledPostFetchButFetchFailed) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -2327,7 +2327,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        CanApplyOptimizationWithURLKeyedHintApplicableForOptimizationType) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
   InitializeWithDefaultConfig("1.0.0");
 
@@ -2357,7 +2357,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        CanApplyOptimizationNotAllowedByURLButAllowedByHostKeyedHint) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::NOSCRIPT});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2384,7 +2384,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        CanApplyOptimizationNotAllowedByURLOrHostKeyedHint) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::RESOURCE_LOADING});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2411,7 +2411,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        CanApplyOptimizationNoURLKeyedHintOrHostKeyedHint) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2439,7 +2439,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        CanApplyOptimizationCalledMidFetchForURLKeyedOptimization) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2465,7 +2465,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        OnNavigationStartOrRedirectWontInitiateFetchIfAlreadyStartedForTheURL) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::RESOURCE_LOADING});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2513,7 +2513,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        PageNavigationHintsFetcherGetsCleanedUpOnceHintsAreStored) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::RESOURCE_LOADING});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2553,7 +2553,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        PageNavigationHintsFetcherCanFetchMultipleThingsConcurrently) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2593,7 +2593,7 @@ TEST_F(HintsManagerFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -2622,7 +2622,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        CanApplyOptimizationNewAPIRequestFailsBeforeFetch) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -2656,7 +2656,7 @@ TEST_F(HintsManagerFetchingTest,
 
 TEST_F(HintsManagerFetchingTest, CanApplyOptimizationNewAPICalledPostFetch) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -2684,7 +2684,7 @@ TEST_F(HintsManagerFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -2713,7 +2713,7 @@ TEST_F(HintsManagerFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -2750,7 +2750,7 @@ TEST_F(
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::RESOURCE_LOADING});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -2778,7 +2778,7 @@ TEST_F(HintsManagerFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2806,7 +2806,7 @@ TEST_F(HintsManagerFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2838,7 +2838,7 @@ TEST_F(HintsManagerFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::PERFORMANCE_HINTS});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2869,7 +2869,7 @@ TEST_F(HintsManagerFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::PERFORMANCE_HINTS});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2898,7 +2898,7 @@ TEST_F(HintsManagerFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -2926,7 +2926,7 @@ TEST_F(HintsManagerFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -3018,7 +3018,7 @@ TEST_F(HintsManagerFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -3047,7 +3047,7 @@ TEST_F(HintsManagerFetchingTest,
 TEST_F(HintsManagerFetchingTest,
        OnNavigationFinishDoesNotCrashWithoutAnyCallbacksRegistered) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -3059,7 +3059,7 @@ TEST_F(HintsManagerFetchingTest,
 
 TEST_F(HintsManagerFetchingTest, NewOptTypeRegisteredClearsHintCache) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
 
   InitializeWithDefaultConfig("1.0.0.0");
@@ -3528,7 +3528,7 @@ class HintsManagerFetchingNoBatchUpdateTest : public HintsManagerTest {
 TEST_F(HintsManagerFetchingNoBatchUpdateTest,
        BatchUpdateHintsFetchNotScheduledIfNotAllowed) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   // Force hints fetch scheduling.
   CreateHintsManager(std::make_unique<FakeTopHostProvider>(
       std::vector<std::string>({"example1.com", "example2.com"})));
@@ -3771,7 +3771,7 @@ class HintsManagerProactivePersonalizationFetchingTest
 TEST_F(HintsManagerProactivePersonalizationFetchingTest,
        NotAnAllowedOptimizationTypeHintsFetchedAtNavigationTime) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -3800,7 +3800,7 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest,
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::SHOPPING_DISCOUNTS});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -3830,7 +3830,7 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest, TokenFailure) {
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
   hints_manager()->RegisterOptimizationTypes({proto::SHOPPING_DISCOUNTS});
   InitializeWithDefaultConfig("1.0.0.0");
 
@@ -3853,7 +3853,7 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
 
   ASSERT_TRUE(identity_test_env()->identity_manager());
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -3899,7 +3899,7 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
 
   ASSERT_TRUE(identity_test_env()->identity_manager());
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -3945,7 +3945,7 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest,
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableCheckingUserPermissionsForTesting);
+      kDisableCheckingUserPermissionsForTestingSwitch);
 
   ASSERT_TRUE(identity_test_env()->identity_manager());
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(

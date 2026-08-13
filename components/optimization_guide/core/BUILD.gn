@@ -730,7 +730,10 @@ if (is_ios) {
       "optimization_guide_switches.cc",
       "optimization_guide_switches.h",
     ]
-    public_deps = [ ":hints_test_support" ]
+    public_deps = [
+      ":core_util",
+      ":hints_test_support",
+    ]
     deps = [
       "//base",
       "//components/optimization_guide/proto:optimization_guide_proto",

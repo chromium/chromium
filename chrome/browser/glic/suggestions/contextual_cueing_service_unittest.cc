@@ -22,6 +22,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_extraction/content/browser/inner_text.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -407,8 +408,8 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
                 })));
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        optimization_guide::switches::
-            kDisableCheckingUserPermissionsForTesting);
+        optimization_guide::
+            kDisableCheckingUserPermissionsForTestingSwitch);
     ON_CALL(mock_optimization_guide_keyed_service(),
             CanApplyOptimization(
                 _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,

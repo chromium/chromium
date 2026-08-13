@@ -15,6 +15,7 @@
 #import "components/optimization_guide/core/optimization_guide_enums.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_prefs.h"
+#import "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -180,7 +181,7 @@ class PredictionManagerTestBase : public TestWithProfile {
     cmd->AppendSwitch("enable-spdy-proxy-auth");
 
     cmd->AppendSwitch(
-        optimization_guide::switches::kGoogleApiKeyConfigurationCheckOverride);
+        optimization_guide::kGoogleApiKeyConfigurationCheckOverrideSwitch);
     cmd->AppendSwitchASCII(
         optimization_guide::switches::kOptimizationGuideServiceGetModelsURL,
         models_server_->GetURL("/").spec());

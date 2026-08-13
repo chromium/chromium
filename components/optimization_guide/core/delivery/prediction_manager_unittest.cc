@@ -37,6 +37,7 @@
 #include "components/optimization_guide/core/delivery/prediction_model_store.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -373,7 +374,7 @@ class PredictionManagerTestBase : public testing::Test {
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kGoogleApiKeyConfigurationCheckOverride);
+        kGoogleApiKeyConfigurationCheckOverrideSwitch);
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     local_state_prefs_ = std::make_unique<TestingPrefServiceSimple>();
@@ -386,7 +387,7 @@ class PredictionManagerTestBase : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kGoogleApiKeyConfigurationCheckOverride);
+        kGoogleApiKeyConfigurationCheckOverrideSwitch);
 
     test_download_service_tracker_ =
         std::make_unique<TestProfileDownloadServiceTracker>();

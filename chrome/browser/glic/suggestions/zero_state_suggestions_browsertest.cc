@@ -22,8 +22,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
@@ -96,8 +96,8 @@ class ZeroStateSuggestionsBrowserTest
 
   void DisableOptimizationPermissionCheck() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        optimization_guide::switches::
-            kDisableCheckingUserPermissionsForTesting);
+        optimization_guide::
+            kDisableCheckingUserPermissionsForTestingSwitch);
   }
 
   GURL url() { return url_; }
@@ -734,8 +734,8 @@ class ZeroStateSuggestionsBFCacheConfusionBrowserTest
     browser()->GetProfile()->GetPrefs()->SetBoolean(
         glic::prefs::kGlicTabContextEnabled, true);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        optimization_guide::switches::
-            kDisableCheckingUserPermissionsForTesting);
+        optimization_guide::
+            kDisableCheckingUserPermissionsForTestingSwitch);
   }
 
   void SetUpHintsNoResult(const GURL& url) {

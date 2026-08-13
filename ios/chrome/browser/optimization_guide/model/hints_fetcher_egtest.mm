@@ -7,6 +7,7 @@
 #import "components/optimization_guide/core/hints/fake_hints_fetcher.h"
 #import "components/optimization_guide/core/hints/hints_manager.h"
 #import "components/optimization_guide/core/optimization_guide_enums.h"
+#import "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
@@ -120,7 +121,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
                optimization_guide::kPurgeHintsStoreSwitch);
   AppendSwitch(
       &config.additional_args,
-      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
+      optimization_guide::kDisableCheckingUserPermissionsForTestingSwitch);
   AppendSwitch(&config.additional_args,
                optimization_guide::kFetchHintsOverrideTimerSwitch);
   AppendSwitch(&config.additional_args,

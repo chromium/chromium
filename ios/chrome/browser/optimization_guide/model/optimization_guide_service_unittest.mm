@@ -19,7 +19,7 @@
 #import "components/optimization_guide/core/hints/optimization_guide_navigation_data.h"
 #import "components/optimization_guide/core/hints/test_hints_config.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
-#import "components/optimization_guide/core/optimization_guide_switches.h"
+#import "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -84,7 +84,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         optimization_guide::kPurgeHintsStoreSwitch);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        optimization_guide::switches::kGoogleApiKeyConfigurationCheckOverride);
+        optimization_guide::kGoogleApiKeyConfigurationCheckOverrideSwitch);
 
     // The tests are run in the same process and share the same
     // OptimizationHintsComponentUpdateListener due to the global object usage
