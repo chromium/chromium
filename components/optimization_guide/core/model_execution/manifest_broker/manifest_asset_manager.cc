@@ -637,8 +637,23 @@ void ManifestAssetManager::UpdateRegistrations() {
       delegate_->RegisterOnDemandComponent(
           public_key, component->target_version(), context.asset_id(),
           weak_ptr_factory_.GetWeakPtr());
+      // Defer calling NotifyFactory until registration completes (via
+      // InstallerRegistered or OnAssetReady), because the asset may already be
+      // present on disk.
       continue;
     }
+
+    if (context.state() == ComponentState::kReady &&
+        !context.install_dir().has_value()) {
+      // Registration completed recently and we've observed that we have the
+      // right version, but we are waiting for the path from the updater.
+      continue;
+    }
+
+    // Registration is complete, so we know the state of the asset and can
+    // notify the factory.
+    NotifyFactory(public_key, context);
+
     if (context.state() == ComponentState::kRegistered) {
       if (active_assets_by_id_.contains(context.asset_id())) {
         context.SetOnDemandDownloading();

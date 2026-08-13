@@ -824,6 +824,60 @@ TEST_F(ManifestAssetManagerTest, UninstallModels) {
   EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 }
 
+TEST_F(ManifestAssetManagerTest, AssetAvailableAfterManifestUpdate) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  auto& subscriber =
+      model_broker_client_->GetSubscriber(mojom::OnDeviceFeature::kCompose);
+  base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+  subscriber.WaitForClient(client_future.GetCallback());
+  EXPECT_TRUE(client_future.Get());
+
+  // Update manifest to a new version containing the same asset version.
+  UpdateManifest(DummyManifest().Add(asset));
+
+  // The client should remain available and able to create sessions immediately.
+  CanCreateSessionFuture can_create_future;
+  subscriber.CanCreateSession({}, can_create_future.GetCallback());
+  EXPECT_EQ(can_create_future.Get<UnavailableReason>(), std::nullopt);
+}
+
+TEST_F(ManifestAssetManagerTest,
+       InitiallyAvailableOnStartupWhenPreviouslyDownloaded) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+
+  // First run: install the asset so it is saved in the ledger.
+  Startup();
+  {
+    auto& subscriber =
+        model_broker_client_->GetSubscriber(mojom::OnDeviceFeature::kCompose);
+    base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+    subscriber.WaitForClient(client_future.GetCallback());
+    EXPECT_TRUE(client_future.Get());
+  }
+  SimulateShutdown();
+
+  // Second run: on startup, the asset was already downloaded.
+  UpdateManifest(DummyManifest().Add(asset));
+  Startup();
+
+  auto& subscriber =
+      model_broker_client_->GetSubscriber(mojom::OnDeviceFeature::kCompose);
+  base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+  subscriber.WaitForClient(client_future.GetCallback());
+  EXPECT_TRUE(client_future.Get());
+
+  CanCreateSessionFuture future;
+  subscriber.CanCreateSession({}, future.GetCallback());
+  EXPECT_EQ(future.Get<UnavailableReason>(), std::nullopt);
+}
+
 // TODO(crbug.com/504749700): Verify these scenarios from these
 // OnDeviceModelServiceControllerTest tests are covered by
 // ManifestAssetManagerTests BaseModelToBeInstalled BaseModelAvailableAfterInit
