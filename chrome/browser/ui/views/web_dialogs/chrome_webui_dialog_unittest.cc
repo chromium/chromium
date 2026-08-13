@@ -274,6 +274,33 @@ TEST_F(ChromeWebUIDialogTest, DialogButtons) {
             spec.buttons);
 }
 
+TEST_F(ChromeWebUIDialogTest, NoWindowSizeControlsByDefault) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  ASSERT_TRUE(widget);
+  // A modal WebUI dialog offers no minimize, maximize or user resize; sizing
+  // is driven by the content.
+  views::WidgetDelegate* delegate = widget->widget_delegate();
+  EXPECT_FALSE(delegate->CanMinimize());
+  EXPECT_FALSE(delegate->CanMaximize());
+  EXPECT_FALSE(delegate->CanResize());
+}
+
+TEST_F(ChromeWebUIDialogTest, WindowSizeControlsWhenRequested) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+  spec.has_window_size_controls = true;
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  ASSERT_TRUE(widget);
+  views::WidgetDelegate* delegate = widget->widget_delegate();
+  EXPECT_TRUE(delegate->CanMinimize());
+  EXPECT_TRUE(delegate->CanMaximize());
+  EXPECT_TRUE(delegate->CanResize());
+}
+
 TEST_F(ChromeWebUIDialogTest, ShowCloseButton) {
   WebDialogSpec spec;
   spec.min_size = gfx::Size(kMinSize, kMinSize);

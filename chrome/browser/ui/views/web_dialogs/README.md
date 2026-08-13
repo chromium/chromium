@@ -30,6 +30,7 @@ A declarative configuration struct used to customize the behavior of the dialog.
 *   **`wait_for_explicit_show`**: (Default: `true`) Keeps the dialog visually hidden until the JavaScript explicitly requests to be shown (via `ShowUI()`). This prevents jarring flashes of white or unstyled content while the DOM is initially rendering.
 *   **`corner_radius`**: An optional override (`std::optional<int>`) for clipping the WebUI content to match the rounded corners of the dialog frame. If not set, it intelligently defaults to `views::DialogDelegate::GetCornerRadius()`.
 *   **`show_close_button`**: (Default: `false`) Whether to show the native OS close button ('X') in the dialog frame.
+*   **`has_window_size_controls`**: (Default: `false`) Minimize/maximize/user-resize on the frame. Leave off for modal dialogs; user resize contends with auto-resizing.
 
 ## Understanding Widget Ownership
 

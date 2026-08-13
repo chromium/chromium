@@ -75,6 +75,9 @@ struct WebDialogSpec {
   // Whether to show the native OS close button.
   bool show_close_button = false;
 
+  // Whether the frame offers minimize, maximize and user resize.
+  bool has_window_size_controls = false;
+
   // Whether ESC counts as a cancel. Without native buttons DialogDelegate says
   // it does, which reports an ESC dismissal under the same ClosedReason as the
   // page's own cancel button. Unset keeps the DialogDelegate default.
