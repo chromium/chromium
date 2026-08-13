@@ -6,8 +6,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "components/signin/core/browser/account_preview_data_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -197,16 +200,20 @@ NSString* GetPromoLabelString(
 @implementation ConsistencyDefaultAccountMediator {
   raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  raw_ptr<signin::AccountPreviewDataService> _accountPreviewDataService;
   // Used to customize content on screen.
   SigninContextStyle _contextStyle;
 }
 
 - (instancetype)
-    initWithIdentityManager:(signin::IdentityManager*)identityManager
-      accountManagerService:(ChromeAccountManagerService*)accountManagerService
-                syncService:(syncer::SyncService*)syncService
-               contextStyle:(SigninContextStyle)contextStyle
-                accessPoint:(signin_metrics::AccessPoint)accessPoint {
+      initWithIdentityManager:(signin::IdentityManager*)identityManager
+        accountManagerService:
+            (ChromeAccountManagerService*)accountManagerService
+    accountPreviewDataService:
+        (signin::AccountPreviewDataService*)accountPreviewDataService
+                  syncService:(syncer::SyncService*)syncService
+                 contextStyle:(SigninContextStyle)contextStyle
+                  accessPoint:(signin_metrics::AccessPoint)accessPoint {
   if ((self = [super init])) {
     CHECK(identityManager);
     CHECK(accountManagerService);
@@ -214,6 +221,7 @@ NSString* GetPromoLabelString(
 
     _identityManager = identityManager;
     _accountManagerService = accountManagerService;
+    _accountPreviewDataService = accountPreviewDataService;
     _syncService = syncService;
     _contextStyle = contextStyle;
     _accessPoint = accessPoint;
@@ -236,6 +244,7 @@ NSString* GetPromoLabelString(
 - (void)disconnect {
   _identityManager = nullptr;
   _accountManagerService = nullptr;
+  _accountPreviewDataService = nullptr;
   _syncService = nullptr;
   _identityManagerObserver.reset();
 }
@@ -296,12 +305,29 @@ NSString* GetPromoLabelString(
 #pragma mark - Private
 
 // Selects the default identity to be either:
-// * the device default identity if any,
+// * the preferred account from _accountPreviewDataService,
+// * otherwise the device default identity if any,
 // * otherwise nil.
 // Also updates the UI accordingly.
 - (void)selectDefaultIdentity {
   if (!_identityManager || !_accountManagerService) {
     return;
+  }
+
+  if (_accountPreviewDataService &&
+      base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewPreferredAccount)) {
+    if (std::optional<
+            signin::AccountPreviewDataService::AccountPreviewPreference>
+            preference =
+                _accountPreviewDataService->GetPreferredAccountForPromo()) {
+      id<SystemIdentity> identity =
+          _accountManagerService->GetIdentityWithGaiaID(preference->gaia_id);
+      if (identity) {
+        self.selectedIdentity = identity;
+        return;
+      }
+    }
   }
 
   // Here, default identity may be nil.

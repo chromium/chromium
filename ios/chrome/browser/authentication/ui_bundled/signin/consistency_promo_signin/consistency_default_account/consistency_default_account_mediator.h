@@ -9,6 +9,7 @@
 
 namespace signin {
 class IdentityManager;
+class AccountPreviewDataService;
 }  // namespace signin
 
 namespace signin_metrics {
@@ -29,12 +30,15 @@ enum class SigninContextStyle;
 @interface ConsistencyDefaultAccountMediator : NSObject
 
 // The designated initializer.
-- (instancetype)
-    initWithIdentityManager:(signin::IdentityManager*)identityManager
-      accountManagerService:(ChromeAccountManagerService*)accountManagerService
-                syncService:(syncer::SyncService*)syncService
-               contextStyle:(SigninContextStyle)contextStyle
-                accessPoint:(signin_metrics::AccessPoint)accessPoint
+- (instancetype)initWithIdentityManager:
+                    (signin::IdentityManager*)identityManager
+                  accountManagerService:
+                      (ChromeAccountManagerService*)accountManagerService
+              accountPreviewDataService:
+                  (signin::AccountPreviewDataService*)accountPreviewDataService
+                            syncService:(syncer::SyncService*)syncService
+                           contextStyle:(SigninContextStyle)contextStyle
+                            accessPoint:(signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
