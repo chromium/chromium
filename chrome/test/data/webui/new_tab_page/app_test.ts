@@ -1839,35 +1839,35 @@ suite('NewTabPageAppTest', () => {
         });
       });
 
-      test('initial height matches searchbox height before expanding', async () => {
-        const searchbox = $$(app, '#searchbox');
-        assertTrue(!!searchbox);
+      interface InvariantCheckTestCase {
+        energyEffectEnabled: boolean;
+        energyEffectVariant: string;
+        name: string;
+      }
 
-        // Arrange: dispatch open-composebox event.
-        (searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-          detail: {text: '', files: []},
-        })));
-        await app.updateComplete;
-
-        const composeboxElement =
-            app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
-        assertTrue(!!composeboxElement);
-
-        // Force/ensure the composebox is in the folded state for
-        // style measurement.
-        composeboxElement.setAttribute('should-remain-folded_', '');
-        await composeboxElement.updateComplete;
-
-        const composeboxContainer =
-            composeboxElement.shadowRoot.querySelector('#composebox');
-        assertTrue(!!composeboxContainer);
-
-        const searchboxHeight = window.getComputedStyle(searchbox).height;
-        assertEquals(
-            searchboxHeight,
-            window.getComputedStyle(composeboxContainer).height,
-            'Initial composebox height should match searchbox height to prevent layout jump');
-      });
+      const invariant_test_cases: InvariantCheckTestCase[] = [
+        {energyEffectEnabled: false, energyEffectVariant: '', name: 'Control'},
+        {
+          energyEffectEnabled: true,
+          energyEffectVariant: 'energy-effect-original',
+          name: 'energy-effect-original',
+        },
+        {
+          energyEffectEnabled: true,
+          energyEffectVariant: 'energy-effect-darker-shadow',
+          name: 'energy-effect-darker-shadow',
+        },
+        {
+          energyEffectEnabled: true,
+          energyEffectVariant: 'pre-energy-effect-with-border',
+          name: 'pre-energy-effect-with-border',
+        },
+        {
+          energyEffectEnabled: true,
+          energyEffectVariant: 'energy-effect-fusebox',
+          name: 'energy-effect-fusebox',
+        },
+      ];
 
       function getCenter(element: Element): {x: number, y: number} {
         const rect = element.getBoundingClientRect();
@@ -1877,402 +1877,444 @@ suite('NewTabPageAppTest', () => {
         };
       }
 
-      [false, true].forEach(energyEffectEnabled => {
-        [false, true].forEach(energyEffectAnimationEnabled => {
+      invariant_test_cases.forEach(({
+                                     energyEffectEnabled,
+                                     energyEffectVariant,
+                                     name,
+                                   }) => {
+        suite(`invariant checks (variant=${name})`, () => {
+          setup(() => {
+            // Set the border color variable, which is normally dynamically
+            // injected into the document root style by the C++
+            // ColorProvider pipeline in a running browser. This ensures the
+            // 1px solid border resolves and participates in test computed
+            // style checks.
+            document.body.style.setProperty(
+                '--color-searchbox-border', 'black');
+            loadTimeData.overrideValues({
+              ntpRealboxNextEnabled: true,
+              contextManagementInComposeboxEnabled: true,
+              contextualMenuUsePecApi: false,
+              energyEffectEnabled,
+              energyEffectVariant,
+              energyEffectAnimationEnabled: true,
+            });
+          });
+
           test(
-              `+ button alignment matches when energyEffectEnabled is ${
-                  energyEffectEnabled} and energyEffectAnimationEnabled is ${
-                  energyEffectAnimationEnabled}`,
+              'initial dimensions (height and width) match searchbox before expanding',
               async () => {
-                // Set the border color variable, which is normally dynamically
-                // injected into the document root style by the C++
-                // ColorProvider pipeline in a running browser. This ensures the
-                // 1px solid border resolves and participates in test computed
-                // style checks.
-                document.body.style.setProperty(
-                    '--color-searchbox-border', 'black');
+                await recreateApp();
+                await microtasksFinished();
+
+                const searchbox = $$(app, '#searchbox');
+                assertTrue(!!searchbox);
+
+                // Arrange: dispatch open-composebox event.
+                (searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                  detail: {text: '', files: []},
+                })));
+                await app.updateComplete;
+
+                const composeboxElement =
+                    app.shadowRoot.querySelector<NtpComposeboxElement>(
+                        '#composebox');
+                assertTrue(!!composeboxElement);
+
+                // Force/ensure the composebox is in the folded state for
+                // style measurement.
+                composeboxElement.setAttribute('should-remain-folded_', '');
+                await composeboxElement.updateComplete;
+
+                const composeboxContainer =
+                    composeboxElement.shadowRoot.querySelector('#composebox');
+                assertTrue(!!composeboxContainer);
+
+                const searchboxWrapper =
+                    searchbox.shadowRoot!.querySelector('#inputWrapper')!;
+                const searchboxWrapperRect =
+                    searchboxWrapper.getBoundingClientRect();
+                const composeboxRect =
+                    composeboxContainer.getBoundingClientRect();
+                assertEquals(
+                    searchboxWrapperRect.height, composeboxRect.height,
+                    'Initial composebox height should match searchbox height to prevent layout jump');
+                assertEquals(
+                    searchboxWrapperRect.width, composeboxRect.width,
+                    'Initial composebox width should match searchbox width to prevent layout jump');
+              });
+
+          test('+ button alignment matches', async () => {
+            await recreateApp();
+            await microtasksFinished();
+
+            const searchbox = $$(app, '#searchbox');
+            assertTrue(!!searchbox, 'Searchbox should exist');
+
+            // Get searchbox + button.
+            const searchboxEntrypointMenu =
+                searchbox.shadowRoot!.querySelector('#context');
+            assertTrue(
+                !!searchboxEntrypointMenu,
+                'Searchbox entrypoint menu should exist');
+            const searchboxEntrypointButton =
+                searchboxEntrypointMenu.shadowRoot!.querySelector(
+                    '#entrypointButton')!;
+            const searchboxIcon =
+                searchboxEntrypointButton.shadowRoot!.querySelector(
+                    '#entrypoint')!;
+
+            // Open composebox.
+            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+              detail: {text: '', files: []},
+            }));
+            await microtasksFinished();
+
+            const composebox =
+                app.shadowRoot.querySelector<NtpComposeboxElement>(
+                    '#composebox');
+            assertTrue(!!composebox, 'Composebox should exist');
+
+            // Get composebox + button.
+            const composeboxEntrypointMenu =
+                composebox.shadowRoot.querySelector('#contextEntrypoint');
+            assertTrue(
+                !!composeboxEntrypointMenu,
+                'Composebox entrypoint menu should exist');
+            const composeboxEntrypointButton =
+                composeboxEntrypointMenu.shadowRoot!.querySelector(
+                    '#entrypointButton')!;
+            const composeboxIcon =
+                composeboxEntrypointButton.shadowRoot!.querySelector(
+                    '#entrypoint')!;
+
+            // Measure centers.
+            const searchboxCenter = getCenter(searchboxIcon);
+            const composeboxCenter = getCenter(composeboxIcon);
+
+            // Assert centers match exactly.
+            assertDeepEquals(
+                searchboxCenter, composeboxCenter,
+                `Center position mismatch. ` +
+                    `Searchbox: (${searchboxCenter.x}, ${
+                        searchboxCenter.y}), ` +
+                    `Composebox: (${composeboxCenter.x}, ${
+                        composeboxCenter.y})`);
+          });
+
+          if (energyEffectEnabled) {
+            test(
+                'search-animated-glow background is aligned with inset 0',
+                async () => {
+                  await recreateApp();
+                  await microtasksFinished();
+
+                  const searchbox = $$(app, '#searchbox');
+                  assertTrue(!!searchbox);
+                  searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                    detail: {text: '', files: []},
+                  }));
+                  await microtasksFinished();
+
+                  const composebox =
+                      app.shadowRoot.querySelector<NtpComposeboxElement>(
+                          '#composebox');
+                  assertTrue(!!composebox);
+
+                  const animatedGlow = $$(composebox, 'search-animated-glow');
+                  assertTrue(!!animatedGlow);
+
+                  const background = $$(animatedGlow, '.background');
+                  assertTrue(!!background);
+
+                  const bgStyle = window.getComputedStyle(background);
+                  assertEquals('0px', bgStyle.top);
+                  assertEquals('0px', bgStyle.left);
+                  assertEquals('0px', bgStyle.right);
+                  assertEquals('0px', bgStyle.bottom);
+                });
+          }
+
+          test(
+              'spacing and bottom alignment when both attachments and tool chip ' +
+                  'are present without dropdown',
+              async () => {
+                await recreateApp();
+                await microtasksFinished();
+
+                const searchbox = $$(app, '#searchbox');
+                assertTrue(!!searchbox);
+
+                searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                  detail: {
+                    text: 'test query',
+                    files: [],
+                  },
+                }));
+                await microtasksFinished();
+
+                const composebox =
+                    $$(app, '#composebox') as NtpComposeboxElement;
+                assertTrue(!!composebox);
+                const file = ComposeboxFile.createFromFile(
+                    'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
+                    ContextUploadStatus.kUploadSuccessful);
+                composebox.files = new Map([[file.uuid, file]]);
+                composebox.inToolMode = true;
+                composebox.contextMenuEnabled = false;
+                composebox.requestUpdate();
+                await composebox.updateComplete;
+
+                const fileCarousel = $$(composebox, '#carousel');
+                assertTrue(!!fileCarousel);
+                const toolChipsContainer =
+                    $$(composebox, '#toolChipsContainer');
+                assertTrue(!!toolChipsContainer);
+                const toolChip =
+                    toolChipsContainer.querySelector('cr-composebox-tool-chip');
+                assertTrue(!!toolChip);
+                const toolChipButton = $$(toolChip, '#toolEnabledButton');
+                assertTrue(!!toolChipButton);
+
+                const carouselContainer = $$(composebox, '#carouselContainer');
+                assertTrue(!!carouselContainer);
+                const submitElement =
+                    carouselContainer.querySelector('cr-composebox-submit')!;
+                assertTrue(!!submitElement);
+                const submitIcon = $$(submitElement, '#submitContainer');
+                assertTrue(!!submitIcon);
+
+                assertEquals(
+                    18,
+                    toolChipButton.getBoundingClientRect().top -
+                        fileCarousel.getBoundingClientRect().bottom,
+                    'Vertical distance between carousel and tool chip should be ' +
+                        '18px');
+                assertEquals(
+                    toolChipButton.getBoundingClientRect().bottom,
+                    submitIcon.getBoundingClientRect().bottom,
+                    'Tool chip button and submit button should be bottom aligned');
+              });
+
+          test(
+              'spacing and bottom alignment when only tool chip is present ' +
+                  'without dropdown',
+              async () => {
+                await recreateApp();
+                await microtasksFinished();
+
+                const searchbox = $$(app, '#searchbox');
+                assertTrue(!!searchbox);
+
+                searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                  detail: {
+                    text: 'test query',
+                    files: [],
+                  },
+                }));
+                await microtasksFinished();
+
+                const composebox =
+                    $$(app, '#composebox') as NtpComposeboxElement;
+                assertTrue(!!composebox);
+                composebox.inToolMode = true;
+                composebox.contextMenuEnabled = false;
+                composebox.requestUpdate();
+                await composebox.updateComplete;
+
+                const toolChipsContainer =
+                    $$(composebox, '#toolChipsContainer');
+                assertTrue(!!toolChipsContainer);
+                const toolChip =
+                    toolChipsContainer.querySelector('cr-composebox-tool-chip');
+                assertTrue(!!toolChip);
+                const toolChipButton = $$(toolChip, '#toolEnabledButton');
+                assertTrue(!!toolChipButton);
+
+                const carouselContainer = $$(composebox, '#carouselContainer');
+                assertTrue(!!carouselContainer);
+                const submitElement =
+                    carouselContainer.querySelector('cr-composebox-submit')!;
+                assertTrue(!!submitElement);
+                const submitIcon = $$(submitElement, '#submitContainer');
+                assertTrue(!!submitIcon);
+
+                assertEquals(
+                    toolChipButton.getBoundingClientRect().bottom,
+                    submitIcon.getBoundingClientRect().bottom,
+                    'Tool chip button and submit button should be bottom aligned');
+              });
+
+          test(
+              'spacing and bottom alignment when attachments and tab context ' +
+                  'are present without dropdown',
+              async () => {
                 loadTimeData.overrideValues({
-                  energyEffectEnabled,
-                  energyEffectAnimationEnabled,
+                  composeboxShowContextMenu: true,
+                  tabFaviconChipsToCoinsEnabled: true,
                 });
                 await recreateApp();
                 await microtasksFinished();
 
                 const searchbox = $$(app, '#searchbox');
-                assertTrue(!!searchbox, 'Searchbox should exist');
+                assertTrue(!!searchbox);
 
-                // Get searchbox + button.
-                const searchboxEntrypointMenu =
-                    searchbox.shadowRoot!.querySelector('#context');
-                assertTrue(
-                    !!searchboxEntrypointMenu,
-                    `Searchbox entrypoint menu should exist when energyEffectEnabled=${
-                        energyEffectEnabled} and energyEffectAnimationEnabled=${
-                        energyEffectAnimationEnabled}`);
-                const searchboxEntrypointButton =
-                    searchboxEntrypointMenu.shadowRoot!.querySelector(
-                        '#entrypointButton')!;
-                const searchboxIcon =
-                    searchboxEntrypointButton.shadowRoot!.querySelector(
-                        '#entrypoint')!;
-
-                // Open composebox.
                 searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-                  detail: {text: '', files: []},
+                  detail: {
+                    text: 'test query',
+                    files: [],
+                  },
                 }));
                 await microtasksFinished();
 
                 const composebox =
-                    app.shadowRoot.querySelector<NtpComposeboxElement>(
-                        '#composebox');
-                assertTrue(!!composebox, 'Composebox should exist');
+                    $$(app, '#composebox') as NtpComposeboxElement;
+                assertTrue(!!composebox);
+                const file = ComposeboxFile.createFromFile(
+                    'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
+                    ContextUploadStatus.kUploadSuccessful);
+                const tabFile = ComposeboxFile.createFromTab(
+                    'test-tab-uuid', 1, 'Example Tab', 'https://example.com');
+                composebox.files =
+                    new Map([[file.uuid, file], [tabFile.uuid, tabFile]]);
+                composebox.contextMenuEnabled = true;
+                composebox.smartTabSharingVisible = true;
+                composebox.smartTabSharingActive = true;
+                composebox.requestUpdate();
+                await composebox.updateComplete;
 
-                // Get composebox + button.
-                const composeboxEntrypointMenu =
-                    composebox.shadowRoot.querySelector('#contextEntrypoint');
-                assertTrue(
-                    !!composeboxEntrypointMenu,
-                    `Composebox entrypoint menu should exist when energyEffectEnabled=${
-                        energyEffectEnabled} and energyEffectAnimationEnabled=${
-                        energyEffectAnimationEnabled}`);
-                const composeboxEntrypointButton =
-                    composeboxEntrypointMenu.shadowRoot!.querySelector(
-                        '#entrypointButton')!;
-                const composeboxIcon =
-                    composeboxEntrypointButton.shadowRoot!.querySelector(
-                        '#entrypoint')!;
+                const fileCarousel = $$(composebox, '#carousel');
+                assertTrue(!!fileCarousel);
+                const entrypointMenu = $$(composebox, '#contextEntrypoint');
+                assertTrue(!!entrypointMenu);
+                const entrypointButton =
+                    $$(entrypointMenu, '#entrypointButton');
+                assertTrue(!!entrypointButton);
 
-                // Measure centers.
-                const searchboxCenter = getCenter(searchboxIcon);
-                const composeboxCenter = getCenter(composeboxIcon);
+                const carouselContainer = $$(composebox, '#carouselContainer');
+                assertTrue(!!carouselContainer);
+                const submitElement =
+                    carouselContainer.querySelector('cr-composebox-submit')!;
+                assertTrue(!!submitElement);
+                const submitIcon = $$(submitElement, '#submitContainer');
+                assertTrue(!!submitIcon);
 
-                // Assert centers match exactly.
-                assertDeepEquals(
-                    searchboxCenter, composeboxCenter,
-                    `Center position mismatch when energyEffectEnabled=${
-                        energyEffectEnabled} and energyEffectAnimationEnabled=${
-                        energyEffectAnimationEnabled}. ` +
-                        `Searchbox: (${searchboxCenter.x}, ${
-                            searchboxCenter.y}), ` +
-                        `Composebox: (${composeboxCenter.x}, ${
-                            composeboxCenter.y})`);
+                assertEquals(
+                    18,
+                    entrypointButton.getBoundingClientRect().top -
+                        fileCarousel.getBoundingClientRect().bottom,
+                    'Vertical distance between carousel and + button should be ' +
+                        '18px');
+                assertEquals(
+                    entrypointButton.getBoundingClientRect().bottom,
+                    submitIcon.getBoundingClientRect().bottom,
+                    'Entrypoint button and submit button should be bottom ' +
+                        'aligned');
+              });
+
+          test(
+              'spacing and bottom alignment when only tab context is attached ' +
+                  'without dropdown',
+              async () => {
+                loadTimeData.overrideValues({
+                  composeboxShowContextMenu: true,
+                  tabFaviconChipsToCoinsEnabled: true,
+                });
+                await recreateApp();
+                await microtasksFinished();
+
+                const searchbox = $$(app, '#searchbox');
+                assertTrue(!!searchbox);
+
+                searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                  detail: {
+                    text: 'test query',
+                    files: [],
+                  },
+                }));
+                await microtasksFinished();
+
+                const composebox =
+                    $$(app, '#composebox') as NtpComposeboxElement;
+                assertTrue(!!composebox);
+                const tabFile = ComposeboxFile.createFromTab(
+                    'test-tab-uuid', 1, 'Example Tab', 'https://example.com');
+                composebox.files = new Map([[tabFile.uuid, tabFile]]);
+                composebox.contextMenuEnabled = true;
+                composebox.smartTabSharingVisible = true;
+                composebox.smartTabSharingActive = true;
+                composebox.requestUpdate();
+                await composebox.updateComplete;
+
+                const entrypointMenu = $$(composebox, '#contextEntrypoint');
+                assertTrue(!!entrypointMenu);
+                const entrypointButton =
+                    $$(entrypointMenu, '#entrypointButton');
+                assertTrue(!!entrypointButton);
+
+                const carouselContainer = $$(composebox, '#carouselContainer');
+                assertTrue(!!carouselContainer);
+                const submitElement =
+                    carouselContainer.querySelector('cr-composebox-submit')!;
+                assertTrue(!!submitElement);
+                const submitIcon = $$(submitElement, '#submitContainer');
+                assertTrue(!!submitIcon);
+
+                assertEquals(
+                    entrypointButton.getBoundingClientRect().bottom,
+                    submitIcon.getBoundingClientRect().bottom,
+                    'Entrypoint button and submit button should be bottom ' +
+                        'aligned');
+              });
+
+          test(
+              'attachment chip is bottom aligned with submit button when only ' +
+                  'attachments are present',
+              async () => {
+                await recreateApp();
+                await microtasksFinished();
+
+                const searchbox = $$(app, '#searchbox');
+                assertTrue(!!searchbox);
+
+                searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                  detail: {
+                    text: 'test query',
+                    files: [],
+                  },
+                }));
+                await microtasksFinished();
+
+                const composebox =
+                    $$(app, '#composebox') as NtpComposeboxElement;
+                assertTrue(!!composebox);
+                const file = ComposeboxFile.createFromFile(
+                    'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
+                    ContextUploadStatus.kUploadSuccessful);
+                composebox.files = new Map([[file.uuid, file]]);
+                composebox.contextMenuEnabled = false;
+                await microtasksFinished();
+
+                const fileCarousel = $$(composebox, '#carousel');
+                assertTrue(!!fileCarousel, 'File carousel should exist');
+                const fileThumbnail =
+                    $$(fileCarousel, 'cr-composebox-file-thumbnail');
+                assertTrue(!!fileThumbnail, 'File thumbnail should exist');
+                const chip = $$(fileThumbnail, '#documentChip');
+                assertTrue(!!chip, 'Document chip should exist');
+
+                const submitElement = $$(composebox, 'cr-composebox-submit');
+                assertTrue(!!submitElement, 'Submit button should be rendered');
+                const submitIcon = $$(submitElement, '#submitContainer');
+                assertTrue(!!submitIcon, 'Submit icon should exist');
+
+                assertEquals(
+                    chip.getBoundingClientRect().bottom,
+                    submitIcon.getBoundingClientRect().bottom,
+                    'Attachment chip and submit button should be bottom aligned');
               });
         });
       });
-
-      [false, true].forEach(energyEffectAnimationEnabled => {
-        test(
-            `search-animated-glow background is aligned with inset 0 when energyEffectEnabled is true and energyEffectAnimationEnabled is ${
-                energyEffectAnimationEnabled}`,
-            async () => {
-              loadTimeData.overrideValues({
-                energyEffectEnabled: true,
-                energyEffectAnimationEnabled,
-              });
-              await recreateApp();
-              await microtasksFinished();
-
-              const searchbox = $$(app, '#searchbox');
-              assertTrue(!!searchbox);
-              searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-                detail: {text: '', files: []},
-              }));
-              await microtasksFinished();
-
-              const composebox =
-                  app.shadowRoot.querySelector<NtpComposeboxElement>(
-                      '#composebox');
-              assertTrue(!!composebox);
-
-              const animatedGlow = $$(composebox, 'search-animated-glow');
-              assertTrue(!!animatedGlow);
-
-              const background = $$(animatedGlow, '.background');
-              assertTrue(!!background);
-
-              const bgStyle = window.getComputedStyle(background);
-              assertEquals('0px', bgStyle.top);
-              assertEquals('0px', bgStyle.left);
-              assertEquals('0px', bgStyle.right);
-              assertEquals('0px', bgStyle.bottom);
-            });
-      });
-
-      test(
-          'spacing and bottom alignment when both attachments and tool chip ' +
-              'are present without dropdown',
-          async () => {
-            await recreateApp();
-            await microtasksFinished();
-
-            const searchbox = $$(app, '#searchbox');
-            assertTrue(!!searchbox);
-
-            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-              detail: {
-                text: 'test query',
-                files: [],
-              },
-            }));
-            await microtasksFinished();
-
-            const composebox = $$(app, '#composebox') as NtpComposeboxElement;
-            assertTrue(!!composebox);
-            const file = ComposeboxFile.createFromFile(
-                'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
-                ContextUploadStatus.kUploadSuccessful);
-            composebox.files = new Map([[file.uuid, file]]);
-            composebox.inToolMode = true;
-            composebox.contextMenuEnabled = false;
-            composebox.requestUpdate();
-            await composebox.updateComplete;
-
-            const fileCarousel = $$(composebox, '#carousel');
-            assertTrue(!!fileCarousel);
-            const toolChipsContainer = $$(composebox, '#toolChipsContainer');
-            assertTrue(!!toolChipsContainer);
-            const toolChip =
-                toolChipsContainer.querySelector('cr-composebox-tool-chip');
-            assertTrue(!!toolChip);
-            const toolChipButton = $$(toolChip, '#toolEnabledButton');
-            assertTrue(!!toolChipButton);
-
-            const carouselContainer = $$(composebox, '#carouselContainer');
-            assertTrue(!!carouselContainer);
-            const submitElement =
-                carouselContainer.querySelector('cr-composebox-submit')!;
-            assertTrue(!!submitElement);
-            const submitIcon = $$(submitElement, '#submitContainer');
-            assertTrue(!!submitIcon);
-
-            assertEquals(
-                18,
-                toolChipButton.getBoundingClientRect().top -
-                    fileCarousel.getBoundingClientRect().bottom,
-                'Vertical distance between carousel and tool chip should be ' +
-                    '18px');
-            assertEquals(
-                toolChipButton.getBoundingClientRect().bottom,
-                submitIcon.getBoundingClientRect().bottom,
-                'Tool chip button and submit button should be bottom aligned');
-          });
-
-      test(
-          'spacing and bottom alignment when only tool chip is present ' +
-              'without dropdown',
-          async () => {
-            await recreateApp();
-            await microtasksFinished();
-
-            const searchbox = $$(app, '#searchbox');
-            assertTrue(!!searchbox);
-
-            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-              detail: {
-                text: 'test query',
-                files: [],
-              },
-            }));
-            await microtasksFinished();
-
-            const composebox = $$(app, '#composebox') as NtpComposeboxElement;
-            assertTrue(!!composebox);
-            composebox.inToolMode = true;
-            composebox.contextMenuEnabled = false;
-            composebox.requestUpdate();
-            await composebox.updateComplete;
-
-            const toolChipsContainer = $$(composebox, '#toolChipsContainer');
-            assertTrue(!!toolChipsContainer);
-            const toolChip =
-                toolChipsContainer.querySelector('cr-composebox-tool-chip');
-            assertTrue(!!toolChip);
-            const toolChipButton = $$(toolChip, '#toolEnabledButton');
-            assertTrue(!!toolChipButton);
-
-            const carouselContainer = $$(composebox, '#carouselContainer');
-            assertTrue(!!carouselContainer);
-            const submitElement =
-                carouselContainer.querySelector('cr-composebox-submit')!;
-            assertTrue(!!submitElement);
-            const submitIcon = $$(submitElement, '#submitContainer');
-            assertTrue(!!submitIcon);
-
-            assertEquals(
-                toolChipButton.getBoundingClientRect().bottom,
-                submitIcon.getBoundingClientRect().bottom,
-                'Tool chip button and submit button should be bottom aligned');
-          });
-
-      test(
-          'spacing and bottom alignment when attachments and tab context ' +
-              'are present without dropdown',
-          async () => {
-            loadTimeData.overrideValues({
-              ntpRealboxNextEnabled: true,
-              contextManagementInComposeboxEnabled: true,
-              contextualMenuUsePecApi: false,
-              composeboxShowContextMenu: true,
-              tabFaviconChipsToCoinsEnabled: true,
-            });
-            await recreateApp();
-            await microtasksFinished();
-
-            const searchbox = $$(app, '#searchbox');
-            assertTrue(!!searchbox);
-
-            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-              detail: {
-                text: 'test query',
-                files: [],
-              },
-            }));
-            await microtasksFinished();
-
-            const composebox = $$(app, '#composebox') as NtpComposeboxElement;
-            assertTrue(!!composebox);
-            const file = ComposeboxFile.createFromFile(
-                'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
-                ContextUploadStatus.kUploadSuccessful);
-            const tabFile = ComposeboxFile.createFromTab(
-                'test-tab-uuid', 1, 'Example Tab', 'https://example.com');
-            composebox.files =
-                new Map([[file.uuid, file], [tabFile.uuid, tabFile]]);
-            composebox.contextMenuEnabled = true;
-            composebox.smartTabSharingVisible = true;
-            composebox.smartTabSharingActive = true;
-            composebox.requestUpdate();
-            await composebox.updateComplete;
-
-            const fileCarousel = $$(composebox, '#carousel');
-            assertTrue(!!fileCarousel);
-            const entrypointMenu = $$(composebox, '#contextEntrypoint');
-            assertTrue(!!entrypointMenu);
-            const entrypointButton = $$(entrypointMenu, '#entrypointButton');
-            assertTrue(!!entrypointButton);
-
-            const carouselContainer = $$(composebox, '#carouselContainer');
-            assertTrue(!!carouselContainer);
-            const submitElement =
-                carouselContainer.querySelector('cr-composebox-submit')!;
-            assertTrue(!!submitElement);
-            const submitIcon = $$(submitElement, '#submitContainer');
-            assertTrue(!!submitIcon);
-
-            assertEquals(
-                18,
-                entrypointButton.getBoundingClientRect().top -
-                    fileCarousel.getBoundingClientRect().bottom,
-                'Vertical distance between carousel and + button should be ' +
-                    '18px');
-            assertEquals(
-                entrypointButton.getBoundingClientRect().bottom,
-                submitIcon.getBoundingClientRect().bottom,
-                'Entrypoint button and submit button should be bottom ' +
-                    'aligned');
-          });
-
-      test(
-          'spacing and bottom alignment when only tab context is attached ' +
-              'without dropdown',
-          async () => {
-            loadTimeData.overrideValues({
-              ntpRealboxNextEnabled: true,
-              contextManagementInComposeboxEnabled: true,
-              contextualMenuUsePecApi: false,
-              composeboxShowContextMenu: true,
-              tabFaviconChipsToCoinsEnabled: true,
-            });
-            await recreateApp();
-            await microtasksFinished();
-
-            const searchbox = $$(app, '#searchbox');
-            assertTrue(!!searchbox);
-
-            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-              detail: {
-                text: 'test query',
-                files: [],
-              },
-            }));
-            await microtasksFinished();
-
-            const composebox = $$(app, '#composebox') as NtpComposeboxElement;
-            assertTrue(!!composebox);
-            const tabFile = ComposeboxFile.createFromTab(
-                'test-tab-uuid', 1, 'Example Tab', 'https://example.com');
-            composebox.files = new Map([[tabFile.uuid, tabFile]]);
-            composebox.contextMenuEnabled = true;
-            composebox.smartTabSharingVisible = true;
-            composebox.smartTabSharingActive = true;
-            composebox.requestUpdate();
-            await composebox.updateComplete;
-
-            const entrypointMenu = $$(composebox, '#contextEntrypoint');
-            assertTrue(!!entrypointMenu);
-            const entrypointButton = $$(entrypointMenu, '#entrypointButton');
-            assertTrue(!!entrypointButton);
-
-            const carouselContainer = $$(composebox, '#carouselContainer');
-            assertTrue(!!carouselContainer);
-            const submitElement =
-                carouselContainer.querySelector('cr-composebox-submit')!;
-            assertTrue(!!submitElement);
-            const submitIcon = $$(submitElement, '#submitContainer');
-            assertTrue(!!submitIcon);
-
-            assertEquals(
-                entrypointButton.getBoundingClientRect().bottom,
-                submitIcon.getBoundingClientRect().bottom,
-                'Entrypoint button and submit button should be bottom ' +
-                    'aligned');
-          });
-
-      test(
-          'attachment chip is bottom aligned with submit button when only ' +
-              'attachments are present',
-          async () => {
-            await recreateApp();
-            await microtasksFinished();
-
-            const searchbox = $$(app, '#searchbox');
-            assertTrue(!!searchbox);
-
-            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-              detail: {
-                text: 'test query',
-                files: [],
-              },
-            }));
-            await microtasksFinished();
-
-            const composebox = $$(app, '#composebox') as NtpComposeboxElement;
-            assertTrue(!!composebox);
-            const file = ComposeboxFile.createFromFile(
-                'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
-                ContextUploadStatus.kUploadSuccessful);
-            composebox.files = new Map([[file.uuid, file]]);
-            composebox.contextMenuEnabled = false;
-            await microtasksFinished();
-
-            const fileCarousel = $$(composebox, '#carousel');
-            assertTrue(!!fileCarousel, 'File carousel should exist');
-            const fileThumbnail =
-                $$(fileCarousel, 'cr-composebox-file-thumbnail');
-            assertTrue(!!fileThumbnail, 'File thumbnail should exist');
-            const chip = $$(fileThumbnail, '#documentChip');
-            assertTrue(!!chip, 'Document chip should exist');
-
-            const submitElement = $$(composebox, 'cr-composebox-submit');
-            assertTrue(!!submitElement, 'Submit button should be rendered');
-            const submitIcon = $$(submitElement, '#submitContainer');
-            assertTrue(!!submitIcon, 'Submit icon should exist');
-
-            assertEquals(
-                chip.getBoundingClientRect().bottom,
-                submitIcon.getBoundingClientRect().bottom,
-                'Attachment chip and submit button should be bottom aligned');
-          });
     });
   });
 

@@ -57,6 +57,7 @@
 }
 
 :host([ntp-realbox-next-enabled_]) {
+  --cr-searchbox-height: 56px;
   --ntp-scrim-opacity_: 0.5;
 }
 

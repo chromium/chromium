@@ -44,7 +44,7 @@
 }
 
 :host(:not([is-collapsible])[should-remain-folded_]) #composebox {
-  max-height: 56px;
+  max-height: var(--cr-searchbox-height);
 }
 
 #inputContainer {
@@ -91,11 +91,6 @@ cr-composebox-submit::part(submit) {
   inset-inline-start: unset;
   position: relative;
   top: unset;
-}
-
-:host-context([energy-effect-enabled_]) #contextEntrypoint::part(context-menu-entrypoint-icon) {
-  inset-inline-start: calc(var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start, 8px) + 1px);
-  top: 11px;
 }
 
 #voiceSearchButton {
