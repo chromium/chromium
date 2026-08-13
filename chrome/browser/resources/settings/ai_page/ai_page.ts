@@ -5,11 +5,10 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_section.js';
+import '../privacy_icons.html.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 
-import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './on_device_ai_browser_proxy.js';
-import {OnDeviceAiBrowserProxyImpl} from './on_device_ai_browser_proxy.js';
 // </if>
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -28,6 +27,10 @@ import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './ai_page.html.js';
 import {FeatureOptInState, SettingsAiPageFeaturePrefName} from './constants.js';
+// <if expr="_google_chrome">
+import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './on_device_ai_browser_proxy.js';
+import {OnDeviceAiBrowserProxyImpl} from './on_device_ai_browser_proxy.js';
+// </if>
 
 const SettingsAiPageElementBase =
     WebUiListenerMixin(SettingsViewMixin(PrefsMixin(PolymerElement)));
@@ -78,6 +81,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
             loadTimeData.getBoolean('showGoogleSearchAiModeWorkspaceControl'),
       },
 
+      showDictationControl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showDictationControl'),
+      },
+
       // <if expr="_google_chrome">
       showOnDeviceAiSettings_: {
         type: Boolean,
@@ -103,6 +111,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   declare private showSkillsSettingPage_: boolean;
   declare private showIndigoControl_: boolean;
   declare private showGoogleSearchAiModeWorkspaceControl_: boolean;
+  declare private showDictationControl_: boolean;
   // <if expr="_google_chrome">
   declare private showOnDeviceAiSettings_: boolean;
   declare private onDeviceAiPref_: chrome.settingsPrivate.PrefObject<boolean>;
@@ -194,6 +203,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().SKILLS);
+  }
+
+  private onDictationRowClick_() {
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().DICTATION);
   }
 
   private onIndigoRowClick_() {
@@ -307,6 +321,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       map.set(routes.SKILLS.path, '#skillsRow');
     }
 
+    if (routes.DICTATION) {
+      map.set(routes.DICTATION.path, '#dictationRow');
+    }
+
     return map;
   }
 
@@ -314,6 +332,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   override getAssociatedControlFor(childViewId: string): HTMLElement {
     const ids = [
       'compose',
+      'dictation',
       'historySearch',
       'aiSuggestions',
       'skills',
@@ -337,6 +356,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       case 'skills':
         assert(this.showSkillsSettingPage_);
         triggerId = 'skillsRow';
+        break;
+      case 'dictation':
+        assert(this.showDictationControl_);
+        triggerId = 'dictationRow';
         break;
       default:
         assertNotReached();

@@ -97,6 +97,11 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
         type: Boolean,
         value: () => loadTimeData.getBoolean('showSkillsSettingPage'),
       },
+
+      showDictationControl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showDictationControl'),
+      },
     };
   }
 
@@ -110,6 +115,7 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   declare private actorLoginFederatedLoginSupportEnabled_: boolean;
   declare private showAiSuggestionsControl_: boolean;
   declare private showSkillsSettingPage_: boolean;
+  declare private showDictationControl_: boolean;
 
   private showDefaultViews_() {
     const defaultViews: string[] = ['aiInfoCard'];
@@ -180,6 +186,11 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
           assert(this.showSkillsSettingPage_);
           this.$.viewManager.switchView(
               'skills', 'no-animation', 'no-animation');
+          break;
+        case routes.DICTATION:
+          assert(this.showDictationControl_);
+          this.$.viewManager.switchView(
+              'dictation', 'no-animation', 'no-animation');
           break;
         default:
           // Nothing to do. Other parent elements are responsible for updating

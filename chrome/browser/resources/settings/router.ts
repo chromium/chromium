@@ -30,6 +30,7 @@ export interface SettingsRoutes {
   COMPARE: Route;
   COOKIES: Route;
   DEFAULT_BROWSER: Route;
+  DICTATION: Route;
   DOWNLOADS: Route;
   EDIT_DICTIONARY: Route;
   FONTS: Route;
