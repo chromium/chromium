@@ -66,9 +66,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
-
-// TODO(http://b/361693496): Remove this after the original issue fixed.
-#include "components/crash/core/common/crash_key.h"
 #include "ui/base/ui_base_features.h"
 
 namespace ash {
@@ -76,8 +73,6 @@ namespace ash {
 using BoundsType = CalendarView::CalendarSlidingSurfaceBoundsType;
 
 namespace {
-
-using AnimatingCrashKey = crash_reporter::CrashKeyString<8>;
 
 // The paddings in each view.
 constexpr int kContentVerticalPadding = 20;
@@ -267,10 +262,6 @@ int GetExpandedCalendarPadding() {
 
 void StopViewLayerAnimation(views::View* view) {
   view->layer()->GetAnimator()->StopAnimating();
-}
-
-void UpdateCachedAnimatingState(AnimatingCrashKey& key, bool running) {
-  key.Set(running ? "True" : "False");
 }
 
 // The overridden `Label` view used in `CalendarView`.
@@ -1660,8 +1651,6 @@ void CalendarView::ScrollOneMonthWithAnimation(bool scroll_up) {
   auto label_reporter = calendar_metrics::CreateAnimationReporter(
       current_label_, kLabelViewScrollOneMonthAnimationHistogram);
 
-  UpdateAnimationCrashKeys();
-
   // Stop animating the views that will be involved in the month scroll
   // animation. It handles the edge case that the calendar view's children get
   // recreated by the abortion callback of the existing animation interrupted by
@@ -2451,39 +2440,6 @@ void CalendarView::StopUpNextTimer() {
 
 bool CalendarView::IsUpNextViewVisible() const {
   return up_next_view_ && up_next_view_->GetVisible();
-}
-
-void CalendarView::UpdateAnimationCrashKeys() {
-  static AnimatingCrashKey event_list_close_animation_key("event_list_close");
-  UpdateCachedAnimatingState(event_list_close_animation_key,
-                             is_event_list_close_animation_running_);
-
-  static AnimatingCrashKey event_list_open_animation_key("event_list_open");
-  UpdateCachedAnimatingState(event_list_open_animation_key,
-                             is_event_list_open_animation_running_);
-
-  static AnimatingCrashKey fade_in_up_next_view_animation_key(
-      "fade_in_up_next_view");
-  UpdateCachedAnimatingState(fade_in_up_next_view_animation_key,
-                             is_fade_in_up_next_view_animation_running_);
-
-  static AnimatingCrashKey fade_out_up_next_view_animation_key(
-      "fade_out_up_next_view");
-  UpdateCachedAnimatingState(fade_out_up_next_view_animation_key,
-                             is_fade_out_up_next_view_animation_running_);
-
-  static AnimatingCrashKey header_animation_key("header");
-  UpdateCachedAnimatingState(header_animation_key,
-                             is_header_animation_running_);
-
-  static AnimatingCrashKey reset_to_today_animation_key("reset_to_today");
-  UpdateCachedAnimatingState(reset_to_today_animation_key,
-                             is_reset_to_today_animation_running_);
-
-  static AnimatingCrashKey reset_to_today_fade_in_animation_key(
-      "reset_to_today_fade_in");
-  UpdateCachedAnimatingState(reset_to_today_fade_in_animation_key,
-                             is_reset_to_today_fade_in_animation_running_);
 }
 
 BEGIN_METADATA(CalendarView)

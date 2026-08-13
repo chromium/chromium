@@ -415,11 +415,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Checks if `up_next_view_` exists and is visible.
   bool IsUpNextViewVisible() const;
 
-  // Helps to verify the idea that the calendar month scroll animation could
-  // interrupt other running animations unexpectedly.
-  // TODO(http://b/361693496): Remove this after the original issue fixed.
-  void UpdateAnimationCrashKeys();
-
   // Setters for animation flags.
   void set_should_header_animate(bool should_animate) {
     should_header_animate_ = should_animate;
