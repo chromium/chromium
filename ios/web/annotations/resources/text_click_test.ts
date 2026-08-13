@@ -208,4 +208,32 @@ export class TestTextClick extends TestSuite {
 
     clicker.stop();
   }
+
+  // Tests that a click event targeted directly on chrome_annotation (as done by
+  // VoiceOver / accessibility activations) is recognized without
+  // annotationForTest.
+  testTextClickTargetedDirectlyAccessibility() {
+    const decoratedHTML = '<div id="outer">' +
+        '<chrome_annotation>Hello</chrome_annotation>' +
+        '</div>';
+    load(decoratedHTML);
+
+    const annotation =
+        document.querySelector<HTMLElement>('chrome_annotation')!;
+    const timer = new FakeTaskTimer();
+    const clicker = new TextClick(
+        document.documentElement, this.tapConsumer, () => undefined, timer,
+        /* mutationCheckDelay */ 50, /* annotationForTest= */ null,
+        /* skipTrustedCheckForTesting= */ true);
+    clicker.start();
+
+    annotation.click();
+
+    expectEq(undefined, this.tappedAnnotation, 'tappedAnnotation after click:');
+    timer.moveAhead(/* ms= */ 10, /* times= */ 6);  // -> 60ms total
+    expectEq(annotation, this.tappedAnnotation, 'tappedAnnotation after 60ms:');
+    expectEq(false, this.tappedCancel, 'tappedCancel after 60ms:');
+
+    clicker.stop();
+  }
 }

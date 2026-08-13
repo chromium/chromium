@@ -4,6 +4,8 @@
 
 #import "ios/web/annotations/annotations_java_script_feature.h"
 
+#import <UIKit/UIKit.h>
+
 #import <vector>
 
 #import "base/logging.h"
@@ -217,7 +219,8 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     manager->OnDecorated(web_state, annotations, successes, failures,
                          *cancelled);
   } else if (*command == "annotations.onClick") {
-    if (trusted_event_check_enabled_ && !script_message.is_user_interacting()) {
+    if (trusted_event_check_enabled_ && !script_message.is_user_interacting() &&
+        !UIAccessibilityIsVoiceOverRunning()) {
       return;
     }
     for (const auto pair : dict) {

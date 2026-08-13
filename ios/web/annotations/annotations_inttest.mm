@@ -18,6 +18,7 @@
 #import "ios/web/js_messaging/web_frame_impl.h"
 #import "ios/web/public/annotations/annotations_text_manager.h"
 #import "ios/web/public/annotations/annotations_text_observer.h"
+#import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -185,6 +186,17 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
   }
 
   virtual std::string GetScriptName() { return ""; }
+
+  std::unique_ptr<AnnotationsJavaScriptFeature> CreateFeatureWithTrustedCheck(
+      bool trusted_event_check_enabled) {
+    return base::WrapUnique(
+        new AnnotationsJavaScriptFeature(trusted_event_check_enabled));
+  }
+
+  void DispatchScriptMessage(AnnotationsJavaScriptFeature* feature,
+                             const ScriptMessage& message) {
+    feature->ScriptMessageReceived(web_state(), message);
+  }
 
   bool WaitForWebFramesCount(unsigned long web_frames_count) {
     return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
@@ -1036,6 +1048,78 @@ TEST_F(AnnotationTextManagerViewportTest,
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
     return observer()->clicks() > clicks;
   }));
+  EXPECT_EQ(1, observer()->clicks() - clicks);
+}
+
+// Tests that when trusted event checks are enabled, an onClick message without
+// user interaction is rejected when VoiceOver is not running.
+TEST_F(AnnotationTextManagerViewportTest,
+       OnClickRejectedWhenTrustedCheckEnabledAndNotInteracting) {
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  observer()->Reset();
+  int clicks = observer()->clicks();
+
+  std::unique_ptr<AnnotationsJavaScriptFeature> trusted_feature =
+      CreateFeatureWithTrustedCheck(/*trusted_event_check_enabled=*/true);
+
+  base::DictValue rect_dict;
+  rect_dict.Set("x", 0.0);
+  rect_dict.Set("y", 0.0);
+  rect_dict.Set("width", 10.0);
+  rect_dict.Set("height", 10.0);
+
+  base::DictValue dict;
+  dict.Set("command", "annotations.onClick");
+  dict.Set("data", "some_data");
+  dict.Set("rect", std::move(rect_dict));
+  dict.Set("text", "some_text");
+  dict.Set("cancel", false);
+
+  ScriptMessage message(std::make_unique<base::Value>(std::move(dict)),
+                        /*is_user_interacting=*/false,
+                        /*is_main_frame=*/true,
+                        /*request_url=*/GURL("https://chromium.test"),
+                        /*security_origin=*/url::Origin());
+
+  DispatchScriptMessage(trusted_feature.get(), message);
+  EXPECT_EQ(0, observer()->clicks() - clicks);
+}
+
+// Tests that when trusted event checks are enabled, an onClick message with
+// user interaction is accepted.
+TEST_F(AnnotationTextManagerViewportTest,
+       OnClickAcceptedWhenTrustedCheckEnabledAndInteracting) {
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  observer()->Reset();
+  int clicks = observer()->clicks();
+
+  std::unique_ptr<AnnotationsJavaScriptFeature> trusted_feature =
+      CreateFeatureWithTrustedCheck(/*trusted_event_check_enabled=*/true);
+
+  base::DictValue rect_dict;
+  rect_dict.Set("x", 0.0);
+  rect_dict.Set("y", 0.0);
+  rect_dict.Set("width", 10.0);
+  rect_dict.Set("height", 10.0);
+
+  base::DictValue dict;
+  dict.Set("command", "annotations.onClick");
+  dict.Set("data", "some_data");
+  dict.Set("rect", std::move(rect_dict));
+  dict.Set("text", "some_text");
+  dict.Set("cancel", false);
+
+  ScriptMessage message(std::make_unique<base::Value>(std::move(dict)),
+                        /*is_user_interacting=*/true,
+                        /*is_main_frame=*/true,
+                        /*request_url=*/GURL("https://chromium.test"),
+                        /*security_origin=*/url::Origin());
+
+  DispatchScriptMessage(trusted_feature.get(), message);
   EXPECT_EQ(1, observer()->clicks() - clicks);
 }
 
