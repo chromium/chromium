@@ -23,7 +23,8 @@ namespace blink {
   }
   auto* tracker =
       scheduler::TaskAttributionTracker::From(context->GetIsolate());
-  // `tracker` is null if `context` is not a Window or if
+  // `tracker` is null when `context` has no task attribution tracker: only
+  // Windows and dedicated/shared workers have one, and not when
   // TaskAttributionInfrastructureDisabledForTesting is enabled.
   return tracker ? tracker->CurrentTaskState() : nullptr;
 }
@@ -35,7 +36,8 @@ SetCurrentTaskStateIfTopLevel(scheduler::TaskAttributionInfo* task_state,
   if (!context || context->IsContextDestroyed()) {
     return std::nullopt;
   }
-  // `tracker` is null if `context` is not a Window or if
+  // `tracker` is null when `context` has no task attribution tracker: only
+  // Windows and dedicated/shared workers have one, and not when
   // TaskAttributionInfrastructureDisabledForTesting is enabled.
   auto* tracker =
       scheduler::TaskAttributionTracker::From(context->GetIsolate());
@@ -44,8 +46,9 @@ SetCurrentTaskStateIfTopLevel(scheduler::TaskAttributionInfo* task_state,
 }
 
 // Sets the given `resource_timing_context` in preparation for executing script
-// in `execution_context`. Does nothing if the corresponding `execution_context`
-// is not a Window or if the Window is detached.
+// in `execution_context`. Does nothing if `execution_context` has no task
+// attribution tracker (only Windows and dedicated/shared workers have one) or
+// is detached.
 [[nodiscard]] inline std::optional<scheduler::TaskAttributionTracker::TaskScope>
 SetTaskStateVariable(ResourceTimingContext* resource_timing_context,
                      ExecutionContext* context) {
