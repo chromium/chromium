@@ -47,9 +47,9 @@ class MockPrintCompositorImplEnterpriseWatermark : public PrintCompositorImpl {
   SkBitmap bitmap_;
 };
 
-class PrintCompositorImplEnterpriseWatermarkTest : public testing::Test {
+class PrintWatermarkTest : public testing::Test {
  public:
-  PrintCompositorImplEnterpriseWatermarkTest() {
+  PrintWatermarkTest() {
     // Create reference bitmap.
     reference_watermark_.allocN32Pixels(kWatermarkSize.fWidth,
                                         kWatermarkSize.fHeight);
@@ -67,7 +67,7 @@ class PrintCompositorImplEnterpriseWatermarkTest : public testing::Test {
   SkBitmap reference_watermark_;
 };
 
-TEST_F(PrintCompositorImplEnterpriseWatermarkTest, EnterpriseWatermarkSet) {
+TEST_F(PrintWatermarkTest, EnterpriseWatermarkSet) {
   MockPrintCompositorImplEnterpriseWatermark compositor;
   compositor.DrawPage(nullptr, {});
 
