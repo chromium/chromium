@@ -162,6 +162,8 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
       int32_t task_id,
       std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) override;
   void UninterruptActorTask(int32_t task_id) override;
+  void UpdateActorTaskStepProgress(int32_t task_id,
+                                   const std::string& step_progress) override;
   void CreateActorTab(int32_t task_id,
                       mojom::CreateActorTabOptionsPtr options,
                       CreateActorTabCallback callback) override;

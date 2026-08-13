@@ -142,6 +142,14 @@ export class ActorHostMessageHandler implements PostMessageHandler<ActorHost> {
     this.actorHandler.uninterruptActorTask(request.taskId);
   }
 
+  updateActorTaskStepProgress(request: {
+    taskId: number,
+    stepProgress: string,
+  }): void {
+    this.actorHandler.updateActorTaskStepProgress(
+        request.taskId, request.stepProgress);
+  }
+
   async createActorTab(request: {
     taskId: number,
     options: api.CreateActorTabOptions,

@@ -240,6 +240,15 @@ void GlicActorFunctionalBrowserTestBase::UninterruptActorTask(TaskId task_id) {
   EXPECT_OK(EvalJsInGlic(content::JsReplace(script, task_id.value())));
 }
 
+void GlicActorFunctionalBrowserTestBase::UpdateActorTaskStepProgress(
+    TaskId task_id,
+    const std::string& step_progress) {
+  std::string script =
+      "window.client.browser.updateActorTaskStepProgress($1, $2);";
+  EXPECT_OK(
+      EvalJsInGlic(content::JsReplace(script, task_id.value(), step_progress)));
+}
+
 void GlicActorFunctionalBrowserTestBase::WaitForTaskState(
     TaskId task_id,
     ActorTask::State expected_state) {

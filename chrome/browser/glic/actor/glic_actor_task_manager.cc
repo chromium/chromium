@@ -806,6 +806,24 @@ void GlicActorClientSession::UninterruptActorTask(int32_t task_id) {
   task->Uninterrupt(next_state);
 }
 
+void GlicActorClientSession::UpdateActorTaskStepProgress(
+    int32_t task_id,
+    const std::string& step_progress) {
+  auto actor_task_id = actor::TaskId(task_id);
+  actor::ActorTask* task = actor_keyed_service().GetTask(actor_task_id);
+  if (!task) {
+    actor_keyed_service().GetJournal().Log(
+        GURL::EmptyGURL(), actor_task_id,
+        "Failed to update step progress for task",
+        actor::JournalDetailsBuilder()
+            .AddError("No such task")
+            .Add("id", task_id)
+            .Build());
+    return;
+  }
+  task->SetStepProgress(step_progress);
+}
+
 void GlicActorClientSession::CreateActorTab(
     int32_t task_id,
     mojom::CreateActorTabOptionsPtr options,

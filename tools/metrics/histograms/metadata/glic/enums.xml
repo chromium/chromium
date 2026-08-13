@@ -480,6 +480,7 @@ chromium-metrics-reviews@google.com.
   <int value="100" label="ProcessCounterAbuseVerdict"/>
   <int value="101" label="GetImageBytesFromTab"/>
   <int value="102" label="ActivateTabWithUrl"/>
+  <int value="103" label="UpdateActorTaskStepProgress"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->

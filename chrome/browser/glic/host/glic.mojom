@@ -1290,6 +1290,9 @@ interface ActorHandler {
   // No-op if the task is not in the interrupted state.
   UninterruptActorTask(int32 task_id);
 
+  // Updates the progress of a step for an actor task with the given ID.
+  UpdateActorTaskStepProgress(int32 task_id, string step_progress);
+
   // Creates a new tab for an actor task to act in. The initiator tab and window
   // are used to place the new tab in the window the task was started from,
   // regardless of whether context from that initial tab was shared or not.

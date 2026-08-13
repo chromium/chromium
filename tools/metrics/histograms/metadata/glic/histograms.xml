@@ -116,6 +116,7 @@ chromium-metrics-reviews@google.com.
   <variant name="UnpinAllTabs"/>
   <variant name="UnpinTabs"/>
   <variant name="UnsubscribeFromZoomLevel"/>
+  <variant name="UpdateActorTaskStepProgress"/>
   <variant name="UpdateSkill"/>
   <variant name="WebClientCreated"/>
   <variant name="WebClientInitialized"/>

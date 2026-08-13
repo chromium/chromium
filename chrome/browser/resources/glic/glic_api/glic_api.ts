@@ -575,6 +575,11 @@ export declare interface GlicBrowserHost {
   uninterruptActorTask?(taskId: number): void;
 
   /**
+   * Updates the progress of a step for an actor task with the given ID.
+   */
+  updateActorTaskStepProgress?(taskId: number, stepProgress: string): void;
+
+  /**
    * Returns the observable state of the actor task with the given ID. Updates
    * are sent whenever:
    * - The task is created, paused, resumed or stopped.

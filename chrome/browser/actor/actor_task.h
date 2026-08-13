@@ -313,6 +313,9 @@ class ActorTask : public base::SupportsUserData {
 
   void OnTabWillDetach(tabs::TabHandle handle);
 
+  const std::string& step_progress() const { return step_progress_; }
+  void SetStepProgress(std::string step_progress);
+
  private:
   class ActorControlledTabState : public content::WebContentsObserver {
    public:
@@ -464,6 +467,9 @@ class ActorTask : public base::SupportsUserData {
 
   // Whether the user should retain control of tabs while a task is interrupted.
   bool interrupted_task_needs_user_control_ = false;
+
+  // Progress text for the current step.
+  std::string step_progress_;
 
   // Once a task is stopped what the reason was.
   std::optional<StoppedReason> stopped_reason_;

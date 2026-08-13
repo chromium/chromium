@@ -808,7 +808,6 @@ export const RECORDED_REQUEST_IDS = {
   WebClientCreated: 1,
   WebClientInitialized: 2,
   CreateTab: 3,
-  ActivateTabWithUrl: 102,
   OpenGlicSettingsPage: 4,
   ClosePanel: 5,
   ClosePanelAndShutdown: 6,
@@ -906,6 +905,8 @@ export const RECORDED_REQUEST_IDS = {
   OnOptinImpression: 99,
   ProcessCounterAbuseVerdict: 100,
   GetImageBytesFromTab: 101,
+  ActivateTabWithUrl: 102,
+  UpdateActorTaskStepProgress: 103,
 } as const satisfies
 // LINT.ThenChange(
 // //tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType,

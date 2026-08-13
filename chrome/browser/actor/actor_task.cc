@@ -1012,6 +1012,10 @@ std::ostream& operator<<(std::ostream& os, const ActorTask::State& state) {
   return os << ToString(state);
 }
 
+void ActorTask::SetStepProgress(std::string step_progress) {
+  step_progress_ = std::move(step_progress);
+}
+
 // static
 ActorTask::State ActorTask::GetTaskStateFromStoppedReason(
     StoppedReason stopped_reason) {
