@@ -5409,6 +5409,17 @@ if (is_android) {
     ]
   }
 
+  android_library("tristate_java") {
+    sources = [
+      "android/java/src/org/chromium/base/TriState.java",
+      "android/java/src/org/chromium/base/TriStateUtils.java",
+    ]
+    deps = [
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
+
   android_library("supplier_java") {
     sources = [
       "android/java/src/org/chromium/base/supplier/BaseObservableSupplierImpl.java",
@@ -6200,6 +6211,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/TimeUtilsTest.java",
       "android/junit/src/org/chromium/base/TokenUnitTest.java",
       "android/junit/src/org/chromium/base/TraceEventTest.java",
+      "android/junit/src/org/chromium/base/TriStateUtilsTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataHostTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataKeyTest.java",
       "android/junit/src/org/chromium/base/ValueChangedCallbackTest.java",
@@ -6259,6 +6271,7 @@ if (is_android) {
       ":jni_callbacks_junit_tests_java",
       ":location_junit_tests",
       ":task_executor_java",
+      ":tristate_java",
       "//base/test:leak_canary_java",
       "//base/test:public_transit_robolectric_tests_java",
       "//base/test:test_support_java",
