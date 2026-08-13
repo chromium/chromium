@@ -4909,12 +4909,14 @@ void RenderViewContextMenu::ExecOpenCompose() {
 
 void RenderViewContextMenu::ExecOpenInReadAnything() {
   read_anything::ReadAnythingEntryPointController::ShowUI(
-      GetBrowser(), ReadAnythingOpenTrigger::kReadAnythingContextMenu);
+      GetBrowser(),
+      read_anything::mojom::ReadAnythingOpenTrigger::kReadAnythingContextMenu);
 }
 
 void RenderViewContextMenu::ExecListenToThisPage() {
   read_anything::ReadAnythingEntryPointController::ShowUI(
-      GetBrowser(), ReadAnythingOpenTrigger::kListenToThisPageContextMenu);
+      GetBrowser(), read_anything::mojom::ReadAnythingOpenTrigger::
+                        kListenToThisPageContextMenu);
 }
 
 void RenderViewContextMenu::ExecSaveToMemoryBanks() {

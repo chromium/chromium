@@ -1511,13 +1511,14 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_SHOW_READING_MODE_SIDE_PANEL: {
       // Yes. This is a separate feature from the reading list.
       read_anything::ReadAnythingEntryPointController::ShowUI(
-          browser_, ReadAnythingOpenTrigger::kAppMenu);
+          browser_, read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu);
       break;
     }
 
     case IDC_SHOW_READING_MODE_KEYBOARD: {
       read_anything::ReadAnythingEntryPointController::ToggleUI(
-          browser_, ReadAnythingOpenTrigger::kKeyboardShortcut);
+          browser_,
+          read_anything::mojom::ReadAnythingOpenTrigger::kKeyboardShortcut);
       break;
     }
 

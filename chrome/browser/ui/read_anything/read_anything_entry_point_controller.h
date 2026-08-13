@@ -11,6 +11,8 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/actions/actions.h"
 
+using read_anything::mojom::ReadAnythingOpenTrigger;
+
 class ReadAnythingController;
 
 namespace read_anything {

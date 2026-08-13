@@ -530,7 +530,8 @@ void BrowserActions::InitializeSidePanelActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 read_anything::ReadAnythingEntryPointController::ToggleUI(
-                    bwi, ReadAnythingOpenTrigger::kKeyboardShortcut);
+                    bwi, read_anything::mojom::ReadAnythingOpenTrigger::
+                             kKeyboardShortcut);
               },
               bwi))
           .SetActionId(kActionShowReadingModeKeyboard)
@@ -551,13 +552,14 @@ void BrowserActions::InitializeSidePanelActions() {
                 std::underlying_type_t<SidePanelOpenTrigger>
                     side_panel_trigger =
                         context.GetProperty(kSidePanelOpenTriggerKey);
-                ReadAnythingOpenTrigger open_trigger =
-                    ReadAnythingOpenTrigger::kAppMenu;
+                read_anything::mojom::ReadAnythingOpenTrigger open_trigger =
+                    read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu;
                 if (side_panel_trigger != -1) {
-                  std::optional<ReadAnythingOpenTrigger> mapped_trigger =
-                      read_anything::SidePanelToReadAnythingOpenTrigger(
-                          static_cast<SidePanelOpenTrigger>(
-                              side_panel_trigger));
+                  std::optional<read_anything::mojom::ReadAnythingOpenTrigger>
+                      mapped_trigger =
+                          read_anything::SidePanelToReadAnythingOpenTrigger(
+                              static_cast<SidePanelOpenTrigger>(
+                                  side_panel_trigger));
                   if (mapped_trigger.has_value()) {
                     open_trigger = mapped_trigger.value();
                   }

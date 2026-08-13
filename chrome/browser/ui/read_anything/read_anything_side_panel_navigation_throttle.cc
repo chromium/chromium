@@ -53,7 +53,8 @@ ReadAnythingSidePanelNavigationThrottle::HandleSidePanelRequest() {
           navigation_handle()->GetWebContents())) {
     read_anything::ReadAnythingEntryPointController::ShowUI(
         tab->GetBrowserWindowInterface(),
-        ReadAnythingOpenTrigger::kReadAnythingNavigationThrottle);
+        read_anything::mojom::ReadAnythingOpenTrigger::
+            kReadAnythingNavigationThrottle);
   }
   return content::NavigationThrottle::CANCEL_AND_IGNORE;
 }

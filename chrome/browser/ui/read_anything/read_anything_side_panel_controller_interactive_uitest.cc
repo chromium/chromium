@@ -39,6 +39,8 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/accelerators/accelerator.h"
 
+using read_anything::mojom::ReadAnythingOpenTrigger;
+
 namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 }  // namespace

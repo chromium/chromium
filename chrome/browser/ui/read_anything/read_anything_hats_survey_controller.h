@@ -27,7 +27,7 @@ class ReadAnythingHatsSurveyController : public ReadAnythingLifecycleObserver {
   // ReadAnythingLifecycleObserver:
   void Activate(
       bool active,
-      ReadAnythingOpenTrigger trigger,
+      read_anything::mojom::ReadAnythingOpenTrigger trigger,
       std::optional<base::TimeDelta> completed_session_duration) override;
   void OnDestroyed() override;
 

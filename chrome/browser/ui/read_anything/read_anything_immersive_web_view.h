@@ -13,6 +13,8 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
+using read_anything::mojom::ReadAnythingOpenTrigger;
+
 class Profile;
 
 namespace tabs {

@@ -9,27 +9,9 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/common/read_anything/read_anything.mojom.h"
 
-// TODO (crbug.com/533115262): Replace ReadAnythingOpenTrigger type with
-// read_anything::mojom::ReadAnythingOpenTrigger type.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(ReadAnythingOpenTrigger)
-enum class ReadAnythingOpenTrigger {
-  kAppMenu = 0,
-  kMinValue = kAppMenu,
-  kReadAnythingContextMenu = 1,
-  kReadAnythingNavigationThrottle = 2,
-  kPinnedSidePanelEntryToolbarButton = 3,
-  kOmniboxChip = 4,
-  kTabSwitch = 5,
-  kReadAnythingTogglePresentationButton = 6,
-  kKeyboardShortcut = 7,
-  kListenToThisPageContextMenu = 8,
-  kUnknown = 9,
-  kMaxValue = kUnknown,
-};
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ReadAnythingOpenTrigger)
+using read_anything::mojom::ReadAnythingOpenTrigger;
 
 enum class ReadAnythingCloseReason {
   kClosedByUser = 0,

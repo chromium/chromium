@@ -10,7 +10,8 @@
 
 class ReadAnythingImmersiveActivationObserver : public base::CheckedObserver {
  public:
-  virtual void OnShowImmersive(ReadAnythingOpenTrigger trigger) {}
+  virtual void OnShowImmersive(
+      read_anything::mojom::ReadAnythingOpenTrigger trigger) {}
   virtual void OnCloseImmersive() {}
 };
 

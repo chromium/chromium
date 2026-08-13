@@ -68,6 +68,8 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
 
+using read_anything::mojom::ReadAnythingOpenTrigger;
+
 class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
  public:
   MOCK_METHOD(void,

@@ -49,6 +49,8 @@
 
 using read_anything::ReadAnythingEntryPointController;
 
+using read_anything::mojom::ReadAnythingOpenTrigger;
+
 class TabRemovedWaiter : public TabStripModelObserver {
  public:
   explicit TabRemovedWaiter(TabStripModel* tab_strip_model)

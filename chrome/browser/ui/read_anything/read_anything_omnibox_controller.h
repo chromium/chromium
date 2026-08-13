@@ -16,6 +16,8 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+using read_anything::mojom::ReadAnythingOpenTrigger;
+
 // A per-tab class that handles the logic for showing or hiding the omnibox
 // entry point for Reading mode.
 class ReadAnythingOmniboxController : public tabs::ContentsObservingTabFeature,

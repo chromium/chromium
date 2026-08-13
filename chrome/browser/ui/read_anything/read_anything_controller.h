@@ -104,6 +104,8 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   using DistillationState = read_anything::mojom::ReadAnythingDistillationState;
 
+  using ReadAnythingOpenTrigger = read_anything::mojom::ReadAnythingOpenTrigger;
+
   ReadAnythingController(tabs::TabInterface* tab,
                          SidePanelRegistry* side_panel_registry);
 

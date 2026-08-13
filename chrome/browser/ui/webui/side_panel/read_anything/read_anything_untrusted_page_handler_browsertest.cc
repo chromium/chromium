@@ -79,6 +79,8 @@ using ash::language_packs::PackResult;
 using read_anything::mojom::InstallationState;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+using read_anything::mojom::ReadAnythingOpenTrigger;
+
 namespace {
 
 using testing::_;

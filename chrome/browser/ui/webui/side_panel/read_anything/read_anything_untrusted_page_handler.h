@@ -46,6 +46,8 @@ using ash::language_packs::PackResult;
 #include "extensions/browser/extension_registry_observer.h"
 #endif
 
+using read_anything::mojom::ReadAnythingOpenTrigger;
+
 namespace content {
 class NavigationHandle;
 class ScopedAccessibilityMode;

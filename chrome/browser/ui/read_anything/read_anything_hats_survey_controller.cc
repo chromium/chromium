@@ -29,7 +29,7 @@ ReadAnythingHatsSurveyController::~ReadAnythingHatsSurveyController() = default;
 
 void ReadAnythingHatsSurveyController::Activate(
     bool active,
-    ReadAnythingOpenTrigger trigger,
+    read_anything::mojom::ReadAnythingOpenTrigger trigger,
     std::optional<base::TimeDelta> completed_session_duration) {
   // The survey is triggered upon closing Reading Mode, so do nothing when
   // activated.

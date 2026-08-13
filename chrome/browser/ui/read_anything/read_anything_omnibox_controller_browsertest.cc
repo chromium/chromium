@@ -47,6 +47,7 @@
 #include "url/url_constants.h"
 
 using read_anything::ReadAnythingEntryPointController;
+using read_anything::mojom::ReadAnythingOpenTrigger;
 using ui_test_utils::NavigateToURL;
 
 class ReadAnythingOmniboxControllerTestBase

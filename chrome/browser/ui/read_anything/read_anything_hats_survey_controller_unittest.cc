@@ -24,6 +24,8 @@
 
 using ::testing::_;
 
+using read_anything::mojom::ReadAnythingOpenTrigger;
+
 namespace {
 constexpr base::TimeDelta kMinSessionDuration = base::Seconds(10);
 constexpr base::TimeDelta kUsageHistoryWindow = base::Days(14);

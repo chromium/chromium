@@ -65,6 +65,7 @@ source_set("read_anything") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui_browser:headers",
     "//chrome/common",
+    "//chrome/common/read_anything:mojo_bindings",
     "//content/public/browser",
     "//ui/base",
     "//ui/views",

@@ -17,6 +17,8 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
+using read_anything::mojom::ReadAnythingOpenTrigger;
+
 class ContentsWebView;
 class ReadAnythingImmersiveWebView;
 
