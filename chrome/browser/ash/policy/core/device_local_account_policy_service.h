@@ -183,7 +183,7 @@ class DeviceLocalAccountPolicyService {
 
   std::unique_ptr<DeviceLocalAccountExternalDataService> external_data_service_;
 
-  const base::CallbackListSubscription local_accounts_subscription_;
+  base::CallbackListSubscription local_accounts_subscription_;
 
   // Path to the directory that contains the cached policy for components
   // for device-local accounts.

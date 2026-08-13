@@ -923,6 +923,34 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest, RemoveAccount) {
   EXPECT_FALSE(base::DirectoryExists(cache_dir_1_));
 }
 
+// Verifies that when the service shuts down, the cache directory of an existing
+// account is NOT deleted.
+TEST_F(DeviceLocalAccountPolicyExtensionCacheTest,
+       ShutdownPreservesCacheDirectory) {
+  // Add account 1 to device policy.
+  InstallDeviceLocalAccountPolicy(kAccount1);
+  AddDeviceLocalAccountToPolicy(kAccount1);
+  InstallDevicePolicy();
+
+  // Create the DeviceLocalAccountPolicyService, allowing it to finish the
+  // deletion of orphaned cache directories.
+  CreatePolicyService();
+  FlushDeviceSettings();
+  extension_cache_task_runner_->RunUntilIdle();
+
+  // Verify that a cache directory has been created for account 1.
+  EXPECT_TRUE(base::DirectoryExists(cache_dir_1_));
+
+  // Shut down the service.
+  service_->Shutdown();
+  extension_cache_task_runner_->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+  extension_cache_task_runner_->RunUntilIdle();
+
+  // Verify that the cache directory for account 1 was NOT deleted on shutdown.
+  EXPECT_TRUE(base::DirectoryExists(cache_dir_1_));
+}
+
 class DeviceLocalAccountPolicyProviderTest
     : public DeviceLocalAccountPolicyServiceTestBase {
  public:
