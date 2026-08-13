@@ -54,7 +54,8 @@ class SplitViewSetupViewSettingsButton : public IconButton {
     SetBorder(std::make_unique<views::HighlightBorder>(
         settings_button_corner_radius,
         views::HighlightBorder::Type::kHighlightBorderOnShadow));
-    shadow_->SetRoundedCornerRadius(settings_button_corner_radius);
+    shadow_->SetRoundedCorners(
+        gfx::RoundedCornersF(settings_button_corner_radius));
 
     StyleUtil::SetUpFocusRingForView(this, kWindowMiniViewFocusRingHaloInset);
   }

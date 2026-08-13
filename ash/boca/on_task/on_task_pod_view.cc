@@ -60,7 +60,7 @@ OnTaskPodView::OnTaskPodView(OnTaskPodController* pod_controller)
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  shadow_->SetRoundedCornerRadius(kPodBorderRadius);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kPodBorderRadius));
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, kPodBorderRadius));
   SetInsideBorderInsets(

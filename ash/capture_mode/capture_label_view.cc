@@ -185,7 +185,7 @@ CaptureLabelView::CaptureLabelView(
       this, kCaptureLabelRadius,
       views::HighlightBorder::Type::kHighlightBorderNoShadow);
 
-  shadow_->SetRoundedCornerRadius(kCaptureLabelRadius);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kCaptureLabelRadius));
 }
 
 CaptureLabelView::~CaptureLabelView() = default;

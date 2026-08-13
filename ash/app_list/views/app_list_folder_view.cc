@@ -200,8 +200,7 @@ class BackgroundAnimation : public AppListFolderView::Animation,
         clip_rect.IsEmpty() ? background_bounds
                             : clip_rect + background_bounds.OffsetFromOrigin();
     shadow_->SetContentBounds(content_bounds);
-    shadow_->SetRoundedCornerRadius(
-        background_layer->rounded_corner_radii().upper_left());
+    shadow_->SetRoundedCorners(background_layer->rounded_corner_radii());
   }
 
   // True if opening the folder.

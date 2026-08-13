@@ -99,7 +99,7 @@ CaptureModeBarView::CaptureModeBarView()
       this, border_radius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow);
 
-  shadow_->SetRoundedCornerRadius(border_radius);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(border_radius));
 }
 
 void CaptureModeBarView::AppendSettingsButton() {

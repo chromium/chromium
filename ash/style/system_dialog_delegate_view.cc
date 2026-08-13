@@ -224,7 +224,7 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
   // Set shadow.
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, SystemShadow::Type::kElevation12);
-  shadow_->SetRoundedCornerRadius(kRoundedCornerRadius);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kRoundedCornerRadius));
 
   // Use flex layout.
   SetLayoutManager(std::make_unique<views::FlexLayout>())

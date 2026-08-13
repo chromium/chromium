@@ -277,7 +277,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
 
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, SystemShadow::Type::kElevation4);
-  shadow_->SetRoundedCornerRadius(kBackgroundCornerRadius);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kBackgroundCornerRadius));
 }
 
 WindowCycleView::~WindowCycleView() = default;

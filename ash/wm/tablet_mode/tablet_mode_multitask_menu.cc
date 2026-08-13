@@ -127,7 +127,7 @@ class TabletModeMultitaskMenuView : public views::View {
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
         SystemShadow::Type::kElevation12,
         SystemShadow::LayerRecreatedCallback());
-    shadow_->SetRoundedCornerRadius(kCornerRadius);
+    shadow_->SetRoundedCorners(gfx::RoundedCornersF(kCornerRadius));
     layer()->Add(shadow_->GetLayer());
   }
 

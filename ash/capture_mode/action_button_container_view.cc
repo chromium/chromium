@@ -113,7 +113,7 @@ ActionButtonContainerView::ErrorView::ErrorView()
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
-  shadow_->SetRoundedCornerRadius(kErrorViewCornerRadius);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kErrorViewCornerRadius));
   capture_mode_util::SetHighlightBorder(
       this, kErrorViewCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderNoShadow);

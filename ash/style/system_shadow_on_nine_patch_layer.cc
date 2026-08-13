@@ -26,10 +26,6 @@ void SystemShadowOnNinePatchLayer::SetContentBounds(const gfx::Rect& bounds) {
   shadow()->SetContentBounds(bounds);
 }
 
-void SystemShadowOnNinePatchLayer::SetRoundedCornerRadius(int corner_radius) {
-  shadow()->SetRoundedCornerRadius(corner_radius);
-}
-
 void SystemShadowOnNinePatchLayer::SetRoundedCorners(
     const gfx::RoundedCornersF& rounded_corners) {
   shadow()->SetRoundedCorners(rounded_corners);
@@ -100,11 +96,6 @@ SystemViewShadowOnNinePatchLayer::SystemViewShadowOnNinePatchLayer(
 }
 
 SystemViewShadowOnNinePatchLayer::~SystemViewShadowOnNinePatchLayer() = default;
-
-void SystemViewShadowOnNinePatchLayer::SetRoundedCornerRadius(
-    int corner_radius) {
-  view_shadow_.SetRoundedCornerRadius(corner_radius);
-}
 
 void SystemViewShadowOnNinePatchLayer::SetRoundedCorners(
     const gfx::RoundedCornersF& rounded_corners) {

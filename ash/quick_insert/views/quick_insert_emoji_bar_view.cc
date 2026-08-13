@@ -278,7 +278,8 @@ QuickInsertEmojiBarView::QuickInsertEmojiBarView(
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, kQuickInsertContainerShadowType);
-  shadow_->SetRoundedCornerRadius(kQuickInsertContainerBorderRadius);
+  shadow_->SetRoundedCorners(
+      gfx::RoundedCornersF(kQuickInsertContainerBorderRadius));
 
   auto* row =
       AddChildView(views::Builder<views::BoxLayoutView>()

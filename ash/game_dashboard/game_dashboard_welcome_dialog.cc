@@ -68,7 +68,7 @@ GameDashboardWelcomeDialog::GameDashboardWelcomeDialog() {
       ui::ColorIds::kColorHighlightBorderHighlight1));
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, SystemShadow::Type::kElevation12);
-  shadow_->SetRoundedCornerRadius(kDialogCornerRadius);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kDialogCornerRadius));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(

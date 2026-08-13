@@ -31,7 +31,6 @@ class SystemShadowOnNinePatchLayer : public SystemShadow {
   // SystemShadow:
   void SetType(SystemShadow::Type type) override;
   void SetContentBounds(const gfx::Rect& bounds) override;
-  void SetRoundedCornerRadius(int corner_radius) override;
   void SetRoundedCorners(const gfx::RoundedCornersF& rounded_corners) override;
   const gfx::Rect& GetContentBounds() override;
   ui::Layer* GetLayer() override;
@@ -91,7 +90,6 @@ class SystemViewShadowOnNinePatchLayer : public SystemShadowOnNinePatchLayer,
   ~SystemViewShadowOnNinePatchLayer() override;
 
   // SystemShadow:
-  void SetRoundedCornerRadius(int corner_radius) override;
   void SetRoundedCorners(const gfx::RoundedCornersF& rounded_corners) override;
 
   // views::ViewObserver:

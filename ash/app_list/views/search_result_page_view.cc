@@ -90,7 +90,8 @@ SearchResultPageView::SearchResultPageView() {
       gfx::Insets::TLBR(kActiveSearchBoxHeight, 0, 0, 0)));
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, kSearchBoxSearchResultShadowType);
-  shadow_->SetRoundedCornerRadius(kSearchBoxBorderCornerRadiusSearchResult);
+  shadow_->SetRoundedCorners(
+      gfx::RoundedCornersF(kSearchBoxBorderCornerRadiusSearchResult));
 
   // Hides this view behind the search box by using the same color and
   // background border corner radius. All child views' background should be
@@ -301,8 +302,8 @@ void SearchResultPageView::AnimateBetweenBounds(const gfx::Rect& from_rect,
 void SearchResultPageView::OnAnimationBetweenBoundsEnded() {
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, kSearchBoxSearchResultShadowType);
-  shadow_->SetRoundedCornerRadius(
-      GetCornerRadiusForSearchResultsState(current_search_results_state_));
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(
+      GetCornerRadiusForSearchResultsState(current_search_results_state_)));
 
   // To keep the animation visible for closing transitions from expanded search
   // results, bounds are set here once the animation completes.

@@ -170,7 +170,7 @@ SystemToastView::SystemToastView(const std::u16string& text,
 
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, SystemShadow::Type::kElevation4);
-  shadow_->SetRoundedCornerRadius(rounded_corner_radius);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(rounded_corner_radius));
 
   SetProperty(views::kElementIdentifierKey, kSystemToastViewElementId);
 }

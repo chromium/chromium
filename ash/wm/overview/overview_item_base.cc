@@ -107,7 +107,7 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
   gfx::Rect shadow_content_bounds(
       gfx::ToRoundedRect(shadow_bounds_in_screen).size());
   shadow_->SetContentBounds(shadow_content_bounds);
-  shadow_->SetRoundedCornerRadius(kWindowMiniViewCornerRadius);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
 }
 
 void OverviewItemBase::UpdateShadowTypeForDrag(bool is_dragging) {

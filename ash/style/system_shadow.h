@@ -87,10 +87,6 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
 
   virtual void SetContentBounds(const gfx::Rect& bounds) = 0;
 
-  // TODO(http://b/307326019): Deprecate this method when all shadow
-  // implementations use `gfx::RoundedCornersF`.
-  virtual void SetRoundedCornerRadius(int corner_radius) = 0;
-
   virtual void SetRoundedCorners(
       const gfx::RoundedCornersF& rounded_corners) = 0;
 

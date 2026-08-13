@@ -550,7 +550,8 @@ void HotseatWidgetDelegateView::UpdateTranslucentBackground() {
   // Update the shadow content bounds and corner radius.
   shadow_->GetLayer()->SetVisible(true);
   gfx::Rect background_bounds = translucent_background_->bounds();
-  shadow_->SetRoundedCornerRadius(background_bounds.height() / 2);
+  shadow_->SetRoundedCorners(
+      gfx::RoundedCornersF(background_bounds.height() / 2.0f));
   shadow_->SetContentBounds(background_bounds);
 }
 

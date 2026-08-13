@@ -378,7 +378,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   if (params_.has_shadow) {
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
         this, params_.shadow_type);
-    shadow_->SetRoundedCornerRadius(params_.corner_radius);
+    shadow_->SetRoundedCorners(gfx::RoundedCornersF(params_.corner_radius));
   }
 
   auto layout = std::make_unique<BottomAlignedBoxLayout>(this);

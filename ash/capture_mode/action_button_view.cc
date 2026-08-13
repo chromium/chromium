@@ -96,7 +96,7 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
       SystemShadow::Type::kElevation12,
       /*layer_recreated_callback=*/{});
-  shadow_->SetRoundedCornerRadius(kActionButtonRadius);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kActionButtonRadius));
 
   if (icon) {
     image_view_ = AddChildView(

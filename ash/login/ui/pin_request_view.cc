@@ -204,7 +204,8 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, SystemShadow::Type::kElevation12);
-  shadow_->SetRoundedCornerRadius(kPinRequestViewRoundedCornerRadiusDp);
+  shadow_->SetRoundedCorners(
+      gfx::RoundedCornersF(kPinRequestViewRoundedCornerRadiusDp));
 
   const int child_view_width =
       kPinRequestViewWidthDp - 2 * kPinRequestViewMainHorizontalInsetDp;

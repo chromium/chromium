@@ -58,7 +58,7 @@ KeyItemView::KeyItemView(ui::KeyboardCode key_code)
       this, kKeyItemHeight / 2,
       views::HighlightBorder::Type::kHighlightBorderOnShadow);
 
-  shadow_->SetRoundedCornerRadius(kKeyItemHeight / 2);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kKeyItemHeight / 2.0f));
 }
 
 KeyItemView::~KeyItemView() = default;
