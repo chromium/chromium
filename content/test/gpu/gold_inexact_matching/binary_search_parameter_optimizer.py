@@ -35,15 +35,20 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
 
     max_diff_locked = self._args.max_max_diff == self._args.min_max_diff
     delta_threshold_locked = (
-        self._args.max_delta_threshold == self._args.min_delta_threshold)
+      self._args.max_delta_threshold == self._args.min_delta_threshold
+    )
     edge_threshold_locked = (
-        self._args.max_edge_threshold == self._args.min_delta_threshold)
+      self._args.max_edge_threshold == self._args.min_delta_threshold
+    )
 
-    if not ((max_diff_locked ^ delta_threshold_locked) or
-            (delta_threshold_locked ^ edge_threshold_locked)):
+    if not (
+      (max_diff_locked ^ delta_threshold_locked)
+      or (delta_threshold_locked ^ edge_threshold_locked)
+    ):
       raise RuntimeError(
-          'Binary search optimization requires all but one parameter to be '
-          'locked (min == max).')
+        'Binary search optimization requires all but one parameter to be '
+        'locked (min == max).'
+      )
 
     if not max_diff_locked:
       self._unlocked_parameter = _UnlockedParameter.MAX_DIFF
@@ -92,10 +97,13 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
       and the other parameters set to their fixed values.
     """
     if self._unlocked_parameter == _UnlockedParameter.MAX_DIFF:
-      return parameter_set.ParameterSet(value, self._args.min_delta_threshold,
-                                        self._args.min_edge_threshold)
+      return parameter_set.ParameterSet(
+        value, self._args.min_delta_threshold, self._args.min_edge_threshold
+      )
     if self._unlocked_parameter == _UnlockedParameter.DELTA_THRESHOLD:
-      return parameter_set.ParameterSet(self._args.min_max_diff, value,
-                                        self._args.min_edge_threshold)
-    return parameter_set.ParameterSet(self._args.min_max_diff,
-                                      self._args.min_delta_threshold, value)
+      return parameter_set.ParameterSet(
+        self._args.min_max_diff, value, self._args.min_edge_threshold
+      )
+    return parameter_set.ParameterSet(
+      self._args.min_max_diff, self._args.min_delta_threshold, value
+    )

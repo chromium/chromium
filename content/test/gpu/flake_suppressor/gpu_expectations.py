@@ -10,24 +10,25 @@ from flake_suppressor_common import expectations as expectations_module
 import gpu_path_util
 
 CHROMIUM_SRC_DIR = gpu_path_util.CHROMIUM_SRC_DIR
-RELATIVE_EXPECTATION_FILE_DIRECTORY = os.path.join('content', 'test', 'gpu',
-                                                   'gpu_tests',
-                                                   'test_expectations')
+RELATIVE_EXPECTATION_FILE_DIRECTORY = os.path.join(
+  'content', 'test', 'gpu', 'gpu_tests', 'test_expectations'
+)
 ABSOLUTE_EXPECTATION_FILE_DIRECTORY = os.path.join(
-    CHROMIUM_SRC_DIR, RELATIVE_EXPECTATION_FILE_DIRECTORY)
+  CHROMIUM_SRC_DIR, RELATIVE_EXPECTATION_FILE_DIRECTORY
+)
 
 # For most test suites reported to ResultDB, we can chop off "_integration_test"
 # and get the name used for the expectation file. However, there are a few
 # special cases, so map those there.
 EXPECTATION_FILE_OVERRIDE = {
-    'info_collection_test': 'info_collection',
-    'trace': 'trace_test',
+  'info_collection_test': 'info_collection',
+  'trace': 'trace_test',
 }
 # For whatever reason, these suites are not supported and will be skipped over
 # when trying to modify expectations. However, the collected data will still be
 # available in the generated results.
 UNSUPPORTED_SUITES = {
-    'webgpu_cts_integration_test',  # Expectation file in Dawn, not Chromium.
+  'webgpu_cts_integration_test',  # Expectation file in Dawn, not Chromium.
 }
 
 
@@ -52,15 +53,18 @@ class GpuExpectationProcessor(expectations_module.ExpectationProcessor):
       efs.append(os.path.join(RELATIVE_EXPECTATION_FILE_DIRECTORY, f))
     return efs
 
-  def GetExpectationFileForSuite(self, suite: str,
-                                 typ_tags: ct.TagTupleType) -> str:
+  def GetExpectationFileForSuite(
+    self, suite: str, typ_tags: ct.TagTupleType
+  ) -> str:
     del typ_tags  # unused
     truncated_suite = suite.replace('_integration_test', '')
-    expectation_file = EXPECTATION_FILE_OVERRIDE.get(truncated_suite,
-                                                     truncated_suite)
+    expectation_file = EXPECTATION_FILE_OVERRIDE.get(
+      truncated_suite, truncated_suite
+    )
     expectation_file += '_expectations.txt'
-    expectation_file = os.path.join(ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-                                    expectation_file)
+    expectation_file = os.path.join(
+      ABSOLUTE_EXPECTATION_FILE_DIRECTORY, expectation_file
+    )
     return expectation_file
 
   def GetExpectedResult(self, fraction: float, flaky_threshold: float) -> str:

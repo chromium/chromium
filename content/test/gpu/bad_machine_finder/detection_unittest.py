@@ -10,7 +10,6 @@ from bad_machine_finder import tasks
 
 
 class BadMachineListUnittest(unittest.TestCase):
-
   def testBasic(self):
     """Tests basic functionality of the class."""
     first_list = detection.BadMachineList()
@@ -23,14 +22,14 @@ class BadMachineListUnittest(unittest.TestCase):
 
     first_list.Merge(second_list)
     expected_bad_machines = {
-        'bot-1': [
-            'reason-1',
-        ],
-        'bot-2': [
-            'reason-2',
-            'reason-3',
-            'reason-4',
-        ],
+      'bot-1': [
+        'reason-1',
+      ],
+      'bot-2': [
+        'reason-2',
+        'reason-3',
+        'reason-4',
+      ],
     }
 
     self.assertEqual(first_list.bad_machines, expected_bad_machines)
@@ -43,20 +42,20 @@ class BadMachineListUnittest(unittest.TestCase):
     bad_machine_list.AddBadMachine('bot-2', 'reason-3')
 
     expected_bad_machines = {
-        'bot-1': ['reason-1'],
-        'bot-2': [
-            'reason-2',
-            'reason-3',
-        ],
+      'bot-1': ['reason-1'],
+      'bot-2': [
+        'reason-2',
+        'reason-3',
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
     bad_machine_list.RemoveLowConfidenceMachines(2)
     expected_bad_machines = {
-        'bot-2': [
-            'reason-2',
-            'reason-3',
-        ],
+      'bot-2': [
+        'reason-2',
+        'reason-3',
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
@@ -76,21 +75,21 @@ class BadMachineListUnittest(unittest.TestCase):
     * reason-3"""
 
     expected_pairs = [
-        ('bot-1', bot_1_expected_markdown),
-        ('bot-2', bot_2_expected_markdown),
+      ('bot-1', bot_1_expected_markdown),
+      ('bot-2', bot_2_expected_markdown),
     ]
     self.assertEqual(list(bad_machine_list.IterMarkdown()), expected_pairs)
 
 
 class MixinGroupedBadMachinesUnittest(unittest.TestCase):
-
   def testInputValidation(self):
     """Tests that invalid inputs are properly caught."""
     bad_machine_list = detection.BadMachineList()
     mgbm = detection.MixinGroupedBadMachines()
     mgbm.AddMixinData('mixin_name', bad_machine_list)
     with self.assertRaisesRegex(
-        ValueError, 'Bad machines for mixin mixin_name were already added'):
+      ValueError, 'Bad machines for mixin mixin_name were already added'
+    ):
       mgbm.AddMixinData('mixin_name', bad_machine_list)
 
   def testGetAllBadMachineNames(self):
@@ -159,8 +158,9 @@ Bad machines for mixin-a
   * bot-2
     * reason-2"""
     self.assertEqual(
-        mgbm.GenerateMarkdown(bots_to_skip={'bot-1', 'bot-3', 'bot-4'}),
-        expected_markdown)
+      mgbm.GenerateMarkdown(bots_to_skip={'bot-1', 'bot-3', 'bot-4'}),
+      expected_markdown,
+    )
 
   def testGenerateMarkdownWithAllBotsSkipped(self):
     """Tests Markdown generation when all bots should be skipped."""
@@ -178,12 +178,12 @@ Bad machines for mixin-a
     mgbm.AddMixinData('mixin-a', first_bad_machine_list)
 
     self.assertEqual(
-        mgbm.GenerateMarkdown(
-            bots_to_skip={'bot-1', 'bot-2', 'bot-3', 'bot-4'}), '')
+      mgbm.GenerateMarkdown(bots_to_skip={'bot-1', 'bot-2', 'bot-3', 'bot-4'}),
+      '',
+    )
 
 
 class DetectViaStdDevOutlierUnittest(unittest.TestCase):
-
   def testInputChecking(self):
     """Tests that invalid inputs are checked."""
     # No tasks.
@@ -220,9 +220,13 @@ class DetectViaStdDevOutlierUnittest(unittest.TestCase):
 
     bad_machine_list = detection.DetectViaStdDevOutlier(mixin_stats, 2, 0)
     expected_bad_machines = {
-        'bad-bot': [('Had a failure rate of 0.99 despite a fleet-wide average '
-                     'of 0.09909090909090909 and a standard deviation of '
-                     '0.2817301915422738.')],
+      'bad-bot': [
+        (
+          'Had a failure rate of 0.99 despite a fleet-wide average '
+          'of 0.09909090909090909 and a standard deviation of '
+          '0.2817301915422738.'
+        )
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
@@ -238,15 +242,27 @@ class DetectViaStdDevOutlierUnittest(unittest.TestCase):
 
     bad_machine_list = detection.DetectViaStdDevOutlier(mixin_stats, 2, 0)
     expected_bad_machines = {
-        'bot-98': [('Had a failure rate of 0.15 despite a fleet-wide average '
-                    'of 0.018118811881188118 and a standard deviation of '
-                    '0.05350511905346074.')],
-        'bot-99': [('Had a failure rate of 0.2 despite a fleet-wide average '
-                    'of 0.018118811881188118 and a standard deviation of '
-                    '0.05350511905346074.')],
-        'bot-100': [('Had a failure rate of 0.5 despite a fleet-wide average '
-                     'of 0.018118811881188118 and a standard deviation of '
-                     '0.05350511905346074.')],
+      'bot-98': [
+        (
+          'Had a failure rate of 0.15 despite a fleet-wide average '
+          'of 0.018118811881188118 and a standard deviation of '
+          '0.05350511905346074.'
+        )
+      ],
+      'bot-99': [
+        (
+          'Had a failure rate of 0.2 despite a fleet-wide average '
+          'of 0.018118811881188118 and a standard deviation of '
+          '0.05350511905346074.'
+        )
+      ],
+      'bot-100': [
+        (
+          'Had a failure rate of 0.5 despite a fleet-wide average '
+          'of 0.018118811881188118 and a standard deviation of '
+          '0.05350511905346074.'
+        )
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
@@ -260,8 +276,12 @@ class DetectViaStdDevOutlierUnittest(unittest.TestCase):
 
     bad_machine_list = detection.DetectViaStdDevOutlier(mixin_stats, 2, 0)
     expected_bad_machines = {
-        'bad-bot': [('Had a failure rate of 0.5 despite a fleet-wide average '
-                     'of 0.275 and a standard deviation of 0.075.')],
+      'bad-bot': [
+        (
+          'Had a failure rate of 0.5 despite a fleet-wide average '
+          'of 0.275 and a standard deviation of 0.075.'
+        )
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
@@ -277,22 +297,27 @@ class DetectViaStdDevOutlierUnittest(unittest.TestCase):
     with self.assertLogs(level='DEBUG') as log_manager:
       bad_machine_list = detection.DetectViaStdDevOutlier(mixin_stats, 2, 5)
       for line in log_manager.output:
-        if ('Bot bot-98 skipped in DetectViaStdDevOutlier due to only having 3 '
-            'failed tasks') in line:
+        if (
+          'Bot bot-98 skipped in DetectViaStdDevOutlier due to only having 3 '
+          'failed tasks'
+        ) in line:
           break
       else:
         self.fail('Did not find expected log line')
 
     expected_bad_machines = {
-        'bot-99': [('Had a failure rate of 0.5 despite a fleet-wide average '
-                    'of 0.0178 and a standard deviation of '
-                    '0.05640177302177654.')],
+      'bot-99': [
+        (
+          'Had a failure rate of 0.5 despite a fleet-wide average '
+          'of 0.0178 and a standard deviation of '
+          '0.05640177302177654.'
+        )
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
 
 class DetectViaRandomChanceUnittest(unittest.TestCase):
-
   def testInputChecking(self):
     """Tests that invalid inputs are checked."""
     # No tasks.
@@ -331,9 +356,13 @@ class DetectViaRandomChanceUnittest(unittest.TestCase):
 
     bad_machine_list = detection.DetectViaRandomChance(mixin_stats, 0.005)
     expected_bad_machines = {
-        'bad-bot': [('99 of 100 tasks failed despite a fleet-wide average '
-                     'failed task rate of 0.5. The probability of this '
-                     'happening randomly is 7.967495142732219e-29.')],
+      'bad-bot': [
+        (
+          '99 of 100 tasks failed despite a fleet-wide average '
+          'failed task rate of 0.5. The probability of this '
+          'happening randomly is 7.967495142732219e-29.'
+        )
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
@@ -349,18 +378,30 @@ class DetectViaRandomChanceUnittest(unittest.TestCase):
 
     bad_machine_list = detection.DetectViaRandomChance(mixin_stats, 0.005)
     expected_bad_machines = {
-        'bot-98': [('15 of 100 tasks failed despite a fleet-wide average '
-                    'failed task rate of 0.01811881188118811881188118812. '
-                    'The probability of this happening randomly is '
-                    '4.41689373707857e-10.')],
-        'bot-99': [('20 of 100 tasks failed despite a fleet-wide average '
-                    'failed task rate of 0.01811881188118811881188118812. The '
-                    'probability of this happening randomly is '
-                    '1.9407812867119233e-15.')],
-        'bot-100': [('50 of 100 tasks failed despite a fleet-wide average '
-                     'failed task rate of 0.01811881188118811881188118812. The '
-                     'probability of this happening randomly is '
-                     '3.3205488374477226e-59.')],
+      'bot-98': [
+        (
+          '15 of 100 tasks failed despite a fleet-wide average '
+          'failed task rate of 0.01811881188118811881188118812. '
+          'The probability of this happening randomly is '
+          '4.41689373707857e-10.'
+        )
+      ],
+      'bot-99': [
+        (
+          '20 of 100 tasks failed despite a fleet-wide average '
+          'failed task rate of 0.01811881188118811881188118812. The '
+          'probability of this happening randomly is '
+          '1.9407812867119233e-15.'
+        )
+      ],
+      'bot-100': [
+        (
+          '50 of 100 tasks failed despite a fleet-wide average '
+          'failed task rate of 0.01811881188118811881188118812. The '
+          'probability of this happening randomly is '
+          '3.3205488374477226e-59.'
+        )
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
@@ -374,15 +415,18 @@ class DetectViaRandomChanceUnittest(unittest.TestCase):
 
     bad_machine_list = detection.DetectViaRandomChance(mixin_stats, 0.005)
     expected_bad_machines = {
-        'bad-bot': [('50 of 100 tasks failed despite a fleet-wide average '
-                     'failed task rate of 0.275. The probability of this '
-                     'happening randomly is 1.5273539960703075e-06.')],
+      'bad-bot': [
+        (
+          '50 of 100 tasks failed despite a fleet-wide average '
+          'failed task rate of 0.275. The probability of this '
+          'happening randomly is 1.5273539960703075e-06.'
+        )
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
 
 class DetectViaInterquartileRangeUnittest(unittest.TestCase):
-
   def testInputChecking(self):
     """Tests that invalid inputs are checked."""
     # No tasks.
@@ -408,10 +452,13 @@ class DetectViaInterquartileRangeUnittest(unittest.TestCase):
 
     with self.assertLogs(level='INFO') as log_manager:
       bad_machine_list = detection.DetectViaInterquartileRange(
-          mixin_stats, 'mixin_name', 1.5, 0)
+        mixin_stats, 'mixin_name', 1.5, 0
+      )
       for line in log_manager.output:
-        if ('Quartiles require at least 5 samples to be meaningful. Mixin '
-            'mixin_name only provided 4 samples.') in line:
+        if (
+          'Quartiles require at least 5 samples to be meaningful. Mixin '
+          'mixin_name only provided 4 samples.'
+        ) in line:
           break
       else:
         self.fail('Did not find expected log line')
@@ -428,10 +475,13 @@ class DetectViaInterquartileRangeUnittest(unittest.TestCase):
 
     with self.assertLogs(level='INFO') as log_manager:
       bad_machine_list = detection.DetectViaInterquartileRange(
-          mixin_stats, 'mixin_name', 1.5, 0)
+        mixin_stats, 'mixin_name', 1.5, 0
+      )
       for line in log_manager.output:
-        if ('Mixin mixin_name resulted in an IQR of 0, which is not useful for '
-            'detecting outliers.') in line:
+        if (
+          'Mixin mixin_name resulted in an IQR of 0, which is not useful for '
+          'detecting outliers.'
+        ) in line:
           break
       else:
         self.fail('Did not find expected log line')
@@ -445,7 +495,8 @@ class DetectViaInterquartileRangeUnittest(unittest.TestCase):
     mixin_stats.Freeze()
 
     bad_machine_list = detection.DetectViaInterquartileRange(
-        mixin_stats, 'mixin_name', 1.5, 0)
+      mixin_stats, 'mixin_name', 1.5, 0
+    )
     self.assertEqual(bad_machine_list.bad_machines, {})
 
   def testOneClearlyBadMachineSmallFleet(self):
@@ -458,10 +509,15 @@ class DetectViaInterquartileRangeUnittest(unittest.TestCase):
     mixin_stats.Freeze()
 
     bad_machine_list = detection.DetectViaInterquartileRange(
-        mixin_stats, 'mixin_name', 1.5, 0)
+      mixin_stats, 'mixin_name', 1.5, 0
+    )
     expected_bad_machines = {
-        'bad-bot': [('Failure rate of 0.99 is above the IQR-based upper bound '
-                     'of 0.07250000000000001.')],
+      'bad-bot': [
+        (
+          'Failure rate of 0.99 is above the IQR-based upper bound '
+          'of 0.07250000000000001.'
+        )
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
@@ -476,14 +532,18 @@ class DetectViaInterquartileRangeUnittest(unittest.TestCase):
     mixin_stats.Freeze()
 
     bad_machine_list = detection.DetectViaInterquartileRange(
-        mixin_stats, 'mixin_name', 1.5, 0)
+      mixin_stats, 'mixin_name', 1.5, 0
+    )
     expected_bad_machines = {
-        'bot-98': [('Failure rate of 0.15 is above the IQR-based upper bound '
-                    'of 0.06.')],
-        'bot-99': [('Failure rate of 0.2 is above the IQR-based upper bound '
-                    'of 0.06.')],
-        'bot-100': [('Failure rate of 0.5 is above the IQR-based upper bound '
-                     'of 0.06.')],
+      'bot-98': [
+        ('Failure rate of 0.15 is above the IQR-based upper bound of 0.06.')
+      ],
+      'bot-99': [
+        ('Failure rate of 0.2 is above the IQR-based upper bound of 0.06.')
+      ],
+      'bot-100': [
+        ('Failure rate of 0.5 is above the IQR-based upper bound of 0.06.')
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
@@ -492,15 +552,21 @@ class DetectViaInterquartileRangeUnittest(unittest.TestCase):
     mixin_stats = tasks.MixinStats()
     mixin_stats.AddStatsForBotAndSuite('bad-bot', 'suite', 100, 50)
     for i in range(9):
-      mixin_stats.AddStatsForBotAndSuite(f'good-bot-{i}', 'suite', 100,
-                                         25 + i % 5)
+      mixin_stats.AddStatsForBotAndSuite(
+        f'good-bot-{i}', 'suite', 100, 25 + i % 5
+      )
     mixin_stats.Freeze()
 
     bad_machine_list = detection.DetectViaInterquartileRange(
-        mixin_stats, 'mixin_name', 1.5, 0)
+      mixin_stats, 'mixin_name', 1.5, 0
+    )
     expected_bad_machines = {
-        'bad-bot': [('Failure rate of 0.5 is above the IQR-based upper bound '
-                     'of 0.31000000000000005.')],
+      'bad-bot': [
+        (
+          'Failure rate of 0.5 is above the IQR-based upper bound '
+          'of 0.31000000000000005.'
+        )
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
@@ -515,23 +581,26 @@ class DetectViaInterquartileRangeUnittest(unittest.TestCase):
 
     with self.assertLogs(level='DEBUG') as log_manager:
       bad_machine_list = detection.DetectViaInterquartileRange(
-          mixin_stats, 'mixin_name', 1.5, 5)
+        mixin_stats, 'mixin_name', 1.5, 5
+      )
       for line in log_manager.output:
-        if ('Bot bot-98 skipped in DetectViaInterquartileRange due to only '
-            'having 4 failed tasks') in line:
+        if (
+          'Bot bot-98 skipped in DetectViaInterquartileRange due to only '
+          'having 4 failed tasks'
+        ) in line:
           break
       else:
         self.fail('Did not find expected log line')
 
     expected_bad_machines = {
-        'bot-99': [('Failure rate of 0.5 is above the IQR-based upper bound of '
-                    '0.05.')],
+      'bot-99': [
+        ('Failure rate of 0.5 is above the IQR-based upper bound of 0.05.')
+      ],
     }
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
 
 class IndependentEventHelpersUnittest(unittest.TestCase):
-
   def testChanceOfExactlyNIndependentEvents(self):
     """Tests behavior of the N independent events helper."""
     # pylint: disable=protected-access

@@ -8,22 +8,25 @@ import logging
 import sys
 from typing import Dict
 
-import gold_inexact_matching.iterative_parameter_optimizer\
-    as iterative_optimizer
-from gold_inexact_matching import common_typing as ct
-from gold_inexact_matching import parameter_set
+from gold_inexact_matching import (
+  common_typing as ct,
+  iterative_parameter_optimizer as iterative_optimizer,
+  parameter_set,
+)
 
 
 Sparse2DIntArray = Dict[int, Dict[int, int]]
 
 
 class LocalMinimaParameterOptimizer(
-    iterative_optimizer.IterativeParameterOptimizer):
+  iterative_optimizer.IterativeParameterOptimizer
+):
   """A ParameterOptimizer to find local minima.
 
   Works on any number of variable parameters and is faster than brute
   forcing, but not guaranteed to find all interesting parameter combinations.
   """
+
   MIN_EDGE_THRESHOLD_WEIGHT = 0
   MIN_MAX_DIFF_WEIGHT = MIN_DELTA_THRESHOLD_WEIGHT = 0
 
@@ -45,36 +48,41 @@ class LocalMinimaParameterOptimizer(
   @classmethod
   def AddArguments(cls, parser: ct.CmdArgParser) -> ct.ArgumentGroupTuple:
     common_group, sobel_group, fuzzy_group = super(
-        LocalMinimaParameterOptimizer, cls).AddArguments(parser)
+      LocalMinimaParameterOptimizer, cls
+    ).AddArguments(parser)
 
     common_group.add_argument(
-        '--use-bfs',
-        action='store_true',
-        default=False,
-        help='Use a breadth-first search instead of a depth-first search. This '
-        'will likely be significantly slower, but is more likely to find '
-        'multiple local minima with the same weight.')
+      '--use-bfs',
+      action='store_true',
+      default=False,
+      help='Use a breadth-first search instead of a depth-first search. This '
+      'will likely be significantly slower, but is more likely to find '
+      'multiple local minima with the same weight.',
+    )
 
     sobel_group.add_argument(
-        '--edge-threshold-weight',
-        default=1,
-        type=int,
-        help='The weight associated with the edge threshold. Higher values '
-        'will penalize a more permissive parameter value more harshly.')
+      '--edge-threshold-weight',
+      default=1,
+      type=int,
+      help='The weight associated with the edge threshold. Higher values '
+      'will penalize a more permissive parameter value more harshly.',
+    )
 
     fuzzy_group.add_argument(
-        '--max-diff-weight',
-        default=3,
-        type=int,
-        help='The weight associated with the maximum number of different '
-        'pixels. Higher values will penalize a more permissive parameter value '
-        'more harshly.')
+      '--max-diff-weight',
+      default=3,
+      type=int,
+      help='The weight associated with the maximum number of different '
+      'pixels. Higher values will penalize a more permissive parameter value '
+      'more harshly.',
+    )
     fuzzy_group.add_argument(
-        '--delta-threshold-weight',
-        default=10,
-        type=int,
-        help='The weight associated with the per-channel delta sum. Higher '
-        'values will penalize a more permissive parameter value more harshly.')
+      '--delta-threshold-weight',
+      default=10,
+      type=int,
+      help='The weight associated with the per-channel delta sum. Higher '
+      'values will penalize a more permissive parameter value more harshly.',
+    )
 
     return common_group, sobel_group, fuzzy_group
 
@@ -118,24 +126,29 @@ class LocalMinimaParameterOptimizer(
         for adjacent in self._AdjacentParameters(current_parameters):
           to_visit.append(adjacent)
         if smallest_weight == weight:
-          logging.info('Found additional smallest parameter %s',
-                       current_parameters)
+          logging.info(
+            'Found additional smallest parameter %s', current_parameters
+          )
           smallest_parameters.append(current_parameters)
         else:
-          logging.info('Found new smallest parameter with weight %d: %s',
-                       weight, current_parameters)
+          logging.info(
+            'Found new smallest parameter with weight %d: %s',
+            weight,
+            current_parameters,
+          )
           smallest_weight = weight
           smallest_parameters = [current_parameters]
       else:
         self._UpdateMostPermissiveFailedParameters(current_parameters)
-    print(f'Found {len(smallest_parameters)} parameter(s) with the smallest '
-          f'weight:')
+    print(
+      f'Found {len(smallest_parameters)} parameter(s) with the smallest weight:'
+    )
     for p in smallest_parameters:
       print(p)
 
-  def _ParametersAreGuaranteedToFail(self,
-                                     parameters: parameter_set.ParameterSet
-                                     ) -> bool:
+  def _ParametersAreGuaranteedToFail(
+    self, parameters: parameter_set.ParameterSet
+  ) -> bool:
     """Checks whether the given ParameterSet is guaranteed to fail.
 
     A ParameterSet is guaranteed to fail if we have already tried and failed
@@ -152,24 +165,28 @@ class LocalMinimaParameterOptimizer(
       parameters, otherwise False.
     """
     permissive_max_diff = self._permissive_max_diff_map.get(
-        parameters.delta_threshold, {}).get(parameters.edge_threshold, -1)
+      parameters.delta_threshold, {}
+    ).get(parameters.edge_threshold, -1)
     if parameters.max_diff < permissive_max_diff:
       return True
 
     permissive_delta = self._permissive_delta_map.get(
-        parameters.max_diff, {}).get(parameters.edge_threshold, -1)
+      parameters.max_diff, {}
+    ).get(parameters.edge_threshold, -1)
     if parameters.delta_threshold < permissive_delta:
       return True
 
     permissive_edge = self._permissive_edge_map.get(
-        parameters.max_diff, {}).get(parameters.delta_threshold, sys.maxsize)
+      parameters.max_diff, {}
+    ).get(parameters.delta_threshold, sys.maxsize)
     if parameters.edge_threshold > permissive_edge:
       return True
 
     return False
 
   def _UpdateMostPermissiveFailedParameters(
-      self, parameters: parameter_set.ParameterSet) -> None:
+    self, parameters: parameter_set.ParameterSet
+  ) -> None:
     """Updates the array of most permissive failed parameters.
 
     This is used in conjunction with _ParametersAreGuaranteedToFail to prune
@@ -181,22 +198,28 @@ class LocalMinimaParameterOptimizer(
       parameters: A ParameterSet to pull updated values from.
     """
     permissive_max_diff = self._permissive_max_diff_map.setdefault(
-        parameters.delta_threshold, {}).get(parameters.edge_threshold, -1)
+      parameters.delta_threshold, {}
+    ).get(parameters.edge_threshold, -1)
     permissive_max_diff = max(permissive_max_diff, parameters.max_diff)
     self._permissive_max_diff_map[parameters.delta_threshold][
-        parameters.edge_threshold] = permissive_max_diff
+      parameters.edge_threshold
+    ] = permissive_max_diff
 
     permissive_delta = self._permissive_delta_map.setdefault(
-        parameters.max_diff, {}).get(parameters.edge_threshold, -1)
+      parameters.max_diff, {}
+    ).get(parameters.edge_threshold, -1)
     permissive_delta = max(permissive_delta, parameters.delta_threshold)
     self._permissive_delta_map[parameters.max_diff][
-        parameters.edge_threshold] = permissive_delta
+      parameters.edge_threshold
+    ] = permissive_delta
 
     permissive_edge = self._permissive_edge_map.setdefault(
-        parameters.max_diff, {}).get(parameters.delta_threshold, sys.maxsize)
+      parameters.max_diff, {}
+    ).get(parameters.delta_threshold, sys.maxsize)
     permissive_edge = min(permissive_edge, parameters.edge_threshold)
     self._permissive_edge_map[parameters.max_diff][
-        parameters.delta_threshold] = permissive_edge
+      parameters.delta_threshold
+    ] = permissive_edge
 
   def _AdjacentParameters(self, starting_parameters):
     max_diff = starting_parameters.max_diff
@@ -208,28 +231,35 @@ class LocalMinimaParameterOptimizer(
     edge_threshold_step = self._args.edge_threshold_step
 
     max_diffs = [
-        max(self._args.min_max_diff, max_diff - max_diff_step), max_diff,
-        min(self._args.max_max_diff, max_diff + max_diff_step)
+      max(self._args.min_max_diff, max_diff - max_diff_step),
+      max_diff,
+      min(self._args.max_max_diff, max_diff + max_diff_step),
     ]
     delta_thresholds = [
-        max(self._args.min_delta_threshold,
-            delta_threshold - delta_threshold_step), delta_threshold,
-        min(self._args.max_delta_threshold,
-            delta_threshold + delta_threshold_step)
+      max(
+        self._args.min_delta_threshold, delta_threshold - delta_threshold_step
+      ),
+      delta_threshold,
+      min(
+        self._args.max_delta_threshold, delta_threshold + delta_threshold_step
+      ),
     ]
     edge_thresholds = [
-        max(self._args.min_edge_threshold,
-            edge_threshold - edge_threshold_step), edge_threshold,
-        min(self._args.max_edge_threshold, edge_threshold + edge_threshold_step)
+      max(self._args.min_edge_threshold, edge_threshold - edge_threshold_step),
+      edge_threshold,
+      min(self._args.max_edge_threshold, edge_threshold + edge_threshold_step),
     ]
-    for combo in itertools.product(max_diffs, delta_thresholds,
-                                   edge_thresholds):
+    for combo in itertools.product(
+      max_diffs, delta_thresholds, edge_thresholds
+    ):
       adjacent = parameter_set.ParameterSet(combo[0], combo[1], combo[2])
       if adjacent != starting_parameters:
         yield adjacent
 
   def _GetWeight(self, parameters: parameter_set.ParameterSet) -> int:
-    return (parameters.max_diff * self._args.max_diff_weight +
-            parameters.delta_threshold * self._args.delta_threshold_weight +
-            (self.MAX_EDGE_THRESHOLD - parameters.edge_threshold) *
-            self._args.edge_threshold_weight)
+    return (
+      parameters.max_diff * self._args.max_diff_weight
+      + parameters.delta_threshold * self._args.delta_threshold_weight
+      + (self.MAX_EDGE_THRESHOLD - parameters.edge_threshold)
+      * self._args.edge_threshold_weight
+    )

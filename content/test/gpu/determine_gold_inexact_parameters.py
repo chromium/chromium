@@ -7,12 +7,12 @@ import argparse
 import logging
 import sys
 
-import gold_inexact_matching.binary_search_parameter_optimizer\
-    as binary_optimizer
-import gold_inexact_matching.brute_force_parameter_optimizer as brute_optimizer
-import gold_inexact_matching.local_minima_parameter_optimizer\
-    as local_optimizer
-from gold_inexact_matching import optimizer_set
+from gold_inexact_matching import (
+  binary_search_parameter_optimizer as binary_optimizer,
+  brute_force_parameter_optimizer as brute_optimizer,
+  local_minima_parameter_optimizer as local_optimizer,
+  optimizer_set,
+)
 
 # Script to find suitable values for Skia Gold inexact matching.
 #
@@ -40,40 +40,47 @@ from gold_inexact_matching import optimizer_set
 
 def CreateArgumentParser():
   parser = argparse.ArgumentParser(
-      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter
+  )
   script_parser = parser.add_argument_group('Script Arguments')
-  script_parser.add_argument('-v',
-                             '--verbose',
-                             dest='verbose_count',
-                             default=0,
-                             action='count',
-                             help='Verbose level (multiple times for more')
+  script_parser.add_argument(
+    '-v',
+    '--verbose',
+    dest='verbose_count',
+    default=0,
+    action='count',
+    help='Verbose level (multiple times for more',
+  )
 
   subparsers = parser.add_subparsers(help='Optimization algorithm')
 
   binary_parser = subparsers.add_parser(
-      'binary_search',
-      formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-      help='Perform a binary search to optimize a single parameter. The best '
-      'option if you only want to tune one parameter.')
+    'binary_search',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    help='Perform a binary search to optimize a single parameter. The best '
+    'option if you only want to tune one parameter.',
+  )
   binary_parser.set_defaults(
-      clazz=binary_optimizer.BinarySearchParameterOptimizer)
+    clazz=binary_optimizer.BinarySearchParameterOptimizer
+  )
   binary_optimizer.BinarySearchParameterOptimizer.AddArguments(binary_parser)
 
   local_parser = subparsers.add_parser(
-      'local_minima',
-      formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-      help='Perform a BFS to find local minima using weights for each '
-      'parameter. Slower than binary searching, but supports an arbitrary '
-      'number of parameters.')
+    'local_minima',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    help='Perform a BFS to find local minima using weights for each '
+    'parameter. Slower than binary searching, but supports an arbitrary '
+    'number of parameters.',
+  )
   local_parser.set_defaults(clazz=local_optimizer.LocalMinimaParameterOptimizer)
   local_optimizer.LocalMinimaParameterOptimizer.AddArguments(local_parser)
 
   brute_parser = subparsers.add_parser(
-      'brute_force',
-      formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-      help='Brute force all possible combinations. VERY, VERY slow, but can '
-      'potentially find better values than local_minima.')
+    'brute_force',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    help='Brute force all possible combinations. VERY, VERY slow, but can '
+    'potentially find better values than local_minima.',
+  )
   brute_parser.set_defaults(clazz=brute_optimizer.BruteForceParameterOptimizer)
   brute_optimizer.BruteForceParameterOptimizer.AddArguments(brute_parser)
 

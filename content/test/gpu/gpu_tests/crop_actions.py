@@ -11,10 +11,10 @@ from gpu_tests import common_typing as ct
 
 
 class BaseCropAction(abc.ABC):
-
   @abc.abstractmethod
-  def CropScreenshot(self, screenshot: ct.Screenshot, dpr: float,
-                     device_type: str, os_name: str) -> ct.Screenshot:
+  def CropScreenshot(
+    self, screenshot: ct.Screenshot, dpr: float, device_type: str, os_name: str
+  ) -> ct.Screenshot:
     """Return a cropped copy of |screenshot|.
 
     The exact behavior is dependent on the concrete class.
@@ -22,9 +22,9 @@ class BaseCropAction(abc.ABC):
 
 
 class NoOpCropAction(BaseCropAction):
-
-  def CropScreenshot(self, screenshot: ct.Screenshot, dpr: float,
-                     device_type: str, os_name: str) -> ct.Screenshot:
+  def CropScreenshot(
+    self, screenshot: ct.Screenshot, dpr: float, device_type: str, os_name: str
+  ) -> ct.Screenshot:
     del dpr, device_type, os_name  # unused
     return screenshot
 
@@ -34,6 +34,7 @@ class FixedRectCropAction(BaseCropAction):
 
   The rectangle is first scaled based on the device pixel ratio.
   """
+
   # The value needed varies depending on device type, likely due to resolution:
   #   * Pixel 4: 10
   #   * Samsung A23: 11
@@ -68,8 +69,9 @@ class FixedRectCropAction(BaseCropAction):
     self._y2 = y2
 
   # pylint: disable=too-many-locals
-  def CropScreenshot(self, screenshot: ct.Screenshot, dpr: float,
-                     device_type: str, os_name: str) -> ct.Screenshot:
+  def CropScreenshot(
+    self, screenshot: ct.Screenshot, dpr: float, device_type: str, os_name: str
+  ) -> ct.Screenshot:
     del device_type, os_name  # unused
     start_x = int(self._x1 * dpr)
     start_y = int(self._y1 * dpr)
@@ -100,22 +102,25 @@ class FixedRectCropAction(BaseCropAction):
 
     crop_width = end_x - start_x
     crop_height = end_y - start_y
-    return image_util.Crop(screenshot, start_x, start_y, crop_width,
-                           crop_height)
+    return image_util.Crop(
+      screenshot, start_x, start_y, crop_width, crop_height
+    )
+
   # pylint: enable=too-many-locals
 
 
 class NonWhiteContentCropAction(BaseCropAction):
   """Crops screenshots to remove all white (background) content."""
+
   OFF_WHITE_TOP_ROW_DEVICES = {
-      # Samsung A13.
-      'SM-A137F',
-      # Samsung A23.
-      'SM-A236B',
-      # Chromebooks using the Brya board.
-      'Brya',
-      # Chromebooks using the Corsola board.
-      'Corsola',
+    # Samsung A13.
+    'SM-A137F',
+    # Samsung A23.
+    'SM-A236B',
+    # Chromebooks using the Brya board.
+    'Brya',
+    # Chromebooks using the Corsola board.
+    'Corsola',
   }
 
   def __init__(self, initial_crop: BaseCropAction | None = None):
@@ -128,15 +133,20 @@ class NonWhiteContentCropAction(BaseCropAction):
     """
     self._initial_crop = initial_crop
 
-  def CropScreenshot(self, screenshot: ct.Screenshot, dpr: float,
-                     device_type: str, os_name: str) -> ct.Screenshot:
+  def CropScreenshot(
+    self, screenshot: ct.Screenshot, dpr: float, device_type: str, os_name: str
+  ) -> ct.Screenshot:
     # The bottom corners of Mac screenshots have black triangles due to the
     # rounded corners of Mac windows. So, crop the bottom few rows off now to
     # get rid of those.
     if os_name == 'mac':
-      screenshot = image_util.Crop(screenshot, 0, 0,
-                                   image_util.Width(screenshot),
-                                   image_util.Height(screenshot) - 20)
+      screenshot = image_util.Crop(
+        screenshot,
+        0,
+        0,
+        image_util.Width(screenshot),
+        image_util.Height(screenshot) - 20,
+      )
     # GPU tests typically capture screenshots from the OS level codepath instead
     # of directly from the web contents. This is because capturing from the
     # web contents may cause the content to be re-rendered, which may hide bugs.
@@ -145,19 +155,25 @@ class NonWhiteContentCropAction(BaseCropAction):
     # the white background. So, preemptively crop off the top row on such
     # devices.
     if device_type in NonWhiteContentCropAction.OFF_WHITE_TOP_ROW_DEVICES:
-      screenshot = image_util.Crop(screenshot, 0, 1,
-                                   image_util.Width(screenshot),
-                                   image_util.Height(screenshot) - 1)
+      screenshot = image_util.Crop(
+        screenshot,
+        0,
+        1,
+        image_util.Width(screenshot),
+        image_util.Height(screenshot) - 1,
+      )
     if self._initial_crop:
-      screenshot = self._initial_crop.CropScreenshot(screenshot, dpr,
-                                                     device_type, os_name)
+      screenshot = self._initial_crop.CropScreenshot(
+        screenshot, dpr, device_type, os_name
+      )
 
     x1, y1, x2, y2 = _GetNonWhiteCropBoundaries(screenshot)
     return image_util.Crop(screenshot, x1, y1, x2 - x1, y2 - y1)
 
 
 def _GetNonWhiteCropBoundaries(
-    screenshot: ct.Screenshot) -> tuple[int, int, int, int]:
+  screenshot: ct.Screenshot,
+) -> tuple[int, int, int, int]:
   """Returns the boundaries to crop the screenshot to.
 
   Specifically, we look for the boundaries where the white background
@@ -220,7 +236,8 @@ def _GetNonWhiteCropBoundaries(
       break
   else:
     raise RuntimeError(
-        'Attempted to crop to non-white content in an all white image')
+      'Attempted to crop to non-white content in an all white image'
+    )
 
   for row in range(img_height):
     if not RowIsWhite(row, start=x1):

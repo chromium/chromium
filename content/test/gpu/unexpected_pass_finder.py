@@ -62,28 +62,35 @@ def ParseArgs() -> argparse.Namespace:
   test_suites.sort()
 
   parser = argparse.ArgumentParser(
-      description=('Script for finding cases of stale expectations that can '
-                   'be removed/modified.'))
+    description=(
+      'Script for finding cases of stale expectations that can '
+      'be removed/modified.'
+    )
+  )
   argument_parsing.AddCommonArguments(parser)
 
   input_group = parser.add_mutually_exclusive_group()
   input_group.add_argument(
-      '--expectation-file',
-      help='A path to an expectation file to read from. If not specified and '
-      '--test is not used, will automatically determine based off the '
-      'provided suite.')
+    '--expectation-file',
+    help='A path to an expectation file to read from. If not specified and '
+    '--test is not used, will automatically determine based off the '
+    'provided suite.',
+  )
   input_group.add_argument(
-      '--test',
-      action='append',
-      dest='tests',
-      default=[],
-      help='The name of a test to check for unexpected passes. Can be passed '
-      'multiple times to specify multiple tests. Will be treated as if it was '
-      'expected to be flaky on all configurations.')
-  parser.add_argument('--suite',
-                      required=True,
-                      choices=test_suites,
-                      help='The test suite being checked.')
+    '--test',
+    action='append',
+    dest='tests',
+    default=[],
+    help='The name of a test to check for unexpected passes. Can be passed '
+    'multiple times to specify multiple tests. Will be treated as if it was '
+    'expected to be flaky on all configurations.',
+  )
+  parser.add_argument(
+    '--suite',
+    required=True,
+    choices=test_suites,
+    help='The test suite being checked.',
+  )
 
   args = parser.parse_args()
   argument_parsing.PerformCommonPostParseSetup(args)
@@ -93,17 +100,20 @@ def ParseArgs() -> argparse.Namespace:
     expectation_files = suite_class.ExpectationsFiles()
     if not expectation_files:
       raise RuntimeError(
-          f'Suite {args.suite} does not specify an expectation file and is '
-          f'thus not compatible with this script.')
+        f'Suite {args.suite} does not specify an expectation file and is '
+        f'thus not compatible with this script.'
+      )
     if len(expectation_files) > 1:
       raise RuntimeError(
-          f'Suite {suite_class} specifies {len(expectation_files)} expectation '
-          f'files when only 1 is supported.')
+        f'Suite {suite_class} specifies {len(expectation_files)} expectation '
+        f'files when only 1 is supported.'
+      )
     args.expectation_file = expectation_files[0]
 
   if args.remove_stale_expectations and not args.expectation_file:
     parser.error(
-        '--remove-stale-expectations can only be used with expectation files')
+      '--remove-stale-expectations can only be used with expectation files'
+    )
 
   # Change to whatever repo the test suite claims the expectation file lives in.
   # This allows the script to work for most suites if run from outside of
@@ -118,60 +128,85 @@ def ParseArgs() -> argparse.Namespace:
 def main() -> None:
   args = ParseArgs()
 
-  builders_instance = gpu_builders.GpuBuilders(args.suite,
-                                               args.include_internal_builders)
+  builders_instance = gpu_builders.GpuBuilders(
+    args.suite, args.include_internal_builders
+  )
   builders.RegisterInstance(builders_instance)
   expectations_instance = gpu_expectations.GpuExpectations()
   expectations.RegisterInstance(expectations_instance)
 
   test_expectation_map = expectations_instance.CreateTestExpectationMap(
-      args.expectation_file, args.tests,
-      datetime.timedelta(days=args.expectation_grace_period))
+    args.expectation_file,
+    args.tests,
+    datetime.timedelta(days=args.expectation_grace_period),
+  )
   ci_builders = builders_instance.GetCiBuilders()
 
-  querier = gpu_queries.GpuBigQueryQuerier(args.suite, args.project,
-                                           args.num_samples,
-                                           args.keep_unmatched_results)
+  querier = gpu_queries.GpuBigQueryQuerier(
+    args.suite, args.project, args.num_samples, args.keep_unmatched_results
+  )
   # Unmatched results are mainly useful for script maintainers, as they don't
   # provide any additional information for the purposes of finding unexpectedly
   # passing tests or unused expectations.
-  unmatched = querier.FillExpectationMapForBuilders(test_expectation_map,
-                                                    ci_builders)
+  unmatched = querier.FillExpectationMapForBuilders(
+    test_expectation_map, ci_builders
+  )
   try_builders = builders_instance.GetTryBuilders(ci_builders)
   unmatched.update(
-      querier.FillExpectationMapForBuilders(test_expectation_map, try_builders))
+    querier.FillExpectationMapForBuilders(test_expectation_map, try_builders)
+  )
   unused_expectations = test_expectation_map.FilterOutUnusedExpectations()
   stale, semi_stale, active = test_expectation_map.SplitByStaleness()
   if args.result_output_file:
     with open(args.result_output_file, 'w', encoding='utf-8') as outfile:
-      result_output.OutputResults(stale, semi_stale, active, unmatched,
-                                  unused_expectations, args.output_format,
-                                  outfile)
+      result_output.OutputResults(
+        stale,
+        semi_stale,
+        active,
+        unmatched,
+        unused_expectations,
+        args.output_format,
+        outfile,
+      )
   else:
-    result_output.OutputResults(stale, semi_stale, active, unmatched,
-                                unused_expectations, args.output_format)
+    result_output.OutputResults(
+      stale,
+      semi_stale,
+      active,
+      unmatched,
+      unused_expectations,
+      args.output_format,
+    )
 
   affected_urls = set()
   stale_message = ''
   if args.remove_stale_expectations:
     for expectation_file, expectation_map in stale.items():
       affected_urls |= expectations_instance.RemoveExpectationsFromFile(
-          expectation_map.keys(), expectation_file,
-          expectations.RemovalType.STALE)
-      stale_message += (f'Stale expectations removed from {expectation_file}. '
-                        f'Stale comments, etc. may still need to be removed.\n')
+        expectation_map.keys(), expectation_file, expectations.RemovalType.STALE
+      )
+      stale_message += (
+        f'Stale expectations removed from {expectation_file}. '
+        f'Stale comments, etc. may still need to be removed.\n'
+      )
     for expectation_file, unused_list in unused_expectations.items():
       affected_urls |= expectations_instance.RemoveExpectationsFromFile(
-          unused_list, expectation_file, expectations.RemovalType.UNUSED)
-      stale_message += (f'Unused expectations removed from {expectation_file}. '
-                        f'Stale comments, etc. may still need to be removed.\n')
+        unused_list, expectation_file, expectations.RemovalType.UNUSED
+      )
+      stale_message += (
+        f'Unused expectations removed from {expectation_file}. '
+        f'Stale comments, etc. may still need to be removed.\n'
+      )
 
   if args.narrow_semi_stale_expectation_scope:
     affected_urls |= expectations_instance.NarrowSemiStaleExpectationScope(
-        semi_stale)
-    stale_message += (f'Semi-stale expectations narrowed in '
-                      f'{args.expectation_file}. Stale comments, etc. may '
-                      f'still need to be removed.\n')
+      semi_stale
+    )
+    stale_message += (
+      f'Semi-stale expectations narrowed in '
+      f'{args.expectation_file}. Stale comments, etc. may '
+      f'still need to be removed.\n'
+    )
 
   if stale_message:
     print(stale_message)
@@ -179,14 +214,18 @@ def main() -> None:
     orphaned_urls = expectations_instance.FindOrphanedBugs(affected_urls)
     if args.bug_output_file:
       with open(args.bug_output_file, 'w', encoding='utf-8') as bug_outfile:
-        result_output.OutputAffectedUrls(affected_urls,
-                                         orphaned_urls,
-                                         bug_outfile,
-                                         auto_close_bugs=args.auto_close_bugs)
+        result_output.OutputAffectedUrls(
+          affected_urls,
+          orphaned_urls,
+          bug_outfile,
+          auto_close_bugs=args.auto_close_bugs,
+        )
     else:
-      result_output.OutputAffectedUrls(affected_urls,
-                                       orphaned_urls,
-                                       auto_close_bugs=args.auto_close_bugs)
+      result_output.OutputAffectedUrls(
+        affected_urls, orphaned_urls, auto_close_bugs=args.auto_close_bugs
+      )
+
+
 # pylint: enable=too-many-locals
 
 

@@ -17,58 +17,69 @@ from gpu_tests.util import host_information
 # Examples:
 #   intel_lt_25.20.100.6577
 #   mesa_ge_20.1
-_MESA_DRIVER_TAGS = frozenset([
+_MESA_DRIVER_TAGS = frozenset(
+  [
     'mesa_lt_19.1',
     'mesa_ge_21.0',
     'mesa_ge_23.2',
     'mesa_ge_24.2',
-])
+  ]
+)
 # Most Android devices do not report a driver version, but some do such as
 # Android Desktop devices.
 _ANDROID_DRIVER_TAGS = frozenset([]) | _MESA_DRIVER_TAGS
 _CROS_DRIVER_TAGS = frozenset([]) | _MESA_DRIVER_TAGS
-_LINUX_DRIVER_TAGS = frozenset([
-    'nvidia_ge_535.183.01',
-    'nvidia_lt_535.183.01',
-]) | _MESA_DRIVER_TAGS
-_WINDOWS_DRIVER_TAGS = frozenset([
+_LINUX_DRIVER_TAGS = (
+  frozenset(
+    [
+      'nvidia_ge_535.183.01',
+      'nvidia_lt_535.183.01',
+    ]
+  )
+  | _MESA_DRIVER_TAGS
+)
+_WINDOWS_DRIVER_TAGS = frozenset(
+  [
     'nvidia_ge_31.0.15.4601',
     'nvidia_lt_31.0.15.4601',
     'nvidia_ge_32.0.15.8180',
     'nvidia_lt_32.0.15.8180',
     'nvidia_ge_32.0.16.1074',
     'nvidia_lt_32.0.16.1074',
-])
+  ]
+)
 _DRIVER_TAGS_BY_OS = {
-    'android': _ANDROID_DRIVER_TAGS,
-    'linux': _LINUX_DRIVER_TAGS,
-    'chromeos': _CROS_DRIVER_TAGS,
-    # Mac does not report driver versions.
-    'win': _WINDOWS_DRIVER_TAGS
+  'android': _ANDROID_DRIVER_TAGS,
+  'linux': _LINUX_DRIVER_TAGS,
+  'chromeos': _CROS_DRIVER_TAGS,
+  # Mac does not report driver versions.
+  'win': _WINDOWS_DRIVER_TAGS,
 }
 
 # Driver tag format: VENDOR_OPERATION_VERSION
 DRIVER_TAG_MATCHER = re.compile(
-    r'^(amd|intel|mesa|nvidia)_(eq|ne|ge|gt|le|lt)_([a-z\d\.]+)$')
+  r'^(amd|intel|mesa|nvidia)_(eq|ne|ge|gt|le|lt)_([a-z\d\.]+)$'
+)
 
 REMOTE_BROWSER_TYPES = [
-    'android-chromium',
-    'android-webview-instrumentation',
-    'cros-chrome',
-    'fuchsia-chrome',
-    'web-engine-shell',
-    'cast-streaming-shell',
+  'android-chromium',
+  'android-webview-instrumentation',
+  'cros-chrome',
+  'fuchsia-chrome',
+  'web-engine-shell',
+  'cast-streaming-shell',
 ]
 
 TAG_SUBSTRING_REPLACEMENTS = {
-    # nvidia on desktop, nvidia-coproration on Android.
-    'nvidia-corporation': 'nvidia',
+  # nvidia on desktop, nvidia-coproration on Android.
+  'nvidia-corporation': 'nvidia',
 }
 
 ENTIRE_TAG_REPLACEMENTS = {
-    # Includes a Vulkan and LLVM version.
-    re.compile('google-vulkan.*swiftshader-device.*', re.IGNORECASE):
-    'google-vulkan',
+  # Includes a Vulkan and LLVM version.
+  re.compile(
+    'google-vulkan.*swiftshader-device.*', re.IGNORECASE
+  ): 'google-vulkan',
 }
 
 
@@ -107,7 +118,8 @@ def GetGpuVendorString(gpu_info: tgi.GPUInfo | None, index: int) -> str:
     if primary_gpu:
       vendor_string = primary_gpu.vendor_string
       angle_vendor_string = _ParseANGLEGpuVendorString(
-          primary_gpu.device_string)
+        primary_gpu.device_string
+      )
       vendor_id = primary_gpu.vendor_id
       try:
         vendor_id = constants.GpuVendor(vendor_id)
@@ -126,9 +138,11 @@ def GetGpuDeviceId(gpu_info: tgi.GPUInfo | None, index: int) -> int | str:
   if gpu_info:
     primary_gpu = gpu_info.devices[index]
     if primary_gpu:
-      return (primary_gpu.device_id
-              or GetANGLEGpuDeviceId(primary_gpu.device_string)
-              or primary_gpu.device_string)
+      return (
+        primary_gpu.device_id
+        or GetANGLEGpuDeviceId(primary_gpu.device_string)
+        or primary_gpu.device_string
+      )
   return 0
 
 
@@ -185,15 +199,21 @@ def GetANGLERenderer(gpu_info: tgi.GPUInfo | None) -> str:
 
 
 def GetCommandDecoder(gpu_info: tgi.GPUInfo | None) -> str:
-  if gpu_info and gpu_info.aux_attributes and \
-      gpu_info.aux_attributes.get('passthrough_cmd_decoder', False):
+  if (
+    gpu_info
+    and gpu_info.aux_attributes
+    and gpu_info.aux_attributes.get('passthrough_cmd_decoder', False)
+  ):
     return 'passthrough'
   return 'no_passthrough'
 
 
 def GetSkiaGraphiteStatus(gpu_info: tgi.GPUInfo | None) -> str:
-  if gpu_info and gpu_info.feature_status and gpu_info.feature_status.get(
-      'skia_graphite') == 'enabled_on':
+  if (
+    gpu_info
+    and gpu_info.feature_status
+    and gpu_info.feature_status.get('skia_graphite') == 'enabled_on'
+  ):
     return 'graphite-enabled'
   return 'graphite-disabled'
 
@@ -203,8 +223,9 @@ def GetSkiaRenderer(gpu_info: tgi.GPUInfo | None) -> str:
   if gpu_info:
     gpu_feature_status = gpu_info.feature_status
     skia_renderer_enabled = (
-        gpu_feature_status
-        and gpu_feature_status.get('gpu_compositing') == 'enabled')
+      gpu_feature_status
+      and gpu_feature_status.get('gpu_compositing') == 'enabled'
+    )
     if skia_renderer_enabled:
       if HasVulkanSkiaRenderer(gpu_feature_status):
         retval = 'renderer-skia-vulkan'
@@ -248,13 +269,17 @@ def GetClangCoverage(gpu_info: tgi.GPUInfo | None) -> str:
 
 
 def HasGlSkiaRenderer(gpu_feature_status: dict[str, str]) -> bool:
-  return (bool(gpu_feature_status)
-          and gpu_feature_status.get('opengl') == 'enabled_on')
+  return (
+    bool(gpu_feature_status)
+    and gpu_feature_status.get('opengl') == 'enabled_on'
+  )
 
 
 def HasVulkanSkiaRenderer(gpu_feature_status: dict[str, str]) -> bool:
-  return (bool(gpu_feature_status)
-          and gpu_feature_status.get('vulkan') == 'enabled_on')
+  return (
+    bool(gpu_feature_status)
+    and gpu_feature_status.get('vulkan') == 'enabled_on'
+  )
 
 
 def ReplaceTags(tags: list[str]) -> list[str]:
@@ -316,15 +341,18 @@ def GetMockArgs(webgl_version: str = '1.0.0') -> mock.MagicMock:
 def MatchDriverTag(tag: str) -> re.Match[str] | None:
   return DRIVER_TAG_MATCHER.match(tag.lower())
 
+
 # No good way to reduce the number of local variables, particularly since each
 # argument is also considered a local. Also no good way to reduce the number of
 # branches without harming readability.
 # pylint: disable=too-many-locals,too-many-branches
-def EvaluateVersionComparison(version: str,
-                              operation: str,
-                              ref_version: str,
-                              os_name: str | None = None,
-                              driver_vendor: str | None = None) -> bool:
+def EvaluateVersionComparison(
+  version: str,
+  operation: str,
+  ref_version: str,
+  os_name: str | None = None,
+  driver_vendor: str | None = None,
+) -> bool:
 
   def parse_version(ver: str) -> tuple[int, str] | tuple[None, None]:
     if ver.isdigit():
@@ -386,6 +414,8 @@ def EvaluateVersionComparison(version: str,
     raise Exception('Invalid operation: ' + operation)
 
   return operation in ('eq', 'ge', 'le')
+
+
 # pylint: enable=too-many-locals,too-many-branches
 
 

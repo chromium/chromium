@@ -16,6 +16,7 @@ suppress_flakes.py \
   --project chrome-unexpected-pass-data \
   --sample-period 5
 """
+
 import os
 import sys
 
@@ -41,9 +42,9 @@ def main():
     expectations_processor.AssertCheckoutIsUpToDate()
 
   results_processor = results_module.GpuResultProcessor(expectations_processor)
-  querier_instance = gpu_queries.GpuBigQueryQuerier(args.sample_period,
-                                                    args.project,
-                                                    results_processor)
+  querier_instance = gpu_queries.GpuBigQueryQuerier(
+    args.sample_period, args.project, results_processor
+  )
 
   results = querier_instance.GetFlakyOrFailingCiTests()
   results.extend(querier_instance.GetFlakyOrFailingTryTests())
@@ -53,22 +54,31 @@ def main():
       result_output.GenerateHtmlOutputFile(aggregated_results, outfile)
   else:
     result_output.GenerateHtmlOutputFile(aggregated_results)
-  print('If there are many instances of failed tests, that may be indicative '
-        'of an issue that should be handled in some other way, e.g. reverting '
-        'a bad CL.')
+  print(
+    'If there are many instances of failed tests, that may be indicative '
+    'of an issue that should be handled in some other way, e.g. reverting '
+    'a bad CL.'
+  )
   if args.prompt_for_user_input:
     input('\nBeginning of user input section - press any key to continue')
-    expectations_processor.IterateThroughResultsForUser(aggregated_results,
-                                                        args.group_by_tags,
-                                                        args.include_all_tags)
+    expectations_processor.IterateThroughResultsForUser(
+      aggregated_results, args.group_by_tags, args.include_all_tags
+    )
   else:
     result_counts = querier_instance.GetResultCounts()
     expectations_processor.IterateThroughResultsWithThresholds(
-        aggregated_results, args.group_by_tags, result_counts,
-        args.ignore_threshold, args.flaky_threshold, args.include_all_tags)
+      aggregated_results,
+      args.group_by_tags,
+      result_counts,
+      args.ignore_threshold,
+      args.flaky_threshold,
+      args.include_all_tags,
+    )
     print('\nGenerated expectations will need to have bugs manually added.')
-  print('\nGenerated expectations likely contain conflicting tags that need to '
-        'be removed.')
+  print(
+    '\nGenerated expectations likely contain conflicting tags that need to '
+    'be removed.'
+  )
 
 
 if __name__ == '__main__':

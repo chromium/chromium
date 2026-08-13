@@ -183,22 +183,26 @@ def _lspci() -> list[list[str]]:
   list(Bus, Type, Vendor [ID], Device [ID], extra...)
   """
   try:
-    process = subprocess.run(['lspci', '-mm', '-nn'],
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE,
-                             text=True,
-                             check=True)
+    process = subprocess.run(
+      ['lspci', '-mm', '-nn'],
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+      text=True,
+      check=True,
+    )
   except FileNotFoundError:
     logging.warning(
-        'Failed to find lspci to enumerate GPUs. This is expected to happen '
-        'when running on a host for a remote platform such as Android and can '
-        'be safely ignored in those cases.')
+      'Failed to find lspci to enumerate GPUs. This is expected to happen '
+      'when running on a host for a remote platform such as Android and can '
+      'be safely ignored in those cases.'
+    )
     return []
   except subprocess.CalledProcessError:
     logging.warning(
-        'Running lspci failed, cannot enumerate GPUs. This is expected to '
-        'happen when running on a host for a remote platform such as Fuchsia '
-        'and can be safely ignored in those cases.')
+      'Running lspci failed, cannot enumerate GPUs. This is expected to '
+      'happen when running on a host for a remote platform such as Fuchsia '
+      'and can be safely ignored in those cases.'
+    )
     return []
   return [shlex.split(line) for line in process.stdout.splitlines()]
 
@@ -229,9 +233,9 @@ def _GetAvailableGpusLinux() -> list[_Gpu]:
 
 
 def _get_system_profiler(data_type: str) -> dict:
-  process = subprocess.run(['system_profiler', data_type, '-xml'],
-                           stdout=subprocess.PIPE,
-                           check=True)
+  process = subprocess.run(
+    ['system_profiler', data_type, '-xml'], stdout=subprocess.PIPE, check=True
+  )
   plist = plistlib.loads(process.stdout)  # pytype: disable=name-error
   return plist[0].get('_items', [])
 
@@ -252,8 +256,10 @@ def _GetAvailableGpusMac() -> list[_Gpu]:
 
 
 def _HandleAppleGpu(gpu: dict) -> _Gpu:
-  if ('spdisplays_vendor' not in gpu
-      or gpu['spdisplays_vendor'] != 'sppci_vendor_Apple'):
+  if (
+    'spdisplays_vendor' not in gpu
+    or gpu['spdisplays_vendor'] != 'sppci_vendor_Apple'
+  ):
     raise RuntimeError('_HandleAppleGpu() called with non-Apple GPU')
   if 'sppci_model' not in gpu:
     raise RuntimeError('No model found for Apple GPU')
@@ -303,7 +309,8 @@ def _HandleNonAppleGpu(gpu: dict) -> _Gpu:
 
   if vendor_id is None:
     raise RuntimeError(
-        f'Unable to determine GPU vendor ID. Raw GPU info: {gpu}')
+      f'Unable to determine GPU vendor ID. Raw GPU info: {gpu}'
+    )
 
   return _Gpu(vendor_id, device_id)
 

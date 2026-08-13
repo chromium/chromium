@@ -70,7 +70,8 @@ class PresentationModeEvent(enum.IntEnum):
 
 
 def PresentationModeEventToStr(
-    presentation_mode_event: int | PresentationModeEvent) -> str:
+  presentation_mode_event: int | PresentationModeEvent,
+) -> str:
   try:
     event = PresentationModeEvent(presentation_mode_event)
     return getattr(PresentationMode, event.name)
@@ -79,8 +80,9 @@ def PresentationModeEventToStr(
     return f'{presentation_mode_event} (unknown)'
 
 
-DriverConditional = collections.namedtuple('DriverConditional',
-                                           ['operation', 'version'])
+DriverConditional = collections.namedtuple(
+  'DriverConditional', ['operation', 'version']
+)
 
 
 @dataclasses.dataclass
@@ -103,7 +105,8 @@ class GpuOverlayConfig:
     self._supported_rotations: dict[str, list[VideoRotation]] = {}
 
     self._force_composed_bgra8_driver_conditionals: Iterable[
-        DriverConditional] = []
+      DriverConditional
+    ] = []
 
     for pixel_format in PixelFormat.ALL_PIXEL_FORMATS:
       self._possible_overlay_support[pixel_format] = OverlaySupport.SOFTWARE
@@ -130,9 +133,9 @@ class GpuOverlayConfig:
     return self
 
   def WithHardwareNV12Support(
-      self,
-      driver_conditionals: Iterable[DriverConditional] | None = None,
-      supported_rotations: list[VideoRotation] | None = None
+    self,
+    driver_conditionals: Iterable[DriverConditional] | None = None,
+    supported_rotations: list[VideoRotation] | None = None,
   ) -> 'GpuOverlayConfig':
     """Enables NV12 hardware support.
 
@@ -144,14 +147,15 @@ class GpuOverlayConfig:
       supported_rotations: An optional List of supported video rotations for
           NV12 overlays. If not set, no video rotation support is assumed.
     """
-    self._WithHardwareSupport(PixelFormat.NV12, driver_conditionals,
-                              supported_rotations)
+    self._WithHardwareSupport(
+      PixelFormat.NV12, driver_conditionals, supported_rotations
+    )
     return self
 
   def WithHardwareYUY2Support(
-      self,
-      driver_conditionals: Iterable[DriverConditional] | None = None,
-      supported_rotations: list[VideoRotation] | None = None
+    self,
+    driver_conditionals: Iterable[DriverConditional] | None = None,
+    supported_rotations: list[VideoRotation] | None = None,
   ) -> 'GpuOverlayConfig':
     """Enables YUY2 hardware support.
 
@@ -163,14 +167,15 @@ class GpuOverlayConfig:
       supported_rotations: An optional List of supported video rotations for
           YUY2 overlays. If not set, no video rotation support is assumed.
     """
-    self._WithHardwareSupport(PixelFormat.YUY2, driver_conditionals,
-                              supported_rotations)
+    self._WithHardwareSupport(
+      PixelFormat.YUY2, driver_conditionals, supported_rotations
+    )
     return self
 
   def WithHardwareBGRA8Support(
-      self,
-      driver_conditionals: Iterable[DriverConditional] | None = None,
-      supported_rotations: list[VideoRotation] | None = None
+    self,
+    driver_conditionals: Iterable[DriverConditional] | None = None,
+    supported_rotations: list[VideoRotation] | None = None,
   ) -> 'GpuOverlayConfig':
     """Enables BGRA8 hardware support.
 
@@ -182,25 +187,28 @@ class GpuOverlayConfig:
       supported_rotations: An optional List of supported video rotations for
           BGRA8 overlays. If not set, no video rotation support is assumed.
     """
-    self._WithHardwareSupport(PixelFormat.BGRA8, driver_conditionals,
-                              supported_rotations)
+    self._WithHardwareSupport(
+      PixelFormat.BGRA8, driver_conditionals, supported_rotations
+    )
     return self
 
   def _WithHardwareSupport(
-      self,
-      pixel_format: str,
-      driver_conditionals: Iterable[DriverConditional] | None = None,
-      supported_rotations: list[VideoRotation] | None = None) -> None:
+    self,
+    pixel_format: str,
+    driver_conditionals: Iterable[DriverConditional] | None = None,
+    supported_rotations: list[VideoRotation] | None = None,
+  ) -> None:
     assert self.supports_overlays
     assert (
-        self._possible_overlay_support[pixel_format] == OverlaySupport.SOFTWARE)
+      self._possible_overlay_support[pixel_format] == OverlaySupport.SOFTWARE
+    )
     self._driver_conditionals[pixel_format] = driver_conditionals or []
     self._supported_rotations[pixel_format].extend(supported_rotations or [])
     self._possible_overlay_support[pixel_format] = OverlaySupport.SCALING
 
   def WithForceComposedBGRA8(
-      self,
-      driver_conditionals: Iterable[DriverConditional]) -> 'GpuOverlayConfig':
+    self, driver_conditionals: Iterable[DriverConditional]
+  ) -> 'GpuOverlayConfig':
     """Forces BGRA8 to use the COMPOSED presentation mode on certain drivers.
 
     In some cases, Chrome can report that software BGRA8 support is available,
@@ -223,13 +231,15 @@ class GpuOverlayConfig:
     Args:
       driver_version: A string containing the driver version in use.
     """
-    assert (self._driver_version is None
-            or self._driver_version == driver_version)
+    assert (
+      self._driver_version is None or self._driver_version == driver_version
+    )
     self._driver_version = driver_version
     return self
 
   def WithZeroCopyConfig(
-      self, zero_copy_config: ZeroCopyConfig) -> 'GpuOverlayConfig':
+    self, zero_copy_config: ZeroCopyConfig
+  ) -> 'GpuOverlayConfig':
     """Sets the ZeroCopyConfig to use."""
     self._zero_copy_config = zero_copy_config
     return self
@@ -253,7 +263,8 @@ class GpuOverlayConfig:
 
     for dc in self._driver_conditionals[pixel_format]:
       on_valid_driver = gpu_helper.EvaluateVersionComparison(
-          self._driver_version, dc.operation, dc.version)
+        self._driver_version, dc.operation, dc.version
+      )
       if not on_valid_driver:
         return OverlaySupport.SOFTWARE
 
@@ -278,7 +289,8 @@ class GpuOverlayConfig:
       return True
     for dc in self._force_composed_bgra8_driver_conditionals:
       on_invalid_driver = gpu_helper.EvaluateVersionComparison(
-          self._driver_version, dc.operation, dc.version)
+        self._driver_version, dc.operation, dc.version
+      )
       if on_invalid_driver:
         return True
     return False
@@ -307,17 +319,22 @@ class GpuOverlayConfig:
 
     # If a specific pixel format was requested via browser arguments that the
     # browser does not support, we expect a direct fallback to BGRA8.
-    if (forced_pixel_format == PixelFormat.NV12
-        and not self.supports_hw_nv12_overlays):
+    if (
+      forced_pixel_format == PixelFormat.NV12
+      and not self.supports_hw_nv12_overlays
+    ):
       return PixelFormat.BGRA8
-    if (forced_pixel_format == PixelFormat.YUY2
-        and not self.supports_hw_yuy2_overlays):
+    if (
+      forced_pixel_format == PixelFormat.YUY2
+      and not self.supports_hw_yuy2_overlays
+    ):
       return PixelFormat.BGRA8
     return forced_pixel_format
 
   # pylint: disable=too-many-return-statements
-  def GetExpectedPresentationMode(self, expected_pixel_format: str,
-                                  video_rotation: VideoRotation) -> str:
+  def GetExpectedPresentationMode(
+    self, expected_pixel_format: str, video_rotation: VideoRotation
+  ) -> str:
     """Retrieves the presentation mode expected to be used for swap chains.
 
     Args:
@@ -349,14 +366,19 @@ class GpuOverlayConfig:
       return PresentationMode.OVERLAY
 
     raise RuntimeError(
-        f'Pixel format {expected_pixel_format} is known, but does not have '
-        f'presentation mode logic added')
+      f'Pixel format {expected_pixel_format} is known, but does not have '
+      f'presentation mode logic added'
+    )
 
   # pylint: enable=too-many-return-statements
 
-  def GetExpectedZeroCopyUsage(self, expected_pixel_format: str,
-                               video_rotation: VideoRotation, fullsize: bool,
-                               codec: ZeroCopyCodec) -> bool:
+  def GetExpectedZeroCopyUsage(
+    self,
+    expected_pixel_format: str,
+    video_rotation: VideoRotation,
+    fullsize: bool,
+    codec: ZeroCopyCodec,
+  ) -> bool:
     """Determines whether the zero copy path is expected to be used or not.
 
     Args:
@@ -386,8 +408,9 @@ class GpuOverlayConfig:
 
     if codec == ZeroCopyCodec.UNSPECIFIED:
       raise RuntimeError(
-          'Test did not specify the codec used when it is relevant to '
-          'determining zero copy usage')
+        'Test did not specify the codec used when it is relevant to '
+        'determining zero copy usage'
+      )
 
     return codec in self._zero_copy_config.supported_codecs
 
@@ -397,147 +420,172 @@ def BasicDirectCompositionConfig() -> GpuOverlayConfig:
 
 
 def AllHardwareSupportDirectCompositionConfig() -> GpuOverlayConfig:
-  return BasicDirectCompositionConfig()\
-            .WithHardwareNV12Support()\
-            .WithHardwareYUY2Support()\
-            .WithHardwareBGRA8Support()
+  return (
+    BasicDirectCompositionConfig()
+    .WithHardwareNV12Support()
+    .WithHardwareYUY2Support()
+    .WithHardwareBGRA8Support()
+  )
 
 
 OVERLAY_CONFIGS = {
-    constants.GpuVendor.AMD: {
-        0x7340: BasicDirectCompositionConfig()\
-                .WithHardwareNV12Support(supported_rotations=[
-                    VideoRotation.ROT90,
-                    VideoRotation.ROT180,
-                    VideoRotation.ROT270])\
-                .WithZeroCopyConfig(ZeroCopyConfig(
-                    supports_scaled_video=True,
-                    supported_codecs=[
-                        ZeroCopyCodec.H264,
-                        ZeroCopyCodec.VP9])),
-        0x1900: BasicDirectCompositionConfig()\
-                .WithHardwareNV12Support(supported_rotations=[
-                    VideoRotation.ROT90,
-                    VideoRotation.ROT180,
-                    VideoRotation.ROT270])\
-                .WithZeroCopyConfig(ZeroCopyConfig(
-                    supports_scaled_video=True,
-                    supported_codecs=[
-                        ZeroCopyCodec.H264])),
-        0x7480: BasicDirectCompositionConfig()\
-                .WithHardwareNV12Support(supported_rotations=[
-                    VideoRotation.ROT90,
-                    VideoRotation.ROT180,
-                    VideoRotation.ROT270])\
-                .WithZeroCopyConfig(ZeroCopyConfig(
-                    supports_scaled_video=True,
-                    supported_codecs=[
-                        ZeroCopyCodec.H264])),
-        0x150e: BasicDirectCompositionConfig()\
-                .WithHardwareNV12Support(supported_rotations=[
-                    VideoRotation.ROT90,
-                    VideoRotation.ROT180,
-                    VideoRotation.ROT270])\
-                .WithZeroCopyConfig(ZeroCopyConfig(
-                    supports_scaled_video=True,
-                    supported_codecs=[
-                        ZeroCopyCodec.H264])),
-        0x6613:
-        BasicDirectCompositionConfig(),
-        0x699f:
-        BasicDirectCompositionConfig(),
-        0x7550: BasicDirectCompositionConfig()\
-                .WithHardwareNV12Support(supported_rotations=[
-                    VideoRotation.ROT90,
-                    VideoRotation.ROT180,
-                    VideoRotation.ROT270])\
-                .WithZeroCopyConfig(ZeroCopyConfig(
-                    supports_scaled_video=True,
-                    supported_codecs=[
-                        ZeroCopyCodec.H264])),
-    },
-    constants.GpuVendor.INTEL: {
-        # Hardware overlays are disabled in 26.20.100.8141 per
-        # crbug.com/1079393#c105
-        0x5912: BasicDirectCompositionConfig()\
-                .WithHardwareNV12Support(driver_conditionals=[
-                    DriverConditional('ne', '26.20.100.8141')])\
-                .WithHardwareYUY2Support()\
-                .WithHardwareBGRA8Support()\
-                .WithZeroCopyConfig(ZeroCopyConfig(
-                    supports_scaled_video=False,
-                    supported_codecs=[
-                        ZeroCopyCodec.H264,
-                        ZeroCopyCodec.VP9])),
-        0x3e92:
-        AllHardwareSupportDirectCompositionConfig(),
-        0x9bc5:
-        AllHardwareSupportDirectCompositionConfig(),
-        0x4680: BasicDirectCompositionConfig()\
-                .WithHardwareNV12Support(supported_rotations=[
-                    VideoRotation.ROT180])\
-                .WithHardwareYUY2Support()\
-                .WithHardwareBGRA8Support()\
-                .WithZeroCopyConfig(ZeroCopyConfig(
-                    supports_scaled_video=False,
-                    supported_codecs=[
-                        ZeroCopyCodec.H264])),
-    },
-    constants.GpuVendor.NVIDIA: {
-        # For some reason, software BGRA8 software overlay support changes
-        # based on driver version.
-        0x2184: BasicDirectCompositionConfig()\
-                .WithHardwareNV12Support(driver_conditionals=[
-                    DriverConditional('ge', '31.0.15.4601')])\
-                .WithHardwareYUY2Support(driver_conditionals=[
-                    DriverConditional('ge', '31.0.15.4601')])\
-                .WithHardwareBGRA8Support(driver_conditionals=[
-                    DriverConditional('ge', '32.0.15.7602')])\
-                .WithForceComposedBGRA8(driver_conditionals=[
-                    DriverConditional('lt', '31.0.15.4601')])\
-                .WithZeroCopyConfig(ZeroCopyConfig(
-                    supports_scaled_video=True,
-                    supported_codecs=[
-                        ZeroCopyCodec.H264])),
-        0x2783: BasicDirectCompositionConfig()\
-                .WithHardwareNV12Support()\
-                .WithHardwareYUY2Support()\
-                .WithZeroCopyConfig(ZeroCopyConfig(
-                    supports_scaled_video=True,
-                    supported_codecs=[
-                        ZeroCopyCodec.H264])),
-        0x2c02: BasicDirectCompositionConfig()\
-                .WithHardwareNV12Support()\
-                .WithHardwareYUY2Support()\
-                .WithHardwareBGRA8Support()\
-                .WithZeroCopyConfig(ZeroCopyConfig(
-                    supports_scaled_video=True,
-                    supported_codecs=[
-                        ZeroCopyCodec.H264])),
-    },
-    constants.GpuVendor.QUALCOMM: {
-        0x36333630: BasicDirectCompositionConfig()\
-                    .WithHardwareNV12Support(supported_rotations=[
-                        VideoRotation.ROT180])\
-                    .WithZeroCopyConfig(ZeroCopyConfig(
-                        supports_scaled_video=True)),
-        0x36334330: BasicDirectCompositionConfig()\
-                    .WithHardwareNV12Support(supported_rotations=[
-                        VideoRotation.ROT180])\
-                    .WithZeroCopyConfig(ZeroCopyConfig(
-                        supports_scaled_video=True)),
-    },
+  constants.GpuVendor.AMD: {
+    0x7340: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support(
+      supported_rotations=[
+        VideoRotation.ROT90,
+        VideoRotation.ROT180,
+        VideoRotation.ROT270,
+      ]
+    )
+    .WithZeroCopyConfig(
+      ZeroCopyConfig(
+        supports_scaled_video=True,
+        supported_codecs=[ZeroCopyCodec.H264, ZeroCopyCodec.VP9],
+      )
+    ),
+    0x1900: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support(
+      supported_rotations=[
+        VideoRotation.ROT90,
+        VideoRotation.ROT180,
+        VideoRotation.ROT270,
+      ]
+    )
+    .WithZeroCopyConfig(
+      ZeroCopyConfig(
+        supports_scaled_video=True, supported_codecs=[ZeroCopyCodec.H264]
+      )
+    ),
+    0x7480: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support(
+      supported_rotations=[
+        VideoRotation.ROT90,
+        VideoRotation.ROT180,
+        VideoRotation.ROT270,
+      ]
+    )
+    .WithZeroCopyConfig(
+      ZeroCopyConfig(
+        supports_scaled_video=True, supported_codecs=[ZeroCopyCodec.H264]
+      )
+    ),
+    0x150E: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support(
+      supported_rotations=[
+        VideoRotation.ROT90,
+        VideoRotation.ROT180,
+        VideoRotation.ROT270,
+      ]
+    )
+    .WithZeroCopyConfig(
+      ZeroCopyConfig(
+        supports_scaled_video=True, supported_codecs=[ZeroCopyCodec.H264]
+      )
+    ),
+    0x6613: BasicDirectCompositionConfig(),
+    0x699F: BasicDirectCompositionConfig(),
+    0x7550: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support(
+      supported_rotations=[
+        VideoRotation.ROT90,
+        VideoRotation.ROT180,
+        VideoRotation.ROT270,
+      ]
+    )
+    .WithZeroCopyConfig(
+      ZeroCopyConfig(
+        supports_scaled_video=True, supported_codecs=[ZeroCopyCodec.H264]
+      )
+    ),
+  },
+  constants.GpuVendor.INTEL: {
+    # Hardware overlays are disabled in 26.20.100.8141 per
+    # crbug.com/1079393#c105
+    0x5912: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support(
+      driver_conditionals=[DriverConditional('ne', '26.20.100.8141')]
+    )
+    .WithHardwareYUY2Support()
+    .WithHardwareBGRA8Support()
+    .WithZeroCopyConfig(
+      ZeroCopyConfig(
+        supports_scaled_video=False,
+        supported_codecs=[ZeroCopyCodec.H264, ZeroCopyCodec.VP9],
+      )
+    ),
+    0x3E92: AllHardwareSupportDirectCompositionConfig(),
+    0x9BC5: AllHardwareSupportDirectCompositionConfig(),
+    0x4680: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support(supported_rotations=[VideoRotation.ROT180])
+    .WithHardwareYUY2Support()
+    .WithHardwareBGRA8Support()
+    .WithZeroCopyConfig(
+      ZeroCopyConfig(
+        supports_scaled_video=False, supported_codecs=[ZeroCopyCodec.H264]
+      )
+    ),
+  },
+  constants.GpuVendor.NVIDIA: {
+    # For some reason, software BGRA8 software overlay support changes
+    # based on driver version.
+    0x2184: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support(
+      driver_conditionals=[DriverConditional('ge', '31.0.15.4601')]
+    )
+    .WithHardwareYUY2Support(
+      driver_conditionals=[DriverConditional('ge', '31.0.15.4601')]
+    )
+    .WithHardwareBGRA8Support(
+      driver_conditionals=[DriverConditional('ge', '32.0.15.7602')]
+    )
+    .WithForceComposedBGRA8(
+      driver_conditionals=[DriverConditional('lt', '31.0.15.4601')]
+    )
+    .WithZeroCopyConfig(
+      ZeroCopyConfig(
+        supports_scaled_video=True, supported_codecs=[ZeroCopyCodec.H264]
+      )
+    ),
+    0x2783: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support()
+    .WithHardwareYUY2Support()
+    .WithZeroCopyConfig(
+      ZeroCopyConfig(
+        supports_scaled_video=True, supported_codecs=[ZeroCopyCodec.H264]
+      )
+    ),
+    0x2C02: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support()
+    .WithHardwareYUY2Support()
+    .WithHardwareBGRA8Support()
+    .WithZeroCopyConfig(
+      ZeroCopyConfig(
+        supports_scaled_video=True, supported_codecs=[ZeroCopyCodec.H264]
+      )
+    ),
+  },
+  constants.GpuVendor.QUALCOMM: {
+    0x36333630: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support(supported_rotations=[VideoRotation.ROT180])
+    .WithZeroCopyConfig(ZeroCopyConfig(supports_scaled_video=True)),
+    0x36334330: BasicDirectCompositionConfig()
+    .WithHardwareNV12Support(supported_rotations=[VideoRotation.ROT180])
+    .WithZeroCopyConfig(ZeroCopyConfig(supports_scaled_video=True)),
+  },
 }
 
 
 def GetOverlayConfigForGpu(gpu: gpu_device.GPUDevice) -> GpuOverlayConfig:
   """Retrieves the GpuOverlayConfig instance for a particular GPU."""
-  overlay_config = OVERLAY_CONFIGS.get(gpu.vendor_id,
-                                       {}).get(gpu.device_id, None)
+  overlay_config = OVERLAY_CONFIGS.get(gpu.vendor_id, {}).get(
+    gpu.device_id, None
+  )
   if not overlay_config:
     raise RuntimeError(
-        f'GPU with vendor ID {gpu.vendor_id:#02x} and device ID '
-        f'{gpu.device_id:#02x} does not have an overlay config specified')
+      f'GPU with vendor ID {gpu.vendor_id:#02x} and device ID '
+      f'{gpu.device_id:#02x} does not have an overlay config specified'
+    )
   return overlay_config.OnDriverVersion(gpu.driver_version)
 
 
@@ -628,8 +676,9 @@ def ParseOverlayJsonFile(filepath: str) -> None:
       _ParseOverlayJsonForDevice(vendor, device, function_list)
 
 
-def _ParseOverlayJsonForDevice(vendor: constants.GpuVendor, device: int,
-                               function_list: list[dict]) -> None:
+def _ParseOverlayJsonForDevice(
+  vendor: constants.GpuVendor, device: int, function_list: list[dict]
+) -> None:
   """Helper to parse overlay config JSON for a single device.
 
   Args:
@@ -639,8 +688,11 @@ def _ParseOverlayJsonForDevice(vendor: constants.GpuVendor, device: int,
   """
   if device in OVERLAY_CONFIGS.get(vendor, {}):
     logging.warning(
-        'Config for vendor %#02x and device %#02x already exists, not applying '
-        'config from JSON file.', vendor, device)
+      'Config for vendor %#02x and device %#02x already exists, not applying '
+      'config from JSON file.',
+      vendor,
+      device,
+    )
     return
 
   overlay_config = GpuOverlayConfig()
@@ -665,7 +717,7 @@ def _ConvertDriverConditionals(args: dict[str, Any]) -> None:
     return
 
   driver_conditionals = [
-      DriverConditional(*dc) for dc in args['driver_conditionals']
+    DriverConditional(*dc) for dc in args['driver_conditionals']
   ]
   args['driver_conditionals'] = driver_conditionals
 
@@ -676,7 +728,7 @@ def _ConvertSupportedRotations(args: dict[str, Any]) -> None:
     return
 
   supported_rotations = [
-      VideoRotation(sr) for sr in args['supported_rotations']
+    VideoRotation(sr) for sr in args['supported_rotations']
   ]
   args['supported_rotations'] = supported_rotations
 

@@ -28,8 +28,9 @@ def RunTestOnFuchsiaDevice(script_type):
   if not script_args.out_dir:
     script_args.out_dir = os.getcwd()
 
-  script = os.path.join(CHROMIUM_SRC_DIR, 'build', 'fuchsia', 'test',
-                        'run_test.py')
+  script = os.path.join(
+    CHROMIUM_SRC_DIR, 'build', 'fuchsia', 'test', 'run_test.py'
+  )
   script_cmd = [script, script_type, '--out-dir', script_args.out_dir]
   script_cmd.extend(rest_args)
 

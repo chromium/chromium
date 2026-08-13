@@ -47,13 +47,16 @@ MAX_ROWS = (2**31) - 1
 
 def ParseArgs():
   parser = argparse.ArgumentParser(
-      'Script for finding cases where the typ tags generated on the bots and '
-      'the typ tags we know about are out of sync.')
-  parser.add_argument('--project',
-                      required=True,
-                      help='The billing project to use for BigQuery queries. '
-                      'Must have access to the ResultDB BQ tables, e.g. '
-                      '"chrome-luci-data.chromium.gpu_ci_test_results".')
+    'Script for finding cases where the typ tags generated on the bots and '
+    'the typ tags we know about are out of sync.'
+  )
+  parser.add_argument(
+    '--project',
+    required=True,
+    help='The billing project to use for BigQuery queries. '
+    'Must have access to the ResultDB BQ tables, e.g. '
+    '"chrome-luci-data.chromium.gpu_ci_test_results".',
+  )
   return parser.parse_args()
 
 
@@ -61,9 +64,12 @@ def _GetUsedTags():
   """Helper function to get all currently used tags."""
   # Get the list of tags in expectation files. Any expectation file will do
   # since tags are synced between all of them.
-  expectation_file_path = os.path.join(os.path.dirname(__file__), 'gpu_tests',
-                                       'test_expectations',
-                                       'info_collection_expectations.txt')
+  expectation_file_path = os.path.join(
+    os.path.dirname(__file__),
+    'gpu_tests',
+    'test_expectations',
+    'info_collection_expectations.txt',
+  )
   with open(expectation_file_path, encoding='utf-8') as f:
     list_parser = expectations_parser.TaggedTestListParser(f.read())
   used_tags = set()
@@ -76,18 +82,18 @@ def _GetGeneratedTags(args):
   """Helper function to get all currently generated tags from bots."""
   generated_tags = set()
   for table in [
-      'chrome-luci-data.chromium.gpu_ci_test_results',
-      'chrome-luci-data.chromium.gpu_try_test_results'
+    'chrome-luci-data.chromium.gpu_ci_test_results',
+    'chrome-luci-data.chromium.gpu_try_test_results',
   ]:
     query = BQ_QUERY_TEMPLATE.format(table=table)
     cmd = [
-        'bq',
-        'query',
-        f'--max_rows={MAX_ROWS}',
-        '--format=json',
-        f'--project_id={args.project}',
-        '--use_legacy_sql=false',
-        query,
+      'bq',
+      'query',
+      f'--max_rows={MAX_ROWS}',
+      '--format=json',
+      f'--project_id={args.project}',
+      '--use_legacy_sql=false',
+      query,
     ]
     with open(os.devnull, 'w', encoding='utf-8') as devnull:
       try:

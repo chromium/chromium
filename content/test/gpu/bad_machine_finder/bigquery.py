@@ -13,12 +13,12 @@ import pandas
 
 
 class Querier:
-
   def __init__(self, billing_project: str):
     self._billing_project = billing_project
 
-  def GetSeriesForQuery(self,
-                        query: str) -> Generator[pandas.Series, None, None]:
+  def GetSeriesForQuery(
+    self, query: str
+  ) -> Generator[pandas.Series, None, None]:
     """Generates results for |query|.
 
     Args:
@@ -35,7 +35,8 @@ class Querier:
     # us to use the BigQuery Storage API, which results in ~10x faster query
     # result retrieval at the cost of a few more dependencies.
     dataframe_iterator = row_iterator.to_dataframe_iterable(
-        bigquery_storage.BigQueryReadClient())
+      bigquery_storage.BigQueryReadClient()
+    )
     for df in dataframe_iterator:
       for _, row in df.iterrows():
         yield row

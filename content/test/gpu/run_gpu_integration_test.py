@@ -11,9 +11,12 @@ import sys
 # This needs to be before the Telemetry imports for importing to work correctly.
 # pylint: disable=wrong-import-order
 from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
+
 # pylint: enable=wrong-import-order
 from telemetry.testing import browser_test_runner
-from telemetry.testing import serially_executed_browser_test_case
+from telemetry.testing.serially_executed_browser_test_case import (
+  SeriallyExecutedBrowserTestCase,
+)
 from py_utils import discover
 
 import gpu_project_config
@@ -37,13 +40,16 @@ def FailIfScreenLockedOnMac():
   if not sys.platform.startswith('darwin'):
     return
   import Quartz  # pylint: disable=import-outside-toplevel,import-error
+
   current_session = Quartz.CGSessionCopyCurrentDictionary()
   if not current_session:
     # Using the logging module doesn't seem to be guaranteed to show up in
     # stdout, so use print instead.
-    print('WARNING: Unable to obtain CGSessionCoppyCurrentDictionary via '
-          'Quartz - unable to determine whether Mac lockscreen is present or '
-          'not.')
+    print(
+      'WARNING: Unable to obtain CGSessionCoppyCurrentDictionary via '
+      'Quartz - unable to determine whether Mac lockscreen is present or '
+      'not.'
+    )
     return
   if current_session.get('CGSSessionScreenIsLocked'):
     raise RuntimeError('Mac lockscreen detected, aborting.')
@@ -52,10 +58,10 @@ def FailIfScreenLockedOnMac():
 def FindTestCase(test_name):
   for start_dir in gpu_project_config.CONFIG.start_dirs:
     modules_to_classes = discover.DiscoverClasses(
-        start_dir,
-        gpu_project_config.CONFIG.top_level_dir,
-        base_class=serially_executed_browser_test_case.
-        SeriallyExecutedBrowserTestCase)
+      start_dir,
+      gpu_project_config.CONFIG.top_level_dir,
+      base_class=SeriallyExecutedBrowserTestCase,
+    )
     for cl in modules_to_classes.values():
       if cl.Name() == test_name:
         return cl
@@ -65,9 +71,10 @@ def FindTestCase(test_name):
 def ProcessArgs(args, parser=None):
   parser = parser or argparse.ArgumentParser()
   parser.add_argument(
-      '--write-run-test-arguments',
-      action='store_true',
-      help='Write the test script arguments to the results file.')
+    '--write-run-test-arguments',
+    action='store_true',
+    help='Write the test script arguments to the results file.',
+  )
   option, rest_args_filtered = parser.parse_known_args(args)
 
   parser.add_argument('test', nargs='*', type=str, help=argparse.SUPPRESS)
@@ -79,16 +86,19 @@ def ProcessArgs(args, parser=None):
     test_class = None
 
   if test_class:
-    rest_args_filtered.extend([
+    rest_args_filtered.extend(
+      [
         f'--test-name-prefix={test_class.__module__}.{test_class.__name__}.',
-    ])
+      ]
+    )
 
   if not any(arg.startswith('--retry-limit') for arg in rest_args_filtered):
     if '--retry-only-retry-on-failure-tests' not in rest_args_filtered:
       rest_args_filtered.append('--retry-only-retry-on-failure-tests')
     rest_args_filtered.append('--retry-limit=2')
   rest_args_filtered.extend(
-      ['--repository-absolute-path', gpu_path_util.CHROMIUM_SRC_DIR])
+    ['--repository-absolute-path', gpu_path_util.CHROMIUM_SRC_DIR]
+  )
   return rest_args_filtered
 
 
@@ -96,12 +106,14 @@ def main():
   rest_args = sys.argv[1:]
   FailIfScreenLockedOnMac()
   parser = argparse.ArgumentParser(
-      description='Extra argument parser', add_help=False)
+    description='Extra argument parser', add_help=False
+  )
 
   rest_args_filtered = ProcessArgs(rest_args, parser)
 
-  retval = browser_test_runner.Run(gpu_project_config.CONFIG,
-                                   rest_args_filtered)
+  retval = browser_test_runner.Run(
+    gpu_project_config.CONFIG, rest_args_filtered
+  )
 
   # We're not relying on argparse to print the help in the normal way, because
   # we need the help output from both the argument parser here and the argument
@@ -113,10 +125,11 @@ def main():
 
   # This duplicates an argument of browser_test_runner.
   parser.add_argument(
-      '--write-full-results-to',
-      metavar='FILENAME',
-      action='store',
-      help='If specified, writes the full results to that path.')
+    '--write-full-results-to',
+    metavar='FILENAME',
+    action='store',
+    help='If specified, writes the full results to that path.',
+  )
 
   option, _ = parser.parse_known_args(rest_args)
 

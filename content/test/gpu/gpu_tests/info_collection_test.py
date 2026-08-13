@@ -18,8 +18,9 @@ from gpu_tests.util import host_information
 
 
 @dataclasses.dataclass
-class InfoCollectionTestArgs():
+class InfoCollectionTestArgs:
   """Struct-like class for passing args to an InfoCollection test."""
+
   expected_vendor_id_str: str | None = None
   expected_device_id_strs: list[str] | None = None
   gpu: gi.GPUInfo | None = None
@@ -34,43 +35,68 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(InfoCollectionTest, cls).AddCommandlineArgs(parser)
     parser.add_argument(
-        '--expected-device-id',
-        action='append',
-        dest='expected_device_ids',
-        default=[],
-        help=('The expected device id in hexadecimal. Can be specified '
-              'multiple times.'))
-    parser.add_argument('--expected-vendor-id',
-                        help='The expected vendor id in hexadecimal.')
+      '--expected-device-id',
+      action='append',
+      dest='expected_device_ids',
+      default=[],
+      help=(
+        'The expected device id in hexadecimal. Can be specified '
+        'multiple times.'
+      ),
+    )
+    parser.add_argument(
+      '--expected-vendor-id', help='The expected vendor id in hexadecimal.'
+    )
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    yield ('InfoCollection_basic', '_', [
+    yield (
+      'InfoCollection_basic',
+      '_',
+      [
         '_RunBasicTest',
         InfoCollectionTestArgs(
-            expected_vendor_id_str=options.expected_vendor_id,
-            expected_device_id_strs=options.expected_device_ids)
-    ])
-    yield ('InfoCollection_direct_composition', '_',
-           ['_RunDirectCompositionTest',
-            InfoCollectionTestArgs()])
-    yield ('InfoCollection_dx12_vulkan', '_',
-           ['_RunDX12VulkanTest',
-            InfoCollectionTestArgs()])
-    yield ('InfoCollection_asan_info_surfaced', '_',
-           ['_RunAsanInfoTest', InfoCollectionTestArgs()])
-    yield ('InfoCollection_clang_coverage_info_surfaced', '_',
-           ['_RunClangCoverageInfoTest',
-            InfoCollectionTestArgs()])
-    yield ('InfoCollection_host_information_matches_browser', '_', [
+          expected_vendor_id_str=options.expected_vendor_id,
+          expected_device_id_strs=options.expected_device_ids,
+        ),
+      ],
+    )
+    yield (
+      'InfoCollection_direct_composition',
+      '_',
+      ['_RunDirectCompositionTest', InfoCollectionTestArgs()],
+    )
+    yield (
+      'InfoCollection_dx12_vulkan',
+      '_',
+      ['_RunDX12VulkanTest', InfoCollectionTestArgs()],
+    )
+    yield (
+      'InfoCollection_asan_info_surfaced',
+      '_',
+      ['_RunAsanInfoTest', InfoCollectionTestArgs()],
+    )
+    yield (
+      'InfoCollection_clang_coverage_info_surfaced',
+      '_',
+      ['_RunClangCoverageInfoTest', InfoCollectionTestArgs()],
+    )
+    yield (
+      'InfoCollection_host_information_matches_browser',
+      '_',
+      [
         '_RunHostInformationTest',
         InfoCollectionTestArgs(
-            expected_vendor_id_str=options.expected_vendor_id,
-            expected_device_id_strs=options.expected_device_ids)
-    ])
-    yield ('InfoCollection_webGPU_android_advanced_protection_mode', '_',
-           ['_RunWebGPUAapmInfoTest',
-            InfoCollectionTestArgs()])
+          expected_vendor_id_str=options.expected_vendor_id,
+          expected_device_id_strs=options.expected_device_ids,
+        ),
+      ],
+    )
+    yield (
+      'InfoCollection_webGPU_android_advanced_protection_mode',
+      '_',
+      ['_RunWebGPUAapmInfoTest', InfoCollectionTestArgs()],
+    )
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -118,53 +144,63 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     detected_device_id = device.device_id
 
     # Gather the expected IDs passed on the command line
-    if (not test_args.expected_vendor_id_str
-        or not test_args.expected_device_id_strs):
+    if (
+      not test_args.expected_vendor_id_str
+      or not test_args.expected_device_id_strs
+    ):
       self.fail('Missing --expected-[vendor|device]-id command line args')
 
     expected_vendor_id = int(test_args.expected_vendor_id_str, 16)
     expected_device_ids = [
-        int(id_str, 16) for id_str in test_args.expected_device_id_strs
+      int(id_str, 16) for id_str in test_args.expected_device_id_strs
     ]
 
     # Check expected and detected GPUs match
     if detected_vendor_id != expected_vendor_id:
-      self.fail(f'Vendor ID mismatch, expected 0x{expected_vendor_id:x} but '
-                f'got 0x{detected_vendor_id:x}.')
+      self.fail(
+        f'Vendor ID mismatch, expected 0x{expected_vendor_id:x} but '
+        f'got 0x{detected_vendor_id:x}.'
+      )
 
     if detected_device_id not in expected_device_ids:
       hex_ids = [f'0x{edi:x}' for edi in expected_device_ids]
-      self.fail(f'Device ID mismatch, expected one of [{", ".join(hex_ids)}] '
-                f'but got 0x{detected_device_id:x}.')
+      self.fail(
+        f'Device ID mismatch, expected one of [{", ".join(hex_ids)}] '
+        f'but got 0x{detected_device_id:x}.'
+      )
 
-  def _RunDirectCompositionTest(self,
-                                test_args: InfoCollectionTestArgs) -> None:
+  def _RunDirectCompositionTest(
+    self, test_args: InfoCollectionTestArgs
+  ) -> None:
     os_name = self.browser.platform.GetOSName()
     if os_name and os_name.lower() == 'win':
       overlay_bot_config = overlay_support.GetOverlayConfigForGpu(
-          test_args.gpu.devices[0])
+        test_args.gpu.devices[0]
+      )
       aux_attributes = test_args.gpu.aux_attributes
       if not aux_attributes:
         self.fail('GPU info does not have aux_attributes.')
       expected_values = {
-          'direct_composition': overlay_bot_config.direct_composition,
-          'supports_overlays': overlay_bot_config.supports_overlays,
-          'nv12_overlay_support': overlay_bot_config.nv12_overlay_support,
-          'yuy2_overlay_support': overlay_bot_config.yuy2_overlay_support,
-          'bgra8_overlay_support': overlay_bot_config.bgra8_overlay_support,
+        'direct_composition': overlay_bot_config.direct_composition,
+        'supports_overlays': overlay_bot_config.supports_overlays,
+        'nv12_overlay_support': overlay_bot_config.nv12_overlay_support,
+        'yuy2_overlay_support': overlay_bot_config.yuy2_overlay_support,
+        'bgra8_overlay_support': overlay_bot_config.bgra8_overlay_support,
       }
       for field, expected in expected_values.items():
         detected = aux_attributes.get(field, 'NONE')
         if expected != detected:
           self.fail(
-              f'{field} mismatch, expected {self._ValueToStr(expected)} but '
-              f'got {self._ValueToStr(detected)}.')
+            f'{field} mismatch, expected {self._ValueToStr(expected)} but '
+            f'got {self._ValueToStr(detected)}.'
+          )
 
   def _RunDX12VulkanTest(self, _: InfoCollectionTestArgs) -> None:
     os_name = self.browser.platform.GetOSName()
     if os_name and os_name.lower() == 'win':
       self.RestartBrowserIfNecessaryWithArgs(
-          ['--no-delay-for-dx12-vulkan-info-collection'])
+        ['--no-delay-for-dx12-vulkan-info-collection']
+      )
       # Need to re-request system info for DX12/Vulkan bits.
       system_info = self.browser.GetSystemInfo()
       if not system_info:
@@ -181,8 +217,9 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
         detected = aux_attributes.get(field)
         if expected != detected:
           self.fail(
-              f'{field} mismatch, expected {self._ValueToStr(expected)} but '
-              f'got {self._ValueToStr(detected)}.')
+            f'{field} mismatch, expected {self._ValueToStr(expected)} but '
+            f'got {self._ValueToStr(detected)}.'
+          )
 
   def _RunAsanInfoTest(self, _: InfoCollectionTestArgs) -> None:
     gpu_info = self.browser.GetSystemInfo().gpu
@@ -235,14 +272,17 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
       self.skipTest('Test only applicable on Android')
     if self._finder_options.browser_type != 'android-chrome':
       self.skipTest(
-          'Android Advanced Protection status requires internal browser apk ' +
-          '(android-chrome). Browser is: ' + self._finder_options.browser_type)
+        'Android Advanced Protection status requires internal browser apk '
+        + '(android-chrome). Browser is: '
+        + self._finder_options.browser_type
+      )
 
     # Ensure Advanced Protection and WebGPU are available on browser.
     feature_status = self.GetGpuFeatureStatusAndValidate()
     if feature_status.get('webgpu') != 'enabled':
       self.skipTest(
-          'WebGPU is not enabled for browser; unable to test disable via AAPM')
+        'WebGPU is not enabled for browser; unable to test disable via AAPM'
+      )
 
     # Enable advanced protection (AAPM).
     # pylint: disable=protected-access
@@ -250,29 +290,34 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     # pylint: enable=protected-access
     try:
       device.RunShellCommand(
-          ['cmd', 'advanced_protection', 'set-protection-enabled', 'true'],
-          check_return=True)
+        ['cmd', 'advanced_protection', 'set-protection-enabled', 'true'],
+        check_return=True,
+      )
 
       aapm_enabled_output = device.RunShellCommand(
-          ['cmd', 'advanced_protection', 'is-protection-enabled'],
-          check_return=True)
+        ['cmd', 'advanced_protection', 'is-protection-enabled'],
+        check_return=True,
+      )
       if ''.join(aapm_enabled_output).lower().strip() != 'true':
         self.fail('Failed to enable Android Advanced Protection Mode.')
 
       # Restart browser after enabling AAPM to ensure status is propagated.
       self.RestartBrowserIfNecessaryWithArgs(
-          ['--enable-features=AAPMBlocksWebGPU'], force_restart=True)
+        ['--enable-features=AAPMBlocksWebGPU'], force_restart=True
+      )
 
       # Check if WebGPU was correctly disabled via AAPM.
       feature_status = self.GetGpuFeatureStatusAndValidate()
       self.assertEqual(
-          feature_status.get('webgpu'), 'disabled_off',
-          'WebGPU not disabled in Android Advanced Protection '
-          'Mode.')
+        feature_status.get('webgpu'),
+        'disabled_off',
+        'WebGPU not disabled in Android Advanced Protection Mode.',
+      )
     finally:
       device.RunShellCommand(
-          ['cmd', 'advanced_protection', 'set-protection-enabled', 'false'],
-          check_return=True)
+        ['cmd', 'advanced_protection', 'set-protection-enabled', 'false'],
+        check_return=True,
+      )
 
   @staticmethod
   def _ValueToStr(value: str | bool) -> str:
@@ -286,12 +331,16 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:
     return [
-        os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                     'test_expectations', 'info_collection_expectations.txt')
+      os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'test_expectations',
+        'info_collection_expectations.txt',
+      )
     ]
 
 
-def load_tests(loader: unittest.TestLoader, tests: Any,
-               pattern: Any) -> unittest.TestSuite:
+def load_tests(
+  loader: unittest.TestLoader, tests: Any, pattern: Any
+) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

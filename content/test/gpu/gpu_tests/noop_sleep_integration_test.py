@@ -22,7 +22,7 @@ class NoopSleepIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    tests = (('DoNothing', 'empty.html'), )
+    tests = (('DoNothing', 'empty.html'),)
     for t in tests:
       yield (t[0], t[1], ['_' + t[0]])
 
@@ -54,7 +54,8 @@ class NoopSleepIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     time.sleep(180)
 
 
-def load_tests(loader: unittest.TestLoader, tests: Any,
-               pattern: Any) -> unittest.TestSuite:
+def load_tests(
+  loader: unittest.TestLoader, tests: Any, pattern: Any
+) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

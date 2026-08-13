@@ -58,27 +58,32 @@ try:
   from selenium.common import exceptions
 except ImportError as error:
   logging.error(
-      'This script needs selenium and appropriate web drivers to be installed.')
+    'This script needs selenium and appropriate web drivers to be installed.'
+  )
   raise
 
 from gpu_tests import ipg_utils
 
 CHROME_STABLE_PATH_WIN = (
-    r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe')
+  r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe'
+)
 CHROME_BETA_PATH_WIN = (
-    r'C:\Program Files (x86)\Google\Chrome Beta\Application\chrome.exe')
+  r'C:\Program Files (x86)\Google\Chrome Beta\Application\chrome.exe'
+)
 CHROME_DEV_PATH_WIN = (
-    r'C:\Program Files (x86)\Google\Chrome Dev\Application\chrome.exe')
+  r'C:\Program Files (x86)\Google\Chrome Dev\Application\chrome.exe'
+)
 # The following two paths are relative to the LOCALAPPDATA
 CHROME_CANARY_PATH_WIN = r'Google\Chrome SxS\Application\chrome.exe'
 CHROMIUM_PATH_WIN = r'Chromium\Application\chrome.exe'
 
 CHROME_STABLE_PATH_MAC = (
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+)
 CHROME_BETA_PATH_MAC = CHROME_STABLE_PATH_MAC
 CHROME_DEV_PATH_MAC = CHROME_STABLE_PATH_MAC
 CHROME_CANARY_PATH_MAC = (
-    '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary'
+  '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary'
 )
 
 SUPPORTED_BROWSERS = ['stable', 'beta', 'dev', 'canary', 'chromium', 'edge']
@@ -103,8 +108,9 @@ def LocateBrowserWin(options_browser):
   else:
     logging.warning('Invalid value for --browser')
     logging.warning(
-        'Supported values: %s, or a full path to a browser executable.',
-        ', '.join(SUPPORTED_BROWSERS))
+      'Supported values: %s, or a full path to a browser executable.',
+      ', '.join(SUPPORTED_BROWSERS),
+    )
     return None
   if not os.path.exists(browser):
     logging.warning("Can't locate browser at %s", browser)
@@ -128,8 +134,9 @@ def LocateBrowserMac(options_browser):
   else:
     logging.warning('Invalid value for --browser')
     logging.warning(
-        'Supported values: %s, or a full path to a browser executable.',
-        ', '.join(SUPPORTED_BROWSERS))
+      'Supported values: %s, or a full path to a browser executable.',
+      ', '.join(SUPPORTED_BROWSERS),
+    )
     return None
   if not os.path.exists(browser):
     logging.warning("Can't locate browser at %s", browser)
@@ -147,8 +154,9 @@ def LocateBrowser(options_browser):
   return None
 
 
-def CreateWebDriver(browser, user_data_dir, url, fullscreen,
-                    extra_browser_args):
+def CreateWebDriver(
+  browser, user_data_dir, url, fullscreen, extra_browser_args
+):
   if browser == 'edge' or browser.endswith('msedge.exe'):
     options = webdriver.EdgeOptions()
     # Set use_chromium to true or an error will be triggered that the latest
@@ -188,13 +196,22 @@ def CreateWebDriver(browser, user_data_dir, url, fullscreen,
 
 
 # pylint: disable=too-many-arguments
-def MeasurePowerOnce(browser, logfile, duration, delay, resolution, url,
-                     fullscreen, extra_browser_args):
+def MeasurePowerOnce(
+  browser,
+  logfile,
+  duration,
+  delay,
+  resolution,
+  url,
+  fullscreen,
+  extra_browser_args,
+):
   logging.debug('Logging into %s', logfile)
   user_data_dir = tempfile.mkdtemp()
 
-  driver = CreateWebDriver(browser, user_data_dir, url, fullscreen,
-                           extra_browser_args)
+  driver = CreateWebDriver(
+    browser, user_data_dir, url, fullscreen, extra_browser_args
+  )
   ipg_utils.RunIPG(duration + delay, resolution, logfile)
   driver.quit()
 
@@ -206,65 +223,90 @@ def MeasurePowerOnce(browser, logfile, duration, delay, resolution, url,
     logging.debug(err)
   results = ipg_utils.AnalyzeIPGLogFile(logfile, delay)
   return results
+
+
 # pylint: enable=too-many-arguments
 
 
 def ParseArgs():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--browser',
-                      help=('select which browser to run. Options include: ' +
-                            ', '.join(SUPPORTED_BROWSERS) +
-                            ', or a full path to a browser executable. ' +
-                            'By default, stable is selected.'))
-  parser.add_argument('--duration',
-                      default=60,
-                      type=int,
-                      help='specify how many seconds Intel Power Gadget '
-                      'measures. By default, 60 seconds is selected.')
-  parser.add_argument('--delay',
-                      default=10,
-                      type=int,
-                      help='specify how many seconds we skip in the data '
-                      'Intel Power Gadget collects. This time is for starting '
-                      'video play, switching to fullscreen mode, etc. '
-                      'By default, 10 seconds is selected.')
-  parser.add_argument('--resolution',
-                      default=100,
-                      type=int,
-                      help='specify how often Intel Power Gadget samples '
-                      'data in milliseconds. By default, 100 ms is selected.')
-  parser.add_argument('--logdir',
-                      help='specify where Intel Power Gadget stores its log.'
-                      'By default, it is the current path.')
-  parser.add_argument('--logname',
-                      help='specify the prefix for Intel Power Gadget log '
-                      'filename. By default, it is PowerLog.')
-  parser.add_argument('-v',
-                      '--verbose',
-                      action='store_true',
-                      default=False,
-                      help='print out debug information.')
-  parser.add_argument('--repeat',
-                      default=1,
-                      type=int,
-                      help='specify how many times to run the measurements.')
-  parser.add_argument('--url',
-                      help='specify the webpage URL the browser launches with.')
   parser.add_argument(
-      '--extra-browser-args',
-      dest='extra_browser_args',
-      help='specify extra command line switches for the browser '
-      'that are separated by spaces (quoted).')
+    '--browser',
+    help=(
+      'select which browser to run. Options include: '
+      + ', '.join(SUPPORTED_BROWSERS)
+      + ', or a full path to a browser executable. '
+      + 'By default, stable is selected.'
+    ),
+  )
   parser.add_argument(
-      '--extra-browser-args-filename',
-      dest='extra_browser_args_filename',
-      metavar='FILE',
-      help='specify extra command line switches for the browser '
-      'in a text file that are separated by whitespace.')
-  parser.add_argument('--fullscreen',
-                      action='store_true',
-                      default=False,
-                      help='specify whether video should be made fullscreen.')
+    '--duration',
+    default=60,
+    type=int,
+    help='specify how many seconds Intel Power Gadget '
+    'measures. By default, 60 seconds is selected.',
+  )
+  parser.add_argument(
+    '--delay',
+    default=10,
+    type=int,
+    help='specify how many seconds we skip in the data '
+    'Intel Power Gadget collects. This time is for starting '
+    'video play, switching to fullscreen mode, etc. '
+    'By default, 10 seconds is selected.',
+  )
+  parser.add_argument(
+    '--resolution',
+    default=100,
+    type=int,
+    help='specify how often Intel Power Gadget samples '
+    'data in milliseconds. By default, 100 ms is selected.',
+  )
+  parser.add_argument(
+    '--logdir',
+    help='specify where Intel Power Gadget stores its log.'
+    'By default, it is the current path.',
+  )
+  parser.add_argument(
+    '--logname',
+    help='specify the prefix for Intel Power Gadget log '
+    'filename. By default, it is PowerLog.',
+  )
+  parser.add_argument(
+    '-v',
+    '--verbose',
+    action='store_true',
+    default=False,
+    help='print out debug information.',
+  )
+  parser.add_argument(
+    '--repeat',
+    default=1,
+    type=int,
+    help='specify how many times to run the measurements.',
+  )
+  parser.add_argument(
+    '--url', help='specify the webpage URL the browser launches with.'
+  )
+  parser.add_argument(
+    '--extra-browser-args',
+    dest='extra_browser_args',
+    help='specify extra command line switches for the browser '
+    'that are separated by spaces (quoted).',
+  )
+  parser.add_argument(
+    '--extra-browser-args-filename',
+    dest='extra_browser_args_filename',
+    metavar='FILE',
+    help='specify extra command line switches for the browser '
+    'in a text file that are separated by whitespace.',
+  )
+  parser.add_argument(
+    '--fullscreen',
+    action='store_true',
+    default=False,
+    help='specify whether video should be made fullscreen.',
+  )
 
   return parser.parse_args()
 
@@ -290,21 +332,31 @@ def main():
     extra_browser_args = options.extra_browser_args.split()
   if options.extra_browser_args_filename:
     if not os.path.isfile(options.extra_browser_args_filename):
-      logging.error("Can't locate file at %s",
-                    options.extra_browser_args_filename)
+      logging.error(
+        "Can't locate file at %s", options.extra_browser_args_filename
+      )
     else:
-      with open(options.extra_browser_args_filename, 'r',
-                encoding='utf-8') as f:
+      with open(
+        options.extra_browser_args_filename, 'r', encoding='utf-8'
+      ) as f:
         extra_browser_args.extend(f.read().split())
         f.close()
 
   for run in range(1, options.repeat + 1):
-    logfile = ipg_utils.GenerateIPGLogFilename(log_prefix, options.logdir, run,
-                                               options.repeat, True)
+    logfile = ipg_utils.GenerateIPGLogFilename(
+      log_prefix, options.logdir, run, options.repeat, True
+    )
     print(f'Iteration #{run} out of {options.repeat}')
-    results = MeasurePowerOnce(browser, logfile, options.duration,
-                               options.delay, options.resolution, options.url,
-                               options.fullscreen, extra_browser_args)
+    results = MeasurePowerOnce(
+      browser,
+      logfile,
+      options.duration,
+      options.delay,
+      options.resolution,
+      options.url,
+      options.fullscreen,
+      extra_browser_args,
+    )
     print(results)
     all_results.append(results)
 

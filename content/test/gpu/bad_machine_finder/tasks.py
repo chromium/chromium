@@ -50,8 +50,9 @@ class BotStats:
 
   # Mutators
 
-  def AddStatsForSuite(self, test_suite: str, total_tasks: int,
-                       failed_tasks: int) -> None:
+  def AddStatsForSuite(
+    self, test_suite: str, total_tasks: int, failed_tasks: int
+  ) -> None:
     assert not self._frozen
     if total_tasks <= 0:
       raise ValueError('total_tasks must be positive')
@@ -61,9 +62,10 @@ class BotStats:
       raise ValueError('total_tasks must be >= failed_tasks')
     if test_suite in self._per_suite_total_tasks:
       raise ValueError(
-          f'Stats for test suite {test_suite} were already provided - queries '
-          f'should only return one row for each mixin/bot/test_suite '
-          f'combination')
+        f'Stats for test suite {test_suite} were already provided - queries '
+        f'should only return one row for each mixin/bot/test_suite '
+        f'combination'
+      )
     self._total_tasks += total_tasks
     self._failed_tasks += failed_tasks
     self._per_suite_total_tasks[test_suite] = total_tasks
@@ -114,8 +116,9 @@ class MixinStats:
 
   # Mutators
 
-  def AddStatsForBotAndSuite(self, bot_id: str, test_suite: str,
-                             total_tasks: int, failed_tasks: int) -> None:
+  def AddStatsForBotAndSuite(
+    self, bot_id: str, test_suite: str, total_tasks: int, failed_tasks: int
+  ) -> None:
     assert not self._frozen
     if total_tasks <= 0:
       raise ValueError('total_tasks must be positive')

@@ -31,8 +31,10 @@ def GetBuildData(method, request):
   if not isinstance(request, bytes):
     request = request.encode('utf-8')
   url = ulib.Request(
-      'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/' + method,
-      request, headers)
+    'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/' + method,
+    request,
+    headers,
+  )
   with ulib.urlopen(url) as conn:
     result = conn.read().decode('utf-8')
   # Result is a multi-line string the first line of which is
@@ -41,36 +43,32 @@ def GetBuildData(method, request):
 
 
 def GetJsonForBuildSteps(bot, build):
-  request = json.dumps({
-      'builder': {
-          'project': 'chromium',
-          'bucket': 'ci',
-          'builder': bot
-      },
+  request = json.dumps(
+    {
+      'builder': {'project': 'chromium', 'bucket': 'ci', 'builder': bot},
       'buildNumber': build,
-      'fields': 'steps.*.name,steps.*.logs'
-  })
+      'fields': 'steps.*.name,steps.*.logs',
+    }
+  )
   return GetBuildData('GetBuild', request)
 
 
 def GetJsonForLatestGreenBuildSteps(bot):
   fields = [
-      'builds.*.number',
-      'builds.*.steps.*.name',
-      'builds.*.steps.*.logs',
+    'builds.*.number',
+    'builds.*.steps.*.name',
+    'builds.*.steps.*.logs',
   ]
-  request = json.dumps({
+  request = json.dumps(
+    {
       'predicate': {
-          'builder': {
-              'project': 'chromium',
-              'bucket': 'ci',
-              'builder': bot
-          },
-          'status': 'SUCCESS'
+        'builder': {'project': 'chromium', 'bucket': 'ci', 'builder': bot},
+        'status': 'SUCCESS',
       },
       'fields': ','.join(fields),
-      'pageSize': 1
-  })
+      'pageSize': 1,
+    }
+  )
   builds_json = GetBuildData('SearchBuilds', request)
   if 'builds' not in builds_json:
     raise ValueError('Returned json data does not have "builds"')
@@ -126,13 +124,18 @@ def GatherResults(bot, build, step):
   json_output = FindStepLogURL(build_json['steps'], step, 'json.output')
   if not json_output:
     raise ValueError(
-        f'Unable to find json.output from step starting with {step}')
+      f'Unable to find json.output from step starting with {step}'
+    )
   logging.debug('json.output for step starting with %s: %s', step, json_output)
 
   merged_json = JsonLoadFromUrl(json_output)
   extracted_times = {'times': {}}
-  ExtractTestTimes(merged_json['tests'], '', extracted_times['times'],
-                   merged_json['path_delimiter'])
+  ExtractTestTimes(
+    merged_json['tests'],
+    '',
+    extracted_times['times'],
+    merged_json['path_delimiter'],
+  )
 
   return extracted_times, merged_json
 
@@ -140,7 +143,7 @@ def GatherResults(bot, build, step):
 def main():
   rest_args = sys.argv[1:]
   parser = argparse.ArgumentParser(
-      description="""
+    description="""
 Gather JSON results from a run of a Swarming test.
 
 Example invocation to fetch the WebGL 1.0 test runtimes from Linux FYI
@@ -156,34 +159,40 @@ gather_swarming_json_results.py \
   --output=../data/gpu/webgl2_conformance_tests_output.json
 
 """,
-      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+  )
   parser.add_argument(
-      '-v',
-      '--verbose',
-      action='store_true',
-      default=False,
-      help='Enable verbose output')
+    '-v',
+    '--verbose',
+    action='store_true',
+    default=False,
+    help='Enable verbose output',
+  )
   parser.add_argument(
-      '--bot',
-      default='Linux FYI Release (NVIDIA)',
-      help='Which bot to examine')
+    '--bot', default='Linux FYI Release (NVIDIA)', help='Which bot to examine'
+  )
   parser.add_argument(
-      '--build',
-      type=int,
-      help='Which build to fetch. If not specified, use '
-      'the latest successful build.')
-  parser.add_argument('--step',
-                      default='webgl2_conformance_gl_passthrough_tests',
-                      help='Which step to fetch (treated as a prefix)')
+    '--build',
+    type=int,
+    help='Which build to fetch. If not specified, use '
+    'the latest successful build.',
+  )
   parser.add_argument(
-      '--output',
-      metavar='FILE',
-      default='output.json',
-      help='Name of output file; contains only test run times')
+    '--step',
+    default='webgl2_conformance_gl_passthrough_tests',
+    help='Which step to fetch (treated as a prefix)',
+  )
   parser.add_argument(
-      '--full-output',
-      metavar='FILE',
-      help='Name of complete output file if desired')
+    '--output',
+    metavar='FILE',
+    default='output.json',
+    help='Name of output file; contains only test run times',
+  )
+  parser.add_argument(
+    '--full-output',
+    metavar='FILE',
+    help='Name of complete output file if desired',
+  )
 
   options = parser.parse_args(rest_args)
   if options.verbose:
@@ -193,19 +202,22 @@ gather_swarming_json_results.py \
     logging.warning('Script does not work with Python older than 2.7.10')
     return 0
 
-  extracted_times, merged_json = GatherResults(options.bot, options.build,
-                                               options.step)
+  extracted_times, merged_json = GatherResults(
+    options.bot, options.build, options.step
+  )
 
   logging.debug('Saving output to %s', options.output)
   with open(options.output, 'w', encoding='utf-8') as f:
     json.dump(
-        extracted_times, f, sort_keys=True, indent=2, separators=(',', ': '))
+      extracted_times, f, sort_keys=True, indent=2, separators=(',', ': ')
+    )
 
   if options.full_output is not None:
     logging.debug('Saving full output to %s', options.full_output)
     with open(options.full_output, 'w', encoding='utf-8') as f:
       json.dump(
-          merged_json, f, sort_keys=True, indent=2, separators=(',', ': '))
+        merged_json, f, sort_keys=True, indent=2, separators=(',', ': ')
+      )
 
   return 0
 

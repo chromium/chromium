@@ -5,5 +5,6 @@
 import gpu_path_util
 
 gpu_path_util.AddDirToPathIfNeeded(gpu_path_util.CATAPULT_DIR, 'telemetry')
-gpu_path_util.AddDirToPathIfNeeded(gpu_path_util.CATAPULT_DIR, 'common',
-                                   'py_utils')
+gpu_path_util.AddDirToPathIfNeeded(
+  gpu_path_util.CATAPULT_DIR, 'common', 'py_utils'
+)

@@ -20,8 +20,9 @@ from gpu_tests.util import host_information
 from gpu_tests.util import websocket_server as wss
 from gpu_tests.util import websocket_utils
 
-TEST_PAGE_RELPATH = os.path.join(webgl_test_util.extensions_relpath,
-                                 'pixel_test_page.html')
+TEST_PAGE_RELPATH = os.path.join(
+  webgl_test_util.extensions_relpath, 'pixel_test_page.html'
+)
 
 DEFAULT_HEARTBEAT_TIMEOUT = 15
 ASAN_HEARTBEAT_MULTIPLIER = 4
@@ -40,6 +41,7 @@ class LoopState:
 
   Used to allow nested loopes, e.g. during pixel test page actions.
   """
+
   test_started: bool = False
   test_finished: bool = False
 
@@ -47,20 +49,26 @@ class LoopState:
 @dataclasses.dataclass
 class TabData:
   """Stores all the components for interacting with a tab."""
+
   tab: ct.Tab
   websocket_server: wss.WebsocketServer
   is_default_tab: bool = False
 
 
-class TestAction():
+class TestAction:
   """Defines some action to run before capturing a screenshot.
 
   Tests are able to define custom lists of actions if additional steps are
   necessary to run the test after loading the test page.
   """
-  def Run(self, test_case: 'SkiaGoldHeartbeatTestCase', tab_data: TabData,
-          loop_state: LoopState,
-          test_instance: 'SkiaGoldHeartbeatIntegrationTestBase') -> None:
+
+  def Run(
+    self,
+    test_case: 'SkiaGoldHeartbeatTestCase',
+    tab_data: TabData,
+    loop_state: LoopState,
+    test_instance: 'SkiaGoldHeartbeatIntegrationTestBase',
+  ) -> None:
     raise NotImplementedError()
 
 
@@ -69,39 +77,58 @@ class _TestActionHandleMessageLoop(TestAction):
     super().__init__()
     self.timeout = timeout
 
-  def Run(self, test_case: 'SkiaGoldHeartbeatTestCase', tab_data: TabData,
-          loop_state: LoopState,
-          test_instance: 'SkiaGoldHeartbeatIntegrationTestBase') -> None:
+  def Run(
+    self,
+    test_case: 'SkiaGoldHeartbeatTestCase',
+    tab_data: TabData,
+    loop_state: LoopState,
+    test_instance: 'SkiaGoldHeartbeatIntegrationTestBase',
+  ) -> None:
     test_instance.HandleMessageLoop(self.timeout, tab_data, loop_state)
 
 
 class TestActionWaitForContinue(_TestActionHandleMessageLoop):
   """Handles the heartbeat message loop and waits for a CONTINUE signal."""
-  def Run(self, test_case: 'SkiaGoldHeartbeatTestCase', tab_data: TabData,
-          loop_state: LoopState,
-          test_instance: 'SkiaGoldHeartbeatIntegrationTestBase') -> None:
+
+  def Run(
+    self,
+    test_case: 'SkiaGoldHeartbeatTestCase',
+    tab_data: TabData,
+    loop_state: LoopState,
+    test_instance: 'SkiaGoldHeartbeatIntegrationTestBase',
+  ) -> None:
     super().Run(test_case, tab_data, loop_state, test_instance)
     test_instance.assertFalse(loop_state.test_finished)
 
 
 class TestActionWaitForFinish(_TestActionHandleMessageLoop):
   """Handles the heartbeat message loop and waits for the test to finish."""
-  def Run(self, test_case: 'SkiaGoldHeartbeatTestCase', tab_data: TabData,
-          loop_state: LoopState,
-          test_instance: 'SkiaGoldHeartbeatIntegrationTestBase') -> None:
+
+  def Run(
+    self,
+    test_case: 'SkiaGoldHeartbeatTestCase',
+    tab_data: TabData,
+    loop_state: LoopState,
+    test_instance: 'SkiaGoldHeartbeatIntegrationTestBase',
+  ) -> None:
     super().Run(test_case, tab_data, loop_state, test_instance)
     test_instance.assertTrue(loop_state.test_finished)
 
 
 class TestActionRunJavaScript(TestAction):
   """Evaluates the given JavaScript in the test page's iframe."""
+
   def __init__(self, javascript: str):
     super().__init__()
     self.javascript = javascript
 
-  def Run(self, test_case: 'SkiaGoldHeartbeatTestCase', tab_data: TabData,
-          loop_state: LoopState,
-          test_instance: 'SkiaGoldHeartbeatIntegrationTestBase') -> None:
+  def Run(
+    self,
+    test_case: 'SkiaGoldHeartbeatTestCase',
+    tab_data: TabData,
+    loop_state: LoopState,
+    test_instance: 'SkiaGoldHeartbeatIntegrationTestBase',
+  ) -> None:
     EvalInTestIframe(tab_data.tab, self.javascript)
 
 
@@ -113,23 +140,31 @@ class TestActionWaitForInnerTestPageLoad(TestAction):
   needs to be manually started via a JavaScript function, then we need to wait
   for a full page load before doing that.
   """
+
   def __init__(self, timeout: float = 10):
     super().__init__()
     self.timeout = timeout
 
-  def Run(self, test_case: 'SkiaGoldHeartbeatTestCase', tab_data: TabData,
-          loop_state: LoopState,
-          test_instance: 'SkiaGoldHeartbeatIntegrationTestBase') -> None:
-    tab_data.tab.WaitForJavaScriptCondition('testIframeLoaded',
-                                            timeout=self.timeout)
+  def Run(
+    self,
+    test_case: 'SkiaGoldHeartbeatTestCase',
+    tab_data: TabData,
+    loop_state: LoopState,
+    test_instance: 'SkiaGoldHeartbeatIntegrationTestBase',
+  ) -> None:
+    tab_data.tab.WaitForJavaScriptCondition(
+      'testIframeLoaded', timeout=self.timeout
+    )
 
 
 class SkiaGoldHeartbeatTestCase(sgitb.SkiaGoldTestCase):
-  def __init__(self,
-               name: str,
-               *args,
-               test_actions: list[TestAction] | None = None,
-               **kwargs):
+  def __init__(
+    self,
+    name: str,
+    *args,
+    test_actions: list[TestAction] | None = None,
+    **kwargs,
+  ):
     super().__init__(name, *args, **kwargs)
     if test_actions:
       self.test_actions = test_actions
@@ -205,19 +240,22 @@ class SkiaGoldHeartbeatIntegrationTestBase(sgitb.SkiaGoldIntegrationTestBase):
     """
     tab = tab_data.tab
     websocket_server = tab_data.websocket_server
-    if not tab_data.is_default_tab or (tab_data.is_default_tab
-                                       and not self.__class__.page_loaded):
+    if not tab_data.is_default_tab or (
+      tab_data.is_default_tab and not self.__class__.page_loaded
+    ):
       # If we haven't loaded the test page that we use to run tests within an
       # iframe, load it and establish the websocket connection.
       url = self.UrlOfStaticFilePath(TEST_PAGE_RELPATH)
       tab.Navigate(
-          url,
-          script_to_evaluate_on_commit=self._dom_automation_controller_script)
+        url, script_to_evaluate_on_commit=self._dom_automation_controller_script
+      )
       tab.WaitForDocumentReadyStateToBeComplete(timeout=5)
       tab.action_runner.EvaluateJavaScript(
-          f'connectWebsocket("{websocket_server.server_port}")', timeout=5)
+        f'connectWebsocket("{websocket_server.server_port}")', timeout=5
+      )
       websocket_server.WaitForConnection(
-          websocket_utils.GetScaledConnectionTimeout(self.child.jobs))
+        websocket_utils.GetScaledConnectionTimeout(self.child.jobs)
+      )
       response = websocket_server.Receive(5)
       response = json.loads(response)
       assert response['type'] == 'CONNECTION_ACK'
@@ -229,8 +267,9 @@ class SkiaGoldHeartbeatIntegrationTestBase(sgitb.SkiaGoldIntegrationTestBase):
     tab.action_runner.EvaluateJavaScript(f'runTest("{url}", {initial_scaling})')
 
   # pylint: disable=too-many-branches
-  def HandleMessageLoop(self, test_timeout: float, tab_data: TabData,
-                        loop_state: LoopState) -> None:
+  def HandleMessageLoop(
+    self, test_timeout: float, tab_data: TabData, loop_state: LoopState
+  ) -> None:
     """Handles the websocket message loop until an error or requested break.
 
     Args:
@@ -252,9 +291,10 @@ class SkiaGoldHeartbeatIntegrationTestBase(sgitb.SkiaGoldIntegrationTestBase):
 
         if time.time() - start_time > test_timeout:
           raise RuntimeError(
-              f'Hit {test_timeout:.3f} second global timeout, but page '
-              f'continued to send messages over the websocket, i.e. was not '
-              f'due to a renderer crash.')
+            f'Hit {test_timeout:.3f} second global timeout, but page '
+            f'continued to send messages over the websocket, i.e. was not '
+            f'due to a renderer crash.'
+          )
 
         if response_type == 'TEST_STARTED':
           VerifyMessageOrderTestStarted(loop_state)
@@ -284,16 +324,19 @@ class SkiaGoldHeartbeatIntegrationTestBase(sgitb.SkiaGoldIntegrationTestBase):
         raise RuntimeError(f'Received unknown message type {response_type}')
     except wss.WebsocketReceiveMessageTimeoutError:
       websocket_utils.HandleWebsocketReceiveTimeoutError(
-          tab, start_time, additional_info=str(loop_state))
+        tab, start_time, additional_info=str(loop_state)
+      )
       raise
     except wss.ClientClosedConnectionError as e:
       websocket_utils.HandlePrematureSocketClose(
-          e, start_time, additional_info=str(loop_state))
+        e, start_time, additional_info=str(loop_state)
+      )
     finally:
       try:
         test_messages = tab.EvaluateJavaScript(
-            'domAutomationController._messages',
-            timeout=self._GetControllerMessageTimeout())
+          'domAutomationController._messages',
+          timeout=self._GetControllerMessageTimeout(),
+        )
         if test_messages:
           logging.info('Logging messages from the test:\n%s', test_messages)
       except Exception:  # pylint:disable=broad-except

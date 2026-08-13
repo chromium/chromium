@@ -8,11 +8,14 @@ from gold_inexact_matching import base_parameter_optimizer as bpo
 from gold_inexact_matching import common_typing as ct
 
 
-class OptimizerSet():
+class OptimizerSet:
   """Class to run a ParameterOptimizer for multiple tests."""
 
-  def __init__(self, args: ct.ParsedCmdArgs,
-               optimizer_class: typing.Type[bpo.BaseParameterOptimizer]):
+  def __init__(
+    self,
+    args: ct.ParsedCmdArgs,
+    optimizer_class: typing.Type[bpo.BaseParameterOptimizer],
+  ):
     """
     Args:
       args: The parse arguments from an argparse.ArgumentParser.

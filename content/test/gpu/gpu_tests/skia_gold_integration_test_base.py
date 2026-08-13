@@ -26,8 +26,8 @@ from gpu_tests import gpu_integration_test
 from gpu_tests import skia_gold_matching_algorithms as algo
 
 TEST_DATA_DIRS = [
-    gpu_path_util.GPU_DATA_DIR,
-    os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'media', 'test', 'data'),
+  gpu_path_util.GPU_DATA_DIR,
+  os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'media', 'test', 'data'),
 ]
 
 SKIA_GOLD_CORPUS = 'chrome-gpu'
@@ -40,7 +40,7 @@ class GoldComparisonFailure(Exception):
   """
 
 
-class _ImageParameters():
+class _ImageParameters:
   def __init__(self):
     # Parameters for cloud storage reference images.
     self.vendor_id: int | None = None
@@ -63,18 +63,21 @@ class _ImageParameters():
 # The third party attrs module supposedly handles this situation
 # (https://stackoverflow.com/a/53085935), but attempting to do so on version
 # 21.4.0 fails.
-class SkiaGoldTestCase():
+class SkiaGoldTestCase:
   """Base class for any Gold-enabled test case definition.
 
   Only information used within SkiaGoldIntegrationTestBase should be stored
   here. Additional information should be stored in the appropriate subclass.
   """
+
   # pylint: disable=too-many-arguments
-  def __init__(self,
-               name: str,
-               gpu_process_disabled: bool = False,
-               matching_algorithm: algo.SkiaGoldMatchingAlgorithm | None = None,
-               refresh_after_finish: bool = False):
+  def __init__(
+    self,
+    name: str,
+    gpu_process_disabled: bool = False,
+    matching_algorithm: algo.SkiaGoldMatchingAlgorithm | None = None,
+    refresh_after_finish: bool = False,
+  ):
     """
     Args:
       name: A string containing the name of the test.
@@ -88,15 +91,17 @@ class SkiaGoldTestCase():
     """
     self.name = name
     self.gpu_process_disabled = gpu_process_disabled
-    self.matching_algorithm = (matching_algorithm
-                               or algo.ExactMatchingAlgorithm())
+    self.matching_algorithm = (
+      matching_algorithm or algo.ExactMatchingAlgorithm()
+    )
     self.refresh_after_finish = refresh_after_finish
 
-  #pylint: enable=too-many-arguments
+  # pylint: enable=too-many-arguments
 
 
 class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   """Base class for all tests that upload results to Skia Gold."""
+
   _error_image_cloud_storage_bucket = 'chromium-browser-gpu-tests'
 
   # This information is class-scoped, so that it can be shared across
@@ -116,7 +121,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     super(SkiaGoldIntegrationTestBase, cls).SetUpProcess()
     options = cls.GetOriginalFinderOptions()
     color_profile_manager.ForceUntilExitSRGB(
-        options.dont_restore_color_profile_after_test)
+      options.dont_restore_color_profile_after_test
+    )
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     cls.SetStaticServerDirs(cls._GetStaticServerDirs())
@@ -130,28 +136,38 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   def _SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs) -> None:
     super()._SetClassVariablesFromOptions(options)
     if not cls._dom_automation_controller_script:
-      with open(os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
-                             'websocket_heartbeat.js'),
-                encoding='utf-8') as f:
+      with open(
+        os.path.join(
+          gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
+          'websocket_heartbeat.js',
+        ),
+        encoding='utf-8',
+      ) as f:
         cls._dom_automation_controller_script = f.read()
       cls._dom_automation_controller_script += '\n'
-      with open(os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
-                             'dom_automation_controller.js'),
-                encoding='utf-8') as f:
+      with open(
+        os.path.join(
+          gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
+          'dom_automation_controller.js',
+        ),
+        encoding='utf-8',
+      ) as f:
         cls._dom_automation_controller_script += f.read()
 
   @classmethod
   def GetSkiaGoldProperties(cls) -> sgp.SkiaGoldProperties:
     if not cls._skia_gold_properties:
       cls._skia_gold_properties = sgp.SkiaGoldProperties(
-          cls.GetOriginalFinderOptions())
+        cls.GetOriginalFinderOptions()
+      )
     return cls._skia_gold_properties
 
   @classmethod
   def GetSkiaGoldSessionManager(cls) -> sgsm.SkiaGoldSessionManager:
     if not cls._skia_gold_session_manager:
       cls._skia_gold_session_manager = sgsm.SkiaGoldSessionManager(
-          cls._skia_gold_temp_dir, cls.GetSkiaGoldProperties())
+        cls._skia_gold_temp_dir, cls.GetSkiaGoldProperties()
+      )
     return cls._skia_gold_session_manager
 
   @classmethod
@@ -160,8 +176,9 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
 
     See the parent class' method documentation for additional information.
     """
-    default_args = super(SkiaGoldIntegrationTestBase,
-                         cls).GenerateBrowserArgs(additional_args)
+    default_args = super(SkiaGoldIntegrationTestBase, cls).GenerateBrowserArgs(
+      additional_args
+    )
     default_args.extend([cba.ENABLE_GPU_BENCHMARKING, cba.TEST_TYPE_GPU])
 
     # TODO(crbug.com/394842006): This flag is an android optimization which
@@ -169,16 +186,19 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     # overlaps with the page's contents and interferes with the tests. Disable
     # it so the hairline isn't drawn.
     default_args.extend(
-        ['--disable-features=AlwaysDrawCompositedToolbarHairline'])
+      ['--disable-features=AlwaysDrawCompositedToolbarHairline']
+    )
 
     force_color_profile_arg = [
-        arg for arg in default_args if arg.startswith('--force-color-profile=')
+      arg for arg in default_args if arg.startswith('--force-color-profile=')
     ]
     if not force_color_profile_arg:
-      default_args.extend([
+      default_args.extend(
+        [
           cba.FORCE_COLOR_PROFILE_SRGB,
           cba.ENSURE_FORCED_COLOR_PROFILE,
-      ])
+        ]
+      )
     return default_args
 
   @classmethod
@@ -197,88 +217,120 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     super(SkiaGoldIntegrationTestBase, cls).AddCommandlineArgs(parser)
     parser.add_argument('--git-revision', help='Chrome revision being tested.')
     parser.add_argument(
-        '--test-machine-name',
-        default='',
-        help=('Name of the test machine. Specifying this argument causes this '
-              'script to upload failure images and diffs to cloud storage '
-              'directly, instead of relying on the '
-              'archive_gpu_pixel_test_results.py script.'))
+      '--test-machine-name',
+      default='',
+      help=(
+        'Name of the test machine. Specifying this argument causes this '
+        'script to upload failure images and diffs to cloud storage '
+        'directly, instead of relying on the '
+        'archive_gpu_pixel_test_results.py script.'
+      ),
+    )
     parser.add_argument(
-        '--dont-restore-color-profile-after-test',
-        action='store_true',
-        default=False,
-        help=("(Mainly on Mac) don't restore the system's original color "
-              'profile after the test completes; leave the system using the '
-              'sRGB color profile. See http://crbug.com/784456.'))
-    parser.add_argument('--gerrit-issue',
-                        default='',
-                        help='For Skia Gold integration. Gerrit issue ID.')
+      '--dont-restore-color-profile-after-test',
+      action='store_true',
+      default=False,
+      help=(
+        "(Mainly on Mac) don't restore the system's original color "
+        'profile after the test completes; leave the system using the '
+        'sRGB color profile. See http://crbug.com/784456.'
+      ),
+    )
     parser.add_argument(
-        '--gerrit-patchset',
-        default='',
-        help='For Skia Gold integration. Gerrit patch set number.')
-    parser.add_argument('--buildbucket-id',
-                        default='',
-                        help='For Skia Gold integration. Buildbucket build ID.')
+      '--gerrit-issue',
+      default='',
+      help='For Skia Gold integration. Gerrit issue ID.',
+    )
     parser.add_argument(
-        '--no-skia-gold-failure',
-        action='store_true',
-        default=False,
-        help=('For Skia Gold integration. Always report that the test passed '
-              'even if the Skia Gold image comparison reported a failure, but '
-              'otherwise perform the same steps as usual.'))
+      '--gerrit-patchset',
+      default='',
+      help='For Skia Gold integration. Gerrit patch set number.',
+    )
+    parser.add_argument(
+      '--buildbucket-id',
+      default='',
+      help='For Skia Gold integration. Buildbucket build ID.',
+    )
+    parser.add_argument(
+      '--no-skia-gold-failure',
+      action='store_true',
+      default=False,
+      help=(
+        'For Skia Gold integration. Always report that the test passed '
+        'even if the Skia Gold image comparison reported a failure, but '
+        'otherwise perform the same steps as usual.'
+      ),
+    )
     # Telemetry is *still* using optparse instead of argparse, so we can't have
     # these two options in a mutually exclusive group.
     # TODO(crbug.com/40807291): Use a mutually exclusive group once the
     # optparse -> argparse migration is complete.
     parser.add_argument(
-        '--local-pixel-tests',
-        action='store_true',
-        default=None,
-        help=('Specifies to run the test harness in local run mode or not. '
-              'When run in local mode, uploading to Gold is disabled and links '
-              'to help with local debugging are output. Running in local mode '
-              'also implies --no-luci-auth. If both this and '
-              '--no-local-pixel-tests are left unset, the test harness will '
-              'attempt to detect whether it is running on a workstation or not '
-              'and set this option accordingly.'))
+      '--local-pixel-tests',
+      action='store_true',
+      default=None,
+      help=(
+        'Specifies to run the test harness in local run mode or not. '
+        'When run in local mode, uploading to Gold is disabled and links '
+        'to help with local debugging are output. Running in local mode '
+        'also implies --no-luci-auth. If both this and '
+        '--no-local-pixel-tests are left unset, the test harness will '
+        'attempt to detect whether it is running on a workstation or not '
+        'and set this option accordingly.'
+      ),
+    )
     parser.add_argument(
-        '--no-local-pixel-tests',
-        action='store_false',
-        dest='local_pixel_tests',
-        help=('Specifies to run the test harness in non-local (bot) mode. When '
-              'run in this mode, data is actually uploaded to Gold and triage '
-              'links are generated. If both this and --local-pixel-tests are '
-              'left unset, the test harness will attempt to detect whether it '
-              'is running on a workstation or not and set this option '
-              'accordingly.'))
+      '--no-local-pixel-tests',
+      action='store_false',
+      dest='local_pixel_tests',
+      help=(
+        'Specifies to run the test harness in non-local (bot) mode. When '
+        'run in this mode, data is actually uploaded to Gold and triage '
+        'links are generated. If both this and --local-pixel-tests are '
+        'left unset, the test harness will attempt to detect whether it '
+        'is running on a workstation or not and set this option '
+        'accordingly.'
+      ),
+    )
     parser.add_argument(
-        '--skia-gold-local-png-write-directory',
-        help=('Specifies a directory to save local image diffs to instead of '
-              'the default of a temporary directory. Only has an effect when '
-              'running tests locally, not on a bot.'))
+      '--skia-gold-local-png-write-directory',
+      help=(
+        'Specifies a directory to save local image diffs to instead of '
+        'the default of a temporary directory. Only has an effect when '
+        'running tests locally, not on a bot.'
+      ),
+    )
     parser.add_argument(
-        '--no-luci-auth',
-        action='store_true',
-        default=False,
-        help=("Don't use the service account provided by LUCI for "
-              'authentication for Skia Gold, instead relying on gsutil to be '
-              'pre-authenticated. Meant for testing locally instead of on the '
-              'bots.'))
+      '--no-luci-auth',
+      action='store_true',
+      default=False,
+      help=(
+        "Don't use the service account provided by LUCI for "
+        'authentication for Skia Gold, instead relying on gsutil to be '
+        'pre-authenticated. Meant for testing locally instead of on the '
+        'bots.'
+      ),
+    )
     parser.add_argument(
-        '--service-account',
-        help=('Specifies the service account to use instead of using '
-              'LUCI_CONTEXT or whatever is configured in gsutil. Implies '
-              '--no-luci-auth. Only meant for use in Skylab where the tests '
-              'are automated but do not have LUCI_CONTEXT available.'))
+      '--service-account',
+      help=(
+        'Specifies the service account to use instead of using '
+        'LUCI_CONTEXT or whatever is configured in gsutil. Implies '
+        '--no-luci-auth. Only meant for use in Skylab where the tests '
+        'are automated but do not have LUCI_CONTEXT available.'
+      ),
+    )
     parser.add_argument(
-        '--bypass-skia-gold-functionality',
-        action='store_true',
-        default=False,
-        help=('Bypass all interaction with Skia Gold, effectively disabling '
-              'the image comparison portion of any tests that use Gold. Only '
-              'meant to be used in case a Gold outage occurs and cannot be '
-              'fixed quickly.'))
+      '--bypass-skia-gold-functionality',
+      action='store_true',
+      default=False,
+      help=(
+        'Bypass all interaction with Skia Gold, effectively disabling '
+        'the image comparison portion of any tests that use Gold. Only '
+        'meant to be used in case a Gold outage occurs and cannot be '
+        'fixed quickly.'
+      ),
+    )
 
   @classmethod
   def ResetGpuInfo(cls) -> None:
@@ -319,23 +371,28 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     # TODO(senorblanco): This should probably be checking
     # for the presence of the extensions in system_info.gpu_aux_attributes
     # in order to check for MSAA, rather than sniffing the blocklist.
-    params.msaa = not (('disable_chromium_framebuffer_multisample' in
-                        system_info.gpu.driver_bug_workarounds) or
-                       ('disable_multisample_render_to_texture' in system_info.
-                        gpu.driver_bug_workarounds))
+    params.msaa = not (
+      (
+        'disable_chromium_framebuffer_multisample'
+        in system_info.gpu.driver_bug_workarounds
+      )
+      or (
+        'disable_multisample_render_to_texture'
+        in system_info.gpu.driver_bug_workarounds
+      )
+    )
     params.model_name = system_info.model_name
     params.driver_version = device.driver_version
     params.driver_vendor = device.driver_vendor
     params.display_server = gpu_helper.GetDisplayServer(browser.browser_type)
     params.skia_graphite_status = gpu_helper.GetSkiaGraphiteStatus(
-        system_info.gpu)
+      system_info.gpu
+    )
 
   @classmethod
-  def _UploadBitmapToCloudStorage(cls,
-                                  bucket: str,
-                                  name: str,
-                                  bitmap: Any,
-                                  public: bool = False) -> None:
+  def _UploadBitmapToCloudStorage(
+    cls, bucket: str, name: str, bitmap: Any, public: bool = False
+  ) -> None:
     # This sequence of steps works on all platforms to write a temporary
     # PNG to disk, following the pattern in bitmap_unittest.py. The key to
     # avoiding PermissionErrors seems to be to not actually try to write to
@@ -344,29 +401,29 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       temp_file_name = temp_file.name
     try:
       image_util.WritePngFile(bitmap, temp_file_name)
-      cloud_storage.Insert(bucket,
-                           name,
-                           temp_file_name,
-                           publicly_readable=public)
+      cloud_storage.Insert(
+        bucket, name, temp_file_name, publicly_readable=public
+      )
     finally:
       os.remove(temp_file_name)
 
   # Not used consistently, but potentially useful for debugging issues on the
   # bots, so kept around for future use.
   @classmethod
-  def _UploadGoldErrorImageToCloudStorage(cls, image_name: str,
-                                          screenshot: ct.Screenshot) -> None:
+  def _UploadGoldErrorImageToCloudStorage(
+    cls, image_name: str, screenshot: ct.Screenshot
+  ) -> None:
     revision = cls.GetSkiaGoldProperties().git_revision
-    machine_name = re.sub(r'\W+', '_',
-                          cls.GetOriginalFinderOptions().test_machine_name)
+    machine_name = re.sub(
+      r'\W+', '_', cls.GetOriginalFinderOptions().test_machine_name
+    )
     base_bucket = f'{cls._error_image_cloud_storage_bucket}/gold_failures'
     image_name_with_revision_and_machine = (
-        f'{image_name}_{machine_name}_{revision}.png')
+      f'{image_name}_{machine_name}_{revision}.png'
+    )
     cls._UploadBitmapToCloudStorage(
-        base_bucket,
-        image_name_with_revision_and_machine,
-        screenshot,
-        public=True)
+      base_bucket, image_name_with_revision_and_machine, screenshot, public=True
+    )
 
   @staticmethod
   def _UrlToImageName(url: str) -> str:
@@ -390,36 +447,29 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     _ConvertAngleDeviceStringToActualDevice(img_params)
     # All values need to be strings, otherwise goldctl fails.
     gpu_keys = {
-        'vendor_id':
-        _ToHexOrNone(img_params.vendor_id),
-        'device_id':
-        _ToHexOrNone(img_params.device_id),
-        'vendor_string':
-        _ToNonEmptyStrOrNone(img_params.vendor_string),
-        'device_string':
-        _ToNonEmptyStrOrNone(img_params.device_string),
-        'msaa':
-        str(img_params.msaa),
-        'model_name':
-        _ToNonEmptyStrOrNone(img_params.model_name),
-        'os':
-        _ToNonEmptyStrOrNone(self.browser.platform.GetOSName()),
-        'os_version':
-        _ToNonEmptyStrOrNone(self.browser.platform.GetOSVersionName()),
-        'os_version_detail_string':
-        _ToNonEmptyStrOrNone(self.browser.platform.GetOSVersionDetailString()),
-        'driver_version':
-        _ToNonEmptyStrOrNone(img_params.driver_version),
-        'driver_vendor':
-        _ToNonEmptyStrOrNone(img_params.driver_vendor),
-        'display_server':
-        _ToNonEmptyStrOrNone(img_params.display_server),
-        'combined_hardware_identifier':
-        _GetCombinedHardwareIdentifier(img_params),
-        'browser_type':
-        _ToNonEmptyStrOrNone(self.browser.browser_type),
-        'skia_graphite_status':
-        _ToNonEmptyStrOrNone(img_params.skia_graphite_status),
+      'vendor_id': _ToHexOrNone(img_params.vendor_id),
+      'device_id': _ToHexOrNone(img_params.device_id),
+      'vendor_string': _ToNonEmptyStrOrNone(img_params.vendor_string),
+      'device_string': _ToNonEmptyStrOrNone(img_params.device_string),
+      'msaa': str(img_params.msaa),
+      'model_name': _ToNonEmptyStrOrNone(img_params.model_name),
+      'os': _ToNonEmptyStrOrNone(self.browser.platform.GetOSName()),
+      'os_version': _ToNonEmptyStrOrNone(
+        self.browser.platform.GetOSVersionName()
+      ),
+      'os_version_detail_string': _ToNonEmptyStrOrNone(
+        self.browser.platform.GetOSVersionDetailString()
+      ),
+      'driver_version': _ToNonEmptyStrOrNone(img_params.driver_version),
+      'driver_vendor': _ToNonEmptyStrOrNone(img_params.driver_vendor),
+      'display_server': _ToNonEmptyStrOrNone(img_params.display_server),
+      'combined_hardware_identifier': _GetCombinedHardwareIdentifier(
+        img_params
+      ),
+      'browser_type': _ToNonEmptyStrOrNone(self.browser.browser_type),
+      'skia_graphite_status': _ToNonEmptyStrOrNone(
+        img_params.skia_graphite_status
+      ),
     }
     return gpu_keys
 
@@ -434,9 +484,12 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
 
   # pylint: enable=no-self-use
 
-  def _UploadTestResultToSkiaGold(self, image_name: str,
-                                  screenshot: ct.Screenshot,
-                                  test_case: SkiaGoldTestCase) -> None:
+  def _UploadTestResultToSkiaGold(
+    self,
+    image_name: str,
+    screenshot: ct.Screenshot,
+    test_case: SkiaGoldTestCase,
+  ) -> None:
     """Compares the given image using Skia Gold and uploads the result.
 
     No uploading is done if the test is being run in local run mode. Compares
@@ -449,70 +502,86 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       test_case: the GPU SkiaGoldTestCase object for the test.
     """
     # Write screenshot to PNG file on local disk.
-    with tempfile.NamedTemporaryFile(suffix='.png',
-                                     dir=self._skia_gold_temp_dir,
-                                     delete=False) as png_temp_file:
+    with tempfile.NamedTemporaryFile(
+      suffix='.png', dir=self._skia_gold_temp_dir, delete=False
+    ) as png_temp_file:
       png_temp_file_name = png_temp_file.name
     image_util.WritePngFile(screenshot, png_temp_file_name)
 
     gold_session = self.GetSkiaGoldSessionManager().GetSkiaGoldSession(
-        self.GetGoldJsonKeys(test_case), corpus=SKIA_GOLD_CORPUS)
+      self.GetGoldJsonKeys(test_case), corpus=SKIA_GOLD_CORPUS
+    )
     gold_properties = self.GetSkiaGoldProperties()
-    use_luci = not (gold_properties.local_pixel_tests
-                    or gold_properties.no_luci_auth)
+    use_luci = not (
+      gold_properties.local_pixel_tests or gold_properties.no_luci_auth
+    )
 
     status, error = gold_session.RunComparison(
-        name=image_name,
-        png_file=png_temp_file_name,
-        inexact_matching_args=test_case.matching_algorithm.GetCmdline(),
-        use_luci=use_luci,
-        service_account=gold_properties.service_account,
-        optional_keys=self.GetGoldOptionalKeys())
+      name=image_name,
+      png_file=png_temp_file_name,
+      inexact_matching_args=test_case.matching_algorithm.GetCmdline(),
+      use_luci=use_luci,
+      service_account=gold_properties.service_account,
+      optional_keys=self.GetGoldOptionalKeys(),
+    )
     if not status:
       return
 
-    status_codes =\
-        self.GetSkiaGoldSessionManager().GetSessionClass().StatusCodes
+    status_codes = (
+      self.GetSkiaGoldSessionManager().GetSessionClass().StatusCodes
+    )
     if status == status_codes.AUTH_FAILURE:
       logging.error('Gold authentication failed with output %s', error)
     elif status == status_codes.INIT_FAILURE:
       logging.error('Gold initialization failed with output %s', error)
     elif status == status_codes.COMPARISON_FAILURE_REMOTE:
       public_triage_link, internal_triage_link = gold_session.GetTriageLinks(
-          image_name)
+        image_name
+      )
       if not public_triage_link or not internal_triage_link:
-        logging.error('Failed to get triage links for %s, raw output: %s',
-                      image_name, error)
-        logging.error('Reason for no triage links: %s',
-                      gold_session.GetTriageLinkOmissionReason(image_name))
+        logging.error(
+          'Failed to get triage links for %s, raw output: %s', image_name, error
+        )
+        logging.error(
+          'Reason for no triage links: %s',
+          gold_session.GetTriageLinkOmissionReason(image_name),
+        )
       elif gold_properties.IsTryjobRun():
-        self.artifacts.CreateLink('public_triage_link_for_entire_cl',
-                                  public_triage_link)
-        self.artifacts.CreateLink('internal_triage_link_for_entire_cl',
-                                  internal_triage_link)
+        self.artifacts.CreateLink(
+          'public_triage_link_for_entire_cl', public_triage_link
+        )
+        self.artifacts.CreateLink(
+          'internal_triage_link_for_entire_cl', internal_triage_link
+        )
       else:
         self.artifacts.CreateLink('public_gold_triage_link', public_triage_link)
-        self.artifacts.CreateLink('internal_gold_triage_link',
-                                  internal_triage_link)
+        self.artifacts.CreateLink(
+          'internal_gold_triage_link', internal_triage_link
+        )
     elif status == status_codes.COMPARISON_FAILURE_LOCAL:
       logging.error('Local comparison failed. Local diff files:')
       _OutputLocalDiffFiles(gold_session, image_name)
     elif status == status_codes.LOCAL_DIFF_FAILURE:
       logging.error(
-          'Local comparison failed and an error occurred during diff '
-          'generation: %s', error)
+        'Local comparison failed and an error occurred during diff '
+        'generation: %s',
+        error,
+      )
       # There might be some files, so try outputting them.
       logging.error('Local diff files:')
       _OutputLocalDiffFiles(gold_session, image_name)
     else:
       logging.error(
-          'Given unhandled SkiaGoldSession StatusCode %s with error %s', status,
-          error)
+        'Given unhandled SkiaGoldSession StatusCode %s with error %s',
+        status,
+        error,
+      )
     if self._ShouldReportGoldFailure():
       raise GoldComparisonFailure(
-          'goldctl command returned non-zero exit code, see above for details. '
-          'This probably just means that the test produced an image that has '
-          'not been triaged as positive.')
+        'goldctl command returned non-zero exit code, see above for details. '
+        'This probably just means that the test produced an image that has '
+        'not been triaged as positive.'
+      )
 
   def _ShouldReportGoldFailure(self) -> bool:
     """Determines if a Gold failure should actually be surfaced.
@@ -531,11 +600,13 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     del options
     raise NotImplementedError(
-        'GenerateGpuTests must be overridden in a subclass')
+      'GenerateGpuTests must be overridden in a subclass'
+    )
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     raise NotImplementedError(
-        'RunActualGpuTest must be overridden in a subclass')
+      'RunActualGpuTest must be overridden in a subclass'
+    )
 
 
 def _ToHex(num: str) -> str:
@@ -574,7 +645,8 @@ def _StripAngleRevisionFromDriver(img_params: _ImageParameters) -> None:
 
 
 def _ConvertAngleDeviceStringToActualDevice(
-    img_params: _ImageParameters) -> None:
+  img_params: _ImageParameters,
+) -> None:
   """Converts an ANGLE device string to only have the actual device.
 
   E.g. ANGLE(Qualcomm, Adreno (TM) 640, OpenGL ES ...) -> Adreno (TM) 640
@@ -598,16 +670,20 @@ def _GetCombinedHardwareIdentifier(img_params: _ImageParameters) -> str:
   vendor_id = _ToHexOrNone(img_params.vendor_id)
   device_id = _ToHexOrNone(img_params.device_id)
   device_string = _ToNonEmptyStrOrNone(img_params.device_string)
-  combined_hw_identifiers = ('vendor_id:{vendor_id}, '
-                             'device_id:{device_id}, '
-                             'device_string:{device_string}')
+  combined_hw_identifiers = (
+    'vendor_id:{vendor_id}, '
+    'device_id:{device_id}, '
+    'device_string:{device_string}'
+  )
   combined_hw_identifiers = combined_hw_identifiers.format(
-      vendor_id=vendor_id, device_id=device_id, device_string=device_string)
+    vendor_id=vendor_id, device_id=device_id, device_string=device_string
+  )
   return combined_hw_identifiers
 
 
-def _OutputLocalDiffFiles(gold_session: sgs.SkiaGoldSession,
-                          image_name: str) -> None:
+def _OutputLocalDiffFiles(
+  gold_session: sgs.SkiaGoldSession, image_name: str
+) -> None:
   """Logs the local diff image files from the given SkiaGoldSession.
 
   Args:
@@ -625,7 +701,8 @@ def _OutputLocalDiffFiles(gold_session: sgs.SkiaGoldSession,
   logging.error('Diff image: %s', diff_file or failure_message)
 
 
-def load_tests(loader: unittest.TestLoader, tests: Any,
-               pattern: Any) -> unittest.TestSuite:
+def load_tests(
+  loader: unittest.TestLoader, tests: Any, pattern: Any
+) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

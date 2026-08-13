@@ -24,7 +24,8 @@ def safe_feature_name(feature: str) -> str:
 
 
 class HardwareAcceleratedFeatureIntegrationTest(
-    gpu_integration_test.GpuIntegrationTest):
+  gpu_integration_test.GpuIntegrationTest
+):
   """Tests GPU acceleration is reported as active for various features."""
 
   @classmethod
@@ -45,7 +46,8 @@ class HardwareAcceleratedFeatureIntegrationTest(
     # to become interactive or better, avoiding critical race
     # conditions.
     self.tab.action_runner.Navigate(
-        url, script_to_evaluate_on_commit=test_harness_script)
+      url, script_to_evaluate_on_commit=test_harness_script
+    )
 
   def _GetTestTimeout(self):
     timeout = 30
@@ -58,17 +60,22 @@ class HardwareAcceleratedFeatureIntegrationTest(
     tests = ('webgl', '2d_canvas')
     for feature in tests:
       safe_name = safe_feature_name(feature)
-      yield (f'HardwareAcceleratedFeature_{safe_name}_accelerated',
-             'chrome://gpu', [feature])
+      yield (
+        f'HardwareAcceleratedFeature_{safe_name}_accelerated',
+        'chrome://gpu',
+        [feature],
+      )
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     feature = args[0]
     self._Navigate(test_path)
     tab = self.tab
-    tab.WaitForJavaScriptCondition('window.gpuPagePopulated',
-                                   timeout=self._GetTestTimeout())
+    tab.WaitForJavaScriptCondition(
+      'window.gpuPagePopulated', timeout=self._GetTestTimeout()
+    )
     if not tab.EvaluateJavaScript(
-        'VerifyHardwareAccelerated({{ feature }})', feature=feature):
+      'VerifyHardwareAccelerated({{ feature }})', feature=feature
+    ):
       print('Test failed. Printing page contents:')
       print(tab.EvaluateJavaScript('document.body.innerHTML'))
       self.fail(f'{feature} not hardware accelerated')
@@ -76,13 +83,16 @@ class HardwareAcceleratedFeatureIntegrationTest(
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:
     return [
-        os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
-            'hardware_accelerated_feature_expectations.txt')
+      os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'test_expectations',
+        'hardware_accelerated_feature_expectations.txt',
+      )
     ]
 
 
-def load_tests(loader: unittest.TestLoader, tests: Any,
-               pattern: Any) -> unittest.TestSuite:
+def load_tests(
+  loader: unittest.TestLoader, tests: Any, pattern: Any
+) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

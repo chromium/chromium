@@ -17,7 +17,6 @@ from bad_machine_finder import detection
 
 
 class FakeBuganizerClient:
-
   def __init__(self):
     # GetIssueComments
     self.issue_comments = []
@@ -41,21 +40,20 @@ def _GetIsoFormatStringForNDaysAgo(num_days: int) -> str:
 
 
 class UpdateBugUnittest(unittest.TestCase):
-
   def testBasic(self):
     """Tests the basic behavior of posting an update to a bug."""
     client = FakeBuganizerClient()
     client.issue_comments = [
-        {
-            'timestamp':
-            _GetIsoFormatStringForNDaysAgo(1),
-            'comment':
-            '\n'.join([
-                buganizer._AUTOMATED_COMMENT_START,
-                'bot-2',
-                'bot-3',
-            ]),
-        },
+      {
+        'timestamp': _GetIsoFormatStringForNDaysAgo(1),
+        'comment': '\n'.join(
+          [
+            buganizer._AUTOMATED_COMMENT_START,
+            'bot-2',
+            'bot-3',
+          ]
+        ),
+      },
     ]
 
     first_machine_list = detection.BadMachineList()
@@ -72,9 +70,9 @@ class UpdateBugUnittest(unittest.TestCase):
     mgbm.AddMixinData('mixin-a', first_machine_list)
     mgbm.AddMixinData('mixin-b', second_machine_list)
 
-    with mock.patch.object(buganizer,
-                           '_GetBuganizerClient',
-                           return_value=client):
+    with mock.patch.object(
+      buganizer, '_GetBuganizerClient', return_value=client
+    ):
       buganizer.UpdateBug(1234, mgbm, 7)
 
     expected_markdown = f"""\
@@ -96,19 +94,18 @@ Bad machines for mixin-b
     """Tests behavior when all bad machines were recently reported."""
     client = FakeBuganizerClient()
     client.issue_comments = [
-        {
-            'timestamp':
-            _GetIsoFormatStringForNDaysAgo(1),
-            'comment':
-            '\n'.join([
-                buganizer._AUTOMATED_COMMENT_START,
-                'bot-1'
-                'bot-2',
-                'bot-3',
-                'bot-4',
-                'bot-5',
-            ]),
-        },
+      {
+        'timestamp': _GetIsoFormatStringForNDaysAgo(1),
+        'comment': '\n'.join(
+          [
+            buganizer._AUTOMATED_COMMENT_START,
+            'bot-1bot-2',
+            'bot-3',
+            'bot-4',
+            'bot-5',
+          ]
+        ),
+      },
     ]
 
     first_machine_list = detection.BadMachineList()
@@ -125,9 +122,9 @@ Bad machines for mixin-b
     mgbm.AddMixinData('mixin-a', first_machine_list)
     mgbm.AddMixinData('mixin-b', second_machine_list)
 
-    with mock.patch.object(buganizer,
-                           '_GetBuganizerClient',
-                           return_value=client):
+    with mock.patch.object(
+      buganizer, '_GetBuganizerClient', return_value=client
+    ):
       buganizer.UpdateBug(1234, mgbm, 7)
 
     expected_markdown = f"""\
@@ -138,79 +135,83 @@ No new bad machines detected"""
 
 
 class GetRecentlyReportedBotsUnittest(unittest.TestCase):
-
   def testBugNotAccessible(self):
     """Tests behavior when accessing the bug returns an error."""
     client = typing.cast(blink_buganizer.BuganizerClient, FakeBuganizerClient())
     client.issue_comments = {'error': 'error_message'}
 
     with self.assertRaisesRegex(
-        buganizer.BugNotAccessibleException,
-        'Failed to get comments from 1234: error_message'):
+      buganizer.BugNotAccessibleException,
+      'Failed to get comments from 1234: error_message',
+    ):
       buganizer._GetRecentlyReportedBots(1234, client, [], 7)
 
   def testBasic(self):
     """Tests the basic behavior of finding recently reported bots."""
     client = typing.cast(blink_buganizer.BuganizerClient, FakeBuganizerClient())
     client.issue_comments = [
-        # Should be ignored because it's not an automated comment.
-        {
-            'timestamp': _GetIsoFormatStringForNDaysAgo(1),
-            'comment': '\n'.join([
-                'bot-1',
-                'bot-2',
-                'bot-3',
-                'bot-4',
-            ]),
-        },
-        # Should be ignored because it's too old.
-        {
-            'timestamp':
-            _GetIsoFormatStringForNDaysAgo(14),
-            'comment':
-            '\n'.join([
-                buganizer._AUTOMATED_COMMENT_START,
-                'bot-1',
-                'bot-2',
-                'bot-3',
-                'bot-4',
-            ]),
-        },
-        # Should be parsed.
-        {
-            'timestamp':
-            _GetIsoFormatStringForNDaysAgo(1),
-            'comment':
-            '\n'.join([
-                buganizer._AUTOMATED_COMMENT_START,
-                'bot-2',
-                'bot-3',
-                'bot-5',
-            ]),
-        },
+      # Should be ignored because it's not an automated comment.
+      {
+        'timestamp': _GetIsoFormatStringForNDaysAgo(1),
+        'comment': '\n'.join(
+          [
+            'bot-1',
+            'bot-2',
+            'bot-3',
+            'bot-4',
+          ]
+        ),
+      },
+      # Should be ignored because it's too old.
+      {
+        'timestamp': _GetIsoFormatStringForNDaysAgo(14),
+        'comment': '\n'.join(
+          [
+            buganizer._AUTOMATED_COMMENT_START,
+            'bot-1',
+            'bot-2',
+            'bot-3',
+            'bot-4',
+          ]
+        ),
+      },
+      # Should be parsed.
+      {
+        'timestamp': _GetIsoFormatStringForNDaysAgo(1),
+        'comment': '\n'.join(
+          [
+            buganizer._AUTOMATED_COMMENT_START,
+            'bot-2',
+            'bot-3',
+            'bot-5',
+          ]
+        ),
+      },
     ]
 
     recently_reported_bots = buganizer._GetRecentlyReportedBots(
-        1234, client, {'bot-1', 'bot-2', 'bot-3', 'bot-4'}, 7)
+      1234, client, {'bot-1', 'bot-2', 'bot-3', 'bot-4'}, 7
+    )
     self.assertEqual(recently_reported_bots, {'bot-2', 'bot-3'})
 
   def testIsoZCompatibility(self):
     """Tests that a trailing Z in an ISO 8601 string does not cause issues."""
     client = typing.cast(blink_buganizer.BuganizerClient, FakeBuganizerClient())
     client.issue_comments = [
-        {
-            'timestamp':
-            _GetIsoFormatStringForNDaysAgo(1) + 'Z',
-            'comment':
-            '\n'.join([
-                buganizer._AUTOMATED_COMMENT_START,
-                'bot-2',
-                'bot-3',
-                'bot-5',
-            ]),
-        },
+      {
+        'timestamp': _GetIsoFormatStringForNDaysAgo(1) + 'Z',
+        'comment': '\n'.join(
+          [
+            buganizer._AUTOMATED_COMMENT_START,
+            'bot-2',
+            'bot-3',
+            'bot-5',
+          ]
+        ),
+      },
     ]
 
     recently_reported_bots = buganizer._GetRecentlyReportedBots(
-        1234, client, {'bot-1', 'bot-2', 'bot-3', 'bot-4'}, 7)
+      1234, client, {'bot-1', 'bot-2', 'bot-3', 'bot-4'}, 7
+    )
     self.assertEqual(recently_reported_bots, {'bot-2', 'bot-3'})

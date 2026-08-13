@@ -19,14 +19,14 @@ from unexpected_passes import gpu_expectations
 
 
 class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
-
   def setUp(self) -> None:
     self.setUpPyfakefs()
     self.instance = gpu_expectations.GpuExpectations()
 
     self._expectation_content: Dict[str, str] = {}
     self._content_patcher = mock.patch(
-        'unexpected_passes_common.expectations._GetNonRecentExpectationContent')
+      'unexpected_passes_common.expectations._GetNonRecentExpectationContent'
+    )
     self._content_mock = self._content_patcher.start()
     self.addCleanup(self._content_patcher.stop)
 
@@ -53,7 +53,8 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
       outfile.write(expectation_content)
 
     expectation_map = self.instance.CreateTestExpectationMap(
-        filename, None, datetime.timedelta(days=0))
+      filename, None, datetime.timedelta(days=0)
+    )
     # The Slow expectations should be omitted.
     # yapf: disable
     expected_expectation_map = {
@@ -90,32 +91,53 @@ class ConsolidateKnownOverlappingTagsUnittest(unittest.TestCase):
 
   def test15InchMacbookPro2019(self) -> None:
     """Tests that 15" Macbook Pro 2019 tags are properly consolidated."""
-    tags = frozenset([
-        'mac', 'amd', 'amd-0x67ef', 'release', 'intel', 'intel-0x3e9b',
-        'intel-gen-9'
-    ])
+    tags = frozenset(
+      [
+        'mac',
+        'amd',
+        'amd-0x67ef',
+        'release',
+        'intel',
+        'intel-0x3e9b',
+        'intel-gen-9',
+      ]
+    )
     consolidated_tags = self.expectations._ConsolidateKnownOverlappingTags(tags)
     self.assertEqual(consolidated_tags, {'mac', 'amd', 'amd-0x67ef', 'release'})
 
   def test16InchMacbookPro2019(self) -> None:
     """Tests that 16" Macbook Pro 2019 tags are properly consolidated."""
-    tags = frozenset([
-        'mac', 'amd', 'amd-0x7340', 'release', 'intel', 'intel-0x3e9b',
-        'intel-gen-9'
-    ])
+    tags = frozenset(
+      [
+        'mac',
+        'amd',
+        'amd-0x7340',
+        'release',
+        'intel',
+        'intel-0x3e9b',
+        'intel-gen-9',
+      ]
+    )
     consolidated_tags = self.expectations._ConsolidateKnownOverlappingTags(tags)
     self.assertEqual(consolidated_tags, {'mac', 'amd', 'amd-0x7340', 'release'})
 
   def testSpecificMacVersion(self) -> None:
     """Tests that specific Mac versions can be used for IDing dual GPUs."""
-    tags = frozenset([
-        'angle-metal', 'amd-0x67ef', 'sonoma', 'intel-gen-9', 'amd',
-        'passthrough'
-    ])
+    tags = frozenset(
+      [
+        'angle-metal',
+        'amd-0x67ef',
+        'sonoma',
+        'intel-gen-9',
+        'amd',
+        'passthrough',
+      ]
+    )
     consolidated_tags = self.expectations._ConsolidateKnownOverlappingTags(tags)
     self.assertEqual(
-        consolidated_tags,
-        {'angle-metal', 'amd-0x67ef', 'sonoma', 'amd', 'passthrough'})
+      consolidated_tags,
+      {'angle-metal', 'amd-0x67ef', 'sonoma', 'amd', 'passthrough'},
+    )
 
 
 if __name__ == '__main__':

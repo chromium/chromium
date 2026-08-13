@@ -19,8 +19,9 @@ from gpu_tests import gpu_integration_test
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
 from gpu_tests.util import screenshot_utils
 
-_MAPS_PERF_TEST_PATH = os.path.join(gpu_path_util.TOOLS_PERF_DIR, 'page_sets',
-                                    'maps_perf_test')
+_MAPS_PERF_TEST_PATH = os.path.join(
+  gpu_path_util.TOOLS_PERF_DIR, 'page_sets', 'maps_perf_test'
+)
 
 
 class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
@@ -39,8 +40,9 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
   @classmethod
   def SetUpProcess(cls) -> None:
     cloud_storage.GetIfChanged(
-        os.path.join(_MAPS_PERF_TEST_PATH, 'dataset', 'load_dataset'),
-        cloud_storage.PUBLIC_BUCKET)
+      os.path.join(_MAPS_PERF_TEST_PATH, 'dataset', 'load_dataset'),
+      cloud_storage.PUBLIC_BUCKET,
+    )
     super().SetUpProcess()
 
   @classmethod
@@ -59,8 +61,11 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:
     return [
-        os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                     'test_expectations', 'expected_color_expectations.txt')
+      os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'test_expectations',
+        'expected_color_expectations.txt',
+      )
     ]
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
@@ -70,9 +75,9 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     # check before running each page that it can run in the current
     # browser instance.
     self.RestartBrowserIfNecessaryWithArgs(test_case.extra_browser_args)
-    tab_data = sghitb.TabData(self.tab,
-                              self.__class__.websocket_server,
-                              is_default_tab=True)
+    tab_data = sghitb.TabData(
+      self.tab, self.__class__.websocket_server, is_default_tab=True
+    )
     self.NavigateTo(test_path, tab_data)
 
     loop_state = sghitb.LoopState()
@@ -90,21 +95,28 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     logging.info('Effective devicePixelRatio is %s', dpr)
 
     screenshot = test_case.crop_action.CropScreenshot(
-        screenshot, dpr, self.browser.platform.GetDeviceTypeName(),
-        self.browser.platform.GetOSName())
+      screenshot,
+      dpr,
+      self.browser.platform.GetDeviceTypeName(),
+      self.browser.platform.GetOSName(),
+    )
 
     self._ValidateScreenshotSamplesWithSkiaGold(test_case, screenshot, dpr)
 
   def GetGoldOptionalKeys(self) -> dict[str, str]:
     keys = super().GetGoldOptionalKeys()
     keys['expected_color_comment'] = (
-        'This is an expected color test. Triaging in Gold will not affect test '
-        'behavior.')
+      'This is an expected color test. Triaging in Gold will not affect test '
+      'behavior.'
+    )
     return keys
 
   def _ValidateScreenshotSamplesWithSkiaGold(
-      self, test_case: expected_color_test_cases.ExpectedColorTestCase,
-      screenshot: ct.Screenshot, device_pixel_ratio: float) -> None:
+    self,
+    test_case: expected_color_test_cases.ExpectedColorTestCase,
+    screenshot: ct.Screenshot,
+    device_pixel_ratio: float,
+  ) -> None:
     """Samples the given screenshot and verifies pixel color values.
 
     In case any of the samples do not match the expected color, it raises
@@ -129,9 +141,11 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       raise
 
   def _CompareScreenshotSamples(
-      self, screenshot: ct.Screenshot,
-      test_case: expected_color_test_cases.ExpectedColorTestCase,
-      device_pixel_ratio: float) -> None:
+    self,
+    screenshot: ct.Screenshot,
+    test_case: expected_color_test_cases.ExpectedColorTestCase,
+    device_pixel_ratio: float,
+  ) -> None:
     """Checks a screenshot for expected colors.
 
     Args:
@@ -144,7 +158,8 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     """
 
     def _CompareScreenshotWithExpectation(
-        expectation: expected_color_test_cases.ExpectedColorExpectation):
+      expectation: expected_color_test_cases.ExpectedColorExpectation,
+    ):
       """Compares a portion of the screenshot to the given expectation.
 
       Fails the test if a the screenshot does not match within the tolerance.
@@ -165,28 +180,37 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
           image_width = image_util.Width(screenshot)
           image_height = image_util.Height(screenshot)
           if x < 0 or y < 0 or x >= image_width or y >= image_height:
-            self.fail(f'Expected pixel location [{x}, {y}] is out of range on '
-                      f'[{image_width}, {image_height}] image')
+            self.fail(
+              f'Expected pixel location [{x}, {y}] is out of range on '
+              f'[{image_width}, {image_height}] image'
+            )
 
           actual_color = image_util.GetPixelColor(screenshot, x, y)
-          expected_color = rgba_color.RgbaColor(expectation.color.r,
-                                                expectation.color.g,
-                                                expectation.color.b,
-                                                expectation.color.a)
+          expected_color = rgba_color.RgbaColor(
+            expectation.color.r,
+            expectation.color.g,
+            expectation.color.b,
+            expectation.color.a,
+          )
           if not actual_color.IsEqual(expected_color, tolerance):
-            self.fail(f'Expected pixel at {location} (actual pixel ({x}, {y})) '
-                      f'to be {expectation.color} but got [{actual_color.r}, '
-                      f'{actual_color.g}, {actual_color.b}, {actual_color.a}]')
+            self.fail(
+              f'Expected pixel at {location} (actual pixel ({x}, {y})) '
+              f'to be {expectation.color} but got [{actual_color.r}, '
+              f'{actual_color.g}, {actual_color.b}, {actual_color.a}]'
+            )
 
     expected_colors = test_case.expected_colors
     for color_expectation in expected_colors:
-      tolerance = (test_case.base_tolerance
-                   if color_expectation.tolerance is None else
-                   color_expectation.tolerance)
+      tolerance = (
+        test_case.base_tolerance
+        if color_expectation.tolerance is None
+        else color_expectation.tolerance
+      )
       _CompareScreenshotWithExpectation(color_expectation)
 
 
-def load_tests(loader: unittest.TestLoader, tests: Any,
-               pattern: Any) -> unittest.TestSuite:
+def load_tests(
+  loader: unittest.TestLoader, tests: Any, pattern: Any
+) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

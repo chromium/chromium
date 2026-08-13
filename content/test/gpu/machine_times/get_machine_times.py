@@ -26,16 +26,20 @@ from unexpected_passes import gpu_builders
 
 # Grabs the runtime and overhead values from strings like:
 #   [shard #0 (runtime (5m 8s) + overhead (13s): 5m 20s)]
-SHARD_TIME_REGEX = re.compile(r'\[shard #\d+ \(runtime \((\d+m \d+s|\d+s)\) '
-                              r'\+ overhead \((\d+m \d+s|\d+s)\)')
+SHARD_TIME_REGEX = re.compile(
+  r'\[shard #\d+ \(runtime \((\d+m \d+s|\d+s)\) '
+  r'\+ overhead \((\d+m \d+s|\d+s)\)'
+)
 # Grabs the values from strings like:
 #  [shard #0 (failed) (44s)]
 # The reported value is runtime + overhead, so we'll end up dropping the data,
 # but we can at least avoid raising a warning if we detect this case.
 FAILURE_SHARD_TIME_REGEX = re.compile(
-    r'\[shard #\d+ \(failed\) \((\d+m \d+s|\d+s)\)')
+  r'\[shard #\d+ \(failed\) \((\d+m \d+s|\d+s)\)'
+)
 TIMED_OUT_SHARD_TIME_REGEX = re.compile(
-    r'\[shard #\d+ timed out after (\d+m \d+s|\d+s)')
+  r'\[shard #\d+ timed out after (\d+m \d+s|\d+s)'
+)
 
 
 def ParseArgs() -> argparse.Namespace:
@@ -44,34 +48,47 @@ def ParseArgs() -> argparse.Namespace:
   test_suites.sort()
 
   parser = argparse.ArgumentParser(
-      description=('Script for determining GPU test shard times. Reported data '
-                   'should be taken as estimates rather than concrete numbers '
-                   'since data will not be precise when failed, timed out, or '
-                   'infra-failed tasks are present.'))
+    description=(
+      'Script for determining GPU test shard times. Reported data '
+      'should be taken as estimates rather than concrete numbers '
+      'since data will not be precise when failed, timed out, or '
+      'infra-failed tasks are present.'
+    )
+  )
   parser.add_argument(
-      '--suite',
-      action='append',
-      dest='suites',
-      default=[],
-      help=('Test suite that must run on a builder for it to be used. If not '
-            'specified, will look for all instances of GPU integration tests.'))
+    '--suite',
+    action='append',
+    dest='suites',
+    default=[],
+    help=(
+      'Test suite that must run on a builder for it to be used. If not '
+      'specified, will look for all instances of GPU integration tests.'
+    ),
+  )
   parser.add_argument(
-      '--builder',
-      action='append',
-      dest='builders',
-      default=[],
-      help=('CI builder to check. Can be specified multiple times. If not '
-            'specified, will check all GPU builders.'))
-  parser.add_argument('--num-samples',
-                      default=10,
-                      type=int,
-                      help='The number of samples per builder to use.')
-  parser.add_argument('--shard-max-threshold',
-                      type=int,
-                      help='Omit showing results if the max shard time for a '
-                      'step is less than the specified number of seconds. '
-                      'Useful for finding problematic configurations if the '
-                      'goal is to have shard times under some limit.')
+    '--builder',
+    action='append',
+    dest='builders',
+    default=[],
+    help=(
+      'CI builder to check. Can be specified multiple times. If not '
+      'specified, will check all GPU builders.'
+    ),
+  )
+  parser.add_argument(
+    '--num-samples',
+    default=10,
+    type=int,
+    help='The number of samples per builder to use.',
+  )
+  parser.add_argument(
+    '--shard-max-threshold',
+    type=int,
+    help='Omit showing results if the max shard time for a '
+    'step is less than the specified number of seconds. '
+    'Useful for finding problematic configurations if the '
+    'goal is to have shard times under some limit.',
+  )
 
   args = parser.parse_args()
   args.suites = args.suites or test_suites
@@ -96,7 +113,8 @@ def _EnsureBuildbucketAuth() -> None:
       subprocess.check_call(['bb', 'auth-info'], stdout=devnull, stderr=devnull)
   except subprocess.CalledProcessError as e:
     raise RuntimeError(
-        'You are not logged into bb - run `bb auth-login`') from e
+      'You are not logged into bb - run `bb auth-login`'
+    ) from e
 
 
 def _GetTimesForBuilder(inputs: Tuple[data_types.BuilderEntry, int]):
@@ -121,7 +139,8 @@ def _GetTimesForBuilder(inputs: Tuple[data_types.BuilderEntry, int]):
   """
   builder, num_samples = inputs
   full_builder_string = (
-      f'{builder.project}/{builder.builder_type}/{builder.name}')
+    f'{builder.project}/{builder.builder_type}/{builder.name}'
+  )
   buildbucket_ids = _GetBuildbucketIdsForBuilder(builder, num_samples)
   builder_to_step = {full_builder_string: collections.defaultdict(list)}
   if not buildbucket_ids:
@@ -136,8 +155,9 @@ def _GetTimesForBuilder(inputs: Tuple[data_types.BuilderEntry, int]):
   return builder_to_step
 
 
-def _GetBuildbucketIdsForBuilder(builder: data_types.BuilderEntry,
-                                 num_samples: int) -> List[str]:
+def _GetBuildbucketIdsForBuilder(
+  builder: data_types.BuilderEntry, num_samples: int
+) -> List[str]:
   """Get the Buildbucket IDs for the most recent N completed builds.
 
   Args:
@@ -149,18 +169,17 @@ def _GetBuildbucketIdsForBuilder(builder: data_types.BuilderEntry,
   """
   # Get the N most recent build IDs.
   cmd = [
-      'bb',
-      'ls',
-      '-id',
-      f'-{num_samples}',
-      '-status',
-      'ended',
-      f'{builder.project}/{builder.builder_type}/{builder.name}',
+    'bb',
+    'ls',
+    '-id',
+    f'-{num_samples}',
+    '-status',
+    'ended',
+    f'{builder.project}/{builder.builder_type}/{builder.name}',
   ]
-  completed_process = subprocess.run(cmd,
-                                     text=True,
-                                     check=True,
-                                     stdout=subprocess.PIPE)
+  completed_process = subprocess.run(
+    cmd, text=True, check=True, stdout=subprocess.PIPE
+  )
   return completed_process.stdout.splitlines()
 
 
@@ -174,15 +193,15 @@ def _GetStepOutputForBuild(build_id: str) -> str:
     The JSON string result of querying the build with ID |build_id|.
   """
   cmd = ['bb', 'get', '-json', '-steps', build_id]
-  completed_process = subprocess.run(cmd,
-                                     text=True,
-                                     check=True,
-                                     stdout=subprocess.PIPE)
+  completed_process = subprocess.run(
+    cmd, text=True, check=True, stdout=subprocess.PIPE
+  )
   return completed_process.stdout
 
 
 def _GetShardTimesFromStepOutput(
-    step_output: str) -> Dict[str, List[Tuple[int, int]]]:
+  step_output: str,
+) -> Dict[str, List[Tuple[int, int]]]:
   """Extract shard time information from Buildbucket step output.
 
   Args:
@@ -215,8 +234,9 @@ def _GetShardTimesFromStepOutput(
       continue
     summary = s['summaryMarkdown']
     if not any(
-        substr in summary
-        for substr in ('Max pending time', 'Pending time', 'Shard runtime')):
+      substr in summary
+      for substr in ('Max pending time', 'Pending time', 'Shard runtime')
+    ):
       continue
     matches = SHARD_TIME_REGEX.findall(summary)
     # Failed and timed out shards report combined runtime + overhead. Since
@@ -233,13 +253,15 @@ def _GetShardTimesFromStepOutput(
         # Assume all shards had these infra failures, so ignore this data
         # point.
         continue
-      logging.warning('Unable to find shard runtimes from summary "%s"',
-                      summary)
+      logging.warning(
+        'Unable to find shard runtimes from summary "%s"', summary
+      )
       continue
 
     suite_name = s['name']
     assert suite_name not in shard_times, (
-        f'Found duplicate suite {suite_name} in build {step_output["id"]}')
+      f'Found duplicate suite {suite_name} in build {step_output["id"]}'
+    )
     shard_times[suite_name] = []
     for runtime_str, overhead_str in matches:
       runtime = _ConvertSummaryRuntimeToSeconds(runtime_str)
@@ -268,12 +290,11 @@ def _ConvertSummaryRuntimeToSeconds(summary_runtime: str) -> int:
   return 60 * minutes + seconds
 
 
-def _OutputBuilderInformation(builders_to_steps: Dict[str,
-                                                      Dict[str,
-                                                           List[Tuple[int,
-                                                                      int]]]],
-                              num_samples: int,
-                              shard_max_threshold: Optional[int]) -> None:
+def _OutputBuilderInformation(
+  builders_to_steps: Dict[str, Dict[str, List[Tuple[int, int]]]],
+  num_samples: int,
+  shard_max_threshold: Optional[int],
+) -> None:
   """Print out collected runtime information.
 
   Args:
@@ -295,6 +316,7 @@ def _OutputBuilderInformation(builders_to_steps: Dict[str,
         shard time is under this value, the stats for the step will not be
         output. If None, all stats will be output regardless of max shard time.
   """
+
   def _OutputListStats(l, output_lines):
     # Here and lower down when we do the shard calculations, we can potentially
     # understate the values since we aren't guaranteed to get |num_samples|
@@ -313,8 +335,7 @@ def _OutputBuilderInformation(builders_to_steps: Dict[str,
   # Re-create the mapping now with sorted keys so that builder output is
   # consistent.
   builders_to_steps = {
-      k: builders_to_steps[k]
-      for k in sorted(list(builders_to_steps.keys()))
+    k: builders_to_steps[k] for k in sorted(list(builders_to_steps.keys()))
   }
   for builder, steps_to_times in builders_to_steps.items():
     output_lines = [builder]
@@ -356,13 +377,15 @@ def main() -> None:
     ci_builders &= valid_builders
 
   with multiprocessing.Pool() as p:
-    builder_times = p.map(_GetTimesForBuilder,
-                          [(b, args.num_samples) for b in ci_builders])
+    builder_times = p.map(
+      _GetTimesForBuilder, [(b, args.num_samples) for b in ci_builders]
+    )
   p.join()
 
   builders_to_steps = {}
   for bt in builder_times:
     builders_to_steps.update(bt)
 
-  _OutputBuilderInformation(builders_to_steps, args.num_samples,
-                            args.shard_max_threshold)
+  _OutputBuilderInformation(
+    builders_to_steps, args.num_samples, args.shard_max_threshold
+  )

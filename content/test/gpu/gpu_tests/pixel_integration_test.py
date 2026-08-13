@@ -35,6 +35,7 @@ MAX_FLAKY_OUTPUT_TEST_TRIES = 3
 
 class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
   """GPU pixel tests backed by Skia Gold and Telemetry."""
+
   test_base_name = 'Pixel'
 
   @classmethod
@@ -50,55 +51,55 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     serial_globs = set()
     if host_information.IsMac():
       serial_globs |= {
-          # Flakily gets timeout when capturing screenshots, see
-          # crbug.com/421318674.
-          'Pixel_MeetEffects*',
-          # Flakily produces only half the image when run in parallel on Mac.
-          'Pixel_OffscreenCanvasWebGL*',
-          # Flakily fails to capture a screenshot when run in parallel on Mac.
-          'Pixel_VideoStreamFrom*',
+        # Flakily gets timeout when capturing screenshots, see
+        # crbug.com/421318674.
+        'Pixel_MeetEffects*',
+        # Flakily produces only half the image when run in parallel on Mac.
+        'Pixel_OffscreenCanvasWebGL*',
+        # Flakily fails to capture a screenshot when run in parallel on Mac.
+        'Pixel_VideoStreamFrom*',
       }
     if host_information.IsWindows():
       serial_globs |= {
-          # Serialized for the same reasons as in trace_integration_test.
-          'Pixel_DirectComposition_Underlay*',
-          'Pixel_DirectComposition_Video*',
+        # Serialized for the same reasons as in trace_integration_test.
+        'Pixel_DirectComposition_Underlay*',
+        'Pixel_DirectComposition_Video*',
       }
     return serial_globs
 
   def _GetSerialTests(self) -> set[str]:
     serial_tests = {
-        # High/low power tests don't work properly with multiple browsers
-        # active.
-        'Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker',
-        'Pixel_OffscreenCanvasIBRCWebGLMain',
-        'Pixel_OffscreenCanvasIBRCWebGLWorker',
-        'Pixel_WebGLLowToHighPower',
-        'Pixel_WebGLLowToHighPowerAlphaFalse',
+      # High/low power tests don't work properly with multiple browsers
+      # active.
+      'Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker',
+      'Pixel_OffscreenCanvasIBRCWebGLMain',
+      'Pixel_OffscreenCanvasIBRCWebGLWorker',
+      'Pixel_WebGLLowToHighPower',
+      'Pixel_WebGLLowToHighPowerAlphaFalse',
     }
 
     if host_information.IsLinux() and host_information.IsAmdGpu():
       serial_tests |= {
-          # Flakily produces slightly incorrect images when run in parallel on
-          # AMD.
-          'Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker',
+        # Flakily produces slightly incorrect images when run in parallel on
+        # AMD.
+        'Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker',
       }
 
     if host_information.IsMac() and host_information.Isx86Cpu():
       serial_tests |= {
-          # Can take a while to finish and does not reliably send heartbeats in
-          # the meantime. To avoid potential slowdowns from other tests which
-          # cause flaky timeouts, run this test serially on older hardware.
-          'Pixel_SVGHuge',
+        # Can take a while to finish and does not reliably send heartbeats in
+        # the meantime. To avoid potential slowdowns from other tests which
+        # cause flaky timeouts, run this test serially on older hardware.
+        'Pixel_SVGHuge',
       }
 
     if host_information.IsWindows() and host_information.IsArmCpu():
       serial_tests |= {
-          # Context loss tests don't like being run in parallel on Windows
-          # arm64.
-          'Pixel_Video_Context_Loss_VP9',
-          'Pixel_WebGLContextRestored',
-          'Pixel_WebGLSadCanvas',
+        # Context loss tests don't like being run in parallel on Windows
+        # arm64.
+        'Pixel_Video_Context_Loss_VP9',
+        'Pixel_WebGLContextRestored',
+        'Pixel_WebGLSadCanvas',
       }
 
     return serial_tests
@@ -127,12 +128,16 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       pages += namespace.HdrTestPages(cls.test_base_name)
       pages += namespace.WARPPages(cls.test_base_name)
     # Only run SwiftShader tests on platforms that support it.
-    if host_information.IsLinux() or (host_information.IsWindows()
-                                      and not host_information.IsArmCpu()):
+    if host_information.IsLinux() or (
+      host_information.IsWindows() and not host_information.IsArmCpu()
+    ):
       pages += namespace.SwiftShaderPages(cls.test_base_name)
     for p in pages:
-      yield (p.name, posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH,
-                                    p.url), [p])
+      yield (
+        p.name,
+        posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH, p.url),
+        [p],
+      )
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     super().RunActualGpuTest(test_path, args)
@@ -144,9 +149,9 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
 
     attempt = 1
     while True:
-      tab_data = sghitb.TabData(self.tab,
-                                self.__class__.websocket_server,
-                                is_default_tab=True)
+      tab_data = sghitb.TabData(
+        self.tab, self.__class__.websocket_server, is_default_tab=True
+      )
       self.NavigateTo(test_path, tab_data)
 
       loop_state = sghitb.LoopState()
@@ -156,15 +161,18 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
         self._RunSkiaGoldBasedPixelTest(test_case)
         break
       except skia_gold_integration_test_base.GoldComparisonFailure:
-        if (test_case.known_flaky_output_test
-            and attempt <= MAX_FLAKY_OUTPUT_TEST_TRIES):
+        if (
+          test_case.known_flaky_output_test
+          and attempt <= MAX_FLAKY_OUTPUT_TEST_TRIES
+        ):
           logging.warning(
-              'Known flaky output test %s failed on attempt %d, retrying',
-              test_case.name, attempt)
+            'Known flaky output test %s failed on attempt %d, retrying',
+            test_case.name,
+            attempt,
+          )
           attempt += 1
           continue
         raise
-
 
   def _OnAfterTest(self, args: ct.TestArgs) -> None:
     """Conditionally restarts the browser after the test is finished.
@@ -177,10 +185,12 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       args: The same arguments that the test was run with.
     """
     test_case = args[0]
-    if (test_case.used_custom_test_actions
-        or test_case.restart_browser_after_test):
+    if (
+      test_case.used_custom_test_actions or test_case.restart_browser_after_test
+    ):
       self._RestartBrowser(
-          'Must restart after non-standard test actions or if required by test')
+        'Must restart after non-standard test actions or if required by test'
+      )
       if test_case.used_custom_test_actions and self.IsDualGPUMacLaptop():
         # Give the system a few seconds to reliably indicate that the
         # low-power GPU is active again, to avoid race conditions if the next
@@ -205,12 +215,15 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     # Get any platform-specific crashes counts, falling back to the one for all
     # platforms.
     return crashes_by_platform.get(
-        os_name,
-        crashes_by_platform.get(
-            pixel_test_pages.EXPECTED_CRASHES_PLATFORM_DEFAULT, {}))
+      os_name,
+      crashes_by_platform.get(
+        pixel_test_pages.EXPECTED_CRASHES_PLATFORM_DEFAULT, {}
+      ),
+    )
 
   def _RunSkiaGoldBasedPixelTest(
-      self, test_case: pixel_test_pages.PixelTestPage) -> None:
+    self, test_case: pixel_test_pages.PixelTestPage
+  ) -> None:
     """Captures and compares a test image using Skia Gold.
 
     Raises an Exception if the comparison fails.
@@ -221,12 +234,15 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     tab = self.tab
     if test_case.RequiresFullScreenOSScreenshot():
       if not self.browser.platform.CanTakeScreenshot():
-        logging.warning('Skipping the test because the platform does not '
-                        'support OS screenshots')
+        logging.warning(
+          'Skipping the test because the platform does not '
+          'support OS screenshots'
+        )
         self.skipTest('The platform does not support fullscreen OS screenshot')
 
-      fh = screenshot.TryCaptureScreenShot(self.browser.platform, None,
-                                           self._GetScreenshotTimeout())
+      fh = screenshot.TryCaptureScreenShot(
+        self.browser.platform, None, self._GetScreenshotTimeout()
+      )
       if fh is None:
         self.fail('Unable to get file handle of the screenshot')
       screen_shot = image_util.FromPngFile(fh.GetAbsPath())
@@ -241,8 +257,11 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
 
     dpr = screenshot_utils.GetEffectiveDpr(tab)
     screen_shot = test_case.crop_action.CropScreenshot(
-        screen_shot, dpr, self.browser.platform.GetDeviceTypeName(),
-        self.browser.platform.GetOSName())
+      screen_shot,
+      dpr,
+      self.browser.platform.GetDeviceTypeName(),
+      self.browser.platform.GetOSName(),
+    )
 
     image_name = self._UrlToImageName(test_case.name)
     self._UploadTestResultToSkiaGold(image_name, screen_shot, test_case)
@@ -261,13 +280,16 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:
     return [
-        os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
-            'pixel_expectations.txt')
+      os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'test_expectations',
+        'pixel_expectations.txt',
+      )
     ]
 
 
-def load_tests(loader: unittest.TestLoader, tests: Any,
-               pattern: Any) -> unittest.TestSuite:
+def load_tests(
+  loader: unittest.TestLoader, tests: Any, pattern: Any
+) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

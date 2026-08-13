@@ -47,4 +47,6 @@ def EmptyList():
 
 def EmptySet():
   return dataclasses.field(default_factory=set)
+
+
 # pylint: enable=invalid-field-call

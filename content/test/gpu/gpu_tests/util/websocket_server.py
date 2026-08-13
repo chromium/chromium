@@ -22,8 +22,7 @@ ClientClosedConnectionError = websockets.exceptions.ConnectionClosedOK
 WebsocketReceiveMessageTimeoutError = TimeoutError
 
 
-class WebsocketServer():
-
+class WebsocketServer:
   def __init__(self):
     """Server that abstracts the websocket library under the hood.
 
@@ -56,7 +55,8 @@ class WebsocketServer():
     if self.connection_stopper_event:
       self.connection_stopper_event.set()
       closed = self.connection_closed_event.wait(
-          WEBSOCKET_CLOSE_TIMEOUT_SECONDS)
+        WEBSOCKET_CLOSE_TIMEOUT_SECONDS
+      )
       if not closed:
         raise RuntimeError('Websocket connection did not close')
     self.connection_stopper_event = None
@@ -78,8 +78,9 @@ class WebsocketServer():
     self._server_thread.join(SERVER_SHUTDOWN_TIMEOUT_SECONDS)
     if self._server_thread.is_alive():
       logging.error(
-          'Websocket server did not shut down properly - this might be '
-          'indicative of an issue in the test harness')
+        'Websocket server did not shut down properly - this might be '
+        'indicative of an issue in the test harness'
+      )
 
   def Send(self, message: str) -> None:
     self.websocket.send(message)
@@ -89,7 +90,7 @@ class WebsocketServer():
       return self.websocket.recv(timeout)
     except TimeoutError as e:
       raise WebsocketReceiveMessageTimeoutError(
-          f'Timed out after {timeout} seconds waiting for websocket message'
+        f'Timed out after {timeout} seconds waiting for websocket message'
       ) from e
 
 
@@ -106,10 +107,12 @@ class _ServerThread(threading.Thread):
     self.websocket_server.shutdown()
 
 
-def StartWebsocketServer(server_thread: _ServerThread,
-                         server_instance: WebsocketServer) -> None:
+def StartWebsocketServer(
+  server_thread: _ServerThread, server_instance: WebsocketServer
+) -> None:
   def HandleWebsocketConnection(
-      websocket: sync_server.ServerConnection) -> None:
+    websocket: sync_server.ServerConnection,
+  ) -> None:
     # We only allow one active connection - if there are multiple, something is
     # wrong.
     assert server_instance.connection_stopper_event is None

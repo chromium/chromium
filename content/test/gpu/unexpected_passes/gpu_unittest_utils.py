@@ -13,10 +13,11 @@ from unexpected_passes import gpu_queries
 
 def CreateGenericGpuQuerier(*args, **kwargs) -> gpu_queries.GpuBigQueryQuerier:
   return typing.cast(
-      gpu_queries.GpuBigQueryQuerier,
-      uu.CreateGenericQuerier(cls=gpu_queries.GpuBigQueryQuerier,
-                              *args,
-                              **kwargs))
+    gpu_queries.GpuBigQueryQuerier,
+    uu.CreateGenericQuerier(
+      cls=gpu_queries.GpuBigQueryQuerier, *args, **kwargs
+    ),
+  )
 
 
 class GenericGpuExpectations(gpu_expectations.GpuExpectations):

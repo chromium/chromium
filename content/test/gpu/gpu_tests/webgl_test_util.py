@@ -14,13 +14,14 @@ extensions_relcomps = ('content', 'test', 'data', 'gpu')
 
 conformance_relpath = os.path.join(*conformance_relcomps)
 extensions_relpath = os.path.join(*extensions_relcomps)
-conformance_path = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR,
-                                conformance_relpath)
+conformance_path = os.path.join(
+  gpu_path_util.CHROMIUM_SRC_DIR, conformance_relpath
+)
 
 # These URL prefixes are needed because having more than one static
 # server dir is causing the base server directory to be moved up the
 # directory hierarchy.
 url_prefixes_to_trim = [
-    '/'.join(conformance_relcomps) + '/',
-    '/'.join(extensions_relcomps) + '/',
+  '/'.join(conformance_relcomps) + '/',
+  '/'.join(extensions_relcomps) + '/',
 ]

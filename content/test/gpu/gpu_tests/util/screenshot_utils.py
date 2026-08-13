@@ -34,4 +34,5 @@ def GetEffectiveDpr(tab: ct.Tab) -> float:
     The effective DPR as a float.
   """
   return tab.EvaluateJavaScript(
-      'window.devicePixelRatio * window.visualViewport.scale')
+    'window.devicePixelRatio * window.visualViewport.scale'
+  )

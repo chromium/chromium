@@ -14,12 +14,12 @@ from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 
-html_path = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'content', 'test',
-                         'data', 'gpu', 'webrtc')
+html_path = os.path.join(
+  gpu_path_util.CHROMIUM_SRC_DIR, 'content', 'test', 'data', 'gpu', 'webrtc'
+)
 
 
 class WebRTCIntegrationTest(gpu_integration_test.GpuIntegrationTest):
-
   @classmethod
   def Name(cls) -> str:
     return 'webrtc'
@@ -36,16 +36,26 @@ class WebRTCIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def GenerateWebRTCTests(cls) -> ct.TestGenerator:
     for codec in ['H264', 'H265', 'VP8', 'VP9', 'AV1']:
-      yield (f'WebRTC_Hardware_Encode_Loopback_{codec}', 'codec_loopback.html',
-             [{
-                 'codec': f'video/{codec}',
-                 'requireHwEncoder': True,
-             }])
-      yield (f'WebRTC_Hardware_Decode_Loopback_{codec}', 'codec_loopback.html',
-             [{
-                 'codec': f'video/{codec}',
-                 'requireHwDecoder': True,
-             }])
+      yield (
+        f'WebRTC_Hardware_Encode_Loopback_{codec}',
+        'codec_loopback.html',
+        [
+          {
+            'codec': f'video/{codec}',
+            'requireHwEncoder': True,
+          }
+        ],
+      )
+      yield (
+        f'WebRTC_Hardware_Decode_Loopback_{codec}',
+        'codec_loopback.html',
+        [
+          {
+            'codec': f'video/{codec}',
+            'requireHwDecoder': True,
+          }
+        ],
+      )
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     url = self.UrlOfStaticFilePath(os.path.join(html_path, test_path))
@@ -53,7 +63,8 @@ class WebRTCIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     arg_obj = args[0]
     tab.Navigate(url)
     tab.action_runner.WaitForJavaScriptCondition(
-        'document.readyState == "complete"')
+      'document.readyState == "complete"'
+    )
     tab.EvaluateJavaScript('TEST.run(' + json.dumps(arg_obj) + ')')
     tab.action_runner.WaitForJavaScriptCondition('TEST.finished', timeout=60)
     if tab.EvaluateJavaScript('TEST.skipped'):
@@ -65,9 +76,9 @@ class WebRTCIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def SetUpProcess(cls) -> None:
     super(WebRTCIntegrationTest, cls).SetUpProcess()
     args = [
-        '--use-fake-device-for-media-stream',
-        '--use-fake-ui-for-media-stream',
-        cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
+      '--use-fake-device-for-media-stream',
+      '--use-fake-ui-for-media-stream',
+      cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
     ]
 
     # If we don't call CustomizeBrowserArgs cls.platform is None
@@ -79,12 +90,16 @@ class WebRTCIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:
     return [
-        os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                     'test_expectations', 'webrtc_expectations.txt')
+      os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'test_expectations',
+        'webrtc_expectations.txt',
+      )
     ]
 
 
-def load_tests(loader: unittest.TestLoader, tests: Any,
-               pattern: Any) -> unittest.TestSuite:
+def load_tests(
+  loader: unittest.TestLoader, tests: Any, pattern: Any
+) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

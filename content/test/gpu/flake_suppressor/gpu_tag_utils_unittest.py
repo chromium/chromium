@@ -12,7 +12,7 @@ class RemoveIgnoredTagsUnittest(unittest.TestCase):
   def testBasic(self) -> None:
     tags = ['win', 'win-laptop']
     filtered_tags = tag_utils.GpuTagUtils().RemoveIgnoredTags(tags)
-    self.assertEqual(filtered_tags, ('win', ))
+    self.assertEqual(filtered_tags, ('win',))
 
 
 if __name__ == '__main__':

@@ -19,18 +19,22 @@ import os
 import sys
 
 _TESTS = [
-    'Basic', 'Video_720_MP4', 'Video_720_MP4_Fullscreen',
-    'Video_720_MP4_Underlay', 'Video_720_MP4_Underlay_Fullscreen'
+  'Basic',
+  'Video_720_MP4',
+  'Video_720_MP4_Fullscreen',
+  'Video_720_MP4_Underlay',
+  'Video_720_MP4_Underlay_Fullscreen',
 ]
 _MEASUREMENTS = ['DRAM', 'Processor']
 
 _RESULTS_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 'win10_intel_hd_630')
+  os.path.dirname(os.path.abspath(__file__)), 'win10_intel_hd_630'
+)
 
 _RESULTS_JSON_FILES = [
-    'build_4370_4425_repeat3.json',
-    'build_4426_4759_repeat3.json',
-    'build_4760_5047_repeat3.json',
+  'build_4370_4425_repeat3.json',
+  'build_4426_4759_repeat3.json',
+  'build_4760_5047_repeat3.json',
 ]
 
 MIN_RUNS_PER_BOT = 8
@@ -88,9 +92,9 @@ def DetermineResultsFromMultipleRuns(measurements, repeat_strategy):
 
 
 # pylint: disable=too-many-locals
-def ProcessJsonData(jsons,
-                    per_bot=False,
-                    repeat_strategy=RepeatStrategy.COUNT_MINIMUM):
+def ProcessJsonData(
+  jsons, per_bot=False, repeat_strategy=RepeatStrategy.COUNT_MINIMUM
+):
   min_build = sys.maxsize
   max_build = -1
   results = {}
@@ -130,13 +134,14 @@ def ProcessJsonData(jsons,
             measurements[ii] = measurements[ii] + data[ii]
         assert measurements
         test_data.extend(
-            DetermineResultsFromMultipleRuns(measurements, repeat_strategy))
+          DetermineResultsFromMultipleRuns(measurements, repeat_strategy)
+        )
 
   return {
-      'min_build': min_build,
-      'max_build': max_build,
-      'bots': list(bots),
-      'results': results,
+    'min_build': min_build,
+    'max_build': max_build,
+    'bots': list(bots),
+    'results': results,
   }
 
 
@@ -235,18 +240,24 @@ def FindBuild(jsons, selected_bots, test_name, result):
         if measurements[0] == result:
           return {'bot': bot, 'build': build_number}
   return None
+
+
 # pylint: enable=too-many-locals
 
 
-def RunExperiment_BadBots(jsons,
-                          stdev_threshold,
-                          repeat_strategy=RepeatStrategy.COUNT_MINIMUM):
-  MarkExperiment(f'Locate potential bad bots: thresh={stdev_threshold:.2f}, '
-                 f'repeat={RepeatStrategy.ToString(repeat_strategy)}')
+def RunExperiment_BadBots(
+  jsons, stdev_threshold, repeat_strategy=RepeatStrategy.COUNT_MINIMUM
+):
+  MarkExperiment(
+    f'Locate potential bad bots: thresh={stdev_threshold:.2f}, '
+    f'repeat={RepeatStrategy.ToString(repeat_strategy)}'
+  )
   outcome = ProcessJsonData(
-      jsons, per_bot=True, repeat_strategy=repeat_strategy)
-  logging.debug('Processed builds: [%d, %d]', outcome['min_build'],
-                outcome['max_build'])
+    jsons, per_bot=True, repeat_strategy=repeat_strategy
+  )
+  logging.debug(
+    'Processed builds: [%d, %d]', outcome['min_build'], outcome['max_build']
+  )
   logging.debug('Total number of bots: %d', len(outcome['bots']))
   results = outcome['results']
   total_bad_bots = set()
@@ -285,20 +296,23 @@ def RunExperiment_BadBots(jsons,
 
 
 # pylint: disable=too-many-locals
-def RunExperiment_GoodBots(jsons,
-                           bad_bots=None,
-                           repeat_strategy=RepeatStrategy.COUNT_MINIMUM):
+def RunExperiment_GoodBots(
+  jsons, bad_bots=None, repeat_strategy=RepeatStrategy.COUNT_MINIMUM
+):
   bad_bots = bad_bots or []
   STDEV_GOOD_BOT_THRESHOLD = 0.2
   GOOD_BOT_RANGE_PERC = 0.08
   REGULAR_BOT_RANGE_PERC = 0.15
   MarkExperiment(
-      f'Locate potential good bots: thresh={STDEV_GOOD_BOT_THRESHOLD:.2f}, '
-      f'repeat={RepeatStrategy.ToString(repeat_strategy)}')
+    f'Locate potential good bots: thresh={STDEV_GOOD_BOT_THRESHOLD:.2f}, '
+    f'repeat={RepeatStrategy.ToString(repeat_strategy)}'
+  )
   outcome = ProcessJsonData(
-      jsons, per_bot=True, repeat_strategy=repeat_strategy)
-  logging.debug('Processed builds: [%d, %d]', outcome['min_build'],
-                outcome['max_build'])
+    jsons, per_bot=True, repeat_strategy=repeat_strategy
+  )
+  logging.debug(
+    'Processed builds: [%d, %d]', outcome['min_build'], outcome['max_build']
+  )
   logging.debug('Total number of bots: %d', len(outcome['bots']))
   total_good_bots = set(outcome['bots'])
   for test_name, test_results in outcome['results'].items():
@@ -322,17 +336,26 @@ def RunExperiment_GoodBots(jsons,
       mean = Mean(bot_results)
       if stdev < STDEV_GOOD_BOT_THRESHOLD:
         good_bots.append(bot_name)
-        logging.debug('Potential good bot %s: mean = %f, stdev = %f', bot_name,
-                      mean, stdev)
+        logging.debug(
+          'Potential good bot %s: mean = %f, stdev = %f', bot_name, mean, stdev
+        )
         outliers = GetOutliers(bot_results, GOOD_BOT_RANGE_PERC)
         if outliers:
-          logging.debug('Good bot %s: %d runs out of %d%% range', bot_name,
-                        len(outliers), GOOD_BOT_RANGE_PERC * 100)
+          logging.debug(
+            'Good bot %s: %d runs out of %d%% range',
+            bot_name,
+            len(outliers),
+            GOOD_BOT_RANGE_PERC * 100,
+          )
       else:
         outliers = GetOutliers(bot_results, REGULAR_BOT_RANGE_PERC)
         if outliers:
-          logging.debug('Regular bot %s: %d runs out of %d%% range', bot_name,
-                        len(outliers), REGULAR_BOT_RANGE_PERC * 100)
+          logging.debug(
+            'Regular bot %s: %d runs out of %d%% range',
+            bot_name,
+            len(outliers),
+            REGULAR_BOT_RANGE_PERC * 100,
+          )
     total_good_bots &= set(good_bots)
     logging.debug('Total bots considered: %d', bots_considered)
     logging.debug('Good bots: %d', len(good_bots))
@@ -349,6 +372,8 @@ def RunExperiment_GoodBots(jsons,
     build_numbers.sort()
     logging.debug('Good bot %s builds: %s', bot, build_numbers)
   return total_good_bots
+
+
 # pylint: enable=too-many-locals
 
 
@@ -359,11 +384,14 @@ def RunExperiment_GoodBots(jsons,
 def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
   GET_RID_OF_N_BOTS_WITH_WORST_STDEV = 10
 
-  MarkExperiment(f'Find {find_m_bots} bots with best variations, threshold = '
-                 f'{variation_threshold * 100:.2f}%')
+  MarkExperiment(
+    f'Find {find_m_bots} bots with best variations, threshold = '
+    f'{variation_threshold * 100:.2f}%'
+  )
 
   outcome = ProcessJsonData(
-      jsons, per_bot=True, repeat_strategy=RepeatStrategy.COUNT_MINIMUM)
+    jsons, per_bot=True, repeat_strategy=RepeatStrategy.COUNT_MINIMUM
+  )
   candidates_per_test = {}
   candidate_bots_per_test = {}
   for test_name, test_results in outcome['results'].items():
@@ -380,12 +408,14 @@ def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
       bots_considered = bots_considered + 1
       mean = Mean(bot_results)
       stdev = Stdev(bot_results)
-      candidates.append({
+      candidates.append(
+        {
           'bot': bot_name,
           'mean': mean,
           'stdev': stdev,
           'data': bot_results,
-      })
+        }
+      )
       stdev_list.append(stdev)
     stdev_list.sort()
     guard_stdev = stdev_list[-GET_RID_OF_N_BOTS_WITH_WORST_STDEV]
@@ -395,8 +425,9 @@ def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
       if candidate['stdev'] < guard_stdev:
         candidates_with_good_stdev.append(candidate)
         mean_list.append(candidate['mean'])
-    assert (len(candidates) - GET_RID_OF_N_BOTS_WITH_WORST_STDEV == len(
-        candidates_with_good_stdev))
+    assert len(candidates) - GET_RID_OF_N_BOTS_WITH_WORST_STDEV == len(
+      candidates_with_good_stdev
+    )
 
     assert len(candidates_with_good_stdev) > find_m_bots
 
@@ -429,8 +460,11 @@ def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
       selected_bots = bots
     else:
       selected_bots = selected_bots & bots
-  logging.debug('Intended to find %d bots, actually found %d', find_m_bots,
-                len(selected_bots))
+  logging.debug(
+    'Intended to find %d bots, actually found %d',
+    find_m_bots,
+    len(selected_bots),
+  )
   selected_bots = list(selected_bots)
   selected_bots.sort()
   logging.debug(selected_bots)
@@ -444,8 +478,9 @@ def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
         results.extend(candidate['data'])
     mean = Mean(results)
     stdev = Stdev(results)
-    logging.debug('Validate test %s: mean = %f, stdev = %f', test_name, mean,
-                  stdev)
+    logging.debug(
+      'Validate test %s: mean = %f, stdev = %f', test_name, mean, stdev
+    )
     outliers = GetOutliers(results, variation_threshold)
     if outliers:
       # Find corresponding builds
@@ -454,10 +489,16 @@ def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
         build = FindBuild(jsons, selected_bots, test_name, outlier)
         assert build is not None
         builds.append(build)
-      logging.debug('%d runs out of %d are not within %0.2f%% range: %s',
-                    len(outliers), len(results), (variation_threshold * 100),
-                    outliers)
+      logging.debug(
+        '%d runs out of %d are not within %0.2f%% range: %s',
+        len(outliers),
+        len(results),
+        (variation_threshold * 100),
+        outliers,
+      )
       logging.debug(builds)
+
+
 # pylint: enable=too-many-locals,too-many-branches,too-many-statements
 
 
@@ -475,10 +516,12 @@ def main():
   bad_bots = RunExperiment_BadBots(jsons, 0.5, RepeatStrategy.COUNT_MEDIAN)
   RunExperiment_GoodBots(jsons, bad_bots, RepeatStrategy.COUNT_MEDIAN)
 
-  bad_bots = RunExperiment_BadBots(jsons, 0.5,
-                                   RepeatStrategy.COUNT_MINIMUM_FIRST_TWO)
-  RunExperiment_GoodBots(jsons, bad_bots,
-                         RepeatStrategy.COUNT_MINIMUM_FIRST_TWO)
+  bad_bots = RunExperiment_BadBots(
+    jsons, 0.5, RepeatStrategy.COUNT_MINIMUM_FIRST_TWO
+  )
+  RunExperiment_GoodBots(
+    jsons, bad_bots, RepeatStrategy.COUNT_MINIMUM_FIRST_TWO
+  )
 
   bad_bots = RunExperiment_BadBots(jsons, 0.5, RepeatStrategy.COUNT_MINIMUM)
   RunExperiment_GoodBots(jsons, bad_bots, RepeatStrategy.COUNT_MINIMUM)

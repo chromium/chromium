@@ -20,84 +20,84 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
   def testMatch(self) -> None:
     """Tests that a match can be successfully found."""
     test_map = {
-        'isolated_scripts': [
-            {
-                'args': [
-                    'webgl_conformance',
-                ],
-                'test': 'telemetry_gpu_integration_test',
-            },
-        ],
+      'isolated_scripts': [
+        {
+          'args': [
+            'webgl_conformance',
+          ],
+          'test': 'telemetry_gpu_integration_test',
+        },
+      ],
     }
     self.assertTrue(self.instance._BuilderRunsTestOfInterest(test_map))
 
   def testMatchSkylab(self) -> None:
     """Tests that a match can be successfully found for Skylab builders."""
     test_map = {
-        'skylab_tests': [
-            {
-                'args': [
-                    'webgl_conformance',
-                ],
-                'test': 'telemetry_gpu_integration_test',
-            },
-        ],
+      'skylab_tests': [
+        {
+          'args': [
+            'webgl_conformance',
+          ],
+          'test': 'telemetry_gpu_integration_test',
+        },
+      ],
     }
     self.assertTrue(self.instance._BuilderRunsTestOfInterest(test_map))
 
   def testNoMatchIsolate(self) -> None:
     """Tests that a match is not found if the isolate name is not valid."""
     test_map = {
-        'isolated_scripts': [
-            {
-                'args': [
-                    'webgl_conformance',
-                ],
-                'test': 'not_telemetry',
-            },
-        ],
+      'isolated_scripts': [
+        {
+          'args': [
+            'webgl_conformance',
+          ],
+          'test': 'not_telemetry',
+        },
+      ],
     }
     self.assertFalse(self.instance._BuilderRunsTestOfInterest(test_map))
 
   def testNoMatchSkylabTest(self) -> None:
     """Tests that a match is not found for Skylab if test name is not valid."""
     test_map = {
-        'skylab_tests': [
-            {
-                'args': [
-                    'webgl_conformance',
-                ],
-                'test': 'not_telemetry',
-            },
-        ],
+      'skylab_tests': [
+        {
+          'args': [
+            'webgl_conformance',
+          ],
+          'test': 'not_telemetry',
+        },
+      ],
     }
     self.assertFalse(self.instance._BuilderRunsTestOfInterest(test_map))
 
   def testNoMatchSuite(self) -> None:
     """Tests that a match is not found if the suite name is not valid."""
     test_map = {
-        'isolated_scripts': [
-            {
-                'args': [
-                    'not_a_suite',
-                ],
-                'test': 'telemetry_gpu_integration_test',
-            },
-        ],
+      'isolated_scripts': [
+        {
+          'args': [
+            'not_a_suite',
+          ],
+          'test': 'telemetry_gpu_integration_test',
+        },
+      ],
     }
     self.assertFalse(self.instance._BuilderRunsTestOfInterest(test_map))
 
   def testNoMatchSuiteSkylab(self) -> None:
     """Tests that a match is not found if Skylab suite name is not valid."""
     test_map = {
-        'skylab_tests': [
-            {
-                'args': [
-                    'not_a_suite',
-                ],
-                'test': 'telemetry_gpu_integration_test',
-            },
-        ],
+      'skylab_tests': [
+        {
+          'args': [
+            'not_a_suite',
+          ],
+          'test': 'telemetry_gpu_integration_test',
+        },
+      ],
     }
     self.assertFalse(self.instance._BuilderRunsTestOfInterest(test_map))
 
@@ -114,8 +114,9 @@ class GetNonChromiumBuildersUnittest(unittest.TestCase):
   def testStringsConvertedToBuilderEntries(self) -> None:
     """Tests that the easier-to-read strings get converted to BuilderEntry."""
     instance = gpu_builders.GpuBuilders('webgl_conformance', False)
-    builder = data_types.BuilderEntry('Win V8 FYI Release (NVIDIA)',
-                                      constants.BuilderTypes.CI, False)
+    builder = data_types.BuilderEntry(
+      'Win V8 FYI Release (NVIDIA)', constants.BuilderTypes.CI, False
+    )
     self.assertIn(builder, instance.GetNonChromiumBuilders())
 
 

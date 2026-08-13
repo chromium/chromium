@@ -14,24 +14,24 @@ from bad_machine_finder import swarming
 from bad_machine_finder import test_specs
 
 FakeRow = collections.namedtuple(
-    'FakeRow', ['mixin', 'bot_id', 'total_tasks', 'failed_tasks', 'test_suite'])
+  'FakeRow', ['mixin', 'bot_id', 'total_tasks', 'failed_tasks', 'test_suite']
+)
 
 
 class FakeQuerier(bigquery.Querier):
-
   def __init__(self):
     super().__init__('')
     self.rows = []
     self.last_run_query = ''
 
-  def GetSeriesForQuery(self,
-                        query: str) -> Generator[pandas.Series, None, None]:
+  def GetSeriesForQuery(
+    self, query: str
+  ) -> Generator[pandas.Series, None, None]:
     self.last_run_query = query
     yield from self.rows
 
 
 class QueryParsingUnittest(unittest.TestCase):
-
   def testSingleMixin(self):
     """Tests query result parsing behavior with a single mixin."""
     dimensions = test_specs.DimensionSet({'os': 'mac'})
@@ -39,13 +39,14 @@ class QueryParsingUnittest(unittest.TestCase):
 
     querier = FakeQuerier()
     querier.rows = [
-        FakeRow('mixin_name', 'bot-1', 10, 5, 'pixel'),
-        FakeRow('mixin_name', 'bot-1', 10, 0, 'webgl'),
-        FakeRow('mixin_name', 'bot-2', 20, 10, 'pixel'),
+      FakeRow('mixin_name', 'bot-1', 10, 5, 'pixel'),
+      FakeRow('mixin_name', 'bot-1', 10, 0, 'webgl'),
+      FakeRow('mixin_name', 'bot-2', 20, 10, 'pixel'),
     ]
 
-    all_mixin_stats = swarming.GetTaskStatsForMixins(querier,
-                                                     dimensions_by_mixin, 5)
+    all_mixin_stats = swarming.GetTaskStatsForMixins(
+      querier, dimensions_by_mixin, 5
+    )
     self.assertEqual(list(all_mixin_stats.keys()), ['mixin_name'])
     mixin_stats = all_mixin_stats['mixin_name']
     self.assertEqual(mixin_stats.total_tasks, 40)
@@ -70,18 +71,19 @@ class QueryParsingUnittest(unittest.TestCase):
   def testMultiMixin(self):
     """Tests query result parsing behavior with multiple mixins."""
     dimensions_by_mixin = {
-        'amd_mixin': test_specs.DimensionSet({'gpu': '1002'}),
-        'nvidia_mixin': test_specs.DimensionSet({'gpu': '10de'}),
+      'amd_mixin': test_specs.DimensionSet({'gpu': '1002'}),
+      'nvidia_mixin': test_specs.DimensionSet({'gpu': '10de'}),
     }
 
     querier = FakeQuerier()
     querier.rows = [
-        FakeRow('amd_mixin', 'bot-1', 10, 5, 'pixel'),
-        FakeRow('nvidia_mixin', 'bot-2', 20, 10, 'webgl'),
+      FakeRow('amd_mixin', 'bot-1', 10, 5, 'pixel'),
+      FakeRow('nvidia_mixin', 'bot-2', 20, 10, 'webgl'),
     ]
 
-    all_mixin_stats = swarming.GetTaskStatsForMixins(querier,
-                                                     dimensions_by_mixin, 5)
+    all_mixin_stats = swarming.GetTaskStatsForMixins(
+      querier, dimensions_by_mixin, 5
+    )
     self.assertEqual(set(all_mixin_stats.keys()), {'amd_mixin', 'nvidia_mixin'})
 
     amd_mixin_stats = all_mixin_stats['amd_mixin']
@@ -99,17 +101,20 @@ class QueryParsingUnittest(unittest.TestCase):
 
     querier = FakeQuerier()
     querier.rows = [
-        FakeRow('mixin_name', 'bot-1', 10, 5, 'pixel'),
-        FakeRow('mixin_name', 'bot-1', 20, 10, None),
+      FakeRow('mixin_name', 'bot-1', 10, 5, 'pixel'),
+      FakeRow('mixin_name', 'bot-1', 20, 10, None),
     ]
 
     with self.assertLogs(level='WARNING') as log_manager:
-      all_mixin_stats = swarming.GetTaskStatsForMixins(querier,
-                                                       dimensions_by_mixin, 5)
+      all_mixin_stats = swarming.GetTaskStatsForMixins(
+        querier, dimensions_by_mixin, 5
+      )
       for line in log_manager.output:
-        if ('Skipping row with 20 total tasks and 10 failed tasks that did not '
-            'have a test suite set. This is normal if these tasks were '
-            'manually triggered.') in line:
+        if (
+          'Skipping row with 20 total tasks and 10 failed tasks that did not '
+          'have a test suite set. This is normal if these tasks were '
+          'manually triggered.'
+        ) in line:
           break
       else:
         self.fail('Expected log line not found')
@@ -121,7 +126,6 @@ class QueryParsingUnittest(unittest.TestCase):
 
 
 class GenerateQueryUnittest(unittest.TestCase):
-
   def testSingleMixinSimpleDimensions(self):
     """Tests behavior when a single mixin is provided with simple dimensions."""
     dimensions = test_specs.DimensionSet({'os': 'mac', 'gpu': '1002'})
@@ -227,10 +231,9 @@ ORDER BY mixin, bot_id, test_suite
 
   def testSingleMixinComplexDimensions(self):
     """Tests behavior when a single mixin is provided w/ complex dimensions."""
-    dimensions = test_specs.DimensionSet({
-        'os': 'mac',
-        'gpu': '1002:2345|1002:3456'
-    })
+    dimensions = test_specs.DimensionSet(
+      {'os': 'mac', 'gpu': '1002:2345|1002:3456'}
+    )
     dimensions_by_mixin = {'mixin_name': dimensions}
     querier = FakeQuerier()
 
@@ -338,8 +341,8 @@ ORDER BY mixin, bot_id, test_suite
     amd_dimensions = test_specs.DimensionSet({'os': 'mac', 'gpu': '1002'})
     nvidia_dimensions = test_specs.DimensionSet({'os': 'mac', 'gpu': '10de'})
     dimensions_by_mixin = {
-        'amd_mixin': amd_dimensions,
-        'nvidia_mixin': nvidia_dimensions
+      'amd_mixin': amd_dimensions,
+      'nvidia_mixin': nvidia_dimensions,
     }
     querier = FakeQuerier()
 
@@ -484,17 +487,15 @@ ORDER BY mixin, bot_id, test_suite
 
   def testMultipleMixinsComplexDimensions(self):
     """Tests behavior w/ multiple mixins are provided w/ complex dimensions."""
-    amd_dimensions = test_specs.DimensionSet({
-        'os': 'mac',
-        'gpu': '1002:2345|1002:3456'
-    })
-    nvidia_dimensions = test_specs.DimensionSet({
-        'os': 'mac|win',
-        'gpu': '10de'
-    })
+    amd_dimensions = test_specs.DimensionSet(
+      {'os': 'mac', 'gpu': '1002:2345|1002:3456'}
+    )
+    nvidia_dimensions = test_specs.DimensionSet(
+      {'os': 'mac|win', 'gpu': '10de'}
+    )
     dimensions_by_mixin = {
-        'amd_mixin': amd_dimensions,
-        'nvidia_mixin': nvidia_dimensions
+      'amd_mixin': amd_dimensions,
+      'nvidia_mixin': nvidia_dimensions,
     }
     querier = FakeQuerier()
 

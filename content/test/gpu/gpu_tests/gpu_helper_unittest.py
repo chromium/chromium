@@ -17,31 +17,32 @@ from gpu_tests import gpu_helper
 
 # pylint: disable=too-many-arguments
 def CreateGpuDeviceDict(
-    vendor_id: int | None = None,
-    device_id: int | None = None,
-    sub_sys_id: int | None = None,
-    revision: int | None = None,
-    vendor_string: str | None = None,
-    device_string: str | None = None,
-    driver_vendor: str | None = None,
-    driver_version: str | None = None) -> dict[str, str | int]:
+  vendor_id: int | None = None,
+  device_id: int | None = None,
+  sub_sys_id: int | None = None,
+  revision: int | None = None,
+  vendor_string: str | None = None,
+  device_string: str | None = None,
+  driver_vendor: str | None = None,
+  driver_version: str | None = None,
+) -> dict[str, str | int]:
   return {
-      'vendor_id':
-      vendor_id or 0,
-      'device_id':
-      device_id or 0,
-      'sub_sys_id':
-      sub_sys_id or 0,
-      'revision':
-      revision or 0,
-      'vendor_string':
-      'vendor_string' if vendor_string is None else vendor_string,
-      'device_string':
-      'device_string' if device_string is None else device_string,
-      'driver_vendor':
-      'driver_vendor' if driver_vendor is None else driver_vendor,
-      'driver_version':
-      'driver_version' if driver_version is None else driver_version,
+    'vendor_id': vendor_id or 0,
+    'device_id': device_id or 0,
+    'sub_sys_id': sub_sys_id or 0,
+    'revision': revision or 0,
+    'vendor_string': 'vendor_string'
+    if vendor_string is None
+    else vendor_string,
+    'device_string': 'device_string'
+    if device_string is None
+    else device_string,
+    'driver_vendor': 'driver_vendor'
+    if driver_vendor is None
+    else driver_vendor,
+    'driver_version': 'driver_version'
+    if driver_version is None
+    else driver_version,
   }
 
 
@@ -49,8 +50,9 @@ def CreateGpuDeviceDict(
 
 
 @dataclasses.dataclass
-class TagHelperTestCase():
+class TagHelperTestCase:
   """Struct-like class for defining a tag helper test case."""
+
   expected_result: Any
   device_dict: dict[str, str | int] = ct.EmptyDict()
   aux_attributes: dict[str, Any] = ct.EmptyDict()
@@ -59,57 +61,76 @@ class TagHelperTestCase():
 
 
 class TagHelpersUnittest(unittest.TestCase):
-
   def runTagHelperTestWithIndex(
-      self, tc: TagHelperTestCase,
-      test_method: Callable[[gpu_info.GPUInfo | None, int], Any]) -> None:
+    self,
+    tc: TagHelperTestCase,
+    test_method: Callable[[gpu_info.GPUInfo | None, int], Any],
+  ) -> None:
     """Helper method for running a single tag helper test case w/ index."""
-    info = gpu_info.GPUInfo([CreateGpuDeviceDict(**tc.device_dict)],
-                            tc.aux_attributes, tc.feature_status, None)
+    info = gpu_info.GPUInfo(
+      [CreateGpuDeviceDict(**tc.device_dict)],
+      tc.aux_attributes,
+      tc.feature_status,
+      None,
+    )
     self.assertEqual(test_method(info, 0), tc.expected_result)
 
   def runTagHelperTest(
-      self, tc: TagHelperTestCase,
-      test_method: Callable[[gpu_info.GPUInfo | None], Any]) -> None:
+    self,
+    tc: TagHelperTestCase,
+    test_method: Callable[[gpu_info.GPUInfo | None], Any],
+  ) -> None:
     """Helper method for running a single tag helper test case w/o index."""
-    info = gpu_info.GPUInfo([CreateGpuDeviceDict(**tc.device_dict)],
-                            tc.aux_attributes, tc.feature_status, None)
+    info = gpu_info.GPUInfo(
+      [CreateGpuDeviceDict(**tc.device_dict)],
+      tc.aux_attributes,
+      tc.feature_status,
+      None,
+    )
     self.assertEqual(test_method(info), tc.expected_result)
 
   def testGetGpuVendorString(self) -> None:
     """Tests all code paths for the GetGpuVendorString() method."""
     cases = [
-        # Explicit ID -> AMD.
-        TagHelperTestCase(
-            'amd', {
-                'vendor_id': 0x1002,
-                'device_string': 'ANGLE (ANGLE gpu, 1, 2)',
-                'vendor_string': 'Vendor_gpu 1 2'
-            }),
-        # Explicit ID -> Intel.
-        TagHelperTestCase(
-            'intel', {
-                'vendor_id': 0x8086,
-                'device_string': 'ANGLE (ANGLE gpu, 1, 2)',
-                'vendor_string': 'Vendor_gpu 1 2'
-            }),
-        # Explicit ID -> NVIDIA.
-        TagHelperTestCase(
-            'nvidia', {
-                'vendor_id': 0x10DE,
-                'device_string': 'ANGLE (ANGLE gpu, 1, 2)',
-                'vendor_string': 'Vendor_gpu 1 2'
-            }),
-        # ANGLE vendor string.
-        TagHelperTestCase(
-            'angle gpu', {
-                'device_string': 'ANGLE (ANGLE gpu, 1, 2)',
-                'vendor_string': 'Vendor_gpu 1 2'
-            }),
-        # Vendor string.
-        TagHelperTestCase('vendor_gpu', {'vendor_string': 'Vendor_gpu 1 2'}),
-        # Defined info but unknown.
-        TagHelperTestCase('unknown_gpu', {'vendor_string': ''}),
+      # Explicit ID -> AMD.
+      TagHelperTestCase(
+        'amd',
+        {
+          'vendor_id': 0x1002,
+          'device_string': 'ANGLE (ANGLE gpu, 1, 2)',
+          'vendor_string': 'Vendor_gpu 1 2',
+        },
+      ),
+      # Explicit ID -> Intel.
+      TagHelperTestCase(
+        'intel',
+        {
+          'vendor_id': 0x8086,
+          'device_string': 'ANGLE (ANGLE gpu, 1, 2)',
+          'vendor_string': 'Vendor_gpu 1 2',
+        },
+      ),
+      # Explicit ID -> NVIDIA.
+      TagHelperTestCase(
+        'nvidia',
+        {
+          'vendor_id': 0x10DE,
+          'device_string': 'ANGLE (ANGLE gpu, 1, 2)',
+          'vendor_string': 'Vendor_gpu 1 2',
+        },
+      ),
+      # ANGLE vendor string.
+      TagHelperTestCase(
+        'angle gpu',
+        {
+          'device_string': 'ANGLE (ANGLE gpu, 1, 2)',
+          'vendor_string': 'Vendor_gpu 1 2',
+        },
+      ),
+      # Vendor string.
+      TagHelperTestCase('vendor_gpu', {'vendor_string': 'Vendor_gpu 1 2'}),
+      # Defined info but unknown.
+      TagHelperTestCase('unknown_gpu', {'vendor_string': ''}),
     ]
 
     for tc in cases:
@@ -121,16 +142,20 @@ class TagHelpersUnittest(unittest.TestCase):
   def testGetGpuDeviceId(self) -> None:
     """Tests all code paths for the GetGpuDeviceId() method."""
     cases = [
-        # Explicit device.
-        TagHelperTestCase(0xFFFF, {
-            'device_id': 0xFFFF,
-            'device_string': 'ANGLE (Vendor, Device, Driver)'
-        }),
-        # ANGLE device string.
-        TagHelperTestCase('Device',
-                          {'device_string': 'ANGLE (Vendor, Device, Driver)'}),
-        # Device string.
-        TagHelperTestCase('Some device', {'device_string': 'Some device'}),
+      # Explicit device.
+      TagHelperTestCase(
+        0xFFFF,
+        {
+          'device_id': 0xFFFF,
+          'device_string': 'ANGLE (Vendor, Device, Driver)',
+        },
+      ),
+      # ANGLE device string.
+      TagHelperTestCase(
+        'Device', {'device_string': 'ANGLE (Vendor, Device, Driver)'}
+      ),
+      # Device string.
+      TagHelperTestCase('Some device', {'device_string': 'Some device'}),
     ]
 
     for tc in cases:
@@ -160,8 +185,9 @@ class TagHelpersUnittest(unittest.TestCase):
     """Tests all code paths for the GetGpuDriverVendor() method."""
     # Explicit vendor.
     self.runTagHelperTest(
-        TagHelperTestCase('vendor', {'driver_vendor': 'vendor'}),
-        gpu_helper.GetGpuDriverVendor)
+      TagHelperTestCase('vendor', {'driver_vendor': 'vendor'}),
+      gpu_helper.GetGpuDriverVendor,
+    )
     # Undefined info.
     self.assertEqual(gpu_helper.GetGpuDriverVendor(None), None)
 
@@ -169,41 +195,50 @@ class TagHelpersUnittest(unittest.TestCase):
     """Tests all code paths for the GetGpuDriverVersion() method."""
     # Explicit version.
     self.runTagHelperTest(
-        TagHelperTestCase('Some version', {'driver_version': 'Some version'}),
-        gpu_helper.GetGpuDriverVersion)
+      TagHelperTestCase('Some version', {'driver_version': 'Some version'}),
+      gpu_helper.GetGpuDriverVersion,
+    )
     # Undefined info.
     self.assertEqual(gpu_helper.GetGpuDriverVersion(None), None)
 
   def testGetANGLERenderer(self) -> None:
     """Tests all code paths for the GetANGLERenderer() method."""
     cases = [
-        # No aux attributes.
-        TagHelperTestCase('angle-disabled'),
-        # Non-ANGLE renderer.
-        TagHelperTestCase('angle-disabled',
-                          aux_attributes={'gl_renderer': 'renderer'}),
-        # D3D11.
-        TagHelperTestCase('angle-d3d11',
-                          aux_attributes={'gl_renderer': 'ANGLE Direct3D11'}),
-        # D3D9.
-        TagHelperTestCase('angle-d3d9',
-                          aux_attributes={'gl_renderer': 'ANGLE Direct3D9'}),
-        # OpenGL ES.
-        TagHelperTestCase('angle-opengles',
-                          aux_attributes={'gl_renderer': 'ANGLE OpenGL ES'}),
-        # OpenGL.
-        TagHelperTestCase('angle-opengl',
-                          aux_attributes={'gl_renderer': 'ANGLE OpenGL'}),
-        # Metal.
-        TagHelperTestCase('angle-metal',
-                          aux_attributes={'gl_renderer': 'ANGLE Metal'}),
-        # SwiftShader, explicitly test that it's chosen over Vulkan.
-        TagHelperTestCase(
-            'angle-swiftshader',
-            aux_attributes={'gl_renderer': 'ANGLE Vulkan SwiftShader'}),
-        # Vulkan.
-        TagHelperTestCase('angle-vulkan',
-                          aux_attributes={'gl_renderer': 'ANGLE Vulkan'}),
+      # No aux attributes.
+      TagHelperTestCase('angle-disabled'),
+      # Non-ANGLE renderer.
+      TagHelperTestCase(
+        'angle-disabled', aux_attributes={'gl_renderer': 'renderer'}
+      ),
+      # D3D11.
+      TagHelperTestCase(
+        'angle-d3d11', aux_attributes={'gl_renderer': 'ANGLE Direct3D11'}
+      ),
+      # D3D9.
+      TagHelperTestCase(
+        'angle-d3d9', aux_attributes={'gl_renderer': 'ANGLE Direct3D9'}
+      ),
+      # OpenGL ES.
+      TagHelperTestCase(
+        'angle-opengles', aux_attributes={'gl_renderer': 'ANGLE OpenGL ES'}
+      ),
+      # OpenGL.
+      TagHelperTestCase(
+        'angle-opengl', aux_attributes={'gl_renderer': 'ANGLE OpenGL'}
+      ),
+      # Metal.
+      TagHelperTestCase(
+        'angle-metal', aux_attributes={'gl_renderer': 'ANGLE Metal'}
+      ),
+      # SwiftShader, explicitly test that it's chosen over Vulkan.
+      TagHelperTestCase(
+        'angle-swiftshader',
+        aux_attributes={'gl_renderer': 'ANGLE Vulkan SwiftShader'},
+      ),
+      # Vulkan.
+      TagHelperTestCase(
+        'angle-vulkan', aux_attributes={'gl_renderer': 'ANGLE Vulkan'}
+      ),
     ]
 
     for tc in cases:
@@ -215,14 +250,16 @@ class TagHelpersUnittest(unittest.TestCase):
   def testGetCommandDecoder(self) -> None:
     """Tests all code paths for the GetcommandDecoder() method."""
     cases = [
-        # No aux attributes.
-        TagHelperTestCase('no_passthrough'),
-        # Validating.
-        TagHelperTestCase('no_passthrough',
-                          aux_attributes={'passthrough_cmd_decoder': False}),
-        # Passthrough.
-        TagHelperTestCase('passthrough',
-                          aux_attributes={'passthrough_cmd_decoder': True}),
+      # No aux attributes.
+      TagHelperTestCase('no_passthrough'),
+      # Validating.
+      TagHelperTestCase(
+        'no_passthrough', aux_attributes={'passthrough_cmd_decoder': False}
+      ),
+      # Passthrough.
+      TagHelperTestCase(
+        'passthrough', aux_attributes={'passthrough_cmd_decoder': True}
+      ),
     ]
 
     for tc in cases:
@@ -234,48 +271,57 @@ class TagHelpersUnittest(unittest.TestCase):
   def testGetSkiaGraphiteStatus(self) -> None:
     """Tests all the code paths for the GetSkiaGraphiteStatus() method."""
     cases = [
-        # No feature status.
-        TagHelperTestCase('graphite-disabled'),
-        # Feature status off.
-        TagHelperTestCase('graphite-disabled',
-                          feature_status={'skia_graphite': 'disabled'}),
-        # Feature status on.
-        TagHelperTestCase('graphite-enabled',
-                          feature_status={'skia_graphite': 'enabled_on'}),
+      # No feature status.
+      TagHelperTestCase('graphite-disabled'),
+      # Feature status off.
+      TagHelperTestCase(
+        'graphite-disabled', feature_status={'skia_graphite': 'disabled'}
+      ),
+      # Feature status on.
+      TagHelperTestCase(
+        'graphite-enabled', feature_status={'skia_graphite': 'enabled_on'}
+      ),
     ]
 
     for tc in cases:
       self.runTagHelperTest(tc, gpu_helper.GetSkiaGraphiteStatus)
 
     # Undefined info.
-    self.assertEqual(gpu_helper.GetSkiaGraphiteStatus(None),
-                     'graphite-disabled')
+    self.assertEqual(
+      gpu_helper.GetSkiaGraphiteStatus(None), 'graphite-disabled'
+    )
 
   def testGetSkiaRenderer(self) -> None:
     """Tests all code paths for the GetSkiaRenderer() method."""
     cases = [
-        # No feature status.
-        TagHelperTestCase('renderer-software'),
-        # No GPU Compositing.
-        TagHelperTestCase('renderer-software',
-                          feature_status={'gpu_compositing': 'disabled'}),
-        # No renderer.
-        TagHelperTestCase('renderer-software',
-                          feature_status={'gpu_compositing': 'enabled'}),
-        # Vulkan Skia Renderer.
-        TagHelperTestCase('renderer-skia-vulkan',
-                          feature_status={
-                              'gpu_compositing': 'enabled',
-                              'vulkan': 'enabled_on',
-                              'opengl': 'enabled_on'
-                          }),
-        # GL Skia Renderer.
-        TagHelperTestCase('renderer-skia-gl',
-                          feature_status={
-                              'gpu_compositing': 'enabled',
-                              'vulkan': 'enabled_off',
-                              'opengl': 'enabled_on'
-                          }),
+      # No feature status.
+      TagHelperTestCase('renderer-software'),
+      # No GPU Compositing.
+      TagHelperTestCase(
+        'renderer-software', feature_status={'gpu_compositing': 'disabled'}
+      ),
+      # No renderer.
+      TagHelperTestCase(
+        'renderer-software', feature_status={'gpu_compositing': 'enabled'}
+      ),
+      # Vulkan Skia Renderer.
+      TagHelperTestCase(
+        'renderer-skia-vulkan',
+        feature_status={
+          'gpu_compositing': 'enabled',
+          'vulkan': 'enabled_on',
+          'opengl': 'enabled_on',
+        },
+      ),
+      # GL Skia Renderer.
+      TagHelperTestCase(
+        'renderer-skia-gl',
+        feature_status={
+          'gpu_compositing': 'enabled',
+          'vulkan': 'enabled_off',
+          'opengl': 'enabled_on',
+        },
+      ),
     ]
 
     for tc in cases:
@@ -286,8 +332,9 @@ class TagHelpersUnittest(unittest.TestCase):
 
   def testGetDisplayServer(self) -> None:
     """Tests all code paths for the GetDisplayServer() method."""
-    with mock.patch('gpu_tests.util.host_information.IsLinux',
-                    return_value=True):
+    with mock.patch(
+      'gpu_tests.util.host_information.IsLinux', return_value=True
+    ):
       # Remote platforms.
       for browser_type in gpu_helper.REMOTE_BROWSER_TYPES:
         self.assertEqual(gpu_helper.GetDisplayServer(browser_type), None)
@@ -296,23 +343,24 @@ class TagHelpersUnittest(unittest.TestCase):
         self.assertEqual(gpu_helper.GetDisplayServer(''), 'display-server-x')
       # Wayland.
       with mock.patch.dict('os.environ', {'WAYLAND_DISPLAY': '1'}, clear=True):
-        self.assertEqual(gpu_helper.GetDisplayServer(''),
-                         'display-server-wayland')
+        self.assertEqual(
+          gpu_helper.GetDisplayServer(''), 'display-server-wayland'
+        )
 
-    with mock.patch('gpu_tests.util.host_information.IsLinux',
-                    return_value=False):
+    with mock.patch(
+      'gpu_tests.util.host_information.IsLinux', return_value=False
+    ):
       self.assertEqual(gpu_helper.GetDisplayServer(''), None)
-
 
   def testGetAsanStatus(self) -> None:
     """Tests all code paths for the GetAsanStatus() method."""
     cases = [
-        # No aux attributes.
-        TagHelperTestCase('no-asan'),
-        # Built without ASan.
-        TagHelperTestCase('no-asan', aux_attributes={'is_asan': False}),
-        # Built with ASan.
-        TagHelperTestCase('asan', aux_attributes={'is_asan': True}),
+      # No aux attributes.
+      TagHelperTestCase('no-asan'),
+      # Built without ASan.
+      TagHelperTestCase('no-asan', aux_attributes={'is_asan': False}),
+      # Built with ASan.
+      TagHelperTestCase('asan', aux_attributes={'is_asan': True}),
     ]
 
     for tc in cases:
@@ -324,11 +372,12 @@ class TagHelpersUnittest(unittest.TestCase):
   def testGetTargetCpuStatus(self) -> None:
     """Tests all code paths for the GetTargetCpuStatus() method."""
     cases = [
-        # No aux attributes.
-        TagHelperTestCase('target-cpu-unknown'),
-        # Target CPU specified.
-        TagHelperTestCase('target-cpu-32',
-                          aux_attributes={'target_cpu_bits': 32}),
+      # No aux attributes.
+      TagHelperTestCase('target-cpu-unknown'),
+      # Target CPU specified.
+      TagHelperTestCase(
+        'target-cpu-32', aux_attributes={'target_cpu_bits': 32}
+      ),
     ]
 
     for tc in cases:
@@ -340,14 +389,16 @@ class TagHelpersUnittest(unittest.TestCase):
   def testGetClangCoverage(self) -> None:
     """Tests all code paths for the GetClangCoverage() method."""
     cases = [
-        # No aux attributes.
-        TagHelperTestCase('no-clang-coverage'),
-        # Built without Clang coverage.
-        TagHelperTestCase('no-clang-coverage',
-                          aux_attributes={'is_clang_coverage': False}),
-        # Built with Clang coverage.
-        TagHelperTestCase('clang-coverage',
-                          aux_attributes={'is_clang_coverage': True}),
+      # No aux attributes.
+      TagHelperTestCase('no-clang-coverage'),
+      # Built without Clang coverage.
+      TagHelperTestCase(
+        'no-clang-coverage', aux_attributes={'is_clang_coverage': False}
+      ),
+      # Built with Clang coverage.
+      TagHelperTestCase(
+        'clang-coverage', aux_attributes={'is_clang_coverage': True}
+      ),
     ]
 
     for tc in cases:
@@ -360,17 +411,19 @@ class TagHelpersUnittest(unittest.TestCase):
 class ReplaceTagsUnittest(unittest.TestCase):
   def testSubstringReplacement(self) -> None:
     tags = ['some_tag', 'some-nvidia-corporation', 'another_tag']
-    self.assertEqual(gpu_helper.ReplaceTags(tags),
-                     ['some_tag', 'some-nvidia', 'another_tag'])
+    self.assertEqual(
+      gpu_helper.ReplaceTags(tags), ['some_tag', 'some-nvidia', 'another_tag']
+    )
 
   def testRegexReplacement(self) -> None:
     tags = [
-        'some_tag',
-        'google-Vulkan-1.3.0-(SwiftShader-Device-(LLVM-10.0.0)-(0x0000C0DE))',
-        'another_tag'
+      'some_tag',
+      'google-Vulkan-1.3.0-(SwiftShader-Device-(LLVM-10.0.0)-(0x0000C0DE))',
+      'another_tag',
     ]
-    self.assertEqual(gpu_helper.ReplaceTags(tags),
-                     ['some_tag', 'google-vulkan', 'another_tag'])
+    self.assertEqual(
+      gpu_helper.ReplaceTags(tags), ['some_tag', 'google-vulkan', 'another_tag']
+    )
 
 
 class EvaluateVersionComparisonUnittest(unittest.TestCase):
@@ -379,28 +432,40 @@ class EvaluateVersionComparisonUnittest(unittest.TestCase):
     non_ne_operations = ('eq', 'ge', 'gt', 'le', 'lt')
     # Versions should only be comparable with 4 elements.
     self.assertTrue(
-        gpu_helper.EvaluateVersionComparison('1.2.3', 'ne', '1.2.3', 'win',
-                                             'intel'))
+      gpu_helper.EvaluateVersionComparison(
+        '1.2.3', 'ne', '1.2.3', 'win', 'intel'
+      )
+    )
     for op in non_ne_operations:
       self.assertFalse(
-          gpu_helper.EvaluateVersionComparison('1.2.3', op, '1.2.3', 'win',
-                                               'intel'))
+        gpu_helper.EvaluateVersionComparison(
+          '1.2.3', op, '1.2.3', 'win', 'intel'
+        )
+      )
     self.assertTrue(
-        gpu_helper.EvaluateVersionComparison('1.2.3.4.5', 'ne', '1.2.3.4.5',
-                                             'win', 'intel'))
+      gpu_helper.EvaluateVersionComparison(
+        '1.2.3.4.5', 'ne', '1.2.3.4.5', 'win', 'intel'
+      )
+    )
     for op in non_ne_operations:
       self.assertFalse(
-          gpu_helper.EvaluateVersionComparison('1.2.3.4.5', op, '1.2.3.4.5',
-                                               'win', 'intel'))
+        gpu_helper.EvaluateVersionComparison(
+          '1.2.3.4.5', op, '1.2.3.4.5', 'win', 'intel'
+        )
+      )
 
   def testWindowsIntelOnlyLastTwoPartsUsed(self) -> None:
     """Tests that only the last two version parts are used on Windows Intel."""
     self.assertTrue(
-        gpu_helper.EvaluateVersionComparison('1.2.3.4', 'eq', '2.3.3.4', 'win',
-                                             'intel'))
+      gpu_helper.EvaluateVersionComparison(
+        '1.2.3.4', 'eq', '2.3.3.4', 'win', 'intel'
+      )
+    )
     self.assertFalse(
-        gpu_helper.EvaluateVersionComparison('1.2.3.4', 'eq', '2.3.5.4', 'win',
-                                             'intel'))
+      gpu_helper.EvaluateVersionComparison(
+        '1.2.3.4', 'eq', '2.3.5.4', 'win', 'intel'
+      )
+    )
 
   def testInvalidOperation(self) -> None:
     """Tests that an error is raised when using an invalid operation."""
@@ -413,47 +478,51 @@ class EvaluateVersionComparisonUnittest(unittest.TestCase):
     for op in eq_operations:
       # Purely numerical.
       self.assertTrue(
-          gpu_helper.EvaluateVersionComparison('1.2.3.4', op, '1.2.3.4'))
+        gpu_helper.EvaluateVersionComparison('1.2.3.4', op, '1.2.3.4')
+      )
 
       # Numerical + suffix.
       self.assertTrue(
-          gpu_helper.EvaluateVersionComparison('1a.2b.3c.4a', op,
-                                               '1a.2b.3c.4a'))
+        gpu_helper.EvaluateVersionComparison('1a.2b.3c.4a', op, '1a.2b.3c.4a')
+      )
 
       # Mismatched length implies 0.
-      self.assertTrue(gpu_helper.EvaluateVersionComparison(
-          '1.2.0.0', op, '1.2'))
-      self.assertTrue(gpu_helper.EvaluateVersionComparison(
-          '1.2', op, '1.2.0.0'))
+      self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('1.2.0.0', op, '1.2')
+      )
+      self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('1.2', op, '1.2.0.0')
+      )
 
       # Failure to parse gets skipped unless in the reference version.
       self.assertTrue(
-          gpu_helper.EvaluateVersionComparison('1.2..4', op, '1.2.3.4'))
+        gpu_helper.EvaluateVersionComparison('1.2..4', op, '1.2.3.4')
+      )
       with self.assertRaises(AssertionError):
         gpu_helper.EvaluateVersionComparison('1.2.3.4', op, '1.2..4')
 
   def testNotEqual(self) -> None:
     """Tests that the not equal operation works as expected."""
     true_cases = (
-        # Purely numerical.
-        ('1.2.3.4', '1.2.3'),
-        ('1.2.3', '1.2.3.4'),
-        # Same suffix, different numerical.
-        ('2a.2b.3c.4d', '1a.2b.3c.4d'),
-        ('1a.3b.3c.4d', '1a.2b.3c.4d'),
-        ('1a.2b.4c.4d', '1a.2b.3c.4d'),
-        ('1a.2b.3c.5d', '1a.2b.3c.4d'),
-        # Same numerical, different suffix.
-        ('1b.2b.3c.4d', '1a.2b.3c.4d'),
-        ('1a.2c.3c.4d', '1a.2b.3c.4d'),
-        ('1a.2b.3d.4d', '1a.2b.3c.4d'),
-        ('1a.2b.3c.4e', '1a.2b.3c.4d'),
+      # Purely numerical.
+      ('1.2.3.4', '1.2.3'),
+      ('1.2.3', '1.2.3.4'),
+      # Same suffix, different numerical.
+      ('2a.2b.3c.4d', '1a.2b.3c.4d'),
+      ('1a.3b.3c.4d', '1a.2b.3c.4d'),
+      ('1a.2b.4c.4d', '1a.2b.3c.4d'),
+      ('1a.2b.3c.5d', '1a.2b.3c.4d'),
+      # Same numerical, different suffix.
+      ('1b.2b.3c.4d', '1a.2b.3c.4d'),
+      ('1a.2c.3c.4d', '1a.2b.3c.4d'),
+      ('1a.2b.3d.4d', '1a.2b.3c.4d'),
+      ('1a.2b.3c.4e', '1a.2b.3c.4d'),
     )
     false_cases = (
-        # Numerical.
-        ('1.2.3.4', '1.2.3.4'),
-        # Numerical + suffix.
-        ('1a.2b.3c.4d', '1a.2b.3c.4d'),
+      # Numerical.
+      ('1.2.3.4', '1.2.3.4'),
+      # Numerical + suffix.
+      ('1a.2b.3c.4d', '1a.2b.3c.4d'),
     )
     for left, right in true_cases:
       self.assertTrue(gpu_helper.EvaluateVersionComparison(left, 'ne', right))
@@ -483,21 +552,21 @@ class EvaluateVersionComparisonUnittest(unittest.TestCase):
 
 def GetGreaterTestCases() -> tuple[tuple[str, str], ...]:
   return (
-      # Purely numerical.
-      ('2.2.3.4', '1.2.3.4'),
-      ('1.3.3.4', '1.2.3.4'),
-      ('1.2.4.4', '1.2.3.4'),
-      ('1.2.3.5', '1.2.3.4'),
-      # Same suffix, different numerical.
-      ('2a.2b.3c.4d', '1a.2b.3c.4d'),
-      ('1a.3b.3c.4d', '1a.2b.3c.4d'),
-      ('1a.2b.4c.4d', '1a.2b.3c.4d'),
-      ('1a.2b.3c.5d', '1a.2b.3c.4d'),
-      # Same numerical, different suffix.
-      ('1b.2b.3c.4d', '1a.2b.3c.4d'),
-      ('1a.2c.3c.4d', '1a.2b.3c.4d'),
-      ('1a.2b.3d.4d', '1a.2b.3c.4d'),
-      ('1a.2b.3c.4e', '1a.2b.3c.4d'),
+    # Purely numerical.
+    ('2.2.3.4', '1.2.3.4'),
+    ('1.3.3.4', '1.2.3.4'),
+    ('1.2.4.4', '1.2.3.4'),
+    ('1.2.3.5', '1.2.3.4'),
+    # Same suffix, different numerical.
+    ('2a.2b.3c.4d', '1a.2b.3c.4d'),
+    ('1a.3b.3c.4d', '1a.2b.3c.4d'),
+    ('1a.2b.4c.4d', '1a.2b.3c.4d'),
+    ('1a.2b.3c.5d', '1a.2b.3c.4d'),
+    # Same numerical, different suffix.
+    ('1b.2b.3c.4d', '1a.2b.3c.4d'),
+    ('1a.2c.3c.4d', '1a.2b.3c.4d'),
+    ('1a.2b.3d.4d', '1a.2b.3c.4d'),
+    ('1a.2b.3c.4e', '1a.2b.3c.4d'),
   )
 
 

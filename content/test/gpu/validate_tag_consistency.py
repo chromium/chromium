@@ -25,113 +25,113 @@ BREAK_INDENTATION = ' ' * 4
 # expectations, so we store the source of truth here and generate the resulting
 # strings for the tag header.
 TAG_SPECIALIZATIONS = {
-    'OS_TAGS': {
-        'android': [
-            'android-oreo',
-            'android-pie',
-            'android-q',
-            'android-r',
-            'android-s',
-            'android-t',
-            'android-14',
-            'android-15',
-            'android-16',
-        ],
-        'chromeos': [],
-        'fuchsia': [],
-        'linux': [
-            'ubuntu',
-        ],
-        'mac': [
-            'highsierra',
-            'mojave',
-            'catalina',
-            'bigsur',
-            'monterey',
-            'ventura',
-            'sonoma',
-            'sequoia',
-            'macos26',
-        ],
-        'win': [
-            'win8',
-            'win10',
-            'win11',
-        ],
-    },
-    'BROWSER_TAGS': {
-        'android-chromium': [],
-        'android-webview-instrumentation': [],
-        'debug': [
-            'debug-x64',
-        ],
-        'release': [
-            'release-x64',
-        ],
-        # These two are both Fuchsia-related.
-        'fuchsia-chrome': [],
-        'web-engine-shell': [],
-        # ChromeOS.
-        'cros-chrome': [],
-    },
-    'GPU_TAGS': {
-        'amd': [
-            'amd-0x150e',
-            'amd-0x1900',
-            'amd-0x6613',
-            'amd-0x67ef',
-            'amd-0x6821',
-            'amd-0x7340',
-            'amd-0x7480',
-            'amd-0x7550',
-        ],
-        'apple': [
-            'apple-apple-m1',
-            'apple-apple-m2',
-            'apple-apple-m3',
-            'apple-angle-metal-renderer:-apple-m1',
-            'apple-angle-metal-renderer:-apple-m2',
-            'apple-angle-metal-renderer:-apple-m3',
-        ],
-        'arm': [],
-        'google': [
-            'google-0xffff',
-            'google-0xc0de',
-        ],
-        'imagination': [],
-        'imagination-technologies': [],
-        'intel': [
-            # Individual GPUs should technically fit under intel-gen-X, but we
-            # only support one level of nesting, so treat the generation tags as
-            # individual GPUs.
-            'intel-gen-9',
-            'intel-gen-12',
-            'intel-0xa2e',
-            'intel-0xa011',
-            'intel-0x3e92',
-            'intel-0x3e9b',
-            'intel-0x4680',
-            'intel-0x46a8',
-            'intel-0x5912',
-            'intel-0x9bc5',
-        ],
-        'microsoft': [
-            'microsoft-0xffff',
-        ],
-        'nvidia': [
-            'nvidia-0x1cb3',
-            'nvidia-0x2184',
-            'nvidia-0x2783',
-            'nvidia-0x2c02',
-        ],
-        'qualcomm': [
-            # 0636 = 0x36333630 = Adreno 690 GPU (such as Surface Pro 9 5G)
-            # 0c36 = 0x36334330 = Adreno 741 GPU (Snapdragon X Elite)
-            'qualcomm-0x36333630',
-            'qualcomm-0x36334330',
-        ],
-        'samsung-electronics-co.-ltd.': [],
-    },
+  'OS_TAGS': {
+    'android': [
+      'android-oreo',
+      'android-pie',
+      'android-q',
+      'android-r',
+      'android-s',
+      'android-t',
+      'android-14',
+      'android-15',
+      'android-16',
+    ],
+    'chromeos': [],
+    'fuchsia': [],
+    'linux': [
+      'ubuntu',
+    ],
+    'mac': [
+      'highsierra',
+      'mojave',
+      'catalina',
+      'bigsur',
+      'monterey',
+      'ventura',
+      'sonoma',
+      'sequoia',
+      'macos26',
+    ],
+    'win': [
+      'win8',
+      'win10',
+      'win11',
+    ],
+  },
+  'BROWSER_TAGS': {
+    'android-chromium': [],
+    'android-webview-instrumentation': [],
+    'debug': [
+      'debug-x64',
+    ],
+    'release': [
+      'release-x64',
+    ],
+    # These two are both Fuchsia-related.
+    'fuchsia-chrome': [],
+    'web-engine-shell': [],
+    # ChromeOS.
+    'cros-chrome': [],
+  },
+  'GPU_TAGS': {
+    'amd': [
+      'amd-0x150e',
+      'amd-0x1900',
+      'amd-0x6613',
+      'amd-0x67ef',
+      'amd-0x6821',
+      'amd-0x7340',
+      'amd-0x7480',
+      'amd-0x7550',
+    ],
+    'apple': [
+      'apple-apple-m1',
+      'apple-apple-m2',
+      'apple-apple-m3',
+      'apple-angle-metal-renderer:-apple-m1',
+      'apple-angle-metal-renderer:-apple-m2',
+      'apple-angle-metal-renderer:-apple-m3',
+    ],
+    'arm': [],
+    'google': [
+      'google-0xffff',
+      'google-0xc0de',
+    ],
+    'imagination': [],
+    'imagination-technologies': [],
+    'intel': [
+      # Individual GPUs should technically fit under intel-gen-X, but we
+      # only support one level of nesting, so treat the generation tags as
+      # individual GPUs.
+      'intel-gen-9',
+      'intel-gen-12',
+      'intel-0xa2e',
+      'intel-0xa011',
+      'intel-0x3e92',
+      'intel-0x3e9b',
+      'intel-0x4680',
+      'intel-0x46a8',
+      'intel-0x5912',
+      'intel-0x9bc5',
+    ],
+    'microsoft': [
+      'microsoft-0xffff',
+    ],
+    'nvidia': [
+      'nvidia-0x1cb3',
+      'nvidia-0x2184',
+      'nvidia-0x2783',
+      'nvidia-0x2c02',
+    ],
+    'qualcomm': [
+      # 0636 = 0x36333630 = Adreno 690 GPU (such as Surface Pro 9 5G)
+      # 0c36 = 0x36334330 = Adreno 741 GPU (Snapdragon X Elite)
+      'qualcomm-0x36333630',
+      'qualcomm-0x36334330',
+    ],
+    'samsung-electronics-co.-ltd.': [],
+  },
 }
 
 
@@ -155,8 +155,10 @@ def _GenerateTagSpecializationStrings() -> Dict[str, str]:
     for general_tag, specialized_tags in tag_set.items():
       current_group += 1
       wrapped_tag_lines.extend(
-          _CreateWrappedLinesForTagGroup([general_tag] + specialized_tags,
-                                         current_group == num_groups))
+        _CreateWrappedLinesForTagGroup(
+          [general_tag] + specialized_tags, current_group == num_groups
+        )
+      )
 
     wrapped_tags_string = '\n'.join(wrapped_tag_lines)
     tag_set_string = ''
@@ -165,25 +167,28 @@ def _GenerateTagSpecializationStrings() -> Dict[str, str]:
       if i == 0:
         tag_set_string += TAG_SET_START
       else:
-        tag_set_string += (' ' * len(TAG_SET_START))
+        tag_set_string += ' ' * len(TAG_SET_START)
       tag_set_string += line
     tag_set_string += TAG_SET_END
     tag_specialization_strings[tag_set_name] = tag_set_string
   return tag_specialization_strings
 
 
-def _CreateWrappedLinesForTagGroup(tag_group: List[str],
-                                   is_last_group: bool) -> List[str]:
+def _CreateWrappedLinesForTagGroup(
+  tag_group: List[str], is_last_group: bool
+) -> List[str]:
   tag_line = ' '.join(tag_group)
   line_length = DEFAULT_LINE_LENGTH
   # If this will be the last group, we have to make sure we wrap such that
   # there will be enough room for the closing bracket of the tag set.
   if is_last_group:
     line_length -= len(TAG_SET_END)
-  return textwrap.wrap(tag_line,
-                       width=line_length,
-                       subsequent_indent=BREAK_INDENTATION,
-                       break_on_hyphens=False)
+  return textwrap.wrap(
+    tag_line,
+    width=line_length,
+    subsequent_indent=BREAK_INDENTATION,
+    break_on_hyphens=False,
+  )
 
 
 # f-strings aren't viable here since we're relying on kwarg expansion of a
@@ -261,12 +266,14 @@ TAG_HEADER = """\
 """.format(**_GenerateTagSpecializationStrings())
 # pylint: enable=consider-using-f-string
 
-TAG_HEADER_BEGIN =\
-    '# BEGIN TAG HEADER (autogenerated, see validate_tag_consistency.py)'
+TAG_HEADER_BEGIN = (
+  '# BEGIN TAG HEADER (autogenerated, see validate_tag_consistency.py)'
+)
 TAG_HEADER_END = '# END TAG HEADER'
 
-EXPECTATION_DIR = os.path.join(os.path.dirname(__file__), 'gpu_tests',
-                               'test_expectations')
+EXPECTATION_DIR = os.path.join(
+  os.path.dirname(__file__), 'gpu_tests', 'test_expectations'
+)
 
 
 def Validate():
@@ -276,17 +283,24 @@ def Validate():
       content = infile.read()
       start_index = content.find(TAG_HEADER_BEGIN)
       end_index = content.find(TAG_HEADER_END)
-      if (start_index < 0 or end_index < 0
-          or content[start_index + len(TAG_HEADER_BEGIN) + 1:end_index] !=
-          TAG_HEADER):
+      if (
+        start_index < 0
+        or end_index < 0
+        or content[start_index + len(TAG_HEADER_BEGIN) + 1 : end_index]
+        != TAG_HEADER
+      ):
         retval = 1
         logging.error(
-            'Expectation file %s does not have a tag/result header consistent '
-            'with the source of truth.', f)
+          'Expectation file %s does not have a tag/result header consistent '
+          'with the source of truth.',
+          f,
+        )
   if retval:
     logging.error(
-        'See %s for the expected header or run it in the "apply" mode to apply '
-        'the source of truth to all expectation files.', __file__)
+      'See %s for the expected header or run it in the "apply" mode to apply '
+      'the source of truth to all expectation files.',
+      __file__,
+    )
   return retval
 
 
@@ -300,18 +314,26 @@ def Apply():
     if start_index < 0:
       retval = 1
       logging.error(
-          'Expectation file %s did not have tag header start string "%s".', f,
-          TAG_HEADER_BEGIN)
+        'Expectation file %s did not have tag header start string "%s".',
+        f,
+        TAG_HEADER_BEGIN,
+      )
       continue
     end_index = content.find(TAG_HEADER_END)
     if end_index < 0:
       retval = 1
       logging.error(
-          'Expectation file %s did not have tag header end string "%s".', f,
-          TAG_HEADER_END)
+        'Expectation file %s did not have tag header end string "%s".',
+        f,
+        TAG_HEADER_END,
+      )
       continue
-    content = (content[:start_index + len(TAG_HEADER_BEGIN)] + '\n' +
-               TAG_HEADER + content[end_index:])
+    content = (
+      content[: start_index + len(TAG_HEADER_BEGIN)]
+      + '\n'
+      + TAG_HEADER
+      + content[end_index:]
+    )
     with open(filepath, 'w', encoding='utf-8') as outfile:
       outfile.write(content)
   return retval
@@ -319,12 +341,15 @@ def Apply():
 
 def main():
   parser = argparse.ArgumentParser(
-      description=('Validate that all test expectation tags are identical '
-                   'across all expectation files or apply the source of truth '
-                   'to all expectation files.'))
-  parser.add_argument('function',
-                      choices=['apply', 'validate'],
-                      help='What the script should do.')
+    description=(
+      'Validate that all test expectation tags are identical '
+      'across all expectation files or apply the source of truth '
+      'to all expectation files.'
+    )
+  )
+  parser.add_argument(
+    'function', choices=['apply', 'validate'], help='What the script should do.'
+  )
   args = parser.parse_args()
   if args.function == 'apply':
     return Apply()

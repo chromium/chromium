@@ -124,12 +124,14 @@ def _GenerateDimensionFilter(dimensions: test_specs.DimensionSet) -> str:
   return '\n      AND\n'.join(filter_components)
 
 
-def _GenerateMixinTaskSelectorQuery(mixin_name: str,
-                                    dimensions: test_specs.DimensionSet) -> str:
+def _GenerateMixinTaskSelectorQuery(
+  mixin_name: str, dimensions: test_specs.DimensionSet
+) -> str:
   """Generates a complete subquery using MIXIN_TASK_SELECTOR_QUERY_TEMPLATE."""
   dimension_filter = _GenerateDimensionFilter(dimensions)
   return MIXIN_TASK_SELECTOR_QUERY_TEMPLATE.format(
-      mixin_name=mixin_name, dimension_filter=dimension_filter)
+    mixin_name=mixin_name, dimension_filter=dimension_filter
+  )
 
 
 def _GenerateMixinStatsQuery(mixin_name: str) -> str:
@@ -138,7 +140,8 @@ def _GenerateMixinStatsQuery(mixin_name: str) -> str:
 
 
 def _GenerateMixinSelectorAndStatQueries(
-    mixin_name: str, dimensions: test_specs.DimensionSet) -> str:
+  mixin_name: str, dimensions: test_specs.DimensionSet
+) -> str:
   """Generates the string for |mixin_selector_and_stat_queries| in
   SWARMING_TASK_COUNTS_QUERY_TEMPLATE for a single mixin.
   """
@@ -166,29 +169,34 @@ def _GenerateCombinedStatsQuery(mixin_names: List[str]) -> str:
   return combined_stats_query
 
 
-def _GenerateQuery(dimensions_by_mixin: Dict[str, test_specs.DimensionSet],
-                   sample_period: int) -> str:
+def _GenerateQuery(
+  dimensions_by_mixin: Dict[str, test_specs.DimensionSet], sample_period: int
+) -> str:
   """Generates a complete query using SWARMING_TASK_COUNTS_QUERY_TEMPLATE."""
   combined_stats_query = _GenerateCombinedStatsQuery(
-      list(dimensions_by_mixin.keys()))
+    list(dimensions_by_mixin.keys())
+  )
   mixin_queries = []
   for mixin_name in sorted(list(dimensions_by_mixin.keys())):
     dimensions = dimensions_by_mixin[mixin_name]
     mixin_queries.append(
-        _GenerateMixinSelectorAndStatQueries(mixin_name, dimensions))
+      _GenerateMixinSelectorAndStatQueries(mixin_name, dimensions)
+    )
   mixin_selector_and_stat_queries = ''.join(mixin_queries)
   # Remove the trailing newline.
   mixin_selector_and_stat_queries = mixin_selector_and_stat_queries.rstrip()
   return SWARMING_TASK_COUNTS_QUERY_TEMPLATE.format(
-      mixin_selector_and_stat_queries=mixin_selector_and_stat_queries,
-      combined_stats_query=combined_stats_query,
-      sample_period=sample_period)
+    mixin_selector_and_stat_queries=mixin_selector_and_stat_queries,
+    combined_stats_query=combined_stats_query,
+    sample_period=sample_period,
+  )
 
 
-def GetTaskStatsForMixins(querier: bigquery.Querier,
-                          dimensions_by_mixin: Dict[str,
-                                                    test_specs.DimensionSet],
-                          sample_period: int) -> Dict[str, tasks.MixinStats]:
+def GetTaskStatsForMixins(
+  querier: bigquery.Querier,
+  dimensions_by_mixin: Dict[str, test_specs.DimensionSet],
+  sample_period: int,
+) -> Dict[str, tasks.MixinStats]:
   """Queries BigQuery for total/failed task counts.
 
   Args:
@@ -208,13 +216,16 @@ def GetTaskStatsForMixins(querier: bigquery.Querier,
   for row in querier.GetSeriesForQuery(query):
     if not row.test_suite:
       logging.warning(
-          'Skipping row with %d total tasks and %d failed tasks that did not '
-          'have a test suite set. This is normal if these tasks were manually '
-          'triggered.', row.total_tasks, row.failed_tasks)
+        'Skipping row with %d total tasks and %d failed tasks that did not '
+        'have a test suite set. This is normal if these tasks were manually '
+        'triggered.',
+        row.total_tasks,
+        row.failed_tasks,
+      )
       continue
-    mixin_stats[row.mixin].AddStatsForBotAndSuite(row.bot_id, row.test_suite,
-                                                  row.total_tasks,
-                                                  row.failed_tasks)
+    mixin_stats[row.mixin].AddStatsForBotAndSuite(
+      row.bot_id, row.test_suite, row.total_tasks, row.failed_tasks
+    )
   for stats in mixin_stats.values():
     stats.Freeze()
   return mixin_stats

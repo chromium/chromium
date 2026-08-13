@@ -41,8 +41,8 @@ class GpuBuilders(builders.Builders):
   def GetIsolateNames(self) -> Set[str]:
     if self._isolate_names is None:
       self._isolate_names = {
-          'telemetry_gpu_integration_test',
-          'telemetry_gpu_integration_test_fuchsia',
+        'telemetry_gpu_integration_test',
+        'telemetry_gpu_integration_test_fuchsia',
       }
       # Android targets are split based on binary type, so add those using the
       # maintained list of suffixes.
@@ -53,19 +53,20 @@ class GpuBuilders(builders.Builders):
   def GetFakeCiBuilders(self) -> builders.FakeBuildersDict:
     if self._fake_ci_builders is None:
       fake_try_builders = {
-          # Not actually fake, but has been unused for long enough that all
-          # builds have aged out of Buildbucket.
-          'Dawn Win10 x86 Experimental Release (NVIDIA)': {
-              'dawn-try-win-x86-nvidia-exp',
-          },
+        # Not actually fake, but has been unused for long enough that all
+        # builds have aged out of Buildbucket.
+        'Dawn Win10 x86 Experimental Release (NVIDIA)': {
+          'dawn-try-win-x86-nvidia-exp',
+        },
       }
       self._fake_ci_builders = {}
       for ci_builder, try_builders in fake_try_builders.items():
-        ci_entry = data_types.BuilderEntry(ci_builder,
-                                           constants.BuilderTypes.CI, False)
+        ci_entry = data_types.BuilderEntry(
+          ci_builder, constants.BuilderTypes.CI, False
+        )
         try_entries = {
-            data_types.BuilderEntry(b, constants.BuilderTypes.TRY, False)
-            for b in try_builders
+          data_types.BuilderEntry(b, constants.BuilderTypes.TRY, False)
+          for b in try_builders
         }
         self._fake_ci_builders[ci_entry] = try_entries
     return self._fake_ci_builders
@@ -73,15 +74,15 @@ class GpuBuilders(builders.Builders):
   def GetNonChromiumBuilders(self) -> Set[data_types.BuilderEntry]:
     if self._non_chromium_builders is None:
       str_builders = {
-          'Win V8 FYI Release (NVIDIA)',
-          'Mac V8 FYI Release (Apple M2)',
-          'Mac V8 FYI Release (Intel)',
-          'Linux V8 FYI Release - pointer compression (NVIDIA)',
-          'Linux V8 FYI Release (NVIDIA)',
-          'Android V8 FYI Release',
+        'Win V8 FYI Release (NVIDIA)',
+        'Mac V8 FYI Release (Apple M2)',
+        'Mac V8 FYI Release (Intel)',
+        'Linux V8 FYI Release - pointer compression (NVIDIA)',
+        'Linux V8 FYI Release (NVIDIA)',
+        'Android V8 FYI Release',
       }
       self._non_chromium_builders = {
-          data_types.BuilderEntry(b, constants.BuilderTypes.CI, False)
-          for b in str_builders
+        data_types.BuilderEntry(b, constants.BuilderTypes.CI, False)
+        for b in str_builders
       }
     return self._non_chromium_builders

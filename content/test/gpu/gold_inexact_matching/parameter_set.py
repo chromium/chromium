@@ -7,7 +7,7 @@ import typing
 
 
 @dataclasses.dataclass
-class ParameterSet():
+class ParameterSet:
   """Struct-like object for holding parameters for an iteration."""
 
   # The maximum number of pixels that are allowed to differ.
@@ -30,31 +30,41 @@ class ParameterSet():
       A list of strings.
     """
     return [
-        '--parameter',
-        f'fuzzy_max_different_pixels:{self.max_diff}',
-        '--parameter',
-        f'fuzzy_pixel_delta_threshold:{self.delta_threshold}',
-        '--parameter',
-        f'fuzzy_ignored_border_thickness:{self.ignored_border_thickness}',
-        '--parameter',
-        f'sobel_edge_threshold:{self.edge_threshold}',
+      '--parameter',
+      f'fuzzy_max_different_pixels:{self.max_diff}',
+      '--parameter',
+      f'fuzzy_pixel_delta_threshold:{self.delta_threshold}',
+      '--parameter',
+      f'fuzzy_ignored_border_thickness:{self.ignored_border_thickness}',
+      '--parameter',
+      f'sobel_edge_threshold:{self.edge_threshold}',
     ]
 
   def __str__(self) -> str:
-    return (f'Max different pixels: {self.max_diff}, '
-            f'Max per-channel delta sum: {self.delta_threshold}, '
-            f'Sobel edge threshold: {self.edge_threshold}, '
-            f'Ignored border thickness: {self.ignored_border_thickness}')
+    return (
+      f'Max different pixels: {self.max_diff}, '
+      f'Max per-channel delta sum: {self.delta_threshold}, '
+      f'Sobel edge threshold: {self.edge_threshold}, '
+      f'Ignored border thickness: {self.ignored_border_thickness}'
+    )
 
   def __eq__(self, other: 'ParameterSet') -> bool:
-    return (self.max_diff == other.max_diff
-            and self.delta_threshold == other.delta_threshold
-            and self.edge_threshold == other.edge_threshold
-            and self.ignored_border_thickness == other.ignored_border_thickness)
+    return (
+      self.max_diff == other.max_diff
+      and self.delta_threshold == other.delta_threshold
+      and self.edge_threshold == other.edge_threshold
+      and self.ignored_border_thickness == other.ignored_border_thickness
+    )
 
   def __ne__(self, other: 'ParameterSet') -> bool:
     return not self.__eq__(other)
 
   def __hash__(self) -> int:
-    return hash((self.max_diff, self.delta_threshold, self.edge_threshold,
-                 self.ignored_border_thickness))
+    return hash(
+      (
+        self.max_diff,
+        self.delta_threshold,
+        self.edge_threshold,
+        self.ignored_border_thickness,
+      )
+    )

@@ -51,8 +51,11 @@ class BadMachineList:
         trimmed_machines[bot_id] = reasons
       else:
         logging.debug(
-            'Bot %s removed because it was only flagged by %d detection '
-            'method(s)', bot_id, len(reasons))
+          'Bot %s removed because it was only flagged by %d detection '
+          'method(s)',
+          bot_id,
+          len(reasons),
+        )
     self.bad_machines = trimmed_machines
 
   def IterMarkdown(self) -> Generator[Tuple[str, str], None, None]:
@@ -79,8 +82,9 @@ class MixinGroupedBadMachines:
   def __init__(self):
     self._bad_machines_by_mixin = {}
 
-  def AddMixinData(self, mixin_name: str,
-                   bad_machine_list: 'BadMachineList') -> None:
+  def AddMixinData(
+    self, mixin_name: str, bad_machine_list: 'BadMachineList'
+  ) -> None:
     """Adds a BadMachineList for |mixin_name|.
 
     Args:
@@ -89,7 +93,8 @@ class MixinGroupedBadMachines:
     """
     if mixin_name in self._bad_machines_by_mixin:
       raise ValueError(
-          f'Bad machines for mixin {mixin_name} were already added')
+        f'Bad machines for mixin {mixin_name} were already added'
+      )
     self._bad_machines_by_mixin[mixin_name] = bad_machine_list
 
   def GetAllBadMachineNames(self) -> Set[str]:
@@ -104,8 +109,9 @@ class MixinGroupedBadMachines:
         bad_machine_names.add(bot_id)
     return bad_machine_names
 
-  def GenerateMarkdown(self,
-                       bots_to_skip: Optional[Iterable[str]] = None) -> str:
+  def GenerateMarkdown(
+    self, bots_to_skip: Optional[Iterable[str]] = None
+  ) -> str:
     """Generates a Markdown string describing the object's contents.
 
     Args:
@@ -121,7 +127,7 @@ class MixinGroupedBadMachines:
     for mixin_name in sorted(self._bad_machines_by_mixin.keys()):
       bad_machine_list = self._bad_machines_by_mixin[mixin_name]
       mixin_report_components = [
-          f'Bad machines for {mixin_name}',
+        f'Bad machines for {mixin_name}',
       ]
       for bot_id, markdown in bad_machine_list.IterMarkdown():
         if bot_id in bots_to_skip:
@@ -133,9 +139,9 @@ class MixinGroupedBadMachines:
     return '\n\n'.join(markdown_components)
 
 
-def DetectViaStdDevOutlier(mixin_stats: tasks.MixinStats,
-                           stddev_multiplier: float,
-                           min_failures: int) -> 'BadMachineList':
+def DetectViaStdDevOutlier(
+  mixin_stats: tasks.MixinStats, stddev_multiplier: float, min_failures: int
+) -> 'BadMachineList':
   """Detects bad machines by looking for machines whose task failure rate is
   more than the given number of standard deviations from the fleet-wide mean.
 
@@ -171,18 +177,24 @@ def DetectViaStdDevOutlier(mixin_stats: tasks.MixinStats,
       continue
     if bot_stats.failed_tasks < min_failures:
       logging.debug(
-          'Bot %s skipped in DetectViaStdDevOutlier due to only having %d '
-          'failed tasks', bot_id, bot_stats.failed_tasks)
+        'Bot %s skipped in DetectViaStdDevOutlier due to only having %d '
+        'failed tasks',
+        bot_id,
+        bot_stats.failed_tasks,
+      )
       continue
-    reason = (f'Had a failure rate of {bot_failure_rate} despite a fleet-wide '
-              f'average of {mean} and a standard deviation of {stddev}.')
+    reason = (
+      f'Had a failure rate of {bot_failure_rate} despite a fleet-wide '
+      f'average of {mean} and a standard deviation of {stddev}.'
+    )
     bad_machines.AddBadMachine(bot_id, reason)
 
   return bad_machines
 
 
-def DetectViaRandomChance(mixin_stats: tasks.MixinStats,
-                          probability_threshold: float) -> 'BadMachineList':
+def DetectViaRandomChance(
+  mixin_stats: tasks.MixinStats, probability_threshold: float
+) -> 'BadMachineList':
   """Detects bad machines by looking for cases where it is very unlikely that
   a machine got as many failed tasks as it did through random chance. If it is
   unlikely that the failures happened due to random chance, then that means that
@@ -206,26 +218,32 @@ def DetectViaRandomChance(mixin_stats: tasks.MixinStats,
 
   bad_machines = BadMachineList()
 
-  average_failure_rate = (decimal.Decimal(mixin_stats.failed_tasks) /
-                          decimal.Decimal(mixin_stats.total_tasks))
+  average_failure_rate = decimal.Decimal(
+    mixin_stats.failed_tasks
+  ) / decimal.Decimal(mixin_stats.total_tasks)
   for bot_id, bot_stats in mixin_stats.IterBots():
-    p = _ChanceOfNOrMoreIndependentEvents(average_failure_rate,
-                                          bot_stats.total_tasks,
-                                          bot_stats.failed_tasks)
+    p = _ChanceOfNOrMoreIndependentEvents(
+      average_failure_rate, bot_stats.total_tasks, bot_stats.failed_tasks
+    )
     if p >= probability_threshold:
       continue
-    reason = (f'{bot_stats.failed_tasks} of {bot_stats.total_tasks} tasks '
-              f'failed despite a fleet-wide average failed task rate of '
-              f'{average_failure_rate}. The probability of this happening '
-              f'randomly is {p}.')
+    reason = (
+      f'{bot_stats.failed_tasks} of {bot_stats.total_tasks} tasks '
+      f'failed despite a fleet-wide average failed task rate of '
+      f'{average_failure_rate}. The probability of this happening '
+      f'randomly is {p}.'
+    )
     bad_machines.AddBadMachine(bot_id, reason)
 
   return bad_machines
 
 
-def DetectViaInterquartileRange(mixin_stats: tasks.MixinStats, mixin_name: str,
-                                iqr_multiplier: float,
-                                min_failures: int) -> 'BadMachineList':
+def DetectViaInterquartileRange(
+  mixin_stats: tasks.MixinStats,
+  mixin_name: str,
+  iqr_multiplier: float,
+  min_failures: int,
+) -> 'BadMachineList':
   """Detects bad machines by looking for for bots whose failure rate is above
   Q3 + |iqr_multiplier| * IQR, which is a standard way of looking for outliers
   in data.
@@ -255,8 +273,11 @@ def DetectViaInterquartileRange(mixin_stats: tasks.MixinStats, mixin_name: str,
   failure_rates = mixin_stats.GetOverallFailureRates()
   if len(failure_rates) <= 4:
     logging.info(
-        'Quartiles require at least 5 samples to be meaningful. Mixin %s only '
-        'provided %d samples.', mixin_name, len(failure_rates))
+      'Quartiles require at least 5 samples to be meaningful. Mixin %s only '
+      'provided %d samples.',
+      mixin_name,
+      len(failure_rates),
+    )
     return bad_machines
 
   quartiles = statistics.quantiles(failure_rates, n=4, method='inclusive')
@@ -264,8 +285,10 @@ def DetectViaInterquartileRange(mixin_stats: tasks.MixinStats, mixin_name: str,
 
   if iqr == 0:
     logging.info(
-        'Mixin %s resulted in an IQR of 0, which is not useful for detecting '
-        'outliers.', mixin_name)
+      'Mixin %s resulted in an IQR of 0, which is not useful for detecting '
+      'outliers.',
+      mixin_name,
+    )
     return bad_machines
 
   upper_bound = quartiles[2] + iqr_multiplier * iqr
@@ -276,19 +299,25 @@ def DetectViaInterquartileRange(mixin_stats: tasks.MixinStats, mixin_name: str,
       continue
     if bot_stats.failed_tasks < min_failures:
       logging.debug(
-          'Bot %s skipped in DetectViaInterquartileRange due to only having %d '
-          'failed tasks', bot_id, bot_stats.failed_tasks)
+        'Bot %s skipped in DetectViaInterquartileRange due to only having %d '
+        'failed tasks',
+        bot_id,
+        bot_stats.failed_tasks,
+      )
       continue
-    reason = (f'Failure rate of {bot_failure_rate} is above the IQR-based '
-              f'upper bound of {upper_bound}.')
+    reason = (
+      f'Failure rate of {bot_failure_rate} is above the IQR-based '
+      f'upper bound of {upper_bound}.'
+    )
     bad_machines.AddBadMachine(bot_id, reason)
 
   return bad_machines
 
 
 @functools.lru_cache(maxsize=None)
-def _ChanceOfNOrMoreIndependentEvents(event_probability: decimal.Decimal,
-                                      total_events: int, n: int) -> float:
+def _ChanceOfNOrMoreIndependentEvents(
+  event_probability: decimal.Decimal, total_events: int, n: int
+) -> float:
   """Calculates the probability of getting |n| or more cases of independent
   events.
 
@@ -301,14 +330,15 @@ def _ChanceOfNOrMoreIndependentEvents(event_probability: decimal.Decimal,
   cumulative_probability = decimal.Decimal(0)
   for current_n in range(n, total_events + 1):
     cumulative_probability += _ChanceOfExactlyNIndependentEvents(
-        event_probability, total_events, current_n)
+      event_probability, total_events, current_n
+    )
   return float(cumulative_probability)
 
 
 @functools.lru_cache(maxsize=None)
-def _ChanceOfExactlyNIndependentEvents(event_probability: decimal.Decimal,
-                                       total_events: int,
-                                       n: int) -> decimal.Decimal:
+def _ChanceOfExactlyNIndependentEvents(
+  event_probability: decimal.Decimal, total_events: int, n: int
+) -> decimal.Decimal:
   """Calculates the probability of getting exactly |n| cases of independent
   events.
 
@@ -339,6 +369,7 @@ def _ChanceOfExactlyNIndependentEvents(event_probability: decimal.Decimal,
   # We use decimal.Decimal instead of float since math.comb() can produce
   # numbers that are too large to store in a float.
   combinations = decimal.Decimal(math.comb(total_events, n))
-  chance_of_one_permutation = (event_probability**n *
-                               (1 - event_probability)**(total_events - n))
+  chance_of_one_permutation = event_probability**n * (
+    1 - event_probability
+  ) ** (total_events - n)
   return combinations * chance_of_one_permutation

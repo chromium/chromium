@@ -16,8 +16,10 @@ import validate_tag_consistency
 from gpu_tests import gpu_integration_test
 
 EXPECTATIONS_DIR = os.path.realpath(
-    os.path.join(os.path.dirname(__file__), '..', 'gpu_tests',
-                 'test_expectations'))
+  os.path.join(
+    os.path.dirname(__file__), '..', 'gpu_tests', 'test_expectations'
+  )
+)
 
 
 @dataclasses.dataclass
@@ -33,7 +35,8 @@ class _OverlappingTagConfig:
 
 
 _SPECIFIC_MAC_VERSIONS = validate_tag_consistency.TAG_SPECIALIZATIONS[
-    'OS_TAGS']['mac']
+  'OS_TAGS'
+]['mac']
 
 
 def _GenerateMacIdentifierTags(gpu: str) -> List[Set[str]]:
@@ -44,26 +47,32 @@ def _GenerateMacIdentifierTags(gpu: str) -> List[Set[str]]:
 
 
 _DUAL_GPU_MAC_TAG_CONFIGS = [
-    # 15" 2019 Macbook Pros.
-    _OverlappingTagConfig(identifier_tags=[
-        {'amd-0x67ef', 'mac'},
-        {'amd-0x67ef', 'intel-0x3e9b'},
-    ] + _GenerateMacIdentifierTags('amd-0x67ef'),
-                          tags_to_remove={
-                              'intel',
-                              'intel-0x3e9b',
-                              'intel-gen-9',
-                          }),
-    # 16" 2019 Macbook Pros.
-    _OverlappingTagConfig(identifier_tags=[
-        {'amd-0x7340', 'mac'},
-        {'amd-0x7340', 'intel-0x3e9b'},
-    ] + _GenerateMacIdentifierTags('amd-0x7340'),
-                          tags_to_remove={
-                              'intel',
-                              'intel-0x3e9b',
-                              'intel-gen-9',
-                          }),
+  # 15" 2019 Macbook Pros.
+  _OverlappingTagConfig(
+    identifier_tags=[
+      {'amd-0x67ef', 'mac'},
+      {'amd-0x67ef', 'intel-0x3e9b'},
+    ]
+    + _GenerateMacIdentifierTags('amd-0x67ef'),
+    tags_to_remove={
+      'intel',
+      'intel-0x3e9b',
+      'intel-gen-9',
+    },
+  ),
+  # 16" 2019 Macbook Pros.
+  _OverlappingTagConfig(
+    identifier_tags=[
+      {'amd-0x7340', 'mac'},
+      {'amd-0x7340', 'intel-0x3e9b'},
+    ]
+    + _GenerateMacIdentifierTags('amd-0x7340'),
+    tags_to_remove={
+      'intel',
+      'intel-0x3e9b',
+      'intel-gen-9',
+    },
+  ),
 ]
 
 
@@ -73,8 +82,9 @@ class GpuExpectations(expectations.Expectations):
     self._known_tags: Optional[Set[str]] = None
     self._expectation_files: Optional[List[str]] = None
 
-  def CreateTestExpectationMap(self, *args,
-                               **kwargs) -> data_types.TestExpectationMap:
+  def CreateTestExpectationMap(
+    self, *args, **kwargs
+  ) -> data_types.TestExpectationMap:
     expectation_map = super().CreateTestExpectationMap(*args, **kwargs)
     # We currently don't support handling Slow expectations, so drop them
     # immediately so they can't be accidentally removed.
@@ -86,9 +96,11 @@ class GpuExpectations(expectations.Expectations):
     for expectation_file, expectation_list in expectations_to_drop.items():
       for expectation in expectation_list:
         logging.info(
-            'Dropping expectation "%s" from %s since it includes a "Slow" '
-            'expected result', expectation.AsExpectationFileString(),
-            expectation_file)
+          'Dropping expectation "%s" from %s since it includes a "Slow" '
+          'expected result',
+          expectation.AsExpectationFileString(),
+          expectation_file,
+        )
         del expectation_map[expectation_file][expectation]
     return expectation_map
 
@@ -106,14 +118,16 @@ class GpuExpectations(expectations.Expectations):
   def _GetKnownTags(self) -> Set[str]:
     if self._known_tags is None:
       list_parser = expectations.ParseTaggedTestListContent(
-          self._GetExpectationFileTagHeader(''))
+        self._GetExpectationFileTagHeader('')
+      )
       self._known_tags = set()
       for ts in list_parser.tag_sets:
         self._known_tags |= ts
     return self._known_tags
 
-  def _ConsolidateKnownOverlappingTags(self, typ_tags: FrozenSet[str]
-                                       ) -> FrozenSet[str]:
+  def _ConsolidateKnownOverlappingTags(
+    self, typ_tags: FrozenSet[str]
+  ) -> FrozenSet[str]:
     typ_tags = set(typ_tags)
     for tag_config in _DUAL_GPU_MAC_TAG_CONFIGS:
       if tag_config.AppliesToTags(typ_tags):

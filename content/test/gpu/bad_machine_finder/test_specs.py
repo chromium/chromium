@@ -60,11 +60,20 @@ def GetMixinDimensions(mixin: str) -> 'DimensionSet':
     A dict mapping dimension names to values that |mixin| specifies.
   """
   mixin_content = _LoadPylFile(
-      os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'infra', 'config',
-                   'generated', 'testing', 'mixins.pyl'))
-  dimensions = mixin_content.get(mixin, {}).get('swarming',
-                                                {}).get('dimensions')
+    os.path.join(
+      gpu_path_util.CHROMIUM_SRC_DIR,
+      'infra',
+      'config',
+      'generated',
+      'testing',
+      'mixins.pyl',
+    )
+  )
+  dimensions = (
+    mixin_content.get(mixin, {}).get('swarming', {}).get('dimensions')
+  )
   if not dimensions:
     raise RuntimeError(
-        f'Specified mixin {mixin} does not contain Swarming dimensions')
+      f'Specified mixin {mixin} does not contain Swarming dimensions'
+    )
   return DimensionSet(dimensions)

@@ -15,12 +15,18 @@ from gpu_tests import webgpu_cts_integration_test_base
 
 import gpu_path_util
 
-EXPECTATIONS_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
-                                 'dawn', 'webgpu-cts',
-                                 'compat-expectations.txt')
+EXPECTATIONS_FILE = os.path.join(
+  gpu_path_util.CHROMIUM_SRC_DIR,
+  'third_party',
+  'dawn',
+  'webgpu-cts',
+  'compat-expectations.txt',
+)
+
 
 class WebGpuCompatCtsIntegrationTest(
-    webgpu_cts_integration_test_base.WebGpuCtsIntegrationTestBase):
+  webgpu_cts_integration_test_base.WebGpuCtsIntegrationTestBase
+):
   _use_min_es31 = False
 
   @classmethod
@@ -62,7 +68,7 @@ class WebGpuCompatCtsIntegrationTest(
 
     for arg in browser_options.extra_browser_args:
       if arg.startswith('--enable-dawn-features='):
-        values = arg[len('--enable-dawn-features='):]
+        values = arg[len('--enable-dawn-features=') :]
         for feature in values.split(','):
           if feature == 'gl_force_es_31_and_no_extensions':
             cls._use_min_es31 = True
@@ -75,12 +81,15 @@ class WebGpuCompatCtsIntegrationTest(
 
   # pylint: disable=unused-argument
   @classmethod
-  def _VerifyWebGPUCompatBackend(cls,
-                                 gpu_info: telemetry_gpu_info.GPUInfo) -> None:
+  def _VerifyWebGPUCompatBackend(
+    cls, gpu_info: telemetry_gpu_info.GPUInfo
+  ) -> None:
     """Verifies that WebGPU's compat ANGLE backend is OpenGL ES 3.1"""
     # TODO(crbug.com/388318201): Verify WebGPU Compat backend GLES version
     return
 
-def load_tests(_loader: unittest.TestLoader, _tests: Any,
-               _pattern: Any) -> unittest.TestSuite:
+
+def load_tests(
+  _loader: unittest.TestLoader, _tests: Any, _pattern: Any
+) -> unittest.TestSuite:
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

@@ -10,10 +10,9 @@ from gpu_tests import common_typing as ct
 from gpu_tests.util import websocket_server as wss
 
 
-def HandleWebsocketReceiveTimeoutError(tab: ct.Tab,
-                                       start_time: float,
-                                       additional_info: str | None = None
-                                       ) -> None:
+def HandleWebsocketReceiveTimeoutError(
+  tab: ct.Tab, start_time: float, additional_info: str | None = None
+) -> None:
   """Helper function for when a message is not received on time.
 
   Args:
@@ -22,12 +21,14 @@ def HandleWebsocketReceiveTimeoutError(tab: ct.Tab,
     additional_info: An optional string to output alongside common logging.
   """
   logging.error(
-      'Timed out waiting for websocket message (%.3f seconds since test '
-      'start), checking for hung renderer',
-      time.time() - start_time)
+    'Timed out waiting for websocket message (%.3f seconds since test '
+    'start), checking for hung renderer',
+    time.time() - start_time,
+  )
   if additional_info:
-    logging.error('Additional information provided by test: %s',
-                  additional_info)
+    logging.error(
+      'Additional information provided by test: %s', additional_info
+    )
   # Telemetry has some code to automatically crash the renderer and GPU
   # processes if it thinks that the renderer is hung. So, execute some
   # trivial JavaScript now to hit that code if we got the timeout because of
@@ -38,9 +39,11 @@ def HandleWebsocketReceiveTimeoutError(tab: ct.Tab,
   logging.error('Timeout does *not* appear to be due to a hung renderer')
 
 
-def HandlePrematureSocketClose(original_error: wss.ClientClosedConnectionError,
-                               start_time: float,
-                               additional_info: str | None = None) -> None:
+def HandlePrematureSocketClose(
+  original_error: wss.ClientClosedConnectionError,
+  start_time: float,
+  additional_info: str | None = None,
+) -> None:
   """Helper function for when a websocket connection is closed early.
 
   Args:
@@ -53,10 +56,12 @@ def HandlePrematureSocketClose(original_error: wss.ClientClosedConnectionError,
   extra_info_str = ''
   if additional_info:
     extra_info_str = (
-        f' Additional information provided by the test: {additional_info}')
+      f' Additional information provided by the test: {additional_info}'
+    )
   raise RuntimeError(
-      f'Detected closed websocket ({elapsed:.3f} seconds since test start) - '
-      f'likely caused by a renderer crash.{extra_info_str}') from original_error
+    f'Detected closed websocket ({elapsed:.3f} seconds since test start) - '
+    f'likely caused by a renderer crash.{extra_info_str}'
+  ) from original_error
 
 
 def GetScaledConnectionTimeout(num_jobs: int) -> float:

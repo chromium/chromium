@@ -16,18 +16,29 @@ from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests.util import host_information
 
-html_path = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'content', 'test',
-                         'data', 'gpu', 'webcodecs')
-data_path = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'media', 'test',
-                         'data')
+html_path = os.path.join(
+  gpu_path_util.CHROMIUM_SRC_DIR, 'content', 'test', 'data', 'gpu', 'webcodecs'
+)
+data_path = os.path.join(
+  gpu_path_util.CHROMIUM_SRC_DIR, 'media', 'test', 'data'
+)
 four_colors_img_path = os.path.join(data_path, 'four-colors.y4m')
 
 frame_sources = [
-    'camera', 'capture', 'offscreen', 'arraybuffer', 'hw_decoder', 'sw_decoder'
+  'camera',
+  'capture',
+  'offscreen',
+  'arraybuffer',
+  'hw_decoder',
+  'sw_decoder',
 ]
 hbd_frame_sources = ['hbd_arraybuffer']
 video_codecs = [
-    'avc1.42001E', 'hvc1.1.6.L123.00', 'vp8', 'vp09.00.10.08', 'av01.0.04M.08'
+  'avc1.42001E',
+  'hvc1.1.6.L123.00',
+  'vp8',
+  'vp09.00.10.08',
+  'av01.0.04M.08',
 ]
 accelerations = ['prefer-hardware', 'prefer-software']
 
@@ -45,9 +56,9 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     serial_globs = set()
     if host_information.IsWindows() and host_information.IsNvidiaGpu():
       serial_globs |= {
-          # crbug.com/1473480. Windows + NVIDIA has a maximum parallel encode
-          # limit of 2, so serialize hardware encoding tests on Windows.
-          'WebCodecs_*prefer-hardware*',
+        # crbug.com/1473480. Windows + NVIDIA has a maximum parallel encode
+        # limit of 2, so serialize hardware encoding tests on Windows.
+        'WebCodecs_*prefer-hardware*',
       }
     return serial_globs
 
@@ -55,195 +66,234 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     serial_tests = set()
     if host_information.IsWindows() and host_information.IsArmCpu():
       serial_tests |= {
-          # crbug.com/323824490. Seems to flakily lose the D3D11 device when
-          # run in parallel.
-          'WebCodecs_FrameSizeChange_vp09.00.10.08_hw_decoder',
+        # crbug.com/323824490. Seems to flakily lose the D3D11 device when
+        # run in parallel.
+        'WebCodecs_FrameSizeChange_vp09.00.10.08_hw_decoder',
       }
     return serial_tests
 
-# pylint: disable=too-many-branches
+  # pylint: disable=too-many-branches
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    tests = itertools.chain(cls.GenerateFrameTests(), cls.GenerateVideoTests(),
-                            cls.GenerateAudioTests(), cls.BitrateTests(),
-                            cls.GenerateD3D12EncodingTests())
+    tests = itertools.chain(
+      cls.GenerateFrameTests(),
+      cls.GenerateVideoTests(),
+      cls.GenerateAudioTests(),
+      cls.BitrateTests(),
+      cls.GenerateD3D12EncodingTests(),
+    )
     yield from tests
 
   @classmethod
   def GenerateFrameTests(cls) -> ct.TestGenerator:
     for source_type in frame_sources:
       yield (
-          f'WebCodecs_DrawImage_{source_type}',
-          'draw-image.html',
-          [{
-              'source_type': source_type,
-          }],
+        f'WebCodecs_DrawImage_{source_type}',
+        'draw-image.html',
+        [
+          {
+            'source_type': source_type,
+          }
+        ],
       )
       yield (
-          f'WebCodecs_TexImage2d_{source_type}',
-          'tex-image-2d.html',
-          [{
-              'source_type': source_type,
-          }],
+        f'WebCodecs_TexImage2d_{source_type}',
+        'tex-image-2d.html',
+        [
+          {
+            'source_type': source_type,
+          }
+        ],
       )
       yield (
-          f'WebCodecs_copyTo_{source_type}',
-          'copyTo.html',
-          [{
-              'source_type': source_type,
-          }],
+        f'WebCodecs_copyTo_{source_type}',
+        'copyTo.html',
+        [
+          {
+            'source_type': source_type,
+          }
+        ],
       )
       yield (
-          f'WebCodecs_convertToRGB_{source_type}',
-          'convert-to-rgb.html',
-          [{
-              'source_type': source_type,
-          }],
+        f'WebCodecs_convertToRGB_{source_type}',
+        'convert-to-rgb.html',
+        [
+          {
+            'source_type': source_type,
+          }
+        ],
       )
     for source_type in ['offscreen', 'hw_decoder', 'sw_decoder']:
       for codec in video_codecs:
         for acc in accelerations:
           yield (
-              f'WebCodecs_cropEncode_{source_type}_{codec}_{acc}',
-              'crop-encode.html',
-              [{
-                  'source_type': source_type,
-                  'codec': codec,
-                  'acceleration': acc,
-              }],
+            f'WebCodecs_cropEncode_{source_type}_{codec}_{acc}',
+            'crop-encode.html',
+            [
+              {
+                'source_type': source_type,
+                'codec': codec,
+                'acceleration': acc,
+              }
+            ],
           )
     for source_type in hbd_frame_sources:
       yield (
-          f'WebCodecs_DrawImage_{source_type}',
-          'draw-image.html',
-          [{
-              'source_type': source_type,
-          }],
+        f'WebCodecs_DrawImage_{source_type}',
+        'draw-image.html',
+        [
+          {
+            'source_type': source_type,
+          }
+        ],
       )
 
   @classmethod
   def GenerateAudioTests(cls) -> ct.TestGenerator:
     yield (
-        'WebCodecs_AudioEncoding_AAC_LC',
-        'audio-encode-decode.html',
-        [{
-            'codec': 'mp4a.67',
-            'sample_rate': 48000,
-            'channels': 2,
-            'aac_format': 'aac',
-        }],
+      'WebCodecs_AudioEncoding_AAC_LC',
+      'audio-encode-decode.html',
+      [
+        {
+          'codec': 'mp4a.67',
+          'sample_rate': 48000,
+          'channels': 2,
+          'aac_format': 'aac',
+        }
+      ],
     )
     yield (
-        'WebCodecs_AudioEncoding_AAC_LC_ADTS',
-        'audio-encode-decode.html',
-        [{
-            'codec': 'mp4a.67',
-            'sample_rate': 48000,
-            'channels': 2,
-            'aac_format': 'adts',
-        }],
+      'WebCodecs_AudioEncoding_AAC_LC_ADTS',
+      'audio-encode-decode.html',
+      [
+        {
+          'codec': 'mp4a.67',
+          'sample_rate': 48000,
+          'channels': 2,
+          'aac_format': 'adts',
+        }
+      ],
     )
 
   @classmethod
   def BitrateTests(cls) -> ct.TestGenerator:
     high_res_codecs = [
-        'avc1.420034',
-        'hvc1.1.6.L123.00',
-        'vp8',
-        'vp09.00.10.08',
-        'av01.0.04M.08',
+      'avc1.420034',
+      'hvc1.1.6.L123.00',
+      'vp8',
+      'vp09.00.10.08',
+      'av01.0.04M.08',
     ]
     for codec, acc, bitrate_mode, bitrate in itertools.product(
-        high_res_codecs, accelerations, ['constant', 'variable'],
-        [1500000, 2000000, 3000000]):
+      high_res_codecs,
+      accelerations,
+      ['constant', 'variable'],
+      [1500000, 2000000, 3000000],
+    ):
       yield (
-          f'WebCodecs_EncodingRateControl_'
-          f'{codec}_{acc}_{bitrate_mode}_{bitrate}',
-          'encoding-rate-control.html',
-          [{
-              'codec': codec,
-              'acceleration': acc,
-              'bitrate_mode': bitrate_mode,
-              'bitrate': bitrate,
-          }],
+        f'WebCodecs_EncodingRateControl_{codec}_{acc}_{bitrate_mode}_{bitrate}',
+        'encoding-rate-control.html',
+        [
+          {
+            'codec': codec,
+            'acceleration': acc,
+            'bitrate_mode': bitrate_mode,
+            'bitrate': bitrate,
+          }
+        ],
       )
 
   @classmethod
   def GenerateVideoTests(cls) -> ct.TestGenerator:
     yield (
-        'WebCodecs_WebRTCPeerConnection_Window',
-        'webrtc-peer-connection.html',
-        [{
-            'use_worker': False,
-        }],
+      'WebCodecs_WebRTCPeerConnection_Window',
+      'webrtc-peer-connection.html',
+      [
+        {
+          'use_worker': False,
+        }
+      ],
     )
     yield (
-        'WebCodecs_WebRTCPeerConnection_Worker',
-        'webrtc-peer-connection.html',
-        [{
-            'use_worker': True,
-        }],
+      'WebCodecs_WebRTCPeerConnection_Worker',
+      'webrtc-peer-connection.html',
+      [
+        {
+          'use_worker': True,
+        }
+      ],
     )
     yield (
-        'WebCodecs_Terminate_Worker',
-        'terminate-worker.html',
-        [{
-            'source_type': 'offscreen',
-        }],
+      'WebCodecs_Terminate_Worker',
+      'terminate-worker.html',
+      [
+        {
+          'source_type': 'offscreen',
+        }
+      ],
     )
 
     source_type = 'offscreen'
     acc = 'prefer-hardware'
     for codec in ['avc1.42001E', 'hvc1.1.6.L93.B0']:
       yield (
-          f'WebCodecs_PerFrameQpEncoding_{source_type}_{codec}_{acc}',
-          'frame-qp-encoding.html',
-          [{
-              'source_type': source_type,
-              'codec': codec,
-              'acceleration': acc,
-          }],
+        f'WebCodecs_PerFrameQpEncoding_{source_type}_{codec}_{acc}',
+        'frame-qp-encoding.html',
+        [
+          {
+            'source_type': source_type,
+            'codec': codec,
+            'acceleration': acc,
+          }
+        ],
       )
 
     codec = 'av01.0.04M.08'
     acc = 'prefer-software'
     for layers in range(4):
       yield (
-          f'WebCodecs_ManualSVC_{codec}_{acc}_layers_{layers}',
-          'manual-svc.html',
-          [{
-              'codec': codec,
-              'acceleration': acc,
-              'layers': layers,
-          }],
+        f'WebCodecs_ManualSVC_{codec}_{acc}_layers_{layers}',
+        'manual-svc.html',
+        [
+          {
+            'codec': codec,
+            'acceleration': acc,
+            'layers': layers,
+          }
+        ],
       )
 
-    for source_type, codec, acc in itertools.product(frame_sources,
-                                                     video_codecs,
-                                                     accelerations):
+    for source_type, codec, acc in itertools.product(
+      frame_sources, video_codecs, accelerations
+    ):
       yield (
-          f'WebCodecs_EncodeDecode_{source_type}_{codec}_{acc}',
-          'encode-decode.html',
-          [{
-              'source_type': source_type,
-              'codec': codec,
-              'acceleration': acc,
-          }],
+        f'WebCodecs_EncodeDecode_{source_type}_{codec}_{acc}',
+        'encode-decode.html',
+        [
+          {
+            'source_type': source_type,
+            'codec': codec,
+            'acceleration': acc,
+          }
+        ],
       )
 
     # Also verify we can deal with the encoder's frame delay that we can
     # encounter for the AVC High profile (avc1.64).
     for source_type, codec, acc in itertools.product(
-        frame_sources, video_codecs + ['avc1.64001E'], accelerations):
+      frame_sources, video_codecs + ['avc1.64001E'], accelerations
+    ):
       yield (
-          f'WebCodecs_Encode_{source_type}_{codec}_{acc}',
-          'encode.html',
-          [{
-              'source_type': source_type,
-              'codec': codec,
-              'acceleration': acc,
-          }],
+        f'WebCodecs_Encode_{source_type}_{codec}_{acc}',
+        'encode.html',
+        [
+          {
+            'source_type': source_type,
+            'codec': codec,
+            'acceleration': acc,
+          }
+        ],
       )
 
     resolutions = ['1920x1080', '3840x2160', '7680x3840']
@@ -251,104 +301,124 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Use at least level 6.2 (H.264/H.265/VP9), or level 6.3 (AV1) mimetypes to
     # test 8k 120fps support.
     codecs = [
-        'avc1.64003E',
-        'hvc1.1.6.L186.B0',
-        'vp09.00.62.08',
-        'av01.1.19M.08',
+      'avc1.64003E',
+      'hvc1.1.6.L186.B0',
+      'vp09.00.62.08',
+      'av01.1.19M.08',
     ]
     for resolution, framerate, codec in itertools.product(
-        resolutions, framerates, codecs):
+      resolutions, framerates, codecs
+    ):
       acc = 'prefer-hardware'
       latency_mode = 'quality'
       yield (
-          f'WebCodecs_EncodingFramerateResolutions_'
-          f'{resolution}_{framerate}_{codec}_{acc}_{latency_mode}',
-          'encoding-framerate-resolutions.html',
-          [{
-              'resolution': resolution,
-              'framerate': framerate,
-              'codec': codec,
-              'acceleration': acc,
-              'latency_mode': latency_mode,
-          }],
+        f'WebCodecs_EncodingFramerateResolutions_'
+        f'{resolution}_{framerate}_{codec}_{acc}_{latency_mode}',
+        'encoding-framerate-resolutions.html',
+        [
+          {
+            'resolution': resolution,
+            'framerate': framerate,
+            'codec': codec,
+            'acceleration': acc,
+            'latency_mode': latency_mode,
+          }
+        ],
       )
 
     for codec, acc, bitrate_mode, latency_mode in itertools.product(
-        video_codecs, accelerations, ['constant', 'variable'],
-        ['realtime', 'quality']):
+      video_codecs,
+      accelerations,
+      ['constant', 'variable'],
+      ['realtime', 'quality'],
+    ):
       source_type = 'offscreen'
       content_hint = 'motion'
       yield (
-          f'WebCodecs_EncodingModes_'
-          f'{source_type}_{codec}_{acc}_{bitrate_mode}_{latency_mode}',
-          'encoding-modes.html',
-          [{
-              'source_type': source_type,
-              'codec': codec,
-              'acceleration': acc,
-              'bitrate_mode': bitrate_mode,
-              'latency_mode': latency_mode,
-              'content_hint': content_hint,
-          }],
+        f'WebCodecs_EncodingModes_'
+        f'{source_type}_{codec}_{acc}_{bitrate_mode}_{latency_mode}',
+        'encoding-modes.html',
+        [
+          {
+            'source_type': source_type,
+            'codec': codec,
+            'acceleration': acc,
+            'bitrate_mode': bitrate_mode,
+            'latency_mode': latency_mode,
+            'content_hint': content_hint,
+          }
+        ],
       )
 
-    for codec, content_hint in itertools.product(video_codecs,
-                                                 ['detail', 'text', 'motion']):
+    for codec, content_hint in itertools.product(
+      video_codecs, ['detail', 'text', 'motion']
+    ):
       source_type = 'offscreen'
       acc = 'prefer-hardware'
       bitrate_mode = 'constant'
       latency_mode = 'realtime'
       yield (
-          f'WebCodecs_ContentHint_{codec}_{content_hint}',
-          'encoding-modes.html',
-          [{
-              'source_type': source_type,
-              'codec': codec,
-              'acceleration': acc,
-              'bitrate_mode': bitrate_mode,
-              'latency_mode': latency_mode,
-              'content_hint': content_hint,
-          }],
+        f'WebCodecs_ContentHint_{codec}_{content_hint}',
+        'encoding-modes.html',
+        [
+          {
+            'source_type': source_type,
+            'codec': codec,
+            'acceleration': acc,
+            'bitrate_mode': bitrate_mode,
+            'latency_mode': latency_mode,
+            'content_hint': content_hint,
+          }
+        ],
       )
 
-    for codec, acc, layers in itertools.product(video_codecs, accelerations,
-                                                [2, 3]):
+    for codec, acc, layers in itertools.product(
+      video_codecs, accelerations, [2, 3]
+    ):
       yield (
-          f'WebCodecs_SVC_{codec}_{acc}_layers_{layers}',
-          'svc.html',
-          [{
-              'codec': codec,
-              'acceleration': acc,
-              'layers': layers,
-          }],
+        f'WebCodecs_SVC_{codec}_{acc}_layers_{layers}',
+        'svc.html',
+        [
+          {
+            'codec': codec,
+            'acceleration': acc,
+            'layers': layers,
+          }
+        ],
       )
 
     for codec, acc in itertools.product(video_codecs, accelerations):
       yield (
-          f'WebCodecs_EncodeColorSpace_{codec}_{acc}',
-          'encode-color-space.html',
-          [{
-              'codec': codec,
-              'acceleration': acc,
-          }],
+        f'WebCodecs_EncodeColorSpace_{codec}_{acc}',
+        'encode-color-space.html',
+        [
+          {
+            'codec': codec,
+            'acceleration': acc,
+          }
+        ],
       )
       yield (
-          f'WebCodecs_MixedSourceEncoding_{codec}_{acc}',
-          'mixed-source-encoding.html',
-          [{
-              'codec': codec,
-              'acceleration': acc,
-          }],
+        f'WebCodecs_MixedSourceEncoding_{codec}_{acc}',
+        'mixed-source-encoding.html',
+        [
+          {
+            'codec': codec,
+            'acceleration': acc,
+          }
+        ],
       )
 
     for codec, source_type in itertools.product(video_codecs, frame_sources):
       yield (
-          f'WebCodecs_FrameSizeChange_{codec}_{source_type}',
-          'frame-size-change.html',
-          [{
-              'codec': codec,
-              'source_type': source_type,
-          }],
+        f'WebCodecs_FrameSizeChange_{codec}_{source_type}',
+        'frame-size-change.html',
+        [
+          {
+            'codec': codec,
+            'source_type': source_type,
+          }
+        ],
       )
 
   @classmethod
@@ -358,109 +428,128 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     for source_type, codec in itertools.product(frame_sources, video_codecs):
       yield (
-          f'WebCodecs_D3D12_EncodeDecode_{source_type}_{codec}',
-          'encode-decode.html',
-          [{
-              'source_type': source_type,
-              'codec': codec,
-              'acceleration': acc,
-              'runs_on_d3d12_encoder': True,
-          }],
+        f'WebCodecs_D3D12_EncodeDecode_{source_type}_{codec}',
+        'encode-decode.html',
+        [
+          {
+            'source_type': source_type,
+            'codec': codec,
+            'acceleration': acc,
+            'runs_on_d3d12_encoder': True,
+          }
+        ],
       )
 
     for source_type, codec in itertools.product(frame_sources, video_codecs):
       yield (
-          f'WebCodecs_D3D12_Encode_{source_type}_{codec}',
-          'encode.html',
-          [{
-              'source_type': source_type,
-              'codec': codec,
-              'acceleration': acc,
-              'runs_on_d3d12_encoder': True,
-          }],
+        f'WebCodecs_D3D12_Encode_{source_type}_{codec}',
+        'encode.html',
+        [
+          {
+            'source_type': source_type,
+            'codec': codec,
+            'acceleration': acc,
+            'runs_on_d3d12_encoder': True,
+          }
+        ],
       )
 
     for codec, bitrate_mode, latency_mode in itertools.product(
-        video_codecs, ['constant', 'variable'], ['realtime', 'quality']):
+      video_codecs, ['constant', 'variable'], ['realtime', 'quality']
+    ):
       source_type = 'offscreen'
       content_hint = 'motion'
       yield (
-          f'WebCodecs_D3D12_EncodingModes_'
-          f'{source_type}_{codec}_{bitrate_mode}_{latency_mode}',
-          'encoding-modes.html',
-          [{
-              'source_type': source_type,
-              'codec': codec,
-              'acceleration': acc,
-              'bitrate_mode': bitrate_mode,
-              'latency_mode': latency_mode,
-              'content_hint': content_hint,
-              'runs_on_d3d12_encoder': True,
-          }],
+        f'WebCodecs_D3D12_EncodingModes_'
+        f'{source_type}_{codec}_{bitrate_mode}_{latency_mode}',
+        'encoding-modes.html',
+        [
+          {
+            'source_type': source_type,
+            'codec': codec,
+            'acceleration': acc,
+            'bitrate_mode': bitrate_mode,
+            'latency_mode': latency_mode,
+            'content_hint': content_hint,
+            'runs_on_d3d12_encoder': True,
+          }
+        ],
       )
 
-    for codec, content_hint in itertools.product(video_codecs,
-                                                 ['detail', 'text', 'motion']):
+    for codec, content_hint in itertools.product(
+      video_codecs, ['detail', 'text', 'motion']
+    ):
       source_type = 'offscreen'
       bitrate_mode = 'constant'
       latency_mode = 'realtime'
       yield (
-          f'WebCodecs_D3D12_ContentHint_{codec}_{content_hint}',
-          'encoding-modes.html',
-          [{
-              'source_type': source_type,
-              'codec': codec,
-              'acceleration': acc,
-              'bitrate_mode': bitrate_mode,
-              'latency_mode': latency_mode,
-              'content_hint': content_hint,
-              'runs_on_d3d12_encoder': True,
-          }],
+        f'WebCodecs_D3D12_ContentHint_{codec}_{content_hint}',
+        'encoding-modes.html',
+        [
+          {
+            'source_type': source_type,
+            'codec': codec,
+            'acceleration': acc,
+            'bitrate_mode': bitrate_mode,
+            'latency_mode': latency_mode,
+            'content_hint': content_hint,
+            'runs_on_d3d12_encoder': True,
+          }
+        ],
       )
 
     for codec, layers in itertools.product(video_codecs, [2, 3]):
       yield (
-          f'WebCodecs_D3D12_SVC_{codec}_layers_{layers}',
-          'svc.html',
-          [{
-              'codec': codec,
-              'acceleration': acc,
-              'layers': layers,
-              'runs_on_d3d12_encoder': True,
-          }],
+        f'WebCodecs_D3D12_SVC_{codec}_layers_{layers}',
+        'svc.html',
+        [
+          {
+            'codec': codec,
+            'acceleration': acc,
+            'layers': layers,
+            'runs_on_d3d12_encoder': True,
+          }
+        ],
       )
 
     for codec in video_codecs:
       yield (
-          f'WebCodecs_D3D12_EncodeColorSpace_{codec}',
-          'encode-color-space.html',
-          [{
-              'codec': codec,
-              'acceleration': acc,
-              'runs_on_d3d12_encoder': True,
-          }],
+        f'WebCodecs_D3D12_EncodeColorSpace_{codec}',
+        'encode-color-space.html',
+        [
+          {
+            'codec': codec,
+            'acceleration': acc,
+            'runs_on_d3d12_encoder': True,
+          }
+        ],
       )
       yield (
-          f'WebCodecs_D3D12_MixedSourceEncoding_{codec}',
-          'mixed-source-encoding.html',
-          [{
-              'codec': codec,
-              'acceleration': acc,
-              'runs_on_d3d12_encoder': True,
-          }],
+        f'WebCodecs_D3D12_MixedSourceEncoding_{codec}',
+        'mixed-source-encoding.html',
+        [
+          {
+            'codec': codec,
+            'acceleration': acc,
+            'runs_on_d3d12_encoder': True,
+          }
+        ],
       )
 
     for codec, source_type in itertools.product(video_codecs, frame_sources):
       yield (
-          f'WebCodecs_D3D12_FrameSizeChange_{codec}_{source_type}',
-          'frame-size-change.html',
-          [{
-              'codec': codec,
-              'source_type': source_type,
-              'runs_on_d3d12_encoder': True,
-          }],
+        f'WebCodecs_D3D12_FrameSizeChange_{codec}_{source_type}',
+        'frame-size-change.html',
+        [
+          {
+            'codec': codec,
+            'source_type': source_type,
+            'runs_on_d3d12_encoder': True,
+          }
+        ],
       )
-# pylint: enable=too-many-branches
+
+  # pylint: enable=too-many-branches
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     url = self.UrlOfStaticFilePath(posixpath.join(html_path, test_path))
@@ -478,7 +567,8 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab = self.tab
     tab.Navigate(url)
     tab.action_runner.WaitForJavaScriptCondition(
-        'document.readyState == "complete"')
+      'document.readyState == "complete"'
+    )
     tab.EvaluateJavaScript('TEST.run(' + json.dumps(arg_obj) + ')')
     tab.action_runner.WaitForJavaScriptCondition('TEST.finished', timeout=60)
     if tab.EvaluateJavaScript('TEST.skipped'):
@@ -493,10 +583,10 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def GetBrowserArguments(cls, enable_d3d12_encoder: bool) -> list[str]:
     args = [
-        '--use-fake-device-for-media-stream',
-        '--use-fake-ui-for-media-stream',
-        '--enable-blink-features=SharedArrayBuffer',
-        cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
+      '--use-fake-device-for-media-stream',
+      '--use-fake-ui-for-media-stream',
+      '--enable-blink-features=SharedArrayBuffer',
+      cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
     ]
 
     if enable_d3d12_encoder:
@@ -523,12 +613,16 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:
     return [
-        os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                     'test_expectations', 'webcodecs_expectations.txt')
+      os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'test_expectations',
+        'webcodecs_expectations.txt',
+      )
     ]
 
 
-def load_tests(loader: unittest.TestLoader, tests: Any,
-               pattern: Any) -> unittest.TestSuite:
+def load_tests(
+  loader: unittest.TestLoader, tests: Any, pattern: Any
+) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

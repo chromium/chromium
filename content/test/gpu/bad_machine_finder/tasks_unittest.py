@@ -8,21 +8,23 @@ from bad_machine_finder import tasks
 
 
 class BotStatsUnittest(unittest.TestCase):
-
   def testInputValidation(self):
     """Tests that inputs are properly validated."""
     bot_stats = tasks.BotStats()
     with self.assertRaisesRegex(ValueError, 'total_tasks must be positive'):
       bot_stats.AddStatsForSuite('suite', 0, 0)
-    with self.assertRaisesRegex(ValueError,
-                                'failed_tasks must be non-negative'):
+    with self.assertRaisesRegex(
+      ValueError, 'failed_tasks must be non-negative'
+    ):
       bot_stats.AddStatsForSuite('suite', 1, -1)
-    with self.assertRaisesRegex(ValueError,
-                                'total_tasks must be >= failed_tasks'):
+    with self.assertRaisesRegex(
+      ValueError, 'total_tasks must be >= failed_tasks'
+    ):
       bot_stats.AddStatsForSuite('suite', 5, 10)
     bot_stats.AddStatsForSuite('suite_name', 10, 5)
     with self.assertRaisesRegex(
-        ValueError, 'Stats for test suite suite_name were already provided .*'):
+      ValueError, 'Stats for test suite suite_name were already provided .*'
+    ):
       bot_stats.AddStatsForSuite('suite_name', 5, 0)
 
   def testOnlyReadableWhenFrozen(self):
@@ -65,14 +67,14 @@ class BotStatsUnittest(unittest.TestCase):
 
 
 class MixinStatsUnittest(unittest.TestCase):
-
   def testInputValidation(self):
     """Tests that inputs are properly validated."""
     mixin_stats = tasks.MixinStats()
     with self.assertRaisesRegex(ValueError, 'total_tasks must be positive'):
       mixin_stats.AddStatsForBotAndSuite('bot', 'suite', 0, 0)
-    with self.assertRaisesRegex(ValueError,
-                                'failed_tasks must be non-negative'):
+    with self.assertRaisesRegex(
+      ValueError, 'failed_tasks must be non-negative'
+    ):
       mixin_stats.AddStatsForBotAndSuite('bot', 'suite', 10, -1)
 
   def testOnlyReadableWhenFrozen(self):
