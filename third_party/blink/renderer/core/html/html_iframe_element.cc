@@ -381,25 +381,6 @@ void HTMLIFrameElement::ParseAttribute(
                           WebFeature::kSharedStorageAPI_Iframe_Attribute);
       }
     }
-  } else if (name == html_names::kSharedstoragewritableAttr &&
-             GetExecutionContext() &&
-             RuntimeEnabledFeatures::SharedStorageAPIEnabled(
-                 GetExecutionContext())) {
-    if (!GetExecutionContext()->IsSecureContext()) {
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kOther,
-          mojom::blink::ConsoleMessageLevel::kError,
-          String("sharedStorageWritable: sharedStorage operations "
-                 "are only available in secure contexts.")));
-    } else {
-      if (!params.new_value.IsNull()) {
-        UseCounter::Count(GetDocument(),
-                          WebFeature::kSharedStorageAPI_Iframe_Attribute);
-        Deprecation::CountDeprecation(
-            GetExecutionContext(),
-            mojom::blink::WebFeature::kSharedStorageAPIAll);
-      }
-    }
   } else if (name == html_names::kCredentiallessAttr &&
              RuntimeEnabledFeatures::AnonymousIframeEnabled()) {
     bool new_value = !value.IsNull();

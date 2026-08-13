@@ -83,44 +83,6 @@ TEST_F(HTMLImageElementTest, ResourceWidthWithPictureContainingScripts) {
 
 using HTMLImageElementSimTest = SimTest;
 
-TEST_F(HTMLImageElementSimTest, Sharedstoragewritable_SecureContext_Allowed) {
-  WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
-  SimRequest main_resource("https://example.com/index.html", "text/html");
-  SimSubresourceRequest image_resource("https://example.com/foo.png",
-                                       "image/png");
-  LoadURL("https://example.com/index.html");
-  main_resource.Complete(R"(
-    <img src="foo.png" id="target"
-      allow="shared-storage"
-      sharedstoragewritable></img>
-  )");
-
-  image_resource.Complete("image data");
-  EXPECT_TRUE(ConsoleMessages().empty());
-}
-
-TEST_F(HTMLImageElementSimTest,
-       Sharedstoragewritable_InsecureContext_NotAllowed) {
-  WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
-  SimRequest main_resource("http://example.com/index.html", "text/html");
-  SimSubresourceRequest image_resource("http://example.com/foo.png",
-                                       "image/png");
-  LoadURL("http://example.com/index.html");
-  main_resource.Complete(R"(
-    <img src="foo.png" id="target"
-      allow="shared-storage"
-      sharedstoragewritable></img>
-  )");
-
-  image_resource.Complete("image data");
-  EXPECT_EQ(ConsoleMessages().size(), 1u);
-  EXPECT_TRUE(ConsoleMessages().front().starts_with(
-      "sharedStorageWritable: sharedStorage operations are only available in "
-      "secure contexts."))
-      << "Expect error that Shared Storage operations are not allowed in "
-         "insecure contexts but got: "
-      << ConsoleMessages().front();
-}
 
 TEST_F(HTMLImageElementSimTest, OnloadTransparentPlaceholderImage) {
   SimRequest main_resource("http://example.com/index.html", "text/html");

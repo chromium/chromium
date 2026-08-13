@@ -3609,7 +3609,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(
       NavigationSuddenTerminationDisablerTypeBrowserTest,
       NavigationSuddenTerminationDisablerTypeRecordUmaActivation);
-  FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SharedStorageWritable);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, SetTitleOnPagehide);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            DetachedIframePagehideHandlerABCB);
