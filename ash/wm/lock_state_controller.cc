@@ -37,7 +37,6 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/span.h"
-#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -377,14 +376,6 @@ void LockStateController::StartLockAnimation() {
       views::MenuController::GetActiveInstance();
 
   if (active_menu_controller) {
-    // TODO(http://b/328064674): Please remove the below crash keys once the
-    // the crash is fixed. It seems after post lock animation finished there
-    // is active menu. This check is moved to the StartLockAnimation, since it
-    // seems the check in the post lock animation is too late.
-
-    views::Widget* owner = active_menu_controller->owner();
-    SCOPED_CRASH_KEY_STRING256("LockStateController", "StartLockAnimation",
-                               owner ? owner->GetName() : "ownerless");
     NOTREACHED();
   }
 
