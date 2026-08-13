@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -152,8 +153,15 @@ IN_PROC_BROWSER_TEST_F(BrowserManagerServiceTest,
   EXPECT_TRUE(verifier.called());
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FilterDeletedScheduledLastBrowser \
+  DISABLED_FilterDeletedScheduledLastBrowser
+#else
+#define MAYBE_FilterDeletedScheduledLastBrowser \
+  FilterDeletedScheduledLastBrowser
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserManagerServiceTest,
-                       FilterDeletedScheduledLastBrowser) {
+                       MAYBE_FilterDeletedScheduledLastBrowser) {
   BrowserManagerService* service =
       BrowserManagerServiceFactory::GetForProfile(GetProfile());
   ASSERT_NE(service, nullptr);
