@@ -16,7 +16,6 @@ include_rules = [
     "+base/task/common/task_annotator.h",
     "+base/values.h",
     "+cc/layers/surface_layer.h",
-    "+cc/layers/video_frame_provider_client_impl.h",
     "+cc/layers/video_frame_provider.h",
     "+cc/paint/skia_paint_canvas.h",
     "+gpu/command_buffer/client/client_shared_image.h",
