@@ -122,14 +122,8 @@ chrome.test.getConfig(function(config) {
     async function chromeExtensionURL() {
       chrome.test.assertTrue(
           SAME_ORIGIN_CHROME_EXTENSION_URL.startsWith('chrome-extension://'));
-      // Use a safelisted scheme with no predefined default handler. mailto and
-      // webcal must be avoided here: on Chrome OS they ship a predefined
-      // non-extension default handler, and an extension handler (kExtension
-      // security level) is not allowed to override a non-extension default, so
-      // the extension handler would never become the default and the
-      // navigation below would not resolve through it.
       await testRegisterProtocolHandler(
-          'xmpp', SAME_ORIGIN_CHROME_EXTENSION_URL, TITLE);
+          'mailto', SAME_ORIGIN_CHROME_EXTENSION_URL, TITLE);
       chrome.test.succeed();
     },
 
