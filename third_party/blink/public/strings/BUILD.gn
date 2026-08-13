@@ -7,6 +7,9 @@ import("//tools/grit/grit_rule.gni")
 
 grit_strings("strings") {
   source = "blink_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "translations/blink_strings_{{source_name_part}}.xtb" ])
   outputs = [ "grit/blink_strings.h" ]
   output_prefix = "blink_strings_"
 }
@@ -14,6 +17,9 @@ grit_strings("strings") {
 # The base strings for the permission element.
 grit_strings("permission_element_strings") {
   source = "permission_element_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "translations/permission_element_strings_{{source_name_part}}.xtb" ])
   outputs = [ "grit/permission_element_strings.h" ]
 }
 

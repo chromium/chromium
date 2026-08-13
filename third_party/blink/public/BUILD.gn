@@ -533,6 +533,7 @@ grit("resources") {
     "//third_party/blink/renderer/core/css/svg.css",
     "//third_party/blink/renderer/core/css/transition.css",
     "//third_party/blink/renderer/core/css/view-source.css",
+    "//third_party/blink/renderer/core/skeleton/skeleton.css",
     "//third_party/blink/renderer/core/html/forms/resources/input_alert.svg",
     "//third_party/blink/renderer/core/html/forms/resources/validation_bubble.css",
     "//third_party/blink/renderer/core/html/resources/android.css",
