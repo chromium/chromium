@@ -55,7 +55,8 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, IncompleteRectangleIgnored) {
 
   ASSERT_TRUE(node_content.is_dict());
   base::flat_map<std::string, uint32_t> section_numbers;
-  AutofillExtractionContext context(nullptr, std::nullopt, false, &section_numbers);
+  AutofillExtractionContext context(nullptr, std::nullopt, false, false,
+                                    &section_numbers);
   PopulateAPCNodeFromContentTree(
       node_content.GetDict(), origin, grafter, &context, &node,
       base::BindRepeating(
@@ -99,7 +100,7 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
 
   ASSERT_TRUE(node_content.is_dict());
   base::flat_map<std::string, uint32_t> section_numbers;
-  AutofillExtractionContext context(nullptr, std::nullopt, false,
+  AutofillExtractionContext context(nullptr, std::nullopt, false, false,
                                     &section_numbers);
   PopulateAPCNodeFromContentTree(
       node_content.GetDict(), origin, grafter, &context, &node,
@@ -167,7 +168,8 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, EmptyGeometryIgnored) {
 
   ASSERT_TRUE(node_content.is_dict());
   base::flat_map<std::string, uint32_t> section_numbers;
-  AutofillExtractionContext context(nullptr, std::nullopt, false, &section_numbers);
+  AutofillExtractionContext context(nullptr, std::nullopt, false, false,
+                                    &section_numbers);
   PopulateAPCNodeFromContentTree(
       node_content.GetDict(), origin, grafter, &context, &node,
       base::BindRepeating(

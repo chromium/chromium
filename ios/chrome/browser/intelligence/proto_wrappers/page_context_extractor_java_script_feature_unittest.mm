@@ -115,7 +115,8 @@ class PageContextExtractorJavaScriptFeatureTest
           frame, include_cross_origin_frame_content, use_rich_extraction,
           use_rich_extraction_with_actionable, extract_paid_content,
           attempt_paid_content_json_fixing,
-          /*include_sensitive_payments_for_redaction=*/false, nonce, timeout,
+          /*include_sensitive_payments_for_redaction=*/false,
+          /*extract_autofill_otp_redactions=*/false, nonce, timeout,
           base::BindOnce(
               [](base::OnceCallback<void(std::optional<base::Value>)> callback,
                  const base::Value* value) {
@@ -128,7 +129,8 @@ class PageContextExtractorJavaScriptFeatureTest
           frame, include_cross_origin_frame_content, use_rich_extraction,
           use_rich_extraction_with_actionable, extract_paid_content,
           attempt_paid_content_json_fixing,
-          /*include_sensitive_payments_for_redaction=*/false, nonce, timeout,
+          /*include_sensitive_payments_for_redaction=*/false,
+          /*extract_autofill_otp_redactions=*/false, nonce, timeout,
           future.GetCallback());
     }
     return future.Take();

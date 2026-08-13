@@ -455,4 +455,15 @@ BASE_DECLARE_FEATURE(kPageContextAutofillCreditCardRedactions);
 // enabled.
 bool IsPageContextAutofillCreditCardRedactionsEnabled();
 
+// Controls whether Autofill OTP redactions are applied to clear sensitive
+// field values in the APC proto and screenshot. Matches Blink's
+// `kAnnotatedPageContentAutofillOtpRedactions`.
+// Note: When enabled, this feature enforces redactions on
+// `PageContext` extractions that use rich extraction, overriding any local
+// `PageContextWrapperConfig` setting. It has no effect on light extractions.
+BASE_DECLARE_FEATURE(kPageContextAutofillOtpRedactions);
+
+// Returns true if `kPageContextAutofillOtpRedactions` is enabled.
+bool IsPageContextAutofillOtpRedactionsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

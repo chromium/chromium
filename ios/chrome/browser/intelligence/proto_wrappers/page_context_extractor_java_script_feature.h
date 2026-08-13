@@ -52,6 +52,7 @@ class PageContextExtractorJavaScriptFeature : public web::JavaScriptFeature {
       bool extract_paid_content,
       bool attempt_paid_content_json_fixing,
       bool include_sensitive_payments_for_redaction,
+      bool extract_autofill_otp_redactions,
       const std::string& nonce,
       base::TimeDelta timeout,
       base::OnceCallback<void(const base::Value*)> callback);
@@ -67,6 +68,7 @@ class PageContextExtractorJavaScriptFeature : public web::JavaScriptFeature {
       bool extract_paid_content,
       bool attempt_paid_content_json_fixing,
       bool include_sensitive_payments_for_redaction,
+      bool extract_autofill_otp_redactions,
       const std::string& nonce,
       base::TimeDelta timeout,
       base::OnceCallback<void(std::optional<base::Value>)> callback);

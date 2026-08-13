@@ -111,6 +111,7 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContext(
     bool extract_paid_content,
     bool attempt_paid_content_json_fixing,
     bool include_sensitive_payments_for_redaction,
+    bool extract_autofill_otp_redactions,
     const std::string& nonce,
     base::TimeDelta timeout,
     base::OnceCallback<void(const base::Value*)> callback) {
@@ -124,6 +125,7 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContext(
   parameters.Append(extract_paid_content);
   parameters.Append(attempt_paid_content_json_fixing);
   parameters.Append(include_sensitive_payments_for_redaction);
+  parameters.Append(extract_autofill_otp_redactions);
   CallJavaScriptFunction(frame, "pageContextExtractor.extractPageContext",
                          parameters, std::move(callback), timeout);
 }
@@ -138,6 +140,7 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContextJSON(
     bool extract_paid_content,
     bool attempt_paid_content_json_fixing,
     bool include_sensitive_payments_for_redaction,
+    bool extract_autofill_otp_redactions,
     const std::string& nonce,
     base::TimeDelta timeout,
     base::OnceCallback<void(std::optional<base::Value>)> callback) {
@@ -151,6 +154,7 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContextJSON(
   parameters.Append(extract_paid_content);
   parameters.Append(attempt_paid_content_json_fixing);
   parameters.Append(include_sensitive_payments_for_redaction);
+  parameters.Append(extract_autofill_otp_redactions);
   CallJavaScriptFunction(
       frame, "pageContextExtractor.extractPageContext", parameters,
       base::BindOnce(&ProcessJSONExtractionResult, std::move(callback)),

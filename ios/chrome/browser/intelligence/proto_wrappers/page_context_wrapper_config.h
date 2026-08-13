@@ -57,6 +57,9 @@ class PageContextWrapperConfig {
   // True to apply redacting metadata for credit card numbers.
   bool extract_autofill_credit_card_redactions() const;
 
+  // True to apply redacting metadata for OTP fields.
+  bool extract_autofill_otp_redactions() const;
+
   // True to block page context extraction on unsafe pages.
   bool block_unsafe_pages() const;
 
@@ -77,6 +80,7 @@ class PageContextWrapperConfig {
       bool extract_autofill,
       bool extract_autofill_credit_card_redactions,
       bool include_sensitive_payments_for_redaction,
+      bool extract_autofill_otp_redactions,
       bool block_unsafe_pages,
       bool include_same_site_only);
 
@@ -106,6 +110,9 @@ class PageContextWrapperConfig {
 
   // Bit to include sensitive payments for redaction.
   bool include_sensitive_payments_for_redaction_;
+
+  // Bit to apply Autofill OTP redaction policies.
+  bool extract_autofill_otp_redactions_;
 
   // Bit to block page context extraction on unsafe pages.
   bool block_unsafe_pages_;
@@ -171,6 +178,12 @@ class PageContextWrapperConfigBuilder {
   PageContextWrapperConfigBuilder& SetIncludeSensitivePaymentsForRedaction(
       bool include_sensitive_payments_for_redaction);
 
+  // Sets whether to apply Autofill OTP redactions to field values.
+  // Note: If `kPageContextAutofillOtpRedactions` is enabled, this setting is
+  // overridden to true upon `Build()`.
+  PageContextWrapperConfigBuilder& SetExtractAutofillOtpRedactions(
+      bool extract_autofill_otp_redactions);
+
   // Sets whether to block page context extraction on unsafe pages.
   PageContextWrapperConfigBuilder& SetBlockUnsafePages(bool block_unsafe_pages);
 
@@ -191,6 +204,7 @@ class PageContextWrapperConfigBuilder {
   bool extract_autofill_;
   bool extract_autofill_credit_card_redactions_;
   bool include_sensitive_payments_for_redaction_;
+  bool extract_autofill_otp_redactions_;
   bool block_unsafe_pages_;
   bool include_same_site_only_;
 };

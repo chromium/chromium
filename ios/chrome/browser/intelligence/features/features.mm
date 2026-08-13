@@ -845,3 +845,10 @@ BASE_FEATURE(kPageContextAutofillCreditCardRedactions,
 bool IsPageContextAutofillCreditCardRedactionsEnabled() {
   return base::FeatureList::IsEnabled(kPageContextAutofillCreditCardRedactions);
 }
+
+BASE_FEATURE(kPageContextAutofillOtpRedactions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPageContextAutofillOtpRedactionsEnabled() {
+  return base::FeatureList::IsEnabled(kPageContextAutofillOtpRedactions);
+}

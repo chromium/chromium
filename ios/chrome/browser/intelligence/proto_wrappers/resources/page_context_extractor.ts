@@ -222,7 +222,8 @@ function extractPageContext(
     nonce: string, keepCrossOriginFrameData: boolean,
     useRichExtraction: boolean, actionableMode: boolean,
     extractPaidContent: boolean, attemptPaidContentJsonFixing: boolean,
-    includeSensitivePaymentsForRedaction: boolean): ExtractionResult {
+    includeSensitivePaymentsForRedaction: boolean,
+    extractAutofillOtpRedactions: boolean): ExtractionResult {
   // If the PageContext should be detached, early return.
   if (shouldDetachPageContext()) {
     return { shouldDetachPageContext: true } as DetachData;
@@ -243,7 +244,8 @@ function extractPageContext(
     const maxDepth = MAX_APC_RESPONSE_DEPTH - MAX_APC_NODE_DEPTH;
     const apc = extractAnnotatedPageContent(
         document, nonce, 0, maxDepth, actionableMode, extractPaidContent,
-        attemptPaidContentJsonFixing, includeSensitivePaymentsForRedaction);
+        attemptPaidContentJsonFixing, includeSensitivePaymentsForRedaction,
+        extractAutofillOtpRedactions);
     return isPageContextIPCOptimizationEnabled() ? JSONStringify(apc) : apc;
   }
 

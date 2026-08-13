@@ -16,6 +16,7 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/page_content_proto_serializer.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/frame_grafter.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/web/public/web_state.h"
@@ -493,6 +494,12 @@ void PopulateAutofillData(
     return;
   }
 
+  if (autofill_metadata->redaction_reason ==
+          AutofillFieldRedactionReason::kShouldRedactForOtp &&
+      !autofill_context->extract_autofill_otp_redactions) {
+    return;
+  }
+
   // Prioritize existing redaction decisions (e.g., from JS) over Autofill.
   if (proto_form_control_data->redaction_decision() !=
       optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY) {
@@ -903,6 +910,7 @@ void PopulateAPCNodeFromContentTree(
               child_autofill_context.emplace(
                   autofill_context->web_state, local_token,
                   autofill_context->extract_autofill_credit_card_redactions,
+                  autofill_context->extract_autofill_otp_redactions,
                   autofill_context->section_numbers);
             }
           }

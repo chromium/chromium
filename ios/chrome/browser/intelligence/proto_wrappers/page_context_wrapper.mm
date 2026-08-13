@@ -681,7 +681,8 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
         _config->use_rich_extraction_with_actionable(),
         _config->extract_paid_content(),
         _config->attempt_paid_content_json_fixing(),
-        _config->include_sensitive_payments_for_redaction(), nonce, jsTimeout,
+        _config->include_sensitive_payments_for_redaction(),
+        _config->extract_autofill_otp_redactions(), nonce, jsTimeout,
         base::BindOnce(
             callbackJson, weakSelf, annotatedPageContentBarrier, isMainFrame,
             frame->GetSecurityOrigin(),
@@ -711,7 +712,8 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
         _config->use_rich_extraction_with_actionable(),
         _config->extract_paid_content(),
         _config->attempt_paid_content_json_fixing(),
-        _config->include_sensitive_payments_for_redaction(), nonce, jsTimeout,
+        _config->include_sensitive_payments_for_redaction(),
+        _config->extract_autofill_otp_redactions(), nonce, jsTimeout,
         base::BindOnce(
             callback, weakSelf, annotatedPageContentBarrier, isMainFrame,
             frame->GetSecurityOrigin(),
@@ -1022,15 +1024,14 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
 
 // Returns YES for any RedactionDecision enums that require screenshot
 // redaction.
-// Note: In this CL, this defaults to NO. Subsequent CLs will override
-// this method to return YES for their respective redaction decisions
-// when enabled.
 - (BOOL)shouldRedactDecisionForScreenshot:
     (optimization_guide::proto::RedactionDecision)decision {
   switch (decision) {
     case optimization_guide::proto::
         REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD:
       return _config->include_sensitive_payments_for_redaction();
+    case optimization_guide::proto::REDACTION_DECISION_REDACTED_IS_OTP:
+      return _config->extract_autofill_otp_redactions();
     default:
       return NO;
   }
@@ -1251,9 +1252,11 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   std::optional<AutofillExtractionContext> autofill_context;
   if (_config->extract_autofill() ||
       _config->extract_autofill_credit_card_redactions() ||
-      _config->include_sensitive_payments_for_redaction()) {
+      _config->include_sensitive_payments_for_redaction() ||
+      _config->extract_autofill_otp_redactions()) {
     autofill_context.emplace(_webState, localFrameToken,
                              _config->extract_autofill_credit_card_redactions(),
+                             _config->extract_autofill_otp_redactions(),
                              &_autofillSectionNumbers);
   }
 

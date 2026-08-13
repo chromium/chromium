@@ -104,6 +104,8 @@
 - (void)setBoxesToRedactForTesting:(const std::vector<CGRect>&)boxes;
 - (const std::vector<CGRect>&)boxesToRedactForTesting;
 - (optimization_guide::proto::PageContext*)pageContextForTesting;
+- (BOOL)shouldRedactDecisionForScreenshot:
+    (optimization_guide::proto::RedactionDecision)decision;
 @end
 
 namespace {
@@ -7636,6 +7638,70 @@ TEST_P(PageContextWrapperTest,
       payment_input.content_attributes().geometry().has_visible_bounding_box());
 }
 
+// Test that the global kPageContextAutofillOtpRedactions feature flag enables
+// redaction geometry extraction for OTP-eligible fields even when actionable
+// mode is off. Configures a test page with a checkbox and a text input with
+// actionable mode off, and verifies that enabling the feature flag forces
+// geometry extraction for the text field while omitting geometry for the
+// checkbox.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_OtpRedactionGeometry_FeatureFlag) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPageContextAutofillOtpRedactions);
+
+  auto page_structure =
+      HtmlPage("OTP Geometry Test",
+               RawHtml("<form>"
+                       "  <input type='checkbox' id='normal_checkbox'>"
+                       "  <input type='text' id='otp_field'>"
+                       "</form>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(false)
+          .SetIncludeSensitivePaymentsForRedaction(false)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  ASSERT_GE(root.children_nodes_size(), 1);
+  const auto& form = root.children_nodes(0);
+  ASSERT_EQ(form.children_nodes_size(), 2);
+
+  // Non-sensitive form controls like checkboxes do not have bounding box
+  // geometry extracted in non-actionable mode, while OTP-eligible fields do
+  // when OTP redaction is enabled.
+  const auto& checkbox_input = form.children_nodes(0);
+  EXPECT_FALSE(
+      checkbox_input.content_attributes().geometry().has_outer_bounding_box());
+
+  const auto& otp_input = form.children_nodes(1);
+  EXPECT_TRUE(
+      otp_input.content_attributes().geometry().has_outer_bounding_box());
+  EXPECT_TRUE(
+      otp_input.content_attributes().geometry().has_visible_bounding_box());
+}
+
 // Tests that the version and mode fields are correctly populated in the
 // AnnotatedPageContent proto based on the configured extraction mode.
 TEST_P(PageContextWrapperTest, PopulatePageContext_ApcVersionAndMode) {
@@ -8011,6 +8077,29 @@ TEST_P(PageContextWrapperTest, ImageRedaction_OutOfBoundsClippingSafety) {
 
   [wrapper encodeImageAndSetTabScreenshotForTesting:test_image];
   EXPECT_TRUE([wrapper boxesToRedactForTesting].empty());
+}
+
+// Test that `shouldRedactDecisionForScreenshot:` returns YES for OTP fields and
+// NO for password fields when OTP screenshot redaction is enabled.
+TEST_P(PageContextWrapperTest, ImageRedaction_AutofillOTP) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kPageContextAutofillOtpRedactions},
+      /*disabled_features=*/{});
+
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+                  config:PageContextWrapperConfigBuilder().Build()
+      completionCallback:base::BindOnce(
+                             [](PageContextWrapperCallbackResponse response) {
+                             })];
+
+  EXPECT_TRUE([wrapper
+      shouldRedactDecisionForScreenshot:
+          optimization_guide::proto::REDACTION_DECISION_REDACTED_IS_OTP]);
+  EXPECT_FALSE([wrapper shouldRedactDecisionForScreenshot:
+                            optimization_guide::proto::
+                                REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD]);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

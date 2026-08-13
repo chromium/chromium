@@ -50,11 +50,16 @@ struct AutofillExtractionContext {
   // redaction decisions based on Autofill metadata.
   bool extract_autofill_credit_card_redactions = false;
 
+  // True if OTP redactions should be applied when setting APC redaction
+  // decisions based on Autofill metadata.
+  bool extract_autofill_otp_redactions = false;
+
   AutofillExtractionContext();
   AutofillExtractionContext(
       base::WeakPtr<web::WebState> web_state,
       std::optional<autofill::LocalFrameToken> frame_token,
       bool extract_autofill_credit_card_redactions,
+      bool extract_autofill_otp_redactions,
       raw_ptr<base::flat_map<std::string, uint32_t>> section_numbers);
   AutofillExtractionContext(const AutofillExtractionContext&) = delete;
   AutofillExtractionContext& operator=(const AutofillExtractionContext&) =

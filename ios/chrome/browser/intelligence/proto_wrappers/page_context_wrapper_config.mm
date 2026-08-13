@@ -27,6 +27,7 @@ PageContextWrapperConfig::PageContextWrapperConfig(
     bool extract_autofill,
     bool extract_autofill_credit_card_redactions,
     bool include_sensitive_payments_for_redaction,
+    bool extract_autofill_otp_redactions,
     bool block_unsafe_pages,
     bool include_same_site_only)
     : use_refactored_extractor_(use_refactored_extractor),
@@ -40,6 +41,7 @@ PageContextWrapperConfig::PageContextWrapperConfig(
           extract_autofill_credit_card_redactions),
       include_sensitive_payments_for_redaction_(
           include_sensitive_payments_for_redaction),
+      extract_autofill_otp_redactions_(extract_autofill_otp_redactions),
       block_unsafe_pages_(block_unsafe_pages),
       include_same_site_only_(include_same_site_only) {}
 
@@ -96,6 +98,10 @@ bool PageContextWrapperConfig::include_sensitive_payments_for_redaction()
   return include_sensitive_payments_for_redaction_;
 }
 
+bool PageContextWrapperConfig::extract_autofill_otp_redactions() const {
+  return extract_autofill_otp_redactions_;
+}
+
 bool PageContextWrapperConfig::block_unsafe_pages() const {
   return block_unsafe_pages_;
 }
@@ -110,6 +116,7 @@ PageContextWrapperConfigBuilder::PageContextWrapperConfigBuilder() {
   extract_autofill_ = false;
   extract_autofill_credit_card_redactions_ = false;
   include_sensitive_payments_for_redaction_ = false;
+  extract_autofill_otp_redactions_ = false;
   block_unsafe_pages_ = true;
   include_same_site_only_ = false;
 }
@@ -190,6 +197,13 @@ PageContextWrapperConfigBuilder::SetIncludeSensitivePaymentsForRedaction(
 }
 
 PageContextWrapperConfigBuilder&
+PageContextWrapperConfigBuilder::SetExtractAutofillOtpRedactions(
+    bool extract_autofill_otp_redactions) {
+  extract_autofill_otp_redactions_ = extract_autofill_otp_redactions;
+  return *this;
+}
+
+PageContextWrapperConfigBuilder&
 PageContextWrapperConfigBuilder::SetBlockUnsafePages(bool block_unsafe_pages) {
   block_unsafe_pages_ = block_unsafe_pages;
   return *this;
@@ -209,12 +223,15 @@ PageContextWrapperConfig PageContextWrapperConfigBuilder::Build() const {
   bool include_sensitive_payments_for_redaction =
       include_sensitive_payments_for_redaction_ ||
       IsPageContextScreenshotSensitivePaymentRedactionEnabled();
+  bool extract_autofill_otp_redactions =
+      extract_autofill_otp_redactions_ ||
+      IsPageContextAutofillOtpRedactionsEnabled();
 
   return PageContextWrapperConfig(
       use_refactored_extractor_, graft_cross_origin_frame_content_,
       use_rich_extraction_, use_rich_extraction_with_actionable_,
       extract_paid_content_, attempt_paid_content_json_fixing_,
       extract_autofill_, extract_autofill_credit_card_redactions,
-      include_sensitive_payments_for_redaction, block_unsafe_pages_,
-      include_same_site_only_);
+      include_sensitive_payments_for_redaction, extract_autofill_otp_redactions,
+      block_unsafe_pages_, include_same_site_only_);
 }
