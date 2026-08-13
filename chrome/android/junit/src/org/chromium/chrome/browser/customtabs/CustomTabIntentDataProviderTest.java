@@ -2646,6 +2646,118 @@ public class CustomTabIntentDataProviderTest {
                         eq(tabProvider), eq(dataProvider), eq(outboundIntent), eq(viewId));
     }
 
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
+        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT
+    })
+    public void isCctTabSwitcherEnabled_bothFlagsDisabled_returnsFalse() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
+                true);
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
+                true);
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(provider.isCctTabSwitcherEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT)
+    @DisableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT)
+    public void isCctTabSwitcherEnabled_embedderFlagEnabled_intentExtraEnabled_returnsTrue() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
+                true);
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue(provider.isCctTabSwitcherEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT)
+    @DisableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT)
+    public void isCctTabSwitcherEnabled_embedderFlagEnabled_intentExtraDisabled_returnsFalse() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
+                true);
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
+                false);
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(provider.isCctTabSwitcherEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT)
+    @DisableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT)
+    public void isCctTabSwitcherEnabled_chromeFlagEnabled_intentExtraEnabled_returnsTrue() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
+                true);
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue(provider.isCctTabSwitcherEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT)
+    @DisableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT)
+    public void isCctTabSwitcherEnabled_chromeFlagEnabled_intentExtraDisabled_returnsFalse() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
+                false);
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
+                true);
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(provider.isCctTabSwitcherEnabled());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
+        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT
+    })
+    public void isCctTabSwitcherEnabled_bothFlagsEnabled_eitherExtraEnabled_returnsTrue() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
+                false);
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
+                true);
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue(provider.isCctTabSwitcherEnabled());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
+        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT
+    })
+    public void isCctTabSwitcherEnabled_bothFlagsEnabled_bothExtrasDisabled_returnsFalse() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
+                false);
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
+                false);
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(provider.isCctTabSwitcherEnabled());
+    }
+
     private int getOibStateForType(int type) {
         if (type == CustomTabsUiType.AUTH_TAB) {
             Intent intent = new Intent(Intent.ACTION_VIEW);

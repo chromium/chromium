@@ -874,4 +874,11 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public void maybeAddAdditionalContentExtrasToOutboundIntent(
             Supplier<@Nullable Tab> tabProvider, Intent outboundIntent, int viewId) {}
+
+    /**
+     * @return Whether the CCT tab switcher is enabled.
+     */
+    public boolean isCctTabSwitcherEnabled() {
+        return false;
+    }
 }

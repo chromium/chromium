@@ -33,6 +33,8 @@ import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl.EXTRA_REQUESTED_WINDOW_FEATURES;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctTabSwitcherEnabledForChromeExperiment;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctTabSwitcherEnabledForEmbedderExperiment;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -173,6 +175,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     /** Indicates the type of UI Custom Tab should use. */
     public static final String EXTRA_UI_TYPE =
             "org.chromium.chrome.browser.customtabs.EXTRA_UI_TYPE";
+
+    public static final String EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT =
+            "org.chromium.chrome.browser.customtabs.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT";
+    public static final String EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT =
+            "org.chromium.chrome.browser.customtabs.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT";
 
     /** Extra that defines the initial background color (RGB color stored as an integer). */
     public static final String EXTRA_INITIAL_BACKGROUND_COLOR =
@@ -385,6 +392,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     private final boolean mIsPartialCustomTabFixedHeight;
     private final boolean mContentScrollMayResizeTab;
+    private final boolean mCctTabSwitcherEnabledForChromeExperiment;
+    private final boolean mCctTabSwitcherEnabledForEmbedderExperiment;
 
     /**
      * {@link Network} to be bound when launching a custom tab or tabs that have been pre-created.
@@ -717,6 +726,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                                 ScreenOrientation.DEFAULT));
 
         mGsaExperimentIds = IntentUtils.safeGetIntArrayExtra(intent, EXPERIMENT_IDS);
+
+        mCctTabSwitcherEnabledForChromeExperiment =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT, false);
+        mCctTabSwitcherEnabledForEmbedderExperiment =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT, false);
 
         mBreakPointDp = getActivityBreakPointFromIntent(intent);
         mInitialActivityHeight = getInitialActivityHeightFromIntent(intent);
@@ -1980,5 +1996,18 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         CustomTabsConnection.getInstance()
                 .maybeAddAdditionalContentExtrasToOutboundIntent(
                         tabProvider, this, outboundIntent, viewId);
+    }
+
+    @Override
+    public boolean isCctTabSwitcherEnabled() {
+        boolean isEnabledForEmbedderExperiment =
+                sCctTabSwitcherEnabledForEmbedderExperiment.isEnabled()
+                        && mCctTabSwitcherEnabledForEmbedderExperiment;
+
+        boolean isEnabledForChromeExperiment =
+                sCctTabSwitcherEnabledForChromeExperiment.isEnabled()
+                        && mCctTabSwitcherEnabledForChromeExperiment;
+
+        return isEnabledForEmbedderExperiment || isEnabledForChromeExperiment;
     }
 }
