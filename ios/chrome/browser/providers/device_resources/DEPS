@@ -1,0 +1,5 @@
+include_rules = [
+  # keep-sorted start
+  "+components/sync_device_info",
+  # keep-sorted end
+]

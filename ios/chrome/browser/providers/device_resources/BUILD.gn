@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("chromium_device_resources") {
+  sources = [ "chromium_device_resources.mm" ]
+  deps = [
+    "//components/sync_device_info",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/public/provider/chrome/browser/device_resources:device_resources_api",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chromium_device_resources_unittest.mm" ]
+  deps = [
+    ":chromium_device_resources",
+    "//components/sync_device_info",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/public/provider/chrome/browser/device_resources:device_resources_api",
+    "//testing/gtest",
+  ]
+}

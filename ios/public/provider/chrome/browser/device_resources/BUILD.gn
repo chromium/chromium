@@ -1,0 +1,9 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("device_resources_api") {
+  sources = [ "device_resources_api.h" ]
+  public_deps = [ "//components/sync_device_info" ]
+  frameworks = [ "UIKit.framework" ]
+}
