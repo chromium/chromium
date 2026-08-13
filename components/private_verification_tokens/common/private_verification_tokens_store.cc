@@ -50,8 +50,9 @@ PrivateVerificationTokensStore::PrivateVerificationTokensStore(
 }
 
 void PrivateVerificationTokensStore::CacheTokens(
-    std::map<url::Origin, TokenWithId> tokens) {
-  tokens_ = std::move(tokens);
+    TokensAndCounts tokens_and_counts) {
+  tokens_ = std::move(tokens_and_counts.tokens);
+  token_counts_ = std::move(tokens_and_counts.counts);
 }
 
 void PrivateVerificationTokensStore::InitializeCache(
@@ -86,6 +87,7 @@ void PrivateVerificationTokensStore::DeleteAllTokens() {
   DeleteTokens(base::Time(), base::Time::Max(), std::nullopt,
                base::DoNothing());
   tokens_.clear();
+  token_counts_.clear();
 }
 
 void PrivateVerificationTokensStore::DeleteTokens(
@@ -166,6 +168,15 @@ void PrivateVerificationTokensStore::OnTokenDeleted(base::OnceClosure callback,
   }
   database_.AsyncCall(&PrivateVerificationTokensDatabase::GetTokensFromEach)
       .Then(std::move(cache_tokens_cb));
+}
+
+size_t PrivateVerificationTokensStore::TokenCountForIssuer(
+    const url::Origin& issuer) const {
+  auto it = token_counts_.find(issuer);
+  if (it == token_counts_.end()) {
+    return 0;
+  }
+  return it->second;
 }
 
 PrivateVerificationTokensStore::~PrivateVerificationTokensStore() = default;

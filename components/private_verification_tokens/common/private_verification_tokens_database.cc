@@ -56,7 +56,7 @@ static constexpr char kGetTokenSql[] =
     "FROM tokens WHERE redeemed = 0 AND issuer = ?";
 
 static constexpr char kGetAllTokensSql[] =
-    "SELECT id,issuer,key_id,expiration,token,version,creation_time "
+    "SELECT id,issuer,key_id,expiration,token,version,creation_time,COUNT(*) "
     "FROM tokens WHERE redeemed = 0 "
     "GROUP BY issuer";
 
@@ -86,6 +86,16 @@ TokenWithId& TokenWithId::operator=(const TokenWithId&) = default;
 TokenWithId::TokenWithId(TokenWithId&&) = default;
 TokenWithId& TokenWithId::operator=(TokenWithId&&) = default;
 TokenWithId::~TokenWithId() = default;
+
+TokensAndCounts::TokensAndCounts() = default;
+TokensAndCounts::TokensAndCounts(std::map<url::Origin, TokenWithId> tokens,
+                                 std::map<url::Origin, size_t> counts)
+    : tokens(std::move(tokens)), counts(std::move(counts)) {}
+TokensAndCounts::TokensAndCounts(const TokensAndCounts&) = default;
+TokensAndCounts& TokensAndCounts::operator=(const TokensAndCounts&) = default;
+TokensAndCounts::TokensAndCounts(TokensAndCounts&&) = default;
+TokensAndCounts& TokensAndCounts::operator=(TokensAndCounts&&) = default;
+TokensAndCounts::~TokensAndCounts() = default;
 
 // static
 std::unique_ptr<sql::Database>
@@ -204,8 +214,7 @@ std::optional<TokenWithId> PrivateVerificationTokensDatabase::GetToken(
   return std::nullopt;
 }
 
-std::map<url::Origin, TokenWithId>
-PrivateVerificationTokensDatabase::GetTokensFromEach() {
+TokensAndCounts PrivateVerificationTokensDatabase::GetTokensFromEach() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return {};
@@ -216,6 +225,7 @@ PrivateVerificationTokensDatabase::GetTokensFromEach() {
   DCHECK(statement.is_valid());
 
   std::map<url::Origin, TokenWithId> tokens;
+  std::map<url::Origin, size_t> counts;
   while (statement.Step()) {
     int64_t id = statement.ColumnInt64(0);
     std::string issuer_str = statement.ColumnString(1);
@@ -224,6 +234,7 @@ PrivateVerificationTokensDatabase::GetTokensFromEach() {
     SerializedToken token = statement.ColumnBlobAsVector(4);
     uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(5));
     int64_t creation_time = statement.ColumnInt64(6);
+    int64_t count = statement.ColumnInt64(7);
 
     url::Origin issuer = url::Origin::Create(GURL(issuer_str));
     tokens.try_emplace(
@@ -232,11 +243,12 @@ PrivateVerificationTokensDatabase::GetTokensFromEach() {
             issuer, std::move(token), key_id,
             base::Time::UnixEpoch() + base::Seconds(expiration), version,
             base::Time::UnixEpoch() + base::Seconds(creation_time)));
+    counts.emplace(issuer, static_cast<size_t>(count));
   }
   if (!statement.Succeeded()) {
     return {};
   }
-  return tokens;
+  return TokensAndCounts(std::move(tokens), std::move(counts));
 }
 
 bool PrivateVerificationTokensDatabase::DeleteRedeemedTokens() {

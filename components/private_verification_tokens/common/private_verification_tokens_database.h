@@ -35,6 +35,21 @@ struct TokenWithId {
   PrivateVerificationTokensToken token;
 };
 
+// Holds the cached tokens and the count of unredeemed tokens per issuer.
+struct TokensAndCounts {
+  TokensAndCounts();
+  TokensAndCounts(std::map<url::Origin, TokenWithId> tokens,
+                  std::map<url::Origin, size_t> counts);
+  TokensAndCounts(const TokensAndCounts&);
+  TokensAndCounts& operator=(const TokensAndCounts&);
+  TokensAndCounts(TokensAndCounts&&);
+  TokensAndCounts& operator=(TokensAndCounts&&);
+  ~TokensAndCounts();
+
+  std::map<url::Origin, TokenWithId> tokens;
+  std::map<url::Origin, size_t> counts;
+};
+
 // Implements PVT database operations. Constructor detaches the object
 // from the sequence it is created on. All functions verify they are executed in
 // the correct sequence using checks. All DB operation functions (private
@@ -83,8 +98,8 @@ class PrivateVerificationTokensDatabase {
   // `SetRedeemed()` on the returned token might return the same token.
   std::optional<TokenWithId> GetToken(const url::Origin& issuer);
 
-  // Get one token from each distinct issuer.
-  std::map<url::Origin, TokenWithId> GetTokensFromEach();
+  // Get one token and the total token count from each distinct issuer.
+  TokensAndCounts GetTokensFromEach();
 
   // Delete all tokens that are marked as redeemed.
   bool DeleteRedeemedTokens();

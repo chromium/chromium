@@ -559,32 +559,37 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   };
   EXPECT_TRUE(pvt_database_->StoreTokens(
       CreateTokens(all_tokens, key_id, expiration, version)));
-  std::map<url::Origin, TokenWithId> tokens =
-      pvt_database_->GetTokensFromEach();
-  EXPECT_EQ(tokens.size(), 4u);
+  TokensAndCounts result = pvt_database_->GetTokensFromEach();
+  EXPECT_EQ(result.tokens.size(), 4u);
+  EXPECT_EQ(result.counts.size(), 4u);
   EXPECT_THAT(all_tokens.at(kOriginA),
-              testing::Contains(tokens.at(kOriginA).token.token()));
+              testing::Contains(result.tokens.at(kOriginA).token.token()));
   EXPECT_THAT(all_tokens.at(kOriginB),
-              testing::Contains(tokens.at(kOriginB).token.token()));
+              testing::Contains(result.tokens.at(kOriginB).token.token()));
   EXPECT_THAT(all_tokens.at(kOriginC),
-              testing::Contains(tokens.at(kOriginC).token.token()));
+              testing::Contains(result.tokens.at(kOriginC).token.token()));
   EXPECT_THAT(all_tokens.at(kOriginD),
-              testing::Contains(tokens.at(kOriginD).token.token()));
+              testing::Contains(result.tokens.at(kOriginD).token.token()));
+
+  EXPECT_EQ(result.counts.at(kOriginA), 3u);
+  EXPECT_EQ(result.counts.at(kOriginB), 1u);
+  EXPECT_EQ(result.counts.at(kOriginC), 2u);
+  EXPECT_EQ(result.counts.at(kOriginD), 4u);
 }
 
 TEST_F(PrivateVerificationTokensDatabaseTest,
        GetTokensFromEach_NoTokens_Success) {
   CreateDatabase(db_path_);
   // This call creates the DB file.
-  std::map<url::Origin, TokenWithId> tokens =
-      pvt_database_->GetTokensFromEach();
+  TokensAndCounts result = pvt_database_->GetTokensFromEach();
   pvt_database_.reset();
   ASSERT_TRUE(base::PathExists(db_path_));
 
   // Re-create db with the created file.
   CreateDatabase(db_path_);
-  tokens = pvt_database_->GetTokensFromEach();
-  EXPECT_TRUE(tokens.empty());
+  result = pvt_database_->GetTokensFromEach();
+  EXPECT_TRUE(result.tokens.empty());
+  EXPECT_TRUE(result.counts.empty());
 }
 
 TEST_F(PrivateVerificationTokensDatabaseTest, DeleteTokens_Neither) {
