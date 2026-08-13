@@ -527,8 +527,10 @@ interface PageHandler {
   // Opens the Lens search UI.
   OpenLensSearch();
 
-  // Called when a user enables a tool.
-  SetActiveToolMode(composebox_query.mojom.ToolMode tool);
+  // Called when a tool is enabled (either manually or via server auto tool
+  // add).
+  SetActiveToolMode(composebox_query.mojom.ToolMode tool,
+                    bool is_set_by_server);
 
   // Called when a user enables a model.
   SetActiveModelMode(composebox_query.mojom.ModelMode model);

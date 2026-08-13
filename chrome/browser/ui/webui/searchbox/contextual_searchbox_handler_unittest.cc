@@ -1672,7 +1672,8 @@ TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
           GetMetricsRecorderPtr(),
           &MockContextualSearchMetricsRecorder::RecordToolModeBase));
 
-  handler_->SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  handler_->SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_CANVAS,
+                              /*is_set_by_server=*/false);
   handler_->RecordToolSelectionAction(omnibox::ToolMode::TOOL_MODE_CANVAS);
   mock_searchbox_page_.FlushForTesting();
   EXPECT_EQ(received_state_1.active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
@@ -3778,7 +3779,8 @@ TEST_F(ContextualSearchboxHandlerTest,
   // Select Canvas.
   EXPECT_CALL(mock_searchbox_page_, UpdateSmartTabSharingActive(false))
       .Times(1);
-  handler().SetActiveToolMode(omnibox::TOOL_MODE_CANVAS);
+  handler().SetActiveToolMode(omnibox::TOOL_MODE_CANVAS,
+                              /*is_set_by_server=*/false);
   mock_searchbox_page_.FlushForTesting();
 
   // STS should now be effectively inactive.
@@ -3786,7 +3788,8 @@ TEST_F(ContextualSearchboxHandlerTest,
 
   // Select Unspecified again.
   EXPECT_CALL(mock_searchbox_page_, UpdateSmartTabSharingActive(true)).Times(1);
-  handler().SetActiveToolMode(omnibox::TOOL_MODE_UNSPECIFIED);
+  handler().SetActiveToolMode(omnibox::TOOL_MODE_UNSPECIFIED,
+                              /*is_set_by_server=*/false);
   mock_searchbox_page_.FlushForTesting();
 
   // STS should be active again.

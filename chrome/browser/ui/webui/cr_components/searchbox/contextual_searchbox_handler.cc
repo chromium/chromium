@@ -1331,7 +1331,8 @@ void ContextualSearchboxHandler::UploadSnapshotTabContextIfPresent() {
   UploadTabContext(context_token, std::move(page_content_data));
 }
 
-void ContextualSearchboxHandler::SetActiveToolMode(omnibox::ToolMode tool) {
+void ContextualSearchboxHandler::SetActiveToolMode(omnibox::ToolMode tool,
+                                                   bool is_set_by_server) {
   if (!input_state_model_) {
     return;
   }

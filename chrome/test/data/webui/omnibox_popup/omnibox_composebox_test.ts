@@ -1072,7 +1072,8 @@ suite('OmniboxComposeboxTest', () => {
     cancelIcon.click();
     await microtasksFinished();
 
-    const activeTool = await testProxy.handler.whenCalled('setActiveToolMode');
+    const [activeTool] =
+        await testProxy.handler.whenCalled('setActiveToolMode');
     assertEquals(ToolMode.kUnspecified, activeTool);
     assertFalse(closeEventFired);
   });
