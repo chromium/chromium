@@ -601,6 +601,8 @@ static_library("browser") {
     "data_model/addresses/company_info.h",
     "data_model/addresses/contact_info.cc",
     "data_model/addresses/contact_info.h",
+    "data_model/addresses/email_info.cc",
+    "data_model/addresses/email_info.h",
     "data_model/addresses/phone_number.cc",
     "data_model/addresses/phone_number.h",
     "data_model/autofill_ai/country_info.cc",

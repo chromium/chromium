@@ -193,39 +193,6 @@ class NameInfo : public FormGroup {
   std::unique_ptr<AlternativeFullName> alternative_name_;
 };
 
-class EmailInfo : public FormGroup {
- public:
-  // See `AutofillProfile::kDatabaseStoredTypes` for a documentation of the
-  // purpose of this constant.
-  static constexpr FieldTypeSet kDatabaseStoredTypes{EMAIL_ADDRESS};
-  EmailInfo();
-  EmailInfo(const EmailInfo& info);
-  EmailInfo& operator=(const EmailInfo& info);
-  ~EmailInfo() override;
-
-  bool operator==(const EmailInfo& other) const;
-
-  // FormGroup:
-  using FormGroup::GetInfo;
-  std::u16string GetInfo(const AutofillType& type,
-                         std::string_view app_locale) const override;
-  std::u16string GetRawInfo(FieldType type) const override;
-  void SetRawInfoWithVerificationStatus(FieldType type,
-                                        std::u16string_view value,
-                                        VerificationStatus status) override;
-  bool SetInfoWithVerificationStatus(const AutofillType& type,
-                                     std::u16string_view value,
-                                     std::string_view app_locale,
-                                     const VerificationStatus status) override;
-  VerificationStatus GetVerificationStatus(FieldType type) const override;
-
- private:
-  // FormGroup:
-  FieldTypeSet GetSupportedTypes() const override;
-
-  std::u16string email_;
-};
-
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_CONTACT_INFO_H_

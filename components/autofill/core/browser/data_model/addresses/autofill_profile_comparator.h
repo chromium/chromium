@@ -23,6 +23,8 @@
 
 namespace autofill {
 
+class EmailInfo;
+
 struct ProfileValueDifference {
   // The type of the field that is different.
   FieldType type;
