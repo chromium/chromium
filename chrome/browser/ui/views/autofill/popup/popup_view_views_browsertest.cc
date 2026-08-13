@@ -583,6 +583,26 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
+  Suggestion remove_suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
+      SuggestionType::kRemoveAutofillAi);
+  remove_suggestion.icon = Suggestion::Icon::kClose;
+  PrepareSuggestions({std::move(remove_suggestion)});
+  ShowAndVerifyUi(/*popup_has_parent=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_AutofillAi_SubMenu_Selected) {
+  Suggestion remove_suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
+      SuggestionType::kRemoveAutofillAi);
+  remove_suggestion.icon = Suggestion::Icon::kClose;
+  PrepareSuggestions({std::move(remove_suggestion)});
+  PrepareSelectedCell(CellIndex{0, CellType::kContent});
+  ShowAndVerifyUi(/*popup_has_parent=*/true);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupViewViewsBrowsertest,
                          Combine(Bool(), Bool()),
