@@ -39,6 +39,8 @@ using ::testing::UnorderedElementsAre;
 // straight to the channel's observer.
 class FakeMessageStreamClient : public MessageStreamClient {
  public:
+  FakeMessageStreamClient() = default;
+
   void Connect() override {
     is_connected_ = true;
     connect_count_++;
@@ -67,12 +69,18 @@ class FakeMessageStreamClient : public MessageStreamClient {
 
   bool disconnected_called() const { return disconnected_called_; }
 
+  base::WeakPtr<FakeMessageStreamClient> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   bool disconnected_called_ = false;
   raw_ptr<Observer> observer_ = nullptr;
   bool is_connected_ = false;
   int connect_count_ = 0;
   int disconnect_count_ = 0;
+
+  base::WeakPtrFactory<FakeMessageStreamClient> weak_factory_{this};
 };
 
 class FakeTransportHandler : public TransportHandler {
@@ -135,15 +143,11 @@ class TransportChannelImplTest : public testing::Test {
  protected:
   TransportChannelImplTest() {
     auto client = std::make_unique<FakeMessageStreamClient>();
-    fake_client_ = client.get();
+    fake_client_ = client->GetWeakPtr();
     channel_ = std::make_unique<TransportChannelImpl>(base::BindOnce(
-        [](std::unique_ptr<FakeMessageStreamClient> owned_client,
+        [](std::unique_ptr<FakeMessageStreamClient> client,
            std::unique_ptr<StreamConnectionDelegate>)
-            -> std::unique_ptr<MessageStreamClient> {
-          // The resume delegate isn't exercised here; the test drives the
-          // body builder directly.
-          return std::move(owned_client);
-        },
+            -> std::unique_ptr<MessageStreamClient> { return client; },
         std::move(client)));
   }
 
@@ -160,7 +164,7 @@ class TransportChannelImplTest : public testing::Test {
   }
 
   std::unique_ptr<TransportChannelImpl> channel_;
-  raw_ptr<FakeMessageStreamClient> fake_client_;
+  base::WeakPtr<FakeMessageStreamClient> fake_client_;
 };
 
 TEST_F(TransportChannelImplTest, RecordsPerSessionResumePositions) {
@@ -391,6 +395,50 @@ TEST_F(TransportChannelImplTest, UnknownPayloadTypesAreIgnored) {
   EXPECT_FALSE(factory_called);
   TransportSessionRegistry* registry = channel_->GetSessionRegistry();
   EXPECT_NE(registry->GetSession("s1"), nullptr);
+}
+
+TEST_F(TransportChannelImplTest,
+       DownstreamConnectionStateReturnsDisconnectedByDefault) {
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kDisconnected);
+}
+
+TEST_F(TransportChannelImplTest,
+       OnSessionRegisteredUpdatesDownstreamConnectionStateToConnecting) {
+  channel_->OnSessionRegistered(nullptr);
+
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kConnecting);
+}
+
+TEST_F(
+    TransportChannelImplTest,
+    OnStreamConnectionStateChangeUpdatesDownstreamConnectionStateToConnected) {
+  channel_->OnStreamConnectionStateChange(/*connected=*/true);
+
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kConnected);
+}
+
+TEST_F(
+    TransportChannelImplTest,
+    OnStreamConnectionStateChangeUpdatesDownstreamConnectionStateToDisconnected) {
+  channel_->OnStreamConnectionStateChange(/*connected=*/true);
+
+  channel_->OnStreamConnectionStateChange(/*connected=*/false);
+
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kDisconnected);
+}
+
+TEST_F(TransportChannelImplTest,
+       OnStreamStatusUpdatesDownstreamConnectionStateToDisconnected) {
+  channel_->OnStreamConnectionStateChange(/*connected=*/true);
+
+  channel_->OnStreamStatus("status");
+
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kDisconnected);
 }
 
 }  // namespace

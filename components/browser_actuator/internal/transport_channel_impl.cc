@@ -48,7 +48,9 @@ TransportChannelImpl::TransportChannelImpl(
 
     stream_client_ =
         std::move(stream_client_factory).Run(std::move(resume_delegate));
-    stream_client_->AddObserver(this);
+    if (stream_client_) {
+      stream_client_->AddObserver(this);
+    }
   }
 }
 
@@ -67,6 +69,7 @@ TransportChannelImpl::~TransportChannelImpl() {
 
 void TransportChannelImpl::Disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  downstream_connection_state_ = DownstreamConnectionState::kDisconnected;
   if (stream_client_) {
     stream_client_->Disconnect();
   }
@@ -89,6 +92,7 @@ void TransportChannelImpl::OnSessionRegistered(TransportSession*) {
     if (stream_client_->IsConnected()) {
       stream_client_->Disconnect();
     }
+    downstream_connection_state_ = DownstreamConnectionState::kConnecting;
     stream_client_->Connect();
   }
 }
@@ -117,10 +121,18 @@ void TransportChannelImpl::OnStreamMessage(const std::string& message) {
   }
 }
 
+void TransportChannelImpl::OnStreamStatus(const std::string& status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  downstream_connection_state_ = DownstreamConnectionState::kDisconnected;
+}
+
 void TransportChannelImpl::OnStreamConnectionStateChange(bool connected) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/534398806): surface connection state to sessions/handlers if
   // needed.
+  downstream_connection_state_ = connected
+                                     ? DownstreamConnectionState::kConnected
+                                     : DownstreamConnectionState::kDisconnected;
 }
 
 // Upstream: assemble the outgoing message for a session, reading that
@@ -171,6 +183,5 @@ std::string TransportChannelImpl::BuildWatchSessionsRequestBody() {
 std::string TransportChannelImpl::BuildWatchSessionsRequestBodyForTesting() {
   return BuildWatchSessionsRequestBody();
 }
-
 
 }  // namespace browser_actuator

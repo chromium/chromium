@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "components/browser_actuator/internal/transport/message_stream_client.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/transport_channel.h"
@@ -23,6 +24,13 @@ class ControlTransportHandlerFactory;
 class StreamConnectionDelegate;
 class TransportHandlerFactoryRegistryImpl;
 class TransportSessionRegistryImpl;
+
+// Connection status of the background transport channel downstream stream.
+enum class DownstreamConnectionState {
+  kDisconnected = 0,
+  kConnecting = 1,
+  kConnected = 2,
+};
 
 // Concrete TransportChannel: the single physical connection shared by every
 // session. It is a router, not a session owner — it owns the downstream
@@ -69,10 +77,16 @@ class TransportChannelImpl : public TransportChannel,
 
   // MessageStreamClient::Observer:
   void OnStreamMessage(const std::string& message) override;
+  void OnStreamStatus(const std::string& status) override;
   void OnStreamConnectionStateChange(bool connected) override;
 
   // TransportSessionRegistry::Observer:
   void OnSessionRegistered(TransportSession* session) override;
+
+  DownstreamConnectionState downstream_connection_state() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return downstream_connection_state_;
+  }
 
   base::WeakPtr<TransportChannel> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -104,7 +118,11 @@ class TransportChannelImpl : public TransportChannel,
   std::unique_ptr<TransportSessionRegistryImpl> session_registry_;
 
   // The underlying network message stream client.
-  std::unique_ptr<MessageStreamClient> stream_client_;
+  std::unique_ptr<MessageStreamClient> stream_client_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  DownstreamConnectionState downstream_connection_state_ GUARDED_BY_CONTEXT(
+      sequence_checker_) = DownstreamConnectionState::kDisconnected;
 
   base::WeakPtrFactory<TransportChannelImpl> weak_ptr_factory_{this};
 };

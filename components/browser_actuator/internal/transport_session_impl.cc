@@ -18,7 +18,9 @@ namespace browser_actuator {
 TransportSessionImpl::TransportSessionImpl(
     std::string_view session_id,
     base::WeakPtr<TransportChannel> channel)
-    : session_id_(session_id), channel_(std::move(channel)) {
+    : session_id_(session_id),
+      channel_(std::move(channel)),
+      start_time_(base::TimeTicks::Now()) {
   DCHECK(channel_);
 }
 

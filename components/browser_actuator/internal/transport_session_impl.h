@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/transport_session.h"
@@ -56,6 +57,16 @@ class TransportSessionImpl : public TransportSession {
   void OnMessage(PayloadType payload_type,
                  const google::protobuf::MessageLite& message) override;
 
+  base::TimeTicks start_time() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return start_time_;
+  }
+
+  int64_t client_sequence_number() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return client_sequence_number_;
+  }
+
   // Routes a downstream message payload of a given `payload_type` to all active
   // handlers registered to receive it. Handlers are lazily instantiated from
   // the registry on the first message receipt for their payload_type.
@@ -70,9 +81,11 @@ class TransportSessionImpl : public TransportSession {
   // Last sequence number for the session received from the server, used for
   // message ordering
   int64_t last_seen_sequence_number() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return last_seen_sequence_number_;
   }
   bool has_last_seen_sequence_number() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return last_seen_sequence_number_ > 0;
   }
 
@@ -80,7 +93,6 @@ class TransportSessionImpl : public TransportSession {
   // the current sequence number and was recorded.
   [[nodiscard]] bool RecordServerSequenceNumber(int64_t seq);
 
-  int64_t client_sequence_number() const { return client_sequence_number_; }
   // Increments the sequence number for the next outgoing message.
   int64_t IncrementClientSequenceNumber() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -109,8 +121,9 @@ class TransportSessionImpl : public TransportSession {
   const std::string session_id_;
   base::WeakPtr<TransportChannel> channel_;
 
-  int64_t last_seen_sequence_number_ = 0;
-  int64_t client_sequence_number_ = 0;
+  const base::TimeTicks start_time_;
+  int64_t last_seen_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  int64_t client_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // Map that holds ownership of all active `TransportHandler` instances for
   // this session, keyed by their instantiating factory ID to guarantee a

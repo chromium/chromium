@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/task_environment.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport_handler_factory_registry_impl.h"
 #include "components/browser_actuator/test_support/mock_transport_channel.h"
@@ -367,6 +368,16 @@ TEST(TransportSessionImplTest, OnMessage) {
   EXPECT_CALL(*handler_ptr, OnMessage(testing::Ref(command)));
 
   session.OnMessage(PayloadType::kControl, command);
+}
+
+TEST(TransportSessionImplTest, StartTimeReturnsCreationTimestamp) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  MockTransportChannel channel;
+  base::TimeTicks expected_time = base::TimeTicks::Now();
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  EXPECT_EQ(session.start_time(), expected_time);
 }
 
 }  // namespace
