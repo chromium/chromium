@@ -69,8 +69,6 @@ FatalCrashEventsObserver::TestEnvironment::CreateFatalCrashEventsObserver(
     FlushTaskRunner(observer->uploaded_crash_info_manager_->io_task_runner_);
   }
 
-  // Clear tasks such as registering the observer.
-  base::RunLoop().RunUntilIdle();
   return observer;
 }
 
