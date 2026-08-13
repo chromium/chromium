@@ -116,16 +116,6 @@ class OnTaskExtensionsManagerMock : public OnTaskExtensionsManager {
   MOCK_METHOD(void, ReEnableExtensions, (), (override));
 };
 
-class MockActiveTabTracker : public ActiveTabTracker {
- public:
-  MockActiveTabTracker() = default;
-  ~MockActiveTabTracker() override = default;
-  MOCK_METHOD(void,
-              OnActiveTabChanged,
-              (const std::u16string& tab_title),
-              (override));
-};
-
 class MockSessionManager : public BocaSessionManager {
  public:
   explicit MockSessionManager(SessionClientImpl* session_client_impl)
@@ -134,6 +124,7 @@ class MockSessionManager : public BocaSessionManager {
                            AccountId::FromUserEmail("useremail"),
                            /*=is_producer*/ false) {}
   MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));
+  MOCK_METHOD(void, UpdateTabActivity, (const std::u16string&), (override));
   ~MockSessionManager() override = default;
 };
 
@@ -179,9 +170,6 @@ class OnTaskSessionManagerTest : public ::testing::Test {
         std::move(system_web_app_manager), std::move(extensions_manager),
         boca_session_manager_.get());
 
-    auto active_tab_tracker =
-        std::make_unique<NiceMock<MockActiveTabTracker>>();
-    active_tab_tracker_ = active_tab_tracker.get();
     // Override notification manager implementation to minimize dependency on
     // Ash UI.
     auto fake_notifications_delegate =
@@ -190,8 +178,6 @@ class OnTaskSessionManagerTest : public ::testing::Test {
     session_manager_->SetNotificationManagerForTesting(
         OnTaskNotificationsManager::CreateForTest(
             std::move(fake_notifications_delegate)));
-    session_manager_->SetActiveTabTrackerForTesting(
-        std::move(active_tab_tracker));
   }
 
   base::flat_map<GURL, ::boca::UrlType>* provider_url_map() {
@@ -224,7 +210,6 @@ class OnTaskSessionManagerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<NiceMock<MockSessionManager>> boca_session_manager_;
   std::unique_ptr<OnTaskSessionManager> session_manager_;
-  raw_ptr<NiceMock<MockActiveTabTracker>> active_tab_tracker_;
   raw_ptr<NiceMock<OnTaskSystemWebAppManagerMock>> system_web_app_manager_ptr_;
   raw_ptr<NiceMock<OnTaskExtensionsManagerMock>> extensions_manager_ptr_;
   raw_ptr<FakeOnTaskNotificationsManagerDelegate>
@@ -239,11 +224,10 @@ TEST_F(OnTaskSessionManagerTest, ShouldLaunchBocaSWAOnSessionStart) {
       .WillOnce([](base::OnceCallback<void(bool)> callback, const GURL& url) {
         std::move(callback).Run(true);
       });
-  EXPECT_CALL(*active_tab_tracker_,
-              OnActiveTabChanged(::testing::Eq(std::u16string(u""))))
+  EXPECT_CALL(*boca_session_manager_,
+              UpdateTabActivity(::testing::Eq(std::u16string(u""))))
       .Times(1);
   session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
-  testing::Mock::VerifyAndClearExpectations(active_tab_tracker_.get());
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
@@ -269,12 +253,11 @@ TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
       .WillOnce([](base::OnceCallback<void(bool)> callback, const GURL& url) {
         std::move(callback).Run(true);
       });
-  EXPECT_CALL(*active_tab_tracker_,
-              OnActiveTabChanged(::testing::Eq(std::u16string(u""))))
+  EXPECT_CALL(*boca_session_manager_,
+              UpdateTabActivity(::testing::Eq(std::u16string(u""))))
       .Times(1);
 
   session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
-  testing::Mock::VerifyAndClearExpectations(active_tab_tracker_.get());
 }
 
 TEST_F(OnTaskSessionManagerTest,
@@ -302,12 +285,11 @@ TEST_F(OnTaskSessionManagerTest,
           kWindowId, ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION))
       .Times(1)
       .InSequence(s);
-  EXPECT_CALL(*active_tab_tracker_,
-              OnActiveTabChanged(::testing::Eq(std::u16string(u""))))
+  EXPECT_CALL(*boca_session_manager_,
+              UpdateTabActivity(::testing::Eq(std::u16string(u""))))
       .Times(1);
 
   session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
-  testing::Mock::VerifyAndClearExpectations(active_tab_tracker_.get());
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldCloseBocaSWAOnSessionEnd) {
@@ -1116,8 +1098,8 @@ TEST_F(OnTaskSessionManagerTest, ShouldRelockWindowAfterInterval) {
       .WillOnce([](base::OnceCallback<void(bool)> callback, const GURL& url) {
         std::move(callback).Run(true);
       });
-  EXPECT_CALL(*active_tab_tracker_,
-              OnActiveTabChanged(::testing::Eq(std::u16string(u""))))
+  EXPECT_CALL(*boca_session_manager_,
+              UpdateTabActivity(::testing::Eq(std::u16string(u""))))
       .Times(1);
   session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
 

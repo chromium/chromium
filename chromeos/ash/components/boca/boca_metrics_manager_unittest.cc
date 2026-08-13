@@ -32,8 +32,6 @@ constexpr char kTestEmail3[] = "test3@gmail.com";
 
 class MockBocaAppClient : public BocaAppClient {
  public:
-  MOCK_METHOD(BocaSessionManager*, GetSessionManager, (), (override));
-  MOCK_METHOD(void, AddSessionManager, (BocaSessionManager*), (override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
               GetURLLoaderFactory,
@@ -58,8 +56,6 @@ class BocaMetricsManagerTest : public testing::Test {
   void SetUp() override {
     ON_CALL(boca_app_client_, GetIdentityManager())
         .WillByDefault(Return(nullptr));
-    ON_CALL(boca_app_client_, GetSessionManager())
-        .WillByDefault(Return(&session_manager_));
   }
 
   const base::TimeDelta fast_forward_timeskip =
@@ -73,7 +69,8 @@ class BocaMetricsManagerTest : public testing::Test {
 
 class BocaMetricsManagerProducerTest : public BocaMetricsManagerTest {
  protected:
-  BocaMetricsManager metrics_manager_{/*is_producer*/ true};
+  BocaMetricsManager metrics_manager_{&session_manager_,
+                                      /*is_producer*/ true};
 };
 
 TEST_F(BocaMetricsManagerProducerTest,
@@ -211,7 +208,8 @@ TEST_F(BocaMetricsManagerProducerTest,
 
 class BocaMetricsManagerConsumerTest : public BocaMetricsManagerTest {
  protected:
-  BocaMetricsManager metrics_manager_{/*is_producer*/ false};
+  BocaMetricsManager metrics_manager_{&session_manager_,
+                                      /*is_producer*/ false};
 };
 
 TEST_F(BocaMetricsManagerConsumerTest,

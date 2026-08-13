@@ -130,6 +130,7 @@ static_library("apps") {
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps:user_type_filter",
+    "//chrome/browser/ash/boca",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/drive",

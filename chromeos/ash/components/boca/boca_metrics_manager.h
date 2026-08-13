@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_METRICS_MANAGER_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
@@ -16,7 +17,9 @@ namespace ash::boca {
 // throughout a Boca session.
 class BocaMetricsManager : public boca::BocaSessionManager::Observer {
  public:
-  BocaMetricsManager(bool is_producer);
+  // `boca_session_manager` must not be null and mut outlive this.
+  BocaMetricsManager(BocaSessionManager* boca_session_manager,
+                     bool is_producer);
   BocaMetricsManager(const BocaMetricsManager&) = delete;
   BocaMetricsManager& operator=(const BocaMetricsManager&) = delete;
   ~BocaMetricsManager() override;
@@ -33,6 +36,8 @@ class BocaMetricsManager : public boca::BocaSessionManager::Observer {
   // true when the bundle before the switch was in locked mode, false if it was
   // unlocked.
   void CalculateDurationForContentState(bool locked_state);
+
+  const raw_ref<BocaSessionManager> boca_session_manager_;
 
   // Determines if this manager is responsible for gathering metrics for a
   // producer or a consumer profile.

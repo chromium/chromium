@@ -27,6 +27,7 @@ class WebUIDataSource;
 namespace ash::boca {
 class BocaUI;
 class BocaAppHandler;
+class BocaSessionManager;
 
 // A delegate used during data source creation to expose some //chrome
 // functionality to the data source
@@ -44,6 +45,7 @@ class BocaUI : public ui::UntrustedWebUIController,
  public:
   BocaUI(content::WebUI* web_ui,
          std::unique_ptr<BocaUIDelegate> delegate,
+         BocaSessionManager* boca_session_manager,
          bool is_producer);
   BocaUI(const BocaUI&) = delete;
   BocaUI& operator=(const BocaUI&) = delete;
@@ -56,6 +58,7 @@ class BocaUI : public ui::UntrustedWebUIController,
               mojo::PendingRemote<boca::mojom::Page> page) override;
 
  private:
+  const raw_ref<BocaSessionManager> boca_session_manager_;
   const bool is_producer_;
   mojo::Receiver<boca::mojom::BocaPageHandlerFactory> receiver_{this};
   std::unique_ptr<BocaAppHandler> page_handler_impl_;

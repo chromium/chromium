@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
@@ -33,15 +34,21 @@ bool IsChromeEnterpriseEmail(const std::string& email) {
 namespace ash::boca {
 
 SpotlightSessionManager::SpotlightSessionManager(
+    BocaSessionManager* boca_session_manager,
     std::unique_ptr<SpotlightCrdManager> spotlight_crd_manager)
-    : notification_handler_(std::make_unique<SpotlightNotificationHandler>()),
-      spotlight_service_(std::make_unique<SpotlightService>()),
+    : boca_session_manager_(CHECK_DEREF(boca_session_manager)),
+      notification_handler_(std::make_unique<SpotlightNotificationHandler>()),
+      spotlight_service_(
+          std::make_unique<SpotlightService>(boca_session_manager)),
       spotlight_crd_manager_(std::move(spotlight_crd_manager)) {}
+
 SpotlightSessionManager::SpotlightSessionManager(
+    BocaSessionManager* boca_session_manager,
     std::unique_ptr<SpotlightNotificationHandler> notification_handler,
     std::unique_ptr<SpotlightCrdManager> spotlight_crd_manager,
     std::unique_ptr<SpotlightService> spotlight_service)
-    : notification_handler_(std::move(notification_handler)),
+    : boca_session_manager_(CHECK_DEREF(boca_session_manager)),
+      notification_handler_(std::move(notification_handler)),
       spotlight_service_(std::move(spotlight_service)),
       spotlight_crd_manager_(std::move(spotlight_crd_manager)) {
   CHECK_IS_TEST();
@@ -76,11 +83,8 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
   if (!ash::features::IsBocaSpotlightEnabled() || !in_session_) {
     return;
   }
-  auto student_status = activities.find(BocaAppClient::Get()
-                                            ->GetSessionManager()
-                                            ->account_id()
-                                            .GetGaiaId()
-                                            .ToString());
+  auto student_status = activities.find(
+      boca_session_manager_->account_id().GetGaiaId().ToString());
   if (student_status == activities.end()) {
     return;
   }
@@ -164,8 +168,7 @@ void SpotlightSessionManager::OnRegisterScreenRequestSent(
 
   // Trigger a session update request so that the view screen state is
   // immediately updated locally.
-  BocaAppClient::Get()->GetSessionManager()->LoadCurrentSession(
-      /*from_polling=*/false);
+  boca_session_manager_->LoadCurrentSession(/*from_polling=*/false);
 }
 
 void SpotlightSessionManager::OnCountdownEnded() {

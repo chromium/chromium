@@ -213,7 +213,7 @@ class BocaSessionManager
   virtual ::boca::Session* GetCurrentSession();
   virtual const ::boca::Session* GetPreviousSession();
 
-  virtual void UpdateTabActivity(std::u16string title);
+  virtual void UpdateTabActivity(const std::u16string& title);
 
   virtual void OnAppWindowOpened();
 

@@ -47,7 +47,8 @@ OnTaskSessionManager::OnTaskSessionManager(
     std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager,
     std::unique_ptr<OnTaskExtensionsManager> extensions_manager,
     BocaSessionManager* boca_session_manager)
-    : active_tab_tracker_(std::make_unique<ActiveTabTracker>()),
+    : active_tab_tracker_(
+          std::make_unique<ActiveTabTracker>(boca_session_manager)),
       system_web_app_manager_(std::move(system_web_app_manager)),
       extensions_manager_(std::move(extensions_manager)),
       system_web_app_launch_helper_(

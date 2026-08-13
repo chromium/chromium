@@ -286,9 +286,7 @@ class BocaSessionManagerTestBase : public testing::Test {
 
     boca_app_client_ = std::make_unique<StrictMock<MockBocaAppClient>>();
 
-    // Expect to have registered session manager for current profile.
     EXPECT_CALL(*boca_app_client_, GetIdentityManager())
-        .Times(2)
         .WillRepeatedly(Return(identity_manager()));
     EXPECT_CALL(*boca_app_client_, GetSchoolToolsServerBaseUrl())
         .WillRepeatedly(Return(kTestDefaultUrl));
@@ -1063,27 +1061,20 @@ TEST_F(BocaSessionManagerTest, DISABLED_DoNotPollSessionWhenNoNetwork) {
 }
 
 TEST_F(BocaSessionManagerTest, NotifyLocalCaptionConfigWhenLocalChange) {
-  EXPECT_CALL(*boca_app_client(), GetIdentityManager())
-      .WillOnce(Return(identity_manager()));
   EXPECT_CALL(*observer(), OnLocalCaptionConfigUpdated(_)).Times(1);
 
   ::boca::CaptionsConfig config;
-  BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(config);
+  boca_session_manager()->NotifyLocalCaptionEvents(config);
 }
 
 TEST_F(BocaSessionManagerTest, NotifyLocalCaptionClosed) {
-  EXPECT_CALL(*boca_app_client(), GetIdentityManager())
-      .WillOnce(Return(identity_manager()));
   EXPECT_CALL(*observer(), OnLocalCaptionClosed()).Times(1);
-  BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionClosed();
+  boca_session_manager()->NotifyLocalCaptionClosed();
 }
 
 TEST_F(BocaSessionManagerTest, NotifyAppReloadEvent) {
-  EXPECT_CALL(*boca_app_client(), GetIdentityManager())
-      .WillOnce(Return(identity_manager()));
   EXPECT_CALL(*observer(), OnAppReloaded()).Times(1);
-
-  BocaAppClient::Get()->GetSessionManager()->NotifyAppReload();
+  boca_session_manager()->NotifyAppReload();
 }
 
 TEST_F(BocaSessionManagerTest, UpdateTabActivity) {

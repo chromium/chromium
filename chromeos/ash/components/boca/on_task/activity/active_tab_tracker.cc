@@ -4,17 +4,18 @@
 
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 
-#include "chromeos/ash/components/boca/boca_app_client.h"
+#include "base/check_deref.h"
+#include "chromeos/ash/components/boca/boca_session_manager.h"
 
 namespace ash::boca {
-ActiveTabTracker::ActiveTabTracker() = default;
+
+ActiveTabTracker::ActiveTabTracker(BocaSessionManager* boca_session_manager)
+    : boca_session_manager_(CHECK_DEREF(boca_session_manager)) {}
 
 ActiveTabTracker::~ActiveTabTracker() = default;
 
 void ActiveTabTracker::OnActiveTabChanged(const std::u16string& tab_title) {
-  // Fetch dependency on the fly to avoid dangling pointers. Boca app client is
-  // guaranteed live throughout boca lifecycle.
-  BocaAppClient::Get()->GetSessionManager()->UpdateTabActivity(tab_title);
+  boca_session_manager_->UpdateTabActivity(tab_title);
 }
 
 }  // namespace ash::boca

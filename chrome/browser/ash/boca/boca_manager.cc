@@ -195,9 +195,11 @@ BocaManager::BocaManager(Profile* profile,
   }
 
   boca_metrics_manager_ =
-      std::make_unique<boca::BocaMetricsManager>(/*is_producer=*/!is_consumer);
+      std::make_unique<boca::BocaMetricsManager>(boca_session_manager_.get(),
+                                                 /*is_producer=*/!is_consumer);
 
   spotlight_session_manager_ = std::make_unique<boca::SpotlightSessionManager>(
+      boca_session_manager_.get(),
       std::make_unique<boca::SpotlightCrdManagerImpl>(profile->GetPrefs()));
 
   gcm::GCMDriver* gcm_driver =

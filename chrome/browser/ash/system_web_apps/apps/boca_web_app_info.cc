@@ -11,6 +11,7 @@
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -28,6 +29,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
 namespace {
 
 inline constexpr std::string_view kDisabled = "disabled";
@@ -181,7 +183,9 @@ ash::BrowserDelegate* BocaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
   if (IsConsumerProfile(profile)) {
     // Notify downstream Boca components so they can prepare the app instance
     // for OnTask and restore contents from the previous session if needed.
-    ash::boca::BocaAppClient::Get()->GetSessionManager()->NotifyAppReload();
+    ash::BocaManagerFactory::GetForProfile(profile)
+        ->GetBocaSessionManager()
+        ->NotifyAppReload();
   } else {
     // Always launch producer app into float mode.
     aura::Window* window = browser->GetNativeWindow();

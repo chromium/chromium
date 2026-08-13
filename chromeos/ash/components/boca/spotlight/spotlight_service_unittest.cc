@@ -78,7 +78,6 @@ class MockRequestHandler {
 
 class MockBocaAppClient : public BocaAppClient {
  public:
-  MOCK_METHOD(BocaSessionManager*, GetSessionManager, (), (override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
               GetURLLoaderFactory,
@@ -118,10 +117,10 @@ class SpotlightServiceTest : public testing::Test {
         base::BindRepeating(&MockRequestHandler::HandleRequest,
                             base::Unretained(&request_handler_)));
 
-    ON_CALL(boca_app_client_, GetSessionManager())
-        .WillByDefault(Return(boca_session_manager_.get()));
-
     ASSERT_TRUE(test_server_.Start());
+
+    spotlight_service_ = std::make_unique<SpotlightService>(
+        boca_session_manager_.get(), MakeRequestSender());
   }
 
  protected:
@@ -146,7 +145,7 @@ class SpotlightServiceTest : public testing::Test {
   net::EmbeddedTestServer test_server_;
   testing::StrictMock<MockRequestHandler> request_handler_;
   std::unique_ptr<StrictMock<MockSessionManager>> boca_session_manager_;
-  SpotlightService spotlight_service_{MakeRequestSender()};
+  std::unique_ptr<SpotlightService> spotlight_service_;
 };
 
 TEST_F(SpotlightServiceTest, TestViewScreenSucceed) {
@@ -160,8 +159,8 @@ TEST_F(SpotlightServiceTest, TestViewScreenSucceed) {
   EXPECT_CALL(request_handler_, HandleRequest(_))
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateSuccessfulResponse())));
-  spotlight_service_.ViewScreen(kStudentId, test_server_.base_url().spec(),
-                                future.GetCallback());
+  spotlight_service_->ViewScreen(kStudentId, test_server_.base_url().spec(),
+                                 future.GetCallback());
   auto result = future.Get();
   EXPECT_EQ(net::test_server::METHOD_POST, http_request.method);
 
@@ -195,8 +194,8 @@ TEST_F(SpotlightServiceTest, TestViewScreenSucceedWithRobotEmail) {
   EXPECT_CALL(request_handler_, HandleRequest(_))
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateSuccessfulResponse())));
-  spotlight_service_.ViewScreen(kStudentId, test_server_.base_url().spec(),
-                                future.GetCallback());
+  spotlight_service_->ViewScreen(kStudentId, test_server_.base_url().spec(),
+                                 future.GetCallback());
   auto result = future.Get();
   EXPECT_EQ(net::test_server::METHOD_POST, http_request.method);
 
@@ -219,8 +218,8 @@ TEST_F(SpotlightServiceTest, TestViewScreenWithEmptySession) {
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
 
-  spotlight_service_.ViewScreen(kStudentId, test_server_.base_url().spec(),
-                                future.GetCallback());
+  spotlight_service_->ViewScreen(kStudentId, test_server_.base_url().spec(),
+                                 future.GetCallback());
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(google_apis::ApiErrorCode::CANCELLED, result.error());
@@ -233,7 +232,7 @@ TEST_F(SpotlightServiceTest, TestViewScreenWithInvalidStudent) {
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
 
-  spotlight_service_.ViewScreen(
+  spotlight_service_->ViewScreen(
       "differentStudent", test_server_.base_url().spec(), future.GetCallback());
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
@@ -247,8 +246,8 @@ TEST_F(SpotlightServiceTest, TestViewScreenWithEmptyDeviceList) {
       .WillOnce(Return(&session));
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
-  spotlight_service_.ViewScreen(kStudentId, test_server_.base_url().spec(),
-                                future.GetCallback());
+  spotlight_service_->ViewScreen(kStudentId, test_server_.base_url().spec(),
+                                 future.GetCallback());
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(google_apis::ApiErrorCode::CANCELLED, result.error());
@@ -266,7 +265,7 @@ TEST_F(SpotlightServiceTest, TestRegisterScreenSucceed) {
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateSuccessfulResponse())));
 
-  spotlight_service_.RegisterScreen(
+  spotlight_service_->RegisterScreen(
       kConnectionCode, test_server_.base_url().spec(), future.GetCallback());
   auto result = future.Get();
   EXPECT_EQ(net::test_server::METHOD_POST, http_request.method);
@@ -289,7 +288,7 @@ TEST_F(SpotlightServiceTest, TestRegisterScreenWithEmptySession) {
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
 
-  spotlight_service_.RegisterScreen(
+  spotlight_service_->RegisterScreen(
       kConnectionCode, test_server_.base_url().spec(), future.GetCallback());
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
@@ -307,7 +306,7 @@ TEST_F(SpotlightServiceTest, TestUpdateViewScreenStateSucceed) {
   EXPECT_CALL(request_handler_, HandleRequest(_))
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateSuccessfulResponse())));
-  spotlight_service_.UpdateViewScreenState(
+  spotlight_service_->UpdateViewScreenState(
       kStudentId, ::boca::ViewScreenConfig::INACTIVE,
       test_server_.base_url().spec(), future.GetCallback());
   auto result = future.Get();
@@ -332,7 +331,7 @@ TEST_F(SpotlightServiceTest, TestUpdateViewScreenStateWithEmptySession) {
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
 
-  spotlight_service_.UpdateViewScreenState(
+  spotlight_service_->UpdateViewScreenState(
       kStudentId, ::boca::ViewScreenConfig::INACTIVE,
       test_server_.base_url().spec(), future.GetCallback());
   auto result = future.Get();
@@ -347,7 +346,7 @@ TEST_F(SpotlightServiceTest, TestUpdateViewScreenStateWithInvalidStudent) {
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
 
-  spotlight_service_.UpdateViewScreenState(
+  spotlight_service_->UpdateViewScreenState(
       "differentStudent", ::boca::ViewScreenConfig::INACTIVE,
       test_server_.base_url().spec(), future.GetCallback());
   auto result = future.Get();
@@ -362,7 +361,7 @@ TEST_F(SpotlightServiceTest, TestUpdateViewScreenStateWithEmptyDeviceList) {
       .WillOnce(Return(&session));
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
-  spotlight_service_.UpdateViewScreenState(
+  spotlight_service_->UpdateViewScreenState(
       kStudentId, ::boca::ViewScreenConfig::INACTIVE,
       test_server_.base_url().spec(), future.GetCallback());
   auto result = future.Get();

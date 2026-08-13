@@ -14,6 +14,7 @@
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "ash/webui/grit/ash_boca_ui_resources_map.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
@@ -48,8 +49,12 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
 
 BocaUI::BocaUI(content::WebUI* web_ui,
                std::unique_ptr<BocaUIDelegate> delegate,
+               BocaSessionManager* boca_session_manager,
                bool is_producer)
-    : UntrustedWebUIController(web_ui), is_producer_(is_producer) {
+    : UntrustedWebUIController(web_ui),
+      boca_session_manager_(CHECK_DEREF(boca_session_manager)),
+      is_producer_(is_producer),
+      spotlight_service_(boca_session_manager) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* host_source =
@@ -119,6 +124,9 @@ void BocaUI::Create(
   content::BrowserContext* context =
       web_ui()->GetWebContents()->GetBrowserContext();
   CHECK(context);
+  // TODO: This is illegal dependency violating the restriction that any
+  // //chrome code must not be depended by the code outside of //chrome.
+  // We must fix this use.
   auto* const profile = Profile::FromWebUI(web_ui());
   auto content_settings_handler =
       std::make_unique<ContentSettingsHandler>(profile);
@@ -129,13 +137,14 @@ void BocaUI::Create(
       on_task_session_manager
           ? on_task_session_manager->GetOnTaskSystemWebAppManager()
           : nullptr;
-  BocaAppClient::Get()->GetSessionManager()->OnAppWindowOpened();
+  boca_session_manager_->OnAppWindowOpened();
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
       std::move(page_handler), std::move(page), web_ui(),
+      &boca_session_manager_.get(),
       std::make_unique<ClassroomPageHandlerImpl>(),
       std::move(content_settings_handler),
       TabInfoCollector::Create(web_ui(), is_producer_), system_web_app_manager,
-      BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
+      boca_session_manager_->session_client_impl(),
       boca_manager->GetGeminiStatusFetcher(), is_producer_);
   page_handler_impl_->SetSpotlightService(&spotlight_service_);
   if (ash::features::IsAnnotatorModeEnabled() && is_producer_) {

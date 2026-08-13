@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
@@ -20,11 +21,14 @@ namespace ash::boca {
 
 class SpotlightSessionManager : public boca::BocaSessionManager::Observer {
  public:
-  explicit SpotlightSessionManager(
+  // `boca_session_manager` must not be nullptr, and must outlive this.
+  SpotlightSessionManager(
+      BocaSessionManager* boca_session_manager,
       std::unique_ptr<SpotlightCrdManager> spotlight_crd_manager);
   // Constructor used for unit testing. By using this constructor we can rely on
   // a mock SpotlightService.
   SpotlightSessionManager(
+      BocaSessionManager* boca_session_manager,
       std::unique_ptr<SpotlightNotificationHandler> notification_handler,
       std::unique_ptr<SpotlightCrdManager> spotlight_crd_manager,
       std::unique_ptr<SpotlightService> spotlight_service);
@@ -49,6 +53,8 @@ class SpotlightSessionManager : public boca::BocaSessionManager::Observer {
   // Handles showing the persistent notification after the Spotlight warning
   // countdown has ended.
   void OnCountdownEnded();
+
+  const raw_ref<BocaSessionManager> boca_session_manager_;
 
   bool in_session_ = false;
   bool request_in_progress_ = false;

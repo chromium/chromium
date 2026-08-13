@@ -5,24 +5,24 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_APP_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_APP_CLIENT_H_
 
-#include <map>
-
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace network {
 class SharedURLLoaderFactory;
-}
+}  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace ash::boca {
 
 class SharedCrdSessionWrapper;
+
 // Defines the interface for sub features to access hub Events
-class BocaAppClient : public signin::IdentityManager::Observer {
+class BocaAppClient {
  public:
   BocaAppClient(const BocaAppClient&) = delete;
   BocaAppClient& operator=(const BocaAppClient&) = delete;
@@ -44,12 +44,6 @@ class BocaAppClient : public signin::IdentityManager::Observer {
   // Returns the number of open app instances.
   virtual int GetAppInstanceCount();
 
-  // Add `BocaSessionManager` instance for the current profile.
-  virtual void AddSessionManager(BocaSessionManager* session_manager);
-
-  // Get `BocaSessionManager` instance for the current profile.
-  virtual BocaSessionManager* GetSessionManager();
-
   // Get virtual device id. Returns empty is device is not enrolled and has no
   // device policy.
   virtual std::string GetDeviceId();
@@ -63,16 +57,9 @@ class BocaAppClient : public signin::IdentityManager::Observer {
   virtual std::unique_ptr<SharedCrdSessionWrapper>
   CreateSharedCrdSessionWrapper();
 
-  // IdentityManager overrides.
-  void OnIdentityManagerShutdown(
-      signin::IdentityManager* identity_manager) override;
-
  protected:
   BocaAppClient();
-  ~BocaAppClient() override;
-
- private:
-  std::map<signin::IdentityManager*, BocaSessionManager*> session_manager_map_;
+  virtual ~BocaAppClient();
 };
 
 }  // namespace ash::boca

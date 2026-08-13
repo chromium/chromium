@@ -9,6 +9,7 @@
 #include "ash/constants/chrome_pref_names.h"
 #include "ash/webui/boca_ui/boca_ui.h"
 #include "base/version_info/channel.h"
+#include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
@@ -113,6 +114,7 @@ std::unique_ptr<content::WebUIController> BocaUIConfig::CreateWebUIController(
   auto delegate = std::make_unique<ChromeBocaUIDelegate>(profile);
   return std::make_unique<ash::boca::BocaUI>(
       web_ui, std::move(delegate),
+      BocaManagerFactory::GetForProfile(profile)->GetBocaSessionManager(),
       ash::boca_util::IsProducer(
           ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile)));
 }

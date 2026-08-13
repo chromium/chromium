@@ -155,18 +155,21 @@ class BocaManagerProducerTest : public BocaManagerTest {
         /*enabled_features=*/{ash::features::kBoca},
         /*disabled_features=*/{ash::features::kBocaSpotlightRobotRequester});
 
+    auto* boca_session_manager_ptr = boca_session_manager_.get();
     boca_manager_ = std::make_unique<BocaManager>(
         std::make_unique<boca::OnTaskSessionManager>(
             /*system_web_app_manager=*/nullptr, /*extensions_manager=*/nullptr,
-            /*boca_session_manager=*/nullptr),
+            boca_session_manager_ptr),
         std::move(session_client_impl_), std::move(boca_session_manager_),
         std::move(invalidation_service_impl_),
         std::make_unique<boca::BabelOrcaManager>(
             &pref_service_, identity_test_env_.identity_manager(),
             url_loader_factory_.GetSafeWeakWrapper(),
             GetBabelOrcaControllerFactory()),
-        std::make_unique<boca::BocaMetricsManager>(/*is_producer=*/true),
+        std::make_unique<boca::BocaMetricsManager>(boca_session_manager_ptr,
+                                                   /*is_producer=*/true),
         std::make_unique<boca::SpotlightSessionManager>(
+            boca_session_manager_ptr,
             /*spotlight_notification_handler=*/nullptr,
             /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr),
         /*profile=*/nullptr);
@@ -215,18 +218,21 @@ class BocaManagerConsumerTest : public BocaManagerTest {
                                ash::features::kBocaSpotlightRobotRequester},
         /* disabled_features=*/{});
 
+    auto* boca_session_manager_ptr = boca_session_manager_.get();
     boca_manager_ = std::make_unique<BocaManager>(
         std::make_unique<boca::OnTaskSessionManager>(
             /*system_web_app_manager=*/nullptr, /*extensions_manager=*/nullptr,
-            /*boca_session_manager_*/ nullptr),
+            boca_session_manager_ptr),
         std::move(session_client_impl_), std::move(boca_session_manager_),
         std::move(invalidation_service_impl_),
         std::make_unique<boca::BabelOrcaManager>(
             &pref_service_, identity_test_env_.identity_manager(),
             url_loader_factory_.GetSafeWeakWrapper(),
             GetBabelOrcaControllerFactory()),
-        std::make_unique<boca::BocaMetricsManager>(/*is_producer=*/false),
+        std::make_unique<boca::BocaMetricsManager>(boca_session_manager_ptr,
+                                                   /*is_producer=*/false),
         std::make_unique<boca::SpotlightSessionManager>(
+            boca_session_manager_ptr,
             /*spotlight_notification_handler=*/nullptr,
             /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr),
         /*profile=*/nullptr);

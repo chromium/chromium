@@ -51,10 +51,12 @@ class BocaAppHandler : public mojom::PageHandler,
                        public mojom::Page,
                        public BocaSessionManager::Observer {
  public:
+  // `boca_session_manager` must not be nullptr and must outlive this.
   BocaAppHandler(
       mojo::PendingReceiver<mojom::PageHandler> receiver,
       mojo::PendingRemote<mojom::Page> remote,
       content::WebUI* webui,
+      BocaSessionManager* boca_session_manager,
       std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
       std::unique_ptr<ContentSettingsHandler> content_settings_handler,
       std::unique_ptr<TabInfoCollector> tab_info_collector,
@@ -67,6 +69,7 @@ class BocaAppHandler : public mojom::PageHandler,
   BocaAppHandler& operator=(const BocaAppHandler&) = delete;
 
   ~BocaAppHandler() override;
+
   // Static
   static void SetFloatModeAndBoundsForWindow(bool is_float_mode,
                                              aura::Window* window,
@@ -268,7 +271,7 @@ class BocaAppHandler : public mojom::PageHandler,
 
   void OnUpdateSessionBlockingRequestCompleted();
 
-  BocaSessionManager* GetSessionManager();
+  BocaSessionManager& GetBocaSessionManager();
 
   void SetAccountImage(user_manager::User* user);
 
@@ -318,7 +321,7 @@ class BocaAppHandler : public mojom::PageHandler,
   raw_ptr<content::WebUI> web_ui_;
   raw_ptr<PrefService> pref_service_;
   mojom::CaptionConfigPtr producer_current_session_caption_config_;
-  raw_ptr<BocaSessionManager> session_manager_;
+  const raw_ref<BocaSessionManager> boca_session_manager_;
   std::unique_ptr<GeminiStatusFetcher> gemini_status_fetcher_;
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };

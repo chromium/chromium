@@ -54,8 +54,6 @@ constexpr base::TimeDelta kTestNotificationDuration =
 
 class MockBocaAppClient : public BocaAppClient {
  public:
-  MOCK_METHOD(BocaSessionManager*, GetSessionManager, (), (override));
-  MOCK_METHOD(void, AddSessionManager, (BocaSessionManager*), (override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
               GetURLLoaderFactory,
@@ -85,8 +83,9 @@ class MockSessionManager : public BocaSessionManager {
 class MockSpotlightService : public SpotlightService {
  public:
   explicit MockSpotlightService(
+      BocaSessionManager* boca_session_manager,
       std::unique_ptr<google_apis::RequestSender> sender)
-      : SpotlightService(std::move(sender)) {}
+      : SpotlightService(boca_session_manager, std::move(sender)) {}
   MOCK_METHOD(void,
               RegisterScreen,
               (const std::string& connection_code,
@@ -126,6 +125,7 @@ class FakeSpotlightNotificationHandlerDelegate
 class SpotlightSessionManagerTest : public testing::Test {
  public:
   SpotlightSessionManagerTest() = default;
+
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kBocaSpotlight,
@@ -134,16 +134,13 @@ class SpotlightSessionManagerTest : public testing::Test {
 
     // Set up global BocaAppClient's mock.
     boca_app_client_ = std::make_unique<NiceMock<MockBocaAppClient>>();
-    EXPECT_CALL(*boca_app_client_, AddSessionManager(_)).Times(1);
     ON_CALL(*boca_app_client_, GetIdentityManager())
         .WillByDefault(Return(nullptr));
     EXPECT_CALL(*boca_app_client_, GetDeviceId())
         .WillRepeatedly(Return(kDeviceId));
 
-    session_manager_ =
+    boca_session_manager_ =
         std::make_unique<StrictMock<MockSessionManager>>(nullptr);
-    ON_CALL(*boca_app_client_, GetSessionManager())
-        .WillByDefault(Return(session_manager()));
 
     ON_CALL(*boca_app_client_, GetSchoolToolsServerBaseUrl())
         .WillByDefault(Return(kTestBaseUrl));
@@ -151,14 +148,23 @@ class SpotlightSessionManagerTest : public testing::Test {
     auto spotlight_crd_manager =
         std::make_unique<NiceMock<MockSpotlightCrdManager>>();
     spotlight_crd_manager_ = spotlight_crd_manager.get();
-    auto spotlight_service =
-        std::make_unique<StrictMock<MockSpotlightService>>(nullptr);
+    auto spotlight_service = std::make_unique<StrictMock<MockSpotlightService>>(
+        boca_session_manager_.get(), nullptr);
     spotlight_service_ = spotlight_service.get();
 
     spotlight_session_manager_ = std::make_unique<SpotlightSessionManager>(
+        boca_session_manager_.get(),
         std::make_unique<SpotlightNotificationHandler>(
             std::make_unique<FakeSpotlightNotificationHandlerDelegate>()),
         std::move(spotlight_crd_manager), std::move(spotlight_service));
+  }
+
+  void TearDown() override {
+    spotlight_crd_manager_ = nullptr;
+    spotlight_service_ = nullptr;
+    spotlight_session_manager_.reset();
+    boca_session_manager_.reset();
+    boca_app_client_.reset();
   }
 
  protected:
@@ -167,7 +173,7 @@ class SpotlightSessionManagerTest : public testing::Test {
   base::test::ScopedFeatureList& scoped_feature_list() {
     return scoped_feature_list_;
   }
-  MockSessionManager* session_manager() { return session_manager_.get(); }
+  MockSessionManager* session_manager() { return boca_session_manager_.get(); }
   MockSpotlightService* spotlight_service() { return spotlight_service_; }
   MockSpotlightCrdManager* spotlight_crd_manager() {
     return spotlight_crd_manager_.get();
@@ -178,7 +184,7 @@ class SpotlightSessionManagerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<NiceMock<MockBocaAppClient>> boca_app_client_;
-  std::unique_ptr<StrictMock<MockSessionManager>> session_manager_;
+  std::unique_ptr<StrictMock<MockSessionManager>> boca_session_manager_;
   raw_ptr<NiceMock<MockSpotlightCrdManager>> spotlight_crd_manager_;
   raw_ptr<StrictMock<MockSpotlightService>> spotlight_service_;
 };

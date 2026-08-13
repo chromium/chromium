@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/spotlight/register_screen_request.h"
 #include "chromeos/ash/components/boca/spotlight/update_view_screen_state_request.h"
@@ -19,12 +20,16 @@ class RequestSender;
 
 namespace ash::boca {
 
+class BocaSessionManager;
+
 // A separate request sender for spotlight action. It can be in parallel with
 // other session requests.
 class SpotlightService {
  public:
-  SpotlightService();
-  explicit SpotlightService(std::unique_ptr<google_apis::RequestSender> sender);
+  // `boca_session_manager` must not be nullptr and must outlive this.
+  explicit SpotlightService(BocaSessionManager* boca_session_manager);
+  SpotlightService(BocaSessionManager* boca_session_manager,
+                   std::unique_ptr<google_apis::RequestSender> sender);
   SpotlightService(const SpotlightService&) = delete;
   SpotlightService& operator=(const SpotlightService&) = delete;
   virtual ~SpotlightService();
@@ -52,6 +57,7 @@ class SpotlightService {
       ::boca::Session* current_session,
       const std::string& student_gaia_id);
 
+  const raw_ref<BocaSessionManager> boca_session_manager_;
   std::unique_ptr<google_apis::RequestSender> sender_;
 };
 }  // namespace ash::boca

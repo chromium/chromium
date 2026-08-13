@@ -101,7 +101,6 @@ BocaSessionManager::BocaSessionManager(
       cros_network_config_observer_.BindNewPipeAndPassRemote());
   //  Register BocaSessionManager for the current profile.
   if (BocaAppClient::HasInstance()) {
-    BocaAppClient::Get()->AddSessionManager(this);
     identity_manager_ = BocaAppClient::Get()->GetIdentityManager();
     if (identity_manager_) {
       identity_manager_->AddObserver(this);
@@ -277,7 +276,7 @@ const ::boca::Session* BocaSessionManager::GetPreviousSession() {
   return previous_session_.get();
 }
 
-void BocaSessionManager::UpdateTabActivity(std::u16string title) {
+void BocaSessionManager::UpdateTabActivity(const std::u16string& title) {
   if (!current_session_ ||
       current_session_->session_state() != ::boca::Session::ACTIVE) {
     return;
@@ -285,7 +284,7 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
   if (title == active_tab_title_) {
     return;
   }
-  active_tab_title_ = std::move(title);
+  active_tab_title_ = title;
   auto session_id = current_session_->session_id();
   auto gaia_id = account_id_.GetGaiaId();
   auto device_id = BocaAppClient::Get()->GetDeviceId();
