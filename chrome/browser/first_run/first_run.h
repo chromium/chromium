@@ -74,7 +74,7 @@ struct MasterPrefs {
   bool confirm_to_quit;
 #endif
 #if BUILDFLAG(IS_LINUX)
-  bool eula_required = false;
+  bool eula_required = true;
 #endif
 };
 

@@ -33,19 +33,22 @@ class FirstRunInternalPosixTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kForceFirstRun);
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // For Chrome, the presence of a Local State file should not influence whether
-  // the first run dialog is shown. See crbug.com/40186863.
   bool SetUpUserDataDirectory() override {
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    // For Chrome, the presence of a Local State file should not influence whether
+    // the first run dialog is shown. See crbug.com/40186863.
     const base::FilePath local_state_file =
         user_data_dir.Append(chrome::kLocalStateFilename);
     const std::string empty_prefs = "{}";
     base::WriteFile(local_state_file, empty_prefs.data());
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_LINUX)
+    base::WriteFile(user_data_dir.Append("EULA Accepted"), "");
+#endif  // BUILDFLAG(IS_LINUX)
     return true;
   }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
