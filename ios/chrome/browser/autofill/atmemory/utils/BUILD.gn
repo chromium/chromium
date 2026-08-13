@@ -9,7 +9,8 @@ source_set("utils") {
   ]
   deps = [
     "//components/autofill/core/browser",
-    "//ios/chrome/browser/autofill/atmemory/ui",
+    "//ios/chrome/browser/autofill/atmemory/public",
+    "//ios/chrome/browser/autofill/atmemory/ui:item",
   ]
 }
 
@@ -20,7 +21,7 @@ source_set("unit_tests") {
     ":utils",
     "//components/autofill/core/browser",
     "//components/strings",
-    "//ios/chrome/browser/autofill/atmemory/ui",
+    "//ios/chrome/browser/autofill/atmemory/ui:item",
     "//testing/gtest",
     "//ui/base",
   ]

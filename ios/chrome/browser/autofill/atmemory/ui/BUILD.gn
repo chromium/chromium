@@ -2,13 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("item") {
+  sources = [
+    "at_memory_granular_fill_item.h",
+    "at_memory_granular_fill_item.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("ui") {
   sources = [
     "at_memory_granular_fill_cell_content_configuration.h",
     "at_memory_granular_fill_cell_content_configuration.mm",
     "at_memory_granular_fill_consumer.h",
-    "at_memory_granular_fill_item.h",
-    "at_memory_granular_fill_item.mm",
     "at_memory_granular_fill_mutator.h",
     "at_memory_granular_fill_view_controller.h",
     "at_memory_granular_fill_view_controller.mm",
@@ -24,6 +30,7 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/resources",
+    "//ios/chrome/browser/autofill/atmemory/utils",
     "//ios/chrome/browser/shared/ui:buildflags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -45,6 +52,7 @@ source_set("unit_tests") {
     ":ui",
     "//components/strings",
     "//ios/chrome/browser/autofill/atmemory/public",
+    "//ios/chrome/browser/autofill/atmemory/utils",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//testing/gtest",
     "//ui/base",

@@ -8,6 +8,7 @@
 #import "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_item.h"
 
 namespace {
@@ -59,4 +60,21 @@ NSArray<AtMemoryGranularFillItem*>* AtMemoryGranularFillItemsForSearchResult(
   }
 
   return [items copy];
+}
+
+NSString* GetAtMemoryGranularFillAttributeLabelAccessibilityIdentifier(
+    NSString* attribute_name) {
+  return [NSString
+      stringWithFormat:
+          @"%@%@",
+          kAtMemoryGranularFillAttributeLabelAccessibilityIdentifierPrefix,
+          attribute_name];
+}
+
+NSString* GetAtMemoryGranularFillChipButtonAccessibilityIdentifier(
+    NSString* attribute_name) {
+  return [NSString
+      stringWithFormat:
+          @"%@%@", kAtMemoryGranularFillChipButtonAccessibilityIdentifierPrefix,
+          attribute_name];
 }

@@ -18,6 +18,9 @@
 // Attribute value string to display as a selectable chip button.
 @property(nonatomic, copy) NSString* attributeValue;
 
+// Handler block called when the user taps on the value chip button.
+@property(nonatomic, copy) void (^selectionHandler)(NSString* value);
+
 // Returns a new default content configuration instance.
 + (instancetype)cellConfiguration;
 

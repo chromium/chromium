@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
+#import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -99,6 +100,9 @@ UIButton* CreateChipButton() {
   if (self) {
     _attributeLabel = CreateAttributeLabel();
     _chipButton = CreateChipButton();
+    [_chipButton addTarget:self
+                    action:@selector(onButtonTapped:)
+          forControlEvents:UIControlEventTouchUpInside];
 
     _containerStackView = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _attributeLabel, _chipButton ]];
@@ -119,6 +123,13 @@ UIButton* CreateChipButton() {
   return self;
 }
 
+- (void)onButtonTapped:(UIButton*)sender {
+  if (_configuration.selectionHandler &&
+      _configuration.attributeValue.length > 0) {
+    _configuration.selectionHandler(_configuration.attributeValue);
+  }
+}
+
 #pragma mark - UIContentView
 
 - (id<UIContentConfiguration>)configuration {
@@ -134,6 +145,13 @@ UIButton* CreateChipButton() {
 
   _attributeLabel.text = _configuration.attributeName;
   UpdateChipButton(_chipButton, _configuration.attributeValue);
+
+  _attributeLabel.accessibilityIdentifier =
+      GetAtMemoryGranularFillAttributeLabelAccessibilityIdentifier(
+          _configuration.attributeName);
+  _chipButton.accessibilityIdentifier =
+      GetAtMemoryGranularFillChipButtonAccessibilityIdentifier(
+          _configuration.attributeName);
 
   self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 }
@@ -155,6 +173,7 @@ UIButton* CreateChipButton() {
       [[AtMemoryGranularFillCellContentConfiguration allocWithZone:zone] init];
   copy.attributeName = self.attributeName;
   copy.attributeValue = self.attributeValue;
+  copy.selectionHandler = self.selectionHandler;
   return copy;
 }
 

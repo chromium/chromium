@@ -21,4 +21,14 @@ NSString* GetAtMemoryGranularFillTitle(
 NSArray<AtMemoryGranularFillItem*>* AtMemoryGranularFillItemsForSearchResult(
     const autofill::MemorySearchResult& result);
 
+// Returns the accessibility identifier for the granular fill attribute label
+// corresponding to `attribute_name`.
+NSString* GetAtMemoryGranularFillAttributeLabelAccessibilityIdentifier(
+    NSString* attribute_name);
+
+// Returns the accessibility identifier for the granular fill chip button
+// corresponding to `attribute_name`.
+NSString* GetAtMemoryGranularFillChipButtonAccessibilityIdentifier(
+    NSString* attribute_name);
+
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_UTILS_ATMEMORY_UI_UTIL_H_
