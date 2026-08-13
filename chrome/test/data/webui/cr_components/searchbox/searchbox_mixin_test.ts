@@ -55,7 +55,8 @@ class TestSearchboxMixinElement extends TestElementBase {
             .result="${this.result}"
             .selectedMatchIndex="${this.selectedMatchIndex}"
             @match-focusin="${this.onMatchFocusin}"
-            @selected-match-index-changed="${this.onSelectedMatchIndexChanged}">
+            @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
+            @keyword-click="${this.onKeywordClick}">
         </cr-searchbox-dropdown>
       </div>
     `;
@@ -1803,5 +1804,37 @@ suite('SearchboxMixinTest', () => {
 
     assertTrue(element.inputKeywordModel !== null);
     assertEquals(KeywordType.kInKeyword, element.inputKeywordModel.type);
+  });
+
+  test('chip click keyword entry', async () => {
+    const mockInput = element.getInputElement();
+    const keyword = 'google.com';
+
+    const match = createSearchMatchForTesting({
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kChip,
+        keyword,
+        chipHint: 'Search Google',
+      }),
+    });
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: keyword,
+      matches: [match],
+    }));
+    await microtasksFinished();
+
+    const dropdown = element.getDropdownElement();
+    dropdown.dispatchEvent(new CustomEvent('keyword-click', {
+      bubbles: true,
+      composed: true,
+      detail: {match},
+    }));
+
+    assertTrue(element.inputKeywordModel !== null);
+    assertEquals(KeywordType.kInKeyword, element.inputKeywordModel.type);
+    assertEquals(keyword, element.inputKeywordModel.keyword);
+    assertEquals('Search Google', element.inputKeywordModel.displayText);
+    assertEquals('', mockInput.inputElement.value);
   });
 });

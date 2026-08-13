@@ -73,6 +73,7 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
             @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
             @match-focusin="${this.onMatchFocusin}"
             @match-click="${this.onMatchClick}"
+            @keyword-click="${this.onKeywordClick}"
             ?hidden="${!this.dropdownIsVisible}">
         </cr-searchbox-dropdown>
         <omnibox-popup-contextual-entrypoint

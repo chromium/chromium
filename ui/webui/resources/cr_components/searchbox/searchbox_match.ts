@@ -299,6 +299,7 @@ export class SearchboxMatchElement extends CrLitElement {
     // Keyboard activation isn't possible because when the keyword chip is
     // focused, focus is redirected to the omnibox view.
     const event = e.detail.event as PointerEvent;
+    this.fire('keyword-click', {match: this.match});
     this.pageHandler_.activateKeyword(
         this.matchIndex, this.match.destinationUrl, mojoTimeTicks(Date.now()),
         // Distinguish mouse and touch or pen events for logging purposes.

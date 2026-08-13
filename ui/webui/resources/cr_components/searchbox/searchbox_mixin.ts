@@ -668,6 +668,18 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       });
     }
 
+    onKeywordClick(e: Event) {
+      const match =
+          (e as CustomEvent<{match?: AutocompleteMatch}>).detail.match;
+      assert(match?.keywordModel);
+      this.inputKeywordModel = {
+        type: KeywordType.kInKeyword,
+        keyword: match.keywordModel.keyword,
+        displayText: match.keywordModel.chipHint,
+      };
+      this.getInputElement().setInputText('');
+    }
+
     private computeMatchFillIntoEdit_(match: AutocompleteMatch): string {
       if (this.inputKeywordModel?.type === KeywordType.kInKeyword) {
         const keyword = this.inputKeywordModel.keyword;
@@ -803,6 +815,7 @@ export interface SearchboxMixinInterface {
   onInputWrapperKeydown(e: KeyboardEvent): void;
   onMatchClick(): void;
   onMatchFocusin(e: CustomEvent<number>): void;
+  onKeywordClick(e: Event): void;
   openCtrlEnterMatch(matchIndex: number): void;
   onSearchboxInputTextUpdated(
       e: CustomEvent<{value: string, isComposing: boolean}>): void;
