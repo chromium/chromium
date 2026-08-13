@@ -1,0 +1,77 @@
+description: >-
+  Verify experimental-code-coverage-swarming-output-validator extracts task
+  digests, audits remote swarming outputs, audits CAS input isolates, and
+  replays tasks locally.
+owner: pasthana@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-code-coverage-swarming-output-validator
+      changes:
+        - apply: >-
+            agents/prompts/eval/experimental-code-coverage-swarming-output-validator/setup_triage_state.patch
+      mocks:
+        - command: bb
+          rules:
+            - args: ["get", "*875812345678*"]
+              stdout: >-
+                {"input": {"properties": {"swarm_hashes": {"net_unittests":
+                "a1b2c3d4e5f67890/100"}}}, "output": {"properties":
+                {"swarm_hashes": {"net_unittests": "a1b2c3d4e5f67890/100"}}}}
+              exit_code: 0
+
+tests:
+  - description: >-
+      Trigger: Implicit query to audit remote swarming task outputs
+    vars:
+      query: >-
+        Audit the remote Swarming task outputs for build 875812345678 and
+        test suite net_unittests to check for missing profraw profile
+        artifacts.
+    assert:
+      - type: contains
+        value: "get_task_digest.py"
+
+  - description: >-
+      Functional: Audit remote output artifacts and create swarming_summary.md
+    vars:
+      query: >-
+        Audit remote Swarming outputs for build 875812345678 and test suite
+        net_unittests using
+        experimental-code-coverage-swarming-output-validator.
+    assert:
+      - type: contains
+        value: "get_task_digest.py"
+      - type: python
+        value: >-
+          file://../../../testing/asserts/check_changes.py:check_file_content
+        config:
+          files:
+            - path: scratch/swarming_summary.md
+              present:
+                - "Swarming"
+
+  - description: >-
+      Functional: Missing output triggering CAS input audit
+    vars:
+      query: >-
+        Remote outputs are missing for build 875812345678 and test suite
+        net_unittests. Audit the input CAS isolate bundle to verify data_deps.
+    assert:
+      - type: contains
+        value: "cas download"
+
+  - description: >-
+      Functional: Corrupt profiles triggering hermetic container replay
+    vars:
+      query: >-
+        Remote profile output for build 875812345678 and step net_unittests
+        is corrupt. Replay the swarming task locally.
+    assert:
+      - type: contains
+        value: "swarming.py reproduce"

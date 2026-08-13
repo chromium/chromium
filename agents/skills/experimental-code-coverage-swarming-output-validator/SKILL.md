@@ -118,4 +118,9 @@ vpython3 ../../third_party/depot_tools/swarming.py reproduce \
 - **Note**: This abstracts away local OS differences and runs the test binary
   inside the exact virtualenv used by the LUCI compilator bot.
 
+### 5. Generate Summary Artifact
+
+Create a summary document of all steps taken, swarming task IDs, `.profraw` file
+existence/integrity, and diagnostic findings at `scratch/swarming_summary.md`.
+
 ______________________________________________________________________

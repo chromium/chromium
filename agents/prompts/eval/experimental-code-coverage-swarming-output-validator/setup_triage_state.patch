@@ -1,0 +1,20 @@
+diff --git a/scratch/triage_state.json b/scratch/triage_state.json
+new file mode 100644
+--- /dev/null
++++ b/scratch/triage_state.json
+@@ -0,0 +1,10 @@
++{
++  "bug_id": "378464314",
++  "target_files": [
++    "net/ssl/client_cert_matcher.cc"
++  ],
++  "builders_of_concern": [
++    "linux-rel"
++  ],
++  "test_suites": [
++    "net_unittests"
++  ],
++  "control_builds": {
++    "linux-rel": "https://ci.chromium.org/b/875812345678"
++  }
++}
