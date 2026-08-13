@@ -40,13 +40,6 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/tab_bottom_sheet_web_ui_top_margin"/>
-
-        <!-- Fusebox Container -->
-        <FrameLayout
-            android:id="@+id/fusebox_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom" />
     </FrameLayout>
 
     <!-- Peek View: Appears when BottomSheet is collapsed -->
