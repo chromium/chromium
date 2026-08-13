@@ -2904,6 +2904,110 @@ IN_PROC_BROWSER_TEST_F(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+// Verifies that for child-process requests, the proxying `URLLoaderFactory`
+// generates and forwards a unique, non-zero request ID to the underlying
+// factory, even when the client passes duplicate IDs or 0. For
+// browser-initiated navigations (`render_process_id == -1`), verifies that the
+// original negative request ID is preserved without modification.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       ProxyingFactoryAssignsUniqueRequestId) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Make sure the WebRequest proxy is inserted into the `URLLoaderFactory`
+  // chain for subresource and navigation requests.
+  auto* web_request_api =
+      BrowserContextKeyedAPIFactory<WebRequestAPI>::Get(profile());
+  ASSERT_TRUE(web_request_api);
+  web_request_api->ForceProxyForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+
+  const GURL navigation_url = embedded_test_server()->GetURL("/simple.html");
+  const GURL url_a = embedded_test_server()->GetURL("/echo?a");
+  const GURL url_b = embedded_test_server()->GetURL("/echo?b");
+  const GURL url_c = embedded_test_server()->GetURL("/echo?c");
+
+  // Intercept requests exiting the WebRequest proxy and record the forwarded
+  // network service request ID for each target URL.
+  std::map<GURL, int32_t> forwarded_request_ids;
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) {
+        const GURL& url = params->url_request.url;
+        if (url == navigation_url || url == url_a || url == url_b ||
+            url == url_c) {
+          forwarded_request_ids[url] = params->request_id;
+        }
+        return false;
+      }));
+
+  // Perform a main-frame navigation. Because navigations are browser-initiated
+  // (`render_process_id == -1`), `GlobalRequestID::MakeBrowserInitiated()`
+  // generates a negative request ID.
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), navigation_url));
+  content::RenderFrameHost* frame =
+      GetActiveWebContents()->GetPrimaryMainFrame();
+
+  // Bind a WebRequest-proxied `URLLoaderFactory` for subresource requests and
+  // drive it directly to simulate a client submitting duplicate or zero IDs.
+  mojo::Remote<network::mojom::URLLoaderFactory> factory;
+  ASSERT_TRUE(frame->CreateNetworkServiceDefaultFactory(
+      factory.BindNewPipeAndPassReceiver()));
+
+  constexpr int32_t kClientRequestId = 42;
+
+  auto make_request = [&](const GURL& url) {
+    network::ResourceRequest request;
+    request.url = url;
+    request.request_initiator = frame->GetLastCommittedOrigin();
+    return request;
+  };
+
+  network::TestURLLoaderClient client_a;
+  mojo::PendingRemote<network::mojom::URLLoader> loader_a;
+  factory->CreateLoaderAndStart(
+      loader_a.InitWithNewPipeAndPassReceiver(), kClientRequestId,
+      network::mojom::kURLLoadOptionNone, make_request(url_a),
+      client_a.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  network::TestURLLoaderClient client_b;
+  mojo::PendingRemote<network::mojom::URLLoader> loader_b;
+  factory->CreateLoaderAndStart(
+      loader_b.InitWithNewPipeAndPassReceiver(), kClientRequestId,
+      network::mojom::kURLLoadOptionNone, make_request(url_b),
+      client_b.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  network::TestURLLoaderClient client_c;
+  mojo::PendingRemote<network::mojom::URLLoader> loader_c;
+  factory->CreateLoaderAndStart(
+      loader_c.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      network::mojom::kURLLoadOptionNone, make_request(url_c),
+      client_c.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client_a.RunUntilComplete();
+  client_b.RunUntilComplete();
+  client_c.RunUntilComplete();
+
+  // Verify that the browser-initiated navigation (`render_process_id == -1`)
+  // forwarded its original negative request ID unmodified.
+  ASSERT_TRUE(forwarded_request_ids.contains(navigation_url));
+  EXPECT_LT(forwarded_request_ids[navigation_url], 0);
+
+  // Verify that untrusted child-process requests receive unique, non-zero
+  // network service request IDs, even when the client reuses an ID (`url_a` vs
+  // `url_b`) or passes 0 (`url_c`).
+  ASSERT_TRUE(forwarded_request_ids.contains(url_a));
+  ASSERT_TRUE(forwarded_request_ids.contains(url_b));
+  ASSERT_TRUE(forwarded_request_ids.contains(url_c));
+  EXPECT_NE(forwarded_request_ids[url_a], 0);
+  EXPECT_NE(forwarded_request_ids[url_b], 0);
+  EXPECT_NE(forwarded_request_ids[url_c], 0);
+  EXPECT_NE(forwarded_request_ids[url_a], forwarded_request_ids[url_b]);
+  EXPECT_NE(forwarded_request_ids[url_a], forwarded_request_ids[url_c]);
+  EXPECT_NE(forwarded_request_ids[url_b], forwarded_request_ids[url_c]);
+}
+
 // Tests that webRequest API can inspect window.open() requests initiated from
 // chrome-untrusted:// pages to Web origins, but not other WebUI origins.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,

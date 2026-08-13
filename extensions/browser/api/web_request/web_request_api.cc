@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -301,11 +302,10 @@ void WebRequestAPI::ProxySet::OnDNRExtensionUnloaded(
 WebRequestAPI::RequestIDGenerator::RequestIDGenerator() = default;
 WebRequestAPI::RequestIDGenerator::~RequestIDGenerator() = default;
 
-int64_t WebRequestAPI::RequestIDGenerator::Generate(
-    int32_t routing_id,
-    int32_t network_service_request_id) {
+int64_t WebRequestAPI::RequestIDGenerator::Generate(int32_t routing_id,
+                                                    int32_t client_request_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto it = saved_id_map_.find({routing_id, network_service_request_id});
+  auto it = saved_id_map_.find({routing_id, client_request_id});
   if (it != saved_id_map_.end()) {
     int64_t id = it->second;
     saved_id_map_.erase(it);
@@ -314,16 +314,22 @@ int64_t WebRequestAPI::RequestIDGenerator::Generate(
   return ++id_;
 }
 
-void WebRequestAPI::RequestIDGenerator::SaveID(
-    int32_t routing_id,
-    int32_t network_service_request_id,
-    uint64_t request_id) {
-  // If |network_service_request_id| is 0, we cannot reliably match the
-  // generated ID to a future request, so ignore it.
-  if (network_service_request_id != 0) {
-    saved_id_map_.insert(
-        {{routing_id, network_service_request_id}, request_id});
+void WebRequestAPI::RequestIDGenerator::SaveID(int32_t routing_id,
+                                               int32_t client_request_id,
+                                               uint64_t request_id) {
+  // If `client_request_id` is 0, we cannot reliably match the generated ID to a
+  // restarted request, so ignore it.
+  if (client_request_id != 0) {
+    saved_id_map_.insert({{routing_id, client_request_id}, request_id});
   }
+}
+
+int32_t WebRequestAPI::RequestIDGenerator::GenerateNetworkRequestId() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (network_request_id_ == std::numeric_limits<int32_t>::max()) {
+    network_request_id_ = 0;
+  }
+  return ++network_request_id_;
 }
 
 WebRequestAPI::WebRequestAPI(content::BrowserContext* context)

@@ -80,6 +80,7 @@ class WebRequestProxyingURLLoaderFactory
         WebRequestProxyingURLLoaderFactory* factory,
         uint64_t request_id,
         int32_t network_service_request_id,
+        int32_t client_request_id,
         int32_t view_routing_id,
         int32_t frame_routing_id,
         uint32_t options,
@@ -217,7 +218,14 @@ class WebRequestProxyingURLLoaderFactory
     network::ResourceRequest request_;
     const std::optional<url::Origin> original_initiator_;
     const uint64_t request_id_ = 0;
+    // The request ID forwarded to `target_factory_`. Used to correlate
+    // network-stack callbacks (such as `TrustedHeaderClient` and auth events)
+    // with this request.
     const int32_t network_service_request_id_ = 0;
+    // The request ID supplied by the caller of `CreateLoaderAndStart()`. Used
+    // solely to preserve the extension-visible WebRequest ID across a request
+    // restart (e.g., via `ThrottlingURLLoader`).
+    const int32_t client_request_id_ = 0;
     const int32_t view_routing_id_ = IPC::mojom::kRoutingIdNone;
     const int32_t frame_routing_id_ = IPC::mojom::kRoutingIdNone;
     const uint32_t options_ = 0;
