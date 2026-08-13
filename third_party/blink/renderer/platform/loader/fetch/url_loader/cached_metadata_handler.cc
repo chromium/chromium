@@ -146,6 +146,11 @@ std::unique_ptr<CachedMetadataSender> CachedMetadataSender::Create(
     if (!requestor_origin) {
       return std::make_unique<NullCachedMetadataSender>();
     }
+    // If the service worker uses a synthetic response (`new Response()`) or a
+    // response fetched from a different URL, disable code caching.
+    if (!response.HasMatchingServiceWorkerUrl()) {
+      return std::make_unique<NullCachedMetadataSender>();
+    }
     return std::make_unique<ServiceWorkerCachedMetadataSender>(
         response, std::move(requestor_origin));
   }

@@ -129,6 +129,10 @@ class PLATFORM_EXPORT ResourceResponse final {
   // responded to the request. See the comments for that function.
   KURL ResponseUrl() const;
 
+  // Returns true if this response has a non-empty service worker URL list whose
+  // final URL matches the current request URL.
+  bool HasMatchingServiceWorkerUrl() const;
+
   // Returns true if this response is the result of a service worker
   // effectively calling `evt.respondWith(fetch(evt.request))`.  Specifically,
   // it returns false for synthetic constructed responses, responses fetched

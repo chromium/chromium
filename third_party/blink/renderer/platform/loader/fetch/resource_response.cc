@@ -161,10 +161,13 @@ KURL ResourceResponse::ResponseUrl() const {
   return CurrentRequestUrl();
 }
 
+bool ResourceResponse::HasMatchingServiceWorkerUrl() const {
+  return !url_list_via_service_worker_.empty() &&
+         url_list_via_service_worker_.back() == current_request_url_;
+}
+
 bool ResourceResponse::IsServiceWorkerPassThrough() const {
-  return cache_storage_cache_name_.empty() &&
-         !url_list_via_service_worker_.empty() &&
-         ResponseUrl() == CurrentRequestUrl();
+  return cache_storage_cache_name_.empty() && HasMatchingServiceWorkerUrl();
 }
 
 const AtomicString& ResourceResponse::MimeType() const {

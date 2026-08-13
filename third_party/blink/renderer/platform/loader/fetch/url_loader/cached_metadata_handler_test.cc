@@ -171,11 +171,46 @@ TEST(CachedMetadataHandlerTest,
   // Equivalent to service worker calling respondWith(cache.match(some_url));
   ResourceResponse response(CreateTestResourceResponse());
   response.SetWasFetchedViaServiceWorker(true);
+  response.SetUrlListViaServiceWorker({response.CurrentRequestUrl()});
   response.SetCacheStorageCacheName("dummy");
 
   SendDataFor(response, &mock_disk_cache);
   EXPECT_EQ(0u, mock_disk_cache.CachedURLs().size());
   EXPECT_EQ(1u, mock_disk_cache.CacheStorageCachedURLs().size());
+}
+
+TEST(
+    CachedMetadataHandlerTest,
+    DoesNotSendMetadataToPlatformWhenFetchedViaServiceWorkerWithSyntheticCacheResponse) {
+  MockGeneratedCodeCache mock_disk_cache;
+
+  // Equivalent to service worker calling
+  // respondWith(cache.match(synthetic_response));
+  ResourceResponse response(CreateTestResourceResponse());
+  response.SetWasFetchedViaServiceWorker(true);
+  response.SetCacheStorageCacheName("dummy");
+
+  SendDataFor(response, &mock_disk_cache);
+  EXPECT_EQ(0u, mock_disk_cache.CachedURLs().size());
+  EXPECT_EQ(0u, mock_disk_cache.CacheStorageCachedURLs().size());
+}
+
+TEST(
+    CachedMetadataHandlerTest,
+    DoesNotSendMetadataToPlatformWhenFetchedViaServiceWorkerWithDifferentURLCacheResponse) {
+  MockGeneratedCodeCache mock_disk_cache;
+
+  // Equivalent to service worker calling
+  // respondWith(cache.match(different_url));
+  ResourceResponse response(CreateTestResourceResponse());
+  response.SetWasFetchedViaServiceWorker(true);
+  response.SetUrlListViaServiceWorker(
+      {KURL("https://example.com/different/url")});
+  response.SetCacheStorageCacheName("dummy");
+
+  SendDataFor(response, &mock_disk_cache);
+  EXPECT_EQ(0u, mock_disk_cache.CachedURLs().size());
+  EXPECT_EQ(0u, mock_disk_cache.CacheStorageCachedURLs().size());
 }
 
 }  // namespace
