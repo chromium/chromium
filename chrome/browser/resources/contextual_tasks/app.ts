@@ -1471,20 +1471,32 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
     const frameRect = this.$.threadFrame.getBoundingClientRect();
     let scale = 1.0;
+    let boundsScale = 1.0;
     // <if expr="is_android">
     scale = (this.guestWidth_ && this.guestWidth_ > 0) ?
         (frameRect.width / this.guestWidth_) :
         1.0;
+    boundsScale = (this.forcedComposeboxBounds_ != null) ? scale : 1.0;
     // </if>
     const scaledBounds = composeboxBounds ? {
-      top: composeboxBounds.top * scale,
-      left: composeboxBounds.left * scale,
-      width: composeboxBounds.width * scale,
-      height: composeboxBounds.height * scale,
-      right: composeboxBounds.right * scale,
-      bottom: composeboxBounds.bottom * scale,
+      top: composeboxBounds.top * boundsScale,
+      left: composeboxBounds.left * boundsScale,
+      width: composeboxBounds.width * boundsScale,
+      height: composeboxBounds.height * boundsScale,
+      right: composeboxBounds.right * boundsScale,
+      bottom: composeboxBounds.bottom * boundsScale,
     } :
                                             null;
+
+    const scaledOccluders =
+        this.occluders_.map(occluder => ({
+                              top: occluder.top * scale,
+                              left: occluder.left * scale,
+                              width: occluder.width * scale,
+                              height: occluder.height * scale,
+                              right: occluder.right * scale,
+                              bottom: occluder.bottom * scale,
+                            }));
 
     // If occluders are present, set the clip path and a z-index that ensures
     // the thread frame is above the occluders.
@@ -1494,7 +1506,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         roundedClipPathEnabled ? COMPOSEBOX_BORDER_RADIUS_PX : 0;
 
     const result = getNonOccludedClipPath(
-                       scaledBounds, this.occluders_, OCCLUDER_EXTRA_PADDING_PX,
+                       scaledBounds, scaledOccluders, OCCLUDER_EXTRA_PADDING_PX,
                        frameRect.width, frameRect.height, borderRadius) +
         'z-index: 100;';
     return result;
