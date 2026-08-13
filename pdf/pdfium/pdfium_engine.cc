@@ -766,8 +766,7 @@ sk_sp<const SkData> MakeDataAvoidingCopy(SkStreamAsset* stream) {
 // Caller takes ownership of `page_objects` via the return value.
 std::vector<ScopedFPDFPageObject> RemovePageObjectsFromPage(
     FPDF_PAGE page,
-    std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
-        page_objects) {
+    PDFiumEngine::PageObjectVector page_objects) {
   std::vector<ScopedFPDFPageObject> page_object_deleters;
   page_object_deleters.reserve(page_objects.size());
   for (FPDF_PAGEOBJECT page_object : page_objects) {
@@ -5489,8 +5488,7 @@ void PDFiumEngine::DrawText(int page_index,
 
   ascent /= pdf_zoom;
 
-  std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
-      page_objects;
+  PageObjectVector page_objects;
   page_objects.reserve(text_info.size());
   FPDF_PAGEOBJECTMARK mark = nullptr;
   for (const InkTextInfo& item : text_info) {
@@ -5636,8 +5634,7 @@ void PDFiumEngine::ApplyStroke(int page_index,
   FPDF_PAGE page = pdfium_page->GetPage();
   CHECK(page);
 
-  std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
-      page_objects = WriteStrokeToPage(page, stroke);
+  PageObjectVector page_objects = WriteStrokeToPage(page, stroke);
   CHECK(!page_objects.empty());
   ink_edited_pages_needing_regeneration_.insert(page_index);
 
@@ -5952,10 +5949,8 @@ void PDFiumEngine::UpdateTextActiveAndInvalidateHelper(InkTextData& data,
   GetPage(page_index)->ReloadTextPage();
 }
 
-PDFiumEngine::InkStrokeData::InkStrokeData(
-    int page_index,
-    std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
-        page_objects)
+PDFiumEngine::InkStrokeData::InkStrokeData(int page_index,
+                                           PageObjectVector page_objects)
     : page_index(page_index), page_objects(std::move(page_objects)) {}
 
 PDFiumEngine::InkStrokeData::InkStrokeData(InkStrokeData&&) noexcept = default;
@@ -5965,10 +5960,8 @@ PDFiumEngine::InkStrokeData& PDFiumEngine::InkStrokeData::operator=(
 
 PDFiumEngine::InkStrokeData::~InkStrokeData() = default;
 
-PDFiumEngine::InkTextData::InkTextData(
-    int page_index,
-    std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>
-        page_objects)
+PDFiumEngine::InkTextData::InkTextData(int page_index,
+                                       PageObjectVector page_objects)
     : page_index(page_index), page_objects(std::move(page_objects)) {}
 
 PDFiumEngine::InkTextData::InkTextData(InkTextData&&) noexcept = default;
