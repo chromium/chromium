@@ -265,9 +265,7 @@ void ApplyHeaderElementShadow(UIView* targetView) {
   UIButton* button = [UIButton buttonWithConfiguration:config
                                          primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [button.heightAnchor constraintEqualToConstant:kButtonSize],
-  ]];
+  AddSizeConstraints(button, CGSizeMake(kButtonSize, kButtonSize));
   return button;
 }
 
