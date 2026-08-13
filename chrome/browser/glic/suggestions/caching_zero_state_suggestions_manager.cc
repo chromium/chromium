@@ -44,7 +44,6 @@ class CachingContextualCueingServiceImpl
             .is_focused_tab_request = true,
             .urls = std::move(urls),
             .is_fre = is_fre,
-            .supported_tools = supported_tools,
             .focused_page = focused_page,
         },
         std::move(callback));
@@ -86,7 +85,6 @@ class CachingContextualCueingServiceImpl
             .is_focused_tab_request = false,
             .urls = std::move(urls),
             .is_fre = is_fre,
-            .supported_tools = supported_tools,
             .focused_page = focused_page,
         },
         std::move(callback));
@@ -143,7 +141,6 @@ class CachingContextualCueingServiceImpl
     bool is_focused_tab_request = false;
     std::vector<GURL> urls;
     bool is_fre = false;
-    std::optional<std::vector<std::string>> supported_tools;
     PageReference focused_page;
 
     bool operator==(const CacheKey& other) const = default;
