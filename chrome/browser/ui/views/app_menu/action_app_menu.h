@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_action_manager.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_helper.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
@@ -30,7 +30,6 @@ class MenuRunner;
 class ActionAppMenu : public views::MenuDelegate {
  public:
   ActionAppMenu(BrowserWindowInterface* browser_window_interface,
-                std::unique_ptr<AppMenuActionManager> action_manager,
                 base::RepeatingClosure on_menu_closed_callback);
   ActionAppMenu(const ActionAppMenu&) = delete;
   ActionAppMenu& operator=(const ActionAppMenu&) = delete;
@@ -52,14 +51,13 @@ class ActionAppMenu : public views::MenuDelegate {
   void PopulateMenu(views::MenuItemView* view_parent,
                     actions::ActionItem* action_item);
 
+  void CreateMenuHierarchy(actions::ActionItem* root);
+
   // The browser window interface associated with this menu.
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
   // Callback run when the menu is closed to notify the menu button.
   base::RepeatingClosure on_menu_closed_callback_;
-
-  // Manager for the menu ActionItem tree hierarchy.
-  std::unique_ptr<AppMenuActionManager> action_manager_;
 
   // Maps command/menu item IDs back to their corresponding ActionItem.
   base::flat_map<int, raw_ptr<actions::ActionItem>> command_to_action_map_;

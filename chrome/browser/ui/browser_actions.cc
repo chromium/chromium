@@ -338,9 +338,10 @@ BrowserActions::BrowserActions(BrowserWindowInterface* bwi)
 
 BrowserActions::~BrowserActions() {
   browser_action_prefs_listener_.reset();
+  // Extract the root and destruct it after the raw_ptr to avoid a dangling
+  // pointer scenario.
+  app_menu_root_ = nullptr;
   if (root_action_item_) {
-    // Extract the unique ptr and destruct it after the raw_ptr to avoid a
-    // dangling pointer scenario.
     std::unique_ptr<actions::ActionItem> owned_root_action_item =
         actions::ActionManager::Get().RemoveAction(root_action_item_);
     root_action_item_ = nullptr;
@@ -356,6 +357,9 @@ std::u16string BrowserActions::GetCleanTitleAndTooltipText(
 void BrowserActions::InitializeBrowserActions() {
   actions::ActionManager::Get().AddAction(
       actions::ActionItem::Builder().CopyAddressTo(&root_action_item_).Build());
+
+  RegisterAction(
+      actions::ActionItem::Builder().CopyAddressTo(&app_menu_root_).Build());
 
   InitializeSidePanelActions();
 
