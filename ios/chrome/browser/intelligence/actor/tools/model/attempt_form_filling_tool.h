@@ -25,6 +25,10 @@ class WebFrame;
 class WebState;
 }  // namespace web
 
+namespace autofill {
+class AutofillClientIOS;
+}  // namespace autofill
+
 namespace actor {
 
 class ActionTarget;
@@ -39,9 +43,7 @@ struct FormFillingRequest {
   FormFillingRequest(FormFillingRequest&&);
   FormFillingRequest& operator=(FormFillingRequest&&);
 
-  using RequestedData = autofill::ActorFormFillingRequestedData;
-
-  RequestedData requested_data{};
+  autofill::ActorFormFillingRequestedData requested_data{};
   std::string section_label;
   std::vector<ActionTarget> trigger_fields;
 };
@@ -69,6 +71,9 @@ class AttemptFormFillingTool : public WebActorTool {
                          std::vector<FormFillingRequest> requests,
                          ToolDelegate* tool_delegate);
 
+  // Returns the AutofillClientIOS associated with the target WebState.
+  autofill::AutofillClientIOS& GetAutofillClient() const;
+
   // Callback invoked when the target frame resolution for a request completes.
   void OnTargetFrameResolved(
       size_t request_idx,
@@ -89,6 +94,26 @@ class AttemptFormFillingTool : public WebActorTool {
   // Callback invoked when all autofill renderer IDs are retrieved.
   void OnAllAutofillRendererIdsRetrieved();
 
+  // Callback invoked when the form filling service returns suggestions.
+  void OnSuggestionsRetrieved(
+      base::expected<std::vector<autofill::ActorFormFillingRequest>,
+                     autofill::ActorFormFillingError> suggestions_result);
+
+  // Scrolls the web page to the form corresponding to the current request and
+  // prompts the user to select a suggestion.
+  void ScrollToCurrentRequestAndShowSuggestions();
+
+  // Callback invoked when the user has selected a suggestion or dismissed the
+  // suggestion selection interface.
+  void OnSuggestionSelected(
+      size_t index,
+      base::expected<std::optional<autofill::ActorSuggestion>,
+                     ToolExecutionResult> selected_suggestion);
+
+  // Invoked when the form filling service has completed filling suggestions.
+  void OnFormFillingComplete(
+      base::expected<std::string, autofill::ActorFormFillingError> result);
+
   // Helper method to handle execution failure. Runs the execution callback
   // with the error result and invalidates all pending callbacks.
   void FailWithResult(ToolExecutionResult result);
@@ -103,6 +128,9 @@ class AttemptFormFillingTool : public WebActorTool {
   // Delegate handling UI interactions.
   raw_ptr<ToolDelegate> tool_delegate_ = nullptr;
 
+  // The callback to run when tool execution completes or fails.
+  ToolExecutionCallback execute_callback_;
+
   // The list of requests to be sent to `ActorFormFillingService` to retrieve
   // suggestions.
   std::vector<autofill::ActorFormFillingService::FillRequest> service_requests_;
@@ -113,8 +141,11 @@ class AttemptFormFillingTool : public WebActorTool {
   std::map<std::string, std::vector<std::pair<size_t, size_t>>>
       frame_to_indices_map_;
 
-  // The callback to run when tool execution completes or fails.
-  ToolExecutionCallback execute_callback_;
+  // The list of suggestions selected by the user.
+  std::vector<autofill::ActorFormFillingSelection> selected_suggestions_;
+
+  // The index of the request currently being processed and presented.
+  size_t current_request_index_ = 0;
 
   base::WeakPtrFactory<AttemptFormFillingTool> weak_ptr_factory_{this};
 };

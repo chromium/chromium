@@ -4,13 +4,20 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/attempt_form_filling_tool.h"
 
+#import <optional>
+
 #import "base/barrier_closure.h"
 #import "base/functional/bind.h"
 #import "base/notimplemented.h"
+#import "base/notreached.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/types/expected.h"
+#import "components/autofill/core/browser/actor/actor_form_filling_service.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/attempt_form_filling_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
@@ -21,9 +28,9 @@
 namespace {
 
 // Enum type conversion for RequestedData.
-actor::FormFillingRequest::RequestedData MapRequestedData(
+autofill::ActorFormFillingRequestedData MapRequestedData(
     optimization_guide::proto::FormFillingRequest_RequestedData proto_enum) {
-  using RequestedData = actor::FormFillingRequest::RequestedData;
+  using RequestedData = autofill::ActorFormFillingRequestedData;
   switch (proto_enum) {
     case optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS:
       return RequestedData::kAddress;
@@ -73,6 +80,34 @@ std::optional<actor::FormFillingRequest> ToFormFillingRequest(
     request.trigger_fields.push_back(std::move(target));
   }
   return request;
+}
+
+// Converts an autofill service error into a tool execution result.
+actor::ToolExecutionResult FromServiceError(
+    autofill::ActorFormFillingError error) {
+  using enum autofill::ActorFormFillingError;
+  switch (error) {
+    case kAutofillNotAvailable:
+      return actor::ToolExecutionResult(
+          actor::mojom::ActionResultCode::kFormFillingAutofillUnavailable,
+          /*requires_page_stabilization=*/false, "Autofill is not available.");
+    case kNoSuggestions:
+      return actor::ToolExecutionResult(
+          actor::mojom::ActionResultCode::kFormFillingNoSuggestionsAvailable,
+          /*requires_page_stabilization=*/false,
+          "No autofill suggestions available for the fields.");
+    case kNoForm:
+      return actor::ToolExecutionResult(
+          actor::mojom::ActionResultCode::kObservedTargetElementDestroyed,
+          /*requires_page_stabilization=*/false,
+          "The form was not found or has changed.");
+    case kOther:
+      return actor::ToolExecutionResult(
+          actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+          /*requires_page_stabilization=*/false,
+          "An unknown error occurred in the form filling service.");
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -196,6 +231,14 @@ void AttemptFormFillingTool::Execute(ToolExecutionCallback callback) {
                          barrier_closure));
     }
   }
+}
+
+autofill::AutofillClientIOS& AttemptFormFillingTool::GetAutofillClient() const {
+  CHECK(web_state_);
+  autofill::AutofillClientIOS* client =
+      autofill::AutofillClientIOS::FromWebState(web_state_.get());
+  CHECK(client);
+  return *client;
 }
 
 void AttemptFormFillingTool::OnTargetFrameResolved(
@@ -331,9 +374,147 @@ void AttemptFormFillingTool::OnRequestRendererIdsResolved(
 }
 
 void AttemptFormFillingTool::OnAllAutofillRendererIdsRetrieved() {
-  // TODO(crbug.com/472287741): Call `GetSuggestions` on
-  // `ActorFormFillingService` and handle selections.
-  std::move(execute_callback_).Run(ToolExecutionResult::Ok());
+  if (!web_state_) {
+    FailWithResult(ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
+
+  // Run a final validation before passing the requests to
+  // `ActorFormFillingService`.
+  CHECK(!service_requests_.empty());
+  for (const autofill::ActorFormFillingService::FillRequest& service_request :
+       service_requests_) {
+    const std::vector<autofill::FieldGlobalId>& fields =
+        service_request.trigger_fields;
+    CHECK(!fields.empty());
+    for (const autofill::FieldGlobalId& field : fields) {
+      CHECK(!field.frame_token.is_empty());
+      CHECK_NE(field.renderer_id, autofill::FieldRendererId());
+    }
+  }
+
+  // Passing the requests to the service.
+  // TODO(crbug.com/472287741): Explore pre-click form. See
+  // `features::kGlicActorAutofillPreClick`.
+  ActorTaskFormFillingHandler* form_filling_handler =
+      tool_delegate_->GetActorTaskFormFillingHandler();
+  CHECK(form_filling_handler);
+  autofill::ActorFormFillingService* form_filling_service =
+      form_filling_handler->GetActorFormFillingService();
+  CHECK(form_filling_service);
+
+  form_filling_service->GetSuggestions(
+      GetAutofillClient(), std::move(service_requests_),
+      base::BindOnce(&AttemptFormFillingTool::OnSuggestionsRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AttemptFormFillingTool::OnSuggestionsRetrieved(
+    base::expected<std::vector<autofill::ActorFormFillingRequest>,
+                   autofill::ActorFormFillingError> suggestions_result) {
+  if (!web_state_) {
+    FailWithResult(ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
+
+  if (!suggestions_result.has_value()) {
+    FailWithResult(FromServiceError(suggestions_result.error()));
+    return;
+  }
+
+  std::vector<autofill::ActorFormFillingRequest> suggestions_result_values =
+      std::move(suggestions_result.value());
+  if (suggestions_result_values.empty()) {
+    FailWithResult(ToolExecutionResult(
+        mojom::ActionResultCode::kFormFillingNoSuggestionsAvailable));
+    return;
+  }
+
+  selected_suggestions_.resize(suggestions_result_values.size());
+
+  ActorTaskFormFillingHandler* form_filling_handler =
+      tool_delegate_->GetActorTaskFormFillingHandler();
+  CHECK(form_filling_handler);
+  form_filling_handler->RegisterAutofillSuggestionsAndCallback(
+      std::move(suggestions_result_values),
+      base::BindRepeating(&AttemptFormFillingTool::OnSuggestionSelected,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  current_request_index_ = 0;
+  ScrollToCurrentRequestAndShowSuggestions();
+}
+
+void AttemptFormFillingTool::ScrollToCurrentRequestAndShowSuggestions() {
+  CHECK(web_state_);
+  CHECK_LT(current_request_index_, selected_suggestions_.size());
+
+  ActorTaskFormFillingHandler* form_filling_handler =
+      tool_delegate_->GetActorTaskFormFillingHandler();
+  CHECK(form_filling_handler);
+  form_filling_handler->GetActorFormFillingService()->ScrollToForm(
+      GetAutofillClient(), current_request_index_);
+  form_filling_handler->PromptToSelectAutofillSuggestion(
+      current_request_index_);
+}
+
+void AttemptFormFillingTool::OnSuggestionSelected(
+    size_t index,
+    base::expected<std::optional<autofill::ActorSuggestion>,
+                   ToolExecutionResult> selected_suggestion) {
+  if (!web_state_) {
+    FailWithResult(ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
+  if (!selected_suggestion.has_value()) {
+    FailWithResult(selected_suggestion.error());
+    return;
+  }
+  if (!selected_suggestion.value().has_value()) {
+    FailWithResult(ToolExecutionResult(
+        mojom::ActionResultCode::kFormFillingDialogError,
+        /*requires_page_stabilization=*/false,
+        "Dialog response contains no selected suggestions."));
+    return;
+  }
+
+  // Forms should be shown sequentially.
+  CHECK_EQ(index, current_request_index_);
+
+  ActorTaskFormFillingHandler* form_filling_handler =
+      tool_delegate_->GetActorTaskFormFillingHandler();
+  CHECK(form_filling_handler);
+  autofill::ActorFormFillingService* service =
+      form_filling_handler->GetActorFormFillingService();
+  CHECK(service);
+  autofill::AutofillClientIOS& client = GetAutofillClient();
+  autofill::ActorSuggestionId suggestion_id = selected_suggestion.value()->id;
+
+  service->FillForm(client, index,
+                    autofill::ActorFormFillingSelection(suggestion_id));
+  selected_suggestions_[index].selected_suggestion_id = suggestion_id;
+
+  // If there are remaining requests, proceed with the next form in order.
+  if (++current_request_index_ < selected_suggestions_.size()) {
+    ScrollToCurrentRequestAndShowSuggestions();
+    return;
+  }
+
+  service->FillSuggestions(
+      client, std::move(selected_suggestions_),
+      base::BindOnce(&AttemptFormFillingTool::OnFormFillingComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AttemptFormFillingTool::OnFormFillingComplete(
+    base::expected<std::string, autofill::ActorFormFillingError> result) {
+  if (!result.has_value()) {
+    FailWithResult(FromServiceError(result.error()));
+    return;
+  }
+  std::move(execute_callback_)
+      .Run(ToolExecutionResult(mojom::ActionResultCode::kOk,
+                               /*requires_page_stabilization=*/true,
+                               result.value()));
 }
 
 void AttemptFormFillingTool::FailWithResult(ToolExecutionResult result) {
