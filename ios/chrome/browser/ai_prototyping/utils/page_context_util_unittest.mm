@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
 
+#import "base/base64.h"
 #import "base/files/file_util.h"
 #import "base/functional/callback_helpers.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -144,6 +145,30 @@ TEST_F(PageContextUtilTest, SaveAndLoadPageContext) {
 
   // Clean up
   EXPECT_TRUE(base::DeleteFile(result.file_path));
+}
+
+TEST_F(PageContextUtilTest, SaveAndLoadPageContextWithScreenshot) {
+  optimization_guide::proto::PageContext page_context;
+  page_context.set_url("https://www.example.com");
+  page_context.set_title("Example");
+  std::string dummy_png = "dummy_png_data";
+  page_context.set_tab_screenshot(base::Base64Encode(dummy_png));
+
+  SavePageContextResult result = SaveSerializedPageContextToDisk(page_context);
+  EXPECT_TRUE(result.success);
+  EXPECT_FALSE(result.file_path.empty());
+  EXPECT_TRUE(base::PathExists(result.file_path));
+  ASSERT_TRUE(result.screenshot_file_path.has_value());
+  EXPECT_TRUE(base::PathExists(*result.screenshot_file_path));
+
+  std::string screenshot_content;
+  EXPECT_TRUE(base::ReadFileToString(*result.screenshot_file_path,
+                                     &screenshot_content));
+  EXPECT_EQ(dummy_png, screenshot_content);
+
+  // Clean up
+  EXPECT_TRUE(base::DeleteFile(result.file_path));
+  EXPECT_TRUE(base::DeleteFile(*result.screenshot_file_path));
 }
 
 TEST_F(PageContextUtilTest, CreatePageContextWrapperWithRichExtraction) {

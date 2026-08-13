@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_AI_PROTOTYPING_UTILS_PAGE_CONTEXT_UTIL_H_
 #define IOS_CHROME_BROWSER_AI_PROTOTYPING_UTILS_PAGE_CONTEXT_UTIL_H_
 
+#import <optional>
+
 #import "base/files/file_path.h"
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -27,6 +29,8 @@ struct SavePageContextResult {
   bool success = false;
   // The path to the saved file.
   base::FilePath file_path;
+  // The path to the saved screenshot file, if any.
+  std::optional<base::FilePath> screenshot_file_path;
   // An error message if `success` is false.
   std::string error_message;
 

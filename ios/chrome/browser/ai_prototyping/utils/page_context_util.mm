@@ -7,6 +7,7 @@
 #import <utility>
 
 #import "base/apple/foundation_util.h"
+#import "base/base64.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/scoped_observation.h"
@@ -108,6 +109,19 @@ SavePageContextResult SaveProtoToPath(
         c_file_path, strerror(errno));
     return result;
   }
+
+  if (page_context.has_tab_screenshot()) {
+    std::string decoded_png;
+    if (base::Base64Decode(page_context.tab_screenshot(), &decoded_png)) {
+      base::FilePath screenshot_path =
+          file_path.InsertBeforeExtensionASCII("_screenshot")
+              .ReplaceExtension(".png");
+      if (base::WriteFile(screenshot_path, decoded_png)) {
+        result.screenshot_file_path = screenshot_path;
+      }
+    }
+  }
+
   result.success = true;
   result.file_path = file_path;
   return result;

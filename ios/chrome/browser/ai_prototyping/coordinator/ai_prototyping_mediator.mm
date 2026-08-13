@@ -759,6 +759,12 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
             [outputStr
                 appendFormat:@"Proto saved to:\n%@\n\n",
                              base::SysUTF8ToNSString(result.file_path.value())];
+            if (result.screenshot_file_path.has_value()) {
+              [outputStr
+                  appendFormat:@"Screenshot saved to:\n%@\n\n",
+                               base::SysUTF8ToNSString(
+                                   result.screenshot_file_path->value())];
+            }
           } else {
             [outputStr appendString:@"Warning: Failed to save to disk.\n\n"];
           }
@@ -791,6 +797,7 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
                                 completionCallback:std::move(completion)];
 
   _pageContextWrapper.shouldGetAnnotatedPageContent = YES;
+  _pageContextWrapper.shouldGetSnapshot = YES;
   [_pageContextWrapper populatePageContextFieldsAsync];
 }
 
