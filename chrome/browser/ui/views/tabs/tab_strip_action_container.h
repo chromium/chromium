@@ -23,6 +23,9 @@
 namespace gfx {
 class Insets;
 }
+namespace geic {
+class GeicButton;
+}
 namespace glic {
 class TabStripGlicActorTaskIcon;
 class GlicSplitButtonController;
@@ -103,7 +106,8 @@ class TabStripActionContainer : public views::View,
     return animation_session_.get();
   }
 
-  views::LabelButton* GetGlicButton() { return glic_button_; }
+  views::LabelButton* GetGlicButton();
+  geic::GeicButton* GetGeicButtonForTesting() { return geic_button_; }
 
   glic::TabStripGlicActorTaskIcon* glic_actor_task_icon() {
     return glic_actor_task_icon_;
@@ -168,6 +172,7 @@ class TabStripActionContainer : public views::View,
   // Update the Glic and GlicActor button borders when showing or hiding the
   // task icon container.
   void UpdateGlicActorButtonContainerBorders();
+  void UpdateGeicButtonBorders();
 
   void OnTabStripNudgeButtonTimeout(TabStripNudgeButton* button);
 
@@ -207,6 +212,7 @@ class TabStripActionContainer : public views::View,
   raw_ptr<views::Separator> separator_ = nullptr;
 
   raw_ptr<GlicAndActorButtonsContainer> glic_actor_button_container_ = nullptr;
+  raw_ptr<geic::GeicButton> geic_button_ = nullptr;
   raw_ptr<glic::TabStripGlicButton> glic_button_ = nullptr;
   raw_ptr<glic::TabStripGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
 

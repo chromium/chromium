@@ -12,6 +12,8 @@
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#include "chrome/browser/geic/geic_button.h"
+#include "chrome/browser/geic/geic_enabling.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
@@ -248,7 +250,14 @@ TabStripActionContainer::TabStripActionContainer(
       glic_actor_button_container_->SetVisible(false);
     }
     glic_button_ = AddChildView(CreateGlicButton());
+  } else if (geic::IsGeicEnabled(browser_window_interface_->GetProfile())) {
+    geic_button_ =
+        AddChildView(geic::GeicButton::Create(browser_window_interface_));
+  }
 
+  if (glic::GlicEnabling::IsProfileEligible(
+          browser_window_interface_->GetProfile()) ||
+      geic_button_) {
 #if !BUILDFLAG(IS_MAC)
     std::unique_ptr<views::Separator> separator =
         std::make_unique<views::Separator>();
@@ -273,6 +282,7 @@ TabStripActionContainer::TabStripActionContainer(
     separator_ = AddChildView(std::move(separator));
 #endif  // !BUILDFLAG(IS_MAC)
   }
+
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
@@ -293,6 +303,10 @@ TabStripActionContainer::~TabStripActionContainer() {
   if (glic_split_button_controller_) {
     glic_split_button_controller_->SetHorizontalTabsDelegate(nullptr);
   }
+}
+
+views::LabelButton* TabStripActionContainer::GetGlicButton() {
+  return glic_button_;
 }
 
 void TabStripActionContainer::AddedToWidget() {
@@ -520,6 +534,8 @@ void TabStripActionContainer::UpdateButtonBorders(
 
   if (glic_button_) {
     UpdateGlicActorButtonContainerBorders();
+  } else if (geic_button_) {
+    UpdateGeicButtonBorders();
   }
 }
 
@@ -720,6 +736,20 @@ void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
   glic_button_->SetBorder(views::CreateEmptyBorder(glic_border));
   // Force a background repaint to account for the new border insets.
   glic_button_->RefreshBackground();
+}
+
+void TabStripActionContainer::UpdateGeicButtonBorders() {
+  CHECK(geic_button_);
+  gfx::Insets border_insets = border_insets_;
+  int min_vertical_inset =
+      std::min(border_insets.top(), border_insets.bottom());
+  border_insets.set_top_bottom(min_vertical_inset, min_vertical_inset);
+
+  gfx::Insets geic_border = gfx::Insets().set_left_right(
+                                border_insets.top(), border_insets.bottom()) +
+                            border_insets;
+  geic_button_->SetBorder(views::CreateEmptyBorder(geic_border));
+  geic_button_->RefreshBackground();
 }
 
 void TabStripActionContainer::OnTabStripNudgeButtonTimeout(

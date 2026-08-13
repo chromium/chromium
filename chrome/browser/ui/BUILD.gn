@@ -630,6 +630,7 @@ static_library("ui") {
     "//chrome/browser/first_run",
     "//chrome/browser/first_run:impl",
     "//chrome/browser/gcm",
+    "//chrome/browser/geic",
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
     "//chrome/browser/google",
@@ -956,6 +957,7 @@ static_library("ui") {
       # target (views/frame/browser_view.h, etc.) that can't be split out yet.
       "//chrome/browser/ui/views/search_engines:impl",
       "//chrome/browser/download:impl",
+      "//chrome/browser/geic:ui",
       "//chrome/browser/ui/browser_web_contents_delegate",
 
       # bookmarks includes headers from //chrome/browser/ui (e.g. browser.h,
@@ -1361,6 +1363,7 @@ static_library("ui") {
       "//chrome/browser/custom_handlers",
       "//chrome/browser/device_api",
       "//chrome/browser/first_party_sets",
+      "//chrome/browser/geic:ui",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/browser_ui:glow",
       "//chrome/browser/glic/browser_ui:glow_controller",

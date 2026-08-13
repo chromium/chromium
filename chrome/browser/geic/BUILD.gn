@@ -2,6 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+
 source_set("geic") {
-  sources = []
+  sources = [
+    "geic_enabling.cc",
+    "geic_enabling.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:chrome_features",
+    "//chrome/common:non_code_constants",
+    "//content/public/common",
+  ]
+}
+
+if (!is_android) {
+  source_set("ui") {
+    sources = [
+      "geic_button.cc",
+      "geic_button.h",
+    ]
+    deps = [
+      ":geic",
+      "//chrome/app:branded_strings_grit",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views",
+      "//chrome/browser/ui/views/glic",
+      "//ui/base",
+      "//ui/base/metadata",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+  }
 }
