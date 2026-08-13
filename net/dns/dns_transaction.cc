@@ -1115,13 +1115,15 @@ class DnsTransactionImpl final : public DnsTransaction {
   // Records when an attempt was retried via TCP due to a truncation error.
   bool had_tcp_retry_ = false;
 
-  // Iterator to get the index of the DNS server for each search query.
-  std::unique_ptr<DnsServerIterator> dns_server_iterator_;
-
   base::OneShotTimer timer_;
   std::unique_ptr<base::ElapsedTimer> time_from_start_;
 
   base::SafeRef<ResolveContext> resolve_context_;
+
+  // Iterator to get the index of the DNS server for each search query.
+  // Declared after `resolve_context_` so `resolve_context_` outlives the iterator.
+  std::unique_ptr<DnsServerIterator> dns_server_iterator_;
+
   RequestPriority request_priority_ = DEFAULT_PRIORITY;
 
   THREAD_CHECKER(thread_checker_);

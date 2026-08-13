@@ -20,16 +20,18 @@ DnsServerIterator::DnsServerIterator(size_t nameservers_size,
     : times_returned_(nameservers_size, 0),
       max_times_returned_(max_times_returned),
       max_failures_(max_failures),
-      resolve_context_(resolve_context),
+      resolve_context_(resolve_context ? resolve_context->GetWeakPtr() : nullptr),
       next_index_(starting_index),
-      session_(session) {
+      session_(session ? session->GetWeakPtr() : nullptr) {
   CHECK(starting_index < nameservers_size || nameservers_size == 0);
 }
 
 DnsServerIterator::~DnsServerIterator() = default;
 
 size_t DohDnsServerIterator::GetNextAttemptIndex() {
-  DCHECK(resolve_context_->IsCurrentSession(session_));
+  CHECK(resolve_context_);
+  CHECK(session_);
+  DCHECK(resolve_context_->IsCurrentSession(session_.get()));
   DCHECK(AttemptAvailable());
 
   // Because AttemptAvailable() should always be true before running this
@@ -51,7 +53,7 @@ size_t DohDnsServerIterator::GetNextAttemptIndex() {
     // because we try every server regardless of availability.
     bool secure_or_available_server =
         secure_dns_mode_ == SecureDnsMode::kSecure ||
-        resolve_context_->GetDohServerAvailability(curr_index, session_);
+        resolve_context_->GetDohServerAvailability(curr_index, session_.get());
 
     // If we've tried this server |max_times_returned_| already, then we're done
     // with it. Similarly skip this server if it isn't available and we're not
@@ -86,15 +88,17 @@ size_t DohDnsServerIterator::GetNextAttemptIndex() {
 }
 
 bool DohDnsServerIterator::AttemptAvailable() {
-  if (!resolve_context_->IsCurrentSession(session_))
+  if (!resolve_context_ || !session_ ||
+      !resolve_context_->IsCurrentSession(session_.get())) {
     return false;
+  }
 
   for (size_t i = 0; i < times_returned_.size(); i++) {
     // If the DoH mode is "secure" then don't check GetDohServerAvailability()
     // because we try every server regardless of availability.
     bool secure_or_available_server =
         secure_dns_mode_ == SecureDnsMode::kSecure ||
-        resolve_context_->GetDohServerAvailability(i, session_);
+        resolve_context_->GetDohServerAvailability(i, session_.get());
 
     if (times_returned_[i] < max_times_returned_ && secure_or_available_server)
       return true;
@@ -103,7 +107,9 @@ bool DohDnsServerIterator::AttemptAvailable() {
 }
 
 size_t ClassicDnsServerIterator::GetNextAttemptIndex() {
-  DCHECK(resolve_context_->IsCurrentSession(session_));
+  CHECK(resolve_context_);
+  CHECK(session_);
+  DCHECK(resolve_context_->IsCurrentSession(session_.get()));
   DCHECK(AttemptAvailable());
 
   // Because AttemptAvailable() should always be true before running this
@@ -152,8 +158,10 @@ size_t ClassicDnsServerIterator::GetNextAttemptIndex() {
 }
 
 bool ClassicDnsServerIterator::AttemptAvailable() {
-  if (!resolve_context_->IsCurrentSession(session_))
+  if (!resolve_context_ || !session_ ||
+      !resolve_context_->IsCurrentSession(session_.get())) {
     return false;
+  }
 
   for (int i : times_returned_) {
     if (i < max_times_returned_)

@@ -255,6 +255,10 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  base::WeakPtr<const ResolveContext> GetWeakPtr() const {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   // Returns true if the current DoH configuration was added from the fallback
   // DoH nameservers as part of the fallback-to-default-provider functionality.
   bool IsDohConfigFromFallbackDohNameservers() const;
@@ -373,7 +377,7 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
 
   base::OneShotTimer doh_autoupgrade_success_metric_timer_;
 
-  base::WeakPtrFactory<ResolveContext> weak_ptr_factory_{this};
+  mutable base::WeakPtrFactory<ResolveContext> weak_ptr_factory_{this};
 };
 
 }  // namespace net
