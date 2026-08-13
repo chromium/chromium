@@ -100,39 +100,32 @@ note() {
   fi
 }
 
-g_temp_dir=
-cleanup() {
-  local status=${?}
+readonly exit_signals=("HUP" "INT" "QUIT" "TERM")
+handle_exit() {
+  local status="${?}"
 
-  trap - EXIT
-  trap '' HUP INT QUIT TERM
+  set +e
 
-  if [[ ${status} -ge 128 ]]; then
-    err "Caught signal $((${status} - 128))"
+  trap '' "${exit_signals[@]}"
+
+  if [[ ${status} -gt 128 && ${status} -lt 160 ]]; then
+    local sig=$((status - 128))
+    err "Child exited because of signal ${sig} ($(kill -l "${sig}"))"
   fi
-
-  if [[ -n "${g_temp_dir}" ]]; then
-    rm -rf "${g_temp_dir}"
-  fi
-
-  exit ${status}
 }
 
-ensure_temp_dir() {
-  if [[ -z "${g_temp_dir}" ]]; then
-    # Choose a template that won't be a dot directory.  Make it safe by
-    # removing leading hyphens, too.
-    local template="${ME}"
-    if [[ "${template}" =~ ^[-.]+(.*)$ ]]; then
-      template="${BASH_REMATCH[1]}"
-    fi
-    if [[ -z "${template}" ]]; then
-      template="keystone_install"
-    fi
+handle_signal() {
+  local signal="${1}"
 
-    g_temp_dir="$(mktemp -d -t "${template}")"
-    note "g_temp_dir = ${g_temp_dir}"
-  fi
+  set +e
+
+  trap - EXIT
+  trap '' "${exit_signals[@]}"
+
+  err "Received signal ${signal}"
+
+  trap - "${signal}"
+  kill -s "${signal}" "${$}"
 }
 
 # Returns 0 (true) if |symlink| exists, is a symbolic link, and appears
@@ -486,8 +479,10 @@ main() {
 
   # Early steps are critical.  Don't continue past any failure.
   set -e
-
-  trap cleanup EXIT HUP INT QUIT TERM
+  trap handle_exit EXIT
+  for exit_signal in "${exit_signals[@]}"; do
+    trap "handle_signal \"${exit_signal}\"" "${exit_signal}"
+  done
 
   readonly APP_DIR_NAMES=( "Google Chrome.app" "Google Chrome Beta.app"
                            "Google Chrome Dev.app" "Google Chrome Canary.app" )
@@ -850,13 +845,6 @@ main() {
   fi
 
   note "rsyncs complete"
-
-  if [[ -n "${g_temp_dir}" ]]; then
-    # The temporary directory, if any, is no longer needed.
-    rm -rf "${g_temp_dir}" 2> /dev/null || true
-    g_temp_dir=
-    note "g_temp_dir = ${g_temp_dir}"
-  fi
 
   # If necessary, touch the outermost .app so that it appears to the outside
   # world that something was done to the bundle.  This will cause
