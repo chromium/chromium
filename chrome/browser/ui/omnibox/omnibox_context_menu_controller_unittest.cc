@@ -493,8 +493,11 @@ TEST_F(OmniboxContextMenuControllerTest,
           .value();
   EXPECT_FALSE(controller()->menu_model()->GetMinorIconAt(index).IsEmpty());
 
-  // 5. Verify: Left icon (tab icon) is present
-  EXPECT_FALSE(controller()->menu_model()->GetIconAt(index).IsEmpty());
+  // 5. Verify: Left icon has the screensaver auto vector icon
+  ui::ImageModel icon = controller()->menu_model()->GetIconAt(index);
+  EXPECT_FALSE(icon.IsEmpty());
+  EXPECT_TRUE(icon.IsVectorIcon());
+  EXPECT_EQ(icon.GetVectorIcon().vector_icon(), &kScreensaverAutoIcon);
 }
 
 TEST_F(OmniboxContextMenuControllerTest,

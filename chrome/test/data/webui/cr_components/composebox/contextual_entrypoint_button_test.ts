@@ -291,7 +291,7 @@ suite('ContextualEntrypointButton', () => {
       // STS icon is shown in coins slot
       const coinIcon = $$(entrypointButton, '.sts-active-coin');
       assertTrue(!!coinIcon);
-      assertEquals('composebox:shareTabs', coinIcon.getAttribute('icon'));
+      assertEquals('composebox:screensaverAuto', coinIcon.getAttribute('icon'));
       assertEquals(
           entrypointButton.i18n('stsMegaplusShareRelevantOpenTabs'),
           coinIcon.getAttribute('title'));
@@ -325,7 +325,7 @@ suite('ContextualEntrypointButton', () => {
       // STS icon is shown in coins slot
       const coinIcon = $$(entrypointButton, '.sts-active-coin');
       assertTrue(!!coinIcon);
-      assertEquals('composebox:shareTabs', coinIcon.getAttribute('icon'));
+      assertEquals('composebox:screensaverAuto', coinIcon.getAttribute('icon'));
       assertEquals(
           entrypointButton.i18n('stsMegaplusShareRelevantOpenTabs'),
           coinIcon.getAttribute('title'));

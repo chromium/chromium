@@ -31,7 +31,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
              this.i18n('searchBoxHintMultimodal') : this.i18n('addContext')}
         </span>
         ${this.smartTabSharingActive ? html`
-          <cr-icon class="sts-active-coin" icon="composebox:shareTabs"
+          <cr-icon class="sts-active-coin" icon="composebox:screensaverAuto"
               aria-hidden="true"
               title="${this.i18n('stsMegaplusShareRelevantOpenTabs')}"></cr-icon>
         ` : this.tabFaviconChipsToCoinsEnabled_ &&
@@ -57,7 +57,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
             aria-hidden="true"
             @animationend="${this.onIconAnimationend_}"></cr-icon>
         ${this.smartTabSharingActive ? html`
-          <cr-icon class="sts-active-coin" icon="composebox:shareTabs"
+          <cr-icon class="sts-active-coin" icon="composebox:screensaverAuto"
               aria-hidden="true"
               title="${this.i18n('stsMegaplusShareRelevantOpenTabs')}"></cr-icon>
         ` : html`
