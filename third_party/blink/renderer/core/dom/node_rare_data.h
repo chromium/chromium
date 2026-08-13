@@ -128,6 +128,7 @@ class ScrollTimelineHashSet final
 // marked by [[nodiscard]] so that you do not accidentally forget to do so.
 class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   friend class NodeRareDataTest;
+  friend class Element;
 
  public:
   using PassKey = base::PassKey<NodeRareData>;
@@ -614,7 +615,8 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
     kFocusgroupTokenList = 50,
     kLastSentUnboundedBounds = 51,
     kUnboundedEventTask = 52,
-    kNumFields = 53,
+    kCanvasTransform = 53,
+    kNumFields = 54,
   };
 
   inline const Member<NodeRareDataField>* ArrayBase() const {

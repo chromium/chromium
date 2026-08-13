@@ -79,6 +79,7 @@
 namespace gfx {
 class QuadF;
 class RectF;
+class Transform;
 class Vector2dF;
 }  // namespace gfx
 
@@ -112,6 +113,8 @@ class CustomElementRegistry;
 class DisplayLockContext;
 class DisplayStyle;
 class Document;
+class DOMMatrix;
+class DOMMatrixInit;
 class DOMPoint;
 class DOMPointInit;
 class DOMQuad;
@@ -1170,6 +1173,13 @@ class CORE_EXPORT Element : public ContainerNode {
   bool IsCanvasOrInCanvasSubtree() const;
   // Called when `IsInCanvasSubtree()` changes.
   virtual void DidChangeIsInCanvasSubtree();
+
+  DOMMatrix* getCanvasTransform();
+  void setCanvasTransform(DOMMatrixInit* matrix,
+                          ExceptionState& exception_state);
+  bool HasCanvasTransform() const;
+  const gfx::Transform* GetCanvasTransformInternal() const;
+  void SetCanvasTransformInternal(const gfx::Transform& transform);
 
   bool IsDefined() const {
     // An element whose custom element state is "uncustomized" or "custom"

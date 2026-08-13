@@ -147,6 +147,7 @@ namespace http://www.w3.org/1999/xhtml
     property getAttributeNodeNS
     property getBoundingClientRect
     property getBoxQuads
+    property getCanvasTransform
     property getClientRects
     property getElementsByClassName
     property getElementsByTagName
@@ -365,6 +366,7 @@ namespace http://www.w3.org/1999/xhtml
     property setAttributeNS
     property setAttributeNode
     property setAttributeNodeNS
+    property setCanvasTransform
     property setHTML
     property setHTMLUnsafe
     property setPointerCapture
@@ -1533,6 +1535,7 @@ namespace http://www.w3.org/2000/svg
     property getAttributeNodeNS
     property getBoundingClientRect
     property getBoxQuads
+    property getCanvasTransform
     property getClientRects
     property getElementsByClassName
     property getElementsByTagName
@@ -1735,6 +1738,7 @@ namespace http://www.w3.org/2000/svg
     property setAttributeNS
     property setAttributeNode
     property setAttributeNodeNS
+    property setCanvasTransform
     property setHTML
     property setHTMLUnsafe
     property setPointerCapture

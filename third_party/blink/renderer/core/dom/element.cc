@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_box_quad_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_convert_coordinate_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_animations_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
@@ -187,6 +188,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
 #include "third_party/blink/renderer/core/geometry/dom_quad.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
@@ -325,6 +327,7 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -4468,6 +4471,42 @@ void Element::DidChangeIsInCanvasSubtree() {
         .InvalidateDisplayItemClient(*layout_object,
                                      PaintInvalidationReason::kUncacheable);
   }
+}
+
+DOMMatrix* Element::getCanvasTransform() {
+  if (const auto* transform = GetCanvasTransformInternal()) {
+    return MakeGarbageCollected<DOMMatrix>(*transform,
+                                           transform->Is2dTransform());
+  }
+  return DOMMatrix::Create();
+}
+
+void Element::setCanvasTransform(DOMMatrixInit* matrix,
+                                 ExceptionState& exception_state) {
+  DOMMatrix* dom_matrix = DOMMatrix::fromMatrix(matrix, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  CHECK(dom_matrix);
+  gfx::Transform transform = dom_matrix->Matrix();
+  SetCanvasTransformInternal(transform);
+}
+
+const gfx::Transform* Element::GetCanvasTransformInternal() const {
+  if (const NodeRareData* data = RareData()) {
+    return data->GetWrappedField<gfx::Transform>(
+        NodeRareData::FieldId::kCanvasTransform);
+  }
+  return nullptr;
+}
+
+bool Element::HasCanvasTransform() const {
+  return GetCanvasTransformInternal() != nullptr;
+}
+
+void Element::SetCanvasTransformInternal(const gfx::Transform& transform) {
+  data_ = EnsureRareData().SetWrappedField<gfx::Transform>(
+      NodeRareData::FieldId::kCanvasTransform, transform);
 }
 
 void Element::RemovedFrom(ContainerNode& insertion_point) {

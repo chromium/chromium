@@ -5069,5 +5069,24 @@
       "abotella@igalia.com"
     ],
     "expires": "Dec 31, 2026"
+  },
+  {
+    "prefix": "element-canvas-transform-disabled",
+    "owners": [
+      "pdr@chromium.org",
+      "paint-dev@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/html/canvas/element/manual/draw-element-image/css-transform-on-div.tentative.html"
+    ],
+    "args": [
+      "--disable-blink-features=ElementCanvasTransform"
+    ],
+    "expires": "Jan 1, 2027"
   }
 ]
