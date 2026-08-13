@@ -420,9 +420,7 @@ fn test_packet_conversion() {
 #[gtest(SymphoniaGlueTest, ZeroFrames)]
 fn test_zero_frames() {
     const SAMPLE_RATE: u32 = 44100;
-    // We use 5.1 channels (6 channels) to explicitly test the 3+ channels
-    // interleaving path in Symphonia, which had a bug where it panicked
-    // if num_frames == 0.
+    // Test 5.1 channels (6 channels) zero-length frame handling in Symphonia 0.6.
     let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_MPEG_5P1_D);
     let audio_buf = AudioBuffer::<f32>::new(spec, 0);
 
@@ -434,44 +432,4 @@ fn test_zero_frames() {
 
     expect_eq!(result.num_frames, 0);
     expect_true!(result.data.is_empty());
-}
-
-#[gtest(SymphoniaGlueTest, UnpackXiphVorbisExtradata)]
-fn test_unpack_xiph_vorbis_extradata() {
-    use symphonia_glue::unpack_xiph_vorbis_extradata;
-
-    // A valid Xiph-packed buffer with 3 headers.
-    // [0]: number of headers - 1 (2)
-    // [1]: length of first header (3)
-    // [2]: length of second header (4)
-    // [3..6]: Header 1
-    // [6..10]: Header 2
-    // [10..]: Header 3
-    let valid_xiph: Vec<u8> = vec![
-        2, 3, 4, // Header information
-        1, 1, 1, // Header 1 (Identification)
-        2, 2, 2, 2, // Header 2 (Comment)
-        3, 3, 3, 3, 3, // Header 3 (Setup)
-    ];
-
-    let unpacked = unpack_xiph_vorbis_extradata(&valid_xiph).expect("Should successfully unpack");
-    // We expect Header 1 (Ident) and Header 3 (Setup) concatenated sequentially.
-    let expected: Vec<u8> = vec![1, 1, 1, 3, 3, 3, 3, 3];
-    expect_eq!(unpacked, expected);
-
-    // Empty extradata should return None.
-    expect_true!(unpack_xiph_vorbis_extradata(&[]).is_err());
-
-    // Not Xiph-lacing (first byte != 2) should return None.
-    let non_xiph: Vec<u8> = vec![1, 2, 3, 4, 5];
-    expect_true!(unpack_xiph_vorbis_extradata(&non_xiph).is_err());
-
-    // Truncated lengths (expecting more bytes than available) should return None.
-    let truncated_lengths: Vec<u8> = vec![2, 255, 255]; // Needs more bytes to finish length parsing
-    expect_true!(unpack_xiph_vorbis_extradata(&truncated_lengths).is_err());
-
-    // Truncated payload (lengths read fine, but payload is missing) should return
-    // None.
-    let truncated_payload: Vec<u8> = vec![2, 3, 4, 1, 1]; // Misses payload bytes
-    expect_true!(unpack_xiph_vorbis_extradata(&truncated_payload).is_err());
 }

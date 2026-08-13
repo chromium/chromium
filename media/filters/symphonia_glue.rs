@@ -154,7 +154,8 @@ pub mod ffi {
         DecoderError,
         /// The requested codec is not supported by the bridge.
         UnsupportedCodec,
-        /// Failed to unpack Xiph lacing for Vorbis extradata.
+        /// Deprecated: Vorbis extradata unpacking is now handled internally by
+        /// Symphonia.
         XiphVorbisUnpackError,
         /// Symphonia returned an 'Unsupported' error during initialization.
         SymphoniaUnsupported,
@@ -434,82 +435,6 @@ impl<'a> From<&ffi::SymphoniaPacket<'a>> for Packet {
     }
 }
 
-const XIPH_LACING_MAX_VALUE: u8 = 255;
-const VORBIS_NUM_HEADERS: u8 = 3;
-const VORBIS_NUM_LACED_HEADERS: u8 = VORBIS_NUM_HEADERS - 1;
-
-/// Unpacks Vorbis extradata packed in the Xiph lacing format.
-///
-/// WebM and Matroska containers use the Xiph lacing format for Vorbis
-/// extradata, where a single `CodecPrivate` buffer contains all three Vorbis
-/// headers: the Identification, Comment, and Setup headers.
-///
-/// Symphonia's `symphonia-codec-vorbis` decoder does not understand the Xiph
-/// packaging layer. It expects only the raw Identification and Setup headers
-/// laid out sequentially. This function unpacks the Xiph format and returns
-/// a new vector containing only those two required headers.
-pub fn unpack_xiph_vorbis_extradata(extradata: &[u8]) -> Result<Vec<u8>, String> {
-    // The first byte of the data block specifies the number of headers minus one.
-    if extradata.is_empty() {
-        return Err("extradata is empty".into());
-    }
-    if extradata[0] != VORBIS_NUM_LACED_HEADERS {
-        return Err(format!(
-            "expected {} headers but found {}",
-            VORBIS_NUM_LACED_HEADERS + 1,
-            extradata[0] + 1
-        ));
-    }
-
-    let mut offset = 1;
-    let mut lengths = Vec::new();
-
-    // The Identification and Comment headers have their lengths laced. The length
-    // of the Setup header is inferred from the remaining buffer size.
-    for _ in 0..VORBIS_NUM_LACED_HEADERS {
-        let mut length = 0;
-        let mut reached_end = false;
-        while offset < extradata.len() {
-            let val = extradata[offset];
-            offset += 1;
-            length += val as usize;
-
-            // Reached the final segment.
-            if val < XIPH_LACING_MAX_VALUE {
-                reached_end = true;
-                break;
-            }
-        }
-        if !reached_end {
-            return Err("truncated length lacing".into());
-        }
-        lengths.push(length);
-    }
-
-    if offset >= extradata.len() {
-        return Err("no data remains after reading lacing".into());
-    }
-
-    let ident_len = lengths[0];
-    let comment_len = lengths[1];
-    // Header contained invalid length.
-    if offset + ident_len + comment_len > extradata.len() {
-        return Err("header lengths exceed buffer size".into());
-    }
-
-    let setup_len = extradata.len() - offset - ident_len - comment_len;
-
-    let ident_start = offset;
-    let comment_start = ident_start + ident_len;
-    let setup_start = comment_start + comment_len;
-
-    let mut unpacked = Vec::with_capacity(ident_len + setup_len);
-    unpacked.extend_from_slice(&extradata[ident_start..ident_start + ident_len]);
-    unpacked.extend_from_slice(&extradata[setup_start..setup_start + setup_len]);
-
-    Ok(unpacked)
-}
-
 /// Trims FLAC extradata that may contain a "fLaC" marker and/or a metadata
 /// block header for the STREAMINFO block. Symphonia's FLAC decoder expects only
 /// the raw 34-byte STREAMINFO block for initialization.
@@ -562,7 +487,6 @@ pub fn get_streaminfo_payload(extradata: &[u8]) -> &[u8] {
 #[derive(Debug, Clone)]
 pub enum SymphoniaInitError {
     UnsupportedCodec(String),
-    XiphVorbisUnpackError(String),
     SymphoniaError(ffi::SymphoniaInitStatus, String),
 }
 
@@ -571,9 +495,6 @@ impl From<SymphoniaInitError> for (ffi::SymphoniaInitStatus, String) {
         match err {
             SymphoniaInitError::UnsupportedCodec(s) => {
                 (ffi::SymphoniaInitStatus::UnsupportedCodec, s)
-            }
-            SymphoniaInitError::XiphVorbisUnpackError(s) => {
-                (ffi::SymphoniaInitStatus::XiphVorbisUnpackError, s)
             }
             SymphoniaInitError::SymphoniaError(status, s) => (status, s),
         }
@@ -596,8 +517,6 @@ fn to_symphonia_init_status(err: &Error) -> ffi::SymphoniaInitStatus {
 /// and Symphonia's decoders. Different codecs have different requirements for
 /// initialization:
 ///
-/// * **Vorbis**: Unpacks Xiph-laced extradata into raw identification and setup
-///   headers.
 /// * **FLAC**: Extracts the verified STREAMINFO payload from potentially
 ///   wrapped or marker-prefixed data.
 /// * **Others**: Returns a simple copy of the non-empty raw data.
@@ -610,26 +529,6 @@ fn get_extra_data(
     raw_extra_data: &[u8],
 ) -> Result<Option<Box<[u8]>>, SymphoniaInitError> {
     match codec {
-        // Chromium's demuxers often pack Vorbis extradata using the Xiph format, which
-        // is a byproduct of using FFmpeg. We unpack the Xiph format here if we detect it, dropping
-        // the comment header, as Symphonia expects only the raw identification and setup
-        // headers.
-        ffi::SymphoniaAudioCodec::Vorbis => match unpack_xiph_vorbis_extradata(raw_extra_data) {
-            Ok(unpacked) => Ok(Some(unpacked.into_boxed_slice())),
-            Err(err) => {
-                // It could be that this stream is not Xiph packed at all (which is fine,
-                // Symphonia might handle it natively if it's already unwrapped). We only log
-                // an error if we actually attempted to parse it as Xiph but failed.
-                if !raw_extra_data.is_empty() && raw_extra_data[0] == VORBIS_NUM_LACED_HEADERS {
-                    return Err(SymphoniaInitError::XiphVorbisUnpackError(format!(
-                        "failed to unpack xiph vorbis extradata: {}",
-                        err
-                    )));
-                }
-                Ok((!raw_extra_data.is_empty()).then(|| Box::from(raw_extra_data)))
-            }
-        },
-
         // Depending on what demuxer implementation was used (and in the case of WebCodecs we may
         // have no idea), the extra data may need to be stripped of the FLAC magic marker
         // and / or the metadata block header.
@@ -765,26 +664,6 @@ pub fn create_audio_buffer(
         Channels::Positioned(pos) => pos.bits(),
         _ => 0,
     };
-
-    // If there are no frames, avoid passing the buffer to Symphonia's
-    // `copy_interleaved_ref`. There is a bug in Symphonia's
-    // `copy_interleaved_typed` where if `n_channels > 2` and `n_frames == 0`,
-    // it will panic trying to slice a zero-length destination buffer with
-    // `dst_buf[ch..]`.
-    //
-    // Tracked upstream in https://github.com/pdeljanov/Symphonia/issues/455.
-    // When resolved upstream and a release is issued with the fix, we can
-    // remove this workaround.
-    if num_frames == 0 {
-        return Ok(ffi::SymphoniaAudioBuffer {
-            data: Vec::new(),
-            sample_format: sample_buffer.sample_format(),
-            sample_rate,
-            num_frames,
-            channel_count,
-            channel_mask: channel_mask.try_into().unwrap(),
-        });
-    }
 
     // Populate the sample byte buffer.
     sample_buffer.copy_from_buffer(buffer_ref);
