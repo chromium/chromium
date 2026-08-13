@@ -89,6 +89,12 @@ bool GlicView::CanDragEnter(content::WebContents* source,
                                       features::kGlicWebDragAndDropFileUpload));
 }
 
+void GlicView::ContentsZoomChange(bool zoom_in) {
+  if (zoom_changed_callback_) {
+    zoom_changed_callback_.Run(zoom_in);
+  }
+}
+
 void GlicView::SetWebContents(content::WebContents* new_web_contents) {
   // Clear the delegate on the old WebContents if this view is currently the
   // delegate. Checks `GetDelegate() == this` to avoid clearing the delegate if

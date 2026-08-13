@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -81,6 +82,17 @@ std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
   auto glic_view = std::make_unique<GlicView>(
       profile, GlicWidget::GetInitialSize(),
       panel_focus_dependent_hotkey_manager_->GetAcceleratorTargetWeakPtr());
+
+  glic_view->SetZoomChangedCallback(base::BindRepeating(
+      [](base::WeakPtr<LocalHotkeyManager::Panel> panel, bool zoom_in) {
+        if (!panel) {
+          return;
+        }
+        panel->Zoom(zoom_in ? mojom::ZoomAction::kZoomIn
+                            : mojom::ZoomAction::kZoomOut);
+      },
+      weak_ptr_factory_.GetWeakPtr()));
+
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_view->UpdateBackgroundColor();
   glic_view_ = glic_view->GetWeakPtr();

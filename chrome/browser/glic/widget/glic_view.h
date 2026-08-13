@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -35,6 +36,12 @@ class GlicView : public views::WebView {
   ~GlicView() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWebViewElementIdForTesting);
+
+  using ZoomCallback = base::RepeatingCallback<void(bool /*zoom_in*/)>;
+  void SetZoomChangedCallback(ZoomCallback callback) {
+    zoom_changed_callback_ = std::move(callback);
+  }
+
   // content::WebContentsDelegate:
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
@@ -48,6 +55,7 @@ class GlicView : public views::WebView {
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
                     blink::DragOperationsMask operations_allowed) override;
+  void ContentsZoomChange(bool zoom_in) override;
 
   // views::WebView:
   void SetWebContents(content::WebContents* web_contents) override;
@@ -87,6 +95,7 @@ class GlicView : public views::WebView {
   SkRegion draggable_region_;
   SkRegion webview_draggable_region_;
 
+  ZoomCallback zoom_changed_callback_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   base::WeakPtrFactory<GlicView> weak_ptr_factory_{this};
 };

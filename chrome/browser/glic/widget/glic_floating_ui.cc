@@ -139,6 +139,17 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
   auto glic_view = std::make_unique<GlicView>(
       profile_, initial_bounds.size(),
       panel_focus_dependent_hotkey_manager_->GetAcceleratorTargetWeakPtr());
+
+  glic_view->SetZoomChangedCallback(base::BindRepeating(
+      [](base::WeakPtr<LocalHotkeyManager::Panel> panel, bool zoom_in) {
+        if (!panel) {
+          return;
+        }
+        panel->Zoom(zoom_in ? mojom::ZoomAction::kZoomIn
+                            : mojom::ZoomAction::kZoomOut);
+      },
+      weak_ptr_factory_.GetWeakPtr()));
+
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_delegate_ =
       GlicWidget::CreateWidgetDelegate(std::move(glic_view), user_resizable_);
