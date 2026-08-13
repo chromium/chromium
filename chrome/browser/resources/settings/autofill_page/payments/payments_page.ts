@@ -50,7 +50,7 @@ import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments_manager_proxy.js';
 import {getTemplate} from './payments_page.html.js';
 
-type DotsCardMenuiClickEvent = CustomEvent<{
+type DotsCardMenuClickEvent = CustomEvent<{
   creditCard: chrome.autofillPrivate.CreditCardEntry,
   anchorElement: HTMLElement,
 }>;
@@ -62,7 +62,7 @@ type RemoteCardMenuClickEvent = CustomEvent<{
 
 declare global {
   interface HTMLElementEventMap {
-    'dots-card-menu-click': DotsCardMenuiClickEvent;
+    'dots-card-menu-click': DotsCardMenuClickEvent;
     'remote-card-menu-click': RemoteCardMenuClickEvent;
   }
 }
@@ -375,7 +375,7 @@ export class SettingsPaymentsPageElement extends
   /**
    * Opens the credit card action menu.
    */
-  private onCreditCardDotsMenuClick_(e: DotsCardMenuiClickEvent) {
+  private onCreditCardDotsMenuClick_(e: DotsCardMenuClickEvent) {
     // Copy item so dialog won't update model on cancel.
     this.activeCreditCard_ = e.detail.creditCard;
 
