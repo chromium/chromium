@@ -1053,7 +1053,25 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     /** Returns the {@link LoadingFullscreenCoordinator} to control loading over the activity. */
     public @Nullable LoadingFullscreenCoordinator getLoadingFullscreenCoordinator() {
+        if (ChromeFeatureList.sAndroidStartupImprovements.isEnabled()
+                && mLoadingFullscreenCoordinator == null) {
+            initLoadingFullscreenCoordinator();
+        }
         return mLoadingFullscreenCoordinator;
+    }
+
+    private void initLoadingFullscreenCoordinator() {
+        ViewStub loadingStub = mActivity.findViewById(R.id.loading_stub);
+        assert loadingStub != null;
+
+        loadingStub.setLayoutResource(R.layout.loading_fullscreen);
+        loadingStub.inflate();
+
+        mLoadingFullscreenCoordinator =
+                new LoadingFullscreenCoordinator(
+                        mActivity,
+                        getScrimManager(),
+                        mActivity.findViewById(R.id.loading_fullscreen_container));
     }
 
     /** Show navigation history sheet. */
@@ -1103,17 +1121,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         super.onInflationComplete();
 
-        ViewStub loadingStub = mActivity.findViewById(R.id.loading_stub);
-        assert loadingStub != null;
-
-        loadingStub.setLayoutResource(R.layout.loading_fullscreen);
-        loadingStub.inflate();
-
-        mLoadingFullscreenCoordinator =
-                new LoadingFullscreenCoordinator(
-                        mActivity,
-                        getScrimManager(),
-                        mActivity.findViewById(R.id.loading_fullscreen_container));
+        if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
+            initLoadingFullscreenCoordinator();
+        }
 
         if (OpenInAppUtils.isOpenInAppAvailable()) {
             var omniboxChipManager = mOmniboxChipManager;
