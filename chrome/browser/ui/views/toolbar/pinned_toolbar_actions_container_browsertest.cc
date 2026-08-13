@@ -689,45 +689,36 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerTest, StatusIndicatorTest) {
   EXPECT_EQ(status_indicator->GetVisible(), false);
 }
 
-// TODO(crbug.com/544873874): Disabled on ChromeOS for reland. Re-enabled with
-// fix in follow-up CL.
-// TODO(crbug.com/545510450): Disabled on Win10 Tests x64.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_MetricsRecordedForPinnableActions \
-  DISABLED_MetricsRecordedForPinnableActions
-#else
-#define MAYBE_MetricsRecordedForPinnableActions \
-  MetricsRecordedForPinnableActions
-#endif
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerTest,
-                       MAYBE_MetricsRecordedForPinnableActions) {
+                       MetricsRecordedForPinnableActions) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   // Verify all pinnable buttons have a suffix listed in actions.xml.
   actions::ActionItemVector action_items;
   actions::ActionManager::Get().GetActions(
       action_items, BrowserActions::From(browser())->root_action_item());
-  size_t pinnable_count =
-      std::ranges::count_if(action_items, [](actions::ActionItem* action) {
-        return action->GetProperty(actions::kActionItemPinnableKey) ==
-               std::to_underlying(actions::ActionPinnableState::kPinnable);
-      });
+
   const auto pinnable_action_variants = base::test::ReadActionVariantsForAction(
       "Actions.PinnedToolbarButtonActivation", ".");
-  EXPECT_EQ(1U, pinnable_action_variants.size());
-  // In browser tests:
-  // * Only one of history or history clusters is registered.
-  // * The split view action is not available via `root_action_item()`.
-  // * Unlike in unit tests, desktop browser features (e.g. Lens Overlay and
-  //   Contextual Tasks) are active and registered in `root_action_item()`.
-  // * Tabs from other devices is not registered as the feature is disabled
-  //   by default.
-  // Overall, this results in a net deduction of 2 from the 27 action variants.
-  size_t expected_pinnable_count = pinnable_action_variants[0].size() - 2;
-#if BUILDFLAG(IS_CHROMEOS)
-  // Downloads action item does not exist for ChromeOS.
-  expected_pinnable_count -= 1;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(pinnable_count, expected_pinnable_count);
+  ASSERT_EQ(1U, pinnable_action_variants.size());
+
+  size_t checked_pinnable_count = 0;
+  for (actions::ActionItem* action : action_items) {
+    if (action->GetProperty(actions::kActionItemPinnableKey) !=
+        std::to_underlying(actions::ActionPinnableState::kPinnable)) {
+      continue;
+    }
+    auto action_id = action->GetActionId();
+    ASSERT_TRUE(action_id.has_value());
+    auto action_id_string =
+        actions::ActionIdMap::ActionIdToString(action_id.value());
+    ASSERT_TRUE(action_id_string.has_value());
+    EXPECT_TRUE(pinnable_action_variants[0].contains(action_id_string.value()))
+        << "Pinnable action " << action_id_string.value()
+        << " is missing from Actions.PinnedToolbarButtonActivation variants in "
+           "actions.xml";
+    checked_pinnable_count++;
+  }
+  EXPECT_GT(checked_pinnable_count, 0U);
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerTest,

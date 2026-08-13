@@ -44,6 +44,8 @@ should be able to be added at any place in this file.
   <variant name=".kActionPrint" summary="Print action"/>
   <variant name=".kActionQrCodeGenerator" summary="QR code generator action"/>
   <variant name=".kActionRouteMedia" summary="Media router action"/>
+  <variant name=".kActionSendSharedTabGroupFeedback"
+      summary="Send shared tab group feedback action"/>
   <variant name=".kActionSendTabToSelf" summary="Send tab to self action"/>
   <variant name=".kActionShowAddresses" summary="Show addresses action"/>
   <variant name=".kActionShowAddressesBubbleOrPage"
@@ -61,6 +63,8 @@ should be able to be added at any place in this file.
   <variant name=".kActionShowTranslate" summary="Show translate action"/>
   <variant name=".kActionSidePanelShowBookmarks"
       summary="Show bookmarks side panel action"/>
+  <variant name=".kActionSidePanelShowContextualTasks"
+      summary="Show contextual tasks side panel action"/>
   <variant name=".kActionSidePanelShowHistory"
       summary="Show history side panel action"/>
   <variant name=".kActionSidePanelShowHistoryCluster"
