@@ -115,8 +115,10 @@ fn compile_probe(rustc_bootstrap: bool) -> bool {
     let rustc_wrapper = env::var_os("RUSTC_WRAPPER").filter(|wrapper| !wrapper.is_empty());
     let rustc_workspace_wrapper =
         env::var_os("RUSTC_WORKSPACE_WRAPPER").filter(|wrapper| !wrapper.is_empty());
-    let mut rustc =
-        rustc_wrapper.into_iter().chain(rustc_workspace_wrapper).chain(iter::once(rustc));
+    let mut rustc = rustc_wrapper
+        .into_iter()
+        .chain(rustc_workspace_wrapper)
+        .chain(iter::once(rustc));
     let mut cmd = Command::new(rustc.next().unwrap());
     cmd.args(rustc);
 

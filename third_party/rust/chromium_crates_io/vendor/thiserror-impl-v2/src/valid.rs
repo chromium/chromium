@@ -156,19 +156,28 @@ fn check_field_attrs(fields: &[Field]) -> Result<()> {
     for field in fields {
         if let Some(from) = field.attrs.from {
             if from_field.is_some() {
-                return Err(Error::new_spanned(from.original, "duplicate #[from] attribute"));
+                return Err(Error::new_spanned(
+                    from.original,
+                    "duplicate #[from] attribute",
+                ));
             }
             from_field = Some(field);
         }
         if let Some(source) = field.attrs.source {
             if source_field.is_some() {
-                return Err(Error::new_spanned(source.original, "duplicate #[source] attribute"));
+                return Err(Error::new_spanned(
+                    source.original,
+                    "duplicate #[source] attribute",
+                ));
             }
             source_field = Some(field);
         }
         if let Some(backtrace) = field.attrs.backtrace {
             if backtrace_field.is_some() {
-                return Err(Error::new_spanned(backtrace, "duplicate #[backtrace] attribute"));
+                return Err(Error::new_spanned(
+                    backtrace,
+                    "duplicate #[backtrace] attribute",
+                ));
             }
             backtrace_field = Some(field);
             has_backtrace = true;
@@ -230,9 +239,10 @@ fn contains_non_static_lifetime(ty: &Type) -> bool {
             }
             false
         }
-        Type::Reference(ty) => {
-            ty.lifetime.as_ref().is_some_and(|lifetime| lifetime.ident != "static")
-        }
+        Type::Reference(ty) => ty
+            .lifetime
+            .as_ref()
+            .is_some_and(|lifetime| lifetime.ident != "static"),
         _ => false, // maybe implement later if there are common other cases
     }
 }

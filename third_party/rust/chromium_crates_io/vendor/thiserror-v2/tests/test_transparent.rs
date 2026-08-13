@@ -121,7 +121,9 @@ fn test_non_static() {
         Unexpected { token: &'a str },
     }
 
-    let error = Error { inner: ErrorKind::Unexpected { token: "error" } };
+    let error = Error {
+        inner: ErrorKind::Unexpected { token: "error" },
+    };
     assert_eq!("unexpected token: \"error\"", error.to_string());
     assert!(error.source().is_none());
 }
