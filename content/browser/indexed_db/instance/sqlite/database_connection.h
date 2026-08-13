@@ -456,6 +456,9 @@ class CONTENT_EXPORT DatabaseConnection {
   // Makes sure the given IDs exist in `metadata_`.
   void ValidateInputs(int64_t object_store_id, int64_t index_id);
 
+  // Returns true if there's a row in the `blobs` table with the given row id.
+  bool RowExistsInBlobTable(int64_t blob_row_id) const;
+
   // Creates a snapshot of the current legacy blob files stored in the database.
   std::set<int64_t> SnapshotLegacyBlobFiles();
 
@@ -506,15 +509,25 @@ class CONTENT_EXPORT DatabaseConnection {
   // Only set while a version change transaction is active.
   std::optional<blink::IndexedDBDatabaseMetadata> metadata_snapshot_;
 
-  // blob_row_id to blob metadata. These are collected over the lifetime of a
-  // single transaction as records with associated blobs are inserted into the
-  // database. The contents of the blobs are not written until commit time. The
-  // objects in this map are also used to vend bytes (via their connected mojo
-  // remote) if the client reads a value after writing but before committing.
-  // ("Pending" blobs.) Note that some of these blobs may be associated with
-  // records that were added and later deleted (or replaced) in the same commit.
-  // A check to verify the blobs are still needed is performed at commit time.
+  // blob_row_id to blob metadata. For normal, persisted databases, these are
+  // collected over the lifetime of a single transaction as records with
+  // associated blobs are inserted into the database. The contents of the blobs
+  // are not written until commit time. The objects in this map are also used to
+  // vend bytes (via their connected mojo remote) if the client reads a value
+  // after writing but before committing. ("Pending" blobs.) Note that some of
+  // these blobs may be associated with records that were added and later
+  // deleted (or replaced) in the same commit. A check to verify the blobs are
+  // still needed is performed at commit time.
   std::map<int64_t, IndexedDBExternalObject> blobs_staged_for_commit_;
+
+  // For in-memory databases, `blobs_staged_for_commit_` are moved to this map
+  // instead of being copied into the database. In this way, the blob doesn't
+  // need to be stored in memory twice (once in the database, and once in Blob
+  // storage). They will be deleted from this map if they are obsolete following
+  // any successful write commit, which is controlled by
+  // `sweep_unused_in_memory_blobs_`.
+  std::map<int64_t, IndexedDBExternalObject> in_memory_blob_references_;
+  bool sweep_unused_in_memory_blobs_ = false;
 
   // This map will be empty until `CommitTransactionPhaseOne()` is called, at
   // which point it will be populated with helper objects that feed the blob

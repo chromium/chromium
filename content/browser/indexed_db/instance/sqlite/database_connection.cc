@@ -494,8 +494,10 @@ Status CreateSchema(sql::Database* db, std::u16string_view name) {
       // This column is null if the blob is stored on disk, which will be the
       // case for legacy blobs. It's also temporarily null while FSA handles are
       // being serialized into a token (after which point, this holds the
-      // token). If there are more bytes than fit into a single SQLite BLOB
-      // (GetMaxBlobSize()), additional bytes will be stored in
+      // token). It's also null for in-memory databases, since a reference to
+      // the remote blob will be stored in `in_memory_blob_references_` instead
+      // of writing it here. If there are more bytes than fit into a single
+      // SQLite BLOB (GetMaxBlobSize()), additional bytes will be stored in
       // `overflow_blob_chunks` table.
       " bytes BLOB)");
   // Partial index to expedite scanning for legacy blobs.
@@ -1517,14 +1519,15 @@ StatusOr<bool> DatabaseConnection::CommitTransactionPhaseOne(
   CHECK_EQ(outstanding_external_object_writes_, 0U);
 
   for (auto& [blob_row_id, external_object] : blobs_staged_for_commit_) {
-    {
-      // The blob may have been added and deleted in the same txn.
-      sql::Statement statement(db_->GetCachedStatement(
-          SQL_FROM_HERE, "SELECT 1 FROM blobs WHERE row_id = ?"));
-      statement.BindInt64(0, blob_row_id);
-      if (!statement.Step()) {
-        continue;
-      }
+    // The blob may have been added and deleted in the same txn.
+    if (!RowExistsInBlobTable(blob_row_id)) {
+      continue;
+    }
+
+    if (in_memory()) {
+      in_memory_blob_references_.emplace(blob_row_id,
+                                         std::move(external_object));
+      continue;
     }
 
     ++outstanding_external_object_writes_;
@@ -1639,14 +1642,14 @@ Status DatabaseConnection::CommitTransactionPhaseTwo(
     // Nothing to do.
     return Status::OK();
   }
-  // No need to sync active blobs when the transaction successfully commits.
-  sync_active_blobs_after_transaction_ = false;
   RETURN_STATUS_ON_ERROR(active_rw_transaction_->Commit());
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
     CHECK(metadata_snapshot_.has_value());
     metadata_snapshot_.reset();
   }
-
+  // No need to sync active blobs when the transaction successfully commits.
+  sync_active_blobs_after_transaction_ = false;
+  sweep_unused_in_memory_blobs_ = in_memory();
   return Status::OK();
 }
 
@@ -1733,6 +1736,20 @@ void DatabaseConnection::EndTransaction(
       LogEvent(SpecificEvent::kSyncActiveBlobsFailed);
     }
     sync_active_blobs_after_transaction_ = false;
+  }
+
+  // Normal on-disk blobs are deleted via a SQLite trigger, but for in-memory
+  // blobs we have to do it manually.
+  if (sweep_unused_in_memory_blobs_) {
+    for (auto iter = in_memory_blob_references_.begin();
+         iter != in_memory_blob_references_.end();) {
+      if (!RowExistsInBlobTable(iter->first)) {
+        iter = in_memory_blob_references_.erase(iter);
+      } else {
+        ++iter;
+      }
+    }
+    sweep_unused_in_memory_blobs_ = false;
   }
 
   // Sweep legacy blob files that have been deleted from the DB during the
@@ -2028,10 +2045,14 @@ StatusOr<IndexedDBValue> DatabaseConnection::AddExternalObjectMetadataToValue(
       const int64_t blob_row_id = statement.ColumnInt64(0);
       if (auto it = blobs_staged_for_commit_.find(blob_row_id);
           it != blobs_staged_for_commit_.end()) {
-        // If the blob is being written in this transaction, copy the external
-        // object (and later the Blob mojo endpoint) from
+        // If this is a blob that was written earlier in the same transaction,
+        // copy the external object (and later the Blob mojo endpoint) from
         // `blobs_staged_for_commit_`.
         value.external_objects.emplace_back(it->second);
+      } else if (in_memory()) {
+        auto in_memory_ref = in_memory_blob_references_.find(blob_row_id);
+        CHECK(in_memory_ref != in_memory_blob_references_.end());
+        value.external_objects.emplace_back(in_memory_ref->second);
       } else {
         auto object_type = static_cast<IndexedDBExternalObject::ObjectType>(
             statement.ColumnInt(1));
@@ -2052,7 +2073,7 @@ StatusOr<IndexedDBValue> DatabaseConnection::AddExternalObjectMetadataToValue(
               Fatal(Status::Corruption("Unknown object type in `blobs`"),
                     SpecificEvent::kBlobTypeUnknown));
         }
-        bool is_legacy_blob = statement.ColumnBool(6);
+        bool is_legacy_blob = !in_memory() && statement.ColumnBool(6);
         if (is_legacy_blob) {
           value.external_objects.back().set_indexed_db_file_path(
               GetBlobFilePath(blob_row_id));
@@ -2222,7 +2243,8 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
           !external_object.indexed_db_file_path().empty();
       // Empty blob.
       bool is_empty_blob = external_object.size() == 0;
-      can_insert_inline = is_empty_blob || being_migrated_from_leveldb;
+      can_insert_inline =
+          !in_memory() && (is_empty_blob || being_migrated_from_leveldb);
       {
         sql::Statement statement(
             db_->GetCachedStatement(SQL_FROM_HERE,
@@ -2264,7 +2286,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
         legacy_blob_files_to_move_.emplace_back(
             external_object.indexed_db_file_path(),
             GetBlobFilePath(blob_row_id));
-      } else {
+      } else if (!in_memory()) {
         // Reserve space for overflow chunks, if any.
         int chunk_index = 1;
         for (int64_t bytes_written = main_chunk_size;
@@ -2468,7 +2490,8 @@ DatabaseConnection::CreateAllExternalObjects(
     mojo::PendingReceiver<blink::mojom::Blob> receiver =
         mojo_object->get_blob_or_file()->blob.InitWithNewPipeAndPassReceiver();
     // The remote will be valid if this is a pending blob i.e. came from
-    // `blobs_staged_for_commit_`.
+    // `blobs_staged_for_commit_`. For in-memory, it might also come from
+    // `in_memory_blob_references_`.
     if (object.is_remote_valid()) {
       object.Clone(std::move(receiver));
       continue;
@@ -2595,26 +2618,17 @@ void DatabaseConnection::OnBlobBecameInactive(int64_t blob_number,
 
   if (active_rw_transaction_) {
     sync_active_blobs_after_transaction_ = true;
-  } else if (is_legacy_blob) {
+  } else if (is_legacy_blob && !RowExistsInBlobTable(blob_number)) {
     // If there's no active RW transaction, and this legacy blob is no longer
     // referenced, it can be deleted from disk. If there is a RW txn, deletion
     // has to be deferred until after commit, in case of rollback.
-    sql::Statement statement(db_->GetCachedStatement(
-        SQL_FROM_HERE, "SELECT 1 FROM blobs WHERE row_id = ?"));
-    statement.BindInt64(0, blob_number);
-    if (!statement.Step()) {
-      if (!statement.Succeeded()) {
-        LogEvent(SpecificEvent::kRemoveActiveBlobReferenceFailed);
-      } else {
-        if (!base::DeleteFile(GetBlobFilePath(blob_number))) {
-          LogEvent(SpecificEvent::kLegacyBlobFileDeletionFailed);
-        }
-        // `legacy_blob_files_` should not be null, but DB corruption could
-        // technically lead to this state, so don't CHECK.
-        if (legacy_blob_files_) {
-          legacy_blob_files_->erase(blob_number);
-        }
-      }
+    if (!base::DeleteFile(GetBlobFilePath(blob_number))) {
+      LogEvent(SpecificEvent::kLegacyBlobFileDeletionFailed);
+    }
+    // `legacy_blob_files_` should not be null, but DB corruption could
+    // technically lead to this state, so don't CHECK.
+    if (legacy_blob_files_) {
+      legacy_blob_files_->erase(blob_number);
     }
   }
 
@@ -2626,6 +2640,8 @@ void DatabaseConnection::OnBlobBecameInactive(int64_t blob_number,
 }
 
 bool DatabaseConnection::AddActiveBlobReference(int64_t blob_number) {
+  CHECK(!in_memory());
+
   if (active_rw_transaction_) {
     sync_active_blobs_after_transaction_ = true;
   }
@@ -2716,6 +2732,13 @@ void DatabaseConnection::OnRecordsModified(int64_t object_store_id) {
       BackingStoreCursorImpl::InvalidateStatement(*statement);
     }
   }
+}
+
+bool DatabaseConnection::RowExistsInBlobTable(int64_t blob_row_id) const {
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE, "SELECT 1 FROM blobs WHERE row_id = ?"));
+  statement.BindInt64(0, blob_row_id);
+  return statement.Step();
 }
 
 Status DatabaseConnection::GetStatusOfLastOperation(
@@ -2837,6 +2860,10 @@ StatusOr<mojo_base::BigBuffer> DatabaseConnection::Decompress(
 }
 
 std::set<int64_t> DatabaseConnection::SnapshotLegacyBlobFiles() {
+  if (in_memory()) {
+    return {};
+  }
+
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT row_id FROM blobs "
