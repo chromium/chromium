@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `js-sys-0.3.103` crate.
+# `js-sys-0.3.104` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "js-sys"
-version = "0.3.103"
+version = "0.3.104"
 
 [package.metadata.gnrt]
 is_placeholder = true
@@ -30,5 +30,5 @@ default_features = false
 version = "^0.3.31"
 default_features = false
 [dependencies.wasm-bindgen]
-version = "=0.2.126"
+version = "=0.2.127"
 default_features = false
