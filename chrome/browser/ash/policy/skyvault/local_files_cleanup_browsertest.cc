@@ -8,10 +8,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -37,7 +38,17 @@ class LocalFilesCleanupTest : public policy::PolicyTest {
     policy::PolicyTest::SetPolicy(&policies,
                                   policy::key::kLocalUserFilesAllowed,
                                   base::Value(local_user_files_allowed));
+    // The policy service publishes updates to the browser. Wait for that
+    // publication so the policy observer starts cleanup before this test waits
+    // for directory deletion. Without the service, UpdateChromePolicy uses an
+    // internal RunUntilIdle() fallback, which previously let the observer and
+    // cleanup work start. Clear the temporary connection after publication
+    // because the provider stores only a raw pointer that must not survive into
+    // browser shutdown.
+    provider_.SetupPolicyServiceForPolicyUpdates(
+        g_browser_process->policy_service());
     provider_.UpdateChromePolicy(policies);
+    provider_.SetupPolicyServiceForPolicyUpdates(nullptr);
   }
 
   base::HistogramTester histogram_tester_;
@@ -56,8 +67,9 @@ IN_PROC_BROWSER_TEST_F(LocalFilesCleanupTest, Cleanup) {
   // and will trigger cleanup.
   SetPolicyValue(false);
 
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(base::DirectoryExists(temp_dir.Take()));
+  ASSERT_TRUE(base::test::RunUntil([&temp_dir] {
+    return !base::DirectoryExists(temp_dir.GetPath());
+  })) << "Timed out waiting for local files cleanup";
   histogram_tester_.ExpectUniqueSample("SkyVault.LocalUserFilesCleanupCount",
                                        /*sample=*/1,
                                        /*expected_bucket_count=*/1);
