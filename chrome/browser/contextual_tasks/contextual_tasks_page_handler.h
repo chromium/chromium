@@ -80,6 +80,7 @@ class ContextualTasksPageHandler
                              GetCommonSearchParamsCallback callback) override;
   void OnboardingTooltipDismissed() override;
   void LensSearchTooltipDismissed() override;
+  void AskGTooltipDismissed() override;
   void ReopenTabs() override;
   void PinSidePanel() override;
   void UnpinSidePanel() override;

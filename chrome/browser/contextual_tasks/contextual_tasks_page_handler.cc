@@ -615,6 +615,15 @@ void ContextualTasksPageHandler::LensSearchTooltipDismissed() {
       count + 1);
 }
 
+void ContextualTasksPageHandler::AskGTooltipDismissed() {
+  PrefService* prefs = web_ui_controller_->GetProfile()->GetPrefs();
+  int count = prefs->GetInteger(
+      contextual_tasks::kContextualTasksAskGTooltipDismissedCount);
+  prefs->SetInteger(
+      contextual_tasks::kContextualTasksAskGTooltipDismissedCount,
+      count + 1);
+}
+
 void ContextualTasksPageHandler::ReopenTabs() {
   // TODO(crbug.com/489832161): Implement tab restoration logic.
 }

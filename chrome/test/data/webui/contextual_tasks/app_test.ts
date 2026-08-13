@@ -61,6 +61,9 @@ suite('ContextualTasksAppTest', function() {
       isAimEligible: true,
       isZeroState: false,
       contextManagementInComposeboxEnabled: false,
+      askGCoBrowseEnabled: true,
+      isAskGTooltipDismissCountBelowCap: true,
+      askGTooltipSessionImpressionCap: 10,
     });
     metrics = fakeMetricsPrivate();
     const proxy = new TestContextualTasksBrowserProxy('http://example.com');
@@ -1313,4 +1316,19 @@ suite('ContextualTasksAppTest', function() {
     assertTrue(appElement.classList.contains('play-zero-state'));
     assertTrue(appElement.$.composebox.classList.contains('play-zero-state'));
   });
+
+  // <if expr="not is_android">
+  test('askGTooltipDismissed calls browser proxy', async () => {
+    const {appElement, proxy} =
+        await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+
+    const askGTooltip =
+        appElement.shadowRoot.querySelector('#askGTooltip');
+    assertTrue(!!askGTooltip);
+
+    askGTooltip.dispatchEvent(new CustomEvent('tooltip-dismissed'));
+
+    await proxy.handler.whenCalled('askGTooltipDismissed');
+  });
+  // </if>
 });
