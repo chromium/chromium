@@ -27,7 +27,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
@@ -187,7 +186,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   InactiveTabsCoordinatorDelegate,
                                   SceneStateObserver,
                                   SendTabToSelfCoordinatorDelegate,
-                                  SigninPresenter,
                                   TabContextMenuDelegate,
                                   TabGridCommands,
                                   TabGridTransitionLayoutProviding,
@@ -1556,55 +1554,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.sharingCoordinator start];
 }
 
-- (void)sendTabToSelfWithIdentifier:(web::WebStateID)identifier {
-  Browser* browser = self.regularBrowser;
-  if (!browser) {
-    return;
-  }
-  WebStateList* webStateList = browser->GetWebStateList();
-  web::WebState* webState = GetWebState(
-      webStateList, WebStateSearchCriteria{.identifier = identifier});
-  if (!webState) {
-    return;
-  }
-  const GURL& url = webState->GetVisibleURL();
-  NSString* title = base::SysUTF16ToNSString(webState->GetTitle());
-
-  [self.sendTabToSelfCoordinator stop];
-  self.sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
-      initWithBaseViewController:_viewController
-                         browser:self.regularBrowser
-                 signinPresenter:self
-                             url:url
-                           title:title
-                      entryPoint:send_tab_to_self::ShareEntryPoint::kTabMenu];
-  self.sendTabToSelfCoordinator.delegate = self;
-
-  // Postpone the start of the coordinator to allow the context menu dismissal
-  // animation to complete cleanly and prevent a UIKit transition deadlock.
-  __weak TabGridCoordinator* weakSelf = self;
-  ExecuteWhenTransitionsComplete(
-      ^{
-        [weakSelf.sendTabToSelfCoordinator start];
-      },
-      _viewController);
+- (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {
+  NOTREACHED();
 }
 
-#pragma mark - SendTabToSelfCoordinatorDelegate
-
-- (void)sendTabToSelfCoordinatorWantsToBeStopped:
-    (SendTabToSelfCoordinator*)coordinator {
-  DCHECK_EQ(coordinator, self.sendTabToSelfCoordinator);
-  [self.sendTabToSelfCoordinator stop];
-  self.sendTabToSelfCoordinator = nil;
-}
-
-#pragma mark - SigninPresenter
-
-- (void)showSignin:(ShowSigninCommand*)command {
-  id<SceneCommands> handler =
-      HandlerForProtocol(self.dispatcher, SceneCommands);
-  [handler showSignin:command baseViewController:_viewController];
+- (synced_sessions::DistantSession const*)sessionForTableSectionWithIdentifier:
+    (NSInteger)sectionIdentifier {
+  NOTREACHED();
 }
 
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
@@ -1632,6 +1588,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   base::RecordAction(base::UserMetricsAction(
       "MobileTabGridOpenedBookmarkEditorForExistingBookmark"));
   [self.bookmarksCoordinator presentBookmarkEditorForURL:URL];
+}
+
+- (void)selectTabs {
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridTabContextMenuSelectTabs"));
+  [self setActiveMode:TabGridMode::kSelection];
 }
 
 - (void)pinTabWithIdentifier:(web::WebStateID)identifier {
@@ -1740,19 +1702,46 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [tabGroupsHandler showRecentActivityForGroup:tabGroup];
 }
 
-- (void)selectTabs {
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridTabContextMenuSelectTabs"));
-  [self setActiveMode:TabGridMode::kSelection];
+- (void)sendTabToSelfWithIdentifier:(web::WebStateID)identifier {
+  Browser* browser = self.regularBrowser;
+  if (!browser) {
+    return;
+  }
+  WebStateList* webStateList = browser->GetWebStateList();
+  web::WebState* webState = GetWebState(
+      webStateList, WebStateSearchCriteria{.identifier = identifier});
+  if (!webState) {
+    return;
+  }
+  const GURL& url = webState->GetVisibleURL();
+  NSString* title = base::SysUTF16ToNSString(webState->GetTitle());
+
+  [self.sendTabToSelfCoordinator stop];
+  self.sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.regularBrowser
+                             url:url
+                           title:title
+                      entryPoint:send_tab_to_self::ShareEntryPoint::kTabMenu];
+  self.sendTabToSelfCoordinator.delegate = self;
+
+  // Postpone the start of the coordinator to allow the context menu dismissal
+  // animation to complete cleanly and prevent a UIKit transition deadlock.
+  __weak TabGridCoordinator* weakSelf = self;
+  ExecuteWhenTransitionsComplete(
+      ^{
+        [weakSelf.sendTabToSelfCoordinator start];
+      },
+      _viewController);
 }
 
-- (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {
-  NOTREACHED();
-}
+#pragma mark - SendTabToSelfCoordinatorDelegate
 
-- (synced_sessions::DistantSession const*)sessionForTableSectionWithIdentifier:
-    (NSInteger)sectionIdentifier {
-  NOTREACHED();
+- (void)sendTabToSelfCoordinatorWantsToBeStopped:
+    (SendTabToSelfCoordinator*)coordinator {
+  DCHECK_EQ(coordinator, self.sendTabToSelfCoordinator);
+  [self.sendTabToSelfCoordinator stop];
+  self.sendTabToSelfCoordinator = nil;
 }
 
 #pragma mark - SceneStateObserver

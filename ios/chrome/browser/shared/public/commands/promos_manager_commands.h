@@ -21,9 +21,6 @@
 // Makes a request to Apple to present the user the App Store Rating Promo.
 - (void)showAppStoreReviewPrompt;
 
-// Asks the presenter to display the signin UI configured by `command`.
-- (void)showSignin:(ShowSigninCommand*)command;
-
 // Display WhatsNew as a promo.
 - (void)showWhatsNewPromo;
 

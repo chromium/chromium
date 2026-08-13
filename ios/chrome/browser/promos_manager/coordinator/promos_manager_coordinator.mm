@@ -662,13 +662,17 @@
 - (void)registerStandardPromoAlertProviderPromos {
   ProfileIOS* profile = self.profile;
   // Post-restore sign-in promo handler.
-  _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
+  PostRestoreSignInProvider* postRestoreSignInProvider =
       [[PostRestoreSignInProvider alloc]
             initWithSyncService:SyncServiceFactory::GetForProfile(profile)
           authenticationService:AuthenticationServiceFactory::GetForProfile(
                                     profile)
                 identityManager:IdentityManagerFactory::GetForProfile(profile)
                     prefService:profile->GetPrefs()];
+  postRestoreSignInProvider.sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
+      postRestoreSignInProvider;
 
   PostRestoreDefaultBrowserPromoProvider* postRestoreProvider =
       [[PostRestoreDefaultBrowserPromoProvider alloc] init];

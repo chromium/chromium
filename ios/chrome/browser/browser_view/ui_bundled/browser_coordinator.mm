@@ -359,7 +359,6 @@
     SendTabToSelfCommands,
     SendTabToSelfCoordinatorDelegate,
     SharedTabGroupLastTabAlertCommands,
-    SigninPresenter,
     SnackbarCoordinatorDelegate,
     SnapshotGeneratorDelegate,
     StoreKitCoordinatorDelegate,
@@ -1921,7 +1920,6 @@
   _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                 signinPresenter:self
                              url:url
                            title:title
            targetDeviceCacheGUID:deviceID
@@ -3373,14 +3371,6 @@
         [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
       };
   [_signinCoordinator start];
-}
-
-#pragma mark - SigninPresenter
-
-- (void)showSignin:(ShowSigninCommand*)command {
-  [HandlerForProtocol(self.dispatcher, SceneCommands)
-              showSignin:command
-      baseViewController:self.viewController];
 }
 
 #pragma mark - SnapshotGeneratorDelegate methods

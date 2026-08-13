@@ -7,8 +7,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@protocol SigninPresenter;
-
 class GURL;
 namespace send_tab_to_self {
 enum class ShareEntryPoint;
@@ -28,7 +26,6 @@ enum class ShareEntryPoint;
 // that target device upon start (bypassing the picker UI).
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
-                           signinPresenter:(id<SigninPresenter>)signinPresenter
                                        url:(const GURL&)url
                                      title:(NSString*)title
                      targetDeviceCacheGUID:(NSString*)targetDeviceCacheGUID
@@ -41,7 +38,6 @@ enum class ShareEntryPoint;
 // mode, presenting the list of target devices to the user to choose from.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
-                           signinPresenter:(id<SigninPresenter>)signinPresenter
                                        url:(const GURL&)url
                                      title:(NSString*)title
                                 entryPoint:(send_tab_to_self::ShareEntryPoint)

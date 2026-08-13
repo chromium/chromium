@@ -102,6 +102,10 @@ class PromosManagerCoordinatorTest : public PlatformTest {
     [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_promos_manager_handler_
                      forProtocol:@protocol(PromosManagerCommands)];
+    mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
+    [browser->GetCommandDispatcher()
+        startDispatchingToTarget:mock_scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
 
     coordinator_ = [[PromosManagerCoordinator alloc]
             initWithBaseViewController:view_controller_
@@ -136,6 +140,7 @@ class PromosManagerCoordinatorTest : public PlatformTest {
   FakeSceneState* scene_state_;
   id mock_pip_handler_;
   id mock_promos_manager_handler_;
+  id mock_scene_handler_;
 };
 
 }  // namespace

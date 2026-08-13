@@ -9,7 +9,6 @@
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync/test/mock_sync_service.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_commands.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -105,11 +104,11 @@ TEST_F(TipsNotificationPresenterTest, TestShowWhatsNew) {
 
 // Tests that the presenter can show the Sign-in page.
 TEST_F(TipsNotificationPresenterTest, TestShowSignin) {
-  id mock_handler = MockHandler(@protocol(SigninPresenter));
-  OCMExpect([mock_handler showSignin:[OCMArg any]]);
+  OCMExpect([application_handler_ showSignin:[OCMArg any]
+                          baseViewController:nil]);
   TipsNotificationPresenter::Present(browser_->AsWeakPtr(),
                                      TipsNotificationType::kSignin);
-  EXPECT_OCMOCK_VERIFY(mock_handler);
+  EXPECT_OCMOCK_VERIFY(application_handler_);
 }
 
 // Tests that the presenter can show the Set Up List "See More" menu.

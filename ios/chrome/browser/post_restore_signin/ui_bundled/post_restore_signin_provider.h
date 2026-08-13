@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/promos_manager/coordinator/bannered_promo_view_provider.h"
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_alert_provider.h"
-#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 
 namespace signin {
 class IdentityManager;
@@ -19,6 +18,7 @@ class SyncService;
 
 class AuthenticationService;
 class PrefService;
+@protocol SceneCommands;
 
 // Provider for displaying the Post Restore Sign-in Promo.
 //
@@ -39,7 +39,7 @@ class PrefService;
 - (void)promoWasDisplayed;
 
 // The handler is used to start the sign-in flow.
-@property(nonatomic, weak) id<PromosManagerCommands> handler;
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 @end
 

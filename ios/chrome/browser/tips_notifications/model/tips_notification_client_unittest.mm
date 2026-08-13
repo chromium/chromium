@@ -17,7 +17,6 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync/test/test_sync_service.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_commands.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -60,28 +59,6 @@
 #import "ui/base/device_form_factor.h"
 
 using startup_metric_utils::FirstRunSentinelCreationResult;
-
-// A simple class that stubs `PrepareToPresentModal:` by immediately calling
-// the provided `completion` callback.
-@interface PrepareToPresentModalStub : NSObject
-@end
-
-@implementation PrepareToPresentModalStub
-- (void)prepareToPresentModalWithSnackbarDismissal:(BOOL)dismissSnackbars
-                                        completion:(ProceduralBlock)completion {
-  completion();
-}
-
-// Allow registering the stub as a SceneCommands handler.
-// Any call to one of these methods will crash.
-- (BOOL)conformsToProtocol:(Protocol*)protocol {
-  if (protocol == @protocol(SceneCommands)) {
-    return YES;
-  }
-  return [super conformsToProtocol:protocol];
-}
-
-@end
 
 class TipsNotificationClientTest : public PlatformTest {
  protected:
@@ -236,11 +213,15 @@ class TipsNotificationClientTest : public PlatformTest {
 
   // Stubs the `-prepareToPresentModalWithSnackbarDismissal:` method from
   // `SceneCommands` so that it immediately calls the completion block.
-  void StubPrepareToPresentModal() {
-    prepare_to_present_modal_stub_ = [[PrepareToPresentModalStub alloc] init];
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:prepare_to_present_modal_stub_
-                     forProtocol:@protocol(SceneCommands)];
+  id StubPrepareToPresentModal() {
+    id mock_handler = MockHandler(@protocol(SceneCommands));
+    OCMStub([mock_handler
+        prepareToPresentModalWithSnackbarDismissal:YES
+                                        completion:[OCMArg invokeBlock]]);
+    OCMStub([mock_handler
+        prepareToPresentModalWithSnackbarDismissal:NO
+                                        completion:[OCMArg invokeBlock]]);
+    return mock_handler;
   }
 
   // Sets up an OCMock expectation that a notification will be requested.
@@ -325,7 +306,6 @@ class TipsNotificationClientTest : public PlatformTest {
   id mock_notification_center_;
   std::unique_ptr<ScopedBlockSwizzler> notification_center_swizzler_;
   raw_ptr<ProfileIOS> profile_;
-  PrepareToPresentModalStub* prepare_to_present_modal_stub_;
   UNNotificationResponse* mock_response_;
 };
 
@@ -366,9 +346,8 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserHandle) {
 
 // Tests that the client handles a SignIn notification response.
 TEST_F(TipsNotificationClientTest, SigninHandle) {
-  StubPrepareToPresentModal();
-  id mock_handler = MockHandler(@protocol(SigninPresenter));
-  OCMExpect([mock_handler showSignin:[OCMArg any]]);
+  id mock_handler = StubPrepareToPresentModal();
+  OCMExpect([mock_handler showSignin:[OCMArg any] baseViewController:nil]);
 
   mock_response_ = MockRequestResponse(TipsNotificationType::kSignin);
   client_->HandleNotificationInteraction(mock_response_);

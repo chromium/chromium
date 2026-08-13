@@ -5,21 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PRESENTER_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PRESENTER_H_
 
-@class ShowSigninCommand;
-
 // Protocol used to display signin UI.
 @protocol ReSigninPresenter
 
 // Asks the presenter to display the signin UI.
 - (void)showReSignin;
-
-@end
-
-// Protocol used to display signin UI.
-@protocol SigninPresenter
-
-// Asks the presenter to display the signin UI configured by `command`.
-- (void)showSignin:(ShowSigninCommand*)command;
 
 @end
 

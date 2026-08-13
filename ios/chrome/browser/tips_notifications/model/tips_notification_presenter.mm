@@ -11,7 +11,6 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_commands.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -143,8 +142,9 @@ void TipsNotificationPresenter::ShowSignin() {
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:nil];
 
-  [HandlerForProtocol(browser_->GetCommandDispatcher(), SigninPresenter)
-      showSignin:command];
+  [HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands)
+              showSignin:command
+      baseViewController:nil];
 }
 
 void TipsNotificationPresenter::ShowSetUpListContinuation() {

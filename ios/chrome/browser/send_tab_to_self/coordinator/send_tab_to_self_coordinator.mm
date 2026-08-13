@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_send_tab.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
@@ -109,7 +108,6 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   NSString* _targetDeviceName;
 }
 
-@property(nonatomic, weak, readonly) id<SigninPresenter> signinPresenter;
 @property(nonatomic, assign, readonly) GURL url;
 @property(nonatomic, copy, readonly) NSString* title;
 
@@ -141,7 +139,6 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
-                           signinPresenter:(id<SigninPresenter>)signinPresenter
                                        url:(const GURL&)url
                                      title:(NSString*)title
                      targetDeviceCacheGUID:(NSString*)targetDeviceCacheGUID
@@ -154,7 +151,6 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   }
 
   CHECK(!targetDeviceCacheGUID || targetDeviceName);
-  _signinPresenter = signinPresenter;
   _url = url;
   _title = title;
   _targetDeviceCacheGUID = targetDeviceCacheGUID;
@@ -167,23 +163,17 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
-                           signinPresenter:(id<SigninPresenter>)signinPresenter
                                        url:(const GURL&)url
                                      title:(NSString*)title
                                 entryPoint:(send_tab_to_self::ShareEntryPoint)
                                                entryPoint {
   return [self initWithBaseViewController:baseViewController
                                   browser:browser
-                          signinPresenter:signinPresenter
                                       url:url
                                     title:title
                     targetDeviceCacheGUID:nil
                          targetDeviceName:nil
                                entryPoint:entryPoint];
-}
-
-- (void)dealloc {
-  CHECK(!_signinPresenter, base::NotFatalUntil::M152);
 }
 
 #pragma mark - ChromeCoordinator Methods
@@ -227,7 +217,6 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   [_mediator disconnect];
   _mediator.delegate = nil;
   _mediator = nil;
-  _signinPresenter = nil;
   _browserCoordinatorHandler = nil;
   _title = nil;
   [_navigationController.presentingViewController

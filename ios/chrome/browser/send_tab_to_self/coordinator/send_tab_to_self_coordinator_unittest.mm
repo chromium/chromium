@@ -132,7 +132,6 @@ class SendTabToSelfCoordinatorTest : public PlatformTest {
     coordinator_ = [[SendTabToSelfCoordinator alloc]
         initWithBaseViewController:view_controller_
                            browser:browser_.get()
-                   signinPresenter:nil
                                url:GURL(kTestURL)
                              title:@(kTestTitle)
                         entryPoint:send_tab_to_self::ShareEntryPoint::
@@ -145,7 +144,6 @@ class SendTabToSelfCoordinatorTest : public PlatformTest {
     coordinator_ = [[SendTabToSelfCoordinator alloc]
         initWithBaseViewController:view_controller_
                            browser:browser_.get()
-                   signinPresenter:nil
                                url:GURL(kTestURL)
                              title:@(kTestTitle)
              targetDeviceCacheGUID:cacheGUID
