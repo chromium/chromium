@@ -505,13 +505,13 @@ TEST_P(MultiprocessMessagePipeTestWithPipeCount, PlatformHandlePassing) {
 }
 
 // Android multi-process tests are not executing the new process. This is flaky.
-INSTANTIATE_TEST_SUITE_P(PipeCount,
-                         MultiprocessMessagePipeTestWithPipeCount,
-                         // TODO(rockot): Enable the 128 and 250 pipe cases when
-                         // ChannelPosix and ChannelFuchsia have support for
-                         // sending larger numbers of handles per-message. See
-                         // kMaxAttachedHandles in channel.cc for details.
-                         testing::Values(1u, 64u /*, 128u, 250u*/));
+INSTANTIATE_TEST_SUITE_P(
+    PipeCount,
+    MultiprocessMessagePipeTestWithPipeCount,
+    // TODO(https://crbug.com/439305148): Enable the 250 pipe case when
+    // ChannelPosix is fixed to safely support chunking of many-handle messages
+    // across multiple sendmsg() calls, rather than crashing the sender.
+    testing::Values(1u, 64u, 128u /*, 250u*/));
 #endif
 
 DEFINE_TEST_CLIENT_WITH_PIPE(CheckMessagePipe, MultiprocessMessagePipeTest, h) {
