@@ -346,7 +346,7 @@ TEST_F(GLReadbackTest, MAYBE_ReadPixelsFloat) {
 TEST_F(GLReadbackTest, PackLargeRowLengthSeparatelyPackBuffer) {
   // Test fails on these configurations due to underlying driver or ANGLE
   // implementation bugs.
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
+#if BUILDFLAG(IS_ANDROID)
   return;
 #else
 #if BUILDFLAG(IS_MAC)
