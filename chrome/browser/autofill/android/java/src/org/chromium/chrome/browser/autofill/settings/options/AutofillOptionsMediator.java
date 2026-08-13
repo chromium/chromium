@@ -211,17 +211,15 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
     }
 
     private boolean isEligibleToAutofillAi() {
-        @Nullable EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
+        EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
         return isAutofillAiEnabled()
-                && manager != null
                 && manager.isEligibleToAutofillAi()
                 && !prefs().getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
     }
 
     private boolean isAutofillAiOn() {
-        @Nullable EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
+        EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
         return isAutofillAiEnabled()
-                && manager != null
                 && manager.getAutofillAiOptInStatus()
                 && isEligibleToAutofillAi();
     }
@@ -229,8 +227,8 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
     private void onAutofillAiSettingToggled(boolean isOn) {
         @AutofillAiOptInStatus
         int optInStatus = isOn ? AutofillAiOptInStatus.OPTED_IN : AutofillAiOptInStatus.OPTED_OUT;
-        @Nullable EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
-        if (manager == null || !manager.setAutofillAiOptInStatus(optInStatus)) {
+        EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
+        if (!manager.setAutofillAiOptInStatus(optInStatus)) {
             // If failed to set, reset the switch to match current status.
             mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON, isAutofillAiOn());
         }
@@ -238,15 +236,12 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
 
     private boolean isPersonalContextOn() {
         EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
-        return manager != null && manager.isPersonalContextEnabled();
+        return manager.isPersonalContextEnabled();
     }
 
     private void onPersonalContextToggleStatusChanged(boolean enabled) {
         EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
-        if (manager != null) {
-            manager.setPersonalContextEnabled(enabled);
-        }
-        // TODO(crbug.com/533372805): The toggle should not change its state if manager is null.
+        manager.setPersonalContextEnabled(enabled);
         mModel.set(PERSONAL_CONTEXT_ENABLED, enabled);
         RecordUserAction.record(
                 enabled

@@ -20,7 +20,7 @@ public class EntityDataManagerFactory {
     private static @Nullable EntityDataManager sManagerForTesting;
 
     /** Return the {@link EntityDataManager} associated with the passed in {@link Profile}. */
-    public static @Nullable EntityDataManager getForProfile(Profile profile) {
+    public static EntityDataManager getForProfile(Profile profile) {
         if (sManagerForTesting != null) return sManagerForTesting;
         ThreadUtils.assertOnUiThread();
         return sProfileMap.getForProfile(profile, EntityDataManager::new);
