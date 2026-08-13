@@ -35,8 +35,10 @@ const CGFloat kIconSize = 16.0;
   UILabel* _titleLabel;
   UILabel* _subtitleLabel;
   UIStackView* _mainRowStack;
+  UIView* _bottomBufferView;
 
   NSLayoutConstraint* _dotSizeConstraint;
+  NSLayoutConstraint* _bottomBufferHeightConstraint;
 
   ActuationWorklogItem* _item;
   CAShapeLayer* _connectorLayer;
@@ -88,6 +90,14 @@ const CGFloat kIconSize = 16.0;
     _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [_mainRowStack addArrangedSubview:_subtitleLabel];
+
+    _bottomBufferView = [[UIView alloc] init];
+    _bottomBufferView.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomBufferView.hidden = YES;
+    _bottomBufferHeightConstraint =
+        [_bottomBufferView.heightAnchor constraintEqualToConstant:0.0];
+    _bottomBufferHeightConstraint.active = YES;
+    [self addSubview:_bottomBufferView];
 
     [self setupConstraints];
   }
@@ -192,10 +202,17 @@ const CGFloat kIconSize = 16.0;
                                                 constant:insets.leading],
     [_mainRowStack.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
                                                  constant:-insets.trailing],
+
+    [_bottomBufferView.topAnchor
+        constraintEqualToAnchor:_mainRowStack.bottomAnchor],
+    [_bottomBufferView.leadingAnchor
+        constraintEqualToAnchor:_mainRowStack.leadingAnchor],
+    [_bottomBufferView.trailingAnchor
+        constraintEqualToAnchor:_mainRowStack.trailingAnchor],
   ]];
   NSLayoutConstraint* bottomConstraint =
-      [_mainRowStack.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
-                                                 constant:-insets.bottom];
+      [_bottomBufferView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
+                                                     constant:-insets.bottom];
   bottomConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   bottomConstraint.active = YES;
 
@@ -270,6 +287,16 @@ const CGFloat kIconSize = 16.0;
   _dotView.layer.borderWidth =
       (active && !showLargeDot) ? kDotBorderWidth : 0.0;
   _dotSizeConstraint.constant = dotSize;
+}
+
+- (void)setBottomBufferHeight:(CGFloat)bottomBufferHeight {
+  if (_bottomBufferHeight == bottomBufferHeight) {
+    return;
+  }
+  _bottomBufferHeight = bottomBufferHeight;
+  _bottomBufferHeightConstraint.constant = bottomBufferHeight;
+  _bottomBufferView.hidden = (bottomBufferHeight == 0.0);
+  [self setNeedsLayout];
 }
 
 @end

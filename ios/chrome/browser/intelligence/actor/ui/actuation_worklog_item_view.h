@@ -30,12 +30,21 @@ enum class ActuationWorklogConnectorVisibility {
 // +------+  |--------------------|
 //           | Subtitle           |
 //           +--------------------+
+// +------------------------------+
+// |     Overlay buffer area      |
+// +------------------------------+
 @interface ActuationWorklogItemView : UIView
 
 // Defines the visibility of the connector lines. Updating this property will
 // trigger a layout. Defaults to `ActuationWorklogConnectorVisibility::kNone`.
 @property(nonatomic, assign)
     ActuationWorklogConnectorVisibility connectorVisibility;
+
+// Extra vertical space reserved at the bottom of the cell to accommodate
+// overlays (such as floating tool chips). Setting a non-zero height extends the
+// vertical dashed connector line on the left through the buffer area to ensure
+// visual continuity. Defaults to 0.0.
+@property(nonatomic, assign) CGFloat bottomBufferHeight;
 
 // Designated initializer
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

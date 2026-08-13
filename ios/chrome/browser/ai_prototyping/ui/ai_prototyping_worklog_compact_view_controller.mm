@@ -17,6 +17,7 @@ const CGFloat kWidgetCornerRadius = 12.0;
 const CGFloat kWidgetBorderWidth = 1.0;
 
 const CGFloat kLayoutSpacing = 16.0;
+const CGFloat kLayoutSpacingSmall = 8.0;
 const CGFloat kIconSize = 16.0;
 
 const CGFloat kButtonFontSize = 16.0;
@@ -27,6 +28,8 @@ struct MockStepConfig {
   NSString* subtitle = nil;
   Symbol iconSymbol = SymbolNone;
   ActuationWorklogItemStyle style;
+  NSString* chipText = nil;
+  Symbol chipIconSymbol = SymbolNone;
 };
 
 }  // namespace
@@ -38,6 +41,7 @@ struct MockStepConfig {
 @implementation AIPrototypingWorklogCompactViewController {
   ActuationWorklogCompactView* _worklogView;
   NSArray<ActuationWorklogItem*>* _mockSteps;
+  NSArray<ActuationWorklogChip*>* _mockChips;
   NSUInteger _currentMockIndex;
   NSLayoutConstraint* _widgetHeightConstraint;
 
@@ -79,43 +83,67 @@ struct MockStepConfig {
 // Pre-populates the mock steps array with predefined ActuationWorklogItems.
 - (void)setupMockSteps {
   const MockStepConfig kMockStepConfigs[] = {
-      {.title = @"Task started",
-       .subtitle = @"Use Gemini carefully and take control if needed. You "
-                   @"are responsible for Gemini's actions.",
-       .iconSymbol = SymbolPlayFill,
-       .style = ActuationWorklogItemStyle::kLabeled},
-      {.title = @"Opening a new Tab.",
-       .style = ActuationWorklogItemStyle::kSimple},
-      {.title = @"Searching for AMC theaters.",
-       .style = ActuationWorklogItemStyle::kSimple},
-      {.title = @"Searching for film showtimes.",
-       .style = ActuationWorklogItemStyle::kSimple},
-      {.title = @"Finding theaters near Washington, D.C.",
+      // 1. No chip -> No chip (Labeled -> Simple)
+      {.title = @"Finding theaters near D.C.",
        .subtitle = @"Finding best matches for AMC theaters within 10 miles.",
        .iconSymbol = SymbolMapPinAndEllipse,
        .style = ActuationWorklogItemStyle::kLabeled},
+      {.title = @"Opening amctheatres.com",
+       .style = ActuationWorklogItemStyle::kSimple},
+
+      // 2. No chip -> chip (Simple -> Simple)
+      {.title = @"Searching for AMC theaters.",
+       .style = ActuationWorklogItemStyle::kSimple,
+       .chipText = @"Google Search",
+       .chipIconSymbol = SymbolMagnifyingglass},
+
+      // 3. Chip -> Same chip (Simple -> Labeled)
       {.title = @"Checking seats availability.",
        .subtitle = @"Checking 7:30 PM showtimes for AMC Georgetown 14.",
        .iconSymbol = SymbolPersonTwoFill,
-       .style = ActuationWorklogItemStyle::kLabeled},
+       .style = ActuationWorklogItemStyle::kLabeled,
+       .chipText = @"Google Search",
+       .chipIconSymbol = SymbolMagnifyingglass},
+
+      // 4. Chip -> different chip (Labeled -> Card)
       {.title = @"Sign in to amctheatres.com",
        .subtitle =
            @"Gemini can use your saved info in Chrome to sign in for you.",
        .iconSymbol = SymbolKeyFill,
+       .style = ActuationWorklogItemStyle::kCard,
+       .chipText = @"Chrome Autofill",
+       .chipIconSymbol = SymbolKeyFill},
+
+      // 5. Chip -> no chip (Card -> Card)
+      {.title = @"Calendar: Movie Showtime added",
+       .subtitle = @"Sun, June 16 - 3:00 - 5:00 PM at 320 Bowling Dr.",
+       .iconSymbol = SymbolCalendar,
        .style = ActuationWorklogItemStyle::kCard},
+
+      // 6. Card (chip) -> Simple (no chip)
       {.title = @"Filling payment info",
        .subtitle = @"To continue the task, Gemini can ask Google Wallet to "
                    @"fill out credit card info.",
        .iconSymbol = SymbolCreditCardFill,
-       .style = ActuationWorklogItemStyle::kCard},
-      {.title = @"Calendar: Golden Gate Tea party",
-       .subtitle = @"Sun, June 16 - 3:00 - 5:00 PM at 320 Bowling Dr.",
-       .iconSymbol = SymbolCalendar,
-       .style = ActuationWorklogItemStyle::kCard},
+       .style = ActuationWorklogItemStyle::kCard,
+       .chipText = @"Google Wallet",
+       .chipIconSymbol = SymbolCreditCardFill},
+      {.title = @"Verifying seat selection.",
+       .style = ActuationWorklogItemStyle::kSimple},
+
+      // 7. Labeled (chip) -> Simple (no chip)
+      {.title = @"Sending ticket receipt.",
+       .subtitle = @"Mailing confirmation ticket to your inbox.",
+       .iconSymbol = SymbolMailFill,
+       .style = ActuationWorklogItemStyle::kLabeled,
+       .chipText = @"Google Wallet",
+       .chipIconSymbol = SymbolCreditCardFill},
+      {.title = @"Done.", .style = ActuationWorklogItemStyle::kSimple},
   };
 
   NSMutableArray<ActuationWorklogItem*>* steps = [NSMutableArray array];
-  for (const auto& config : kMockStepConfigs) {
+  NSMutableArray<ActuationWorklogChip*>* chips = [NSMutableArray array];
+  for (const MockStepConfig& config : kMockStepConfigs) {
     UIImage* icon = config.iconSymbol != SymbolNone
                         ? SymbolWithPointSize(config.iconSymbol, kIconSize)
                         : nil;
@@ -126,8 +154,20 @@ struct MockStepConfig {
                                               style:config.style
                                              active:YES];
     [steps addObject:item];
+
+    ActuationWorklogChip* chip = nil;
+    if (config.chipText) {
+      UIImage* chipIcon =
+          config.chipIconSymbol != SymbolNone
+              ? SymbolWithPointSize(config.chipIconSymbol, kIconSize)
+              : nil;
+      chip = [[ActuationWorklogChip alloc] initWithText:config.chipText
+                                                   icon:chipIcon];
+    }
+    [chips addObject:chip ?: (id)[NSNull null]];
   }
   _mockSteps = [steps copy];
+  _mockChips = [chips copy];
 }
 
 // Instantiates and adds the subviews to the view hierarchy.
@@ -185,7 +225,7 @@ struct MockStepConfig {
   AddSameConstraintsToSidesWithInsets(
       _descriptionLabel, self.view.safeAreaLayoutGuide,
       LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing,
-      NSDirectionalEdgeInsetsMake(kLayoutSpacing, kLayoutSpacing, 0.0,
+      NSDirectionalEdgeInsetsMake(kLayoutSpacingSmall, kLayoutSpacing, 0.0,
                                   kLayoutSpacing));
 
   AddSameConstraintsToSidesWithInsets(
@@ -197,10 +237,10 @@ struct MockStepConfig {
     _widgetHeightConstraint,
     [_widgetContainer.topAnchor
         constraintEqualToAnchor:_descriptionLabel.bottomAnchor
-                       constant:2.0 * kLayoutSpacing],
+                       constant:kLayoutSpacing],
     [_nextButton.bottomAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
-                       constant:-3.0 * kLayoutSpacing],
+                       constant:-kLayoutSpacingSmall],
     [_nextButton.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
   ]];
 }
@@ -214,9 +254,13 @@ struct MockStepConfig {
   }
 
   ActuationWorklogItem* item = _mockSteps[_currentMockIndex];
+  id chipObj = _mockChips[_currentMockIndex];
+  ActuationWorklogChip* chip =
+      [chipObj isKindOfClass:[ActuationWorklogChip class]] ? chipObj : nil;
+
   _currentMockIndex++;
 
-  [_worklogView transitionToItem:item animated:animated];
+  [_worklogView transitionToItem:item chip:chip animated:animated];
 }
 
 @end

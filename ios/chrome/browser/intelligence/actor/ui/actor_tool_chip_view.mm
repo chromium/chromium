@@ -15,6 +15,7 @@ namespace {
 
 using intelligence::actor::kSpacingMedium;
 using intelligence::actor::kSpacingSmall;
+using intelligence::actor::kSpacingTiny;
 
 // Chip-specific custom layout overrides.
 const CGFloat kChipIconSize = 18.0;
@@ -91,12 +92,16 @@ const CGFloat kChipIconSize = 18.0;
 
 #pragma mark - Private
 
-// Intialize the constraints for the subviews
+// Initialize the constraints for the subviews
 - (void)setupConstraints {
   NSDirectionalEdgeInsets insets = NSDirectionalEdgeInsetsMake(
-      kSpacingSmall, kSpacingMedium, kSpacingSmall, kSpacingMedium);
+      kSpacingTiny, kSpacingMedium, kSpacingTiny, kSpacingMedium);
   AddSameConstraintsWithInsets(_stackView, self, insets);
   AddSquareConstraints(_iconView, kChipIconSize);
+
+  [self.heightAnchor constraintGreaterThanOrEqualToConstant:
+                         intelligence::actor::kToolChipHeight]
+      .active = YES;
 }
 
 @end

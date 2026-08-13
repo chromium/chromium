@@ -18,6 +18,9 @@ inline constexpr CGFloat kSpacingLarge = 16.0;
 // Layout dimension for the timeline gutter/connector lines.
 inline constexpr CGFloat kTimelineGutterWidth = 50.0;
 
+// The fixed layout height of the actor tool chip view.
+inline constexpr CGFloat kToolChipHeight = 32.0;
+
 }  // namespace intelligence::actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_CONSTANTS_H_

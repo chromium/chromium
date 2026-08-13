@@ -5,10 +5,18 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_compact_view.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actor_tool_chip_view.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
+
+using intelligence::actor::kSpacingMedium;
+using intelligence::actor::kSpacingSmall;
+using intelligence::actor::kTimelineGutterWidth;
+using intelligence::actor::kToolChipHeight;
 
 // Animation transition duration in seconds.
 const NSTimeInterval kAnimationDuration = 0.5;
@@ -16,11 +24,15 @@ const NSTimeInterval kAnimationDuration = 0.5;
 // Spring damping ratio (1.0 = critically damped, no overshoot).
 const CGFloat kSpringDamping = 1.0;
 
+// The spacing buffer reserved at the bottom of compact timeline cells.
+const CGFloat kCompactBottomBufferHeight = kToolChipHeight + kSpacingMedium;
+
 }  // namespace
 
 // Private helper container representing a pending layout transition queue item.
 @interface ActuationWorklogPendingTransition : NSObject
 @property(nonatomic, strong) ActuationWorklogItem* item;
+@property(nonatomic, strong) ActuationWorklogChip* chip;
 @property(nonatomic, assign) BOOL animated;
 @end
 
@@ -36,6 +48,11 @@ const CGFloat kSpringDamping = 1.0;
   NSMutableArray<ActuationWorklogPendingTransition*>* _pendingTransitions;
   BOOL _isTransitioning;
   CGFloat _lastReportedHeight;
+
+  UIView* _stepsView;
+  ActorToolChipView* _toolChipView;
+  UIView* _chipContainer;
+  NSLayoutConstraint* _stepsViewHeightConstraint;
 }
 
 - (instancetype)init {
@@ -43,22 +60,56 @@ const CGFloat kSpringDamping = 1.0;
   if (self) {
     self.clipsToBounds = YES;
     _pendingTransitions = [NSMutableArray array];
-    _isTransitioning = NO;
-    _lastReportedHeight = 0.0;
+
+    _stepsView = [[UIView alloc] init];
+    _stepsView.clipsToBounds = YES;
+    _stepsView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_stepsView];
+    [NSLayoutConstraint activateConstraints:@[
+      [_stepsView.topAnchor constraintEqualToAnchor:self.topAnchor],
+      [_stepsView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [_stepsView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+    ]];
+
+    _chipContainer = [[UIView alloc] init];
+    _chipContainer.alpha = 0.0;
+    _chipContainer.hidden = YES;
+    _chipContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_chipContainer];
+
+    _toolChipView = [[ActorToolChipView alloc] init];
+    _toolChipView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_chipContainer addSubview:_toolChipView];
+    AddSameConstraints(_toolChipView, _chipContainer);
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_chipContainer.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
+                                                  constant:-kSpacingSmall],
+      [_chipContainer.leadingAnchor
+          constraintEqualToAnchor:self.leadingAnchor
+                         constant:kTimelineGutterWidth],
+    ]];
+
+    _stepsViewHeightConstraint =
+        [_stepsView.heightAnchor constraintEqualToConstant:0.0];
+    _stepsViewHeightConstraint.active = YES;
   }
   return self;
 }
 
-- (void)transitionToItem:(ActuationWorklogItem*)item animated:(BOOL)animated {
+- (void)transitionToItem:(ActuationWorklogItem*)item
+                    chip:(ActuationWorklogChip*)chip
+                animated:(BOOL)animated {
   CHECK(item);
   if (!_currentView) {
-    [self loadFirstItem:item];
+    [self loadFirstItem:item chip:chip];
     return;
   }
 
   ActuationWorklogPendingTransition* transition =
       [[ActuationWorklogPendingTransition alloc] init];
   transition.item = item;
+  transition.chip = chip;
   transition.animated = animated;
 
   [_pendingTransitions addObject:transition];
@@ -68,11 +119,16 @@ const CGFloat kSpringDamping = 1.0;
 #pragma mark - UIView
 
 - (void)layoutSubviews {
+  if (_currentView && !_isTransitioning) {
+    _stepsViewHeightConstraint.constant =
+        [_currentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+            .height;
+  }
   [super layoutSubviews];
 
   // Only update height when resting (not transitioning).
   if (_currentView && !_isTransitioning) {
-    [self notifyHeight:_currentView.bounds.size.height];
+    [self notifyHeight];
   }
 }
 
@@ -95,36 +151,70 @@ const CGFloat kSpringDamping = 1.0;
 
 // Prepares and executes a queued transition.
 - (void)executeTransition:(ActuationWorklogPendingTransition*)transition {
-  [self prepareTransitionToItem:transition.item];
+  [self prepareForTransition:transition];
 
   CGFloat targetHeight = _nextView.bounds.size.height;
   _currentTopConstraint.constant = -_currentView.bounds.size.height;
+  _stepsViewHeightConstraint.constant = targetHeight;
 
-  [self transitionToHeight:targetHeight animated:transition.animated];
+  [self applyChipTransition:transition];
+  [self applyLayoutTransition:transition];
 }
 
-// Instantiates the incoming step view and anchors it directly below the active
-// view in preparation for the slide transition.
-- (void)prepareTransitionToItem:(ActuationWorklogItem*)item {
-  _nextView = [self addViewWithItem:item
+- (void)prepareForTransition:(ActuationWorklogPendingTransition*)transition {
+  _nextView = [self addViewWithItem:transition.item
                           connector:ActuationWorklogConnectorVisibility::kBoth];
+  CGFloat chipHeight = transition.chip ? kCompactBottomBufferHeight : 0.0;
+  _nextView.bottomBufferHeight = chipHeight;
 
   [NSLayoutConstraint activateConstraints:@[
     [_nextView.topAnchor constraintEqualToAnchor:_currentView.bottomAnchor],
   ]];
 
-  // Force placement of `_nextView` directly below
+  // Force placement of `_nextView` directly below.
   [self layoutIfNeeded];
 }
 
-// Executes the height layout change transition.
-- (void)transitionToHeight:(CGFloat)targetHeight animated:(BOOL)animated {
+- (void)applyChipTransition:(ActuationWorklogPendingTransition*)transition {
+  ActuationWorklogChip* chip = transition.chip;
+  if (!chip) {
+    return;
+  }
+
+  if (!transition.animated || _chipContainer.hidden) {
+    [_toolChipView updateText:chip.text icon:chip.icon];
+    return;
+  }
+
+  // Cross dissolve only when there is already a chip present.
+  ActorToolChipView* chipView = _toolChipView;
+  [UIView transitionWithView:_toolChipView
+                    duration:kAnimationDuration
+                     options:UIViewAnimationOptionTransitionCrossDissolve
+                  animations:^{
+                    [chipView updateText:chip.text icon:chip.icon];
+                  }
+                  completion:nil];
+}
+
+// Performs the slide and height layout transition animation.
+- (void)applyLayoutTransition:(ActuationWorklogPendingTransition*)transition {
+  BOOL show = (transition.chip != nil);
+  BOOL animated = transition.animated;
+  BOOL visibilityChanged = (_chipContainer.hidden != !show);
   if (!animated) {
-    [self notifyHeight:targetHeight];
+    [self setChipVisible:show];
+    [self notifyHeight];
     [self transitionDidComplete];
     return;
   }
 
+  // Unhide the container if showing to allow the fade-in animation.
+  if (show) {
+    _chipContainer.hidden = NO;
+  }
+
+  UIView* chipContainer = _chipContainer;
   __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:kAnimationDuration
       delay:0.0
@@ -132,10 +222,14 @@ const CGFloat kSpringDamping = 1.0;
       initialSpringVelocity:0.0
       options:UIViewAnimationOptionCurveEaseInOut
       animations:^{
-        [weakSelf notifyHeight:targetHeight];
         [weakSelf layoutIfNeeded];
+        if (visibilityChanged) {
+          chipContainer.alpha = show ? 1.0 : 0.0;
+        }
+        [weakSelf notifyHeight];
       }
       completion:^(BOOL finished) {
+        [weakSelf setChipVisible:show];
         [weakSelf transitionDidComplete];
       }];
 }
@@ -146,7 +240,7 @@ const CGFloat kSpringDamping = 1.0;
     [_currentView removeFromSuperview];
     _currentView = _nextView;
     _currentTopConstraint =
-        [_currentView.topAnchor constraintEqualToAnchor:self.topAnchor];
+        [_currentView.topAnchor constraintEqualToAnchor:_stepsView.topAnchor];
     _currentTopConstraint.active = YES;
     _nextView = nil;
   }
@@ -156,16 +250,30 @@ const CGFloat kSpringDamping = 1.0;
 }
 
 // Renders the first step immediately without transition animations.
-- (void)loadFirstItem:(ActuationWorklogItem*)item {
+- (void)loadFirstItem:(ActuationWorklogItem*)item
+                 chip:(ActuationWorklogChip*)chip {
   _currentView =
       [self addViewWithItem:item
                   connector:ActuationWorklogConnectorVisibility::kBottom];
 
+  if (chip) {
+    [_toolChipView updateText:chip.text icon:chip.icon];
+  }
+  [self setChipVisible:(chip != nil)];
+
+  CGFloat chipHeight = chip ? kCompactBottomBufferHeight : 0.0;
+  _currentView.bottomBufferHeight = chipHeight;
+
   _currentTopConstraint =
-      [_currentView.topAnchor constraintEqualToAnchor:self.topAnchor];
+      [_currentView.topAnchor constraintEqualToAnchor:_stepsView.topAnchor];
   _currentTopConstraint.active = YES;
+
+  _stepsViewHeightConstraint.constant =
+      [_currentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+          .height;
+
   [self layoutIfNeeded];
-  [self notifyHeight:_currentView.bounds.size.height];
+  [self notifyHeight];
 }
 
 // Helper to instantiate, add, and horizontally anchor a new step view.
@@ -174,11 +282,11 @@ const CGFloat kSpringDamping = 1.0;
           connector:(ActuationWorklogConnectorVisibility)connector {
   ActuationWorklogItemView* view = [[ActuationWorklogItemView alloc] init];
   view.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addSubview:view];
+  [_stepsView addSubview:view];
 
   [NSLayoutConstraint activateConstraints:@[
-    [view.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [view.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+    [view.leadingAnchor constraintEqualToAnchor:_stepsView.leadingAnchor],
+    [view.trailingAnchor constraintEqualToAnchor:_stepsView.trailingAnchor],
   ]];
 
   view.connectorVisibility = connector;
@@ -186,8 +294,16 @@ const CGFloat kSpringDamping = 1.0;
   return view;
 }
 
-// Notifies `delegate` of view height changes, guarding against redundant calls.
-- (void)notifyHeight:(CGFloat)height {
+// Updates the chip container visibility and opacity states in sync.
+- (void)setChipVisible:(BOOL)visible {
+  _chipContainer.hidden = !visible;
+  _chipContainer.alpha = visible ? 1.0 : 0.0;
+}
+
+// Notifies `delegate` of view height changes, querying layout height
+// dynamically.
+- (void)notifyHeight {
+  CGFloat height = _stepsViewHeightConstraint.constant;
   if (height == _lastReportedHeight) {
     return;
   }

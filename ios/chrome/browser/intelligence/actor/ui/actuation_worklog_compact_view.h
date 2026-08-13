@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class ActuationWorklogChip;
 @class ActuationWorklogCompactView;
 @class ActuationWorklogItem;
 
@@ -31,8 +32,10 @@
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
-// Transition to display a new item.
-- (void)transitionToItem:(ActuationWorklogItem*)item animated:(BOOL)animated;
+// Transition to display a new item and its associated tool chip.
+- (void)transitionToItem:(ActuationWorklogItem*)item
+                    chip:(ActuationWorklogChip*)chip
+                animated:(BOOL)animated;
 
 @end
 
