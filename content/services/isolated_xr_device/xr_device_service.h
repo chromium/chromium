@@ -7,9 +7,9 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
-#include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace device {
 
@@ -30,8 +30,7 @@ class XrDeviceService : public mojom::XRDeviceService {
       mojo::PendingReceiver<mojom::IsolatedXRRuntimeProvider> receiver,
       mojo::PendingRemote<mojom::XRDeviceServiceHost> device_service_host)
       override;
-  void BindTestHook(mojo::PendingReceiver<device_test::mojom::XRServiceTestHook>
-                        receiver) override;
+  void BindHookForTesting(mojo::ScopedMessagePipeHandle receiver) override;
 
   mojo::Receiver<mojom::XRDeviceService> receiver_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

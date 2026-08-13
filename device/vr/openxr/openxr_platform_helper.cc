@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -29,12 +30,27 @@ namespace device {
 namespace {
 OpenXrPlatformHelper::InitializeOpenXrMockTrampolineFn
     g_initialize_openxr_mock_trampoline_fn = nullptr;
+OpenXrPlatformHelper::BindTestHookFn g_bind_test_hook_fn = nullptr;
 }  // namespace
 
 // static
 void OpenXrPlatformHelper::RegisterInitializeOpenXrMockTrampolineFn(
     InitializeOpenXrMockTrampolineFn fn) {
   g_initialize_openxr_mock_trampoline_fn = fn;
+}
+
+// static
+void OpenXrPlatformHelper::RegisterBindTestHookFn(BindTestHookFn fn) {
+  g_bind_test_hook_fn = fn;
+}
+
+// static
+void OpenXrPlatformHelper::BindHookForTesting(
+    mojo::ScopedMessagePipeHandle receiver) {
+  CHECK_IS_TEST();
+  if (g_bind_test_hook_fn) {
+    g_bind_test_hook_fn(std::move(receiver));
+  }
 }
 
 OpenXrPlatformHelper::OpenXrPlatformHelper() = default;

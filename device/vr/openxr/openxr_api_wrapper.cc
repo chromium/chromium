@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,9 +28,7 @@
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/cpp/features.h"
-#include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
-#include "device/vr/test/test_hook.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -51,14 +48,6 @@
 namespace device {
 
 namespace {
-
-mojo::PendingRemote<device_test::mojom::XRTestHook>&
-GetTestHookPendingRemote() {
-  static base::NoDestructor<
-      mojo::PendingRemote<device_test::mojom::XRTestHook>>
-      test_hook;
-  return *test_hook;
-}
 
 // We can get into a state where frames are not requested, such as when the
 // visibility state is hidden. Since OpenXR events are polled at the beginning
@@ -209,14 +198,6 @@ bool OpenXrApiWrapper::Initialize(XrInstance instance,
   }
 
   DCHECK(IsInitialized());
-
-  if (GetTestHookPendingRemote()) {
-    // Allow our mock implementation of OpenXr to be controlled by tests.
-    // The mock implementation of xrCreateInstance returns a pointer to the
-    // service test hook (g_test_helper) as the instance.
-    service_test_hook_ = reinterpret_cast<ServiceTestHook*>(instance_);
-    service_test_hook_->SetTestHook(std::move(GetTestHookPendingRemote()));
-  }
 
   return true;
 }
@@ -1826,19 +1807,6 @@ void OpenXrApiWrapper::SetXrSessionState(XrSessionState new_state) {
   }
 
   session_state_ = new_state;
-}
-
-ServiceTestHook* OpenXrApiWrapper::service_test_hook_ = nullptr;
-void OpenXrApiWrapper::SetTestHook(
-    mojo::PendingRemote<device_test::mojom::XRTestHook> hook) {
-  // This may be called from any thread - tests are responsible for
-  // maintaining thread safety, typically by not changing the test hook
-  // while presenting.
-  if (service_test_hook_) {
-    service_test_hook_->SetTestHook(std::move(hook));
-  } else {
-    GetTestHookPendingRemote() = std::move(hook);
-  }
 }
 
 }  // namespace device

@@ -25,16 +25,3 @@ if (is_android) {
     ]
   }
 }
-
-source_set("test_support") {
-  sources = [
-    "xr_test_hook_wrapper.cc",
-    "xr_test_hook_wrapper.h",
-  ]
-
-  deps = [
-    "//base",
-    "//device/vr:vr_test_hook",
-    "//device/vr/public/mojom/test:test_mojom",
-  ]
-}

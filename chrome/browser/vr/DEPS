@@ -14,11 +14,3 @@ include_rules = [
   # other files that would like to include it.
   "-third_party/openxr/src/include/openxr/openxr_platform.h"
 ]
-
-# Test files may access VRService as they will either move with it, or we can
-# expose test-specific interfaces if needed.
-specific_include_rules = {
-  ".*test.*\\.cc": [
-    "+device/vr/test/test_hook.h",
-  ]
-}

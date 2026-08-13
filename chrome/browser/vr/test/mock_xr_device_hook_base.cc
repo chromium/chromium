@@ -13,7 +13,6 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/test/controller_frame_data.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -34,12 +33,8 @@ MockXRDeviceHookBase::MockXRDeviceHookBase() {
   // spinning up/holding onto and setting the test hook on the XrRuntimeManager,
   // which could pass on to providers.
 #if BUILDFLAG(IS_WIN)
-  content::GetXRDeviceServiceForTesting()->BindTestHook(
-      service_test_hook_.BindNewPipeAndPassReceiver());
-
-  mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-  service_test_hook_->SetTestHook(
-      receiver_.BindNewPipeAndPassRemote(thread_->task_runner()));
+  content::GetXRDeviceServiceForTesting()->BindHookForTesting(
+      receiver_.BindNewPipeAndPassRemote(thread_->task_runner()).PassPipe());
 #elif BUILDFLAG(IS_ANDROID)
   webxr::OpenXrPlatformHelperAndroid::SetXrHostActivityDisabledForTesting(true);
   OpenXrTestHelper::Get().SetTestHook(
@@ -59,10 +54,11 @@ void MockXRDeviceHookBase::StopHooking() {
   // Ensure that this is being called from our main thread, and not the mock
   // device thread.
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
-  // We don't call service_test_hook_->SetTestHook(mojo::NullRemote()), since
-  // that will potentially deadlock with reentrant or crossing synchronous mojo
-  // calls.
-  service_test_hook_.reset();
+  // Note: On Windows we do not attempt to clear the test hook in the service
+  // process with a synchronous call, since that could deadlock with reentrant
+  // or crossing synchronous Mojo calls from active frames. Instead, resetting
+  // `receiver_` below will close the pipe and trigger disconnection handling
+  // in the service process's OpenXrTestHelper.
 #if BUILDFLAG(IS_ANDROID)
   OpenXrTestHelper::Get().SetTestHook(mojo::NullRemote());
 #endif

@@ -15,6 +15,7 @@
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "device/vr/vr_export.h"
 #include "ipc/constants.mojom-forward.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/cpp/renderer_process_id.h"
 
 namespace device {
@@ -56,6 +57,10 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   using InitializeOpenXrMockTrampolineFn = bool (*)();
   static void RegisterInitializeOpenXrMockTrampolineFn(
       InitializeOpenXrMockTrampolineFn fn);
+
+  using BindTestHookFn = void (*)(mojo::ScopedMessagePipeHandle);
+  static void RegisterBindTestHookFn(BindTestHookFn fn);
+  static void BindHookForTesting(mojo::ScopedMessagePipeHandle receiver);
 
   virtual ~OpenXrPlatformHelper();
 

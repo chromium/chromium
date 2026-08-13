@@ -17,7 +17,6 @@
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
-#include "device/vr/test/test_hook.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -36,7 +35,7 @@ namespace gfx {
 class Transform;
 }  // namespace gfx
 
-class OpenXrTestHelper : public device::ServiceTestHook {
+class OpenXrTestHelper {
  public:
   static OpenXrTestHelper& Get();
 
@@ -51,8 +50,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   void TestFailure();
 
   // TestHookRegistration
-  void SetTestHook(
-      mojo::PendingRemote<device_test::mojom::XRTestHook> hook) override;
+  void SetTestHook(mojo::PendingRemote<device_test::mojom::XRTestHook> hook);
 
   // Helper methods called by the mock OpenXR runtime. These methods will
   // call back into the test hook, thus communicating with the test object

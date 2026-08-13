@@ -4,7 +4,6 @@
 
 module device.mojom;
 
-import "device/vr/public/mojom/test/browser_test_interfaces.mojom";
 import "device/vr/public/mojom/vr_service.mojom";
 import "device/vr/public/mojom/xr_device.mojom";
 import "device/vr/public/mojom/xr_session.mojom";
@@ -202,9 +201,10 @@ interface XRDeviceService {
   BindRuntimeProvider(pending_receiver<IsolatedXRRuntimeProvider> receiver,
       pending_remote<XRDeviceServiceHost> host);
 
-  // Binds the main testing interface pipe in the service. Only used by
-  // browser tests.
-  BindTestHook(pending_receiver<device_test.mojom.XRServiceTestHook> receiver);
+  // Registers a test hook that can be used to control the device service.
+  // Used on Windows to connect mock OpenXR hooks to the isolated device
+  // service.
+  BindHookForTesting(handle<message_pipe> receiver);
 };
 
 // XRDeviceServiceHost is implemented in the browser process and called from

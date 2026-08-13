@@ -256,10 +256,7 @@ if (enable_vr) {
         "openxr/scoped_openxr_object.h",
       ]
 
-      deps += [
-        ":vr_test_hook",
-        "//third_party/blink/public:blink_headers",
-      ]
+      deps += [ "//third_party/blink/public:blink_headers" ]
 
       if (is_win) {
         libs = [
@@ -329,7 +326,6 @@ if (enable_vr) {
     defines = [ "IS_VR_TEST_HOOK_IMPL" ]
 
     sources = [
-      "test/test_hook.h",
       "test/webxr_test_gamepad_utils.cc",
       "test/webxr_test_gamepad_utils.h",
     ]

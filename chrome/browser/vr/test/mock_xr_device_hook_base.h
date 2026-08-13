@@ -117,7 +117,6 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
 
  private:
   mojo::Receiver<device_test::mojom::XRTestHook> receiver_{this};
-  mojo::Remote<device_test::mojom::XRServiceTestHook> service_test_hook_;
   std::atomic_bool can_create_session_ = true;
   std::atomic_uint32_t frame_count_ = 0;
   std::atomic_uint32_t target_frame_count_ = 0;

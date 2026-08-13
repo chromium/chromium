@@ -27,9 +27,7 @@
 #include "device/vr/openxr/openxr_visibility_mask_handler.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
-#include "device/vr/public/mojom/test/browser_test_interfaces.mojom-forward.h"
 #include "device/vr/vr_export.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -50,8 +48,6 @@ namespace device {
 
 class OpenXrExtensionHelper;
 class OpenXRInputHelper;
-class VRTestHook;
-class ServiceTestHook;
 
 using SessionStartedCallback =
     base::OnceCallback<void(mojom::XRRuntimeSessionOptionsPtr options,
@@ -86,8 +82,6 @@ class OpenXrApiWrapper {
   static std::vector<XrEnvironmentBlendMode> GetSupportedBlendModes(
       XrInstance instance,
       XrSystemId system);
-
-  static VRTestHook* GetTestHook();
 
   bool UpdateAndGetSessionEnded();
 
@@ -153,9 +147,6 @@ class OpenXrApiWrapper {
   uint32_t GetRecommendedSwapchainSampleCount() const;
 
   uint16_t GetMaxRenderLayers() const;
-
-  static void DEVICE_VR_EXPORT
-  SetTestHook(mojo::PendingRemote<device_test::mojom::XRTestHook> hook);
 
  private:
   void Reset();
@@ -225,9 +216,6 @@ class OpenXrApiWrapper {
   SessionEndedCallback on_session_ended_callback_;
   VisibilityChangedCallback visibility_changed_callback_;
   mojom::XRRuntimeSessionOptionsPtr session_options_;
-
-  // Testing objects
-  static ServiceTestHook* service_test_hook_;
 
   std::unique_ptr<OpenXRInputHelper> input_helper_;
 
