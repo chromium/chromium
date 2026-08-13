@@ -18,6 +18,7 @@ export function getHtml(this: IndigoImageReplacementAppElement) {
 ${this.showOverlay_ ? html`
   <indigo-motion-overlay
       .animationState="${this.overlayAnimationState_}"
+      @entry-complete="${this.onEntryComplete_}"
       @motion-complete="${this.onMotionComplete_}">
   </indigo-motion-overlay>
 ` : ''}

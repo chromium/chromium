@@ -44,6 +44,8 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
   protected accessor imageSrc_: string = '';
   protected accessor objectFit_: ObjectFit = 'contain';
   private invocationId_: number|undefined;
+  private isGenerating_: boolean = false;
+  private entryAnimationResolve_: (() => void)|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -52,6 +54,12 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
 
   protected onMotionComplete_() {
     this.showOverlay_ = false;
+    this.overlayAnimationState_ = 'none';
+  }
+
+  protected onEntryComplete_() {
+    this.entryAnimationResolve_?.();
+    this.entryAnimationResolve_ = null;
   }
 
   private async initialize_() {
@@ -74,20 +82,39 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
     }
     if (originalImage.value instanceof ArrayBuffer) {
       const blob = new Blob([originalImage.value], {type: 'image/webp'});
-      await this.updateAndDecodeImage_(URL.createObjectURL(blob));
+      this.imageSrc_ = URL.createObjectURL(blob);
+      await this.updateComplete;
+      await this.$.image.decode();
     }
   }
 
   private async loadReplacementImage_() {
+    if (this.isGenerating_) {
+      return;
+    }
+    this.isGenerating_ = true;
+    const entryAnimationPromise = new Promise<void>(resolve => {
+      this.entryAnimationResolve_ = resolve;
+    });
     this.startAnimation_();
     try {
-      const imageData = await chrome.indigoPrivate.getReplacementImage();
+      const [imageData] = await Promise.all([
+        chrome.indigoPrivate.getReplacementImage(),
+        entryAnimationPromise,
+      ]);
       if (typeof imageData.value === 'string') {
+        const img = new Image();
+        img.src = imageData.value;
+        await img.decode();
+
         URL.revokeObjectURL(this.imageSrc_);
-        await this.updateAndDecodeImage_(imageData.value);
-        this.objectFit_ = this.computeObjectFitForReplacement_();
+        this.imageSrc_ = imageData.value;
+        this.objectFit_ = this.computeObjectFitForReplacement_(img);
+        await this.updateComplete;
       }
     } finally {
+      this.entryAnimationResolve_ = null;
+      this.isGenerating_ = false;
       this.overlayAnimationState_ = 'exit';
     }
   }
@@ -97,14 +124,9 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
     this.overlayAnimationState_ = 'entry';
   }
 
-  private async updateAndDecodeImage_(src: string) {
-    this.imageSrc_ = src;
-    await this.updateComplete;
-    await this.$.image.decode();
-  }
-
-  private computeObjectFitForReplacement_(): 'contain'|'cover' {
-    const {naturalWidth, naturalHeight} = this.$.image;
+  private computeObjectFitForReplacement_(
+      image: {naturalWidth: number, naturalHeight: number}): 'contain'|'cover' {
+    const {naturalWidth, naturalHeight} = image;
     if (naturalWidth !== naturalHeight) {
       return 'contain';
     }
