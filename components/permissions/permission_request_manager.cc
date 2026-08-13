@@ -607,7 +607,7 @@ void PermissionRequestManager::OnVisibilityChanged(
 }
 
 const std::vector<std::unique_ptr<PermissionRequest>>&
-PermissionRequestManager::Requests() {
+PermissionRequestManager::Requests() const {
   return requests_;
 }
 

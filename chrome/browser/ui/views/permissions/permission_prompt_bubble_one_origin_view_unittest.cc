@@ -76,7 +76,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   }
 
   const std::vector<std::unique_ptr<permissions::PermissionRequest>>& Requests()
-      override {
+      const override {
     return requests_;
   }
 

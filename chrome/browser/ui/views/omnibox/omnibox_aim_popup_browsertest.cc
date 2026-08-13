@@ -815,7 +815,7 @@ class TestPermissionPromptDelegate
   }
 
   const std::vector<std::unique_ptr<permissions::PermissionRequest>>& Requests()
-      override {
+      const override {
     return request_list_;
   }
   GURL GetRequestingOrigin() const override {

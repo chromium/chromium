@@ -12,7 +12,7 @@ TestPermissionBubbleViewDelegate::TestPermissionBubbleViewDelegate() = default;
 TestPermissionBubbleViewDelegate::~TestPermissionBubbleViewDelegate() = default;
 
 const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
-TestPermissionBubbleViewDelegate::Requests() {
+TestPermissionBubbleViewDelegate::Requests() const {
   return requests_;
 }
 

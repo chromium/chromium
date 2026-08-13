@@ -61,8 +61,8 @@ class PermissionPrompt {
 
     // These pointers should not be stored as the actual request objects may be
     // deleted upon navigation and so on.
-    virtual const std::vector<std::unique_ptr<PermissionRequest>>&
-    Requests() = 0;
+    virtual const std::vector<std::unique_ptr<PermissionRequest>>& Requests()
+        const = 0;
 
     // Get the single origin for the current set of requests.
     virtual GURL GetRequestingOrigin() const = 0;

@@ -396,8 +396,9 @@ bool PermissionUtil::IsLowPriorityPermissionRequest(
   return request->request_type() == RequestType::kNotifications ||
          request->request_type() == RequestType::kGeolocation;
 }
+
 bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
-    PermissionPrompt::Delegate* delegate,
+    const PermissionPrompt::Delegate* delegate,
     content::WebContents* web_contents) {
   if (permissions::PermissionsClient::
           AllowEmbeddedPermissionPromptForAllowlistedSurfaces() &&
@@ -409,8 +410,9 @@ bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
   }
   return ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate);
 }
+
 bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
-    PermissionPrompt::Delegate* delegate) {
+    const PermissionPrompt::Delegate* delegate) {
   if (!base::FeatureList::IsEnabled(blink::features::kGeolocationElement) &&
       !base::FeatureList::IsEnabled(blink::features::kUserMediaElement) &&
       !base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {

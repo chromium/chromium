@@ -96,7 +96,7 @@ class PermissionUtil {
   // - The request is initiated from a permission element.
   // - The request type is permission element supported type.
   static bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
-      PermissionPrompt::Delegate* delegate);
+      const PermissionPrompt::Delegate* delegate);
 
   // Performs the same checks as
   // `ShouldCurrentRequestUsePermissionElementSecondaryUI(
@@ -104,7 +104,7 @@ class PermissionUtil {
   // is a trusted internal surface like omnibox popup, new tab page, contextual
   // tasks, AND the searchbox embedded permission prompt flag is be enabled.
   static bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
-      PermissionPrompt::Delegate* delegate,
+      const PermissionPrompt::Delegate* delegate,
       content::WebContents* web_contents);
 
   // Checks whether the given ContentSettingsType is a guard content setting,

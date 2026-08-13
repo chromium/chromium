@@ -162,7 +162,7 @@ class MockPermissionRequestManager
   }
 
   const std::vector<std::unique_ptr<permissions::PermissionRequest>>& Requests()
-      override {
+      const override {
     return requests_;
   }
 

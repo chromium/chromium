@@ -22,7 +22,7 @@ class MockPermissionPromptDelegate : public PermissionPrompt::Delegate {
   MOCK_METHOD(const std::vector<std::unique_ptr<PermissionRequest>>&,
               Requests,
               (),
-              (override));
+              (const, override));
   MOCK_METHOD(GURL, GetRequestingOrigin, (), (const, override));
   MOCK_METHOD(GURL, GetEmbeddingOrigin, (), (const, override));
   MOCK_METHOD(void, Accept, (const PromptOptions&), (override));
