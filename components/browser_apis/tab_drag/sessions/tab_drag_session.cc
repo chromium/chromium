@@ -381,7 +381,12 @@ void TabDragSession::CompleteReattachment() {
 
   drag_mode_ = DragMode::kAttaching;
   TabDragWindowAdapter* detached_window = registry()->Get(dragged_window_);
-  CHECK(detached_window);
+  if (!detached_window) {
+    drag_mode_ = DragMode::kRunningWindowMoveLoop;
+    injector_->GetSessionListener().OnSessionCancelled();
+    EndSession();
+    return;
+  }
 
   auto migrate_result =
       detached_window->MigrateTabs(target.window_id, dragged_tabs_);

@@ -203,14 +203,21 @@ tabs_api::DragMoveLoopResult TabDragWindowAdapterImpl::RunWindowMoveLoop(
 
   move_callback_ = std::move(move_callback);
 
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observation(
-      this);
-  observation.Observe(widget);
+  widget_observation_.Reset();
+  widget_observation_.Observe(widget);
+
+  base::WeakPtr<TabDragWindowAdapterImpl> weak_this =
+      weak_factory_.GetWeakPtr();
 
   views::Widget::MoveLoopResult result =
       widget->RunMoveLoop(drag_offset, views::Widget::MoveLoopSource::kMouse,
                           views::Widget::MoveLoopEscapeBehavior::kHide);
 
+  if (!weak_this) {
+    return tabs_api::DragMoveLoopResult::kCanceled;
+  }
+
+  widget_observation_.Reset();
   move_callback_.Reset();
 
   return result == views::Widget::MoveLoopResult::kSuccessful
@@ -321,4 +328,8 @@ void TabDragWindowAdapterImpl::OnWidgetBoundsChanged(
   if (move_callback_) {
     move_callback_.Run(display::Screen::Get()->GetCursorScreenPoint());
   }
+}
+
+void TabDragWindowAdapterImpl::OnWidgetDestroyed(views::Widget* widget) {
+  widget_observation_.Reset();
 }
