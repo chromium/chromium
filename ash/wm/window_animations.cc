@@ -20,17 +20,12 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/check.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/scoped_observation.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -111,31 +106,6 @@ base::TimeDelta GetCrossFadeDuration(aura::Window* window,
   const auto kRange = kCrossFadeMaxDuration - kCrossFadeDuration;
   return kCrossFadeDuration + factor * kRange;
 }
-
-// Defines an observer that can be used to monitor the destruction of a given
-// layer and dump without crashing when that happens. This is needed to
-// investigate a crash that happens within `CrossFadeAnimationInternal()` due to
-// using a layer after it has been destroyed.
-// TODO(http://b/333095196): Remove this once the root cause of the crash is
-// found and fixed.
-class LayerDeletionDumper : public ui::LayerObserver {
- public:
-  explicit LayerDeletionDumper(ui::Layer* layer) {
-    observation_.Observe(layer);
-  }
-  LayerDeletionDumper(const LayerDeletionDumper&) = delete;
-  LayerDeletionDumper& operator=(const LayerDeletionDumper&) = delete;
-  ~LayerDeletionDumper() override = default;
-
-  // ui::LayerObserver:
-  void LayerDestroyed(ui::Layer* layer) override {
-    observation_.Reset();
-    base::debug::DumpWithoutCrashing();
-  }
-
- private:
-  base::ScopedObservation<ui::Layer, ui::LayerObserver> observation_{this};
-};
 
 // Observer for a window cross-fade animation. If either the window closes or
 // the layer's animation completes, it deletes the layer and removes itself as
@@ -325,14 +295,6 @@ void CrossFadeAnimationInternal(
   const gfx::Rect new_bounds(window->bounds());
   const bool old_on_top = (old_bounds.width() > new_bounds.width());
 
-  SCOPED_CRASH_KEY_BOOL("333095196", "animate_old_layer_transform",
-                        animate_old_layer_transform);
-  SCOPED_CRASH_KEY_BOOL("333095196", "old_on_top", old_on_top);
-  SCOPED_CRASH_KEY_STRING256("333095196", "window_title",
-                             base::UTF16ToUTF8(window->GetTitle()));
-  SCOPED_CRASH_KEY_STRING256("333095196", "new_layer_begin",
-                             base::StringPrintf("%p", new_layer()));
-
   // Ensure the higher-resolution layer is on top.
   if (old_on_top)
     old_layer->parent()->StackBelow(new_layer(), old_layer);
@@ -387,16 +349,6 @@ void CrossFadeAnimationInternal(
     old_layer = nullptr;
   }
 
-  SCOPED_CRASH_KEY_STRING256("333095196", "new_layer_mid",
-                             base::StringPrintf("%p", new_layer()));
-
-  // Create an observer that would dump without crashing if `new_layer()` gets
-  // destroyed within the remaining scope of this function. This is needed to
-  // investigate the root cause of http://b/333095196.
-  // TODO(http://b/333095196): Remove this code and all crash keys once the
-  // issue is resolved.
-  LayerDeletionDumper deletion_dumper(new_layer());
-
   // Set the new layer's current transform, such that the user sees a scaled
   // version of the window with the original bounds at the original position.
   gfx::Transform in_transform;
@@ -440,12 +392,6 @@ void CrossFadeAnimationInternal(
       // New layer is on top, fade it in.
       new_layer()->SetOpacity(kWindowAnimation_ShowOpacity);
     }
-    SCOPED_CRASH_KEY_NUMBER("333095196", "animation_duration_ms",
-                            animation_duration.InMillisecondsF());
-    SCOPED_CRASH_KEY_BOOL("333095196", "is_destroying",
-                          window->is_destroying());
-    SCOPED_CRASH_KEY_STRING256("333095196", "new_layer_end",
-                               base::StringPrintf("%p", new_layer()));
     new_layer()->SetTransform(gfx::Transform());
   }
 }

@@ -43,7 +43,6 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
@@ -1185,9 +1184,6 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& bounds_in_parent,
                                       *float_state);
     return;
   }
-
-  SCOPED_CRASH_KEY_NUMBER("333095196", "state_type",
-                          std::to_underlying(GetStateType()));
 
   CrossFadeAnimation(window_, std::move(old_layer_owner));
 }
