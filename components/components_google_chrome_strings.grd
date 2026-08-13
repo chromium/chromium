@@ -310,15 +310,17 @@
       </message>
 
       <!-- Desktop-to-Mobile Promo Notifications -->
-      <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Password promo notification.">
-        Chrome Tip: Save Passwords
-      </message>
-      <message name="IDS_IOS_DESKTOP_SAFE_BROWSING_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Enhanced Safe Browsing promo notification.">
-        Chrome Tip: Enhanced Safe Browsing
-      </message>
-      <message name="IDS_IOS_DESKTOP_LENS_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Lens promo notification.">
-        Chrome Tip: Search With Lens
-      </message>
+      <if expr="not is_android">
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Password promo notification.">
+          Chrome Tip: Save Passwords
+        </message>
+        <message name="IDS_IOS_DESKTOP_SAFE_BROWSING_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Enhanced Safe Browsing promo notification.">
+          Chrome Tip: Enhanced Safe Browsing
+        </message>
+        <message name="IDS_IOS_DESKTOP_LENS_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Lens promo notification.">
+          Chrome Tip: Search With Lens
+        </message>
+      </if>
     </messages>
   </release>
 </grit>

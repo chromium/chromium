@@ -4,6 +4,7 @@
 
 #include "components/desktop_to_mobile_promos/desktop_to_mobile_promo_utils.h"
 
+#include "build/build_config.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 
@@ -12,6 +13,7 @@ namespace desktop_to_mobile_promos {
 PromoNotificationStringIDs GetPromoNotificationStringIDs(PromoType promo_type) {
   PromoNotificationStringIDs ids;
 
+#if !BUILDFLAG(IS_ANDROID)
   switch (promo_type) {
     case PromoType::kPassword:
       ids.title_id = IDS_IOS_DESKTOP_PASSWORD_PROMO_NOTIFICATION_TITLE;
@@ -37,6 +39,7 @@ PromoNotificationStringIDs GetPromoNotificationStringIDs(PromoType promo_type) {
     case PromoType::kPayment:
       break;
   }
+#endif
 
   return ids;
 }
