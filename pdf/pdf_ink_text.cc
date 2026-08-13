@@ -184,7 +184,7 @@ InkTextBoxAttributes::InkTextBoxAttributes(gfx::RectF rect,
                                            PageOrientation viewport_orientation,
                                            bool is_bold,
                                            bool is_italic,
-                                           const std::string& text)
+                                           std::string_view text)
     : rect(rect),
       color(color),
       css_font_size(css_font_size),
