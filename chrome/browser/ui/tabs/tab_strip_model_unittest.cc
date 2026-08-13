@@ -2840,6 +2840,71 @@ TEST_F(TabStripModelTest, ClosingTabInFocusedGroupSelectsAdjacentTab) {
   EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
 }
 
+TEST_F(TabStripModelTest, RotateFocusedGroup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  // Case 1: If there are no tab groups, rotating focus is a no-op.
+  PrepareTabs(tabstrip(), 2);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/false);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+
+  // Case 2: If there is one tab group, rotation toggles between unfocused and
+  // the group.
+  tab_groups::TabGroupId group0 = tabstrip()->AddToNewGroup({0});
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+
+  // Rotating forward cycles from unfocused to group0, then back to unfocused.
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  EXPECT_EQ(group0, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+
+  // Rotating backward cycles from unfocused to group0, then back to unfocused.
+  tabstrip()->RotateFocusedGroup(/*forward=*/false);
+  EXPECT_EQ(group0, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/false);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+
+  // Case 3: When multiple groups exist, rotation wraps around in a carousel.
+  PrepareTabs(tabstrip(), 3);
+  tab_groups::TabGroupId group1 = tabstrip()->AddToNewGroup({2});
+  tab_groups::TabGroupId group2 = tabstrip()->AddToNewGroup({4});
+
+  // Rotating forward transitions through all groups in visual order, returns
+  // to unfocused, and wraps around.
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  EXPECT_EQ(group0, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  EXPECT_EQ(group1, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  EXPECT_EQ(group2, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/true);
+  EXPECT_EQ(group0, tabstrip()->GetFocusedGroup());
+
+  // Reset to the unfocused state.
+  tabstrip()->SetFocusedGroup(std::nullopt);
+
+  // Rotating backward transitions through all groups in reverse visual order,
+  // returns to unfocused, and wraps around.
+  tabstrip()->RotateFocusedGroup(/*forward=*/false);
+  EXPECT_EQ(group2, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/false);
+  EXPECT_EQ(group1, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/false);
+  EXPECT_EQ(group0, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/false);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  tabstrip()->RotateFocusedGroup(/*forward=*/false);
+  EXPECT_EQ(group2, tabstrip()->GetFocusedGroup());
+}
+
 TEST_F(TabStripModelTest, SplitTabPinning) {
   for (bool split_is_selected : {true, false}) {
     for (bool use_left_tab : {true, false}) {

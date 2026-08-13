@@ -322,6 +322,48 @@ void TabStripModel::SetFocusedGroup(
   }
 }
 
+void TabStripModel::RotateFocusedGroup(bool forward) {
+  CHECK(base::FeatureList::IsEnabled(features::kTabGroupsFocusing));
+  if (!group_model_) {
+    return;
+  }
+
+  std::vector<tab_groups::TabGroupId> groups_in_order =
+      group_model_->ListTabGroups();
+  if (groups_in_order.empty()) {
+    return;
+  }
+
+  std::ranges::sort(groups_in_order, {}, [&](const tab_groups::TabGroupId& id) {
+    return group_model_->GetTabGroup(id)->ListTabs().start();
+  });
+
+  std::optional<tab_groups::TabGroupId> current_focused_group =
+      GetFocusedGroup();
+
+  if (!current_focused_group.has_value()) {
+    SetFocusedGroup(forward ? groups_in_order.front() : groups_in_order.back());
+    return;
+  }
+
+  auto it = std::ranges::find(groups_in_order, *current_focused_group);
+  if (it == groups_in_order.end()) {
+    SetFocusedGroup(std::nullopt);
+    return;
+  }
+
+  if (forward) {
+    auto next_it = std::next(it);
+    SetFocusedGroup(next_it != groups_in_order.end()
+                        ? std::make_optional(*next_it)
+                        : std::nullopt);
+  } else {
+    SetFocusedGroup(it != groups_in_order.begin()
+                        ? std::make_optional(*std::prev(it))
+                        : std::nullopt);
+  }
+}
+
 TabStripModel::~TabStripModel() {
   for (auto& observer : observers_) {
     observer.ModelDestroyed(TabStripModelObserver::ModelPasskey(), this);

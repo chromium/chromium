@@ -709,6 +709,13 @@ class TabStripModel {
   // Sets the group to be focused.
   void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group);
 
+  // Rotates the focused tab group between the unfocused state and active tab
+  // groups in the strip. Requires `features::kTabGroupsFocusing` to be enabled
+  // (CHECKs). If there are no tab groups, this is a no-op. When `forward` is
+  // true, rotates towards higher-indexed groups; otherwise rotates in reverse
+  // order.
+  void RotateFocusedGroup(bool forward);
+
   // Returns true if one or more of the tabs pointed to by |indices| are
   // supported by read later.
   bool IsReadLaterSupportedForAny(const std::vector<int>& indices);
