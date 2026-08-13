@@ -175,6 +175,9 @@ packager_builder(
         category = "packager|android",
         short_name = "avd",
     ),
+    # Allow build triggers to override this prop. Overriding any other prop
+    # will lead to a buildbucket rejection.
+    allowed_property_overrides = ["$build/avd_packager"],
     properties = {
         "$build/avd_packager": {
             "avd_configs": [
