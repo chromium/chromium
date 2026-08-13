@@ -485,3 +485,22 @@ TEST_F(ComposeboxHandlerTest, NextboxAnimationLimiting) {
     EXPECT_THAT(dict.FindInt("nextbox_lifetime_count"), testing::Optional(20));
   }
 }
+
+TEST_F(ComposeboxHandlerTest, SubmitQuery_NullInputStateModel) {
+  mock_page_.receiver_.reset();
+  mock_searchbox_page_.receiver_.reset();
+
+  auto test_handler = std::make_unique<ComposeboxHandler>(
+      mojo::PendingReceiver<composebox::mojom::PageHandler>(),
+      mock_page_.BindAndGetRemote(),
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      mock_searchbox_page_.BindAndGetRemote(), profile(), web_contents(),
+      base::BindLambdaForTesting(
+          []() -> contextual_search::ContextualSearchSessionHandle* {
+            return nullptr;
+          }),
+      base::DoNothing());
+
+  // This should not crash and should return early.
+  test_handler->SubmitQuery("test query", 1, false, false, false, false, false);
+}
