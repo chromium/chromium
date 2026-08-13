@@ -11,8 +11,8 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.webkit.JavascriptInterface;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -65,22 +65,24 @@ public class PostMessageTest extends AwParameterizedTest {
         public static class Data {
             public final String mMessage;
             public final String mOrigin;
-            public final int[] mPorts;
 
-            public Data(String message, String origin, int[] ports) {
+            public Data(String message, String origin) {
                 mMessage = message;
                 mOrigin = origin;
-                mPorts = ports;
             }
         }
 
         @JavascriptInterface
-        public void setMessageParams(String message, String origin, int[] ports) {
-            mQueue.add(new MessageObject.Data(message, origin, ports));
+        public void setMessageParams(String message, String origin) {
+            mQueue.add(new MessageObject.Data(message, origin));
         }
 
-        public MessageObject.Data waitForMessage() throws Exception {
-            return AwActivityTestRule.waitForNextQueueElement(mQueue);
+        public MessageObject.Data waitForMessage() {
+            try {
+                return AwActivityTestRule.waitForNextQueueElement(mQueue);
+            } catch (Exception e) {
+                throw new AssertionError(e);
+            }
         }
     }
 
@@ -172,7 +174,7 @@ public class PostMessageTest extends AwParameterizedTest {
             "<!DOCTYPE html><html><body>"
                     + "    <script>"
                     + "        onmessage = function (e) {"
-                    + "            messageObject.setMessageParams(e.data, e.origin, e.ports);"
+                    + "            messageObject.setMessageParams(e.data, e.origin);"
                     + "            if (e.ports != null && e.ports.length > 0) {"
                     + "               e.ports[0].postMessage(\""
                     + JS_MESSAGE
@@ -341,6 +343,8 @@ public class PostMessageTest extends AwParameterizedTest {
                                     new MessagePayload("1"),
                                     mWebServer.getBaseUrl(),
                                     new MessagePort[] {channel[1]});
+                            // Wait for the message to arrive.
+                            mMessageObject.waitForMessage();
                             // Retransfer the port. This should fail with an exception.
                             try {
                                 mAwContents.postMessageToMainFrame(
@@ -603,6 +607,8 @@ public class PostMessageTest extends AwParameterizedTest {
                                     new MessagePayload("1"),
                                     mWebServer.getBaseUrl(),
                                     new MessagePort[] {channel[1]});
+                            // Wait for the message to arrive.
+                            mMessageObject.waitForMessage();
                             try {
                                 channel[1].close();
                             } catch (IllegalStateException ex) {
@@ -629,6 +635,8 @@ public class PostMessageTest extends AwParameterizedTest {
                                     new MessagePayload("1"),
                                     mWebServer.getBaseUrl(),
                                     new MessagePort[] {channel1[1]});
+                            // Wait for the message to arrive.
+                            mMessageObject.waitForMessage();
                             MessagePort[] channel2 = mAwContents.createMessageChannel();
                             channel1[0].postMessage(
                                     new MessagePayload("2"), new MessagePort[] {channel2[0]});
@@ -992,7 +1000,7 @@ public class PostMessageTest extends AwParameterizedTest {
                     + "            if (e.data == \""
                     + WORKER_MESSAGE
                     + "\") {"
-                    + "                messageObject.setMessageParams(e.data, e.origin, e.ports);"
+                    + "                messageObject.setMessageParams(e.data, e.origin);"
                     + "            }"
                     + "        };"
                     + "   </script>"
@@ -1360,6 +1368,9 @@ public class PostMessageTest extends AwParameterizedTest {
                             // Post port1 to main frame.
                             mAwContents.postMessageToMainFrame(
                                     new MessagePayload("1"), baseUrl, new MessagePort[] {ports[1]});
+                            // Wait for the message to arrive.
+                            mMessageObject.waitForMessage();
+
                             Assert.assertTrue(ports[1].isTransferred());
                             Assert.assertFalse(ports[1].isClosed());
                             Assert.assertFalse(ports[1].isStarted());
