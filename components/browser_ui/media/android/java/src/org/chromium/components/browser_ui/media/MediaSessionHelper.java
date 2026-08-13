@@ -20,12 +20,12 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ScreenStateReceiver;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -101,10 +101,13 @@ public class MediaSessionHelper implements MediaImageCallback {
         }
     }
 
-    public static @Nullable MediaSessionHelper sInstanceForTesting;
-
     public ScreenStateReceiver.ScreenStateObserver getScreenStateObserverForTesting() {
         return mScreenStateObserver;
+    }
+
+    public AudioBecomingNoisyReceiver.AudioBecomingNoisyObserver
+            getAudioBecomingNoisyObserverForTesting() {
+        return mAudioBecomingNoisyObserver;
     }
 
     // To track deep sleep duration between screen off and screen on.
@@ -134,9 +137,9 @@ public class MediaSessionHelper implements MediaImageCallback {
 
                 @Override
                 public void onScreenOn(Context context, Intent intent) {
-                    // Only pause if the feature is enabled to avoid regressing background audio
-                    // on standard Android phones.
-                    if (!MediaFeatureList.sPauseMediaOnSystemSleepAndroid.isEnabled()) return;
+                    // Only pause on desktop devices (e.g. laptop lid close) to avoid regressing
+                    // background audio on standard Android phones.
+                    if (!DeviceInfo.isDesktop()) return;
 
                     // If the baseline is INVALID_DEEP_SLEEP_TIME, we didn't observe a Screen Off
                     // event first.
@@ -169,13 +172,9 @@ public class MediaSessionHelper implements MediaImageCallback {
                         public void onAudioBecomingNoisy() {
                             if (mIsPaused) return;
 
-                            // Query native flag directly via JNI.
-                            boolean noPause =
-                                    MediaFeatureMap.getInstance()
-                                            .isEnabledInNative(
-                                                    MediaFeatureList
-                                                            .NO_PAUSE_MEDIA_ON_HEADPHONE_UNPLUG);
-                            boolean shouldPause = !noPause;
+                            // On desktop devices, do not pause media when headphones are unplugged
+                            // to align with standard desktop behavior.
+                            boolean shouldPause = !DeviceInfo.isDesktop();
 
                             if (mMediaSessionObserver != null
                                     && mMediaSessionObserver.getMediaSession() != null) {
@@ -558,11 +557,6 @@ public class MediaSessionHelper implements MediaImageCallback {
 
         ScreenStateReceiver.addObserver(mScreenStateObserver);
         AudioBecomingNoisyReceiver.addObserver(mAudioBecomingNoisyObserver);
-
-        if (BuildConfig.IS_FOR_TEST) {
-            sInstanceForTesting = this;
-            ResettersForTesting.register(() -> sInstanceForTesting = null);
-        }
     }
 
     /**

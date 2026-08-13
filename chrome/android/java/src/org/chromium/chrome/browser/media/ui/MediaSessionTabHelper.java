@@ -151,4 +151,9 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate, UserD
         MediaNotificationManager.activateAndroidMediaSession(
                 mTab.getId(), R.id.media_playback_notification);
     }
+
+    @VisibleForTesting
+    public @Nullable MediaSessionHelper getMediaSessionHelperForTesting() {
+        return mMediaSessionHelper;
+    }
 }
