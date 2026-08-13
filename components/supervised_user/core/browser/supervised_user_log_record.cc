@@ -43,16 +43,7 @@ bool IsParentFamilyMemberRole(const PrefService& pref_service) {
 
 std::optional<SupervisedUserLogRecord::Segment> GetSupervisionStatus(
     signin::IdentityManager* identity_manager,
-    const PrefService& pref_service,
-    const DeviceParentalControls& device_parental_controls) {
-  if (!base::FeatureList::IsEnabled(kSupervisedUserEmitLogRecordSeparately) &&
-      !IsSubjectToParentalControls(pref_service) &&
-      device_parental_controls.IsEnabled()) {
-    // This type of supervision is signin-status independent (but only available
-    // to non-incognito profiles).
-    return SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally;
-  }
-
+    const PrefService& pref_service) {
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // Unsigned users who are not supervised locally are considered
     // unsupervised.
@@ -305,8 +296,7 @@ SupervisedUserLogRecord SupervisedUserLogRecord::Create(
     SupervisedUserUrlFilteringService* url_filtering_service,
     const DeviceParentalControls& device_parental_controls) {
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
-      GetSupervisionStatus(identity_manager, pref_service,
-                           device_parental_controls);
+      GetSupervisionStatus(identity_manager, pref_service);
   return SupervisedUserLogRecord(
       supervision_status,
       GetWebFilterType(supervision_status, url_filtering_service,
@@ -322,8 +312,7 @@ bool SupervisedUserLogRecord::EmitHistograms(
     const DeviceParentalControls& device_parental_controls) {
   bool did_emit_histogram = false;
 
-  if (base::FeatureList::IsEnabled(kSupervisedUserEmitLogRecordSeparately) &&
-      device_parental_controls.IsEnabled()) {
+  if (device_parental_controls.IsEnabled()) {
     base::UmaHistogramEnumeration(
         kFamilyLinkUserLogSegmentHistogramName,
         SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally);

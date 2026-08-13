@@ -8791,11 +8791,6 @@ inline constexpr char kEnableManagementPromotionBannerName[] =
 inline constexpr char kEnableManagementPromotionBannerDescription[] =
     "Enables showing the management promotion banner on chrome://management "
     "page.";
-inline constexpr char kSupervisedUserEmitLogRecordSeparatelyName[] =
-    "Emit device log record separately";
-inline constexpr char kSupervisedUserEmitLogRecordSeparatelyDescription[] =
-    "Emits one log record per each supervision type, instead of a single "
-    "combined value. No user-visible effect on other platforms than Android.";
 
 inline constexpr char kVariationsSeedCorpusName[] = "Variations seed corpus";
 inline constexpr char kVariationsSeedCorpusDescription[] =

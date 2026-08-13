@@ -515,16 +515,6 @@ struct ContentFiltersTestCase {
 class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
     : public FamilyLinkUserMetricsProviderTest {
  protected:
-  virtual void SetUpFeatureList() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kSupervisedUserEmitLogRecordSeparately);
-  }
-
-  void SetUp() override {
-    FamilyLinkUserMetricsProviderTest::SetUp();
-    SetUpFeatureList();
-  }
-
   // Enables or disables the browser content filters for all profiles.
   void SetBrowserContentFilters(bool enabled) {
     TestingBrowserProcess::GetGlobal()
@@ -538,8 +528,6 @@ class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
         ->android_parental_controls()
         .SetSearchContentFiltersEnabledForTesting(enabled);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest,
@@ -573,13 +561,9 @@ TEST_F(FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest,
 // Family-Link supervision and cannot be applied to these profiles.
 class
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest
-    : public WithFeatureOverrideAndParamInterface<ContentFiltersTestCase>,
-      public FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest {
+    : public FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest,
+      public testing::WithParamInterface<ContentFiltersTestCase> {
  protected:
-  FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest()
-      : WithFeatureOverrideAndParamInterface<ContentFiltersTestCase>(
-            kSupervisedUserEmitLogRecordSeparately) {}
-
   void CreateProfiles(std::size_t count) {
     CHECK_GE(email_addresses_.size(), count) << "Not enough email addresses";
     CHECK_GE(profile_names_.size(), count) << "Not enough profile names";
@@ -611,7 +595,7 @@ class
 TEST_P(
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest,
     AllFiltersDisabled) {
-  CreateProfiles(GetTestCase().profile_count);
+  CreateProfiles(GetParam().profile_count);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
@@ -628,7 +612,7 @@ TEST_P(
 TEST_P(
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest,
     SearchFilterEnabled) {
-  CreateProfiles(GetTestCase().profile_count);
+  CreateProfiles(GetParam().profile_count);
   SetSearchContentFilters(true);
 
   base::HistogramTester histogram_tester;
@@ -637,6 +621,10 @@ TEST_P(
   histogram_tester.ExpectBucketCount(
       kFamilyLinkUserLogSegmentHistogramName,
       SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kFamilyLinkUserLogSegmentHistogramName,
+      SupervisedUserLogRecord::Segment::kUnsupervised,
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
       kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -647,7 +635,7 @@ TEST_P(
 TEST_P(
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest,
     ContentFiltersEnabled) {
-  CreateProfiles(GetTestCase().profile_count);
+  CreateProfiles(GetParam().profile_count);
   SetBrowserContentFilters(true);
 
   base::HistogramTester histogram_tester;
@@ -656,6 +644,10 @@ TEST_P(
   histogram_tester.ExpectBucketCount(
       kFamilyLinkUserLogSegmentHistogramName,
       SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kFamilyLinkUserLogSegmentHistogramName,
+      SupervisedUserLogRecord::Segment::kUnsupervised,
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
       kFamilyLinkUserLogSegmentWebFilterHistogramName,
@@ -666,7 +658,7 @@ TEST_P(
 TEST_P(
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest,
     AllFiltersEnabled) {
-  CreateProfiles(GetTestCase().profile_count);
+  CreateProfiles(GetParam().profile_count);
   SetBrowserContentFilters(true);
   SetSearchContentFilters(true);
 
@@ -677,6 +669,10 @@ TEST_P(
       kFamilyLinkUserLogSegmentHistogramName,
       SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally,
       /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kFamilyLinkUserLogSegmentHistogramName,
+      SupervisedUserLogRecord::Segment::kUnsupervised,
+      /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
       kFamilyLinkUserLogSegmentWebFilterHistogramName,
       WebFilterType::kTryToBlockMatureSites,
@@ -686,19 +682,12 @@ TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     ,
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest,
-    testing::Combine(testing::Bool(),
-                     testing::ValuesIn<ContentFiltersTestCase>({
-                         {1, "SingleProfile"},
-                         {2, "MultipleProfiles"},
-                     })),
-    [](const testing::TestParamInfo<
-        FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest::
-            ParamType>& info) {
-      bool feature_enabled = std::get<0>(info.param);
-      ContentFiltersTestCase test_case = std::get<1>(info.param);
-      return base::StrCat({feature_enabled ? "With" : "Without",
-                           kSupervisedUserEmitLogRecordSeparately.name, "_",
-                           test_case.test_name});
+    testing::ValuesIn<ContentFiltersTestCase>({
+        {1, "SingleProfile"},
+        {2, "MultipleProfiles"},
+    }),
+    [](const testing::TestParamInfo<ContentFiltersTestCase>& info) {
+      return info.param.test_name;
     });
 #endif  // BUILDFLAG(IS_ANDROID)
 

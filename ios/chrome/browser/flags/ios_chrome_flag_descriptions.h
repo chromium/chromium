@@ -1872,12 +1872,6 @@ inline constexpr char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
 inline constexpr char kStrokesAPIEnabledDescription[] =
     "When enabled, Lens will use the Strokes API.";
 
-inline constexpr char kSupervisedUserEmitLogRecordSeparatelyName[] =
-    "Emit supervised user log record separately";
-inline constexpr char kSupervisedUserEmitLogRecordSeparatelyDescription[] =
-    "Emit supervised user log record separately for Family Link and device "
-    "parental controls users (no user-visible effect).";
-
 inline constexpr char kSupportGoogleOneDeepLinkName[] =
     "Support Google One Deep Link";
 inline constexpr char kSupportGoogleOneDeepLinkDescription[] =

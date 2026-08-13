@@ -11457,12 +11457,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          printing::features::kAlignPdfDefaultPrintSettingsWithHTML)},
 
-    {"supervised-user-emit-log-record-separately",
-     flag_descriptions::kSupervisedUserEmitLogRecordSeparatelyName,
-     flag_descriptions::kSupervisedUserEmitLogRecordSeparatelyDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kSupervisedUserEmitLogRecordSeparately)},
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

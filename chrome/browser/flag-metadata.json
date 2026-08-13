@@ -9277,11 +9277,7 @@
       "//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com", "jaeone@google.com" ],
     "expiry_milestone": 159
   },
-  {
-    "name": "supervised-user-emit-log-record-separately",
-    "owners": [ "tju@google.com", "chrome-kids-eng@google.com" ],
-    "expiry_milestone": 155
-  },
+
   {
     "name": "support-f11-and-f12-shortcuts",
     "owners": [

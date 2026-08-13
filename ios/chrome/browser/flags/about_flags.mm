@@ -1957,12 +1957,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"data-sharing-debug-logs", flag_descriptions::kDataSharingDebugLogsName,
      flag_descriptions::kDataSharingDebugLogsDescription, flags_ui::kOsIos,
      SINGLE_VALUE_TYPE(data_sharing::kDataSharingDebugLoggingEnabled)},
-    {"supervised-user-emit-log-record-separately",
-     flag_descriptions::kSupervisedUserEmitLogRecordSeparatelyName,
-     flag_descriptions::kSupervisedUserEmitLogRecordSeparatelyDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kSupervisedUserEmitLogRecordSeparately)},
     {"lens-fetch-srp-api-enabled",
      flag_descriptions::kLensFetchSrpApiEnabledName,
      flag_descriptions::kLensFetchSrpApiEnabledDescription, flags_ui::kOsIos,
