@@ -398,19 +398,46 @@ bool IsNormalizedNameVariantOfLinear(std::u16string_view full_name_1,
     return true;
   }
 
-  if (HasCjkNameCharacteristics(base::UTF16ToUTF8(full_name_1))) {
-    return IsSubsequence(TokenizeNormalizedCjkName(full_name_1),
-                         TokenizeNormalizedCjkName(full_name_2));
-  }
+  const bool is_cjk = HasCjkNameCharacteristics(base::UTF16ToUTF8(full_name_1));
 
-  if (full_name_2.size() > full_name_1.size()) {
+  if (!is_cjk && full_name_2.size() > full_name_1.size()) {
     return false;
   }
 
-  std::vector<std::u16string_view> tokens_1 = base::SplitStringPiece(
-      full_name_1, kSpace, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  std::vector<std::u16string_view> tokens_2 = base::SplitStringPiece(
-      full_name_2, kSpace, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  data_util::NameParts name_1_parts = data_util::SplitName(full_name_1);
+
+  // Family name abbreviations are not allowed; the family name must match
+  // exactly or be completely omitted. If found, it is stripped first (from the
+  // beginning for CJK, or from the end for non-CJK), leaving only given and
+  // middle names (if applicable, middle name is not parsed for CJK) for the
+  // subsequence check.
+  if (is_cjk) {
+    std::u16string_view given_name_2 =
+        base::RemovePrefix(full_name_2, name_1_parts.family)
+            .value_or(full_name_2);
+    return IsSubsequence(TokenizeNormalizedCjkName(name_1_parts.given),
+                         TokenizeNormalizedCjkName(given_name_2));
+  }
+
+  auto tokenize = [](std::u16string_view str) {
+    return base::SplitStringPiece(str, kSpace, base::TRIM_WHITESPACE,
+                                  base::SPLIT_WANT_NONEMPTY);
+  };
+
+  std::vector<std::u16string_view> tokens_1 = tokenize(name_1_parts.given);
+  std::vector<std::u16string_view> middle_tokens =
+      tokenize(name_1_parts.middle);
+  tokens_1.insert(tokens_1.end(), middle_tokens.begin(), middle_tokens.end());
+
+  std::vector<std::u16string_view> tokens_2 = tokenize(full_name_2);
+  std::vector<std::u16string_view> family_tokens =
+      tokenize(name_1_parts.family);
+
+  // Similarly to CJK, remove the family name from the end if found before the
+  // abbreviated subsequence check.
+  if (std::ranges::ends_with(tokens_2, family_tokens)) {
+    tokens_2.resize(tokens_2.size() - family_tokens.size());
+  }
 
   return IsAbbreviatedConcatenatedSubsequence(tokens_1, tokens_2);
 }
