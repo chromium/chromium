@@ -46,8 +46,6 @@ using StorageType = mojom::ContentSettingsManager::StorageType;
 
 namespace {
 
-constexpr int kTopicsAPITestTaxonomyVersion = 1;
-
 class MockSiteDataObserver
     : public PageSpecificContentSettings::SiteDataObserver {
  public:
@@ -1057,31 +1055,6 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest, ContentAllowedAndBlocked) {
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
       network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
   navigation->Commit();
-}
-
-TEST_F(PageSpecificContentSettingsTest, Topics) {
-  NavigateAndCommit(GURL("http://google.com"));
-  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
-      web_contents()->GetPrimaryMainFrame());
-  EXPECT_FALSE(pscs->HasAccessedTopics());
-  EXPECT_THAT(pscs->GetAccessedTopics(), testing::IsEmpty());
-
-  privacy_sandbox::CanonicalTopic topic(1, kTopicsAPITestTaxonomyVersion);
-  pscs->OnTopicAccessed(url::Origin::Create(GURL("https://foo.com")), false,
-                        topic);
-  EXPECT_TRUE(pscs->HasAccessedTopics());
-  EXPECT_THAT(pscs->GetAccessedTopics(), testing::Contains(topic));
-
-  // Check that pscs->GetAccessedTopics() does not return the same topic ID
-  // twice.
-  privacy_sandbox::CanonicalTopic duplicate_topic(
-      1, kTopicsAPITestTaxonomyVersion - 1);
-  pscs->OnTopicAccessed(url::Origin::Create(GURL("https://foo.com")), false,
-                        duplicate_topic);
-  EXPECT_TRUE(pscs->HasAccessedTopics());
-  auto accessed_topics = pscs->GetAccessedTopics();
-  EXPECT_EQ(accessed_topics.size(), 1U);
-  EXPECT_THAT(accessed_topics, testing::Contains(topic));
 }
 
 class PageSpecificContentSettingsWithFencedFrameTest

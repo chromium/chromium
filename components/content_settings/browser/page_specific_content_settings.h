@@ -30,7 +30,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/privacy_sandbox/canonical_topic.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -301,12 +300,6 @@ class PageSpecificContentSettings
                                   const url::Origin& api_origin,
                                   bool blocked_by_policy);
 
-  // Called when |api_origin| attempts to access browsing topics.
-  static void TopicAccessed(content::RenderFrameHost* rfh,
-                            const url::Origin& api_origin,
-                            bool blocked_by_policy,
-                            privacy_sandbox::CanonicalTopic topic);
-
   // Called when notifications are accessed on `rfh`.
   static void NotificationsAccessed(content::RenderFrameHost* rfh,
                                     bool blocked);
@@ -413,9 +406,6 @@ class PageSpecificContentSettings
                                   ContentSetting content_setting);
   void OnInterestGroupJoined(const url::Origin& api_origin,
                              bool blocked_by_policy);
-  void OnTopicAccessed(const url::Origin& api_origin,
-                       bool blocked_by_policy,
-                       privacy_sandbox::CanonicalTopic topic);
   void OnTrustTokenAccessed(const url::Origin& api_origin, bool blocked);
   void OnBrowsingDataAccessed(BrowsingDataModel::DataKey data_key,
                               BrowsingDataModel::StorageType storage_type,
@@ -458,12 +448,6 @@ class PageSpecificContentSettings
   // Returns true if the user was joined to an interest group and if the page
   // is the joining origin.
   bool HasJoinedUserToInterestGroup() const;
-
-  // Returns true if the page has accessed the Topics API.
-  bool HasAccessedTopics() const;
-
-  // Returns the topics that were accessed by this page.
-  std::vector<privacy_sandbox::CanonicalTopic> GetAccessedTopics() const;
 
   // Runs any queued updates in |updates_queued_during_prerender_|, should be
   // called after the page activates.
@@ -676,9 +660,6 @@ class PageSpecificContentSettings
   // only currently show the top frame as having attempted to join.
   std::vector<url::Origin> allowed_interest_group_api_;
   std::vector<url::Origin> blocked_interest_group_api_;
-
-  // Contains topics that were accessed by this page.
-  base::flat_set<privacy_sandbox::CanonicalTopic> accessed_topics_;
 
   // The Geolocation, camera, and/or microphone permission was granted to this
   // origin from a permission prompt that was triggered by the currently active

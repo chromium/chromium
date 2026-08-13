@@ -76,11 +76,7 @@ if (use_blink) {
   }
 
   source_set("privacy_sandbox") {
-    sources = [
-      "canonical_topic.cc",
-      "canonical_topic.h",
-      "privacy_sandbox_settings_impl.cc",
-    ]
+    sources = [ "privacy_sandbox_settings_impl.cc" ]
 
     deps = [
       ":privacy_sandbox_prefs",
@@ -159,7 +155,6 @@ source_set("unit_tests") {
 
   if (use_blink) {
     sources += [
-      "canonical_topic_unittest.cc",
       "privacy_sandbox_settings_impl_unittest.cc",
       "privacy_sandbox_test_util_unittest.cc",
     ]

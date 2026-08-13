@@ -32,7 +32,6 @@
 #include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cookie_access_details.h"
@@ -84,10 +83,6 @@ constexpr auto kDeviceInUseIndicatorHideDelay = base::Seconds(15);
 #endif
 
 bool ignore_blocked_media_indicator_timer_for_testing_ = false;
-
-// Determines which taxonomy is used to generate sample topics for the Topics
-// API.
-constexpr int kTopicsAPISampleDataTaxonomy = 1;
 
 bool WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
     content::NavigationHandle* navigation_handle) {
@@ -859,19 +854,6 @@ void PageSpecificContentSettings::InterestGroupJoined(
 }
 
 // static
-void PageSpecificContentSettings::TopicAccessed(
-    content::RenderFrameHost* rfh,
-    const url::Origin& api_origin,
-    bool blocked_by_policy,
-    privacy_sandbox::CanonicalTopic topic) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PageSpecificContentSettings* settings = GetForFrame(rfh);
-  if (settings) {
-    settings->OnTopicAccessed(api_origin, blocked_by_policy, topic);
-  }
-}
-
-// static
 void PageSpecificContentSettings::NotificationsAccessed(
     content::RenderFrameHost* rfh,
     bool blocked) {
@@ -1184,16 +1166,6 @@ void PageSpecificContentSettings::OnInterestGroupJoined(
   AccessDetails access_details{SiteDataType::kInterestGroup, AccessType::kWrite,
                                api_origin.GetURL(), blocked_by_policy, false};
   MaybeNotifySiteDataObservers(access_details);
-}
-
-void PageSpecificContentSettings::OnTopicAccessed(
-    const url::Origin& api_origin,
-    bool blocked_by_policy,
-    privacy_sandbox::CanonicalTopic topic) {
-  // TODO(crbug.com/40210776): Add URL and Topic to local_shared_objects?
-  accessed_topics_.insert(topic);
-  MaybeUpdateParent(&PageSpecificContentSettings::OnTopicAccessed, api_origin,
-                    blocked_by_policy, topic);
 }
 
 void PageSpecificContentSettings::OnTrustTokenAccessed(
@@ -1545,23 +1517,6 @@ bool PageSpecificContentSettings::HasContentSettingChangedViaPageInfo(
     ContentSettingsType type) const {
   return content_settings_changed_via_page_info_.find(type) !=
          content_settings_changed_via_page_info_.end();
-}
-
-bool PageSpecificContentSettings::HasAccessedTopics() const {
-  return !GetAccessedTopics().empty();
-}
-
-std::vector<privacy_sandbox::CanonicalTopic>
-PageSpecificContentSettings::GetAccessedTopics() const {
-  if (accessed_topics_.empty() &&
-      privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.Get() &&
-      page().GetMainDocument().GetLastCommittedURL().GetHost() ==
-          "example.com") {
-    // TODO(crbug.com/40210776): Remove sample topic when API is ready.
-    return {privacy_sandbox::CanonicalTopic(3, kTopicsAPISampleDataTaxonomy),
-            privacy_sandbox::CanonicalTopic(4, kTopicsAPISampleDataTaxonomy)};
-  }
-  return {accessed_topics_.begin(), accessed_topics_.end()};
 }
 
 bool PageSpecificContentSettings::HasJoinedUserToInterestGroup() const {
