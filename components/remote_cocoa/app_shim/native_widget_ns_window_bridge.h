@@ -11,6 +11,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
@@ -528,6 +529,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // This tracks whether current window can go back or go forward.
   bool can_go_back_ = false;
   bool can_go_forward_ = false;
+
+  base::RepeatingCallback<void(NSWindow*, bool)>
+      capture_exclusion_applier_for_testing_;
+  bool allow_screenshots_ = true;
 
   display::ScopedDisplayObserver display_observer_{this};
 

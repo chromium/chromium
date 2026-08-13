@@ -85,6 +85,18 @@ CG_EXTERN CGRegionRef CGRegionCreateWithRect(CGRect rect);
 namespace {
 constexpr auto kUIPaintTimeout = base::Milliseconds(500);
 
+void ApplyCaptureExclusion(NSWindow* window, bool allow) {
+  CGSConnectionID connection_id = CGSMainConnectionID();
+  CGSWindowID window_id = window.windowNumber;
+  CGRect frame = window.frame;
+  frame.origin = CGPointZero;
+  base::apple::ScopedCFTypeRef<CGRegionRef> region;
+  if (!allow) {
+    region.reset(CGRegionCreateWithRect(frame));
+  }
+  CGSSetWindowCaptureExcludeShape(connection_id, window_id, region.get());
+}
+
 // Returns the display that the specified window is on.
 display::Display GetDisplayForWindow(NSWindow* window) {
   return display::Screen::Get()->GetDisplayNearestWindow(
@@ -1301,15 +1313,12 @@ void NativeWidgetNSWindowBridge::DisplayContextMenu(
 }
 
 void NativeWidgetNSWindowBridge::SetAllowScreenshots(bool allow) {
-  CGSConnectionID connection_id = CGSMainConnectionID();
-  CGSWindowID window_id = ns_window().windowNumber;
-  CGRect frame = ns_window().frame;
-  frame.origin = CGPointZero;
-  base::apple::ScopedCFTypeRef<CGRegionRef> region;
-  if (!allow) {
-    region.reset(CGRegionCreateWithRect(frame));
+  allow_screenshots_ = allow;
+  if (capture_exclusion_applier_for_testing_) {
+    capture_exclusion_applier_for_testing_.Run(ns_window(), allow);
+  } else {
+    ApplyCaptureExclusion(ns_window(), allow);
   }
-  CGSSetWindowCaptureExcludeShape(connection_id, window_id, region.get());
 }
 
 void NativeWidgetNSWindowBridge::SetColorMode(
@@ -1428,6 +1437,9 @@ void NativeWidgetNSWindowBridge::OnWindowWillClose() {
 
 void NativeWidgetNSWindowBridge::OnSizeChanged() {
   UpdateWindowGeometry();
+  if (!allow_screenshots_) {
+    SetAllowScreenshots(false);
+  }
 }
 
 void NativeWidgetNSWindowBridge::OnPositionChanged() {

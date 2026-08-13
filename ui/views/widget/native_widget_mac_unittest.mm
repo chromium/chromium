@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <vector>
+
 #import "base/apple/foundation_util.h"
 #import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
@@ -153,6 +155,11 @@ class BridgedNativeWidgetTestApi {
     bridge_->wants_to_be_visible_ = visible;
   }
 
+  void SetCaptureExclusionApplier(
+      base::RepeatingCallback<void(NSWindow*, bool)> applier) {
+    bridge_->capture_exclusion_applier_for_testing_ = std::move(applier);
+  }
+
   static std::unique_ptr<remote_cocoa::NativeWidgetNSWindowBridge>
   TakeInProcessBridge(NativeWidgetMacNSWindowHost* host) {
     return std::move(host->in_process_ns_window_bridge_);
@@ -258,6 +265,52 @@ class NativeWidgetMacTest : public WidgetTest {
     return native_widget->focus_manager_;
   }
 };
+
+TEST_F(NativeWidgetMacTest, ScreenshotProtectionTracksWindowSize) {
+  struct CaptureExclusionCall {
+    NSRect frame;
+    bool allow;
+  };
+
+  NativeWidgetMacTestWindow* window;
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.bounds = gfx::Rect(100, 100, 200, 150);
+  Widget* widget = CreateWidgetWithTestWindow(std::move(params), &window);
+
+  std::vector<CaptureExclusionCall> calls;
+  BridgedNativeWidgetTestApi(widget).SetCaptureExclusionApplier(
+      base::BindRepeating(
+          [](std::vector<CaptureExclusionCall>* calls, NSWindow* window,
+             bool allow) { calls->push_back({window.frame, allow}); },
+          &calls));
+
+  const NSRect initial_frame = window.frame;
+  widget->SetAllowScreenshots(false);
+  ASSERT_EQ(1u, calls.size());
+  EXPECT_FALSE(calls.back().allow);
+  EXPECT_TRUE(NSEqualRects(initial_frame, calls.back().frame));
+
+  const NSRect expanded_frame = NSMakeRect(
+      initial_frame.origin.x, initial_frame.origin.y,
+      initial_frame.size.width + 100, initial_frame.size.height + 100);
+  [window setFrame:expanded_frame display:NO];
+  const NSRect resized_frame = window.frame;
+  EXPECT_GT(resized_frame.size.width, initial_frame.size.width);
+  EXPECT_GT(resized_frame.size.height, initial_frame.size.height);
+  ASSERT_EQ(2u, calls.size());
+  EXPECT_FALSE(calls.back().allow);
+  EXPECT_TRUE(NSEqualRects(resized_frame, calls.back().frame));
+
+  widget->SetAllowScreenshots(true);
+  ASSERT_EQ(3u, calls.size());
+  EXPECT_TRUE(calls.back().allow);
+
+  [window setFrame:initial_frame display:NO];
+  EXPECT_EQ(3u, calls.size());
+
+  widget->CloseNow();
+}
 
 class WidgetChangeObserver : public TestWidgetObserver {
  public:
