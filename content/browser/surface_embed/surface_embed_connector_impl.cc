@@ -300,9 +300,17 @@ void SurfaceEmbedConnectorImpl::SetFocusedFrameTree(
   FrameTreeNode* embedder_node = embedder_rfh_->frame_tree_node();
   embedder_node->frame_tree().SetFocusedFrame(embedder_node,
                                               /*source=*/nullptr);
+  delegate_->RequestFocusOnEmbedElement();
 
   // Ensure that outer frame trees are focused.
   parent_web_contents()->GetPrimaryFrameTree().FocusOuterFrameTrees();
+
+  // Ensure that the embedded page has focus. This is needed when the focused
+  // frame tree belongs to an inner WebContents of the SurfaceEmbed child.
+  child_web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->SetPageFocus(true);
 
   // Ensure that the embedder's page has focus so that it can display active UI
   // and therefore the embedded plugin is also active.
@@ -767,22 +775,6 @@ void SurfaceEmbedConnectorImpl::OnDetachedFromParent() {
   if (parent_web_contents()) {
     parent_web_contents()->SurfaceEmbedChildWebContentsDetached(
         child_web_contents_);
-  }
-}
-
-void SurfaceEmbedConnectorImpl::RequestFocusOnEmbedElement() {
-  // Walk up the embedding chain, requesting focus for each ancestor's
-  // <embed> element so that all levels show the correct active element.
-  delegate_->RequestFocusOnEmbedElement();
-  WebContentsImpl* parent = parent_web_contents();
-  while (parent) {
-    auto* parent_connector = static_cast<SurfaceEmbedConnectorImpl*>(
-        parent->GetSurfaceEmbedConnector());
-    if (!parent_connector) {
-      break;
-    }
-    parent_connector->GetDelegate()->RequestFocusOnEmbedElement();
-    parent = parent_connector->parent_web_contents();
   }
 }
 

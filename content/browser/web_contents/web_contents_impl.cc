@@ -11130,12 +11130,6 @@ void WebContentsImpl::FocusOwningWebContents(
     UMA_HISTOGRAM_BOOLEAN("Android.FocusChanged.FocusOwningWebContents", false);
 #endif
   }
-
-  if (surface_embed_connector_) {
-    // Requests focus for the embedding elements after their owning frames got
-    // focus as part of SetAsFocusedWebContentsIfNecessary.
-    surface_embed_connector_->RequestFocusOnEmbedElement();
-  }
 }
 
 void WebContentsImpl::OnIgnoredUIEvent() {

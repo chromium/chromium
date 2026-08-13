@@ -151,11 +151,6 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   // parent WebContents.
   void OnDetachedFromParent();
 
-  // Requests focus for all ancestor embed elements up the chain. This ensures
-  // that in a multi-level embedding scenario, each ancestor's <embed> element
-  // becomes the active element in its respective document.
-  void RequestFocusOnEmbedElement();
-
   // Returns nullptr if the focus is outside of this connector's child
   // WebContents.
   FrameTree* GetFocusFrameTreeIfContainsFocus();
