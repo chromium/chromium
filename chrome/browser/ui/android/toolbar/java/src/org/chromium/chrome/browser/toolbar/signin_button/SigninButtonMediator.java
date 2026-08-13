@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -294,9 +295,12 @@ final class SigninButtonMediator
                         && !SHOW_AVATAR_WHEN_SIGNED_OUT;
 
         if (!showSigninText) {
-            mModel.set(
-                    SigninButtonProperties.BUTTON_AVATAR,
-                    profileData != null ? profileData.getImage() : getPlaceholderImage());
+            Drawable avatar = profileData != null ? profileData.getImage() : getPlaceholderImage();
+            if (profileData != null) {
+                avatar = maybeApplyErrorBadgeInset(avatar);
+            }
+
+            mModel.set(SigninButtonProperties.BUTTON_AVATAR, avatar);
             mModel.set(
                     SigninButtonProperties.AVATAR_TINT,
                     profileData != null ? null : mActivityFocusTint);
@@ -473,6 +477,30 @@ final class SigninButtonMediator
         setProfile(null);
         mProfileSupplier.removeObserver(mProfileSupplierObserver);
         mThemeColorProvider.removeTintObserver(this);
+    }
+
+    // TODO(crbug.com/522145863): Remove when AI tier is launched.
+    private Drawable maybeApplyErrorBadgeInset(Drawable avatar) {
+        if (mIdentityError == UserActionableError.NONE
+                || SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)) {
+            return avatar;
+        }
+
+        // The error badge makes the avatar bigger by adding to the bottom and right. Since the
+        // button is centered, this pushes it up and left. Adding an inset makes it symmetric again.
+        int badgePositionX =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_identity_disc_badge_position_x);
+        int badgeSize =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_identity_disc_badge_size);
+        int avatarSize =
+                mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_identity_disc_size);
+        int insetPx = badgePositionX + badgeSize - avatarSize;
+        if (insetPx <= 0) {
+            return avatar;
+        }
+        return new InsetDrawable(avatar, /* insetLeft= */ insetPx, /* insetTop= */ insetPx, 0, 0);
     }
 
     private Drawable getPlaceholderImage() {
