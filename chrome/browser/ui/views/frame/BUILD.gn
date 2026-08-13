@@ -150,6 +150,7 @@ source_set("glass_frame_service") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/performance_manager/public/user_tuning",
+    "//chrome/browser/themes",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/common:constants",

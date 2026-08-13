@@ -11,8 +11,11 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -26,7 +29,8 @@ class PrefRegistrySimple;
 // a browser window should display the glass frame or not.
 class GlassFrameService : public BrowserCollectionObserver,
                           public performance_manager::user_tuning::
-                              BatterySaverModeManager::Observer {
+                              BatterySaverModeManager::Observer,
+                          public ThemeServiceObserver {
  public:
   DECLARE_USER_DATA(GlassFrameService);
 
@@ -64,6 +68,9 @@ class GlassFrameService : public BrowserCollectionObserver,
   void OnBatterySaverActiveChanged(bool is_active) override;
   void OnBatterySaverModeManagerDestroyed() override;
 
+  // ThemeServiceObserver:
+  void OnThemeChanged() override;
+
  private:
   // Returns the set of BrowserWindowInterfaces for the most recently activated
   // browser window interfaces. The returned set has at most `kMaxGlassWindows`
@@ -97,6 +104,8 @@ class GlassFrameService : public BrowserCollectionObserver,
       performance_manager::user_tuning::BatterySaverModeManager,
       performance_manager::user_tuning::BatterySaverModeManager::Observer>
       battery_saver_observation_{this};
+  base::ScopedMultiSourceObservation<ThemeService, ThemeServiceObserver>
+      theme_observations_{this};
 
   PrefChangeRegistrar pref_change_registrar_;
   bool is_glass_frame_enabled_ = true;

@@ -13,6 +13,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -112,18 +114,26 @@ void GlassFrameService::OnBatterySaverModeManagerDestroyed() {
   OnEligibleStateChanged();
 }
 
+void GlassFrameService::OnThemeChanged() {
+  OnEligibleStateChanged();
+}
+
 base::flat_set<BrowserWindowInterface*>
 GlassFrameService::ActivationOrderedEligibleBrowsers() {
   base::flat_set<BrowserWindowInterface*> activation_ordered_eligible_browsers;
   GlobalBrowserCollection::GetInstance()->ForEach(
       [&activation_ordered_eligible_browsers,
        this](BrowserWindowInterface* browser) {
+        // Stop iterating once the maximum number of glass windows is reached.
         if (activation_ordered_eligible_browsers.size() >= kMaxGlassWindows) {
           return false;
         }
+        // Skip untracked windows (e.g. non-normal windows or background windows
+        // that have not yet been activated).
         if (!tracked_browsers_.contains(browser)) {
           return true;
         }
+        // Skip windows currently in fullscreen mode.
         auto* const exclusive_access_manager =
             browser->GetFeatures().exclusive_access_manager();
         if (exclusive_access_manager &&
@@ -131,6 +141,13 @@ GlassFrameService::ActivationOrderedEligibleBrowsers() {
             exclusive_access_manager->fullscreen_controller()
                 ->IsFullscreenForBrowser()) {
           return true;
+        }
+        // Skip windows using an extension theme, which disables glass.
+        if (auto* const theme_service =
+                ThemeServiceFactory::GetForProfile(browser->GetProfile())) {
+          if (theme_service->UsingExtensionTheme()) {
+            return true;
+          }
         }
         activation_ordered_eligible_browsers.insert(browser);
         return activation_ordered_eligible_browsers.size() < kMaxGlassWindows;
@@ -187,6 +204,12 @@ void GlassFrameService::MaybeTrackBrowser(BrowserWindowInterface* browser) {
       }
     }
   }
+  if (auto* const theme_service =
+          ThemeServiceFactory::GetForProfile(browser->GetProfile())) {
+    if (!theme_observations_.IsObservingSource(theme_service)) {
+      theme_observations_.AddObservation(theme_service);
+    }
+  }
 
   tracked_browsers_.insert(browser);
 }
@@ -195,6 +218,22 @@ void GlassFrameService::StopTrackingBrowser(BrowserWindowInterface* browser) {
   fullscreen_subscriptions_.erase(browser);
   window_callbacks_.erase(browser);
   tracked_browsers_.erase(browser);
+
+  if (auto* const theme_service =
+          ThemeServiceFactory::GetForProfile(browser->GetProfile())) {
+    bool is_still_used = false;
+    for (BrowserWindowInterface* tracked : tracked_browsers_) {
+      if (ThemeServiceFactory::GetForProfile(tracked->GetProfile()) ==
+          theme_service) {
+        is_still_used = true;
+        break;
+      }
+    }
+    if (!is_still_used &&
+        theme_observations_.IsObservingSource(theme_service)) {
+      theme_observations_.RemoveObservation(theme_service);
+    }
+  }
 }
 
 void GlassFrameService::LogGlassFramePreferredLook() {
