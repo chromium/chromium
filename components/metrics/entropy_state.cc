@@ -125,6 +125,7 @@ int EntropyState::GetOldLowEntropySource() {
   return old_low_entropy_source_;
 }
 
+// LINT.IfChange(generate_limited_entropy_randomization_source)
 std::string EntropyState::GenerateLimitedEntropyRandomizationSource() {
   // Uses a cryptographically strong random source to generate a random 128 bit
   // value. The value cannot be all zeros.
@@ -132,6 +133,7 @@ std::string EntropyState::GenerateLimitedEntropyRandomizationSource() {
   DCHECK(IsValidLimitedEntropyRandomizationSource(token));
   return token;
 }
+// LINT.ThenChange(/components/metrics/android/java/src/org/chromium/components/metrics/LimitedEntropyRandomizationSource.java:generateValue)
 
 std::string_view EntropyState::GetLimitedEntropyRandomizationSource() {
   UpdateLimitedEntropyRandomizationSource();

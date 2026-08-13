@@ -74,12 +74,23 @@ if (!is_cronet_build && is_android) {
       ":java_switches_srcjar",
     ]
     sources = [
+      "android/java/src/org/chromium/components/metrics/LimitedEntropyRandomizationSource.java",
       "android/java/src/org/chromium/components/metrics/LowEntropySource.java",
     ]
     deps = [
       "//base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  robolectric_library("components_metrics_junit_tests") {
+    sources = [ "android/junit/src/org/chromium/components/metrics/LimitedEntropyRandomizationSourceTest.java" ]
+    deps = [
+      ":metrics_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//third_party/junit",
     ]
   }
 }
