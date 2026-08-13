@@ -194,10 +194,16 @@ class BrowserDelegate {
   // Enters locked fullscreen mode.
   // Pins the window, updates browser commands, and optionally focuses the
   // toolbar.
+  // TODO(crbug.com/434082728): Remove this OnTask/LockedFullscreen
+  // consolidation is completed. This will be replaced with lock method for
+  // OnTask.
   virtual void EnterLockedFullscreen(bool focus_toolbar) = 0;
 
   // Leaves locked fullscreen mode.
   // Unpins the window and updates browser commands.
+  // TODO(crbug.com/434082728): Remove this OnTask/LockedFullscreen
+  // consolidation is completed. This will be replaced with unlock method for
+  // OnTask.
   virtual void LeaveLockedFullscreen() = 0;
 
   // Sets whether command shortcuts related to DevTools are enabled.

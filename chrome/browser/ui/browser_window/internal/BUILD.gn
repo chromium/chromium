@@ -172,6 +172,7 @@ source_set("internal") {
     if (is_chromeos) {
       deps += [
         "//chrome/browser/ash/boca/on_task",
+        "//chrome/browser/ui/chromeos/locked_state",
         "//components/session_manager/core",
       ]
     } else {

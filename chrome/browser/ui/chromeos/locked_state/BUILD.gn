@@ -1,0 +1,45 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("locked_state") {
+  sources = [
+    "locked_state_controller.cc",
+    "locked_state_controller.h",
+  ]
+
+  public_deps = [ "//chrome/browser/ui/browser_window" ]
+
+  deps = [
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui/window_feature_controller",
+    "//chrome/common:chrome_features",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base/unowned_user_data",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "locked_state_controller_browsertest.cc" ]
+
+  deps = [
+    ":locked_state",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/aura",
+  ]
+}

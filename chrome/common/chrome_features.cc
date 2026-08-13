@@ -113,6 +113,13 @@ BASE_FEATURE(kCaptureHandleForStandalonePwasAndIwas,
 // Enable project Crostini, Linux VMs on Chrome OS.
 BASE_FEATURE(kCrostini, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, use the restricted/unified locked state controller.
+BASE_FEATURE(kUseUnifiedLockedStateController,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsUseUnifiedLockedStateControllerEnabled() {
+  return base::FeatureList::IsEnabled(kUseUnifiedLockedStateController);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Enables stricter cryptography settings for CNSA2 compliance. This is not

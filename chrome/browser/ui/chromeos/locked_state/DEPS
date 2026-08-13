@@ -1,0 +1,14 @@
+include_rules = [
+  "+chrome/app/chrome_command_ids.h",
+  "+chrome/browser/ash/browser_delegate",
+  "+chrome/browser/extensions/context_menu_matcher.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+  "+chrome/browser/ui/window_feature_controller/window_feature_controller.h",
+  "+chrome/common/chrome_features.h",
+]
+
+specific_include_rules = {
+  ".*test\\.cc": [
+    "+ash/wm/window_state.h",
+  ],
+}

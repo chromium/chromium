@@ -224,6 +224,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -451,6 +452,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<memory_saver::MemorySaverBubbleController>(browser);
 
 #if BUILDFLAG(IS_CHROMEOS)
+  locked_state_controller_ =
+      GetUserDataFactory().CreateInstance<chromeos::LockedStateController>(
+          *browser, browser);
   on_task_locked_controller_ =
       GetUserDataFactory().CreateInstance<ash::boca::OnTaskLockedController>(
           *browser, browser);

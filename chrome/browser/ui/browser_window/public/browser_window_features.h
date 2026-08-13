@@ -147,6 +147,10 @@ class ActionItem;
 namespace ash::boca {
 class OnTaskLockedController;
 }  // namespace ash::boca
+
+namespace chromeos {
+class LockedStateController;
+}  // namespace chromeos
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace chrome {
@@ -528,6 +532,12 @@ class BrowserWindowFeatures {
     return webui_browser_exclusive_access_context_.get();
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  chromeos::LockedStateController* locked_state_controller() {
+    return locked_state_controller_.get();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -759,6 +769,7 @@ class BrowserWindowFeatures {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<chromeos::LockedStateController> locked_state_controller_;
   std::unique_ptr<ash::boca::OnTaskLockedController> on_task_locked_controller_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
