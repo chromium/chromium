@@ -480,14 +480,10 @@ void WebRequestAPI::OnListenerAdded(const EventListenerInfo& details) {
 
   auto registration = ParseListenerRegistration(details);
   if (!registration.has_value()) {
-    if (per_context_dispatch) {
-      // Per-context registrations are validated in the renderer before they
-      // are sent, so an unparsable one indicates a misbehaving renderer.
-      bad_message::ReceivedBadMessage(
-          details.render_process_id.GetUnsafeValue(),
-          bad_message::WRA_INVALID_LISTENER_REGISTRATION);
-      return;
-    }
+    // TODO(crbug.com/494684626): the renderer does not validate URL patterns,
+    // so a parse failure can come from a legitimate extension. Report an error,
+    // not a bad message. Validate URL patterns at addListener time once the
+    // legacy path is gone.
     // TODO(crbug.com/477654111): this validation should happen at the
     // EventRouter layer. Currently, it's possible for an invalid listener to be
     // added at the EventRouter layer, and for the validation to then fail here.
@@ -667,11 +663,10 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
   if (per_context_dispatch) {
     auto registration = ParseListenerRegistration(details);
     if (!registration.has_value()) {
-      // Per-context registrations are validated in the renderer before they are
-      // sent, so a renderer sending this is misbehaving.
-      bad_message::ReceivedBadMessage(
-          details.render_process_id.GetUnsafeValue(),
-          bad_message::WRA_INVALID_LISTENER_REGISTRATION);
+      // TODO(crbug.com/494684626): the addition was rejected the same way (see
+      // `OnListenerAdded()`), so there is no listener to remove. Once URL
+      // patterns are validated at addListener time, a parse failure here can
+      // only come from a misbehaving renderer; treat it as a bad message.
       return;
     }
     filter = std::move(registration->filter);
