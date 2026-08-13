@@ -49,13 +49,38 @@
 
 using content_settings::PageSpecificContentSettings;
 
+class PageSpecificContentSettingsDelegate::MediaObserver
+    : public MediaStreamCaptureIndicator::Observer {
+ public:
+  explicit MediaObserver(PageSpecificContentSettingsDelegate* delegate)
+      : delegate_(delegate) {
+    observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
+                             ->GetMediaStreamCaptureIndicator()
+                             .get());
+  }
+  ~MediaObserver() override = default;
+
+  // MediaStreamCaptureIndicator::Observer
+  void OnIsCapturingVideoChanged(content::WebContents* web_contents,
+                                 bool is_capturing_video) override {
+    delegate_->OnIsCapturingVideoChanged(web_contents, is_capturing_video);
+  }
+  void OnIsCapturingAudioChanged(content::WebContents* web_contents,
+                                 bool is_capturing_audio) override {
+    delegate_->OnIsCapturingAudioChanged(web_contents, is_capturing_audio);
+  }
+
+ private:
+  raw_ptr<PageSpecificContentSettingsDelegate> delegate_;
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
+      observation_{this};
+};
+
 PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {
-  media_observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
-                                 ->GetMediaStreamCaptureIndicator()
-                                 .get());
-}
+    : WebContentsObserver(web_contents),
+      media_observer_(std::make_unique<MediaObserver>(this)) {}
 
 PageSpecificContentSettingsDelegate::~PageSpecificContentSettingsDelegate() =
     default;

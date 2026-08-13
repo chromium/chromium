@@ -20,7 +20,6 @@ source_set("content_settings") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/permissions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing:advanced_protection",
     "//chrome/browser/ui/tabs:tabs_public",
