@@ -8,6 +8,7 @@ import collections
 from collections.abc import Generator, Iterable
 import dataclasses
 import datetime
+import argparse
 import fnmatch
 import functools
 import importlib
@@ -38,6 +39,7 @@ from gpu_tests import constants
 from gpu_tests import gpu_helper
 from gpu_tests import overlay_support
 from gpu_tests.util import host_information
+from gpu_tests.util import wayland_server
 import validate_tag_consistency
 
 TEST_WAS_SLOW = 'test_was_slow'
@@ -113,6 +115,8 @@ class GpuIntegrationTest(
   _skip_post_test_cleanup_and_debug_info = False
   _skip_post_failure_browser_restart = False
   _enforce_browser_version = False
+  _use_isolated_wayland_displays: bool | None = None
+  _wayland_server: wayland_server.WaylandServer | None = None
 
   # Several of the tests in this directory need to be able to relaunch
   # the browser on demand with a new set of command line arguments
@@ -228,6 +232,20 @@ class GpuIntegrationTest(
     )
     cls._disable_log_uploads = options.disable_log_uploads
     cls._enforce_browser_version = options.enforce_browser_version
+    cls._use_isolated_wayland_displays = options.use_isolated_wayland_displays
+
+  @classmethod
+  def _ShouldUseIsolatedWaylandDisplays(cls) -> bool:
+    if cls._use_isolated_wayland_displays is not None:
+      return cls._use_isolated_wayland_displays
+    if not host_information.IsLinux():
+      return False
+    if (
+      cls._finder_options
+      and cls._finder_options.browser_type in gpu_helper.REMOTE_BROWSER_TYPES
+    ):
+      return False
+    return host_information.IsWayland()
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -249,6 +267,35 @@ class GpuIntegrationTest(
       'cast-streaming-shell',
     ]:
       page_action.DEFAULT_TIMEOUT = 240
+
+    if cls._ShouldUseIsolatedWaylandDisplays():
+      try:
+        cls._wayland_server = wayland_server.WaylandServer(
+          worker_num=cls.child.worker_num
+        )
+        cls._wayland_server.Start()
+        host_information.IsWayland.cache_clear()
+      except Exception as e:
+        if cls._use_isolated_wayland_displays:
+          raise
+        logging.warning(
+          'Failed to start isolated Wayland display, falling back to '
+          'existing display: %s. If running locally on a system that uses '
+          'Mutter, you may need to install the "mutter" binary since it '
+          'is typically not made available by default.',
+          e,
+        )
+        cls._wayland_server = None
+
+  @classmethod
+  def TearDownProcess(cls) -> None:
+    try:
+      if cls._wayland_server:
+        cls._wayland_server.Stop()
+        cls._wayland_server = None
+        host_information.IsWayland.cache_clear()
+    finally:
+      super(GpuIntegrationTest, cls).TearDownProcess()
 
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
@@ -304,6 +351,16 @@ class GpuIntegrationTest(
         'would build, i.e. that the browser being used '
         'is one that was built at the current Chromium '
         'revision.'
+      ),
+    )
+    parser.add_argument(
+      '--use-isolated-wayland-displays',
+      action=argparse.BooleanOptionalAction,
+      default=None,
+      help=(
+        'Start an isolated headless Wayland display server for each test '
+        'worker process to prevent window occlusion issues in parallel '
+        'testing.'
       ),
     )
 

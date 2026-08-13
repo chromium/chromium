@@ -824,7 +824,6 @@
     "gpu-fyi-try-linux-nvidia-rtx-5080-exp": "try/gpu-fyi-try-linux-nvidia-rtx-5080-exp/gn-args.json",
     "gpu-fyi-try-linux-nvidia-tsn": "try/gpu-fyi-try-linux-nvidia-tsn/gn-args.json",
     "gpu-fyi-try-linux-wayland-amd-rel": "try/gpu-fyi-try-linux-wayland-amd-rel/gn-args.json",
-    "gpu-fyi-try-linux-wayland-intel-rel": "try/gpu-fyi-try-linux-wayland-intel-rel/gn-args.json",
     "gpu-try-linux-nvidia-dbg": "try/gpu-try-linux-nvidia-dbg/gn-args.json",
     "gpu-try-linux-nvidia-rel": "try/gpu-try-linux-nvidia-rel/gn-args.json",
     "leak_detection_linux": "try/leak_detection_linux/gn-args.json",

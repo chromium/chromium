@@ -3,92 +3,101 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-gpu",
-          "--use-gpu-in-tests",
-          "--gtest_filter=*MappableBufferTest*",
-          "--ozone-platform=wayland",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "module_name": "//gpu:gpu_unittests",
-        "module_scheme": "gtest",
-        "name": "mappable_buffer_tests",
-        "swarming": {
-          "containment_type": "AUTO",
-          "dimensions": {
-            "display_attached": "1",
-            "display_server": "x11",
-            "gpu": "1002:7340-25.2.8",
-            "os": "Ubuntu-24.04",
-            "pool": "chromium.tests.gpu"
-          },
-          "hard_timeout": 1800,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gpu_unittests",
-        "test_id_prefix": "ninja://gpu:gpu_unittests/"
-      }
-    ],
-    "isolated_scripts": [
-      {
-        "args": [
-          "noop_sleep",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=UseOzonePlatform --ozone-platform=wayland",
-          "--enforce-browser-version",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
-        "name": "noop_sleep_tests",
+        "module_name": "//third_party/angle/src/tests:angle_unittests",
+        "module_scheme": "gtest",
+        "name": "angle_unittests",
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "display_server": "x11",
+            "display_server": "wayland",
             "gpu": "1002:7340-25.2.8",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
-          "idempotent": false,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      }
-    ]
-  },
-  "Linux Wayland FYI Release (Intel)": {
-    "gtest_tests": [
+        "test": "angle_unittests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/",
+        "use_isolated_scripts_api": true
+      },
+      {
+        "args": [
+          "--use-cmd-decoder=passthrough",
+          "--use-gl=angle",
+          "--use-gpu-in-tests",
+          "--no-xvfb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux.amd.5500xt.wayland.gl_tests_passthrough.filter"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//gpu:gl_tests",
+        "module_scheme": "gtest",
+        "name": "gl_tests_passthrough",
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "gl_tests",
+        "test_id_prefix": "ninja://gpu:gl_tests/"
+      },
+      {
+        "args": [
+          "--use-gpu-in-tests",
+          "--no-xvfb",
+          "--git-revision=${got_revision}"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//ui/gl:gl_unittests",
+        "module_scheme": "gtest",
+        "name": "gl_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gl_unittests",
+        "test_id_prefix": "ninja://ui/gl:gl_unittests/"
+      },
       {
         "args": [
           "--enable-gpu",
           "--use-gpu-in-tests",
           "--gtest_filter=*MappableBufferTest*",
-          "--ozone-platform=wayland",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -99,9 +108,10 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -110,6 +120,33 @@
         },
         "test": "gpu_unittests",
         "test_id_prefix": "ninja://gpu:gpu_unittests/"
+      },
+      {
+        "args": [
+          "--use-gpu-in-tests",
+          "--no-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//gpu/vulkan:vulkan_tests",
+        "module_scheme": "gtest",
+        "name": "vulkan_tests",
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "vulkan_tests",
+        "test_id_prefix": "ninja://gpu/vulkan:vulkan_tests/"
       }
     ],
     "isolated_scripts": [
@@ -121,13 +158,9 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -142,9 +175,10 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -163,17 +197,13 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
           "--git-revision=${got_revision}",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -193,9 +223,10 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -214,13 +245,9 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -235,9 +262,10 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -256,13 +284,9 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -277,9 +301,10 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -298,17 +323,13 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--expected-vendor-id",
-          "8086",
+          "1002",
           "--expected-device-id",
-          "9bc5",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "7340",
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -323,9 +344,10 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -344,17 +366,13 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
           "--git-revision=${got_revision}",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -374,9 +392,10 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -395,14 +414,10 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -417,9 +432,10 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -438,13 +454,9 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -459,9 +471,10 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -480,13 +493,9 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -501,9 +510,10 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -516,20 +526,58 @@
       },
       {
         "args": [
+          "webgl2_conformance",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --use-angle=gles --force_high_performance_gpu",
+          "--enforce-browser-version",
+          "--webgl-conformance-version=2.0.1",
+          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_linux_runtimes.json",
+          "--jobs=4"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "flat",
+        "name": "webgl2_conformance_gles_passthrough_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+      },
+      {
+        "args": [
           "webgl1_conformance",
           "--show-stdout",
           "--browser=release",
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gles --use-cmd-decoder=passthrough --use-gl=angle --force_high_performance_gpu --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gles --use-cmd-decoder=passthrough --use-gl=angle --force_high_performance_gpu",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -544,16 +592,17 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 2
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -566,13 +615,9 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--jobs=4",
-          "--xvfb",
-          "--no-xvfb",
-          "--use-weston",
-          "--weston-use-gl"
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -587,9 +632,10 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "display_server": "x11",
-            "gpu": "8086:9bc5-23.2.1",
-            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,

@@ -56,7 +56,8 @@ VENDOR_INTEL = 0x8086
 VENDOR_STRING_IMAGINATION = 'Imagination Technologies'
 DEVICE_STRING_SGX = 'PowerVR SGX 554'
 
-GpuTestClassType = Type[gpu_integration_test.GpuIntegrationTest]
+GpuTestClass = gpu_integration_test.GpuIntegrationTest
+GpuTestClassType = Type[GpuTestClass]
 
 
 def _GetSystemInfo(  # pylint: disable=too-many-arguments
@@ -1131,6 +1132,123 @@ class GetGPUInfoErrorStringUnittest(unittest.TestCase):
     self.assertEqual(
       gpu_integration_test._GetGPUInfoErrorString(gpu_info), expected_error
     )
+
+
+class IsolatedWaylandDisplaysUnittest(unittest.TestCase):
+  def setUp(self):
+    self._orig_env = os.environ.copy()
+    GpuTestClass._wayland_server = None
+    GpuTestClass._use_isolated_wayland_displays = None
+
+  def tearDown(self):
+    if GpuTestClass._wayland_server:
+      GpuTestClass._wayland_server.Stop()
+      GpuTestClass._wayland_server = None
+    GpuTestClass._use_isolated_wayland_displays = None
+    os.environ.clear()
+    os.environ.update(self._orig_env)
+
+  def testShouldUseIsolatedWaylandDisplaysExplicitTrue(self):
+    GpuTestClass._use_isolated_wayland_displays = True
+    self.assertTrue(GpuTestClass._ShouldUseIsolatedWaylandDisplays())
+
+  def testShouldUseIsolatedWaylandDisplaysExplicitFalse(self):
+    GpuTestClass._use_isolated_wayland_displays = False
+    self.assertFalse(GpuTestClass._ShouldUseIsolatedWaylandDisplays())
+
+  def testCommandLineArgs(self):
+
+    def parse(args):
+      parser = bo.BrowserFinderOptions().CreateParser()
+      GpuTestClass.AddCommandlineArgs(parser)
+      return parser.parse_args(args)[0]
+
+    self.assertIsNone(parse([]).use_isolated_wayland_displays)
+    self.assertTrue(
+      parse(['--use-isolated-wayland-displays']).use_isolated_wayland_displays
+    )
+    self.assertFalse(
+      parse(
+        ['--no-use-isolated-wayland-displays']
+      ).use_isolated_wayland_displays
+    )
+
+  def testShouldUseIsolatedWaylandDisplaysDefaultLinuxWayland(self):
+    GpuTestClass._use_isolated_wayland_displays = None
+    options = mock.MagicMock()
+    options.browser_type = 'exact'
+    GpuTestClass._finder_options = options
+
+    with (
+      mock.patch('gpu_tests.util.host_information.IsLinux', return_value=True),
+      mock.patch(
+        'gpu_tests.util.host_information.IsWayland', return_value=True
+      ),
+    ):
+      self.assertTrue(GpuTestClass._ShouldUseIsolatedWaylandDisplays())
+
+  def testShouldUseIsolatedWaylandDisplaysDefaultNonLinux(self):
+    GpuTestClass._use_isolated_wayland_displays = None
+    with (
+      mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False),
+      mock.patch(
+        'gpu_tests.util.host_information.IsWayland', return_value=True
+      ),
+    ):
+      self.assertFalse(GpuTestClass._ShouldUseIsolatedWaylandDisplays())
+
+  def testShouldUseIsolatedWaylandDisplaysDefaultRemoteBrowser(self):
+    GpuTestClass._use_isolated_wayland_displays = None
+    options = mock.MagicMock()
+    options.browser_type = 'android-chromium'
+    GpuTestClass._finder_options = options
+
+    with (
+      mock.patch('gpu_tests.util.host_information.IsLinux', return_value=True),
+      mock.patch(
+        'gpu_tests.util.host_information.IsWayland', return_value=True
+      ),
+    ):
+      self.assertFalse(GpuTestClass._ShouldUseIsolatedWaylandDisplays())
+
+  @mock.patch('gpu_tests.util.wayland_server.WaylandServer')
+  def testSetUpAndTearDownProcessSuccess(self, mock_server_class):
+    mock_server = mock.MagicMock()
+    mock_server_class.return_value = mock_server
+
+    options = mock.MagicMock()
+    options.use_isolated_wayland_displays = True
+    options.extra_overlay_config_json = None
+    options.browser_type = 'exact'
+    options.skip_post_test_cleanup_and_debug_info = False
+    options.no_browser_restart_on_failure = False
+    options.disable_log_uploads = False
+    options.enforce_browser_version = False
+    options.Copy.return_value = options
+
+    with (
+      mock.patch.object(
+        gpu_integration_test.serially_executed_browser_test_case.SeriallyExecutedBrowserTestCase,
+        'SetUpProcess',
+      ),
+      mock.patch.object(
+        gpu_integration_test.serially_executed_browser_test_case.SeriallyExecutedBrowserTestCase,
+        'TearDownProcess',
+      ),
+    ):
+      GpuTestClass._finder_options = options
+      GpuTestClass.child = mock.MagicMock(worker_num=4)
+
+      GpuTestClass.SetUpProcess()
+
+      mock_server_class.assert_called_once_with(worker_num=4)
+      mock_server.Start.assert_called_once()
+      self.assertIs(GpuTestClass._wayland_server, mock_server)
+
+      GpuTestClass.TearDownProcess()
+
+      mock_server.Stop.assert_called_once()
+      self.assertIsNone(GpuTestClass._wayland_server)
 
 
 def _ExtractTestResults(

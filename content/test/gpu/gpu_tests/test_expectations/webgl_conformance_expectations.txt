@@ -310,8 +310,13 @@ crbug.com/1372155 [ android android-sm-a137f arm ] WebglExtension_WEBGL_draw_buf
 # Extensions not available on Corsola devices with Android Desktop.
 [ android android-corsola arm ] WebglExtension_EXT_float_blend [ Skip ]
 
-# Test too slow on ChromeOS - often hitting 300s timeouts.
-crbug.com/401988385 [ chromeos angle-opengles mesa_ge_21.0 passthrough ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
+# Not available when running with Wayland, likely due to using OpenGLES instead
+# of OpenGL.
+[ linux amd display-server-wayland angle-opengles ] WebglExtension_EXT_shader_texture_lod [ Skip ]
+[ linux amd display-server-wayland passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
+# GL_EXT_draw_buffers is required for shader compilation but not supported.
+[ linux amd display-server-wayland ] conformance/extensions/webgl-draw-buffers.html [ Skip ]
+
 
 ###############################
 # Temporary Skip Expectations #
@@ -370,6 +375,9 @@ crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures
 
 # Causes the shard to hang.
 crbug.com/507502286 [ android android-pixel-10 ] conformance/extensions/webgl-blend-func-extended.html [ Skip ]
+
+# Test too slow on ChromeOS - often hitting 300s timeouts.
+crbug.com/401988385 [ chromeos angle-opengles mesa_ge_21.0 passthrough ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
 
 ###############################
 # Permanent Slow Expectations #
@@ -638,6 +646,8 @@ crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/renderin
 crbug.com/1185344 [ angle-opengles linux display-server-wayland intel ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 
 crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+
+crbug.com/541251909 [ linux amd display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 ###############################
 # New failures in WebGL rolls #

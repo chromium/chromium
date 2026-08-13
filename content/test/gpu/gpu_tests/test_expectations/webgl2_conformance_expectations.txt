@@ -289,6 +289,13 @@ crbug.com/1421437 [ mac passthrough angle-opengl ] WebglExtension_WEBGL_shader_p
 [ android android-corsola arm passthrough angle-vulkan ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 [ android android-corsola arm passthrough angle-vulkan ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 
+# Not available when running with Wayland, likely due to using OpenGLES instead
+# of OpenGL.
+[ linux amd display-server-wayland ] WebglExtension_OVR_multiview2 [ Skip ]
+[ linux amd display-server-wayland passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
+[ linux amd display-server-wayland ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
+[ linux amd display-server-wayland passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -657,10 +664,6 @@ crbug.com/544795247 [ mac apple-angle-metal-renderer:-apple-m2 asan ] deqp/funct
 
 crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
 
-
-
-
-
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
@@ -684,7 +687,6 @@ crbug.com/444250724 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformanc
 ## Mac / M1 / OpenGL ##
 
 
-
 ####################
 # Linux failures   #
 ####################
@@ -698,6 +700,13 @@ crbug.com/535817988 [ linux nvidia angle-opengl passthrough ] conformance/extens
 ## Linux AMD RX 5500 XT ##
 
 crbug.com/445727124 [ linux amd-0x7340 ] deqp/functional/gles3/shaderoperator/unary_operator_00.html [ Failure ]
+
+## Linux AMD RX 5500 XT Wayland ##
+crbug.com/40167934 [ linux amd display-server-wayland ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/541251909 [ linux amd display-server-wayland ] conformance2/extensions/ext-render-snorm.html [ Failure ]
+crbug.com/541251909 [ linux amd display-server-wayland ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
+crbug.com/541251909 [ linux amd display-server-wayland ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
+crbug.com/541251909 [ linux amd display-server-wayland ] conformance2/rendering/rasterizer-discard-and-implicit-clear.html [ Failure ]
 
 ## Linux AMD RX 7600 ##
 

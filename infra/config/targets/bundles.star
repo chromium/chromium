@@ -3175,6 +3175,19 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_all_linux_wayland_release_telemetry_tests",
+    targets = [
+        "gpu_linux_wayland_release_telemetry_tests",
+        "gpu_fyi_linux_wayland_release_telemetry_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_tests": targets.remove(
+            reason = "Only run the default behavior tests on non-FYI testers",
+        ),
+    },
+)
+
+targets.bundle(
     name = "gpu_all_mac_debug_gtests",
     targets = [
         "gpu_mac_debug_gtests",
@@ -4348,29 +4361,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_fyi_lacros_release_gtests",
-    targets = [
-        "mappable_buffer_tests_suite",
-    ],
-)
-
-# The same as gpu_fyi_chromeos_release_telemetry_tests, but using
-# passthrough instead of validating since the Lacros bots are actually
-# Lacros-like Linux bots, and Linux uses the passthrough decoder.
-# Additionally, we use GLES instead of GL since that's what is supported.
-targets.bundle(
-    name = "gpu_fyi_lacros_release_telemetry_tests",
-    targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webrtc_telemetry_test",
-        "gpu_webcodecs_telemetry_test",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
-    ],
-)
-
-targets.bundle(
     name = "gpu_fyi_linux_debug_gtests",
     targets = [
         "gpu_common_gtests_passthrough",
@@ -4411,6 +4401,25 @@ targets.bundle(
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
         "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
     ],
+)
+
+# Wayland tests use GLES instead of GL due to how ANGLE interfaces with
+# Wayland vs. X11.
+targets.bundle(
+    name = "gpu_fyi_linux_wayland_release_telemetry_tests",
+    targets = [
+        "gpu_fyi_linux_release_telemetry_tests",
+        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_gl_passthrough_tests": targets.remove(
+            reason = "Wayland requires running tests with GLES, not GL",
+        ),
+        "webgl2_conformance_gl_passthrough_tests": targets.remove(
+            reason = "Wayland requires running tests with GLES, not GL",
+        ),
+    },
 )
 
 targets.bundle(
@@ -4563,6 +4572,13 @@ targets.bundle(
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webgl_conformance_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_linux_wayland_release_telemetry_tests",
+    targets = [
+        "gpu_linux_release_telemetry_tests",
     ],
 )
 

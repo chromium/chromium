@@ -12,6 +12,7 @@ when determining serial tests, these functions can be used as stand-ins.
 import collections
 import functools
 import logging
+import os
 import platform
 import re
 import shlex
@@ -67,6 +68,11 @@ def IsLinux() -> bool:
 @functools.lru_cache(maxsize=1)
 def IsMac() -> bool:
   return sys.platform == 'darwin'
+
+
+@functools.lru_cache(maxsize=1)
+def IsWayland() -> bool:
+  return 'WAYLAND_DISPLAY' in os.environ
 
 
 @functools.lru_cache(maxsize=1)

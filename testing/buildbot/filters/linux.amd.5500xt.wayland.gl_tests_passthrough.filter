@@ -1,0 +1,5 @@
+# crbug.com/540477155
+-Service/EGLImageBackingFactoryThreadSafeTest.*
+
+# crbug.com/540801230
+-GLReadbackTest.ReadPixelsFloat

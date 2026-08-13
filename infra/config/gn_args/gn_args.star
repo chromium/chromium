@@ -908,6 +908,20 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "linux_native_wayland",
+    configs = [
+        "linux",
+    ],
+    args = {
+        "ozone_auto_platforms": False,
+        "ozone_platform_wayland": True,
+        "ozone_platform": "wayland",
+        "use_bundled_weston": False,
+        "use_bundled_mutter": False,
+    },
+)
+
+gn_args.config(
     name = "linux_wayland",
     configs = [
         "linux",

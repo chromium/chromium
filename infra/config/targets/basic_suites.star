@@ -1083,8 +1083,14 @@ targets.legacy_basic_suite(
     tests = {
         "webgl2_conformance_gles_passthrough_tests": targets.legacy_test_config(
             swarming = targets.swarming(
+                shards = 5,
+            ),
+            android_swarming = targets.swarming(
                 # These tests currently take about an hour and fifteen minutes
                 # to run. Split them into roughly 5-minute shards.
+                shards = 20,
+            ),
+            chromeos_swarming = targets.swarming(
                 shards = 20,
             ),
             skylab = targets.skylab(
@@ -1132,6 +1138,12 @@ targets.legacy_basic_suite(
     tests = {
         "webgl_conformance_gles_passthrough_tests": targets.legacy_test_config(
             swarming = targets.swarming(
+                shards = 2,
+            ),
+            android_swarming = targets.swarming(
+                shards = 6,
+            ),
+            chromeos_swarming = targets.swarming(
                 shards = 6,
             ),
             skylab = targets.skylab(

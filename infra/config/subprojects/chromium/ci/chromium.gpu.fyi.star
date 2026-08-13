@@ -1136,8 +1136,7 @@ gpu.ci.linux_builder(
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
-            "ozone_linux",
-            "ozone_linux_non_x11",
+            "linux_native_wayland",
             "release_builder",
             "try_builder",
             "remoteexec",
@@ -1482,65 +1481,27 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_lacros_release_gtests",
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_all_linux_release_gtests",
+            "gpu_all_linux_wayland_release_telemetry_tests",
         ],
         mixins = [
-            "linux_amd_rx_5500_xt",
-        ],
-    ),
-    targets_settings = targets.settings(
-        browser_config = targets.browser_config.RELEASE,
-        os_type = targets.os_type.LACROS,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Wayland|AMD",
-        short_name = "amd",
-    ),
-)
-
-ci.thin_tester(
-    name = "Linux Wayland FYI Release (Intel)",
-    description_html = "Runs release GPU tests with Wayland enabled on stable Linux/Intel UHD 630 configs",
-    parent = "GPU FYI Linux Wayland Builder",
-    builder_spec = gpu_fyi_thin_tester_builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    targets = targets.bundle(
-        targets = [
-            "gpu_fyi_lacros_release_gtests",
-            "gpu_fyi_lacros_release_telemetry_tests",
-        ],
-        mixins = [
-            "linux_intel_uhd_630_stable",
+            "linux_amd_rx_5500_xt_wayland_stable",
         ],
         per_test_modifications = {
-            "webgl2_conformance_gles_passthrough_tests": targets.remove(
-                reason = [
-                    "Not enough CrOS hardware capacity to run both on anything other than",
-                    "VMs. See https://crbug.com/1238070.",
+            "gl_tests_passthrough": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux.amd.5500xt.wayland.gl_tests_passthrough.filter",
                 ],
             ),
         },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
-        os_type = targets.os_type.LACROS,
+        os_type = targets.os_type.LINUX,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Wayland|Intel",
-        short_name = "int",
+        category = "Linux|Wayland|AMD",
+        short_name = "5500",
     ),
 )
 

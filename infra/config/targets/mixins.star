@@ -1232,6 +1232,19 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "linux_amd_rx_5500_xt_wayland_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "gpu": "1002:7340-25.2.8",
+            "os": "Ubuntu-24.04",
+            "display_attached": "1",
+            "display_server": "wayland",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "linux_amd_rx_7600_stable",
     swarming = targets.swarming(
         dimensions = {

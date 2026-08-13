@@ -145,20 +145,10 @@ def gpu_linux_builder(*args, **kwargs):
 
 gpu_linux_builder(
     name = "gpu-fyi-try-linux-wayland-amd-rel",
-    description_html = "Runs GPU tests on weston with AMD RX 5500 XT",
+    description_html = "Runs release GPU tests on stable Linux/AMD RX 5500XT configs using Wayland",
     mirrors = [
         "ci/GPU FYI Linux Wayland Builder",
         "ci/Linux Wayland FYI Release (AMD)",
-    ],
-    gn_args = "ci/GPU FYI Linux Wayland Builder",
-)
-
-gpu_linux_builder(
-    name = "gpu-fyi-try-linux-wayland-intel-rel",
-    description_html = "Runs GPU tests on weston with Intel UHD 630",
-    mirrors = [
-        "ci/GPU FYI Linux Wayland Builder",
-        "ci/Linux Wayland FYI Release (Intel)",
     ],
     gn_args = "ci/GPU FYI Linux Wayland Builder",
 )

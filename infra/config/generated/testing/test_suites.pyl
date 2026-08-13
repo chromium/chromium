@@ -1867,6 +1867,12 @@
         },
         'telemetry_test_name': 'webgl2_conformance',
         'swarming': {
+          'shards': 5,
+        },
+        'android_swarming': {
+          'shards': 20,
+        },
+        'chromeos_swarming': {
           'shards': 20,
         },
         'skylab': {
@@ -1952,6 +1958,12 @@
         },
         'telemetry_test_name': 'webgl1_conformance',
         'swarming': {
+          'shards': 2,
+        },
+        'android_swarming': {
+          'shards': 6,
+        },
+        'chromeos_swarming': {
           'shards': 6,
         },
         'skylab': {
