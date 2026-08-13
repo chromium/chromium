@@ -93,7 +93,9 @@ int GetLiveCaptionsNumberOfLines() {
 
 void SetShouldShowSuggestionChips(bool should_show) {}
 
-void SetRequireFullPageContext(bool require_full_page_context) {}
+void SetBlockQuerySubmissionWhileLoading(bool block_submission) {}
+
+void SetShowPageLoadingSnackbarOnOpeningInvocation(bool show_snackbar) {}
 
 void ShowAccountSnackbar() {}
 
