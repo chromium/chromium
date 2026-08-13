@@ -8,6 +8,7 @@ import 'chrome://contextual-tasks/sources_menu.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ContextualTasksFaviconGroupElement} from 'chrome://contextual-tasks/favicon_group.js';
 import type {TopToolbarElement} from 'chrome://contextual-tasks/top_toolbar.js';
+import type {UnboundedDialog} from 'chrome://contextual-tasks/utils.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -871,7 +872,7 @@ suite('TopToolbarTest', () => {
     const menu = topToolbar.$.overflowMenu.get();
     let showUnboundedCalled = false;
     let hideUnboundedCalled = false;
-    const dialogEl = menu.$.menu.getDialog() as any;
+    const dialogEl = menu.$.menu.getDialog() as UnboundedDialog;
     dialogEl.showUnboundedElement = () => {
       showUnboundedCalled = true;
       return Promise.resolve();
