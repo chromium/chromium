@@ -206,10 +206,6 @@ const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
     "NtpComposeboxContextMenuEnableMultiTabSelection",
     true);
 
-const base::FeatureParam<bool> kUseNtpComposeboxFork(&kNtpComposebox,
-                                                     "useNtpComposeboxFork",
-                                                     true);
-
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
 FeatureConfig::FeatureConfig(const FeatureConfig&) = default;
