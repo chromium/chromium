@@ -68,9 +68,17 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
     if (!histogram) {
       break;
     }
+
+    // Read-only allocators cannot update logged samples in persistent memory,
+    // so merge final deltas instead.
     // TODO(crbug.com/489919375): Fuzz the name_override parameter.
-    histogram_allocator->MergeHistogramDeltaToStatisticsRecorder(
-        histogram.get(), /*name_override=*/"");
+    if (readonly) {
+      histogram_allocator->MergeHistogramFinalDeltaToStatisticsRecorder(
+          histogram.get(), /*name_override=*/"");
+    } else {
+      histogram_allocator->MergeHistogramDeltaToStatisticsRecorder(
+          histogram.get(), /*name_override=*/"");
+    }
   }
 
   return 0;
