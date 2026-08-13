@@ -21,7 +21,7 @@ GlicInstanceHelper* GlicInstanceHelper::From(tabs::TabInterface* tab) {
 
 GlicInstanceHelper::GlicInstanceHelper(tabs::TabInterface* tab)
     : tab_(tab),
-      metrics_(std::make_unique<GlicInstanceHelperMetrics>()),
+      metrics_(std::make_unique<GlicInstanceHelperMetrics>(tab)),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
 #if BUILDFLAG(IS_ANDROID)
   InitJavaObject();

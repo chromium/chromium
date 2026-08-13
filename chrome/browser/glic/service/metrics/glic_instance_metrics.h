@@ -112,10 +112,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when the floaty is hidden.
   void OnFloatyClosed();
 
-  enum class CloseReason { kExplicitlyClosed, kTabSwitched };
-
   // Called when the side panel is closed.
-  void OnSidePanelClosed(tabs::TabInterface* tab, CloseReason reason);
+  void OnSidePanelClosed(tabs::TabInterface* tab, MetricCloseReason reason);
 
   // Called when an embedder is unbound from this instance.
   void OnUnbindEmbedder(EmbedderKey key);
@@ -275,7 +273,6 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void RecordResponseLatencyByAttachedTabCount(base::TimeDelta latency);
 
   void RecordSkillsInvokeFunnelStep(SkillsInvokeFunnel invoke_funnel);
-  void RecordAndResetAutoOpenPdfMetric();
   void MaybeRecordOptInImpression();
 
   // Records the duration and prompt count for the first time the side panel is
@@ -323,9 +320,6 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   base::TimeTicks creation_time_;
   base::TimeTicks floaty_open_time_;
   std::map<tabs::TabHandle, base::TimeTicks> side_panel_open_times_;
-  std::vector<tabs::TabHandle> tabs_with_side_panel_;
-  ukm::SourceId auto_open_pdf_source_id_ = ukm::kInvalidSourceId;
-  base::TimeTicks auto_open_pdf_start_time_;
 
   std::unique_ptr<GlicStateTracker> activity_tracker_;
   std::unique_ptr<GlicStateTracker> visibility_tracker_;

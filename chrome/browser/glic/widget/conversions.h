@@ -7,6 +7,7 @@
 
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 
 namespace glic {
 
@@ -15,6 +16,10 @@ namespace glic {
 GlicSidePanelCoordinator::ShowOptions ConvertToCoordinatorShowOptions(
     const ShowOptions& options,
     bool supports_peek);
+
+// Converts side panel coordinator state to metric close reason.
+MetricCloseReason ConvertSidePanelStateToMetricCloseReason(
+    GlicSidePanelCoordinator::State state);
 
 }  // namespace glic
 
