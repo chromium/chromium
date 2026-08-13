@@ -74,16 +74,19 @@ void MenuModelBridge::AddExtensionItems() {
       }
       case MenuModel::TYPE_CHECK:
         Java_MenuModelBridge_addCheck(
-            env, java_obj_, menu_model_->GetLabelAt(i),
+            env, java_obj_, menu_model_->GetCommandIdAt(i),
+            menu_model_->GetDisplayOrderAt(i), menu_model_->GetLabelAt(i),
             menu_model_->IsItemCheckedAt(i), menu_model_->IsEnabledAt(i), i);
         break;
       case MenuModel::TYPE_RADIO:
         Java_MenuModelBridge_addRadioButton(
-            env, java_obj_, menu_model_->GetLabelAt(i),
+            env, java_obj_, menu_model_->GetCommandIdAt(i),
+            menu_model_->GetDisplayOrderAt(i), menu_model_->GetLabelAt(i),
             menu_model_->IsItemCheckedAt(i), menu_model_->IsEnabledAt(i), i);
         break;
       case MenuModel::TYPE_SEPARATOR: {
-        Java_MenuModelBridge_addDivider(env, java_obj_);
+        Java_MenuModelBridge_addDivider(env, java_obj_,
+                                        menu_model_->GetDisplayOrderAt(i));
         break;
       }
       /* Don't handle TYPE_BUTTON_ITEM for now; it's not available in the Chrome
@@ -97,8 +100,10 @@ void MenuModelBridge::AddExtensionItems() {
         auto submenu_model_bridge = std::make_unique<MenuModelBridge>(
             menu_model_->GetSubmenuModelAt(i)->AsWeakPtr());
         Java_MenuModelBridge_addSubmenu(
-            env, java_obj_, menu_model_->GetLabelAt(i), optional_bitmap,
-            menu_model_->IsEnabledAt(i), submenu_model_bridge->GetJavaObject());
+            env, java_obj_, menu_model_->GetCommandIdAt(i),
+            menu_model_->GetDisplayOrderAt(i), menu_model_->GetLabelAt(i),
+            optional_bitmap, menu_model_->IsEnabledAt(i),
+            submenu_model_bridge->GetJavaObject());
         submenu_model_bridges_.push_back(std::move(submenu_model_bridge));
         break;
       }

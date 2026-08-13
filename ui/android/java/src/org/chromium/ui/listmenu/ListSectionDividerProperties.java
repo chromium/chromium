@@ -4,6 +4,8 @@
 
 package org.chromium.ui.listmenu;
 
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ORDER;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -17,6 +19,6 @@ public class ListSectionDividerProperties {
     public static final WritableIntPropertyKey COLOR_ID = new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
-        LEFT_PADDING_DIMEN_ID, RIGHT_PADDING_DIMEN_ID, COLOR_ID
+        LEFT_PADDING_DIMEN_ID, RIGHT_PADDING_DIMEN_ID, COLOR_ID, ORDER
     };
 }

@@ -14,6 +14,8 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.LONG_CLICK_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ORDER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TEXT_APPEARANCE_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
@@ -54,6 +56,8 @@ public class ListMenuSubmenuItemProperties {
         GENERIC_MOTION_LISTENER,
         LONG_CLICK_LISTENER,
         TEXT_APPEARANCE_ID,
-        ICON_TINT_COLOR_STATE_LIST_ID
+        ICON_TINT_COLOR_STATE_LIST_ID,
+        MENU_ITEM_ID,
+        ORDER
     };
 }
