@@ -82,7 +82,7 @@ class AtMemoryHandler {
 
   // Tries to fill `value` into `element` at the location where AtMemory was
   // last triggered on `element`.
-  void ReplaceSelectionForAtMemory(blink::WebElement& element,
+  void ReplaceSelectionForAtMemory(blink::WebElement element,
                                    const std::u16string& value);
 
   // Stores metadata for an AskForValuesToFill() on `element` if

@@ -358,7 +358,7 @@ void AtMemoryHandler::DidReceiveLeftMouseDownOrGestureTapInNode(
   trigger_state_ = {};
 }
 
-void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement& element,
+void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement element,
                                                   const std::u16string& value) {
   const std::optional<AskForValuesToFillInfo> info =
       FindAskForValuesToFill(element, /*pop=*/true);
