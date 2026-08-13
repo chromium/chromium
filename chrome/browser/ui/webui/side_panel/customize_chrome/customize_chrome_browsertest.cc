@@ -4,9 +4,9 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -23,18 +23,18 @@
 class CustomizeChromeSidePanelBrowserTest : public InProcessBrowserTest {
  protected:
   // Activates the browser tab at `index`.
-  void ActivateTabAt(Browser* browser, int index) {
-    browser->tab_strip_model()->ActivateTabAt(index);
+  void ActivateTabAt(BrowserWindowInterface* browser, int index) {
+    browser->GetTabStripModel()->ActivateTabAt(index);
   }
 
   // Appends a new tab with `url` to the end of the tabstrip.
-  void AppendTab(Browser* browser, const GURL& url) {
+  void AppendTab(BrowserWindowInterface* browser, const GURL& url) {
     chrome::AddTabAt(browser, url, -1, true);
   }
 
   // Returns the CustomizeChromeTabHelper associated with the tab
   customize_chrome::SidePanelController* GetSidePanelController(
-      Browser* browser) {
+      BrowserWindowInterface* browser) {
     return browser->GetActiveTabInterface()
         ->GetTabFeatures()
         ->customize_chrome_side_panel_controller();

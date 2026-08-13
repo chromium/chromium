@@ -87,6 +87,7 @@ source_set("browser_tests") {
     "//chrome/browser/pdf:pdf_extension_test_utils",
     "//chrome/browser/speech",
     "//chrome/browser/translate",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/views/translate",

@@ -23,7 +23,6 @@
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -228,8 +227,7 @@ void ReadingListPageHandler::MarkCurrentTabAsRead() {
     return;
   }
 
-  chrome::MarkCurrentTabAsReadInReadLater(
-      browser->GetBrowserForMigrationOnly());
+  chrome::MarkCurrentTabAsReadInReadLater(browser);
   base::RecordAction(base::UserMetricsAction("DesktopReadingList.MarkAsRead"));
 }
 
@@ -240,7 +238,7 @@ void ReadingListPageHandler::AddCurrentTab() {
     return;
   }
 
-  chrome::MoveCurrentTabToReadLater(browser->GetBrowserForMigrationOnly());
+  chrome::MoveCurrentTabToReadLater(browser);
   reading_list_model_->MarkAllSeen();
 
   base::RecordAction(
