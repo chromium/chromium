@@ -2040,12 +2040,6 @@ inline constexpr char kDevToolsInstrumentationBreakpointsName[] =
 inline constexpr char kDevToolsInstrumentationBreakpointsDescription[] =
     "Enables instrumentation breakpoints in DevTools.";
 
-inline constexpr char kDevToolsLiveEditName[] =
-    "Enable JavaScript live editing in DevTools";
-inline constexpr char kDevToolsLiveEditDescription[] =
-    "Re-enable the deprecated feature in DevTools' Sources panel to apply code "
-    "edits to the target page live.";
-
 inline constexpr char kDevToolsPlusButtonName[] =
     "Enable the Plus Button in DevTools";
 inline constexpr char kDevToolsPlusButtonDescription[] =

@@ -175,8 +175,6 @@ RenderProcessImpl::RenderProcessImpl()
     SetV8FlagIfOverridden(blink::features::kJavaScriptImportText,
                           "--js-import-text", "--no-js-import-text");
 
-    SetV8FlagIfOverridden(features::kDevToolsLiveEdit, "--inspector-live-edit",
-                          "--no-inspector-live-edit");
   }
 
   bool enable_shared_array_buffer_unconditionally =
