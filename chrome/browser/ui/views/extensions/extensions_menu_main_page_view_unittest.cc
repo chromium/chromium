@@ -694,9 +694,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
 // Verifies the site access toggle and site permissions button properties when
 // toggling site access for an extension that only requests active tab.
-// TODO(crbug.com/40268140): Flaky on various builders.
 TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       DISABLED_ActiveTabRequested_ToggleSiteAccess) {
+       ActiveTabRequested_ToggleSiteAccess) {
   auto extension = InstallExtensionWithPermissions("Extension", {"activeTab"});
 
   const GURL url("http://www.example.com");
