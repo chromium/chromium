@@ -72,14 +72,15 @@ BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
 std::optional<BoundSessionRegistrationFetcherParam>
 BoundSessionRegistrationFetcherParam::ParseListItem(
     const GURL& request_url,
-    const net::structured_headers::ParameterizedMember& item) {
+    net::structured_headers::ParameterizedMember item) {
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos;
   for (const auto& algo_token : item.member) {
-    if (!algo_token.item.is_token()) {
+    const std::string* token = algo_token.item.GetIfToken();
+    if (!token) {
       continue;
     }
     std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algo =
-        signin::SignatureAlgorithmFromString(algo_token.item.GetString());
+        signin::SignatureAlgorithmFromString(*token);
     if (algo) {
       supported_algos.push_back(*algo);
     }
@@ -90,14 +91,17 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
 
   GURL registration_endpoint;
   std::string challenge;
-  for (const auto& [name, value] : item.params) {
-    if (value.is_string() && name == kPathItemKey) {
-      registration_endpoint = bound_session_credentials::ResolveEndpointPath(
-          request_url, value.GetString());
+  for (auto& [name, value] : item.params) {
+    std::string* str = value.GetIfString();
+    if (!str) {
+      continue;
     }
 
-    if (value.is_string() && name == kChallengeItemKey) {
-      challenge = value.GetString();
+    if (name == kPathItemKey) {
+      registration_endpoint =
+          bound_session_credentials::ResolveEndpointPath(request_url, *str);
+    } else if (name == kChallengeItemKey) {
+      challenge = std::move(*str);
     }
   }
 
@@ -122,13 +126,13 @@ BoundSessionRegistrationFetcherParam::MaybeCreateFromListHeader(
   }
 
   std::vector<BoundSessionRegistrationFetcherParam> params;
-  for (const auto& item : *list) {
+  for (auto& item : *list) {
     if (!item.member_is_inner_list) {
       continue;
     }
 
     std::optional<BoundSessionRegistrationFetcherParam> param =
-        ParseListItem(request_url, item);
+        ParseListItem(request_url, std::move(item));
     if (param) {
       params.push_back(std::move(param).value());
     }
