@@ -22,7 +22,7 @@ class OmniboxPopupPresenterDelegate {
 
   // This returns the view that will be given focus when the focus is given
   // back to the location bar.
-  virtual const views::View* GetLocationBarFocusRestoreView() const = 0;
+  virtual views::View* GetLocationBarFocusRestoreView() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_DELEGATE_H_

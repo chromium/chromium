@@ -117,10 +117,9 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
       focus ? gfx::Range(0, text.length()) : gfx::Range(0, 0);
   // If the user is actively typing a draft or has an active highlight from
   // mouse dragging or double-clicking, use the native view's selection range.
-  if (auto* omnibox_view_views =
-          static_cast<OmniboxViewViews*>(omnibox_view_)) {
-    if (user_input_in_progress || omnibox_view_views->HasSelection()) {
-      selection = omnibox_view_views->GetSelectedRange();
+  if (omnibox_view_) {
+    if (user_input_in_progress || omnibox_view_->HasSelection()) {
+      selection = omnibox_view_->GetSelectionBounds();
     }
   }
   const std::u16string full_url = controller()->client()->GetFormattedFullURL();

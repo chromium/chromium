@@ -1190,7 +1190,7 @@ OmniboxPopupAimPresenter* LocationBarView::GetOmniboxPopupAimPresenter() const {
   return omnibox_popup_aim_presenter_.get();
 }
 
-const views::View* LocationBarView::GetLocationBarFocusRestoreView() const {
+views::View* LocationBarView::GetLocationBarFocusRestoreView() {
   return omnibox_view_;
 }
 

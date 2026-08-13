@@ -77,9 +77,8 @@ void OmniboxPopupHandler::OnSelectionChanged(const gfx::Range& selection,
   // is transferred to the native view upon click on top container, that typed
   // text is entered at the correct place.
   if (controller_) {
-    if (auto* omnibox_view_views =
-            static_cast<OmniboxViewViews*>(controller_->edit_model()->view())) {
-      omnibox_view_views->SetSelectedRange(selection);
+    if (auto* view = controller_->edit_model()->view()) {
+      view->SetSelectionBounds(selection);
     }
   }
 }

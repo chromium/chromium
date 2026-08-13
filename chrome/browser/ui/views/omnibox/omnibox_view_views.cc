@@ -472,6 +472,14 @@ gfx::Range OmniboxViewViews::GetSelectionBounds() const {
   return GetSelectedRange();
 }
 
+void OmniboxViewViews::SetSelectionBounds(gfx::Range selection) {
+  SetSelectedRange(selection);
+}
+
+bool OmniboxViewViews::HasSelection() const {
+  return views::Textfield::HasSelection();
+}
+
 void OmniboxViewViews::SelectAll(bool reversed) {
   views::Textfield::SelectAll(reversed);
 }

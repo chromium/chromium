@@ -41,6 +41,8 @@ class TestOmniboxView : public OmniboxView {
   void EnterKeywordModeForDefaultSearchProvider() override {}
   bool IsSelectAll() const override;
   gfx::Range GetSelectionBounds() const override;
+  void SetSelectionBounds(gfx::Range selection) override;
+  bool HasSelection() const override;
   void SelectAll(bool reversed) override;
   void UpdatePopup() override {}
   void SetFocus(bool is_user_initiated) override {}

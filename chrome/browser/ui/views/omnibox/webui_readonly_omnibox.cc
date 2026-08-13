@@ -247,6 +247,15 @@ gfx::Range WebUIReadOnlyOmnibox::GetSelectionBounds() const {
   return selection_;
 }
 
+void WebUIReadOnlyOmnibox::SetSelectionBounds(gfx::Range selection) {
+  selection_ = selection;
+  RequestUpdateWebUI();
+}
+
+bool WebUIReadOnlyOmnibox::HasSelection() const {
+  return true;  // <input>s always have a selection.
+}
+
 void WebUIReadOnlyOmnibox::SelectAll(bool reversed) {
   size_t length = text_.size();
   selection_ = reversed ? gfx::Range(length, 0) : gfx::Range(0, length);

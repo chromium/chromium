@@ -808,7 +808,7 @@ OmniboxPopupAimPresenter* WebUILocationBar::GetOmniboxPopupAimPresenter()
   return omnibox_popup_aim_presenter_.get();
 }
 
-const views::View* WebUILocationBar::GetLocationBarFocusRestoreView() const {
+views::View* WebUILocationBar::GetLocationBarFocusRestoreView() {
   return toolbar_delegate_ ? toolbar_delegate_->GetInternalWebView() : nullptr;
 }
 

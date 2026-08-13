@@ -220,11 +220,10 @@ void WebuiOmniboxHandler::QueryAutocomplete(
       query_id, input, prevent_inline_autocomplete, cursor_position,
       suggest_inventory, is_on_focus, keyword, input_method);
 
-  if (auto* omnibox_view_views =
-          static_cast<OmniboxViewViews*>(edit_model()->view())) {
-    omnibox_view_views->SetWindowTextAndCaretPos(input, cursor_position,
-                                                 /*update_popup=*/false,
-                                                 /*notify_text_changed=*/false);
+  if (auto* view = edit_model()->view()) {
+    view->SetWindowTextAndCaretPos(input, cursor_position,
+                                   /*update_popup=*/false,
+                                   /*notify_text_changed=*/false);
   }
 }
 

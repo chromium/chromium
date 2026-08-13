@@ -122,6 +122,12 @@ class OmniboxView {
   // current cursor position.
   virtual gfx::Range GetSelectionBounds() const = 0;
 
+  // Changes the selection (directly on the view).
+  virtual void SetSelectionBounds(gfx::Range selection) = 0;
+
+  // Returns whether the view has any selection at all.
+  virtual bool HasSelection() const = 0;
+
   // Selects all the text in the edit.  Use this in place of SetSelAll() to
   // avoid selecting the "phantom newline" at the end of the edit.
   virtual void SelectAll(bool reversed) = 0;

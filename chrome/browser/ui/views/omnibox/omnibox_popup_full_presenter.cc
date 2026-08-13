@@ -274,14 +274,12 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
           base::BindOnce(
               [](base::WeakPtr<OmniboxPopupFullPresenter> presenter) {
                 if (presenter) {
-                  if (auto* omnibox_view =
-                          presenter->location_bar()->GetOmniboxView()) {
-                    if (auto* omnibox_view_views =
-                            static_cast<OmniboxViewViews*>(omnibox_view)) {
-                      if (auto* focus_manager =
-                              omnibox_view_views->GetFocusManager()) {
-                        focus_manager->SetStoredFocusView(omnibox_view_views);
-                      }
+                  if (auto* widget =
+                          presenter->delegate().GetLocationBarWidget()) {
+                    if (auto* focus_manager = widget->GetFocusManager()) {
+                      focus_manager->SetStoredFocusView(
+                          presenter->delegate()
+                              .GetLocationBarFocusRestoreView());
                     }
                   }
                 }

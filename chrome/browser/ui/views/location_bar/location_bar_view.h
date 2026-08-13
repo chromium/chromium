@@ -271,7 +271,7 @@ class LocationBarView
   views::Widget* GetLocationBarWidget() override;
   OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const override;
   OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const override;
-  const views::View* GetLocationBarFocusRestoreView() const override;
+  views::View* GetLocationBarFocusRestoreView() override;
 
   static bool IsVirtualKeyboardVisible(views::Widget* widget);
 

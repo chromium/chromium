@@ -115,6 +115,8 @@ class WebUIReadOnlyOmnibox
   void EnterKeywordModeForDefaultSearchProvider() override;
   bool IsSelectAll() const override;
   gfx::Range GetSelectionBounds() const override;
+  void SetSelectionBounds(gfx::Range selection) override;
+  bool HasSelection() const override;
   void SelectAll(bool reversed) override;
   void RevertAll() override;
   void UpdatePopup() override;
