@@ -127,6 +127,17 @@ void AutoPictureInPictureTabModelObserverHelper::TabRemoved(TabAndroid* tab) {
   ReevaluateObservedModelAndState();
 }
 
+void AutoPictureInPictureTabModelObserverHelper::WillCloseTabs(
+    const std::vector<TabAndroid*>& tabs,
+    bool is_all_tabs,
+    bool allow_undo) {
+  // If the tab is closing, we shouldn't trigger Auto-PiP. We pass false to
+  // skip checking the activation status, effectively freezing the state until
+  // the tab is destroyed. It's required because when closing a tab via
+  // WillCloseTabs, Clank doesn't immediately remove the tab from the TabModel.
+  ReevaluateObservedModelAndState(false);
+}
+
 void AutoPictureInPictureTabModelObserverHelper::WillCloseTab(TabAndroid* tab) {
   // If the tab is closing, we shouldn't trigger Auto-PiP. We pass false to
   // skip checking the activation status, effectively freezing the state until
