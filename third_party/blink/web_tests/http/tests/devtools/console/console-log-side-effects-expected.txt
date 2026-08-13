@@ -14,7 +14,7 @@ console-log-side-effects.js:36 Boolean {true}
 console-log-side-effects.js:37 String {'foo'}
 console-log-side-effects.js:38 {}
 console-log-side-effects.js:39 Window {window: Window, self: Window, document: document, name: '', location: Location, …}
-console-log-side-effects.js:45 
+console-log-side-effects.js:45 <p id="node"> </p>
 console-log-side-effects.js:49 {foo: 1, bar: 2}
 console-log-side-effects.js:50 (3) [1, 2, 3]
 console-log-side-effects.js:52 Uint32Array(3) [1, 2, 3, buffer: ArrayBuffer(12), byteLength: 12, byteOffset: 0, length: 3, Symbol(Symbol.toStringTag): 'Uint32Array']
