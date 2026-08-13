@@ -27347,21 +27347,6 @@
             ]
         }
     ],
-    "WebViewBackgroundClassPreloading": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewBackgroundClassPreloading"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewBypassProvisionalCookieManager": [
         {
             "platforms": [
