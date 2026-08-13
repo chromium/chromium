@@ -2982,6 +2982,7 @@
     "AutofillDelayApcForPredictions": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
