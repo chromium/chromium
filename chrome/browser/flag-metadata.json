@@ -9813,7 +9813,7 @@
   {
     "name": "updated-fre-screens-sequence",
     "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 148
+    "expiry_milestone": 156
   },
   {
     "name": "upload-office-to-cloud",
