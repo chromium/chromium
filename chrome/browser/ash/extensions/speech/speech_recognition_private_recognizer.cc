@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_recognizer.h"
 
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
-#include "base/debug/crash_logging.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/network_speech_recognizer.h"
@@ -57,9 +56,6 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechResult(
 
 void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
-  // Crash keys for https://crbug.com/40821591.
-  SCOPED_CRASH_KEY_NUMBER("Accessibility", "Speech recognition state",
-                          new_state);
   SpeechRecognizerStatus next_state = new_state;
   if (new_state == SPEECH_RECOGNIZER_READY) {
     if (current_state_ == SPEECH_RECOGNIZER_OFF && speech_recognizer_) {
