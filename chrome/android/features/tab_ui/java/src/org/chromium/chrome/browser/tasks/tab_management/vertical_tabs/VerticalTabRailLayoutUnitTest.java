@@ -475,7 +475,7 @@ public class VerticalTabRailLayoutUnitTest {
                         .getDimensionPixelSize(R.dimen.vertical_tabs_new_tab_button_height);
 
         assertEquals(36, expectedTouchButtonSize);
-        assertEquals(36, expectedTouchNewTabHeight);
+        assertEquals(40, expectedTouchNewTabHeight);
 
         View collapseButton = mRailLayout.findViewById(R.id.collapse_button);
         assertEquals(expectedTouchButtonSize, collapseButton.getLayoutParams().width);

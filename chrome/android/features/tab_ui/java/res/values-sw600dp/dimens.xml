@@ -15,6 +15,6 @@ found in the LICENSE file.
     <dimen name="vertical_tab_item_margin_bottom">0dp</dimen>
     <dimen name="vertical_tab_item_collapsed_size">36dp</dimen>
     <dimen name="vertical_tab_pinned_item_height">36dp</dimen>
-    <dimen name="vertical_tabs_new_tab_button_height">36dp</dimen>
+    <dimen name="vertical_tabs_new_tab_button_height">40dp</dimen>
     <dimen name="vertical_tabs_header_button_size">36dp</dimen>
 </resources>
