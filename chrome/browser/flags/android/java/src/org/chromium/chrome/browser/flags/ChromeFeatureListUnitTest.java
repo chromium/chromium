@@ -189,4 +189,10 @@ public class ChromeFeatureListUnitTest {
             featureNamesValuesToSymbols.put(fieldValue, fieldSymbol);
         }
     }
+
+    @Test
+    public void testCctTabSwitcherFlagsDefaultValues() {
+        assertFalse(ChromeFeatureList.sCctTabSwitcherEnabledForChromeExperiment.isEnabled());
+        assertTrue(ChromeFeatureList.sCctTabSwitcherEnabledForEmbedderExperiment.isEnabled());
+    }
 }

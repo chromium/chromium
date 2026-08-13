@@ -13786,7 +13786,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          features::kReadAnythingReadAloudExperimentalPlaybackUi)},
 #endif
-
 #if !BUILDFLAG(IS_ANDROID)
     {"password-change-with-glic",
      flag_descriptions::kPasswordChangeWithGlicName,
@@ -13798,6 +13797,18 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kXplatSyncedSetupThemesName,
      flag_descriptions::kXplatSyncedSetupThemesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kXplatSyncedSetupThemes)},
+    {"cct-tab-switcher-enabled-for-chrome-experiment",
+     flag_descriptions::kCCTTabSwitcherEnabledForChromeExperimentName,
+     flag_descriptions::kCCTTabSwitcherEnabledForChromeExperimentDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kCCTTabSwitcherEnabledForChromeExperiment)},
+    {"cct-tab-switcher-enabled-for-embedder-experiment",
+     flag_descriptions::kCCTTabSwitcherEnabledForEmbedderExperimentName,
+     flag_descriptions::kCCTTabSwitcherEnabledForEmbedderExperimentDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kCCTTabSwitcherEnabledForEmbedderExperiment)},
 #endif
 
     {"critical-action-history", flag_descriptions::kCriticalActionHistoryName,

@@ -5929,6 +5929,16 @@ inline constexpr char kCCTResizableForThirdPartiesName[] =
 inline constexpr char kCCTResizableForThirdPartiesDescription[] =
     "Enable bottom sheet Custom Tabs for third party apps.";
 
+inline constexpr char kCCTTabSwitcherEnabledForChromeExperimentName[] =
+    "CCT Tab Switcher Enabled For Chrome Experiment";
+inline constexpr char kCCTTabSwitcherEnabledForChromeExperimentDescription[] =
+    "Enable the Custom Tabs tab switcher for Chrome-initiated experiments.";
+
+inline constexpr char kCCTTabSwitcherEnabledForEmbedderExperimentName[] =
+    "CCT Tab Switcher Enabled For Embedder Experiment";
+inline constexpr char kCCTTabSwitcherEnabledForEmbedderExperimentDescription[] =
+    "Enable the Custom Tabs tab switcher when enabled for embedder experiments.";
+
 inline constexpr char kChangeUnfocusedPriorityName[] =
     "Change Unfocused Priority";
 inline constexpr char kChangeUnfocusedPriorityDescription[] =

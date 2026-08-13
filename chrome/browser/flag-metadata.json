@@ -1707,6 +1707,16 @@
     "expiry_milestone": 160
   },
   {
+    "name": "cct-tab-switcher-enabled-for-chrome-experiment",
+    "owners": [ "tivi@google.com", "chrome-connective-tissue@google.com" ],
+    "expiry_milestone": 180
+  },
+  {
+    "name": "cct-tab-switcher-enabled-for-embedder-experiment",
+    "owners": [ "tivi@google.com", "chrome-connective-tissue@google.com" ],
+    "expiry_milestone": 180
+  },
+  {
     "name": "cellular-bypass-esim-installation-connectivity-check",
     "owners": [ "khorimoto@chromium.org", "jiajunz@google.com", "cros-device-enablement@google.com" ],
     // This flag does not expire because it allows some test cases that host a local SM-DP+ server

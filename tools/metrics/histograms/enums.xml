@@ -11908,6 +11908,8 @@ from previous Chrome versions.
   <int value="-853404233"
       label="ServiceWorkerSkipIgnorableFetchHandler:enabled"/>
   <int value="-853035945" label="SafeBrowsingLocalListsUseSBv5:disabled"/>
+  <int value="-852910698"
+      label="CCTTabSwitcherEnabledForEmbedderExperiment:enabled"/>
   <int value="-852882930"
       label="NewTabPageAndroidTriggerForPrerender2:enabled"/>
   <int value="-852804781"
@@ -13821,6 +13823,8 @@ from previous Chrome versions.
   <int value="-255157394" label="ButtonARCNetworkDiagnostics:enabled"/>
   <int value="-254887599" label="google-profile-info"/>
   <int value="-254375567" label="OpenDownloadInPreferredApp:disabled"/>
+  <int value="-254371436"
+      label="CCTTabSwitcherEnabledForEmbedderExperiment:disabled"/>
   <int value="-254183580" label="AccessibilityLabeledBy:disabled"/>
   <int value="-254158542" label="SubresourceRedirectPreviews:enabled"/>
   <int value="-253685023" label="PrivacyGuideAndroid3:enabled"/>
@@ -14869,6 +14873,8 @@ from previous Chrome versions.
       label="ChromeHomePersonalizedOmniboxSuggestions:enabled"/>
   <int value="83893372" label="SigninInterceptBubbleV2:disabled"/>
   <int value="84092881" label="ComposeProactiveNudge:enabled"/>
+  <int value="84146097"
+      label="CCTTabSwitcherEnabledForChromeExperiment:enabled"/>
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
   <int value="86386196"
       label="SafeBrowsingExtensionTelemetryForEnterprise:enabled"/>
@@ -18938,6 +18944,8 @@ from previous Chrome versions.
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:disabled"/>
   <int value="1355923367" label="CrOSContainer:disabled"/>
   <int value="1356161410" label="VizHitTestSurfaceLayer:enabled"/>
+  <int value="1357337799"
+      label="CCTTabSwitcherEnabledForChromeExperiment:disabled"/>
   <int value="1357722794" label="TextClassifierTimeout:enabled"/>
   <int value="1357749568" label="EnableLazyLoadImageForInvisiblePage:enabled"/>
   <int value="1357785514" label="AndroidNativePagesInNewTab:disabled"/>
