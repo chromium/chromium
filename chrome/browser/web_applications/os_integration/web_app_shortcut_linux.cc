@@ -126,7 +126,8 @@ bool LaunchXdgUtility(const std::vector<std::string>& argv, int* exit_code) {
 
 const char kDirectoryFilename[] = "chrome-apps.directory";
 
-std::string CreateShortcutIcon(const gfx::ImageFamily& icon_images,
+std::string CreateShortcutIcon(base::Environment* env,
+                               const gfx::ImageFamily& icon_images,
                                const base::FilePath& shortcut_filename) {
   if (icon_images.empty()) {
     RecordCreateIcon(CreateShortcutIconResult::kEmptyIconImages);
@@ -143,6 +144,8 @@ std::string CreateShortcutIcon(const gfx::ImageFamily& icon_images,
   base::FilePath temp_file_path =
       temp_dir.GetPath().Append(shortcut_filename.ReplaceExtension("png"));
   std::string icon_name = temp_file_path.BaseName().RemoveExtension().value();
+  std::string desktop_icon = icon_name;
+  int largest_installed_icon_width = 0;
 
   for (gfx::ImageFamily::const_iterator it = icon_images.begin();
        it != icon_images.end(); ++it) {
@@ -188,9 +191,23 @@ std::string CreateShortcutIcon(const gfx::ImageFamily& icon_images,
       RecordCreateIcon(CreateShortcutIconResult::kFailToInstallIcon);
     } else {
       RecordCreateIcon(CreateShortcutIconResult::kSuccess);
+      if (width > largest_installed_icon_width) {
+        base::FilePath icon_path =
+            base::nix::GetXDGDataWriteLocation(env)
+                .Append("icons")
+                .Append("hicolor")
+                .AppendASCII(base::NumberToString(width) + "x" +
+                             base::NumberToString(width))
+                .Append("apps")
+                .Append(base::FilePath(icon_name).AddExtension("png"));
+        if (icon_path.IsAbsolute()) {
+          desktop_icon = icon_path.value();
+          largest_installed_icon_width = width;
+        }
+      }
     }
   }
-  return icon_name;
+  return desktop_icon;
 }
 
 bool CreateShortcutAtLocation(const base::FilePath location_path,
@@ -522,7 +539,7 @@ bool CreateDesktopShortcut(base::Environment* env,
   }
 
   std::string icon_name =
-      CreateShortcutIcon(shortcut_info.favicon, shortcut_filename);
+      CreateShortcutIcon(env, shortcut_info.favicon, shortcut_filename);
 
   std::string app_name = GenerateApplicationNameFromInfo(shortcut_info);
 
