@@ -461,10 +461,6 @@ void InitSkiaGraphiteDefaultParamsForTesting() {
 const base::FeatureParam<int> kSkiaGraphiteMinPathSizeForMsaa{
     &kSkiaGraphiteSmallPathAtlas, "min_path_size_for_msaa", 0};
 
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kSkiaGraphiteDawnUseD3D12, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Whether to use the GpuPersistentCache for caching GPU process shader blobs.
 // Usage for Graphite is controlled independently with
 // kSkiaGraphiteDawnUsePersistentCache.

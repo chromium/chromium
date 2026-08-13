@@ -460,9 +460,7 @@ wgpu::BackendType DawnContextProvider::GetDefaultBackendType() {
     return wgpu::BackendType::Vulkan;
   }
 #if BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(features::kSkiaGraphiteDawnUseD3D12)
-             ? wgpu::BackendType::D3D12
-             : wgpu::BackendType::D3D11;
+  return wgpu::BackendType::D3D11;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return wgpu::BackendType::Vulkan;
 #elif BUILDFLAG(IS_APPLE)

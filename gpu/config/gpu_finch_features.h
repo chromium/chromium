@@ -168,8 +168,6 @@ inline bool SkiaGraphiteFlushD3D11TileRasterCommandsToDriver() {
 inline bool SkiaGraphiteTripleBufferedDCompRootSurface() {
   return GetSkiaGraphiteFeatureParams().triple_buffered_dcomp_root_surface;
 }
-
-GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDawnUseD3D12);
 #endif
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteSmallPathAtlas);
