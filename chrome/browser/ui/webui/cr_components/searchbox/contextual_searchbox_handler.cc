@@ -99,6 +99,7 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_controller.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_sanitizer.h"
@@ -2222,6 +2223,20 @@ void ContextualSearchboxHandler::OpenUrl(
     // (copied from the omnibox handle) and assigning it to the active tab.
     auto* browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents_);
+    // Explicitly dismiss the popup and revert the location bar for any
+    // query submitted from the Omnibox popup (side panel, web search, voice).
+    auto* location_bar =
+        browser_window_interface
+            ? browser_window_interface->GetFeatures().location_bar()
+            : nullptr;
+    if (location_bar) {
+      if (auto* controller = location_bar->GetOmniboxController()) {
+        if (auto* popup_state_manager = controller->popup_state_manager()) {
+          popup_state_manager->SetPopupState(OmniboxPopupState::kNone);
+        }
+      }
+      location_bar->Revert();
+    }
     content::OpenURLParams params(url, content::Referrer(), disposition,
                                   ui::PAGE_TRANSITION_LINK, false);
     // If the current tab is part of the context list, navigate in the lens side
