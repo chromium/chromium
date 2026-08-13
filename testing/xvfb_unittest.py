@@ -14,6 +14,9 @@ import subprocess
 import sys
 import time
 import unittest
+from unittest import mock
+
+import xvfb
 
 # pylint: disable=super-with-arguments
 
@@ -76,6 +79,19 @@ class XvfbLinuxTest(unittest.TestCase):
   def test_xvfb_flag(self):
     self._procs.append(launch_process([]))
     self._procs[0].wait()
+
+  def test_x11_environment_does_not_inherit_wayland_session(self):
+    env = {
+        'WAYLAND_DISPLAY': 'wayland-test',
+        'WAYLAND_SOCKET': '10',
+        'XDG_SESSION_TYPE': 'wayland',
+    }
+    with mock.patch.object(xvfb, '_run_with_x11', return_value=0) as run_x11:
+      self.assertEqual(xvfb.run_executable(['test-command'], env), 0)
+    run_x11.assert_called_once()
+    self.assertNotIn('WAYLAND_DISPLAY', env)
+    self.assertNotIn('WAYLAND_SOCKET', env)
+    self.assertEqual(env['XDG_SESSION_TYPE'], 'x11')
 
   @unittest.skip('flaky; crbug.com/1320399')
   def test_xvfb_race_condition(self):

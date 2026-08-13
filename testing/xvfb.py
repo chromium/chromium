@@ -127,8 +127,8 @@ def run_executable(cmd,
 
   Args:
     cmd: Command to be executed.
-    env: A copy of environment variables. "DISPLAY" and will be set if Xvfb is
-      used. "WAYLAND_DISPLAY" will be set if Weston is used.
+    env: A copy of environment variables. "DISPLAY" will be set if Xvfb or
+      Xorg is used. "WAYLAND_DISPLAY" will be set if Weston is used.
     stdoutfile: If provided, symbolization via script is disabled and stdout
       is written to this file as well as to stdout.
     use_openbox: A flag to use openbox process.
@@ -198,6 +198,11 @@ def run_executable(cmd,
 
 
   if sys.platform.startswith('linux') and (use_xvfb or use_xorg):
+    # Do not let the host Wayland session make clients select Wayland instead
+    # of the isolated X server.
+    env.pop('WAYLAND_DISPLAY', None)
+    env.pop('WAYLAND_SOCKET', None)
+    env['XDG_SESSION_TYPE'] = 'x11'
     return _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr,
                          use_xorg, xvfb_whd or DEFAULT_XVFB_WHD, cwd)
   if use_weston:
