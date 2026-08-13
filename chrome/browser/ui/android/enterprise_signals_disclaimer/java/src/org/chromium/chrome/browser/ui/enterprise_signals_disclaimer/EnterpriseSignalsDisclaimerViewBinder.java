@@ -19,9 +19,7 @@ class EnterpriseSignalsDisclaimerViewBinder {
      * @param propertyKey The key of the property that changed.
      */
     public static void bind(
-            PropertyModel model,
-            EnterpriseSignalsDisclaimerBottomSheetView view,
-            PropertyKey propertyKey) {
+            PropertyModel model, EnterpriseSignalsDisclaimerView view, PropertyKey propertyKey) {
         if (propertyKey == EnterpriseSignalsDisclaimerProperties.PROFILE_PICTURE) {
             view.setProfilePicture(
                     model.get(EnterpriseSignalsDisclaimerProperties.PROFILE_PICTURE));
