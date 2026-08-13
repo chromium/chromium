@@ -363,10 +363,12 @@ enum class AccessPoint : int {
   // The snackbar is displayed after the user signs out from the account menu,
   // when IdentityAwareness is enabled. iOS only.
   kSignoutUndoSnackbar = 108,
+  // Sign-in promo shown for the Composebox Drive context menu option.
+  kComposeboxDriveContextMenuOptionBubble = 109,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kSignoutUndoSnackbar,  // This must be last.
+  kMaxValue = kComposeboxDriveContextMenuOptionBubble,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

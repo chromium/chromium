@@ -47405,6 +47405,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromComposeboxDriveContextMenuOptionBubble">
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <description>
+    Recorded when the signin promo is shown from interacting with the Composebox
+    Drive context menu option.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromCreatorFeedFollow">
   <owner>wry@chromium.org</owner>
   <description>
@@ -48283,6 +48291,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kCollaborationTabGroup.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromComposeboxDriveContextMenuOptionBubble">
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <description>
+    Recorded on sign in start from the Composebox Drive context menu option
+    signin promo.
   </description>
 </action>
 

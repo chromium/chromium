@@ -341,6 +341,10 @@ TEST(SigninPromoTest, GetSignInPromoTypeFromAccessPoint) {
   EXPECT_EQ(SignInPromoType::kSendTabToSelf,
             GetSignInPromoTypeFromAccessPoint(
                 signin_metrics::AccessPoint::kSendTabToSelfPromo));
+  EXPECT_EQ(SignInPromoType::kComposeboxDriveContextMenuOption,
+            GetSignInPromoTypeFromAccessPoint(
+                signin_metrics::AccessPoint::
+                    kComposeboxDriveContextMenuOptionBubble));
 }
 
 class ShowPromoTest : public testing::Test {

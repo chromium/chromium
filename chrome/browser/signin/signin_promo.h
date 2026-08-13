@@ -75,6 +75,7 @@ enum class SignInPromoType {
   kExtension,
   kSearchAIMode,
   kSendTabToSelf,
+  kComposeboxDriveContextMenuOption,
   // Add other types here if other access points will show a signin promo.
 };
 

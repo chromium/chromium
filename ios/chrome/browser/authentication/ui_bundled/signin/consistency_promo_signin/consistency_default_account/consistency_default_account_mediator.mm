@@ -177,6 +177,7 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kDeepLinkDefault:
     case signin_metrics::AccessPoint::kAgeMismatchSignout:
     case signin_metrics::AccessPoint::kSignoutUndoSnackbar:
+    case signin_metrics::AccessPoint::kComposeboxDriveContextMenuOptionBubble:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.

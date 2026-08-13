@@ -152,6 +152,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kOverflowMenu:
     case AccessPoint::kLevelUp:
     case AccessPoint::kSignoutUndoSnackbar:
+    case AccessPoint::kComposeboxDriveContextMenuOptionBubble:
       return access_point;
   }
 
@@ -766,6 +767,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSignoutUndoSnackbar"));
       break;
+    case AccessPoint::kComposeboxDriveContextMenuOptionBubble:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromComposeboxDriveContextMenuOptionBubble"));
+      break;
   }
 }
 
@@ -909,6 +914,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kOverflowMenu:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromOverflowMenu"));
+      break;
+    case AccessPoint::kComposeboxDriveContextMenuOptionBubble:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromComposeboxDriveContextMenuOptionBubble"));
       break;
     case AccessPoint::kExtensions:
     case AccessPoint::kMachineLogon:

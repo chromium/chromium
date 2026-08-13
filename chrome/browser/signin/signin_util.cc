@@ -491,6 +491,7 @@ bool IsValidAccessPointForHistoryOptinScreen(
     case signin_metrics::AccessPoint::kIndigo:
     case signin_metrics::AccessPoint::kLevelUp:
     case signin_metrics::AccessPoint::kSignoutUndoSnackbar:
+    case signin_metrics::AccessPoint::kComposeboxDriveContextMenuOptionBubble:
       return false;
     case signin_metrics::AccessPoint::kStartPage:
     case signin_metrics::AccessPoint::kMenu:

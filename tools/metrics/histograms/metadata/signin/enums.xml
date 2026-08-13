@@ -1168,6 +1168,7 @@ chromium-metrics-reviews@google.com.
   <int value="106" label="Overflow Menu (iOS only)"/>
   <int value="107" label="Level Up (iOS only)"/>
   <int value="108" label="Undo button from the signout snackbar (iOS only)"/>
+  <int value="109" label="Composebox Drive context menu option (Desktop only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

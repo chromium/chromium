@@ -54,6 +54,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_import_requirement_utils.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -294,6 +295,7 @@ bool IsAllowedByPromoFrequency(Profile& profile,
     case SignInPromoType::kBookmark:
     case SignInPromoType::kExtension:
     case SignInPromoType::kSendTabToSelf:
+    case SignInPromoType::kComposeboxDriveContextMenuOption:
       // No specific frequency exists for this promo type.
       return true;
     case SignInPromoType::kSearchAIMode:
@@ -405,6 +407,10 @@ syncer::DataType GetDataTypeFromSignInPromoType(SignInPromoType type) {
     case SignInPromoType::kSearchAIMode:
       // Search AI Mode sign-in promo is not related to any synced data type.
       NOTREACHED();
+    case SignInPromoType::kComposeboxDriveContextMenuOption:
+      // Composebox Drive context menu option sign-in promo is not related to
+      // any synced data type.
+      NOTREACHED();
     case SignInPromoType::kSendTabToSelf:
       return syncer::SEND_TAB_TO_SELF;
   }
@@ -420,6 +426,10 @@ bool PromoTypeHasSyncableData(SignInPromoType type) {
       return true;
     case SignInPromoType::kSearchAIMode:
       // Search AI Mode sign-in promo is not related to any synced data type.
+      return false;
+    case SignInPromoType::kComposeboxDriveContextMenuOption:
+      // Composebox Drive context menu option sign-in promo is not related to
+      // any synced data type.
       return false;
   }
   NOTREACHED();
@@ -490,6 +500,7 @@ int GetContextualPromoDismissCountPerSignedOutProfile(Profile& profile,
           prefs::kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment);
     case SignInPromoType::kExtension:
     case SignInPromoType::kSendTabToSelf:
+    case SignInPromoType::kComposeboxDriveContextMenuOption:
       NOTREACHED();
     case SignInPromoType::kSearchAIMode:
       return profile.GetPrefs()->GetInteger(
@@ -521,6 +532,7 @@ int GetContextualPromoDismissCountPerAccount(Profile& profile,
           .GetBookmarkSigninPromoDismissCount(gaia_id);
     case SignInPromoType::kExtension:
     case SignInPromoType::kSendTabToSelf:
+    case SignInPromoType::kComposeboxDriveContextMenuOption:
       NOTREACHED();
   }
 }
@@ -530,6 +542,7 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
   // Footer sign in promos are always shown.
   if (type == signin::SignInPromoType::kExtension ||
       type == signin::SignInPromoType::kSendTabToSelf ||
+      type == signin::SignInPromoType::kComposeboxDriveContextMenuOption ||
       (type == signin::SignInPromoType::kBookmark &&
        !base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp))) {
     return true;
@@ -557,6 +570,7 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
       break;
     case SignInPromoType::kExtension:
     case SignInPromoType::kSendTabToSelf:
+    case SignInPromoType::kComposeboxDriveContextMenuOption:
       NOTREACHED();
   }
 
@@ -790,6 +804,10 @@ bool IsBubbleSigninPromo(signin_metrics::AccessPoint access_point) {
          (base::FeatureList::IsEnabled(
               switches::kEnableSearchAIModeSigninPromo) &&
           access_point == signin_metrics::AccessPoint::kSearchAIModeBubble) ||
+         (base::FeatureList::IsEnabled(
+              omnibox::kComposeboxDriveContextMenuOptionSigninPromo) &&
+          access_point == signin_metrics::AccessPoint::
+                              kComposeboxDriveContextMenuOptionBubble) ||
          (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp) &&
           access_point == signin_metrics::AccessPoint::kBookmarkBubble);
 #else
@@ -841,6 +859,8 @@ SignInPromoType GetSignInPromoTypeFromAccessPoint(
       return SignInPromoType::kExtension;
     case signin_metrics::AccessPoint::kSendTabToSelfPromo:
       return SignInPromoType::kSendTabToSelf;
+    case signin_metrics::AccessPoint::kComposeboxDriveContextMenuOptionBubble:
+      return SignInPromoType::kComposeboxDriveContextMenuOption;
     default:
       NOTREACHED();
   }
@@ -892,6 +912,7 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
         break;
       case SignInPromoType::kExtension:
       case SignInPromoType::kSendTabToSelf:
+      case SignInPromoType::kComposeboxDriveContextMenuOption:
         return;
     }
 
@@ -926,12 +947,15 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
       return;
     case SignInPromoType::kExtension:
     case SignInPromoType::kSendTabToSelf:
+    case SignInPromoType::kComposeboxDriveContextMenuOption:
       return;
   }
 }
 
 bool ShouldUseAutofillSignInPromoLimits(signin::SignInPromoType promo_type) {
   return promo_type != signin::SignInPromoType::kSearchAIMode &&
+         promo_type !=
+             signin::SignInPromoType::kComposeboxDriveContextMenuOption &&
          !base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment);
 }
 
