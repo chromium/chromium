@@ -797,6 +797,36 @@ scrutiny as `chrome` or `d8`. Memory corruption in these binaries does not harm
 Chrome's users, and are not valid reports. Please ensure all of your PoCs
 demonstrate an issue in `chrome` or `d8`.
 
+### I can make Chrome perform potentially insecure NTLM requests to an attacker controlled server. Is this a security bug?
+
+Chrome generally does not treat the observation or capture of an NTLMv2
+authentication response, by itself, as a Chrome security vulnerability. NTLM is
+a Windows authentication mechanism provided by the operating system, and NTLM
+authentication responses are protocol messages intended to be sent to an
+authentication peer.
+
+Microsoft has deprecated all versions of NTLM, including NTLMv2, and recommends
+migrating applications to Negotiate/Kerberos. NTLMv1 has already been removed
+from Windows 11 version 24H2 and Windows Server 2025, and Microsoft has
+announced plans to disable NTLM by default in future major Windows releases.
+
+For this reason, reports whose only result is obtaining an NTLMv2
+challenge-response through expected Windows authentication behavior are
+generally considered an operating-system/network-authentication configuration
+issue rather than a Chrome vulnerability. We recommend using a current, fully
+patched version of Windows and following Microsoft's guidance for reducing or
+disabling NTLM and migrating to Kerberos where possible.
+
+We may still investigate cases where Chrome causes authentication in
+circumstances where it should not—for example, a demonstrated bypass of Chrome's
+authentication allowlisting, origin/security boundaries, or another Chrome
+security control. Chrome provides enterprise controls such as
+`AuthServerAllowlist` governing servers permitted to use integrated
+authentication.
+
+Reports should therefore demonstrate a Chrome-specific security-boundary bypass
+rather than only the ability to capture an NTLMv2 authentication response.
+
 ## AI Features
 
 Chrome deeply integrates AI both in user-facing features like [Gemini Live
