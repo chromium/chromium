@@ -7016,13 +7016,6 @@ const FeatureEntry kFeatureEntries[] = {
          kOptimizationGuideOnDeviceModelVariations,
          "OptimizationGuideOnDeviceModel")},
 
-    {"optimization-guide-on-device-model-android",
-     flag_descriptions::kOptimizationGuideOnDeviceModelAndroidName,
-     flag_descriptions::kOptimizationGuideOnDeviceModelAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         optimization_guide::features::kOptimizationGuideOnDeviceModel)},
-
     {"organic-repeatable-queries",
      flag_descriptions::kOrganicRepeatableQueriesName,
      flag_descriptions::kOrganicRepeatableQueriesDescription,

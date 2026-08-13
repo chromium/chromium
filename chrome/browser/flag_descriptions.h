@@ -3946,11 +3946,6 @@ inline constexpr char kOptimizationGuideOnDeviceModelName[] =
 inline constexpr char kOptimizationGuideOnDeviceModelDescription[] =
     "Enables the optimization guide to execute models on device.";
 
-inline constexpr char kOptimizationGuideOnDeviceModelAndroidName[] =
-    "Enables optimization guide on device on Android";
-inline constexpr char kOptimizationGuideOnDeviceModelAndroidDescription[] =
-    "Enables the optimization guide to execute models on device on Android.";
-
 inline constexpr char kOrganicRepeatableQueriesName[] =
     "Organic repeatable queries in Most Visited tiles";
 inline constexpr char kOrganicRepeatableQueriesDescription[] =

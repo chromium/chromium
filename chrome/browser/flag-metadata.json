@@ -7894,11 +7894,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "optimization-guide-on-device-model-android",
-    "owners": [ "xinghuilu@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "optimize-web-request-proxy",
     "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
     "expiry_milestone": 152
