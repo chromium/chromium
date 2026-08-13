@@ -611,10 +611,7 @@ void OnTokenRequestParsed(
       token_value, continue_on, redirect_to, response_error);
 
   if (response_error) {
-    std::string error_code;
-    if (IsErrorAttributeEnabled()) {
-      error_code = ExtractString(*response_error, kErrorKey);
-    }
+    std::string error_code = ExtractString(*response_error, kErrorKey);
     if (error_code.empty()) {
       error_code = ExtractString(*response_error, kErrorCodeKey);
     }

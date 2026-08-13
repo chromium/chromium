@@ -2631,11 +2631,6 @@ inline constexpr char kEmailVerificationProtocolName[] =
 inline constexpr char kEmailVerificationProtocolDescription[] =
     "Enables the Email Verification Protocol in Autofill.";
 
-inline constexpr char kFedCmErrorAttributeName[] = "FedCmErrorAttribute";
-inline constexpr char kFedCmErrorAttributeDescription[] =
-    "Enables the spec-compliant 'error' attribute in IdentityCredentialError "
-    "while deprecating the legacy 'code' attribute.";
-
 inline constexpr char kFedCmIdPRegistrationName[] =
     "FedCM with IdP Registration support";
 inline constexpr char kFedCmIdPRegistrationDescription[] =

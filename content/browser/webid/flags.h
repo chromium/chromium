@@ -54,9 +54,6 @@ bool IsWellKnownEndpointValidationEnabled();
 // Whether preserving ports for testing is enabled.
 bool IsPreservePortsForTestingEnabled();
 
-// Whether accessing error attribute is enabled.
-bool IsErrorAttributeEnabled();
-
 // Whether navigation interception is enabled.
 bool IsNavigationInterceptionEnabled();
 

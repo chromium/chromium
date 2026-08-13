@@ -8820,10 +8820,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEmailVerificationProtocolDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEmailVerificationProtocol)},
 
-    {"fedcm-error-attribute", flag_descriptions::kFedCmErrorAttributeName,
-     flag_descriptions::kFedCmErrorAttributeDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmErrorAttribute)},
-
     {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmIdPRegistration)},

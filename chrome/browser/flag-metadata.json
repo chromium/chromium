@@ -4969,11 +4969,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "fedcm-error-attribute",
-    "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
-     "expiry_milestone": 155
-   },
-  {
     "name": "fedcm-idp-registration",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 155

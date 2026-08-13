@@ -79,10 +79,6 @@ bool IsPreservePortsForTestingEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmPreservePortsForTesting);
 }
 
-bool IsErrorAttributeEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmErrorAttribute);
-}
-
 bool IsNavigationInterceptionEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmNavigationInterception);
 }
