@@ -186,18 +186,6 @@ group("make_platform_generated") {
   ]
 }
 
-rust_static_library("font_format_check") {
-  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
-  crate_root = "fonts/opentype/format_check.rs"
-  sources = [ crate_root ]
-  cxx_bindings = [ crate_root ]
-  deps = [
-    "//third_party/rust/font_types/v0_12:lib",
-    "//third_party/rust/read_fonts/v0_41:lib",
-    "//third_party/rust/skrifa/v0_44:lib",
-  ]
-}
-
 rust_static_library("rustfft_ffi") {
   allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
   crate_root = "audio/rustfft_ffi.rs"
@@ -1806,6 +1794,7 @@ component("platform") {
     ":allow_discouraged_type",
     ":blink_platform_public_deps",
     ":platform_export",
+    "//build/rust/crubit",
     "//gpu/command_buffer/client:raster_interface",
     "//media/capture:capture_lib",
     "//mojo/public/cpp/base",
@@ -1832,8 +1821,8 @@ component("platform") {
     "//ui/native_theme/features",
   ]
   deps = [
-    ":font_format_check",
     ":rustfft_ffi",
+    "fonts:font_format_bindings",
     "//base:base_static",
     "//base/allocator:buildflags",
     "//build:chromecast_buildflags",

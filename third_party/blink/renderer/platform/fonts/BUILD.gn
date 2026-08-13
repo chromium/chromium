@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("font_format") {
+  crate_root = "opentype/format_check.rs"
+  sources = [ crate_root ]
+  cpp_api_from_rust = {
+    target_name = "font_format_bindings"
+    cpp_namespace = "font_format"
+  }
+  deps = [
+    "//third_party/rust/font_types/v0_12:lib",
+    "//third_party/rust/read_fonts/v0_41:lib",
+    "//third_party/rust/skrifa/v0_44:lib",
+  ]
+}
