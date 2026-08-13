@@ -246,8 +246,6 @@ MainDllLoader::MainDllLoader() : dll_(nullptr) {}
 
 MainDllLoader::~MainDllLoader() = default;
 
-const int kNonBrowserShutdownPriority = 0x280;
-
 // Launching is a matter of loading the right dll and calling the entry point.
 // Derived classes can add custom code in the OnBeforeLaunch callback.
 int MainDllLoader::Launch(HINSTANCE instance,
@@ -286,16 +284,6 @@ int MainDllLoader::Launch(HINSTANCE instance,
               preread_begin_ticks, preread_end_ticks);
   if (!dll_)
     return CHROME_RESULT_CODE_MISSING_DATA;
-
-  if (!is_browser) {
-    // Set non-browser processes up to be killed by the system after the
-    // browser goes away. The browser uses the default shutdown order, which
-    // is 0x280. Note that lower numbers here denote "kill later" and higher
-    // numbers mean "kill sooner". This gets rid of most of those unsightly
-    // sad tabs on logout and shutdown.
-    ::SetProcessShutdownParameters(kNonBrowserShutdownPriority - 1,
-                                   SHUTDOWN_NORETRY);
-  }
 
   OnBeforeLaunch(process_type_, file);
   DLL_MAIN chrome_main = reinterpret_cast<DLL_MAIN>(
@@ -336,14 +324,6 @@ void ChromeDllLoader::OnBeforeLaunch(const std::string& process_type,
     if constexpr (kShouldRecordActiveUse) {
       RecordDidRun(dll_path);
     }
-  } else {
-    // Set non-browser processes up to be killed by the system after the browser
-    // goes away. The browser uses the default shutdown order, which is 0x280.
-    // Note that lower numbers here denote "kill later" and higher numbers mean
-    // "kill sooner".
-    // This gets rid of most of those unsightly sad tabs on logout and shutdown.
-    ::SetProcessShutdownParameters(kNonBrowserShutdownPriority - 1,
-                                   SHUTDOWN_NORETRY);
   }
 }
 

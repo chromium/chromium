@@ -123,6 +123,12 @@ bool IsSubprocess() {
 
 void CommonSubprocessInit() {
 #if BUILDFLAG(IS_WIN)
+  // Lower non-browser processes to 0x27F so `csrss` notifies/terminates the
+  // browser process (0x280) first during OS shutdown. The browser's teardown
+  // or job handle cleanup then takes care of child processes before it can
+  // observe them dying unexpectedly.
+  ::SetProcessShutdownParameters(0x280 - 1, SHUTDOWN_NORETRY);
+
   // HACK: Let Windows know that we have started.  This is needed to suppress
   // the IDC_APPSTARTING cursor from being displayed for a prolonged period
   // while a subprocess is starting.
