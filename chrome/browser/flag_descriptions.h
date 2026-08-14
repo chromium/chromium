@@ -6914,8 +6914,7 @@ inline constexpr char kNtpScaledActionChipsDescription[] =
 inline constexpr char kNtpScaledActionChipsSmallName[] =
     "NTP Scaled Action Chips Small";
 inline constexpr char kNtpScaledActionChipsSmallDescription[] =
-    "Enables small scaled merchandising action chips on the New Tab Page. "
-    "Requires #ntp-scaled-action-chips to be enabled too.";
+    "Enables small scaled merchandising action chips on the New Tab Page.";
 
 inline constexpr char kNtpSharepointModuleName[] = "NTP Sharepoint Module";
 inline constexpr char kNtpSharepointModuleDescription[] =
