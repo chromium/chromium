@@ -379,7 +379,9 @@ let mojoLockManagerProfile = Profile(
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,
-    disabledMutators: v8Profile.disabledMutators,
+    disabledMutators: [
+        "ExplorationMutator", "ProbingMutator", "PropertyAccessorMutator"
+    ],
     additionalBuiltins: mojoBuiltins.merging(commonMojoBuiltins) { (existing, _) in existing },
     additionalObjectGroups: [
         .lockManager,
