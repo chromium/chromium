@@ -139,6 +139,7 @@ void DownloadManagerTabHelper::CleanupCurrentDownload() {
   }
   files_request_handler_.reset();
   content_analysis_info_.reset();
+  has_processed_complete_task_ = false;
 }
 
 void DownloadManagerTabHelper::AdaptToFullscreen(bool adapt_to_fullscreen) {
@@ -383,6 +384,11 @@ void DownloadManagerTabHelper::ProcessCompleteDownloadTask() {
   if (WillDownloadTaskBeSavedToDrive()) {
     return;
   }
+
+  if (has_processed_complete_task_) {
+    return;
+  }
+  has_processed_complete_task_ = true;
 
   enterprise_connectors::FileDownloadScanningResources resources =
       enterprise_connectors::PrepareCloudContentScanning(

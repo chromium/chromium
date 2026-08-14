@@ -4,6 +4,10 @@
 
 source_set("model") {
   sources = [
+    "background_cloud_scanner_manager.h",
+    "background_cloud_scanner_manager.mm",
+    "background_cloud_scanner_manager_factory.h",
+    "background_cloud_scanner_manager_factory.mm",
     "cloud_content_scanning_helper.h",
     "cloud_content_scanning_helper.mm",
     "download_protection_metrics.h",
@@ -64,6 +68,7 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/enterprise:test_support",
     "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/core:cloud_content_scanning",
     "//components/policy/core/common",

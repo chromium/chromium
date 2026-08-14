@@ -152,6 +152,12 @@ class DownloadManagerTabHelper
   base::FilePath task_final_file_path_;
   bool delegate_started_ = false;
   bool is_processing_for_testing_ = false;
+  // Tracks whether completion processing has been initiated for the current
+  // download task. This prevents duplicate triggers of
+  // `ProcessCompleteDownloadTask` when subsequent properties (such as bytes)
+  // are updated while the current task remains in the `kComplete` state.
+  // This is reset to false in `CleanupCurrentDownload()`.
+  bool has_processed_complete_task_ = false;
 
   base::WeakPtrFactory<DownloadManagerTabHelper> weak_ptr_factory_{this};
 };

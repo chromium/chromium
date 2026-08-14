@@ -181,10 +181,10 @@ TEST_F(DriveTabHelperTest, UploadStartsDirectlyWhenFeatureDisabled) {
 
   // Simulate completion of the download task.
   download_task_->SetDone(true);
-  OnDownloadUpdated(download_task_.get());
 
-  // Since the feature is disabled, it should have started the upload.
-  EXPECT_EQ(UploadTask::State::kInProgress, upload_task->GetState());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return upload_task->GetState() == UploadTask::State::kInProgress;
+  }));
 }
 
 // Tests that when scanning is ENABLED and result is SUCCESS, the upload
@@ -307,6 +307,7 @@ TEST_F(DriveTabHelperTest, UploadFailsIfIdentityRemovedBeforeStart) {
   // files_request_handler_).
   download_task_->SetDone(true);
 
-  // Upload should have failed and not be resumable.
-  EXPECT_EQ(UploadTask::State::kFailedNotResumable, upload_task->GetState());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return upload_task->GetState() == UploadTask::State::kFailedNotResumable;
+  }));
 }

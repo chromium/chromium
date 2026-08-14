@@ -140,6 +140,7 @@ void DriveTabHelper::ResetSaveToDriveData(web::DownloadTask* task,
   upload_task_observation_.Reset();
   files_request_handler_.reset();
   content_analysis_info_.reset();
+  has_processed_complete_task_ = false;
   if (!task || !identity) {
     return;
   }
@@ -172,6 +173,11 @@ void DriveTabHelper::RemoveComplete(bool remove_completed) {
 }
 
 void DriveTabHelper::ProcessCompleteDownloadTask(web::DownloadTask* task) {
+  if (has_processed_complete_task_) {
+    return;
+  }
+  has_processed_complete_task_ = true;
+
   enterprise_connectors::FileDownloadScanningResources resources =
       enterprise_connectors::PrepareCloudContentScanning(
           web_state_, task->GetRedirectedUrl(), task->GetResponsePath(),

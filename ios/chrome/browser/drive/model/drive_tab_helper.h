@@ -101,6 +101,12 @@ class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
   // Request handler for enterprise content scanning.
   std::unique_ptr<enterprise_connectors::FilesRequestHandlerBase>
       files_request_handler_;
+  // Tracks whether completion processing has been initiated for the current
+  // download task. This prevents duplicate triggers of
+  // `ProcessCompleteDownloadTask` when subsequent properties are updated
+  // while the task remains in the `kComplete` state.
+  // Reset to false in `ResetSaveToDriveData()`.
+  bool has_processed_complete_task_ = false;
 
   base::WeakPtrFactory<DriveTabHelper> weak_ptr_factory_{this};
 };
