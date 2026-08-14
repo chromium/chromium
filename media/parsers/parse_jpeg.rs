@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 const K_JPEG_MAX_HUFFMAN_CODE_LENGTHS: usize = 16;
-const K_JPEG_MAX_HUFFMAN_SYMBOLS: usize = 162;
+const K_JPEG_MAX_HUFFMAN_DC_SYMBOLS: usize = 12;
+const K_JPEG_MAX_HUFFMAN_AC_SYMBOLS: usize = 162;
 const K_JPEG_MAX_HUFFMAN_TABLE_NUM_BASELINE: usize = 2;
 const K_JPEG_MAX_COMPONENTS: usize = 4;
 const K_JPEG_MAX_QUANTIZATION_TABLE_NUM: usize = 4;
@@ -289,7 +290,12 @@ fn parse_dht(
         let code_length = read_slice(&mut cursor, K_JPEG_MAX_HUFFMAN_CODE_LENGTHS)?;
         let count = code_length.iter().copied().map(usize::from).sum::<usize>();
 
-        if count > K_JPEG_MAX_HUFFMAN_SYMBOLS {
+        let max_symbols = if table_class == 0 {
+            K_JPEG_MAX_HUFFMAN_DC_SYMBOLS
+        } else {
+            K_JPEG_MAX_HUFFMAN_AC_SYMBOLS
+        };
+        if count > max_symbols {
             return Err(JpegParserError::TooManyHuffmanCodes);
         }
 
@@ -428,7 +434,7 @@ impl Default for JpegHuffmanTable {
         Self {
             valid: false,
             code_length: [0; K_JPEG_MAX_HUFFMAN_CODE_LENGTHS],
-            code_value: [0; K_JPEG_MAX_HUFFMAN_SYMBOLS],
+            code_value: [0; K_JPEG_MAX_HUFFMAN_AC_SYMBOLS],
         }
     }
 }
