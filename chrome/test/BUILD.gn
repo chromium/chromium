@@ -666,17 +666,14 @@ static_library("test_support") {
     sources += [
       "base/ash/extension_js_browser_test.cc",
       "base/ash/extension_js_browser_test.h",
-      "base/ash/js_test_api.cc",
-      "base/ash/js_test_api.h",
       "base/ash/scoped_test_system_nss_key_slot_mixin.cc",
       "base/ash/scoped_test_system_nss_key_slot_mixin.h",
-      "base/browser_process_platform_part_test_api_chromeos.cc",
-      "base/browser_process_platform_part_test_api_chromeos.h",
+    ]
 
-      # TODO(crbug.com/521960574): Move these files. They are not crosier
-      # specific and are used by non-crosier tests.
-      "base/chromeos/crosier/aura_window_title_observer.cc",
-      "base/chromeos/crosier/aura_window_title_observer.h",
+    public_deps += [
+      "//chrome/test/base:aura_window_title_observer",
+      "//chrome/test/base:browser_process_platform_part_test_api_chromeos",
+      "//chrome/test/base:js_test_api",
     ]
 
     deps += [
@@ -8275,8 +8272,11 @@ if (!is_android) {
         "base/ash/mojo_web_ui_browser_test.h",
         "base/ash/web_ui_browser_test.cc",
         "base/ash/web_ui_browser_test.h",
-        "base/ash/web_ui_test_handler.cc",
-        "base/ash/web_ui_test_handler.h",
+      ]
+
+      public_deps += [
+        "//chrome/test/base:js_test_api",
+        "//chrome/test/base:web_ui_test_handler",
       ]
 
       deps += [

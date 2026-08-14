@@ -781,6 +781,63 @@ if (!is_android) {
   }
 }
 
+if (is_chromeos) {
+  source_set("js_test_api") {
+    testonly = true
+    sources = [
+      "ash/js_test_api.cc",
+      "ash/js_test_api.h",
+    ]
+    public_deps = [ "//base" ]
+    deps = [ "//chrome/common" ]
+  }
+
+  source_set("browser_process_platform_part_test_api_chromeos") {
+    testonly = true
+    sources = [
+      "browser_process_platform_part_test_api_chromeos.cc",
+      "browser_process_platform_part_test_api_chromeos.h",
+    ]
+    public_deps = [
+      "//base",
+      "//components/component_updater/ash",
+    ]
+    deps = [ "//chrome/browser:browser_process_platform_part" ]
+  }
+
+  source_set("aura_window_title_observer") {
+    testonly = true
+    sources = [
+      "chromeos/crosier/aura_window_title_observer.cc",
+      "chromeos/crosier/aura_window_title_observer.h",
+    ]
+    public_deps = [
+      "//base",
+      "//ui/aura",
+      "//ui/base/interaction:test_support",
+    ]
+    deps = [ "//ui/aura:test_support" ]
+  }
+
+  source_set("web_ui_test_handler") {
+    testonly = true
+    sources = [
+      "ash/web_ui_test_handler.cc",
+      "ash/web_ui_test_handler.h",
+    ]
+    public_deps = [ "//content/public/browser" ]
+    deps = [
+      "//base",
+      "//chrome/common:mojo_bindings",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//testing/gtest",
+      "//third_party/blink/public/common:headers",
+    ]
+  }
+}
+
 source_set("web_ui_mocha_browser_test") {
   testonly = true
   sources = [
