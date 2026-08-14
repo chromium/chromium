@@ -10305,28 +10305,6 @@
             ]
         }
     ],
-    "EnableDeepScanVerdictCacheSize": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "remove_query_params": "false",
-                        "verdict_cache_max_size": "200"
-                    },
-                    "enable_features": [
-                        "EnableDeepScanVerdictCacheSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableDevToolsJsErrorReporting": [
         {
             "platforms": [
