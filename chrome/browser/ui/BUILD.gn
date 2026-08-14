@@ -2536,8 +2536,6 @@ static_library("ui") {
       "views/autofill/at_memory_promo_bubble_view.h",
       "views/autofill/autofill_bubble_handler_impl.cc",
       "views/autofill/autofill_bubble_handler_impl.h",
-      "views/autofill/autofill_bubble_utils.cc",
-      "views/autofill/autofill_bubble_utils.h",
       "views/autofill/autofill_field_promo_view_impl.cc",
       "views/autofill/autofill_field_promo_view_impl.h",
       "views/autofill/edit_address_profile_view.cc",
@@ -2993,6 +2991,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/apps:impl",
       "//chrome/browser/ui/views/apps/app_info_dialog",
       "//chrome/browser/ui/views/apps/app_info_dialog:impl",
+      "//chrome/browser/ui/views/autofill:autofill_bubble_utils",
       "//chrome/browser/ui/views/autofill:delete_address_profile_dialog_view",
       "//chrome/browser/ui/views/autofill/payments:autofill_error_dialog_view_native_views",
       "//chrome/browser/ui/views/autofill/payments:autofill_progress_dialog_views",
@@ -3520,10 +3519,8 @@ static_library("ui") {
     }
 
     if (enable_dice_support) {
-      sources += [
-        "views/autofill/address_sign_in_promo_view.cc",
-        "views/autofill/address_sign_in_promo_view.h",
-      ]
+      deps +=
+          [ "//chrome/browser/ui/views/autofill:address_sign_in_promo_view" ]
     }
 
     # Merged and added for autofill_ai

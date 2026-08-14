@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("delete_address_profile_dialog_view") {
@@ -25,4 +27,37 @@ source_set("autofill_location_bar_bubble") {
     "//chrome/browser/ui/views/location_bar",
     "//ui/base/metadata",
   ]
+}
+
+source_set("autofill_bubble_utils") {
+  public = [ "autofill_bubble_utils.h" ]
+  sources = [ "autofill_bubble_utils.cc" ]
+  public_deps = [ "//ui/views" ]
+  deps = [
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/base:features",
+  ]
+}
+
+if (enable_dice_support) {
+  source_set("address_sign_in_promo_view") {
+    public = [ "address_sign_in_promo_view.h" ]
+    sources = [ "address_sign_in_promo_view.cc" ]
+    public_deps = [
+      ":autofill_location_bar_bubble",
+      "//chrome/browser/ui/autofill",
+      "//ui/base/metadata",
+    ]
+    deps = [
+      "//chrome/browser:resources",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/signin",
+      "//components/signin/public/base",
+      "//components/strings:components_strings",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
 }
