@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -48,6 +49,17 @@ class PrintWatermark;
 
 class PrintCompositorImpl : public mojom::PrintCompositor {
  public:
+  // Interface for optional addons that extend compositor behavior to draw more
+  // content onto the page.
+  class Addon {
+   public:
+    virtual ~Addon() = default;
+
+    // Called when drawing a page to `canvas` of a given `size`. The addon may
+    // draw into `canvas` as well.
+    virtual void OnDrawPage(SkCanvas* canvas, const SkSize& size) = 0;
+  };
+
   // Creates an instance with an optional Mojo receiver (may be null) and
   // optional initialization of the runtime environment necessary for
   // compositing operations. `io_task_runner` is used for shared memory
@@ -63,6 +75,12 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   PrintCompositorImpl& operator=(const PrintCompositorImpl&) = delete;
 
   ~PrintCompositorImpl() override;
+
+  void SetAddonForTesting(std::unique_ptr<Addon> addon);
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  PrintWatermark* watermark_for_testing() { return watermark_for_testing_; }
+#endif
 
   // mojom::PrintCompositor
   void NotifyUnavailableSubframe(uint64_t frame_guid) override;
@@ -130,12 +148,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       CompositePagesCallback callback);
   virtual void FinishDocumentRequest(
       FinishDocumentCompositionCallback callback);
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-  const PrintWatermark* watermark_for_testing() const {
-    return watermark_.get();
-  }
-#endif
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PrintCompositorImplTest, IsReadyToComposite);
@@ -291,8 +303,14 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   // The title of the document.
   std::string title_;
 
+  // Currently, PrintCompositor supports either 0 or 1 addon, but if there is
+  // demand for multiple addons, this can be easily modified to accommodate
+  // that.
+  std::unique_ptr<Addon> addon_;
+
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-  std::unique_ptr<PrintWatermark> watermark_;
+  // Points at `addon_` if `addon_` is a PrintWatermark.
+  raw_ptr<PrintWatermark> watermark_for_testing_ = nullptr;
 #endif
 };
 

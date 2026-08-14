@@ -117,6 +117,10 @@ PrintCompositorImpl::~PrintCompositorImpl() {
 #endif
 }
 
+void PrintCompositorImpl::SetAddonForTesting(std::unique_ptr<Addon> addon) {
+  addon_ = std::move(addon);
+}
+
 void PrintCompositorImpl::NotifyUnavailableSubframe(uint64_t frame_guid) {
   // Add this frame into the map.
   DCHECK(!frame_info_map_.contains(frame_guid));
@@ -466,11 +470,9 @@ void PrintCompositorImpl::DrawPage(SkDocument* doc,
                                    const SkDocumentPage& page) {
   SkCanvas* canvas = doc->beginPage(page.fSize.width(), page.fSize.height());
   canvas->drawPicture(page.fPicture);
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-  if (watermark_) {
-    watermark_->Draw(canvas, page.fSize);
+  if (addon_) {
+    addon_->OnDrawPage(canvas, page.fSize);
   }
-#endif
   doc->endPage();
 }
 
@@ -546,9 +548,13 @@ void PrintCompositorImpl::SetTitle(const std::string& title) {
 void PrintCompositorImpl::SetWatermarkBlock(
     watermark::mojom::WatermarkBlockPtr watermark_block) {
   if (watermark_block) {
-    watermark_ = std::make_unique<PrintWatermark>(std::move(watermark_block));
+    auto watermark =
+        std::make_unique<PrintWatermark>(std::move(watermark_block));
+    watermark_for_testing_ = watermark.get();
+    addon_ = std::move(watermark);
   } else {
-    watermark_.reset();
+    watermark_for_testing_ = nullptr;
+    addon_.reset();
   }
 }
 #endif

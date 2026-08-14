@@ -13,10 +13,18 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "cc/test/pixel_test_utils.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkDocument.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/docs/SkMultiPictureDocument.h"
 
 namespace printing {
 
@@ -32,6 +40,8 @@ class MockPrintCompositorImpl : public PrintCompositorImpl {
                             /*initialize_environment=*/false,
                             /*io_task_runner=*/nullptr) {}
   ~MockPrintCompositorImpl() override = default;
+
+  using PrintCompositorImpl::DrawPage;
 
   MOCK_METHOD2(OnFulfillRequest, void(uint64_t, int));
 
@@ -75,6 +85,16 @@ class MockCompletionPrintCompositorImpl : public PrintCompositorImpl {
   void FinishDocumentRequest(
       FinishDocumentCompositionCallback callback) override {
     OnFinishDocumentRequest();
+  }
+};
+
+class TestBlueSquareAddon : public PrintCompositorImpl::Addon {
+ public:
+  void OnDrawPage(SkCanvas* canvas, const SkSize& size) override {
+    SkPaint paint;
+    paint.setColor(SK_ColorBLUE);
+    paint.setStyle(SkPaint::kFill_Style);
+    canvas->drawRect(SkRect::MakeSize(size), paint);
   }
 };
 
@@ -481,6 +501,54 @@ TEST_F(PrintCompositorImplTest, InvalidContentFormat) {
 
   EXPECT_EQ(future.Get<0>(), mojom::PrintCompositor::Status::kContentFormatError);
   EXPECT_FALSE(future.Get<1>().IsValid());
+}
+
+class PrintCompositorImplRenderTest : public PrintCompositorImplTest {
+ public:
+  void RenderPageAndCheckBitmap(MockPrintCompositorImpl& impl,
+                                SkColor expected_color) {
+    constexpr SkSize kPageSize(100, 100);
+    SkDynamicMemoryWStream stream;
+    sk_sp<SkDocument> doc = SkMultiPictureDocument::Make(&stream);
+    SkDocumentPage page;
+    page.fSize = kPageSize;
+
+    impl.DrawPage(doc.get(), page);
+    doc->close();
+
+    sk_sp<SkData> data = stream.detachAsData();
+    SkMemoryStream read_stream(data);
+    int page_count = SkMultiPictureDocument::ReadPageCount(&read_stream);
+    ASSERT_EQ(page_count, 1);
+
+    std::vector<SkDocumentPage> pages(1);
+    ASSERT_TRUE(
+        SkMultiPictureDocument::Read(&read_stream, pages.data(), pages.size()));
+
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(kPageSize.width(), kPageSize.height());
+    SkCanvas canvas(bitmap);
+    canvas.clear(SK_ColorWHITE);
+    pages[0].fPicture->playback(&canvas);
+
+    SkBitmap reference_bitmap;
+    reference_bitmap.allocN32Pixels(kPageSize.width(), kPageSize.height());
+    reference_bitmap.eraseColor(expected_color);
+
+    EXPECT_TRUE(cc::MatchesBitmap(bitmap, reference_bitmap,
+                                  cc::ExactPixelComparator()));
+  }
+};
+
+TEST_F(PrintCompositorImplRenderTest, WithoutAddon) {
+  MockPrintCompositorImpl impl;
+  RenderPageAndCheckBitmap(impl, /*expected_color=*/SK_ColorWHITE);
+}
+
+TEST_F(PrintCompositorImplRenderTest, WithBlueSquareAddon) {
+  MockPrintCompositorImpl impl;
+  impl.SetAddonForTesting(std::make_unique<TestBlueSquareAddon>());
+  RenderPageAndCheckBitmap(impl, /*expected_color=*/SK_ColorBLUE);
 }
 
 }  // namespace printing

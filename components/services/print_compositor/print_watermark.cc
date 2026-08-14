@@ -26,7 +26,7 @@ PrintWatermark::PrintWatermark(
 
 PrintWatermark::~PrintWatermark() = default;
 
-void PrintWatermark::Draw(SkCanvas* canvas, const SkSize& size) const {
+void PrintWatermark::OnDrawPage(SkCanvas* canvas, const SkSize& size) {
   base::ReadOnlySharedMemoryMapping mapping =
       watermark_block_->serialized_skpicture.Map();
   if (!mapping.IsValid()) {
