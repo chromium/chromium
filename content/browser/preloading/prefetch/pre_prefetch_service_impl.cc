@@ -104,7 +104,7 @@ network::HttpRequestHeadersUpdateParams PreCalculatePrePrefetchHeadersOnUI(
       PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
           browser_context, key.origin.GetURL(),
           PrefetchType(PreloadingTriggerType::kEmbedder,
-                       /*use_prefetch_proxy=*/true),
+                       /*use_prefetch_proxy=*/false),
           /*histogram_suffix=*/"Tentative", blink::mojom::Referrer(),
           key.javascript_enabled,
           /*referring_origin=*/std::nullopt,
@@ -427,7 +427,7 @@ PrePrefetchServiceImpl::StartPrePrefetchRequest(
       PrefetchRequest::CreateBrowserInitiatedWithoutWebContentsOffTheMainThread(
           browser_context_weak_on_ui_thread_, url,
           PrefetchType(PreloadingTriggerType::kEmbedder,
-                       /*use_prefetch_proxy=*/true),
+                       /*use_prefetch_proxy=*/false),
           histogram_suffix, blink::mojom::Referrer(), javascript_enabled,
           /*referring_origin=*/std::nullopt, std::move(no_vary_search_hint),
           priority,
