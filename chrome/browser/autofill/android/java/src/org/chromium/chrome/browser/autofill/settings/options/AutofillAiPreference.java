@@ -48,8 +48,8 @@ public class AutofillAiPreference extends ChromeSwitchPreference
     }
 
     @Override
-    public void onBindViewHolder(PreferenceViewHolder holder) {
-        super.onBindViewHolder(holder);
+    public void onAttached() {
+        super.onAttached();
 
         // TODO(crbug.com/530067273): Move string configuration to XML once kAutofillAiUsePrivateAi
         // is launched.
@@ -59,6 +59,14 @@ public class AutofillAiPreference extends ChromeSwitchPreference
                 usePrivateAi
                         ? R.string.settings_autofill_ai_toggle_sub_label_v2
                         : R.string.settings_autofill_ai_toggle_sub_label);
+    }
+
+    @Override
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
+
+        final boolean usePrivateAi =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_USE_PRIVATE_AI);
 
         setInfoItemDetails(
                 holder.findViewById(R.id.autofill_ai_when_on),
@@ -67,6 +75,8 @@ public class AutofillAiPreference extends ChromeSwitchPreference
                 R.drawable.ic_text_analysis_24dp);
 
         View thingsToConsider = holder.findViewById(R.id.autofill_ai_things_to_consider);
+        // TODO(crbug.com/530067273): Move string configuration to XML once kAutofillAiUsePrivateAi
+        // is launched.
         setInfoItemDetails(
                 thingsToConsider,
                 R.string.settings_autofill_ai_things_to_consider,
