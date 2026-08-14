@@ -34,7 +34,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kRefactorMinWidthContextOverride,
     &ui::kReportBottomOverscrolls,
     &ui::kRequireLeadingInTextViewWithLeading,
-    &ui::kSelectFileOpenDocument,
     &ui::kAndroidUpdateDisplayForContext,
     &ui::kSupportKeyboard,
     &ui::kAndroidTouchpadOverscrollHistoryNavigation,

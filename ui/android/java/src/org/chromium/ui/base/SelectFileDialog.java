@@ -346,10 +346,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             @JniType("std::string") String defaultDirectory,
             @JniType("std::string") String suggestedName,
             WindowAndroid window) {
-        mIntentAction =
-                UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)
-                        ? intentAction
-                        : Intent.ACTION_GET_CONTENT;
+        mIntentAction = intentAction;
         mFileTypes = new ArrayList<>(Arrays.asList(fileTypes));
         mMimeTypes = convertToSupportedMimeTypes(mFileTypes);
         mCapture = capture;
@@ -1050,18 +1047,16 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                 onFileNotSelected();
                 return;
             }
-            if (UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)) {
-                ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
-                try {
-                    cr.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                } catch (SecurityException e) {
-                    Log.w(TAG, "No persisted read permission for " + uri);
-                }
-                try {
-                    cr.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                } catch (SecurityException e) {
-                    Log.w(TAG, "No persisted write permission for " + uri);
-                }
+            ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
+            try {
+                cr.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (SecurityException e) {
+                Log.w(TAG, "No persisted read permission for " + uri);
+            }
+            try {
+                cr.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            } catch (SecurityException e) {
+                Log.w(TAG, "No persisted write permission for " + uri);
             }
             GetDisplayNameTask task =
                     new GetDisplayNameTask(

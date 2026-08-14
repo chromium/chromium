@@ -71,7 +71,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Config(manifest = Config.NONE)
 @DisableFeatures({
     UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,
-    UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT
 })
 @EnableFeatures({UiAndroidFeatures.DISABLE_PHOTO_PICKER_FOR_VIDEO_CAPTURE})
 public class SelectFileDialogTest {
@@ -331,19 +330,16 @@ public class SelectFileDialogTest {
     }
 
     @Test
-    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
     public void testFileSystemAccessOpenDocument() throws Exception {
         verifyFileSystemAccessIntent(Intent.ACTION_OPEN_DOCUMENT);
     }
 
     @Test
-    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
     public void testFileSystemAccessCreateDocument() throws Exception {
         verifyFileSystemAccessIntent(Intent.ACTION_CREATE_DOCUMENT);
     }
 
     @Test
-    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
     public void testFileSystemAccessOpenDocumentTree() throws Exception {
         verifyFileSystemAccessIntent(Intent.ACTION_OPEN_DOCUMENT_TREE);
     }
