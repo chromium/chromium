@@ -976,3 +976,22 @@ IN_PROC_BROWSER_TEST_F(
   // Presenter MUST NOT be locked if prompt creation returned `nullptr`.
   EXPECT_FALSE(presenter->IsPermissionPromptPreventingClose());
 }
+
+// Verifies that when `kWebUIOmniboxFullPopup` is enabled, `OmniboxPopupCloser`
+// transitions `kFull` popup state to `kNone` on `CloseWithReason(kRevertAll)`.
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
+                       PopupCloserTransitionsFullPopupStateToNone) {
+  auto* state_manager =
+      location_bar()->GetOmniboxController()->popup_state_manager();
+  ASSERT_TRUE(state_manager);
+
+  state_manager->SetPopupState(OmniboxPopupState::kFull);
+  EXPECT_EQ(state_manager->popup_state(), OmniboxPopupState::kFull);
+
+  auto* popup_closer =
+      location_bar()->GetOmniboxController()->client()->GetOmniboxPopupCloser();
+  ASSERT_TRUE(popup_closer);
+  popup_closer->CloseWithReason(omnibox::PopupCloseReason::kRevertAll);
+
+  EXPECT_EQ(state_manager->popup_state(), OmniboxPopupState::kNone);
+}

@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -79,6 +80,13 @@ void OmniboxPopupCloser::CloseWithReason(PopupCloseReason reason) {
   // Reset focus ring for the AIM button if it was set.
   if (auto* omnibox_view = location_bar->GetOmniboxView()) {
     omnibox_view->ApplyFocusRingToAimButton(false);
+  }
+  // For `kRevertAll` ensure the popup state is reset back to `kNone`.
+  if (reason == PopupCloseReason::kRevertAll) {
+    if (auto* state_manager =
+            location_bar->GetOmniboxController()->popup_state_manager()) {
+      state_manager->SetPopupState(OmniboxPopupState::kNone);
+    }
   }
 }
 

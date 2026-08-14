@@ -856,6 +856,28 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       CheckWebUIInputFocus(true));
 }
 
+// Verifies that pressing Shift+Enter on a match opens the result in a new
+// window and resets the original window's omnibox popup state to steady state.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       ShiftEnterOpensNewWindowAndResetsOmnibox) {
+  RunTestSequence(
+      // 1. Open Tab 1 at chrome://version/ and focus Omnibox.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      // 2. Type "a" into the WebUI input to open suggestions.
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      // 3. Send Shift+Enter to open the suggestion in a new window.
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_RETURN, ui::EF_SHIFT_DOWN)),
+      // 4. Verify that in the original window, the full popup frame is hidden
+      // and Omnibox focus is cleared.
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForOmniboxFocus(false));
+}
+
 // Verifies that copying text in the full WebUI Omnibox records the
 // Omnibox.CutOrCopyAllText metric.
 IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, OnCopy) {
