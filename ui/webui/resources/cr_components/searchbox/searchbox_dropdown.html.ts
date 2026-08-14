@@ -33,6 +33,7 @@ ${this.sideTypes_().map(sideType => html`
             aria-describedby="${this.getAriaDescribedByForGroup_(groupId)}"
             .match="${match}" match-index="${this.matchIndex_(match)}"
             side-type="${sideType}"
+            ?show-contextual-description="${match.showContextualDescription}"
             ?selected="${this.isSelected_(match)}"
             ?show-thumbnail="${this.showThumbnail}">
         </cr-searchbox-match>

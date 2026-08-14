@@ -826,16 +826,31 @@ SearchboxHandler::CreateAutocompleteMatches(
     bookmarks::BookmarkModel* bookmark_model,
     const omnibox::GroupConfigMap& suggestion_groups_map,
     const TemplateURLService* turl_service) const {
+  // Tracks whether the first contextual match has been flagged to force show
+  // its description, ensuring only the first one gets flagged.
+  bool flagged_contextual = false;
   std::vector<searchbox::mojom::AutocompleteMatchPtr> matches;
   for (const auto& match : result) {
     auto mojom_match =
         CreateAutocompleteMatch(match, matches.size(), bookmark_model,
                                 suggestion_groups_map, turl_service);
     if (mojom_match) {
+      if (!flagged_contextual && ShouldShowFirstContextualDescription() &&
+          match.suggestion_group_id ==
+              omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH) {
+        mojom_match.value()->show_contextual_description = true;
+        flagged_contextual = true;
+      }
       matches.push_back(std::move(mojom_match.value()));
     }
   }
   return matches;
+}
+
+// TODO(b/546186345): Consider extending this behavior to other searchboxes if
+// they also need to show the contextual description.
+bool SearchboxHandler::ShouldShowFirstContextualDescription() const {
+  return false;
 }
 
 std::optional<searchbox::mojom::AutocompleteMatchPtr>
@@ -928,6 +943,7 @@ SearchboxHandler::CreateAutocompleteMatch(
   mojom_match->is_search_type = AutocompleteMatch::IsSearchType(match.type);
   mojom_match->swap_contents_and_description =
       match.swap_contents_and_description;
+  mojom_match->show_contextual_description = false;
   mojom_match->type = AutocompleteMatchType::ToString(match.type);
   mojom_match->supports_deletion = match.SupportsDeletion();
   if (match.answer_template.has_value()) {

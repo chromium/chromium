@@ -92,6 +92,11 @@ export class SearchboxMatchElement extends CrLitElement {
         reflect: true,
       },
 
+      showContextualDescription: {
+        type: Boolean,
+        reflect: true,
+      },
+
       /**
        * Whether the match features an image (as opposed to an icon or favicon).
        */
@@ -189,6 +194,7 @@ export class SearchboxMatchElement extends CrLitElement {
 
   override accessor ariaLabel: string = '';
   accessor hasAction: boolean = false;
+  accessor showContextualDescription: boolean = false;
   accessor hasImage: boolean = false;
   accessor hasKeywordChip: boolean = false;
   accessor isEntitySuggestion: boolean = false;

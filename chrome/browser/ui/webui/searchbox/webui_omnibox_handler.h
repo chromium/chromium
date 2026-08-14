@@ -88,6 +88,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
       bookmarks::BookmarkModel* bookmark_model,
       const omnibox::GroupConfigMap& suggestion_groups_map,
       const TemplateURLService* turl_service) const override;
+  bool ShouldShowFirstContextualDescription() const override;
   void OnFocusChanged(bool focused) override;
 
   // AutocompleteController::Observer:

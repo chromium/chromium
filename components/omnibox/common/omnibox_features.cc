@@ -601,6 +601,8 @@ const base::FeatureParam<bool> kAskGLensIcon{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGLensIcon", false};
 const base::FeatureParam<bool> kAskGLensSearchHintText{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGLensSearchHintText", false};
+const base::FeatureParam<bool> kAskGShowFirstDescription{
+    &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGShowFirstDescription", false};
 const base::FeatureParam<bool> kAskGComposeboxLensChip{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGComposeboxLensChip", false};
 const base::FeatureParam<bool> kAskGBlockZeroStateSuggestions{

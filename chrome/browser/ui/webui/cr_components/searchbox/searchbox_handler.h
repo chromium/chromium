@@ -285,6 +285,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       bookmarks::BookmarkModel* bookmark_model,
       const omnibox::GroupConfigMap& suggestion_groups_map,
       const TemplateURLService* turl_service) const;
+  virtual bool ShouldShowFirstContextualDescription() const;
   virtual std::optional<searchbox::mojom::AutocompleteMatchPtr>
   CreateAutocompleteMatch(const AutocompleteMatch& match,
                           size_t line,

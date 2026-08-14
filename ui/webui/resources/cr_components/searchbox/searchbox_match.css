@@ -238,8 +238,8 @@
   font-size: .875em;
 }
 
-:host([is-contextual-suggestion_]) #description,
-:host([is-contextual-suggestion_]) #separator {
+:host([is-contextual-suggestion_]:not([show-contextual-description])) #description,
+:host([is-contextual-suggestion_]:not([show-contextual-description])) #separator {
   display: none;
 }
 

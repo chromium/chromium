@@ -417,6 +417,15 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
   return mojom_match;
 }
 
+bool WebuiOmniboxHandler::ShouldShowFirstContextualDescription() const {
+  return omnibox::kAskGShowFirstDescription.Get() &&
+         autocomplete_controller() &&
+         autocomplete_controller()
+             ->GetSuggestionGroupHeaderText(
+                 omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH)
+             .empty();
+}
+
 void WebuiOmniboxHandler::OnFocusChanged(bool focused) {
   if (focused) {
     edit_model()->OnSetFocus(false);
