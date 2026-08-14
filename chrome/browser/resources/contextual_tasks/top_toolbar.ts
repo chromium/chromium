@@ -95,6 +95,8 @@ export class TopToolbarElement extends TopToolbarElementBase {
         type: Boolean,
         reflect: true,
       },
+      isCobrowseEligible: {type: Boolean},
+      isHandshakeComplete: {type: Boolean},
       isUserSignedIn: {type: Boolean},
       onboardingTooltipShowing: {type: Boolean},
       lensSearchTooltipShowing: {type: Boolean},
@@ -113,6 +115,9 @@ export class TopToolbarElement extends TopToolbarElementBase {
   accessor darkMode: boolean = false;
   accessor isAiPage: boolean = loadTimeData.getBoolean('isAiPage');
   accessor isAimEligible: boolean = loadTimeData.getBoolean('isAimEligible');
+  accessor isCobrowseEligible: boolean =
+      loadTimeData.getBoolean('isCobrowseEligible');
+  accessor isHandshakeComplete: boolean = false;
   accessor permissionDashboardState: PermissionDashboardState|null = null;
   protected accessor isSidePanelRearchitectureEnabled_: boolean =
       loadTimeData.getBoolean('contextualTasksSidePanelRearchitectureEnabled');
@@ -161,6 +166,9 @@ export class TopToolbarElement extends TopToolbarElementBase {
       callbackRouter.setExpandButtonEnabled.addListener((enabled: boolean) => {
         this.isExpandButtonEnabled = enabled;
       }),
+      callbackRouter.onHandshakeComplete.addListener(() => {
+        this.isHandshakeComplete = true;
+      }),
     ];
   }
 
@@ -196,6 +204,9 @@ export class TopToolbarElement extends TopToolbarElementBase {
         changedProperties.has('lensSearchTooltipShowing')) {
       this.hideOverflowMenuButton_ =
           this.isAiPage && this.hideOverflowMenuOnAiPageEnabled_;
+      if (changedProperties.has('isAiPage') && !this.isAiPage) {
+        this.isHandshakeComplete = false;
+      }
       // <if expr="not is_android">
       if (this.isAiPage) {
         if (!this.onboardingTooltipShowing && !this.lensSearchTooltipShowing) {
@@ -212,15 +223,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
     return this.isSidePanelRearchitectureEnabled_ &&
         (!!this.permissionDashboardState?.indicatorChip?.isVisible ||
          !!this.permissionDashboardState?.requestChip?.isVisible);
-  }
-
-  protected shouldShowPinButton_(): boolean {
-    return this.isPinButtonEnabled && this.isAiPage;
-  }
-
-  protected getPinButtonTooltip_(): string {
-    return this.isPinned ? loadTimeData.getString('unpinTooltip') :
-                           loadTimeData.getString('pinTooltip');
   }
 
   protected shouldShowSourcesMenuButton_(): boolean {

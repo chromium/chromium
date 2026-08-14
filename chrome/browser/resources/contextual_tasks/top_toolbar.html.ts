@@ -106,6 +106,8 @@ export function getHtml(this: TopToolbarElement) {
         .isPinButtonEnabled="${this.isPinButtonEnabled}"
         .isAiPage="${this.isAiPage}"
         .isAimEligible="${this.isAimEligible}"
+        .isCobrowseEligible="${this.isCobrowseEligible}"
+        .isHandshakeComplete="${this.isHandshakeComplete}"
         .contextualTasksEnableSpatialModelToolbarLayout="${this.contextualTasksEnableSpatialModelToolbarLayout_}"
         .contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow="${this.contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow_}"
         @pin-click="${this.onPinClick_}"
