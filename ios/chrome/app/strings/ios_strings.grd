@@ -4240,9 +4240,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_START_BROWSING_BUTTON" desc="The text for the button that allows users to start browsing after the interactive lens overlay promo in the First Run Experience.">
         Start browsing
       </message>
-      <message name="IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_SUBTITLE" desc="The subtitle for the interactive lens overlay promo in the First Run Experience.">
-        You can now open Google Lens from your address bar and search anything you see
-      </message>
       <message name="IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_TITLE" desc="The title for the interactive lens overlay promo in the First Run Experience.">
         Search anything on your screen
       </message>
