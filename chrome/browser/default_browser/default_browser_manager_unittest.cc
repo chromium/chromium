@@ -56,6 +56,8 @@ class FakeDefaultBrowserMonitor : public DefaultBrowserMonitor {
   FakeDefaultBrowserMonitor() = default;
   ~FakeDefaultBrowserMonitor() override = default;
 
+  void StartMonitor() override {}
+
   void TriggerChange() { NotifyObservers(); }
 };
 
