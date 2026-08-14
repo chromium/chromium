@@ -365,6 +365,11 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kUsePortalAccentColor);
 #endif
 
+// Enables performance optimizations for theme changes, including caching
+// ColorProviderKey, hierarchical theme observation, and coalescing updates.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kThemeChangeOptimization);
+
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsGlassFrameEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES)

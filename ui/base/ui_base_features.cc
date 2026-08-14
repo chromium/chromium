@@ -531,6 +531,10 @@ BASE_FEATURE(kChromeDarkNeutrals26, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUsePortalAccentColor, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Enables performance optimizations for theme changes, including caching
+// ColorProviderKey, hierarchical theme observation, and coalescing updates.
+BASE_FEATURE(kThemeChangeOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsGlassFrameEnabled() {
 #if BUILDFLAG(IS_MAC)
   return base::mac::MacOSMajorVersion() >= 26 &&

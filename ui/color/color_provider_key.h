@@ -154,6 +154,31 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
   JavaObjectWeakGlobalRef context;
 #endif
 
+  bool operator==(const ColorProviderKey& other) const {
+    auto* lhs_app_controller = app_controller.get();
+    auto* rhs_app_controller = other.app_controller.get();
+#if BUILDFLAG(IS_ANDROID)
+    return std::tie(color_mode, contrast_mode, forced_colors, system_theme,
+                    frame_type, frame_style, user_color_source, user_color,
+                    scheme_variant, custom_theme, lhs_app_controller,
+                    context_hash) ==
+           std::tie(other.color_mode, other.contrast_mode, other.forced_colors,
+                    other.system_theme, other.frame_type, other.frame_style,
+                    other.user_color_source, other.user_color,
+                    other.scheme_variant, other.custom_theme,
+                    rhs_app_controller, other.context_hash);
+#else
+    return std::tie(color_mode, contrast_mode, forced_colors, system_theme,
+                    frame_type, frame_style, user_color_source, user_color,
+                    scheme_variant, custom_theme, lhs_app_controller) ==
+           std::tie(other.color_mode, other.contrast_mode, other.forced_colors,
+                    other.system_theme, other.frame_type, other.frame_style,
+                    other.user_color_source, other.user_color,
+                    other.scheme_variant, other.custom_theme,
+                    rhs_app_controller);
+#endif
+  }
+
   bool operator<(const ColorProviderKey& other) const {
     auto* lhs_app_controller = app_controller.get();
     auto* rhs_app_controller = other.app_controller.get();

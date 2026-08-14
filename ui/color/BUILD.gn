@@ -111,6 +111,7 @@ source_set("unit_tests") {
 
   sources = [
     "color_mixer_unittest.cc",
+    "color_provider_key_unittest.cc",
     "color_provider_manager_unittest.cc",
     "color_provider_source_observer_unittest.cc",
     "color_provider_unittest.cc",
