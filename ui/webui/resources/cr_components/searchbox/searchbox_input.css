@@ -99,8 +99,19 @@ cr-searchbox-icon {
 }
 
 :is(input, textarea),
-cr-searchbox-icon {
+cr-searchbox-icon,
+#keyword {
   z-index: 100;
+}
+
+#keyword {
+  align-self: center;
+  border-inline-end: 1px solid var(--color-omnibox-keyword-selected);
+  color: var(--color-omnibox-keyword-selected);
+  margin-inline-end: 8px;
+  padding-inline-end: 8px;
+  user-select: none;
+  white-space: nowrap;
 }
 
 .truncate {

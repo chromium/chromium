@@ -17,7 +17,8 @@ export function getHtml(this: SearchboxInputElement) {
     </cr-searchbox-icon>
     <slot name="thumbnail"></slot>
     ${this.inputKeywordModel?.type === KeywordType.kInKeyword ?
-      html`<span>${this.inputKeywordModel.displayText}</span>` : ''}
+      html`<span id="keyword">${
+          this.inputKeywordModel.displayText}</span>` : ''}
     ${this.multiLineEnabled ? html`
       <textarea id="input" autocomplete="off"
           part="searchbox-input"
