@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
@@ -143,6 +144,17 @@ public class SwipeRefreshHandlerTest {
         orderVerifier
                 .verify(firstSwipeRefreshLayout, times(1))
                 .setContentDescription(sAccessibilitySwipeRefreshString);
+    }
+
+    @Test
+    @SmallTest
+    public void testSideUiWidths_passedToSwipeRefreshLayout() {
+        var handler = SwipeRefreshHandler.from(mTab, mSwipeRefreshLayoutCreator);
+        handler.initWebContents(mock());
+        handler.setSideUiWidthsForTesting(100, 200);
+        triggerRefresh(handler);
+
+        verify(mSwipeRefreshLayout).setHorizontalOffsets(100, 200);
     }
 
     /**

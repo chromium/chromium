@@ -427,6 +427,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 var swipeHandler = SwipeRefreshHandler.from(mTab);
                 swipeHandler.setNavigationCoordinator(null);
                 swipeHandler.setBottomOverscrollHandler(null);
+                swipeHandler.setSideUiStateProvider(null);
             }
             mTab = tab;
 
@@ -437,8 +438,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     swipeHandler.setBottomOverscrollHandler(
                             new BottomOverscrollHandler(mBrowserControlsManager));
                 }
+                if (mSideUiStateProviderSupplier.get() != null) {
+                    swipeHandler.setSideUiStateProvider(mSideUiStateProviderSupplier.get());
+                }
             }
             setActivityTitle(tab, /* isHub= */ false);
+        }
+
+        private void setSideUiStateProvider(SideUiStateProvider provider) {
+            if (mTab != null && !mTab.isDestroyed()) {
+                SwipeRefreshHandler.from(mTab).setSideUiStateProvider(provider);
+            }
         }
 
         @Override
@@ -2335,6 +2345,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 provider ->
                         assumeNonNull(mHistoryNavigationCoordinator)
                                 .setSideUiStateProvider(provider));
+        mSideUiStateProviderSupplier.onAvailable(
+                provider -> mRootUiTabObserver.setSideUiStateProvider(provider));
         mSideUiStateProviderSupplier.set(mSideUiCoordinator);
         if (mTopControlsLockCoordinator != null) {
             mTopControlsLockCoordinator.setSideUiStateProvider(mSideUiCoordinator);

@@ -28,25 +28,21 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
 
 /**
- * The SwipeRefreshLayout should be used whenever the user can refresh the
- * contents of a view via a vertical swipe gesture. The activity that
- * instantiates this view should add an OnRefreshListener to be notified
- * whenever the swipe to refresh gesture is completed. The SwipeRefreshLayout
- * will notify the listener each and every time the gesture is completed again;
- * the listener is responsible for correctly determining when to actually
- * initiate a refresh of its content. If the listener determines there should
- * not be a refresh, it must call setRefreshing(false) to cancel any visual
- * indication of a refresh. If an activity wishes to show just the progress
- * animation, it should call setRefreshing(true). To disable the gesture and
- * progress animation, call setEnabled(false) on the view.
- * <p>
- * This layout should be made the parent of the view that will be refreshed as a
- * result of the gesture and can only support one direct child. This view will
- * also be made the target of the gesture and will be forced to match both the
- * width and the height supplied in this layout. The SwipeRefreshLayout does not
- * provide accessibility events; instead, a menu item must be provided to allow
- * refresh of the content wherever this gesture is used.
- * </p>
+ * The SwipeRefreshLayout should be used whenever the user can refresh the contents of a view via a
+ * vertical swipe gesture. The activity that instantiates this view should add an OnRefreshListener
+ * to be notified whenever the swipe to refresh gesture is completed. The SwipeRefreshLayout will
+ * notify the listener each and every time the gesture is completed again; the listener is
+ * responsible for correctly determining when to actually initiate a refresh of its content. If the
+ * listener determines there should not be a refresh, it must call setRefreshing(false) to cancel
+ * any visual indication of a refresh. If an activity wishes to show just the progress animation, it
+ * should call setRefreshing(true). To disable the gesture and progress animation, call
+ * setEnabled(false) on the view.
+ *
+ * <p>This layout should be made the parent of the view that will be refreshed as a result of the
+ * gesture and can only support one direct child. This view will also be made the target of the
+ * gesture and will be forced to match both the width and the height supplied in this layout. The
+ * SwipeRefreshLayout does not provide accessibility events; instead, a menu item must be provided
+ * to allow refresh of the content wherever this gesture is used.
  */
 public class SwipeRefreshLayout extends ViewGroup {
     // Maps to ProgressBar.Large style
@@ -130,32 +126,34 @@ public class SwipeRefreshLayout extends ViewGroup {
     // Whether the client has set a custom starting position;
     private boolean mUsingCustomStart;
 
-    private Animation.AnimationListener mRefreshListener = new Animation.AnimationListener() {
-        @Override
-        public void onAnimationStart(Animation animation) {
-        }
+    private int mLeftOffset;
+    private int mRightOffset;
 
-        @Override
-        public void onAnimationRepeat(Animation animation) {
-        }
+    private Animation.AnimationListener mRefreshListener =
+            new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {}
 
-        @Override
-        public void onAnimationEnd(Animation animation) {
-            if (mRefreshing) {
-                // Make sure the progress view is fully visible
-                mProgress.setAlpha(MAX_ALPHA);
-                mProgress.start();
-                if (mNotify) {
-                    if (mListener != null) {
-                        mListener.onRefresh();
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    if (mRefreshing) {
+                        // Make sure the progress view is fully visible
+                        mProgress.setAlpha(MAX_ALPHA);
+                        mProgress.start();
+                        if (mNotify) {
+                            if (mListener != null) {
+                                mListener.onRefresh();
+                            }
+                        }
+                    } else {
+                        reset();
                     }
+                    mCurrentTargetOffsetTop = mCircleView.getTop();
                 }
-            } else {
-                reset();
-            }
-            mCurrentTargetOffsetTop = mCircleView.getTop();
-        }
-    };
+            };
 
     // Chrome-specific additions.
     private float mTotalMotionY;
@@ -211,8 +209,20 @@ public class SwipeRefreshLayout extends ViewGroup {
     }
 
     /**
-     * One of DEFAULT, or LARGE.
+     * Sets horizontal offsets to account for when positioning the spinner.
+     *
+     * @param leftOffset The left offset in pixels.
+     * @param rightOffset The right offset in pixels.
      */
+    public void setHorizontalOffsets(int leftOffset, int rightOffset) {
+        if (mLeftOffset != leftOffset || mRightOffset != rightOffset) {
+            mLeftOffset = leftOffset;
+            mRightOffset = rightOffset;
+            if (mCircleView != null) mCircleView.requestLayout();
+        }
+    }
+
+    /** One of DEFAULT, or LARGE. */
     public void setSize(int size) {
         if (size != MaterialProgressDrawable.LARGE && size != MaterialProgressDrawable.DEFAULT) {
             return;
@@ -423,8 +433,13 @@ public class SwipeRefreshLayout extends ViewGroup {
         }
         int circleWidth = mCircleView.getMeasuredWidth();
         int circleHeight = mCircleView.getMeasuredHeight();
-        mCircleView.layout((width / 2 - circleWidth / 2), mCurrentTargetOffsetTop,
-                (width / 2 + circleWidth / 2), mCurrentTargetOffsetTop + circleHeight);
+        int contentWidth = width - mLeftOffset - mRightOffset;
+        int circleLeft = mLeftOffset + (contentWidth - circleWidth) / 2;
+        mCircleView.layout(
+                circleLeft,
+                mCurrentTargetOffsetTop,
+                circleLeft + circleWidth,
+                mCurrentTargetOffsetTop + circleHeight);
     }
 
     @Override
