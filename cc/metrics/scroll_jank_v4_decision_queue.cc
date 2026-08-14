@@ -26,7 +26,9 @@ ScrollJankV4DecisionQueue::ResultConsumer::~ResultConsumer() = default;
 
 ScrollJankV4DecisionQueue::ScrollJankV4DecisionQueue(
     std::unique_ptr<ResultConsumer> result_consumer)
-    : result_consumer_(std::move(result_consumer)) {}
+    : result_consumer_(std::move(result_consumer)) {
+  CHECK(result_consumer_);
+}
 
 ScrollJankV4DecisionQueue::~ScrollJankV4DecisionQueue() {
   FlushDeferredSyntheticFrames(/*future_real_updates=*/nullptr);

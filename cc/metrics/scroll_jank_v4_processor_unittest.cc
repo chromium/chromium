@@ -4,14 +4,17 @@
 
 #include "cc/metrics/scroll_jank_v4_processor.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/tracing/test_trace_processor.h"
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/test/event_metrics_test_creator.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -1513,6 +1516,70 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
   ASSERT_TRUE(status.ok()) << status.message();
   EXPECT_THAT(QueryTraceProcessor(kTraceQuery),
               ElementsAreArray(std::move(expected_results).Take()));
+}
+
+class MockScrollJankOsReporter : public ScrollJankOsReporter {
+ public:
+  MOCK_METHOD(void,
+              ReportScrollJankStats,
+              (uint32_t total_frames, uint32_t janky_frames),
+              (override));
+
+  base::WeakPtr<MockScrollJankOsReporter> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockScrollJankOsReporter> weak_factory_{this};
+};
+
+TEST_F(ScrollJankV4ProcessorTest, ReportsScrollJankStatsToOs) {
+  testing::StrictMock<MockScrollJankOsReporter> os_reporter;
+  processor_.SetOsReporter(os_reporter.GetWeakPtr());
+
+  const base::TimeTicks scroll_begin_arrival_ts =
+      next_input_generation_ts_ + kVsyncInterval / 4;
+
+  // Start a scroll and present a frame.
+  {
+    viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
+    EventMetrics::List first_metrics;
+    first_metrics.push_back(
+        metrics_creator_.GestureScrollBeginBuilder()
+            .SetTimestamp(next_input_generation_ts_)
+            .SetArrivedInRendererCompositorTimestamp(scroll_begin_arrival_ts)
+            .Build());
+    first_metrics.push_back(
+        metrics_creator_.FirstGestureScrollUpdateBuilder()
+            .SetTimestamp(next_input_generation_ts_)
+            .SetDelta(5.0f)
+            .SetCausedFrameUpdate(true)
+            .SetDidScroll(true)
+            .SetTraceId(TraceId(10))
+            .SetDispatchArgs(DispatchBeginFrameArgs::From(args))
+            .SetScrollBeginArrivalTimestamp(scroll_begin_arrival_ts)
+            .Build());
+    processor_.ProcessEventsMetricsForPresentedFrame(
+        first_metrics, next_presentation_ts_, args);
+  }
+
+  // End the scroll.
+  {
+    AdvanceByVsyncs(1);
+    viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
+    EventMetrics::List end_metrics;
+    end_metrics.push_back(
+        metrics_creator_.GestureScrollEndBuilder()
+            .SetTimestamp(next_input_generation_ts_)
+            .SetDispatchArgs(DispatchBeginFrameArgs::From(args))
+            .SetScrollBeginArrivalTimestamp(scroll_begin_arrival_ts)
+            .Build());
+
+    EXPECT_CALL(os_reporter, ReportScrollJankStats(1, 0)).Times(1);
+
+    processor_.ProcessEventsMetricsForPresentedFrame(
+        end_metrics, next_presentation_ts_, args);
+  }
 }
 
 }  // namespace cc

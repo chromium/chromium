@@ -5,14 +5,17 @@
 #include "cc/metrics/scroll_jank_v4_processor.h"
 
 #include <memory>
+#include <utility>
 #include <variant>
 
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_decision_queue.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
 #include "cc/metrics/scroll_jank_v4_frame_timeline_calculator.h"
@@ -29,6 +32,12 @@ namespace {
 class ProcessorResultConsumer
     : public ScrollJankV4DecisionQueue::ResultConsumer {
  public:
+  ProcessorResultConsumer() = default;
+
+  void SetOsReporter(base::WeakPtr<ScrollJankOsReporter> os_reporter) {
+    histogram_emitter_.SetOsReporter(std::move(os_reporter));
+  }
+
   void OnFrameResult(const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
                      const ScrollJankV4Frame::ScrollDamage& damage,
                      const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
@@ -53,6 +62,14 @@ class ProcessorResultConsumer
 
 ScrollJankV4Processor::ScrollJankV4Processor()
     : decision_queue_(std::make_unique<ProcessorResultConsumer>()) {}
+
+ScrollJankV4Processor::~ScrollJankV4Processor() = default;
+
+void ScrollJankV4Processor::SetOsReporter(
+    base::WeakPtr<ScrollJankOsReporter> os_reporter) {
+  static_cast<ProcessorResultConsumer&>(decision_queue_.result_consumer())
+      .SetOsReporter(std::move(os_reporter));
+}
 
 void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
     EventMetrics::List& events_metrics,

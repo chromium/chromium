@@ -7,8 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -1141,6 +1144,51 @@ TEST_F(ScrollJankV4HistogramEmitterTest, LimitsNumberOfPendingFixedWindows) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow"),
               base::BucketsAre(base::Bucket(0, 20)));
+}
+
+class MockScrollJankOsReporter : public ScrollJankOsReporter {
+ public:
+  MOCK_METHOD(void,
+              ReportScrollJankStats,
+              (uint32_t total_frames, uint32_t janky_frames),
+              (override));
+
+  base::WeakPtr<MockScrollJankOsReporter> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockScrollJankOsReporter> weak_factory_{this};
+};
+
+TEST_F(ScrollJankV4HistogramEmitterTest, ReportsScrollJankStatsToOs) {
+  testing::StrictMock<MockScrollJankOsReporter> os_reporter;
+  histogram_emitter_->SetOsReporter(os_reporter.GetWeakPtr());
+
+  histogram_emitter_->OnScrollStarted();
+  histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame, kDamaging);
+  histogram_emitter_->OnFrameWithScrollUpdates(
+      MakeMissedVsyncCounts({{JankReason::kMissedVsyncDuringFling, 2}}),
+      kDamaging);
+
+  EXPECT_CALL(os_reporter, ReportScrollJankStats(2, 1)).Times(1);
+
+  histogram_emitter_->OnScrollEnded();
+}
+
+TEST_F(ScrollJankV4HistogramEmitterTest, DeletingOsReporterDoesNotCauseCrash) {
+  {
+    testing::StrictMock<MockScrollJankOsReporter> os_reporter;
+    histogram_emitter_->SetOsReporter(os_reporter.GetWeakPtr());
+  }
+
+  histogram_emitter_->OnScrollStarted();
+  histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame, kDamaging);
+  histogram_emitter_->OnFrameWithScrollUpdates(
+      MakeMissedVsyncCounts({{JankReason::kMissedVsyncDuringFling, 2}}),
+      kDamaging);
+
+  histogram_emitter_->OnScrollEnded();
 }
 
 }  // namespace cc

@@ -5,8 +5,10 @@
 #ifndef CC_METRICS_SCROLL_JANK_V4_PROCESSOR_H_
 #define CC_METRICS_SCROLL_JANK_V4_PROCESSOR_H_
 
+#include "base/memory/weak_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_decision_queue.h"
 #include "cc/metrics/scroll_jank_v4_frame_timeline_calculator.h"
 
@@ -23,10 +25,13 @@ namespace cc {
 class CC_EXPORT ScrollJankV4Processor {
  public:
   ScrollJankV4Processor();
+  ~ScrollJankV4Processor();
 
   void ProcessEventsMetricsForPresentedFrame(EventMetrics::List& events_metrics,
                                              base::TimeTicks presentation_ts,
                                              const viz::BeginFrameArgs& args);
+
+  void SetOsReporter(base::WeakPtr<ScrollJankOsReporter> os_reporter);
 
  private:
   void HandleFrame(const ScrollJankV4Frame::StageList& stages,

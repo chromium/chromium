@@ -5,6 +5,7 @@
 #include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
 
 #include <algorithm>
+#include <utility>
 #include <variant>
 
 #include "base/check_op.h"
@@ -12,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/histogram_macros.h"
+#include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 
 namespace cc {
@@ -123,6 +125,11 @@ void ScrollJankV4HistogramEmitter::OnScrollStarted() {
 
 void ScrollJankV4HistogramEmitter::OnScrollEnded() {
   FinishScroll();
+}
+
+void ScrollJankV4HistogramEmitter::SetOsReporter(
+    base::WeakPtr<ScrollJankOsReporter> os_reporter) {
+  os_reporter_ = std::move(os_reporter);
 }
 
 void ScrollJankV4HistogramEmitter::JankDataFixedWindow::AddFrame(
@@ -240,6 +247,14 @@ void ScrollJankV4HistogramEmitter::
   UMA_HISTOGRAM_PERCENTAGE(
       kDelayedFramesPerScrollHistogram,
       (100 * per_scroll_.delayed_frames) / per_scroll_.presented_frames);
+
+  if (os_reporter_) {
+    os_reporter_->ReportScrollJankStats(
+        /*total_frames=*/base::saturated_cast<uint32_t>(
+            per_scroll_.presented_frames),
+        /*janky_frames=*/base::saturated_cast<uint32_t>(
+            per_scroll_.delayed_frames));
+  }
 
   per_scroll_ = JankDataPerScroll();
 }
