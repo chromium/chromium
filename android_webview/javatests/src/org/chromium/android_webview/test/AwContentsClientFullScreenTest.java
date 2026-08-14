@@ -341,6 +341,22 @@ public class AwContentsClientFullScreenTest extends AwParameterizedTest {
         assertKeepScreenOnActive(customView, true);
     }
 
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testReparentAwContents_FullScreenTransitionsState() throws Throwable {
+        loadTestPage(VIDEO_TEST_URL);
+        mTestContainerView = mActivityTestRule.reparentAwContents(mTestContainerView);
+
+        JSUtils.clickNodeWithUserGesture(
+                mTestContainerView.getWebContents(), CUSTOM_FULLSCREEN_CONTROL_ID);
+        mContentsClient.waitForCustomViewShown();
+        assertWaitForIsFullscreen();
+
+        DOMUtils.exitFullscreen(getWebContentsOnUiThread());
+        mContentsClient.waitForCustomViewHidden();
+    }
+
     private boolean shouldPlayOnFullScreenView() throws Exception {
         GURL testUrl = mTestContainerView.getAwContents().getUrl();
         return new GURL(VIDEO_TEST_URL).equals(testUrl)

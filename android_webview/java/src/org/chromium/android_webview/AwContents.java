@@ -416,7 +416,8 @@ public class AwContents implements SmartClipProvider {
     private final ShouldInterceptRequestMediator mShouldInterceptRequestMediator;
     private final AwContentsIoThreadClient mIoThreadClient;
     private final InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
-    private InternalAccessDelegate mInternalAccessAdapter;
+    private InternalAccessDelegate mCurrentInternalAccessAdapter;
+    private InternalAccessDelegate mPrimaryInternalAccessAdapter;
     private final AwDrawFnImpl.DrawFnAccess mDrawFnAccess;
     private final AwLayoutSizer mLayoutSizer;
     private final AwZoomControls mZoomControls;
@@ -507,8 +508,9 @@ public class AwContents implements SmartClipProvider {
 
     private AwPdfExporter mAwPdfExporter;
 
-    private AwViewMethods mAwViewMethods;
-    private final FullScreenTransitionsState mFullScreenTransitionsState;
+    private AwViewMethods mCurrentAwViewMethods;
+    private final AwViewMethods mPrimaryAwViewMethods;
+    @Nullable private FullScreenState mFullScreenState;
 
     // True when this AwContents has been destroyed.
     // Do not use directly, call isDestroyed() instead.
@@ -601,65 +603,71 @@ public class AwContents implements SmartClipProvider {
         }
     }
 
-    /** A class that stores the state needed to enter and exit fullscreen. */
-    private static class FullScreenTransitionsState {
-        private final InternalAccessDelegate mInitialInternalAccessAdapter;
-        private final AwViewMethods mInitialAwViewMethods;
-        private FullScreenView mFullScreenView;
+    private class FullScreenState {
+        private final FullScreenView mFullScreenView;
+        private final boolean mWasContainerViewFocused;
+        private final int mScrollX;
+        private final int mScrollY;
 
-        /** Whether the initial container view was focused when we entered fullscreen */
-        private boolean mWasInitialContainerViewFocused;
+        private FullScreenState() {
+            mWasContainerViewFocused = mContainerView.isFocused();
+            mScrollX = mScrollOffsetManager.getScrollX();
+            mScrollY = mScrollOffsetManager.getScrollY();
 
-        private int mScrollX;
-        private int mScrollY;
-
-        private FullScreenTransitionsState(
-                InternalAccessDelegate initialInternalAccessAdapter,
-                AwViewMethods initialAwViewMethods) {
-            mInitialInternalAccessAdapter = initialInternalAccessAdapter;
-            mInitialAwViewMethods = initialAwViewMethods;
+            // In fullscreen mode FullScreenView owns the AwViewMethodsImpl and AwContents
+            // a NullAwViewMethods.
+            mFullScreenView = new FullScreenView(mContext, mCurrentAwViewMethods, AwContents.this);
+            mFullScreenView.setFocusable(true);
+            mFullScreenView.setFocusableInTouchMode(true);
+            if (mWasContainerViewFocused) {
+                mFullScreenView.requestFocus();
+            }
         }
 
-        private void enterFullScreen(
-                FullScreenView fullScreenView,
-                boolean wasInitialContainerViewFocused,
-                int scrollX,
-                int scrollY) {
-            mFullScreenView = fullScreenView;
-            mWasInitialContainerViewFocused = wasInitialContainerViewFocused;
-            mScrollX = scrollX;
-            mScrollY = scrollY;
-        }
+        private void enterFullScreen() {
+            // Detach to tear down the GL functor if this is still associated with the old
+            // container view. It will be recreated during the next call to onDraw attached to
+            // the new container view.
+            getViewMethods().onDetachedFromWindow();
 
-        private boolean wasInitialContainerViewFocused() {
-            return mWasInitialContainerViewFocused;
-        }
+            mCurrentAwViewMethods =
+                    new NullAwViewMethods(
+                            AwContents.this, mCurrentInternalAccessAdapter, mContainerView);
 
-        private int getScrollX() {
-            return mScrollX;
-        }
-
-        private int getScrollY() {
-            return mScrollY;
+            // Associate this AwContents with the FullScreenView.
+            setInternalAccessAdapter(mFullScreenView.getInternalAccessAdapter());
+            setContainerView(mFullScreenView);
         }
 
         private void exitFullScreen() {
-            mFullScreenView = null;
+            // Detach to tear down the GL functor if this is still associated with the old
+            // container view. It will be recreated during the next call to onDraw attached to
+            // the new container view.
+            mPrimaryAwViewMethods.onDetachedFromWindow();
+
+            // Swap the view delegates. In embedded mode the FullScreenView owns a
+            // NullAwViewMethods and AwContents the AwViewMethodsImpl.
+            mFullScreenView.setAwViewMethods(
+                    new NullAwViewMethods(
+                            AwContents.this,
+                            mFullScreenView.getInternalAccessAdapter(),
+                            mFullScreenView));
+            mCurrentAwViewMethods = mPrimaryAwViewMethods;
+            setInternalAccessAdapter(mPrimaryInternalAccessAdapter);
+            setContainerView(mPrimaryContainerView);
+
+            // Return focus to the WebView.
+            if (mWasContainerViewFocused) {
+                mContainerView.requestFocus();
+            }
+
+            if (!isDestroyed(NO_WARN)) {
+                AwContentsJni.get()
+                        .restoreScrollAfterTransition(mNativeAwContents, mScrollX, mScrollY);
+            }
         }
 
-        private boolean isFullScreen() {
-            return mFullScreenView != null;
-        }
-
-        private InternalAccessDelegate getInitialInternalAccessDelegate() {
-            return mInitialInternalAccessAdapter;
-        }
-
-        private AwViewMethods getInitialAwViewMethods() {
-            return mInitialAwViewMethods;
-        }
-
-        private FullScreenView getFullScreenView() {
+        private View getFullScreenView() {
             return mFullScreenView;
         }
     }
@@ -739,7 +747,7 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void setMeasuredDimension(int measuredWidth, int measuredHeight) {
-            mInternalAccessAdapter.setMeasuredDimension(measuredWidth, measuredHeight);
+            mCurrentInternalAccessAdapter.setMeasuredDimension(measuredWidth, measuredHeight);
         }
 
         @Override
@@ -766,7 +774,7 @@ public class AwContents implements SmartClipProvider {
                 int scrollRangeX,
                 int scrollRangeY,
                 boolean isTouchEvent) {
-            mInternalAccessAdapter.overScrollBy(
+            mCurrentInternalAccessAdapter.overScrollBy(
                     deltaX,
                     deltaY,
                     scrollX,
@@ -781,7 +789,7 @@ public class AwContents implements SmartClipProvider {
         @Override
         public void scrollContainerViewTo(int x, int y) {
             try {
-                mInternalAccessAdapter.super_scrollTo(x, y);
+                mCurrentInternalAccessAdapter.super_scrollTo(x, y);
             } catch (Throwable e) {
                 AwThreadUtils.postToCurrentLooper(
                         () -> {
@@ -1079,15 +1087,16 @@ public class AwContents implements SmartClipProvider {
             mPrimaryContainerView = containerView;
             mContainerView.setWillNotDraw(false);
 
-            mInternalAccessAdapter = internalAccessAdapter;
+            mPrimaryInternalAccessAdapter = internalAccessAdapter;
+            mCurrentInternalAccessAdapter = mPrimaryInternalAccessAdapter;
             mDrawFnAccess = drawFnAccess;
             mContentsClient = clientFactory.create(this);
             mContentsClient
                     .getCallbackHelper()
                     .setCancelCallbackPoller(() -> AwContents.this.isDestroyed(NO_WARN));
-            mAwViewMethods = new AwViewMethodsImpl();
-            mFullScreenTransitionsState =
-                    new FullScreenTransitionsState(mInternalAccessAdapter, mAwViewMethods);
+            mPrimaryAwViewMethods = new AwViewMethodsImpl();
+            mCurrentAwViewMethods = mPrimaryAwViewMethods;
+
             mLayoutSizer = dependencyFactory.createLayoutSizer();
             mLayoutSizer.setDelegate(new AwLayoutSizerDelegate());
             mWebContentsDelegate =
@@ -1130,7 +1139,7 @@ public class AwContents implements SmartClipProvider {
             mScrollAccessibilityHelper = new ScrollAccessibilityHelper(mContainerView);
 
             setOverScrollMode(mContainerView.getOverScrollMode());
-            setScrollBarStyle(mInternalAccessAdapter.super_getScrollBarStyle());
+            setScrollBarStyle(mCurrentInternalAccessAdapter.super_getScrollBarStyle());
 
             mAwDarkMode = new AwDarkMode(this);
             mStylusWritingController = new StylusWritingController(context.getApplicationContext());
@@ -1214,7 +1223,7 @@ public class AwContents implements SmartClipProvider {
     }
 
     public boolean isFullScreen() {
-        return mFullScreenTransitionsState.isFullScreen();
+        return mFullScreenState != null;
     }
 
     /**
@@ -1314,32 +1323,10 @@ public class AwContents implements SmartClipProvider {
         assert !isFullScreen();
         if (isDestroyed(NO_WARN)) return null;
 
-        // Detach to tear down the GL functor if this is still associated with the old
-        // container view. It will be recreated during the next call to onDraw attached to
-        // the new container view.
-        getViewMethods().onDetachedFromWindow();
+        mFullScreenState = new FullScreenState();
+        mFullScreenState.enterFullScreen();
 
-        // In fullscreen mode FullScreenView owns the AwViewMethodsImpl and AwContents
-        // a NullAwViewMethods.
-        FullScreenView fullScreenView = new FullScreenView(mContext, mAwViewMethods, this);
-        fullScreenView.setFocusable(true);
-        fullScreenView.setFocusableInTouchMode(true);
-        boolean wasInitialContainerViewFocused = mContainerView.isFocused();
-        if (wasInitialContainerViewFocused) {
-            fullScreenView.requestFocus();
-        }
-        mFullScreenTransitionsState.enterFullScreen(
-                fullScreenView,
-                wasInitialContainerViewFocused,
-                mScrollOffsetManager.getScrollX(),
-                mScrollOffsetManager.getScrollY());
-        mAwViewMethods = new NullAwViewMethods(this, mInternalAccessAdapter, mContainerView);
-
-        // Associate this AwContents with the FullScreenView.
-        setInternalAccessAdapter(fullScreenView.getInternalAccessAdapter());
-        setContainerView(fullScreenView);
-
-        return fullScreenView;
+        return mFullScreenState.getFullScreenView();
     }
 
     /** Called when the app has requested to exit fullscreen. */
@@ -1359,44 +1346,13 @@ public class AwContents implements SmartClipProvider {
             return;
         }
 
-        // Detach to tear down the GL functor if this is still associated with the old
-        // container view. It will be recreated during the next call to onDraw attached to
-        // the new container view.
-        // NOTE: we cannot use mAwViewMethods here because its type is NullAwViewMethods.
-        AwViewMethods awViewMethodsImpl = mFullScreenTransitionsState.getInitialAwViewMethods();
-        awViewMethodsImpl.onDetachedFromWindow();
-
-        // Swap the view delegates. In embedded mode the FullScreenView owns a
-        // NullAwViewMethods and AwContents the AwViewMethodsImpl.
-        FullScreenView fullscreenView = mFullScreenTransitionsState.getFullScreenView();
-        fullscreenView.setAwViewMethods(
-                new NullAwViewMethods(
-                        this, fullscreenView.getInternalAccessAdapter(), fullscreenView));
-        mAwViewMethods = awViewMethodsImpl;
-
-        // Re-associate this AwContents with the WebView.
-        setInternalAccessAdapter(mFullScreenTransitionsState.getInitialInternalAccessDelegate());
-        setContainerView(mPrimaryContainerView);
-
-        // Return focus to the WebView.
-        if (mFullScreenTransitionsState.wasInitialContainerViewFocused()) {
-            mContainerView.requestFocus();
-        }
-
-        if (!isDestroyed(NO_WARN)) {
-            AwContentsJni.get()
-                    .restoreScrollAfterTransition(
-                            mNativeAwContents,
-                            mFullScreenTransitionsState.getScrollX(),
-                            mFullScreenTransitionsState.getScrollY());
-        }
-
-        mFullScreenTransitionsState.exitFullScreen();
+        mFullScreenState.exitFullScreen();
+        mFullScreenState = null;
     }
 
     private void setInternalAccessAdapter(InternalAccessDelegate internalAccessAdapter) {
-        mInternalAccessAdapter = internalAccessAdapter;
-        mViewEventSink.setAccessDelegate(mInternalAccessAdapter);
+        mCurrentInternalAccessAdapter = internalAccessAdapter;
+        mViewEventSink.setAccessDelegate(mCurrentInternalAccessAdapter);
     }
 
     public void adopt(ViewGroup newContainerView, InternalAccessDelegate internalAccessAdapter) {
@@ -1413,6 +1369,7 @@ public class AwContents implements SmartClipProvider {
                     "The new container view must be detached from the window before adopting.");
         }
         updateContext(newContainerView.getContext());
+        mPrimaryInternalAccessAdapter = internalAccessAdapter;
         setInternalAccessAdapter(internalAccessAdapter);
         mPrimaryContainerView = newContainerView;
         setContainerView(newContainerView);
@@ -1441,7 +1398,7 @@ public class AwContents implements SmartClipProvider {
         mScrollAccessibilityHelper.setContainerView(mContainerView);
 
         onContainerViewChanged();
-        setScrollBarStyle(mInternalAccessAdapter.super_getScrollBarStyle());
+        setScrollBarStyle(mCurrentInternalAccessAdapter.super_getScrollBarStyle());
     }
 
     public AwDrawFnImpl.DrawFnAccess getDrawFnAccess() {
@@ -1493,19 +1450,18 @@ public class AwContents implements SmartClipProvider {
 
     /** Reconciles the state of this AwContents object with the state of the new container view. */
     private void onContainerViewChanged() {
-        // NOTE: mAwViewMethods is used by the old container view, the WebView, so it might refer
-        // to a NullAwViewMethods when in fullscreen. To ensure that the state is reconciled with
-        // the new container view correctly, we bypass mAwViewMethods and use the real
+        // NOTE: mCurrentAwViewMethods is used by the old container view, the WebView, so it might
+        // refer to a NullAwViewMethods when in fullscreen. To ensure that the state is reconciled
+        // with the new container view correctly, we bypass mCurrentAwViewMethods and use the real
         // implementation directly.
-        AwViewMethods awViewMethodsImpl = mFullScreenTransitionsState.getInitialAwViewMethods();
-        awViewMethodsImpl.onVisibilityChanged(mContainerView, mContainerView.getVisibility());
-        awViewMethodsImpl.onWindowVisibilityChanged(mContainerView.getWindowVisibility());
+        mPrimaryAwViewMethods.onVisibilityChanged(mContainerView, mContainerView.getVisibility());
+        mPrimaryAwViewMethods.onWindowVisibilityChanged(mContainerView.getWindowVisibility());
 
         boolean containerViewAttached = mContainerView.isAttachedToWindow();
         if (containerViewAttached && !mIsAttachedToWindow) {
-            awViewMethodsImpl.onAttachedToWindow();
+            mPrimaryAwViewMethods.onAttachedToWindow();
         } else if (!containerViewAttached && mIsAttachedToWindow) {
-            awViewMethodsImpl.onDetachedFromWindow();
+            mPrimaryAwViewMethods.onDetachedFromWindow();
         }
 
         // Skip passing size of FullScreenView down. FullScreenView is newly created and detached
@@ -1514,11 +1470,11 @@ public class AwContents implements SmartClipProvider {
         if ((mContainerView instanceof FullScreenView)) {
             assert !containerViewAttached;
         } else {
-            awViewMethodsImpl.onSizeChanged(
+            mPrimaryAwViewMethods.onSizeChanged(
                     mContainerView.getWidth(), mContainerView.getHeight(), 0, 0);
         }
-        awViewMethodsImpl.onWindowFocusChanged(mContainerView.hasWindowFocus());
-        awViewMethodsImpl.onFocusChanged(mContainerView.hasFocus(), 0, null);
+        mPrimaryAwViewMethods.onWindowFocusChanged(mContainerView.hasWindowFocus());
+        mPrimaryAwViewMethods.onFocusChanged(mContainerView.hasFocus(), 0, null);
         ViewUtils.requestLayout(mContainerView, "AwContents.onContainerViewChanged");
         if (mAutofillProvider != null) mAutofillProvider.onContainerViewChanged(mContainerView);
         mDisplayModeController.setCurrentContainerView(mContainerView);
@@ -1720,7 +1676,7 @@ public class AwContents implements SmartClipProvider {
                 SelectionActionMenuDelegateProvider.getSelectionActionMenuDelegate();
         initWebContents(
                 mViewAndroidDelegate,
-                mInternalAccessAdapter,
+                mCurrentInternalAccessAdapter,
                 mWebContents,
                 mWindowAndroid.getWindowAndroid(),
                 mWebContentsInternalsHolder,
@@ -3704,12 +3660,9 @@ public class AwContents implements SmartClipProvider {
         // TODO(anukul.chand): check if we can replace existing implementation with WindowAndroid's
         //  intent dispatch handling/tracking.
         try {
-            // Even in fullscreen mode, startActivityForResult will still use the
-            // initial internal access delegate because it has access to
-            // the hidden API View#startActivityForResult.
-            mFullScreenTransitionsState
-                    .getInitialInternalAccessDelegate()
-                    .super_startActivityForResult(intent, mNextRequestCode);
+            // We always use the default internal access delegate to start the activity
+            // because it has access to the hidden API View#startActivityForResult.
+            mPrimaryInternalAccessAdapter.super_startActivityForResult(intent, mNextRequestCode);
         } catch (ActivityNotFoundException e) {
             return false;
         }
@@ -4613,7 +4566,7 @@ public class AwContents implements SmartClipProvider {
      * implementation when it isn't (and the AwContents is attached to a FullScreenView).
      */
     public AwViewMethods getViewMethods() {
-        return mAwViewMethods;
+        return mCurrentAwViewMethods;
     }
 
     // --------------------------------------------------------------------------------------------
@@ -4819,7 +4772,7 @@ public class AwContents implements SmartClipProvider {
             // This check reflects Chrome's behavior and is a workaround for http://b/7697782.
             if (mContentsClient.hasWebViewClient()
                     && mContentsClient.shouldOverrideKeyEvent(event)) {
-                return mInternalAccessAdapter.super_dispatchKeyEvent(event);
+                return mCurrentInternalAccessAdapter.super_dispatchKeyEvent(event);
             }
             return mWebContents.getEventForwarder().dispatchKeyEvent(event);
         }
@@ -4874,7 +4827,7 @@ public class AwContents implements SmartClipProvider {
 
             if (!isDestroyed(NO_WARN)) {
                 mViewEventSink.onConfigurationChanged(newConfig);
-                mInternalAccessAdapter.super_onConfigurationChanged(newConfig);
+                mCurrentInternalAccessAdapter.super_onConfigurationChanged(newConfig);
                 mWebContents.notifyRendererPreferenceUpdate();
             }
         }
