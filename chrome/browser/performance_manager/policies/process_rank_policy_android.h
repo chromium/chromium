@@ -70,7 +70,8 @@ class ProcessRankPolicyAndroid
   void OnIsVisibleChanged(const PageNode* page_node) override;
   void OnIsAudibleChanged(const PageNode* page_node) override;
   void OnHasPictureInPictureChanged(const PageNode* page_node) override;
-  void OnMainFrameUrlChanged(const PageNode* page_node) override;
+  void OnMainFrameUrlChanged(const PageNode* page_node,
+                             const GURL& previous_url) override;
   // Change on GetContentsMimeType() is notified by
   // OnMainFrameDocumentChanged().
   void OnMainFrameDocumentChanged(const PageNode* page_node) override;

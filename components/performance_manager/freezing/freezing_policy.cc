@@ -778,7 +778,8 @@ void FreezingPolicy::OnPageIsHoldingWebLockChanged(const PageNode* page_node) {
                              CannotFreezeReason::kHoldingWebLock);
 }
 
-void FreezingPolicy::OnMainFrameUrlChanged(const PageNode* page_node) {
+void FreezingPolicy::OnMainFrameUrlChanged(const PageNode* page_node,
+                                           const GURL& previous_url) {
   const bool was_opted_out =
       GetFreezingState(page_node).cannot_freeze_reasons.Has(
           CannotFreezeReason::kOptedOut);

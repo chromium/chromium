@@ -289,7 +289,8 @@ void DiscardsGraphDumpImpl::OnFaviconUpdated(
 }
 
 void DiscardsGraphDumpImpl::OnMainFrameUrlChanged(
-    const performance_manager::PageNode* page_node) {
+    const performance_manager::PageNode* page_node,
+    const GURL& previous_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SendPageNotification(page_node, false);
 }

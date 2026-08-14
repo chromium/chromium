@@ -299,9 +299,10 @@ class PageNodeImpl
 
   // The URL the main frame last committed, or the initial URL a page was
   // initialized with. The latter case is distinguished by a zero navigation ID.
-  ObservedProperty::
-      NotifiesOnlyOnChanges<GURL, &PageNodeObserver::OnMainFrameUrlChanged>
-          main_frame_url_ GUARDED_BY_CONTEXT(sequence_checker_);
+  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
+      GURL,
+      &PageNodeObserver::OnMainFrameUrlChanged>
+      main_frame_url_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The unique ID of the navigation handle the main frame last committed, or
   // zero if the page has never committed a navigation.

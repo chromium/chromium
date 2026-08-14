@@ -190,7 +190,8 @@ class FreezingPolicy : public PageNodeObserver,
   void OnPageNotificationPermissionStatusChange(
       const PageNode* page_node,
       std::optional<blink::mojom::PermissionStatus> previous_status) override;
-  void OnMainFrameUrlChanged(const PageNode* page_node) override;
+  void OnMainFrameUrlChanged(const PageNode* page_node,
+                             const GURL& previous_url) override;
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
 

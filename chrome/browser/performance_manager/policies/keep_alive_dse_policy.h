@@ -34,7 +34,8 @@ class KeepAliveDSEPolicy : public PageNodeObserver,
   KeepAliveDSEPolicy& operator=(const KeepAliveDSEPolicy&) = delete;
 
   // PageNodeObserver:
-  void OnMainFrameUrlChanged(const PageNode* page_node) override;
+  void OnMainFrameUrlChanged(const PageNode* page_node,
+                             const GURL& previous_url) override;
 
   // ProcessNodeObserver:
   void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;

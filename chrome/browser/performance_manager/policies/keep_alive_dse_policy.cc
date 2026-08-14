@@ -57,7 +57,8 @@ KeepAliveDSEPolicy::KeepAliveDSEPolicy()
 
 KeepAliveDSEPolicy::~KeepAliveDSEPolicy() = default;
 
-void KeepAliveDSEPolicy::OnMainFrameUrlChanged(const PageNode* page_node) {
+void KeepAliveDSEPolicy::OnMainFrameUrlChanged(const PageNode* page_node,
+                                               const GURL& previous_url) {
   const FrameNode* main_frame_node = page_node->GetPrimaryMainFrameNode();
   // If there's no main frame (e.g., this can happen during session restore
   // before the main frame is fully initialized), there's nothing to do, as we

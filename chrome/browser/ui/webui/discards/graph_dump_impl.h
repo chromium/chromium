@@ -84,7 +84,8 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       const performance_manager::PageNode* page_node,
       const performance_manager::FrameNode* previous_embedder) override;
   void OnMainFrameUrlChanged(
-      const performance_manager::PageNode* page_node) override;
+      const performance_manager::PageNode* page_node,
+      const GURL& previous_url) override;
   void OnFaviconUpdated(const performance_manager::PageNode* page_node,
                         blink::mojom::FaviconUpdateReason reason) override;
 

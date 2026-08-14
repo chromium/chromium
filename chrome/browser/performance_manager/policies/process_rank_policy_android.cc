@@ -243,7 +243,8 @@ void ProcessRankPolicyAndroid::OnHasPictureInPictureChanged(
 }
 
 void ProcessRankPolicyAndroid::OnMainFrameUrlChanged(
-    const PageNode* page_node) {
+    const PageNode* page_node,
+    const GURL& previous_url) {
   UpdateProcessRank(page_node);
 }
 

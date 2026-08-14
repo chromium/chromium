@@ -361,7 +361,8 @@ class PageNodeObserver : public base::CheckedObserver {
       std::optional<blink::mojom::PermissionStatus> previous_status) {}
 
   // Invoked when the MainFrameUrl property changes.
-  virtual void OnMainFrameUrlChanged(const PageNode* page_node) {}
+  virtual void OnMainFrameUrlChanged(const PageNode* page_node,
+                                     const GURL& previous_url) {}
 
   // This is fired when a non-same document navigation commits in the main
   // frame. It indicates that the the |NavigationId| property and possibly the
