@@ -4,16 +4,21 @@
 
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporter_client.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/file_version_info.h"
-#include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/win/registry.h"
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporting_utils.h"
 
 namespace credential_provider {
+
+GcpCrashReporterClient::GcpCrashReporterClient(
+    base::FilePath crash_dump_location)
+    : crash_dump_location_(std::move(crash_dump_location)) {
+  CHECK(!crash_dump_location_.empty());
+}
 
 GcpCrashReporterClient::~GcpCrashReporterClient() = default;
 
@@ -59,10 +64,7 @@ bool GcpCrashReporterClient::GetShouldDumpLargerDumps() {
 }
 
 bool GcpCrashReporterClient::GetCrashDumpLocation(std::wstring* crash_dir) {
-  base::FilePath crash_directory_path = GetFolderForCrashDumps();
-  if (crash_directory_path.empty())
-    return false;
-  *crash_dir = crash_directory_path.value();
+  *crash_dir = crash_dump_location_.value();
   return true;
 }
 
