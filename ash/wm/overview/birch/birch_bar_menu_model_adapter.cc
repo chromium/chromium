@@ -50,12 +50,6 @@ BirchBarMenuModelAdapter::BirchBarMenuModelAdapter(
 
 BirchBarMenuModelAdapter::~BirchBarMenuModelAdapter() = default;
 
-void BirchBarMenuModelAdapter::OnButtonSelected(OptionButtonBase* button) {}
-
-void BirchBarMenuModelAdapter::OnButtonClicked(OptionButtonBase* button) {
-  button->SetSelected(!button->selected());
-}
-
 views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
     views::MenuItemView* menu,
     ui::MenuModel* model,
@@ -151,7 +145,6 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
           enabled &&
           BirchBarController::Get()->GetShowSuggestionType(
               birch_bar_util::CommandIdToSuggestionType(command_id)));
-      checkbox->set_delegate(this);
       checkbox->GetViewAccessibility().SetName(label);
       checkbox->SetLabelFontList(font_list);
       checkbox->SetLabelColorId(cros_tokens::kCrosSysOnSurface);

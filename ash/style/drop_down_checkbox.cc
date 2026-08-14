@@ -92,7 +92,6 @@ class CheckboxMenuOptionGroup : public CheckboxGroup {
     auto* button = AddChildView(std::make_unique<Checkbox>(
         group_width_ - inside_border_insets_.width(), std::move(callback),
         label, kMenuItemInnerPadding, kCheckmarkLabelSpacing));
-    button->set_delegate(this);
     buttons_.push_back(button);
     return button;
   }

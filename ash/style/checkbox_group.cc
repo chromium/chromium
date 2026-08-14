@@ -33,13 +33,8 @@ Checkbox* CheckboxGroup::AddButton(Checkbox::PressedCallback callback,
   auto* button = AddChildView(std::make_unique<Checkbox>(
       group_width_ - inside_border_insets_.width(), std::move(callback), label,
       button_padding_, image_label_spacing_));
-  button->set_delegate(this);
   buttons_.push_back(button);
   return button;
-}
-
-void CheckboxGroup::OnButtonClicked(OptionButtonBase* button) {
-  button->SetSelected(!button->selected());
 }
 
 BEGIN_METADATA(CheckboxGroup)

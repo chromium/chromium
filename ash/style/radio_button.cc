@@ -31,7 +31,8 @@ RadioButton::RadioButton(int button_width,
                        std::move(callback),
                        label,
                        insets,
-                       image_label_spacing),
+                       image_label_spacing,
+                       ClickBehavior::kSetToOn),
       icon_direction_(icon_direction),
       icon_type_(icon_type) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);

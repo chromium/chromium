@@ -22,8 +22,7 @@ class BirchBarContextMenuModel;
 // menu items by adding widgets like switch button and checkbox. `for_chip_menu`
 // is true if the model adapter is used for a `BirchChipContextMenuModel`. It's
 // false if the model is `BirchBarContextMenuModel`.
-class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter,
-                                            public Checkbox::Delegate {
+class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter {
  public:
   BirchBarMenuModelAdapter(
       std::unique_ptr<ui::SimpleMenuModel> birch_menu_model,
@@ -35,10 +34,6 @@ class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter,
   BirchBarMenuModelAdapter(const BirchBarMenuModelAdapter&) = delete;
   BirchBarMenuModelAdapter& operator=(const BirchBarMenuModelAdapter&) = delete;
   ~BirchBarMenuModelAdapter() override;
-
-  // Checkbox::Delegate:
-  void OnButtonSelected(OptionButtonBase* button) override;
-  void OnButtonClicked(OptionButtonBase* button) override;
 
  protected:
   // AppMenuModelAdapter:

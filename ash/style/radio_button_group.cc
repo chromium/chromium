@@ -45,7 +45,8 @@ RadioButton* RadioButtonGroup::AddButton(RadioButton::PressedCallback callback,
   auto* button = AddChildView(std::make_unique<RadioButton>(
       group_width_ - inside_border_insets_.width(), std::move(callback), label,
       icon_direction_, icon_type_, button_padding_, image_label_spacing_));
-  button->set_delegate(this);
+  button->set_button_selected_callback(base::BindRepeating(
+      &RadioButtonGroup::OnButtonSelected, base::Unretained(this)));
   buttons_.push_back(button);
   return button;
 }
@@ -61,10 +62,6 @@ void RadioButtonGroup::OnButtonSelected(OptionButtonBase* button) {
     }
   }
   button->ScrollViewToVisible();
-}
-
-void RadioButtonGroup::OnButtonClicked(OptionButtonBase* button) {
-  button->SetSelected(true);
 }
 
 BEGIN_METADATA(RadioButtonGroup)
