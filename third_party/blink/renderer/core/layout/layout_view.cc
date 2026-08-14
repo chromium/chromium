@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_skip_reason.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -177,11 +178,12 @@ bool LayoutView::HitTestNoLifecycleUpdate(const HitTestLocation& location,
       // Start with a rect sized to the frame, to ensure we include the
       // scrollbars.
       hit_test_area.size = PhysicalSize(frame_view->Size());
-      if (result.GetHitTestRequest().IgnoreClipping() ||
-          (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
-           GetDocument().HasActiveUnboundedElements())) {
+      if (result.GetHitTestRequest().IgnoreClipping()) {
         hit_test_area.Unite(
             frame_view->DocumentToFrame(PhysicalRect(DocumentRect())));
+      } else if (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
+                 GetDocument().HasActiveUnboundedElements()) {
+        hit_test_area = PhysicalRect(InfiniteIntRect());
       }
     }
 

@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -1727,10 +1728,21 @@ WebInputEventResult EventHandler::HandleGestureEvent(
     UpdateGestureTargetNodeForMouseEvent(targeted_event);
 
   // Route to the correct frame.
+  if (auto unbounded_result =
+          event_handling_util::SubframeForActiveUnboundedElement(
+              frame_, targeted_event.Event().PositionInRootFrame())) {
+    GestureEventWithHitTestResults subframe_event(targeted_event.Event(),
+                                                  unbounded_result->location,
+                                                  unbounded_result->result);
+    return unbounded_result->frame->GetEventHandler().HandleGestureEventInFrame(
+        subframe_event);
+  }
+
   if (LocalFrame* inner_frame =
-          targeted_event.GetHitTestResult().InnerNodeFrame())
+          targeted_event.GetHitTestResult().InnerNodeFrame()) {
     return inner_frame->GetEventHandler().HandleGestureEventInFrame(
         targeted_event);
+  }
 
   // No hit test result, handle in root instance. Perhaps we should just return
   // false instead?

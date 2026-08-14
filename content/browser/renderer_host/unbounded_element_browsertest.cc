@@ -579,18 +579,18 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   EXPECT_GE(popup_bounds.height(), 90);
 }
 
-IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, PopupInputEventRouting) {
-#if BUILDFLAG(IS_ANDROID)
-  // Mouse events are not routed through UnboundedSurfaceWindow on Android, as
-  // native touch/pointer events are handled by the regular Android View
-  // hierarchy.
-  GTEST_SKIP();
-#elif BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
-  // popup container positioning and coordinate conversion issues.
-  GTEST_SKIP();
+// Mouse events are not routed through UnboundedSurfaceWindow on Android, as
+// native touch/pointer events are handled by the regular Android View
+// hierarchy.
+// TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
+// popup container positioning and coordinate conversion issues.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PopupInputEventRouting DISABLED_PopupInputEventRouting
+#else
+#define MAYBE_PopupInputEventRouting PopupInputEventRouting
 #endif
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       MAYBE_PopupInputEventRouting) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -632,22 +632,22 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, PopupInputEventRouting) {
             EvalJs(primary_main_frame_host(), "window.__mouse_x"));
   EXPECT_EQ(kMouseOffsetY,
             EvalJs(primary_main_frame_host(), "window.__mouse_y"));
-#endif
 }
 
-IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
-                       PopupOutsideViewportInputEventRouting) {
-#if BUILDFLAG(IS_ANDROID)
-  // Mouse events are not routed through UnboundedSurfaceWindow on Android, as
-  // native touch/pointer events are handled by the regular Android View
-  // hierarchy.
-  GTEST_SKIP();
-#elif BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
-  // popup container positioning and coordinate conversion issues.
-  GTEST_SKIP();
+// Mouse events are not routed through UnboundedSurfaceWindow on Android, as
+// native touch/pointer events are handled by the regular Android View
+// hierarchy.
+// TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
+// popup container positioning and coordinate conversion issues.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PopupOutsideViewportInputEventRouting \
+  DISABLED_PopupOutsideViewportInputEventRouting
+#else
+#define MAYBE_PopupOutsideViewportInputEventRouting \
+  PopupOutsideViewportInputEventRouting
 #endif
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       MAYBE_PopupOutsideViewportInputEventRouting) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -698,7 +698,6 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
             EvalJs(primary_main_frame_host(), "window.__mouse_x"));
   EXPECT_EQ(kExpectedMouseY,
             EvalJs(primary_main_frame_host(), "window.__mouse_y"));
-#endif
 }
 
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
@@ -740,8 +739,64 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   EXPECT_EQ(370, EvalJs(primary_main_frame_host(), "window.__mouse_y"));
 }
 
-// TODO(crbug.com/508672616): Unbounded elements within frames are not yet
-// working properly.
+// Mouse events are not routed through UnboundedSurfaceWindow on Android, as
+// native touch/pointer events are handled by the regular Android View
+// hierarchy.
+// TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
+// popup container positioning and coordinate conversion issues.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_IframeClickEventRouting DISABLED_IframeClickEventRouting
+#else
+#define MAYBE_IframeClickEventRouting IframeClickEventRouting
+#endif
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       MAYBE_IframeClickEventRouting) {
+  GURL url(embedded_test_server()->GetURL("/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Position and style the iframe.
+  std::string setup_script =
+      "document.getElementById('test_iframe').style.cssText = "
+      "'width:100px; height:100px; border:none; margin:0; position:absolute; "
+      "top:50px; left:50px;';";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), setup_script));
+
+  RenderFrameHost* iframe = ChildFrameAt(primary_main_frame_host(), 0);
+  ASSERT_TRUE(iframe);
+
+  // Set up the unbounded element inside the iframe with a button extending
+  // outside the iframe's 100x100 bounds.
+  std::string iframe_script = R"(
+    document.body.style.margin = '0';
+    document.body.innerHTML = `
+      <div id="child" style="width:50px; height:50px; position:absolute;
+           top:120px; left:120px;" unbounded>
+        <button id="btn" style="width:50px; height:50px;">Click</button>
+      </div>
+    `;
+    const btn = document.getElementById('btn');
+    btn.addEventListener('click', () => {
+      window.__clicked = true;
+    });
+    document.getElementById('child').showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(iframe, iframe_script));
+  WaitForFrameReady();
+
+  // The iframe is at document (50, 50). Its bounds are [50, 50] to [150, 150].
+  // The child element is at iframe-document (120, 120), which is document (170,
+  // 170). Simulate mouse click at viewport (180, 180) which is offset (10, 10)
+  // inside the child button, and completely outside the iframe bounds.
+  SimulateMouseClickAt(web_contents(), 0, blink::WebMouseEvent::Button::kLeft,
+                       gfx::Point(180, 180));
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  EXPECT_TRUE(EvalJs(iframe, "window.__clicked").ExtractBool());
+}
+
+// TODO(crbug.com/508672616): Mouse move / hover event routing for unbounded
+// elements within frames is not yet working properly, unlike click routing
+// (tested in IframeClickEventRouting above).
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        DISABLED_IframeInputEventRouting) {
   GURL url(embedded_test_server()->GetURL("/page_with_iframe.html"));
@@ -1210,11 +1265,13 @@ class UnboundedElementPermutationBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(UnboundedElementPermutationBrowserTest,
-                       CheckPermutation) {
 #if BUILDFLAG(IS_IOS)
-  GTEST_SKIP();
+#define MAYBE_CheckPermutation DISABLED_CheckPermutation
 #else
+#define MAYBE_CheckPermutation CheckPermutation
+#endif
+IN_PROC_BROWSER_TEST_P(UnboundedElementPermutationBrowserTest,
+                       MAYBE_CheckPermutation) {
   const auto& params = GetParam();
 
   if (params.is_privileged) {
@@ -1294,7 +1351,6 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementPermutationBrowserTest,
       }
     }
   }
-#endif
 }
 
 namespace {

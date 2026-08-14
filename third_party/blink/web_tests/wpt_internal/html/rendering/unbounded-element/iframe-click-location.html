@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/523268809">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  iframe {
+    width: 200px;
+    height: 100px;
+    border: none;
+    margin: 0;
+    position: absolute;
+    top: 50px;
+    left: 50px;
+  }
+</style>
+
+<iframe id="test-iframe" srcdoc="
+  <!DOCTYPE html>
+  <style>
+    body { margin: 0; }
+    #unbounded-menu {
+      position: absolute;
+      top: 150px;
+      left: 50px;
+      width: 100px;
+      height: 100px;
+      background: green;
+    }
+  </style>
+  <button id='trigger'>Open Menu</button>
+  <div id='unbounded-menu' unbounded>
+    <button id='menu-btn' style='width: 100px; height: 50px;'>Menu Button</button>
+  </div>
+"></iframe>
+
+<script>
+async function clickViewport(x, y, pointerType) {
+  let actions = new test_driver.Actions();
+  if (pointerType === 'touch') {
+    actions = actions.addPointer('touchPointer', 'touch')
+                     .pointerMove(x, y, {origin: 'viewport'})
+                     .pointerDown()
+                     .pointerUp();
+  } else {
+    actions = actions.pointerMove(x, y, {origin: 'viewport'})
+                     .pointerDown()
+                     .pointerUp();
+  }
+  await actions.send();
+}
+
+for (const inputType of ['mouse', 'touch']) {
+  promise_test(async t => {
+    const iframe = document.getElementById('test-iframe');
+    if (!iframe.contentDocument || !iframe.contentDocument.getElementById('trigger')) {
+      await new Promise(resolve => { iframe.onload = resolve; });
+    }
+    const doc = iframe.contentDocument;
+    const trigger = doc.getElementById('trigger');
+    const menu = doc.getElementById('unbounded-menu');
+    const menuBtn = doc.getElementById('menu-btn');
+
+    let triggerClicked = false;
+    let showPromise = null;
+    trigger.onclick = () => {
+      triggerClicked = true;
+      showPromise = menu.showUnboundedElement();
+    };
+
+    let menuBtnClicked = false;
+    menuBtn.onclick = () => {
+      menuBtnClicked = true;
+    };
+
+    t.add_cleanup(async () => {
+      trigger.onclick = null;
+      menuBtn.onclick = null;
+      if (menu.matches(':unbounded')) {
+        await menu.hideUnboundedElement();
+      }
+    });
+
+    const iframeRect = iframe.getBoundingClientRect();
+    const tRect = trigger.getBoundingClientRect();
+    const triggerX = Math.round(iframeRect.left + tRect.left + tRect.width / 2);
+    const triggerY = Math.round(iframeRect.top + tRect.top + tRect.height / 2);
+
+    // Click trigger inside iframe.
+    await clickViewport(triggerX, triggerY, inputType);
+    assert_true(triggerClicked, `Trigger button inside iframe should be clicked via ${inputType}.`);
+    assert_true(!!showPromise, 'showUnboundedElement should be initiated');
+    await showPromise;
+
+    const mRect = menuBtn.getBoundingClientRect();
+    const menuBtnX = Math.round(iframeRect.left + mRect.left + mRect.width / 2);
+    const menuBtnY = Math.round(iframeRect.top + mRect.top + mRect.height / 2);
+
+    // Click menu button extending outside iframe bounds.
+    await clickViewport(menuBtnX, menuBtnY, inputType);
+    assert_true(menuBtnClicked, `Menu button extending outside iframe should be clicked via ${inputType}.`);
+  }, `Verify clicks on unbounded elements outside iframe bounds work correctly with ${inputType}.`);
+}
+</script>
