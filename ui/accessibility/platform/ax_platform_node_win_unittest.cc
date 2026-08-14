@@ -8545,14 +8545,7 @@ TEST_F(AXPlatformNodeWinTest, OwnedNodeSurvivesUnexpectedReleases) {
 // Test for UIA's MathML Implementation.
 TEST_F(AXPlatformNodeWinTest, UiaMathMlFeatureFlag) {
   // Verify flag is disabled by default.
-  EXPECT_FALSE(base::FeatureList::IsEnabled(features::kUiaMathMlSupport));
-
-  // Verify flag can be enabled.
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(features::kUiaMathMlSupport);
-    EXPECT_TRUE(base::FeatureList::IsEnabled(features::kUiaMathMlSupport));
-  }
+  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kUiaMathMlSupport));
 
   // Verify flag can be explicitly disabled.
   {

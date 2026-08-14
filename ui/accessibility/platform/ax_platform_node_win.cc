@@ -1266,6 +1266,8 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kDeferToAriaRole, UIA_TextControlTypeId,
               L"marquee"};
 
+    // TODO(crbug.com/546438370): Expose mappings for MathML so the semantics
+    // are exposed as part of the tree.
     case ax::mojom::Role::kMath:
     case ax::mojom::Role::kMathMLMath:
     case ax::mojom::Role::kMathMLFraction:
@@ -6910,6 +6912,7 @@ int AXPlatformNodeWin::MSAARole() {
 
     // TODO(http://crbug.com/1260584): Refine this if/when a MSAA API exists for
     // properly exposing MathML content.
+    // Also see http://crbug.com/546438370
     case ax::mojom::Role::kMathMLFraction:
     case ax::mojom::Role::kMathMLIdentifier:
     case ax::mojom::Role::kMathMLMultiscripts:
