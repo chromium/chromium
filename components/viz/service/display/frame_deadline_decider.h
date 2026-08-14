@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -91,11 +92,33 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   // Called when the display becomes invisible.
   void OnDisplayInvisible();
 
+  void SetStrategyForTesting(
+      features::FrameDeadlineDeciderSequenceStrategy strategy) {
+    strategy_ = strategy;
+  }
+
  private:
   bool IsPartOfOngoingFrameSequence(base::TimeTicks frame_time,
                                     bool is_handling_interaction) const;
 
   size_t FindClosestDeadlineByPresentation(
+      const PossibleDeadlines& possible_deadlines,
+      base::TimeDelta vsync_interval,
+      int max_allowed_buffers) const;
+  // Selects the closest sustainable deadline candidate tracking the OS
+  // preferred presentation delta plus the initial sequence offset
+  // (os_preferred_delta + offset). This avoids progressive deadline drift
+  // caused by VSync jitter or OS latch phase shifts while bounding candidate
+  // selection by buffer sustainability (max_allowed_buffers *
+  // min_vsync_interval + 1ms).
+  size_t SelectDeadlineOsPreferredLocking(
+      const PossibleDeadlines& possible_deadlines,
+      base::TimeDelta vsync_interval,
+      int max_allowed_buffers) const;
+
+  // Selects the deadline candidate minimizing difference against the previous
+  // frame's absolute presentation delta without sustainability bounds.
+  size_t SelectDeadlinePresentationDeltaLocking(
       const PossibleDeadlines& possible_deadlines) const;
   void RecordSelectedSustainableDeadlineHistogram(
       base::TimeDelta selected_present_delta,
@@ -104,6 +127,7 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
 
   struct FrameSequenceState {
     base::TimeDelta present_delta;
+    base::TimeDelta os_preferred_offset;
     size_t deadline_index = 0;
     base::TimeTicks last_frame_time;
     bool is_interaction_active = false;
@@ -113,6 +137,8 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   std::optional<base::TimeDelta> min_supported_vsync_interval_;
   const base::TimeDelta max_non_interactive_idle_duration_;
   const base::TimeDelta max_interactive_idle_duration_;
+  features::FrameDeadlineDeciderSequenceStrategy strategy_ =
+      features::FrameDeadlineDeciderSequenceStrategy::kOsPreferredDeltaLocking;
   const bool use_platform_preferred_deadlines_;
 };
 

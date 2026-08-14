@@ -107,6 +107,8 @@ TEST_F(FrameDeadlineDeciderTest, SelectedSustainableDeadline_False) {
 TEST_F(FrameDeadlineDeciderTest, OngoingInteractionSequenceRetention) {
   base::HistogramTester histogram_tester;
   FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/false);
+  decider.SetStrategyForTesting(features::FrameDeadlineDeciderSequenceStrategy::
+                                    kPresentationDeltaLocking);
   base::TimeTicks base_time = base::TimeTicks() + base::Milliseconds(1000);
 
   auto deadlines = CreatePossibleDeadlines(
@@ -140,6 +142,8 @@ TEST_F(FrameDeadlineDeciderTest, OngoingInteractionSequenceRetention) {
 
 TEST_F(FrameDeadlineDeciderTest, InteractionEndSequenceRetention) {
   FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/false);
+  decider.SetStrategyForTesting(features::FrameDeadlineDeciderSequenceStrategy::
+                                    kPresentationDeltaLocking);
   base::TimeTicks base_time = base::TimeTicks() + base::Milliseconds(1000);
 
   auto deadlines = CreatePossibleDeadlines(
@@ -282,6 +286,238 @@ TEST_F(FrameDeadlineDeciderTest,
   EXPECT_EQ(decider.SelectDeadline(deadlines_60hz, base::Milliseconds(16),
                                    /*max_allowed_buffers=*/3,
                                    base::TimeTicks::Now(), std::nullopt,
+                                   /*is_handling_interaction=*/true),
+            0u);
+}
+
+TEST_F(FrameDeadlineDeciderTest, OsPreferredDeltaLocking_StableSequence) {
+  FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/false);
+  decider.SetStrategyForTesting(
+      features::FrameDeadlineDeciderSequenceStrategy::kOsPreferredDeltaLocking);
+
+  auto deadlines = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(16)),
+          PossibleDeadline(2, base::Milliseconds(16), base::Milliseconds(24)),
+          PossibleDeadline(3, base::Milliseconds(24), base::Milliseconds(32)),
+          PossibleDeadline(4, base::Milliseconds(32), base::Milliseconds(40)),
+          PossibleDeadline(5, base::Milliseconds(40), base::Milliseconds(48))});
+
+  base::TimeTicks base_time = base::TimeTicks() + base::Milliseconds(1000);
+
+  // Frame 0: Initial frame of sequence selects index 3 (40ms).
+  EXPECT_EQ(
+      decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                             k120HzAllowedBuffers, base_time, std::nullopt,
+                             /*is_handling_interaction=*/true),
+      3u);
+
+  // Frames 1..9: Stable consecutive frames in sequence.
+  for (int i = 1; i <= 9; ++i) {
+    base::TimeTicks frame_time = base_time + (i * k120HzVsyncInterval);
+    EXPECT_EQ(
+        decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                               k120HzAllowedBuffers, frame_time, std::nullopt,
+                               /*is_handling_interaction=*/true),
+        3u);
+  }
+}
+
+TEST_F(FrameDeadlineDeciderTest, OsPreferredDeltaLocking_VsyncJitterShift) {
+  base::TimeTicks base_time = base::TimeTicks() + base::Milliseconds(1000);
+
+  auto deadlines_f1 = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(16)),
+          PossibleDeadline(2, base::Milliseconds(16), base::Milliseconds(24)),
+          PossibleDeadline(3, base::Milliseconds(24), base::Milliseconds(32)),
+          PossibleDeadline(4, base::Milliseconds(32), base::Milliseconds(40)),
+          PossibleDeadline(5, base::Milliseconds(40), base::Milliseconds(48))});
+
+  // VSync jitter (+3ms latch phase shift) on Frame 2.
+  auto deadlines_f2_shifted = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(11), base::Milliseconds(19)),
+          PossibleDeadline(2, base::Milliseconds(19), base::Milliseconds(27)),
+          PossibleDeadline(3, base::Milliseconds(27), base::Milliseconds(35)),
+          PossibleDeadline(4, base::Milliseconds(35), base::Milliseconds(43)),
+          PossibleDeadline(5, base::Milliseconds(43), base::Milliseconds(51))});
+
+  FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/false);
+  decider.SetStrategyForTesting(
+      features::FrameDeadlineDeciderSequenceStrategy::kOsPreferredDeltaLocking);
+
+  EXPECT_EQ(
+      decider.SelectDeadline(deadlines_f1, k120HzVsyncInterval,
+                             k120HzAllowedBuffers, base_time, std::nullopt,
+                             /*is_handling_interaction=*/true),
+      3u);  // 40ms (offset = 40 - 16 = 24ms)
+
+  // OS preferred is 19ms. Target = 19 + 24 = 43ms.
+  // Max sustainable = 5 * 8ms + 1ms = 41ms.
+  // Candidate 3 (43ms) > 41ms -> filtered out.
+  // Sustainable candidates: [19ms, 27ms, 35ms]. Best: index 2 (35ms).
+  EXPECT_EQ(decider.SelectDeadline(
+                deadlines_f2_shifted, k120HzVsyncInterval, k120HzAllowedBuffers,
+                base_time + k120HzVsyncInterval, std::nullopt,
+                /*is_handling_interaction=*/true),
+            2u);  // 35ms (SUSTAINABLE)
+}
+
+TEST_F(FrameDeadlineDeciderTest, OsPreferredDeltaLocking_RefreshRateSwitch) {
+  FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/false);
+  decider.SetStrategyForTesting(
+      features::FrameDeadlineDeciderSequenceStrategy::kOsPreferredDeltaLocking);
+
+  base::TimeTicks base_time = base::TimeTicks() + base::Milliseconds(1000);
+
+  // Frame 1: 120Hz (8ms vsync), 5 buffers.
+  auto deadlines_120hz = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(16)),
+          PossibleDeadline(2, base::Milliseconds(16), base::Milliseconds(24)),
+          PossibleDeadline(3, base::Milliseconds(24), base::Milliseconds(32)),
+          PossibleDeadline(4, base::Milliseconds(32), base::Milliseconds(40))});
+
+  EXPECT_EQ(
+      decider.SelectDeadline(deadlines_120hz, k120HzVsyncInterval,
+                             k120HzAllowedBuffers, base_time, std::nullopt,
+                             /*is_handling_interaction=*/true),
+      3u);  // 40ms (offset = 40 - 16 = 24ms)
+
+  // Frame 2: Switch to 60Hz (16.67ms vsync), 3 buffers.
+  // Max sustainable = 3 * 16.67ms + 1ms = 51ms.
+  constexpr base::TimeDelta k60HzVsyncInterval = base::Microseconds(16667);
+  auto deadlines_60hz = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Microseconds(8333),
+                           base::Microseconds(16667)),  // OS pref
+          PossibleDeadline(2, base::Microseconds(16667),
+                           base::Microseconds(33333)),  // 33.33ms
+          PossibleDeadline(3, base::Microseconds(33333),
+                           base::Microseconds(50000)),  // 50ms
+          PossibleDeadline(
+              4, base::Microseconds(50000),
+              base::Microseconds(66667))});  // 66.67ms (unsustainable)
+
+  // Target = 16.67ms + 24ms = 40.67ms.
+  // Sustainable candidates: [16.67ms, 33.33ms, 50.00ms].
+  // |33.33 - 40.67| = 7.34ms, |50.00 - 40.67| = 9.33ms.
+  // Closest sustainable is index 1 (33.33ms).
+  EXPECT_EQ(decider.SelectDeadline(deadlines_60hz, k60HzVsyncInterval,
+                                   /*max_allowed_buffers=*/3,
+                                   base_time + k60HzVsyncInterval, std::nullopt,
+                                   /*is_handling_interaction=*/true),
+            1u);
+}
+
+TEST_F(FrameDeadlineDeciderTest,
+       OsPreferredDeltaLocking_BufferCountReductionClamping) {
+  FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/false);
+  decider.SetStrategyForTesting(
+      features::FrameDeadlineDeciderSequenceStrategy::kOsPreferredDeltaLocking);
+
+  base::TimeTicks base_time = base::TimeTicks() + base::Milliseconds(1000);
+
+  auto deadlines = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(16)),
+          PossibleDeadline(2, base::Milliseconds(16), base::Milliseconds(24)),
+          PossibleDeadline(3, base::Milliseconds(24), base::Milliseconds(32)),
+          PossibleDeadline(4, base::Milliseconds(32), base::Milliseconds(40))});
+
+  // Frame 1: 5 buffers (max sustainable = 41ms) -> selects index 3 (40ms).
+  EXPECT_EQ(
+      decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                             k120HzAllowedBuffers, base_time, std::nullopt,
+                             /*is_handling_interaction=*/true),
+      3u);
+
+  // Frame 2: Buffers reduced from 5 to 3 (max sustainable = 3 * 8 + 1 = 25ms).
+  // Target = 16 + 24 = 40ms.
+  // Candidates > 25ms (index 2: 32ms, index 3: 40ms) are filtered out.
+  // Sustainable candidates: index 0 (16ms), index 1 (24ms).
+  // Closest to 40ms is index 1 (24ms).
+  EXPECT_EQ(
+      decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                             /*max_allowed_buffers=*/3,
+                             base_time + k120HzVsyncInterval, std::nullopt,
+                             /*is_handling_interaction=*/true),
+      1u);
+}
+
+TEST_F(FrameDeadlineDeciderTest, OsPreferredDeltaLocking_SequenceTimeoutReset) {
+  FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/false);
+  decider.SetStrategyForTesting(
+      features::FrameDeadlineDeciderSequenceStrategy::kOsPreferredDeltaLocking);
+
+  base::TimeTicks base_time = base::TimeTicks() + base::Milliseconds(1000);
+
+  auto deadlines_5buf = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(16)),
+          PossibleDeadline(2, base::Milliseconds(32), base::Milliseconds(40))});
+
+  auto deadlines_3buf = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(16)),
+          PossibleDeadline(2, base::Milliseconds(16), base::Milliseconds(24)),
+          PossibleDeadline(3, base::Milliseconds(32), base::Milliseconds(40))});
+
+  // Frame 1 (t=0ms): Start interaction sequence with 5 buffers -> selects 40ms
+  // (index 1).
+  EXPECT_EQ(
+      decider.SelectDeadline(deadlines_5buf, k120HzVsyncInterval,
+                             k120HzAllowedBuffers, base_time, std::nullopt,
+                             /*is_handling_interaction=*/true),
+      1u);
+
+  // Frame 2 (t=3500ms): Gap of 3.5s > 3.0s interactive timeout resets sequence
+  // state. Recalculates new sequence target for 3 buffers: (3 * 8ms) = 24ms ->
+  // selects index 1 (24ms).
+  EXPECT_EQ(
+      decider.SelectDeadline(deadlines_3buf, k120HzVsyncInterval,
+                             /*max_allowed_buffers=*/3,
+                             base_time + base::Milliseconds(3500), std::nullopt,
+                             /*is_handling_interaction=*/true),
+      1u);
+}
+
+TEST_F(
+    FrameDeadlineDeciderTest,
+    OsPreferredDeltaLocking_NotifyMinSupportedVsyncIntervalCapsSustainableDelta) {
+  FrameDeadlineDecider decider(/*use_platform_preferred_deadlines=*/false);
+  decider.SetStrategyForTesting(
+      features::FrameDeadlineDeciderSequenceStrategy::kOsPreferredDeltaLocking);
+
+  // Notify display capability (supports 120Hz peak / 8ms min vsync interval)
+  // before the interaction sequence begins.
+  decider.NotifyMinSupportedVsyncInterval(base::Milliseconds(8));
+
+  base::TimeTicks base_time = base::TimeTicks() + base::Milliseconds(1000);
+  constexpr base::TimeDelta k60HzVsyncInterval = base::Milliseconds(16);
+
+  auto deadlines_f1 = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(16)),
+          PossibleDeadline(2, base::Milliseconds(16), base::Milliseconds(24)),
+          PossibleDeadline(3, base::Milliseconds(24), base::Milliseconds(32))});
+
+  // Frame 1: Sequence starts at 60Hz (16ms vsync), 3 allowed buffers.
+  // QueryDeadline caps initial target to min(3 * 16ms, 3 * 8ms) = 24ms.
+  // Selects index 1 (24ms). Sequence offset = 24 - 16 = 8ms.
+  EXPECT_EQ(
+      decider.SelectDeadline(deadlines_f1, k60HzVsyncInterval,
+                             /*max_allowed_buffers=*/3, base_time, std::nullopt,
+                             /*is_handling_interaction=*/true),
+      1u);
+
+  // Frame 2 (subsequent frame in sequence at 60Hz):
+  // VSync jitter (+3ms phase shift) shifts deadlines to [19ms, 27ms, 35ms].
+  // Target delta = 19ms + 8ms = 27ms.
+  // With min supported vsync interval = 8ms, max_sustainable_delta in
+  // SelectDeadlineOsPreferredLocking is capped to (3 * 8ms) + 1ms = 25ms.
+  // Candidate index 1 (27ms > 25ms) is filtered out.
+  // The closest sustainable deadline is index 0 (19ms).
+  auto deadlines_f2_shifted = CreatePossibleDeadlines(
+      0, {PossibleDeadline(1, base::Milliseconds(11), base::Milliseconds(19)),
+          PossibleDeadline(2, base::Milliseconds(19), base::Milliseconds(27)),
+          PossibleDeadline(3, base::Milliseconds(27), base::Milliseconds(35))});
+
+  EXPECT_EQ(decider.SelectDeadline(deadlines_f2_shifted, k60HzVsyncInterval,
+                                   /*max_allowed_buffers=*/3,
+                                   base_time + k60HzVsyncInterval, std::nullopt,
                                    /*is_handling_interaction=*/true),
             0u);
 }
@@ -469,6 +705,8 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SequenceLockingAndReset) {
       {{"presentation_offset", "0"}});
 
   FrameDeadlineDecider decider(false);
+  decider.SetStrategyForTesting(features::FrameDeadlineDeciderSequenceStrategy::
+                                    kPresentationDeltaLocking);
   base::TimeTicks base_time = base::TimeTicks() + base::Milliseconds(1000);
 
   // 1. Start sequence: max_pending_swaps = 4. Target = (4+1)*8 = 40ms.

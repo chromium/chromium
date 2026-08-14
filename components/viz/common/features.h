@@ -114,8 +114,18 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFScrollNoRendererMain);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFAsyncSetThreads);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSelectFutureFrameDeadline);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowMultipleSwapsPerVsync);
+
+enum class FrameDeadlineDeciderSequenceStrategy {
+  kPresentationDeltaLocking = 0,
+  kOsPreferredDeltaLocking = 1,
+  kMaxValue = kOsPreferredDeltaLocking,
+};
+
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseAndroidCustomFrameDeadlines);
+VIZ_COMMON_EXPORT extern const base::FeatureParam<
+    FrameDeadlineDeciderSequenceStrategy>
+    kAndroidCustomFrameDeadlineSequenceStrategy;
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
     kAndroidCustomFrameDeadlinePresentationOffset;
 VIZ_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>

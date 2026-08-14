@@ -32,6 +32,9 @@ FrameDeadlineDecider::FrameDeadlineDecider(
           base::Seconds(3)
 #endif
               ),
+#if BUILDFLAG(IS_ANDROID)
+      strategy_(features::kAndroidCustomFrameDeadlineSequenceStrategy.Get()),
+#endif
       use_platform_preferred_deadlines_(use_platform_preferred_deadlines) {
 }
 
@@ -75,7 +78,8 @@ FrameDeadlineDecider::QueryResult FrameDeadlineDecider::QueryDeadline(
   }
 
   if (IsPartOfOngoingFrameSequence(frame_time, is_handling_interaction)) {
-    return {FindClosestDeadlineByPresentation(possible_deadlines),
+    return {FindClosestDeadlineByPresentation(
+                possible_deadlines, vsync_interval, max_allowed_buffers),
             SelectionReason::kOngoingSequence};
   }
 
@@ -173,8 +177,12 @@ size_t FrameDeadlineDecider::SelectDeadline(
   UMA_HISTOGRAM_ENUMERATION("Viz.FrameDeadlineDecider.SelectionReason",
                             result.reason);
 
+  const auto& os_preferred_deadline =
+      possible_deadlines.GetOSPreferredDeadline();
   frame_sequence_state_ = FrameSequenceState{
       .present_delta = selected_deadline.present_delta,
+      .os_preferred_offset =
+          selected_deadline.present_delta - os_preferred_deadline.present_delta,
       .deadline_index = result.deadline_index,
       .last_frame_time = frame_time,
       .is_interaction_active = is_handling_interaction,
@@ -204,6 +212,79 @@ void FrameDeadlineDecider::OnDisplayInvisible() {
 }
 
 size_t FrameDeadlineDecider::FindClosestDeadlineByPresentation(
+    const PossibleDeadlines& possible_deadlines,
+    base::TimeDelta vsync_interval,
+    int max_allowed_buffers) const {
+  switch (strategy_) {
+    case features::FrameDeadlineDeciderSequenceStrategy::
+        kOsPreferredDeltaLocking:
+      return SelectDeadlineOsPreferredLocking(
+          possible_deadlines, vsync_interval, max_allowed_buffers);
+    case features::FrameDeadlineDeciderSequenceStrategy::
+        kPresentationDeltaLocking:
+      return SelectDeadlinePresentationDeltaLocking(possible_deadlines);
+  }
+}
+
+size_t FrameDeadlineDecider::SelectDeadlineOsPreferredLocking(
+    const PossibleDeadlines& possible_deadlines,
+    base::TimeDelta vsync_interval,
+    int max_allowed_buffers) const {
+  // A deadline is sustainable if it does not exceed the maximum buffer depth
+  // spanned by the display's peak refresh rate (min_supported_vsync_interval_).
+  const base::TimeDelta max_sustainable_delta =
+      (max_allowed_buffers *
+       min_supported_vsync_interval_.value_or(vsync_interval)) +
+      base::Milliseconds(1);
+
+  // Subsequent frames in an ongoing sequence track the OS preferred deadline
+  // plus the sequence offset established on the first frame. This avoids
+  // progressive deadline drift during VSync jitter while seamlessly adapting
+  // across refresh rate changes.
+  const auto& os_preferred =
+      possible_deadlines.deadlines[possible_deadlines.os_preferred_index];
+  const base::TimeDelta target_delta =
+      os_preferred.present_delta + frame_sequence_state_->os_preferred_offset;
+
+  // Fast path: if the cached deadline index from the previous frame is still
+  // valid, sustainable, and within 1ms tolerance of target_delta, reuse it.
+  const size_t cached_idx = frame_sequence_state_->deadline_index;
+  if (cached_idx < possible_deadlines.deadlines.size() &&
+      possible_deadlines.deadlines[cached_idx].present_delta <=
+          max_sustainable_delta &&
+      (possible_deadlines.deadlines[cached_idx].present_delta - target_delta)
+              .magnitude() <= base::Milliseconds(1)) {
+    return cached_idx;
+  }
+
+  std::optional<size_t> best_idx;
+  base::TimeDelta best_diff = base::TimeDelta::Max();
+
+  // Deadlines from Android are guaranteed to be in strictly increasing
+  // chronological order.
+  size_t current_idx = 0;
+  for (const auto& deadline : possible_deadlines.deadlines) {
+    const size_t idx = current_idx++;
+    // Since deadlines are in strictly increasing order, all subsequent
+    // candidates will also exceed max_sustainable_delta.
+    if (deadline.present_delta > max_sustainable_delta) {
+      break;
+    }
+    const base::TimeDelta diff =
+        (deadline.present_delta - target_delta).magnitude();
+    // Since deadlines are strictly increasing, once diff stops decreasing
+    // and starts growing, no subsequent deadline can be closer to target_delta.
+    if (diff >= best_diff) {
+      break;
+    }
+    best_diff = diff;
+    best_idx = idx;
+  }
+
+  return best_idx.value_or(possible_deadlines.os_preferred_index);
+}
+
+size_t FrameDeadlineDecider::SelectDeadlinePresentationDeltaLocking(
     const PossibleDeadlines& possible_deadlines) const {
   // Check if the cached index is valid and within 1ms of target.
   if (frame_sequence_state_->deadline_index <
