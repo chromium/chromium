@@ -171,10 +171,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     public void renderTwoLineSuggestions() throws Exception {
         // All suggestion types are rendered in the same test to minimize the number of render
         // tests.
-        runOnUiThreadBlocking(
-                () -> {
-                    layoutViews();
-                });
+        runOnUiThreadBlocking(this::layoutViews);
         mRenderTestRule.render(mContentView, "keyboard_accessory_two_line_suggestions");
     }
 

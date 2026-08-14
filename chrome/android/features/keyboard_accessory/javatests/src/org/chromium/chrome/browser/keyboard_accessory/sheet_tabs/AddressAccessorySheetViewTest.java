@@ -128,11 +128,10 @@ public class AddressAccessorySheetViewTest {
         assertThat(mView.get().getChildCount(), is(0));
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.add(
-                            new AccessorySheetDataPiece(
-                                    "Addresses", AccessorySheetDataPiece.Type.TITLE));
-                });
+                () ->
+                        mModel.add(
+                                new AccessorySheetDataPiece(
+                                        "Addresses", AccessorySheetDataPiece.Type.TITLE)));
 
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
         View title = mView.get().findViewById(R.id.tab_title);

@@ -257,10 +257,7 @@ public class PasswordGenerationIntegrationTest {
     }
 
     private void pressManualGenerationSuggestion() {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return mActivity.findViewById(R.id.passwords_sheet) != null;
-                });
+        CriteriaHelper.pollUiThread(() -> mActivity.findViewById(R.id.passwords_sheet) != null);
         ArrayList<View> selectedViews = new ArrayList<>();
         mActivity
                 .findViewById(R.id.passwords_sheet)
@@ -279,17 +276,14 @@ public class PasswordGenerationIntegrationTest {
                     return mKeyboardAccessoryBarItems != null;
                 });
         CriteriaHelper.pollUiThread(
-                () -> {
-                    return mKeyboardAccessoryBarItems.findViewHolderForLayoutPosition(0) != null;
-                });
+                () -> mKeyboardAccessoryBarItems.findViewHolderForLayoutPosition(0) != null);
         KeyboardAccessoryButtonGroupView keyboardAccessoryView =
                 (KeyboardAccessoryButtonGroupView)
                         mKeyboardAccessoryBarItems.findViewHolderForLayoutPosition(0).itemView;
         CriteriaHelper.pollUiThread(
-                () -> {
-                    return keyboardAccessoryView.getButtons().size()
-                            == KEYBOARD_ACCESSORY_BAR_ITEM_COUNT;
-                });
+                () ->
+                        keyboardAccessoryView.getButtons().size()
+                                == KEYBOARD_ACCESSORY_BAR_ITEM_COUNT);
         ArrayList<ImageButton> buttons = keyboardAccessoryView.getButtons();
         ImageButton keyButton = buttons.get(0);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -355,12 +349,11 @@ public class PasswordGenerationIntegrationTest {
     private void waitForMessageShown() {
         WindowAndroid window = mActivityTestRule.getActivity().getWindowAndroid();
         CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            "Message is not enqueued.",
-                            MessagesTestHelper.getMessageCount(window),
-                            Matchers.is(1));
-                });
+                () ->
+                        Criteria.checkThat(
+                                "Message is not enqueued.",
+                                MessagesTestHelper.getMessageCount(window),
+                                Matchers.is(1)));
     }
 
     private void dismissBottomSheet() {

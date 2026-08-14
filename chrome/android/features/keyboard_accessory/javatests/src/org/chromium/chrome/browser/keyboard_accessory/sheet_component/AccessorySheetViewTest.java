@@ -159,18 +159,12 @@ public class AccessorySheetViewTest {
         assertNull(mViewPager.poll());
 
         // After setting the visibility to true, the view should exist and be visible.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(VISIBLE, true);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         AccessorySheetView viewPager = mViewPager.take();
         assertEquals(View.VISIBLE, viewPager.getVisibility());
 
         // After hiding the view, the view should still exist but be invisible.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(VISIBLE, false);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         assertNotEquals(viewPager.getVisibility(), View.VISIBLE);
     }
 
@@ -274,10 +268,7 @@ public class AccessorySheetViewTest {
 
         // Remove the last tab.
         onViewWaiting(withText(kFirstTab)).check(matches(isDisplayed()));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.get(TABS).remove(mModel.get(TABS).get(0));
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.get(TABS).remove(mModel.get(TABS).get(0)));
         onView(withText(kFirstTab)).check(doesNotExist());
 
         // Add a new first tab.

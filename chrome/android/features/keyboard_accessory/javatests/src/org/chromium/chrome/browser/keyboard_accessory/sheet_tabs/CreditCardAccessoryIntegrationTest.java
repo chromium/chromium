@@ -91,9 +91,7 @@ public class CreditCardAccessoryIntegrationTest {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
         CriteriaHelper.pollUiThread(
-                () -> {
-                    return mHelper.getOrCreateCreditCardAccessorySheet() != null;
-                },
+                () -> mHelper.getOrCreateCreditCardAccessorySheet() != null,
                 "Credit Card sheet should be bound to accessory sheet.");
     }
 
@@ -148,8 +146,6 @@ public class CreditCardAccessoryIntegrationTest {
         whenDisplayed(withId(R.id.cc_number)).perform(click());
 
         CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    return mHelper.getFieldText("CREDIT_CARD_NAME_FULL").equals("4111111111111111");
-                });
+                () -> mHelper.getFieldText("CREDIT_CARD_NAME_FULL").equals("4111111111111111"));
     }
 }

@@ -295,18 +295,12 @@ public class KeyboardAccessoryViewTest {
         assertNull(mKeyboardAccessoryView.poll());
 
         // After setting the visibility to true, the view should exist and be visible.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(VISIBLE, true);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
         assertEquals(View.VISIBLE, view.getVisibility());
 
         // After hiding the view, the view should still exist but be invisible.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(VISIBLE, false);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         assertNotEquals(view.getVisibility(), View.VISIBLE);
     }
 
@@ -315,10 +309,7 @@ public class KeyboardAccessoryViewTest {
     public void testAccessoryDimensions() throws InterruptedException {
         assertNull(mKeyboardAccessoryView.poll());
         // After setting the visibility to true, the view should exist and be visible.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(VISIBLE, true);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
 
         LinearLayout barContents = view.findViewById(R.id.accessory_bar_contents);
@@ -337,10 +328,7 @@ public class KeyboardAccessoryViewTest {
         assertNull(mKeyboardAccessoryView.poll());
 
         // After setting the visibility to true, the view should exist and be visible.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(VISIBLE, true);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(false));
     }
 
@@ -832,27 +820,26 @@ public class KeyboardAccessoryViewTest {
         assertThat(obfuscatedChildAt.get(), is(-1));
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.get(BAR_ITEMS)
-                            .set(
-                                    new BarItem[] {
-                                        createAutofillBarItem(
-                                                "Item 1 - very long text to fill width", null),
-                                        createAutofillBarItem(
-                                                "Item 2 - very long text to fill width", null),
-                                        createAutofillBarItem(
-                                                "Item 3 - very long text to fill width", null),
-                                        createAutofillBarItem(
-                                                "Item 4 - very long text to fill width", null),
-                                        createAutofillBarItem(
-                                                "Item 5 - very long text to fill width", null),
-                                        createAutofillBarItem(
-                                                "Item 6 - very long text to fill width", null),
-                                        createAutofillBarItem(
-                                                "Item 7 - very long text to fill width", null),
-                                        createSheetOpener(/* atMemoryEnabled= */ true)
-                                    });
-                });
+                () ->
+                        mModel.get(BAR_ITEMS)
+                                .set(
+                                        new BarItem[] {
+                                            createAutofillBarItem(
+                                                    "Item 1 - very long text to fill width", null),
+                                            createAutofillBarItem(
+                                                    "Item 2 - very long text to fill width", null),
+                                            createAutofillBarItem(
+                                                    "Item 3 - very long text to fill width", null),
+                                            createAutofillBarItem(
+                                                    "Item 4 - very long text to fill width", null),
+                                            createAutofillBarItem(
+                                                    "Item 5 - very long text to fill width", null),
+                                            createAutofillBarItem(
+                                                    "Item 6 - very long text to fill width", null),
+                                            createAutofillBarItem(
+                                                    "Item 7 - very long text to fill width", null),
+                                            createSheetOpener(/* atMemoryEnabled= */ true)
+                                        }));
         onViewWaiting(withText("Item 1 - very long text to fill width"));
         CriteriaHelper.pollUiThread(() -> obfuscatedChildAt.get() > -1);
 
@@ -896,19 +883,19 @@ public class KeyboardAccessoryViewTest {
 
         // As soon as at least one item can't be displayed in full, trigger the swiping callback.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.get(BAR_ITEMS)
-                            .set(
-                                    new BarItem[] {
-                                        createAutofillBarItem("JohnathanSmith", null),
-                                        createAutofillBarItem("TroyMcSpartanGregor", null),
-                                        createAutofillBarItem("SomeOtherRandomLongName", null),
-                                        createAutofillBarItem("ToddTester", null),
-                                        createAutofillBarItem("MayaPark", null),
-                                        createAutofillBarItem("ThisChipIsProbablyHiddenNow", null),
-                                        createSheetOpener(/* atMemoryEnabled= */ true)
-                                    });
-                });
+                () ->
+                        mModel.get(BAR_ITEMS)
+                                .set(
+                                        new BarItem[] {
+                                            createAutofillBarItem("JohnathanSmith", null),
+                                            createAutofillBarItem("TroyMcSpartanGregor", null),
+                                            createAutofillBarItem("SomeOtherRandomLongName", null),
+                                            createAutofillBarItem("ToddTester", null),
+                                            createAutofillBarItem("MayaPark", null),
+                                            createAutofillBarItem(
+                                                    "ThisChipIsProbablyHiddenNow", null),
+                                            createSheetOpener(/* atMemoryEnabled= */ true)
+                                        }));
         onViewWaiting(withText("JohnathanSmith"));
         CriteriaHelper.pollUiThread(() -> obfuscatedChildAt.get() > -1);
     }
@@ -1315,12 +1302,11 @@ public class KeyboardAccessoryViewTest {
         // Wait for buttons to be added.
         int expectedSize = atMemoryEnabled ? 3 : 2;
         CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            "Actual size of buttons",
-                            buttonGroupView.getButtons().size(),
-                            is(expectedSize));
-                });
+                () ->
+                        Criteria.checkThat(
+                                "Actual size of buttons",
+                                buttonGroupView.getButtons().size(),
+                                is(expectedSize)));
 
         return buttonGroupView;
     }
