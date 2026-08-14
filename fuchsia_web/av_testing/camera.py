@@ -1,7 +1,7 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-""" Starts an av_sync_record process to record the video from the camera. """
+"""Starts an av_sync_record process to record the video from the camera."""
 
 import logging
 import os.path
@@ -42,9 +42,11 @@ def start(parameters: Parameters) -> None:
     BINARY = '/usr/local/cipd/av_sync_record/av_sync_record'
     assert os.path.isfile(BINARY)
     args = [
-        BINARY, '--gid=', '--uid=',
+        BINARY,
+        '--gid=',
+        '--uid=',
         f'--camera_info_path={parameters.info_file}',
-        f'--video_output={parameters.video_file}'
+        f'--video_output={parameters.video_file}',
     ]
     if parameters.fps:
         args.append(f'--camera_fps={parameters.fps}')

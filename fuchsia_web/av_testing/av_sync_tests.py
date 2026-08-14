@@ -2,9 +2,9 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-""" Executes Audio / Video performance tests against a smart display device.
-    This script needs to be executed from the build output folder, e.g.
-    out/fuchsia/."""
+"""Executes Audio / Video performance tests against a smart display device.
+This script needs to be executed from the build output folder, e.g.
+out/fuchsia/."""
 
 import logging
 import multiprocessing
@@ -22,8 +22,9 @@ import camera
 import server
 import video_analyzer
 
-TEST_SCRIPTS_ROOT = os.path.join(os.path.dirname(__file__), '..', '..',
-                                 'build', 'fuchsia', 'test')
+TEST_SCRIPTS_ROOT = os.path.join(
+    os.path.dirname(__file__), '..', '..', 'build', 'fuchsia', 'test'
+)
 sys.path.append(TEST_SCRIPTS_ROOT)
 
 import monitors
@@ -116,21 +117,24 @@ def parameters_of(file: str) -> camera.Parameters:
     return result
 
 
-def _wait_js_condition(driver: ChromeDriverWrapper, element,
-                       condition: str) -> bool:
+def _wait_js_condition(
+    driver: ChromeDriverWrapper, element, condition: str
+) -> bool:
     """Waits a condition on the element once a second for at most 30 seconds,
-       returns True if the condition met."""
+    returns True if the condition met."""
     start = time.time()
-    while not driver.execute_script(f'return arguments[0].{condition};',
-                                    element):
+    while not driver.execute_script(
+        f'return arguments[0].{condition};', element
+    ):
         if time.time() - start >= 30:
             return False
         time.sleep(1)
     return True
 
 
-def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
-                        host: str) -> None:
+def run_video_perf_test(
+    file: str, driver: ChromeDriverWrapper, host: str
+) -> None:
     perf_trace.start()
     driver.get(f'http://{host}:{HTTP_SERVER_PORT}/video.html?file={file}')
     camera_params = parameters_of(file)
@@ -138,13 +142,14 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
     # Ensure the original video won't be overwritten.
     assert camera_params.video_file != original_video
     video = driver.find_element_by_id('video')
-    with monitors.time_consumption(file, 'playback', 'loading'), \
-         RepeatingLog(f'Waiting for video {file} to be loaded.'):
+    with monitors.time_consumption(file, 'playback', 'loading'), RepeatingLog(
+        f'Waiting for video {file} to be loaded.'
+    ):
         if not _wait_js_condition(driver, video, 'readyState >= 2'):
             logging.warning(
-                '%s may never be loaded, still go ahead to play it.', file)
-            monitors.average(file, 'playback',
-                             'failed_to_load').record(1)
+                '%s may never be loaded, still go ahead to play it.', file
+            )
+            monitors.average(file, 'playback', 'failed_to_load').record(1)
     with StartProcess(camera.start, [camera_params], False):
         video.click()
     # Video playback should finish almost within the same time as the camera
@@ -152,17 +157,18 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
     # network laggy and buffering.
     # TODO(crbug.com/40935291): May need to adjust the strategy here, the
     # final frame / barcode is considered laggy and drops the score.
-    with monitors.time_consumption(file, 'playback', 'laggy'), \
-         RepeatingLog(f'Waiting for video {file} playback to finish.'):
+    with monitors.time_consumption(file, 'playback', 'laggy'), RepeatingLog(
+        f'Waiting for video {file} playback to finish.'
+    ):
         if not _wait_js_condition(driver, video, 'ended'):
             logging.warning('%s may never finish', file)
-            monitors.average(file, 'playback',
-                             'never_finish').record(1)
+            monitors.average(file, 'playback', 'never_finish').record(1)
     logging.warning('Video %s finished', file)
     perf_trace.stop(file)
 
-    results = video_analyzer.from_original_video(camera_params.video_file,
-                                                 original_video)
+    results = video_analyzer.from_original_video(
+        camera_params.video_file, original_video
+    )
 
     def record(key: str) -> None:
         # If the video_analyzer does not generate any result, treat it as an
@@ -188,24 +194,32 @@ def main() -> int:
         with ChromeDriverWrapper() as driver:
             # webpage test may update the fuchsia version, so get build_info
             # after its finish.
-            logging.warning('Chrome version %s %s',
-                            version.chrome_version_str(),
-                            version.git_revision())
+            logging.warning(
+                'Chrome version %s %s',
+                version.chrome_version_str(),
+                version.git_revision(),
+            )
             build_info = get_build_info()
             logging.warning('Fuchsia build info %s', build_info)
             monitors.tag(
                 'fuchsia',
                 'video_perf',
-                version.chrome_version_str(), build_info.version,
-                version.chrome_version_str() + '/' + build_info.version)
+                version.chrome_version_str(),
+                build_info.version,
+                version.chrome_version_str() + '/' + build_info.version,
+            )
             # TODO(crbug.com/391663618): Remove the condition once all the hosts
             # are migrated into chrome lab.
-            host = '.'.join(get_ip_address(os.environ.get('FUCHSIA_NODENAME'),
-                                           ipv4_only=True).
-                            exploded.split('.')[:-1] +
-                            [os.environ.get('CAMERA_SERIAL_NUMBER') and
-                             '10' or  # In chrome lab, the host is at .10.
-                             '1'])    # In media lab, the host is at .1.
+            host = '.'.join(
+                get_ip_address(
+                    os.environ.get('FUCHSIA_NODENAME'), ipv4_only=True
+                ).exploded.split('.')[:-1]
+                + [
+                    os.environ.get('CAMERA_SERIAL_NUMBER')
+                    and '10'  # In chrome lab, the host is at .10.
+                    or '1'
+                ]
+            )  # In media lab, the host is at .1.
 
             # Waiting for a change like https://crrev.com/c/6063979 to loose the
             # size limitation of the invocation which triggers an upload error

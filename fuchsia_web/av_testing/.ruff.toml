@@ -1,0 +1,9 @@
+line-length = 80
+indent-width = 4
+
+[format]
+quote-style = "preserve"
+
+[per-file-target-version]
+# TODO: remove once Fuchsia upgrades the Py version.
+"*" = "py38"
