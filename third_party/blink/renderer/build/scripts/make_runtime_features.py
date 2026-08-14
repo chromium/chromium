@@ -166,8 +166,20 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
             pickle.dump(features_map, pickle_file)
 
     def _template_inputs(self):
+        # Sorted by name so that the generated lookup tables can be binary
+        # searched. `simple_features` are the features whose setters are plain
+        # stores into `feature_states_`, unlike those of `protected_features`.
+        features_by_name = sorted(self._features, key=lambda f: str(f['name']))
+        simple_features = [
+            f for f in features_by_name if not f['is_protected_feature']
+        ]
+        protected_features = [
+            f for f in features_by_name if f['is_protected_feature']
+        ]
         return {
             'features': self._features,
+            'simple_features': simple_features,
+            'protected_features': protected_features,
             'feature_sets': self._feature_sets(),
             'platforms': self._platforms(),
             'input_files': self._input_files,

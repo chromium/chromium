@@ -6,6 +6,8 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
+#include <cstdint>
+#include <optional>
 #include <string_view>
 
 #include "base/gtest_prod_util.h"
@@ -27,6 +29,21 @@ class FeatureContext;
 
 class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
   STATIC_ONLY(RuntimeEnabledFeaturesBase);
+
+ private:
+  // Index of each non-protected feature's flag in `feature_states_`. Using a
+  // single array + indices (rather than one static bool per feature) lets
+  // lookup tables store small integers instead of pointers.
+  enum FlagIndex : uint16_t {
+    {% for feature in features %}
+    {% if not feature.is_protected_feature %}
+    k{{feature.name}}FlagIndex,
+    {% endif %}
+    {% endfor %}
+    kFlagIndexCount,
+  };
+  static bool feature_states_[kFlagIndexCount];
+
  public:
   class PLATFORM_EXPORT Backup {
    public:
@@ -34,8 +51,11 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
     void Restore();
 
    private:
+    bool feature_states_[kFlagIndexCount];
     {% for feature in features %}
+    {% if feature.is_protected_feature %}
     bool {{feature.data_member_name}};
+    {% endif %}
     {% endfor %}
   };
 
@@ -61,7 +81,7 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
     {% if feature.is_protected_feature %}
     return get_{{feature.data_member_name}}();
     {% else %}
-    return {{feature.data_member_name}};
+    return feature_states_[k{{feature.name}}FlagIndex];
     {% endif %}
   }
 
@@ -106,18 +126,18 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
   {% if feature.is_protected_feature %}
   static void Set{{feature.name}}Enabled(bool enabled);
   {% else %}
-  static void Set{{feature.name}}Enabled(bool enabled) { {{feature.data_member_name}} = enabled; }
+  static void Set{{feature.name}}Enabled(bool enabled) { feature_states_[k{{feature.name}}FlagIndex] = enabled; }
   {%endif %}
   {% endfor %}
 
  private:
   friend class RuntimeEnabledFeaturesTestHelpers;
 
-  {% for feature in features %}
-  {% if not feature.is_protected_feature %}
-  static bool {{feature.data_member_name}};
-  {% endif %}
-  {% endfor %}
+  // Returns the `feature_states_` index of the non-protected feature named
+  // `name`, or std::nullopt if there is no such feature. Shared by
+  // SetFeatureEnabledFromString() and IsFeatureEnabledFromString() so that the
+  // lookup tables only exist once.
+  static std::optional<uint16_t> FindFeatureFlagIndex(std::string_view name);
 
   {% for feature in features %}
   {% if feature.is_protected_feature %}
