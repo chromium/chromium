@@ -365,16 +365,15 @@ void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement element,
     return;
   }
 
+  int offset = 0;
   if (info->caused_by_trigger_string && ShouldTriggerAtMemorySearch(element)) {
-    if (WebLocalFrame* frame = element.GetDocument().GetFrame()) {
-      frame->DeleteSurroundingText(/*before=*/GetTriggerString().size(),
-                                   /*after=*/0);
-    }
+    offset = GetTriggerString().size();
   }
 
-  element.PasteText(WebString::FromUtf16(value),
-                    /*replace_all=*/false,
-                    /*smart_replace=*/false);
+  if (WebLocalFrame* frame = element.GetDocument().GetFrame()) {
+    frame->ExtendSelectionAndReplace(/*before=*/offset,
+                                     /*after=*/0, WebString::FromUtf16(value));
+  }
 }
 
 std::optional<AtMemoryHandler::AskForValuesToFillInfo>
