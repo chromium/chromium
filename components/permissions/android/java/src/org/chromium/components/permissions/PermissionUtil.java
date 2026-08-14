@@ -13,6 +13,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSetting;
@@ -112,6 +113,22 @@ public class PermissionUtil {
     }
 
     /**
+     * Returns whether Local Network Access permission is required.
+     *
+     * <p>Local Network Protection (LNP) runtime permission is only required when both:
+     * 1. The host device is running Android 17 (SDK 37) or higher (Build.VERSION.SDK_INT >= 37).
+     * 2. The application targets Android 17 (SDK 37) or higher (targetSdkVersion >= 37).
+     *
+     * <p>For apps targeting lower SDK versions (<37), local network access is implicitly granted
+     * by the OS using the INTERNET permission without requiring runtime prompts.
+     * See: https://developer.android.com/privacy-and-security/local-network-permission
+     */
+    private static boolean isLocalNetworkAccessPermissionRequired() {
+        return Build.VERSION.SDK_INT >= 37
+                && ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion >= 37;
+    }
+
+    /**
      * Returns required Android permission strings for a given {@link ContentSettingsType}. If there
      * is no permissions associated with the content setting, then an empty array is returned.
      *
@@ -158,7 +175,7 @@ public class PermissionUtil {
                 }
                 return EMPTY_PERMISSIONS;
             case ContentSettingsType.LOCAL_NETWORK_ACCESS, ContentSettingsType.LOCAL_NETWORK:
-                if (Build.VERSION.SDK_INT >= 37) {
+                if (isLocalNetworkAccessPermissionRequired()) {
                     return Arrays.copyOf(
                             LOCAL_NETWORK_PERMISSIONS, LOCAL_NETWORK_PERMISSIONS.length);
                 }
