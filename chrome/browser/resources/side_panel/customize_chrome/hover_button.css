@@ -42,3 +42,11 @@
 customize-chrome-button-label {
   align-self: center;
 }
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  :host-context(.focus-outline-visible) #hoverButton:focus {
+    outline: var(--cr-focus-outline-hcm);
+  }
+}
+
