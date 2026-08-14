@@ -64,6 +64,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
+#include "chrome/browser/geic/geic_enabling.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -690,7 +691,15 @@ void BrowserActions::InitializeSidePanelActions() {
             .Build());
   }
 
-  if (glic::GlicEnabling::IsEnabledByGlobalCriteria()) {
+  if (geic::IsGeicEnabled(profile)) {
+    root_action_item_->AddChild(
+        SidePanelAction(
+            SidePanelEntryId::kGeic, IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_GLIC,
+            IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_GLIC, omnibox::kSparkIcon,
+            kActionSidePanelShowGeic, bwi, false)
+            .SetVisible(true)
+            .Build());
+  } else if (glic::GlicEnabling::IsEnabledByGlobalCriteria()) {
     root_action_item_->AddChild(
         SidePanelAction(
             SidePanelEntryId::kGlic, IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_GLIC,

@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/geic/geic_side_panel_coordinator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
@@ -39,8 +40,16 @@ std::unique_ptr<GeicButton> GeicButton::Create(
     BrowserWindowInterface* browser_window_interface) {
   std::u16string tooltip_text =
       l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
+
   auto geic_button = std::make_unique<GeicButton>(
-      browser_window_interface, tooltip_text, base::BindRepeating([] {}));
+      browser_window_interface, tooltip_text,
+      base::BindRepeating(
+          [](BrowserWindowInterface* bwi) {
+            if (auto* coordinator = GeicSidePanelCoordinator::From(bwi)) {
+              coordinator->Toggle();
+            }
+          },
+          browser_window_interface));
 
   geic_button->SetProperty(views::kCrossAxisAlignmentKey,
                            views::LayoutAlignment::kCenter);

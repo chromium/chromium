@@ -486,6 +486,7 @@
   E(kActionSidePanelShowCustomizeChromeToolbar, \
     IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR) \
   E(kActionSidePanelShowFeed) \
+  E(kActionSidePanelShowGeic) \
   E(kActionSidePanelShowGlic) \
   E(kActionSidePanelShowContextualTasks) \
   E(kActionSidePanelShowHistoryCluster, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL) \

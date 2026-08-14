@@ -68,6 +68,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CustomizeChrome" summary="customize chrome"/>
   <variant name="Extension" summary="extension"/>
   <variant name="Feed" summary="feed"/>
+  <variant name="Geic" summary="geic"/>
   <variant name="Glic" summary="glic"/>
   <variant name="History" summary="history"/>
   <variant name="HistoryClusters" summary="history clusters"/>

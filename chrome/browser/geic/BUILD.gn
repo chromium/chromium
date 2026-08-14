@@ -23,16 +23,23 @@ if (!is_android) {
     sources = [
       "geic_button.cc",
       "geic_button.h",
+      "geic_side_panel_coordinator.cc",
+      "geic_side_panel_coordinator.h",
     ]
     deps = [
       ":geic",
+      "//base",
       "//chrome/app:branded_strings_grit",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/glic",
       "//ui/base",
       "//ui/base/metadata",
+      "//ui/base/unowned_user_data",
       "//ui/gfx",
       "//ui/views",
     ]

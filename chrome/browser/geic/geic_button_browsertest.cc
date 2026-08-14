@@ -4,11 +4,15 @@
 
 #include "chrome/browser/geic/geic_button.h"
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/geic/geic_enabling.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
@@ -18,6 +22,8 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/test/test_event.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/view_class_properties.h"
 
 namespace geic {
@@ -124,6 +130,35 @@ IN_PROC_BROWSER_TEST_P(GeicButtonBrowserTest,
   ASSERT_TRUE(container);
   EXPECT_EQ(container->GetGeicButtonForTesting(), nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+IN_PROC_BROWSER_TEST_P(GeicButtonBrowserTest, GeicButtonTogglesSidePanel) {
+  if (!GetParam().expect_geic_enabled) {
+    return;
+  }
+
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
+  ASSERT_TRUE(side_panel_ui);
+  EXPECT_FALSE(side_panel_ui->IsSidePanelShowing());
+
+  TabStripActionContainer* container =
+      BrowserElementsViews::From(browser())->GetViewAs<TabStripActionContainer>(
+          kTabStripActionContainerElementId);
+  ASSERT_TRUE(container);
+  GeicButton* button = container->GetGeicButtonForTesting();
+  ASSERT_NE(button, nullptr);
+
+  // First click opens the GEiC side panel.
+  views::test::ButtonTestApi(button).NotifyClick(ui::test::TestEvent());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_ui->IsSidePanelShowing(); }));
+  EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kGeic)));
+
+  // Second click closes the side panel.
+  views::test::ButtonTestApi(button).NotifyClick(ui::test::TestEvent());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !side_panel_ui->IsSidePanelShowing(); }));
 }
 
 INSTANTIATE_TEST_SUITE_P(

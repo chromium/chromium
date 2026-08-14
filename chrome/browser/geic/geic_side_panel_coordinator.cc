@@ -1,0 +1,71 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/geic/geic_side_panel_coordinator.h"
+
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
+#include "ui/views/view.h"
+
+namespace geic {
+
+DEFINE_USER_DATA(GeicSidePanelCoordinator);
+
+// static
+GeicSidePanelCoordinator* GeicSidePanelCoordinator::From(
+    BrowserWindowInterface* browser) {
+  return browser
+             ? GeicSidePanelCoordinator::Get(browser->GetUnownedUserDataHost())
+             : nullptr;
+}
+
+GeicSidePanelCoordinator::GeicSidePanelCoordinator(
+    BrowserWindowInterface& browser_window_interface)
+    : browser_window_interface_(browser_window_interface),
+      scoped_unowned_user_data_(
+          browser_window_interface.GetUnownedUserDataHost(),
+          *this) {
+  if (auto* registry =
+          SidePanelRegistry::From(&browser_window_interface_.get())) {
+    CreateAndRegisterEntry(registry);
+  }
+}
+
+GeicSidePanelCoordinator::~GeicSidePanelCoordinator() = default;
+
+void GeicSidePanelCoordinator::CreateAndRegisterEntry(
+    SidePanelRegistry* global_registry) {
+  global_registry->Register(std::make_unique<SidePanelEntry>(
+      SidePanelEntryKey(SidePanelEntryId::kGeic),
+      base::BindRepeating(&GeicSidePanelCoordinator::CreateGeicView,
+                          base::Unretained(this)),
+      /*default_content_width_callback=*/base::NullCallback()));
+}
+
+void GeicSidePanelCoordinator::Toggle() {
+  if (auto* side_panel_ui =
+          SidePanelUI::From(&browser_window_interface_.get())) {
+    // TODO(crbug.com/545285265): Handle case when a non-GEiC side panel is
+    // showing.
+    if (side_panel_ui->IsSidePanelShowing()) {
+      side_panel_ui->Close();
+    } else {
+      side_panel_ui->Show(SidePanelEntryId::kGeic);
+    }
+  }
+}
+
+std::unique_ptr<views::View> GeicSidePanelCoordinator::CreateGeicView(
+    SidePanelEntryScope& scope) {
+  return std::make_unique<views::View>();
+}
+
+}  // namespace geic

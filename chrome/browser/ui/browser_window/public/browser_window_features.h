@@ -37,6 +37,10 @@ class BookmarkBarController;
 class BookmarksSidePanelCoordinator;
 class BookmarksServiceFeature;
 class BreadcrumbManagerBrowserAgent;
+
+namespace geic {
+class GeicSidePanelCoordinator;
+}  // namespace geic
 class Browser;
 class BrowserActions;
 class BrowserActiveStateManager;
@@ -559,6 +563,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<BookmarksServiceFeature> bookmarks_service_feature_;
   std::unique_ptr<BookmarksSidePanelCoordinator>
       bookmarks_side_panel_coordinator_;
+  std::unique_ptr<geic::GeicSidePanelCoordinator> geic_side_panel_coordinator_;
 
   // Listens for browser-related breadcrumb events to be added to crash reports.
   std::unique_ptr<BreadcrumbManagerBrowserAgent>

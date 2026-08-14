@@ -65,6 +65,8 @@ source_set("internal") {
       "//chrome/browser/collaboration",
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/devtools",
+      "//chrome/browser/geic",
+      "//chrome/browser/geic:ui",
       "//chrome/browser/glic",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/lens/region_search",
