@@ -502,6 +502,10 @@ impl Searcher {
     /// `0`) in which it was added. The offsets in the `Match` will be relative
     /// to the start of `haystack` (and not `at`).
     ///
+    /// # Panics
+    ///
+    /// When `span` does not correspond to a valid range in `haystack`.
+    ///
     /// # Example
     ///
     /// Basic usage:

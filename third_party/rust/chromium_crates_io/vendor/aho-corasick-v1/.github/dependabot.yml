@@ -1,0 +1,14 @@
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: semiannually
+    open-pull-requests-limit: 1
+    cooldown:
+      default-days: 30
+    groups:
+      actions:
+        patterns:
+          - "*"

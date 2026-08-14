@@ -86,9 +86,11 @@ jobs:
           rust: stable-x86_64-gnu
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
     - name: Install Rust
-      uses: dtolnay/rust-toolchain@master
+      uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # v1
       with:
         toolchain: ${{ matrix.rust }}
     - name: Install and configure Cross
@@ -120,7 +122,9 @@ jobs:
     # See: https://github.com/rust-lang/regex/blob/a2887636930156023172e4b376a6febad4e49120/.github/workflows/ci.yml#L145-L163
     - name: Pin memchr to 2.6.2
       if: matrix.build == 'pinned'
-      run: cargo update -p memchr --precise 2.6.2
+      run: |
+        cargo update -p memchr --precise 2.6.2
+        cargo update -p log --precise 0.4.20
     - run: ${{ env.CARGO }} build --verbose $TARGET
     - run: ${{ env.CARGO }} doc --verbose $TARGET
     - run: ${{ env.CARGO }} test --verbose $TARGET
@@ -137,9 +141,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
     - name: Install Rust
-      uses: dtolnay/rust-toolchain@master
+      uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # v1
       with:
         toolchain: stable
         components: rustfmt
