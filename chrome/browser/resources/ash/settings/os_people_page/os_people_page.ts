@@ -105,18 +105,13 @@ export class OsSettingsPeoplePageElement extends
   declare prefs: PrefsState;
   declare private accounts_: Account[];
   declare private deviceAccount_: Account|null;
-  private graduationMojoProvider_: GraduationHandlerInterface;
-  private graduationObserverReceiver_: GraduationObserverReceiver|null;
+  private graduationMojoProvider_: GraduationHandlerInterface =
+      getGraduationHandlerProvider();
+  private graduationObserverReceiver_: GraduationObserverReceiver|null = null;
   declare private isAccountManagerEnabled_: boolean;
   declare private showGraduationApp_: boolean;
   declare private showParentalControls_: boolean;
   declare private section_: Section;
-
-  constructor() {
-    super();
-
-    this.graduationMojoProvider_ = getGraduationHandlerProvider();
-  }
 
   override connectedCallback(): void {
     super.connectedCallback();

@@ -44,7 +44,7 @@ export class SettingsPrivacyHubSystemServiceRow extends PolymerElement {
   declare iconSource: string;
   declare name: string;
   declare permissionState: string;
-  permissionStatus: string;
+  permissionStatus: string = '';
 }
 
 declare global {

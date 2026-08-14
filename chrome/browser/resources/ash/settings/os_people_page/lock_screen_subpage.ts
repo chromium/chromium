@@ -155,8 +155,8 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   declare private fingerprintUnlockEnabled_: boolean;
   declare private numFingerprints_: number;
   declare private numFingerprintDescription_: string;
-  private lockScreenNotificationsEnabled_: boolean;
-  private lockScreenHideSensitiveNotificationSupported_: boolean;
+  private lockScreenNotificationsEnabled_: boolean = false;
+  private lockScreenHideSensitiveNotificationSupported_: boolean = false;
   declare private recovery_: chrome.settingsPrivate.PrefObject|null;
   declare private noRecoveryVirtualPref_: chrome.settingsPrivate.PrefObject;
   declare private recoveryChangeInProcess_: boolean;
