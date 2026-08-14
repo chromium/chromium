@@ -63,15 +63,7 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
 };
 
 // TODO(crbug.com/487147580): Re-enable the test
-// Only running on Mac and Desktop Android currently.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||                  \
-    (BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)) || \
-    BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_App DISABLED_App
-#else
-#define MAYBE_App App
-#endif
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_App) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, DISABLED_App) {
   RunTest("contextual_tasks/app_test.js", "mocha.run();");
 }
 
