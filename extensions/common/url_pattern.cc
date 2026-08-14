@@ -586,40 +586,99 @@ bool URLPattern::MatchesPath(std::string_view test) const {
 }
 
 bool URLPattern::MatchesPath(std::string_view test, bool case_sensitive) const {
-  if (case_sensitive) {
-    // Make the behaviour of OverlapsWith consistent with MatchesURL, which
-    // is needed to ensure hosted apps on e.g. 'google.com' also run on
-    // 'google.com/'. The below if is a no-copy way of doing (test + "/*" ==
-    // path_escaped_).
-    if (path_escaped_.length() == test.length() + 2 &&
-        base::StartsWith(path_escaped_, test) &&
-        base::EndsWith(path_escaped_, "/*")) {
-      return true;
-    }
-
-    return base::MatchPattern(test, path_escaped_);
-  }
-
+  // Unescape %-encoding. This is important for processing UTF8 matches, where
+  // "café.html" would reach this code as "caf%C3%A9.html", and thus doesn't
+  // match the path in the manifest via a simple MatchPattern() test.
+  // NOTE: We have to do this even if both strings are pure-ASCII. Percent-
+  // encodings are case-insensitive, so `caf%C3%A9` and `caf%c3%a9` match
+  // after escaping, even though they don't match (case-sensitively) before
+  // escaping.
   std::string unescaped_test =
       base::UnescapeURLComponent(test, base::UnescapeRule::NORMAL);
   std::string unescaped_pattern =
       base::UnescapeURLComponent(path_escaped_, base::UnescapeRule::NORMAL);
 
-  // We can't just use base::ToLowerASCII() (because this might not be ASCII).
-  // Instead, we use i18n::FoldCase(), which will fold these into a canonical
-  // case for each character.
-  std::u16string test_u16 =
-      base::i18n::FoldCase(base::UTF8ToUTF16(unescaped_test));
-  std::u16string pattern_u16 =
-      base::i18n::FoldCase(base::UTF8ToUTF16(unescaped_pattern));
-
-  if (pattern_u16.length() == test_u16.length() + 2 &&
-      base::StartsWith(pattern_u16, test_u16) &&
-      base::EndsWith(pattern_u16, u"/*")) {
+  // Make the behaviour of OverlapsWith consistent with MatchesURL, which
+  // is needed to ensure hosted apps on e.g. 'google.com' also run on
+  // 'google.com/'. The below if is a no-copy way of doing (unescaped_test +
+  // "/*" == unescaped_pattern).
+  if (unescaped_pattern.length() == unescaped_test.length() + 2 &&
+      base::StartsWith(unescaped_pattern, unescaped_test) &&
+      base::EndsWith(unescaped_pattern, "/*")) {
     return true;
   }
 
-  return base::MatchPattern(test_u16, pattern_u16);
+  if (case_sensitive) {
+    // Match the unescaped strings first to handle UTF-8 sequences (e.g.
+    // "café.html" vs "caf%C3%A9.html"). If that fails, fall back to matching
+    // the raw strings; base::MatchPattern() requires valid UTF-8 and rejects
+    // invalid UTF-8 byte sequences, so percent-encoded non-UTF-8 bytes (like
+    // "%E1") can only match via the raw ASCII percent-encoded strings.
+    return base::MatchPattern(unescaped_test, unescaped_pattern) ||
+           base::MatchPattern(test, path_escaped_);
+  }
+
+  // Check if the pattern matches in a case-insensitive way.
+
+  // Fast path: If both unescaped strings are pure ASCII, Unicode case folding
+  // is identical to ASCII lowercasing, allowing us to avoid UTF-16 conversions
+  // and ICU case-folding overhead.
+  if (base::IsStringASCII(unescaped_test) &&
+      base::IsStringASCII(unescaped_pattern)) {
+    std::string lower_unescaped_test = base::ToLowerASCII(unescaped_test);
+    std::string lower_unescaped_pattern = base::ToLowerASCII(unescaped_pattern);
+
+    if (lower_unescaped_pattern.length() == lower_unescaped_test.length() + 2 &&
+        base::StartsWith(lower_unescaped_pattern, lower_unescaped_test) &&
+        base::EndsWith(lower_unescaped_pattern, "/*")) {
+      return true;
+    }
+
+    return base::MatchPattern(lower_unescaped_test, lower_unescaped_pattern) ||
+           base::MatchPattern(base::ToLowerASCII(test),
+                              base::ToLowerASCII(path_escaped_));
+  }
+
+  // Non-ASCII path: Try unescaped UTF-8 matching using Unicode case folding,
+  // provided both strings are valid UTF-8. If either string contains invalid
+  // UTF-8 byte sequences (such as unescaped non-UTF-8 percent-encoded bytes),
+  // base::UTF8ToUTF16() would replace those invalid bytes with U+FFFD, causing
+  // different invalid byte sequences (e.g. %E1 and %E2) to falsely match.
+  std::u16string test_u16;
+  std::u16string pattern_u16;
+  if (base::UTF8ToUTF16(unescaped_test.data(), unescaped_test.size(),
+                        &test_u16) &&
+      base::UTF8ToUTF16(unescaped_pattern.data(), unescaped_pattern.size(),
+                        &pattern_u16)) {
+    test_u16 = base::i18n::FoldCase(test_u16);
+    pattern_u16 = base::i18n::FoldCase(pattern_u16);
+
+    // Check again for the /* ending with the unescaped, canonical case
+    // variants.
+    if (pattern_u16.length() == test_u16.length() + 2 &&
+        base::StartsWith(pattern_u16, test_u16) &&
+        base::EndsWith(pattern_u16, u"/*")) {
+      return true;
+    }
+
+    if (base::MatchPattern(test_u16, pattern_u16)) {
+      return true;
+    }
+  }
+
+  // Fall back to matching the raw strings case-insensitively. This handles
+  // percent-encoded non-UTF-8 bytes (like "%E1"), matching them via their ASCII
+  // representations.
+  std::string lower_test = base::ToLowerASCII(test);
+  std::string lower_pattern = base::ToLowerASCII(path_escaped_);
+
+  if (lower_pattern.length() == lower_test.length() + 2 &&
+      base::StartsWith(lower_pattern, lower_test) &&
+      base::EndsWith(lower_pattern, "/*")) {
+    return true;
+  }
+
+  return base::MatchPattern(lower_test, lower_pattern);
 }
 
 const std::string& URLPattern::GetAsString() const {

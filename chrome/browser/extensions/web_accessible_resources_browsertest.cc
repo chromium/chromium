@@ -200,11 +200,9 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   // 3. UTF-8 declared resource cannot be fetched because URLPattern matching
   // does not currently unescape percent-encoded paths in case-sensitive mode
   // ("caf%C3%A9.html" vs "café.html").
-  // TODO(crbug.com/545512660): Fix percent-encoded matching for non-ASCII paths
-  // in case-sensitive mode.
   GURL cafe_url = extension->url().Resolve("café.html");
   EXPECT_EQ(
-      "FETCH_FAILED",
+      "café content",
       content::EvalJs(web_contents, content::JsReplace(
                                         "window.fetchResource($1)", cafe_url)));
 
@@ -213,11 +211,9 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   // emulates a page just requesting café.html.
   // As above, this fails because we internally *do* still escape unicode
   // characters (so the handling is the same).
-  // TODO(crbug.com/545512660): Fix percent-encoded matching for non-ASCII paths
-  // in case-sensitive mode.
   std::string cafe_url_simple =
       base::StringPrintf("%scafé.html", extension->url().spec().c_str());
-  EXPECT_EQ("FETCH_FAILED",
+  EXPECT_EQ("café content",
             content::EvalJs(web_contents,
                             content::JsReplace("window.fetchResource($1)",
                                                cafe_url_simple)));
