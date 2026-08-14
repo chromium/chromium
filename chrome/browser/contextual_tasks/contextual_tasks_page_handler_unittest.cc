@@ -1056,6 +1056,38 @@ TEST_F(ContextualTasksPageHandlerTest,
   page_handler_->OnWebviewMessage(serialized);
 }
 
+TEST_F(
+    ContextualTasksPageHandlerTest,
+    OnWebviewMessage_UpdateThreadContextLibrary_EmptyMessagePreservesSubmittedContext) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  contextual_tasks_ui_->SetTaskId(task_id);
+
+  NiceMock<contextual_search::MockContextualSearchSessionHandle>
+      mock_session_handle;
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  mock_session_handle.set_submitted_context_tokens({token});
+
+  ON_CALL(*contextual_tasks_ui_, GetOrCreateContextualSessionHandle())
+      .WillByDefault(Return(&mock_session_handle));
+
+  // Initial empty update received (contexts_size == 0).
+  lens::AimToClientMessage empty_message;
+  empty_message.mutable_update_thread_context_library();
+
+  size_t empty_size = empty_message.ByteSizeLong();
+  std::vector<uint8_t> empty_serialized(empty_size);
+  empty_message.SerializeToArray(empty_serialized.data(), empty_size);
+
+  EXPECT_CALL(*mock_contextual_tasks_service_,
+              SetUrlResourcesFromServer(task_id, testing::IsEmpty()))
+      .Times(1);
+
+  page_handler_->OnWebviewMessage(empty_serialized);
+
+  // Submitted tokens should NOT be cleared on an empty message.
+  EXPECT_EQ(mock_session_handle.GetSubmittedContextTokens().size(), 1u);
+}
+
 TEST_F(ContextualTasksPageHandlerTest, PostAimMessage) {
   lens::ClientToAimMessage message;
   message.mutable_open_threads_view();
