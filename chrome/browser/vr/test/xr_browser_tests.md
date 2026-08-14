@@ -102,10 +102,63 @@ not set up on your machine.
 
 On Android, the tests are built and run via the `android_browsertests` target.
 Note that due to the deployment of the OpenXR mock trampoline shared library
-(`libopenxr_mock.so`) and writing a JSON file to:
+(`libopenxr_mock.so`) and writing a JSON file to
 `'/product/etc/openxr/1/active_runtime.json'`, tests must be run on a rooted
-device. Because this is a large target, it is recommended to append
-`--gtest_filter=*WebXr*` when running the tests.
+physical device or an Android emulator. Because this is a large target, it is
+recommended to append `--gtest_filter=*WebXr*` when running the tests directly.
+
+#### Building for Android Emulators
+
+To build tests for an Android emulator, configure your GN args:
+
+```gn
+target_os = "android"
+target_cpu = "x64"  # x64 is recommended; while arm64 emulators exist, they are very slow
+enable_openxr = true  # Required on x64 Android builds prior to being enabled by default
+```
+
+Compile the test target:
+
+```bash
+autoninja -C out/Emu android_browsertests
+```
+
+#### Running on Android Emulators
+
+Building `android_browsertests` with `enable_openxr = true` copies the
+`run_xr_android_emulator_tests.py` wrapper script to the build output directory
+(e.g., `out/Emu/run_xr_android_emulator_tests.py`).
+
+The wrapper script automatically appends `--use-cmd-decoder=validating`
+(required for WebGL emulation on the host OpenGL ES driver) and defaults
+`--gtest_filter` to `*WebXr*`.
+
+Full information about Android emulators can be found at
+[`docs/android_emulator.md`](../../../../docs/android_emulator.md), but available
+AVD configurations can be listed with:
+```bash
+tools/android/avd/avd.py list
+```
+
+The script intentionally does not auto-select or auto-start an emulator. You can
+either:
+
+1. **Start an emulator beforehand** using `tools/android/avd/avd.py`:
+   ```bash
+   tools/android/avd/avd.py start --avd-config tools/android/avd/proto/android_35_google_apis_x64.textpb
+   out/Emu/run_xr_android_emulator_tests.py
+   ```
+
+2. **Pass `--avd-config` directly** to let the test runner launch and manage the
+   emulator lifecycle:
+   ```bash
+   out/Emu/run_xr_android_emulator_tests.py --avd-config tools/android/avd/proto/android_35_google_apis_x64.textpb
+   ```
+
+3. **Filter specific tests**:
+   ```bash
+   out/Emu/run_xr_android_emulator_tests.py --avd-config tools/android/avd/proto/android_35_google_apis_x64.textpb --gtest_filter="WebXrVrOpenXrBrowserTest.TestMultipleEntryFromBlinkEnd"
+   ```
 
 ## Adding New Files
 

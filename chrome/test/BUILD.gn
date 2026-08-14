@@ -1685,6 +1685,7 @@ if (is_android) {
       ]
 
       deps += [
+        ":xr_android_emulator_tests_runner",
         ":xr_browser_tests_common",
         "//chrome/browser/vr:vr_common",
         "//chrome/common:constants",
@@ -9936,6 +9937,12 @@ if (!is_android) {
     testonly = true
     sources = [ "//chrome/browser/vr/test/run_xr_browser_tests.py" ]
     outputs = [ "$root_out_dir/run_xr_browser_tests.py" ]
+  }
+} else {
+  copy("xr_android_emulator_tests_runner") {
+    testonly = true
+    sources = [ "//chrome/browser/vr/test/run_xr_android_emulator_tests.py" ]
+    outputs = [ "$root_out_dir/run_xr_android_emulator_tests.py" ]
   }
 }
 
