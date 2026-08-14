@@ -163,8 +163,6 @@ crbug.com/1254933 [ Linux ] css3/filters/filterRegions.html [ Failure Pass ]
 crbug.com/1254933 [ Win ] css3/filters/filterRegions.html [ Failure Pass ]
 crbug.com/1405377 [ Mac ] css3/filters/filterRegions.html [ Failure Pass ]
 
-crbug.com/1459010 fast/events/hit-test-counts.html [ Failure ]
-
 # Fails flakily or times out
 
 # Unknown media state flakiness (likely due to layout occuring earlier than expected):
