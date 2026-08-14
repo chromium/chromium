@@ -1254,12 +1254,7 @@ void SyncServiceImpl::FetchAccessToken(
     return;
   }
 
-  // TODO(crbug.com/539471945): Actually request an access token here in
-  // follow-up CLs instead of relying on the cached credentials from
-  // SyncAuthManager. For now, this step uses the same token as before, but
-  // propagates it from a different source (SyncCycle instead of
-  // ServerConnectionManager's cache).
-  std::move(callback).Run(auth_manager_->GetCredentials().access_token_info);
+  auth_manager_->FetchAccessToken(std::move(callback));
 }
 
 void SyncServiceImpl::OnConfigureDone(
