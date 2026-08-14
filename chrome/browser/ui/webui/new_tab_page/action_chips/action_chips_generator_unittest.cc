@@ -99,6 +99,9 @@ struct CreateSuggestionOptions {
   omnibox::SuggestTemplateInfo_FuseboxAction_QueryActionOverride
       query_action_override =
           omnibox::SuggestTemplateInfo_FuseboxAction::QUERY_ACTION_DEFAULT;
+  omnibox::SuggestTemplateInfo_FuseboxAction_SearchboxOverride
+      searchbox_override = omnibox::SuggestTemplateInfo_FuseboxAction::
+          SEARCHBOX_OVERRIDE_UNSPECIFIED;
 };
 
 SearchSuggestionParser::SuggestResult CreateSuggestion(
@@ -144,6 +147,12 @@ SearchSuggestionParser::SuggestResult CreateSuggestion(
         omnibox::SuggestTemplateInfo_FuseboxAction::QUERY_ACTION_DEFAULT) {
       suggest_template_info.mutable_fusebox_action()->set_query_action_override(
           options.query_action_override);
+    }
+    if (options.searchbox_override !=
+        omnibox::SuggestTemplateInfo_FuseboxAction::
+            SEARCHBOX_OVERRIDE_UNSPECIFIED) {
+      suggest_template_info.mutable_fusebox_action()->set_searchbox_override(
+          options.searchbox_override);
     }
     result.SetSuggestTemplateInfo(std::move(suggest_template_info));
   }
@@ -754,6 +763,10 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpoint) {
 
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1)),
                                   Eq(std::cref(chip2))));
+  ASSERT_EQ(actual.size(), 3u);
+  ASSERT_TRUE(actual[1]->suggest_template_info->fusebox_action);
+  EXPECT_FALSE(
+      actual[1]->suggest_template_info->fusebox_action->searchbox_override);
   histogram_tester.ExpectUniqueSample("NewTabPage.ActionChips.RequestStatus",
                                       ActionChipsRequestStatus::kSuccess, 1);
   histogram_tester.ExpectUniqueSample("NewTabPage.ActionChips.SuggestionCount",
@@ -1451,9 +1464,11 @@ TEST(ActionChipGeneratorTest, ParsesAimActionCorrectly) {
                      .match_contents = "aim action",
                      .annotation = "aim action subtitle",
                      .suggestion = u"aim action suggestion",
-                     .query_action_override =
+                     .query_action_override = omnibox::
+                         SuggestTemplateInfo_FuseboxAction::QUERY_ACTION_PASTE,
+                     .searchbox_override =
                          omnibox::SuggestTemplateInfo_FuseboxAction::
-                             QUERY_ACTION_PASTE})});
+                             SEARCHBOX_OVERRIDE_COMPOSEBOX})});
             return nullptr;
           }));
 
@@ -1474,6 +1489,9 @@ TEST(ActionChipGeneratorTest, ParsesAimActionCorrectly) {
   EXPECT_EQ(
       actual[0]->suggest_template_info->fusebox_action->query_action_override,
       fusebox_action::mojom::QueryActionOverride::kPaste);
+  EXPECT_EQ(
+      actual[0]->suggest_template_info->fusebox_action->searchbox_override,
+      fusebox_action::mojom::SearchboxOverride::kComposebox);
 }
 
 TEST(ActionChipsGeneratorTest, SteadyStateFallbackChipsHavePreferredInventory) {

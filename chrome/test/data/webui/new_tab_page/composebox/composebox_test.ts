@@ -895,6 +895,7 @@ suite(`NewTabPageComposeboxTest`, () => {
           preselectedModel: null,
           queryActionOverride: null,
           preselectedInputSource: InputSource.kInputSourceGallery,
+          searchboxOverride: null,
         });
 
         assertTrue(imageInputClicked);
@@ -922,6 +923,7 @@ suite(`NewTabPageComposeboxTest`, () => {
           preselectedModel: null,
           queryActionOverride: null,
           preselectedInputSource: InputSource.kInputSourceFilePicker,
+          searchboxOverride: null,
         });
 
         assertTrue(fileInputClicked);

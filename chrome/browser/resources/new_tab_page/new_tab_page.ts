@@ -55,6 +55,7 @@ export {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, S
 export {DriveSuggestionHandlerRemote} from './drive_suggestion.mojom-webui.js';
 export type {File} from './file_suggestion.mojom-webui.js';
 export {RecommendationType} from './file_suggestion.mojom-webui.js';
+export {QueryActionOverride, SearchboxOverride} from './fusebox_action.mojom-webui.js';
 export {GoogleCalendarPageHandlerRemote} from './google_calendar.mojom-webui.js';
 export {MicrosoftAuthPageHandlerRemote} from './microsoft_auth.mojom-webui.js';
 export {MicrosoftFilesPageHandlerRemote} from './microsoft_files.mojom-webui.js';
