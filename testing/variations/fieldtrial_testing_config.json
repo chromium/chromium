@@ -13790,6 +13790,21 @@
             ]
         }
     ],
+    "HeliosPageContextPdf": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PageContextPdf"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosUpdatedEligibility": [
         {
             "platforms": [
