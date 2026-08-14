@@ -90,7 +90,9 @@ class PhishingClassifierTest : public testing::Test {
 
   void TearDown() override {
     classifier_.reset();
+#if !BUILDFLAG(IS_IOS)
     ScorerStorage::GetInstance()->SetScorer(nullptr);
+#endif
   }
 
   void ClearScorer() {
@@ -133,9 +135,11 @@ TEST_F(PhishingClassifierTest, ClassificationWithImageEmbedding) {
   // Inject a MockScorer to intercept model application calls.
   auto mock_scorer = std::make_unique<MockScorer>();
   MockScorer* raw_mock_scorer = mock_scorer.get();
-  ScorerStorage::GetInstance()->SetScorer(std::move(mock_scorer));
 #if BUILDFLAG(IS_IOS)
   classifier_->set_scorer(raw_mock_scorer);
+  scorer_ = std::move(mock_scorer);
+#else
+  ScorerStorage::GetInstance()->SetScorer(std::move(mock_scorer));
 #endif
 
   SkBitmap bitmap;

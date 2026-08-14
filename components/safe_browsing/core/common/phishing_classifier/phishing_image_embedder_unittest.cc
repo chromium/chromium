@@ -101,7 +101,9 @@ class PhishingImageEmbedderTest : public testing::Test {
 
   void TearDown() override {
     image_embedder_.reset();
+#if !BUILDFLAG(IS_IOS)
     ScorerStorage::GetInstance()->SetScorer(nullptr);
+#endif
   }
 
   void ClearScorer() {
@@ -182,9 +184,11 @@ TEST_F(PhishingImageEmbedderTest, NoImageEmbeddingOrVisualFeatures) {
 TEST_F(PhishingImageEmbedderTest, ImageEmbeddingWithMockScorer) {
   auto mock_scorer = std::make_unique<MockScorer>();
   MockScorer* raw_mock_scorer = mock_scorer.get();
-  ScorerStorage::GetInstance()->SetScorer(std::move(mock_scorer));
 #if BUILDFLAG(IS_IOS)
   image_embedder_->set_scorer(raw_mock_scorer);
+  scorer_ = std::move(mock_scorer);
+#else
+  ScorerStorage::GetInstance()->SetScorer(std::move(mock_scorer));
 #endif
 
   SkBitmap bitmap;

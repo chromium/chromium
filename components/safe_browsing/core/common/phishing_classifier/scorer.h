@@ -180,6 +180,7 @@ class Scorer {
   base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};
 };
 
+#if !BUILDFLAG(IS_IOS)
 // A small wrapper around a Scorer that allows callers to observe for changes in
 // the model.
 class ScorerStorage {
@@ -209,6 +210,7 @@ class ScorerStorage {
   std::unique_ptr<Scorer> scorer_;
   base::ObserverList<Observer> observers_;
 };
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace safe_browsing
 

@@ -401,6 +401,7 @@ Scorer::Scorer() {
 }
 Scorer::~Scorer() = default;
 
+#if !BUILDFLAG(IS_IOS)
 // static
 ScorerStorage* ScorerStorage::GetInstance() {
   static base::NoDestructor<ScorerStorage> instance;
@@ -409,6 +410,7 @@ ScorerStorage* ScorerStorage::GetInstance() {
 
 ScorerStorage::ScorerStorage() = default;
 ScorerStorage::~ScorerStorage() = default;
+#endif
 
 /* static */
 std::unique_ptr<Scorer> Scorer::Create(base::ReadOnlySharedMemoryRegion region,
@@ -676,6 +678,7 @@ int Scorer::image_embedding_tflite_model_version() const {
              : 0;
 }
 
+#if !BUILDFLAG(IS_IOS)
 void ScorerStorage::SetScorer(std::unique_ptr<Scorer> scorer) {
   if (scorer_) {
     // The Scorer contains a TensorFlow Lite model. Destroying it can take a
@@ -710,5 +713,6 @@ void ScorerStorage::AddObserver(ScorerStorage::Observer* observer) {
 void ScorerStorage::RemoveObserver(ScorerStorage::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace safe_browsing
