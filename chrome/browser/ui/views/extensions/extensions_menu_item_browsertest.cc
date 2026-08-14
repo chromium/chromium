@@ -22,8 +22,8 @@ class ExtensionMenuItemViewBrowserTest : public ExtensionsToolbarBrowserTest {
     scoped_feature_list_.InitAndDisableFeature(
         extensions_features::kExtensionsMenuAccessControl);
   }
-  ExtensionMenuItemViewBrowserTest(
-      const ExtensionMenuItemViewBrowserTest&) = delete;
+  ExtensionMenuItemViewBrowserTest(const ExtensionMenuItemViewBrowserTest&) =
+      delete;
   ExtensionMenuItemViewBrowserTest& operator=(
       const ExtensionMenuItemViewBrowserTest&) = delete;
   ~ExtensionMenuItemViewBrowserTest() override = default;

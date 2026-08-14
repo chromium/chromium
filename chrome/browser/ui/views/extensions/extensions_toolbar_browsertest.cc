@@ -12,17 +12,21 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/host_access_request_helper.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/common/extension.h"
@@ -30,6 +34,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/permissions_manager_waiter.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/view_utils.h"
@@ -48,9 +53,14 @@ ExtensionsToolbarBrowserTest::~ExtensionsToolbarBrowserTest() = default;
 void ExtensionsToolbarBrowserTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
 
+  host_resolver()->AddRule("*", "127.0.0.1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
   cooldown_reset_.emplace(
       extensions::HostAccessRequestsHelper::SetCooldownForTesting(
           base::TimeDelta()));
+  accept_reload_dialog_reset_.emplace(
+      extensions::ReloadPageDialogController::AcceptDialogForTesting(false));
 
   extension_service_ =
       extensions::ExtensionSystem::Get(profile())->extension_service();
@@ -62,6 +72,7 @@ void ExtensionsToolbarBrowserTest::SetUpOnMainThread() {
 }
 
 void ExtensionsToolbarBrowserTest::TearDownOnMainThread() {
+  accept_reload_dialog_reset_.reset();
   cooldown_reset_.reset();
   permissions_helper_.reset();
   extension_service_ = nullptr;
@@ -110,6 +121,12 @@ ExtensionsToolbarBrowserTest::InstallExtension(
           .AddHostPermissions(host_permissions)
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();
+  extensions::ExtensionPrefs::Get(profile())->OnExtensionInstalled(
+      extension.get(), {}, syncer::StringOrdinal(), "");
+  extensions::PermissionsUpdater(profile()).InitializePermissions(
+      extension.get());
+  extensions::PermissionsUpdater(profile()).GrantActivePermissions(
+      extension.get());
   extension_registrar()->AddExtension(extension);
 
   // Force the container to re-layout, since a new extension was added.
@@ -147,7 +164,7 @@ void ExtensionsToolbarBrowserTest::WithholdHostPermissions(
     const extensions::Extension* extension) {
   extensions::PermissionsManagerWaiter waiter(permissions_manager_);
   extensions::ScriptingPermissionsModifier(profile(), extension)
-      .RemoveAllGrantedHostPermissions();
+      .SetWithholdHostPermissions(true);
   waiter.WaitForExtensionPermissionsUpdate();
 }
 
@@ -156,13 +173,13 @@ void ExtensionsToolbarBrowserTest::ClickButton(views::Button* button) const {
     button->SetSize(button->GetPreferredSize());
   }
   gfx::Point center = button->GetLocalBounds().CenterPoint();
-  ui::MouseEvent press_event(ui::EventType::kMousePressed, center,
-                             center, ui::EventTimeForNow(),
-                             ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, center, center,
+                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                             0);
   button->OnMousePressed(press_event);
-  ui::MouseEvent release_event(ui::EventType::kMouseReleased, center,
-                               center, ui::EventTimeForNow(),
-                               ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, center, center,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               0);
   button->OnMouseReleased(release_event);
 }
 
@@ -170,8 +187,7 @@ void ExtensionsToolbarBrowserTest::UpdateUserSiteAccess(
     const extensions::Extension& extension,
     content::WebContents* web_contents,
     PermissionsManager::UserSiteAccess site_access) {
-  extensions::PermissionsManagerWaiter waiter(
-      PermissionsManager::Get(browser()->GetProfile()));
+  extensions::PermissionsManagerWaiter waiter(permissions_manager_);
   permissions_helper_->UpdateSiteAccess(
       extension, web_contents, site_access,
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
@@ -258,6 +274,19 @@ void ExtensionsToolbarBrowserTest::WaitForAnimation() {
 #else
   views::test::WaitForAnimatingLayoutManager(extensions_container());
 #endif
+}
+
+void ExtensionsToolbarBrowserTest::NavigateAndCommit(const GURL& url) {
+  GURL target_url = url;
+  if (url.SchemeIsHTTPOrHTTPS() && !url.has_port() &&
+      embedded_test_server()->Started()) {
+    std::string path = url.path().empty() || url.path() == "/"
+                           ? "/title1.html"
+                           : std::string(url.path());
+    target_url = embedded_test_server()->GetURL(url.host(), path);
+  }
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), target_url));
+  WaitForAnimation();
 }
 
 void ExtensionsToolbarBrowserTest::LayoutContainerIfNecessary() {

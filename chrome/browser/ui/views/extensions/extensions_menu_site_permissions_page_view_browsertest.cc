@@ -9,9 +9,11 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
@@ -32,15 +34,15 @@ using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
 }  // namespace
 
-class ExtensionsSitePermissionsPageViewUnitTest
-    : public ExtensionsToolbarUnitTest {
+class ExtensionsSitePermissionsPageViewBrowserTest
+    : public ExtensionsToolbarBrowserTest {
  public:
-  ExtensionsSitePermissionsPageViewUnitTest();
-  ~ExtensionsSitePermissionsPageViewUnitTest() override = default;
-  ExtensionsSitePermissionsPageViewUnitTest(
-      const ExtensionsSitePermissionsPageViewUnitTest&) = delete;
-  ExtensionsSitePermissionsPageViewUnitTest& operator=(
-      const ExtensionsSitePermissionsPageViewUnitTest&) = delete;
+  ExtensionsSitePermissionsPageViewBrowserTest();
+  ~ExtensionsSitePermissionsPageViewBrowserTest() override = default;
+  ExtensionsSitePermissionsPageViewBrowserTest(
+      const ExtensionsSitePermissionsPageViewBrowserTest&) = delete;
+  ExtensionsSitePermissionsPageViewBrowserTest& operator=(
+      const ExtensionsSitePermissionsPageViewBrowserTest&) = delete;
 
   // Opens menu and navigates to site permissions page for `extension_id`. This
   // will CHECK if extension cannot have a site permissions page (e.g
@@ -58,64 +60,57 @@ class ExtensionsSitePermissionsPageViewUnitTest
   // toolbar.
   std::vector<extensions::ExtensionId> GetExtensionsShowingRequests();
 
-  // Navigates to `url`.
-  void NavigateAndCommit(const GURL& url);
-
-  // Since this is a unittest, the extensions menu widget sometimes needs a
+  // Since this is a test, the extensions menu widget sometimes needs a
   // nudge to re-layout the views.
   void LayoutMenuIfNecessary();
 
   ExtensionsMenuMainPageView* main_page();
   ExtensionsMenuSitePermissionsPageView* site_permissions_page();
 
-  // ExtensionsToolbarUnitTest:
-  void SetUp() override;
-  void TearDown() override;
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<content::WebContentsTester> web_contents_tester_;
 };
 
-ExtensionsSitePermissionsPageViewUnitTest::
-    ExtensionsSitePermissionsPageViewUnitTest() {
+ExtensionsSitePermissionsPageViewBrowserTest::
+    ExtensionsSitePermissionsPageViewBrowserTest() {
   scoped_feature_list_.InitAndEnableFeature(
       extensions_features::kExtensionsMenuAccessControl);
 }
 
-void ExtensionsSitePermissionsPageViewUnitTest::ShowSitePermissionsPage(
+void ExtensionsSitePermissionsPageViewBrowserTest::ShowSitePermissionsPage(
     extensions::ExtensionId extension_id) {
   menu_coordinator()->Show(views::BubbleAnchor(extensions_button()),
                            extensions_container());
+  if (views::Widget* menu_widget =
+          menu_coordinator()->GetExtensionsMenuWidget()) {
+    if (auto* bubble_delegate =
+            menu_widget->widget_delegate()->AsBubbleDialogDelegate()) {
+      bubble_delegate->set_close_on_deactivate(false);
+    }
+  }
   menu_coordinator()->GetDelegateForTesting()->OpenSitePermissionsPage(
       extension_id);
 }
 
-bool ExtensionsSitePermissionsPageViewUnitTest::IsMainPageOpened() {
+bool ExtensionsSitePermissionsPageViewBrowserTest::IsMainPageOpened() {
   ExtensionsMenuMainPageView* page = main_page();
   return !!page;
 }
 
-bool ExtensionsSitePermissionsPageViewUnitTest::IsSitePermissionsPageOpened(
+bool ExtensionsSitePermissionsPageViewBrowserTest::IsSitePermissionsPageOpened(
     extensions::ExtensionId extension_id) {
   ExtensionsMenuSitePermissionsPageView* page = site_permissions_page();
   return page && page->extension_id() == extension_id;
 }
 
 std::vector<extensions::ExtensionId>
-ExtensionsSitePermissionsPageViewUnitTest::GetExtensionsShowingRequests() {
+ExtensionsSitePermissionsPageViewBrowserTest::GetExtensionsShowingRequests() {
   return extensions_container()
       ->GetRequestAccessButton()
       ->GetExtensionIdsForTesting();
 }
 
-void ExtensionsSitePermissionsPageViewUnitTest::NavigateAndCommit(
-    const GURL& url) {
-  web_contents_tester_->NavigateAndCommit(url);
-  WaitForAnimation();
-}
-
-void ExtensionsSitePermissionsPageViewUnitTest::LayoutMenuIfNecessary() {
+void ExtensionsSitePermissionsPageViewBrowserTest::LayoutMenuIfNecessary() {
   if (views::Widget* menu_widget =
           menu_coordinator()->GetExtensionsMenuWidget()) {
     menu_widget->LayoutRootViewIfNecessary();
@@ -123,34 +118,22 @@ void ExtensionsSitePermissionsPageViewUnitTest::LayoutMenuIfNecessary() {
 }
 
 ExtensionsMenuMainPageView*
-ExtensionsSitePermissionsPageViewUnitTest::main_page() {
+ExtensionsSitePermissionsPageViewBrowserTest::main_page() {
   ExtensionsMenuDelegateDesktop* menu_delegate =
       menu_coordinator()->GetDelegateForTesting();
   return menu_delegate ? menu_delegate->GetMainPageViewForTesting() : nullptr;
 }
 
 ExtensionsMenuSitePermissionsPageView*
-ExtensionsSitePermissionsPageViewUnitTest::site_permissions_page() {
+ExtensionsSitePermissionsPageViewBrowserTest::site_permissions_page() {
   ExtensionsMenuDelegateDesktop* menu_delegate =
       menu_coordinator()->GetDelegateForTesting();
   return menu_delegate ? menu_delegate->GetSitePermissionsPageForTesting()
                        : nullptr;
 }
 
-void ExtensionsSitePermissionsPageViewUnitTest::SetUp() {
-  ExtensionsToolbarUnitTest::SetUp();
-  // Menu needs web contents at construction, so we need to add them to every
-  // test.
-  web_contents_tester_ = AddWebContentsAndGetTester();
-}
-
-void ExtensionsSitePermissionsPageViewUnitTest::TearDown() {
-  web_contents_tester_ = nullptr;
-  ExtensionsToolbarUnitTest::TearDown();
-}
-
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
-       AddAndRemoveExtensionWhenSitePermissionsPageIsOpen) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       AddAndRemoveExtensionWhenSitePermissionsPageIsOpen) {
   auto extensionA =
       InstallExtensionWithHostPermissions("A Extension", {"<all_urls>"});
 
@@ -184,8 +167,8 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
 
 // Tests that removing the last extension while its site permissions page is
 // open closes the menu bubble.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
-       RemoveLastExtensionWhenSitePermissionsPageIsOpen) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       RemoveLastExtensionWhenSitePermissionsPageIsOpen) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
@@ -200,7 +183,8 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
 }
 
 // Tests that the extension name is elided if it is too long.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest, LongExtensionNameIsElided) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       LongExtensionNameIsElided) {
   std::string long_name =
       "A very very very very very very very very long extension name";
   auto extension =
@@ -218,7 +202,8 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, LongExtensionNameIsElided) {
 
 // Tests that menu navigates back to the main page when an extension, whose site
 // permissions page is open, is disabled.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest, DisableAndEnableExtension) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       DisableAndEnableExtension) {
   auto extension =
       InstallExtensionWithHostPermissions("Test Extension", {"<all_urls>"});
   // Add another extension to the menu, so that the menu doesn't close when the
@@ -239,7 +224,8 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, DisableAndEnableExtension) {
 
 // Tests that menu navigates back to the main page when an extension, whose site
 // permissions page is open, is reloaded.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ReloadExtension) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       ReloadExtension) {
   // Add another extension to the menu, so that the menu doesn't close when the
   // only extension is reloaded.
   InstallExtensionWithHostPermissions("Other Extension", {"<all_urls>"});
@@ -276,7 +262,8 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ReloadExtension) {
 
 // Tests that toggling the show requests button changes whether an extension can
 // show site access requests in the toolbar, and the UI is properly updated.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ShowRequestsTogglePressed) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       ShowRequestsTogglePressed) {
   auto extensionA =
       InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
   auto extensionB =
@@ -323,8 +310,8 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ShowRequestsTogglePressed) {
 
 // Tests that the UI is properly updated when an extension pref for showing site
 // access requests in the toolbar changes while the menu is open.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
-       ShowRequestsPrefChangedWithMenuOpen) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       ShowRequestsPrefChangedWithMenuOpen) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
@@ -355,7 +342,8 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
 
 // Tests that selecting a site acces option in the menu updates the extension
 // site access.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest, SiteAccessUpdated) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       SiteAccessUpdated) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
@@ -395,8 +383,8 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, SiteAccessUpdated) {
 
 // Tests that the menu UI is properly updated when the extension's site access
 // is changed to "on click" while the menu is open.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
-       SiteAccessUpdatedWithMenuOpen_OnClick) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       SiteAccessUpdatedWithMenuOpen_OnClick) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
@@ -425,8 +413,8 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
 
 // Tests that the menu UI is properly updated when the extension's site access
 // is changed to "on site" while the menu is open.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
-       SiteAccessUpdatedWithMenuOpen_OnSite) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       SiteAccessUpdatedWithMenuOpen_OnSite) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
@@ -455,18 +443,14 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
 
 // Tests that the menu UI is properly updated when the extension's site access
 // is changed to "on all sites" while the menu is open.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
-       SiteAccessUpdatedWithMenuOpen_OnAllSites) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       SiteAccessUpdatedWithMenuOpen_OnAllSites) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
   // Withhold the extension host permissions since they are granted by default,
   // so we can test changing site access to "on all sites".
-  extensions::PermissionsManagerWaiter waiter(
-      PermissionsManager::Get(profile()));
-  extensions::ScriptingPermissionsModifier(profile(), extension)
-      .SetWithholdHostPermissions(true);
-  waiter.WaitForExtensionPermissionsUpdate();
+  WithholdHostPermissions(extension.get());
 
   NavigateAndCommit(GURL("http://www.url.com"));
   content::WebContents* web_contents =
@@ -493,8 +477,9 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
 
 // Test that navigating to a new site where the user doesn't have runtime host
 // permissions controls (e.g restricted site) closes the site permissions page.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
-       PageNavigationWithMenuOpen_UserLosesRuntimeHostPermissionsControls) {
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsSitePermissionsPageViewBrowserTest,
+    PageNavigationWithMenuOpen_UserLosesRuntimeHostPermissionsControls) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
@@ -516,8 +501,9 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
 
 // Test that navigating to a new site where the user still has runtime host
 // permissions controls updates the page contents.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
-       PageNavigationWithMenuOpen_UserMaintainsRuntimeHostPermissionsControls) {
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsSitePermissionsPageViewBrowserTest,
+    PageNavigationWithMenuOpen_UserMaintainsRuntimeHostPermissionsControls) {
   constexpr char kUrlA[] = "http://www.a.com";
   const GURL url_A(kUrlA);
   auto extension = InstallExtension("Extension", {"activeTab"}, {url_A.spec()});
@@ -556,8 +542,8 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
 
 // Tests that the site access radio buttons are mutually exclusive, and focusing
 // a radio button does not result in multiple selected radio buttons.
-TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
-       RadioButtonsAreMutuallyExclusive) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       RadioButtonsAreMutuallyExclusive) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 

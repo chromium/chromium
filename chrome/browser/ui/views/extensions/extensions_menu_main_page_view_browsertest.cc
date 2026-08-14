@@ -4,14 +4,16 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
-
 #include "base/containers/to_vector.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -21,10 +23,12 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/host_access_request_helper.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
@@ -57,14 +61,15 @@ std::vector<std::string> GetExtensionNames(
 
 }  // namespace
 
-class ExtensionsMenuMainPageViewUnitTest : public ExtensionsToolbarUnitTest {
+class ExtensionsMenuMainPageViewBrowserTest
+    : public ExtensionsToolbarBrowserTest {
  public:
-  ExtensionsMenuMainPageViewUnitTest();
-  ~ExtensionsMenuMainPageViewUnitTest() override = default;
-  ExtensionsMenuMainPageViewUnitTest(
-      const ExtensionsMenuMainPageViewUnitTest&) = delete;
-  ExtensionsMenuMainPageViewUnitTest& operator=(
-      const ExtensionsMenuMainPageViewUnitTest&) = delete;
+  ExtensionsMenuMainPageViewBrowserTest();
+  ~ExtensionsMenuMainPageViewBrowserTest() override = default;
+  ExtensionsMenuMainPageViewBrowserTest(
+      const ExtensionsMenuMainPageViewBrowserTest&) = delete;
+  ExtensionsMenuMainPageViewBrowserTest& operator=(
+      const ExtensionsMenuMainPageViewBrowserTest&) = delete;
 
   // Opens menu on "main page" by default.
   void ShowMenu();
@@ -92,35 +97,48 @@ class ExtensionsMenuMainPageViewUnitTest : public ExtensionsToolbarUnitTest {
   void ClickSiteAccessToggle(ExtensionsMenuEntryView* menu_entry,
                              bool active_tab_only = false);
 
-  content::WebContentsTester* web_contents_tester() {
-    return web_contents_tester_;
-  }
-
   ExtensionsMenuMainPageView* main_page();
   ExtensionsMenuSitePermissionsPageView* site_permissions_page();
   std::vector<ExtensionsMenuEntryView*> menu_entries();
 
-  // ExtensionsToolbarUnitTest:
-  void SetUp() override;
-  void TearDown() override;
+  // Appends the embedded test server port to the expected site settings label.
+  // In browser tests, embedded_test_server() binds to an ephemeral non-standard
+  // port, which Chromium's URL display formatter includes in the displayed host
+  // string (e.g. "example.com:<port>").
+  std::u16string GetExpectedSiteSettingLabel(
+      std::u16string_view base_label) const {
+    return base::StrCat(
+        {base_label, u":",
+         base::NumberToString16(embedded_test_server()->port())});
+  }
+
+  // ExtensionsToolbarBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+  void TearDownOnMainThread() override;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<content::WebContentsTester> web_contents_tester_;
 };
 
-ExtensionsMenuMainPageViewUnitTest::ExtensionsMenuMainPageViewUnitTest() {
+ExtensionsMenuMainPageViewBrowserTest::ExtensionsMenuMainPageViewBrowserTest() {
   scoped_feature_list_.InitAndEnableFeature(
       extensions_features::kExtensionsMenuAccessControl);
 }
 
-void ExtensionsMenuMainPageViewUnitTest::ShowMenu() {
+void ExtensionsMenuMainPageViewBrowserTest::ShowMenu() {
   menu_coordinator()->Show(views::BubbleAnchor(extensions_button()),
                            extensions_container());
+  if (views::Widget* menu_widget =
+          menu_coordinator()->GetExtensionsMenuWidget()) {
+    if (auto* bubble_delegate =
+            menu_widget->widget_delegate()->AsBubbleDialogDelegate()) {
+      bubble_delegate->set_close_on_deactivate(false);
+    }
+  }
 }
 
 ExtensionsMenuEntryView*
-ExtensionsMenuMainPageViewUnitTest::GetOnlyMenuEntry() {
+ExtensionsMenuMainPageViewBrowserTest::GetOnlyMenuEntry() {
   std::vector<ExtensionsMenuEntryView*> entries = menu_entries();
   if (entries.size() != 1u) {
     ADD_FAILURE() << "Not exactly one entry; size is: " << entries.size();
@@ -130,54 +148,53 @@ ExtensionsMenuMainPageViewUnitTest::GetOnlyMenuEntry() {
 }
 
 std::vector<extensions::ExtensionId>
-ExtensionsMenuMainPageViewUnitTest::GetExtensionsInRequestsSection() {
+ExtensionsMenuMainPageViewBrowserTest::GetExtensionsInRequestsSection() {
   ExtensionsMenuMainPageView* page = main_page();
   return page ? page->GetExtensionsRequestingAccessForTesting()
               : std::vector<std::string>();
 }
 
 std::vector<extensions::ExtensionId>
-ExtensionsMenuMainPageViewUnitTest::GetExtensionsInRequestAccessButton() {
+ExtensionsMenuMainPageViewBrowserTest::GetExtensionsInRequestAccessButton() {
   return extensions_container()
       ->GetRequestAccessButton()
       ->GetExtensionIdsForTesting();
 }
 
-void ExtensionsMenuMainPageViewUnitTest::LayoutMenuIfNecessary() {
+void ExtensionsMenuMainPageViewBrowserTest::LayoutMenuIfNecessary() {
   if (views::Widget* menu_widget =
           menu_coordinator()->GetExtensionsMenuWidget()) {
     menu_widget->LayoutRootViewIfNecessary();
   }
 }
 
-void ExtensionsMenuMainPageViewUnitTest::ClickSitePermissionsButton(
+void ExtensionsMenuMainPageViewBrowserTest::ClickSitePermissionsButton(
     ExtensionsMenuEntryView* menu_entry) {
   ClickButton(menu_entry->site_permissions_button_for_testing());
   WaitForAnimation();
 }
 
-void ExtensionsMenuMainPageViewUnitTest::ClickSiteAccessToggle(
+void ExtensionsMenuMainPageViewBrowserTest::ClickSiteAccessToggle(
     ExtensionsMenuEntryView* menu_entry,
     bool active_tab_only) {
   extensions::PermissionsManagerWaiter waiter(
-      PermissionsManager::Get(browser()->GetProfile()));
+      PermissionsManager::Get(profile()));
   ClickButton(menu_entry->site_access_toggle_for_testing());
   if (!active_tab_only) {
     waiter.WaitForExtensionPermissionsUpdate();
   }
-
   WaitForAnimation();
   LayoutMenuIfNecessary();
 }
 
-ExtensionsMenuMainPageView* ExtensionsMenuMainPageViewUnitTest::main_page() {
+ExtensionsMenuMainPageView* ExtensionsMenuMainPageViewBrowserTest::main_page() {
   ExtensionsMenuDelegateDesktop* menu_delegate =
       menu_coordinator()->GetDelegateForTesting();
   return menu_delegate ? menu_delegate->GetMainPageViewForTesting() : nullptr;
 }
 
 ExtensionsMenuSitePermissionsPageView*
-ExtensionsMenuMainPageViewUnitTest::site_permissions_page() {
+ExtensionsMenuMainPageViewBrowserTest::site_permissions_page() {
   ExtensionsMenuDelegateDesktop* menu_delegate =
       menu_coordinator()->GetDelegateForTesting();
   return menu_delegate ? menu_delegate->GetSitePermissionsPageForTesting()
@@ -185,31 +202,29 @@ ExtensionsMenuMainPageViewUnitTest::site_permissions_page() {
 }
 
 std::vector<ExtensionsMenuEntryView*>
-ExtensionsMenuMainPageViewUnitTest::menu_entries() {
+ExtensionsMenuMainPageViewBrowserTest::menu_entries() {
   ExtensionsMenuMainPageView* page = main_page();
   return page ? page->GetMenuEntries()
               : std::vector<ExtensionsMenuEntryView*>();
 }
 
-void ExtensionsMenuMainPageViewUnitTest::SetUp() {
-  ExtensionsToolbarUnitTest::SetUp();
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+void ExtensionsMenuMainPageViewBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  ExtensionsToolbarBrowserTest::SetUpCommandLine(command_line);
+  command_line->AppendSwitch(
       views::switches::kDisableInputEventActivationProtectionForTesting);
-  // Menu needs web contents at construction, so we need to add them to every
-  // test.
-  web_contents_tester_ = AddWebContentsAndGetTester();
 }
 
-void ExtensionsMenuMainPageViewUnitTest::TearDown() {
+void ExtensionsMenuMainPageViewBrowserTest::TearDownOnMainThread() {
   if (views::Widget* menu_widget =
           menu_coordinator()->GetExtensionsMenuWidget()) {
     menu_widget->CloseNow();
   }
-  web_contents_tester_ = nullptr;
-  ExtensionsToolbarUnitTest::TearDown();
+  ExtensionsToolbarBrowserTest::TearDownOnMainThread();
 }
 
-TEST_F(ExtensionsMenuMainPageViewUnitTest, ExtensionsAreSorted) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       ExtensionsAreSorted) {
   constexpr char kExtensionZName[] = "Z Extension";
   InstallExtension(kExtensionZName);
   constexpr char kExtensionAName[] = "A Extension";
@@ -232,11 +247,12 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ExtensionsAreSorted) {
 
 // Verifies the site access toggle and site permissions button properties for an
 // extension that doesn't request site access.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, NoHostAccessRequested) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       NoHostAccessRequested) {
   auto extension = InstallExtension("Extension");
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -270,13 +286,13 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NoHostAccessRequested) {
 
 // Verifies the site access toggle and site permissions button properties for an
 // enterprise extension that doesn't request host permissions.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       NoHostAccessRequested_EnterpriseExtension) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       NoHostAccessRequested_EnterpriseExtension) {
   auto extension =
       InstallEnterpriseExtension("Extension", /*host_permissions*/ {});
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -313,13 +329,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // Verifies the site access toggle and site permissions button properties when
 // toggling site access for an extension that requests host permissions for a
 // specific site.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       HostPermissionsRequested_ToggleSiteAccess_OnSite) {
-  const GURL url("http://www.example.com");
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       HostPermissionsRequested_ToggleSiteAccess_OnSite) {
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
   auto extension =
-      InstallExtensionWithHostPermissions("Extension", {url.spec()});
+      InstallExtensionWithHostPermissions("Extension", {"*://*.example.com/*"});
 
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -390,13 +407,13 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // Verifies the site access toggle and site permissions button properties when
 // toggling site access for an extension that requests host permissions for all
 // sites.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       HostPermissionsRequested_ToggleSiteAccess_OnAllSites) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       HostPermissionsRequested_ToggleSiteAccess_OnAllSites) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -470,13 +487,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // Verifies the site access toggle and site permissions button properties for an
 // extension that requests host permissions when host permission change with the
 // menu open.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       HostPermissionsRequested_DynamicUpdates) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       HostPermissionsRequested_DynamicUpdates) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
-  const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateAndCommit(url);
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -525,14 +543,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
 // Verifies the site access toggle persists its previous state when toggling
 // site access on.
-TEST_F(
-    ExtensionsMenuMainPageViewUnitTest,
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsMenuMainPageViewBrowserTest,
     HostPermissionsRequested_DynamicUpdates_TogglePersistsPreviousSiteAccess) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -577,12 +595,13 @@ TEST_F(
 
 // Tests that opening the menu on a restricted URL correctly sets the site
 // access toggle state to off.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, SiteAccessToggle_RestrictedUrl) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       SiteAccessToggle_RestrictedUrl) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
   const GURL restricted_url("chrome://extensions");
-  web_contents_tester()->NavigateAndCommit(restricted_url);
+  NavigateAndCommit(restricted_url);
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -595,8 +614,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, SiteAccessToggle_RestrictedUrl) {
 // Tests that an extension with broad site access (kOnAllSites) whose site
 // interaction evaluates to non-granted (e.g., on a policy-blocked host)
 // correctly maintains toggle state matching UserSiteAccess (toggle is on).
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       SiteAccessToggle_BroadAccessWithWithheldInteraction) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       SiteAccessToggle_BroadAccessWithWithheldInteraction) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
@@ -611,7 +630,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
       default_blocked_hosts, default_allowed_hosts);
 
   const GURL policy_blocked_url("https://www.policy-blocked.com");
-  web_contents_tester()->NavigateAndCommit(policy_blocked_url);
+  NavigateAndCommit(policy_blocked_url);
 
   // Extension has kOnAllSites access in PermissionsManager.
   ASSERT_EQ(GetUserSiteAccess(*extension, policy_blocked_url),
@@ -628,14 +647,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
 // Verifies the site access toggle and site permissions button properties for an
 // extension that requests host permissions.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       HostPermissionsRequested_EnterpriseExtension) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       HostPermissionsRequested_EnterpriseExtension) {
   auto extension =
       InstallEnterpriseExtension("Extension",
                                  /*host_permissions=*/{"<all_urls>"});
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -694,12 +713,12 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
 // Verifies the site access toggle and site permissions button properties when
 // toggling site access for an extension that only requests active tab.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       ActiveTabRequested_ToggleSiteAccess) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       ActiveTabRequested_ToggleSiteAccess) {
   auto extension = InstallExtensionWithPermissions("Extension", {"activeTab"});
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -756,12 +775,13 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // Verifies the site access toggle and site permissions button properties when
 // toggling an extension off that has "on click" site access and granted tab
 // permissions (meaning it has access to the current site).
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       ActiveTabRequested_ToggleSiteAccess_UngrantTabPermissions) {
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsMenuMainPageViewBrowserTest,
+    ActiveTabRequested_ToggleSiteAccess_UngrantTabPermissions) {
   auto extension = InstallExtensionWithPermissions("Extension", {"activeTab"});
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -837,11 +857,13 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // Verifies the site access toggle and site permissions button properties for an
 // extension that only requests active tab when site permissions change with the
 // menu open.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, ActiveTabRequested_DynamicUpdates) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       ActiveTabRequested_DynamicUpdates) {
   auto extension = InstallExtensionWithPermissions("Extension", {"activeTab"});
 
-  const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateAndCommit(url);
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -883,8 +905,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ActiveTabRequested_DynamicUpdates) {
   //   - site permissions button is visible, enabled, and has "on click" text.
   // Note: refreshing the page doesn't revoke tab permissions, thus we
   // need to re navigate to the url.
-  web_contents_tester()->NavigateAndCommit(GURL("http://other-url.com"));
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(
+      embedded_test_server()->GetURL("other-url.com", "/title1.html"));
+  NavigateAndCommit(url);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
   EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
@@ -904,13 +927,13 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ActiveTabRequested_DynamicUpdates) {
 
 // Verifies the site permissions button opens the site permissions page when it
 // is enabled.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       SitePermissionsButton_OpenSitePermissionsPage) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       SitePermissionsButton_OpenSitePermissionsPage) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -931,8 +954,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_EQ(page->extension_id(), extension->id());
 }
 
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       AddAndRemoveExtensionWhenMainPageIsOpen) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       AddAndRemoveExtensionWhenMainPageIsOpen) {
   constexpr char kExtensionA[] = "A Extension";
   constexpr char kExtensionC[] = "C Extension";
   InstallExtension(kExtensionA);
@@ -978,8 +1001,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
 // Tests that removing the last extension while the main page is open closes the
 // menu bubble.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       CloseMenuWhenLastExtensionIsRemoved) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       CloseMenuWhenLastExtensionIsRemoved) {
   auto extension = InstallExtension("Extension");
 
   ShowMenu();
@@ -992,17 +1015,17 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
 // Tests that the extensions menu is dynamically updated when there is a
 // navigation while the menu is opened.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       NavigationWhenMainPageIsOpen) {
   auto extension_A =
       InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
   auto extension_B = InstallExtensionWithHostPermissions(
       "Extension B", {"*://www.other.com/"});
-
-  web_contents_tester()->NavigateAndCommit(GURL("http://www.site.com"));
-
-  // Withhold extension A's host permissions and add a site access
-  // request.
   WithholdHostPermissions(extension_A.get());
+
+  NavigateAndCommit(GURL("http://www.example.com"));
+
+  // Add a site access request for extension A.
   AddHostAccessRequest(*extension_A,
                        browser()->tab_strip_model()->GetActiveWebContents());
 
@@ -1022,7 +1045,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
   // shows extension A request and extension items have the site access text
   // based on their access.
   ASSERT_EQ(main_page()->GetSiteSettingLabelForTesting(),
-            u"Allow extensions on site.com");
+            GetExpectedSiteSettingLabel(u"Allow extensions on example.com"));
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestsSection(),
@@ -1039,14 +1062,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
 
   // Navigate to a same-origin site.
-  web_contents_tester()->NavigateAndCommit(GURL(("http://www.site.com/path")));
+  NavigateAndCommit(GURL("http://www.example.com/title2.html"));
   LayoutMenuIfNecessary();
 
   // Verify site settings label has the new site, request access section still
   // shows the extension A request and extension items have the same site access
   // text.
   ASSERT_EQ(main_page()->GetSiteSettingLabelForTesting(),
-            u"Allow extensions on site.com");
+            GetExpectedSiteSettingLabel(u"Allow extensions on example.com"));
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestsSection(),
@@ -1063,14 +1086,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
 
   // Navigate to a cross-origin site.
-  web_contents_tester()->NavigateAndCommit(GURL(("http://www.other.com")));
+  NavigateAndCommit(GURL("http://www.other.com"));
   LayoutMenuIfNecessary();
 
   // Verify site settings label has the new site, request access section is not
   // visible (requests are reset on cross-origin navigations) and extension
   // items updated their site access text based on their access.
   ASSERT_EQ(main_page()->GetSiteSettingLabelForTesting(),
-            u"Allow extensions on other.com");
+            GetExpectedSiteSettingLabel(u"Allow extensions on other.com"));
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_FALSE(requests_section->GetVisible());
   EXPECT_EQ(extension_A_item->site_permissions_button_for_testing()->GetText(),
@@ -1083,7 +1106,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
 
 // Verifies the pin button appears on the menu item, in place of context menu
 // button when state is normal, when an extension is pinned.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensions) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       PinnedExtensions) {
   auto extension = InstallExtension("Test Extension");
 
   ShowMenu();
@@ -1146,7 +1170,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensions) {
       three_dot_icon));
 }
 
-TEST_F(ExtensionsMenuMainPageViewUnitTest, DisableAndEnableExtension) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       DisableAndEnableExtension) {
   constexpr char kName[] = "Test Extension";
   auto extension_id = InstallExtension(kName)->id();
 
@@ -1170,7 +1195,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, DisableAndEnableExtension) {
 // as pinned state is also preserved when a reload happens. Add this
 // functionality when showing pin icon instead of context menu when extension is
 // pinned is added.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtension) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest, ReloadExtension) {
   // The extension must have a manifest to be reloaded.
   extensions::TestExtensionDir extension_directory;
   constexpr char kManifest[] = R"({
@@ -1202,7 +1227,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtension) {
 // Tests that a when an extension is reloaded with manifest errors, and
 // therefore fails to be loaded into Chrome, it's removed from the
 // extensions menu.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtensionFailed) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       ReloadExtensionFailed) {
   extensions::TestExtensionDir extension_directory;
   constexpr char kManifest[] = R"({
         "name": "Test Extension",
@@ -1237,7 +1263,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtensionFailed) {
 
 // Test that user controls in the menu are hidden on restricted sites, since
 // user cannot change extension's site settings for them.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest, RestrictedSite) {
   constexpr char kExtension[] = "Extension";
   constexpr char kEnterpriseExtension[] = "Enterprise extension";
   InstallExtension(kExtension);
@@ -1246,7 +1272,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
 
   const GURL restricted_url("chrome://extensions");
   auto restricted_origin = url::Origin::Create(restricted_url);
-  web_contents_tester()->NavigateAndCommit(restricted_url);
+  NavigateAndCommit(restricted_url);
 
   ShowMenu();
   ASSERT_EQ(menu_entries().size(), 2u);
@@ -1278,7 +1304,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
 
 // Test that user controls in the menu are hidden or disabled on policy blocked
 // sites, since user cannot change extension's site settings for them.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       PolicyBlockedSite) {
   // Install extensions requesting site access.
   InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   InstallExtensionWithPermissions("Extension: activeTab", {"activeTab"});
@@ -1296,7 +1323,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
   // Navigate to the policy-blocked site.
   const GURL policy_blocked_url("https://www.policy-blocked.com");
   auto restricted_origin = url::Origin::Create(policy_blocked_url);
-  web_contents_tester()->NavigateAndCommit(policy_blocked_url);
+  NavigateAndCommit(policy_blocked_url);
 
   ShowMenu();
   ASSERT_EQ(menu_entries().size(), 2u);
@@ -1308,7 +1335,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
   //    - toggle is hidden since user cannot customize any extension on a
   //    policy-blocked-site.
   EXPECT_EQ(main_page()->GetSiteSettingLabelForTesting(),
-            u"Extensions are not allowed on policy-blocked.com");
+            GetExpectedSiteSettingLabel(
+                u"Extensions are not allowed on policy-blocked.com"));
   EXPECT_FALSE(main_page()->site_settings_tooltip()->GetVisible());
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetVisible());
 
@@ -1356,8 +1384,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
 // Test that user controls in the menu are hidden or disabled on policy blocked
 // sites, since user cannot change extension's site settings for them, and
 // informs the user that enterprise extensions still have access.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       PolicyBlockedSite_EnterpriseExtension) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       PolicyBlockedSite_EnterpriseExtension) {
   // Add a policy-blocked site.
   URLPattern default_policy_blocked_pattern =
       URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*");
@@ -1383,7 +1411,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // Navigate to the policy-blocked site.
   const GURL policy_blocked_url("https://www.policy-blocked.com");
   auto restricted_origin = url::Origin::Create(policy_blocked_url);
-  web_contents_tester()->NavigateAndCommit(policy_blocked_url);
+  NavigateAndCommit(policy_blocked_url);
 
   ShowMenu();
   ASSERT_EQ(menu_entries().size(), 1u);
@@ -1394,7 +1422,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //    - toggle is hidden since user cannot customize any extension on a
   //      policy-blocked-site.
   EXPECT_EQ(main_page()->GetSiteSettingLabelForTesting(),
-            u"Extensions are not allowed on policy-blocked.com");
+            GetExpectedSiteSettingLabel(
+                u"Extensions are not allowed on policy-blocked.com"));
   EXPECT_TRUE(main_page()->site_settings_tooltip());
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetVisible());
 
@@ -1430,11 +1459,12 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // Test that user controls for extensions in the menu are hidden on user
 // blocked sites, since user cannot change the individual extension's site
 // access.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, UserBlockedSite) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest, UserBlockedSite) {
   InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
-  const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateAndCommit(url);
 
   // Block all extensions on `url`.
   UpdateUserSiteSetting(
@@ -1461,12 +1491,13 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, UserBlockedSite) {
 // Test that user controls for enterprise extensions in the menu are disabled on
 // user blocked sites, since user cannot change the individual extension's site
 // access.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       UserBlockedSite_EnterpriseExtension) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       UserBlockedSite_EnterpriseExtension) {
   InstallEnterpriseExtension("Enterprise extension", {"<all_urls>"});
 
-  const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateAndCommit(url);
 
   // Block all extensions on `url`.
   UpdateUserSiteSetting(
@@ -1506,7 +1537,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // Tests that the requests section is visible when the user can customize the
 // extensions site access and at least 1+ extensions added a site access
 // request. Reload section is always hidden if requests section is visible.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsSection) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest, RequestsSection) {
   // Install two extension that requests host permissions.
   auto extension_A =
       InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
@@ -1514,7 +1545,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsSection) {
       InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1576,14 +1607,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsSection) {
 // Tests that the requests section is visible when the user can customize the
 // extensions site access and an extension added a site access request with a
 // pattern filter that matches the current site.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       RequestsSection_RequestsWithPattern) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       RequestsSection_RequestsWithPattern) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1604,7 +1635,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // Requests section is hidden when extension adds a site access request with
   // filter that doesn't match the current web contents.
   URLPattern filter(extensions::Extension::kValidHostPermissionSchemes,
-                    "http://www.other.com/");
+                    "http://www.other.com/*");
   AddHostAccessRequest(*extension, web_contents, filter);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
@@ -1613,7 +1644,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // Requests section is visible and has extension when the extension added a
   // site access request with filter that matches the current web contents.
   filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
-                      "http://www.example.com/");
+                      "http://www.example.com/*");
   AddHostAccessRequest(*extension, web_contents, filter);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
@@ -1625,7 +1656,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // with filter that doesn't match the current web contents (previous request
   // was removed).
   filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
-                      "http://www.example.com/other");
+                      "http://www.example.com/other*");
   AddHostAccessRequest(*extension, web_contents, filter);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
@@ -1635,14 +1666,15 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // Tests that the requests section is visible when the user can customize the
 // extensions site access and an extension added a site access request with a
 // pattern filter that matches the current site after same-origin navigations.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       RequestsSection_RequestsWithPattern_NavigationBetweenPages) {
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsMenuMainPageViewBrowserTest,
+    RequestsSection_RequestsWithPattern_NavigationBetweenPages) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
 
   // By default, user can customize the site access of each extension and site
   // access will be granted
@@ -1656,7 +1688,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // Requests section is hidden when extension adds a site access request for
   // extension with a filter that doesn't match the current web contents.
   URLPattern filter(extensions::Extension::kValidHostPermissionSchemes,
-                    "*://*/path");
+                    "*://*/title2.html*");
   AddHostAccessRequest(
       *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
   LayoutMenuIfNecessary();
@@ -1666,7 +1698,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // Navigate to a same-origin site that matches the filter.
   // Requests section is visible and has extension when the extension added a
   // site access request with filter that matches the current web contents.
-  web_contents_tester()->NavigateAndCommit(GURL("http://www.example.com/path"));
+  NavigateAndCommit(GURL("http://www.example.com/title2.html"));
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_TRUE(requests_section->GetVisible());
@@ -1677,7 +1709,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // cross-origin navigation, requests are reset.
   // Requests section is hidden when no extension has site access requests for
   // the current site.
-  web_contents_tester()->NavigateAndCommit(GURL("http://www.other.com/"));
+  NavigateAndCommit(GURL("http://www.other.com/"));
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_FALSE(requests_section->GetVisible());
@@ -1685,8 +1717,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
 // Tests that the extension's request entry is removed from the requests
 // container when an extension is granted site access.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       MessageSection_UserCustomizedAccess_ExtensionGrantedSiteAccess) {
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsMenuMainPageViewBrowserTest,
+    MessageSection_UserCustomizedAccess_ExtensionGrantedSiteAccess) {
   // Install two extension that requests host permissions.
   auto extension_A = InstallExtensionWithHostPermissions(
       "Extension A", {"*://www.example.com/*"});
@@ -1696,7 +1729,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   WithholdHostPermissions(extension_B.get());
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1723,15 +1756,16 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
 // Tests that clicking on the extension's request 'allow' button grants site
 // access one time.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       MessageSection_UserCustomizedAccess_AllowExtension) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       MessageSection_UserCustomizedAccess_AllowExtension) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
 
   // Navigate to a site and add a site access request for the extension.
-  const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateAndCommit(url);
   AddHostAccessRequest(*extension,
                        browser()->tab_strip_model()->GetActiveWebContents());
 
@@ -1741,7 +1775,6 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   constexpr char kActivatedUserAction[] =
       "Extensions.Toolbar.ExtensionActivatedFromAllowingRequestAccessInMenu";
   base::UserActionTester user_action_tester;
-  auto* permissions = PermissionsManager::Get(profile());
 
   // When extension added a site access request:
   //   - requests section (menu) includes extension and is visible.
@@ -1754,7 +1787,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_THAT(GetExtensionsInRequestAccessButton(),
               testing::ElementsAre(extension->id()));
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 0);
-  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnClick);
 
   // Click on the allow button for the extension.
@@ -1782,21 +1815,21 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(GetExtensionsInRequestsSection().empty());
   EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 1);
-  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
+  EXPECT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnSite);
 }
 
 // Tests that clicking on the extension's request 'dismiss' button removes the
 // extension request from the menu and toolbar.
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       MessageSection_UserCustomizedAccess_DismissExtension) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       MessageSection_UserCustomizedAccess_DismissExtension) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
 
   // Navigate to a site and add a site access request for the extension.
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
   AddHostAccessRequest(*extension,
                        browser()->tab_strip_model()->GetActiveWebContents());
 
@@ -1835,8 +1868,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // Re navigate to the same page.
   // Note: refreshing the page doesn't revoke tab permissions, thus we
   // need to re navigate to the url.
-  web_contents_tester()->NavigateAndCommit(GURL("http://other-url.com"));
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(GURL("http://other-url.com"));
+  NavigateAndCommit(url);
 
   // Navigating to the same url should not show again the request, since
   // requests are reset on cross-origin navigation.
@@ -1850,15 +1883,15 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // Tests that the requests section displays an extension with a site access
 // request even if it is not allowed to show requests on the toolbar (extensions
 // menu is not considered part of the toolbar for this).
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       RequestsSection_RequestNotAllowedOnToolbar) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       RequestsSection_RequestNotAllowedOnToolbar) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
 
   // Navigate to a site and add a site access request for the extension.
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  NavigateAndCommit(url);
   AddHostAccessRequest(*extension,
                        browser()->tab_strip_model()->GetActiveWebContents());
 
