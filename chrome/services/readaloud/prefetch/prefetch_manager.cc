@@ -9,8 +9,15 @@
 #include <utility>
 
 #include "chrome/common/readaloud/read_aloud.mojom.h"
+#include "chrome/common/readaloud/read_aloud_constants.h"
 
 namespace readaloud {
+
+namespace {
+// Maximum number of sentence chunks to prefetch ahead in a single evaluation
+// to avoid queueing excessive network requests on long documents.
+constexpr size_t kMaxPrefetchLookahead = 5;
+}  // namespace
 
 CachedCompressedSegment::CachedCompressedSegment() = default;
 
@@ -123,21 +130,15 @@ base::TimeDelta PrefetchManager::GetTargetPrefetchDuration() const {
   return mode_scheduler_.GetTargetPrefetchDuration();
 }
 
-bool PrefetchManager::HasCachedSegment(int32_t chunk_index) const {
+bool PrefetchManager::HasCachedSegment(uint32_t chunk_index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (chunk_index < 0) {
-    return false;
-  }
   return session_cache_.contains(chunk_index);
 }
 
 const CachedCompressedSegment* PrefetchManager::GetCachedSegment(
-    int32_t chunk_index) const {
+    uint32_t chunk_index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (chunk_index < 0) {
-    return nullptr;
-  }
-  std::map<int32_t, CachedCompressedSegment>::const_iterator it =
+  std::map<uint32_t, CachedCompressedSegment>::const_iterator it =
       session_cache_.find(chunk_index);
   if (it == session_cache_.end()) {
     return nullptr;
@@ -146,15 +147,14 @@ const CachedCompressedSegment* PrefetchManager::GetCachedSegment(
 }
 
 void PrefetchManager::InsertCachedSegment(
-    int32_t chunk_index,
+    uint32_t chunk_index,
     scoped_refptr<media::DecoderBuffer> opus_buffer,
     std::vector<DecodedAudioSegment::WordTiming> timings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (chunk_index < 0 || !opus_buffer || opus_buffer->empty()) {
+  if (!opus_buffer || opus_buffer->empty()) {
     return;
   }
-  if (!timeline_.empty() &&
-      chunk_index >= static_cast<int32_t>(timeline_.size())) {
+  if (!timeline_.empty() && chunk_index >= timeline_.size()) {
     return;
   }
   session_cache_.insert_or_assign(
@@ -208,6 +208,32 @@ void PrefetchManager::MaybeIssueSynthesisRequest() {
     // callback.
     request_synthesis_callback_.Run(next_index, timeline_[next_index].text);
   }
+}
+
+std::vector<uint32_t> PrefetchManager::GetRequiredPrefetchChunks(
+    size_t current_chunk_index,
+    base::TimeDelta current_buffered_duration) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<uint32_t> required_chunks;
+
+  if (current_chunk_index >= timeline_.size() ||
+      current_buffered_duration.is_negative() ||
+      current_buffered_duration >= kAudioBufferPrefetchWatermark) {
+    return required_chunks;
+  }
+
+  size_t start_idx = current_chunk_index;
+  size_t end_idx =
+      std::min(timeline_.size(), start_idx + kMaxPrefetchLookahead);
+
+  for (size_t i = start_idx; i < end_idx; ++i) {
+    uint32_t chunk_idx = static_cast<uint32_t>(i);
+    if (!HasCachedSegment(chunk_idx)) {
+      required_chunks.push_back(chunk_idx);
+    }
+  }
+
+  return required_chunks;
 }
 
 }  // namespace readaloud

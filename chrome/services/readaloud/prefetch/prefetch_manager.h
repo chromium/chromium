@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/common/readaloud/read_aloud.mojom-forward.h"
 #include "chrome/services/readaloud/chunking/text_chunker.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
@@ -102,10 +103,10 @@ class PrefetchManager {
       std::vector<DecodedAudioSegment::WordTiming> timings);
 
   // Cache accessors & modifiers:
-  bool HasCachedSegment(int32_t chunk_index) const;
-  const CachedCompressedSegment* GetCachedSegment(int32_t chunk_index) const;
+  bool HasCachedSegment(uint32_t chunk_index) const;
+  const CachedCompressedSegment* GetCachedSegment(uint32_t chunk_index) const;
   void InsertCachedSegment(
-      int32_t chunk_index,
+      uint32_t chunk_index,
       scoped_refptr<media::DecoderBuffer> opus_buffer,
       std::vector<DecodedAudioSegment::WordTiming> timings);
   void ClearCache();
@@ -120,6 +121,18 @@ class PrefetchManager {
     return weak_factory_.GetWeakPtr();
   }
 
+  // Evaluates the sliding prefetch window starting from |current_chunk_index|.
+  // Returns a vector of uncached chunk indices ahead of |current_chunk_index|
+  // that should be synthesized to satisfy the target prefetch watermark.
+  //
+  // - If |current_buffered_duration| >= kAudioBufferPrefetchWatermark (15s),
+  //   returns an empty vector.
+  // - Skips indices that are already present in session_cache_.
+  // - Bounded by kMaxPrefetchLookahead and timeline_.size().
+  std::vector<uint32_t> GetRequiredPrefetchChunks(
+      size_t current_chunk_index,
+      base::TimeDelta current_buffered_duration) const;
+
  private:
   // Manages hysteresis transitions between kSpeed and kQuality modes.
   PrefetchModeScheduler mode_scheduler_;
@@ -131,7 +144,7 @@ class PrefetchManager {
 
   // Maps 0-indexed canonical sentence chunk indices to compressed cache
   // entries.
-  std::map<int32_t, CachedCompressedSegment> session_cache_;
+  std::map<uint32_t, CachedCompressedSegment> session_cache_;
 
   // Canonical sentence-level timeline generated from input segments.
   std::vector<TextChunk> timeline_;

@@ -147,16 +147,10 @@ TEST_F(PrefetchManagerTest, ClearCachePurgesAudioWithoutClearingTimeline) {
   EXPECT_FALSE(manager.HasCachedSegment(0));
 }
 
-TEST_F(PrefetchManagerTest, GetCachedSegmentWithNegativeIndexReturnsNull) {
+TEST_F(PrefetchManagerTest, GetCachedSegmentWithUncachedIndexReturnsNull) {
   PrefetchManager manager;
-  manager.InsertCachedSegment(
-      -1,
-      media::DecoderBuffer::CopyFrom(
-          std::vector<uint8_t>({0x4F, 0x67, 0x67, 0x53})),
-      {});
-
-  EXPECT_FALSE(manager.HasCachedSegment(-1));
-  EXPECT_EQ(nullptr, manager.GetCachedSegment(-1));
+  EXPECT_FALSE(manager.HasCachedSegment(999u));
+  EXPECT_EQ(nullptr, manager.GetCachedSegment(999u));
 }
 
 TEST_F(PrefetchManagerTest, InsertCachedSegmentIgnoresNullOrEmptyBuffer) {
@@ -426,6 +420,113 @@ TEST_F(PrefetchManagerTest, UpdatePrefetchModeDelegatesToModeScheduler) {
 
   manager.ResetSession();
   EXPECT_EQ(ChunkingMode::kSpeed, manager.GetChunkingMode());
+}
+
+TEST_F(PrefetchManagerTest, GetRequiredPrefetchChunksReturnsUncachedAhead) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  for (int i = 0; i < 10; ++i) {
+    auto seg = read_aloud::mojom::TextSegment::New();
+    seg->segment_index = i;
+    seg->text = u"Sentence.";
+    segments.push_back(std::move(seg));
+  }
+  manager.SetTextContent(segments);
+
+  EXPECT_THAT(manager.GetRequiredPrefetchChunks(0, base::Seconds(0)),
+              testing::ElementsAre(0, 1, 2, 3, 4));
+}
+
+TEST_F(PrefetchManagerTest, GetRequiredPrefetchChunksSkipsCachedChunks) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  for (int i = 0; i < 10; ++i) {
+    auto seg = read_aloud::mojom::TextSegment::New();
+    seg->segment_index = i;
+    seg->text = u"Sentence.";
+    segments.push_back(std::move(seg));
+  }
+  manager.SetTextContent(segments);
+
+  manager.InsertCachedSegment(
+      1,
+      media::DecoderBuffer::CopyFrom(
+          std::vector<uint8_t>({0x4F, 0x67, 0x67, 0x53})),
+      {});
+  manager.InsertCachedSegment(
+      3,
+      media::DecoderBuffer::CopyFrom(
+          std::vector<uint8_t>({0x4F, 0x67, 0x67, 0x53})),
+      {});
+
+  // Window [0, 5) contains chunks 0, 1, 2, 3, 4. Chunks 1 and 3 are cached.
+  // The uncached chunks within the 5-chunk lookahead window are 0, 2, 4.
+  EXPECT_THAT(manager.GetRequiredPrefetchChunks(0, base::Seconds(0)),
+              testing::ElementsAre(0, 2, 4));
+}
+
+TEST_F(PrefetchManagerTest,
+       GetRequiredPrefetchChunksDoesNotScanBeyondMaxLookahead) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  for (int i = 0; i < 10; ++i) {
+    auto seg = read_aloud::mojom::TextSegment::New();
+    seg->segment_index = i;
+    seg->text = u"Sentence.";
+    segments.push_back(std::move(seg));
+  }
+  manager.SetTextContent(segments);
+
+  // Cache all chunks in the lookahead window [0, 5).
+  for (int i = 0; i < 5; ++i) {
+    manager.InsertCachedSegment(
+        i,
+        media::DecoderBuffer::CopyFrom(
+            std::vector<uint8_t>({0x4F, 0x67, 0x67, 0x53})),
+        {});
+  }
+
+  // Lookahead window [0, 5) is fully cached; should NOT scan chunks 5..9.
+  std::vector<uint32_t> required =
+      manager.GetRequiredPrefetchChunks(0, base::Seconds(0));
+  EXPECT_TRUE(required.empty());
+}
+
+TEST_F(PrefetchManagerTest,
+       GetRequiredPrefetchChunksReturnsEmptyWhenWindowFull) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  for (int i = 0; i < 10; ++i) {
+    auto seg = read_aloud::mojom::TextSegment::New();
+    seg->segment_index = i;
+    seg->text = u"Sentence.";
+    segments.push_back(std::move(seg));
+  }
+  manager.SetTextContent(segments);
+
+  std::vector<uint32_t> required =
+      manager.GetRequiredPrefetchChunks(0, base::Seconds(15));
+  EXPECT_TRUE(required.empty());
+
+  // Negative buffered duration should also return empty vector.
+  std::vector<uint32_t> required_neg =
+      manager.GetRequiredPrefetchChunks(0, base::Seconds(-1));
+  EXPECT_TRUE(required_neg.empty());
+}
+
+TEST_F(PrefetchManagerTest, GetRequiredPrefetchChunksRespectsTimelineBounds) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  for (int i = 0; i < 10; ++i) {
+    auto seg = read_aloud::mojom::TextSegment::New();
+    seg->segment_index = i;
+    seg->text = u"Sentence.";
+    segments.push_back(std::move(seg));
+  }
+  manager.SetTextContent(segments);
+
+  EXPECT_THAT(manager.GetRequiredPrefetchChunks(8, base::Seconds(0)),
+              testing::ElementsAre(8, 9));
 }
 
 }  // namespace readaloud
