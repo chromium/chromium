@@ -5,6 +5,7 @@
 #include "chrome/credential_provider/setup/gcp_installer_crash_reporting.h"
 
 #include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
@@ -31,10 +32,16 @@ void ConfigureGcpInstallerCrashReporting(
   // a stub .exe and a main .dll, crash reporting can be configured in one place
   // right here.
 
-  GcpCrashReporterClient* crash_client = new GcpCrashReporterClient();
-  ANNOTATE_LEAKING_OBJECT_PTR(crash_client);
+  base::FilePath crash_dir = GetFolderForCrashDumps();
+  if (crash_dir.empty()) {
+    // Crashpad cannot function without a directory in which to write.
+    return;
+  }
 
-  InitializeGcpwCrashReporting(crash_client);
+  GcpCrashReporterClient* crash_client =
+      new GcpCrashReporterClient(std::move(crash_dir));
+  ANNOTATE_LEAKING_OBJECT_PTR(crash_client);
+  crash_reporter::SetCrashReporterClient(crash_client);
 
   crash_reporter::InitializeCrashpadWithEmbeddedHandler(true, "GCPW Installer",
                                                         "", base::FilePath());
