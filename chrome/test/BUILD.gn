@@ -4290,6 +4290,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/frame:app_menu_button_observer",
         "//chrome/browser/ui/views/frame:top_controls_slide_controller",
         "//chrome/browser/ui/views/mahi",
+        "//chrome/browser/ui/views/profiles:profile_indicator_icon",
         "//chrome/browser/ui/views/select_file_dialog_extension:browser_tests",
         "//chrome/browser/ui/views/web_apps:protocol_handler_picker_dialog",
         "//chrome/browser/ui/webui/ash:browser_tests",

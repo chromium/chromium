@@ -3,8 +3,65 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//components/signin/features.gni")
+
+if (is_chromeos) {
+  source_set("profile_indicator_icon") {
+    public = [ "profile_indicator_icon.h" ]
+    sources = [ "profile_indicator_icon.cc" ]
+    public_deps = [
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+    deps = [
+      "//chrome/browser/profiles:profile_util",
+      "//ui/compositor",
+    ]
+  }
+}
+
+if (is_win || is_mac || is_linux || is_chromeos) {
+  source_set("avatar_badge_view") {
+    public = [ "avatar_badge_view.h" ]
+    sources = [ "avatar_badge_view.cc" ]
+    public_deps = [
+      "//chrome/browser/ui/profiles",
+      "//skia",
+      "//ui/base",
+      "//ui/views",
+    ]
+    deps = [
+      "//base",
+      "//build:branding_buildflags",
+      "//cc/paint",
+      "//chrome/browser/ui/color:color_headers",
+      "//components/signin/public/base:signin_switches",
+      "//ui/color",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+    ]
+  }
+}
 
 if (is_win || is_mac || is_linux) {
+  source_set("badged_profile_photo") {
+    public = [ "badged_profile_photo.h" ]
+    sources = [ "badged_profile_photo.cc" ]
+    public_deps = [
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+    deps = [
+      "//chrome/app/vector_icons",
+      "//chrome/browser/profiles:profile_util",
+      "//skia",
+      "//ui/base:features",
+      "//ui/color:color_headers",
+    ]
+  }
+
   # ProfilePickerView and the flow controllers this helper drives are only
   # compiled into //chrome/browser/ui on Windows, Mac and Linux, so the helper
   # (whose object file is always linked in, unlike when it lived in the
@@ -38,6 +95,7 @@ if (is_win || is_mac || is_linux) {
     ]
   }
 }
+
 
 if (toolkit_views) {
   source_set("profiles_pixel_test_utils") {
