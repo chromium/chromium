@@ -31,6 +31,8 @@
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -69,6 +71,10 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
         /*variations_client=*/nullptr,
         std::move(query_controller_config_params));
     query_controller_ = query_controller_ptr.get();
+
+    ON_CALL(*query_controller_, GetFileInfo)
+        .WillByDefault(testing::Invoke(query_controller_.get(),
+                                       &MockQueryController::FakeGetFileInfo));
 
     auto metrics_recorder_ptr =
         std::make_unique<MockContextualSearchMetricsRecorder>();
@@ -623,4 +629,138 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery_NullInputStateModel) {
 
   // This should not crash and should return early.
   test_handler->SubmitQuery("test query", 1, false, false, false, false, false);
+}
+
+TEST_F(ComposeboxHandlerTest,
+       ShouldOpenInLensSidePanel_ContextualTasksSidePanelEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{contextual_tasks::kContextualTasksSidePanel},
+      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  query_controller().AddTabFileInfoForTesting(
+      token, GURL("https://example.com"), lens::MimeType::kAnnotatedPageContent,
+      tab_id);
+  contextual_session_handle()->set_submitted_context_tokens({token});
+
+  EXPECT_TRUE(handler().ShouldOpenInLensSidePanelForTesting(
+      web_contents(), contextual_session_handle()));
+}
+
+TEST_F(
+    ComposeboxHandlerTest,
+    ShouldOpenInLensSidePanel_ContextualTasksSidePanelEnabled_CobrowseEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{contextual_tasks::kContextualTasksSidePanel,
+                            contextual_tasks::
+                                kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  query_controller().AddTabFileInfoForTesting(
+      token, GURL("https://example.com"), lens::MimeType::kAnnotatedPageContent,
+      tab_id);
+  contextual_session_handle()->set_submitted_context_tokens({token});
+
+  // When kContextualTasks (cobrowse) is disabled, even if the user is cobrowse
+  // eligible, the query should route to the ContextualTasks side panel if
+  // kContextualTasksSidePanel is enabled.
+  EXPECT_TRUE(handler().ShouldOpenInLensSidePanelForTesting(
+      web_contents(), contextual_session_handle()));
+}
+
+TEST_F(ComposeboxHandlerTest,
+       ShouldOpenInLensSidePanel_ContextualTasksCobrowseEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{contextual_tasks::kContextualTasks,
+                            contextual_tasks::
+                                kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{});
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  query_controller().AddTabFileInfoForTesting(
+      token, GURL("https://example.com"), lens::MimeType::kAnnotatedPageContent,
+      tab_id);
+  contextual_session_handle()->set_submitted_context_tokens({token});
+
+  // When kContextualTasks is enabled and eligible, cobrowse should handle
+  // the navigation, so ShouldOpenInLensSidePanel returns false.
+  EXPECT_FALSE(handler().ShouldOpenInLensSidePanelForTesting(
+      web_contents(), contextual_session_handle()));
+}
+
+TEST_F(ComposeboxHandlerTest,
+       ShouldOpenInLensSidePanel_ContextualTasksEnabled_CobrowseIneligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{contextual_tasks::kContextualTasks,
+                            contextual_tasks::kContextualTasksSidePanel},
+      /*disabled_features=*/{
+          contextual_tasks::kContextualTasksForceEntryPointEligibility});
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  query_controller().AddTabFileInfoForTesting(
+      token, GURL("https://example.com"), lens::MimeType::kAnnotatedPageContent,
+      tab_id);
+  contextual_session_handle()->set_submitted_context_tokens({token});
+
+  // When kContextualTasks is enabled but the profile is ineligible for
+  // cobrowse, it should route to the side panel if ContextualTasksSidePanel
+  // is enabled.
+  EXPECT_TRUE(handler().ShouldOpenInLensSidePanelForTesting(
+      web_contents(), contextual_session_handle()));
+}
+
+TEST_F(ComposeboxHandlerTest, ShouldOpenInLensSidePanel_MultipleTabsAttached) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{contextual_tasks::kContextualTasksSidePanel},
+      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
+
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  query_controller().AddTabFileInfoForTesting(
+      token1, GURL("https://example1.com"),
+      lens::MimeType::kAnnotatedPageContent, tab_id);
+  query_controller().AddTabFileInfoForTesting(
+      token2, GURL("https://example2.com"),
+      lens::MimeType::kAnnotatedPageContent,
+      SessionID::FromSerializedValue(tab_id.id() + 1));
+  contextual_session_handle()->set_submitted_context_tokens({token1, token2});
+
+  EXPECT_FALSE(handler().ShouldOpenInLensSidePanelForTesting(
+      web_contents(), contextual_session_handle()));
 }
