@@ -69,6 +69,7 @@ public class AutocompleteEditTextUnitTest {
     private InputConnection mInputConnection;
     private Verifier mVerifier;
     private boolean mIsShown;
+    private boolean mIsMultilineEligible;
 
     /**
      * A flag to tweak test expectations to deal with an OS bug.
@@ -237,6 +238,11 @@ public class AutocompleteEditTextUnitTest {
 
         public void setKeyboardPackageName(String packageName) {
             mKeyboardPackageName.set(packageName);
+        }
+
+        @Override
+        public void setInputIsMultilineEligible(boolean isMultilineEligible) {
+            mIsMultilineEligible = isMultilineEligible;
         }
 
         @Override
@@ -1599,5 +1605,39 @@ public class AutocompleteEditTextUnitTest {
 
         assertTrue(mAutocomplete.onTextContextMenuItem(android.R.id.undo));
         assertTexts("", "", "");
+    }
+
+    @Test
+    public void testMultilineEligibility_whitespaceVariants() {
+        // Empty text:
+        assertFalse(mIsMultilineEligible);
+
+        // Without whitespace:
+        assertTrue(mInputConnection.commitText("hello", 1));
+        assertFalse(mIsMultilineEligible);
+
+        // With standard ASCII space:
+        assertTrue(mInputConnection.commitText(" ", 1));
+        assertTrue(mIsMultilineEligible);
+
+        // CJK text without whitespace:
+        mAutocomplete.setText("");
+        assertTrue(mInputConnection.commitText("こんにちは世界", 1));
+        assertFalse(mIsMultilineEligible);
+
+        // With Japanese / CJK full-width ideographic space (U+3000):
+        mAutocomplete.setText("");
+        assertTrue(mInputConnection.commitText("こんにちは\u3000世界", 1));
+        assertTrue(mIsMultilineEligible);
+
+        // With tab character (U+0009):
+        mAutocomplete.setText("");
+        assertTrue(mInputConnection.commitText("hello\tworld", 1));
+        assertTrue(mIsMultilineEligible);
+
+        // With newline character (U+000A):
+        mAutocomplete.setText("");
+        assertTrue(mInputConnection.commitText("hello\nworld", 1));
+        assertTrue(mIsMultilineEligible);
     }
 }

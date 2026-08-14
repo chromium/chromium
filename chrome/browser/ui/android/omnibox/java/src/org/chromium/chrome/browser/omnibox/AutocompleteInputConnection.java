@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.CorrectionInfo;
@@ -115,6 +114,19 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
          * @return True if the composition should be finished on deletion, false otherwise.
          */
         boolean shouldFinishCompositionOnDeletion();
+    }
+
+    /**
+     * Checks whether the given text contains any whitespace characters (ASCII or Unicode) without
+     * allocations.
+     */
+    private static boolean containsWhitespace(CharSequence text) {
+        for (int i = 0; i < text.length(); i++) {
+            if (Character.isWhitespace(text.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private final AutocompleteState mPreBatchEditState;
@@ -240,8 +252,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
         mInputDelegate
                 .getAutocompleteEditTextModelBaseDelegate()
                 .setInputIsMultilineEligible(
-                        TextUtils.indexOf(mInputDelegate.getCurrentState().getUserText(), ' ')
-                                >= 0);
+                        containsWhitespace(mInputDelegate.getCurrentState().getUserText()));
 
         if (!mInputDelegate.getCurrentState().isCursorAtEndOfUserText()) return false;
 
