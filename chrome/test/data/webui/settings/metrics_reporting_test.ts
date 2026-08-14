@@ -5,9 +5,10 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsPersonalizationOptionsElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, PrivacyPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -64,15 +65,16 @@ suite('MetricsConsentRestructureDisabled', function() {
         await testBrowserProxy.whenCalled('getMetricsReporting');
         await flushTasks();
 
-        const control =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#metricsReportingControl');
+        const control = page.shadowRoot!.querySelector<CrToggleElement>(
+            '#metricsReportingControl');
         assertTrue(!!control);
         assertEquals(
             testBrowserProxy.metricsReporting.enabled, control.checked);
         assertEquals(
+            testBrowserProxy.metricsReporting.managed, control.disabled);
+        assertEquals(
             testBrowserProxy.metricsReporting.managed,
-            !!control.pref!.controlledBy);
+            isChildVisible(page, 'cr-policy-indicator'));
 
         const changedMetrics = {
           enabled: !testBrowserProxy.metricsReporting.enabled,
@@ -82,15 +84,16 @@ suite('MetricsConsentRestructureDisabled', function() {
         flush();
 
         assertEquals(changedMetrics.enabled, control.checked);
-        assertEquals(changedMetrics.managed, !!control.pref!.controlledBy);
+        assertEquals(changedMetrics.managed, control.disabled);
+        assertEquals(
+            changedMetrics.managed,
+            isChildVisible(page, 'cr-policy-indicator'));
 
-        const toggled: boolean = !changedMetrics.enabled;
-        control.checked = toggled;
-        control.notifyChangedByUserInteraction();
+        control.click();
 
         const enabled =
             await testBrowserProxy.whenCalled('setMetricsReportingEnabled');
-        assertEquals(toggled, enabled);
+        assertEquals(!changedMetrics.enabled, enabled);
       });
 
   test('metrics reporting restart button', async function() {

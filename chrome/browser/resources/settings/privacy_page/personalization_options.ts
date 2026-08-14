@@ -24,11 +24,15 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 // <if expr="_google_chrome">
 // <if expr="is_chromeos">
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+// </if>
+// <if expr="not is_chromeos">
+import '//resources/cr_elements/policy/cr_policy_indicator.js';
 
 // </if>
 // </if>
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -86,16 +90,7 @@ export class SettingsPersonalizationOptionsElement extends
       syncStatus: Object,
 
       // <if expr="_google_chrome and not is_chromeos">
-      // TODO(dbeam): make a virtual.* pref namespace and set/get this normally
-      // (but handled differently in C++).
-      metricsReportingPref_: {
-        type: Object,
-        value() {
-          // TODO(dbeam): this is basically only to appease PrefControlMixin.
-          // Maybe add a no-validate attribute instead? This makes little sense.
-          return {};
-        },
-      },
+      metricsReporting_: Object,
 
       showRestart_: Boolean,
       // </if>
@@ -160,8 +155,7 @@ export class SettingsPersonalizationOptionsElement extends
   declare syncStatus: SyncStatus;
 
   // <if expr="_google_chrome and not is_chromeos">
-  declare private metricsReportingPref_:
-      chrome.settingsPrivate.PrefObject<boolean>;
+  declare private metricsReporting_: MetricsReporting|undefined;
   declare private showRestart_: boolean;
   // </if>
 
@@ -216,10 +210,10 @@ export class SettingsPersonalizationOptionsElement extends
     super.ready();
 
     // <if expr="_google_chrome and not is_chromeos">
-    const setMetricsReportingPref = (metricsReporting: MetricsReporting) =>
-        this.setMetricsReportingPref_(metricsReporting);
-    this.addWebUiListener('metrics-reporting-change', setMetricsReportingPref);
-    this.browserProxy_.getMetricsReporting().then(setMetricsReportingPref);
+    const setMetricsReporting = (metricsReporting: MetricsReporting) =>
+        this.setMetricsReporting_(metricsReporting);
+    this.addWebUiListener('metrics-reporting-change', setMetricsReporting);
+    this.browserProxy_.getMetricsReporting().then(setMetricsReporting);
     // </if>
 
     // <if expr="not is_chromeos">
@@ -254,33 +248,20 @@ export class SettingsPersonalizationOptionsElement extends
   // </if>
 
   // <if expr="_google_chrome and not is_chromeos">
-  private onMetricsReportingChange_() {
-    const control = this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#metricsReportingControl');
-    const enabled = control?.checked ?? false;
-    this.browserProxy_.setMetricsReportingEnabled(enabled);
+  private onMetricsReportingChange_(e: Event) {
+    const target = e.target as CrToggleElement;
+    this.browserProxy_.setMetricsReportingEnabled(target.checked);
   }
 
-  private setMetricsReportingPref_(metricsReporting: MetricsReporting) {
-    const hadPreviousPref = this.metricsReportingPref_.value !== undefined;
-    const pref: chrome.settingsPrivate.PrefObject<boolean> = {
-      key: '',
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: metricsReporting.enabled,
-    };
-    if (metricsReporting.managed) {
-      pref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-      pref.controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
-    }
-
-    // Ignore the next change because it will happen when we set the pref.
-    this.metricsReportingPref_ = pref;
+  private setMetricsReporting_(metricsReporting: MetricsReporting) {
+    const hadPrevious = this.metricsReporting_ !== undefined;
+    this.metricsReporting_ = metricsReporting;
 
     // TODO(dbeam): remember whether metrics reporting was enabled when Chrome
     // started.
     if (metricsReporting.managed) {
       this.showRestart_ = false;
-    } else if (hadPreviousPref) {
+    } else if (hadPrevious) {
       this.showRestart_ = true;
     }
   }

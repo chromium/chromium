@@ -22,6 +22,10 @@
         margin-inline-end: 20px;
       }
 
+      #restart {
+        margin-inline-end: 20px;
+      }
+
     </style>
 
 <if expr="not is_chromeos">
@@ -78,19 +82,31 @@
 </if><!-- chromeos -->
 <if expr="not is_chromeos">
     <template is="dom-if" if="[[!shouldUseMetricsConsentRestructure_]]">
-      <settings-toggle-button id="metricsReportingControl"
-          class="hr"
-          pref="[[metricsReportingPref_]]"
-          label="$i18n{enablePersonalizationLogging}"
-          sub-label="$i18n{enablePersonalizationLoggingDesc}" no-set-pref
-          on-settings-boolean-control-change="onMetricsReportingChange_">
+      <div class="cr-row hr">
+        <div class="flex cr-padded-text">
+          <div id="metricsReportingLabel">
+            $i18n{enablePersonalizationLogging}
+          </div>
+          <div class="cr-secondary-text">
+            $i18n{enablePersonalizationLoggingDesc}
+          </div>
+        </div>
         <template is="dom-if" if="[[showRestart_]]" restamp>
-          <cr-button on-click="onRestartClick_" id="restart"
-              slot="more-actions">
+          <cr-button on-click="onRestartClick_" id="restart">
             $i18n{restart}
           </cr-button>
         </template>
-      </settings-toggle-button>
+        <template is="dom-if" if="[[metricsReporting_.managed]]" restamp>
+          <cr-policy-indicator indicator-type="userPolicy">
+          </cr-policy-indicator>
+        </template>
+        <cr-toggle id="metricsReportingControl"
+            checked="[[metricsReporting_.enabled]]"
+            disabled="[[metricsReporting_.managed]]"
+            on-change="onMetricsReportingChange_"
+            aria-labelledby="metricsReportingLabel">
+        </cr-toggle>
+      </div>
     </template>
 </if><!-- not chromeos -->
 </if><!-- _google_chrome -->
