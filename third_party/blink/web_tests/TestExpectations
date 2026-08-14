@@ -9186,10 +9186,6 @@ crbug.com/527385398 external/wpt/web-extensions/browser.browsingData.extension.h
 crbug.com/527385398 external/wpt/web-extensions/browser.idle.extension.html [ Failure ]
 crbug.com/527385398 external/wpt/web-extensions/browser.storage.extension.html [ Failure ]
 
-# WebMCP: Flaky WPT tests.
-
-crbug.com/521896358 external/wpt/webmcp/imperative/document-domain-enabled.https.html [ Failure Pass ]
-
 # Gardener 2026-06-01
 crbug.com/517759858 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Failure ]
 crbug.com/453144946 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Crash Failure Pass ]
