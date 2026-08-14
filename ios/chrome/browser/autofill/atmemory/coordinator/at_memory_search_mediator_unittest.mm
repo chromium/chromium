@@ -13,6 +13,7 @@
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_fill_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -134,6 +135,35 @@ TEST_F(AtMemorySearchMediatorTest, PushesSearchResultsToConsumer) {
   [mediator_ startSearchWithQuery:kSearchQuery];
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that selecting a search result item calls fillHandler with the item's
+// title and dismisses the UI.
+TEST_F(AtMemorySearchMediatorTest,
+       SelectSearchResultItemFillsFormAndDismisses) {
+  CreateMediator();
+
+  id mock_fill_handler = OCMProtocolMock(@protocol(AtMemoryFillCommands));
+  id mock_at_memory_handler = OCMProtocolMock(@protocol(AtMemoryCommands));
+  mediator_.fillHandler = mock_fill_handler;
+  mediator_.atMemoryHandler = mock_at_memory_handler;
+
+  autofill::MemorySearchResult mock_result(
+      autofill::MemoryDataType::kPassportNumber,
+      base::SysNSStringToUTF16(kPassportTypeName),
+      base::SysNSStringToUTF16(kPassportValue));
+
+  AtMemorySearchItem* item =
+      [[AtMemorySearchItem alloc] initWithMemorySearchResult:mock_result
+                                                       index:0];
+
+  OCMExpect([mock_fill_handler fillWithContent:kPassportValue]);
+  OCMExpect([mock_at_memory_handler dismissAtMemory]);
+
+  [mediator_ didSelectSearchResultItem:item];
+
+  EXPECT_OCMOCK_VERIFY(mock_fill_handler);
+  EXPECT_OCMOCK_VERIFY(mock_at_memory_handler);
 }
 
 // Parameters for AtMemorySearchMediatorErrorTest.

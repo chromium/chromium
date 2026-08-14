@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class AtMemorySearchItem;
+
 // Mutator for the AtMemorySearchViewController to update the
 // AtMemorySearchMediator.
 @protocol AtMemorySearchMutator <NSObject>
@@ -19,6 +21,9 @@
 
 // Called when the user clicks the Settings link in the notice.
 - (void)didTapSettingsLink;
+
+// Called when the user selects a search result item.
+- (void)didSelectSearchResultItem:(AtMemorySearchItem*)item;
 
 @end
 

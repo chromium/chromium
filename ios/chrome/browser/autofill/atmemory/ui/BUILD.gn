@@ -66,6 +66,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autofill/atmemory/utils",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }

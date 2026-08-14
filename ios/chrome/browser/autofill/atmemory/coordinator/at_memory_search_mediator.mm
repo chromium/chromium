@@ -19,6 +19,7 @@
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_fill_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/web/public/web_state.h"
@@ -142,6 +143,11 @@ constexpr std::string_view kNoticeInteractionsHistogram =
       kNoticeInteractionsHistogram,
       autofill::AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked);
   [self.atMemoryHandler openAutofillSettings];
+}
+
+- (void)didSelectSearchResultItem:(AtMemorySearchItem*)item {
+  [self.fillHandler fillWithContent:item.title];
+  [self.atMemoryHandler dismissAtMemory];
 }
 
 #pragma mark - Private

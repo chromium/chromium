@@ -9,10 +9,13 @@
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -92,6 +95,29 @@ TEST_F(AtMemorySearchViewControllerTest, TestSetSearchResults) {
   ASSERT_NE(config, nil);
   EXPECT_NSEQ(config.title, kPassportValue);
   EXPECT_NSEQ(config.subtitle, kPassportTypeName);
+}
+
+// Tests that selecting a search result item calls the mutator.
+TEST_F(AtMemorySearchViewControllerTest, TestSelectSearchResultItem) {
+  id mutator = OCMProtocolMock(@protocol(AtMemorySearchMutator));
+  view_controller_.mutator = mutator;
+
+  autofill::MemorySearchResult mock_result(
+      autofill::MemoryDataType::kPassportNumber,
+      base::SysNSStringToUTF16(kPassportTypeName),
+      base::SysNSStringToUTF16(kPassportValue));
+
+  AtMemorySearchItem* item =
+      [[AtMemorySearchItem alloc] initWithMemorySearchResult:mock_result
+                                                       index:0];
+  [view_controller_ setSearchResults:@[ item ]];
+
+  OCMExpect([mutator didSelectSearchResultItem:item]);
+
+  [view_controller_ tableView:view_controller_.tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+
+  EXPECT_OCMOCK_VERIFY(mutator);
 }
 
 // Tests that the table view displays the search cell when in the search

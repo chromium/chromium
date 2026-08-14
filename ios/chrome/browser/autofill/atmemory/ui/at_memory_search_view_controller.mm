@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
@@ -166,6 +167,10 @@ enum class ItemIdentifier {
           ItemIdentifier::kSearchItem) {
     [self.mutator startSearchWithQuery:_searchController.searchBar.text];
     [self createSnapshotForFetchingState];
+  } else if ([item isKindOfClass:[AtMemorySearchItem class]]) {
+    AtMemorySearchItem* searchItem =
+        base::apple::ObjCCastStrict<AtMemorySearchItem>(item);
+    [self.mutator didSelectSearchResultItem:searchItem];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
