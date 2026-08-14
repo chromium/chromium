@@ -184,5 +184,51 @@ TEST_F(LiveCaptionControllerTest,
   NotifySodaBinaryInstalled();
 }
 
+// Tests that destroying LiveCaptionController while SODA is downloading or
+// encountering errors unregisters the observer and does not crash on
+// subsequent notifications.
+TEST_F(LiveCaptionControllerTest,
+       DestroyControllerWhileSodaDownloadingDoesNotCrash) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  testing_pref_service_.SetBoolean(prefs::kLiveCaptionEnabled, true);
+
+  SetNonEmptyFilePathForSoda();
+  EXPECT_CALL(soda_installer_, GetLanguagePath);
+  EXPECT_CALL(soda_installer_, Init);
+
+  auto mock_delegate = std::make_unique<MockCaptionControllerDelgate>();
+  auto* mock_delegate_ptr = mock_delegate.get();
+  EXPECT_CALL(*mock_delegate_ptr, CreateCaptionBubbleController).Times(1);
+
+  {
+    LiveCaptionController controller_under_test(
+        &testing_pref_service_, &testing_pref_service_,
+        speech::kUsEnglishLocale, /*browser_context=*/nullptr,
+        std::move(mock_delegate));
+
+    // Triggering progress or error notifications before destruction must not
+    // crash.
+    speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(
+        10, speech::GetLanguageCode(speech::kUsEnglishLocale));
+    speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+        speech::LanguageCode::kFrFr,
+        speech::SodaInstaller::ErrorCode::kUnspecifiedError);
+    speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+        speech::GetLanguageCode(speech::kUsEnglishLocale),
+        speech::SodaInstaller::ErrorCode::kUnspecifiedError);
+  }
+  // controller_under_test has been destructed.
+
+  // Emulating progress/error/installation notifications on SodaInstaller after
+  // controller destruction must not crash.
+  speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(
+      20, speech::GetLanguageCode(speech::kUsEnglishLocale));
+  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+      speech::GetLanguageCode(speech::kUsEnglishLocale),
+      speech::SodaInstaller::ErrorCode::kUnspecifiedError);
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+      speech::GetLanguageCode(speech::kUsEnglishLocale));
+}
+
 }  // namespace
 }  // namespace captions
