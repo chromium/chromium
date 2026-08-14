@@ -7,9 +7,10 @@ import type {InkTextAnnotationsElement, TextAnnotationMessageData} from 'chrome-
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertPositionAndSize, dragHandle, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
+import {assertPositionAndSize, dragHandle, getCtrlModifier, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
 import {TestPdfViewerPrivateProxy} from './test_pdf_viewer_private_proxy.js';
 import {createMockPdfPluginForTest, createWheelEvent, getTestAnnotation, MockDocumentDimensions, setUpInkTestContext} from './test_util.js';
 import type {MockPdfPluginElement} from './test_util.js';
@@ -54,6 +55,12 @@ function createAnnotationsElement(viewport: Viewport):
 function getPlaceholders(annotationsElement: InkTextAnnotationsElement):
     NodeListOf<HTMLElement> {
   return annotationsElement.shadowRoot.querySelectorAll('.placeholder');
+}
+
+function waitForTextboxFocused(annotationsElement: InkTextAnnotationsElement):
+    Promise<Event> {
+  return eventToPromise(
+      'textbox-focused-for-test', annotationsElement.$.textBox);
 }
 
 chrome.test.runTests([
@@ -880,6 +887,207 @@ chrome.test.runTests([
 
     // Cleanup DOM.
     document.body.innerHTML = '';
+    chrome.test.succeed();
+  },
+
+  async function testCopyAndPasteAnnotation() {
+    const {manager, viewport, mockPlugin} = setUpTest();
+    const annotation = {
+      ...getTestAnnotation(1),
+      text: 'Copy Me',
+      textBoxRect: {height: 20, locationX: 50, locationY: 50, width: 100},
+    };
+    mockPlugin.setMessageReply('getAllTextAnnotations', {
+      annotations: [annotation],
+    });
+    await manager.initializeTextAnnotations();
+
+    const annotationsElement = createAnnotationsElement(viewport);
+    await microtasksFinished();
+
+    const placeholders = getPlaceholders(annotationsElement);
+    chrome.test.assertEq(1, placeholders.length);
+
+    // Activate the annotation for editing.
+    placeholders[0]!.click();
+    await microtasksFinished();
+
+    // Trigger Copy shortcut (Ctrl+C / Cmd+C).
+    keyDownOn(annotationsElement.$.textBox, 0, getCtrlModifier(), 'c');
+    await microtasksFinished();
+
+    // Copying does not commit the annotation immediately; it remains active.
+    const textbox = annotationsElement.$.textBox;
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertEq('Copy Me', textbox.$.textbox.value);
+
+    // Trigger Paste shortcut (Ctrl+V / Cmd+V).
+    let whenFocused = waitForTextboxFocused(annotationsElement);
+    annotationsElement.pasteAnnotation();
+    await whenFocused;
+    await microtasksFinished();
+
+    // Verify outer ink-text-box is focused (not the inner textarea) on paste.
+    chrome.test.assertEq(textbox, annotationsElement.shadowRoot.activeElement);
+    chrome.test.assertTrue(
+        textbox.shadowRoot.activeElement !== textbox.$.textbox);
+
+    // Verify active text box is visible with pasted content.
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertEq('Copy Me', textbox.$.textbox.value);
+
+    // Copied annotation should have a new ID and be offset by +10px.
+    const activeAnnotation = textbox.annotation;
+    chrome.test.assertTrue(activeAnnotation !== null);
+    chrome.test.assertFalse(activeAnnotation.id === 1);
+    chrome.test.assertEq(115, activeAnnotation.textBoxRect.locationX);
+    chrome.test.assertEq(63, activeAnnotation.textBoxRect.locationY);
+
+    // Commit active annotation.
+    await textbox.commitTextAnnotation();
+    await microtasksFinished();
+
+    // Verify both annotations exist now.
+    const pageMap = manager.annotations.get(0);
+    chrome.test.assertTrue(pageMap !== undefined);
+    chrome.test.assertEq(2, pageMap.size);
+
+    // Trigger keyboard Ctrl+V on the focused ink-text-box to test consecutive
+    // paste via keyboard without crash or double-copy.
+    whenFocused = waitForTextboxFocused(annotationsElement);
+    keyDownOn(textbox, 0, getCtrlModifier(), 'v');
+    await whenFocused;
+    await microtasksFinished();
+
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertEq('Copy Me', textbox.$.textbox.value);
+
+    // Second paste is offset by another +10px from the first pasted copy.
+    const secondActiveAnnotation = textbox.annotation;
+    chrome.test.assertTrue(secondActiveAnnotation !== null);
+    chrome.test.assertEq(125, secondActiveAnnotation.textBoxRect.locationX);
+    chrome.test.assertEq(73, secondActiveAnnotation.textBoxRect.locationY);
+
+    await textbox.commitTextAnnotation();
+    await microtasksFinished();
+
+    chrome.test.assertEq(3, pageMap.size);
+
+    chrome.test.succeed();
+  },
+
+  async function testCutAndPasteAnnotation() {
+    const {manager, viewport, mockPlugin} = setUpTest();
+    const annotation = {
+      ...getTestAnnotation(1),
+      text: 'Cut Me',
+      textBoxRect: {height: 20, locationX: 50, locationY: 50, width: 100},
+    };
+    mockPlugin.setMessageReply('getAllTextAnnotations', {
+      annotations: [annotation],
+    });
+    await manager.initializeTextAnnotations();
+
+    const annotationsElement = createAnnotationsElement(viewport);
+    await microtasksFinished();
+
+    let placeholders = getPlaceholders(annotationsElement);
+    chrome.test.assertEq(1, placeholders.length);
+
+    // Activate the annotation for editing.
+    placeholders[0]!.click();
+    await microtasksFinished();
+
+    // Trigger Cut shortcut (Ctrl+X / Cmd+X).
+    keyDownOn(annotationsElement.$.textBox, 0, getCtrlModifier(), 'x');
+    await microtasksFinished();
+
+    // Verify annotation was removed.
+    placeholders = getPlaceholders(annotationsElement);
+    chrome.test.assertEq(0, placeholders.length);
+
+    // Trigger Paste shortcut (Ctrl+V / Cmd+V).
+    let whenFocused = waitForTextboxFocused(annotationsElement);
+    annotationsElement.pasteAnnotation();
+    await whenFocused;
+    await microtasksFinished();
+
+    // Verify active text box is visible with cut content.
+    const textbox = annotationsElement.$.textBox;
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertEq('Cut Me', textbox.$.textbox.value);
+
+    // Cut/pasted annotation reuses the same ID and is offset by +10px.
+    const activeAnnotation = textbox.annotation;
+    chrome.test.assertTrue(activeAnnotation !== null);
+    chrome.test.assertEq(1, activeAnnotation.id);
+    chrome.test.assertEq(115, activeAnnotation.textBoxRect.locationX);
+    chrome.test.assertEq(63, activeAnnotation.textBoxRect.locationY);
+
+    // Cut the newly pasted annotation without committing it first.
+    keyDownOn(annotationsElement.$.textBox, 0, getCtrlModifier(), 'x');
+    await microtasksFinished();
+
+    placeholders = getPlaceholders(annotationsElement);
+    chrome.test.assertEq(0, placeholders.length);
+
+    // Paste it again.
+    whenFocused = waitForTextboxFocused(annotationsElement);
+    annotationsElement.pasteAnnotation();
+    await whenFocused;
+    await microtasksFinished();
+
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertEq('Cut Me', textbox.$.textbox.value);
+
+    // Commit active annotation.
+    await textbox.commitTextAnnotation();
+    await microtasksFinished();
+
+    // Verify original annotation ID was restored.
+    const pageMap = manager.annotations.get(0);
+    chrome.test.assertTrue(pageMap !== undefined);
+    chrome.test.assertEq(1, pageMap.size);
+    chrome.test.assertTrue(pageMap.has(1));
+
+    chrome.test.succeed();
+  },
+
+  // Verify copying and cutting empty annotations does not save
+  // an annotation to the clipboard.
+  async function testCopyAndCutEmptyAnnotation() {
+    const {manager, viewport} = setUpTest();
+    await manager.initializeTextAnnotations();
+    const annotationsElement = createAnnotationsElement(viewport);
+    await microtasksFinished();
+
+    // 1. Initialize a new empty text box.
+    const whenFocused = waitForTextboxFocused(annotationsElement);
+    manager.initializeTextAnnotation();
+    await whenFocused;
+    await microtasksFinished();
+
+    const textbox = annotationsElement.$.textBox;
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertEq('', textbox.$.textbox.value);
+
+    // Focus outer ink-text-box so shortcut can be received.
+    textbox.focus();
+
+    // 2. Try copying empty text box (Ctrl+C).
+    keyDownOn(textbox, 0, getCtrlModifier(), 'c');
+    await microtasksFinished();
+
+    // Verify nothing was saved to clipboard.
+    chrome.test.assertFalse(manager.pasteAnnotation());
+
+    // 3. Try cutting empty text box (Ctrl+X).
+    keyDownOn(textbox, 0, getCtrlModifier(), 'x');
+    await microtasksFinished();
+
+    // Verify nothing was saved to clipboard.
+    chrome.test.assertFalse(manager.pasteAnnotation());
+
     chrome.test.succeed();
   },
 ]);

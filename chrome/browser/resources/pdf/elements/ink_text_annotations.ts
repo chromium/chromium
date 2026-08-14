@@ -12,6 +12,7 @@ import type {TextAnnotation, TextBoxRect} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
 import type {TextBoxInit} from '../ink2_manager.js';
 import {pageToScreenCoordinates} from '../ink_text_annotation_utils.js';
+import {hasCtrlModifierOnly} from '../pdf_viewer_utils.js';
 import type {Viewport, ViewportRect} from '../viewport.js';
 
 import {getCss} from './ink_text_annotations.css.js';
@@ -51,6 +52,7 @@ export class InkTextAnnotationsElement extends CrLitElement {
       viewport: {type: Object},
       activeAnnotation_: {type: Object},
       activePageDimensions_: {type: Object},
+      isPaste_: {type: Boolean},
       placeholders_: {type: Array},
     };
   }
@@ -58,6 +60,7 @@ export class InkTextAnnotationsElement extends CrLitElement {
   accessor viewport: Viewport|null = null;
   protected accessor activeAnnotation_: TextAnnotation|null = null;
   protected accessor activePageDimensions_: ViewportRect|null = null;
+  protected accessor isPaste_: boolean = false;
   protected accessor placeholders_: Placeholder[] = [];
   private annotations_: TextAnnotation[] = [];
   private eventTracker_: EventTracker = new EventTracker();
@@ -74,12 +77,37 @@ export class InkTextAnnotationsElement extends CrLitElement {
             this.onInitializeTextBox_((e as CustomEvent<TextBoxInit>).detail));
     this.eventTracker_.add(
         this, 'wheel', (e: Event) => this.onWheel_(e as WheelEvent));
+    this.eventTracker_.add(
+        document, 'keydown', (e: Event) => this.onKeyDown_(e as KeyboardEvent));
     this.updateAnnotations_();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+  }
+
+  private onKeyDown_(e: KeyboardEvent) {
+    if (!hasCtrlModifierOnly(e) || e.key.toLowerCase() !== 'v') {
+      return;
+    }
+
+    // Ignore if event occurred on a <textarea> or <input> that
+    // should handle it (e.g. the ink-text-box textarea)
+    const target = e.composedPath()[0] ?? null;
+    if (target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLInputElement) {
+      return;
+    }
+
+    this.pasteAnnotation();
+  }
+
+  async pasteAnnotation() {
+    if (this.activeAnnotation_) {
+      await this.$.textBox.commitTextAnnotation();
+    }
+    Ink2Manager.getInstance().pasteAnnotation();
   }
 
   viewportChanged() {
@@ -203,6 +231,7 @@ export class InkTextAnnotationsElement extends CrLitElement {
 
   protected onTextBoxStateChanged_(e: CustomEvent<TextBoxState>) {
     if (e.detail === TextBoxState.INACTIVE) {
+      this.isPaste_ = false;
       this.activeAnnotation_ = null;
       this.activePageDimensions_ = null;
     }
@@ -213,6 +242,7 @@ export class InkTextAnnotationsElement extends CrLitElement {
     if (this.activeAnnotation_) {
       await this.$.textBox.commitTextAnnotation();
     }
+    this.isPaste_ = !!data.isPaste;
     this.activeAnnotation_ = data.annotation;
     this.activePageDimensions_ = data.pageDimensions;
   }

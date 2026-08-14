@@ -572,6 +572,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           this.maybeCreateTextAnnotation_();
         }
         return;
+      case 'v':
+        if ((e as ExtendedKeyEvent).fromPlugin && hasCtrlModifierOnly(e) &&
+            this.isInTextAnnotationMode_()) {
+          this.maybePasteTextAnnotation_();
+        }
+        return;
       // </if>
       default:
         break;
@@ -580,6 +586,21 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // Handle toolbar related key events.
     this.handleToolbarKeyEvent_(e);
   }
+
+  // <if expr="enable_pdf_ink2">
+  private maybePasteTextAnnotation_() {
+    // Ignore paste if focus is actively on some other element like
+    // a side panel/nav or toolbar.
+    const focused = this.shadowRoot.activeElement;
+    if (!!focused && !this.$.scroller.contains(focused)) {
+      return;
+    }
+
+    const annotations = this.shadowRoot.querySelector('ink-text-annotations');
+    assert(annotations);
+    annotations.pasteAnnotation();
+  }
+  // </if>
 
   /**
    * Helper for handleKeyEvent dealing with events that control toolbars.

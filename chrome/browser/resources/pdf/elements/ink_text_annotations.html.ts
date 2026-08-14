@@ -28,6 +28,7 @@ export function getHtml(this: InkTextAnnotationsElement) {
     .viewport="${this.viewport}"
     .annotation="${this.activeAnnotation_}"
     .pageDimensions="${this.activePageDimensions_}"
+    .isPaste="${this.isPaste_}"
     @state-changed="${this.onTextBoxStateChanged_}"
     @textbox-focused="${this.onTextboxFocused_}">
 </ink-text-box>

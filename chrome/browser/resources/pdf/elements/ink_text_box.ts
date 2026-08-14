@@ -91,6 +91,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       viewport: {type: Object},
       annotation: {type: Object},
       pageDimensions: {type: Object},
+      isPaste: {type: Boolean},
     };
   }
 
@@ -108,6 +109,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   private accessor viewportRotations_: number = 0;
   private accessor width_: number = MIN_TEXTBOX_SIZE_PX;
   private accessor zoom_: number = 1.0;
+  accessor isPaste: boolean = false;
   accessor viewport: Viewport|null = null;
   accessor annotation: TextAnnotation|null = null;
   accessor pageDimensions: ViewportRect|null = null;
@@ -245,7 +247,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   // Populates a `TextAnnotation` with the current state that can
   // be passed to Ink2Manager.
   private createClipboardAnnotation_(): TextAnnotation|null {
-    if (!this.viewport || !this.attributes_) {
+    if (!this.viewport || !this.attributes_ || this.textValue_ === '') {
       return null;
     }
     const pageRect = screenToPageCoordinates(
@@ -376,8 +378,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.resetDrag_();
 
     const hasTextValue = this.textValue_ !== '';
-    if ((!hasTextValue || this.state_ !== TextBoxState.EDITED) &&
-        !this.existing_) {
+    const isUnedited = this.state_ !== TextBoxState.EDITED && !this.isPaste;
+    if ((!hasTextValue || isUnedited) && !this.existing_) {
       // Empty textbox.
       this.finishCommit_();
       record(UserAction.ADD_INK2_TEXT_ANNOTATION_ABORTED);
@@ -476,8 +478,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.minWidth_ = MIN_TEXTBOX_SIZE_PX;
     this.locationX_ = annotation.textBoxRect.locationX;
     this.locationY_ = annotation.textBoxRect.locationY;
-    this.state_ = TextBoxState.NEW;
-    this.existing_ = annotation.text !== '';
+    this.state_ = this.isPaste ? TextBoxState.EDITED : TextBoxState.NEW;
+    this.existing_ = annotation.text !== '' && !this.isPaste;
     this.textValue_ = annotation.text;
     this.id_ = annotation.id;
     this.pageIndex_ = annotation.pageIndex;
@@ -490,7 +492,11 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   private async focusTextboxWhenReady_() {
     await this.updateComplete;
     setTimeout(() => {
-      this.$.textbox.focus();
+      if (this.isPaste) {
+        this.focus();
+      } else {
+        this.$.textbox.focus();
+      }
       this.fire('textbox-focused-for-test');
     }, 0);
   }
