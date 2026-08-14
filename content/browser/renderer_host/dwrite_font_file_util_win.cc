@@ -141,7 +141,9 @@ std::u16string GetWindowsFontsPath() {
   BOOL result = SHGetSpecialFolderPath(nullptr /* hwndOwner - reserved */,
                                        font_path_chars.data(), CSIDL_FONTS,
                                        FALSE /* fCreate */);
-  CHECK(result, base::NotFatalUntil::M154);
+  // TODO(crbug.com/544832941): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(result);
   return base::i18n::FoldCase(base::AsStringPiece16(font_path_chars.data()));
 }
 
