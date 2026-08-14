@@ -44,11 +44,14 @@ safe_browsing::ReferrerChain GetSafeBrowsingReferrerChain(
     const GURL& url,
     content::WebContents& web_contents) {
   safe_browsing::ReferrerChain referrers;
-  safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
-      GetForBrowserContext(web_contents.GetBrowserContext())
-          ->IdentifyReferrerChainByEventURL(
-              url, sessions::SessionTabHelper::IdForTab(&web_contents),
-              kReferrerUserGestureLimit, &referrers);
+  auto* observer_manager =
+      safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+          GetForBrowserContext(web_contents.GetBrowserContext());
+  if (observer_manager) {
+    observer_manager->IdentifyReferrerChainByEventURL(
+        url, sessions::SessionTabHelper::IdForTab(&web_contents),
+        kReferrerUserGestureLimit, &referrers);
+  }
   return referrers;
 }
 
