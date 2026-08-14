@@ -42,6 +42,7 @@ public class TestTabModel extends EmptyTabModel {
         when(mockTab.getId()).thenReturn(tabId);
         when(mockTab.getTitle()).thenReturn(title);
         when(mockTab.getParentId()).thenReturn(Tab.INVALID_TAB_ID);
+        when(mockTab.getAlertState()).thenReturn(null);
         mMockTabs.add(mockTab);
     }
 

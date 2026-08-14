@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
@@ -132,7 +131,7 @@ public abstract class ReorderStrategyTestBase {
                         null,
                         false,
                         false,
-                        MediaState.NONE);
+                        /* alertState= */ null);
         setDrawProperties(tab, x);
         return tab;
     }

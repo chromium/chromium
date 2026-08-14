@@ -83,7 +83,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabClosingSource;
@@ -117,6 +116,7 @@ import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -1692,9 +1692,10 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void onMediaStateChanged(Tab tab, @MediaState int mediaState) {
+                    public void onAlertStateChanged(
+                            Tab tab, @Nullable @TabAlert Integer alertState) {
                         getStripLayoutHelper(tab.isIncognito())
-                                .onMediaStateChanged(tab, mediaState);
+                                .onAlertStateChanged(tab, alertState);
                         mRenderHost.requestRender();
                     }
                 };

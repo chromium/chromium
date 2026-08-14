@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphController.IphType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -109,7 +108,7 @@ public class TabStripIphControllerUnitTest {
                         mUpdateHost,
                         /* incognito= */ false,
                         /* isPinned= */ false,
-                        MediaState.NONE);
+                        /* alertState= */ null);
         mGroupTitle.setWidth(GROUP_TITLE_WIDTH);
         mGroupTitle.setHeight(TAB_STRIP_HEIGHT);
         mTab.setWidth(TAB_WIDTH);

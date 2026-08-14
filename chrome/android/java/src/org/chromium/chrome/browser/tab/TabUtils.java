@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.components.browser_ui.util.DimensionCompat;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -301,10 +302,69 @@ public class TabUtils {
     }
 
     /**
+     * Returns the {@link MediaState} corresponding to the given {@link TabAlert}.
+     *
+     * @param alertState The {@link TabAlert} for which to get the corresponding media state.
+     */
+    public static @MediaState int getMediaStateForAlert(@Nullable @TabAlert Integer alertState) {
+        if (alertState == null) return MediaState.NONE;
+        return switch (alertState) {
+            case TabAlert.AUDIO_PLAYING -> MediaState.AUDIBLE;
+            case TabAlert.AUDIO_MUTING -> MediaState.MUTED;
+            case TabAlert.AUDIO_RECORDING, TabAlert.MEDIA_RECORDING, TabAlert.VIDEO_RECORDING ->
+                    MediaState.RECORDING;
+            case TabAlert.TAB_CAPTURING, TabAlert.DESKTOP_CAPTURING -> MediaState.SHARING;
+            case TabAlert.PIP_PLAYING -> MediaState.PICTURE_IN_PICTURE;
+            default -> MediaState.NONE;
+        };
+    }
+
+    /**
+     * Returns the {@link DrawableRes} ID for a given tab alert.
+     *
+     * @param alertState The {@link TabAlert} for which to get the indicator drawable.
+     */
+    public static @DrawableRes int getTabAlertDrawable(@Nullable @TabAlert Integer alertState) {
+        if (alertState == null) return Resources.ID_NULL;
+        return switch (alertState) {
+            case TabAlert.AUDIO_MUTING -> R.drawable.volume_off_24dp;
+            case TabAlert.AUDIO_PLAYING -> R.drawable.volume_up_24dp;
+            case TabAlert.AUDIO_RECORDING, TabAlert.MEDIA_RECORDING, TabAlert.VIDEO_RECORDING ->
+                    R.drawable.radio_button_checked_24dp;
+            case TabAlert.DESKTOP_CAPTURING, TabAlert.TAB_CAPTURING -> R.drawable.capture_24dp;
+            case TabAlert.PIP_PLAYING -> R.drawable.picture_in_picture_24px;
+            default -> Resources.ID_NULL;
+        };
+    }
+
+    /**
+     * Returns the tint color for a given tab alert.
+     *
+     * @param context The {@link Context} used to retrieve color.
+     * @param alertState The {@link TabAlert} for which to get the tint.
+     * @param defaultTint The default tint to use.
+     */
+    public static @ColorInt int getTabAlertTintColor(
+            Context context, @Nullable @TabAlert Integer alertState, @ColorInt int defaultTint) {
+        if (alertState == null) return defaultTint;
+        return switch (alertState) {
+            case TabAlert.AUDIO_RECORDING, TabAlert.MEDIA_RECORDING, TabAlert.VIDEO_RECORDING ->
+                    context.getColor(R.color.tab_recording_media_color);
+            case TabAlert.DESKTOP_CAPTURING, TabAlert.TAB_CAPTURING ->
+                    context.getColor(R.color.tab_sharing_media_color);
+            case TabAlert.PIP_PLAYING -> context.getColor(R.color.tab_pip_media_color);
+            default -> defaultTint;
+        };
+    }
+
+    /**
      * Returns the {@link DrawableRes} ID for a given media state.
      *
      * @param mediaState The {@link MediaState} for which to get the indicator.
+     * @deprecated Android is migrating from {@link MediaState} to {@link TabAlert}. Use {@link
+     *     #getTabAlertDrawable(Integer)} instead.
      */
+    @Deprecated
     public static @DrawableRes int getMediaIndicatorDrawable(@MediaState int mediaState) {
         return switch (mediaState) {
             case MediaState.AUDIBLE -> R.drawable.volume_up_24dp;
@@ -322,7 +382,10 @@ public class TabUtils {
      * @param context The {@link Context} used to retrieve color.
      * @param mediaState The {@link MediaState} for which to get the tint.
      * @param defaultTint The default tint to use.
+     * @deprecated Android is migrating from {@link MediaState} to {@link TabAlert}. Use {@link
+     *     #getTabAlertTintColor(Context, Integer, int)} instead.
      */
+    @Deprecated
     public static @ColorInt int getMediaIndicatorTintColor(
             Context context, @MediaState int mediaState, @ColorInt int defaultTint) {
         if (mediaState == MediaState.RECORDING) {

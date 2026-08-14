@@ -123,7 +123,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -162,6 +161,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -900,7 +900,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testPushPlaceholdersForTabs_MediaState() {
+    public void testPushPlaceholdersForTabs_AlertState() {
         // Create StripLayoutHelper with startup info to create placeholders.
         mStripLayoutHelper = createStripLayoutHelper(false, false);
         mStripLayoutHelper.setTabModelStartupInfo(1, 0, false);
@@ -908,28 +908,25 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         assertEquals(1, stripTabs.length);
         assertTrue("Tab should be a placeholder.", stripTabs[0].getIsPlaceholder());
-        assertEquals(
-                "Placeholder media state should be NONE.",
-                MediaState.NONE,
-                stripTabs[0].getMediaState());
+        assertNull("Placeholder alert state should be null.", stripTabs[0].getAlertState());
 
-        // Add a tab with media state to the tab model and update the tab model in the strip.
+        // Add a tab with alert state to the tab model and update the tab model in the strip.
         MockTabModel tabModel = new MockTabModel(mProfile, null);
-        Tab tabWithMedia = new MockTab(0, mProfile);
-        tabWithMedia.setMediaState(MediaState.RECORDING);
+        MockTab tabWithAlert = new MockTab(0, mProfile);
+        tabWithAlert.onAlertStateChanged(TabAlert.MEDIA_RECORDING);
         tabModel.addTab(
-                tabWithMedia, 0, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
+                tabWithAlert, 0, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
         mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
 
-        // StripLayoutTab should have updated the former placeholder's media state.
+        // StripLayoutTab should have updated the former placeholder's alert state.
         stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         assertEquals(1, stripTabs.length);
         assertEquals(
-                "Media state should be propagated to the former placeholder.",
-                MediaState.RECORDING,
-                stripTabs[0].getMediaState());
+                "Alert state should be propagated to the former placeholder.",
+                Integer.valueOf(TabAlert.MEDIA_RECORDING),
+                stripTabs[0].getAlertState());
         assertFalse("Tab should no longer be a placeholder.", stripTabs[0].getIsPlaceholder());
     }
 
@@ -961,22 +958,22 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testRebuildStripTabs_MediaState() {
+    public void testRebuildStripTabs_AlertState() {
         // Initialize with 2 tabs.
         initializeTest(false, false, 0, 2);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
-        // Update media state for tabs.
+        // Update alert state for tabs.
         Tab tab0 = mModel.getTabAt(0);
         Tab tab1 = mModel.getTabAt(1);
-        when(tab0.getMediaState()).thenReturn(MediaState.AUDIBLE);
-        when(tab1.getMediaState()).thenReturn(MediaState.RECORDING);
-        mStripLayoutHelper.onMediaStateChanged(tab0, tab0.getMediaState());
-        mStripLayoutHelper.onMediaStateChanged(tab1, tab1.getMediaState());
+        when(tab0.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
+        when(tab1.getAlertState()).thenReturn(TabAlert.MEDIA_RECORDING);
+        mStripLayoutHelper.onAlertStateChanged(tab0, tab0.getAlertState());
+        mStripLayoutHelper.onAlertStateChanged(tab1, tab1.getAlertState());
 
         // Verify initial state.
-        assertEquals(MediaState.AUDIBLE, tabs[0].getMediaState());
-        assertEquals(MediaState.RECORDING, tabs[1].getMediaState());
+        assertEquals(Integer.valueOf(TabAlert.AUDIO_PLAYING), tabs[0].getAlertState());
+        assertEquals(Integer.valueOf(TabAlert.MEDIA_RECORDING), tabs[1].getAlertState());
 
         // Force rebuild.
         mStripLayoutHelper.setStripLayoutTabsForTesting(new StripLayoutTab[0]);
@@ -987,13 +984,15 @@ public class StripLayoutHelperTest {
         assertNotEquals(tabs[0], newTabs[0]);
         assertNotEquals(tabs[1], newTabs[1]);
 
-        // Verify media state is persistent.
+        // Verify alert state is persistent.
         assertEquals(
-                "Media state should be preserved.", MediaState.AUDIBLE, newTabs[0].getMediaState());
+                "Alert state should be preserved.",
+                Integer.valueOf(TabAlert.AUDIO_PLAYING),
+                newTabs[0].getAlertState());
         assertEquals(
-                "Media state should be preserved.",
-                MediaState.RECORDING,
-                newTabs[1].getMediaState());
+                "Alert state should be preserved.",
+                Integer.valueOf(TabAlert.MEDIA_RECORDING),
+                newTabs[1].getAlertState());
     }
 
     @Test

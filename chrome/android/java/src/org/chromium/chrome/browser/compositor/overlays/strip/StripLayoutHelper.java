@@ -101,6 +101,7 @@ import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.NextTabSelectionUtil;
@@ -141,6 +142,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.LocalizationUtils;
@@ -3846,7 +3848,7 @@ public class StripLayoutHelper
             final int id = tab.getId();
             final StripLayoutTab oldTab = findTabById(id);
             boolean isPinned = tab.getIsPinned();
-            tabs[i] = oldTab != null ? oldTab : createStripTab(id, isPinned, tab.getMediaState());
+            tabs[i] = oldTab != null ? oldTab : createStripTab(id, isPinned, tab.getAlertState());
             setAccessibilityDescription(tabs[i], tab);
         }
 
@@ -4463,7 +4465,7 @@ public class StripLayoutHelper
                         mUpdateHost,
                         mIncognito,
                         /* isPinned= */ false,
-                        MediaState.NONE);
+                        /* alertState= */ null);
         mTabDelegate.setIsTabPlaceholder(tab, true);
 
         // TODO(crbug.com/40942588): Added placeholder a11y descriptions to prevent crash due
@@ -4477,8 +4479,10 @@ public class StripLayoutHelper
         return tab;
     }
 
+    // TODO(crbug.com/546133121): Add NONE value to Java TabAlert enum
     @VisibleForTesting
-    StripLayoutTab createStripTab(int id, boolean isPinned, @MediaState int mediaState) {
+    StripLayoutTab createStripTab(
+            int id, boolean isPinned, @Nullable @TabAlert Integer alertState) {
         // TODO: Cache these
         StripLayoutTab tab =
                 new StripLayoutTab(
@@ -4492,7 +4496,7 @@ public class StripLayoutHelper
                         mUpdateHost,
                         mIncognito,
                         isPinned,
-                        mediaState);
+                        alertState);
 
         if (isSelectedTab(id)) {
             StripLayoutTabDelegate.setTabVisibility(tab, /* isVisible= */ true);
@@ -4506,7 +4510,7 @@ public class StripLayoutHelper
     private void pushPropertiesToPlaceholder(StripLayoutTab placeholderTab, @Nullable Tab tab) {
         if (tab == null) return;
         placeholderTab.setTabId(tab.getId());
-        placeholderTab.setMediaState(tab.getMediaState());
+        placeholderTab.setAlertState(tab.getAlertState());
         mTabDelegate.setIsTabPlaceholder(placeholderTab, false);
         setAccessibilityDescription(placeholderTab, tab);
     }
@@ -5468,7 +5472,7 @@ public class StripLayoutHelper
                         stripTab.getNotificationBubbleShown(),
                         isHidden,
                         stripTab.getIsMultiSelected(),
-                        stripTab.getMediaState());
+                        TabUtils.getMediaStateForAlert(stripTab.getAlertState()));
 
         if (!stripTab.needsAccessibilityDescriptionUpdate(title, resId)) {
             // The resulting accessibility description would be the same as the current description,
@@ -5860,11 +5864,17 @@ public class StripLayoutHelper
         return isPinned ? getNumLivePinnedTabs() : mStripTabs.length;
     }
 
-    public void onMediaStateChanged(Tab tab, @MediaState int mediaState) {
+    /**
+     * Updates the alert state of a {@link StripLayoutTab} and its accessibility description.
+     *
+     * @param tab The {@link Tab} whose alert state changed.
+     * @param alertState The {@link TabAlert} state of the tab.
+     */
+    public void onAlertStateChanged(Tab tab, @Nullable @TabAlert Integer alertState) {
         StripLayoutTab stripLayoutTab = findTabById(tab.getId());
         // This state may get reset after the tab has already closed, so ignore if null.
         if (stripLayoutTab == null) return;
-        stripLayoutTab.setMediaState(mediaState);
+        stripLayoutTab.setAlertState(alertState);
         setAccessibilityDescription(stripLayoutTab, tab);
     }
 

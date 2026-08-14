@@ -96,7 +96,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -1329,7 +1328,7 @@ public class StripLayoutHelperManagerTest {
                         mUpdateHost,
                         false,
                         false,
-                        MediaState.NONE);
+                        /* alertState= */ null);
 
         // Inject the strip tab into the helper via reflection.
         Field tabsField = StripLayoutHelper.class.getDeclaredField("mStripTabs");
@@ -1418,7 +1417,7 @@ public class StripLayoutHelperManagerTest {
                         mUpdateHost,
                         false,
                         false,
-                        MediaState.NONE);
+                        /* alertState= */ null);
 
         Field tabsField = StripLayoutHelper.class.getDeclaredField("mStripTabs");
         tabsField.setAccessible(true);

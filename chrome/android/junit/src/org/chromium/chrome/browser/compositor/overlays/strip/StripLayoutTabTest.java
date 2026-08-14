@@ -30,10 +30,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTabDelegate.VisualState;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.util.ColorUtils;
 
@@ -288,7 +288,7 @@ public class StripLayoutTabTest {
                         null,
                         false,
                         false,
-                        MediaState.RECORDING);
+                        TabAlert.MEDIA_RECORDING);
         tabWithRecording.setTabIndicatorStatus(TabIndicatorStatus.DYNAMIC);
 
         assertTrue(
@@ -320,7 +320,7 @@ public class StripLayoutTabTest {
                         null,
                         false,
                         false,
-                        MediaState.AUDIBLE);
+                        TabAlert.AUDIO_PLAYING);
         tabWithAudio.setTabIndicatorStatus(TabIndicatorStatus.DYNAMIC);
 
         assertTrue(
@@ -342,7 +342,17 @@ public class StripLayoutTabTest {
 
     private StripLayoutTab createStripLayoutTab(boolean incognito) {
         return new StripLayoutTab(
-                mContext, 0, null, null, null, null, null, null, incognito, false, MediaState.NONE);
+                mContext,
+                0,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                incognito,
+                false,
+                /* alertState= */ null);
     }
 
     @Test
