@@ -1432,6 +1432,10 @@ public final class ProductionSupportedFlagList {
                 PaymentFeatureList.PAYMENT_HANDLER_DIALOG_USE_INITIATOR_IN_URL_LOAD,
                 "When enabled, the merchant site is set as the initiator for the web payment"
                         + " handler modal dialog popup."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_NAVIGATE_DRAIN_PREFETCH,
+                "Enables draining the prefetch queue before loading the URL in the WebView"
+                        + " navigate method"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

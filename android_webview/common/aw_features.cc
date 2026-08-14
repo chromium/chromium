@@ -259,6 +259,10 @@ BASE_FEATURE(kWebViewMultiProfileSkipDefaultProfile,
 // Kill switch for the WebView Navigate method.
 BASE_FEATURE(kWebViewNavigate, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for draining the prefetch queue prior to loading the URL in the
+// WebView Navigate method.
+BASE_FEATURE(kWebViewNavigateDrainPrefetch, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, the provisional cookie store is properly closed before the
 // Network Service opens the database, fixing race conditions that can cause
 // cookie loss and CHECK failures when cookies are set before WebView is fully

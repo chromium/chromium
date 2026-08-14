@@ -67,6 +67,7 @@ BASE_DECLARE_FEATURE(kWebViewMoveWorkToProviderInit);
 BASE_DECLARE_FEATURE(kWebViewMoveWorkToProviderInitThreadPool);
 BASE_DECLARE_FEATURE(kWebViewMultiProfileSkipDefaultProfile);
 BASE_DECLARE_FEATURE(kWebViewNavigate);
+BASE_DECLARE_FEATURE(kWebViewNavigateDrainPrefetch);
 BASE_DECLARE_FEATURE(kWebViewNonBlockingCookieStoreHandoff);
 BASE_DECLARE_FEATURE(kWebViewOptInToGmsBindServiceOptimization);
 BASE_DECLARE_FEATURE(kWebViewPersistentMetricsInNoBackupDir);
