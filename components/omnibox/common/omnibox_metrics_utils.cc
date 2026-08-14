@@ -38,6 +38,8 @@ std::string GetToolModeString(omnibox::ToolMode mode) {
       return "Aim";
     case omnibox::TOOL_MODE_AIM_GEN_PROMPT:
       return "AimGenPrompt";
+    case omnibox::TOOL_MODE_AGENT_TASK:
+      return "AgentTask";
     default:
       return "Unspecified";
   }

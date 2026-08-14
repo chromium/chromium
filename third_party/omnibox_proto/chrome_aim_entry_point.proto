@@ -83,4 +83,7 @@ enum ChromeAimEntryPoint {
 
   // AIM entered from the app bar button on Chrome iOS.
   IOS_CHROME_APP_BAR_ENTRY_POINT = 192;
+
+  // AIM is entered from the NTP Action Chips in Chrome.
+  DESKTOP_CHROME_NTP_ACTION_CHIPS_ENTRY_POINT = 198;
 }

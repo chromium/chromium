@@ -434,9 +434,10 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="DisableSuggest"/>
   <int value="9" label="Aim"/>
   <int value="10" label="AimGenPrompt"/>
+  <int value="11" label="AgentTask"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.cc:ToolMode) -->
+<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.cc:ToolMode,//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:ToolMode) -->
 
 <enum name="OmniboxWebUIRendererProcessGoneStatus">
   <int value="0" label="Normal termination"/>

@@ -14,7 +14,7 @@ option java_outer_classname = 'InputSourceProto';
 package omnibox;
 
 // Input source
-// Next ID: 5
+// Next ID: 9
 enum InputSource {
   // Unspecified input source.
   INPUT_SOURCE_UNSPECIFIED = 0;
@@ -26,4 +26,10 @@ enum InputSource {
   INPUT_SOURCE_FILE_PICKER = 3;
   // Use Google Drive as the input source.
   INPUT_SOURCE_DRIVE = 4;
+  // Use a tab picker as the input source. This is used in Chrome.
+  INPUT_SOURCE_TAB_PICKER = 5;
+  // Voice input.
+  INPUT_SOURCE_VOICE = 6;
+  // Search Live input.
+  INPUT_SOURCE_SEARCH_LIVE = 7;
 }

@@ -47,12 +47,12 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProc
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
-import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.Image;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.action.OmniboxAction;

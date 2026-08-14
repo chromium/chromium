@@ -21,11 +21,9 @@ import "model_mode.proto";
 import "tool_mode.proto";
 
 // A set of rules that are applied to the input plate or fusebox.
-//
 // This is deprecated (only used for legacy xGA client and legacy Chrome)
 // For validation use SearchboxConfig.*_config.rule instead.
 // For allowed primitives use presence of the SearchboxConfig.*_configs instead.
-//
 // Next ID: 8
 message RuleSet {
   // Server determined allowed tools based on user/geo/platform.

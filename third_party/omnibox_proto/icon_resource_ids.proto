@@ -237,11 +237,7 @@ enum IconResourceIds {
 
   // Bookmarks
   BOOKMARKS = 76;
-
-  // Screenshot: https://screenshot.googleplex.com/B5wRtTHgRYkzBKk
   COLORED_SEARCH_LOUPE_WITH_SPARKLE = 84;
-
-  // Screenshot: https://screenshot.googleplex.com/4FNrAJE79snwYne
   SEARCH_LOUPE_WITH_SPARKLE = 86;
 
   // follow_up
@@ -263,72 +259,84 @@ enum IconResourceIds {
   LOCATION_PIN = 74;
   STORY_SUGGESTION = 77;
 
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:group:FILL@0;wght@400;GRAD@0;opsz@48
+  // Icon: Google Symbols:group:FILL@0;wght@400;GRAD@0;opsz@48
   GROUP_SYMBOL = 78;
 
   // http://shortn/_0sp4vlu2bM
   CELEBRATION = 79;
 
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:update:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=update
+  // Icon: Google Symbols:update:FILL@0;wght@400;GRAD@0;opsz@24
   PERSONAL_UPDATE = 81;
 
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:cloud_off:FILL@0;wght@400;GRAD@0;opsz@24
+  // Icon: Google Symbols:cloud_off:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   OFFLINE = 82;
 
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:refresh:FILL@0;wght@400;GRAD@0;opsz@24
+  // Icon: Google Symbols:refresh:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   REFRESH = 83;
 
   // Query Builder icon
-  // (https://screenshot.googleplex.com/9HTD9HwsnUnKDWY.png)
   QUERY_BUILDER = 85;
 
   // Pen with spark icon
   PEN_SPARK = 88;
 
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:astrophotography_mode:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
-  // For AIM.
+  // Icon: Google
+  // Symbols:astrophotography_mode:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24 For
+  // AIM.
   ASTROPHOTOGRAPHY_MODE = 89;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:autorenew:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // Icon: Google Symbols:autorenew:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   AUTORENEW = 90;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:bolt:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // Icon: Google Symbols:bolt:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   BOLT = 91;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:attach_file:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // Icon: Google Symbols:attach_file:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   ATTACH_FILE = 92;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:add_photo_alternate:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
-  // For AIM.
+  // Icon: Google
+  // Symbols:add_photo_alternate:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24 For AIM.
   ADD_PHOTO_ALTERNATE = 93;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:travel_explore:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3&
+  // Icon: Google Symbols:travel_explore:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   TRAVEL_EXPLORE = 94;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:task_spark:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // Icon: Google Symbols:task_spark:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   TASK_SPARK = 95;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:draft_spark:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // Icon: Google Symbols:draft_spark:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   DRAFT_SPARK = 96;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:timer:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // Icon: Google Symbols:timer:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   TIMER = 97;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:photo_spark:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // Icon: Google Symbols:photo_spark:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   PHOTO_SPARK = 98;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:lens_camera:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%2523e3e3e3
+  // Icon: Google Symbols:lens_camera:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   LENS_CAMERA = 99;
   // Banana emoji icon "🍌" for AIM.
   BANANA = 100;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:check_small:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // Icon: Google Symbols:check_small:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   CHECK_SMALL = 101;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:photo_prints:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // Icon: Google Symbols:photo_prints:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   PHOTO_PRINTS = 102;
-  // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:drive:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%2523e3e3e3&icon.query=drive
+  // Icon: Google Symbols:drive:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
   // For AIM.
   DRIVE = 103;
+  // Icon: Google Symbols:agent_mode_2:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
+  // For AIM.
+  // LINT: LEGACY_NAMES
+  AGENT_MODE_2 = 104;
+
+  // Icon: Google Symbols:schedule_auto:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
+  // AIM History icon.
+  SCHEDULE_AUTO = 105;
+
+  // Icon: Google Symbols:sort_spark:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
+  // AIM Threads History icon.
+  SORT_SPARK = 106;
 }
 
 enum IconPositions {

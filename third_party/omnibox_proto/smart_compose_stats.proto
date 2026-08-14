@@ -13,7 +13,6 @@ option java_outer_classname = 'SmartComposeStatsProto';
 
 package omnibox.metrics;
 
-//
 // This tracks metrics related to smart compose features in searchbox (a.k.a.
 // inlined autocomplete) that cannot be captured by the existing SearchboxStats.
 message SmartComposeStats {

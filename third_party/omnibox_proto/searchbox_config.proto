@@ -30,12 +30,15 @@ message SearchboxConfig {
 
   // Configurations for server allowed input types.
   // This is the source of truth for what input types are allowed.
+  // Client should render input types in the same order.
   repeated InputTypeConfig input_type_configs = 4;
   // Configurations for server allowed tools.
   // This is the source of truth for what tools are allowed.
+  // Client should render tools in the same order.
   repeated ToolConfig tool_configs = 5;
   // Configurations for server allowed models.
   // This is the source of truth for what models are allowed.
+  // Client should render models in the same order.
   repeated ModelConfig model_configs = 6;
 
   // Configuration for the tools section in menu.

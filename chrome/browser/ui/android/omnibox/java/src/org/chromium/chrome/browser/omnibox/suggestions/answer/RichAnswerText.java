@@ -14,10 +14,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
-import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
-import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString.ColorType;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString.FormattedStringFragment;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.ui.text.DownloadableFontTextAppearanceSpan;
 

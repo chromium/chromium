@@ -21,10 +21,10 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
-import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
-import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
-import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString.ColorType;
+import org.chromium.components.omnibox.FormattedStringProto.FormattedString.FormattedStringFragment;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 
 /** Tests for {@link RichAnswerText}. */

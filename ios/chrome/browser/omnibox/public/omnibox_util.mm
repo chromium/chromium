@@ -86,7 +86,7 @@ GetOmniboxSuggestionIconTypeForSuggestTemplateInfoIconType(
     omnibox::SuggestTemplateInfo::IconType type) {
   // Update this assertion and the switch below whenever values are added.
   static_assert(omnibox::SuggestTemplateInfo::IconType_MAX ==
-                omnibox::SuggestTemplateInfo::DRAFT_SPARK);
+                omnibox::SuggestTemplateInfo::INK_PEN);
   switch (type) {
     case omnibox::SuggestTemplateInfo_IconType_HISTORY:
       return OmniboxSuggestionIconType::kSearchHistory;
@@ -106,6 +106,10 @@ GetOmniboxSuggestionIconTypeForSuggestTemplateInfoIconType(
     case omnibox::SuggestTemplateInfo_IconType_NOTES_SPARK:
       return OmniboxSuggestionIconType::kNotesSpark;
     case omnibox::SuggestTemplateInfo_IconType_DRAFT_SPARK:
+    case omnibox::SuggestTemplateInfo_IconType_LIGHTBULB:
+    case omnibox::SuggestTemplateInfo_IconType_ATTACH_FILE:
+    case omnibox::SuggestTemplateInfo_IconType_SCHOOL:
+    case omnibox::SuggestTemplateInfo_IconType_INK_PEN:
       // TODO(crbug.com/486698515): Replace with the correct symbol when it's
       // available.
       return OmniboxSuggestionIconType::kSearch;
