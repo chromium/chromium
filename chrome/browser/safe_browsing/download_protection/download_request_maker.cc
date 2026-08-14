@@ -193,8 +193,8 @@ DownloadRequestMaker::DownloadRequestMaker(
 
   if (referrer_chain_data &&
       !referrer_chain_data->GetReferrerChain()->empty()) {
-    request_->mutable_referrer_chain()->Swap(
-        referrer_chain_data->GetReferrerChain());
+    *request_->mutable_referrer_chain() =
+        *referrer_chain_data->GetReferrerChain();
     request_->mutable_referrer_chain_options()
         ->set_recent_navigations_to_collect(
             referrer_chain_data->recent_navigations_to_collect());

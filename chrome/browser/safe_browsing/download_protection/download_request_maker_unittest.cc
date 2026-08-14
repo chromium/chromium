@@ -253,6 +253,51 @@ TEST_F(DownloadRequestMakerTest, PopulatesReferrerChain) {
   EXPECT_EQ(details_.inspection_type, DownloadFileType::NONE);
 }
 
+TEST_F(DownloadRequestMakerTest,
+       PopulatesReferrerChain_DoesNotMutateReferrerChainData) {
+  base::FilePath tmp_path(FILE_PATH_LITERAL("temp_path"));
+
+  auto referrer_chain = std::make_unique<
+      google::protobuf::RepeatedPtrField<ReferrerChainEntry>>();
+  ReferrerChainEntry* entry1 = referrer_chain->Add();
+  entry1->set_url("https://example.com/landing");
+  ReferrerChainEntry* entry2 = referrer_chain->Add();
+  entry2->set_url("https://example.com/referrer");
+  ReferrerChainData referrer_chain_data(ReferrerChainProvider::SUCCESS,
+                                        std::move(referrer_chain),
+                                        /*referrer_chain_length=*/2,
+                                        /*recent_navigation_to_collect=*/5);
+
+  DownloadRequestMaker request_maker(
+      mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
+      /*target_file_name=*/base::FilePath(), tmp_path,
+      /*source_url=*/GURL(),
+      /*sha256_hash=*/"",
+      /*length=*/0,
+      /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
+      /*is_user_initiated=*/true, &referrer_chain_data,
+      /*password=*/std::nullopt,
+      /*previous_token=*/"", base::DoNothing());
+
+  EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
+      .WillOnce(Return());
+  EXPECT_CALL(*mock_feature_extractor_, ExtractImageFeatures(tmp_path, _, _, _))
+      .WillRepeatedly(Return(true));
+
+  RunRequestMaker(request_maker);
+
+  ASSERT_TRUE(request_);
+  EXPECT_EQ(request_->referrer_chain_size(), 2);
+  EXPECT_EQ(request_->referrer_chain(0).url(), "https://example.com/landing");
+  EXPECT_EQ(request_->referrer_chain(1).url(), "https://example.com/referrer");
+  ASSERT_NE(referrer_chain_data.GetReferrerChain(), nullptr);
+  EXPECT_EQ(referrer_chain_data.GetReferrerChain()->size(), 2);
+  EXPECT_EQ(referrer_chain_data.GetReferrerChain()->at(0).url(),
+            "https://example.com/landing");
+  EXPECT_EQ(referrer_chain_data.GetReferrerChain()->at(1).url(),
+            "https://example.com/referrer");
+}
+
 TEST_F(DownloadRequestMakerTest, PopulatesStandardProtection) {
   base::RunLoop run_loop;
   base::FilePath tmp_path(FILE_PATH_LITERAL("temp_path"));
