@@ -200,6 +200,12 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
                   .SetTextStyle(views::style::STYLE_BODY_5)
                   .SetEnabledColor(kColorExtensionsMenuSecondaryText)
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetElideBehavior(gfx::ELIDE_TAIL)
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::LayoutOrientation::kHorizontal,
+                                   views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kPreferred))
                   .SetProperty(views::kMarginsKey,
                                gfx::Insets::VH(0, icon_size))
                   .SetBorder(views::CreateEmptyBorder(
