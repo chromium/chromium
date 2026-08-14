@@ -3456,6 +3456,7 @@ if (!is_android) {
         "//chrome/app:command_ids",
         "//chrome/browser:font_prewarmer_tab_helper",
         "//chrome/browser/ui:uninstall_browser_prompt",
+        "//chrome/browser/ui/views:critical_notification_bubble_view",
         "//chrome/browser/ui/views:uninstall_browser_prompt",
         "//chrome/browser/win:browser_tests",
         "//chrome/credential_provider/common:common_constants",
@@ -3773,6 +3774,10 @@ if (!is_android) {
       # TODO(crbug.com/353332589): Remove this dependency when the
       # views/autofill/popup/ browser tests get modularized.
       deps += [ "//chrome/browser/ui/views/autofill/popup" ]
+      if (is_win) {
+        deps +=
+            [ "//chrome/browser/ui/views:critical_notification_bubble_view" ]
+      }
 
       if (enable_dice_support || is_chromeos) {
         deps += [ "//chrome/browser/profiles/batch_upload:test_support" ]
@@ -5970,6 +5975,7 @@ test("unit_tests") {
       "//chrome/browser/ui:uninstall_browser_prompt",
       "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/search_promotion:unit_tests",
+      "//chrome/browser/ui/views:critical_notification_bubble_view",
       "//chrome/browser/ui/views:uninstall_browser_prompt",
       "//chrome/browser/ui/webui/version:unit_tests",
       "//chrome/browser/win:chrome_process_finder",
@@ -7824,6 +7830,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/ui/call_to_action",
       "//chrome/browser/ui/tabs:tab_list_bridge",
+      "//chrome/browser/ui/views:task_manager_search_bar_view",
       "//chrome/browser/ui/views/extensions:unit_tests",
       "//chrome/browser/ui/views/relaunch_notification:unit_tests",
     ]

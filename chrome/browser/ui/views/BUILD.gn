@@ -187,6 +187,34 @@ source_set("status_bubble") {
 }
 
 if (is_win) {
+  source_set("critical_notification_bubble_view") {
+    public = [ "critical_notification_bubble_view.h" ]
+    sources = [ "critical_notification_bubble_view.cc" ]
+    public_deps = [
+      "//base",
+      "//ui/views",
+    ]
+    deps = [
+      ":layout_provider",
+      "//base:i18n",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/app/resources:locale_settings",
+      "//chrome/app/theme:theme_resources",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/ui/dialogs:browser_dialogs",
+      "//chrome/browser/upgrade_detector",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//components/strings:components_strings",
+      "//ui/accessibility",
+      "//ui/accessibility:ax_base",
+      "//ui/base",
+      "//ui/base/mojom",
+    ]
+  }
+
   source_set("uninstall_browser_prompt") {
     public = [ "uninstall_view.h" ]
     sources = [ "uninstall_view.cc" ]
@@ -353,5 +381,134 @@ source_set("media_picker_utils") {
     "//content/public/browser",
     "//extensions/browser",
     "//ui/views",
+  ]
+}
+
+source_set("flying_indicator") {
+  public = [ "flying_indicator.h" ]
+  sources = [ "flying_indicator.cc" ]
+  public_deps = [
+    "//skia",
+    "//ui/base",
+    "//ui/color:color_headers",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+  deps = [
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/color:color_headers",
+    "//ui/color",
+  ]
+}
+
+source_set("login_view") {
+  public = [ "login_view.h" ]
+  sources = [ "login_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/login",
+    "//components/password_manager/core/browser",
+    "//ui/views",
+  ]
+  deps = [
+    ":layout_provider",
+    "//components/strings:components_strings",
+    "//ui/base",
+  ]
+}
+
+source_set("message_box_dialog") {
+  public = [ "message_box_dialog.h" ]
+  sources = [ "message_box_dialog.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui:simple_message_box_headers",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui:simple_message_box_internal",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//components/constrained_window",
+    "//components/startup_metric_utils",
+    "//components/strings:components_strings",
+    "//ui/base",
+    "//ui/base/mojom",
+    "//ui/display",
+  ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ui/base" ]
+  }
+  if (is_mac) {
+    deps += [ "//chrome/browser/ui/cocoa" ]
+  }
+}
+
+source_set("sub_apps_permission_explanation") {
+  public = [ "sub_apps_permission_explanation.h" ]
+  sources = [ "sub_apps_permission_explanation.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/base",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//components/webapps/common",
+    "//content/public/browser",
+  ]
+}
+
+source_set("task_manager_search_bar_view") {
+  public = [ "task_manager_search_bar_view.h" ]
+  sources = [ "task_manager_search_bar_view.cc" ]
+  public_deps = [
+    ":layout_provider",
+    "//base",
+    "//ui/base",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/app:branded_strings",
+    "//chrome/browser/ui/color:color_headers",
+    "//components/vector_icons",
+    "//ui/color:color_headers",
+  ]
+}
+
+source_set("theme_copying_widget") {
+  public = [ "theme_copying_widget.h" ]
+  sources = [ "theme_copying_widget.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/views",
+  ]
+}
+
+source_set("update_recommended_message_box") {
+  public = [ "update_recommended_message_box.h" ]
+  sources = [ "update_recommended_message_box.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+  deps = [
+    ":layout_provider",
+    "//build:branding_buildflags",
+    "//chrome/app:branded_strings",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/lifetime",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//components/constrained_window",
+    "//components/strings:components_strings",
+    "//ui/base",
+    "//ui/base/mojom",
   ]
 }

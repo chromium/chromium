@@ -94,6 +94,7 @@ source_set("impl") {
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/views:bubble_anchor_util_views",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views:sub_apps_permission_explanation",
     "//chrome/browser/ui/views/accessibility",
     "//chrome/browser/ui/views/controls",
     "//chrome/browser/ui/views/file_system_access",

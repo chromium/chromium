@@ -138,6 +138,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views:device_chooser_content_view",
       "//chrome/browser/ui/views:layout_provider",
+      "//chrome/browser/ui/views:sub_apps_permission_explanation",
       "//chrome/browser/ui/views/infobars",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/omnibox",

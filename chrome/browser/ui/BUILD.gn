@@ -2421,8 +2421,6 @@ static_library("ui") {
       "network_profile_bubble.cc",
       "network_profile_bubble.h",
       "views/certificate_viewer_win.cc",
-      "views/critical_notification_bubble_view.cc",
-      "views/critical_notification_bubble_view.h",
       "views/frame/browser_caption_button_container_win.cc",
       "views/frame/browser_caption_button_container_win.h",
       "views/frame/browser_desktop_window_tree_host.h",
@@ -2458,6 +2456,7 @@ static_library("ui") {
       "//chrome/browser:font_prewarmer_tab_helper",
       "//chrome/browser:titlebar_config",
       "//chrome/browser/taskbar",
+      "//chrome/browser/ui/views:critical_notification_bubble_view",
       "//chrome/browser/ui/views:uninstall_browser_prompt",
       "//chrome/browser/win:impl",
       "//components/search_engines",
@@ -2698,8 +2697,6 @@ static_library("ui") {
       "views/find_bar_owner.h",
       "views/find_bar_view.cc",
       "views/find_bar_view.h",
-      "views/flying_indicator.cc",
-      "views/flying_indicator.h",
       "views/frame/app_menu_button.cc",
       "views/frame/app_menu_button.h",
       "views/frame/base_tab_strip_region_view.cc",
@@ -2810,10 +2807,6 @@ static_library("ui") {
       "views/javascript_tab_modal_dialog_view_views.cc",
       "views/javascript_tab_modal_dialog_view_views.h",
       "views/login_handler_views.cc",
-      "views/login_view.cc",
-      "views/login_view.h",
-      "views/message_box_dialog.cc",
-      "views/message_box_dialog.h",
       "views/profiles/avatar_toolbar_button.cc",
       "views/profiles/avatar_toolbar_button.h",
       "views/profiles/avatar_toolbar_button_state_manager.cc",
@@ -2825,8 +2818,6 @@ static_library("ui") {
       "views/simple_web_view_dialog.h",
       "views/ssl_client_certificate_selector.cc",
       "views/ssl_client_certificate_selector.h",
-      "views/sub_apps_permission_explanation.cc",
-      "views/sub_apps_permission_explanation.h",
       "views/tab_icon_view.cc",
       "views/tab_icon_view.h",
       "views/tab_search_bubble_host.cc",
@@ -2909,18 +2900,12 @@ static_library("ui") {
       "views/tabs/vertical_tab_style_views.h",
       "views/tabs/z_orderable_tab_container_element.cc",
       "views/tabs/z_orderable_tab_container_element.h",
-      "views/task_manager_search_bar_view.cc",
-      "views/task_manager_search_bar_view.h",
       "views/task_manager_view.cc",
       "views/task_manager_view.h",
-      "views/theme_copying_widget.cc",
-      "views/theme_copying_widget.h",
       "views/title_origin_label.cc",
       "views/title_origin_label.h",
       "views/toolbar/avatar_toolbar_button_interface.cc",
       "views/toolbar/avatar_toolbar_button_interface.h",
-      "views/update_recommended_message_box.cc",
-      "views/update_recommended_message_box.h",
       "views/upgrade_notification_controller.cc",
       "views/upgrade_notification_controller.h",
       "views/web_apps/create_shortcut_confirmation_view.cc",
@@ -3033,9 +3018,16 @@ static_library("ui") {
       "//chrome/browser/ui/views:confirm_bubble",
       "//chrome/browser/ui/views:device_chooser_content_view",
       "//chrome/browser/ui/views:elevation_icon_setter",
+      "//chrome/browser/ui/views:flying_indicator",
       "//chrome/browser/ui/views:layout_provider_impl",
+      "//chrome/browser/ui/views:login_view",
       "//chrome/browser/ui/views:media_picker_utils",
+      "//chrome/browser/ui/views:message_box_dialog",
       "//chrome/browser/ui/views:status_bubble",
+      "//chrome/browser/ui/views:sub_apps_permission_explanation",
+      "//chrome/browser/ui/views:task_manager_search_bar_view",
+      "//chrome/browser/ui/views:theme_copying_widget",
+      "//chrome/browser/ui/views:update_recommended_message_box",
       "//chrome/browser/ui/views/accessibility",
       "//chrome/browser/ui/views/accessibility:impl",
       "//chrome/browser/ui/views/animations",
@@ -3242,7 +3234,6 @@ static_library("ui") {
       # following headers get componentized:
       # c/b/ui/browser.h
       # c/b/ui/views/frame/browser_view.h, contents_web_view.h
-      # c/b/ui/views/theme_copying_widget.h
       "//chrome/browser/ui/views/omnibox:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
@@ -3278,7 +3269,6 @@ static_library("ui") {
       # c/b/ui/views/frame/contents_container_outline.h
       # c/b/ui/views/frame/contents_container_view.h
       # c/b/ui/views/frame/multi_contents_view.h
-      # c/b/ui/views/sub_apps_permission_explanation.h
       "//chrome/browser/ui/views/page_info:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
@@ -3444,7 +3434,6 @@ static_library("ui") {
       # c/b/ui/views/extensions/extensions_container_views.h
       # c/b/ui/views/frame/browser_view.h
       # c/b/ui/views/frame/contents_web_view.h
-      # c/b/ui/views/sub_apps_permission_explanation.h
       # c/b/ui/views/title_origin_label.h
       "//chrome/browser/ui/views/permissions:impl",
     ]
