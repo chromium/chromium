@@ -871,7 +871,14 @@ inline constexpr char kGeminiCoordinatorTeardownFixName[] =
 inline constexpr char kGeminiCoordinatorTeardownFixDescription[] =
     "Enables the teardown crash fix for Gemini First Run Coordinator.";
 
+inline constexpr char kGeminiExperimentalGuidedOnboardingName[] =
+    "Gemini Experimental Guided Onboarding driven by the SDK.";
+inline constexpr char kGeminiExperimentalGuidedOnboardingDescription[] =
+    "Enables the experimental Gemini guided onboarding. Meant for "
+    "experiments only.";
+
 inline constexpr char kGeminiFREExperimentName[] = "Gemini FRE Experiment";
+
 inline constexpr char kGeminiFREExperimentDescription[] =
     "Enables the experimental Gemini First Run Experience";
 

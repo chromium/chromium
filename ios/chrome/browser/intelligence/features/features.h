@@ -459,6 +459,21 @@ bool IsGeminiVisualRichFREEnabled();
 // Returns true if the Lightweight variant is enabled.
 bool IsGeminiLightweightFREEnabled();
 
+// Feature flag for Gemini Experimental Guided Onboarding.
+// Meant for experiments only.
+BASE_DECLARE_FEATURE(kGeminiExperimentalGuidedOnboarding);
+
+// Feature parameter to force Gemini Experimental Guided Onboarding for
+// debugging.
+extern const char kGeminiExperimentalGuidedOnboardingForceParam[];
+
+// Returns true if Gemini Experimental Guided Onboarding is enabled.
+bool IsGeminiExperimentalGuidedOnboardingEnabled();
+
+// Returns true if Gemini Experimental Guided Onboarding should be forced for
+// debugging.
+bool ShouldForceGeminiExperimentalGuidedOnboarding();
+
 // Controls whether blacked out bounding boxes for sensitive payment fields are
 // applied to the screenshot in `PageContext`. Matches Blink's
 // `kGlicScreenshotSensitivePaymentRedaction`.

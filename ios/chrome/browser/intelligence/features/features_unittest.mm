@@ -334,3 +334,39 @@ TEST_F(ActorFeaturesTest, GeminiFREExperimentVariants) {
     EXPECT_TRUE(IsGeminiLightweightFREEnabled());
   }
 }
+
+TEST_F(ActorFeaturesTest, IsGeminiExperimentalGuidedOnboardingEnabled) {
+  // Disabled by default.
+  EXPECT_FALSE(IsGeminiExperimentalGuidedOnboardingEnabled());
+  EXPECT_FALSE(ShouldForceGeminiExperimentalGuidedOnboarding());
+
+  // Disabled without PageActionMenu dependency.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        kGeminiExperimentalGuidedOnboarding);
+    EXPECT_FALSE(IsGeminiExperimentalGuidedOnboardingEnabled());
+    EXPECT_FALSE(ShouldForceGeminiExperimentalGuidedOnboarding());
+  }
+
+  // Enabled when PageActionMenu and feature are enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {kPageActionMenu, kGeminiExperimentalGuidedOnboarding}, {});
+    EXPECT_TRUE(IsGeminiExperimentalGuidedOnboardingEnabled());
+    EXPECT_FALSE(ShouldForceGeminiExperimentalGuidedOnboarding());
+  }
+
+  // Forced when force param is enabled with PageActionMenu.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    base::FieldTrialParams params;
+    params[kGeminiExperimentalGuidedOnboardingForceParam] = "true";
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kPageActionMenu, {}}, {kGeminiExperimentalGuidedOnboarding, params}},
+        {});
+    EXPECT_TRUE(IsGeminiExperimentalGuidedOnboardingEnabled());
+    EXPECT_TRUE(ShouldForceGeminiExperimentalGuidedOnboarding());
+  }
+}

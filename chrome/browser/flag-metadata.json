@@ -5376,6 +5376,14 @@
     "expiry_milestone": 180
   },
   {
+    "name": "gemini-experimental-guided-onboarding",
+    "owners": [
+      "yasamans@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 180
+  },
+  {
     "name": "gemini-fre-experiment",
     "owners": [ "hamzamoh@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 160
