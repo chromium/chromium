@@ -37,6 +37,12 @@ _PROTOBUF_DIR = os.path.join(
 if os.path.exists(_PROTOBUF_DIR) and _PROTOBUF_DIR not in sys.path:
     sys.path.insert(1, _PROTOBUF_DIR)
 
+# See b/315080809, b/545614704 and b/336173744 for context.
+# This relies on print_python_deps.py to pick up the in-tree version of the
+# protobuf dependency. If not careful, print_python_deps.py can pickup the wrong
+# version of google.protobuf from vpython's site-packages. This will lead to
+# print_python_deps.py failing to declare the dependency on google.protobuf in
+# protoc_java.pydeps. This in turns leads to less hermetic builds.
 from google.protobuf import descriptor_pb2
 
 

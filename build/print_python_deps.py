@@ -10,6 +10,7 @@ required for .isolate files.
 """
 
 import argparse
+import importlib.abc
 import os
 import shlex
 import sys
@@ -18,6 +19,36 @@ import sys
 
 
 _SRC_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+
+
+class _ProtobufPathFinder(importlib.abc.MetaPathFinder):
+    """Ensures in-tree protobuf is prioritized when added to sys.path."""
+
+    _importing = False
+
+    def find_spec(self, fullname, path, target=None):
+        if not fullname.startswith('google.protobuf') or self._importing:
+            return None
+
+        protobuf_dir = os.path.join(
+            _SRC_ROOT, 'third_party', 'protobuf', 'python'
+        )
+        if not any(os.path.abspath(p) == protobuf_dir for p in sys.path):
+            return None
+
+        self._importing = True
+        try:
+            import google.protobuf
+
+            sub_dir = os.path.join(protobuf_dir, 'google', 'protobuf')
+            if (
+                os.path.exists(sub_dir)
+                and sub_dir not in google.protobuf.__path__
+            ):
+                google.protobuf.__path__.insert(0, sub_dir)
+        finally:
+            self._importing = False
+        return None
 
 
 def ComputePythonDependencies():
@@ -172,8 +203,13 @@ def main():
         # TODO(agrieve): Add support for this if the need ever arises.
         os.execvp('vpython3', ['vpython3'] + sys.argv + ['--did-relaunch'])
 
-    # Work-around for protobuf library not being loadable via importlib
-    # This is needed due to compile_resources.py.
+    # Work-around for protobuf library not being loadable via importlib.
+    # This is needed due to compile_resources.py and protoc_java.py.
+    # When a script explicitly adds third_party/protobuf/python to sys.path,
+    # ensure google.protobuf.__path__ prioritizes the in-tree directory,
+    # while preserving vpython's site-packages for other scripts.
+    sys.meta_path.insert(0, _ProtobufPathFinder())
+
     import importlib._bootstrap_external
 
     importlib._bootstrap_external._NamespacePath.sort = lambda self, **_: 0
