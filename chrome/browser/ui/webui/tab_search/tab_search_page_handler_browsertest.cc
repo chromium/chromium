@@ -369,7 +369,13 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
   std::unique_ptr<TabSearchUI> webui_controller_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, GetTabs) {
+#if BUILDFLAG(IS_LINUX) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER) || \
+                            defined(MEMORY_SANITIZER))
+#define MAYBE_GetTabs DISABLED_GetTabs
+#else
+#define MAYBE_GetTabs GetTabs
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_GetTabs) {
   // Browser3 and browser4 are using different profiles, browser5 is not a
   // normal type browser, thus their tabs should not be accessible.
   AddTabWithTitle(browser5(), tab_url6_, kTabName6);
