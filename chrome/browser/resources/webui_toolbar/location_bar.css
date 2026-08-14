@@ -115,10 +115,11 @@ permission-dashboard:not([visible]) {
 }
 
 location-icon {
-  flex-shrink: 0;
+  flex-shrink: 1;
   margin: 4px;
-  margin-inline-start: calc(4px - var(--border-radius));
+  margin-inline-start: calc(5px - var(--border-radius));
   margin-inline-end: 8px;
+  max-width: 50%; /* See kLeadingDecorationMaxFraction */
 }
 
 /* We expand out spacing between icon and text to line things up with the
@@ -136,4 +137,5 @@ location-icon {
 
 selected-keyword {
   flex-shrink: 1;
+  max-width: 50%; /* See kLeadingDecorationMaxFraction */
 }

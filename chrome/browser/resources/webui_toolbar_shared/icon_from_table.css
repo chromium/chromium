@@ -8,8 +8,9 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  display: inline-flex;
   align-items: center;
+  display: inline-flex;
+  flex-shrink: 0;
   justify-content: center;
   /* Default intrinsic size. Layout containers (like toolbar-chip-button)
      can override height/width to forcefully constrain this element. */

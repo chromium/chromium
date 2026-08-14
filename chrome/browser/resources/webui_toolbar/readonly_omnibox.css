@@ -34,9 +34,10 @@
   /* We want to position textInput off of us */
   position: relative;
   /* Giving this a width makes flex shrink it to fit available space when this
-   * is too long. The exact value will get replaced by whatever flex computes
+   * is too long. The exact value will get replaced by whatever flex computes,
+   * but it also won't go below this.
    */
-  width: 200px;
+  width: 0;
 }
 
 /* When the popup is expanded, we take control of spacing between us and icons,
