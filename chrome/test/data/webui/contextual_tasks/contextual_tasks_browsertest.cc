@@ -177,6 +177,37 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
           "SmartTabSharing')");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Resize) {
+  RunTest("contextual_tasks/composebox_test.js",
+          "runMochaSuite('ContextualTasksComposeboxResizeTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Glow_ForkTrue) {
+  RunTest("contextual_tasks/composebox_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkGlowTest "
+          "\\\\(useContextualTasksComposeboxFork = true\\\\)')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Glow_ForkFalse) {
+  RunTest("contextual_tasks/composebox_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkGlowTest "
+          "\\\\(useContextualTasksComposeboxFork = false\\\\)')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_ErrorScrim_ForkTrue) {
+  RunTest("contextual_tasks/composebox_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkErrorScrimTest "
+          "\\\\(useContextualTasksComposeboxFork = true\\\\)')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_ErrorScrim_ForkFalse) {
+  RunTest("contextual_tasks/composebox_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkErrorScrimTest "
+          "\\\\(useContextualTasksComposeboxFork = false\\\\)')");
+}
+
 // TODO(crbug.com/480689282): Flaky on ChromeOS debug.
 // TODO(crbug.com/487147580): Re-enable on Linux.
 // TODO(crbug.com/490250939): Flaky elsewhere as well.

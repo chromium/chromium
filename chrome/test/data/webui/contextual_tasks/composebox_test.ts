@@ -6,9 +6,8 @@ import 'chrome://contextual-tasks/app.js';
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
-import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 /* clang-format off */
-import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile, GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
 // <if expr="not is_android">
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 // </if>
@@ -26,6 +25,7 @@ import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrom
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -2265,11 +2265,15 @@ suite(`ContextualTasksComposeboxResizeTest`, () => {
   class MockResizeObserver {
     static instances: MockResizeObserver[] = [];
 
+    observedTargets: Element[] = [];
+
     constructor(private callback: ResizeObserverCallback) {
       MockResizeObserver.instances.push(this);
     }
 
-    observe(_target: Element) {}
+    observe(target: Element) {
+      this.observedTargets.push(target);
+    }
     unobserve(_target: Element) {}
     disconnect() {}
 
@@ -2383,26 +2387,38 @@ suite(`ContextualTasksComposeboxResizeTest`, () => {
     assertEquals(123, firedHeight);
   });
 
-  test('carousel-resize from the fork carousel sets --carousel-height', () => {
-    mockTimer.install();
-    const {innerComposebox} = parts;
-    const carousel = innerComposebox.shadowRoot.querySelector('#carousel');
-    assertTrue(!!carousel, 'Fork should render the file carousel.');
+  test(
+      'carousel-resize from the fork carousel sets --carousel-height',
+      async () => {
+        const {innerComposebox} = parts;
+        // The carousel is only rendered while files are present.
+        const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
+        innerComposebox.addFileContextForTesting(new ComposeboxFile(
+            token, 'unknown.dat', 'unknown/type', InputType.kLensFile));
+        await innerComposebox.updateComplete;
 
-    Object.defineProperty(carousel, 'clientHeight', {
-      writable: true,
-      configurable: true,
-      value: 50,
-    });
+        const carousel = innerComposebox.shadowRoot.querySelector('#carousel');
+        assertTrue(!!carousel, 'Fork should render the file carousel.');
 
-    MockResizeObserver.instances.forEach(obs => obs.trigger());
-    mockTimer.tick(100);
+        mockTimer.install();
+        Object.defineProperty(carousel, 'clientHeight', {
+          writable: true,
+          configurable: true,
+          value: 50,
+        });
 
-    // The file carousel adds CAROUSEL_HEIGHT_PADDING (18) to clientHeight, and
-    // the wrapper writes the result to --carousel-height on the inner element.
-    assertEquals(
-        '68px', innerComposebox.style.getPropertyValue('--carousel-height'));
-  });
+        const carouselObservers = MockResizeObserver.instances.filter(
+            obs => obs.observedTargets.includes(carousel));
+        assertTrue(carouselObservers.length > 0);
+        carouselObservers.forEach(obs => obs.trigger());
+        mockTimer.tick(100);
+
+        // The carousel adds CAROUSEL_HEIGHT_PADDING (18) to clientHeight and
+        // the wrapper writes the result to --carousel-height.
+        assertEquals(
+            '68px',
+            innerComposebox.style.getPropertyValue('--carousel-height'));
+      });
 });
 
 // =============================================================================
@@ -2650,6 +2666,10 @@ suite(`ContextualTasksComposeboxResizeTest`, () => {
               await errorScrim.updateComplete;
               assertEquals(
                   'absolute', window.getComputedStyle(errorScrim).position);
+
+              innerComposebox.inVoiceSearchMode = false;
+              innerComposebox.errorMessage = '';
+              await innerComposebox.updateComplete;
             });
       });
 });
