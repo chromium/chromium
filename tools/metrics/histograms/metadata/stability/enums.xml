@@ -133,6 +133,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="13" label="SAGPC_INVALID_PERMISSION_REQUEST_CONTEXT"/>
   <int value="14" label="TLSAPC_INVALID_PERMISSION_REQUEST_CONTEXT"/>
   <int value="15" label="CCBC_GOOGLE_CHROME_SCHEME"/>
+  <int value="16" label="PWC_BRIDGE_UNQUALIFIED_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonContent">

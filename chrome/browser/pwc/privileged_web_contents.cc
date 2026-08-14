@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "chrome/browser/pwc/pwc_api_binder.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/back_forward_cache/disabled_reason_id.h"
@@ -79,7 +80,8 @@ PrivilegedWebContents::PrivilegedWebContents(
     PrivilegedComponent component,
     content::BrowserContext* browser_context,
     std::unique_ptr<PwcPolicyDelegate> policy_delegate)
-    : policy_(component, std::move(policy_delegate)) {
+    : policy_(component, std::move(policy_delegate)),
+      bridge_(std::make_unique<PwcApiBinder>()) {
   // No StoragePartitionConfig override: the WebContents lives in the
   // profile's default partition so the component shares the live cookie jar.
   content::WebContents::CreateParams params(browser_context);

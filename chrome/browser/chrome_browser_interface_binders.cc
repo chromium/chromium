@@ -28,6 +28,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_processor_impl_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/pwc/pwc_api_binder.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/speech/on_device_speech_recognition_impl.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
@@ -454,6 +455,7 @@ void PopulateChromeFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
   map->Add<glic::mojom::WebClientHandler>(&glic::BindGlicWebClientHandler);
+  map->Add<pwc::mojom::PrivilegedBridge>(&pwc::BindPrivilegedBridge);
   map->Add<image_annotation::mojom::Annotator>(&BindImageAnnotator);
 
   map->Add<blink::mojom::ScriptToolHost>(

@@ -21,6 +21,8 @@ class WebContents;
 
 namespace pwc {
 
+class PwcApiBinder;
+
 // Owns a WebContents that hosts remote content for a blessed component with
 // elevated browser capabilities.
 //
@@ -60,6 +62,11 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   const PwcComponentPolicy& policy() const { return policy_; }
   PrivilegedComponent component() const { return policy_.component(); }
 
+  // The browser-side host for the capability bridge exposed to this PWC's
+  // qualifying main frame. Owned by (and lives as long as) this
+  // PrivilegedWebContents.
+  PwcApiBinder& bridge() { return *bridge_; }
+
   // content::WebContentsDelegate:
   // Privileged content never prerenders: a prerendered page is activated into
   // the primary main frame without running navigation throttles, which would
@@ -95,6 +102,7 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
 
   const PwcComponentPolicy policy_;
   std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<PwcApiBinder> bridge_;
 };
 
 }  // namespace pwc

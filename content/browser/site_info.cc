@@ -555,6 +555,10 @@ bool SiteInfo::IsWebUI() const {
                                site_url_.scheme());
 }
 
+bool SiteInfo::IsOriginKeyed() const {
+  return agent_cluster_key_.IsOriginKeyed();
+}
+
 GURL SiteInfo::GetProcessLockURL() const {
   return agent_cluster_key_.GetURL();
 }
