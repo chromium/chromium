@@ -527,7 +527,7 @@ BASE_FEATURE(kDoNotDisturbShortcut, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDeskTemplateSync, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the new window occlusion calculator.
-BASE_FEATURE(kNewWindowOcclusionCalculator, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNewWindowOcclusionCalculator, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDesksTemplates, base::FEATURE_DISABLED_BY_DEFAULT);
 
