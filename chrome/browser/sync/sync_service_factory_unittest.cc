@@ -31,6 +31,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -267,7 +268,7 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::THEMES_IOS);
     }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENABLE_WEBUI_NTP)
     if (base::FeatureList::IsEnabled(
             syncer::kNewTabPageCustomizationThemeSync)) {
       datatypes.Put(syncer::THEMES_ANDROID);
@@ -352,11 +353,13 @@ TEST_F(SyncServiceFactoryTestWithCrossDeviceThemeFeatures,
   syncer::DataTypeSet types = sync_service->GetRegisteredDataTypesForTest();
 
   EXPECT_TRUE(types.Has(syncer::THEMES_IOS));
-#if !BUILDFLAG(IS_ANDROID)
+  // THEMES_ANDROID is registered on desktop (via CrossDeviceThemeTracker) and
+  // on Android (via NtpAndroidCustomBackgroundService), except on Desktop
+  // Android where NTP theme sync is temporarily disabled (crbug.com/488439751).
+#if !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENABLE_WEBUI_NTP)
   EXPECT_TRUE(types.Has(syncer::THEMES_ANDROID));
-  EXPECT_TRUE(types.Has(syncer::THEMES));
 #else
   EXPECT_FALSE(types.Has(syncer::THEMES_ANDROID));
-  EXPECT_TRUE(types.Has(syncer::THEMES));
 #endif
+  EXPECT_TRUE(types.Has(syncer::THEMES));
 }

@@ -211,6 +211,7 @@ source_set("sync") {
     deps += [
       "//chrome/android:chrome_jni_headers",
       "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ntp_customization",
       "//chrome/browser/ntp_customization:jni_headers",
       "//chrome/browser/sync/android:jni_headers",
       "//chrome/browser/tab",
@@ -345,6 +346,7 @@ source_set("unit_tests") {
     "//google_apis",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/webui:buildflags",
     "//url",
   ]
 

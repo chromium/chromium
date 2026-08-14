@@ -122,6 +122,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
+#include "chrome/browser/ntp_customization/ntp_android_custom_background_service_factory.h"
 #include "ui/base/device_form_factor.h"
 
 // Must come after other includes, because FromJniType() uses Profile.
@@ -323,6 +324,10 @@ syncer::DataTypeController::TypeVector CreateChromeControllers(
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 #if BUILDFLAG(IS_ANDROID)
+  builder.SetNtpAndroidCustomBackgroundService(
+      base::FeatureList::IsEnabled(syncer::kNewTabPageCustomizationThemeSync)
+          ? NtpAndroidCustomBackgroundServiceFactory::GetForProfile(profile)
+          : nullptr);
   builder.SetWebApkSyncService(
       base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)
           ? webapk::WebApkSyncServiceFactory::GetForProfile(profile)
@@ -588,6 +593,7 @@ SyncServiceFactory::SyncServiceFactory()
 #endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(TrustedVaultServiceFactory::GetInstance());
 #if BUILDFLAG(IS_ANDROID)
+  DependsOn(NtpAndroidCustomBackgroundServiceFactory::GetInstance());
   if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
     DependsOn(webapk::WebApkSyncServiceFactory::GetInstance());
   }
