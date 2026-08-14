@@ -12,10 +12,10 @@
 
 namespace memory_saver {
 
-// Returns whether |url| supports showing discard indicators
+// Returns whether `url` supports showing discard indicators
 bool IsURLSupported(GURL url);
 
-// Returns the discard reason if |contents| has been discarded
+// Returns the discard reason if `contents` has been discarded
 std::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
     content::WebContents* contents);
 

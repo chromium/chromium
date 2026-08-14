@@ -169,7 +169,7 @@ void TabSearchUI::CreatePageHandler(
 
   // CreatePageHandler() can be called multiple times if reusing the same
   // WebUIController. For eg refreshing the page will create new PageHandler but
-  // reuse TabSearchUI. Check to make sure |page_handler_timer_| is valid before
+  // reuse TabSearchUI. Check to make sure `page_handler_timer_` is valid before
   // logging metrics.
   if (page_handler_timer_.has_value()) {
     TRACE_EVENT_END("browser", perfetto::Track::FromPointer(this));
