@@ -1,0 +1,28 @@
+; Copyright 2026 The Chromium Authors
+; Use of this source code is governed by a BSD-style license that can be
+; found in the LICENSE file.
+
+; --- The contents of common.sb implicitly included here. ---
+
+; Following rules allow the WebNN Compiler process to read and write to the
+; temporary directory where CoreML writes compiled model files. If a
+; process-isolated temporary directory is defined, it will be used instead
+; of the system-assigned user temporary directory.
+(allow mach-lookup
+  (global-name "com.apple.system.opendirectoryd.membership"))
+
+(define temp-dir
+  (if (param-defined? sandbox-child-user-temp-dir)
+      (param sandbox-child-user-temp-dir)
+      (param darwin-user-temp-dir)))
+
+(allow file-read* file-write*
+  (subpath temp-dir)
+)
+
+; The browser process copies the compiled model created by the compiler
+; process to the webnn_gpu_protected subdirectory which prevents the
+; compiler process from accessing the compiled model after it has been copied.
+(deny file-read* file-write*
+  (subpath (string-append temp-dir "/webnn_gpu_protected"))
+)

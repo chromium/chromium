@@ -60,13 +60,13 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::mojom::Sandbox::kPdfConversion ||
       sandbox_type_ == sandbox::mojom::Sandbox::kIconReader ||
       sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kWebNNModelCompilation ||
 #endif
 #if BUILDFLAG(IS_MAC)
       sandbox_type_ == sandbox::mojom::Sandbox::kMirroring ||
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       sandbox_type_ == sandbox::mojom::Sandbox::kProxyResolver ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kWebNNModelCompilation ||
 #endif
       sandbox_type_ == sandbox::mojom::Sandbox::kUtility ||
       sandbox_type_ == sandbox::mojom::Sandbox::kService ||

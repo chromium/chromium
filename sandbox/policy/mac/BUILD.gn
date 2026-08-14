@@ -20,6 +20,7 @@ sb_files = [
   "speech_recognition.sb",
   "on_device_translation.sb",
   "utility.sb",
+  "webnn_model_compilation.sb",
 ]
 
 action_foreach("package_sb_files") {
