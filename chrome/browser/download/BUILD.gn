@@ -388,7 +388,7 @@ source_set("impl") {
     deps += [ "//components/offline_pages/core" ]
   }
 
-  if (enterprise_content_analysis) {
+  if (enterprise_content_analysis || is_android) {
     deps += [
       "//components/enterprise/connectors/core:cloud_content_scanning",
       "//components/enterprise/obfuscation/core:enterprise_obfuscation",

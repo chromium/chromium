@@ -97,7 +97,7 @@ source_set("internal") {
     deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }
 
-  if (enterprise_cloud_content_analysis) {
+  if (enterprise_cloud_content_analysis || is_android) {
     deps +=
         [ "//components/enterprise/obfuscation/core:enterprise_obfuscation" ]
   }
