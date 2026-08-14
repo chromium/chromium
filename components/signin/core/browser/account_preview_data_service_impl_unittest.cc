@@ -1637,6 +1637,31 @@ TEST_F(AccountPreviewDataServiceTest,
 }
 
 TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewPreferenceForAccountFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewPreferredAccount);
+
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  base::RunLoop fetch_run_loop;
+  std::optional<AccountPreviewPreference> fetched_preference;
+  service_->GetPreviewPreferenceForAccount(
+      account.gaia, base::BindOnce(
+                        [](base::OnceClosure quit,
+                           std::optional<AccountPreviewPreference>* result,
+                           std::optional<AccountPreviewPreference> pref) {
+                          *result = std::move(pref);
+                          std::move(quit).Run();
+                        },
+                        fetch_run_loop.QuitClosure(), &fetched_preference));
+  fetch_run_loop.Run();
+
+  EXPECT_EQ(fetched_preference, std::nullopt);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
        GetPreviewPreferenceForAccountDoesNotInterfereWithAllAccountsBarrier) {
   AccountInfo account1 =
       identity_test_env_.MakeAccountAvailable("account1@gmail.com");

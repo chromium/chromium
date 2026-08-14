@@ -78,7 +78,8 @@ TEST(AccountPreviewHeuristicDisabledFeatureTest, ReturnsNullopt) {
   feature_list.InitAndDisableFeature(
       switches::kEnableAccountPreviewPreferredAccount);
 
-  AccountPreviewData data = CreatePreviewData({.passwords = 60});
+  AccountPreviewData data = CreatePreviewData(
+      {.passwords = 2 * switches::kPasswordsMedianThreshold.Get()});
   EXPECT_EQ(ComputeAccountPreviewPreference(GaiaId("user1"), data),
             std::nullopt);
   EXPECT_EQ(ComputePreferredAccountForPromo({AccountPreviewHeuristicContext{
@@ -88,12 +89,15 @@ TEST(AccountPreviewHeuristicDisabledFeatureTest, ReturnsNullopt) {
 
 TEST_F(AccountPreviewHeuristicTest,
        ComputeAccountPreviewPreferencePreferredDataTypesRankingAndQuartile) {
-  // Passwords: 40 (median=20, ratio=2.0, quartile=kMedianToQ3)
-  // Bookmarks: 50 (median=50, ratio=1.0, quartile=kMedianToQ3)
-  // Autofill: 2 (median=15, ratio=0.13, quartile=kBelowQ1)
+  // Passwords: 2 * Median (ratio=2.0, quartile=kMedianToQ3)
+  // Bookmarks: Median (ratio=1.0, quartile=kMedianToQ3)
+  // Autofill: Q1 / 2 (ratio < 1.0, quartile=kBelowQ1)
   // Wallet: 0 -> Excluded
-  AccountPreviewData data =
-      CreatePreviewData({.passwords = 40, .bookmarks = 50, .autofill = 2});
+  AccountPreviewData data = CreatePreviewData({
+      .passwords = 2 * switches::kPasswordsMedianThreshold.Get(),
+      .bookmarks = switches::kBookmarksMedianThreshold.Get(),
+      .autofill = switches::kAutofillQ1Threshold.Get() / 2,
+  });
 
   auto pref = ComputeAccountPreviewPreference(GaiaId("user1"), data);
   ASSERT_TRUE(pref.has_value());
@@ -115,8 +119,13 @@ TEST_F(AccountPreviewHeuristicTest,
 
 TEST_F(AccountPreviewHeuristicTest,
        ComputeAccountPreviewPreferencePreferredDataTypesNoneAboveMedian) {
-  // Passwords: 2 (ratio=0.1), Autofill: 4 (ratio=0.267)
-  AccountPreviewData data = CreatePreviewData({.passwords = 2, .autofill = 4});
+  // Passwords: Q1 / 4, Autofill: Q1 - 1
+  // Autofill has a higher ratio to its median than Passwords, but both are
+  // below their respective Q1 thresholds.
+  AccountPreviewData data = CreatePreviewData({
+      .passwords = switches::kPasswordsQ1Threshold.Get() / 4,
+      .autofill = switches::kAutofillQ1Threshold.Get() - 1,
+  });
 
   auto pref = ComputeAccountPreviewPreference(GaiaId("user1"), data);
   ASSERT_TRUE(pref.has_value());
@@ -168,12 +177,15 @@ TEST_F(AccountPreviewHeuristicTest,
 TEST_F(AccountPreviewHeuristicTest,
        ComputeAccountPreviewPreferenceTieBreakingPreservesDataTypeOrder) {
   // All counts are set to their exact median (ratio = 1.0, quartile =
-  // kMedianToQ3): Passwords: 20 (median=20, ratio=1.0) Bookmarks: 50
-  // (median=50, ratio=1.0) Autofill: 15 (median=15, ratio=1.0) Wallet: 3
-  // (median=3, ratio=1.0) Tie-breaking should preserve the priority declaration
-  // order (PASSWORDS -> BOOKMARKS -> AUTOFILL -> AUTOFILL_WALLET_METADATA).
-  AccountPreviewData data = CreatePreviewData(
-      {.passwords = 20, .bookmarks = 50, .autofill = 15, .wallet = 3});
+  // kMedianToQ3):
+  // Tie-breaking should preserve the priority declaration order (PASSWORDS ->
+  // BOOKMARKS -> AUTOFILL -> AUTOFILL_WALLET_METADATA).
+  AccountPreviewData data = CreatePreviewData({
+      .passwords = switches::kPasswordsMedianThreshold.Get(),
+      .bookmarks = switches::kBookmarksMedianThreshold.Get(),
+      .autofill = switches::kAutofillMedianThreshold.Get(),
+      .wallet = switches::kAutofillWalletMetadataMedianThreshold.Get(),
+  });
 
   auto pref = ComputeAccountPreviewPreference(GaiaId("user1"), data);
   ASSERT_TRUE(pref.has_value());
@@ -200,7 +212,7 @@ TEST_F(AccountPreviewHeuristicTest, EmptyListReturnsNullopt) {
 
 TEST_F(AccountPreviewHeuristicTest, SingleValidAccountReturnsPreference) {
   AccountPreviewData data = CreatePreviewData(
-      {.passwords = 25},
+      {.passwords = switches::kPasswordsMedianThreshold.Get()},
       {CreateDevicePreview(
           "guid", base::Time::Now(),
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)});
@@ -222,7 +234,8 @@ TEST_F(AccountPreviewHeuristicTest, SingleValidAccountReturnsPreference) {
 
 TEST_F(AccountPreviewHeuristicTest,
        AccountPreviewHeuristicContextIsEligibleForPreferredAccount) {
-  AccountPreviewData data = CreatePreviewData({.passwords = 10});
+  AccountPreviewData data = CreatePreviewData(
+      {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext context{
       .gaia_id = GaiaId("user1"),
       .preview_data = &data,
@@ -245,14 +258,16 @@ TEST_F(AccountPreviewHeuristicTest,
 }
 
 TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
-  AccountPreviewData default_data = CreatePreviewData({.passwords = 10});
+  AccountPreviewData default_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext default_acc{
       .gaia_id = GaiaId("default"),
       .preview_data = &default_data,
   };
 
   // Managed candidate is not preferred.
-  AccountPreviewData managed_data = CreatePreviewData({.passwords = 100});
+  AccountPreviewData managed_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ3Threshold.Get() + 1});
   AccountPreviewHeuristicContext managed_candidate{
       .gaia_id = GaiaId("managed"),
       .is_managed = true,
@@ -263,7 +278,8 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
   EXPECT_EQ(pref->gaia_id, GaiaId("default"));
 
   // Child candidate is not preferred.
-  AccountPreviewData child_data = CreatePreviewData({.passwords = 100});
+  AccountPreviewData child_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ3Threshold.Get() + 1});
   AccountPreviewHeuristicContext child_candidate{
       .gaia_id = GaiaId("child"),
       .is_child = true,
@@ -283,14 +299,15 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
   EXPECT_EQ(pref->gaia_id, GaiaId("default"));
 
   // If default account is managed, eligible candidate is chosen.
-  AccountPreviewData managed_default_data =
-      CreatePreviewData({.passwords = 10});
+  AccountPreviewData managed_default_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext managed_default{
       .gaia_id = GaiaId("managed_default"),
       .is_managed = true,
       .preview_data = &managed_default_data,
   };
-  AccountPreviewData consumer_data = CreatePreviewData({.passwords = 1});
+  AccountPreviewData consumer_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext consumer_candidate{
       .gaia_id = GaiaId("consumer"),
       .preview_data = &consumer_data,
@@ -305,7 +322,8 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
 }
 
 TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
-  AccountPreviewData default_aga_data = CreatePreviewData({.passwords = 5});
+  AccountPreviewData default_aga_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext default_aga{
       .gaia_id = GaiaId("default_aga"),
       .is_external_app_primary = true,
@@ -313,7 +331,7 @@ TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
   };
 
   AccountPreviewData candidate_cross_more_data = CreatePreviewData(
-      {.passwords = 50},
+      {.passwords = switches::kPasswordsMedianThreshold.Get()},
       {CreateDevicePreview(
           "guid", base::Time::Now(),
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP)});
@@ -327,8 +345,8 @@ TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("candidate_cross_more"));
 
-  AccountPreviewData candidate_single_more_data =
-      CreatePreviewData({.passwords = 50});
+  AccountPreviewData candidate_single_more_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext candidate_single_more{
       .gaia_id = GaiaId("candidate_single_more"),
       .preview_data = &candidate_single_more_data,
@@ -339,7 +357,7 @@ TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
   EXPECT_EQ(pref->gaia_id, GaiaId("default_aga"));
 
   AccountPreviewData candidate_cross_equal_data = CreatePreviewData(
-      {.passwords = 5},
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2},
       {CreateDevicePreview(
           "guid", base::Time::Now(),
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP)});
@@ -354,14 +372,15 @@ TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
 }
 
 TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultSingleDevice) {
-  AccountPreviewData default_data = CreatePreviewData({.passwords = 5});
+  AccountPreviewData default_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext default_single{
       .gaia_id = GaiaId("default"),
       .preview_data = &default_data,
   };
 
   AccountPreviewData candidate_cross_equal_data = CreatePreviewData(
-      {.passwords = 5},
+      {.passwords = switches::kPasswordsMedianThreshold.Get()},
       {CreateDevicePreview(
           "guid", base::Time::Now(),
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)});
@@ -376,7 +395,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultSingleDevice) {
   EXPECT_EQ(pref->gaia_id, GaiaId("candidate_equal"));
 
   AccountPreviewData candidate_cross_less_data = CreatePreviewData(
-      {.passwords = 1},
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2},
       {CreateDevicePreview(
           "guid", base::Time::Now(),
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)});
@@ -393,7 +412,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultSingleDevice) {
 
 TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultCrossDevice) {
   AccountPreviewData default_data = CreatePreviewData(
-      {.passwords = 5},
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2},
       {CreateDevicePreview(
           "guid1", base::Time::Now(),
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP)});
@@ -403,7 +422,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultCrossDevice) {
   };
 
   AccountPreviewData candidate_cross_equal_data = CreatePreviewData(
-      {.passwords = 5},
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2},
       {CreateDevicePreview(
           "guid2", base::Time::Now(),
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)});
@@ -418,7 +437,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultCrossDevice) {
   EXPECT_EQ(pref->gaia_id, GaiaId("default"));
 
   AccountPreviewData candidate_cross_more_data = CreatePreviewData(
-      {.passwords = 50},
+      {.passwords = switches::kPasswordsMedianThreshold.Get()},
       {CreateDevicePreview(
           "guid3", base::Time::Now(),
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)});
@@ -433,14 +452,15 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultCrossDevice) {
 }
 
 TEST_F(AccountPreviewHeuristicTest, CandidateSingleDeviceDefaultSingleDevice) {
-  AccountPreviewData default_data = CreatePreviewData({.passwords = 5});
+  AccountPreviewData default_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext default_single{
       .gaia_id = GaiaId("default"),
       .preview_data = &default_data,
   };
 
-  AccountPreviewData candidate_single_equal_data =
-      CreatePreviewData({.passwords = 5});
+  AccountPreviewData candidate_single_equal_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext candidate_single_equal{
       .gaia_id = GaiaId("candidate_equal"),
       .preview_data = &candidate_single_equal_data,
@@ -451,8 +471,8 @@ TEST_F(AccountPreviewHeuristicTest, CandidateSingleDeviceDefaultSingleDevice) {
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default"));
 
-  AccountPreviewData candidate_single_more_data =
-      CreatePreviewData({.passwords = 50});
+  AccountPreviewData candidate_single_more_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext candidate_single_more{
       .gaia_id = GaiaId("candidate_more"),
       .preview_data = &candidate_single_more_data,
@@ -465,7 +485,8 @@ TEST_F(AccountPreviewHeuristicTest, CandidateSingleDeviceDefaultSingleDevice) {
 }
 
 TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
-  AccountPreviewData candidate_aga_data = CreatePreviewData({.passwords = 5});
+  AccountPreviewData candidate_aga_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext candidate_aga{
       .gaia_id = GaiaId("candidate_aga"),
       .is_external_app_primary = true,
@@ -473,7 +494,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
   };
 
   AccountPreviewData default_cross_more_data = CreatePreviewData(
-      {.passwords = 50},
+      {.passwords = switches::kPasswordsMedianThreshold.Get()},
       {CreateDevicePreview(
           "guid", base::Time::Now(),
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP)});
@@ -487,8 +508,8 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("default_cross"));
 
-  AccountPreviewData default_single_more_data =
-      CreatePreviewData({.passwords = 50});
+  AccountPreviewData default_single_more_data = CreatePreviewData(
+      {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext default_single_more{
       .gaia_id = GaiaId("default_single"),
       .preview_data = &default_single_more_data,
@@ -499,7 +520,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
   EXPECT_EQ(pref->gaia_id, GaiaId("candidate_aga"));
 
   AccountPreviewData default_cross_equal_data = CreatePreviewData(
-      {.passwords = 5},
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2},
       {CreateDevicePreview(
           "guid", base::Time::Now(),
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP)});
@@ -515,18 +536,20 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
 
 TEST_F(AccountPreviewHeuristicTest,
        MultiAccountCandidateSelectionAndTieBreaking) {
-  AccountPreviewData data1 = CreatePreviewData({.passwords = 5});
+  AccountPreviewData data1 = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext acc1{
       .gaia_id = GaiaId("acc1"),
       .preview_data = &data1,
   };
-  AccountPreviewData data2 = CreatePreviewData({.passwords = 5});
+  AccountPreviewData data2 = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext acc2{
       .gaia_id = GaiaId("acc2"),
       .preview_data = &data2,
   };
   AccountPreviewData data3 = CreatePreviewData(
-      {.passwords = 50},
+      {.passwords = switches::kPasswordsMedianThreshold.Get()},
       {CreateDevicePreview(
           "guid", base::Time::Now(),
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET)});
@@ -550,19 +573,22 @@ TEST_F(AccountPreviewHeuristicTest,
 
 TEST_F(AccountPreviewHeuristicTest,
        ExponentialQuartileScores1Q4Vs2Q3ScoreTieHigherQuartileWins) {
-  // Account 1: 1 Q4 (Passwords: 50, q3=50 -> kAboveQ3 = Q4, score = 8)
-  // Account 2: 2 Q3 (Bookmarks: 50, median=50 -> kMedianToQ3 = Q3, score = 4;
-  //                  Autofill: 15, median=15 -> kMedianToQ3 = Q3, score = 4)
+  // Account 1: 1 Q4 (Passwords >= Q3 -> kAboveQ3 = Q4, score = 8)
+  // Account 2: 2 Q3 (Bookmarks >= Median -> kMedianToQ3 = Q3, score = 4;
+  //                  Autofill >= Median -> kMedianToQ3 = Q3, score = 4)
   // Both accounts have total sync data score = 8.
   // Account 1 wins the tie-breaker because it has a higher Q4 count (1 vs 0).
-  AccountPreviewData data_1q4 = CreatePreviewData({.passwords = 50});
+  AccountPreviewData data_1q4 = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ3Threshold.Get() + 1});
   AccountPreviewHeuristicContext acc_1q4{
       .gaia_id = GaiaId("acc_1q4"),
       .preview_data = &data_1q4,
   };
 
-  AccountPreviewData data_2q3 =
-      CreatePreviewData({.bookmarks = 50, .autofill = 15});
+  AccountPreviewData data_2q3 = CreatePreviewData({
+      .bookmarks = switches::kBookmarksMedianThreshold.Get(),
+      .autofill = switches::kAutofillMedianThreshold.Get(),
+  });
   AccountPreviewHeuristicContext acc_2q3{
       .gaia_id = GaiaId("acc_2q3"),
       .preview_data = &data_2q3,
@@ -580,20 +606,24 @@ TEST_F(AccountPreviewHeuristicTest,
 
 TEST_F(AccountPreviewHeuristicTest,
        ExponentialQuartileScores1Q4Vs2Q3Plus1Q1HigherScoreWins) {
-  // Account 1: 1 Q4 (Passwords: 50 -> kAboveQ3 = Q4, score = 8)
-  // Account 2: 2 Q3 + 1 Q1 (Bookmarks: 50 -> kMedianToQ3 = Q3, score = 4;
-  //                         Autofill: 15 -> kMedianToQ3 = Q3, score = 4;
-  //                         Passwords: 2, q1=5 -> kBelowQ1 = Q1, score = 1)
+  // Account 1: 1 Q4 (Passwords >= Q3 -> kAboveQ3 = Q4, score = 8)
+  // Account 2: 2 Q3 + 1 Q1 (Bookmarks >= Median -> kMedianToQ3 = Q3, score = 4;
+  //                         Autofill >= Median -> kMedianToQ3 = Q3, score = 4;
+  //                         Passwords < Q1 -> kBelowQ1 = Q1, score = 1)
   // Account 2 has total sync data score = 4 + 4 + 1 = 9, which is strictly
   // greater than Account 1's score of 8. Therefore, Account 2 wins.
-  AccountPreviewData data_1q4 = CreatePreviewData({.passwords = 50});
+  AccountPreviewData data_1q4 = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ3Threshold.Get() + 1});
   AccountPreviewHeuristicContext acc_1q4{
       .gaia_id = GaiaId("acc_1q4"),
       .preview_data = &data_1q4,
   };
 
-  AccountPreviewData data_2q3_1q1 =
-      CreatePreviewData({.passwords = 2, .bookmarks = 50, .autofill = 15});
+  AccountPreviewData data_2q3_1q1 = CreatePreviewData({
+      .passwords = switches::kPasswordsQ1Threshold.Get() / 2,
+      .bookmarks = switches::kBookmarksMedianThreshold.Get(),
+      .autofill = switches::kAutofillMedianThreshold.Get(),
+  });
   AccountPreviewHeuristicContext acc_2q3_1q1{
       .gaia_id = GaiaId("acc_2q3_1q1"),
       .preview_data = &data_2q3_1q1,
@@ -611,21 +641,27 @@ TEST_F(AccountPreviewHeuristicTest,
 
 TEST_F(AccountPreviewHeuristicTest,
        ExponentialQuartileScores1Q4VsLowQuartilesHigherScoreWins) {
-  // Account 1: 1 Q4 (Passwords: 50, q3=50 -> kAboveQ3 = Q4, score = 8)
-  // Account 2: 3 Q1s + 1 Q2 (Passwords: 2, q1=5 -> kBelowQ1 = Q1, score = 1;
-  //                          Bookmarks: 5, q1=10 -> kBelowQ1 = Q1, score = 1;
-  //                          Autofill: 2, q1=5 -> kBelowQ1 = Q1, score = 1;
-  //                          Wallet: 1, q1=1 -> kQ1ToMedian = Q2, score = 2)
+  // Account 1: 1 Q4 (Passwords >= Q3 -> kAboveQ3 = Q4, score = 8)
+  // Account 2: 3 Q1s + 1 Q2 (Passwords < Q1 -> kBelowQ1 = Q1, score = 1;
+  //                          Bookmarks < Q1 -> kBelowQ1 = Q1, score = 1;
+  //                          Autofill < Q1 -> kBelowQ1 = Q1, score = 1;
+  //                          Wallet in [Q1, Median) -> kQ1ToMedian = Q2, score
+  //                          = 2)
   // Account 1 has score 8, while Account 2 has score 1 + 1 + 1 + 2 = 5.
   // Under the exponential scoring, Account 1 wins decisively with score 8 > 5.
-  AccountPreviewData data_1q4 = CreatePreviewData({.passwords = 50});
+  AccountPreviewData data_1q4 = CreatePreviewData(
+      {.passwords = switches::kPasswordsQ3Threshold.Get() + 1});
   AccountPreviewHeuristicContext acc_1q4{
       .gaia_id = GaiaId("acc_1q4"),
       .preview_data = &data_1q4,
   };
 
-  AccountPreviewData data_low_quartiles = CreatePreviewData(
-      {.passwords = 2, .bookmarks = 5, .autofill = 2, .wallet = 1});
+  AccountPreviewData data_low_quartiles = CreatePreviewData({
+      .passwords = switches::kPasswordsQ1Threshold.Get() / 2,
+      .bookmarks = switches::kBookmarksQ1Threshold.Get() / 2,
+      .autofill = switches::kAutofillQ1Threshold.Get() / 2,
+      .wallet = switches::kAutofillWalletMetadataQ1Threshold.Get(),
+  });
   AccountPreviewHeuristicContext acc_low_quartiles{
       .gaia_id = GaiaId("acc_low_quartiles"),
       .preview_data = &data_low_quartiles,

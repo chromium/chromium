@@ -123,6 +123,12 @@ void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
     const GaiaId& gaia_id,
     base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
         callback) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewPreferredAccount)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   auto it = cached_data_.find(gaia_id);
   if (it != cached_data_.end()) {
     std::move(callback).Run(

@@ -44,16 +44,34 @@ struct SyncDataTypeThresholds {
   }
 };
 
-// List of all relevant sync data types and their respective default
+// Returns the list of all relevant sync data types and their respective
 // thresholds for quartile classification, in priority order for tie-breaking.
-// TODO(crbug.com/530144650): Add real counts for these thresholds.
-constexpr auto kDataTypeThresholds =
-    std::to_array<std::pair<syncer::DataType, SyncDataTypeThresholds>>({
-        {syncer::PASSWORDS, {.q1 = 5, .median = 20, .q3 = 50}},
-        {syncer::BOOKMARKS, {.q1 = 10, .median = 50, .q3 = 150}},
-        {syncer::AUTOFILL, {.q1 = 5, .median = 15, .q3 = 40}},
-        {syncer::AUTOFILL_WALLET_METADATA, {.q1 = 1, .median = 3, .q3 = 8}},
-    });
+const auto& GetDataTypeThresholds() {
+  static const auto kDataTypeThresholds =
+      std::to_array<std::pair<syncer::DataType, SyncDataTypeThresholds>>({
+          {syncer::PASSWORDS,
+           SyncDataTypeThresholds{
+               .q1 = switches::kPasswordsQ1Threshold.Get(),
+               .median = switches::kPasswordsMedianThreshold.Get(),
+               .q3 = switches::kPasswordsQ3Threshold.Get()}},
+          {syncer::BOOKMARKS,
+           SyncDataTypeThresholds{
+               .q1 = switches::kBookmarksQ1Threshold.Get(),
+               .median = switches::kBookmarksMedianThreshold.Get(),
+               .q3 = switches::kBookmarksQ3Threshold.Get()}},
+          {syncer::AUTOFILL,
+           SyncDataTypeThresholds{
+               .q1 = switches::kAutofillQ1Threshold.Get(),
+               .median = switches::kAutofillMedianThreshold.Get(),
+               .q3 = switches::kAutofillQ3Threshold.Get()}},
+          {syncer::AUTOFILL_WALLET_METADATA,
+           SyncDataTypeThresholds{
+               .q1 = switches::kAutofillWalletMetadataQ1Threshold.Get(),
+               .median = switches::kAutofillWalletMetadataMedianThreshold.Get(),
+               .q3 = switches::kAutofillWalletMetadataQ3Threshold.Get()}},
+      });
+  return kDataTypeThresholds;
+}
 
 std::vector<PreferredDataTypeInfo> ExtractPreferredDataTypes(
     const AccountPreviewData& data) {
@@ -65,7 +83,7 @@ std::vector<PreferredDataTypeInfo> ExtractPreferredDataTypes(
 
   // Extract data types with counts and calculate median ratios.
   std::vector<DataTypeCandidate> candidates;
-  for (const auto& [type, thresholds] : kDataTypeThresholds) {
+  for (const auto& [type, thresholds] : GetDataTypeThresholds()) {
     auto it = data.counts.find(type);
     if (it != data.counts.end() && it->second > 0) {
       size_t count = it->second;
@@ -157,7 +175,7 @@ struct SyncDataScore {
 // In case of ties, the counts of higher quartiles break the tie.
 SyncDataScore CalculateSyncDataScore(const AccountPreviewData& data) {
   SyncDataScore score;
-  for (const auto& [type, thresholds] : kDataTypeThresholds) {
+  for (const auto& [type, thresholds] : GetDataTypeThresholds()) {
     auto it = data.counts.find(type);
     if (it != data.counts.end()) {
       SyncDataQuartile quartile = thresholds.GetQuartileForCount(it->second);
