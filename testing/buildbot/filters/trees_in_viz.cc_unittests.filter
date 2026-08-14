@@ -1,0 +1,4 @@
+# TODO(crbug.com/438242521): In TreesInViz mode, UI resource deletion is asynchronous
+# and depends on an IPC ack from Viz, which causes race conditions on shared_image_count
+# expectations across frames in multi-threaded mode.
+-LayerTreeHostTestUIResource.RunMultiThread_DelegatingRenderer
