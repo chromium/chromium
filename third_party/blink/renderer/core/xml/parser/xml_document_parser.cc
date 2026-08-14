@@ -1102,6 +1102,38 @@ void XMLDocumentParser::StartElementNs(
   if (!parsing_fragment_ && is_first_element && local_name == "alert" &&
       IsCAPAlertNamespace(uri)) {
     UseCounter::Count(document_, WebFeature::kXmlCAPAlert);
+    if (document_) {
+      // We set this here so that XSLT processing can be conditionally enabled
+      // for this document, and so the XSLT engine knows to inject the CAP alert
+      // banner and record use counters.
+      document_->SetIsCAPAlert(true);
+      if (RuntimeEnabledFeatures::EnableXSLTForCAPAlertsEnabled(
+              document_->GetExecutionContext())) {
+        for (Node* child = document_->firstChild(); child;
+             child = child->nextSibling()) {
+          if (auto* pi = DynamicTo<ProcessingInstruction>(child)) {
+            if (!pi->IsXSL()) {
+              // The PI was initially inserted into the document before
+              // IsCAPAlert() was set, so IsXSL() returned false and it was
+              // treated as a regular CSS stylesheet. Remove it from the CSS
+              // engine, re-evaluate it, and manually trigger the XSLT
+              // processing logic since it was missed during insertion.
+              document_->GetStyleEngine().RemoveStyleSheetCandidateNode(
+                  *pi, *document_);
+              pi->UpdateStylesheetIfNeeded();
+              if (pi->IsXSL()) {
+                DocumentXSLT::ProcessingInstructionInsertedIntoDocument(
+                    *document_, pi);
+                saw_xsl_transform_ = true;
+                if (!DocumentXSLT::HasTransformSourceDocument(*GetDocument())) {
+                  StopParsing();
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   Vector<Attribute, kAttributePrealloc> prefixed_attributes;

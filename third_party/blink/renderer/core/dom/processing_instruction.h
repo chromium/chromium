@@ -51,6 +51,7 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
 
   bool IsCSS() const { return is_css_; }
   bool IsXSL() const;
+  void UpdateStylesheetIfNeeded();
 
   void DidChangeData();
   bool IsLoading() const;
@@ -120,7 +121,6 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
   bool CheckStyleSheet(String& href, String& charset);
   void ProcessStylesheet(const String& href, const String& charset);
   void UpdateDataFromAttributes();
-  void UpdateStylesheetIfNeeded();
 
   void NotifyFinished(Resource*) override;
 

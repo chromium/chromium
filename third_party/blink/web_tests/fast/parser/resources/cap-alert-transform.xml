@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="transform.xsl"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <info><headline>Alert</headline></info>
+</alert>

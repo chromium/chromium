@@ -26,10 +26,12 @@
 #include "base/notreached.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -38,8 +40,10 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
+#include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -80,6 +84,12 @@ bool XSLTProcessor::IsXSLTEnabled(const ExecutionContext* context) {
           blink::switches::kXSLTEnabledPolicy)) {
     return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                blink::switches::kXSLTEnabledPolicy) == "true";
+  }
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (window->document() && window->document()->IsCAPAlert() &&
+        RuntimeEnabledFeatures::EnableXSLTForCAPAlertsEnabled(context)) {
+      return true;
+    }
   }
   return RuntimeEnabledFeatures::XSLTEnabled(context);
 }
@@ -141,6 +151,58 @@ XSLTProcessor::XSLTProcessor(PassKey,
 
 XSLTProcessor::~XSLTProcessor() = default;
 
+namespace {
+static Element* CreateBannerLink(Document& document,
+                                 const String& href,
+                                 const String& text) {
+  Element* link = document.CreateRawElement(
+      html_names::kATag, CreateElementFlags::ByCreateElement());
+  link->setAttribute(html_names::kHrefAttr, AtomicString(href));
+  link->setAttribute(html_names::kTargetAttr, AtomicString("_blank"));
+  link->setAttribute(html_names::kRelAttr, AtomicString("noopener noreferrer"));
+  link->setAttribute(html_names::kStyleAttr,
+                     AtomicString("color: white; text-decoration: underline;"));
+  link->appendChild(document.createTextNode(text));
+  return link;
+}
+
+static void InjectCAPAlertXSLTBanner(Document& document) {
+  Element* target = document.body();
+  if (!target) {
+    target = document.documentElement();
+  }
+  if (!target) {
+    return;
+  }
+
+  Element* banner = document.CreateRawElement(
+      html_names::kDivTag, CreateElementFlags::ByCreateElement());
+  banner->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString(
+          "background-color: #d9534f; color: white; padding: 12px; "
+          "margin-bottom: 20px; font-size: 16px; font-weight: bold; "
+          "text-align: center; font-family: sans-serif; position: relative; "
+          "z-index: 2147483647;"));
+  banner->appendChild(
+      document.createTextNode("This CAP alert uses technology called XSLT; "
+                              "that functionality is being "));
+  banner->appendChild(CreateBannerLink(
+      document, "https://chromestatus.com/feature/4709671889534976",
+      "removed from this browser"));
+  banner->appendChild(
+      document.createTextNode(". When that happens, this alert will be shown "
+                              "as raw XML data. You might "
+                              "be able to "));
+  banner->appendChild(CreateBannerLink(
+      document, "https://chromewebstore.google.com/search/XSLT%20Polyfill",
+      "install a browser extension"));
+  banner->appendChild(
+      document.createTextNode(" that allows you to continue viewing it."));
+  target->insertBefore(banner, target->firstChild());
+}
+}  // namespace
+
 Document* XSLTProcessor::CreateDocumentFromSource(
     const String& source_string,
     const String& source_encoding,
@@ -155,6 +217,15 @@ Document* XSLTProcessor::CreateDocumentFromSource(
   if (owner_document == source_node)
     url = owner_document->Url();
   String document_source = source_string;
+
+  if (frame && owner_document->IsCAPAlert()) {
+    UseCounter::Count(owner_document, WebFeature::kXmlCAPAlertWithXSLT);
+  }
+
+  bool is_cap_alert_xslt =
+      frame && owner_document->IsCAPAlert() &&
+      RuntimeEnabledFeatures::EnableXSLTForCAPAlertsEnabled(
+          owner_document->GetExecutionContext());
 
   String mime_type = source_mime_type;
   // Force text/plain to be parsed as XHTML. This was added without explanation
@@ -178,7 +249,11 @@ Document* XSLTProcessor::CreateDocumentFromSource(
     params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
     frame->Loader().CommitNavigation(std::move(params), nullptr,
                                      CommitReason::kXSLT);
-    return frame->GetDocument();
+    Document* new_doc = frame->GetDocument();
+    if (new_doc && is_cap_alert_xslt) {
+      InjectCAPAlertXSLTBanner(*new_doc);
+    }
+    return new_doc;
   }
 
   DocumentInit init =
@@ -201,6 +276,9 @@ Document* XSLTProcessor::CreateDocumentFromSource(
         StrCat({"Document encoding not valid: ", source_encoding})));
   }
   document->SetContent(document_source);
+  if (is_cap_alert_xslt) {
+    InjectCAPAlertXSLTBanner(*document);
+  }
   return document;
 }
 

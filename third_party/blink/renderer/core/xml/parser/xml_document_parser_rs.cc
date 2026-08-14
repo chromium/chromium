@@ -399,7 +399,6 @@ void XMLDocumentParserRs::StartElementNs(
 
   bool is_first_element = !saw_first_element_;
   saw_first_element_ = true;
-
   if (!parsing_fragment_ && is_first_element && local_name == "alert" &&
       has_ns && IsCAPAlertNamespace(RustStrToAtomicString(ns))) {
     UseCounter::Count(document_, WebFeature::kXmlCAPAlert);

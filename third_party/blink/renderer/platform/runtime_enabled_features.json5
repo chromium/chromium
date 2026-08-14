@@ -2666,6 +2666,14 @@
       status: "stable"
     },
     {
+      // Controls whether XSLT processing is selectively re-enabled for
+      // Common Alerting Protocol (CAP) alert XML documents when native XSLT
+      // is otherwise disabled.
+      // crbug.com/435623334.
+      name: "EnableXSLTForCAPAlerts",
+      status: "stable",
+    },
+    {
       name: "EndpointInclusiveCommitStyles",
       status: "stable",
     },

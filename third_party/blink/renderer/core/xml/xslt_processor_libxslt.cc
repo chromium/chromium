@@ -358,6 +358,12 @@ bool XSLTProcessor::TransformToString(Node* source_node,
   bool should_free_source_doc = false;
   if (xmlDocPtr source_doc =
           XmlDocPtrFromNode(source_node, should_free_source_doc)) {
+    // If XSLT is globally enabled, the XML parser (xml_document_parser.cc)
+    // stops parsing as soon as it sees an XSL stylesheet processing
+    // instruction, and hands the document over to libxslt. This means the XML
+    // parser never reaches the <alert> tag, so it never has a chance to set
+    // IsCAPAlert() to true or increment the kXmlCAPAlert UseCounter. We catch
+    // that case here when libxslt parses the document.
     xmlNodePtr root_element = xmlDocGetRootElement(source_doc);
     if (root_element && root_element->name &&
         xmlStrEqual(root_element->name, (const xmlChar*)"alert")) {
@@ -366,6 +372,7 @@ bool XSLTProcessor::TransformToString(Node* source_node,
               ? reinterpret_cast<const char*>(root_element->ns->href)
               : "";
       if (IsCAPAlertNamespace(ns_href)) {
+        owner_document->SetIsCAPAlert(true);
         UseCounter::Count(owner_document, WebFeature::kXmlCAPAlert);
         UseCounter::Count(owner_document, WebFeature::kXmlCAPAlertWithXSLT);
       }

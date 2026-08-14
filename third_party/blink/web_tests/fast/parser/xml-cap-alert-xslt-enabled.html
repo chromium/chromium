@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/435623334">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+function createFrame(src) {
+  return new Promise(resolve => {
+    const iframe = document.createElement('iframe');
+    iframe.onload = () => resolve(iframe);
+    iframe.src = src;
+    (document.body || document.documentElement).appendChild(iframe);
+  });
+}
+
+promise_test(async () => {
+  const capFrame = await createFrame("resources/cap-alert-transform.xml");
+  const nonCapFrame = await createFrame("resources/non-cap-transform.xml");
+
+  const xsltEnabled = internals.runtimeFlags.xsltEnabled;
+  const capAlertXsltEnabled = internals.runtimeFlags.enableXSLTForCAPAlertsEnabled;
+
+  const capDoc = capFrame.contentDocument;
+  assert_not_equals(capDoc, null, "CAP frame contentDocument should exist");
+  const capTransformed = capDoc.getElementById('transformed');
+
+  const expectCapTransformed = xsltEnabled || capAlertXsltEnabled;
+  if (expectCapTransformed) {
+    assert_not_equals(capTransformed, null, "CAP alert XML document should be transformed via XSLT");
+    assert_equals(capTransformed.textContent, "Transformed Output");
+  } else {
+    assert_equals(capTransformed, null, "CAP alert XML document should NOT be transformed via XSLT");
+  }
+
+  // Warning banner should be present if and only if EnableXSLTForCAPAlerts is enabled and document was transformed.
+  const capHasBanner = capDoc.documentElement.textContent.includes("technology called XSLT");
+  if (expectCapTransformed && capAlertXsltEnabled) {
+    assert_true(capHasBanner, "CAP Alert transformed page should contain the deprecation warning banner");
+  } else {
+    assert_false(capHasBanner, "CAP Alert page should NOT contain the deprecation warning banner");
+  }
+
+  // Non-CAP alert XML document should ONLY be transformed if global XSLT is enabled.
+  const nonCapDoc = nonCapFrame.contentDocument;
+  assert_not_equals(nonCapDoc, null, "Non-CAP frame contentDocument should exist");
+  const nonCapTransformed = nonCapDoc.getElementById('transformed');
+  if (xsltEnabled) {
+    assert_not_equals(nonCapTransformed, null, "Non-CAP XML document should be transformed when XSLT is enabled");
+  } else {
+    assert_equals(nonCapTransformed, null, "Non-CAP XML document should not be transformed via XSLT");
+  }
+  const nonCapHasBanner = nonCapDoc.documentElement.textContent.includes("technology called XSLT");
+  assert_false(nonCapHasBanner, "Non-CAP document should never contain the CAP deprecation warning banner");
+}, "XSLT processing and banner display for CAP alert and non-CAP XML documents");
+</script>
