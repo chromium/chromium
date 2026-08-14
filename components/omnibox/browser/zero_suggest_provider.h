@@ -154,6 +154,10 @@ class ZeroSuggestProvider : public BaseSearchProvider {
       const SearchSuggestionParser::Results& results,
       const AutocompleteInput& input);
 
+  // Populates matches_ with client fallback suggestions if the request for a
+  // SuggestInventory failed or returned no matches.
+  void MaybePopulateFallbackMatches(const AutocompleteInput& input);
+
   // The result type that is currently being retrieved and processed for
   // non-prefetch requests.
   // Set in Start() and used in Stop() for logging purposes.

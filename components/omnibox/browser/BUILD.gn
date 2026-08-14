@@ -471,6 +471,11 @@ static_library("browser") {
     ]
   } else {
     deps += [ "//components/keep_alive_registry" ]
+    sources += [
+      "suggest_inventory_fallback_prompts.h",
+      "suggest_inventory_fallback_utils.cc",
+      "suggest_inventory_fallback_utils.h",
+    ]
   }
 
   # GeolocationHeaderService is not supported on iOS due to dependencies on
@@ -1021,6 +1026,10 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
     "//url",
   ]
+
+  if (!is_android) {
+    sources += [ "suggest_inventory_fallback_utils_unittest.cc" ]
+  }
 
   if ((!is_android || enable_vr) && !is_ios) {
     sources += [ "location_bar_model_util_unittest.cc" ]
