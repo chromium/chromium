@@ -5,18 +5,34 @@
 #include "base/base64.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
+#include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/glic/actor/new_glic_actor_functional_browsertest.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/actor_webui.mojom.h"
+#include "chrome/common/chrome_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/one_time_tokens/core/browser/mock_one_time_token_service.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/performance_manager/public/features.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -117,6 +133,91 @@ bool JournalEntryHasError(const ::actor::mojom::JournalEntry& entry,
   return false;
 }
 
+class PrefInvarianceScope {
+ public:
+  explicit PrefInvarianceScope(PrefService* prefs)
+      : prefs_(prefs),
+        initial_enabled_(prefs->GetBoolean(
+            autofill::prefs::kAutofillGmailOtpFillingEnabled)),
+        initial_dismiss_timestamp_(prefs->GetTime(
+            autofill::prefs::
+                kAutofillGmailOtpFillingActivationDismissalTimestamp)) {
+    registrar_.Init(prefs_);
+    auto on_pref_changed = base::BindRepeating(
+        &PrefInvarianceScope::OnPrefChanged, base::Unretained(this));
+    registrar_.Add(autofill::prefs::kAutofillGmailOtpFillingEnabled,
+                   on_pref_changed);
+    registrar_.Add(
+        autofill::prefs::kAutofillGmailOtpFillingActivationDismissalTimestamp,
+        on_pref_changed);
+  }
+
+  void VerifyInvariance() {
+    EXPECT_EQ(pref_change_count_, 0)
+        << "Preference invariance violated: " << pref_change_count_
+        << " change notifications fired.";
+    EXPECT_EQ(
+        prefs_->GetBoolean(autofill::prefs::kAutofillGmailOtpFillingEnabled),
+        initial_enabled_)
+        << "kAutofillGmailOtpFillingEnabled value unexpectedly changed.";
+    EXPECT_EQ(prefs_->GetTime(
+                  autofill::prefs::
+                      kAutofillGmailOtpFillingActivationDismissalTimestamp),
+              initial_dismiss_timestamp_)
+        << "kAutofillGmailOtpFillingActivationDismissalTimestamp value "
+           "unexpectedly changed.";
+  }
+
+  int change_count() const { return pref_change_count_; }
+
+ private:
+  void OnPrefChanged() { pref_change_count_++; }
+
+  raw_ptr<PrefService> prefs_;
+  const bool initial_enabled_;
+  const base::Time initial_dismiss_timestamp_;
+  int pref_change_count_ = 0;
+  PrefChangeRegistrar registrar_;
+};
+
+class TestJournalObserver : public ::actor::AggregatedJournal::Observer {
+ public:
+  explicit TestJournalObserver(::actor::AggregatedJournal* journal)
+      : journal_(journal) {
+    journal_->AddObserver(this);
+  }
+
+  ~TestJournalObserver() override { journal_->RemoveObserver(this); }
+
+  void WillAddJournalEntry(
+      const ::actor::AggregatedJournal::Entry& entry) override {
+    std::string s = base::StrCat({"Event: ", entry.data->event, ";"});
+    for (const auto& details_entry : entry.data->details) {
+      base::StrAppend(&s, {details_entry->key, "=", details_entry->value, ";"});
+    }
+    entries_.push_back(std::move(s));
+  }
+
+  const std::vector<std::string>& Entries() const { return entries_; }
+
+ private:
+  raw_ptr<::actor::AggregatedJournal> journal_;
+  std::vector<std::string> entries_;
+};
+
+std::optional<::actor::DomNode> GetDomNodeOnPage(
+    content::RenderFrameHost& rfh,
+    std::string_view query_selector) {
+  ASSIGN_OR_RETURN(int node_id, content::GetDOMNodeId(rfh, query_selector));
+  ASSIGN_OR_RETURN(
+      std::string document_identifier,
+      optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
+          rfh.GetGlobalFrameToken()));
+  return ::actor::DomNode{
+      .node_id = node_id,
+      .document_identifier = std::move(document_identifier)};
+}
+
 class GlicActorTaskLifecycleFunctionalBrowserTest
     : public GlicActorFunctionalBrowserTestBase {
  public:
@@ -143,10 +244,137 @@ class GlicActorTaskLifecycleGmailOtpEnabledBrowserTest
     : public GlicActorTaskLifecycleFunctionalBrowserTest {
  public:
   GlicActorTaskLifecycleGmailOtpEnabledBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kGlicActorAutofillOneTimePassword);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlicActorAutofillOneTimePassword,
+         autofill::features::kGlicActorAutofill,
+         ::actor::kGlicActorSkipScreenshot},
+        /*disabled_features=*/{});
   }
   ~GlicActorTaskLifecycleGmailOtpEnabledBrowserTest() override = default;
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    GlicActorTaskLifecycleFunctionalBrowserTest::
+        SetUpBrowserContextKeyedServices(context);
+    AffiliationServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<affiliations::FakeAffiliationService>();
+        }));
+    autofill::OneTimeTokenServiceFactory::GetInstance()
+        ->SetTestingSubclassFactoryAndUse<
+            one_time_tokens::MockOneTimeTokenService>(
+            context,
+            base::BindOnce(&GlicActorTaskLifecycleGmailOtpEnabledBrowserTest::
+                               CreateMockOtpService));
+  }
+
+  void SetUpOnMainThread() override {
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "components/test/data");
+    GlicActorTaskLifecycleFunctionalBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_https_test_server().Start());
+
+    autofill::prefs::SetAutofillGmailOtpFillingEnabled(GetProfile()->GetPrefs(),
+                                                       true);
+    SeedTestServerAffiliation("example.com");
+
+    EXPECT_CALL(GetMockOtpService(),
+                Subscribe(testing::_, testing::_, testing::_, testing::_))
+        .WillRepeatedly(
+            [](one_time_tokens::OneTimeTokenSource source,
+               base::Time expiration,
+               one_time_tokens::OneTimeTokenService::Callback callback,
+               base::OnceClosure expiration_callback) {
+              return one_time_tokens::ExpiringSubscription();
+            });
+    EXPECT_CALL(GetMockOtpService(), GetRecentOneTimeTokens(testing::_))
+        .WillRepeatedly(
+            [](one_time_tokens::OneTimeTokenService::Callback callback) {});
+    EXPECT_CALL(GetMockOtpService(), GetCachedOneTimeTokens())
+        .WillRepeatedly(
+            []() { return std::vector<one_time_tokens::OneTimeToken>(); });
+  }
+
+  affiliations::FakeAffiliationService* fake_affiliation_service() {
+    return static_cast<affiliations::FakeAffiliationService*>(
+        AffiliationServiceFactory::GetForProfile(GetProfile()));
+  }
+
+  void SeedTestServerAffiliation(std::string_view host) {
+    GURL test_url = embedded_https_test_server().GetURL(host, "/");
+    std::string test_spec = url::Origin::Create(test_url).Serialize();
+    std::string standard_spec = base::StrCat({"https://", host});
+    fake_affiliation_service()->AddAffiliationGroup({
+        affiliations::Facet(
+            affiliations::FacetURI::FromCanonicalSpec(test_spec)),
+        affiliations::Facet(
+            affiliations::FacetURI::FromCanonicalSpec(standard_spec)),
+    });
+  }
+
+  static std::unique_ptr<one_time_tokens::MockOneTimeTokenService>
+  CreateMockOtpService(content::BrowserContext* context) {
+    return std::make_unique<
+        testing::NiceMock<one_time_tokens::MockOneTimeTokenService>>();
+  }
+
+  one_time_tokens::MockOneTimeTokenService& GetMockOtpService() {
+    auto* mock_otp_service =
+        static_cast<one_time_tokens::MockOneTimeTokenService*>(
+            autofill::OneTimeTokenServiceFactory::GetForProfile(GetProfile()));
+    CHECK(mock_otp_service);
+    return *mock_otp_service;
+  }
+
+  void SetMockOtpResponse(const std::string& otp) {
+    EXPECT_CALL(GetMockOtpService(),
+                Subscribe(one_time_tokens::OneTimeTokenSource::kGmail,
+                          testing::_, testing::_, testing::_))
+        .WillOnce([otp](one_time_tokens::OneTimeTokenSource source,
+                        base::Time expiration,
+                        one_time_tokens::OneTimeTokenService::Callback callback,
+                        base::OnceClosure expiration_callback) {
+          callback.Run(
+              one_time_tokens::OneTimeTokenSource::kGmail,
+              base::expected<one_time_tokens::OneTimeToken,
+                             one_time_tokens::OneTimeTokenRetrievalError>(
+                  one_time_tokens::OneTimeToken(
+                      one_time_tokens::OneTimeTokenType::kGmail, otp,
+                      base::TimeTicks::Now(), "sender@example.com")));
+          return one_time_tokens::ExpiringSubscription();
+        });
+  }
+
+  void SetGmailOtpConfirmationResponseMode(std::string_view mode) {
+    GlicInstanceImpl* instance = GetInstanceImpl();
+    ASSERT_TRUE(instance);
+    content::WebContents* guest_contents =
+        instance->host().web_client_contents();
+    ASSERT_TRUE(guest_contents);
+    ASSERT_TRUE(content::ExecJs(
+        guest_contents,
+        base::StrCat(
+            {"window.setGmailOtpConfirmationResponseMode('", mode, "');"})));
+  }
+
+  void WaitForTabObservation(TaskId task_id) {
+    ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+    content::WaitForCopyableViewInWebContents(web_contents());
+    TestFuture<::actor::ActorKeyedService::TabObservationResult>
+        tab_observation_future;
+    actor_keyed_service()->RequestTabObservation(
+        *active_tab(), task_id, std::nullopt,
+        tab_observation_future.GetCallback());
+    const ::actor::ActorKeyedService::TabObservationResult& result =
+        tab_observation_future.Get();
+    std::optional<std::string> error_message =
+        ::actor::ActorKeyedService::ExtractErrorMessageIfFailed(result);
+    ASSERT_FALSE(error_message)
+        << "Waiting for tab observation failed: " << *error_message;
+    ASSERT_TRUE(result.value());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -687,6 +915,305 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
 
   task_manager->GetClientSessionForTesting()->StopActorTask(
       task_id.value(), glic::mojom::ActorTaskStopReason::kTaskComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
+                       testGmailOtpConfirmationAcceptFillsOtpSuccessfully) {
+  TestJournalObserver observer(&actor_keyed_service()->GetJournal());
+
+  GlicInstanceImpl* instance = GetInstanceImpl();
+  ASSERT_TRUE(instance);
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateActorTask(instance));
+  EXPECT_NE(task_id, TaskId());
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  ExecuteJsTest();
+
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation(task_id));
+
+  ASSERT_OK_AND_ASSIGN(
+      ::actor::DomNode otp_field,
+      GetDomNodeOnPage(*web_contents()->GetPrimaryMainFrame(), "#otp"));
+
+  PrefInvarianceScope pref_scope(GetProfile()->GetPrefs());
+
+  SetGmailOtpConfirmationResponseMode("accept");
+
+  const std::string kExpectedOtp = "482910";
+  SetMockOtpResponse(kExpectedOtp);
+
+  std::unique_ptr<::actor::ToolRequest> request =
+      std::make_unique<::actor::AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(),
+          std::vector<::actor::PageTarget>{otp_field},
+          /*for_signin=*/false);
+
+  ::actor::ActResultFuture result;
+  task->Act(::actor::ToRequestList(std::move(request)), result.GetCallback());
+
+  ::actor::ExpectOkResult(result);
+
+  EXPECT_EQ(
+      content::EvalJs(web_contents(), "document.querySelector('#otp').value"),
+      kExpectedOtp);
+
+  EXPECT_THAT(observer.Entries(),
+              testing::Contains(testing::ContainsRegex(
+                  "AttemptOtpFillingTool::Invoke;.*for_signin=false")));
+  EXPECT_THAT(observer.Entries(),
+              testing::Contains(testing::ContainsRegex(
+                  "AttemptOtpFillingTool::OnGmailOtpConfirmationResponse;.*"
+                  "permission_granted=true")));
+  EXPECT_THAT(
+      observer.Entries(),
+      testing::Contains(testing::ContainsRegex(
+          "AttemptOtpFillingTool::OnOtpRetrieved;.*otp_received=true")));
+
+  pref_scope.VerifyInvariance();
+
+  ContinueJsTest();
+
+  instance->GetActorTaskManager()->GetClientSessionForTesting()->StopActorTask(
+      task_id.value(), glic::mojom::ActorTaskStopReason::kTaskComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
+                       testGmailOtpConfirmationDeclineAbortsFilling) {
+  TestJournalObserver observer(&actor_keyed_service()->GetJournal());
+
+  GlicInstanceImpl* instance = GetInstanceImpl();
+  ASSERT_TRUE(instance);
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateActorTask(instance));
+  EXPECT_NE(task_id, TaskId());
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  ExecuteJsTest();
+
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation(task_id));
+
+  ASSERT_OK_AND_ASSIGN(
+      ::actor::DomNode otp_field,
+      GetDomNodeOnPage(*web_contents()->GetPrimaryMainFrame(), "#otp"));
+
+  PrefInvarianceScope pref_scope(GetProfile()->GetPrefs());
+
+  SetGmailOtpConfirmationResponseMode("decline");
+  SetMockOtpResponse("123456");
+
+  std::unique_ptr<::actor::ToolRequest> request =
+      std::make_unique<::actor::AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(),
+          std::vector<::actor::PageTarget>{otp_field},
+          /*for_signin=*/false);
+
+  ::actor::ActResultFuture result;
+  task->Act(::actor::ToRequestList(std::move(request)), result.GetCallback());
+
+  ::actor::ExpectErrorResult(
+      result,
+      ::actor::mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling);
+
+  EXPECT_EQ(
+      content::EvalJs(web_contents(), "document.querySelector('#otp').value"),
+      "");
+
+  EXPECT_THAT(observer.Entries(),
+              testing::Contains(testing::ContainsRegex(
+                  "AttemptOtpFillingTool::Invoke;.*for_signin=false")));
+  EXPECT_THAT(observer.Entries(),
+              testing::Contains(testing::ContainsRegex(
+                  "AttemptOtpFillingTool::OnGmailOtpConfirmationResponse;.*"
+                  "permission_granted=false")));
+
+  pref_scope.VerifyInvariance();
+
+  ContinueJsTest();
+
+  instance->GetActorTaskManager()->GetClientSessionForTesting()->StopActorTask(
+      task_id.value(), glic::mojom::ActorTaskStopReason::kTaskComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
+                       testGmailOtpConfirmationErrorHandling) {
+  TestJournalObserver observer(&actor_keyed_service()->GetJournal());
+
+  GlicInstanceImpl* instance = GetInstanceImpl();
+  ASSERT_TRUE(instance);
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateActorTask(instance));
+  EXPECT_NE(task_id, TaskId());
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  ExecuteJsTest();
+
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation(task_id));
+
+  ASSERT_OK_AND_ASSIGN(
+      ::actor::DomNode otp_field,
+      GetDomNodeOnPage(*web_contents()->GetPrimaryMainFrame(), "#otp"));
+
+  PrefInvarianceScope pref_scope(GetProfile()->GetPrefs());
+
+  SetGmailOtpConfirmationResponseMode("error");
+  SetMockOtpResponse("123456");
+
+  std::unique_ptr<::actor::ToolRequest> request =
+      std::make_unique<::actor::AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(),
+          std::vector<::actor::PageTarget>{otp_field},
+          /*for_signin=*/false);
+
+  ::actor::ActResultFuture result;
+  task->Act(::actor::ToRequestList(std::move(request)), result.GetCallback());
+
+  ::actor::ExpectErrorResult(
+      result, ::actor::mojom::ActionResultCode::kOtpUnableToFill);
+
+  EXPECT_EQ(
+      content::EvalJs(web_contents(), "document.querySelector('#otp').value"),
+      "");
+
+  EXPECT_THAT(observer.Entries(),
+              testing::Contains(testing::ContainsRegex(
+                  "AttemptOtpFillingTool::Invoke;.*for_signin=false")));
+  EXPECT_THAT(observer.Entries(),
+              testing::Contains(testing::ContainsRegex(
+                  "AttemptOtpFillingTool::OnGmailOtpConfirmationResponse;.*"
+                  "error_reason=")));
+
+  pref_scope.VerifyInvariance();
+
+  ContinueJsTest();
+
+  instance->GetActorTaskManager()->GetClientSessionForTesting()->StopActorTask(
+      task_id.value(), glic::mojom::ActorTaskStopReason::kTaskComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
+                       testGmailOtpConfirmationAssertNoPreferenceMutations) {
+  GlicInstanceImpl* instance = GetInstanceImpl();
+  ASSERT_TRUE(instance);
+
+  ExecuteJsTest();
+
+  struct TestCase {
+    std::string name;
+    bool initial_opt_in_enabled;
+    base::Time initial_dismiss_timestamp;
+    std::string response_mode;
+    std::string mock_otp;
+    std::string expected_dom_value;
+  };
+
+  const std::vector<TestCase> test_cases = {
+      {
+          .name = "PreOptedIn_Accept",
+          .initial_opt_in_enabled = true,
+          .initial_dismiss_timestamp = base::Time(),
+          .response_mode = "accept",
+          .mock_otp = "445566",
+          .expected_dom_value = "445566",
+      },
+      {
+          .name = "PreOptedIn_Decline",
+          .initial_opt_in_enabled = true,
+          .initial_dismiss_timestamp = base::Time(),
+          .response_mode = "decline",
+          .mock_otp = "123456",
+          .expected_dom_value = "",
+      },
+      {
+          .name = "PreOptedIn_WithDismissalTimestamp_Accept",
+          .initial_opt_in_enabled = true,
+          .initial_dismiss_timestamp = base::Time::Now() - base::Days(10),
+          .response_mode = "accept",
+          .mock_otp = "778899",
+          .expected_dom_value = "778899",
+      },
+      {
+          .name = "PreOptedIn_WithDismissalTimestamp_Decline",
+          .initial_opt_in_enabled = true,
+          .initial_dismiss_timestamp = base::Time::Now() - base::Days(10),
+          .response_mode = "decline",
+          .mock_otp = "123456",
+          .expected_dom_value = "",
+      },
+  };
+
+  PrefService* prefs = GetProfile()->GetPrefs();
+
+  for (const auto& tc : test_cases) {
+    SCOPED_TRACE(tc.name);
+
+    ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateActorTask(instance));
+    EXPECT_NE(task_id, TaskId());
+    ActorTask* task = actor_keyed_service()->GetTask(task_id);
+    ASSERT_TRUE(task);
+
+    const GURL url = embedded_https_test_server().GetURL(
+        "example.com", "/actor/otp_page.html");
+    ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+    ASSERT_NO_FATAL_FAILURE(WaitForTabObservation(task_id));
+
+    ASSERT_OK_AND_ASSIGN(
+        ::actor::DomNode otp_field,
+        GetDomNodeOnPage(*web_contents()->GetPrimaryMainFrame(), "#otp"));
+
+    ASSERT_TRUE(content::ExecJs(web_contents(),
+                                "document.querySelector('#otp').value = '';"));
+
+    prefs->SetBoolean(autofill::prefs::kAutofillGmailOtpFillingEnabled,
+                      tc.initial_opt_in_enabled);
+    prefs->SetTime(
+        autofill::prefs::kAutofillGmailOtpFillingActivationDismissalTimestamp,
+        tc.initial_dismiss_timestamp);
+
+    PrefInvarianceScope pref_scope(prefs);
+
+    SetGmailOtpConfirmationResponseMode(tc.response_mode);
+    SetMockOtpResponse(tc.mock_otp);
+
+    std::unique_ptr<::actor::ToolRequest> request =
+        std::make_unique<::actor::AttemptOtpFillingToolRequest>(
+            active_tab()->GetHandle(),
+            std::vector<::actor::PageTarget>{otp_field},
+            /*for_signin=*/false);
+
+    ::actor::ActResultFuture result;
+    task->Act(::actor::ToRequestList(std::move(request)), result.GetCallback());
+
+    if (tc.response_mode == "accept") {
+      ::actor::ExpectOkResult(result);
+    } else {
+      ::actor::ExpectErrorResult(
+          result,
+          ::actor::mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling);
+    }
+
+    EXPECT_EQ(
+        content::EvalJs(web_contents(), "document.querySelector('#otp').value"),
+        tc.expected_dom_value);
+
+    pref_scope.VerifyInvariance();
+
+    instance->GetActorTaskManager()
+        ->GetClientSessionForTesting()
+        ->StopActorTask(task_id.value(),
+                        glic::mojom::ActorTaskStopReason::kTaskComplete);
+  }
+
+  ContinueJsTest();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

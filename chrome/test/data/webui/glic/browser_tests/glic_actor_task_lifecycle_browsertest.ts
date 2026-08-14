@@ -7,9 +7,60 @@ import type {GmailOtpConfirmationRequest, GmailOtpOptInRequest} from '/glic/glic
 
 import {ApiTestFixtureBase, assertDefined, assertEquals, assertRejects, assertTrue, checkDefined, longWaitTimeMs, observeSequence, testMain} from './browser_test_base.js';
 
+export type ConfirmationResponseMode = 'accept'|'decline'|'error';
+
+declare global {
+  interface Window {
+    setGmailOtpConfirmationResponseMode?:
+        (mode: ConfirmationResponseMode) => void;
+  }
+}
+
 class GlicActorTaskLifecycleFunctionalBrowserTest extends ApiTestFixtureBase {
+  private confirmationResponseMode: ConfirmationResponseMode = 'accept';
+  private confirmationSubscription?: {unsubscribe: () => void};
+
+  setGmailOtpConfirmationResponseMode(mode: ConfirmationResponseMode) {
+    this.confirmationResponseMode = mode;
+    if (mode === 'error') {
+      if (this.confirmationSubscription) {
+        this.confirmationSubscription.unsubscribe();
+        this.confirmationSubscription = undefined;
+      }
+      return;
+    }
+    if (!this.confirmationSubscription &&
+        this.host.selectGmailOtpConfirmationRequestHandler) {
+      const subscriber = this.host.selectGmailOtpConfirmationRequestHandler();
+      if (subscriber) {
+        this.confirmationSubscription =
+            subscriber.subscribe((request: GmailOtpConfirmationRequest) => {
+              switch (this.confirmationResponseMode) {
+                case 'accept':
+                  request.onDialogClosed({permissionGranted: true});
+                  break;
+                case 'decline':
+                  request.onDialogClosed({permissionGranted: false});
+                  break;
+                default:
+                  break;
+              }
+            });
+      }
+    }
+  }
+
   override async setUpTest() {
     await this.client.waitForFirstOpen();
+    if (this.confirmationSubscription) {
+      this.confirmationSubscription.unsubscribe();
+      this.confirmationSubscription = undefined;
+    }
+    this.confirmationResponseMode = 'accept';
+    window.setGmailOtpConfirmationResponseMode =
+        (mode: ConfirmationResponseMode) => {
+          this.setGmailOtpConfirmationResponseMode(mode);
+        };
   }
 
   async getFocusedTabId(): Promise<string> {
@@ -433,6 +484,25 @@ class GlicActorTaskLifecycleFunctionalBrowserTest extends ApiTestFixtureBase {
   async testGmailOtpConfirmationDialogFeatureDisabled() {
     assertTrue(
         this.host.selectGmailOtpConfirmationRequestHandler === undefined);
+    await this.advanceToNextStep();
+  }
+
+  async testGmailOtpConfirmationAcceptFillsOtpSuccessfully() {
+    assertDefined(this.host.selectGmailOtpConfirmationRequestHandler);
+    await this.advanceToNextStep();
+  }
+
+  async testGmailOtpConfirmationDeclineAbortsFilling() {
+    assertDefined(this.host.selectGmailOtpConfirmationRequestHandler);
+    await this.advanceToNextStep();
+  }
+
+  async testGmailOtpConfirmationErrorHandling() {
+    await this.advanceToNextStep();
+  }
+
+  async testGmailOtpConfirmationAssertNoPreferenceMutations() {
+    assertDefined(this.host.selectGmailOtpConfirmationRequestHandler);
     await this.advanceToNextStep();
   }
 
