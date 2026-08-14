@@ -7141,6 +7141,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "new-geolocation-permission-delegate",
+    "owners": ["alexandrasp@google.com", "bling-fundamentals@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "new-tab-page-customization-theme-sync",
     "owners": ["hanxi@google.com", "xinyiji@google.com", "clank-start@google.com"],
     "expiry_milestone": 160

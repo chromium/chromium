@@ -1461,6 +1461,13 @@ inline constexpr char kNativeFindInPageDescription[] =
     "is replaced with a native implementation which also enables searching "
     "text in PDF files. Available for iOS 16 or later.";
 
+inline constexpr char kNewGeolocationPermissionDelegateName[] =
+    "New Geolocation Permission Delegate";
+inline constexpr char kNewGeolocationPermissionDelegateDescription[] =
+    "Enables the new geolocation permission delegate feature to help users "
+    "manage location permission updates when sharing their location with the "
+    "browser.";
+
 inline constexpr char kNewTabPageFieldTrialName[] =
     "New tab page features that target new users";
 inline constexpr char kNewTabPageFieldTrialDescription[] =

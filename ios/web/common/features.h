@@ -151,6 +151,9 @@ BASE_DECLARE_FEATURE(kIOSScriptMessageConversionDurationLogging);
 // Feature flag to enable the isolated world parent-child frame tree handshake.
 BASE_DECLARE_FEATURE(kWebFrameTree);
 
+// Enables the new geolocation permission delegate feature.
+BASE_DECLARE_FEATURE(kNewGeolocationPermissionDelegate);
+
 }  // namespace web::features
 
 #endif  // IOS_WEB_COMMON_FEATURES_H_
