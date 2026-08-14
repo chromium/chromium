@@ -11,6 +11,11 @@ import type {GetPoliciesReason} from './policy.mojom-webui.js';
 const policyPageMojoMigrationEnabled =
     loadTimeData.getBoolean('policyPageMojoMigrationEnabled');
 
+export interface CustomCommandLineArguments {
+  hasCustomArgs: boolean;
+  commandLineArgs: string;
+}
+
 export class BrowserProxy {
   handler: PolicyPageHandlerRemote;
   callbackRouter: PolicyPageClientCallbackRouter;
@@ -34,15 +39,6 @@ export class BrowserProxy {
   }
 
   // <if expr="not is_ios and not is_android">
-  static checkCommandLineSwitches(): Promise<boolean> {
-    if (policyPageMojoMigrationEnabled) {
-      return this.getInstance().handler.checkCommandLineSwitches().then(
-          response => response.hasCustomFlags);
-    } else {
-      return sendWithPromise('checkCommandLineSwitches');
-    }
-  }
-
   static checkPromotionEligibility(): Promise<boolean> {
     if (policyPageMojoMigrationEnabled) {
       return this.getInstance().handler.checkPromotionEligibility().then(

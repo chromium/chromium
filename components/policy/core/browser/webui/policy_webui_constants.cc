@@ -8,6 +8,7 @@ namespace policy {
 
 const char kPolicyIdsKey[] = "policyIds";
 const char kPolicyValuesKey[] = "policyValues";
-const char kHasCustomCommandLineFlags[] = "hasCustomCommandLineFlags";
+const char kHasCustomCommandLineArguments[] = "hasCustomCommandLineArguments";
+const char kCustomCommandLineArguments[] = "customCommandLineArguments";
 
 }  // namespace policy

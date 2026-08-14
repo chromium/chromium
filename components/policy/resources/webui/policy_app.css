@@ -119,8 +119,15 @@ a {
 }
 
 .warning-text {
+  flex: 1;
   font-size: 13px;
   line-height: 18px;
+}
+
+#command-line-args {
+  font-family: monospace;
+  margin-top: 4px;
+  word-break: break-all;
 }
 
 
