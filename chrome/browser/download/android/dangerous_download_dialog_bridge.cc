@@ -57,8 +57,9 @@ DangerousDownloadDialogBridge::~DangerousDownloadDialogBridge() {
 
 void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
                                          ui::WindowAndroid* window_android) {
-  // Don't show download again if it is already showing.
-  if (std::ranges::contains(download_items_, download_item)) {
+  // Don't show download again if it is already showing or done.
+  if (download_item->IsDone() ||
+      std::ranges::contains(download_items_, download_item)) {
     return;
   }
   if (!window_android) {
@@ -94,8 +95,13 @@ void DangerousDownloadDialogBridge::Accepted(JNIEnv* env,
                                              const std::string& download_guid) {
   download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
       &download_items_, download_guid);
-  if (download) {
-    download->RemoveObserver(this);
+  if (!download) {
+    return;
+  }
+
+  download->RemoveObserver(this);
+
+  if (!download->IsDone()) {
     if (download->IsDangerous()) {
       download->ValidateDangerousDownload();
     } else {
@@ -109,8 +115,13 @@ void DangerousDownloadDialogBridge::Cancelled(
     const std::string& download_guid) {
   download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
       &download_items_, download_guid);
-  if (download) {
-    download->RemoveObserver(this);
+  if (!download) {
+    return;
+  }
+
+  download->RemoveObserver(this);
+
+  if (!download->IsDone()) {
     DownloadController::ScheduleRemoveDownloadItem(download);
   }
 }
