@@ -404,6 +404,22 @@ void PdfInkModule::OnGeometryChanged() {
   MaybeSetCursor();
 }
 
+void PdfInkModule::RecordMetricsOnSave() {
+  if (!baseline_text_annotation_count_.has_value()) {
+    return;
+  }
+
+  if (text_id_map_.size() > baseline_text_annotation_count_.value()) {
+    RecordTextAnnotationAddedCountOnSave(
+        text_id_map_.size() - baseline_text_annotation_count_.value());
+  } else if (text_id_map_.size() < baseline_text_annotation_count_.value()) {
+    RecordTextAnnotationRemovedCountOnSave(
+        baseline_text_annotation_count_.value() - text_id_map_.size());
+  }
+
+  baseline_text_annotation_count_ = text_id_map_.size();
+}
+
 const PdfInkBrush* PdfInkModule::GetPdfInkBrushForTesting() const {
   return is_drawing_stroke() ? &GetDrawingBrush() : nullptr;
 }
@@ -1372,15 +1388,19 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
     const base::DictValue& message) {
   CHECK(text_id_map_.empty());
 
-  base::ListValue annotations;
-
-  DocumentInkTextBoxesMap document_text_boxes =
+  const DocumentInkTextBoxesMap document_text_boxes =
       client_->LoadTextAnnotationsFromPdf();
+
+  size_t total_text_boxes = 0;
+  for (const auto& [page_index, text_boxes] : document_text_boxes) {
+    total_text_boxes += text_boxes.size();
+  }
+  auto annotations = base::ListValue::with_capacity(total_text_boxes);
 
   // The backend sets the frontend ID for loaded text annotations.
   int frontend_id = 0;
 
-  for (auto& [page_index, text_boxes] : document_text_boxes) {
+  for (const auto& [page_index, text_boxes] : document_text_boxes) {
     for (const auto& item : text_boxes) {
       text_id_map_[frontend_id] = item.ink_loaded_text_id;
 
@@ -1420,6 +1440,8 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
       ++frontend_id;
     }
   }
+
+  baseline_text_annotation_count_ = text_id_map_.size();
 
   client_->PostMessage(
       PrepareReplyMessage(message).Set("annotations", std::move(annotations)));

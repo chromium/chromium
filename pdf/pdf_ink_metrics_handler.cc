@@ -222,6 +222,15 @@ void RecordPdfLoadedWithV2InkAnnotations(
                                 loaded_with_annotations);
 }
 
+void RecordTextAnnotationAddedCountOnSave(size_t count) {
+  base::UmaHistogramCounts100("PDF.Ink2TextAnnotationAddedCountOnSave", count);
+}
+
+void RecordTextAnnotationRemovedCountOnSave(size_t count) {
+  base::UmaHistogramCounts100("PDF.Ink2TextAnnotationRemovedCountOnSave",
+                              count);
+}
+
 void ReportTextAnnotationMetrics(const InkTextBoxAttributes& attributes) {
   auto color_it = kTextAnnotationColors.find(attributes.color);
   CHECK(color_it != kTextAnnotationColors.end());

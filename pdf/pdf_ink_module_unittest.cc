@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -553,17 +554,7 @@ TEST_P(PdfInkModuleTest, HandleGetAllTextAnnotationsMessage) {
 
   std::vector<InkTextBox> test_boxes;
   test_boxes.push_back(InkTextBox(
-      /*id=*/42, InkTextBoxAttributes(
-                     /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 50.0f),
-                     /*color=*/SkColorSetRGB(0, 0, 255),
-                     /*css_font_size=*/12.0f,
-                     /*typeface=*/TextTypeface::kMonospace,
-                     /*alignment=*/TextAlignment::kCenter,
-                     /*orientation=*/1,
-                     /*viewport_orientation=*/PageOrientation::kOriginal,
-                     /*is_bold=*/false,
-                     /*is_italic=*/true,
-                     /*text=*/"Hello World from Test!")));
+      /*id=*/42, SampleInkTextBoxAttributesWithText("Hello World from Test!")));
 
   DocumentInkTextBoxesMap map;
   map[0] = std::move(test_boxes);
@@ -1046,6 +1037,32 @@ class PdfInkModuleTextTest : public testing::Test {
     EXPECT_TRUE(ink_module().OnMessage(message));
     testing::Mock::VerifyAndClearExpectations(this);
   }
+
+  void InitializeLoadedTextAnnotations(size_t count) {
+    std::vector<gfx::RectF> layouts(1, gfx::RectF(0, 0, 100, 100));
+    client().set_page_layouts(layouts);
+
+    std::vector<InkTextBox> text_boxes_loaded_from_pdf;
+    for (size_t i = 0; i < count; ++i) {
+      text_boxes_loaded_from_pdf.push_back(
+          InkTextBox(/*id=*/static_cast<int>(i + 1),
+                     SampleInkTextBoxAttributesWithText(
+                         base::StringPrintf("Box %zu", i))));
+    }
+
+    DocumentInkTextBoxesMap map;
+    map[0] = std::move(text_boxes_loaded_from_pdf);
+
+    EXPECT_CALL(client(), LoadTextAnnotationsFromPdf())
+        .WillOnce(Return(std::move(map)));
+    EXPECT_CALL(client(), PostMessage);
+
+    base::DictValue message = base::DictValue()
+                                  .Set("type", "getAllTextAnnotations")
+                                  .Set("messageId", "bar");
+    EXPECT_TRUE(ink_module().OnMessage(message));
+  }
+
   void PerformUndo() {
     EXPECT_TRUE(
         ink_module().OnMessage(CreateSetAnnotationUndoRedoMessageForTesting(
@@ -2290,6 +2307,155 @@ TEST_F(PdfInkModuleTextTest,
         CreateFinishTextAnnotationMessage(std::move(data))));
     PerformRedo();
     testing::Mock::VerifyAndClearExpectations(this);
+  }
+}
+
+TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveNoLoadedAnnotations) {
+  base::HistogramTester histograms;
+  ink_module().RecordMetricsOnSave();
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
+}
+
+TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveNoChange) {
+  InitializeLoadedTextAnnotations(1);
+
+  base::HistogramTester histograms;
+  ink_module().RecordMetricsOnSave();
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
+}
+
+TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveAdded) {
+  InitializeLoadedTextAnnotations(1);
+
+  static constexpr FontId kFontId(123);
+  static constexpr auto kTypefaceBlob =
+      std::to_array<const uint8_t>({1, 2, 3, 4});
+
+  base::DictValue finish_data =
+      SampleFinishTextAnnotationData(/*frontend_id=*/1, kFontId,
+                                     /*page_index=*/0, /*pdf_zoom=*/1.0);
+  base::ListValue typefaces;
+  typefaces.Append(SampleSerializedTypeface(kFontId, kTypefaceBlob));
+  finish_data.Set("newTypefaces", std::move(typefaces));
+
+  EXPECT_CALL(client(), AddFont(_, _, _));
+  EXPECT_CALL(client(), DrawText(_, _, _, _, _, _));
+  EXPECT_CALL(client(), RequestThumbnail(_, _));
+
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateFinishTextAnnotationMessage(std::move(finish_data))));
+
+  base::HistogramTester histograms;
+  ink_module().RecordMetricsOnSave();
+  histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationAddedCountOnSave", 1, 1);
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
+}
+
+TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveRemoved) {
+  InitializeLoadedTextAnnotations(2);
+
+  static constexpr FontId kFontId(123);
+  base::DictValue finish_data =
+      SampleFinishTextAnnotationData(/*frontend_id=*/0, kFontId,
+                                     /*page_index=*/0, /*pdf_zoom=*/1.0);
+  finish_data.Set("text", "");
+
+  EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, false));
+  EXPECT_CALL(client(), RequestThumbnail(_, _));
+
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateFinishTextAnnotationMessage(std::move(finish_data))));
+
+  base::HistogramTester histograms;
+  ink_module().RecordMetricsOnSave();
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
+  histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationRemovedCountOnSave", 1,
+                                1);
+}
+
+TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveMultipleSaves) {
+  InitializeLoadedTextAnnotations(5);
+
+  static constexpr FontId kFontId(123);
+  static constexpr auto kTypefaceBlob =
+      std::to_array<const uint8_t>({1, 2, 3, 4});
+
+  const auto typefaces = base::ListValue().Append(
+      SampleSerializedTypeface(kFontId, kTypefaceBlob));
+  {
+    // Add 1 annotation (total 6).
+    base::DictValue finish_data =
+        SampleFinishTextAnnotationData(/*frontend_id=*/10, kFontId,
+                                       /*page_index=*/0, /*pdf_zoom=*/1.0);
+    finish_data.Set("newTypefaces", typefaces.Clone());
+
+    EXPECT_CALL(client(), AddFont(_, _, _));
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _, _));
+    EXPECT_CALL(client(), RequestThumbnail(_, _));
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(finish_data))));
+
+    base::HistogramTester histograms;
+    ink_module().RecordMetricsOnSave();
+    histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationAddedCountOnSave", 1,
+                                  1);
+    histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
+  }
+
+  {
+    // Add 2 more annotations (total 8).
+    base::DictValue finish_data_1 =
+        SampleFinishTextAnnotationData(/*frontend_id=*/11, kFontId,
+                                       /*page_index=*/0, /*pdf_zoom=*/1.0);
+    finish_data_1.Set("newTypefaces", typefaces.Clone());
+
+    EXPECT_CALL(client(), AddFont(_, _, _));
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _, _));
+    EXPECT_CALL(client(), RequestThumbnail(_, _));
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(finish_data_1))));
+
+    base::DictValue finish_data_2 =
+        SampleFinishTextAnnotationData(/*frontend_id=*/12, kFontId,
+                                       /*page_index=*/0, /*pdf_zoom=*/1.0);
+    finish_data_2.Set("newTypefaces", typefaces.Clone());
+
+    EXPECT_CALL(client(), AddFont(_, _, _));
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _, _));
+    EXPECT_CALL(client(), RequestThumbnail(_, _));
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(finish_data_2))));
+
+    base::HistogramTester histograms;
+    ink_module().RecordMetricsOnSave();
+    histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationAddedCountOnSave", 2,
+                                  1);
+    histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
+  }
+
+  {
+    // Remove 1 annotation (total 7).
+    base::DictValue finish_data =
+        SampleFinishTextAnnotationData(/*frontend_id=*/10, kFontId,
+                                       /*page_index=*/0, /*pdf_zoom=*/1.0);
+    finish_data.Set("text", "");
+
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, false));
+    EXPECT_CALL(client(), RequestThumbnail(_, _));
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(finish_data))));
+
+    base::HistogramTester histograms;
+    ink_module().RecordMetricsOnSave();
+    histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
+    histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationRemovedCountOnSave", 1,
+                                  1);
   }
 }
 

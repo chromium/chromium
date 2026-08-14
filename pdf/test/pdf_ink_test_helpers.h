@@ -76,6 +76,10 @@ base::DictValue SampleTextAttributesDict();
 
 base::DictValue SampleTextBoxRectDict();
 
+InkTextBoxAttributes SampleInkTextBoxAttributes();
+
+InkTextBoxAttributes SampleInkTextBoxAttributesWithText(std::string_view text);
+
 // Matches `SampleTextAttributesDict()`, `SampleTextBoxRectDict()`, and
 // `SampleFinishTextAnnotationData()`.
 testing::Matcher<const InkTextBoxAttributes&>

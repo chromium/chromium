@@ -2512,6 +2512,105 @@ TEST_F(PdfViewWebPluginSaveInBlocksTest, ReleaseSaveBuffer) {
   pdf_receiver_.FlushForTesting();
 }
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+using PdfViewWebPluginInk2SaveInBlocksTest = PdfViewWebPluginSaveInBlocksTest;
+
+TEST_F(PdfViewWebPluginInk2SaveInBlocksTest, AnnotationInEditModeMetrics) {
+  DocumentInkTextBoxesMap map;
+  EXPECT_CALL(*engine_ptr_, LoadTextAnnotationsFromPdf())
+      .WillOnce(Return(std::move(map)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "getAllTextAnnotations",
+    "messageId": "foo",
+  })"));
+
+  plugin_->EnteredEditMode();
+
+  base::span data(TestPDFiumEngine::kSaveData);
+  ExpectResponse(data, 0, data.size(), "token-1");
+
+  base::HistogramTester histograms;
+  plugin_->OnMessage(CreateRequest(pdf::mojom::SaveRequestType::kAnnotation,
+                                   /*offset=*/0, /*block_size=*/0, "token-1"));
+  EXPECT_TRUE(plugin_->IsSaveDataBufferEmptyForTesting());
+  pdf_receiver_.FlushForTesting();
+
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
+}
+
+TEST_F(PdfViewWebPluginInk2SaveInBlocksTest, AnnotationInEditModeMetricsAdded) {
+  DocumentInkTextBoxesMap map;
+  EXPECT_CALL(*engine_ptr_, LoadTextAnnotationsFromPdf())
+      .WillOnce(Return(std::move(map)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "getAllTextAnnotations",
+    "messageId": "foo",
+  })"));
+
+  plugin_->EnteredEditMode();
+
+  EXPECT_CALL(*engine_ptr_, DrawText(_, _, _, _, _, _));
+  EXPECT_CALL(*engine_ptr_, RequestThumbnail(_, _, _));
+
+  plugin_->OnMessage(CreateFinishTextAnnotationMessage(
+      SampleFinishTextAnnotationData(/*frontend_id=*/10, FontId(123),
+                                     /*page_index=*/0, /*pdf_zoom=*/1.0)));
+
+  base::span data(TestPDFiumEngine::kSaveData);
+  ExpectResponse(data, 0, data.size(), "token-1");
+
+  base::HistogramTester histograms;
+  plugin_->OnMessage(CreateRequest(pdf::mojom::SaveRequestType::kAnnotation,
+                                   /*offset=*/0, /*block_size=*/0, "token-1"));
+  EXPECT_TRUE(plugin_->IsSaveDataBufferEmptyForTesting());
+  pdf_receiver_.FlushForTesting();
+
+  histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationAddedCountOnSave", 1, 1);
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
+}
+
+TEST_F(PdfViewWebPluginInk2SaveInBlocksTest,
+       AnnotationInEditModeMetricsRemoved) {
+  DocumentInkTextBoxesMap map;
+  map[0].push_back(InkTextBox(/*id=*/1, SampleInkTextBoxAttributes()));
+  EXPECT_CALL(*engine_ptr_, LoadTextAnnotationsFromPdf())
+      .WillOnce(Return(std::move(map)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "getAllTextAnnotations",
+    "messageId": "foo",
+  })"));
+
+  plugin_->EnteredEditMode();
+
+  base::DictValue finish_data =
+      SampleFinishTextAnnotationData(/*frontend_id=*/0, FontId(123),
+                                     /*page_index=*/0, /*pdf_zoom=*/1.0);
+  finish_data.Set("text", "");
+
+  EXPECT_CALL(*engine_ptr_, UpdateTextActiveAndInvalidate(_, false));
+  EXPECT_CALL(*engine_ptr_, RequestThumbnail(_, _, _));
+
+  plugin_->OnMessage(CreateFinishTextAnnotationMessage(std::move(finish_data)));
+
+  base::span data(TestPDFiumEngine::kSaveData);
+  ExpectResponse(data, 0, data.size(), "token-1");
+
+  base::HistogramTester histograms;
+  plugin_->OnMessage(CreateRequest(pdf::mojom::SaveRequestType::kAnnotation,
+                                   /*offset=*/0, /*block_size=*/0, "token-1"));
+  EXPECT_TRUE(plugin_->IsSaveDataBufferEmptyForTesting());
+  pdf_receiver_.FlushForTesting();
+
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
+  histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationRemovedCountOnSave", 1,
+                                1);
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 class PdfViewWebPluginSaveInBlocksToGoogleDriveTest
     : public PdfViewWebPluginSaveInBlocksTest {
@@ -2684,6 +2783,106 @@ TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest,
   FreeHandler(handler2);
   EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
 }
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest,
+       AnnotationInEditModeMetrics) {
+  DocumentInkTextBoxesMap map;
+  EXPECT_CALL(*engine_ptr_, LoadTextAnnotationsFromPdf())
+      .WillOnce(Return(std::move(map)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "getAllTextAnnotations",
+    "messageId": "foo",
+  })"));
+
+  plugin_->EnteredEditMode();
+
+  base::HistogramTester histograms;
+  base::span<const uint8_t> data(TestPDFiumEngine::kSaveData);
+  auto [handler, total_file_size] =
+      GetSaveDataBufferHandler(pdf::mojom::SaveRequestType::kAnnotation);
+  EXPECT_EQ(total_file_size, static_cast<uint32_t>(data.size()));
+  ReadSaveDataBufferAndExpectResult(handler, data, 0, data.size());
+  FreeHandler(handler);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
+
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
+}
+
+TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest,
+       AnnotationInEditModeMetricsAdded) {
+  DocumentInkTextBoxesMap map;
+  EXPECT_CALL(*engine_ptr_, LoadTextAnnotationsFromPdf())
+      .WillOnce(Return(std::move(map)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "getAllTextAnnotations",
+    "messageId": "foo",
+  })"));
+
+  plugin_->EnteredEditMode();
+
+  EXPECT_CALL(*engine_ptr_, DrawText(_, _, _, _, _, _));
+  EXPECT_CALL(*engine_ptr_, RequestThumbnail(_, _, _));
+
+  plugin_->OnMessage(CreateFinishTextAnnotationMessage(
+      SampleFinishTextAnnotationData(/*frontend_id=*/10, FontId(123),
+                                     /*page_index=*/0, /*pdf_zoom=*/1.0)));
+
+  base::HistogramTester histograms;
+  base::span<const uint8_t> data(TestPDFiumEngine::kSaveData);
+  auto [handler, total_file_size] =
+      GetSaveDataBufferHandler(pdf::mojom::SaveRequestType::kAnnotation);
+  EXPECT_EQ(total_file_size, static_cast<uint32_t>(data.size()));
+  ReadSaveDataBufferAndExpectResult(handler, data, 0, data.size());
+  FreeHandler(handler);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
+
+  histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationAddedCountOnSave", 1, 1);
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
+}
+
+TEST_F(PdfViewWebPluginSaveInBlocksToGoogleDriveTest,
+       AnnotationInEditModeMetricsRemoved) {
+  DocumentInkTextBoxesMap map;
+  map[0].push_back(InkTextBox(/*id=*/1, SampleInkTextBoxAttributes()));
+  EXPECT_CALL(*engine_ptr_, LoadTextAnnotationsFromPdf())
+      .WillOnce(Return(std::move(map)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "getAllTextAnnotations",
+    "messageId": "foo",
+  })"));
+
+  plugin_->EnteredEditMode();
+
+  base::DictValue finish_data =
+      SampleFinishTextAnnotationData(/*frontend_id=*/0, FontId(123),
+                                     /*page_index=*/0, /*pdf_zoom=*/1.0);
+  finish_data.Set("text", "");
+
+  EXPECT_CALL(*engine_ptr_, UpdateTextActiveAndInvalidate(_, false));
+  EXPECT_CALL(*engine_ptr_, RequestThumbnail(_, _, _));
+
+  plugin_->OnMessage(CreateFinishTextAnnotationMessage(std::move(finish_data)));
+
+  base::HistogramTester histograms;
+  base::span<const uint8_t> data(TestPDFiumEngine::kSaveData);
+  auto [handler, total_file_size] =
+      GetSaveDataBufferHandler(pdf::mojom::SaveRequestType::kAnnotation);
+  EXPECT_EQ(total_file_size, static_cast<uint32_t>(data.size()));
+  ReadSaveDataBufferAndExpectResult(handler, data, 0, data.size());
+  FreeHandler(handler);
+  EXPECT_EQ(plugin_->GetSaveToDriveBufferHandlerReceiverSizeForTesting(), 0u);
+
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
+  histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationRemovedCountOnSave", 1,
+                                1);
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 class PdfViewWebPluginSubmitFormTest
@@ -3939,6 +4138,126 @@ TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInEditMode) {
   })"));
 
   pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInEditModeMetrics) {
+  DocumentInkTextBoxesMap map;
+  EXPECT_CALL(*engine_ptr_, LoadTextAnnotationsFromPdf())
+      .WillOnce(Return(std::move(map)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "getAllTextAnnotations",
+    "messageId": "foo",
+  })"));
+
+  plugin_->EnteredEditMode();
+  pdf_receiver_.FlushForTesting();
+
+  base::Value expected_response = base::test::ParseJson(R"({
+    "type": "saveData",
+    "token": "annotation-in-edit-mode",
+    "fileName": "example.pdf",
+    "editModeForTesting": true,
+  })");
+  AddDataToValue(base::span(TestPDFiumEngine::kSaveData), expected_response);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
+
+  base::HistogramTester histograms;
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "save",
+    "saveRequestType": "ANNOTATION",
+    "token": "annotation-in-edit-mode",
+  })"));
+
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
+}
+
+TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInEditModeMetricsAdded) {
+  DocumentInkTextBoxesMap map;
+  EXPECT_CALL(*engine_ptr_, LoadTextAnnotationsFromPdf())
+      .WillOnce(Return(std::move(map)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "getAllTextAnnotations",
+    "messageId": "foo",
+  })"));
+
+  plugin_->EnteredEditMode();
+
+  EXPECT_CALL(*engine_ptr_, DrawText(_, _, _, _, _, _));
+  EXPECT_CALL(*engine_ptr_, RequestThumbnail(_, _, _));
+
+  plugin_->OnMessage(CreateFinishTextAnnotationMessage(
+      SampleFinishTextAnnotationData(/*frontend_id=*/10, FontId(123),
+                                     /*page_index=*/0, /*pdf_zoom=*/1.0)));
+
+  pdf_receiver_.FlushForTesting();
+
+  base::Value expected_response = base::test::ParseJson(R"({
+    "type": "saveData",
+    "token": "annotation-in-edit-mode",
+    "fileName": "example.pdf",
+    "editModeForTesting": true,
+  })");
+  AddDataToValue(base::span(TestPDFiumEngine::kSaveData), expected_response);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
+
+  base::HistogramTester histograms;
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "save",
+    "saveRequestType": "ANNOTATION",
+    "token": "annotation-in-edit-mode",
+  })"));
+
+  histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationAddedCountOnSave", 1, 1);
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
+}
+
+TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInEditModeMetricsRemoved) {
+  DocumentInkTextBoxesMap map;
+  map[0].push_back(InkTextBox(/*id=*/1, SampleInkTextBoxAttributes()));
+  EXPECT_CALL(*engine_ptr_, LoadTextAnnotationsFromPdf())
+      .WillOnce(Return(std::move(map)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "getAllTextAnnotations",
+    "messageId": "foo",
+  })"));
+
+  plugin_->EnteredEditMode();
+
+  base::DictValue finish_data =
+      SampleFinishTextAnnotationData(/*frontend_id=*/0, FontId(123),
+                                     /*page_index=*/0, /*pdf_zoom=*/1.0);
+  finish_data.Set("text", "");
+
+  EXPECT_CALL(*engine_ptr_, UpdateTextActiveAndInvalidate(_, false));
+  EXPECT_CALL(*engine_ptr_, RequestThumbnail(_, _, _));
+
+  plugin_->OnMessage(CreateFinishTextAnnotationMessage(std::move(finish_data)));
+
+  pdf_receiver_.FlushForTesting();
+
+  base::Value expected_response = base::test::ParseJson(R"({
+    "type": "saveData",
+    "token": "annotation-in-edit-mode",
+    "fileName": "example.pdf",
+    "editModeForTesting": true,
+  })");
+  AddDataToValue(base::span(TestPDFiumEngine::kSaveData), expected_response);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
+
+  base::HistogramTester histograms;
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "save",
+    "saveRequestType": "ANNOTATION",
+    "token": "annotation-in-edit-mode",
+  })"));
+
+  histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
+  histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationRemovedCountOnSave", 1,
+                                1);
 }
 
 using PdfViewWebPluginInkMetricTest = PdfViewWebPluginInkTest;
