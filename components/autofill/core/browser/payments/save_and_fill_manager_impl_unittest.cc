@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -916,8 +917,17 @@ TEST_F(SaveAndFillManagerImplTest, StrikeDatabaseMetrics) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.NumOfStrikesPresentWhenSaveAndFillAccepted",
-      /*sample=*/2,
+      /*sample=*/save_and_fill_strike_database.GetMaxStrikesLimit() - 1,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillManagerImplTest, MaxStrikeLimit) {
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database());
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(save_and_fill_strike_database.GetMaxStrikesLimit(), 2);
+#else
+  EXPECT_EQ(save_and_fill_strike_database.GetMaxStrikesLimit(), 3);
+#endif
 }
 
 TEST_F(SaveAndFillManagerImplTest, HideDialog_CalledAfterLocalSaveCompleted) {
