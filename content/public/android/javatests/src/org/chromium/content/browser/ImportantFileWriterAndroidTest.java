@@ -24,7 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
- * Tests for {@Link ImportantFileWriterAndroid}
+ * Tests for {@link ImportantFileWriterAndroid}
  *
  * Note that this assumes that the underlying native atomic write functions
  * work, so is not attempting to test that writes are atomic. Instead it is just
