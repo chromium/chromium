@@ -130,6 +130,8 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
 @implementation InfobarBannerViewController {
   // Whether the infobar button was already pressed.
   BOOL _bannerInfobarButtonWasPressed;
+  // The infobar type for this banner.
+  InfobarType _infobarType;
 }
 // Synthesized from InfobarBannerInteractable.
 @synthesize interactionDelegate = _interactionDelegate;
@@ -142,6 +144,7 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
     _delegate = delegate;
     _metricsRecorder =
         [[InfobarMetricsRecorder alloc] initWithType:infobarType];
+    _infobarType = infobarType;
     _presentsModal = presentsModal;
     _useIconBackgroundTint = YES;
     _ignoreIconColorWithTint = YES;
@@ -379,8 +382,17 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   subTitleLabel.adjustsFontForContentSizeCategory = YES;
   subTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  subTitleLabel.numberOfLines =
-      _subtitleNumberOfLines > 0 ? MIN(_subtitleNumberOfLines, 3) : 3;
+  // TODO(crbug.com/546628720): Remove this once a better approach is
+  // implemented.
+  if (_infobarType == InfobarType::kInfobarTypeFormsAiPrivateInference) {
+    subTitleLabel.numberOfLines = 6;
+    [subTitleLabel
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:UILayoutConstraintAxisVertical];
+  } else {
+    subTitleLabel.numberOfLines =
+        _subtitleNumberOfLines > 0 ? MIN(_subtitleNumberOfLines, 3) : 3;
+  }
   subTitleLabel.lineBreakMode = _subtitleLineBreakMode;
   subTitleLabel.hidden = (self.subtitleText.length == 0);
   self.subTitleLabel = subTitleLabel;
