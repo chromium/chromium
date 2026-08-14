@@ -295,6 +295,9 @@ void CullRectUpdater::UpdateRecursively(const Context& parent_context,
   if (object.IsFragmentLessBox()) {
     return;
   }
+  if (!object.FirstFragment().HasLocalBorderBoxProperties()) {
+    return;
+  }
 
   Context context = parent_context;
   if (object.IsAbsolutePositioned())
