@@ -2476,15 +2476,23 @@ class SkillsApiTests extends ApiTests {
     const skill1 = skills.find(s => s.name === 'test_skill_1');
     assertDefined(skill1);
     assertEquals('test_icon_1', skill1.icon);
+    assertTrue(skill1.creationTime instanceof Date);
     const actualSkill1 = await this.host.getSkill(skill1.id);
     assertDefined(actualSkill1);
     assertEquals(actualSkill1.sourceSkillId, 'source_id_1');
+    assertEquals(
+        actualSkill1.preview.creationTime?.getTime(),
+        skill1.creationTime.getTime());
     const skill2 = skills.find(s => s.name === 'test_skill_2');
     assertDefined(skill2);
     assertEquals('test_icon_2', skill2.icon);
+    assertTrue(skill2.creationTime instanceof Date);
     const actualSkill2 = await this.host.getSkill(skill2.id);
     assertDefined(actualSkill2);
     assertEquals(actualSkill2.sourceSkillId, 'source_id_2');
+    assertEquals(
+        actualSkill2.preview.creationTime?.getTime(),
+        skill2.creationTime.getTime());
   }
 
   async testShowManageSkillsUi() {

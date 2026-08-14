@@ -129,6 +129,12 @@ class SkillsInteractiveUiTestBase
   ui::test::InteractiveTestApi::MultiStep WaitForSkillPreviewShown(
       std::string_view skill_name);
 
+  // Waits for a SkillPreview with `skill_name` and `expected_creation_time`
+  // to be shown in the test client's Skills list.
+  ui::test::InteractiveTestApi::MultiStep WaitForSkillPreviewWithCreationTime(
+      std::string_view skill_name,
+      base::Time expected_creation_time);
+
   // Waits for the SkillPreviews in the test client's Skills list to be in the
   // same order as the given skill names.
   ui::test::InteractiveTestApi::MultiStep WaitForSkillPreviewOrder(

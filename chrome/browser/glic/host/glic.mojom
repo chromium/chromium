@@ -939,6 +939,8 @@ struct SkillPreview {
   url.mojom.Url? image_url;
   // The category of the skill.
   string? category;
+  // The time when the skill was created.
+  mojo_base.mojom.Time? creation_time;
 };
 
 // @generate glic_api

@@ -51,7 +51,8 @@ mojom::SkillPreviewPtr ToMojomSkillPreview(const skills::proto::Skill& skill) {
   }
   return mojom::SkillPreview::New(
       skill.id(), skill.name(), skill.icon(), mojom::SkillSource::kFirstParty,
-      skill.description(), curated_by, /*image_url=*/std::nullopt, category);
+      skill.description(), curated_by, /*image_url=*/std::nullopt, category,
+      /*creation_time=*/std::nullopt);
 }
 
 }  // namespace

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/skills/skills_interactive_uitest_base.h"
 
+#include <inttypes.h>
+
 #include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -18,13 +21,13 @@
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/channel_info.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/skills/features.h"
@@ -323,6 +326,36 @@ SkillsInteractiveUiTestBase::WaitForSkillPreviewShown(
                         std::string(skill_name) + "\"]"};
   state_change.test_function = "el => el.checkVisibility()";
   state_change.event = kSkillPreviewShown;
+  return WaitForStateChange(glic::kGlicContentsElementId, state_change);
+}
+
+ui::test::InteractiveTestApi::MultiStep
+SkillsInteractiveUiTestBase::WaitForSkillPreviewWithCreationTime(
+    std::string_view skill_name,
+    base::Time expected_creation_time) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSkillPreviewWithCreationTimeShown);
+  StateChange state_change;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.where = {"#skillsList"};
+  state_change.test_function = base::StringPrintf(
+      "(el) => {"
+      "  const items = Array.from(el.querySelectorAll('li'));"
+      "  const item = items.find(li => {"
+      "    const nameSpan = li.querySelector('.skill-name');"
+      "    return nameSpan && nameSpan.getAttribute('value') === '%s';"
+      "  });"
+      "  if (!item) return false;"
+      "  const timeSpan = item.querySelector('.skill-creation-time');"
+      "  if (!timeSpan) return false;"
+      "  const dateStr = timeSpan.getAttribute('value');"
+      "  if (!dateStr) return false;"
+      "  const timeMs = new Date(dateStr).getTime();"
+      "  return timeMs === %" PRId64
+      ";"
+      "}",
+      std::string(skill_name).c_str(),
+      expected_creation_time.InMillisecondsSinceUnixEpoch());
+  state_change.event = kSkillPreviewWithCreationTimeShown;
   return WaitForStateChange(glic::kGlicContentsElementId, state_change);
 }
 

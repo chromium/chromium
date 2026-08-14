@@ -87,7 +87,8 @@ type ArrayElement<ArrayType extends unknown[]> =
 // This can be extended for other transferable types when we need them. Using
 // 'extends ...' for all possible Transferable types is too permissive.
 type TransferableTypes = ArrayBuffer|Blob;
-type StructuredClonableBasicType = string|boolean|number|void|undefined|null;
+type StructuredClonableBasicType =
+    string|boolean|number|void|undefined|null|Date;
 export type CheckStructuredClonable<T> =
     T extends StructuredClonableBasicType ? never : T extends unknown[] ?
     CheckStructuredClonable<ArrayElement<T>>:

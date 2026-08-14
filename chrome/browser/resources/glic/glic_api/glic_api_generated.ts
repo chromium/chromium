@@ -843,6 +843,8 @@ export declare interface SkillPreview {
   imageUrl?: string;
   // The category of the skill.
   category?: string;
+  // The time when the skill was created.
+  creationTime?: Date;
 }
 
 // A single skill.

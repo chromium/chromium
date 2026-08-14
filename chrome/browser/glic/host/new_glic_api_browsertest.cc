@@ -3841,12 +3841,12 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
       "contextual_skill_id_1", "contextual_skill_1", "contextual_skill_icon_1",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_1",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com"),
-      /*category=*/std::nullopt));
+      /*category=*/std::nullopt, /*creation_time=*/std::nullopt));
   skills_batch_1.push_back(mojom::SkillPreview::New(
       "contextual_skill_id_2", "contextual_skill_2", "contextual_skill_icon_2",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_2",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com"),
-      /*category=*/std::nullopt));
+      /*category=*/std::nullopt, /*creation_time=*/std::nullopt));
 
   GlicInstanceImpl* instance = GetOnlyGlicInstance();
   ASSERT_TRUE(instance);
@@ -3860,7 +3860,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
       "contextual_skill_id_3", "contextual_skill_3", "contextual_skill_icon_3",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_3",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com"),
-      /*category=*/std::nullopt));
+      /*category=*/std::nullopt, /*creation_time=*/std::nullopt));
   instance->skills_manager().NotifyContextualSkillsChanged(
       std::move(skills_batch_2));
 
@@ -3878,7 +3878,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
       "contextual_skill_id_1", "contextual_skill_1", "contextual_skill_icon_1",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_1",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com"),
-      /*category=*/std::nullopt));
+      /*category=*/std::nullopt, /*creation_time=*/std::nullopt));
 
   instance->skills_manager().NotifyContextualSkillsChanged(
       std::move(skills_batch));
@@ -3902,7 +3902,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
       "contextual_skill_id_1", "contextual_skill_1", "contextual_skill_icon_1",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_1",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com"),
-      /*category=*/std::nullopt));
+      /*category=*/std::nullopt, /*creation_time=*/std::nullopt));
 
   instance->skills_manager().NotifyContextualSkillsChanged(
       std::move(skills_batch));

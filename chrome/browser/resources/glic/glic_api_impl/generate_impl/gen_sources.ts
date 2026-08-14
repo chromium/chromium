@@ -45,6 +45,7 @@ function generateTs(c: MojomModel): string {
     'ReadableStream',
     'Promise',
     'Record',
+    'Date',
   ]);
   for (const t of c.referencedTypes) {
     if (!c.generatedNames.has(t) && !BUILTIN_TYPES.has(t)) {

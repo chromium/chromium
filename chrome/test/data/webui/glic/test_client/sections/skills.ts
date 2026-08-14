@@ -84,6 +84,19 @@ function updateSkillsListUi(skillPreviews: SkillPreview[]) {
     name.setAttribute('value', skill.name);
     li.appendChild(name);
 
+    // Creation Time.
+    if (skill.creationTime) {
+      const timeDivider = document.createElement('SPAN');
+      timeDivider.innerText = ' : ';
+      li.appendChild(timeDivider);
+
+      const creationTime = document.createElement('SPAN');
+      creationTime.className = 'skill-creation-time';
+      creationTime.setAttribute('value', skill.creationTime.toISOString());
+      creationTime.innerText = skill.creationTime.toISOString();
+      li.appendChild(creationTime);
+    }
+
     $.skillsList.appendChild(li);
   });
 }

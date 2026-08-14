@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
+#include "base/uuid.h"
 #include "chrome/browser/skills/skills_interactive_uitest_base.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
@@ -171,6 +173,58 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
       // Undo the deletion and verify that the skill is restored.
       PressButton(toasts::ToastView::kToastActionButton),
       WaitForSkillPreviewOrder({user_created_skill.name}));
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
+                       SkillPreviewsIncludeCreationTime) {
+  auto user_skill = GetMockSkill();
+  user_skill.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  user_skill.name = "Skill With Creation Time";
+  base::Time expected_creation_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(1700000000000);
+
+  auto first_party_skill = GetMockSkill();
+  first_party_skill.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  first_party_skill.name = "1P Skill No Creation Time";
+  first_party_skill.source = sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
+
+  RunTestSequence(
+      OpenGlicAndInstrument(), Do([this, user_skill, expected_creation_time]() {
+        GetSkillsService()->AddOrUpdateSkillFromSync(
+            user_skill.id, /*source_skill_id=*/"", user_skill.name,
+            user_skill.icon, user_skill.prompt, user_skill.description,
+            /*creation_time=*/expected_creation_time,
+            /*last_update_time=*/base::Time::Now(),
+            sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED);
+      }),
+      // Verify user skill displays the creation time matching the C++ time.
+      WaitForSkillPreviewWithCreationTime(user_skill.name,
+                                          expected_creation_time),
+      // Add a 1P skill with null creation_time.
+      Do([this, first_party_skill]() {
+        GetSkillsService()->AddOrUpdateSkillFromSync(
+            first_party_skill.id, /*source_skill_id=*/"",
+            first_party_skill.name, first_party_skill.icon,
+            first_party_skill.prompt, first_party_skill.description,
+            /*creation_time=*/base::Time(),
+            /*last_update_time=*/base::Time::Now(),
+            sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY);
+      }),
+      WaitForSkillPreviewShown(first_party_skill.name),
+      // Verify 1P skill has no creation time displayed.
+      WaitForJsResult(
+          glic::kGlicContentsElementId,
+          base::StringPrintf(
+              "() => {"
+              "  const items = "
+              "Array.from(document.querySelectorAll('#skillsList > li'));"
+              "  const item = items.find(li => {"
+              "    const nameSpan = li.querySelector('.skill-name');"
+              "    return nameSpan && nameSpan.getAttribute('value') === '%s';"
+              "  });"
+              "  return !!item && !item.querySelector('.skill-creation-time');"
+              "}",
+              first_party_skill.name.c_str())));
 }
 
 }  // namespace skills

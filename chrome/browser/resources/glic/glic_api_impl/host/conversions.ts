@@ -12,7 +12,7 @@
 
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {ProtoWrapper} from '//resources/mojo/mojo/public/mojom/base/proto_wrapper.mojom-webui.js';
-import type {TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {Time, TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 import {AlphaType} from '//resources/mojo/skia/public/mojom/image_info.mojom-webui.js';
 import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
@@ -255,6 +255,24 @@ export function tabDataToClient(
   };
 }
 
+// Microseconds between Windows epoch (1601-01-01 00:00:00 UTC) used by
+// base::Time / mojo_base.mojom.Time and Unix epoch (1970-01-01 00:00:00 UTC)
+// used by JS Date.
+// See also:
+// - chrome/browser/resources/new_tab_page/modules/calendar/common.ts
+// - chrome/browser/resources/context_hub/memory_banks/memory_banks.ts
+// - ui/webui/resources/cr_components/history_clusters/clusters.ts
+export const WINDOWS_TO_UNIX_EPOCH_OFFSET_US: bigint = 11644473600000000n;
+
+export function timeToClient(time: Time|null|undefined): Date|undefined {
+  if (!time || time.internalValue === 0n) {
+    return undefined;
+  }
+  const unixEpochMs =
+      Number((time.internalValue - WINDOWS_TO_UNIX_EPOCH_OFFSET_US) / 1000n);
+  return new Date(unixEpochMs);
+}
+
 export function skillPreviewToClient(s: SkillPreviewMojo): SkillPreview {
   return {
     id: s.id,
@@ -265,6 +283,7 @@ export function skillPreviewToClient(s: SkillPreviewMojo): SkillPreview {
     curatedBy: s.curatedBy || undefined,
     imageUrl: urlToClient(s.imageUrl),
     category: optionalToClient(s.category),
+    creationTime: timeToClient(s.creationTime),
   };
 }
 
