@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
@@ -207,9 +208,13 @@ struct ViewConfig {
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
   if (colorPalette) {
-    _iconContainerView.backgroundColor = colorPalette.tertiaryColor;
+    _iconContainerView.backgroundColor = IsNewTabPageUICleanupEnabled()
+                                             ? colorPalette.primaryColor
+                                             : colorPalette.tertiaryColor;
   } else {
-    _iconContainerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    _iconContainerView.backgroundColor = [UIColor
+        colorNamed:IsNewTabPageUICleanupEnabled() ? kSurfaceContainerColor
+                                                  : kGrey100Color];
   }
 }
 

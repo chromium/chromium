@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_commands.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_config.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_price_chip_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -84,6 +86,9 @@ bool HasPriceDropOnTab(TabResumptionConfig* config) {
 
 }  // namespace
 
+@interface TabResumptionView () <NewTabPageColorUpdating>
+@end
+
 @implementation TabResumptionView {
   // Item used to configure the view.
   TabResumptionConfig* _config;
@@ -122,6 +127,31 @@ bool HasPriceDropOnTab(TabResumptionConfig* config) {
   if (!_containerStackView) {
     [self createSubviews];
     [self addTapGestureRecognizer];
+  }
+}
+
+#pragma mark - NewTabPageColorUpdating
+
+- (void)applyBackgroundColors {
+  // Only set background color if item does not have content image.
+  BOOL hasContentImage = _config.contentImage &&
+                         _config.contentImage.size.width &&
+                         _config.contentImage.size.height;
+
+  if (hasContentImage) {
+    return;
+  }
+
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+  if (colorPalette) {
+    _imageContainerView.backgroundColor = IsNewTabPageUICleanupEnabled()
+                                              ? colorPalette.primaryColor
+                                              : colorPalette.tertiaryColor;
+  } else {
+    _imageContainerView.backgroundColor = [UIColor
+        colorNamed:IsNewTabPageUICleanupEnabled() ? kSurfaceContainerColor
+                                                  : kGrey100Color];
   }
 }
 
@@ -468,19 +498,6 @@ bool HasPriceDropOnTab(TabResumptionConfig* config) {
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
   return label;
-}
-
-- (void)applyBackgroundColors {
-  // Only set background color if item does not have content image.
-  BOOL hasContentImage = _config.contentImage &&
-                         _config.contentImage.size.width &&
-                         _config.contentImage.size.height;
-  if (!hasContentImage) {
-    NewTabPageColorPalette* colorPalette =
-        [self.traitCollection objectForNewTabPageTrait];
-    _imageContainerView.backgroundColor =
-        colorPalette.tertiaryColor ?: [UIColor colorNamed:kGrey100Color];
-  }
 }
 
 // Returns the tab hostname from the given `URL`.

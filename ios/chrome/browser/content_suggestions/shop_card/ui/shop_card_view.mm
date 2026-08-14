@@ -10,6 +10,10 @@
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_commands.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_price_chip_view.h"
 #import "ios/chrome/browser/shared/ui/elements/gradient/gradient_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -44,6 +48,9 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
 
 }  // namespace
 
+@interface ShopCardModuleView () <NewTabPageColorUpdating>
+@end
+
 @implementation ShopCardModuleView {
   ShopCardConfig* _config;
   // Holds content of ShopCard. includes productAndFavicon on the left,
@@ -73,6 +80,10 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
     return;
   }
   [self addTapGestureRecognizer];
+  if (IsNewTabPageUICleanupEnabled()) {
+    [self registerForTraitChanges:@[ NewTabPageTrait.class ]
+                       withAction:@selector(applyBackgroundColors)];
+  }
   _config = config;
 
   if (config.shopCardData.shopCardItemType ==
@@ -81,6 +92,29 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   } else if (config.shopCardData.shopCardItemType ==
              ShopCardItemType::kReviews) {
     // TODO: crbug.com/394638800 - render correct view when data available
+  }
+}
+
+#pragma mark - NewTabPageColorUpdating
+
+- (void)applyBackgroundColors {
+  // Only update color for the background if there is no product image.
+  if (_config.shopCardData.productImage) {
+    return;
+  }
+
+  if (!IsNewTabPageUICleanupEnabled()) {
+    _productImage.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    return;
+  }
+
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+
+  if (colorPalette) {
+    _productImage.backgroundColor = colorPalette.primaryColor;
+  } else {
+    _productImage.backgroundColor = [UIColor colorNamed:kSurfaceContainerColor];
   }
 }
 
@@ -138,7 +172,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   // grey.
   if (!_config.shopCardData.productImage && _config.shopCardData.faviconImage) {
     // Styling
-    [self addProductImageEmptyGray];
+    [self addProductImageEmpty];
     [self addFaviconImageAndContainer:_config.shopCardData.faviconImage];
     _faviconImageContainer.backgroundColor = UIColor.whiteColor;
     [self addShadowForFaviconContainer];
@@ -160,7 +194,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   if (!_config.shopCardData.productImage &&
       !_config.shopCardData.faviconImage) {
     // Styling
-    [self addProductImageEmptyGray];
+    [self addProductImageEmpty];
     [self addFaviconImageAndContainer:[self makeDefaultFaviconUIImage]];
     [self addFaviconImageContainerColorForGlobe];
     [self addShadowForFaviconContainer];
@@ -367,10 +401,10 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   ]];
 }
 
-- (void)addProductImageEmptyGray {
+- (void)addProductImageEmpty {
   _productAndFaviconContainer = [[UIView alloc] init];
   _productImage = [[UIImageView alloc] init];
-  _productImage.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  [self applyBackgroundColors];
   _productImage.contentMode = UIViewContentModeScaleAspectFill;
   _productImage.translatesAutoresizingMaskIntoConstraints = NO;
   _productImage.layer.borderWidth = 0;

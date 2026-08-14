@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_view_configuration.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/gradient/gradient_view.h"
@@ -275,8 +276,16 @@ UIView* BadgeIconInContainer(UIImageView* icon,
 - (void)applyBackgroundColors {
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
-  _imageContainerView.backgroundColor =
-      colorPalette.tertiaryColor ?: [UIColor colorNamed:kGrey100Color];
+
+  if (colorPalette) {
+    _imageContainerView.backgroundColor = IsNewTabPageUICleanupEnabled()
+                                              ? colorPalette.primaryColor
+                                              : colorPalette.tertiaryColor;
+  } else {
+    _imageContainerView.backgroundColor = [UIColor
+        colorNamed:IsNewTabPageUICleanupEnabled() ? kSurfaceContainerColor
+                                                  : kGrey100Color];
+  }
   _config.ntpBackgroundColorPalette = colorPalette;
 }
 

@@ -18,6 +18,8 @@ source_set("ui") {
     "//base:i18n",
     "//components/url_formatter",
     "//ios/chrome/browser/content_suggestions/public:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/price_notifications/ui_bundled/cells",
     "//ios/chrome/browser/shared/ui/elements/gradient",
     "//ios/chrome/browser/shared/ui/symbols",
