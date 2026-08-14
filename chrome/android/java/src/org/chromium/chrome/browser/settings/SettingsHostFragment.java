@@ -311,6 +311,16 @@ public class SettingsHostFragment extends Fragment
         return getChildFragmentManager().findFragmentById(CONTAINER_ID);
     }
 
+    /** Returns whether the given fragment is a direct child of this host fragment. */
+    public boolean containsChild(Fragment fragment) {
+        if (!isAdded()) return false;
+
+        for (Fragment f : getChildFragmentManager().getFragments()) {
+            if (f == fragment) return true;
+        }
+        return false;
+    }
+
     /**
      * Returns the active {@link SettingsHostFragment} if attached to the activity and shown, or
      * null.

@@ -120,7 +120,7 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
                 .thenReturn(mMockSettingsHostFragment);
         when(mFragmentManager.beginTransaction()).thenReturn(mFragmentTransaction);
-        when(mFragmentTransaction.add(anyInt(), any(Fragment.class), anyString()))
+        when(mFragmentTransaction.add(any(Fragment.class), anyString()))
                 .thenReturn(mFragmentTransaction);
         when(mFragmentTransaction.remove(any(Fragment.class))).thenReturn(mFragmentTransaction);
         when(mContainerView.getId()).thenReturn(CONTAINER_ID);
@@ -170,6 +170,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
         SettingsContainmentHelper mockContainmentHelper = mock(SettingsContainmentHelper.class);
         when(mMockSettingsHostFragment.getContainmentHelper()).thenReturn(mockContainmentHelper);
+        when(mMockSettingsHostFragment.containsChild(mMultiColumnSettings)).thenReturn(true);
         when(mTab.getId()).thenReturn(TAB_ID);
 
         mDelegate =
@@ -223,8 +224,7 @@ public class SettingsPageFragmentDelegateImplTest {
         }
 
         // Verify fragment creation and addition.
-        verify(mFragmentTransaction)
-                .add(eq(CONTAINER_ID), any(SettingsHostFragment.class), eq(EXPECTED_TAG));
+        verify(mFragmentTransaction).add(any(SettingsHostFragment.class), eq(EXPECTED_TAG));
         verify(mFragmentTransaction).commitAllowingStateLoss();
     }
 

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 
@@ -200,6 +201,85 @@ public class SettingsPageTest {
                             && searchBox.getLeft() >= 0
                             && lp.getMarginStart() == expectedExpandedMargin
                             && lp.getMarginEnd() == expectedExpandedMargin;
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testThemeSwitchRestoresSettingsPageAndDetailFragment() {
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+
+        // Verify MainSettings header fragment is displayed by checking for Search engine
+        // preference.
+        onView(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        // Click on "Search engine" in MainSettings header pane to open SearchEngineSettings detail
+        // fragment.
+        var matcher =
+                allOf(
+                        withId(R.id.recycler_view),
+                        hasDescendant(withText(R.string.search_engine_settings)));
+        onView(matcher).perform(scrollTo(hasDescendant(withText(R.string.search_engine_settings))));
+        onView(withText(R.string.search_engine_settings)).perform(click());
+
+        // Simulate theme switch / activity recreation.
+        mActivityTestRule.recreateActivity();
+
+        // 1. Verify Toolbar/Action Bar is restored and displayed.
+        onView(withId(R.id.action_bar)).check(matches(isDisplayed()));
+
+        // 2. Verify MainSettings header pane is restored (checking top-level preference item).
+        onView(withText(R.string.prefs_privacy_security)).check(matches(isDisplayed()));
+
+        // 3. Verify SearchEngineSettings detail pane fragment is restored and displayed.
+        onView(withText("Microsoft Bing")).check(matches(isDisplayed()));
+    }
+
+    /** Regression test for https://crbug.com/535695748. */
+    @Test
+    @MediumTest
+    public void testTwoSettingsTabsThemeSwitchRestoresDetailFragment() {
+        // Tab 0: Open settings and navigate to Search engine detail fragment.
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        onView(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        var matcher =
+                allOf(
+                        withId(R.id.recycler_view),
+                        hasDescendant(withText(R.string.search_engine_settings)));
+        onView(matcher).perform(scrollTo(hasDescendant(withText(R.string.search_engine_settings))));
+        onView(withText(R.string.search_engine_settings)).perform(click());
+        onView(withText("Microsoft Bing")).check(matches(isDisplayed()));
+
+        // Tab 1: Open a second settings tab at root MainSettings.
+        mActivityTestRule.loadUrlInNewTab("chrome-native://settings/");
+        onView(allOf(withText(R.string.prefs_privacy_security), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        // Simulate theme switch / activity recreation.
+        mActivityTestRule.recreateActivity();
+
+        // Verify Tab 1 (active tab): Action bar and MainSettings header pane are restored.
+        onView(allOf(withId(R.id.action_bar), isDisplayed())).check(matches(isDisplayed()));
+        onView(allOf(withText(R.string.prefs_privacy_security), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        // Switch to Tab 0.
+        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
+
+        // Verify Tab 0 (previously navigated tab): Action bar and SearchEngineSettings detail
+        // fragment are restored.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        onView(allOf(withId(R.id.action_bar), isDisplayed()))
+                                .check(matches(isDisplayed()));
+                        onView(allOf(withText("Microsoft Bing"), isDisplayed()))
+                                .check(matches(isDisplayed()));
+                        return true;
+                    } catch (AssertionError | Exception e) {
+                        return false;
+                    }
                 });
     }
 }
