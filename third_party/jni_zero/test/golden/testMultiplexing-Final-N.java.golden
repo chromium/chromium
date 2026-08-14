@@ -8,32 +8,13 @@ import javax.annotation.processing.Generated;
 
 @Generated("JNI Zero")
 public class N {
-  public static final long WHOLE_HASH = 8964712790495820057L;
+  public static final long WHOLE_HASH = 3865356290363738592L;
   public static final long PRIORITY_HASH = 0L;
 
   public static native void V();
-  public static native float F();
-  public static native int I();
   public static native Object O(int _switchNum);
   public static native boolean Z();
-  public static native void VO(Object p0);
-  public static native double DO(Object p0);
   public static native Object OO(int _switchNum, Object p0);
-  public static native void VJO(long p0, Object p1);
-  public static native void VOO(Object p0, Object p1);
-  public static native double DJO(long p0, Object p1);
-  public static native Object OJO(long p0, Object p1);
-  public static native void VJOO(int _switchNum, long p0, Object p1, Object p2);
-  public static native int IJOO(long p0, Object p1, Object p2);
-  public static native long JOOOOO(Object p0, Object p1, Object p2, Object p3, Object p4);
-  public static native Object OOOOOOOO(
-      Object p0,
-      Object p1,
-      Object p2,
-      Object p3,
-      Object p4,
-      Object p5,
-      Object p6);
   public static native Object OBCDFIJOOOOOOOOSZ(
       byte p0,
       char p1,

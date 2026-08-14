@@ -17,7 +17,6 @@ import re
 import sys
 import zipfile
 
-from codegen import called_by_native_header
 from codegen import gen_jni_java
 from codegen import header_common
 from codegen import natives_header
@@ -42,24 +41,17 @@ def _ParseHelper(package_prefix, package_prefix_filter, path):
     return e
 
 
-def _LoadJniObjs(paths,
-                 namespace,
-                 package_prefix,
-                 package_prefix_filter,
-                 *,
-                 weak_cbns_by_path=None):
+def _LoadJniObjs(paths, namespace, package_prefix, package_prefix_filter):
   ret = {}
-  weak_cbns_by_path = weak_cbns_by_path or {}
   if all(p.endswith('.jni.pickle') for p in paths):
     for pickle_path in paths:
       with open(pickle_path, 'rb') as f:
-        module_name, use_weak_cbns, parsed_files = pickle.load(f)
+        module_name, parsed_files = pickle.load(f)
       ret[pickle_path] = [
           jni_generator.JniObject(pf,
                                   from_javap=False,
                                   default_namespace=namespace,
-                                  module_name=module_name,
-                                  use_weak_called_by_natives=use_weak_cbns)
+                                  module_name=module_name)
           for pf in parsed_files
       ]
   else:
@@ -71,12 +63,10 @@ def _LoadJniObjs(paths,
         if isinstance(res, Exception):
           errors.append(res)
         else:
-          use_weak_cbns = weak_cbns_by_path.get(res.filename, False)
           ret[res.filename] = [
               jni_generator.JniObject(res,
                                       from_javap=False,
-                                      default_namespace=namespace,
-                                      use_weak_called_by_natives=use_weak_cbns)
+                                      default_namespace=namespace)
           ]
       if errors:
         for e in errors:
@@ -84,6 +74,9 @@ def _LoadJniObjs(paths,
         sys.exit(1)
 
   return ret
+
+
+
 
 
 def _Flatten(jni_objs_by_path, paths):
@@ -108,8 +101,6 @@ def _Generate(args,
               native_sources,
               java_sources,
               priority_java_sources,
-              *,
-              weak_cbns_by_path=None,
               never_omit_switch_num=False):
   """Generates files required to perform JNI registration.
 
@@ -139,10 +130,8 @@ def _Generate(args,
   java_sources_set = set(java_sources_list)
 
   jni_objs_by_path = _LoadJniObjs(native_sources_set | java_sources_set,
-                                  args.namespace,
-                                  args.package_prefix,
-                                  args.package_prefix_filter,
-                                  weak_cbns_by_path=weak_cbns_by_path)
+                                  args.namespace, args.package_prefix,
+                                  args.package_prefix_filter)
 
   present_jni_objs = list(
       _Flatten(jni_objs_by_path, native_sources_set & java_sources_set))
@@ -151,14 +140,8 @@ def _Generate(args,
   priority_sources_list = priority_java_sources.get(
       args.module_name, []) if priority_java_sources else []
   priority_set = set(priority_sources_list)
-  # native_jni_objs contains all JniObjects referenced by the native library.
-  # They might not be in present_jni_objs because there is no requirement that
-  # the java side depend on the generate_jni() rule.
-  native_jni_objs = list(_Flatten(jni_objs_by_path, native_sources_set))
   # Sort for determinism and to put priority_java_sources first.
   present_jni_objs.sort(
-      key=lambda o: (o.filename not in priority_set, o.java_class))
-  native_jni_objs.sort(
       key=lambda o: (o.filename not in priority_set, o.java_class))
 
   whole_hash = None
@@ -206,7 +189,7 @@ def _Generate(args,
       package_prefix_filter=args.package_prefix_filter)
 
   if not args.include_test_only:
-    for jni_obj in native_jni_objs:
+    for jni_obj in present_jni_objs:
       jni_obj.RemoveTestOnlyNatives()
 
   if jni_mode.is_hashing or jni_mode.is_muxing:
@@ -215,7 +198,7 @@ def _Generate(args,
     gen_jni_class = full_gen_jni_class
 
   if args.impl_path:
-    impl_content = _CreateImpl(jni_mode, native_jni_objs,
+    impl_content = _CreateImpl(jni_mode, present_jni_objs,
                                boundary_proxy_natives, gen_jni_class, args,
                                muxed_aliases_by_sig, whole_hash, priority_hash)
     with common.atomic_output(args.impl_path, mode='w') as f:
@@ -379,27 +362,16 @@ def _CreateImpl(jni_mode, jni_objs, boundary_proxy_natives, gen_jni_class, args,
     sb(f"""\
 extern const int64_t kJniZeroHash{module_name}Whole = {whole_hash}LL;
 extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
-
 """)
 
-  if jni_mode.is_muxing:
-    classes_requiring_accessors = set()
-    for jni_obj in jni_objs:
-      if not jni_obj.from_javap:
-        classes_requiring_accessors.update(
-            jni_obj.CollectClassesThatRequireAccessors())
-    sorted_classes = sorted(classes_requiring_accessors)
-    called_by_natives = []
-    for jni_obj in jni_objs:
-      called_by_natives.extend(jni_obj.muxed_called_by_natives)
-    called_by_native_header.registration_metadata(sb, sorted_classes,
-                                                  called_by_natives)
-  elif args.manual_jni_registration:
-    sorted_classes = sorted(o.java_class for o in jni_objs
-                            if o.non_proxy_natives)
-    if sorted_classes:
-      with sb.section('Class Accessors.'):
-        header_common.class_accessors(sb, sorted_classes)
+  non_proxy_natives_java_classes = [
+      o.java_class for o in jni_objs if o.non_proxy_natives
+  ]
+  non_proxy_natives_java_classes.sort()
+
+  if args.manual_jni_registration and non_proxy_natives_java_classes:
+    with sb.section('Class Accessors.'):
+      header_common.class_accessors(sb, non_proxy_natives_java_classes)
 
   if jni_mode.is_muxing or args.manual_jni_registration:
     with sb.section('Forward Declarations.'):
@@ -449,15 +421,12 @@ extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
 def _ParseMetadataJson(path):
   with open(path) as f:
     data = json.load(f)
-  sources_by_module = collections.defaultdict(list)
-  use_weaks_by_path = {}
+  ret = collections.defaultdict(list)
   for item in data:
     module_name = item.get('module_name') or ''
-    use_weak_cbns = item.get('use_weak_called_by_natives', False)
     for src in item['java_files']:
-      sources_by_module[module_name].append(src)
-      use_weaks_by_path[src] = use_weak_cbns
-  return sources_by_module, use_weaks_by_path
+      ret[module_name].append(src)
+  return ret
 
 
 def _write_depfile(depfile_path, first_gn_output, inputs):
@@ -502,37 +471,27 @@ def main(parser, args, jni_mode):
       # --priority-java-sources.
       parser.error('--priority-java-sources requires --never-omit-switch-num.')
 
-  java_sources, java_weak_cbns_by_path = _ParseMetadataJson(
-      args.java_sources_file)
+  java_sources = _ParseMetadataJson(args.java_sources_file)
   if args.native_sources_file:
-    native_sources, native_weak_cbns_by_path = _ParseMetadataJson(
-        args.native_sources_file)
+    native_sources = _ParseMetadataJson(args.native_sources_file)
   else:
     if args.add_stubs_for_missing_native:
       # This will create a fully stubbed out GEN_JNI.
       native_sources = {}
-      native_weak_cbns_by_path = {}
     else:
       # Just treating it like we have perfect alignment between native and java
       # when only looking at java.
       native_sources = java_sources
-      native_weak_cbns_by_path = java_weak_cbns_by_path
   if args.priority_java_sources_file:
-    priority_java_sources, _ = _ParseMetadataJson(
-        args.priority_java_sources_file)
+    priority_java_sources = _ParseMetadataJson(args.priority_java_sources_file)
   else:
     priority_java_sources = None
-
-  weak_cbns_by_path = {}
-  weak_cbns_by_path.update(java_weak_cbns_by_path)
-  weak_cbns_by_path.update(native_weak_cbns_by_path)
 
   _Generate(args,
             jni_mode,
             native_sources,
             java_sources,
             priority_java_sources,
-            weak_cbns_by_path=weak_cbns_by_path,
             never_omit_switch_num=args.never_omit_switch_num)
 
   if args.depfile:
