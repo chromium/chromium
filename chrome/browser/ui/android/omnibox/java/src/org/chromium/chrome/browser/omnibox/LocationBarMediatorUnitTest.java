@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridgeJni;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
@@ -242,6 +243,7 @@ public class LocationBarMediatorUnitTest {
     @Mock private AppBannerManager.Natives mAppBannerManagerJni;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
+    @Mock private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     @Mock private AutocompleteController mAutocompleteController;
     @Mock private ComposeboxQueryControllerBridge mComposeboxBridge;
     @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
@@ -490,6 +492,10 @@ public class LocationBarMediatorUnitTest {
                             if (state == AutocompleteState.STANDBY) {
                                 mAutocompleteCoordinator.stopAutocomplete();
                                 mAutocompleteCoordinator.endInput();
+                                if (mSessionState.getAutocompleteInput().getDisplayState()
+                                        == DisplayState.SUGGESTIONS) {
+                                    mMediator.onSuggestionsChanged(null, false);
+                                }
                             } else if (state == AutocompleteState.DISABLED) {
                                 mAutocompleteCoordinator.endInput();
                             }
@@ -3743,8 +3749,8 @@ public class LocationBarMediatorUnitTest {
         verify(mUrlCoordinator).finishReparenting(true);
     }
 
-    @Test
-    public void testDesktopDeleteButton() {
+    private AutocompleteInput setupDesktopSuggestionsSession() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
@@ -3764,20 +3770,113 @@ public class LocationBarMediatorUnitTest {
         mMediator.handleUrlFocusAnimation(true);
         assertTrue(mMediator.isParentedToSuggestionsContainer());
 
-        var input = mSessionState.getAutocompleteInput();
-        input.setUserText("modified text").setInitialUserText("initial text");
-        input.setRequestType(AutocompleteRequestType.AI_MODE);
         reset(mLocationBarLayout);
         doReturn(mDeleteButton).when(mLocationBarLayout).getDeleteButton();
         doReturn(mUrlBar).when(mLocationBarLayout).getUrlBar();
+
+        return mSessionState.getAutocompleteInput();
+    }
+
+    @Test
+    public void testDesktopDeleteButton() {
+        AutocompleteInput input = setupDesktopSuggestionsSession();
+        input.setUserText("modified text").setInitialUserText("initial text");
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+
         mMediator.deleteButtonClicked(null);
         assertEquals("", input.getUserText());
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
         verify(mLocationBarLayout, never()).setDeleteButtonVisibility(false);
 
         mMediator.deleteButtonClicked(null);
+        assertEquals("initial text", input.getUserText());
+        assertEquals(TextSelection.SELECT_END, input.getSelection());
+        assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
+        assertEquals(DisplayState.DRAFTING, input.getDisplayState());
         assertEquals(AutocompleteRequestType.SEARCH, input.getRequestType());
         verify(mLocationBarLayout, atLeastOnce()).setDeleteButtonVisibility(false);
+    }
+
+    @Test
+    public void testDesktopDeleteButton_withCustomTool_revertsToAiMode() {
+        AutocompleteInput input = setupDesktopSuggestionsSession();
+        input.setUserText("").setInitialUserText("initial text");
+        input.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+
+        mMediator.deleteButtonClicked(null);
+        assertEquals("", input.getUserText());
+        assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
+
+        mMediator.deleteButtonClicked(null);
+        assertEquals("initial text", input.getUserText());
+        assertEquals(TextSelection.SELECT_END, input.getSelection());
+        assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
+        assertEquals(DisplayState.DRAFTING, input.getDisplayState());
+        assertEquals(AutocompleteRequestType.SEARCH, input.getRequestType());
+    }
+
+    @Test
+    public void testDesktopDeleteButton_withAttachments_clearsAttachments() {
+        AutocompleteInput input = setupDesktopSuggestionsSession();
+        doReturn(false).doReturn(true).when(mFuseboxAttachmentModelList).isEmpty();
+        mMediator.setAttachmentModelList(mFuseboxAttachmentModelList);
+
+        input.setUserText("").setInitialUserText("initial text");
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+
+        mMediator.deleteButtonClicked(null);
+        verify(mFuseboxAttachmentModelList).clear();
+        assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
+
+        mMediator.deleteButtonClicked(null);
+        assertEquals("initial text", input.getUserText());
+        assertEquals(TextSelection.SELECT_END, input.getSelection());
+        assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
+        assertEquals(DisplayState.DRAFTING, input.getDisplayState());
+        assertEquals(AutocompleteRequestType.SEARCH, input.getRequestType());
+    }
+
+    @Test
+    public void testDesktopDeleteButton_withTextToolAndAttachments() {
+        AutocompleteInput input = setupDesktopSuggestionsSession();
+        doReturn(false).doReturn(true).when(mFuseboxAttachmentModelList).isEmpty();
+        mMediator.setAttachmentModelList(mFuseboxAttachmentModelList);
+
+        input.setUserText("deep search query").setInitialUserText("initial text");
+        input.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
+
+        mMediator.deleteButtonClicked(null);
+        assertEquals("", input.getUserText());
+        assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
+        verify(mFuseboxAttachmentModelList).clear();
+
+        mMediator.deleteButtonClicked(null);
+        assertEquals("initial text", input.getUserText());
+        assertEquals(TextSelection.SELECT_END, input.getSelection());
+        assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
+        assertEquals(DisplayState.DRAFTING, input.getDisplayState());
+        assertEquals(AutocompleteRequestType.SEARCH, input.getRequestType());
+    }
+
+    @Test
+    public void testDeleteButton_mobile_doesNotRevertCustomToolToAiMode() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        mMediator.onUrlFocusChange(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setUserText("generate an image");
+        input.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+
+        mMediator.deleteButtonClicked(null);
+        assertEquals("", input.getUserText());
+        assertEquals(AutocompleteRequestType.IMAGE_GENERATION, input.getRequestType());
+
+        mMediator.deleteButtonClicked(null);
+        assertEquals(AutocompleteRequestType.IMAGE_GENERATION, input.getRequestType());
     }
 
     @Test

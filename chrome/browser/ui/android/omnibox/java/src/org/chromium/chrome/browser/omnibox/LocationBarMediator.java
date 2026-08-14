@@ -79,6 +79,7 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
 import org.chromium.chrome.browser.omnibox.LocationBarSelectionController.SelectableView;
+import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
@@ -872,12 +873,9 @@ class LocationBarMediator
             mCurrentInput
                     .setRequestType(AutocompleteRequestType.SEARCH)
                     .setAutocompleteState(AutocompleteState.STANDBY)
-                    .setDisplayState(DisplayState.DRAFTING)
-                    .setUserText(mCurrentInput.getInitialUserText());
-            mUrlCoordinator.setUrlBarData(
-                    getUrlBarDataForCurrentInput(mCurrentInput),
-                    UrlBar.ScrollType.NO_SCROLL,
-                    TextSelection.SELECT_ALL);
+                    .setUserText(mCurrentInput.getInitialUserText())
+                    .setSelection(TextSelection.SELECT_ALL);
+            pushUrlBarDataFromCurrentInput();
             mUrlCoordinator.setKeyboardVisibility(false, false);
         } else {
             updateUrl();
@@ -1270,7 +1268,7 @@ class LocationBarMediator
             return;
         }
 
-        setUrlBarText(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_ALL);
+        setUrlBarText(urlBarData, ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_ALL);
     }
 
     /* package */ void deleteButtonClicked(View view) {
@@ -1278,17 +1276,58 @@ class LocationBarMediator
         RecordUserAction.record("MobileOmniboxDeleteUrl");
         if (mCurrentInput == null) return; // session not started yet.
 
-        if (TextUtils.isEmpty(mCurrentInput.getUserText())) {
-            mCurrentInput.setRequestType(AutocompleteRequestType.SEARCH);
+        if (OmniboxCapabilities.hasDesktopExperience(mContext)) {
+            // Should only have been visible when in any aim type.
+            assert ToolModeUtils.isAimRequest(mCurrentInput.getRequestType());
+
+            boolean hasAttachments =
+                    mFuseboxAttachmentModelList != null && !mFuseboxAttachmentModelList.isEmpty();
+            boolean hasCustomTool =
+                    mCurrentInput.getRequestType() != AutocompleteRequestType.AI_MODE;
+            boolean hasText = !TextUtils.isEmpty(mCurrentInput.getUserText());
+
+            // The first button press removes everything else, but stays in AI Mode.
+            if (hasAttachments || hasCustomTool || hasText) {
+                if (mFuseboxAttachmentModelList != null) {
+                    mFuseboxAttachmentModelList.clear();
+                }
+                mCurrentInput.setRequestType(AutocompleteRequestType.AI_MODE);
+                clearText();
+            } else {
+                // Return to conventional search in standby with the original URL.
+                mCurrentInput
+                        .setRequestType(AutocompleteRequestType.SEARCH)
+                        .setUserText(mCurrentInput.getInitialUserText())
+                        .setAutocompleteState(AutocompleteState.STANDBY);
+                pushUrlBarDataFromCurrentInput();
+            }
+        } else {
+            clearText();
         }
 
-        mCurrentInput.setUserText(null);
-        mUrlCoordinator.setUrlBarData(
-                UrlBarData.forNonUrlText(mCurrentInput.getUserText()),
-                UrlBar.ScrollType.NO_SCROLL,
-                mCurrentInput.getSelection());
         updateButtonVisibility();
         mUrlCoordinator.requestAccessibilityFocus();
+    }
+
+    private void clearText() {
+        if (mCurrentInput == null) return;
+        mCurrentInput.setUserText(null);
+        pushUrlBarDataFromUserText();
+    }
+
+    private void pushUrlBarDataFromUserText() {
+        if (mCurrentInput == null) return;
+        pushUrlBarData(UrlBarData.forNonUrlText(mCurrentInput.getUserText()));
+    }
+
+    private void pushUrlBarDataFromCurrentInput() {
+        if (mCurrentInput == null) return;
+        pushUrlBarData(getUrlBarDataForCurrentInput(mCurrentInput));
+    }
+
+    private void pushUrlBarData(UrlBarData data) {
+        if (mCurrentInput == null) return;
+        mUrlCoordinator.setUrlBarData(data, ScrollType.NO_SCROLL, mCurrentInput.getSelection());
     }
 
     /* package */ void navigateButtonClicked(View view) {
@@ -1978,7 +2017,7 @@ class LocationBarMediator
      * @return Whether the URL was changed as a result of this call.
      */
     /* package */ boolean setUrlBarText(
-            UrlBarData urlBarData, @UrlBar.ScrollType int scrollType, TextSelection selection) {
+            UrlBarData urlBarData, @ScrollType int scrollType, TextSelection selection) {
         return mUrlCoordinator.setUrlBarData(urlBarData, scrollType, selection);
     }
 
@@ -2631,12 +2670,11 @@ class LocationBarMediator
                             siteSearchData.enteredViaSpace
                                     ? siteSearchData.keyword + " "
                                     : siteSearchData.keyword;
-                    mCurrentInput.setUserText(searchText);
-                    mCurrentInput.setSiteSearchData(null);
-                    mUrlCoordinator.setUrlBarData(
-                            UrlBarData.forNonUrlText(searchText),
-                            UrlBar.ScrollType.NO_SCROLL,
-                            TextSelection.SELECT_END);
+                    mCurrentInput
+                            .setUserText(searchText)
+                            .setSiteSearchData(null)
+                            .setSelection(TextSelection.SELECT_END);
+                    pushUrlBarDataFromUserText();
                     return true;
                 }
             }
@@ -2706,10 +2744,7 @@ class LocationBarMediator
                 mAutocompleteCoordinator.resetSelection();
                 if (mCurrentInput != null && mCurrentInput.isInZeroPrefixContext()) {
                     mCurrentInput.setUserText("");
-                    mUrlCoordinator.setUrlBarData(
-                            getUrlBarDataForCurrentInput(mCurrentInput),
-                            UrlBar.ScrollType.NO_SCROLL,
-                            TextSelection.SELECT_ALL);
+                    pushUrlBarDataFromCurrentInput();
                 }
             } else if (isTypedStateConventionalRequest
                     && isBackwardsTab
@@ -2799,8 +2834,7 @@ class LocationBarMediator
             }
             mCurrentInput
                     .setRequestType(AutocompleteRequestType.SEARCH)
-                    .setAutocompleteState(AutocompleteState.STANDBY)
-                    .setDisplayState(DisplayState.DRAFTING);
+                    .setAutocompleteState(AutocompleteState.STANDBY);
             // TODO(https://crbug.com/534359434): Remove bespoke update calls.
             updateButtonVisibility();
         } else if (!TextUtils.equals(
@@ -3466,7 +3500,8 @@ class LocationBarMediator
         mLocationBarLayout.setUrlActionContainerVisibility(shouldShow);
     }
 
-    private void setAttachmentModelList(
+    @VisibleForTesting
+    /* package */ void setAttachmentModelList(
             @Nullable FuseboxAttachmentModelList fuseboxAttachmentModelList) {
         if (mFuseboxAttachmentModelList != null) {
             mFuseboxAttachmentModelList.removeAttachmentChangeListener(this);
