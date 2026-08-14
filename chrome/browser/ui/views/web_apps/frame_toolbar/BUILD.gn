@@ -5,6 +5,20 @@
 import("//build/config/ui.gni")
 
 if (toolkit_views) {
+  source_set("system_app_accessible_name") {
+    public = [ "system_app_accessible_name.h" ]
+    sources = [ "system_app_accessible_name.cc" ]
+    public_deps = [
+      "//ui/base",
+      "//ui/views",
+    ]
+    deps = [
+      "//chrome/browser/ui/views:layout_provider",
+      "//skia",
+      "//ui/accessibility",
+    ]
+  }
+
   source_set("test_support") {
     testonly = true
 

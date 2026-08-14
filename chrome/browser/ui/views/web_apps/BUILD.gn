@@ -6,6 +6,48 @@ import("//build/config/ui.gni")
 
 assert(toolkit_views)
 
+source_set("progress_delay") {
+  public = [ "progress_delay.h" ]
+  sources = [ "progress_delay.cc" ]
+  public_deps = [ "//base" ]
+  deps = [ "//content/public/common" ]
+}
+
+source_set("web_app_blocked_migration_infobar_delegate") {
+  public = [ "web_app_blocked_migration_infobar_delegate.h" ]
+  sources = [ "web_app_blocked_migration_infobar_delegate.cc" ]
+  public_deps = [
+    "//base",
+    "//components/infobars/core",
+    "//url",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/infobars",
+    "//components/infobars/content",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("web_app_update_identity_view") {
+  public = [ "web_app_update_identity_view.h" ]
+  sources = [ "web_app_update_identity_view.cc" ]
+  public_deps = [
+    "//chrome/browser/web_applications",
+    "//ui/base",
+    "//ui/views",
+  ]
+  deps = [
+    ":web_apps",
+    "//base",
+    "//chrome/browser/ui/views:layout_provider",
+    "//ui/gfx",
+  ]
+}
+
 source_set("web_apps") {
   public = [ "web_app_views_utils.h" ]
   sources = [ "web_app_views_utils.cc" ]
@@ -58,6 +100,9 @@ source_set("browser_tests") {
     "web_app_update_review_dialog_browsertest.cc",
   ]
   deps = [
+    ":progress_delay",
+    ":web_app_blocked_migration_infobar_delegate",
+    ":web_app_update_identity_view",
     "//base",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:test_support_ui",
