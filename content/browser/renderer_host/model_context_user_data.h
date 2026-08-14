@@ -87,17 +87,10 @@ class CONTENT_EXPORT ModelContextPageUserData
   //   2. It simply cleans up all pending execution data for tools *called by*
   //      `rfh`, when tool callers gets destroyed.
   //
-  // `CancelPendingScriptToolExecutionsDueToUnregistration()` is
-  // rather obviously more narrowly scoped, and is used to notify the caller of
-  // a still-running tool has been unregistered mid-execution.
-  //
   void CancelPendingScriptToolExecution(
       const base::UnguessableToken& invocation_id);
   void CancelPendingScriptToolExecutionsForDocument(
       const blink::DocumentToken& document_token);
-  void CancelPendingScriptToolExecutionsDueToUnregistration(
-      const blink::DocumentToken& target_document_token,
-      const std::string& tool_name);
 
   base::WeakPtr<ModelContextPageUserData> GetWeakPtr();
 

@@ -162,19 +162,6 @@ void ModelContextUserData::UnregisterScriptTool(const std::string& name) {
     return;
   }
 
-  // Cancel all pending executions of the tool. For now this only include
-  // notifying the caller that tool execution has failed, but see the
-  // documentation above the
-  // `CancelPendingScriptToolExecutionsDueToUnregistration()` declaration about
-  // notifying the tool itself.
-  auto& page = render_frame_host().GetPage();
-  auto* page_data = ModelContextPageUserData::GetForPage(page);
-  if (page_data) {
-    auto& rfh_impl = static_cast<RenderFrameHostImpl&>(render_frame_host());
-    page_data->CancelPendingScriptToolExecutionsDueToUnregistration(
-        rfh_impl.GetDocumentToken(), name);
-  }
-
   std::vector<url::Origin> exposed_origins = (*it)->exposed_origins;
 
   script_tools_.erase(it);
@@ -494,10 +481,7 @@ void ModelContextPageUserData::CancelPendingScriptToolExecution(
   //   1. The tool execution completed and sent its response IPC
   //      (`CompletePendingScriptToolExecution()`) before this cancellation
   //      IPC arrived.
-  //   2. The tool owner unregistered the tool
-  //      (`CancelPendingScriptToolExecutionsDueToUnregistration()`)
-  //      concurrently with this cancellation request.
-  //   3. The document hosting the tool was destroyed
+  //   2. The document hosting the tool was destroyed
   //      (`CancelPendingScriptToolExecutionsForDocument()`) before this
   //      cancellation IPC arrived.
   auto it = pending_script_tool_executions_.find(invocation_id);
@@ -531,22 +515,6 @@ void ModelContextPageUserData::CancelPendingScriptToolExecutionsForDocument(
     }
     std::move(it->second.callback).Run(std::nullopt, false);
     it = pending_script_tool_executions_.erase(it);
-  }
-}
-
-void ModelContextPageUserData::
-    CancelPendingScriptToolExecutionsDueToUnregistration(
-        const blink::DocumentToken& target_document_token,
-        const std::string& tool_name) {
-  for (auto it = pending_script_tool_executions_.begin();
-       it != pending_script_tool_executions_.end();) {
-    if (it->second.target_token == target_document_token &&
-        it->second.tool_name == tool_name) {
-      std::move(it->second.callback).Run(std::nullopt, false);
-      it = pending_script_tool_executions_.erase(it);
-    } else {
-      ++it;
-    }
   }
 }
 

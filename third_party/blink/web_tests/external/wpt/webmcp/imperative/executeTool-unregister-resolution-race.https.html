@@ -18,9 +18,12 @@ promise_test(async t => {
       return new Promise(resolve => {
         resolve({status: "resolved"});
         // Synchronously unregister the tool after resolving the promise.
-        // Because promise resolution runs in a microtask, but AbortSignal
-        // algorithms run synchronously, the unregistration should win the race,
-        // and executeTool() should reject.
+        // Unregistering a tool does not cancel pending tool executions,
+        // so executeTool() should resolve successfully with the tool's result.
+        //
+        // (This test was originally written as a regression test from a time
+        // when unregistering a tool cancelled pending executions. It no longer
+        // does.)
         ac.abort();
       });
     }
@@ -29,10 +32,9 @@ promise_test(async t => {
   const [tool] = await document.modelContext.getTools();
   const execute_promise = document.modelContext.executeTool(tool, '{}');
 
-  // The executeTool promise should reject with UnknownError because the tool
-  // was unregistered before the execute promise microtasks could run.
-  await promise_rejects_dom(t, 'UnknownError', execute_promise);
-}, 'executeTool rejects when tool is unregistered synchronously after its promise resolves');
+  const result = await execute_promise;
+  assert_equals(result, '{"status":"resolved"}');
+}, 'executeTool resolves successfully even when tool is unregistered synchronously after its promise resolves');
 </script>
 </body>
 </html>
