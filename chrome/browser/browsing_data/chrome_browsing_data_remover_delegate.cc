@@ -1564,8 +1564,6 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
       base::TimeTicks::Now() - started);
 
   if (!success) {
-    base::UmaHistogramEnumeration("History.ClearBrowsingData.FailedTasksChrome",
-                                  data_type);
     failed_data_types_ |= data_type_mask;
   }
 
