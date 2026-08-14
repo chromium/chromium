@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -1853,6 +1854,70 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     EXPECT_GT(popup_bounds.x(), 100);
     EXPECT_GT(popup_bounds.y(), 100);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       GetBoundsRectIframesForDateTimePicker) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <iframe style='border-width: 80px; padding: 20px;'
+            srcdoc="
+              <input type='datetime-local' aria-label='Input' />
+            ">
+          </iframe>
+        </body>
+      </html>)HTML"));
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Input");
+
+  ui::AXNode* root = GetManager()->GetRoot();
+  ASSERT_NE(nullptr, root);
+
+  const ui::AXNode* iframe = root->children()[0]->children()[0]->children()[0];
+  ASSERT_NE(nullptr, iframe);
+  ASSERT_EQ(iframe->GetRole(), ax::mojom::Role::kIframe);
+
+  const ui::AXTreeID iframe_tree_id = ui::AXTreeID::FromString(
+      iframe->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
+  ui::BrowserAccessibilityManager* iframe_manager =
+      ui::BrowserAccessibilityManager::FromID(iframe_tree_id);
+  ASSERT_NE(nullptr, iframe_manager);
+
+  ui::BrowserAccessibility* input =
+      FindNodeByRole(iframe_manager->GetBrowserAccessibilityRoot(),
+                     ax::mojom::Role::kDateTime);
+  ASSERT_NE(nullptr, input);
+  ui::BrowserAccessibility* popup_button =
+      FindNodeByRole(input, ax::mojom::Role::kPopUpButton);
+  ASSERT_NE(nullptr, popup_button);
+
+  {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ax::mojom::Event::kClicked);
+
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kDoDefault;
+    popup_button->AccessibilityPerformAction(action_data);
+
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+
+  const auto& controls_ids =
+      input->GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
+  ASSERT_EQ(1u, controls_ids.size());
+  ui::BrowserAccessibility* popup_area =
+      iframe_manager->GetFromID(controls_ids[0]);
+  ASSERT_NE(nullptr, popup_area);
+  const ui::BrowserAccessibility* previous_month_button =
+      FindFirstAccessibilityNodeWithNameOrValue(*popup_area,
+                                                "Show previous month");
+  ASSERT_NE(nullptr, previous_month_button);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !popup_area->GetLocation().IsEmpty(); }));
+  EXPECT_EQ(gfx::SizeF(28, 24), previous_month_button->GetLocation().size());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !(BUILDFLAG(IS_IOS) &&
         // BUILDFLAG(USE_BLINK))
