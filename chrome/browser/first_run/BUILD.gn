@@ -114,6 +114,7 @@ source_set("impl") {
         "first_run_internal_linux.cc",
         "upgrade_util_linux.cc",
       ]
+      deps += [ "//chrome/browser/ui/views:eula_dialog_linux" ]
     }
 
     if (is_linux || is_mac) {

@@ -539,3 +539,18 @@ source_set("bubble_menu_item_factory") {
     "//ui/gfx/geometry",
   ]
 }
+
+if (is_linux) {
+  source_set("eula_dialog_linux") {
+    public = [ "eula_dialog_linux.h" ]
+    sources = [ "eula_dialog_linux.cc" ]
+    public_deps = [ "//ui/views" ]
+    deps = [
+      "//base",
+      "//chrome/app:branded_strings",
+      "//components/strings:components_locale_settings",
+      "//ui/base",
+      "//ui/gfx",
+    ]
+  }
+}
