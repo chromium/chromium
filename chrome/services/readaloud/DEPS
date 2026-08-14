@@ -2,5 +2,4 @@ include_rules = [
   "+media/mojo/mojom",
   "+media/base",
   "+media/filters",
-  "+media/audio",
 ]

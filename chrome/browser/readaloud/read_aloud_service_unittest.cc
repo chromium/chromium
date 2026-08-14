@@ -21,7 +21,6 @@
 #include "components/dom_distiller/core/proto/distilled_page.pb.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "content/public/browser/web_contents.h"
-#include "media/base/audio_parameters.h"
 #include "mojo/public/mojom/base/work_in_progress.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,8 +127,7 @@ class FakePlaybackController
 
   void InitializeAudio(
       mojo::PendingRemote<media::mojom::AudioOutputStream> stream,
-      media::mojom::ReadWriteAudioDataPipePtr data_pipe,
-      const media::AudioParameters& params) override {}
+      media::mojom::ReadWriteAudioDataPipePtr data_pipe) override {}
 
   void SetTextContent(
       std::vector<read_aloud::mojom::TextSegmentPtr> segments) override {

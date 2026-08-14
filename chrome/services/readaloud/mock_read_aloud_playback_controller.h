@@ -20,10 +20,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace media {
-class AudioParameters;
-}
-
 namespace readaloud {
 
 // Mock implementation of `ReadAloudPlaybackController` used for unit testing
@@ -54,8 +50,7 @@ class MockReadAloudPlaybackController
   MOCK_METHOD(void,
               InitializeAudio,
               (mojo::PendingRemote<media::mojom::AudioOutputStream> stream,
-               media::mojom::ReadWriteAudioDataPipePtr data_pipe,
-               const media::AudioParameters& params),
+               media::mojom::ReadWriteAudioDataPipePtr data_pipe),
               (override));
   MOCK_METHOD(void,
               SetTextContent,
