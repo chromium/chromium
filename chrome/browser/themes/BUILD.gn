@@ -84,7 +84,6 @@ source_set("themes") {
       "theme_helper_win.cc",
       "theme_helper_win.h",
     ]
-    deps += [ "//chrome/browser/win:mica_titlebar" ]
   }
   if (is_linux) {
     public += [ "theme_service_aura_linux.h" ]

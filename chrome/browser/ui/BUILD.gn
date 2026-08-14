@@ -2460,7 +2460,6 @@ static_library("ui") {
       "//chrome/browser/taskbar",
       "//chrome/browser/ui/views:uninstall_browser_prompt",
       "//chrome/browser/win:impl",
-      "//chrome/browser/win:mica_titlebar",
       "//components/search_engines",
       "//third_party/wtl",
     ]

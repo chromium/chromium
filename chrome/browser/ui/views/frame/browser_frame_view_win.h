@@ -7,7 +7,6 @@
 
 #include <array>
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/ui/views/tab_icon_view.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/window/frame_view.h"
 
@@ -96,14 +94,9 @@ class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   void Layout(PassKey) override;
-  void AddedToWidget() override;
-  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
-                                  float new_device_scale_factor) override;
 
  private:
   friend class BrowserCaptionButtonContainer;
-
-  class CaptionButtonMetrics;
 
   // Describes the type of titlebar that a window might have; used to query
   // whether specific elements may be present.
@@ -147,12 +140,6 @@ class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
   // |type|.
   bool ShouldShowWindowTitle(TitlebarType type) const;
 
-  // Called when the device enters or exits tablet mode.
-  void TabletModeChanged();
-
-  // Sets DWM attributes for rendering the system-drawn Mica titlebar.
-  void SetSystemMicaTitlebarAttributes();
-
   // Paint various sub-components of this view.
   void PaintTitlebar(gfx::Canvas* canvas) const;
 
@@ -188,14 +175,6 @@ class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
 
   // The container holding the caption buttons (minimize, maximize, close, etc.)
   raw_ptr<BrowserCaptionButtonContainer> caption_button_container_;
-
-  base::CallbackListSubscription tablet_mode_subscription_ =
-      ui::TouchUiController::Get()->RegisterCallback(
-          base::BindRepeating(&BrowserFrameViewWin::TabletModeChanged,
-                              base::Unretained(this)));
-
-  // Tracks information about caption button location, size, etc.
-  std::unique_ptr<CaptionButtonMetrics> caption_button_metrics_;
 
   // Whether or not the window throbber is currently animating.
   bool throbber_running_ = false;

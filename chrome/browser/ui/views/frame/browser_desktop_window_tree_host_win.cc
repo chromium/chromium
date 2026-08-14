@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/browser_window_property_manager_win.h"
-#include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/system_menu_insertion_delegate_win.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/windows_caption_button.h"
@@ -50,21 +49,6 @@
 #include "ui/gfx/win/icon_util.h"
 #include "ui/gfx/win/msg_util.h"
 #include "ui/views/controls/menu/native_menu_win.h"
-#include "ui/views/view_utils.h"
-
-namespace {
-
-int GetTopAreaHeight(const BrowserFrameView* frame) {
-  if (auto* const opaque = views::AsViewClass<OpaqueBrowserFrameView>(frame)) {
-    return opaque->GetTopAreaHeight();
-  } else if (auto* const frame_win =
-                 views::AsViewClass<BrowserFrameViewWin>(frame)) {
-    return frame_win->TopAreaHeight(false);
-  }
-  return 0;
-}
-
-}  // namespace
 
 class VirtualDesktopHelper
     : public base::RefCountedDeleteOnSequence<VirtualDesktopHelper> {
@@ -351,13 +335,6 @@ bool BrowserDesktopWindowTreeHostWin::GetClientAreaInsets(
     return false;
   }
 
-  // Use default insets for popups and apps, unless we are custom drawing the
-  // titlebar.
-  if (!ShouldBrowserCustomDrawTitlebar(browser_view_) &&
-      !browser_view_->GetIsNormalType()) {
-    return false;
-  }
-
   if (GetWidget()->IsFullscreen()) {
     // In fullscreen mode there is no frame.
     *insets = gfx::Insets();
@@ -372,8 +349,7 @@ bool BrowserDesktopWindowTreeHostWin::GetClientAreaInsets(
     // area, Windows will draw a full native titlebar outside the client area.
     // (This doesn't occur in the maximized case.)
     int top_thickness = 0;
-    if (ShouldBrowserCustomDrawTitlebar(browser_view_) &&
-        GetWidget()->IsMaximized()) {
+    if (GetWidget()->IsMaximized()) {
       top_thickness = frame_thickness;
     }
     *insets = gfx::Insets::TLBR(top_thickness, frame_thickness, frame_thickness,
@@ -399,21 +375,7 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
   }
 
   // Don't extend the glass in at all if it won't be visible.
-  if (!ShouldUseNativeFrame() || GetWidget()->IsFullscreen() ||
-      ShouldBrowserCustomDrawTitlebar(browser_view_)) {
-    *insets = gfx::Insets();
-  } else {
-    // The glass should extend to the bottom of the tabstrip.
-    auto* const frame = browser_widget_->GetFrameView();
-    const int bottom =
-        GetTopAreaHeight(frame) +
-        browser_view_->GetFrameElementInfo().tabstrip_preferred_height;
-    const int tabstrip_region_bottom =
-        display::win::GetScreenWin()
-            ->DIPToClientPoint(GetHWND(), gfx::Point(0, bottom))
-            .y();
-    *insets = gfx::Insets::TLBR(tabstrip_region_bottom, 0, 0, 0);
-  }
+  *insets = gfx::Insets();
   return true;
 }
 
@@ -530,9 +492,7 @@ views::FrameMode BrowserDesktopWindowTreeHostWin::GetFrameMode() const {
   }
 
   const views::FrameMode system_frame_mode =
-      ShouldBrowserCustomDrawTitlebar(browser_view_)
-          ? views::FrameMode::SYSTEM_DRAWN_NO_CONTROLS
-          : views::FrameMode::SYSTEM_DRAWN;
+      views::FrameMode::SYSTEM_DRAWN_NO_CONTROLS;
 
   // We don't theme popup or app windows, so regardless of whether or not a
   // theme is active for normal browser windows, we don't want to use the custom
@@ -575,8 +535,7 @@ bool BrowserDesktopWindowTreeHostWin::ShouldUseNativeFrame() const {
 bool BrowserDesktopWindowTreeHostWin::ShouldWindowContentsBeTransparent()
     const {
   CHECK(browser_view_);
-  return !ShouldBrowserCustomDrawTitlebar(browser_view_) &&
-         views::DesktopWindowTreeHostWin::ShouldWindowContentsBeTransparent();
+  return false;
 }
 
 void BrowserDesktopWindowTreeHostWin::ClientDestroyedWidget() {

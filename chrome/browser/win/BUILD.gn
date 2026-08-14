@@ -103,7 +103,6 @@ source_set("impl") {
   ]
 
   deps = [
-    ":mica_titlebar",
     "//chrome/app:chrome_exe_main_exports",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
@@ -152,18 +151,6 @@ static_library("chrome_process_finder") {
     "//base",
     "//chrome/browser/policy:path_parser",
     "//chrome/common:constants",
-  ]
-}
-
-source_set("mica_titlebar") {
-  sources = [
-    "mica_titlebar.cc",
-    "mica_titlebar.h",
-  ]
-  deps = [
-    "//base",
-    "//ui/color:accent_color_observer",
-    "//ui/native_theme",
   ]
 }
 

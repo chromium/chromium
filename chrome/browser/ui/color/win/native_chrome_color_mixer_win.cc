@@ -13,7 +13,6 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/win/mica_titlebar.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -59,19 +58,8 @@ struct FrameTransforms {
   std::optional<ui::ColorTransform> inactive;
 };
 
-FrameTransforms GetMicaFrameTransforms(const ui::ColorProviderKey& key) {
-  const auto mica_frame_color =
-      (key.color_mode == ui::ColorProviderKey::ColorMode::kDark)
-          ? SkColorSetRGB(0x20, 0x20, 0x20)
-          : SkColorSetRGB(0xE8, 0xE8, 0xE8);
-  return {mica_frame_color, mica_frame_color};
-}
-
 FrameTransforms GetSystemFrameTransforms(const ui::ColorProviderKey& key) {
   FrameTransforms frame_transforms;
-  if (ShouldDefaultThemeUseMicaTitlebar()) {
-    frame_transforms = GetMicaFrameTransforms(key);
-  }
   if (const auto* const accent_color_observer = ui::AccentColorObserver::Get();
       accent_color_observer->ShouldUseAccentColorForWindowFrame()) {
     if (const std::optional<SkColor> dwm_frame_color =
@@ -245,15 +233,6 @@ void AddNativeNonHighContrastColors(ui::ColorMixer& mixer,
     mixer[ui::kColorSysStateHeaderHoverInactive] =
         ui::AlphaBlend(ui::kColorSysBase, ui::kColorSysHeaderInactive, 0x66);
     mixer[ui::kColorSysHeaderContainerInactive] = {ui::kColorSysBase};
-  }
-
-  if (ShouldDefaultThemeUseMicaTitlebar() && !key.app_controller) {
-    mixer[kColorNewTabButtonBackgroundFrameActive] = {SK_ColorTRANSPARENT};
-    mixer[kColorNewTabButtonBackgroundFrameInactive] = {SK_ColorTRANSPARENT};
-    mixer[kColorNewTabButtonInkDropFrameActive] =
-        ui::GetColorWithMaxContrast(ui::kColorFrameActive);
-    mixer[kColorNewTabButtonInkDropFrameInactive] =
-        ui::GetColorWithMaxContrast(ui::kColorFrameInactive);
   }
 }
 

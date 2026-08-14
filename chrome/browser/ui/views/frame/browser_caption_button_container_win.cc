@@ -195,14 +195,6 @@ void BrowserCaptionButtonContainer::OnWidgetBoundsChanged(
 }
 
 void BrowserCaptionButtonContainer::UpdateButtons() {
-  if (!ShouldBrowserCustomDrawTitlebar(frame_view_->GetBrowserView())) {
-    minimize_button_->SetVisible(false);
-    maximize_button_->SetVisible(false);
-    restore_button_->SetVisible(false);
-    close_button_->SetVisible(false);
-    return;
-  }
-
   minimize_button_->SetVisible(frame_view_->GetBrowserView()->CanMinimize());
 
   const bool is_maximized = frame_view_->IsMaximized();
