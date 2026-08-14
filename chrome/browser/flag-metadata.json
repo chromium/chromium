@@ -9248,6 +9248,14 @@
     "expiry_milestone": 154
   },
   {
+    "name": "startup-launch-infobar",
+    "owners": [
+      "top-chrome-desktop-ui@google.com",
+      "//chrome/browser/startup/OWNERS"
+    ],
+    "expiry_milestone": 154
+  },
+  {
     "name": "strict-origin-isolation",
     "owners": [ "lbrady@google.com", "alexmos@chromium.org", "creis@chromium.org" ],
     // This can be used to opt in to origin isolation which isolates full

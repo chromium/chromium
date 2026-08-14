@@ -25,6 +25,8 @@ BASE_FEATURE_ENUM_PARAM(LaunchOnStartupDefaultPreference,
                         LaunchOnStartupDefaultPreference::kDisabled,
                         kLaunchOnStartupTrialGroupOptions);
 
+BASE_FEATURE(kLaunchOnStartupInfoBar, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsForegroundLaunchEnabled() {
   // Do not consider instances with user-data-dir flag as part of the
   // experiment.
@@ -34,6 +36,21 @@ bool IsForegroundLaunchEnabled() {
   }
   return base::FeatureList::IsEnabled(kLaunchOnStartup) &&
          kLaunchOnStartupModeParam.Get() == LaunchOnStartupMode::kForeground;
+}
+
+bool IsForegroundLaunchInfoBarEnabled() {
+  if (!IsForegroundLaunchEnabled()) {
+    return false;
+  }
+  const std::optional<bool> infobar_override =
+      base::FeatureList::GetStateIfOverridden(kLaunchOnStartupInfoBar);
+  if (!infobar_override.has_value()) {
+    // If the infobar feature flag is not available / configured, use the base
+    // feature flag.
+    return true;
+  }
+
+  return *infobar_override;
 }
 
 LaunchOnStartupDefaultPreference GetLaunchOnStartupDefaultPreference() {

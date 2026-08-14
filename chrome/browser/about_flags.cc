@@ -1318,13 +1318,12 @@ const FeatureEntry::FeatureVariation
 
 #if BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kStartupLaunchForegroundEnabledParams[] = {
-    {"mode", "foreground"},
-    {"default_preference", "enabled"},
+    {features::kLaunchOnStartupModeParam.name, "foreground"},
+    {features::kLaunchOnStartupDefaultPreferenceParam.name, "enabled"},
 };
-
 const FeatureEntry::FeatureParam kStartupLaunchForegroundDisabledParams[] = {
-    {"mode", "foreground"},
-    {"default_preference", "disabled"},
+    {features::kLaunchOnStartupModeParam.name, "foreground"},
+    {features::kLaunchOnStartupDefaultPreferenceParam.name, "disabled"},
 };
 const FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
     {"with Foreground launch enabled by default",
@@ -11683,6 +11682,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kLaunchOnStartup,
                                     kStartupLaunchVariations,
                                     "LaunchOnStartup")},
+    {"startup-launch-infobar", flag_descriptions::kStartupLaunchInfoBarName,
+     flag_descriptions::kStartupLaunchInfoBarDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kLaunchOnStartupInfoBar)},
 #endif  // BUILDFLAG(IS_WIN)
 
     {"field-classification-model-caching",

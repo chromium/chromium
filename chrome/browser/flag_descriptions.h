@@ -2983,6 +2983,13 @@ inline constexpr char kStartupLaunchName[] =
 inline constexpr char kStartupLaunchDescription[] =
     "When enabled, Launch Chrome on Startup can be turned on from Settings";
 
+inline constexpr char kStartupLaunchInfoBarName[] =
+    "Enable Launch Chrome on Startup prompt";
+
+inline constexpr char kStartupLaunchInfoBarDescription[] =
+    "When enabled, shows an infobar prompting to launch Chrome on Windows "
+    "startup";
+
 inline constexpr char kHttpsFirstBalancedModeName[] =
     "Allow enabling Balanced Mode for HTTPS-First Mode.";
 inline constexpr char kHttpsFirstBalancedModeDescription[] =

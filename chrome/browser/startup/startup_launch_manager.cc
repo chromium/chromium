@@ -168,7 +168,8 @@ void StartupLaunchManager::SetInfoBarManager(
 }
 
 void StartupLaunchManager::MaybeShowInfoBars() {
-  if (infobar_type_.has_value() && ShouldShowInfoBars()) {
+  if (features::IsForegroundLaunchInfoBarEnabled() &&
+      infobar_type_.has_value() && ShouldShowInfoBars()) {
     infobar_manager_->ShowInfoBars(*infobar_type_);
     is_showing_infobar_ = true;
   }

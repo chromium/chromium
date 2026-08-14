@@ -51,36 +51,46 @@ class StartupLaunchManagerTestBase : public testing::Test {
       std::optional<features::LaunchOnStartupDefaultPreference>
           default_preference) {
     if (enable_foreground_launch_feature) {
-      CHECK(default_preference.has_value());
-      std::string trial_group_param_string;
+      std::vector<base::test::FeatureRefAndParams> enabled_features;
+      std::vector<base::test::FeatureRef> disabled_features;
 
-      switch (*default_preference) {
-        case features::LaunchOnStartupDefaultPreference::kDisabled:
-          trial_group_param_string = "disabled";
-          break;
-        case features::LaunchOnStartupDefaultPreference::kEnabled:
-          trial_group_param_string = "enabled";
-          break;
+      // Configure kLaunchOnStartup (overall feature and trial params) and
+      // kLaunchOnStartupInfoBar (infobar prompt feature).
+      base::FieldTrialParams launch_on_startup_params = {
+          {features::kLaunchOnStartupModeParam.name, "foreground"}};
+
+      if (default_preference.has_value()) {
+        std::string trial_group_param_string;
+        switch (*default_preference) {
+          case features::LaunchOnStartupDefaultPreference::kDisabled:
+            trial_group_param_string = "disabled";
+            break;
+          case features::LaunchOnStartupDefaultPreference::kEnabled:
+            trial_group_param_string = "enabled";
+            break;
+        }
+        launch_on_startup_params
+            [features::kLaunchOnStartupDefaultPreferenceParam.name] =
+                trial_group_param_string;
+        enabled_features.push_back({features::kLaunchOnStartupInfoBar, {}});
+      } else {
+        disabled_features.push_back(features::kLaunchOnStartupInfoBar);
       }
 
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kLaunchOnStartup,
-          {
-              {
-                  features::kLaunchOnStartupModeParam.name,
-                  "foreground",
-              },
-              {
-                  features::kLaunchOnStartupDefaultPreferenceParam.name,
-                  trial_group_param_string,
-              },
-          });
+      enabled_features.emplace_back(features::kLaunchOnStartup,
+                                    launch_on_startup_params);
+
+      scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                         disabled_features);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kLaunchOnStartup);
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kLaunchOnStartup, features::kLaunchOnStartupInfoBar});
     }
 
     CHECK_EQ(enable_foreground_launch_feature,
              features::IsForegroundLaunchEnabled());
+    CHECK_EQ(enable_foreground_launch_feature && default_preference.has_value(),
+             features::IsForegroundLaunchInfoBarEnabled());
 
     // Override factory for creating StartupLaunchManager to return the mocked
     // manager.
@@ -552,6 +562,35 @@ TEST_F(StartupLaunchManagerForegroundLaunchOptInTest,
   testing::Mock::VerifyAndClearExpectations(launch_manager);
 }
 
+class StartupLaunchManagerForegroundLaunchNoInfoBarTest
+    : public StartupLaunchManagerTestBase {
+ public:
+  StartupLaunchManagerForegroundLaunchNoInfoBarTest()
+      : StartupLaunchManagerTestBase(
+            /*enable_foreground_launch_feature=*/true,
+            /*default_preference=*/std::nullopt) {}
+};
+
+TEST_F(StartupLaunchManagerForegroundLaunchNoInfoBarTest,
+       DoesNotShowInfoBarWhenInfoBarFeatureDisabled) {
+  TestStartupLaunchManager* const launch_manager = launch_on_startup_manager();
+  auto infobar_manager_mock =
+      std::make_unique<MockStartupLaunchInfoBarManager>();
+  MockStartupLaunchInfoBarManager* infobar_manager = infobar_manager_mock.get();
+
+  EXPECT_CALL(*infobar_manager, AddObserver(launch_manager))
+      .Times(testing::Exactly(1));
+  launch_manager->SetInfoBarManager(std::move(infobar_manager_mock));
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+
+  // Infobar should NOT be shown when InfoBar feature is disabled.
+  EXPECT_CALL(*infobar_manager, ShowInfoBars(testing::_))
+      .Times(testing::Exactly(0));
+
+  launch_manager->MaybeShowInfoBars();
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+}
+
 class StartupLaunchManagerForegroundLaunchOptOutTest
     : public StartupLaunchManagerTestBase {
  public:
@@ -635,4 +674,45 @@ TEST_F(StartupLaunchManagerForegroundLaunchOptOutTest,
 
   launch_manager->MaybeShowInfoBars();
   testing::Mock::VerifyAndClearExpectations(launch_manager);
+}
+
+TEST(StartupFeaturesTest, IsForegroundLaunchInfoBarEnabledFallback) {
+  base::test::ScopedFeatureList feature_list;
+
+  // Case 1: Base feature enabled, InfoBar feature NOT overridden -> Fallback
+  // to base feature state (returns true).
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kLaunchOnStartup,
+      {{features::kLaunchOnStartupModeParam.name, "foreground"}});
+  EXPECT_TRUE(features::IsForegroundLaunchEnabled());
+  EXPECT_TRUE(features::IsForegroundLaunchInfoBarEnabled());
+
+  // Case 2: Base feature enabled, InfoBar feature explicitly disabled ->
+  // Returns false.
+  feature_list.Reset();
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kLaunchOnStartup,
+                             {{features::kLaunchOnStartupModeParam.name,
+                               "foreground"}}}},
+      /*disabled_features=*/{features::kLaunchOnStartupInfoBar});
+  EXPECT_TRUE(features::IsForegroundLaunchEnabled());
+  EXPECT_FALSE(features::IsForegroundLaunchInfoBarEnabled());
+
+  // Case 3: Base feature enabled, InfoBar feature explicitly enabled ->
+  // Returns true.
+  feature_list.Reset();
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kLaunchOnStartup,
+                             {{features::kLaunchOnStartupModeParam.name,
+                               "foreground"}}},
+                            {features::kLaunchOnStartupInfoBar, {}}},
+      /*disabled_features=*/{});
+  EXPECT_TRUE(features::IsForegroundLaunchEnabled());
+  EXPECT_TRUE(features::IsForegroundLaunchInfoBarEnabled());
+
+  // Case 4: Base feature disabled -> Returns false.
+  feature_list.Reset();
+  feature_list.InitAndDisableFeature(features::kLaunchOnStartup);
+  EXPECT_FALSE(features::IsForegroundLaunchEnabled());
+  EXPECT_FALSE(features::IsForegroundLaunchInfoBarEnabled());
 }
