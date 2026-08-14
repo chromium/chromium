@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_login_pref_names.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -285,7 +287,8 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
   if (IsArcBlockedDueToIncompatibleFileSystem(profile)) {
     VLOG(1) << "Attempt to launch " << app_id
             << " while ARC++ is blocked due to incompatible file system.";
-    arc::ShowArcMigrationGuideNotification(profile);
+    arc::ShowArcMigrationGuideNotification(CHECK_DEREF(
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context)));
     return false;
   }
 

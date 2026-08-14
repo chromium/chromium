@@ -63,6 +63,7 @@ include_rules = [
   "+chromeos/ash/services/keymint/public",
   "+services/tracing/public",
   "+third_party/boringssl/src/pki",
+  "+ui/message_center/message_center.h",
 
   # Unsafe to use from //chrome. See //chrome/browser/DEPS.
   "-components/user_prefs/test/test_browser_context_with_prefs.h",

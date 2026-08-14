@@ -139,6 +139,7 @@ static_library("session") {
     "//chrome/browser/prefs:util",
     "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/concierge",
@@ -188,6 +189,7 @@ source_set("unit_tests") {
 
   deps = [
     ":session",
+    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chrome/app/vector_icons",
@@ -222,9 +224,11 @@ source_set("unit_tests") {
     "//components/session_manager/core",
     "//components/session_manager/core:test_support",
     "//components/strings:components_strings_grit",
+    "//components/user_manager",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",
+    "//ui/message_center",
   ]
 }
 
