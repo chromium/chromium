@@ -34,9 +34,91 @@ function getScopedUniqueSubEventName(eventName) {
 // the same process, they have additional identifiers of the service worker
 // thread and version.
 function getUniqueSubEventName(eventName) {
-  return isServiceWorkerContext ?
-      getScopedUniqueSubEventName(eventName) :
-      getGloballyUniqueSubEventName(eventName);
+  return isServiceWorkerContext ? getScopedUniqueSubEventName(eventName) :
+                                  getGloballyUniqueSubEventName(eventName);
+}
+
+function hasExtraInfo(extraInfo, option) {
+  return !!extraInfo && $Array.indexOf(extraInfo, option) >= 0;
+}
+
+// Header names delivered only to "extraHeaders" listeners.
+// NOTE: Keep in sync with `kExtra{Request,Response}HeaderNames` in
+// //extensions/common/api/web_request/web_request_constants.h.
+const kExtraRequestHeaderNames =
+    ['accept-encoding', 'accept-language', 'cookie', 'origin', 'referer'];
+const kExtraResponseHeaderNames = ['set-cookie'];
+
+// Returns a copy of `headers` ({name, value} pairs) excluding any entries
+// whose name is in `hiddenNames` (case-insensitive).
+function eraseHeaders(headers, hiddenNames) {
+  const result = [];
+  for (let i = 0; i < headers.length; ++i) {
+    if ($Array.indexOf(hiddenNames, $String.toLowerCase(headers[i].name)) < 0) {
+      $Array.push(result, headers[i]);
+    }
+  }
+  return result;
+}
+
+// Removes rawDER from the first certificate in `details.securityInfo`.
+// The browser sets rawDER only on the leaf certificate (see `SetSecurityInfo`).
+// NOTE: Keep in sync with `FilterSecurityInfo()` in
+// //extensions/browser/api/web_request/web_request_event_details.cc.
+function filterSecurityInfo(details) {
+  const securityInfo = details.securityInfo;
+  if (!securityInfo || !securityInfo.certificates ||
+      !securityInfo.certificates[0]) {
+    return;
+  }
+  delete securityInfo.certificates[0].rawDER;
+}
+
+// Returns optional `details` properties that `extraInfoSpec` doesn't request.
+// NOTE: Keep in sync with `WebRequestEventDetails::GetFilteredDict()`.
+function computeDroppedKeys(extraInfoSpec) {
+  const droppedKeys = [];
+  if (!hasExtraInfo(extraInfoSpec, 'requestHeaders')) {
+    $Array.push(droppedKeys, 'requestHeaders');
+  }
+  if (!hasExtraInfo(extraInfoSpec, 'responseHeaders')) {
+    $Array.push(droppedKeys, 'responseHeaders');
+  }
+  if (!hasExtraInfo(extraInfoSpec, 'requestBody')) {
+    $Array.push(droppedKeys, 'requestBody');
+  }
+  if (!hasExtraInfo(extraInfoSpec, 'securityInfo') &&
+      !hasExtraInfo(extraInfoSpec, 'securityInfoRawDer')) {
+    $Array.push(droppedKeys, 'securityInfo');
+  }
+  return droppedKeys;
+}
+
+// Returns a deep copy of `details` filtered down to `listener`'s
+// extraInfoSpec. Dispatched details contain the union of options across all
+// listeners in the context, so each listener must filter out fields requested
+// by others.
+function getFilteredDetails(details, listener) {
+  // TODO(crbug.com/494684626): Avoid deep-copying fields that are immediately
+  // filtered out below (e.g. raw certificates in `securityInfoRawDer`).
+  const copy = utils.deepCopy(details);
+  for (let i = 0; i < listener.droppedKeys.length; ++i) {
+    delete copy[listener.droppedKeys[i]];
+  }
+  if (!listener.hasExtraHeaders) {
+    if (copy.requestHeaders) {
+      copy.requestHeaders =
+          eraseHeaders(copy.requestHeaders, kExtraRequestHeaderNames);
+    }
+    if (copy.responseHeaders) {
+      copy.responseHeaders =
+          eraseHeaders(copy.responseHeaders, kExtraResponseHeaderNames);
+    }
+  }
+  if (!listener.hasSecurityInfoRawDer) {
+    filterSecurityInfo(copy);
+  }
+  return copy;
 }
 
 // WebRequestEventImpl object. This is used for special webRequest events
@@ -80,8 +162,8 @@ WebRequestEventImpl.prototype.hasListeners = function() {
 // opt_filter is specified, then the callback is only called for events that
 // match the given filters. If opt_extraInfo is specified, the given optional
 // info is sent to the callback.
-WebRequestEventImpl.prototype.addListener =
-    function(cb, opt_filter, opt_extraInfo) {
+WebRequestEventImpl.prototype.addListener = function(
+    cb, opt_filter, opt_extraInfo) {
   // NOTE(benjhayden) New APIs should not use this subEventName trick! It does
   // not play well with event pages. See downloads.onDeterminingFilename and
   // ExtensionDownloadsEventRouter for an alternative approach.
@@ -93,12 +175,11 @@ WebRequestEventImpl.prototype.addListener =
 
   var supportsFilters = true;
   var supportsLazyListeners = true;
-  var subEvent =
-      bindingUtil.createCustomEvent(subEventName, supportsFilters,
-                                    supportsLazyListeners);
+  var subEvent = bindingUtil.createCustomEvent(
+      subEventName, supportsFilters, supportsLazyListeners);
 
   var subEventCallback = cb;
-  if (opt_extraInfo && $Array.indexOf(opt_extraInfo, 'blocking') >= 0) {
+  if (hasExtraInfo(opt_extraInfo, 'blocking')) {
     var eventName = this.eventName;
     var webViewInstanceId = this.webViewInstanceId;
     subEventCallback = function() {
@@ -132,8 +213,7 @@ WebRequestEventImpl.prototype.addListener =
         handleHandlerError(e);
       }
     };
-  } else if (
-      opt_extraInfo && $Array.indexOf(opt_extraInfo, 'asyncBlocking') >= 0) {
+  } else if (hasExtraInfo(opt_extraInfo, 'asyncBlocking')) {
     var eventName = this.eventName;
     var webViewInstanceId = this.webViewInstanceId;
     subEventCallback = function() {
@@ -146,11 +226,13 @@ WebRequestEventImpl.prototype.addListener =
       $Function.apply(cb, null, [details, handledCallback]);
     };
   }
-  $Array.push(this.subEvents,
+  $Array.push(
+      this.subEvents,
       {subEvent: subEvent, callback: cb, subEventCallback: subEventCallback});
 
-  subEvent.addListener(subEventCallback, opt_filter,
-    { extraInfo: opt_extraInfo, webViewInstanceId: this.webViewInstanceId });
+  subEvent.addListener(
+      subEventCallback, opt_filter,
+      {extraInfo: opt_extraInfo, webViewInstanceId: this.webViewInstanceId});
 };
 
 // Unregisters a callback.

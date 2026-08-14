@@ -20,6 +20,8 @@ inline constexpr char kContextDispatchWindowIdKey[] = "windowId";
 // Request/response header names only delivered to webRequest listeners that
 // registered the "extraHeaders" option. Lowercase for case-insensitive
 // comparison.
+// NOTE: Keep in sync with the corresponding constants in
+// //extensions/renderer/resources/web_request_event.js.
 inline constexpr auto kExtraRequestHeaderNames =
     base::MakeFixedFlatSet<std::string_view>(
         {"accept-encoding", "accept-language", "cookie", "origin", "referer"});

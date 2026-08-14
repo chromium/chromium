@@ -53,6 +53,8 @@ void EraseHeadersIf(
   });
 }
 
+// NOTE: Keep in sync with `filterSecurityInfo()` in
+// //extensions/renderer/resources/web_request_event.js.
 void FilterSecurityInfo(base::DictValue& result, int extra_info_spec) {
   if (!(extra_info_spec & ExtraInfoSpec::SECURITY_INFO)) {
     result.Remove(keys::kSecurityInfoKey);
@@ -242,6 +244,8 @@ void WebRequestEventDetails::SetResponseSource(const WebRequestInfo& request) {
   }
 }
 
+// NOTE: Keep in sync with `getFilteredDetails()` in
+// //extensions/renderer/resources/web_request_event.js.
 base::DictValue WebRequestEventDetails::GetFilteredDict(
     int extra_info_spec,
     PermissionHelper* permission_helper,
