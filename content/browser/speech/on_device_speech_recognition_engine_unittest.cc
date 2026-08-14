@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -298,6 +299,41 @@ TEST(OnDeviceSpeechRecognitionEngine, EmptyLanguagePropagation) {
       FROM_HERE,
       base::BindLambdaForTesting([&]() { ui_model_client.reset(); }));
   task_environment.RunUntilIdle();
+}
+
+TEST(OnDeviceSpeechRecognitionEngine, TakeAudioChunkStereo) {
+  BrowserTaskEnvironment task_environment;
+  OnDeviceSpeechRecognitionEngine engine(SpeechRecognitionSessionConfig{});
+
+  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::ChannelLayoutConfig::Stereo(), 16000,
+                                160);
+  engine.SetAudioParameters(params);
+
+  // 4 int16_t samples = 2 stereo frames (L1, R1, L2, R2).
+  constexpr std::array<int16_t, 4> raw_pcm = {1000, 3000, -2000, 4000};
+  auto chunk = base::MakeRefCounted<AudioChunk>(base::as_byte_span(raw_pcm),
+                                                sizeof(int16_t));
+
+  engine.TakeAudioChunk(*chunk);
+
+  // Average for frame 1: (1000 + 3000) / 2 = 2000
+  // Average for frame 2: (-2000 + 4000) / 2 = 1000
+  ASSERT_EQ(engine.accumulated_audio_data_.size(), 2u);
+  EXPECT_EQ(engine.accumulated_audio_data_[0], 2000);
+  EXPECT_EQ(engine.accumulated_audio_data_[1], 1000);
+}
+
+TEST(OnDeviceSpeechRecognitionEngine, NullDelegateOnResponseAndDisconnect) {
+  BrowserTaskEnvironment task_environment;
+  OnDeviceSpeechRecognitionEngine engine(SpeechRecognitionSessionConfig{});
+
+  // Calling OnResponse with nullptr delegate_ should not crash.
+  std::vector<on_device_model::mojom::SpeechRecognitionResultPtr> results;
+  engine.OnResponse(std::move(results));
+
+  // AudioChunksEnded with nullptr delegate_ should not crash.
+  engine.AudioChunksEnded();
 }
 
 }  // namespace content

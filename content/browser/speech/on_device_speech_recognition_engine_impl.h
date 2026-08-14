@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -105,6 +106,7 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
   FRIEND_TEST(OnDeviceSpeechRecognitionEngine, Reinitialization);
   FRIEND_TEST(OnDeviceSpeechRecognitionEngine, LanguagePropagation);
   FRIEND_TEST(OnDeviceSpeechRecognitionEngine, EmptyLanguagePropagation);
+  FRIEND_TEST(OnDeviceSpeechRecognitionEngine, TakeAudioChunkStereo);
 
   void OnAsrStreamCreated(
       mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> asr_stream,
@@ -122,7 +124,7 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
   mojo::Remote<on_device_model::mojom::AsrStreamInput> asr_stream_;
   mojo::Receiver<on_device_model::mojom::AsrStreamResponder>
       asr_stream_responder_{this};
-  std::vector<int16_t> accumulated_audio_data_;
+  base::circular_deque<int16_t> accumulated_audio_data_;
 
   base::TimeDelta audio_duration_;
 
