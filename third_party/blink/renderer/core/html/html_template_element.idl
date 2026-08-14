@@ -56,10 +56,4 @@
     [CEReactions, Reflect, RuntimeEnabled=DeclarativeFragment] attribute boolean buffer;
     [CEReactions, Reflect, RuntimeEnabled=DeclarativeFragment] attribute DOMString sanitize;
     [CEReactions, Reflect=for, RuntimeEnabled=DocumentPatching] attribute DOMString htmlFor;
-
-    // TODO(crbug.com/545645928) when upstreaming: make these an interface mixin?
-    [CEReactions, Reflect, URL, RuntimeEnabled=DeclarativeFragment] attribute USVString src;
-    [CEReactions, Reflect, ReflectOnly=("anonymous","use-credentials"), ReflectEmpty="anonymous", ReflectInvalid="anonymous", RuntimeEnabled=DeclarativeFragment] attribute DOMString? crossOrigin;
-    [CEReactions, Reflect, ReflectOnly=("", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"), ReflectMissing="", ReflectInvalid="", RuntimeEnabled=DeclarativeFragment] attribute DOMString? referrerPolicy;
-    [Reflect, RuntimeEnabled=DeclarativeFragment] attribute DOMString integrity;
 };

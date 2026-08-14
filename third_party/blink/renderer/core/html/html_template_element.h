@@ -78,14 +78,13 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
 
   bool IsShadowRootModeTemplate() const { return override_insertion_target_; }
 
-  void SetPatch(Patch* patch);
+  void SetPatch(Patch* patch) { patch_ = patch; }
   Patch* GetPatch() const { return patch_; }
 
  private:
   void CloneNonAttributePropertiesFrom(const Element&,
                                        NodeCloningData&) override;
   void DidMoveToNewDocument(Document& old_document) override;
-  void RemovedFrom(ContainerNode&) override;
   void FinishParsingChildren() override;
   mutable Member<TemplateContentDocumentFragment> content_;
 

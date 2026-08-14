@@ -1214,10 +1214,7 @@ html element td
 html element template
     property buffer
     property content
-    property crossOrigin
     property htmlFor
-    property integrity
-    property referrerPolicy
     property sanitize
     property shadowRootAdoptedStyleSheets
     property shadowRootClonable
@@ -1227,7 +1224,6 @@ html element template
     property shadowRootReferenceTarget
     property shadowRootSerializable
     property shadowRootSlotAssignment
-    property src
 html element textarea
     property autocomplete
     property checkValidity

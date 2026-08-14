@@ -5434,10 +5434,7 @@ interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
     getter buffer
     getter content
-    getter crossOrigin
     getter htmlFor
-    getter integrity
-    getter referrerPolicy
     getter sanitize
     getter shadowRootAdoptedStyleSheets
     getter shadowRootClonable
@@ -5447,13 +5444,9 @@ interface HTMLTemplateElement : HTMLElement
     getter shadowRootReferenceTarget
     getter shadowRootSerializable
     getter shadowRootSlotAssignment
-    getter src
     method constructor
     setter buffer
-    setter crossOrigin
     setter htmlFor
-    setter integrity
-    setter referrerPolicy
     setter sanitize
     setter shadowRootAdoptedStyleSheets
     setter shadowRootClonable
@@ -5463,7 +5456,6 @@ interface HTMLTemplateElement : HTMLElement
     setter shadowRootReferenceTarget
     setter shadowRootSerializable
     setter shadowRootSlotAssignment
-    setter src
 interface HTMLTextAreaElement : HTMLElement
     attribute @@toStringTag
     getter autocomplete

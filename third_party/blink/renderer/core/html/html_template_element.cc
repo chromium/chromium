@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -116,25 +115,8 @@ ContainerNode* HTMLTemplateElement::InsertionTarget() const {
 }
 
 void HTMLTemplateElement::FinishParsingChildren() {
-  HTMLElement::FinishParsingChildren();
   if (patch_) {
-    patch_->DidFinishParsingChildren(this);
-    // We need to keep track of patch_, to clean things up if a <template src>
-    // is removed.
-    if (!RuntimeEnabledFeatures::DeclarativeFragmentEnabled()) {
-      patch_ = nullptr;
-    }
-  }
-}
-
-void HTMLTemplateElement::SetPatch(Patch* patch) {
-  patch_ = patch;
-}
-
-void HTMLTemplateElement::RemovedFrom(ContainerNode& insertion_point) {
-  HTMLElement::RemovedFrom(insertion_point);
-  if (patch_) {
-    patch_->DidRemoveTemplateElement();
+    patch_->Finalize(this);
     patch_ = nullptr;
   }
 }
