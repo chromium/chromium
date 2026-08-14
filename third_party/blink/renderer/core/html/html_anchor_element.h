@@ -101,7 +101,6 @@ class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
 
  private:
   void AttributeChanged(const AttributeModificationParams&) override;
-  bool ShouldHaveFocusAppearance() const final;
   FocusableState IsFocusableState(
       UpdateBehavior update_behavior) const override;
   bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const override;

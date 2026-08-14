@@ -103,18 +103,6 @@ FocusableState HTMLAnchorElementBase::SupportsFocus(
   return HTMLElement::SupportsFocus(update_behavior);
 }
 
-bool HTMLAnchorElementBase::ShouldHaveFocusAppearance() const {
-  if (RuntimeEnabledFeatures::AnchorFocusRingFixEnabled()) {
-    // When this flag is removed, we can remove
-    // HTMLAnchorElementBase::ShouldHaveFocusAppearance.
-    return HTMLElement::ShouldHaveFocusAppearance();
-  }
-  // TODO(crbug.com/1444450): Can't this be done with focus-visible now?
-  return (GetDocument().LastFocusType() != mojom::blink::FocusType::kMouse) ||
-         HTMLElement::SupportsFocus(UpdateBehavior::kNoneForFocusManagement) !=
-             FocusableState::kNotFocusable;
-}
-
 FocusableState HTMLAnchorElementBase::IsFocusableState(
     UpdateBehavior update_behavior) const {
   if (!IsFocusableStyle(update_behavior)) {
