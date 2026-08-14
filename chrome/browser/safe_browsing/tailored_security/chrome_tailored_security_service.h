@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager.h"
 #endif
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -88,7 +88,8 @@ class ChromeTailoredSecurityService : public TailoredSecurityService,
   // Shows a dialog on the provided `browser`. If `show_enable_dialog` is
   // true, display the enabled dialog; otherwise show the disabled dialog.
   // This method is virtual to support testing.
-  virtual void DisplayDesktopDialog(Browser* browser, bool show_enable_dialog);
+  virtual void DisplayDesktopDialog(BrowserWindowInterface* browser,
+                                    bool show_enable_dialog);
 #endif
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;

@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
@@ -596,10 +596,10 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                     .size());
 
   // Opens a new browser window.
-  Browser* browser2 = CreateBrowser(profile);
+  BrowserWindowInterface* browser2 = CreateBrowser(profile);
   // Shows modal dialog on this new web_contents.
   content::WebContents* new_web_contents =
-      browser2->tab_strip_model()->GetActiveWebContents();
+      browser2->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser2, GURL("data:text/html,<html></html>")));
   scoped_refptr<PasswordProtectionRequest> new_request =

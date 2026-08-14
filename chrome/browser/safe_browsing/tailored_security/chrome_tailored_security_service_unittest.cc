@@ -20,6 +20,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -141,7 +142,7 @@ class TestChromeTailoredSecurityService : public ChromeTailoredSecurityService {
   // ChromeTailoredSecurityService:
   // This method is overridden so we can detect the number of times that the
   // dialog has been requested to be shown and what the last value was.
-  void DisplayDesktopDialog(Browser* browser,
+  void DisplayDesktopDialog(BrowserWindowInterface* browser,
                             bool show_enable_dialog) override {
     previous_show_enable_dialog_value_ = show_enable_dialog;
     times_display_desktop_dialog_called_++;
@@ -257,8 +258,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
         .WillByDefault(testing::Return(false));
     ON_CALL(*mock_browser_, GetWindow())
         .WillByDefault(testing::Return(&dummy_window_));
-    ON_CALL(*mock_browser_, GetBrowserForMigrationOnly())
-        .WillByDefault(testing::Return(nullptr));
 
     // Get the injected fake service and hand it the mock.
     static_cast<FakeBrowserManagerService*>(

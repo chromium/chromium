@@ -44,7 +44,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -244,11 +244,12 @@ GURL ConstructJsRequestURL(const GURL& base_url, JsRequestType request_type) {
 // Navigate |browser| to |url| and wait for the title to change to "NOT BLOCKED"
 // or "ERROR". This is specific to the tests using malware_js_request.html.
 // Returns the new title.
-std::string JsRequestTestNavigateAndWaitForTitle(Browser* browser,
-                                                 const GURL& url) {
+std::string JsRequestTestNavigateAndWaitForTitle(
+    BrowserWindowInterface* browser,
+    const GURL& url) {
   std::u16string expected_title = u"ERROR";
   content::TitleWatcher title_watcher(
-      browser->tab_strip_model()->GetActiveWebContents(), expected_title);
+      browser->GetTabStripModel()->GetActiveWebContents(), expected_title);
   title_watcher.AlsoWaitForTitle(u"NOT BLOCKED");
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
@@ -488,8 +489,8 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  bool ShowingInterstitialPage(Browser* browser) {
-    WebContents* contents = browser->tab_strip_model()->GetActiveWebContents();
+  bool ShowingInterstitialPage(BrowserWindowInterface* browser) {
+    WebContents* contents = browser->GetTabStripModel()->GetActiveWebContents();
     return chrome_browser_interstitials::IsShowingInterstitial(contents);
   }
 

@@ -16,7 +16,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/search_hijacking_detector.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -113,8 +113,8 @@ class ExtensionTelemetryServiceBrowserTest
   }
 
  protected:
-  content::WebContents* web_contents(Browser* browser) const {
-    return browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents(BrowserWindowInterface* browser) const {
+    return browser->GetTabStripModel()->GetActiveWebContents();
   }
 
   PrefService* prefs() { return browser()->GetProfile()->GetPrefs(); }

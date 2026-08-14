@@ -10,7 +10,8 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,12 +34,12 @@ void InnerContentsCreationObserver::InnerWebContentsCreated(
 }
 
 TestSafeBrowsingNavigationObserverManager::
-    TestSafeBrowsingNavigationObserverManager(Browser* browser)
+    TestSafeBrowsingNavigationObserverManager(BrowserWindowInterface* browser)
     : SafeBrowsingNavigationObserverManager(browser->GetProfile()->GetPrefs(),
                                             browser->GetProfile()
                                                 ->GetDefaultStoragePartition()
                                                 ->GetServiceWorkerContext()) {
-  browser->tab_strip_model()->AddObserver(this);
+  browser->GetTabStripModel()->AddObserver(this);
 }
 TestSafeBrowsingNavigationObserverManager::
     ~TestSafeBrowsingNavigationObserverManager() = default;

@@ -31,7 +31,6 @@
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #else
 #include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -179,7 +178,7 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
   if (base::FeatureList::IsEnabled(safe_browsing::kNoticeQueueForEsb)) {
     QueueNotice(is_enabled);
   } else {
-    DisplayDesktopDialog(browser->GetBrowserForMigrationOnly(), is_enabled);
+    DisplayDesktopDialog(browser, is_enabled);
   }
 
 #endif
@@ -204,8 +203,7 @@ void ChromeTailoredSecurityService::TriggerDialogDisplay(
       ProfileBrowserCollection::GetForProfile(profile_);
   BrowserWindowInterface* browser =
       collection ? collection->GetLastActiveBrowser() : nullptr;
-  DisplayDesktopDialog(
-      browser ? browser->GetBrowserForMigrationOnly() : nullptr, is_enabled);
+  DisplayDesktopDialog(browser, is_enabled);
 }
 
 void ChromeTailoredSecurityService::ReleaseEnabledQueueHandle() {
@@ -332,7 +330,7 @@ void ChromeTailoredSecurityService::MessageDismissed() {
 
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeTailoredSecurityService::DisplayDesktopDialog(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     bool show_enable_modal) {
   if (show_enable_modal) {
     dialog_manager_.ShowEnabledDialogForBrowser(
