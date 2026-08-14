@@ -592,12 +592,14 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::WebURLRequest& request,
       const blink::WebURLResponse& response) override;
   void DidChangePerformanceTiming() override;
-  void DidObserveUserInteraction(base::TimeTicks max_event_start,
-                                 base::TimeTicks max_event_queued_main_thread,
-                                 base::TimeTicks max_event_processing_start,
-                                 base::TimeTicks max_event_commit_finish,
-                                 base::TimeTicks max_event_end,
-                                 uint64_t interaction_offset) override;
+  void DidObserveUserInteraction(
+      base::TimeTicks max_event_start,
+      base::TimeTicks max_event_queued_main_thread,
+      base::TimeTicks max_event_processing_start,
+      base::TimeTicks max_event_commit_finish,
+      base::TimeTicks max_event_end,
+      uint64_t interaction_offset,
+      uint64_t performance_timeline_navigation_id) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
   void DidObserveJavaScriptFrameworks(
@@ -610,7 +612,10 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::SoftNavigationMetricsForReporting metrics) override;
   void DidObserveSoftLargestContentfulPaint(
       const blink::LargestContentfulPaintDetailsForReporting& lcp) override;
-  void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
+  void DidObserveLayoutShift(
+      double score,
+      bool after_input_or_scroll,
+      uint64_t performance_timeline_navigation_id) override;
   void DidCreateScriptContext(v8::Local<v8::Context> context,
                               int world_id) override;
   void WillReleaseScriptContext(v8::Local<v8::Context> context,

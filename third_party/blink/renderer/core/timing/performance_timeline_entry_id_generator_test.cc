@@ -12,18 +12,21 @@
 namespace blink {
 
 TEST(PerformanceTimelineEntryIdGeneratorTest, InitialValueIsRandom) {
+  // Default constructor initializes with non_web_exposed_id = 1.
   PerformanceTimelineEntryIdGenerator generator;
   const PerformanceTimelineEntryIdInfo value = generator.GetValue();
-  EXPECT_NE(value.id, PerformanceTimelineEntryIdInfo::kNoId);
-  EXPECT_GE(value.id, PerformanceTimelineEntryIdInfo::kMinId);
-  EXPECT_LE(value.id, PerformanceTimelineEntryIdInfo::kMaxIdForReset);
-  EXPECT_EQ(value.offset, 0u);
+  EXPECT_NE(value, PerformanceTimelineEntryIdInfo::kNone);
+  EXPECT_GE(value.web_exposed_id, PerformanceTimelineEntryIdInfo::kMinId);
+  EXPECT_LE(value.web_exposed_id,
+            PerformanceTimelineEntryIdInfo::kMaxIdForReset);
+  EXPECT_EQ(value.non_web_exposed_id, 1u);
 }
 
 TEST(PerformanceTimelineEntryIdGeneratorTest, ResetValues) {
   std::vector<uint64_t> ids;
   for (int i = 0; i < 100; ++i) {
-    ids.push_back(PerformanceTimelineEntryIdGenerator().GetValue().id);
+    ids.push_back(
+        PerformanceTimelineEntryIdGenerator().GetValue().web_exposed_id);
   }
   // Check that the ids are mostly unique - but we allow 10 collisions,
   // since the ids are randomly generated between 100 and 10000.
@@ -41,12 +44,12 @@ TEST(PerformanceTimelineEntryIdGeneratorTest, ResetValues) {
 TEST(PerformanceTimelineEntryIdGeneratorTest, IncrementValues) {
   PerformanceTimelineEntryIdGenerator generator;
   std::vector<uint64_t> ids;
-  ids.push_back(generator.GetValue().id);
-  EXPECT_EQ(generator.GetValue().offset, 0u);
-  for (uint32_t i = 1; i <= 100; ++i) {
+  ids.push_back(generator.GetValue().web_exposed_id);
+  EXPECT_EQ(generator.GetValue().non_web_exposed_id, 1u);
+  for (uint32_t i = 2; i <= 100; ++i) {
     generator.IncrementId();
-    ids.push_back(generator.GetValue().id);
-    EXPECT_EQ(generator.GetValue().offset, i);
+    ids.push_back(generator.GetValue().web_exposed_id);
+    EXPECT_EQ(generator.GetValue().non_web_exposed_id, i);
   }
   // Check that all ids are unique.
   auto last = std::unique(ids.begin(), ids.end());
@@ -65,24 +68,26 @@ TEST(PerformanceTimelineEntryIdGeneratorTest, IncrementValues) {
 TEST(PerformanceTimelineEntryIdGeneratorTest, IdOverflow) {
   PerformanceTimelineEntryIdGenerator generator;
   // Test what happens when the id grows up to the limit of allowed values:
-  generator.current_value_.id = PerformanceTimelineEntryIdInfo::kMaxId - 1;
-  generator.current_value_.offset = 0;
-  EXPECT_EQ(generator.GetValue().id,
+  generator.current_value_.web_exposed_id =
+      PerformanceTimelineEntryIdInfo::kMaxId - 1;
+  generator.current_value_.non_web_exposed_id = 0;
+  EXPECT_EQ(generator.GetValue().web_exposed_id,
             PerformanceTimelineEntryIdInfo::kMaxId - 1);
 
   generator.IncrementId();
 
   // Should reset id, because kMaxId - 1 + 7 > kMaxId
   const PerformanceTimelineEntryIdInfo value = generator.GetValue();
-  EXPECT_GE(value.id, PerformanceTimelineEntryIdInfo::kMinId);
-  EXPECT_LE(value.id, PerformanceTimelineEntryIdInfo::kMaxIdForReset);
-  // ...But should still increment offset (count) without resetting.
-  EXPECT_EQ(value.offset, 1u);
+  EXPECT_GE(value.web_exposed_id, PerformanceTimelineEntryIdInfo::kMinId);
+  EXPECT_LE(value.web_exposed_id,
+            PerformanceTimelineEntryIdInfo::kMaxIdForReset);
+  // ...But should still increment non_web_exposed_id without resetting.
+  EXPECT_EQ(value.non_web_exposed_id, 1u);
 
   generator.IncrementId();
 
-  EXPECT_GT(generator.GetValue().id, value.id);
-  EXPECT_EQ(generator.GetValue().offset, 2u);
+  EXPECT_GT(generator.GetValue().web_exposed_id, value.web_exposed_id);
+  EXPECT_EQ(generator.GetValue().non_web_exposed_id, 2u);
 }
 
 }  // namespace blink

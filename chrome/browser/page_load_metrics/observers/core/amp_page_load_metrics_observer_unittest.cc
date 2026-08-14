@@ -407,16 +407,20 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {
   page_load_metrics::mojom::FrameRenderDataUpdate render_data;
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(3030), 0.25, false));
+          current_time - base::Milliseconds(3030), 0.25, false,
+          /*navigation_id=*/1u));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(2020), 0.25, false));
+          current_time - base::Milliseconds(2020), 0.25, false,
+          /*navigation_id=*/1u));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(1010), 0.25, true));
+          current_time - base::Milliseconds(1010), 0.25, true,
+          /*navigation_id=*/1u));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(0), 0.25, true));
+          current_time - base::Milliseconds(0), 0.25, true,
+          /*navigation_id=*/1u));
   tester()->SimulateRenderDataUpdate(render_data, subframe);
 
   // Navigate the main frame to trigger metrics recording.
@@ -468,19 +472,24 @@ TEST_P(AMPPageLoadMetricsObserverTest,
 
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(4000), 0.1, false));
+          current_time - base::Milliseconds(4000), 0.1, false,
+          /*navigation_id=*/1u));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(3000), 0.1, false));
+          current_time - base::Milliseconds(3000), 0.1, false,
+          /*navigation_id=*/1u));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(2000), 0.2, false));
+          current_time - base::Milliseconds(2000), 0.2, false,
+          /*navigation_id=*/1u));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(200), 0.1, false));
+          current_time - base::Milliseconds(200), 0.1, false,
+          /*navigation_id=*/1u));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(100), 0.15, false));
+          current_time - base::Milliseconds(100), 0.15, false,
+          /*navigation_id=*/1u));
 
   tester()->SimulateRenderDataUpdate(render_data, subframe);
 
@@ -534,13 +543,13 @@ TEST_P(AMPPageLoadMetricsObserverTest,
   base::TimeTicks current_time = base::TimeTicks::Now();
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(50), 1, current_time + base::Milliseconds(1000),
-      current_time + base::Milliseconds(1050)));
+      current_time + base::Milliseconds(1050), /*navigation_id=*/1u));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(100), 2, current_time + base::Milliseconds(2000),
-      current_time + base::Milliseconds(2070)));
+      current_time + base::Milliseconds(2070), /*navigation_id=*/1u));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(150), 3, current_time + base::Milliseconds(3000),
-      current_time + base::Milliseconds(3066)));
+      current_time + base::Milliseconds(3066), /*navigation_id=*/1u));
 
   tester()->SimulateEventTimingUpdate(event_timings, subframe);
 
@@ -598,13 +607,13 @@ TEST_P(AMPPageLoadMetricsObserverTest,
   base::TimeTicks current_time = base::TimeTicks::Now();
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(50), 1, current_time + base::Milliseconds(1000),
-      current_time + base::Milliseconds(1050)));
+      current_time + base::Milliseconds(1050), /*navigation_id=*/1u));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(100), 2, current_time + base::Milliseconds(2000),
-      current_time + base::Milliseconds(2070)));
+      current_time + base::Milliseconds(2070), /*navigation_id=*/1u));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(150), 3, current_time + base::Milliseconds(3000),
-      current_time + base::Milliseconds(3066)));
+      current_time + base::Milliseconds(3066), /*navigation_id=*/1u));
 
   tester()->SimulateEventTimingUpdate(event_timings, subframe);
 

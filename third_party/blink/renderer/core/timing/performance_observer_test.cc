@@ -93,7 +93,7 @@ TEST_F(PerformanceObserverTest, ObserveWithBufferedFlag) {
   // add a layout-shift to performance so getEntries() returns it
   auto* entry =
       LayoutShift::Create(0.0, 1234, true, 5678, LayoutShift::AttributionList(),
-                          window, performance->NavigationId());
+                          window, performance->NavigationId().web_exposed_id);
   base_->AddToLayoutShiftBuffer(*entry);
 
   // call observe with the buffered flag

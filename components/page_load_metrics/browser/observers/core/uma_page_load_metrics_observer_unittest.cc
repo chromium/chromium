@@ -1146,13 +1146,16 @@ TEST_P(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
   base::TimeTicks current_time = base::TimeTicks::Now();
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(50), 1, current_time + base::Milliseconds(1000),
-      current_time + base::Milliseconds(1050)));
+      current_time + base::Milliseconds(1050),
+      /*performance_timeline_navigation_id=*/1u));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(100), 2, current_time + base::Milliseconds(2000),
-      current_time + base::Milliseconds(2050)));
+      current_time + base::Milliseconds(2050),
+      /*performance_timeline_navigation_id=*/1u));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(150), 3, current_time + base::Milliseconds(3000),
-      current_time + base::Milliseconds(3050)));
+      current_time + base::Milliseconds(3050),
+      /*performance_timeline_navigation_id=*/1u));
   NavigateAndCommit(GURL(kDefaultTestUrl));
   tester()->SimulateEventTimingUpdate(event_timings);
   // Navigate again to force histogram recording.

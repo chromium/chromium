@@ -862,10 +862,14 @@ void LocalFrameClientImpl::DidObserveUserInteraction(
     base::TimeTicks max_event_processing_start,
     base::TimeTicks max_event_commit_finish,
     base::TimeTicks max_event_end,
-    uint64_t interaction_offset) {
-  web_frame_->Client()->DidObserveUserInteraction(
-      max_event_start, max_event_queued_main_thread, max_event_processing_start,
-      max_event_commit_finish, max_event_end, interaction_offset);
+    PerformanceTimelineEntryIdInfo interaction_id,
+    PerformanceTimelineEntryIdInfo navigation_id) {
+  if (web_frame_->Client()) {
+    web_frame_->Client()->DidObserveUserInteraction(
+        max_event_start, max_event_queued_main_thread,
+        max_event_processing_start, max_event_commit_finish, max_event_end,
+        interaction_id.non_web_exposed_id, navigation_id.non_web_exposed_id);
+  }
 }
 
 void LocalFrameClientImpl::DidChangeCpuTiming(base::TimeDelta time) {
@@ -913,10 +917,13 @@ void LocalFrameClientImpl::DidObserveSoftLargestContentfulPaint(
   web_frame_->Client()->DidObserveSoftLargestContentfulPaint(lcp);
 }
 
-void LocalFrameClientImpl::DidObserveLayoutShift(double score,
-                                                 bool after_input_or_scroll) {
+void LocalFrameClientImpl::DidObserveLayoutShift(
+    double score,
+    bool after_input_or_scroll,
+    PerformanceTimelineEntryIdInfo navigation_id) {
   if (WebLocalFrameClient* client = web_frame_->Client()) {
-    client->DidObserveLayoutShift(score, after_input_or_scroll);
+    client->DidObserveLayoutShift(score, after_input_or_scroll,
+                                  navigation_id.non_web_exposed_id);
   }
 }
 

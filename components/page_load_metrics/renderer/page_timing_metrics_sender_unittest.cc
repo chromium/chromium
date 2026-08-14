@@ -302,17 +302,20 @@ TEST_F(PageTimingMetricsSenderTest, SendPageRenderData) {
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
 
-  metrics_sender_->DidObserveLayoutShift(0.5, false);
-  metrics_sender_->DidObserveLayoutShift(0.5, false);
-  metrics_sender_->DidObserveLayoutShift(0.5, true);
+  metrics_sender_->DidObserveLayoutShift(
+      0.5, false, /*performance_timeline_navigation_id=*/1);
+  metrics_sender_->DidObserveLayoutShift(
+      0.5, false, /*performance_timeline_navigation_id=*/1);
+  metrics_sender_->DidObserveLayoutShift(
+      0.5, true, /*performance_timeline_navigation_id=*/1);
 
   mojom::FrameRenderDataUpdate render_data;
   render_data.new_layout_shifts.emplace_back(
-      mojom::LayoutShift::New(base::TimeTicks::Now(), 0.5, false));
+      mojom::LayoutShift::New(base::TimeTicks::Now(), 0.5, false, 1u));
   render_data.new_layout_shifts.emplace_back(
-      mojom::LayoutShift::New(base::TimeTicks::Now(), 0.5, false));
+      mojom::LayoutShift::New(base::TimeTicks::Now(), 0.5, false, 1u));
   render_data.new_layout_shifts.emplace_back(
-      mojom::LayoutShift::New(base::TimeTicks::Now(), 0.5, true));
+      mojom::LayoutShift::New(base::TimeTicks::Now(), 0.5, true, 1u));
   validator_.UpdateExpectFrameRenderDataUpdate(render_data);
 
   metrics_sender_->mock_timer()->Fire();
@@ -368,16 +371,20 @@ TEST_F(PageTimingMetricsSenderTest, SendInteractions) {
   // max_event_queued and max_event_commit_finish is irrelevant to this test.
   metrics_sender_->DidObserveUserInteraction(
       interaction_start_1, base::TimeTicks(), base::TimeTicks(),
-      base::TimeTicks(), interaction_end_1, 0);
+      base::TimeTicks(), interaction_end_1, /*interaction_offset=*/0,
+      /*performance_timeline_navigation_id=*/1);
   validator_.UpdateExpectedInteractionTiming(
-      interaction_duration_1, 0, interaction_start_1, base::TimeTicks());
+      interaction_duration_1, /*interaction_offset=*/0, interaction_start_1,
+      base::TimeTicks(), /*performance_timeline_navigation_id=*/1);
 
   // max_event_queued and max_event_commit_finish is irrelevant to this test.
   metrics_sender_->DidObserveUserInteraction(
       interaction_start_2, base::TimeTicks(), base::TimeTicks(),
-      base::TimeTicks(), interaction_end_2, 1);
+      base::TimeTicks(), interaction_end_2, /*interaction_offset=*/1,
+      /*performance_timeline_navigation_id=*/1);
   validator_.UpdateExpectedInteractionTiming(
-      interaction_duration_2, 1, interaction_start_2, base::TimeTicks());
+      interaction_duration_2, /*interaction_offset=*/1, interaction_start_2,
+      base::TimeTicks(), /*performance_timeline_navigation_id=*/1);
 
   // Fire the timer to trigger sending of features via an SendTiming call.
   metrics_sender_->mock_timer()->Fire();

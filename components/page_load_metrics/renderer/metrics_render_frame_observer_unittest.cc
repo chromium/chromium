@@ -188,14 +188,15 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
   validator_.ExpectPageLoadTiming(timing);
 
   auto soft_navigation_metrics = mojom::SoftNavigationMetrics::New();
+  soft_navigation_metrics->performance_timeline_navigation_id = 2;
+  soft_navigation_metrics->start_time = base::Milliseconds(221.1);
   soft_navigation_metrics->same_document_metrics_token =
       base::UnguessableToken::Create();
-  soft_navigation_metrics->soft_navigation_offset = 1;
-  soft_navigation_metrics->start_time = base::Milliseconds(221.1);
   validator_.ExpectSoftNavigationMetrics(*soft_navigation_metrics);
 
   observer_.DidObserveSoftNavigation(blink::SoftNavigationMetricsForReporting{
-      .soft_navigation_offset = soft_navigation_metrics->soft_navigation_offset,
+      .performance_timeline_navigation_id =
+          soft_navigation_metrics->performance_timeline_navigation_id,
       .start_time = timing.navigation_start - base::Time::UnixEpoch() +
                     soft_navigation_metrics->start_time,
       .same_document_metrics_token =
@@ -216,15 +217,20 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
       soft_lcp + soft_navigation_metrics->start_time;
   soft_largest_contentful_paint->largest_image_paint_size = 2500;
 
+  soft_largest_contentful_paint->performance_timeline_navigation_id =
+      soft_navigation_metrics->performance_timeline_navigation_id;
   validator_.ExpectSoftLargestContentfulPaint(*soft_largest_contentful_paint);
   observer_.DidObserveSoftLargestContentfulPaint(
       blink::LargestContentfulPaintDetailsForReporting{
           .image_paint_time =
               (timing.navigation_start - base::Time::UnixEpoch() +
-               soft_navigation_metrics->start_time + soft_lcp)
+               soft_largest_contentful_paint->largest_image_paint.value())
                   .InSecondsF(),
           .image_paint_size =
-              soft_largest_contentful_paint->largest_image_paint_size});
+              soft_largest_contentful_paint->largest_image_paint_size,
+          .performance_timeline_navigation_id =
+              soft_largest_contentful_paint
+                  ->performance_timeline_navigation_id});
   validator_.ExpectPageLoadTiming(timing);
   observer_.GetMockTimer()->Fire();
   validator_.VerifyExpectedTimings();
@@ -240,13 +246,14 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
   validator_.ExpectPageLoadTiming(timing);
 
   soft_navigation_metrics = mojom::SoftNavigationMetrics::New();
+  soft_navigation_metrics->performance_timeline_navigation_id = 3;
+  soft_navigation_metrics->start_time = base::Milliseconds(4020.71);
   soft_navigation_metrics->same_document_metrics_token =
       base::UnguessableToken::Create();
-  soft_navigation_metrics->soft_navigation_offset = 2;
-  soft_navigation_metrics->start_time = base::Milliseconds(4020.71);
 
   observer_.DidObserveSoftNavigation(blink::SoftNavigationMetricsForReporting{
-      .soft_navigation_offset = soft_navigation_metrics->soft_navigation_offset,
+      .performance_timeline_navigation_id =
+          soft_navigation_metrics->performance_timeline_navigation_id,
       .start_time = timing.navigation_start - base::Time::UnixEpoch() +
                     soft_navigation_metrics->start_time,
       .same_document_metrics_token =

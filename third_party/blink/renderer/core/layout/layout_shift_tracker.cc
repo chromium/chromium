@@ -634,17 +634,19 @@ LayoutShift::AttributionList LayoutShiftTracker::CreateAttributionList() const {
 void LayoutShiftTracker::SubmitPerformanceEntry(double score_delta,
                                                 bool had_recent_input) const {
   LocalDOMWindow* window = frame_view_->GetFrame().DomWindow();
-  if (!window)
+  if (!window) {
     return;
+  }
   WindowPerformance* performance = DOMWindowPerformance::performance(*window);
-  DCHECK(performance);
+  if (!performance) {
+    return;
+  }
 
   double input_timestamp = LastInputTimestamp();
-  LayoutShift* entry = LayoutShift::Create(
-      performance->now(), score_delta, had_recent_input, input_timestamp,
-      CreateAttributionList(), window, performance->NavigationId());
-
-  // Add WPT for LayoutShift. See crbug.com/1320878.
+  LayoutShift* entry =
+      LayoutShift::Create(performance->now(), score_delta, had_recent_input,
+                          input_timestamp, CreateAttributionList(), window,
+                          performance->NavigationId().web_exposed_id);
 
   performance->AddLayoutShiftEntry(entry);
 }
@@ -658,8 +660,14 @@ void LayoutShiftTracker::ReportShift(double score_delta,
     score_ += score_delta;
     if (weighted_score_delta > 0) {
       weighted_score_ += weighted_score_delta;
-      frame.Client()->DidObserveLayoutShift(weighted_score_delta,
-                                            observed_input_or_scroll_);
+      LocalDOMWindow* window = frame.DomWindow();
+      WindowPerformance* performance =
+          window ? DOMWindowPerformance::performance(*window) : nullptr;
+      PerformanceTimelineEntryIdInfo navigation_id =
+          performance ? performance->NavigationId()
+                      : PerformanceTimelineEntryIdInfo::kNone;
+      frame.Client()->DidObserveLayoutShift(
+          weighted_score_delta, observed_input_or_scroll_, navigation_id);
     }
   }
 

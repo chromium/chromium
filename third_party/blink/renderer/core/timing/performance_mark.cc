@@ -105,7 +105,7 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
   return MakeGarbageCollected<PerformanceMark>(
       mark_name, start, unsafe_start_for_traces, std::move(serialized_detail),
       exception_state, LocalDOMWindow::From(script_state),
-      performance->NavigationId());
+      performance->NavigationId().web_exposed_id);
 }
 
 const AtomicString& PerformanceMark::entryType() const {

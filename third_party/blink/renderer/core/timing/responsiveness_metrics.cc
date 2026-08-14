@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -330,7 +331,6 @@ void ResponsivenessMetrics::HandleCompositionInteraction(
     return;
   }
 
-
   if (event_type == event_type_names::kKeydown) {
     CHECK_EQ(composition_state_, kCompositionActive);
     last_keydown_interaction_id_ = AssignNewKeyboardInteractionId(
@@ -542,8 +542,7 @@ void ResponsivenessMetrics::ReportToMetrics(PerformanceEventTiming* entry) {
 
   // Skip reporting EventTiming entries that are not interactions or are
   // explicitly ignored for reporting purposes.
-  if (entry->GetInteractionIdInfo()->id ==
-          PerformanceTimelineEntryIdInfo::kNoId ||
+  if (entry->GetInteractionIdInfo() == PerformanceTimelineEntryIdInfo::kNone ||
       entry->GetEventTimingReportingInfo()->prevent_counting_as_interaction) {
     return;
   }
@@ -564,7 +563,7 @@ void ResponsivenessMetrics::ReportToMetrics(PerformanceEventTiming* entry) {
     reported_interactions_in_frame_.clear();
   }
 
-  ReportedInteractionKey key{entry->GetInteractionIdInfo()->id,
+  ReportedInteractionKey key{entry->GetInteractionIdInfo()->web_exposed_id,
                              entry->GetEndTime()};
 
   if (!reported_interactions_in_frame_.Contains(key)) {
@@ -579,6 +578,10 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
     LocalDOMWindow* window,
     UserInteractionType interaction_type,
     const PerformanceEventTiming& entry) {
+  auto interaction_id = entry.GetInteractionIdInfo();
+  CHECK(interaction_id.has_value());
+  CHECK_NE(*interaction_id, PerformanceTimelineEntryIdInfo::kNone);
+
   const auto* reporting_info = entry.GetEventTimingReportingInfo();
   base::TimeTicks event_start = reporting_info->creation_time;
   base::TimeTicks event_processing_start =
@@ -589,13 +592,12 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
   base::TimeTicks event_commit_finish = reporting_info->commit_finish_time;
   base::TimeDelta duration = event_end - event_start;
 
-  uint64_t interaction_offset = entry.GetInteractionIdInfo()->offset;
-
   if (!event_start.is_null() && duration.InMilliseconds() >= 0) {
     if (window->GetFrame()) {
       window->GetFrame()->Client()->DidObserveUserInteraction(
           event_start, event_queued_main_thread, event_processing_start,
-          event_commit_finish, event_end, interaction_offset);
+          event_commit_finish, event_end, *interaction_id,
+          DOMWindowPerformance::performance(*window)->NavigationId());
     }
   }
 
@@ -660,6 +662,7 @@ void ResponsivenessMetrics::RecordUserInteractionTracing(
 
 void ResponsivenessMetrics::FlushAllEvents() {
   CommitAllPendingPointerdowns();
+  composition_state_ = kNonComposition;
   keycode_to_interactionid_.clear();
   pointerid_to_interactionid_.clear();
   last_keydown_interaction_id_ = std::nullopt;
@@ -669,7 +672,18 @@ void ResponsivenessMetrics::FlushAllEvents() {
 }
 
 uint64_t ResponsivenessMetrics::GetInteractionCount() const {
-  auto interaction_count = interaction_id_generator_.GetValue().offset;
+  // The generator starts at non_web_exposed_id = 1 and calls IncrementId()
+  // before assigning the ID to each new interaction so that GetValue() always
+  // reflects the most recent interaction ID (used in composition events).
+  // Therefore, the total number of interactions is the current ordinal minus 1
+  // because the initial generator value is skipped.
+  // TODO(crbug.com/488319885): Stop relying on the global GetValue() in
+  // composition handling by simplifying the state machine. Then, we won't have
+  // to skip using the initial InteractionId, by treating the generator as
+  // producing the *next* value, rather than holding the *current* value, which
+  // is what it is designed for.
+  auto interaction_count =
+      interaction_id_generator_.GetValue().non_web_exposed_id - 1;
   if (!RuntimeEnabledFeatures::NavigationEventTimingEnabled()) {
     interaction_count -= navigation_interaction_count_;
   }

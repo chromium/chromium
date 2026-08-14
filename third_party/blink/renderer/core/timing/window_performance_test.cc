@@ -434,7 +434,7 @@ TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
   WindowPerformance* perf =
       DOMWindowPerformance::performance(*page_holder->GetFrame().DomWindow());
   PerformanceTiming* timing = perf->timing();
-  uint64_t navigation_id = perf->NavigationId();
+  PerformanceTimelineEntryIdInfo navigation_id = perf->NavigationId();
 
   auto* document_loader = page_holder->GetFrame().Loader().GetDocumentLoader();
   ASSERT_TRUE(document_loader);
@@ -2396,7 +2396,8 @@ TEST_F(WindowPerformanceNavigationIdTest, NavigationIdHardNavigations) {
     const WindowPerformance* performance =
         DOMWindowPerformance::performance(*scope.GetFrame().DomWindow());
     ASSERT_TRUE(performance);
-    ids.push_back(performance->NavigationId());
+    EXPECT_EQ(performance->NavigationId().non_web_exposed_id, 1u);
+    ids.push_back(performance->NavigationId().web_exposed_id);
   }
   // We allow 10 collisions, since the IDs are randomly generated between 100
   // and 10000.
@@ -2415,11 +2416,13 @@ TEST_F(WindowPerformanceNavigationIdTest, NavigationIdSoftNavigations) {
   V8TestingScope scope;
   WindowPerformance* performance =
       DOMWindowPerformance::performance(*scope.GetFrame().DomWindow());
-  uint64_t navigation_id1 = performance->NavigationId();
+  EXPECT_EQ(performance->NavigationId().non_web_exposed_id, 1u);
+  uint64_t navigation_id1 = performance->NavigationId().web_exposed_id;
 
   // Soft navigation or back-forward cache restoration: incremented ID.
   performance->IncrementNavigationId();
-  uint64_t navigation_id3 = performance->NavigationId();
+  EXPECT_EQ(performance->NavigationId().non_web_exposed_id, 2u);
+  uint64_t navigation_id3 = performance->NavigationId().web_exposed_id;
   EXPECT_NE(navigation_id1, navigation_id3);
   EXPECT_LT(navigation_id1, navigation_id3);
 }

@@ -52,7 +52,7 @@ TEST_F(PerformanceScrollTimingTest, EntryCreation) {
       /*delta_x=*/3, /*delta_y=*/4, AtomicString("wheel"),
       /*frames_expected=*/5, /*frames_produced=*/6,
       /*checkerboard_time=*/7.0, window->document(), window,
-      GetPerformance(scope)->NavigationId());
+      GetPerformance(scope)->NavigationId().web_exposed_id);
 
   EXPECT_EQ(AtomicString("scroll"), entry->name());
   EXPECT_EQ(AtomicString("scroll"), entry->entryType());
@@ -82,7 +82,7 @@ TEST_F(PerformanceScrollTimingTest, ToJSON) {
       /*delta_x=*/3, /*delta_y=*/4, AtomicString("wheel"),
       /*frames_expected=*/5, /*frames_produced=*/6,
       /*checkerboard_time=*/7.0, window->document(), window,
-      GetPerformance(scope)->NavigationId());
+      GetPerformance(scope)->NavigationId().web_exposed_id);
 
   const ScriptValue json_object = entry->toJSONForBinding(script_state);
   EXPECT_TRUE(json_object.IsObject());

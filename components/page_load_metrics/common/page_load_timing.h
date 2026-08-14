@@ -10,6 +10,10 @@
 
 namespace page_load_metrics {
 
+// Monotonic performance timeline navigation ID for initial (hard)
+// navigations.
+inline constexpr uint64_t kHardNavigationPerformanceTimelineNavigationId = 1;
+
 // Initialize an empty PageLoadTiming with initialized empty sub-members.
 mojom::PageLoadTimingPtr CreatePageLoadTiming();
 mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming();

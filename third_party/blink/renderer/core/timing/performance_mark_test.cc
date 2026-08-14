@@ -63,7 +63,7 @@ TEST_F(PerformanceMarkTest, Construction) {
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
       AtomicString("mark-name"), 0, base::TimeTicks(),
       SerializedScriptValue::NullValue(), exception_state, window,
-      performance->NavigationId());
+      performance->NavigationId().web_exposed_id);
   ASSERT_EQ(pm->entryType(), performance_entry_names::kMark);
   ASSERT_EQ(pm->EntryTypeEnum(), PerformanceEntry::EntryType::kMark);
 
@@ -88,7 +88,7 @@ TEST_F(PerformanceMarkTest, ConstructionWithDetail) {
 
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
       AtomicString("mark-name"), 0, base::TimeTicks(), payload_string,
-      exception_state, window, performance->NavigationId());
+      exception_state, window, performance->NavigationId().web_exposed_id);
   ASSERT_EQ(pm->entryType(), performance_entry_names::kMark);
   ASSERT_EQ(pm->EntryTypeEnum(), PerformanceEntry::EntryType::kMark);
 
@@ -115,7 +115,7 @@ TEST_F(PerformanceMarkTest, BuildJSONValue) {
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
       expected_name, expected_start_time, base::TimeTicks(),
       SerializedScriptValue::NullValue(), exception_state, window,
-      performance->NavigationId());
+      performance->NavigationId().web_exposed_id);
 
   ScriptValue json_object = pm->toJSONForBinding(script_state);
   EXPECT_TRUE(json_object.IsObject());

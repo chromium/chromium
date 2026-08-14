@@ -496,8 +496,9 @@ LargestContentfulPaintCalculator::CreateWebExposedCandidateTraceDataCommon(
     value->SetString("navigationId", IdentifiersFactory::LoaderId(
                                          window->document()->Loader()));
   }
-  value->SetInteger("performanceTimelineNavigationId",
-                    static_cast<int>(window_performance_->NavigationId()));
+  value->SetInteger(
+      "performanceTimelineNavigationId",
+      static_cast<int>(window_performance_->NavigationId().web_exposed_id));
   if (Node* node = record.GetNode()) {
     value->SetString("nodeName", node->DebugName());
   }

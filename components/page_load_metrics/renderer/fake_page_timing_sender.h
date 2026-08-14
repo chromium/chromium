@@ -88,7 +88,8 @@ class FakePageTimingSender : public PageTimingSender {
         const base::TimeDelta interaction_duration,
         uint64_t interaction_offset,
         const base::TimeTicks interaction_time,
-        const base::TimeTicks processing_start);
+        const base::TimeTicks processing_start,
+        uint64_t performance_timeline_navigation_id);
 
     void UpdateExpectedSubresourceLoadMetrics(
         const blink::SubresourceLoadMetrics& subresource_load_metrics);

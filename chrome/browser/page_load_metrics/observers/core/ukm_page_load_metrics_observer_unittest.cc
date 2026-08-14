@@ -1306,13 +1306,13 @@ TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
   base::TimeTicks current_time = base::TimeTicks::Now();
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(50), 1, current_time + base::Milliseconds(1000),
-      current_time + base::Milliseconds(1030)));
+      current_time + base::Milliseconds(1030), /*navigation_id=*/1u));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(100), 2, current_time + base::Milliseconds(2000),
-      current_time + base::Milliseconds(2044)));
+      current_time + base::Milliseconds(2044), /*navigation_id=*/1u));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(150), 3, current_time + base::Milliseconds(3000),
-      current_time + base::Milliseconds(3050)));
+      current_time + base::Milliseconds(3050), /*navigation_id=*/1u));
 
   tester()->SimulateEventTimingUpdate(event_timings);
 
@@ -1351,8 +1351,8 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
 
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(50), 1, base::TimeTicks::Now(),
-      base::TimeTicks::Now()));
+      base::Milliseconds(50), 1, base::TimeTicks::Now(), base::TimeTicks::Now(),
+      /*navigation_id=*/1u));
 
   tester()->SimulateEventTimingUpdate(event_timings);
 
@@ -1800,10 +1800,12 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
   page_load_metrics::mojom::FrameRenderDataUpdate render_data;
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(4000), 0.5, false));
+          current_time - base::Milliseconds(4000), 0.5, false,
+          /*navigation_id=*/1u));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(3500), 0.5, false));
+          current_time - base::Milliseconds(3500), 0.5, false,
+          /*navigation_id=*/1u));
 
   tester()->SimulateRenderDataUpdate(render_data);
 
@@ -1813,7 +1815,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
   page_load_metrics::mojom::FrameRenderDataUpdate render_data_2;
   render_data_2.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(2500), 1.5, true));
+          current_time - base::Milliseconds(2500), 1.5, true,
+          /*navigation_id=*/1u));
   tester()->SimulateRenderDataUpdate(render_data_2);
 
   // Simulate closing the tab.
@@ -1856,18 +1859,17 @@ TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
   auto url = GURL(kTestUrl1);
   NavigateAndCommit(url);
 
+  base::UnguessableToken same_doc_token = base::UnguessableToken::Create();
   auto soft_navigation_metrics =
       page_load_metrics::mojom::SoftNavigationMetrics(
-          1, base::Milliseconds(12), base::TimeTicks() + base::Milliseconds(12),
-          blink::mojom::NavigationTypeForNavigationApi::kPush,
-          base::UnguessableToken::Create());
+          2, base::Milliseconds(12), base::TimeTicks() + base::Milliseconds(12),
+          blink::mojom::NavigationTypeForNavigationApi::kPush, same_doc_token);
 
   content::MockNavigationHandle navigation_handle;
   navigation_handle.set_has_committed(true);
   navigation_handle.set_is_in_primary_main_frame(true);
   navigation_handle.set_is_same_document(true);
-  navigation_handle.set_same_document_metrics_token(
-      base::UnguessableToken::Create());
+  navigation_handle.set_same_document_metrics_token(same_doc_token);
 
   // Simulate the detection of soft navigation so that the ukm source id for
   // soft navigation is initialized.
@@ -1901,10 +1903,12 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   page_load_metrics::mojom::FrameRenderDataUpdate render_data;
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(4000), 0.5, false));
+          current_time - base::Milliseconds(4000), 0.5, false,
+          /*navigation_id=*/1u));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(3500), 0.5, false));
+          current_time - base::Milliseconds(3500), 0.5, false,
+          /*navigation_id=*/1u));
 
   tester()->SimulateRenderDataUpdate(render_data);
 
@@ -1935,7 +1939,8 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   page_load_metrics::mojom::FrameRenderDataUpdate render_data_2;
   render_data_2.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(2500), 1.5, true));
+          current_time - base::Milliseconds(2500), 1.5, true,
+          /*navigation_id=*/1u));
   tester()->SimulateRenderDataUpdate(render_data_2);
 
   // Simulate closing the tab (the CLS metrics should include all the shifts
@@ -2009,10 +2014,12 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   page_load_metrics::mojom::FrameRenderDataUpdate render_data;
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(4000), 0.5, false));
+          current_time - base::Milliseconds(4000), 0.5, false,
+          /*navigation_id=*/1u));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(3500), 0.5, false));
+          current_time - base::Milliseconds(3500), 0.5, false,
+          /*navigation_id=*/1u));
 
   tester()->SimulateRenderDataUpdate(render_data);
 
@@ -2172,7 +2179,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstabilitySubframeAggregation) {
   page_load_metrics::mojom::FrameRenderDataUpdate render_data;
   render_data.new_layout_shifts.push_back(
       page_load_metrics::mojom::LayoutShift::New(base::TimeTicks::Now(), 1.0,
-                                                 false));
+                                                 false, /*navigation_id=*/1u));
 
   tester()->SimulateRenderDataUpdate(render_data);
 
@@ -2186,7 +2193,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstabilitySubframeAggregation) {
   render_data.new_layout_shifts.clear();
   render_data.new_layout_shifts.push_back(
       page_load_metrics::mojom::LayoutShift::New(base::TimeTicks::Now(), 1.5,
-                                                 false));
+                                                 false, /*navigation_id=*/1u));
   tester()->SimulateRenderDataUpdate(render_data, subframe);
 
   // Simulate closing the tab.
@@ -2930,7 +2937,7 @@ void CLSUkmPageLoadMetricsObserverTest::SimulateShiftDelta(
   page_load_metrics::mojom::FrameRenderDataUpdate render_data;
   render_data.new_layout_shifts.push_back(
       page_load_metrics::mojom::LayoutShift::New(base::TimeTicks::Now(), delta,
-                                                 false));
+                                                 false, /*navigation_id=*/1u));
   tester()->SimulateRenderDataUpdate(render_data, frame);
 }
 

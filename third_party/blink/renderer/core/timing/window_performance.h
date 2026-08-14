@@ -210,12 +210,11 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // https://w3c.github.io/performance-timeline/.
   void IncrementNavigationId() { navigation_id_generator_.IncrementId(); }
 
-  // Returns the navigation ID, as specified in
-  // https://w3c.github.io/performance-timeline/; this appears as navigationId
-  // in https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry
-  // instances.
-  uint64_t NavigationId() const override {
-    return navigation_id_generator_.GetValue().id;
+  // Returns the navigation ID info, containing the web-exposed navigationId
+  // (https://w3c.github.io/performance-timeline/) and the monotonic ordinal
+  // offset.
+  PerformanceTimelineEntryIdInfo NavigationId() const override {
+    return navigation_id_generator_.GetValue();
   }
 
   // PageVisibilityObserver

@@ -199,8 +199,8 @@ class CORE_EXPORT Performance : public EventTarget {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(resourcetimingbufferfull,
                                   kResourcetimingbufferfull)
 
-  virtual uint64_t NavigationId() const {
-    return PerformanceTimelineEntryIdInfo::kNoId;
+  virtual PerformanceTimelineEntryIdInfo NavigationId() const {
+    return PerformanceTimelineEntryIdInfo::kNone;
   }
 
   void AddLongTaskTiming(base::TimeTicks start_time,

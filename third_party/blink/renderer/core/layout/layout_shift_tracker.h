@@ -194,7 +194,7 @@ class CORE_EXPORT LayoutShiftTracker final
   // per-source impact area in descending order (largest impact first).
   // Impact area is the union of the previous and current visual rectangles.
   LayoutShift::AttributionList CreateAttributionList() const;
-  void SubmitPerformanceEntry(double score_delta, bool input_detected) const;
+  void SubmitPerformanceEntry(double score_delta, bool had_recent_input) const;
   void NotifyPrePaintFinishedInternal();
   double LastInputTimestamp() const;
   void UpdateTimerAndInputTimestamp();

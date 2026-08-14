@@ -23,7 +23,7 @@ PerformanceSoftNavigation::PerformanceSoftNavigation(
           AtomicString(CHECK_DEREF(context).AttributionUrl()),
           start_time,
           CHECK_DEREF(context).DomWindow(),
-          CHECK_DEREF(context).NavigationId()),
+          CHECK_DEREF(context).NavigationId().web_exposed_id),
       navigation_type_(CHECK_DEREF(context).NavigationType()),
       interaction_id_(CHECK_DEREF(context).InteractionId()),
       context_(context) {

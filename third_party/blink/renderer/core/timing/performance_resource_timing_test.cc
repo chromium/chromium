@@ -60,7 +60,7 @@ class PerformanceResourceTimingTest : public testing::Test {
             .GetExecutionContext()
             ->CrossOriginIsolatedCapability(),
         dummy_page_holder->GetDocument().GetExecutionContext(),
-        performance_->NavigationId());
+        performance_->NavigationId().web_exposed_id);
   }
 
   test::TaskEnvironment task_environment_;

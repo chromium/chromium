@@ -67,9 +67,9 @@ struct LargestContentfulPaintTiming {
   bool image_request_priority_valid = false;
   network.mojom.RequestPriority image_request_priority_value;
 
-  // The offset of the corresponding soft navigation; 0 otherwise.
-  // See SoftNavigationMetrics.soft_navigation_offset.
-  uint64 soft_navigation_offset;
+  // The monotonic ordinal navigation ID of the corresponding soft navigation;
+  // 1 for initial navigation.
+  uint64 performance_timeline_navigation_id;
 };
 
 // TimeDeltas below relative to navigation start.
@@ -608,6 +608,10 @@ struct LayoutShift {
   double layout_shift_score;
   // Whether this layout shift occurred after a user input or document scroll.
   bool after_input_or_scroll;
+  // The performance timeline navigation ID to which this layout shift is
+  // attributed. 1 for the initial/hard navigation, 2, 3, ... for subsequent
+  // soft navigations.
+  uint64 performance_timeline_navigation_id;
 };
 
 // Metrics about how a RenderFrame rendered since the last UpdateTiming call.
@@ -633,6 +637,10 @@ struct EventTiming {
   // The time the processing on the main thread started; used for
   // determining to which soft navigation this measurement should be attributed.
   mojo_base.mojom.TimeTicks processing_start;
+  // The performance timeline navigation ID to which this interaction is
+  // attributed. 1 for the initial/hard navigation, 2, 3, ... for subsequent
+  // soft navigations.
+  uint64 performance_timeline_navigation_id;
 };
 
 // Sent from renderer to browser process when the PageLoadTiming for the
@@ -692,10 +700,9 @@ struct BackForwardCacheTiming {
 // The metrics are to be added in a SoftNavigation Event which is parallel to
 // a PageLoad event.
 struct SoftNavigationMetrics {
-  // A unique number assigned to this soft navigation from the start of the
-  // page load, 1, 2, 3, ... n. For the last soft navigation, it is synonymous
-  // with a count of the soft navigations for the page load.
-  uint64 soft_navigation_offset;
+  // A unique monotonic ordinal number assigned to this soft navigation from
+  // the start of the page load, 2, 3, ... n.
+  uint64 performance_timeline_navigation_id;
 
   // The start time of a soft navigation. It is the time the user initializes
   // the soft navigation. It is relative to navigation start, and is the time

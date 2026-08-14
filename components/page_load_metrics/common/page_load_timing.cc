@@ -78,7 +78,7 @@ bool IsEmpty(const mojom::MonotonicPaintTiming& timing) {
 }
 
 bool IsEmpty(const mojom::SoftNavigationMetrics& timing) {
-  return !timing.soft_navigation_offset;
+  return !timing.performance_timeline_navigation_id;
 }
 
 bool IsEmpty(const page_load_metrics::mojom::PageLoadTiming& timing) {

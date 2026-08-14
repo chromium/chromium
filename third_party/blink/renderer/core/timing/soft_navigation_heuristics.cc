@@ -250,7 +250,7 @@ SoftNavigationHeuristics::GetSoftNavigationContextForInteractionId(
   if (interaction_id == PerformanceTimelineEntryIdInfo::kNone) {
     return nullptr;
   }
-  auto it = interaction_id_to_context_.find(interaction_id.id);
+  auto it = interaction_id_to_context_.find(interaction_id.non_web_exposed_id);
   if (it != interaction_id_to_context_.end()) {
     return it->value.Get();
   }
@@ -442,9 +442,9 @@ void SoftNavigationHeuristics::MaybeCommitNavigationOrEmitSoftNavigation(
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);
   performance->IncrementNavigationId();
-  context->StartSlicingPerformanceTimeline(
+  ++soft_navigation_count_;
+  context->OnSoftNavigationCommit(
       /*navigation_id=*/performance->NavigationId(),
-      /*soft_navigation_offset=*/++soft_navigation_count_,
       /*soft_navigation_slicing_time=*/base::TimeTicks::Now());
   // For metrics reporting, FCP presentation feedback will is in a separate
   // record, when the ICP is reported. Therefore, we can send this immediately,
@@ -562,8 +562,9 @@ void SoftNavigationHeuristics::UpdateSoftLcpMetricsForContext(
       performance->timingForReporting()
           ->PopulateLargestContentfulPaintDetailsForReporting(
               context->LatestLcpDetailsForUkm());
-  lcp.soft_navigation_offset = context->SoftNavigationOffset();
-  CHECK(lcp.soft_navigation_offset);
+  lcp.performance_timeline_navigation_id =
+      context->NavigationId().non_web_exposed_id;
+  CHECK(lcp.performance_timeline_navigation_id);
   frame_client->DidObserveSoftLargestContentfulPaint(lcp);
 }
 
@@ -606,7 +607,8 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
 #endif
 
     blink::SoftNavigationMetricsForReporting metrics = {
-        .soft_navigation_offset = context->SoftNavigationOffset(),
+        .performance_timeline_navigation_id =
+            context->NavigationId().non_web_exposed_id,
         .start_time = loader->GetTiming().MonotonicTimeToPseudoWallTime(
             context->TimeOrigin()),
         .soft_navigation_slicing_time = context->SoftNavigationSlicingTime(),
@@ -663,7 +665,8 @@ SoftNavigationHeuristics::MaybeCreateTaskScopeForEvent(
   // event timings with each ICP.
   if (!context) {
     context = MakeGarbageCollected<SoftNavigationContext>(*window_, entry);
-    interaction_id_to_context_.insert(interaction_id.id, context);
+    interaction_id_to_context_.insert(interaction_id.non_web_exposed_id,
+                                      context);
   }
 
   auto* tracker =

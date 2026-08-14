@@ -38,6 +38,11 @@ namespace page_load_metrics {
 // PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationMetrics.
 class SoftNavigationTracker {
  public:
+  // Minimum valid performance timeline navigation ID for a soft navigation
+  // (hard navigation is 1).
+  static constexpr uint64_t
+      kFirstSoftNavigationPerformanceTimelineNavigationId = 2;
+
   SoftNavigationTracker();
   ~SoftNavigationTracker();
 
@@ -50,7 +55,7 @@ class SoftNavigationTracker {
 
   // The current soft navigation. If there are no soft navigations, the
   // returned metrics will be empty; this can be detected by
-  // checking the soft_navigation_offset field for 0.
+  // checking the performance_timeline_navigation_id field for 0.
   const mojom::SoftNavigationMetrics& current_soft_navigation() const {
     return *current_soft_navigation_;
   }

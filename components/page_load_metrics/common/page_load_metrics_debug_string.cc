@@ -340,8 +340,9 @@ std::string DebugString(
     const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
   std::vector<std::pair<std::string, std::string>> entries;
   entries.emplace_back(
-      "soft_navigation_offset",
-      base::NumberToString(soft_navigation_metrics.soft_navigation_offset));
+      "performance_timeline_navigation_id",
+      base::NumberToString(
+          soft_navigation_metrics.performance_timeline_navigation_id));
   entries.emplace_back(
       "start_time", base::NumberToString(
                         soft_navigation_metrics.start_time.InMillisecondsF()));

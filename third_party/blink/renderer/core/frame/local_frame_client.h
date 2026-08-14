@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
+#include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
@@ -230,7 +231,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       base::TimeTicks max_event_processing_start,
       base::TimeTicks max_event_commit_finish,
       base::TimeTicks max_event_end,
-      uint64_t interaction_offset) {}
+      PerformanceTimelineEntryIdInfo interaction_id,
+      PerformanceTimelineEntryIdInfo navigation_id) {}
 
   // Will be called when |CpuTiming| events are updated
   virtual void DidChangeCpuTiming(base::TimeDelta time) {}
@@ -261,8 +263,10 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       const LargestContentfulPaintDetailsForReporting& lcp) {}
 
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
-  virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
-  }
+  virtual void DidObserveLayoutShift(
+      double score,
+      bool after_input_or_scroll,
+      PerformanceTimelineEntryIdInfo navigation_id) {}
 
   // Transmits the change in the set of watched CSS selectors property that
   // match any element on the frame.

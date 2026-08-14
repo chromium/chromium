@@ -38,18 +38,11 @@ bool SoftNavigationTracker::UpdateAndValidateMetrics(
 bool SoftNavigationTracker::ValidateIncoming(
     const mojom::SoftNavigationMetricsPtr& soft_navigation) {
   // TODO(johannes): Report invalid soft navigation metrics. crbug.com/490096674
-  if (soft_navigation->soft_navigation_offset == 0 ||
+  if (soft_navigation->performance_timeline_navigation_id <
+          kFirstSoftNavigationPerformanceTimelineNavigationId ||
+      soft_navigation->start_time.is_zero() ||
       soft_navigation->soft_navigation_slicing_time.is_null() ||
       soft_navigation->same_document_metrics_token.is_empty()) {
-    return false;
-  }
-  // Soft navigation metrics are expected to be sent in order, and we expect
-  // to receive a contiguous range of soft navigation offsets.
-  uint64_t expected_offset =
-      soft_navigations_to_process_.empty()
-          ? current_soft_navigation_->soft_navigation_offset + 1
-          : soft_navigations_to_process_.back()->soft_navigation_offset + 1;
-  if (soft_navigation->soft_navigation_offset != expected_offset) {
     return false;
   }
   // We expect the slicing time to be strictly monotonically increasing.
@@ -158,7 +151,7 @@ struct LargestContentfulPaintAdapter {
   static bool ShouldProcess(
       uint64_t limit,
       const mojom::LargestContentfulPaintTimingPtr& measurement) {
-    return measurement->soft_navigation_offset <= limit;
+    return measurement->performance_timeline_navigation_id <= limit;
   }
   static void AddNewMeasurements(
       ContentfulPaint* calculator,
@@ -213,7 +206,7 @@ size_t SoftNavigationTracker::Process(
     base::span<const mojom::LargestContentfulPaintTimingPtr>* soft_lcps,
     ContentfulPaint* soft_lcp_candidate) const {
   return ProcessTmpl<LargestContentfulPaintAdapter>(
-      current_soft_navigation().soft_navigation_offset, soft_lcps,
+      current_soft_navigation().performance_timeline_navigation_id, soft_lcps,
       soft_lcp_candidate);
 }
 

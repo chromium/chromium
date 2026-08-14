@@ -148,8 +148,8 @@ class CORE_EXPORT ResponsivenessMetrics
           IntWithZeroKeyHashTraits<KeydownKeyType>>
       keycode_to_interactionid_;
 
-  // During composition or for simulated clicks, we sometimes just match to most
-  // recent keydown.
+  // During non-composition or for simulated clicks, we sometimes just match to
+  // most recent keydown.
   //
   // TODO(crbug.com/490481909): This is also used to assign the interaction id
   // for (non-composition) keypress events. Those should be able to use

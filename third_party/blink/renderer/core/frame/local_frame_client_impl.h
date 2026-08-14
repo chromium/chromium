@@ -160,12 +160,14 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
           soft_navigation_heuristics_task_id) const override;
   void DidDispatchPingLoader(const KURL&) override;
   void DidChangePerformanceTiming() override;
-  void DidObserveUserInteraction(base::TimeTicks max_event_start,
-                                 base::TimeTicks max_event_queued_main_thread,
-                                 base::TimeTicks max_event_processing_start,
-                                 base::TimeTicks max_event_commit_finish,
-                                 base::TimeTicks max_event_end,
-                                 uint64_t interaction_offset) override;
+  void DidObserveUserInteraction(
+      base::TimeTicks max_event_start,
+      base::TimeTicks max_event_queued_main_thread,
+      base::TimeTicks max_event_processing_start,
+      base::TimeTicks max_event_commit_finish,
+      base::TimeTicks max_event_end,
+      PerformanceTimelineEntryIdInfo interaction_id,
+      PerformanceTimelineEntryIdInfo navigation_id) override;
   void DidChangeCpuTiming(base::TimeDelta) override;
   void DidObserveLoadingBehavior(LoadingBehaviorFlag) override;
   void DidObserveJavaScriptFrameworks(
@@ -177,7 +179,10 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       SoftNavigationMetricsForReporting metrics) override;
   void DidObserveSoftLargestContentfulPaint(
       const LargestContentfulPaintDetailsForReporting& lcp) override;
-  void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
+  void DidObserveLayoutShift(
+      double score,
+      bool after_input_or_scroll,
+      PerformanceTimelineEntryIdInfo navigation_id) override;
   void SelectorMatchChanged(const Vector<String>& added_selectors,
                             const Vector<String>& removed_selectors) override;
 

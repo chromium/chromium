@@ -123,21 +123,20 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
 
 void PageTimingMetricsSender::DidObserveSoftNavigation(
     blink::SoftNavigationMetricsForReporting new_metrics) {
-  // The start_time is a TimeDelta, and its resolution is in microseconds.
-  // Note that it may not be monotonically increasing, see:
-  // crbug.com/418449366#comment3
+  CHECK_GT(new_metrics.performance_timeline_navigation_id, 1u);
   CHECK(!new_metrics.start_time.is_zero());
-
   CHECK(!new_metrics.same_document_metrics_token.is_empty());
   if (!soft_navigation_metrics_.empty()) {
-    CHECK_EQ(soft_navigation_metrics_.back()->soft_navigation_offset + 1,
-             new_metrics.soft_navigation_offset);
+    CHECK_EQ(
+        soft_navigation_metrics_.back()->performance_timeline_navigation_id + 1,
+        new_metrics.performance_timeline_navigation_id);
     CHECK_NE(new_metrics.same_document_metrics_token,
              soft_navigation_metrics_.back()->same_document_metrics_token);
   }
   // Now that we've checked the invariants, enter the soft nav into the queue.
   auto entry = mojom::SoftNavigationMetrics::New();
-  entry->soft_navigation_offset = new_metrics.soft_navigation_offset;
+  entry->performance_timeline_navigation_id =
+      new_metrics.performance_timeline_navigation_id;
   entry->start_time = new_metrics.start_time;
   entry->soft_navigation_slicing_time =
       new_metrics.soft_navigation_slicing_time;
@@ -150,10 +149,12 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
 
 void PageTimingMetricsSender::DidObserveLayoutShift(
     double score,
-    bool after_input_or_scroll) {
+    bool after_input_or_scroll,
+    uint64_t performance_timeline_navigation_id) {
   DCHECK(score > 0);
   render_data_.new_layout_shifts.push_back(mojom::LayoutShift::New(
-      base::TimeTicks::Now(), score, after_input_or_scroll));
+      base::TimeTicks::Now(), score, after_input_or_scroll,
+      performance_timeline_navigation_id));
   EnsureSendTimer();
 }
 
@@ -409,16 +410,17 @@ void PageTimingMetricsSender::DidObserveUserInteraction(
     base::TimeTicks max_event_processing_start,
     base::TimeTicks max_event_commit_finish,
     base::TimeTicks max_event_end,
-    uint64_t interaction_offset) {
+    uint64_t interaction_offset,
+    uint64_t performance_timeline_navigation_id) {
   metadata_recorder_.AddInteractionDurationMetadata(max_event_start,
                                                     max_event_end);
   metadata_recorder_.AddInteractionDurationAfterQueueingMetadata(
       max_event_start, max_event_queued_main_thread, max_event_commit_finish,
       max_event_end);
   base::TimeDelta duration = max_event_end - max_event_start;
-  event_timings_.push_back(mojom::EventTiming::New(duration, interaction_offset,
-                                                   max_event_start,
-                                                   max_event_processing_start));
+  event_timings_.push_back(mojom::EventTiming::New(
+      duration, interaction_offset, max_event_start, max_event_processing_start,
+      performance_timeline_navigation_id));
   EnsureSendTimer();
 }
 }  // namespace page_load_metrics

@@ -212,7 +212,7 @@ void SoftNavigationContext::WriteIntoTrace(
   perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
 
   dict.Add("softNavContextId", context_id_);
-  dict.Add("performanceTimelineNavigationId", navigation_id_);
+  dict.Add("performanceTimelineNavigationId", navigation_id_.web_exposed_id);
 
   dict.Add("URL", AttributionUrl());
   dict.Add("timeOrigin", TimeOrigin());
@@ -314,7 +314,7 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
       /*start_time=*/paint_timing_info.presentation_time,
       /*render_time=*/paint_timing_info.presentation_time, paint_size,
       performance->MonotonicTimeToDOMHighResTimeStamp(load_time), id, url,
-      element, window_, performance->NavigationId());
+      element, window_, performance->NavigationId().web_exposed_id);
   lcp_entry->SetPaintTimingInfo(paint_timing_info);
 
   current_lcp_entry_ = lcp_entry;
@@ -323,7 +323,7 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
       /*start_time=*/performance->MonotonicTimeToDOMHighResTimeStamp(
           TimeOrigin()),
       /*render_time=*/paint_timing_info.presentation_time, current_lcp_entry_,
-      window_, performance->NavigationId(),
+      window_, performance->NavigationId().web_exposed_id,
       initial_event_timing_->interactionId());
   entry->SetPaintTimingInfo(paint_timing_info);
   performance->OnInteractionContentfulPaintUpdated(entry);

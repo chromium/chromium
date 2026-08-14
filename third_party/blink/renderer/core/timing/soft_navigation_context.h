@@ -64,34 +64,23 @@ class CORE_EXPORT SoftNavigationContext
   }
 
   bool HasNavigationId() const {
-    return navigation_id_ != PerformanceTimelineEntryIdInfo::kNoId;
+    return navigation_id_ != PerformanceTimelineEntryIdInfo::kNone;
   }
-  // The navigation id is a unique id, which montonically increases as soft
-  // navigations are committed to the performance timeline.
-  uint64_t NavigationId() const { return navigation_id_; }
+  // The navigation id info contains the web-exposed navigationId and the
+  // monotonic ordinal offset.
+  PerformanceTimelineEntryIdInfo NavigationId() const { return navigation_id_; }
 
   LocalDOMWindow* DomWindow() const { return window_.Get(); }
   uint64_t InteractionId() const {
     return initial_event_timing_ ? initial_event_timing_->interactionId() : 0;
   }
 
-  // The soft navigation offset is an exact count of the soft navigations
-  // emitted to UKM since the start of the page load. This is similar in spirit
-  // to the navigation id, but has stricter requirements due to the usage for
-  // ukm_page_load_metrics_observer.cc, the PageLoad:SoftNavigationCount metric,
-  // and assertions while we work on correctness. For the last
-  // soft navigation, it is synonymous with the count of the soft navigations
-  // for this page load.
-  uint64_t SoftNavigationOffset() const { return soft_navigation_offset_; }
   base::TimeTicks SoftNavigationSlicingTime() const {
     return soft_navigation_slicing_time_;
   }
-  void StartSlicingPerformanceTimeline(
-      uint64_t navigation_id,
-      uint64_t soft_navigation_offset,
-      base::TimeTicks soft_navigation_slicing_time) {
+  void OnSoftNavigationCommit(PerformanceTimelineEntryIdInfo navigation_id,
+                              base::TimeTicks soft_navigation_slicing_time) {
     navigation_id_ = navigation_id;
-    soft_navigation_offset_ = soft_navigation_offset;
     soft_navigation_slicing_time_ = soft_navigation_slicing_time;
   }
 
@@ -212,8 +201,8 @@ class CORE_EXPORT SoftNavigationContext
   // largest value and can be used to identify the most recent context.
   const uint64_t context_id_ = ++last_context_id_;
 
-  uint64_t navigation_id_ = PerformanceTimelineEntryIdInfo::kNoId;
-  uint64_t soft_navigation_offset_ = 0;
+  PerformanceTimelineEntryIdInfo navigation_id_ =
+      PerformanceTimelineEntryIdInfo::kNone;
   bool was_emitted_ = false;
 
   base::TimeTicks first_input_or_scroll_time_;

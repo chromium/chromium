@@ -188,13 +188,15 @@ void MetricsRenderFrameObserver::DidObserveUserInteraction(
     base::TimeTicks max_event_processing_start,
     base::TimeTicks max_event_commit_finish,
     base::TimeTicks max_event_end,
-    uint64_t interaction_offset) {
+    uint64_t interaction_offset,
+    uint64_t performance_timeline_navigation_id) {
   if (!page_timing_metrics_sender_ || HasNoRenderFrame()) {
     return;
   }
   page_timing_metrics_sender_->DidObserveUserInteraction(
       max_event_start, max_event_queued_main_thread, max_event_processing_start,
-      max_event_commit_finish, max_event_end, interaction_offset);
+      max_event_commit_finish, max_event_end, interaction_offset,
+      performance_timeline_navigation_id);
 }
 
 void MetricsRenderFrameObserver::DidChangeCpuTiming(base::TimeDelta time) {
@@ -253,7 +255,8 @@ void MetricsRenderFrameObserver::DidObserveSoftLargestContentfulPaint(
     // to the (hard) navigation start time.
     mojom::LargestContentfulPaintTimingPtr relative_lcp =
         CreateLargestContentfulPaintTiming();
-    relative_lcp->soft_navigation_offset = lcp.soft_navigation_offset;
+    relative_lcp->performance_timeline_navigation_id =
+        lcp.performance_timeline_navigation_id;
 
     if (lcp.image_paint_size > 0) {
       // Set largest image time.
@@ -331,10 +334,11 @@ void MetricsRenderFrameObserver::DidObserveSoftLargestContentfulPaint(
 
 void MetricsRenderFrameObserver::DidObserveLayoutShift(
     double score,
-    bool after_input_or_scroll) {
+    bool after_input_or_scroll,
+    uint64_t performance_timeline_navigation_id) {
   if (page_timing_metrics_sender_) {
-    page_timing_metrics_sender_->DidObserveLayoutShift(score,
-                                                       after_input_or_scroll);
+    page_timing_metrics_sender_->DidObserveLayoutShift(
+        score, after_input_or_scroll, performance_timeline_navigation_id);
   }
 }
 
@@ -830,6 +834,22 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
         LargestContentfulPaintTypeToUKMFlags(
             largest_contentful_paint_details.type);
   }
+
+  if (largest_contentful_paint_details.image_paint_size > 0 ||
+      largest_contentful_paint_details.text_paint_size > 0) {
+    // Hard navigation LCP has an expected navigation_id of 1
+    // (kHardNavigationId). Note: In principle, this should be the navigation ID
+    // from the global WindowPerformance object. However, because hard
+    // navigation LCP is read lazily (after presentation feedback), a subsequent
+    // soft navigation might have already incremented the global navigation ID
+    // before this is read. Therefore, we cannot rely on the current global
+    // navigation ID here. Once LCP is captured at paint time, this can be
+    // plumbed directly.
+    timing->paint_timing->largest_contentful_paint
+        ->performance_timeline_navigation_id =
+        kHardNavigationPerformanceTimelineNavigationId;
+  }
+
   // It is possible for a frame to switch from eligible for painting to
   // ineligible for it prior to the first paint. If this occurs, we need to
   // propagate the null value.

@@ -203,19 +203,26 @@ class CONTENT_EXPORT RenderFrameObserver {
   // user interaction can be built up from multiple input events (e.g. keydown
   // then keyup). Each of these events has an input to next frame latency. This
   // reports the timings of the max input-to-frame latency for each interaction.
-  // `max_event_start` is when input was received, `max_event_end` is when
-  // the next frame was presented, `max_event_queued_main_thread` is when the
-  // input was queued and `max_event_commit_finish` is when the next commit
-  // finished after event has been processed. See
-  // https://web.dev/inp/#whats-in-an-interaction for more detailed motivation
-  // and explanation.
+  // `max_event_start`: when input was received.
+  // `max_event_queued_main_thread`: when the input was queued.
+  // `max_event_processing_start`: when input event processing started.
+  // `max_event_commit_finish`: when the next commit finished after the event
+  // was processed.
+  // `max_event_end`: when the next frame was presented.
+  // `interaction_offset`: unique interaction index within the frame.
+  // `performance_timeline_navigation_id`: the Performance Timeline navigation
+  // ID (1 for the initial document navigation, 2+ for subsequent soft
+  // navigations in the document; distinct from browser-side navigation IDs).
+  // See https://web.dev/inp/#whats-in-an-interaction for more detailed
+  // motivation and explanation.
   virtual void DidObserveUserInteraction(
       base::TimeTicks max_event_start,
       base::TimeTicks max_event_queued_main_thread,
       base::TimeTicks max_event_processing_start,
       base::TimeTicks max_event_commit_finish,
       base::TimeTicks max_event_end,
-      uint64_t interaction_offset) {}
+      uint64_t interaction_offset,
+      uint64_t performance_timeline_navigation_id) {}
 
   // Notification when the First Scroll Delay becomes available.
   virtual void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay) {}
@@ -269,10 +276,16 @@ class CONTENT_EXPORT RenderFrameObserver {
   // This is called once for each animation frame containing any layout shift,
   // and receives the layout shift (LS) score for that frame.  The cumulative
   // layout shift (CLS) score can be inferred by summing the LS scores.
-  // |after_input_or_scroll| indicates whether the given |score| was observed
-  // after an input or scroll occurred in the associated document.
-  virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
-  }
+  // `score`: the layout shift score for the animation frame.
+  // `after_input_or_scroll`: whether the given `score` was observed after an
+  // input or scroll occurred in the associated document.
+  // `performance_timeline_navigation_id`: the Performance Timeline navigation
+  // ID (1 for the initial document navigation, 2+ for subsequent soft
+  // navigations in the document; distinct from browser-side navigation IDs).
+  virtual void DidObserveLayoutShift(
+      double score,
+      bool after_input_or_scroll,
+      uint64_t performance_timeline_navigation_id) {}
 
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.

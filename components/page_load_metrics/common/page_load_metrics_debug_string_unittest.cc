@@ -11,7 +11,7 @@ namespace page_load_metrics {
 
 TEST(PageLoadMetricsDebugStringTest, SoftNavigationMetrics) {
   mojom::SoftNavigationMetrics soft_navigation_metrics;
-  soft_navigation_metrics.soft_navigation_offset = 1;
+  soft_navigation_metrics.performance_timeline_navigation_id = 2;
   soft_navigation_metrics.start_time = base::Milliseconds(123);
   soft_navigation_metrics.soft_navigation_slicing_time =
       base::TimeTicks() + base::Milliseconds(42);
@@ -19,7 +19,7 @@ TEST(PageLoadMetricsDebugStringTest, SoftNavigationMetrics) {
       blink::mojom::NavigationTypeForNavigationApi::kReplace;
 
   EXPECT_EQ(DebugString(soft_navigation_metrics),
-            "{soft_navigation_offset: 1, start_time: 123, "
+            "{performance_timeline_navigation_id: 2, start_time: 123, "
             "soft_navigation_slicing_time: 42, "
             "navigation_type: kReplace}");
 }

@@ -30,7 +30,8 @@ class LayoutShiftNormalizationTest : public testing::Test {
     for (auto shift : shifts_data) {
       new_shifts.emplace_back(page_load_metrics::mojom::LayoutShift::New(
           current_time - base::Milliseconds(std::get<0>(shift)),
-          std::get<1>(shift), /*after_input_or_scroll*/ false));
+          std::get<1>(shift), /*after_input_or_scroll*/ false,
+          /*performance_timeline_navigation_id=*/1u));
     }
   }
 
