@@ -19,9 +19,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/private_verification_tokens/common/privacy_pass_athm_batch_request.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -80,6 +83,7 @@ void PrivateVerificationTokensService::Shutdown() {
   for (auto& operation : operations) {
     std::move(operation).Run();
   }
+  active_fetchers_.clear();
   store_ = nullptr;
 }
 
@@ -137,7 +141,21 @@ void PrivateVerificationTokensService::StoreTokens(
   }
 
   CHECK(store_);
-  store_->StoreTokens(std::move(tokens), std::move(callback));
+  store_->StoreTokens(
+      std::move(tokens),
+      base::BindOnce(
+          [](base::WeakPtr<PrivateVerificationTokensService> service,
+             base::OnceClosure callback) {
+            if (service) {
+              for (auto& observer : service->observers_) {
+                observer.OnTokensStored();
+              }
+            }
+            if (callback) {
+              std::move(callback).Run();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PrivateVerificationTokensService::GetTokenIssuers(
@@ -220,6 +238,117 @@ void PrivateVerificationTokensService::DeleteTokensByFilter(
           .Then(base::BindOnce(&PrivateVerificationTokensService::DeleteTokens,
                                weak_ptr_factory_.GetWeakPtr(), delete_begin,
                                delete_end, std::move(callback))));
+}
+
+void PrivateVerificationTokensService::MaybeFetchTokens(
+    const GURL& issue_url,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_shutting_down_ || !url_loader_factory) {
+    return;
+  }
+
+  if (!is_initialized()) {
+    pending_operations_.push_back(
+        base::BindOnce(&PrivateVerificationTokensService::MaybeFetchTokens,
+                       weak_ptr_factory_.GetWeakPtr(), issue_url,
+                       std::move(url_loader_factory)));
+    return;
+  }
+
+  if (!issuer_config_) {
+    return;
+  }
+
+  url::Origin issuer = url::Origin::Create(issue_url);
+  if (!IsAntiAbuseEnabled(issuer)) {
+    return;
+  }
+
+  if (active_fetchers_.contains(issuer)) {
+    return;
+  }
+
+  CHECK(store_);
+
+  auto it = issuer_config_->config().find(issuer);
+  if (it == issuer_config_->config().end()) {
+    return;
+  }
+  const auto& config = it->second;
+
+  if (store_->TokenCountForIssuer(issuer) >
+      static_cast<size_t>(config.batch_size / 2)) {
+    return;
+  }
+
+  auto params = private_verification_tokens::GetParametersForVersion(
+      config.public_key.version());
+  if (!params.has_value()) {
+    return;
+  }
+
+  base::expected<private_verification_tokens::PrivacyPassAthmBatchRequest,
+                 private_verification_tokens::PrivacyPassAthmBatchRequestError>
+      batch_request =
+          private_verification_tokens::PrivacyPassAthmBatchRequest::Create(
+              config, params->num_buckets);
+  if (!batch_request.has_value()) {
+    return;
+  }
+
+  auto fetcher =
+      private_verification_tokens::PrivateVerificationTokensFetcher::Create(
+          issue_url, url_loader_factory->Clone());
+  if (!fetcher) {
+    return;
+  }
+
+  auto* fetcher_ptr = fetcher.get();
+  active_fetchers_[issuer] = std::move(fetcher);
+
+  std::string request_body(batch_request->request_body().begin(),
+                           batch_request->request_body().end());
+
+  uint32_t key_id = config.public_key.truncated_key_id();
+  base::Time expiration = config.public_key.expiration();
+  uint32_t version = config.public_key.version();
+
+  fetcher_ptr->TryGetTokens(
+      std::move(request_body),
+      base::BindOnce(&PrivateVerificationTokensService::OnFetchTokensCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), issuer,
+                     std::move(*batch_request), key_id, expiration, version));
+}
+
+void PrivateVerificationTokensService::OnFetchTokensCompleted(
+    url::Origin issuer,
+    private_verification_tokens::PrivacyPassAthmBatchRequest batch_request,
+    uint32_t key_id,
+    base::Time expiration,
+    uint32_t version,
+    base::expected<std::string, private_verification_tokens::TryGetTokensResult>
+        result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  active_fetchers_.erase(issuer);
+  if (!result.has_value()) {
+    return;
+  }
+  base::expected<std::vector<std::vector<uint8_t>>,
+                 private_verification_tokens::PrivacyPassAthmBatchRequestError>
+      finalized_tokens =
+          batch_request.Finalize(base::as_byte_span(result.value()));
+  if (!finalized_tokens.has_value()) {
+    return;
+  }
+  std::vector<private_verification_tokens::PrivateVerificationTokensToken>
+      tokens;
+  tokens.reserve(finalized_tokens->size());
+  for (auto& token_bytes : *finalized_tokens) {
+    tokens.emplace_back(issuer, std::move(token_bytes), key_id, expiration,
+                        version);
+  }
+  StoreTokens(std::move(tokens), base::DoNothing());
 }
 
 std::optional<std::pair<int64_t, std::string>>

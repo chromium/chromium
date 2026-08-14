@@ -21,6 +21,8 @@ struct PrivateVerificationTokensParameters {
   int max_batch_size = 0;
   // Limit for maximum number of redeemers.
   int max_number_of_redeemers = 0;
+  // Number of metadata buckets.
+  uint8_t num_buckets = 0;
   // Size of a single serialized token request in bytes.
   size_t single_request_size = 0;
   // Size of the blinded token request in bytes.

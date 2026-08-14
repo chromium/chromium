@@ -9,12 +9,15 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -24,11 +27,14 @@
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/private_verification_tokens/common/athm_test_issuer.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_database.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/features.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -42,7 +48,10 @@ const base::FilePath::CharType kDatabaseName[] =
 
 class PrivateVerificationTokensServiceTest : public testing::Test {
  public:
-  PrivateVerificationTokensServiceTest() {
+  PrivateVerificationTokensServiceTest()
+      : test_issuer_(private_verification_tokens::AthmTestIssuer::Create(
+            2,
+            base::as_byte_span(std::string_view("1")))) {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kEnablePrivateVerificationTokens);
   }
@@ -101,6 +110,10 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
   const base::FilePath& temp_dir_path() const { return temp_dir_.GetPath(); }
   const base::FilePath& db_path() const { return db_path_; }
 
+  const private_verification_tokens::AthmTestIssuer& test_issuer() const {
+    return *test_issuer_;
+  }
+
   std::vector<private_verification_tokens::PrivateVerificationTokensToken>
   CreateTestTokens() const {
     std::vector<private_verification_tokens::PrivateVerificationTokensToken>
@@ -122,7 +135,11 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
      public:
       explicit Waiter(base::OnceClosure callback)
           : callback_(std::move(callback)) {}
-      void OnInitializationComplete() override { std::move(callback_).Run(); }
+      void OnInitializationComplete() override {
+        if (callback_) {
+          std::move(callback_).Run();
+        }
+      }
 
      private:
       base::OnceClosure callback_;
@@ -135,6 +152,29 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
     EXPECT_TRUE(init_future.Wait());
   }
 
+  void WaitForTokensStored(PrivateVerificationTokensService* target_service) {
+    base::test::TestFuture<void> future;
+    class Waiter : public PrivateVerificationTokensService::Observer {
+     public:
+      explicit Waiter(base::OnceClosure callback)
+          : callback_(std::move(callback)) {}
+      void OnTokensStored() override {
+        if (callback_) {
+          std::move(callback_).Run();
+        }
+      }
+
+     private:
+      base::OnceClosure callback_;
+    };
+    Waiter waiter(future.GetCallback());
+    base::ScopedObservation<PrivateVerificationTokensService,
+                            PrivateVerificationTokensService::Observer>
+        observation(&waiter);
+    observation.Observe(target_service);
+    EXPECT_TRUE(future.Wait());
+  }
+
   void SetTestIssuerConfig(PrivateVerificationTokensService* target_service) {
     const url::Origin issuer_a = url::Origin::Create(GURL("https://a.com"));
     const url::Origin redeemer_a =
@@ -144,12 +184,10 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
         url::Origin::Create(GURL("https://r2.b.org"));
     const url::Origin issuer_c = url::Origin::Create(GURL("https://c.net"));
     const url::Origin issuer_d = url::Origin::Create(GURL("https://d.com"));
-    const std::vector<uint8_t> serialized_public_key = {3, 6, 8, 12, 14};
     const std::string encoded_public_key =
-        base::Base64Encode(serialized_public_key);
-    const std::vector<uint8_t> serialized_public_key_proof = {1, 2, 4, 8};
+        base::Base64Encode(test_issuer_->public_key());
     const std::string encoded_public_key_proof =
-        base::Base64Encode(serialized_public_key_proof);
+        base::Base64Encode(test_issuer_->public_key_proof());
     const std::string expiration_str = "12";
     const std::string json_str = base::StringPrintf(
         R"({
@@ -220,6 +258,7 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
   }
 
  private:
+  std::optional<private_verification_tokens::AthmTestIssuer> test_issuer_;
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
@@ -764,6 +803,173 @@ TEST_F(PrivateVerificationTokensServiceTest,
        IsRegisteredRedeemer_NoConfig_ReturnsFalse) {
   EXPECT_FALSE(service()->IsRegisteredRedeemer(
       url::Origin::Create(GURL("https://r1.a.com"))));
+}
+
+TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
+       MaybeFetchTokens_Success_FetchesAndStoresTokens) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::string request_body;
+        if (request.request_body) {
+          for (const auto& element : *request.request_body->elements()) {
+            if (element.type() == network::DataElement::Tag::kBytes) {
+              const auto& bytes =
+                  element.As<network::DataElementBytes>().bytes();
+              request_body.append(bytes.begin(), bytes.end());
+            }
+          }
+        }
+
+        std::optional<std::string> response =
+            test_issuer().BatchIssue(request_body, /*hidden_metadata=*/0);
+        ASSERT_TRUE(response.has_value());
+        test_url_loader_factory.AddResponse(request.url.spec(),
+                                            std::move(*response));
+      }));
+
+  service()->MaybeFetchTokens(GURL("https://c.net/pvt/issue"),
+                              test_url_loader_factory.GetSafeWeakWrapper());
+
+  WaitForTokensStored(service());
+
+  base::test::TestFuture<std::vector<url::Origin>> future;
+  service()->GetTokenIssuers(future.GetCallback());
+  auto issuers = future.Take();
+  EXPECT_THAT(issuers,
+              testing::ElementsAre(url::Origin::Create(GURL("https://c.net"))));
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       MaybeFetchTokens_TokensAboveThreshold_DoesNothing) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  // Store a second token for a.com so count is 2 (threshold for batch_size 2 is
+  // > 1).
+  const auto expiration = base::Time::Now() + base::Hours(2);
+  base::test::TestFuture<void> future;
+  std::vector<private_verification_tokens::PrivateVerificationTokensToken>
+      tokens;
+  tokens.emplace_back(url::Origin::Create(GURL("https://a.com")),
+                      std::vector<uint8_t>{1, 2, 4}, 1, expiration, 1);
+  service()->StoreTokens(std::move(tokens), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  service()->MaybeFetchTokens(GURL("https://a.com/pvt/issue"),
+                              test_url_loader_factory.GetSafeWeakWrapper());
+
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       MaybeFetchTokens_TokensAtOrBelowThreshold_FetchesTokens) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  // Store starts with 1 token for a.com. With batch_size 2, 1 <= (2/2 = 1), so
+  // fetch is triggered.
+  network::TestURLLoaderFactory test_url_loader_factory;
+  service()->MaybeFetchTokens(GURL("https://a.com/pvt/issue"),
+                              test_url_loader_factory.GetSafeWeakWrapper());
+
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 1);
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       MaybeFetchTokens_UnregisteredIssuer_DoesNothing) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  service()->MaybeFetchTokens(GURL("https://unregistered.com/pvt/issue"),
+                              test_url_loader_factory.GetSafeWeakWrapper());
+
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       MaybeFetchTokens_AntiAbuseBlocked_DoesNothing) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  const url::Origin issuer_c = url::Origin::Create(GURL("https://c.net"));
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(issuer_c.GetURL(), issuer_c.GetURL(),
+                                      ContentSettingsType::ANTI_ABUSE,
+                                      CONTENT_SETTING_BLOCK);
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  service()->MaybeFetchTokens(GURL("https://c.net/pvt/issue"),
+                              test_url_loader_factory.GetSafeWeakWrapper());
+
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       MaybeFetchTokens_NullFactory_DoesNothing) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  service()->MaybeFetchTokens(GURL("https://c.net/pvt/issue"), nullptr);
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       MaybeFetchTokens_WhenShuttingDown_DoesNothing) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  service()->Shutdown();
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  service()->MaybeFetchTokens(GURL("https://c.net/pvt/issue"),
+                              test_url_loader_factory.GetSafeWeakWrapper());
+
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+}
+
+TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
+       MaybeFetchTokens_PendingBeforeInitialization_QueuesOperation) {
+  SetTestIssuerConfig(service());
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::string request_body;
+        if (request.request_body) {
+          for (const auto& element : *request.request_body->elements()) {
+            if (element.type() == network::DataElement::Tag::kBytes) {
+              const auto& bytes =
+                  element.As<network::DataElementBytes>().bytes();
+              request_body.append(bytes.begin(), bytes.end());
+            }
+          }
+        }
+        std::optional<std::string> response =
+            test_issuer().BatchIssue(request_body, /*hidden_metadata=*/0);
+        ASSERT_TRUE(response.has_value());
+        test_url_loader_factory.AddResponse(request.url.spec(),
+                                            std::move(*response));
+      }));
+
+  service()->MaybeFetchTokens(GURL("https://c.net/pvt/issue"),
+                              test_url_loader_factory.GetSafeWeakWrapper());
+
+  // Not initialized yet, so no fetch should be completed yet.
+  EXPECT_FALSE(service()->is_initialized());
+
+  WaitForInitialization(service());
+  WaitForTokensStored(service());
+
+  base::test::TestFuture<std::vector<url::Origin>> future;
+  service()->GetTokenIssuers(future.GetCallback());
+  auto issuers = future.Take();
+  EXPECT_THAT(issuers,
+              testing::ElementsAre(url::Origin::Create(GURL("https://c.net"))));
 }
 
 }  // namespace

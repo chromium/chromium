@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRIVATE_VERIFICATION_TOKENS_PRIVATE_VERIFICATION_TOKENS_SERVICE_H_
 #define CHROME_BROWSER_PRIVATE_VERIFICATION_TOKENS_PRIVATE_VERIFICATION_TOKENS_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -18,13 +19,23 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_fetcher.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
+
+namespace private_verification_tokens {
+class PrivacyPassAthmBatchRequest;
+}
 
 namespace url {
 class Origin;
 }
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
+class GURL;
 class HostContentSettingsMap;
 
 class PrivateVerificationTokensService : public KeyedService {
@@ -36,7 +47,8 @@ class PrivateVerificationTokensService : public KeyedService {
   void Shutdown() override;
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnInitializationComplete() = 0;
+    virtual void OnInitializationComplete() {}
+    virtual void OnTokensStored() {}
   };
 
   void AddObserver(Observer* observer);
@@ -73,6 +85,12 @@ class PrivateVerificationTokensService : public KeyedService {
           tokens,
       base::OnceClosure callback);
 
+  // Triggers fetching tokens for issue_url if issue_url is a registered issuer
+  // and token count is low.
+  void MaybeFetchTokens(
+      const GURL& issue_url,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   // Gets a token for the specified redeemer_origin. Returns a pair of
   // (token_id, base64_encoded_token) if available. Does not delete or remove
   // the token from storage.
@@ -106,6 +124,15 @@ class PrivateVerificationTokensService : public KeyedService {
 
   bool IsAntiAbuseEnabled(const url::Origin& issuer) const;
 
+  void OnFetchTokensCompleted(
+      url::Origin issuer,
+      private_verification_tokens::PrivacyPassAthmBatchRequest batch_request,
+      uint32_t key_id,
+      base::Time expiration,
+      uint32_t version,
+      base::expected<std::string,
+                     private_verification_tokens::TryGetTokensResult> result);
+
   std::unique_ptr<private_verification_tokens::PrivateVerificationTokensStore>
       store_;
 
@@ -123,6 +150,11 @@ class PrivateVerificationTokensService : public KeyedService {
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
   std::vector<base::OnceClosure> pending_operations_;
+
+  std::map<url::Origin,
+           std::unique_ptr<
+               private_verification_tokens::PrivateVerificationTokensFetcher>>
+      active_fetchers_;
 
   base::WeakPtrFactory<PrivateVerificationTokensService> weak_ptr_factory_{
       this};

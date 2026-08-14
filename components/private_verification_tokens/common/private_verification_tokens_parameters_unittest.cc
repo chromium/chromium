@@ -14,6 +14,7 @@ TEST(PrivateVerificationTokensParametersTest, GetParametersForVersion1) {
   EXPECT_EQ(params->min_batch_size, 2);
   EXPECT_EQ(params->max_batch_size, 20);
   EXPECT_EQ(params->max_number_of_redeemers, 2);
+  EXPECT_EQ(params->num_buckets, 2);
   EXPECT_EQ(params->single_request_size, 36u);
   EXPECT_EQ(params->blinded_request_size, 33u);
 }
