@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/json/values_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -429,6 +430,135 @@ TEST_F(UniversalOptOutServiceTest, SignedOutUserFallsBackToPrefEligibility) {
   // User is not signed in.
   auto service = CreateService();
   EXPECT_TRUE(service->IsEligible());
+}
+
+TEST_F(UniversalOptOutServiceTest,
+       StartupMetricsRecordedWhenSignedOutEligibleViaFinch) {
+  EnableFeatureWithTargetLocations("us-ca");
+  SetGeoLevel1("us-ca");
+
+  base::HistogramTester histogram_tester;
+  auto service = CreateService();
+
+  histogram_tester.ExpectUniqueSample(kProfileEligibilityStartupHistogram, true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(kEligibilitySystemStartupHistogram,
+                                      EligibilitySystem::kEligibleViaFinch, 1);
+}
+
+TEST_F(UniversalOptOutServiceTest,
+       StartupMetricsRecordedWhenSignedOutIneligibleViaFinch) {
+  EnableFeatureWithTargetLocations("us-ca");
+  SetGeoLevel1("us-ny");
+
+  base::HistogramTester histogram_tester;
+  auto service = CreateService();
+
+  histogram_tester.ExpectUniqueSample(kProfileEligibilityStartupHistogram,
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample(kEligibilitySystemStartupHistogram,
+                                      EligibilitySystem::kIneligibleViaFinch,
+                                      1);
+}
+
+TEST_F(UniversalOptOutServiceTest,
+       StartupMetricsRecordedWhenSignedInEligibleViaAccountCapabilities) {
+  EnableFeatureWithTargetLocations("us-ca");
+  SetGeoLevel1("us-ny");  // Ineligible by Finch, but eligible by account.
+
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_universal_opt_out(true);
+  identity_test_env_.UpdateAccountInfoForAccount(account_info);
+
+  base::HistogramTester histogram_tester;
+  auto service = CreateService();
+
+  histogram_tester.ExpectUniqueSample(kProfileEligibilityStartupHistogram, true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kEligibilitySystemStartupHistogram,
+      EligibilitySystem::kEligibleViaAccountCapabilities, 1);
+}
+
+TEST_F(UniversalOptOutServiceTest,
+       StartupMetricsRecordedWhenSignedInIneligibleViaAccountCapabilities) {
+  EnableFeatureWithTargetLocations("us-ca");
+  SetGeoLevel1("us-ca");  // Eligible by Finch, but ineligible by account.
+
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_universal_opt_out(false);
+  identity_test_env_.UpdateAccountInfoForAccount(account_info);
+
+  base::HistogramTester histogram_tester;
+  auto service = CreateService();
+
+  histogram_tester.ExpectUniqueSample(kProfileEligibilityStartupHistogram,
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      kEligibilitySystemStartupHistogram,
+      EligibilitySystem::kIneligibleViaAccountCapabilities, 1);
+}
+
+TEST_F(UniversalOptOutServiceTest,
+       StartupMetricsRecordedWhenSignedInCapabilityUnknownFallsBackToFinch) {
+  EnableFeatureWithTargetLocations("us-ca");
+  SetGeoLevel1("us-ca");
+
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  base::HistogramTester histogram_tester;
+  auto service = CreateService();
+
+  histogram_tester.ExpectUniqueSample(kProfileEligibilityStartupHistogram, true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(kEligibilitySystemStartupHistogram,
+                                      EligibilitySystem::kEligibleViaFinch, 1);
+}
+
+TEST_F(UniversalOptOutServiceTest,
+       EligibilityChangedHistogramRecordedOnTransition) {
+  EnableFeatureWithTargetLocations("us-ca");
+  SetGeoLevel1("us-ca");
+
+  // User starts with pref false (default).
+  base::HistogramTester histogram_tester;
+  auto service = CreateService();
+
+  histogram_tester.ExpectUniqueSample(
+      kEligibilityChangedHistogram,
+      EligibilityTransition::kIneligibleToEligible, 1);
+}
+
+TEST_F(UniversalOptOutServiceTest,
+       EligibilityChangedHistogramRecordedOnLossOfEligibility) {
+  EnableFeatureWithTargetLocations("us-ca");
+
+  // User is eligible with toggle off.
+  pref_service_.SetBoolean(prefs::kUniversalOptOutEligible, true);
+  pref_service_.SetBoolean(prefs::kUniversalOptOutEnabled, false);
+
+  // Populate history so ratio < 50% over 90 days.
+  base::Time today = GetCurrentDay(test_clock_.Now());
+  for (int i = 1; i <= 10; ++i) {
+    SetHistoricalDay(today - base::Days(i), true);
+  }
+  for (int i = 11; i < 60; ++i) {
+    SetHistoricalDay(today - base::Days(i), false);
+  }
+
+  SetGeoLevel1("us-ny");
+  base::HistogramTester histogram_tester;
+  auto service = CreateService();
+
+  EXPECT_FALSE(service->IsEligible());
+  histogram_tester.ExpectUniqueSample(
+      kEligibilityChangedHistogram,
+      EligibilityTransition::kEligibleToIneligible, 1);
 }
 
 }  // namespace universal_optout

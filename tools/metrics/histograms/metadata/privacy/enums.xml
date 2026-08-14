@@ -250,6 +250,26 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="No third-party site data accesses"/>
 </enum>
 
+<!-- LINT.IfChange(UniversalOptOutEligibilitySystem) -->
+
+<enum name="UniversalOptOutEligibilitySystem">
+  <int value="0" label="Eligible via Account capabilities"/>
+  <int value="1" label="Ineligible via Account capabilities"/>
+  <int value="2" label="Eligible via Finch"/>
+  <int value="3" label="Ineligible via Finch"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/universal_optout/universal_optout_service.h:UniversalOptOutEligibilitySystem) -->
+
+<!-- LINT.IfChange(UniversalOptOutEligibilityTransition) -->
+
+<enum name="UniversalOptOutEligibilityTransition">
+  <int value="0" label="Ineligible to Eligible"/>
+  <int value="1" label="Eligible to Ineligible"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/universal_optout/universal_optout_service.h:UniversalOptOutEligibilityTransition) -->
+
 </enums>
 
 </histogram-configuration>

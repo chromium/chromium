@@ -11,6 +11,7 @@
 
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -105,6 +106,7 @@ UniversalOptOutService::UniversalOptOutService(
       clock_(clock) {
   variations_service_observation_.Observe(&variations_service);
   RecordLocationAndUpdateEligibility();
+  RecordStartupMetrics();
 }
 
 UniversalOptOutService::~UniversalOptOutService() = default;
@@ -118,18 +120,11 @@ void UniversalOptOutService::OnSeedFetched() {
 }
 
 bool UniversalOptOutService::IsEligible() const {
-  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    const CoreAccountInfo core_account_info =
-        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    const AccountInfo account_info =
-        identity_manager_->FindExtendedAccountInfo(core_account_info);
-    signin::Tribool capability =
-        account_info.GetAccountCapabilities().is_subject_to_universal_opt_out();
-    // If the capability is known, use it. Otherwise, fall back to location
-    // history.
-    if (capability != signin::Tribool::kUnknown) {
-      return capability == signin::Tribool::kTrue;
-    }
+  signin::Tribool capability = GetAccountCapabilityEligibility();
+  // If the capability is known, use it. Otherwise, fall back to location
+  // history.
+  if (capability != signin::Tribool::kUnknown) {
+    return capability == signin::Tribool::kTrue;
   }
 
   return pref_service_->GetBoolean(prefs::kUniversalOptOutEligible);
@@ -198,15 +193,55 @@ void UniversalOptOutService::UpdateEligibility(base::Time current_day) {
   bool is_opt_out_enabled =
       pref_service_->GetBoolean(prefs::kUniversalOptOutEnabled);
 
+  bool new_eligible = currently_eligible;
   if (currently_eligible) {
     if (!is_opt_out_enabled && category == EligibilityCategory::kIneligible) {
-      pref_service_->SetBoolean(prefs::kUniversalOptOutEligible, false);
+      new_eligible = false;
     }
   } else {
     if (category == EligibilityCategory::kEligible) {
-      pref_service_->SetBoolean(prefs::kUniversalOptOutEligible, true);
+      new_eligible = true;
     }
   }
+
+  if (new_eligible != currently_eligible) {
+    pref_service_->SetBoolean(prefs::kUniversalOptOutEligible, new_eligible);
+    base::UmaHistogramEnumeration(
+        kEligibilityChangedHistogram,
+        new_eligible ? EligibilityTransition::kIneligibleToEligible
+                     : EligibilityTransition::kEligibleToIneligible);
+  }
+}
+
+signin::Tribool UniversalOptOutService::GetAccountCapabilityEligibility()
+    const {
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    const CoreAccountInfo core_account_info =
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    const AccountInfo account_info =
+        identity_manager_->FindExtendedAccountInfo(core_account_info);
+    return account_info.GetAccountCapabilities()
+        .is_subject_to_universal_opt_out();
+  }
+  return signin::Tribool::kUnknown;
+}
+
+void UniversalOptOutService::RecordStartupMetrics() {
+  base::UmaHistogramBoolean(kProfileEligibilityStartupHistogram, IsEligible());
+
+  signin::Tribool capability = GetAccountCapabilityEligibility();
+  EligibilitySystem system;
+  if (capability == signin::Tribool::kTrue) {
+    system = EligibilitySystem::kEligibleViaAccountCapabilities;
+  } else if (capability == signin::Tribool::kFalse) {
+    system = EligibilitySystem::kIneligibleViaAccountCapabilities;
+  } else {
+    system = pref_service_->GetBoolean(prefs::kUniversalOptOutEligible)
+                 ? EligibilitySystem::kEligibleViaFinch
+                 : EligibilitySystem::kIneligibleViaFinch;
+  }
+
+  base::UmaHistogramEnumeration(kEligibilitySystemStartupHistogram, system);
 }
 
 base::Time UniversalOptOutService::GetCurrentDay() const {

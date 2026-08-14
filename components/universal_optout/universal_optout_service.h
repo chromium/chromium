@@ -18,9 +18,42 @@ class ScopedDictPrefUpdate;
 
 namespace signin {
 class IdentityManager;
+enum class Tribool;
 }  // namespace signin
 
 namespace universal_optout {
+
+// Histogram names.
+inline constexpr char kProfileEligibilityStartupHistogram[] =
+    "Privacy.UniversalOptOut.ProfileEligibility.Startup";
+inline constexpr char kEligibilitySystemStartupHistogram[] =
+    "Privacy.UniversalOptOut.EligibilitySystem.Startup";
+inline constexpr char kEligibilityChangedHistogram[] =
+    "Privacy.UniversalOptOut.EligibilityChanged";
+
+// Identifies which system determined eligibility and the result.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(UniversalOptOutEligibilitySystem)
+enum class EligibilitySystem {
+  kEligibleViaAccountCapabilities = 0,
+  kIneligibleViaAccountCapabilities = 1,
+  kEligibleViaFinch = 2,
+  kIneligibleViaFinch = 3,
+  kMaxValue = kIneligibleViaFinch,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:UniversalOptOutEligibilitySystem)
+
+// Indicates the transition direction when eligibility changes.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(UniversalOptOutEligibilityTransition)
+enum class EligibilityTransition {
+  kIneligibleToEligible = 0,
+  kEligibleToIneligible = 1,
+  kMaxValue = kEligibleToIneligible,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:UniversalOptOutEligibilityTransition)
 
 // Service responsible for tracking location history and determining eligibility
 // of users for Universal Opt Out. For signed-out users, eligibility is
@@ -71,6 +104,13 @@ class UniversalOptOutService : public KeyedService,
   // Evaluates and updates eligibility status based on location history within
   // the sliding windows.
   void UpdateEligibility(base::Time current_day);
+
+  // Returns the eligibility status based on account capabilities if known,
+  // or Tribool::kUnknown if unknown or signed out.
+  signin::Tribool GetAccountCapabilityEligibility() const;
+
+  // Records startup metrics (profile eligibility and eligibility system).
+  void RecordStartupMetrics();
 
   // Returns the start of the current day (UTC midnight) for now.
   base::Time GetCurrentDay() const;
