@@ -32,8 +32,8 @@ enum class InfoBarScope {
   kGlobal,
 };
 
-// The outcome of showing an infobar. Exactly one result is reported per
-// logical infobar.
+// Terminal outcome of a shown infobar. Reported exactly once per logical
+// infobar; programmatic removals are not reported.
 enum class InfoBarResult {
   // The user pressed the OK button.
   kAccepted,
@@ -41,7 +41,7 @@ enum class InfoBarResult {
   kCancelled,
   // The user closed the infobar.
   kDismissed,
-  // The infobar went away without any user interaction.
+  // Went away without the user touching it, e.g. the tab was closed.
   kIgnored,
 };
 
@@ -54,6 +54,8 @@ class InfoBarSpec {
           content::WebContents*)>;
   using InlineLinkCallback = base::RepeatingCallback<
       void(content::WebContents*, size_t, WindowOpenDisposition)>;
+  // Reports the terminal outcome. The WebContents may already be gone by
+  // then, in which case it is null.
   using ResultCallback =
       base::RepeatingCallback<void(content::WebContents*, InfoBarResult)>;
   // Returns true if the infobar may be shown in the given browser. Only
@@ -153,6 +155,7 @@ class InfoBarSpec::Builder {
   Builder& SetLinkText(std::u16string link_text);
   Builder& SetLinkNavigationUrl(GURL gurl);
   Builder& SetIcon(const gfx::VectorIcon& icon);
+  // Shown instead of the SetIcon() icon when the infobar is in dark mode.
   Builder& SetDarkModeIcon(const gfx::VectorIcon& icon);
   Builder& SetIconId(int icon_id);
 
