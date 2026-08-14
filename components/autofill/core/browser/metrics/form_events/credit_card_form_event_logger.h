@@ -61,7 +61,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   // Called by BnplManager after its suggestion update barrier callback is
   // triggered and a BNPL suggestion is shown.
-  virtual void OnBnplSuggestionShown();
+  virtual void OnBnplSuggestionShown(
+      bool suggestion_contains_pay_later_tab_entry);
 
   // Invoked when `suggestions` are successfully fetched.
   // `with_cvc` indicates whether CVC is saved in any of the suggestion in

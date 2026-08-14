@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/metrics/payments/ai_amount_extraction_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
+#include "components/autofill/core/browser/payments/android_bnpl_strategy.h"
 #include "components/autofill/core/browser/payments/bnpl_manager_test_api.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
@@ -83,7 +84,7 @@ class MockCreditCardFormEventLogger
     : public autofill_metrics::CreditCardFormEventLogger {
  public:
   using autofill_metrics::CreditCardFormEventLogger::CreditCardFormEventLogger;
-  MOCK_METHOD(void, OnBnplSuggestionShown, (), (override));
+  MOCK_METHOD(void, OnBnplSuggestionShown, (bool), (override));
 };
 
 class MockAutofillClient : public TestAutofillClient {
@@ -2109,7 +2110,9 @@ TEST_F(BnplManagerTest,
       Suggestion(SuggestionType::kManageCreditCard)};
 
   EXPECT_CALL(callback, Run);
-  EXPECT_CALL(*credit_card_form_event_logger_, OnBnplSuggestionShown());
+  EXPECT_CALL(*credit_card_form_event_logger_,
+              OnBnplSuggestionShown(
+                  /*suggestion_contains_pay_later_tab_entry=*/false));
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
@@ -2136,7 +2139,9 @@ TEST_F(
       Suggestion(SuggestionType::kManageCreditCard)};
 
   EXPECT_CALL(callback, Run).Times(0);
-  EXPECT_CALL(*credit_card_form_event_logger_, OnBnplSuggestionShown())
+  EXPECT_CALL(*credit_card_form_event_logger_,
+              OnBnplSuggestionShown(
+                  /*suggestion_contains_pay_later_tab_entry=*/false))
       .Times(0);
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
@@ -2295,7 +2300,9 @@ TEST_F(BnplManagerTest,
       Suggestion(SuggestionType::kCreditCardEntry),
       Suggestion(SuggestionType::kBnplEntry)};
 
-  EXPECT_CALL(*credit_card_form_event_logger_, OnBnplSuggestionShown());
+  EXPECT_CALL(*credit_card_form_event_logger_,
+              OnBnplSuggestionShown(
+                  /*suggestion_contains_pay_later_tab_entry=*/false));
   bnpl_manager_->OnCreditCardSuggestionsShown(suggestions, base::DoNothing());
 }
 
@@ -3430,7 +3437,9 @@ TEST_F(BnplManagerPayLaterTabTest,
                    .payments_data_manager()
                    .IsAutofillHasSeenBnplPrefEnabled());
   EXPECT_CALL(callback, Run).Times(0);
-  EXPECT_CALL(*credit_card_form_event_logger_, OnBnplSuggestionShown())
+  EXPECT_CALL(*credit_card_form_event_logger_,
+              OnBnplSuggestionShown(
+                  /*suggestion_contains_pay_later_tab_entry=*/false))
       .Times(0);
 
   bnpl_manager_->NotifyOfSuggestionGeneration(

@@ -66,7 +66,10 @@ CreditCardFormEventLogger::CreditCardFormEventLogger(
 
 CreditCardFormEventLogger::~CreditCardFormEventLogger() = default;
 
-void CreditCardFormEventLogger::OnBnplSuggestionShown() {
+void CreditCardFormEventLogger::OnBnplSuggestionShown(
+    bool suggestion_contains_pay_later_tab_entry) {
+  suggestion_contains_pay_later_tab_entry_ =
+      suggestion_contains_pay_later_tab_entry;
   if (!has_logged_bnpl_suggestion_shown_) {
     LogBnplSuggestionShown(driver().GetPageUkmSourceId());
     has_logged_bnpl_suggestion_shown_ = true;

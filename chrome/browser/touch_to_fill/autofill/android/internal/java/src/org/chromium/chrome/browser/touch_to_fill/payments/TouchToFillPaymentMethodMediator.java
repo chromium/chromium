@@ -955,6 +955,7 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
         if (mModel.get(CURRENT_SCREEN) == TABBED_HOME_SCREEN) {
             mShowBnplLoadingInTab = true;
             onTabSelected(PAY_LATER); // Refresh Pay Later tab to show spinner.
+            recordTouchToFillBnplUserAction(PROGRESS_SCREEN_SHOWN);
             return;
         }
         mModel.set(CURRENT_SCREEN, PROGRESS_SCREEN);
@@ -1011,6 +1012,10 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
         if (mModel.get(CURRENT_SCREEN) == TABBED_HOME_SCREEN) {
             mShowBnplLoadingInTab = false;
             onTabSelected(PAY_LATER); // Refresh Pay Later tab to show loaded issuers.
+            recordTouchToFillBnplUserAction(ISSUER_SELECTION_SCREEN_SHOWN);
+            RecordHistogram.recordCount100Histogram(
+                    TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN,
+                    mBnplIssuerContexts.size());
             return;
         }
 

@@ -392,7 +392,7 @@ class MockCreditCardFormEventLogger
       OnMetadataLoggingContextReceived,
       (autofill_metrics::CardMetadataLoggingContext metadata_logging_context),
       (override));
-  MOCK_METHOD(void, OnBnplSuggestionShown, (), (override));
+  MOCK_METHOD(void, OnBnplSuggestionShown, (bool), (override));
 };
 
 // TODO(crbug.com/40176273): Move GetSuggestionsForCreditCard tests and
@@ -3112,7 +3112,28 @@ TEST_F(CreditCardSuggestionGeneratorBnplTest,
           IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(true));
 
-  EXPECT_CALL(credit_card_form_event_logger(), OnBnplSuggestionShown())
+  EXPECT_CALL(credit_card_form_event_logger(), OnBnplSuggestionShown(false))
+      .Times(1);
+
+  GetCreditCardSuggestionsForTouchToFill(/*credit_cards=*/{CreateServerCard()},
+                                         autofill_manager(),
+                                         test::MakeFormGlobalId());
+}
+
+TEST_F(
+    CreditCardSuggestionGeneratorBnplTest,
+    GetCreditCardSuggestionsForTouchToFill_OnBnplSuggestionShownCalled_PayLaterTabsEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnablePayNowPayLaterTabs);
+
+  payments_data().AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_CALL(credit_card_form_event_logger(), OnBnplSuggestionShown(true))
       .Times(1);
 
   GetCreditCardSuggestionsForTouchToFill(/*credit_cards=*/{CreateServerCard()},
@@ -3131,7 +3152,7 @@ TEST_F(
           IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(false));
 
-  EXPECT_CALL(credit_card_form_event_logger(), OnBnplSuggestionShown())
+  EXPECT_CALL(credit_card_form_event_logger(), OnBnplSuggestionShown(_))
       .Times(0);
 
   GetCreditCardSuggestionsForTouchToFill(/*credit_cards=*/{CreateServerCard()},
@@ -3156,7 +3177,7 @@ TEST_F(
           IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(true));
 
-  EXPECT_CALL(credit_card_form_event_logger(), OnBnplSuggestionShown())
+  EXPECT_CALL(credit_card_form_event_logger(), OnBnplSuggestionShown(_))
       .Times(0);
 
   GetCreditCardSuggestionsForTouchToFill(/*credit_cards=*/{CreateServerCard()},

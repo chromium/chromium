@@ -141,7 +141,8 @@ TEST_F(CreditCardFormEventLoggerTest,
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
+  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown(
+      /*suggestion_contains_pay_later_tab_entry=*/false);
   autofill_manager().GetCreditCardFormEventLogger().OnUserDecisionToUseBnpl({});
 
   {
@@ -487,7 +488,8 @@ TEST_F(CreditCardFormEventLoggerTest,
        OnBnplSuggestionShown_SuggestionShownLogged) {
   base::HistogramTester histogram_tester;
 
-  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
+  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown(
+      /*suggestion_contains_pay_later_tab_entry=*/false);
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionShown,
@@ -495,7 +497,8 @@ TEST_F(CreditCardFormEventLoggerTest,
 
   // Test that `kBnplSuggestionShown` is logged only once even if
   // `OnBnplSuggestionShown()` is called more than once on the same page.
-  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
+  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown(
+      /*suggestion_contains_pay_later_tab_entry=*/false);
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionShown,
@@ -509,7 +512,8 @@ TEST_F(CreditCardFormEventLoggerTest,
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
+  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown(
+      /*suggestion_contains_pay_later_tab_entry=*/false);
 
   using Ukm = UkmBnplSuggestionShownType;
   EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),

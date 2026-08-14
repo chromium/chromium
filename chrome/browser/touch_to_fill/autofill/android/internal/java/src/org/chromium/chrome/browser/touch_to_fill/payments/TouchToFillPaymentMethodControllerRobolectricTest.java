@@ -3484,6 +3484,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, PROGRESS_ICON).size(), is(0));
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(1));
+
+        assertEquals(1, getUserActionCount(PROGRESS_SCREEN_SHOWN));
+        assertEquals(1, getUserActionCount(ISSUER_SELECTION_SCREEN_SHOWN));
     }
 
     @Test
