@@ -1943,6 +1943,26 @@ std::vector<int> new_way(std::from_range, a_very_long_container_name);
 See also std::ranges::to which offers something similar.
 ***
 
+### std::out_ptr, std::inout_ptr <sup>[allowed]</sup>
+
+```c++
+std::unique_ptr<T> p;
+void GetT(T** out);
+GetT(std::out_ptr(p));
+```
+
+**Description:** Smart pointer adapters for functions that take raw pointers as
+out-parameters.
+
+**Documentation:**
+[std::out_ptr](https://en.cppreference.com/w/cpp/memory/out_ptr_t/out_ptr),
+[std::inout_ptr](https://en.cppreference.com/w/cpp/memory/inout_ptr_t/inout_ptr)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/wQaVa2yNnNo).
+***
+
 ### std::ranges::to <sup>[allowed]</sup>
 
 ```c++
@@ -2206,26 +2226,6 @@ std::flat_map<int, std::string> map;
 **Notes:**
 *** promo
 Overlaps with `base::flat_map` and `base::flat_set`.
-***
-
-### std::out_ptr, std::inout_ptr <sup>[tbd]</sup>
-
-```c++
-std::unique_ptr<T> p;
-void GetT(T** out);
-GetT(std::out_ptr(p));
-```
-
-**Description:** Smart pointer adapters for functions that take raw pointers as
-out-parameters.
-
-**Documentation:**
-[std::out_ptr](https://en.cppreference.com/w/cpp/memory/out_ptr_t/out_ptr),
-[std::inout_ptr](https://en.cppreference.com/w/cpp/memory/inout_ptr_t/inout_ptr)
-
-**Notes:**
-*** promo
-None
 ***
 
 ### std::mdspan <sup>[tbd]</sup>

@@ -1402,13 +1402,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
     ),
     BanRule(
-        pattern=r'/std::(in)?out_ptr',
-        explanation=('Use of std::{out_ptr,inout_ptr} isn`t allowed. If you '
-                     'need it, contact cxx@chromium.org.', ),
-        treat_as_error=True,
-        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
-    ),
-    BanRule(
         pattern=r'std::start_lifetime_as',
         explanation=('Use of std::start_lifetime_as isn`t allowed. If you '
                      'need it, contact cxx@chromium.org.', ),
