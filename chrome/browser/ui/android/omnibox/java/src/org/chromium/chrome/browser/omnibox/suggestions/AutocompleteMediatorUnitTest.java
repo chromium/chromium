@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver;
 import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
@@ -167,8 +168,7 @@ public class AutocompleteMediatorUnitTest {
     @Mock private View mDecorView;
     @Mock private OmniboxSuggestionsDropdownEmbedder mEmbedder;
     @Mock private InsetObserver mInsetObserver;
-    private @Mock AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver
-            mVisualStateObserver;
+    @Mock private OmniboxSuggestionsVisualStateObserver mVisualStateObserver;
     @Mock private DeferredIMEWindowInsetApplicationCallback mDeferredImeCallback;
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
     @Mock private LocationBarEmbedderUiOverrides mUiOverrides;
@@ -176,8 +176,6 @@ public class AutocompleteMediatorUnitTest {
     @Mock private PreloadingFeatureMap mPreloadingFeatureMap;
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     @Mock private Callback<GURL> mGurlCallback;
-    private @Mock CachedZeroSuggestionsManager.OverridesForTesting
-            mMockCachedZeroSuggestionsManager;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
@@ -185,6 +183,10 @@ public class AutocompleteMediatorUnitTest {
     @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
+
+    @Mock
+    private CachedZeroSuggestionsManager.OverridesForTesting mMockCachedZeroSuggestionsManager;
+
     @Captor private ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
     @Captor private ArgumentCaptor<Consumer<SiteSearchData>> mKeywordModeEnteredCaptor;
     @Captor private ArgumentCaptor<Callback<GURL>> mUrlCallbackCaptor;
