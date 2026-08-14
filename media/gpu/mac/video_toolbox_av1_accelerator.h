@@ -66,6 +66,8 @@ class MEDIA_GPU_EXPORT VideoToolboxAV1Accelerator
   VideoColorSpace active_color_space_;
   VideoCodecProfile active_profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   gfx::Size active_coded_size_;
+  gfx::Size active_max_coded_size_;
+  int active_bit_depth_ = 0;
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
   VideoToolboxDecompressionSessionMetadata session_metadata_;
