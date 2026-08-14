@@ -69,11 +69,6 @@ const base::FeatureParam<base::TimeDelta> kAutoOpenGlicCooldown({
     "AutoOpenGlicCooldown",
     base::Hours(1),
 });
-const base::FeatureParam<base::TimeDelta> kAutoOpenMetricDebounceDuration({
-    &kAutoOpenGlicForPdf,
-    "AutoOpenMetricDebounceDuration",
-    base::Seconds(5),
-});
 
 BASE_FEATURE(kGlicInvoke, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicOnboardingMetricsMigration, base::FEATURE_ENABLED_BY_DEFAULT);

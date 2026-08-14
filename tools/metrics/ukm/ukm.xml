@@ -10803,66 +10803,15 @@ be describing additional metrics about the same event.
   <owner>iwells@google.com</owner>
   <summary>
     Recorded when an auto-opened Glic instance (such as for a PDF) is closed or
-    dismissed by the user or system, or when the user switches tabs. The
-    source_id represents the URL of the tab where auto-open was initially
-    triggered. This metric is only recorded once for the first side panel close
-    or tab switch.
+    dismissed by the user or system. The source_id represents the URL of the tab
+    where auto-open was initially triggered. This metric is not recorded on tab
+    switches and is only recorded when the last side panel associated with the
+    auto-opened instance closes.
   </summary>
-  <metric name="CloseReason" enum="GlicAutoOpenCloseReason">
-    <summary>
-      The reason the auto-opened panel closed (0 = ExplicitlyClosed, 1 =
-      TabSwitched).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="FirstAction" enum="GlicDaisyChainFirstAction">
-    <summary>
-      The first action taken by the user after Glic auto-opened.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="PromptCount">
-    <summary>
-      Total number of prompts submitted on the PDF tab during the auto-opened
-      panel interaction.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
   <metric name="SessionDurationMs">
     <summary>
       The duration in milliseconds that the auto-opened Glic instance remained
       open.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="TimeToFirstActionMs">
-    <summary>
-      The bucketed duration in milliseconds from when Glic auto-opened until the
-      user took their first action.
     </summary>
     <aggregation>
       <history>

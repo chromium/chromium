@@ -107,15 +107,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_enabling.h:AnchoredDespiteEligibilityReason) -->
 
-<!-- LINT.IfChange(GlicAutoOpenCloseReason) -->
-
-<enum name="GlicAutoOpenCloseReason">
-  <int value="0" label="Explicitly Closed / Dismissed"/>
-  <int value="1" label="Tab Switched"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:MetricCloseReason) -->
-
 <!-- LINT.IfChange(GlicBrowserActiveState) -->
 
 <enum name="GlicBrowserActiveState">

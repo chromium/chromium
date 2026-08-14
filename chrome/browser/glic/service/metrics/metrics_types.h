@@ -348,18 +348,6 @@ enum class SkillBuilderEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:SkillBuilderEvent)
 
-// LINT.IfChange(MetricCloseReason)
-// Reason why a Glic side panel was closed or dismissed.
-enum class MetricCloseReason {
-  // Explicitly closed by the user (e.g. clicking close on the panel) or the
-  // tab/window containing the panel was closed.
-  kExplicitlyClosed = 0,
-  // The user switched to a different tab while the panel was open.
-  kTabSwitched = 1,
-  kMaxValue = kTabSwitched,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicAutoOpenCloseReason)
-
 std::string GetDaisyChainSourceString(DaisyChainSource source);
 
 ResponseSegmentation GetResponseSegmentation(bool attached,
