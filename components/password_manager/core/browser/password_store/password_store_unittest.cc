@@ -680,6 +680,48 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfUpdateReturnsError) {
   store->ShutdownOnUIThread();
 }
 
+TEST_F(PasswordStoreTest, CallOnErrorStateChangedIfGetLoginsReturnsError) {
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebRealm1)};
+  MockPasswordStoreObserver mock_observer;
+  MockPasswordStoreConsumer mock_consumer;
+  auto [store, fake_backend] = CreateUnownedStoreWithOwnedFakeBackend();
+  fake_backend->ReturnErrorOnRequest(kBackendError);
+  store->Init();
+  store->AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer,
+              OnErrorStateChanged(store.get(), ActionableError::kInactionable));
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsOrErrorFrom(
+                  store.get(), VariantWith<PasswordStoreBackendError>(_)));
+  store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
+  WaitForPasswordStore();
+
+  store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest, CallOnErrorStateChangedIfGetAllLoginsReturnsError) {
+  MockPasswordStoreObserver mock_observer;
+  MockPasswordStoreConsumer mock_consumer;
+  auto [store, fake_backend] = CreateUnownedStoreWithOwnedFakeBackend();
+  fake_backend->ReturnErrorOnRequest(kBackendError);
+  store->Init();
+  store->AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer,
+              OnErrorStateChanged(store.get(), ActionableError::kInactionable));
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsOrErrorFrom(
+                  store.get(), VariantWith<PasswordStoreBackendError>(_)));
+  store->GetAllLogins(mock_consumer.GetWeakPtr());
+  WaitForPasswordStore();
+
+  store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+
 TEST_F(PasswordStoreTest, AbleToSavePasswords) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
   store->Init();

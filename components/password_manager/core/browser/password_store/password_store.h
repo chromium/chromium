@@ -145,6 +145,11 @@ class PasswordStore : public PasswordStoreInterface {
   // differs from `last_reported_actionable_error_`.
   void NotifyObserversIfErrorStateChanged(ActionableError error);
 
+  // Helper to forward the backend logins result or error to the consumer,
+  // notifying observers via OnErrorStateChanged if the result is an error.
+  void ForwardLoginsResultOrError(base::WeakPtr<PasswordStoreConsumer> consumer,
+                                  BackendLoginsResultOrError result);
+
   // The following methods notify observers that the password store may have
   // been modified via NotifyLoginsChangedOnMainSequence(). Note that there is
   // no guarantee that the called method will actually modify the password store
