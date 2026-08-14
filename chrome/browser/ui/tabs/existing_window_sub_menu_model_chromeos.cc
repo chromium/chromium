@@ -74,7 +74,7 @@ ExistingWindowSubMenuModelChromeOS::~ExistingWindowSubMenuModelChromeOS() =
 
 void ExistingWindowSubMenuModelChromeOS::BuildMenuGroupedByDesk(
     const std::vector<BrowserWindowInterface*>& existing_browsers) {
-  // Get the vector of MenuItemInfo for |existing_browsers| and then group them
+  // Get the vector of MenuItemInfo for `existing_browsers` and then group them
   // by desk.
   const DesksHelper* desks_helper = DesksHelper::Get();
   const int num_desks = desks_helper->GetNumberOfDesks();

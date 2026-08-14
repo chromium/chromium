@@ -95,12 +95,12 @@ class TabStripModelSelectionState final {
   bool Valid() const;
 
   // Access the current object as a ListSelectionModel. Requires the
-  // |model_| member to be non null.
+  // `model_` member to be non null.
   const ui::ListSelectionModel& GetListSelectionModel() const;
 
-  // Helper functions to update the |list_selection_model_| member,
+  // Helper functions to update the `list_selection_model_` member,
   // which is a ListSelectionModel representation of the current
-  // selection model. Requires |model_| to be non null.
+  // selection model. Requires `model_` to be non null.
   void InvalidateListSelectionModel(base::PassKey<TabStripModel>) const;
   void UpdateListSelectionModel(base::PassKey<TabStripModel>) const;
 
@@ -126,7 +126,7 @@ class TabStripModelSelectionState final {
   // The focused tab group, if any.
   std::optional<tab_groups::TabGroupId> focused_group_ = std::nullopt;
 
-  // If |model_| is non-null, this member represents a ListSelectionModel that
+  // If `model_` is non-null, this member represents a ListSelectionModel that
   // represents the current selection model. Otherwise it is a nullopt. The
   // value of this member is cached and generated only on access, if
   // necessary.

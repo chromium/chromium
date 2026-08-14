@@ -35,7 +35,7 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
 
   // Whether the submenu should be shown in the provided context. True iff
   // the submenu would show at least one group. Does not assume ownership of
-  // |model|; |model| must outlive this instance.
+  // `model`; `model` must outlive this instance.
   static bool ShouldShowSubmenu(TabStripModel* model,
                                 int context_index,
                                 TabMenuModelDelegate* tab_menu_model_delegate);
@@ -58,15 +58,13 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
   const std::vector<MenuItemInfo> GetMenuItemsFromModel(
       TabStripModel* current_model);
 
-
-  // Helper function to make a |MenuItemInfo| corresponding to the fields
+  // Helper function to make a `MenuItemInfo` corresponding to the fields
   // of a group. Intended to be used for both saved tab groups and local groups.
   MenuItemInfo CreateMenuItemInfo(const std::u16string& displayed_title,
                                   const tab_groups::TabGroupColorId&);
 
-
-  // Whether the submenu should contain the group |group|. True iff at least
-  // one tab that would be affected by the command is not in |group|.
+  // Whether the submenu should contain the group `group`. True iff at least
+  // one tab that would be affected by the command is not in `group`.
   static bool ShouldShowGroup(TabStripModel* model,
                               int context_index,
                               tab_groups::TabGroupId group);

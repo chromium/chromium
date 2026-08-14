@@ -36,7 +36,7 @@ class MostRecentSharedTabUpdateStore {
       const MostRecentSharedTabUpdateStore& other) = delete;
   ~MostRecentSharedTabUpdateStore();
 
-  // Returns whether |tab_identifiers| has been set.
+  // Returns whether `tab_identifiers` has been set.
   bool HasUpdate() { return last_updated_tab_.has_value(); }
 
   // Gets the identifiers of the most recent locally-updated shared tab.

@@ -760,7 +760,7 @@ TEST_F(TabStripModelTest, TestBasicAPI) {
   // Test CloseSelectedTabs
   {
     tabstrip()->CloseSelectedTabs();
-    // |CloseSelectedTabs| calls CloseWebContentsAt, we already tested that, now
+    // `CloseSelectedTabs` calls CloseWebContentsAt, we already tested that, now
     // just verify that the count and selected index have changed
     // appropriately...
     EXPECT_EQ(1, tabstrip()->count());
@@ -1199,7 +1199,7 @@ TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
   std::unique_ptr<WebContents> contents5 = CreateWebContents();
   WebContents* raw_contents5 = contents5.get();
 
-  // We use |InsertWebContentsAt| here instead of |AppendWebContents| so that
+  // We use `InsertWebContentsAt` here instead of `AppendWebContents` so that
   // openership relationships are preserved.
   tabstrip()->InsertWebContentsAt(tabstrip()->count(), std::move(contents1),
                                   AddTabTypes::ADD_INHERIT_OPENER);
@@ -5714,11 +5714,11 @@ TEST_F(TabStripModelTest, TabBlockedState) {
   TabStripModel strip_dst(&dummy_tab_strip_delegate, profile());
   TabBlockedStateTestBrowser browser_dst(&strip_dst);
 
-  // Setup a SingleWebContentsDialogManager for tab |contents2|.
+  // Setup a SingleWebContentsDialogManager for tab `contents2`.
   web_modal::WebContentsModalDialogManager* modal_dialog_manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(raw_contents2);
 
-  // Show a dialog that blocks tab |contents2|.
+  // Show a dialog that blocks tab `contents2`.
   // DummySingleWebContentsDialogManager doesn't care about the
   // dialog window value, so any dummy value works.
   DummySingleWebContentsDialogManager* native_manager =
@@ -5776,8 +5776,8 @@ TEST_F(TabStripModelTest, LinkClicksWithPinnedTabOrdering) {
 }
 
 // This test covers a bug in TabStripModel::MoveWebContentsAt(). Specifically
-// if |select_after_move| was true it checked if the index
-// select_after_move (as an int) was selected rather than |to_position|.
+// if `select_after_move` was true it checked if the index
+// select_after_move (as an int) was selected rather than `to_position`.
 TEST_F(TabStripModelTest, MoveWebContentsAt) {
   tabstrip()->AppendWebContents(CreateWebContents(), false);
   tabstrip()->AppendWebContents(CreateWebContents(), false);

@@ -35,10 +35,10 @@ class TabGroupModel {
   TabGroupModel();
   ~TabGroupModel();
 
-  // Returns whether a tab group with the given |id| exists.
+  // Returns whether a tab group with the given `id` exists.
   bool ContainsTabGroup(const tab_groups::TabGroupId& id) const;
 
-  // Returns the tab group with the given |id|. The group must exist.
+  // Returns the tab group with the given `id`. The group must exist.
   TabGroup* GetTabGroup(const tab_groups::TabGroupId& id) const;
 
   // Registers a tab group. It will initially be empty,

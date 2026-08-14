@@ -12,7 +12,7 @@
 
 // A UKM entry consists of named metrics with int64_t values. Use a map to
 // specify expected metrics to test against an actual entry for tests.
-// A value of |nullopt| implies a value shouldn't exist for the given metric
+// A value of `nullopt` implies a value shouldn't exist for the given metric
 // name.
 using UkmMetricMap = std::map<const char*, std::optional<int64_t>>;
 using SourceUkmMetricMap =
@@ -30,17 +30,17 @@ class UkmEntryChecker {
   UkmEntryChecker& operator=(const UkmEntryChecker&) = delete;
   ~UkmEntryChecker();
 
-  // Expects that the next untested entry for |entry_name| matches the value
-  // and the given URL if |source_url| is not empty.
+  // Expects that the next untested entry for `entry_name` matches the value
+  // and the given URL if `source_url` is not empty.
   // Use this function to verify a single expected event.
-  // This function increments |num_entries_[entry_name]| by 1, so entries after
+  // This function increments `num_entries_[entry_name]` by 1, so entries after
   // this one will still be considered new/untested.
   void ExpectNewEntry(const std::string& entry_name,
                       const GURL& source_url,
                       const UkmMetricMap& expected_metrics);
 
-  // Expects that |expected_entries.size()| new entries have been recorded for
-  // |entry_name|, in any order. For each expected entry, checks that its
+  // Expects that `expected_entries.size()` new entries have been recorded for
+  // `entry_name`, in any order. For each expected entry, checks that its
   // metrics match one of the newly recorded entries.
   // Use this function when expecting multiple entries to be logged at once.
   void ExpectNewEntries(const std::string& entry_name,
@@ -52,17 +52,17 @@ class UkmEntryChecker {
   void ExpectNewEntriesBySource(const std::string& entry_name,
                                 const SourceUkmMetricMap& expected_data);
 
-  // Returns number of new entries that have been recorded for |entry_name|.
+  // Returns number of new entries that have been recorded for `entry_name`.
   // Entries are considered new until they have been validated with
   // ExpectNewEntries() or similar.
   // Thus, this returns the difference between the number of entries in UKM and
   // the number of entries that have been validated.
   int NumNewEntriesRecorded(const std::string& entry_name) const;
 
-  // Returns number of entries for |entry_name|.
+  // Returns number of entries for `entry_name`.
   size_t NumEntries(const std::string& entry_name) const;
 
-  // Returns the last recorded entry for |entry_name|.
+  // Returns the last recorded entry for `entry_name`.
   const ukm::mojom::UkmEntry* LastUkmEntry(const std::string& entry_name) const;
 
  private:
@@ -70,7 +70,7 @@ class UkmEntryChecker {
 
   // Keyed by entry name, and tracks the expected number of entries to ensure we
   // don't log duplicate or incorrect entries.
-  // |num_entries_| records the number of entries that have been expected via
+  // `num_entries_` records the number of entries that have been expected via
   // calls to ExpectNewEntries() or similar.
   std::map<std::string, size_t> num_entries_;
 };

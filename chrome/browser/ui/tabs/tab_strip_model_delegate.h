@@ -60,8 +60,8 @@ class TabStripModelDelegate {
 
   virtual ~TabStripModelDelegate() = default;
 
-  // Adds a tab to the model and loads |url| in the tab. If |url| is an empty
-  // URL, then the new tab-page is loaded instead. An |index| value of -1
+  // Adds a tab to the model and loads `url` in the tab. If `url` is an empty
+  // URL, then the new tab-page is loaded instead. An `index` value of -1
   // means to append the contents to the end of the tab strip.
   virtual void AddTabAt(
       const GURL& url,
@@ -71,7 +71,7 @@ class TabStripModelDelegate {
       bool pinned = false) = 0;
 
   // Asks for a new TabStripModel to be created and the given web contentses to
-  // be added to it. Its size and position are reflected in |window_bounds|.
+  // be added to it. Its size and position are reflected in `window_bounds`.
   // Returns the Browser object representing the newly created window and tab
   // strip. This does not show the window; it's up to the caller to do so.
   //
@@ -119,17 +119,17 @@ class TabStripModelDelegate {
   virtual void MoveToExistingWindow(const std::vector<int>& indices,
                                     int browser_index) = 0;
 
-  // Returns whether the contents at |indices| can be moved from the current
+  // Returns whether the contents at `indices` can be moved from the current
   // tabstrip to a different window.
   virtual bool CanMoveTabsToWindow(const std::vector<int>& indices) = 0;
 
-  // Removes the contents at |indices| from this tab strip and places it into a
+  // Removes the contents at `indices` from this tab strip and places it into a
   // new window.
   virtual void MoveTabsToNewWindow(const std::vector<int>& indices) = 0;
 
-  // Moves all the tabs in the specified |group| to a new window, keeping them
+  // Moves all the tabs in the specified `group` to a new window, keeping them
   // grouped. The group in the new window will have the same appearance as
-  // |group| but a different ID, since IDs can't be shared across windows.
+  // `group` but a different ID, since IDs can't be shared across windows.
   virtual void MoveGroupToNewWindow(const tab_groups::TabGroupId& group) = 0;
 
   // Creates an entry in the historical tab database for the specified
@@ -139,11 +139,11 @@ class TabStripModelDelegate {
       content::WebContents* contents) = 0;
 
   // Creates an entry in the historical group database for the specified
-  // |group|.
+  // `group`.
   virtual void CreateHistoricalGroup(const tab_groups::TabGroupId& group) = 0;
 
   // Creates an entry in the historical split database for the specified
-  // |split_id|.
+  // `split_id`.
   virtual void CreateHistoricalSplit(
       const split_tabs::SplitTabId& split_id) = 0;
 
@@ -176,7 +176,7 @@ class TabStripModelDelegate {
       content::WebContents* contents) = 0;
 
   // Returns true if we should run unload listeners before attempts
-  // to close |contents|.
+  // to close `contents`.
   virtual bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) = 0;
 

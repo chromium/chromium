@@ -26,7 +26,7 @@ class TabActivitySimulator {
   TabActivitySimulator& operator=(const TabActivitySimulator&) = delete;
   ~TabActivitySimulator();
 
-  // Simulates a navigation to |url| using the given transition type.
+  // Simulates a navigation to `url` using the given transition type.
   void Navigate(content::WebContents* web_contents,
                 const GURL& url,
                 ui::PageTransition page_transition = ui::PAGE_TRANSITION_LINK);
@@ -37,14 +37,14 @@ class TabActivitySimulator {
       bool initially_visible = false);
 
   // Creates a new WebContents suitable for testing, adds it to the tab strip
-  // and commits a navigation to |initial_url|. The WebContents is owned by the
+  // and commits a navigation to `initial_url`. The WebContents is owned by the
   // TabStripModel, so its tab must be closed later, e.g. via CloseAllTabs().
   content::WebContents* AddWebContentsAndNavigate(
       TabStripModel* tab_strip_model,
       const GURL& initial_url,
       ui::PageTransition page_transition = ui::PAGE_TRANSITION_LINK);
 
-  // Sets |new_index| as the active tab in its tab strip, hiding the previously
+  // Sets `new_index` as the active tab in its tab strip, hiding the previously
   // active tab.
   void SwitchToTabAt(TabStripModel* tab_strip_model, int new_index);
 };

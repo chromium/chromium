@@ -76,7 +76,7 @@ ui::ImageModel CreateSizedFallback(float scale_factor,
     background_flags.setAntiAlias(true);
     background_flags.setBlendMode(SkBlendMode::kClear);
 
-    // Paint circle border, taking up the entire |icon_width|.
+    // Paint circle border, taking up the entire `icon_width`.
     cc::PaintFlags border_flags;
     border_flags.setColor(color_provider->GetColor(ui::kColorSysTonalOutline));
     canvas.DrawCircle(icon_bounds.CenterPoint(), icon_width / 2.0,

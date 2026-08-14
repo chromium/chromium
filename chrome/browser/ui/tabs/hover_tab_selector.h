@@ -19,7 +19,7 @@ class HoverTabSelector {
   HoverTabSelector& operator=(const HoverTabSelector&) = delete;
   ~HoverTabSelector();
 
-  // Begin a delayed tab transition to the tab at |index|. Only starts
+  // Begin a delayed tab transition to the tab at `index`. Only starts
   // the transition if the specified tab is not active and there isn't
   // already a transition to it scheduled. Cancels the pending transition
   // to any other tab, if there is one.

@@ -16,8 +16,8 @@
 
 namespace {
 
-// Verifies each expected metric's value. Metrics not in |expected_metrics| are
-// ignored. A metric value of |nullopt| implies the metric shouldn't exist.
+// Verifies each expected metric's value. Metrics not in `expected_metrics` are
+// ignored. A metric value of `nullopt` implies the metric shouldn't exist.
 void ExpectEntryMetrics(const ukm::mojom::UkmEntry& entry,
                         const UkmMetricMap& expected_metrics) {
   // Each expected metric should match a named value in the UKM entry.
@@ -33,8 +33,8 @@ void ExpectEntryMetrics(const ukm::mojom::UkmEntry& entry,
   }
 }
 
-// Returns true if each metric in |expected_metrics| has the same value in the
-// given entry. An expected metric value of |nullopt| implies a value shouldn't
+// Returns true if each metric in `expected_metrics` has the same value in the
+// given entry. An expected metric value of `nullopt` implies a value shouldn't
 // exist in the entry.
 bool EntryContainsMetrics(const ukm::mojom::UkmEntry* entry,
                           const UkmMetricMap& expected_metrics) {
@@ -55,7 +55,7 @@ bool EntryContainsMetrics(const ukm::mojom::UkmEntry* entry,
   return true;
 }
 
-// Returns an iterator to an entry whose metrics match |expected_metrics|,
+// Returns an iterator to an entry whose metrics match `expected_metrics`,
 // or end() if not found.
 std::vector<
     raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>::const_iterator
@@ -129,7 +129,7 @@ void UkmEntryChecker::ExpectNewEntries(
       << "Expected at least " << num_entries_[entry_name] << " entries, found "
       << entries.size() << " for " << entry_name;
 
-  // Remove old entries from |entries| before matching new entries.
+  // Remove old entries from `entries` before matching new entries.
   entries.erase(entries.begin(), entries.end() - num_new_entries);
   for (size_t i = 0; i < expected_entries.size(); i++) {
     auto it = FindMatchingEntry(entries, expected_entries[i]);
@@ -183,7 +183,7 @@ int UkmEntryChecker::NumNewEntriesRecorded(
     const std::string& entry_name) const {
   const size_t current_ukm_entries = NumEntries(entry_name);
 
-  // If a value hasn't been inserted for |entry_name|, the test hasn't checked
+  // If a value hasn't been inserted for `entry_name`, the test hasn't checked
   // for these entries before, so they all count as new.
   if (!num_entries_.count(entry_name)) {
     return current_ukm_entries;

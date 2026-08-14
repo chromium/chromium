@@ -108,8 +108,8 @@ ui::ImageModel CreateFavicon(const gfx::VectorIcon& icon) {
 
 }  // namespace
 
-// An element in |RecentTabsSubMenuModel::local_tab_items_| or
-// |RecentTabsSubMenuModel::remote_tab_items_| that stores
+// An element in `RecentTabsSubMenuModel::local_tab_items_` or
+// `RecentTabsSubMenuModel::remote_tab_items_` that stores
 // the navigation information of a local or other devices' tab required to
 // restore the tab.
 struct RecentTabsSubMenuModel::TabItem {
@@ -131,7 +131,7 @@ struct RecentTabsSubMenuModel::TabItem {
   GURL url;
 };
 
-// An element in |RecentTabsSubMenuModel::sub_menu_items_| that records a sub
+// An element in `RecentTabsSubMenuModel::sub_menu_items_` that records a sub
 // menu item's model and its own command id.
 // TODO(emshack): This solution, where sub menus are represented by a
 // SimpleMenuModel and managed by the parent RecentTabsSubMenuModel, is not

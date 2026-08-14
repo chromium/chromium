@@ -118,7 +118,7 @@ class TabStripModelChange {
     void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
-  // Tabs were removed at |indices_before_removal|. This implicitly
+  // Tabs were removed at `indices_before_removal`. This implicitly
   // changes the existing selection model by calling DecrementFrom(index).
   struct Remove {
     Remove();
@@ -212,8 +212,8 @@ struct TabStripSelectionChange {
 
   TabStripSelectionChange& operator=(const TabStripSelectionChange& other);
 
-  // Fill TabStripSelectionChange with given |contents| and |selection_model|.
-  // note that |new_contents| and |new_model| will be filled too so that
+  // Fill TabStripSelectionChange with given `contents` and `selection_model`.
+  // note that `new_contents` and `new_model` will be filled too so that
   // selection_changed() and active_tab_changed() won't return true.
   TabStripSelectionChange(tabs::TabInterface* tab,
                           const ui::ListSelectionModel& model);
@@ -512,12 +512,12 @@ class TabStripModelObserver {
   TabStripModelObserver(const TabStripModelObserver&) = delete;
   TabStripModelObserver& operator=(const TabStripModelObserver&) = delete;
 
-  // |change| is a series of changes in tabstrip model. |change| consists
+  // `change` is a series of changes in tabstrip model. `change` consists
   // of changes with same type and those changes may have caused selection or
-  // activation changes. |selection| is determined by comparing the state of
-  // TabStripModel before the |change| and after the |change| are applied.
+  // activation changes. `selection` is determined by comparing the state of
+  // TabStripModel before the `change` and after the `change` are applied.
   // When only selection/activation was changed without any change about
-  // the Tab, |change| can be empty.
+  // the Tab, `change` can be empty.
   virtual void OnTabStripModelChanged(TabStripModel* tab_strip_model,
                                       const TabStripModelChange& change,
                                       const TabStripSelectionChange& selection);
@@ -528,7 +528,7 @@ class TabStripModelObserver {
   // cancelling/completing a the drag before a tab is added during header drag.
   virtual void OnTabWillBeAdded();
 
-  // Notification that the tab at |index| will be removed from the
+  // Notification that the tab at `index` will be removed from the
   // TabStripModel, which allows an observer to react to an impending change to
   // the TabStripModel. The only use case of this signal that is currently
   // supported is the drag controller completing a drag before a tab is removed.
@@ -538,11 +538,11 @@ class TabStripModelObserver {
   // permitted by the `TabStripModel::IsTabClosable` oracle.
   virtual void OnTabCloseCancelled(const tabs::TabInterface* tab);
 
-  // The specified Tab changed in some way. |tab|
+  // The specified Tab changed in some way. `tab`
   // may be an entirely different object and the old value is no longer
   // available by the time this message is delivered.
   //
-  // See tab_change_type.h for a description of |change_type|.
+  // See tab_change_type.h for a description of `change_type`.
   virtual void OnTabChangedAt(tabs::TabInterface* tab,
                               TabChangeType change_type);
 
@@ -558,7 +558,7 @@ class TabStripModelObserver {
       tabs::TabInterface* tab,
       int index);
 
-  // |change| is a change in the Tab Group model or metadata. These
+  // `change` is a change in the Tab Group model or metadata. These
   // changes may cause repainting of some Tab Group UI. They are
   // independent of the tabstrip model and do not affect any tab state.
   virtual void OnTabGroupChanged(const TabGroupChange& change);
@@ -576,7 +576,7 @@ class TabStripModelObserver {
   virtual void OnTabGroupWillBeRemoved(const tab_groups::TabGroupId& group_id);
 
   // Notifies us when there is a change to split tab state in the TabStripModel.
-  // The |change| provides details of the change to split tab.
+  // The `change` provides details of the change to split tab.
   virtual void OnSplitTabChanged(const SplitTabChange& change);
 
   // The TabStripModel now no longer has any tabs. The implementer may

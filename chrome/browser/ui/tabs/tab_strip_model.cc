@@ -1035,7 +1035,7 @@ std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
 void TabStripModel::SendDetachWebContentsNotifications(
     DetachNotifications* notifications) {
   // Sort the DetachedTab in decreasing order of
-  // |index_before_any_removals|. This is because |index_before_any_removals| is
+  // `index_before_any_removals`. This is because `index_before_any_removals` is
   // used by observers to update their own copy of TabStripModel state, and each
   // removal affects subsequent removals of higher index.
   std::sort(
@@ -1568,7 +1568,7 @@ std::optional<tab_groups::TabGroupId> TabStripModel::GetSurroundingTabGroup(
     return std::nullopt;
   }
 
-  // If the tab before is not in a group, a tab inserted at |index|
+  // If the tab before is not in a group, a tab inserted at `index`
   // wouldn't be surrounded by one group.
   std::optional<tab_groups::TabGroupId> group = GetTabGroupForTab(index - 1);
   if (!group) {
@@ -1576,7 +1576,7 @@ std::optional<tab_groups::TabGroupId> TabStripModel::GetSurroundingTabGroup(
   }
 
   // If the tab after is in a different (or no) group, a new tab at
-  // |index| isn't surrounded.
+  // `index` isn't surrounded.
   if (group != GetTabGroupForTab(index)) {
     return std::nullopt;
   }
@@ -1809,7 +1809,7 @@ void TabStripModel::AddTab(std::unique_ptr<tabs::TabModel> tab,
                                                   ui::PAGE_TRANSITION_LINK) &&
       (add_types & ADD_FORCE_INDEX) == 0) {
     // We assume tabs opened via link clicks are part of the same task as their
-    // parent.  Note that when |force_index| is true (e.g. when the user
+    // parent.  Note that when `force_index` is true (e.g. when the user
     // drag-and-drops a link to the tab strip), callers aren't really handling
     // link clicks, they just want to score the navigation like a link click in
     // the history backend, so we don't inherit the opener in this case.
@@ -2119,10 +2119,10 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
   // a split. In that case, unsplit said split tabs.
   MaybeRemoveSplitsForUpdate(indices);
 
-  // The odds of |new_group| colliding with an existing group are astronomically
-  // low. If there is a collision, a DCHECK will fail in |AddToNewGroupImpl()|,
+  // The odds of `new_group` colliding with an existing group are astronomically
+  // low. If there is a collision, a DCHECK will fail in `AddToNewGroupImpl()`,
   // in which case there is probably something wrong with
-  // |tab_groups::TabGroupId::GenerateNew()|.
+  // `tab_groups::TabGroupId::GenerateNew()`.
   const tab_groups::TabGroupId new_group =
       tab_groups::TabGroupId::GenerateNew();
   AddToNewGroupImpl(indices, new_group);
@@ -2673,7 +2673,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
   CHECK(command_id > CommandFirst && command_id < CommandLast);
 
   // The tab strip may have been modified while the context menu was open,
-  // including closing the tab originally at |context_index|.
+  // including closing the tab originally at `context_index`.
   if (!ContainsIndex(context_index)) {
     return;
   }
@@ -4629,7 +4629,7 @@ void TabStripModel::AddToExistingGroupImpl(const std::vector<int>& indices,
   tabs::TabInterface* last_tab_in_group = group_object->GetLastTab();
   int last_tab_index = GetIndexOfTab(last_tab_in_group);
 
-  // Split |new_indices| into |tabs_left_of_group| and |tabs_right_of_group| to
+  // Split `new_indices` into `tabs_left_of_group` and `tabs_right_of_group` to
   // be moved to proper destination index. Directly set the group for indices
   // that are inside the group.
   std::vector<int> tabs_left_of_group;
@@ -5357,7 +5357,7 @@ void TabStripModel::MoveTabsWithNotifications(
   }
 }
 
-// Sets the sound content setting for each site at the |indices|.
+// Sets the sound content setting for each site at the `indices`.
 void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
                                   bool mute) const {
   for (int tab_index : indices) {
@@ -5421,7 +5421,7 @@ void TabStripModel::FixOpeners(int index) {
     tab_model->set_opener(new_opener == tab_model ? nullptr : new_opener);
   }
 
-  // Sanity check that none of the tabs' openers refer |old_tab| or
+  // Sanity check that none of the tabs' openers refer `old_tab` or
   // themselves.
   DCHECK([&]() {
     return std::none_of(begin(), end(), [&](tabs::TabInterface* tab) {

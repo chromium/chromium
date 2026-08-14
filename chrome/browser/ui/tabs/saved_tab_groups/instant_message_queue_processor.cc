@@ -288,7 +288,7 @@ base::TimeDelta InstantMessageQueueProcessor::GetMessageInterval() {
 
 void InstantMessageQueueProcessor::ProcessQueueAfterMessageShown() {
   // This function is only entered if a toast was successfully shown and is
-  // solely responsible for resetting the |is_showing_instant_message_| bool.
+  // solely responsible for resetting the `is_showing_instant_message_` bool.
   CHECK(IsMessageShowing());
   is_showing_instant_message_ = false;
   ProceedToNextQueueMessage();

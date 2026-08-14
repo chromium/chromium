@@ -211,7 +211,7 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommandForTesting(
 
 void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
   // The tab strip may have been modified while the context menu was open,
-  // including closing the tab originally at |context_index|.
+  // including closing the tab originally at `context_index`.
   if (!model()->ContainsIndex(GetContextIndex())) {
     return;
   }

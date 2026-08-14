@@ -16,7 +16,7 @@ class Profile;
 // associated PinnedTabService.
 class PinnedTabServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns the PinnedTabService that tracks pinning changes for |profile|.
+  // Returns the PinnedTabService that tracks pinning changes for `profile`.
   static PinnedTabService* GetForProfile(Profile* profile);
 
   static PinnedTabServiceFactory* GetInstance();

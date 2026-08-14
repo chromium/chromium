@@ -52,7 +52,7 @@ enum TabGroupingTransitionType {
 // shortly after creation.
 //
 // When constructed, the controller gets the last active tab group if any, and
-// schedules a one-time delayed task on |task_runner_| to log how the tab's
+// schedules a one-time delayed task on `task_runner_` to log how the tab's
 // grouping state changed between creation and the end of the delay (10
 // seconds).
 class TabCreationMetricsController {

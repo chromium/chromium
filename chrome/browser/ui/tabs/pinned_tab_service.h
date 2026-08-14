@@ -42,7 +42,7 @@ class PinnedTabService : public BrowserCollectionObserver,
       const TabStripSelectionChange& selection) override;
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
 
-  // Writes the pinned tabs for |profile_|, but only if a new tab or browser
+  // Writes the pinned tabs for `profile_`, but only if a new tab or browser
   // window has been added since the last time the method was called.
   void WritePinnedTabsIfNecessary();
 

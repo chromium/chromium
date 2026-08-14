@@ -33,7 +33,7 @@ PinnedTabService::~PinnedTabService() = default;
 
 void PinnedTabService::OnClosingAllBrowsersChanged(bool closing) {
   // Saving of tabs happens when the user exits the application or closes the
-  // last browser window. After saving, |need_to_write_pinned_tabs_| is set to
+  // last browser window. After saving, `need_to_write_pinned_tabs_` is set to
   // false to make sure subsequent window closures don't overwrite the pinned
   // tab state. Saving is re-enabled when a browser window or tab is opened
   // again. Note, cancelling a shutdown (via onbeforeunload) will not re-enable

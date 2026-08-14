@@ -34,11 +34,11 @@ class TabStripScrubbingMetrics {
   base::TimeTicks last_tab_switch_timestamp_ = base::TimeTicks();
 
   // Counter used to keep track of tab scrubs during intervals set by
-  // |tab_scrubbing_interval_timer_|.
+  // `tab_scrubbing_interval_timer_`.
   size_t tabs_scrubbed_by_mouse_press_count_ = 0;
 
   // Counter used to keep track of tab scrubs during intervals set by
-  // |tab_scrubbing_interval_timer_|.
+  // `tab_scrubbing_interval_timer_`.
   size_t tabs_scrubbed_by_key_press_count_ = 0;
 };
 

@@ -19,7 +19,7 @@ struct LastMuteMetadata
   ~LastMuteMetadata() override;
 
   TabMutedReason reason = TabMutedReason::kNone;
-  std::string extension_id;  // Only valid when |reason| is EXTENSION.
+  std::string extension_id;  // Only valid when `reason` is EXTENSION.
 
  private:
   explicit LastMuteMetadata(content::WebContents* contents);
@@ -27,9 +27,9 @@ struct LastMuteMetadata
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-// Sets whether all audio output from |contents| is muted, along with the
-// |reason| it is to be muted/unmuted (via UI or extension API).  When |reason|
-// is TAB_MUTED_REASON_EXTENSION, |extension_id| must be provided; otherwise, it
+// Sets whether all audio output from `contents` is muted, along with the
+// `reason` it is to be muted/unmuted (via UI or extension API).  When `reason`
+// is TAB_MUTED_REASON_EXTENSION, `extension_id` must be provided; otherwise, it
 // is ignored.  Returns whether the tab was actually muted.
 bool SetTabAudioMuted(content::WebContents* contents,
                       bool mute,

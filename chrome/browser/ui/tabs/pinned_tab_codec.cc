@@ -34,7 +34,7 @@ base::DictValue EncodeTab(const GURL& url) {
   return dict;
 }
 
-// Encodes all the pinned tabs from |browser| into |serialized_tabs|.
+// Encodes all the pinned tabs from `browser` into `serialized_tabs`.
 void EncodePinnedTabs(BrowserWindowInterface* browser,
                       base::ListValue& serialized_tabs) {
   const TabStripModel* const tab_model = browser->GetTabStripModel();
@@ -52,7 +52,7 @@ void EncodePinnedTabs(BrowserWindowInterface* browser,
   }
 }
 
-// Decodes the previously written values in |value| to |tab|, returning true
+// Decodes the previously written values in `value` to `tab`, returning true
 // on success.
 std::optional<StartupTab> DecodeTab(const base::DictValue& value) {
   const std::string* const url_string = value.FindString(kURL);

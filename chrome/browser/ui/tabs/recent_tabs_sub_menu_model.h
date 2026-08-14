@@ -113,22 +113,22 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   void BuildTabsFromOtherDevices();
 
   // Build a recently closed tab item with parameters needed to restore it, and
-  // add it to the menumodel at |curr_model_index|.
+  // add it to the menumodel at `curr_model_index`.
   void BuildLocalTabItem(const sessions::tab_restore::Tab& tab,
                          size_t curr_model_index);
 
   // Build the recently closed window item with parameters needed to restore it,
-  // and add it to the menumodel at |curr_model_index|.
+  // and add it to the menumodel at `curr_model_index`.
   void BuildLocalWindowItem(const sessions::tab_restore::Window& window,
                             size_t curr_model_index);
 
   // Build the recently closed group item with parameters needed to restore it,
-  // and add it to the menumodel at |curr_model_index|.
+  // and add it to the menumodel at `curr_model_index`.
   void BuildLocalGroupItem(const sessions::tab_restore::Group& group,
                            size_t curr_model_index);
 
   // Build the recently closed split view item with parameters needed to restore
-  // it, and add it to the menumodel at |curr_model_index|.
+  // it, and add it to the menumodel at `curr_model_index`.
   void BuildLocalSplitItem(const sessions::tab_restore::Split& split,
                            size_t curr_model_index);
 
@@ -177,17 +177,17 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   std::unique_ptr<ui::SimpleMenuModel> CreateSplitSubMenuModel(
       const sessions::tab_restore::Split& split);
 
-  // Adds a submenu item representation of |group_model| to |parent_model|.
+  // Adds a submenu item representation of `group_model` to `parent_model`.
   void AddGroupItemToModel(SimpleMenuModel* parent_model,
                            std::unique_ptr<SimpleMenuModel> group_model,
                            const sessions::tab_restore::Group& group);
 
-  // Adds a submenu item representation of a split view to |parent_model|.
+  // Adds a submenu item representation of a split view to `parent_model`.
   void AddSplitItemToModel(SimpleMenuModel* parent_model,
                            std::unique_ptr<SimpleMenuModel> split_model,
                            const sessions::tab_restore::Split& split);
 
-  // Adds a submenu item representation of a |tab| to |model|.
+  // Adds a submenu item representation of a `tab` to `model`.
   void AddTabItemToModel(const sessions::tab_restore::Tab* tab,
                          ui::SimpleMenuModel* model,
                          int command_id);
@@ -223,7 +223,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   void ClearTabsFromOtherDevices();
 
   // Returns the corresponding local or other devices' TabItems in
-  // |local_tab_items_| or |remote_tab_items_|.
+  // `local_tab_items_` or `remote_tab_items_`.
   TabItems* GetTabVectorForCommandId(int command_id);
 
   // Convenience function to access OpenTabsUIDelegate provided by
@@ -244,7 +244,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Called when the kSavingBrowserHistoryDisabled pref changes.
   void OnSavingBrowserHistoryDisabledChanged();
 
-  // Returns |next_menu_id_| and increments it by 2. This allows for 'sharing'
+  // Returns `next_menu_id_` and increments it by 2. This allows for 'sharing'
   // command ids with the bookmarks menu, which also uses every other int as
   // an id.
   int GetAndIncrementNextMenuID();

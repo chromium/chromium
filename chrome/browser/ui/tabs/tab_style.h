@@ -26,7 +26,7 @@ class ColorProvider;
 class TabStyle {
  public:
   // The different types of path GetPath() can return. Different paths are used
-  // in different situations, but most (excluding |kClip|) are roughly the same
+  // in different situations, but most (excluding `kClip`) are roughly the same
   // shape.
   enum class PathType {
     // File-folder tab outline. Extends halfway into the border so there are no

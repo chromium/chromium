@@ -53,7 +53,7 @@ class ExistingWindowSubMenuModel : public ExistingBaseSubMenuModel {
 
   // Whether the submenu should be shown in the provided context. True iff
   // the submenu would show at least one window. Does not assume ownership of
-  // |model|; |model| must outlive this instance.
+  // `model`; `model` must outlive this instance.
   static bool ShouldShowSubmenu(Profile* profile);
   static bool ShouldShowSubmenuForApp(
       TabMenuModelDelegate* tab_menu_model_delegate);

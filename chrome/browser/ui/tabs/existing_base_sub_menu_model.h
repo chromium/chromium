@@ -78,7 +78,7 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
     std::optional<size_t> target_index;
 
     // An optionally provided accessible name for this menu item. If
-    // |accessible_name| is empty, then the default accessible name will be used
+    // `accessible_name` is empty, then the default accessible name will be used
     // for this item.
     std::u16string accessible_name;
 
@@ -87,13 +87,13 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
     bool has_separator_before = false;
   };
 
-  // Helper method to create consistent submenus.|new_text| is the label to add
-  // the tab to a new object model (e.g. group or window). |menu_item_infos| is
+  // Helper method to create consistent submenus. `new_text` is the label to add
+  // the tab to a new object model (e.g. group or window). `menu_item_infos` is
   // a vector of text and optionally images for adding the tab to an existing
   // object model.
   void Build(int new_text, const std::vector<MenuItemInfo>& menu_item_infos);
 
-  // Clears the MenuModel and |command_id_to_target_index_|.
+  // Clears the MenuModel and `command_id_to_target_index_`.
   void ClearMenu();
 
   // Helper method for checking if the command is to add a tab to a new object
@@ -101,7 +101,7 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   bool IsNewCommand(int command_id) const;
 
   // Performs the action for adding the tab to an existing object model (e.g.
-  // group or window) at |target_index|.
+  // group or window) at `target_index`.
   virtual void ExecuteExistingCommand(size_t target_index);
 
   // Maximum number of entries for a submenu.
