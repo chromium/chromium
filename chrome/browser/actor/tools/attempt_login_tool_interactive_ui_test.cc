@@ -667,8 +667,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
             last_credential_used->type);
 }
 
-// TODO(https://crbug.com/456675144): Flaky on asan.
-#if defined(ADDRESS_SANITIZER)
+// TODO(https://crbug.com/456675144): Flaky on asan and msan.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_PopupNavigation DISABLED_PopupNavigation
 #else
 #define MAYBE_PopupNavigation PopupNavigation
