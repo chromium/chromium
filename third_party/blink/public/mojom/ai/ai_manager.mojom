@@ -74,6 +74,9 @@ enum ModelAvailabilityCheckResult {
   // The specified options are not supported with the requested performance
   // preference.
   kUnavailableIncompatiblePreferenceOptions = 21,
+  // The device does not have sufficient disk space to build caches for the
+  // on-device model.
+  kUnavailableInsufficientDiskSpaceForCaches = 22,
 
   // Append new line here
 };
