@@ -49,8 +49,8 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   SidePanelCoordinatorAndroid& operator=(const SidePanelCoordinatorAndroid&) =
       delete;
 
-  // Implements Java `SidePanelCoordinatorAndroid.Natives`. These methods are
-  // called from Java via JNI, see `SidePanelCoordinatorAndroidImpl.java`.
+  // Implements Java `SidePanelCoordinatorAndroidBridge.Natives`. These methods
+  // are called from Java via JNI, see `SidePanelCoordinatorAndroidBridge.java`.
   void Init();
   void Destroy();
   void ClosePanel();

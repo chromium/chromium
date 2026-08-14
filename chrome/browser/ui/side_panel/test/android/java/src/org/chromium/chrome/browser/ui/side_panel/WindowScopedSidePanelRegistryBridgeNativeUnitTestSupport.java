@@ -18,11 +18,11 @@ import org.jni_zero.CalledByNativeForTesting;
  * </ul>
  */
 final class WindowScopedSidePanelRegistryBridgeNativeUnitTestSupport {
-    private final WindowScopedSidePanelRegistryBridgeImpl mBridge;
+    private final WindowScopedSidePanelRegistryBridge mBridge;
 
     @CalledByNativeForTesting
     private WindowScopedSidePanelRegistryBridgeNativeUnitTestSupport() {
-        mBridge = new WindowScopedSidePanelRegistryBridgeImpl();
+        mBridge = new WindowScopedSidePanelRegistryBridge();
     }
 
     @CalledByNativeForTesting

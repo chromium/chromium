@@ -608,8 +608,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/messages/android:java",
       "//chrome/browser/ui/side_panel/android:factory_java",
       "//chrome/browser/ui/side_panel/android:java",
-      "//chrome/browser/ui/side_panel_container/public:factory_java",
-      "//chrome/browser/ui/side_panel_container/public:java",
       "//chrome/browser/ui/side_ui/public:factory_java",
       "//chrome/browser/ui/side_ui/public:java",
       "//chrome/browser/ui/side_ui/public:java_resources",
@@ -1018,7 +1016,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/webid/internal:java",
       "//chrome/browser/ui/browser_window/internal:java",
       "//chrome/browser/ui/side_panel/internal/android:java",
-      "//chrome/browser/ui/side_panel_container/internal:java",
       "//chrome/browser/ui/side_ui/internal:java",
       "//components/android_autofill/browser:java",
       "//components/autofill/android:payments_autofill_java",
@@ -1279,7 +1276,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/whats_new:junit",
       "//chrome/browser/ui/browser_window/internal:junit",
       "//chrome/browser/ui/messages/android:junit",
-      "//chrome/browser/ui/side_panel_container/internal:junit",
+      "//chrome/browser/ui/side_panel/internal/android:junit",
       "//chrome/browser/ui/side_ui/internal:junit",
       "//chrome/browser/ui/side_ui/public:junit",
       "//chrome/browser/uid/android:junit",
@@ -2080,7 +2077,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/renderer_host/android:test_support",
       "//chrome/browser/sync",
       "//chrome/browser/thumbnail:test_support",
-      "//chrome/browser/ui/side_panel_container/test:test_support",
+      "//chrome/browser/ui/side_panel/test/android:integration_test_support",
       "//components/offline_pages/core/background:test_support",
       "//components/saved_tab_groups/internal:tab_group_sync_bridge",
       "//components/saved_tab_groups/public",
@@ -2462,7 +2459,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android/internal:javatests",
       "//chrome/browser/ui/android/digital_credentials:javatests",
       "//chrome/browser/ui/android/webid/internal:javatests",
-      "//chrome/browser/ui/side_panel_container/internal:javatests",
+      "//chrome/browser/ui/side_panel/internal/android:javatests",
       "//components/embedder_support/android:virtual_structure_javatests",
     ]
 
@@ -2478,7 +2475,7 @@ if (_is_default_toolchain) {
 
     device_data_filters = [
       "+//chrome/browser/thumbnail/generator/test/data/*",
-      "+//chrome/browser/ui/side_panel_container/test/data/*",
+      "+//chrome/browser/ui/side_panel/test/data/*",
       "+//chrome/test/data/*",
       "+//components/test/data/payments/*",
       "+//content/test/data/*",

@@ -1,0 +1,288 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.side_panel;
+
+import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
+
+import android.graphics.Rect;
+import android.view.View;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
+
+/** JNI bridge for communicating with the native {@code SidePanelCoordinatorAndroid}. */
+@NullMarked
+final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeature {
+    private static final String TAG = "SidePanelCoordinatorAndroidBridge";
+
+    /** Sentinel value for invalid or unset coordinates. */
+    private static final int INVALID_COORDINATE = -1;
+
+    private final SidePanelContainerCoordinatorImpl mSidePanelContainerCoordinator;
+
+    /** Address of the native {@code SidePanelCoordinatorAndroid}. */
+    private long mNativeSidePanelCoordinatorAndroid;
+
+    private boolean mDisableAnimationsForTesting;
+
+    SidePanelCoordinatorAndroidBridge(
+            SidePanelContainerCoordinatorImpl sidePanelContainerCoordinator) {
+        log(TAG, "constructor", sidePanelContainerCoordinator);
+        mSidePanelContainerCoordinator = sidePanelContainerCoordinator;
+    }
+
+    @Override
+    public void onAddedToTask(InitInfo initInfo) {
+        long nativeBrowserWindowPtr = initInfo.nativeBrowserWindowPtr;
+        log(TAG, "onAddedToTask", nativeBrowserWindowPtr);
+        createNativePtr(nativeBrowserWindowPtr);
+    }
+
+    @Override
+    public void onFeatureRemoved() {
+        log(TAG, "onFeatureRemoved");
+        destroyNativePtr();
+    }
+
+    /**
+     * @see org.chromium.chrome.browser.ui.side_ui.SideUiContainer#hasContentToShow
+     */
+    boolean hasContentToShow() {
+        boolean hasContentToShow =
+                mNativeSidePanelCoordinatorAndroid != 0
+                        ? SidePanelCoordinatorAndroidBridgeJni.get()
+                                .hasContentToShow(mNativeSidePanelCoordinatorAndroid)
+                        : false;
+
+        log(TAG, "hasContentToShow", hasContentToShow);
+        return hasContentToShow;
+    }
+
+    /** Initializes the native coordinator and restores the active entry if one exists. */
+    void init() {
+        log(TAG, "init");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidBridgeJni.get().init(mNativeSidePanelCoordinatorAndroid);
+        }
+    }
+
+    /**
+     * @see org.chromium.chrome.browser.ui.side_ui.SideUiContainer#onUiUpdateCompleted
+     */
+    void onPanelContainerUpdated(int oldWidth, int newWidth) {
+        log(TAG, "onPanelContainerUpdated", oldWidth, newWidth);
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidBridgeJni.get()
+                    .onPanelContainerUpdated(
+                            mNativeSidePanelCoordinatorAndroid, oldWidth, newWidth);
+        }
+    }
+
+    /** Called when the side panel content has been replaced. */
+    void onPanelContentReplaced() {
+        log(TAG, "onPanelContentReplaced");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidBridgeJni.get()
+                    .onPanelContentReplaced(mNativeSidePanelCoordinatorAndroid);
+        }
+    }
+
+    /** Requests to close the side panel. */
+    void closePanel() {
+        log(TAG, "closePanel");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidBridgeJni.get()
+                    .closePanel(mNativeSidePanelCoordinatorAndroid);
+        }
+    }
+
+    /**
+     * @see org.chromium.chrome.browser.ui.side_ui.SideUiContainer#onWillAutoClose()
+     */
+    void onWillAutoClose() {
+        log(TAG, "onWillAutoClose");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidBridgeJni.get()
+                    .onWillAutoClose(mNativeSidePanelCoordinatorAndroid);
+        }
+    }
+
+    /**
+     * @see org.chromium.chrome.browser.ui.side_ui.SideUiContainer#onWillAutoRestore()
+     */
+    void onWillAutoRestore() {
+        log(TAG, "onWillAutoRestore");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidBridgeJni.get()
+                    .onWillAutoRestore(mNativeSidePanelCoordinatorAndroid);
+        }
+    }
+
+    private void createNativePtr(long nativeBrowserWindowPtr) {
+        log(TAG, "createNativePtr", nativeBrowserWindowPtr);
+        assert nativeBrowserWindowPtr != 0
+                : "Native BrowserWindowInterface pointer shouldn't be null. Is the"
+                        + " ChromeAndroidTaskFeatureKey correct?";
+        assert mNativeSidePanelCoordinatorAndroid == 0
+                : "Native SidePanelCoordinatorAndroid already exists";
+        mNativeSidePanelCoordinatorAndroid =
+                SidePanelCoordinatorAndroidBridgeJni.get().create(this, nativeBrowserWindowPtr);
+    }
+
+    private void destroyNativePtr() {
+        log(TAG, "destroyNativePtr");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidBridgeJni.get().destroy(mNativeSidePanelCoordinatorAndroid);
+        }
+    }
+
+    @CalledByNative
+    private void clearNativePtr() {
+        log(TAG, "clearNativePtr");
+        mNativeSidePanelCoordinatorAndroid = 0;
+    }
+
+    @CalledByNative
+    private boolean canShow() {
+        return mSidePanelContainerCoordinator.canShow();
+    }
+
+    @CalledByNative
+    private void startOpeningPanel(
+            View sidePanelNativeView,
+            @JniType("std::u16string_view") String title,
+            boolean shouldShowHeader,
+            int x,
+            int y,
+            int width,
+            int height,
+            boolean suppressAnimations) {
+        log(TAG, "startOpeningPanel", sidePanelNativeView, title, x, y, width, height);
+        mSidePanelContainerCoordinator.startOpeningPanel(
+                new SidePanelContent(sidePanelNativeView, title, shouldShowHeader),
+                createRectFromCoordinates(x, y, width, height),
+                suppressAnimations || mDisableAnimationsForTesting);
+    }
+
+    @CalledByNative
+    private void startClosingPanel(boolean suppressAnimations) {
+        log(TAG, "startClosingPanel", suppressAnimations);
+        mSidePanelContainerCoordinator.startClosingPanel(
+                suppressAnimations || mDisableAnimationsForTesting);
+    }
+
+    @CalledByNative
+    private void startReplacingPanelContent(
+            View sidePanelNativeView,
+            @JniType("std::u16string_view") @Nullable String title,
+            boolean shouldShowHeader) {
+        log(TAG, "startReplacingPanelContent", sidePanelNativeView, title);
+        mSidePanelContainerCoordinator.startReplacingPanelContent(
+                new SidePanelContent(sidePanelNativeView, title, shouldShowHeader));
+    }
+
+    @CalledByNative
+    private void endAnimations() {
+        log(TAG, "endAnimations");
+        mSidePanelContainerCoordinator.endAnimations();
+    }
+
+    @CalledByNative
+    private void completePendingContentReplacement() {
+        log(TAG, "completePendingContentReplacement");
+        mSidePanelContainerCoordinator.completePendingContentReplacement();
+    }
+
+    @CalledByNativeForTesting
+    private void configDeferredViewReplacementForTesting(boolean enable) {
+        log(TAG, "configDeferredViewReplacementForTesting", enable);
+        mSidePanelContainerCoordinator.configDeferredViewReplacementForTesting(enable); // IN-TEST
+    }
+
+    @CalledByNativeForTesting
+    private void simulateAutoCloseConditionForTesting() {
+        log(TAG, "simulateAutoCloseConditionForTesting");
+        mSidePanelContainerCoordinator.simulateAutoCloseConditionForTesting(); // IN-TEST
+    }
+
+    @CalledByNativeForTesting
+    private void simulateAutoRestoreConditionForTesting() {
+        log(TAG, "simulateAutoRestoreConditionForTesting");
+        mSidePanelContainerCoordinator.simulateAutoRestoreConditionForTesting(); // IN-TEST
+    }
+
+    @CalledByNativeForTesting
+    private void disableAnimationsForTesting() {
+        log(TAG, "disableAnimationsForTesting");
+        mDisableAnimationsForTesting = true;
+    }
+
+    @CalledByNativeForTesting
+    private int getContainerWidthForTesting() {
+        View view = mSidePanelContainerCoordinator.getView(); // IN-TEST
+        if (view == null || !view.isAttachedToWindow()) {
+            return 0;
+        }
+        return view.getWidth();
+    }
+
+    private @Nullable Rect createRectFromCoordinates(int x, int y, int width, int height) {
+        if (x == INVALID_COORDINATE
+                && y == INVALID_COORDINATE
+                && width == INVALID_COORDINATE
+                && height == INVALID_COORDINATE) {
+            return null;
+        }
+        return new Rect(x, y, x + width, y + height);
+    }
+
+    @NativeMethods
+    interface Natives {
+        /**
+         * Creates a native {@code SidePanelCoordinatorAndroid}.
+         *
+         * @param caller The Java object calling this method.
+         * @param nativeBrowserWindowPtr The pointer to the native {@code BrowserWindowInterface}.
+         * @return The address of the native {@code SidePanelCoordinatorAndroid}.
+         */
+        long create(SidePanelCoordinatorAndroidBridge caller, long nativeBrowserWindowPtr);
+
+        /**
+         * Destroys the native {@code SidePanelCoordinatorAndroid}.
+         *
+         * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
+         *     SidePanelCoordinatorAndroid}.
+         */
+        void destroy(long nativeSidePanelCoordinatorAndroid);
+
+        /** See {@link SidePanelCoordinatorAndroidBridge#closePanel}. */
+        void closePanel(long nativeSidePanelCoordinatorAndroid);
+
+        /** See {@link SidePanelCoordinatorAndroidBridge#init}. */
+        void init(long nativeSidePanelCoordinatorAndroid);
+
+        /** See {@link SidePanelCoordinatorAndroidBridge#hasContentToShow}. */
+        boolean hasContentToShow(long nativeSidePanelCoordinatorAndroid);
+
+        /** See {@link SidePanelCoordinatorAndroidBridge#onPanelContainerUpdated}. */
+        void onPanelContainerUpdated(
+                long nativeSidePanelCoordinatorAndroid, int oldWidth, int newWidth);
+
+        /** See {@link SidePanelCoordinatorAndroidBridge#onPanelContentReplaced}. */
+        void onPanelContentReplaced(long nativeSidePanelCoordinatorAndroid);
+
+        /** See {@link SidePanelCoordinatorAndroidBridge#onWillAutoClose}. */
+        void onWillAutoClose(long nativeSidePanelCoordinatorAndroid);
+
+        /** See {@link SidePanelCoordinatorAndroidBridge#onWillAutoRestore}. */
+        void onWillAutoRestore(long nativeSidePanelCoordinatorAndroid);
+    }
+}

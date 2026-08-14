@@ -40,7 +40,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.tab_bottom_sheet.WebViewResizingHelper.ResizeLock;
-import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
+import org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;

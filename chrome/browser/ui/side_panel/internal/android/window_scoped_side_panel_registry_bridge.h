@@ -30,7 +30,7 @@ class WindowScopedSidePanelRegistryBridge final {
 
   ~WindowScopedSidePanelRegistryBridge();
 
-  // Implements Java `WindowScopedSidePanelRegistryBridgeImpl.Natives#destroy`.
+  // Implements Java `WindowScopedSidePanelRegistryBridge.Natives#destroy`.
   void Destroy(JNIEnv* env);
 
   SidePanelRegistry* GetSidePanelRegistryForTesting() const;

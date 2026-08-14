@@ -12,14 +12,14 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/side_panel/internal/android/jni_headers/WindowScopedSidePanelRegistryBridgeImpl_jni.h"
+#include "chrome/browser/ui/side_panel/internal/android/jni_headers/WindowScopedSidePanelRegistryBridge_jni.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-// Implements Java `WindowScopedSidePanelRegistryBridgeImpl.Natives#create`.
-static int64_t JNI_WindowScopedSidePanelRegistryBridgeImpl_Create(
+// Implements Java `WindowScopedSidePanelRegistryBridge.Natives#create`.
+static int64_t JNI_WindowScopedSidePanelRegistryBridge_Create(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
     int64_t nativeBrowserWindowPtr) {
@@ -36,7 +36,7 @@ WindowScopedSidePanelRegistryBridge ::WindowScopedSidePanelRegistryBridge(
       side_panel_registry_(std::make_unique<SidePanelRegistry>(browser)) {}
 
 WindowScopedSidePanelRegistryBridge::~WindowScopedSidePanelRegistryBridge() {
-  Java_WindowScopedSidePanelRegistryBridgeImpl_clearNativePtr(
+  Java_WindowScopedSidePanelRegistryBridge_clearNativePtr(
       base::android::AttachCurrentThread(), java_bridge());
 }
 
@@ -60,4 +60,4 @@ ScopedJavaLocalRef<jobject> WindowScopedSidePanelRegistryBridge::java_bridge()
   return local_ref;
 }
 
-DEFINE_JNI(WindowScopedSidePanelRegistryBridgeImpl)
+DEFINE_JNI(WindowScopedSidePanelRegistryBridge)

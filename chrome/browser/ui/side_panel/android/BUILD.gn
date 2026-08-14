@@ -27,17 +27,20 @@ source_set("android") {
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/side_panel/AndroidSidePanelEnabledFn.java",
-    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroid.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelContainerCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelContent.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelUtils.java",
-    "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/dev/SidePanelDevFeature.java",
   ]
   deps = [
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/browser_window/public/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
   ]
   srcjar_deps = [ ":jni_headers" ]
 }
@@ -45,13 +48,17 @@ android_library("java") {
 # Public Java factory
 android_library_factory("factory_java") {
   sources = [
-    "//chrome/browser/ui/side_panel/internal/android/java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidFactory.java",
-    "//chrome/browser/ui/side_panel/internal/android/java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelRegistryBridgeFactory.java",
+    "//chrome/browser/ui/side_panel/internal/android/java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelContainerCoordinatorFactory.java",
+    "//chrome/browser/ui/side_panel/internal/android/java/src/org/chromium/chrome/browser/ui/side_panel/dev/SidePanelDevFeatureFactory.java",
   ]
   deps = [
     ":java",
+    "//base:supplier_java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
-    "//chrome/browser/ui/side_panel_container/public:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+    "//chrome/browser/ui/side_ui/public:java",
+    "//ui/android:ui_java",
   ]
 }
 

@@ -56,9 +56,9 @@ source_set("tabs_impl") {
     "//chrome/browser/ui/side_panel/android",
     "//chrome/browser/ui/webui:webui_util",
 
-    # TODO(crbug.com/489548570): Remove "side_panel_container/internal:android"
+    # TODO(crbug.com/489548570): Remove "side_panel/internal/android"
     # since it's for the tab-scoped dev feature.
-    "//chrome/browser/ui/side_panel_container/internal:android",
+    "//chrome/browser/ui/side_panel/internal/android",
     "//components/external_intents/android",
     "//components/favicon/content",
     "//components/lens",

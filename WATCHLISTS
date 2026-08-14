@@ -163,13 +163,6 @@
     },
     'android_side_panel': {
       'filepath': 'chrome/browser/ui/side_panel/'\
-                  '|chrome/browser/ui/side_panel_container/'\
-                  '|chrome/browser/ui/side_ui/'\
-                  '|.*SidePanel.*\.java'\
-                  '|.*SideUi.*\.java'
-    },
-    'android_side_panel_ui': {
-      'filepath': 'chrome/browser/ui/side_panel_container/'\
                   '|chrome/browser/ui/side_ui/'\
                   '|.*SidePanel.*\.java'\
                   '|.*SideUi.*\.java'
@@ -2628,8 +2621,8 @@
     'android_side_panel': ['clhager@google.com',
                            'linyuh@google.com',
                            'mschillaci+watchsidepanel@google.com',
+                           'nemco+watch@google.com',
                            'shuyng@google.com'],
-    'android_side_panel_ui': ['nemco+watch@google.com'],
     'android_startup_metrics': ['pasko+watch@chromium.org'],
     'android_studio': ['wnwen+watch@chromium.org',
                        'nyquist+watch@chromium.org'],

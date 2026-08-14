@@ -8,17 +8,12 @@ import("//third_party/jni_zero/jni_zero.gni")
 # Supports native unit tests.
 android_library("native_unit_test_support_java") {
   testonly = true
-  sources = [
-    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidNativeUnitTestSupport.java",
-    "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridgeNativeUnitTestSupport.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridgeNativeUnitTestSupport.java" ]
   deps = [
     "//build/android:build_java",
     "//chrome/browser/ui/side_panel/internal/android:java",
-    "//chrome/browser/ui/side_panel_container/public:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/mockito:mockito_java",
   ]
   srcjar_deps = [ ":native_unit_test_support_jni" ]
 }
@@ -26,10 +21,7 @@ android_library("native_unit_test_support_java") {
 # JNI for native unit tests.
 generate_jni("native_unit_test_support_jni") {
   testonly = true
-  sources = [
-    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidNativeUnitTestSupport.java",
-    "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridgeNativeUnitTestSupport.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridgeNativeUnitTestSupport.java" ]
 }
 
 # Supports native browser tests.
@@ -76,5 +68,35 @@ source_set("browser_test_support") {
     "//chrome/test:test_support_ui_android",
     "//components/tabs:public",
     "//testing/gtest",
+  ]
+}
+
+# Supports Java integration tests.
+android_library("integration_test_support_java") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/test/SidePanelContainerCoordinatorIntegrationTestSupport.java" ]
+  deps = [
+    "//build/android:build_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/side_panel/android:java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [ ":integration_test_support_jni_headers" ]
+}
+
+generate_jni("integration_test_support_jni_headers") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/test/SidePanelContainerCoordinatorIntegrationTestSupport.java" ]
+}
+
+source_set("integration_test_support") {
+  testonly = true
+  sources = [ "side_panel_container_coordinator_integration_test_support.cc" ]
+  deps = [
+    ":integration_test_support_jni_headers",
+    "//base",
+    "//chrome/browser/android:tabs_public",
+    "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
   ]
 }
