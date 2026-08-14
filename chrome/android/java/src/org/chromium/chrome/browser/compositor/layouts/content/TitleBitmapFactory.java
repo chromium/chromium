@@ -46,6 +46,8 @@ public class TitleBitmapFactory {
     // with a smaller limit.
     private static final int SMALLER_MAX_NUM_TITLE_CHAR = 100;
 
+    private final Canvas mCanvas;
+    private final Paint mFaviconPaint;
     private final int mMaxTitleWidth;
     private final int mViewHeight;
     private final int mFaviconDimension;
@@ -71,6 +73,9 @@ public class TitleBitmapFactory {
     public TitleBitmapFactory(Context context, boolean incognito, int tabStripHeightPx) {
         Resources res = context.getResources();
         mIncognito = incognito;
+
+        mCanvas = new Canvas();
+        mFaviconPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
 
         boolean fakeBoldText = res.getBoolean(R.bool.compositor_tab_title_fake_bold_text);
         float density = res.getDisplayMetrics().density;
@@ -159,29 +164,29 @@ public class TitleBitmapFactory {
             Bitmap b =
                     Bitmap.createBitmap(
                             mFaviconDimension, mFaviconDimension, Bitmap.Config.ARGB_8888);
-            Canvas c = new Canvas(b);
+            mCanvas.setBitmap(b);
+            try {
+                // Disable density scaling on the canvas so bitmaps are drawn at their exact pixel
+                // dimensions. This prevents any automatic DPI-based scaling by the canvas.
+                mCanvas.setDensity(Bitmap.DENSITY_NONE);
 
-            // Disable density scaling on the canvas so bitmaps are drawn at their exact pixel
-            // dimensions. This prevents any automatic DPI-based scaling by the canvas.
-            c.setDensity(Bitmap.DENSITY_NONE);
-
-            // Smooth edges and apply bilinear filtering when the bitmap is scaled to prevent
-            // pixelation.
-            Paint paint = new Paint();
-            paint.setAntiAlias(true);
-            paint.setFilterBitmap(true);
-
-            if (favicon.getWidth() > mFaviconDimension || favicon.getHeight() > mFaviconDimension) {
-                float scale =
-                        (float) mFaviconDimension
-                                / Math.max(favicon.getWidth(), favicon.getHeight());
-                c.scale(scale, scale);
-            } else {
-                c.translate(
-                        Math.round((mFaviconDimension - favicon.getWidth()) / 2.0f),
-                        Math.round((mFaviconDimension - favicon.getHeight()) / 2.0f));
+                mCanvas.save();
+                if (favicon.getWidth() > mFaviconDimension
+                        || favicon.getHeight() > mFaviconDimension) {
+                    float scale =
+                            (float) mFaviconDimension
+                                    / Math.max(favicon.getWidth(), favicon.getHeight());
+                    mCanvas.scale(scale, scale);
+                } else {
+                    mCanvas.translate(
+                            Math.round((mFaviconDimension - favicon.getWidth()) / 2.0f),
+                            Math.round((mFaviconDimension - favicon.getHeight()) / 2.0f));
+                }
+                mCanvas.drawBitmap(favicon, /* left= */ 0, /* top= */ 0, mFaviconPaint);
+                mCanvas.restore();
+            } finally {
+                mCanvas.setBitmap(null);
             }
-            c.drawBitmap(favicon, 0, 0, paint);
             return b;
         } catch (OutOfMemoryError ex) {
             Log.e(TAG, "OutOfMemoryError while building favicon texture.");
@@ -251,22 +256,26 @@ public class TitleBitmapFactory {
                             Math.max(Math.min(mMaxTitleWidth, textWidth), 1),
                             mViewHeight,
                             Bitmap.Config.ARGB_8888);
-            Canvas c = new Canvas(b);
-            if (drawText) {
-                final int maxCharsToDraw =
-                        ChromeFeatureList.sSmallerTabStripTitleLimit.isEnabled()
-                                ? SMALLER_MAX_NUM_TITLE_CHAR
-                                : MAX_NUM_TITLE_CHAR;
-                RecordHistogram.recordCount100Histogram(
-                        "Android.TabStrip.TitleBitmapFactory.getTitleBitmap.Length",
-                        title.length());
-                c.drawText(
-                        title,
-                        0,
-                        Math.min(maxCharsToDraw, title.length()),
-                        0,
-                        Math.round((mViewHeight - height) / 2.0f + yOffset),
-                        textPaint);
+            mCanvas.setBitmap(b);
+            try {
+                if (drawText) {
+                    final int maxCharsToDraw =
+                            ChromeFeatureList.sSmallerTabStripTitleLimit.isEnabled()
+                                    ? SMALLER_MAX_NUM_TITLE_CHAR
+                                    : MAX_NUM_TITLE_CHAR;
+                    RecordHistogram.recordCount100Histogram(
+                            "Android.TabStrip.TitleBitmapFactory.getTitleBitmap.Length",
+                            title.length());
+                    mCanvas.drawText(
+                            title,
+                            /* start= */ 0,
+                            /* end= */ Math.min(maxCharsToDraw, title.length()),
+                            /* x= */ 0,
+                            /* y= */ Math.round((mViewHeight - height) / 2.0f + yOffset),
+                            textPaint);
+                }
+            } finally {
+                mCanvas.setBitmap(null);
             }
 
             RecordHistogram.recordTimesHistogram(
