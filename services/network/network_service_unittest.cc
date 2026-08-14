@@ -732,7 +732,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
                                        /*fallback_doh_nameservers=*/{});
   EXPECT_TRUE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kOff,
-            dns_client_ptr->GetEffectiveConfig()->secure_dns_mode);
+            dns_client_ptr->GetEffectiveConfig().secure_dns_mode);
 
   service()->ConfigureStubHostResolver(net::InsecureDnsMode::kDisabled,
                                        /*happy_eyeballs_v3_enabled=*/false,
@@ -742,7 +742,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
                                        /*fallback_doh_nameservers=*/{});
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kOff,
-            dns_client_ptr->GetEffectiveConfig()->secure_dns_mode);
+            dns_client_ptr->GetEffectiveConfig().secure_dns_mode);
 
   service()->ConfigureStubHostResolver(net::InsecureDnsMode::kDisabled,
                                        /*happy_eyeballs_v3_enabled=*/false,
@@ -752,7 +752,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
                                        /*fallback_doh_nameservers=*/{});
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic,
-            dns_client_ptr->GetEffectiveConfig()->secure_dns_mode);
+            dns_client_ptr->GetEffectiveConfig().secure_dns_mode);
 
   service()->ConfigureStubHostResolver(
       net::InsecureDnsMode::kDisabled, /*happy_eyeballs_v3_enabled=*/false,
@@ -762,7 +762,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
       /*fallback_doh_nameservers=*/{});
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic,
-            dns_client_ptr->GetEffectiveConfig()->secure_dns_mode);
+            dns_client_ptr->GetEffectiveConfig().secure_dns_mode);
 }
 
 TEST_F(NetworkServiceTest, HandlesAdditionalDnsQueryTypesEnableDisable) {
@@ -842,7 +842,7 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
                                        net::SecureDnsMode::kAutomatic, kConfig1,
                                        /*additional_dns_types_enabled=*/true,
                                        /*fallback_doh_nameservers=*/{});
-  EXPECT_EQ(kConfig1, dns_client_ptr->GetEffectiveConfig()->doh_config);
+  EXPECT_EQ(kConfig1, dns_client_ptr->GetEffectiveConfig().doh_config);
 
   // Enable DNS over HTTPS for two servers.
 
@@ -851,7 +851,7 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
                                        net::SecureDnsMode::kSecure, kConfig2,
                                        /*additional_dns_types_enabled=*/true,
                                        /*fallback_doh_nameservers=*/{});
-  EXPECT_EQ(kConfig2, dns_client_ptr->GetEffectiveConfig()->doh_config);
+  EXPECT_EQ(kConfig2, dns_client_ptr->GetEffectiveConfig().doh_config);
 }
 
 TEST_F(NetworkServiceTest, AutomaticWithDohFallbackEnableDisable) {
@@ -874,7 +874,7 @@ TEST_F(NetworkServiceTest, AutomaticWithDohFallbackEnableDisable) {
                                        net::SecureDnsMode::kAutomatic, kConfig,
                                        /*additional_dns_types_enabled=*/true,
                                        /*fallback_doh_nameservers=*/{});
-  EXPECT_EQ(kConfig, dns_client_ptr->GetEffectiveConfig()->doh_config);
+  EXPECT_EQ(kConfig, dns_client_ptr->GetEffectiveConfig().doh_config);
   EXPECT_TRUE(dns_client_ptr->GetConfigOverridesForTesting()
                   .fallback_doh_nameservers->empty());
 
@@ -902,7 +902,7 @@ TEST_F(NetworkServiceTest, AutomaticWithDohFallbackEnableDisable) {
                                        net::SecureDnsMode::kAutomatic, kConfig,
                                        /*additional_dns_types_enabled=*/true,
                                        /*fallback_doh_nameservers=*/{});
-  EXPECT_EQ(kConfig, dns_client_ptr->GetEffectiveConfig()->doh_config);
+  EXPECT_EQ(kConfig, dns_client_ptr->GetEffectiveConfig().doh_config);
   EXPECT_TRUE(dns_client_ptr->GetConfigOverridesForTesting()
                   .fallback_doh_nameservers->empty());
 }
@@ -960,9 +960,8 @@ TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
 
   auto expected_doh_config = *net::DnsOverHttpsConfig::FromString(
       "https://doh.cleanbrowsing.org/doh/family-filter{?dns}");
-  EXPECT_TRUE(dns_client_ptr->GetEffectiveConfig());
   EXPECT_EQ(expected_doh_config,
-            dns_client_ptr->GetEffectiveConfig()->doh_config);
+            dns_client_ptr->GetEffectiveConfig().doh_config);
 }
 
 TEST_F(NetworkServiceTest, DohProbe) {

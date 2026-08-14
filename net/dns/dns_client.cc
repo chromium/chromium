@@ -151,15 +151,14 @@ class DnsClientImpl : public DnsClient {
   ~DnsClientImpl() override = default;
 
   bool CanUseSecureDnsTransactions() const override {
-    const DnsConfig* config = GetEffectiveConfig();
-    return config && !config->doh_config.servers().empty();
+    return !GetEffectiveConfig().doh_config.servers().empty();
   }
 
   bool CanUseInsecureDnsTransactions() const override {
-    const DnsConfig* config = GetEffectiveConfig();
-    return config && !config->nameservers.empty() &&
+    const DnsConfig& config = GetEffectiveConfig();
+    return !config.nameservers.empty() &&
            insecure_dns_mode_ != InsecureDnsMode::kDisabled &&
-           !config->unhandled_options && !config->dns_over_tls_active;
+           !config.unhandled_options && !config.dns_over_tls_active;
   }
 
   bool CanQueryAdditionalTypesViaInsecureDns() const override {
@@ -244,13 +243,13 @@ class DnsClientImpl : public DnsClient {
     return session_.get();
   }
 
-  const DnsConfig* GetEffectiveConfig() const override {
+  const DnsConfig& GetEffectiveConfig() const override {
     DCHECK(session_);
-    return &session_->config();
+    return session_->config();
   }
 
   const DnsHosts* GetHosts() const override {
-    return &GetEffectiveConfig()->hosts;
+    return &GetEffectiveConfig().hosts;
   }
 
   std::optional<std::vector<IPEndPoint>> GetPresetAddrs(
@@ -294,10 +293,7 @@ class DnsClientImpl : public DnsClient {
   }
 
   base::DictValue GetDnsConfigAsValueForNetLog() const override {
-    const DnsConfig* config = GetEffectiveConfig();
-    if (config == nullptr)
-      return base::DictValue();
-    base::DictValue dict = config->ToDict();
+    base::DictValue dict = GetEffectiveConfig().ToDict();
     dict.Set("can_use_secure_dns_transactions", CanUseSecureDnsTransactions());
     dict.Set("can_use_insecure_dns_transactions",
              CanUseInsecureDnsTransactions());

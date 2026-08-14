@@ -454,7 +454,7 @@ class MockDnsClient : public DnsClient {
   bool SetConfigOverrides(DnsConfigOverrides config_overrides) override;
   void ReplaceCurrentSession() override;
   DnsSession* GetCurrentSession() override;
-  const DnsConfig* GetEffectiveConfig() const override;
+  const DnsConfig& GetEffectiveConfig() const override;
   const DnsHosts* GetHosts() const override;
   DnsTransactionFactory* GetTransactionFactory() override;
   AddressSorter* GetAddressSorter() override;

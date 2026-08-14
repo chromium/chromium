@@ -109,9 +109,8 @@ class NET_EXPORT DnsClient {
   virtual DnsSession* GetCurrentSession() = 0;
 
   // Retrieve the current DNS configuration that would be used if transactions
-  // were otherwise currently allowed. Returns null if configuration is
-  // invalid or a configuration has not yet been read from the system.
-  virtual const DnsConfig* GetEffectiveConfig() const = 0;
+  // were otherwise currently allowed.
+  virtual const DnsConfig& GetEffectiveConfig() const = 0;
   virtual const DnsHosts* GetHosts() const = 0;
 
   // Returns all preset addresses for the specified endpoint, if any are

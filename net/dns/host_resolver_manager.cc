@@ -818,9 +818,9 @@ void HostResolverManager::InitializeJobKeyAndIPAddress(
   // Disable AAAA queries when we cannot do anything with the results.
   bool use_local_ipv6 = true;
   if (dns_client_) {
-    const DnsConfig* config = dns_client_->GetEffectiveConfig();
-    if (!config->nameservers.empty() || !config->doh_config.servers().empty()) {
-      use_local_ipv6 = config->use_local_ipv6;
+    const DnsConfig& config = dns_client_->GetEffectiveConfig();
+    if (!config.nameservers.empty() || !config.doh_config.servers().empty()) {
+      use_local_ipv6 = config.use_local_ipv6;
     }
   }
   // When resolving IPv4 literals, there's no need to probe for IPv6. When
@@ -1307,14 +1307,10 @@ SecureDnsMode HostResolverManager::GetEffectiveSecureDnsMode(
       break;
   }
 
-  const DnsConfig* config =
-      dns_client_ ? dns_client_->GetEffectiveConfig() : nullptr;
-
-  SecureDnsMode secure_dns_mode = SecureDnsMode::kOff;
-  if (config) {
-    secure_dns_mode = config->secure_dns_mode;
+  if (dns_client_) {
+    return dns_client_->GetEffectiveConfig().secure_dns_mode;
   }
-  return secure_dns_mode;
+  return SecureDnsMode::kOff;
 }
 
 bool HostResolverManager::ShouldForceSystemResolverDueToTestOverride() const {
@@ -1322,8 +1318,7 @@ bool HostResolverManager::ShouldForceSystemResolverDueToTestOverride() const {
   // that we are not at risk of sending queries beyond the local network.
   if (HostResolverProc::GetDefault() && system_resolver_disabled_for_testing_) {
     DCHECK(dns_client_);
-    DCHECK(dns_client_->GetEffectiveConfig());
-    DCHECK(std::ranges::none_of(dns_client_->GetEffectiveConfig()->nameservers,
+    DCHECK(std::ranges::none_of(dns_client_->GetEffectiveConfig().nameservers,
                                 &IPAddress::IsPubliclyRoutable,
                                 &IPEndPoint::address))
         << "Test could query a publicly-routable address.";
@@ -1344,7 +1339,6 @@ void HostResolverManager::PushDnsTasks(const DnsClient& dns_client,
                                        bool prioritize_local_lookups,
                                        ResolveContext* resolve_context,
                                        std::deque<TaskType>* out_tasks) {
-  DCHECK(dns_client.GetEffectiveConfig());
 
   // If a catch-all DNS block has been set for unit tests, we shouldn't send
   // DnsTasks. It is still necessary to call this method, however, so that the

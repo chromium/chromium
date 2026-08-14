@@ -800,15 +800,14 @@ MockDnsClient::MockDnsClient(DnsConfig config, MockDnsClientRuleList rules)
 MockDnsClient::~MockDnsClient() = default;
 
 bool MockDnsClient::CanUseSecureDnsTransactions() const {
-  const DnsConfig* config = GetEffectiveConfig();
-  return config && !config->doh_config.servers().empty();
+  return !GetEffectiveConfig().doh_config.servers().empty();
 }
 
 bool MockDnsClient::CanUseInsecureDnsTransactions() const {
-  const DnsConfig* config = GetEffectiveConfig();
-  return config && !config->nameservers.empty() &&
+  const DnsConfig& config = GetEffectiveConfig();
+  return !config.nameservers.empty() &&
          insecure_dns_mode_ != InsecureDnsMode::kDisabled &&
-         !config->dns_over_tls_active;
+         !config.dns_over_tls_active;
 }
 
 bool MockDnsClient::CanQueryAdditionalTypesViaInsecureDns() const {
@@ -866,8 +865,8 @@ DnsSession* MockDnsClient::GetCurrentSession() {
   return session_.get();
 }
 
-const DnsConfig* MockDnsClient::GetEffectiveConfig() const {
-  return &effective_config_;
+const DnsConfig& MockDnsClient::GetEffectiveConfig() const {
+  return effective_config_;
 }
 
 base::DictValue MockDnsClient::GetDnsConfigAsValueForNetLog() const {

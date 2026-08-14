@@ -6451,7 +6451,7 @@ TEST_F(NetworkContextCreateHostResolverTest, WithConfigOverrides) {
 
   // Test that the DnsClient is getting the overridden configuration.
   EXPECT_TRUE(overrides.ApplyOverrides(base_configuration)
-                  .Equals(*mock_dns_client_ptr->GetEffectiveConfig()));
+                  .Equals(mock_dns_client_ptr->GetEffectiveConfig()));
 
   // Ensure we are using the private resolver by testing that we get results
   // from the overridden DnsClient.

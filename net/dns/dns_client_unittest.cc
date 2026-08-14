@@ -115,7 +115,7 @@ TEST_F(DnsClientTest, NoConfig) {
   EXPECT_FALSE(client_->CanUseInsecureDnsTransactions());
   EXPECT_TRUE(client_->FallbackFromInsecureTransactionPreferred());
 
-  EXPECT_THAT(client_->GetEffectiveConfig(), testing::Pointee(DnsConfig()));
+  EXPECT_EQ(client_->GetEffectiveConfig(), DnsConfig());
   EXPECT_TRUE(client_->GetHosts());
   EXPECT_TRUE(client_->GetTransactionFactory());
   EXPECT_EQ(client_->GetCurrentSession()->config(), DnsConfig());
@@ -132,7 +132,7 @@ TEST_F(DnsClientTest, EmptyConfig) {
   EXPECT_FALSE(client_->CanUseInsecureDnsTransactions());
   EXPECT_TRUE(client_->FallbackFromInsecureTransactionPreferred());
 
-  EXPECT_THAT(client_->GetEffectiveConfig(), testing::Pointee(DnsConfig()));
+  EXPECT_EQ(client_->GetEffectiveConfig(), DnsConfig());
   EXPECT_TRUE(client_->GetHosts());
   EXPECT_TRUE(client_->GetTransactionFactory());
   EXPECT_EQ(client_->GetCurrentSession()->config(), DnsConfig());
@@ -150,8 +150,7 @@ TEST_F(DnsClientTest, CanUseSecureDnsTransactions_NoDohServers) {
   EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
   EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
 
-  EXPECT_THAT(client_->GetEffectiveConfig(),
-              testing::Pointee(BasicValidConfig()));
+  EXPECT_EQ(client_->GetEffectiveConfig(), BasicValidConfig());
   EXPECT_TRUE(client_->GetHosts());
   EXPECT_TRUE(client_->GetTransactionFactory());
   EXPECT_EQ(client_->GetCurrentSession()->config(), BasicValidConfig());
@@ -168,8 +167,8 @@ TEST_F(DnsClientTest, InsecureNotEnabled) {
   EXPECT_FALSE(client_->CanUseInsecureDnsTransactions());
   EXPECT_TRUE(client_->FallbackFromInsecureTransactionPreferred());
 
-  EXPECT_THAT(client_->GetEffectiveConfig(),
-              testing::Pointee(ValidConfigWithDoh(false /* doh_only */)));
+  EXPECT_EQ(client_->GetEffectiveConfig(),
+            ValidConfigWithDoh(false /* doh_only */));
   EXPECT_TRUE(client_->GetHosts());
   EXPECT_TRUE(client_->GetTransactionFactory());
   EXPECT_EQ(client_->GetCurrentSession()->config(),
@@ -215,7 +214,7 @@ TEST_F(DnsClientTest, UnhandledOptions) {
 
   DnsConfig expected_config = config;
   expected_config.nameservers.clear();
-  EXPECT_THAT(client_->GetEffectiveConfig(), testing::Pointee(expected_config));
+  EXPECT_EQ(client_->GetEffectiveConfig(), expected_config);
   EXPECT_TRUE(client_->GetHosts());
   EXPECT_TRUE(client_->GetTransactionFactory());
   EXPECT_EQ(client_->GetCurrentSession()->config(), expected_config);
@@ -251,7 +250,7 @@ TEST_F(DnsClientTest, DnsOverTlsActive) {
   EXPECT_FALSE(client_->CanUseInsecureDnsTransactions());
   EXPECT_TRUE(client_->FallbackFromInsecureTransactionPreferred());
 
-  EXPECT_THAT(client_->GetEffectiveConfig(), testing::Pointee(config));
+  EXPECT_EQ(client_->GetEffectiveConfig(), config);
   EXPECT_TRUE(client_->GetHosts());
   EXPECT_TRUE(client_->GetTransactionFactory());
   EXPECT_EQ(client_->GetCurrentSession()->config(), config);
@@ -274,8 +273,8 @@ TEST_F(DnsClientTest, AllAllowed) {
   EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
   EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
 
-  EXPECT_THAT(client_->GetEffectiveConfig(),
-              testing::Pointee(ValidConfigWithDoh(false /* doh_only */)));
+  EXPECT_EQ(client_->GetEffectiveConfig(),
+            ValidConfigWithDoh(false /* doh_only */));
   EXPECT_TRUE(client_->GetHosts());
   EXPECT_TRUE(client_->GetTransactionFactory());
   EXPECT_EQ(client_->GetCurrentSession()->config(),
@@ -363,8 +362,7 @@ TEST_F(DnsClientTest,
 
   // Check that kAutomatic doesn't change the config without a
   // fallback server set.
-  EXPECT_THAT(client_->GetEffectiveConfig(),
-              testing::Pointee(std::move(initial_config)));
+  EXPECT_EQ(client_->GetEffectiveConfig(), initial_config);
   EXPECT_FALSE(client_->CanUseSecureDnsTransactions());
   histogram_tester.ExpectBucketCount(
       "Net.DNS.UpgradeConfig.InsecureUpgradeWithFallbackSucceeded", false, 1);
@@ -383,9 +381,9 @@ TEST_F(DnsClientTest,
 
   // The DNS config now has the fallback nameservers which are used to set
   // the DoH config, enabling Secure DNS.
-  EXPECT_THAT(client_->GetEffectiveConfig()->doh_config,
+  EXPECT_THAT(client_->GetEffectiveConfig().doh_config,
               DnsOverHttpsConfig(fallback_doh_configs));
-  EXPECT_THAT(client_->GetEffectiveConfig()->fallback_doh_nameservers,
+  EXPECT_THAT(client_->GetEffectiveConfig().fallback_doh_nameservers,
               fallback_doh_nameservers);
   EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
   histogram_tester.ExpectBucketCount(
@@ -416,8 +414,8 @@ TEST_F(
 
   // Fallback nameservers provided, but should NOT be used because the feature
   // is disabled.
-  EXPECT_EQ(client_->GetEffectiveConfig()->doh_config, DnsOverHttpsConfig());
-  EXPECT_THAT(client_->GetEffectiveConfig()->fallback_doh_nameservers,
+  EXPECT_EQ(client_->GetEffectiveConfig().doh_config, DnsOverHttpsConfig());
+  EXPECT_THAT(client_->GetEffectiveConfig().fallback_doh_nameservers,
               fallback_doh_nameservers);
   EXPECT_FALSE(client_->CanUseSecureDnsTransactions());
   histogram_tester.ExpectBucketCount(
@@ -452,7 +450,7 @@ TEST_F(
   client_->SetConfigOverrides(std::move(overrides));
 
   // Check that the fallback DoH nameservers aren't applied to the DoH config.
-  EXPECT_EQ(client_->GetEffectiveConfig()->doh_config, DnsOverHttpsConfig());
+  EXPECT_EQ(client_->GetEffectiveConfig().doh_config, DnsOverHttpsConfig());
   EXPECT_FALSE(client_->CanUseSecureDnsTransactions());
   histogram_tester.ExpectBucketCount(
       "Net.DNS.UpgradeConfig.InsecureUpgradeWithFallbackSucceeded", false, 2);
@@ -486,7 +484,7 @@ TEST_F(
   client_->SetConfigOverrides(std::move(overrides));
 
   // Check that the fallback DoH nameservers aren't applied to the DoH config.
-  EXPECT_EQ(client_->GetEffectiveConfig()->doh_config, DnsOverHttpsConfig());
+  EXPECT_EQ(client_->GetEffectiveConfig().doh_config, DnsOverHttpsConfig());
   EXPECT_FALSE(client_->CanUseSecureDnsTransactions());
   histogram_tester.ExpectBucketCount(
       "Net.DNS.UpgradeConfig.InsecureUpgradeWithFallbackSucceeded", false, 2);
@@ -520,7 +518,7 @@ TEST_F(
   client_->SetConfigOverrides(std::move(overrides));
 
   // Check that the fallback DoH nameservers aren't applied to the DoH config.
-  EXPECT_EQ(client_->GetEffectiveConfig()->doh_config, DnsOverHttpsConfig());
+  EXPECT_EQ(client_->GetEffectiveConfig().doh_config, DnsOverHttpsConfig());
   EXPECT_FALSE(client_->CanUseSecureDnsTransactions());
   histogram_tester.ExpectBucketCount(
       "Net.DNS.UpgradeConfig.InsecureUpgradeWithFallbackSucceeded", false, 2);
@@ -556,7 +554,7 @@ TEST_F(
 
   // The fallback DoH nameservers ARE applied to the DoH config even with local
   // nameservers because the feature is enabled.
-  EXPECT_THAT(client_->GetEffectiveConfig()->doh_config,
+  EXPECT_THAT(client_->GetEffectiveConfig().doh_config,
               DnsOverHttpsConfig(std::move(fallback_doh_configs)));
   EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
   histogram_tester.ExpectBucketCount(
@@ -591,35 +589,31 @@ TEST_F(
   // The DoH config should be from the standard autoupgrade, not the fallback.
   std::vector<DnsOverHttpsServerConfig> expected_doh_configs =
       net::GetDohUpgradeServersFromNameservers(initial_config.nameservers);
-  EXPECT_THAT(client_->GetEffectiveConfig()->doh_config,
+  EXPECT_THAT(client_->GetEffectiveConfig().doh_config,
               DnsOverHttpsConfig(expected_doh_configs));
   EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
 }
 
 TEST_F(DnsClientTest, Override) {
   client_->SetSystemConfig(BasicValidConfig());
-  EXPECT_THAT(client_->GetEffectiveConfig(),
-              testing::Pointee(BasicValidConfig()));
+  EXPECT_EQ(client_->GetEffectiveConfig(), BasicValidConfig());
   EXPECT_EQ(client_->GetCurrentSession()->config(), BasicValidConfig());
 
   client_->SetConfigOverrides(BasicValidOverrides());
-  EXPECT_THAT(client_->GetEffectiveConfig(),
-              testing::Pointee(
-                  BasicValidOverrides().ApplyOverrides(BasicValidConfig())));
+  EXPECT_EQ(client_->GetEffectiveConfig(),
+            BasicValidOverrides().ApplyOverrides(BasicValidConfig()));
   EXPECT_EQ(client_->GetCurrentSession()->config(),
             BasicValidOverrides().ApplyOverrides(BasicValidConfig()));
 
   client_->SetConfigOverrides(DnsConfigOverrides());
-  EXPECT_THAT(client_->GetEffectiveConfig(),
-              testing::Pointee(BasicValidConfig()));
+  EXPECT_EQ(client_->GetEffectiveConfig(), BasicValidConfig());
   EXPECT_EQ(client_->GetCurrentSession()->config(), BasicValidConfig());
 }
 
 TEST_F(DnsClientTest, OverrideNoConfig) {
   client_->SetConfigOverrides(BasicValidOverrides());
-  EXPECT_THAT(
-      client_->GetEffectiveConfig(),
-      testing::Pointee(BasicValidOverrides().ApplyOverrides(DnsConfig())));
+  EXPECT_EQ(client_->GetEffectiveConfig(),
+            BasicValidOverrides().ApplyOverrides(DnsConfig()));
   EXPECT_EQ(client_->GetCurrentSession()->config(),
             BasicValidOverrides().ApplyOverrides(DnsConfig()));
 
@@ -628,30 +622,27 @@ TEST_F(DnsClientTest, OverrideNoConfig) {
   override_everything.nameservers.emplace(
       {IPEndPoint(IPAddress(1, 2, 3, 4), 123)});
   client_->SetConfigOverrides(override_everything);
-  EXPECT_THAT(
-      client_->GetEffectiveConfig(),
-      testing::Pointee(override_everything.ApplyOverrides(DnsConfig())));
+  EXPECT_EQ(client_->GetEffectiveConfig(),
+            override_everything.ApplyOverrides(DnsConfig()));
   EXPECT_EQ(client_->GetCurrentSession()->config(),
             override_everything.ApplyOverrides(DnsConfig()));
 }
 
 TEST_F(DnsClientTest, OverrideEmptyConfig) {
   client_->SetSystemConfig(DnsConfig());
-  EXPECT_THAT(client_->GetEffectiveConfig(), testing::Pointee(DnsConfig()));
+  EXPECT_EQ(client_->GetEffectiveConfig(), DnsConfig());
   EXPECT_EQ(client_->GetCurrentSession()->config(), DnsConfig());
 
   client_->SetConfigOverrides(BasicValidOverrides());
-  EXPECT_THAT(
-      client_->GetEffectiveConfig(),
-      testing::Pointee(BasicValidOverrides().ApplyOverrides(DnsConfig())));
+  EXPECT_EQ(client_->GetEffectiveConfig(),
+            BasicValidOverrides().ApplyOverrides(DnsConfig()));
   EXPECT_EQ(client_->GetCurrentSession()->config(),
             BasicValidOverrides().ApplyOverrides(DnsConfig()));
 }
 
 TEST_F(DnsClientTest, OverrideToEmptyNameservers) {
   client_->SetSystemConfig(BasicValidConfig());
-  EXPECT_THAT(client_->GetEffectiveConfig(),
-              testing::Pointee(BasicValidConfig()));
+  EXPECT_EQ(client_->GetEffectiveConfig(), BasicValidConfig());
   EXPECT_EQ(client_->GetCurrentSession()->config(), BasicValidConfig());
 
   DnsConfigOverrides overrides;
@@ -660,8 +651,7 @@ TEST_F(DnsClientTest, OverrideToEmptyNameservers) {
 
   DnsConfig expected_config = BasicValidConfig();
   expected_config.nameservers.clear();
-  EXPECT_THAT(client_->GetEffectiveConfig(),
-              testing::Pointee(expected_config));
+  EXPECT_EQ(client_->GetEffectiveConfig(), expected_config);
   EXPECT_EQ(client_->GetCurrentSession()->config(), expected_config);
 }
 
