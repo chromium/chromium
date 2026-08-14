@@ -289,10 +289,10 @@ component("gpu") {
     ]
     if (enable_hevc_parser_and_hw_decoder) {
       sources += [
-        "windows/d3d11_h265_accelerator.cc",
-        "windows/d3d11_h265_accelerator.h",
         "windows/d3d12_video_encode_h265_delegate.cc",
         "windows/d3d12_video_encode_h265_delegate.h",
+        "windows/d3d_h265_accelerator.cc",
+        "windows/d3d_h265_accelerator.h",
       ]
     }
     deps += [

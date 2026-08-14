@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
-#include "media/gpu/windows/d3d11_h265_accelerator.h"
+#include "media/gpu/windows/d3d_h265_accelerator.h"
 
 #include <algorithm>
 
@@ -52,18 +51,18 @@ D3D11H265Picture::~D3D11H265Picture() {
   picture->set_in_picture_use(false);
 }
 
-D3D11H265Accelerator::D3D11H265Accelerator(D3D11VideoDecoderClient* client,
-                                           MediaLog* media_log,
-                                           bool use_dxva_device_for_hevc_rext)
+D3DH265Accelerator::D3DH265Accelerator(D3D11VideoDecoderClient* client,
+                                       MediaLog* media_log,
+                                       bool use_dxva_device_for_hevc_rext)
     : media_log_(media_log->Clone()),
       client_(client),
       use_dxva_device_for_hevc_rext_(use_dxva_device_for_hevc_rext) {
   DCHECK(client_);
 }
 
-D3D11H265Accelerator::~D3D11H265Accelerator() {}
+D3DH265Accelerator::~D3DH265Accelerator() {}
 
-scoped_refptr<H265Picture> D3D11H265Accelerator::CreateH265Picture() {
+scoped_refptr<H265Picture> D3DH265Accelerator::CreateH265Picture() {
   D3D11PictureBuffer* picture = client_->GetPicture();
   if (!picture) {
     return nullptr;
@@ -71,14 +70,14 @@ scoped_refptr<H265Picture> D3D11H265Accelerator::CreateH265Picture() {
   return base::MakeRefCounted<D3D11H265Picture>(picture);
 }
 
-bool D3D11H265Accelerator::IsChromaSamplingSupported(
+bool D3DH265Accelerator::IsChromaSamplingSupported(
     VideoChromaSampling chroma_sampling) {
   return chroma_sampling == VideoChromaSampling::k420 ||
          chroma_sampling == VideoChromaSampling::k422 ||
          chroma_sampling == VideoChromaSampling::k444;
 }
 
-H265DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
+H265DecoderStatus D3DH265Accelerator::SubmitFrameMetadata(
     const H265SPS* sps,
     const H265PPS* pps,
     const H265SliceHeader* slice_hdr,
@@ -117,11 +116,13 @@ H265DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
 
   int i = 0;
   for (auto& it : ref_pic_list) {
-    if (!it)
+    if (!it) {
       continue;
+    }
     D3D11H265Picture* our_ref_pic = it->AsD3D11H265Picture();
-    if (!our_ref_pic)
+    if (!our_ref_pic) {
       continue;
+    }
     UNSAFE_TODO(ref_frame_list_[i].Index7Bits) = our_ref_pic->picture_index_;
     UNSAFE_TODO(ref_frame_list_[i].AssociatedFlag) =
         our_ref_pic->IsLongTermRef();
@@ -132,7 +133,7 @@ H265DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
   return H265DecoderStatus::kOk;
 }
 
-void D3D11H265Accelerator::FillPicParamsWithConstants(
+void D3DH265Accelerator::FillPicParamsWithConstants(
     DXVA_PicParams_HEVC_Rext* pic_param) {
   std::visit(
       [&](auto& pic) {
@@ -183,9 +184,8 @@ void D3D11H265Accelerator::FillPicParamsWithConstants(
 #define SPS_TO_PPEXT(a) pic_param.a = sps->a;
 #define SPS_TO_PP2(a, b) (pic_param.params).a = sps->b;
 #define SPS_TO_PP(...) ARG_SEL(__VA_ARGS__, SPS_TO_PP2, SPS_TO_PP1)(__VA_ARGS__)
-void D3D11H265Accelerator::PicParamsFromSPS(
-    DXVA_PicParams_HEVC_Rext* pic_params,
-    const H265SPS* sps) {
+void D3DH265Accelerator::PicParamsFromSPS(DXVA_PicParams_HEVC_Rext* pic_params,
+                                          const H265SPS* sps) {
   std::visit(
       [&](auto& pic_param) {
         // Refer to formula 7-14 and 7-16 of HEVC spec.
@@ -267,9 +267,8 @@ void D3D11H265Accelerator::PicParamsFromSPS(
 #define PPS_TO_PP1(a) (pic_param.params).a = pps->a;
 #define PPS_TO_PP2(a, b) (pic_param.params).a = pps->b;
 #define PPS_TO_PP(...) ARG_SEL(__VA_ARGS__, PPS_TO_PP2, PPS_TO_PP1)(__VA_ARGS__)
-void D3D11H265Accelerator::PicParamsFromPPS(
-    DXVA_PicParams_HEVC_Rext* pic_params,
-    const H265PPS* pps) {
+void D3DH265Accelerator::PicParamsFromPPS(DXVA_PicParams_HEVC_Rext* pic_params,
+                                          const H265PPS* pps) {
   std::visit(
       [&](auto& pic_param) {
         PPS_TO_PP(num_ref_idx_l0_default_active_minus1);
@@ -349,7 +348,7 @@ void D3D11H265Accelerator::PicParamsFromPPS(
 #undef PPS_TO_PP1
 #undef ARG_SEL
 
-void D3D11H265Accelerator::PicParamsFromSliceHeader(
+void D3DH265Accelerator::PicParamsFromSliceHeader(
     DXVA_PicParams_HEVC_Rext* pic_params,
     const H265SPS* sps,
     const H265SliceHeader* slice_hdr) {
@@ -376,9 +375,8 @@ void D3D11H265Accelerator::PicParamsFromSliceHeader(
       *pic_params);
 }
 
-void D3D11H265Accelerator::PicParamsFromPic(
-    DXVA_PicParams_HEVC_Rext* pic_params,
-    D3D11H265Picture* pic) {
+void D3DH265Accelerator::PicParamsFromPic(DXVA_PicParams_HEVC_Rext* pic_params,
+                                          D3D11H265Picture* pic) {
   std::visit(
       [&](auto& pic_param) {
         pic_param.params.CurrPicOrderCntVal = pic->pic_order_cnt_val_;
@@ -387,7 +385,7 @@ void D3D11H265Accelerator::PicParamsFromPic(
       *pic_params);
 }
 
-bool D3D11H265Accelerator::PicParamsFromRefLists(
+bool D3DH265Accelerator::PicParamsFromRefLists(
     DXVA_PicParams_HEVC_Rext* pic_params,
     const H265Picture::Vector& ref_pic_set_lt_curr,
     const H265Picture::Vector& ref_pic_set_st_curr_after,
@@ -465,7 +463,7 @@ bool D3D11H265Accelerator::PicParamsFromRefLists(
   return ref_check_ok;
 }
 
-H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
+H265DecoderStatus D3DH265Accelerator::SubmitSlice(
     const H265SPS* sps,
     const H265PPS* pps,
     const H265SliceHeader* slice_hdr,
@@ -672,7 +670,7 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
   return ok ? H265DecoderStatus::kOk : H265DecoderStatus::kFail;
 }
 
-H265DecoderStatus D3D11H265Accelerator::SubmitDecode(
+H265DecoderStatus D3DH265Accelerator::SubmitDecode(
     scoped_refptr<H265Picture> pic) {
   return client_->GetWrapper()->SubmitSlice() &&
                  client_->GetWrapper()->SubmitDecode()
@@ -680,21 +678,21 @@ H265DecoderStatus D3D11H265Accelerator::SubmitDecode(
              : H265DecoderStatus::kFail;
 }
 
-void D3D11H265Accelerator::Reset() {
+void D3DH265Accelerator::Reset() {
   current_frame_size_ = 0;
   if (client_->GetWrapper()) {
     client_->GetWrapper()->Reset();
   }
 }
 
-H265Decoder::H265Accelerator::Status D3D11H265Accelerator::SetStream(
+H265Decoder::H265Accelerator::Status D3DH265Accelerator::SetStream(
     base::span<const uint8_t> stream,
     const DecryptConfig* decrypt_config) {
   current_frame_size_ = stream.size();
   return H265Accelerator::SetStream(stream, decrypt_config);
 }
 
-bool D3D11H265Accelerator::OutputPicture(scoped_refptr<H265Picture> pic) {
+bool D3DH265Accelerator::OutputPicture(scoped_refptr<H265Picture> pic) {
   D3D11H265Picture* our_pic = pic->AsD3D11H265Picture();
   return our_pic && client_->OutputResult(our_pic, our_pic->picture);
 }

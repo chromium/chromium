@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_WINDOWS_D3D11_H265_ACCELERATOR_H_
-#define MEDIA_GPU_WINDOWS_D3D11_H265_ACCELERATOR_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D_H265_ACCELERATOR_H_
+#define MEDIA_GPU_WINDOWS_D3D_H265_ACCELERATOR_H_
 
 #include <d3d11_1.h>
 #include <d3d9.h>
@@ -100,19 +100,19 @@ typedef struct {
 using DXVA_PicParams_HEVC_Rext =
     std::variant<DXVA_PicParams_HEVC_Rext_Intel, DXVA_PicParams_HEVC_RangeExt>;
 
-class D3D11H265Accelerator : public H265Decoder::H265Accelerator {
+class D3DH265Accelerator : public H265Decoder::H265Accelerator {
  public:
   // When `use_dxva_device_for_hevc_rext` is true, the accelerator will follow
   // DXVA spec to submit picture buffers to driver for range extension profile;
   // otherwise it will use Intel specific structures to submit picture buffers.
-  D3D11H265Accelerator(D3D11VideoDecoderClient* client,
-                       MediaLog* media_log,
-                       bool use_dxva_device_for_hevc_rext);
+  D3DH265Accelerator(D3D11VideoDecoderClient* client,
+                     MediaLog* media_log,
+                     bool use_dxva_device_for_hevc_rext);
 
-  D3D11H265Accelerator(const D3D11H265Accelerator&) = delete;
-  D3D11H265Accelerator& operator=(const D3D11H265Accelerator&) = delete;
+  D3DH265Accelerator(const D3DH265Accelerator&) = delete;
+  D3DH265Accelerator& operator=(const D3DH265Accelerator&) = delete;
 
-  ~D3D11H265Accelerator() override;
+  ~D3DH265Accelerator() override;
 
   // H265Decoder::H265Accelerator implementation.
   scoped_refptr<H265Picture> CreateH265Picture() override;
@@ -197,4 +197,4 @@ class D3D11H265Accelerator : public H265Decoder::H265Accelerator {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_WINDOWS_D3D11_H265_ACCELERATOR_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D_H265_ACCELERATOR_H_

@@ -33,7 +33,7 @@
 #include "media/base/video_util.h"
 #include "media/gpu/windows/d3d11_av1_accelerator.h"
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-#include "media/gpu/windows/d3d11_h265_accelerator.h"
+#include "media/gpu/windows/d3d_h265_accelerator.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_status.h"
@@ -193,8 +193,8 @@ bool D3D11VideoDecoder::InitializeAcceleratedDecoder(
     bool use_dxva_device_for_hevc_rext =
         ShouldUseDXVADeviceForHEVCRangeExtension(config, device_);
     accelerated_video_decoder_ = std::make_unique<H265Decoder>(
-        std::make_unique<D3D11H265Accelerator>(this, media_log_.get(),
-                                               use_dxva_device_for_hevc_rext),
+        std::make_unique<D3DH265Accelerator>(this, media_log_.get(),
+                                             use_dxva_device_for_hevc_rext),
         profile_, config.color_space_info());
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else {
