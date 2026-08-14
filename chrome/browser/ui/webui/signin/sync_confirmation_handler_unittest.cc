@@ -27,14 +27,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/dialog_test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/signin/public/base/avatar_icon_util.h"
@@ -42,7 +38,9 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
@@ -55,12 +53,10 @@ const double kDefaultDialogHeight = 350.0;
 class TestingSyncConfirmationHandler : public SyncConfirmationHandler {
  public:
   TestingSyncConfirmationHandler(
-      Browser* browser,
+      Profile* profile,
       content::WebUI* web_ui,
       std::unordered_map<std::string, int> string_to_grd_id_map)
-      : SyncConfirmationHandler(browser->GetProfile(),
-                                string_to_grd_id_map,
-                                browser) {
+      : SyncConfirmationHandler(profile, string_to_grd_id_map) {
     set_web_ui(web_ui);
   }
 
@@ -76,7 +72,7 @@ class TestingSyncConfirmationHandler : public SyncConfirmationHandler {
   using SyncConfirmationHandler::RecordConsent;
 };
 
-class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
+class SyncConfirmationHandlerTest : public testing::Test,
                                     public LoginUIService::Observer {
  public:
   static const char kConsentText1[];
@@ -93,30 +89,39 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
 #endif
   }
 
-  SyncConfirmationHandlerTest()
-      : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-
-        web_ui_(new content::TestWebUI) {}
-
+  SyncConfirmationHandlerTest() = default;
   SyncConfirmationHandlerTest(const SyncConfirmationHandlerTest&) = delete;
   SyncConfirmationHandlerTest& operator=(const SyncConfirmationHandlerTest&) =
       delete;
+  ~SyncConfirmationHandlerTest() override = default;
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-    web_ui()->set_web_contents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    testing::Test::SetUp();
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment(
+            {TestingProfile::TestingFactory{
+                 ConsentAuditorFactory::GetInstance(),
+                 base::BindRepeating(&BuildFakeConsentAuditor)},
+             TestingProfile::TestingFactory{
+                 SyncServiceFactory::GetInstance(),
+                 base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+                   return std::make_unique<syncer::TestSyncService>();
+                 })}});
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+
+    web_contents_factory_ = std::make_unique<content::TestWebContentsFactory>();
+    web_ui_ = std::make_unique<content::TestWebUI>();
+    web_ui_->set_web_contents(
+        web_contents_factory_->CreateWebContents(profile_.get()));
 
     auto handler = std::make_unique<TestingSyncConfirmationHandler>(
-        browser(), web_ui(), GetStringToGrdIdMap());
+        profile(), web_ui(), GetStringToGrdIdMap());
     handler_ = handler.get();
     sync_confirmation_ui_ = std::make_unique<SyncConfirmationUI>(web_ui());
     web_ui()->AddMessageHandler(std::move(handler));
 
-    identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     account_info_ = identity_test_env()->MakePrimaryAccountAvailable(
         "foo@example.com", signin::ConsentLevel::kSync);
     enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
@@ -126,14 +131,23 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
 
   void TearDown() override {
     login_ui_service_observation_.Reset();
+    handler_ = nullptr;
     sync_confirmation_ui_.reset();
     web_ui_.reset();
+    web_contents_factory_.reset();
     identity_test_env_adaptor_.reset();
-    BrowserWithTestWindowTest::TearDown();
+    profile_.reset();
+    testing::Test::TearDown();
 
     EXPECT_EQ(did_user_explicitly_interact_ ? 0 : 1,
               user_action_tester()->GetActionCount("Signin_Abort_Signin"));
   }
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
+
+  Profile* profile() { return profile_.get(); }
 
   TestingSyncConfirmationHandler* handler() { return handler_; }
 
@@ -148,24 +162,6 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_adaptor_->identity_test_env();
-  }
-
-  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
-    return std::make_unique<DialogTestBrowserWindow>();
-  }
-
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
-            {TestingProfile::TestingFactory{
-                 ConsentAuditorFactory::GetInstance(),
-                 base::BindRepeating(&BuildFakeConsentAuditor)},
-             TestingProfile::TestingFactory{
-                 SyncServiceFactory::GetInstance(),
-                 base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-                   return std::make_unique<syncer::TestSyncService>();
-                 })}});
   }
 
   const std::unordered_map<std::string, int>& GetStringToGrdIdMap() {
@@ -235,17 +231,19 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   base::HistogramTester histogram_tester_;
 
  private:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+  std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<SyncConfirmationUI> sync_confirmation_ui_;
-  raw_ptr<TestingSyncConfirmationHandler, DanglingUntriaged>
-      handler_;  // Not owned.
+  raw_ptr<TestingSyncConfirmationHandler> handler_ = nullptr;
   base::UserActionTester user_action_tester_;
   std::unordered_map<std::string, int> string_to_grd_id_map_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       login_ui_service_observation_{this};
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_adaptor_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 const char SyncConfirmationHandlerTest::kConsentText1[] = "consentText1";
