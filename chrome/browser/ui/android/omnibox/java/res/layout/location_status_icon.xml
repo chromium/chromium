@@ -16,7 +16,7 @@ found in the LICENSE file.
         android:visibility="visible"
         android:focusable="false">
 
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/location_bar_status_icon"
             style="@style/OmniboxIcon"
             android:layout_width="@dimen/omnibox_search_engine_logo_composed_size"

@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.Checkable;
 
+import androidx.appcompat.widget.AppCompatImageView;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -17,7 +19,7 @@ import org.chromium.build.annotations.Nullable;
  * AnimatedStateListDrawable to dynamically change the appearance of this widget.
  */
 @NullMarked
-public class CheckableImageView extends ChromeImageView implements Checkable {
+public class CheckableImageView extends AppCompatImageView implements Checkable {
     private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
 
     private boolean mChecked;

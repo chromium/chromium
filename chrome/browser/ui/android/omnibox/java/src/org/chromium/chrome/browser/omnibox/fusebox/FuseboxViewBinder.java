@@ -50,7 +50,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.List;
 
@@ -563,7 +562,7 @@ class FuseboxViewBinder {
 
     private void updatePlusButtonVisuals(PropertyModel model, FuseboxViewHolder view) {
         Context context = view.parentView.getContext();
-        ChromeImageView plusButton = view.plusButton;
+        ImageView plusButton = view.plusButton;
         @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
         @BackgroundStyle int style = model.get(FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE);
 

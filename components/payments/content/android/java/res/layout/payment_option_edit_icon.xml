@@ -20,7 +20,7 @@ found in the LICENSE file.
         android:layout_marginEnd="@dimen/editor_dialog_section_large_spacing"
         style="@style/VerticalDivider" />
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="center_vertical"

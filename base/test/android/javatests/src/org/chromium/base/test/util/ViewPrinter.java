@@ -256,7 +256,7 @@ public class ViewPrinter {
      * │       │   ├── @id/location_bar_status | StatusView
      * │       │   │   ╰── @id/location_bar_status_icon_view | StatusIconView
      * │       │   │       ╰── @id/location_bar_status_icon_frame | FrameLayout
-     * │       │   │           ╰── @id/loc_bar_status_icon | ChromeImageView
+     * │       │   │           ╰── @id/loc_bar_status_icon | ImageView
      * │       │   ╰── "about:blank" | @id/url_bar | UrlBarApi26
      * │       ╰── @id/toolbar_buttons | LinearLayout
      * │           ├── @id/tab_switcher_button | ToggleTabStackButton

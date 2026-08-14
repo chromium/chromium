@@ -31,7 +31,7 @@ found in the LICENSE file.
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/qrcode"
             android:layout_width="228dp"
             android:layout_height="228dp"

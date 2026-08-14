@@ -26,7 +26,7 @@ found in the LICENSE file.
         android:paddingStart="16dp"
         android:paddingEnd="16dp">
 
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/favicon"
             android:layout_width="24dp"
             android:layout_height="24dp"
@@ -48,7 +48,7 @@ found in the LICENSE file.
             android:contentDescription="@string/accessibility_custom_tab_drag_handle"
             android:src="@drawable/drag_handlebar" />
 
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/close"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -63,7 +63,7 @@ found in the LICENSE file.
             android:contentDescription="@string/close"
             app:tint="@macro/default_icon_color" />
 
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/open_in_new_tab"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -103,7 +103,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@id/title"
                 android:layout_below="@id/title">
-                <org.chromium.ui.widget.ChromeImageView
+                <ImageView
                     android:id="@+id/security_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"

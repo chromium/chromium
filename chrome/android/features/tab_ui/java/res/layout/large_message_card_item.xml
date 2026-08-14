@@ -31,7 +31,7 @@ found in the LICENSE file.
                 android:layout_gravity="center"
                 android:gravity="center_horizontal"
                 android:visibility="gone" />
-            <org.chromium.ui.widget.ChromeImageView
+            <ImageView
                 android:id="@+id/icon"
                 android:layout_width="26dp"
                 android:layout_height="26dp"
@@ -79,7 +79,7 @@ found in the LICENSE file.
                 android:layout_marginTop="8dp"
                 android:visibility="gone" />
         </LinearLayout>
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/close_button"
             android:layout_width="24dp"
             android:layout_height="24dp"

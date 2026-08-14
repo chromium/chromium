@@ -11,12 +11,12 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotShareSheetViewProperties.NoArgOperation;
-import org.chromium.ui.widget.ChromeImageView;
 
 /** Manages the Android View representing the Screenshot share panel. */
 @NullMarked
@@ -60,7 +60,7 @@ class ScreenshotShareSheetView extends FrameLayout {
      * @param bitmap The {@link Bitmap} to display.
      */
     public void updateScreenshotBitmap(Bitmap bitmap) {
-        ChromeImageView screenshotImageView = findViewById(R.id.screenshot);
+        ImageView screenshotImageView = findViewById(R.id.screenshot);
         Drawable drawable = new BitmapDrawable(bitmap);
         screenshotImageView.setImageDrawable(drawable);
     }

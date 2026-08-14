@@ -77,7 +77,7 @@ In logcat, ViewPrinter has dumped the visible Views and we search the output for
     │   ├── @id/location_bar_status | StatusView
     │   │   ╰── @id/location_bar_status_icon_view | StatusIconView
     │   │       ╰── @id/location_bar_status_icon_frame | FrameLayout
-    │   │           ╰── @id/location_bar_status_icon | ChromeImageView
+    │   │           ╰── @id/location_bar_status_icon | ImageView
     │   ├── "" | @id/url_bar | UrlBarApi26
     │   ╰── @id/url_action_container | LinearLayout
     │       ╰── @id/mic_button | ChromeImageButton

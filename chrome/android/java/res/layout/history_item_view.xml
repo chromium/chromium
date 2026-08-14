@@ -24,7 +24,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/oval_surface_0" />
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="@dimen/history_item_spark_padding"

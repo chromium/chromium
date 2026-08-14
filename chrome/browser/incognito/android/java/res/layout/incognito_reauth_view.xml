@@ -31,7 +31,7 @@ found in the LICENSE file.
         android:layout_weight="1" >
     </Space>
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/incognito_reauth_icon"
         android:layout_width="72dp"
         android:layout_height="72dp"

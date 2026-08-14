@@ -48,7 +48,7 @@ found in the LICENSE file.
             app:layout_constraintStart_toEndOf="@id/tab_favicon"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/trailing_icon"
             android:layout_width="@dimen/pinned_tab_strip_item_icon_size"
             android:layout_height="@dimen/pinned_tab_strip_item_icon_size"

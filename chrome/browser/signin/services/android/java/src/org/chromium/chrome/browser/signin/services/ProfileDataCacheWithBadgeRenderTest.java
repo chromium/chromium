@@ -37,7 +37,6 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.widget.ChromeImageView;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -105,7 +104,7 @@ public class ProfileDataCacheWithBadgeRenderTest {
                 () -> {
                     mIdentityManager = mAccountManagerTestRule.getIdentityManager();
                     mContentView = new FrameLayout(sActivity);
-                    mImageView = new ChromeImageView(sActivity);
+                    mImageView = new ImageView(sActivity);
                     mContentView.addView(
                             mImageView,
                             ViewGroup.LayoutParams.WRAP_CONTENT,

@@ -33,7 +33,7 @@ found in the LICENSE file.
         android:gravity="top"
         android:orientation="horizontal">
 
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:layout_width="@dimen/glic_expanded_row_icon_size"
             android:layout_height="@dimen/glic_expanded_row_icon_size"
             android:layout_marginEnd="@dimen/glic_expanded_row_icon_margin_end"
@@ -56,7 +56,7 @@ found in the LICENSE file.
         android:gravity="top"
         android:orientation="horizontal">
 
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:layout_width="@dimen/glic_expanded_row_icon_size"
             android:layout_height="@dimen/glic_expanded_row_icon_size"
             android:layout_marginEnd="@dimen/glic_expanded_row_icon_margin_end"
@@ -90,7 +90,7 @@ found in the LICENSE file.
         android:gravity="top"
         android:orientation="horizontal">
 
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:layout_width="@dimen/glic_expanded_row_icon_size"
             android:layout_height="@dimen/glic_expanded_row_icon_size"
             android:layout_marginEnd="@dimen/glic_expanded_row_icon_margin_end"

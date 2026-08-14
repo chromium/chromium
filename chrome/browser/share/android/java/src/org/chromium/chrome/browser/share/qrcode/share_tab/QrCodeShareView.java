@@ -16,11 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.ui.widget.ChromeImageView;
 
 /** Manages the Android View representing the QrCode share panel. */
 @NullMarked
@@ -64,7 +64,7 @@ class QrCodeShareView {
      * @param bitmap The {@link Bitmap} to display on share panel.
      */
     public void updateQrCodeBitmap(Bitmap bitmap) {
-        ChromeImageView qrcodeImageView = mView.findViewById(R.id.qrcode);
+        ImageView qrcodeImageView = mView.findViewById(R.id.qrcode);
         Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
         qrcodeImageView.setImageDrawable(drawable);
 

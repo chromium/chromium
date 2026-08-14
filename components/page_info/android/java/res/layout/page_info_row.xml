@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-   Copyright 2020 The Chromium Authors
-
-   Use of this source code is governed by a BSD-style license that can be
-   found in the LICENSE file.
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <LinearLayout
@@ -18,7 +17,7 @@
     android:paddingHorizontal="@dimen/page_info_popup_padding_sides"
     android:paddingVertical="@dimen/page_info_popup_padding_vertical">
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/page_info_row_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"

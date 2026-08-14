@@ -20,7 +20,7 @@ found in the LICENSE file.
     android:layoutDirection="locale"
     android:textDirection="locale">
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/start_icon"
         android:layout_width="@dimen/account_selection_account_avatar_size"
         android:layout_height="@dimen/account_selection_account_avatar_size"

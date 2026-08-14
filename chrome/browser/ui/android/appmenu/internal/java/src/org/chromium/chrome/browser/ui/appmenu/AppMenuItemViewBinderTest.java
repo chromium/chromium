@@ -50,7 +50,6 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.concurrent.TimeoutException;
 
@@ -229,7 +228,7 @@ public class AppMenuItemViewBinderTest {
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
         TextView titleView = view.findViewById(R.id.menu_item_text);
-        ChromeImageView itemIcon = view.findViewById(R.id.menu_item_icon);
+        ImageView itemIcon = view.findViewById(R.id.menu_item_icon);
 
         Assert.assertEquals("Incorrect title text for item 1", TITLE_1, titleView.getText());
         Assert.assertNull("Should not have icon for item 1", itemIcon.getDrawable());
@@ -243,7 +242,7 @@ public class AppMenuItemViewBinderTest {
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
-        ChromeImageView itemIcon = view.findViewById(R.id.menu_item_icon);
+        ImageView itemIcon = view.findViewById(R.id.menu_item_icon);
 
         standardModel.set(
                 AppMenuItemProperties.ICON,
@@ -758,7 +757,7 @@ public class AppMenuItemViewBinderTest {
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
-        ChromeImageView itemIcon = view.findViewById(R.id.menu_item_icon);
+        ImageView itemIcon = view.findViewById(R.id.menu_item_icon);
 
         ColorStateList tint = ImageViewCompat.getImageTintList(itemIcon);
         Assert.assertNull("Tint should be null when ICON_NO_TINT is set to true", tint);
@@ -779,7 +778,7 @@ public class AppMenuItemViewBinderTest {
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
-        ChromeImageView itemIcon = view.findViewById(R.id.menu_item_icon);
+        ImageView itemIcon = view.findViewById(R.id.menu_item_icon);
 
         // Assert that the tint list is not null.
         ColorStateList tint = ImageViewCompat.getImageTintList(itemIcon);
@@ -802,7 +801,7 @@ public class AppMenuItemViewBinderTest {
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
-        ChromeImageView itemIcon = view.findViewById(R.id.menu_item_icon);
+        ImageView itemIcon = view.findViewById(R.id.menu_item_icon);
 
         // Assert tint list is present and matches the requested color.
         ColorStateList tint = ImageViewCompat.getImageTintList(itemIcon);

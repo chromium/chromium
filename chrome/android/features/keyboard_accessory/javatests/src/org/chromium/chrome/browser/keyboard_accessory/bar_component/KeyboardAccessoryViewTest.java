@@ -53,6 +53,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.DimenRes;
@@ -116,7 +117,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.ViewUtils;
-import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -935,7 +935,7 @@ public class KeyboardAccessoryViewTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
-                    ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
+                    ImageView iconImageView = (ImageView) chipView.getChildAt(0);
                     return ((BitmapDrawable) iconImageView.getDrawable())
                             .getBitmap()
                             .equals(TEST_CARD_ART_IMAGE);
@@ -976,7 +976,7 @@ public class KeyboardAccessoryViewTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
-                    ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
+                    ImageView iconImageView = (ImageView) chipView.getChildAt(0);
                     Drawable expectedIcon =
                             mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
                     return getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable()));
@@ -1009,7 +1009,7 @@ public class KeyboardAccessoryViewTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
-                    ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
+                    ImageView iconImageView = (ImageView) chipView.getChildAt(0);
                     Drawable expectedIcon =
                             mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
                     return getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable()));
@@ -1261,11 +1261,8 @@ public class KeyboardAccessoryViewTest {
 
         ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(style));
 
-        int expectedMargin =
-                view.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen
-                                        .keyboard_accessory_bar_dynamic_positioning_horizontal_margin);
+        int marginRes = R.dimen.keyboard_accessory_bar_dynamic_positioning_horizontal_margin;
+        int expectedMargin = view.getResources().getDimensionPixelSize(marginRes);
 
         CriteriaHelper.pollUiThread(() -> view.getTranslationX() == expectedMargin);
     }

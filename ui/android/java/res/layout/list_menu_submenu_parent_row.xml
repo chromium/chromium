@@ -11,7 +11,7 @@ found in the LICENSE file.
     android:background="?android:attr/listChoiceBackgroundIndicator"
     style="@style/ListMenuItemStyle" >
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/menu_item_icon"
         android:duplicateParentState="true"
         android:importantForAccessibility="no"

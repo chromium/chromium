@@ -23,7 +23,7 @@ found in the LICENSE file.
         android:background="@drawable/default_icon_background"
         android:visibility="gone" />
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/title_icon"
         android:layout_width="36dp"
         android:layout_height="36dp"
@@ -53,7 +53,7 @@ found in the LICENSE file.
         android:background="@drawable/default_icon_background"
         android:visibility="gone" />
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/title_end_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

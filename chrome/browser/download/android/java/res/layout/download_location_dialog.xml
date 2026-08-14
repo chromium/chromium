@@ -50,7 +50,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <org.chromium.ui.widget.ChromeImageView
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_drive_file_24dp"
@@ -87,7 +87,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <org.chromium.ui.widget.ChromeImageView
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_folder_blue_24dp"

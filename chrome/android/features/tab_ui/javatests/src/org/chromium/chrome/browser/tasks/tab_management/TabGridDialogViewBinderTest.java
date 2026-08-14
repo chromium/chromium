@@ -84,7 +84,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -111,8 +110,8 @@ public class TabGridDialogViewBinderTest {
     private TabGridDialogToolbarView mToolbarView;
     private TabListRecyclerView mContentView;
     private TabGridDialogView mTabGridDialogView;
-    private ChromeImageView mNewTabButton;
-    private ChromeImageView mBackButton;
+    private ImageView mNewTabButton;
+    private ImageView mBackButton;
     private EditText mTitleTextView;
     private FrameLayout mColorIconContainer;
     private ImageView mColorIcon;

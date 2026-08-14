@@ -48,7 +48,6 @@ import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /**
@@ -441,7 +440,7 @@ public class TabGridViewBinder {
         View cardView = rootView.fastFindViewById(R.id.card_view);
         TextView titleView = rootView.fastFindViewById(R.id.tab_title);
         TabThumbnailView thumbnail = rootView.fastFindViewById(R.id.tab_thumbnail);
-        ChromeImageView backgroundView = rootView.fastFindViewById(R.id.background_view);
+        ImageView backgroundView = rootView.fastFindViewById(R.id.background_view);
         ImageView mediaIndicator = rootView.fastFindViewById(R.id.media_indicator_icon);
 
         cardView.getBackground().mutate();

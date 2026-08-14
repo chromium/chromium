@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -17,7 +18,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.sync_device_info.FormFactor;
-import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.List;
 
@@ -54,7 +54,7 @@ class DevicePickerBottomSheetAdapter extends BaseAdapter {
                             .inflate(R.layout.send_tab_to_self_device_picker_item, parent, false);
 
             TargetDeviceInfo deviceInfo = getItem(position);
-            ChromeImageView deviceIcon = convertView.findViewById(R.id.device_icon);
+            ImageView deviceIcon = convertView.findViewById(R.id.device_icon);
             deviceIcon.setImageDrawable(getDrawableForDeviceType(context, deviceInfo));
             deviceIcon.setVisibility(View.VISIBLE);
 

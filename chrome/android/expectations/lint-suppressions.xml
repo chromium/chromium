@@ -15,6 +15,18 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- See https://crbug.com/41379786 and comment in the file for context. -->
     <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
   </issue>
+  <!-- Triggered by ChromeImageView removal. -->
+  <issue id="ContentDescription">
+    <ignore regexp="chrome/android/java/res/layout/history_item_view.xml"/>
+    <ignore regexp="chrome/browser/commerce/price_change/android/java/res/layout/price_change_module_layout.xml"/>
+    <ignore regexp="chrome/browser/data_sharing/android/java/res/layout/recent_activity_log_item.xml"/>
+    <ignore regexp="chrome/browser/glic/android/java/res/layout/glic_auto_browse.xml"/>
+    <ignore regexp="chrome/browser/glic/android/java/res/layout/glic_default_tab_access.xml"/>
+    <ignore regexp="chrome/browser/safety_hub/android/java/res/layout/safety_hub_expandable_preference.xml"/>
+    <ignore regexp="chrome/browser/ui/android/omnibox/java/res/layout/fusebox_layout.xml"/>
+    <ignore regexp="components/browser_ui/settings/android/java/res/layout/chrome_expandable_switch_preference.xml"/>
+    <ignore regexp="components/browser_ui/widget/android/java/res/layout/rich_radio_button.xml"/>
+  </issue>
   <issue id="ExifInterface">
       <!-- TODO(crbug.com/40559214): Update to androidx ExifInterface. -->
       <ignore regexp="components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/BitmapUtils.java"/>
@@ -403,6 +415,13 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   <issue id="VectorPath" severity="ignore"/>
   <!-- These constructors are useful for layout editors which we currently do not support. -->
   <issue id="ViewConstructor" severity="ignore"/>
+  <!-- Triggered by ChromeImageView removal. -->
+  <issue id="UseCompoundDrawables">
+    <ignore regexp="chrome/browser/glic/android/java/res/layout/glic_auto_browse.xml"/>
+    <ignore regexp="chrome/browser/glic/android/java/res/layout/glic_default_tab_access.xml"/>
+    <ignore regexp="chrome/browser/ui/android/appmenu/internal/java/res/layout/submenu_header.xml"/>
+    <ignore regexp="chrome/browser/ui/android/toolbar/java/res/layout/sheet_tab_toolbar.xml"/>
+  </issue>
   <issue id="WrongConstant">
     <!-- Discussed in crbug.com/40125815, ignoring this class of errors since these are Q+ constants. -->
     <ignore regexp="Must be one of: LineBreaker.BREAK_STRATEGY_SIMPLE, LineBreaker.BREAK_STRATEGY_HIGH_QUALITY, LineBreaker.BREAK_STRATEGY_BALANCED"/>

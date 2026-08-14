@@ -10,7 +10,7 @@ found in the LICENSE file.
     android:id="@+id/content"
     style="@style/ListItemSmallIconContainer" >
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/start_icon"
         style="@style/ListItemSmallStartIcon"
         android:importantForAccessibility="no" />

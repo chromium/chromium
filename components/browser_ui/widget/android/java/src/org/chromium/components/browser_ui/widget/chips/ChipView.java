@@ -27,6 +27,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -39,7 +40,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.base.LocalizationUtils;
-import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.RippleBackgroundHelper;
@@ -75,7 +75,7 @@ public class ChipView extends LinearLayout {
 
     private final RippleBackgroundHelper mRippleBackgroundHelper;
     private final AppCompatTextView mPrimaryText;
-    private final ChromeImageView mStartIcon;
+    private final AppCompatImageView mStartIcon;
     private final boolean mUseRoundedStartIcon;
     private final LoadingView mLoadingView;
     private final @StyleRes int mSecondaryTextAppearanceId;
@@ -221,7 +221,7 @@ public class ChipView extends LinearLayout {
                         R.styleable.ChipView_loadingViewSize,
                         getResources().getDimensionPixelSize(R.dimen.chip_loading_view_size));
 
-        mStartIcon = new ChromeImageView(getContext());
+        mStartIcon = new AppCompatImageView(getContext());
         mStartIcon.setId(R.id.chip_view_start_icon);
         mStartIcon.setLayoutParams(new LinearLayout.LayoutParams(iconWidth, iconHeight));
         addView(mStartIcon);
@@ -478,7 +478,7 @@ public class ChipView extends LinearLayout {
     public void addRemoveIcon() {
         if (mEndIconWrapper != null) return;
 
-        ChromeImageView endIcon = new ChromeImageView(getContext());
+        AppCompatImageView endIcon = new AppCompatImageView(getContext());
         endIcon.setId(R.id.chip_view_end_icon);
         endIcon.setImageResource(R.drawable.btn_close);
         ImageViewCompat.setImageTintList(endIcon, mPrimaryText.getTextColors());
@@ -509,7 +509,7 @@ public class ChipView extends LinearLayout {
     public void addDropdownIcon() {
         if (mEndIconWrapper != null) return;
 
-        ChromeImageView endIcon = new ChromeImageView(getContext());
+        AppCompatImageView endIcon = new AppCompatImageView(getContext());
         endIcon.setId(R.id.chip_view_end_icon);
         endIcon.setImageResource(R.drawable.mtrl_dropdown_arrow);
         ImageViewCompat.setImageTintList(endIcon, mPrimaryText.getTextColors());

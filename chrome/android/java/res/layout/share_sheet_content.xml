@@ -73,7 +73,7 @@ found in the LICENSE file.
         android:textDirection="locale"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 
-      <org.chromium.ui.widget.ChromeImageView
+      <ImageView
           android:id="@+id/link_toggle_view"
           android:layout_height="@dimen/sharing_hub_preview_icon_size"
           android:layout_width="@dimen/sharing_hub_preview_icon_size"

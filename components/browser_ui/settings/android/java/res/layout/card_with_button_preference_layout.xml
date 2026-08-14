@@ -25,7 +25,7 @@ found in the LICENSE file.
         android:layout_marginHorizontal="@dimen/card_with_button_pref_horizontal_padding"
         android:background="@drawable/rounded_corner_card">
 
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/icon"
             android:layout_width="@dimen/card_with_button_pref_icon_size"
             android:layout_height="@dimen/card_with_button_pref_icon_size"

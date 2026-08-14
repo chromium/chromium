@@ -52,7 +52,7 @@ found in the LICENSE file.
                     android:layout_width="@dimen/price_change_module_product_image_size"
                     android:layout_margin="@dimen/price_change_module_product_image_margin"
                     android:scaleType="centerCrop" />
-                <org.chromium.ui.widget.ChromeImageView
+                <ImageView
                     android:id="@+id/favicon_image"
                     android:background="@drawable/price_change_module_favicon_background"
                     android:elevation="4dp"

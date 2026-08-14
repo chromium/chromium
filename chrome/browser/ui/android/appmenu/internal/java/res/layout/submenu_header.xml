@@ -12,7 +12,7 @@ found in the LICENSE file.
     android:orientation="horizontal"
     android:contentDescription="@string/submenu_header_back">
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/menu_item_icon"
         android:src="@drawable/ic_arrow_back_24dp"
         android:layout_width="?attr/listItemIconSize"

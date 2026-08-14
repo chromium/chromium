@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
@@ -29,7 +30,6 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.text.ChromeClickableSpan;
-import org.chromium.ui.widget.ChromeImageView;
 
 /**
  * View that displays connection security information, including whether or not the connection is
@@ -60,7 +60,7 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
     }
 
     private final Context mContext;
-    private final ChromeImageView mIcon;
+    private final ImageView mIcon;
     private final TextView mSummary;
     private final TextView mDetails;
     private final TextView mResetDecision;

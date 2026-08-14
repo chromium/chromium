@@ -19,7 +19,7 @@
         android:orientation="horizontal"
         android:paddingHorizontal="@dimen/page_info_popup_padding_sides"
         android:paddingVertical="@dimen/page_info_popup_padding_vertical">
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/identity_status_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
@@ -72,7 +72,7 @@
         android:paddingVertical="@dimen/page_info_popup_padding_vertical"
         android:clickable="true"
         android:focusable="true">
-            <org.chromium.ui.widget.ChromeImageView
+            <ImageView
                 android:id="@+id/qwac_status_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -99,7 +99,7 @@
                     android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                     app:leading="@dimen/text_size_medium_leading" />
             </LinearLayout>
-            <org.chromium.ui.widget.ChromeImageView
+            <ImageView
                 android:id="@+id/qwac_cert_details_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -121,7 +121,7 @@
         android:paddingVertical="@dimen/page_info_popup_padding_vertical"
         android:clickable="true"
         android:focusable="true">
-            <org.chromium.ui.widget.ChromeImageView
+            <ImageView
                 android:id="@+id/certificate_details_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -137,7 +137,7 @@
                 android:layout_weight="1"
                 android:text="@string/page_info_certificate_details"
                 android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-            <org.chromium.ui.widget.ChromeImageView
+            <ImageView
                 android:id="@+id/certificate_details_launch_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"

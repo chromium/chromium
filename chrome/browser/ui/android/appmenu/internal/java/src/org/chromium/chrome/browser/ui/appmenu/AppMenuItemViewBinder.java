@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
@@ -37,7 +38,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageButton;
-import org.chromium.ui.widget.ChromeImageView;
 
 /** The binder to bind the app menu {@link PropertyModel} with the view. */
 @NullMarked
@@ -322,7 +322,7 @@ class AppMenuItemViewBinder {
     }
 
     private static void setIcon(View view, final PropertyModel model) {
-        ChromeImageView imageView = view.findViewById(R.id.menu_item_icon);
+        ImageView imageView = view.findViewById(R.id.menu_item_icon);
         if (imageView == null) {
             return;
         }

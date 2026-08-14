@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
@@ -25,7 +26,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.ref.WeakReference;
@@ -42,12 +42,12 @@ class LargeMessageCardView extends FrameLayout {
     private final int mLandscapeSidePadding;
     private MaterialCardViewNoShadow mMaterialCardViewNoShadow;
     private PriceCardView mPriceInfoBox;
-    private ChromeImageView mIcon;
+    private ImageView mIcon;
     private TextView mTitle;
     private TextView mDescription;
     private ButtonCompat mActionButton;
     private ButtonCompat mSecondaryActionButton;
-    private ChromeImageView mCloseButton;
+    private ImageView mCloseButton;
 
     public LargeMessageCardView(Context context, AttributeSet attrs) {
         super(context, attrs);

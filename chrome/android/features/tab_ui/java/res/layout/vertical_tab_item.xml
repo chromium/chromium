@@ -119,7 +119,7 @@ found in the LICENSE file.
         android:importantForAccessibility="no" />
 
     <!-- Tab Close Button -->
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/action_button"
         android:layout_width="@dimen/vertical_tab_item_icon_size"
         android:layout_height="@dimen/vertical_tab_item_icon_size"

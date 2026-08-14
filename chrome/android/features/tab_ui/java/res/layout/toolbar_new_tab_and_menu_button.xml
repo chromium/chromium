@@ -8,14 +8,14 @@ found in the LICENSE file.
 <merge
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/toolbar_new_tab_button"
         android:layout_height="@dimen/min_touch_target_size"
         style="@style/ToolbarHoverableButton"
         android:src="@drawable/plus"
         app:tint="@color/default_icon_color_tint_list"
         android:contentDescription="@string/bottom_tab_grid_new_tab" />
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/toolbar_menu_button"
         android:layout_height="@dimen/min_touch_target_size"
         style="@style/ToolbarMenuButton"

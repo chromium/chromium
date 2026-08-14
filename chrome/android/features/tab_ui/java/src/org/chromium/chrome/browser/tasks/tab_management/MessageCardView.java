@@ -13,6 +13,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import org.chromium.base.Callback;
@@ -22,7 +23,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.OutlineOverlayHelper;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
@@ -51,10 +51,10 @@ class MessageCardView extends LinearLayout {
         void dismiss(T messageType);
     }
 
-    private ChromeImageView mIcon;
+    private ImageView mIcon;
     private TextViewWithClickableSpans mDescription;
     private ButtonCompat mActionButton;
-    private ChromeImageView mCloseButton;
+    private ImageView mCloseButton;
     private OutlineOverlayHelper mOutlineOverlayHelper;
 
     public MessageCardView(Context context, AttributeSet attrs) {

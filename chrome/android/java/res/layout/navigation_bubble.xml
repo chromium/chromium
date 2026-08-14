@@ -14,7 +14,7 @@
     android:animateLayoutChanges="true"
     android:orientation="horizontal">
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/navigation_bubble_arrow"
         android:layout_width="@dimen/navigation_bubble_arrow_size"
         android:layout_height="@dimen/navigation_bubble_arrow_size"

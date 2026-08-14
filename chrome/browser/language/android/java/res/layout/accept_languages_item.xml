@@ -15,7 +15,7 @@ found in the LICENSE file.
     android:paddingEnd="@dimen/draggable_list_item_padding"
     style="@style/ListItemContainer">
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/icon_view"
         style="@style/ListItemStartIcon"
         app:tint="@color/default_icon_color_tint_list"

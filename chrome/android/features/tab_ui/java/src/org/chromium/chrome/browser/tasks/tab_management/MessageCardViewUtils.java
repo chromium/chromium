@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.res.ColorStateList;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.ChromeImageView;
 
 /**
  * A common utils class for Message cards for updating the look of different UI elements present
@@ -109,7 +109,7 @@ public class MessageCardViewUtils {
      * @param closeButton The close button image view whose tint we want to set.
      * @param isIncognito Whether the tint is used for incognito mode.
      */
-    public static void setCloseButtonTint(ChromeImageView closeButton, boolean isIncognito) {
+    public static void setCloseButtonTint(ImageView closeButton, boolean isIncognito) {
         ImageViewCompat.setImageTintList(
                 closeButton,
                 TabUiThemeProvider.getMessageCardCloseButtonTintList(

@@ -21,7 +21,7 @@ found in the LICENSE file.
     android:paddingBottom="10dp"
     android:gravity="center" >
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/image"
         android:layout_width="24sp"
         android:layout_height="24sp"

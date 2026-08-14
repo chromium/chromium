@@ -14,6 +14,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
@@ -23,7 +24,6 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.widget.ChromeImageView;
 
 /** View showing an icon, title and subtitle for a page info row. */
 @NullMarked
@@ -43,7 +43,7 @@ public class PageInfoRowView extends FrameLayout {
         public @ColorRes int titleTint;
     }
 
-    private final ChromeImageView mIcon;
+    private final ImageView mIcon;
     private final TextView mTitle;
     private final TextView mSubtitle;
 

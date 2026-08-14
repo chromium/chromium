@@ -31,7 +31,7 @@ found in the LICENSE file.
             android:paddingTop="13dp"
             android:paddingBottom="13dp"
             android:paddingEnd="16dp" />
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/menu_item_icon"
             android:src="@drawable/ic_check_googblue_24dp"
             android:layout_width="24dp"

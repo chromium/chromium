@@ -39,7 +39,7 @@ found in the LICENSE file.
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/toolbar_new_tab_button"/>
         <!-- z-index above the recycler view by putting after FrameLayout. -->
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/tab_strip_fading_edge_start"
             android:layout_height="match_parent"
             android:layout_width="@dimen/tab_strip_fading_edge_width"
@@ -50,7 +50,7 @@ found in the LICENSE file.
             app:layout_constraintStart_toStartOf="parent"
             android:importantForAccessibility="no"/>
         <!-- Use negative margin start to overlay the recycler view. -->
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/tab_strip_fading_edge_end"
             android:layout_height="match_parent"
             android:layout_width="@dimen/tab_strip_fading_edge_width"
@@ -62,7 +62,7 @@ found in the LICENSE file.
             app:layout_constraintStart_toEndOf="@+id/toolbar_container_view"
             android:importantForAccessibility="no"/>
 
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/toolbar_new_tab_button"
             style="@style/BottomToolbarButton"
             android:src="@drawable/plus"
@@ -85,7 +85,7 @@ found in the LICENSE file.
             app:barrierDirection="start"
             app:constraint_referenced_ids="toolbar_show_group_dialog_button,toolbar_image_tiles_container" />
 
-        <org.chromium.ui.widget.ChromeImageView
+        <ImageView
             android:id="@+id/toolbar_show_group_dialog_button"
             style="@style/BottomToolbarButton"
             android:src="@drawable/ic_expand_less_black_24dp"

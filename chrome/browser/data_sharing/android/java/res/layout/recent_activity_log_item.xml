@@ -52,7 +52,7 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
     </LinearLayout>
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/favicon"
         android:layout_width="@dimen/recent_activity_favicon_bg_size"
         android:layout_height="@dimen/recent_activity_favicon_bg_size"
