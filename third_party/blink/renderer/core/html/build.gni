@@ -756,6 +756,7 @@ blink_core_tests_html = [
   "forms/type_ahead_test.cc",
   "html_dom_fuzztest.cc",
   "html_anchor_element_test.cc",
+  "html_area_element_test.cc",
   "html_attribute_fuzztest.cc",
   "html_credential_element_test.cc",
   "html_dimension_test.cc",

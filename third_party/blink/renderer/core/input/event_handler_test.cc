@@ -692,6 +692,44 @@ TEST_F(EventHandlerTest, EditableAnchorTextCanStartSelection) {
       ui::mojom::blink::CursorType::kIBeam);  // An I-beam signals editability.
 }
 
+// A default-styled <area> has no box of its own, but hit testing resolves
+// image map hits to it, so the cursor comes from the <area>'s own style.
+TEST_F(EventHandlerTest, CursorForLayoutlessArea) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>area { cursor: help }</style>
+    <img usemap="#m" width="100" height="100" style="cursor:auto">
+    <map name="m"><area id="area" shape="rect" coords="0,0,100,100"></map>
+  )HTML");
+
+  HitTestLocation location((gfx::Point(50, 50)));
+  HitTestResult result =
+      GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
+          location);
+  ASSERT_EQ(GetDocument().getElementById(AtomicString("area")),
+            result.InnerPossiblyPseudoNode());
+  EXPECT_EQ(ui::mojom::blink::CursorType::kHelp,
+            GetDocument()
+                .GetFrame()
+                ->GetEventHandler()
+                .SelectCursor(location, result)
+                .value()
+                .type());
+
+  // Script may dirty style between the hit test and the cursor update. The
+  // <area> keeps its ComputedStyle, which is then as up-to-date as the style
+  // of any LayoutObject we would have used instead.
+  GetDocument().body()->AppendChild(
+      GetDocument().CreateRawElement(html_names::kStyleTag));
+  ASSERT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
+  EXPECT_EQ(ui::mojom::blink::CursorType::kHelp,
+            GetDocument()
+                .GetFrame()
+                ->GetEventHandler()
+                .SelectCursor(location, result)
+                .value()
+                .type());
+}
+
 TEST_F(EventHandlerTest, CursorForVerticalResizableTextArea) {
   SetHtmlInnerHTML("<textarea style='resize:vertical'>vertical</textarea>");
   Node* const element = GetDocument().body()->firstChild();

@@ -602,6 +602,12 @@ bool BothOnTopmostPaintLayerInStackingContext(
     return false;
 
   const LayoutObject* origin = current_interest.visible_node->GetLayoutObject();
+  // An <area> uses its associated <img> as the visible node, and that image may
+  // have no layout object when it isn't rendered.
+  if (!origin) {
+    return false;
+  }
+
   const PaintLayer* focused_layer = origin->PaintingLayer();
   if (!focused_layer || focused_layer->IsRootLayer())
     return false;

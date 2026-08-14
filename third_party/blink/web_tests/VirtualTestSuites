@@ -203,6 +203,39 @@
     "expires": "never"
   },
   {
+    "prefix": "area-display-inline",
+    "owners": [
+      "helmut@januschka.com"
+    ],
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "accessibility/image-map1.html",
+      "external/wpt/css/css-break/area-crash.html",
+      "external/wpt/css/css-break/area-in-inline-crash.html",
+      "external/wpt/css/css-multicol/crashtests/oof-in-area-001.html",
+      "external/wpt/css/css-multicol/crashtests/oof-in-area-002.html",
+      "external/wpt/css/css-multicol/crashtests/oof-in-area-003.html",
+      "external/wpt/css/css-multicol/crashtests/oof-in-area-004.html",
+      "external/wpt/css/css-multicol/crashtests/oof-in-area-005.html",
+      "external/wpt/html/rendering/non-replaced-elements/hidden-elements.html",
+      "external/wpt/html/semantics/embedded-content/the-area-element",
+      "external/wpt/html/semantics/interestfor/interestfor-area-event-dispatch.tentative.html",
+      "external/wpt/html/semantics/interestfor/interestfor-pseudo-element-appearance.tentative.html",
+      "fast/css/area-computedStyle.html",
+      "fast/dom/HTMLAreaElement",
+      "fast/spatial-navigation/snav-imagemap-area-not-focusable.html",
+      "images/imagemap-circle-focus-ring.html",
+      "images/imagemap-focus-ring.html",
+      "images/imagemap-polygon-focus-ring.html"
+    ],
+    "args": [
+      "--disable-blink-features=HTMLAreaElementDisplayNone"
+    ],
+    "expires": "Aug 1, 2027"
+  },
+  {
     "prefix": "backface-visibility-interop",
     "owners": [
       "dbaron@chromium.org",

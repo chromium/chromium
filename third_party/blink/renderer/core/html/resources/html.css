@@ -1041,9 +1041,10 @@ input[type="image" i] {
 }
 
 /* https://html.spec.whatwg.org/multipage/rendering.html#hidden-elements */
-/* TODO(crbug.com/1231263): <area> should be display:none. */
-area {
-  display: inline;
+@supports blink-feature(HTMLAreaElementDisplayNone) {
+  area {
+    display: none;
+  }
 }
 base, basefont, datalist, head, link, meta, noembed,
 noframes, param, rp, script, style, template, title {

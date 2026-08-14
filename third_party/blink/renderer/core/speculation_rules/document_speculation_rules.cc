@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/anchor_element_utils.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
@@ -1045,6 +1046,18 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
           // the flat tree or links with a "display: none" inclusive-ancestor.
           if (ComputedStyle::IsNullOrEnsured(link->GetComputedStyle())) {
             return;
+          }
+
+          // A default-styled <area> has no box of its own. Judge it by the
+          // <img> that uses its <map> instead.
+          if (const auto* area = DynamicTo<HTMLAreaElement>(link);
+              area && !area->GetLayoutObject() &&
+              RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+            const HTMLImageElement* image = area->ImageElement();
+            if (!image ||
+                ComputedStyle::IsNullOrEnsured(image->GetComputedStyle())) {
+              return;
+            }
           }
 
           // Links with display locked ancestors can have a stale

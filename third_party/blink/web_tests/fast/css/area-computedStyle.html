@@ -8,8 +8,11 @@ var area;
 window.onload = function() {
   area = document.getElementById("areaTest");
   if (window.eventSender) {
-    var x = area.offsetParent.offsetLeft + area.offsetLeft + area.offsetWidth / 2;
-    var y = area.offsetParent.offsetTop + area.offsetTop + area.offsetHeight / 2;
+    // <area> is display:none and has no offsets of its own, so aim at the
+    // image that uses the map.
+    var image = document.querySelector("img");
+    var x = image.offsetLeft + image.offsetWidth / 2;
+    var y = image.offsetTop + image.offsetHeight / 2;
     eventSender.mouseMoveTo(x, y);
     eventSender.mouseMoveTo(x - 1, y);
   }

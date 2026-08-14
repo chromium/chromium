@@ -68,9 +68,11 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/menu_safe_triangle.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
@@ -585,12 +587,32 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
   }
 
   Node* node = result.InnerPossiblyPseudoNode();
-  if (!node || !node->GetLayoutObject()) {
+  if (!node) {
+    return SelectAutoCursor(result, node, IBeamCursor());
+  }
+  const LayoutObject* hit_layout_object = node->GetLayoutObject();
+
+  // A default-styled <area> has no layout object, but hit testing still
+  // resolves image map hits to it (see HitTestResult::ImageAreaForImage). Use
+  // the image's box for geometry and the area's own style, retained during
+  // style recalc, for the cursor.
+  const ComputedStyle* area_style = nullptr;
+  if (auto* area = DynamicTo<HTMLAreaElement>(node);
+      area && !hit_layout_object &&
+      RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+    area_style = area->GetComputedStyle();
+    if (area_style) {
+      HTMLImageElement* image = area->ImageElement();
+      hit_layout_object = image ? image->GetLayoutObject() : nullptr;
+    }
+  }
+
+  if (!hit_layout_object) {
     return SelectAutoCursor(result, node, IBeamCursor());
   }
 
-  const LayoutObject& layout_object = *node->GetLayoutObject();
-  if (ShouldShowResizeForNode(layout_object, location)) {
+  const LayoutObject& layout_object = *hit_layout_object;
+  if (!area_style && ShouldShowResizeForNode(layout_object, location)) {
     const LayoutBox* box = layout_object.EnclosingLayer()->GetLayoutBox();
     EResize resize = box->StyleRef().UsedResize();
     switch (resize) {
@@ -624,8 +646,9 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
   const ComputedStyle* scrollbar_style =
       GetComputedStyleFromScrollbar(layout_object, result);
 
-  const ComputedStyle& style =
-      scrollbar_style ? *scrollbar_style : layout_object.StyleRef();
+  const ComputedStyle& style = area_style        ? *area_style
+                               : scrollbar_style ? *scrollbar_style
+                                                 : layout_object.StyleRef();
 
   if (const CursorList* cursors = style.Cursors()) {
     for (const auto& cursor : *cursors) {

@@ -8599,7 +8599,9 @@ void Element::SetFocused(bool now_focused, mojom::blink::FocusType focus_type) {
 
   FocusStateChanged();
 
-  if (GetLayoutObject() || now_focused) {
+  if (GetLayoutObject() || now_focused ||
+      (IsA<HTMLAreaElement>(*this) && GetComputedStyle() &&
+       RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled())) {
     return;
   }
 
@@ -9026,9 +9028,21 @@ FocusgroupFlags Element::NativeArrowKeyAxes() const {
 // has changed independent of the focused element changing.
 void Element::FocusStateChanged() {
   // If we're just changing the window's active state and the focused node has
-  // no layoutObject we can just ignore the state change.
+  // no layoutObject we can just ignore the state change. A default-styled
+  // <area> is an exception, since its focus ring is painted by the <img> that
+  // uses its <map>, so its focus style needs to stay current.
   if (!GetLayoutObject()) {
-    return;
+    if (!IsA<HTMLAreaElement>(*this) ||
+        !RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+      return;
+    }
+
+    // Anything with a box has a ComputedStyle, but a layoutless <area> only
+    // has one for as long as style recalc reaches it, and not, for instance,
+    // inside a display:none subtree.
+    if (!GetComputedStyle()) {
+      return;
+    }
   }
 
   StyleChangeType change_type =
@@ -10485,6 +10499,13 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   if (LayoutObjectIsNeeded(style)) {
     return true;
   }
+
+  // An <area> has no box, but remains interactive through its image map.
+  if (IsA<HTMLAreaElement>(*this) &&
+      RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+    return true;
+  }
+
   if (IsColumnPseudoElement()) {
     // Column pseudo-elements don't create layout objects, but need to store
     // computed style regardless (display type doesn't matter here). It's the

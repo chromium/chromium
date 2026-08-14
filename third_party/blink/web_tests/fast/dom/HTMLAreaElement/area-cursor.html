@@ -6,11 +6,14 @@ onload = function() {
         return;
 
     testRunner.dumpAsText();
-    document.body.offsetLeft;
-    var target = document.querySelector('area');
-    eventSender.mouseMoveTo(target.offsetLeft + target.offsetWidth / 2,
-                            target.offsetTop + target.offsetHeight / 2);
-    document.getElementById('result').innerHTML = '' + window.getComputedStyle(target).cursor;
+    // <area> is display:none, so it has no offsets of its own. Aim at the
+    // middle of the image the map is attached to instead.
+    var image = document.querySelector('img');
+    eventSender.mouseMoveTo(image.offsetLeft + image.offsetWidth / 2,
+                            image.offsetTop + image.offsetHeight / 2);
+    document.getElementById('result').innerHTML =
+        window.getComputedStyle(document.querySelector('area')).cursor +
+        ' / ' + internals.getCurrentCursorInfo();
 }
 </script>
 </head>

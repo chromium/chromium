@@ -23,9 +23,11 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
@@ -35,6 +37,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -299,6 +302,13 @@ FocusCandidate SpatialNavigationController::FindNextCandidateInContainer(
   current_interest.rect_in_root_frame = starting_rect_in_root_frame;
   current_interest.focusable_node = interest_child_in_container;
   current_interest.visible_node = interest_child_in_container;
+  // An <area> has no box of its own; it is rendered by the <img> that uses its
+  // <map>. Use that image as the visible node, like FocusCandidate does.
+  if (auto* area = DynamicTo<HTMLAreaElement>(interest_child_in_container);
+      area && !area->GetLayoutObject() &&
+      RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+    current_interest.visible_node = area->ImageElement();
+  }
 
   FocusCandidate best_candidate, previous_best_candidate;
   double previous_best_distance = kMaxDistance;
@@ -425,8 +435,22 @@ void SpatialNavigationController::DispatchMouseMoveAt(Element* element) {
 
 bool SpatialNavigationController::IsValidCandidate(
     const Element* element) const {
-  if (!element || !element->isConnected() || !element->GetLayoutObject())
+  if (!element || !element->isConnected()) {
     return false;
+  }
+
+  if (!element->GetLayoutObject()) {
+    const auto* area = DynamicTo<HTMLAreaElement>(element);
+    if (!area || !RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+      return false;
+    }
+    // An <area> has no box of its own; it is rendered by the <img> that uses
+    // its <map>, so require that image to be laid out instead.
+    const HTMLImageElement* image = area->ImageElement();
+    if (!image || !image->GetLayoutObject()) {
+      return false;
+    }
+  }
 
   LocalFrame* frame = element->GetDocument().GetFrame();
   if (!frame)

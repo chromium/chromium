@@ -256,6 +256,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_all_collection.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_base_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
@@ -5799,6 +5800,14 @@ static Element* SkipDisplayNoneAncestors(Element* element) {
   for (; element; element = FlatTreeTraversal::ParentElement(*element)) {
     if (element->GetLayoutObject() || element->HasDisplayContentsStyle())
       return element;
+    // <area> is display:none by default, in which case it has no box of its
+    // own, but it is painted as part of the <img> that uses its <map>, and hit
+    // testing resolves image map hits to it, so it can be hovered/activated
+    // like a rendered element.
+    if (IsA<HTMLAreaElement>(*element) &&
+        RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+      return element;
+    }
   }
   return nullptr;
 }

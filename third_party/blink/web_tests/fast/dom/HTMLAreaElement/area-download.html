@@ -17,7 +17,7 @@ if (window.testRunner) {
 function click(elmt)
 {
     if (!window.eventSender) {
-        alert('Click the area to run the test.');
+        alert('Click the image to run the test.');
         return;
     }
     eventSender.mouseMoveTo(elmt.offsetLeft + elmt.offsetWidth / 2, elmt.offsetTop + elmt.offsetHeight / 2);
@@ -31,7 +31,9 @@ function runTest()
     var blob = new Blob([string], {type: "text/html"});
     var area = document.getElementById("area");
     area.href = window.URL.createObjectURL(blob);
-    click(area);
+    // <area> is display:none and has no offsets of its own, so the click has
+    // to be aimed at the image that uses the map.
+    click(document.querySelector("img"));
 }
 runTest();
 </script>

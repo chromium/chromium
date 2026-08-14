@@ -1393,6 +1393,8 @@ crbug.com/332331836 external/wpt/html/semantics/popovers/popover-attribute-basic
 
 # Interestfor related tests
 crbug.com/326681249 external/wpt/html/semantics/interestfor/interestfor-svg-a-event-dispatch.tentative.html [ Failure ]
+crbug.com/546131804 external/wpt/html/semantics/interestfor/interestfor-pseudo-element-appearance.tentative.html [ Failure ]
+crbug.com/546131804 virtual/area-display-inline/external/wpt/html/semantics/interestfor/interestfor-pseudo-element-appearance.tentative.html [ Pass ]
 
 crbug.com/421119389 external/wpt/pointerevents/crashtests/longpress-crash.html [ Crash ]
 
