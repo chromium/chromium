@@ -30,10 +30,8 @@ class NET_EXPORT_PRIVATE SystemDnsConfigChangeNotifier {
   class Observer {
    public:
     // Called on loading new config, including the initial read once the first
-    // valid config has been read. If a config read encounters errors or an
-    // invalid config is read, will be invoked with |std::nullopt|. Only
-    // invoked when |config| changes.
-    virtual void OnSystemDnsConfigChanged(std::optional<DnsConfig> config) = 0;
+    // config has been read. Only invoked when `config` changes.
+    virtual void OnSystemDnsConfigChanged(const DnsConfig& config) = 0;
   };
 
   SystemDnsConfigChangeNotifier();

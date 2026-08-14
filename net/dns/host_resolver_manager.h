@@ -551,7 +551,7 @@ class NET_EXPORT HostResolverManager
       NetworkChangeNotifier::ConnectionType type) override;
 
   // SystemDnsConfigChangeNotifier::Observer:
-  void OnSystemDnsConfigChanged(std::optional<DnsConfig> config) override;
+  void OnSystemDnsConfigChanged(const DnsConfig& config) override;
 
   void UpdateJobsForChangedConfig();
 

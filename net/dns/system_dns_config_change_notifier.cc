@@ -164,7 +164,7 @@ class SystemDnsConfigChangeNotifier::Core {
     config_ = config;
 
     for (auto& wrapped_observer : wrapped_observers_) {
-      wrapped_observer.second->OnNotifyThreadsafe(config_.value());
+      wrapped_observer.second->OnNotifyThreadsafe(config);
     }
   }
 

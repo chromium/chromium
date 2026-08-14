@@ -257,7 +257,7 @@ class NetworkChangeNotifier::SystemDnsConfigObserver
  public:
   virtual ~SystemDnsConfigObserver() = default;
 
-  void OnSystemDnsConfigChanged(std::optional<DnsConfig> config) override {
+  void OnSystemDnsConfigChanged(const DnsConfig& config) override {
     NotifyObserversOfDNSChange();
   }
 };

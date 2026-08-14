@@ -1809,14 +1809,12 @@ void HostResolverManager::OnConnectionTypeChanged(
   UpdateConnectionType(type);
 }
 
-void HostResolverManager::OnSystemDnsConfigChanged(
-    std::optional<DnsConfig> config) {
+void HostResolverManager::OnSystemDnsConfigChanged(const DnsConfig& config) {
   DCHECK(!IsBoundToNetwork());
   // If tests have provided a catch-all DNS block and then disabled it, check
   // that we are not at risk of sending queries beyond the local network.
-  if (HostResolverProc::GetDefault() && system_resolver_disabled_for_testing_ &&
-      config.has_value()) {
-    DCHECK(std::ranges::none_of(config->nameservers,
+  if (HostResolverProc::GetDefault() && system_resolver_disabled_for_testing_) {
+    DCHECK(std::ranges::none_of(config.nameservers,
                                 &IPAddress::IsPubliclyRoutable,
                                 &IPEndPoint::address))
         << "Test could query a publicly-routable address.";
@@ -1827,7 +1825,7 @@ void HostResolverManager::OnSystemDnsConfigChanged(
   if (dns_client_) {
     transactions_allowed_before = dns_client_->CanUseSecureDnsTransactions() ||
                                   dns_client_->CanUseInsecureDnsTransactions();
-    changed = dns_client_->SetSystemConfig(std::move(config));
+    changed = dns_client_->SetSystemConfig(config);
   }
 
   // Always invalidate cache, even if no change is seen.
