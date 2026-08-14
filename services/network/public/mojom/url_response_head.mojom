@@ -319,9 +319,6 @@ struct URLResponseHead {
   // are returned with the locally storead headers. See crbug.com/352578800.
   bool from_synthetic_response = false;
 
-  // True when a proxy will handle the redirect checks.
-  bool bypass_redirect_checks = false;
-
   // The parsed value of the Unencoded-Digest header, if present.
   UnencodedDigests? unencoded_digests;
 

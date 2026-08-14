@@ -85,8 +85,9 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
               navigation_handle->GetParentFrameOrOuterDocument()),
           ExtensionApiFrameIdMap::GetFrameType(navigation_handle),
           ExtensionApiFrameIdMap::GetDocumentLifecycle(navigation_handle),
-          GetWebViewData(navigation_handle)) {
-  // TODO(clamy): See if it would be possible to have just one source for the
+          GetWebViewData(navigation_handle),
+          navigation_handle->GetFrameTreeNodeId()) {
+  // TODO(clamy): See if it would be possible to have just one source for the
   // FrameData that works both for navigations and subresources loads.
 }
 
@@ -109,7 +110,8 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
               frame_host->GetParentOrOuterDocument()),
           ExtensionApiFrameIdMap::GetFrameType(frame_host),
           ExtensionApiFrameIdMap::GetDocumentLifecycle(frame_host),
-          GetWebViewData(frame_host)) {}
+          GetWebViewData(frame_host),
+          frame_host->GetFrameTreeNodeId()) {}
 
 // static
 std::unique_ptr<ExtensionNavigationUIData>
@@ -131,7 +133,8 @@ ExtensionNavigationUIData::CreateForMainFrameNavigation(
       /*parent_document_id=*/ExtensionApiFrameIdMap::DocumentId(),
       api::extension_types::FrameType::kOutermostFrame,
       api::extension_types::DocumentLifecycle::kActive,
-      /*web_view_data=*/std::nullopt));
+      /*web_view_data=*/std::nullopt,
+      web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
 }
 
 std::unique_ptr<ExtensionNavigationUIData> ExtensionNavigationUIData::DeepCopy()
@@ -141,6 +144,7 @@ std::unique_ptr<ExtensionNavigationUIData> ExtensionNavigationUIData::DeepCopy()
   copy->web_view_data_ = web_view_data_;
   copy->parent_routing_id_ = parent_routing_id_;
   copy->is_privileged_ = is_privileged_;
+  copy->frame_tree_node_id_ = frame_tree_node_id_;
   return copy;
 }
 
@@ -155,7 +159,8 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
     const ExtensionApiFrameIdMap::DocumentId& parent_document_id,
     api::extension_types::FrameType frame_type,
     api::extension_types::DocumentLifecycle document_lifecycle,
-    std::optional<WebViewData> web_view_data)
+    std::optional<WebViewData> web_view_data,
+    content::FrameTreeNodeId frame_tree_node_id)
     : frame_data_(frame_id,
                   parent_frame_id,
                   tab_id,
@@ -166,6 +171,7 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
                   document_lifecycle),
       web_view_data_(web_view_data),
       is_privileged_(web_contents && web_contents->IsPrivileged()),
-      parent_routing_id_(parent_routing_id) {}
+      parent_routing_id_(parent_routing_id),
+      frame_tree_node_id_(frame_tree_node_id) {}
 
 }  // namespace extensions

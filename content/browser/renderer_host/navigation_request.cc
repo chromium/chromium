@@ -10364,6 +10364,29 @@ int64_t NavigationRequest::GetNavigationId() const {
   return navigation_id_;
 }
 
+void NavigationRequest::SetBypassRedirectChecksForNextRedirect(bool bypass) {
+  bypass_redirect_checks_for_next_redirect_ = bypass;
+}
+
+bool NavigationRequest::ConsumeBypassRedirectChecksForNextRedirect() {
+  bool bypass = bypass_redirect_checks_for_next_redirect_;
+  bypass_redirect_checks_for_next_redirect_ = false;
+  return bypass;
+}
+
+void NavigationHandle::SetBypassRedirectChecksForNextRedirect(
+    FrameTreeNodeId frame_tree_node_id,
+    int64_t navigation_id) {
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (frame_tree_node && frame_tree_node->navigation_request() &&
+      frame_tree_node->navigation_request()->GetNavigationId() ==
+          navigation_id) {
+    frame_tree_node->navigation_request()
+        ->SetBypassRedirectChecksForNextRedirect(true);
+  }
+}
+
 ukm::SourceId NavigationRequest::GetNextPageUkmSourceId() {
   // If the navigation is restoring from back-forward cache, the UKM id
   // will get restored, too.

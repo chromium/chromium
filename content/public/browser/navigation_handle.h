@@ -938,6 +938,21 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // both NavigationRequest and MockNavigationHandle. It's not actually needed
   // outside of //content.
   virtual bool IsInitialWebUINavigation() = 0;
+
+  // Marks that for the navigation identified by `navigation_id` (if it exists
+  // and is in progress) in the given `frame_tree_node_id`, redirect checks
+  // should be bypassed for the next redirect. Called by browser-process
+  // proxying loaders when the embedder authorizes a redirect.
+  static void SetBypassRedirectChecksForNextRedirect(
+      FrameTreeNodeId frame_tree_node_id,
+      int64_t navigation_id);
+
+  // Sets whether the next redirect should bypass redirect checks.
+  virtual void SetBypassRedirectChecksForNextRedirect(bool bypass) = 0;
+
+  // Returns true if the next redirect should bypass redirect checks, and resets
+  // the flag to false.
+  virtual bool ConsumeBypassRedirectChecksForNextRedirect() = 0;
 };
 
 }  // namespace content

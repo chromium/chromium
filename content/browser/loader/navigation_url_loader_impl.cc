@@ -66,6 +66,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/download_utils.h"
 #include "content/public/browser/frame_accept_header.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
@@ -1567,10 +1568,27 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
                         resource_request().is_outermost_main_frame);
   net::Error error = net::OK;
 
-  bool bypass_redirect_checks =
-      base::FeatureList::IsEnabled(features::kBypassRedirectChecksPerRequest)
-          ? head->bypass_redirect_checks
-          : bypass_redirect_checks_;
+  bool bypass_redirect_checks = false;
+  if (base::FeatureList::IsEnabled(features::kBypassRedirectChecksPerRequest)) {
+    // A proxying URLLoaderFactory may authorize a redirect to bypass safety
+    // checks. This authorization is set directly on the NavigationRequest
+    // in the browser process. NavigationURLLoaderImpl doesn't have a direct
+    // pointer to the NavigationRequest, so we look it up via the
+    // FrameTreeNode. We check the navigation ID to ensure we don't apply the
+    // bypass to a different navigation in the same frame.
+    if (FrameTreeNode* frame_tree_node =
+            FrameTreeNode::GloballyFindByID(frame_tree_node_id_)) {
+      if (NavigationRequest* nav_request =
+              frame_tree_node->navigation_request()) {
+        if (nav_request->GetNavigationId() == request_info_->navigation_id) {
+          bypass_redirect_checks =
+              nav_request->ConsumeBypassRedirectChecksForNextRedirect();
+        }
+      }
+    }
+  } else {
+    bypass_redirect_checks = bypass_redirect_checks_;
+  }
 
   if (url_.SchemeIsBlob()) {
     // Loading a blob URL never produces a redirect.

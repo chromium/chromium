@@ -293,7 +293,6 @@ class RedirectingBlob : public blink::mojom::Blob {
     head->headers = net::HttpResponseHeaders::TryToCreate(
         "HTTP/1.1 302 Found\r\nLocation: " + redirect_target_.spec() + "\r\n");
     head->encoded_data_length = 0;
-    head->bypass_redirect_checks = true;
     client_->OnReceiveRedirect(redirect_info, std::move(head));
   }
   void ReadSideData(ReadSideDataCallback) override { NOTREACHED(); }

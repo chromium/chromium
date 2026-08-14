@@ -30,6 +30,7 @@
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/buildflags.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
@@ -38,6 +39,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_navigation_url_loader_delegate.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
@@ -200,10 +202,12 @@ class NavigationURLLoaderImplTest : public testing::Test {
             nullptr /* blob_url_loader_factory */,
             base::UnguessableToken::Create() /* devtools_navigation_token */,
             base::UnguessableToken::Create() /* devtools_frame_token */,
-            nullptr /* client_security_state */,
-            false /* is_pdf */, ChildProcessId() /* initiator_process_id */,
+            nullptr /* client_security_state */, false /* is_pdf */,
+            ChildProcessId() /* initiator_process_id */,
             std::nullopt /* initiator_document_token */,
-            false /* allow_cookies_from_browser */, 0 /* navigation_id */,
+            false /* allow_cookies_from_browser */,
+            pending_navigation_->GetNavigationHandle()
+                ->GetNavigationId() /* navigation_id */,
             is_ad_tagged /* is_ad_tagged */,
             false /* force_no_https_upgrade */));
 
@@ -696,6 +700,78 @@ class TestResponseInterceptor final : public NavigationLoaderInterceptor {
   const GURL redirect_url_;
   int response_count_ = 0;
   bool should_redirect_ = true;
+};
+
+// A `NavigationLoaderInterceptor` that intercepts the request via
+// `MaybeCreateLoader()` and immediately issues a redirect to `redirect_url`
+// with `URLResponseHead::bypass_redirect_checks` set to the supplied value.
+class TestRedirectInterceptor final : public NavigationLoaderInterceptor {
+ public:
+  TestRedirectInterceptor(const GURL& redirect_url,
+                          bool bypass_redirect_checks,
+                          int64_t* navigation_id_ptr = nullptr,
+                          FrameTreeNodeId* frame_tree_node_id = nullptr)
+      : redirect_url_(redirect_url),
+        bypass_redirect_checks_(bypass_redirect_checks),
+        navigation_id_ptr_(navigation_id_ptr),
+        frame_tree_node_id_ptr_(frame_tree_node_id) {}
+  ~TestRedirectInterceptor() override = default;
+
+ private:
+  void MaybeCreateLoader(
+      const network::ResourceRequest& tentative_resource_request,
+      BrowserContext* browser_context,
+      LoaderCallback callback,
+      FallbackCallback fallback_callback) override {
+    auto factory = base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+        base::BindOnce(&TestRedirectInterceptor::HandleRequest,
+                       base::Unretained(this)));
+    std::move(callback).Run(NavigationLoaderInterceptor::Result(
+        std::move(factory), SubresourceLoaderParams()));
+  }
+
+  bool MaybeCreateLoaderForResponse(
+      const network::URLLoaderCompletionStatus& status,
+      const network::ResourceRequest& request,
+      network::mojom::URLResponseHeadPtr* response_head,
+      mojo::ScopedDataPipeConsumerHandle* response_body,
+      mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
+      blink::ThrottlingURLLoader* url_loader,
+      bool* skip_other_interceptors) override {
+    return false;
+  }
+
+  void HandleRequest(
+      const network::ResourceRequest& request,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+    loader_receiver_ = std::move(loader);
+    client_.Bind(std::move(client));
+
+    auto head = network::mojom::URLResponseHead::New();
+    if (bypass_redirect_checks_ && navigation_id_ptr_ &&
+        *navigation_id_ptr_ != 0 && frame_tree_node_id_ptr_) {
+      NavigationHandle::SetBypassRedirectChecksForNextRedirect(
+          *frame_tree_node_id_ptr_, *navigation_id_ptr_);
+    }
+    net::RedirectInfo redirect_info = net::RedirectInfo::ComputeRedirectInfo(
+        request.method, request.url, request.site_for_cookies,
+        request.update_first_party_url_on_redirect
+            ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
+            : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL,
+        request.referrer_policy, request.referrer.spec(),
+        request.request_initiator, net::HTTP_TEMPORARY_REDIRECT, redirect_url_,
+        /*referrer_policy_header=*/std::nullopt,
+        /*insecure_scheme_was_upgraded=*/false);
+    client_->OnReceiveRedirect(redirect_info, std::move(head));
+  }
+
+  const GURL redirect_url_;
+  const bool bypass_redirect_checks_;
+  const raw_ptr<int64_t> navigation_id_ptr_;
+  const raw_ptr<FrameTreeNodeId> frame_tree_node_id_ptr_;
+  mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
 };
 
 // This sets the timeout timer but doesn't expect the timer is fired
@@ -1368,6 +1444,68 @@ TEST_F(NavigationURLLoaderImplTest, RedirectModifiedHeaders) {
   EXPECT_THAT(
       loader->GetResourceRequestForTesting().headers.GetHeader("Header3"),
       Optional(std::string("Value3")));
+}
+
+// `URLResponseHead::bypass_redirect_checks` is delivered over the
+// `URLLoaderClient` pipe and must not by itself allow a redirect to a target
+// that fails `IsSafeRedirectTarget()`. The per-request bit is only honored when
+// the loader factory in use was created with `bypass_redirect_checks` set
+// (i.e., a browser-process proxy is responsible for the redirect).
+TEST_F(NavigationURLLoaderImplTest,
+       PerRequestBypassRedirectChecksRequiresFactoryFlag) {
+  base::test::ScopedFeatureList feature_list{
+      features::kBypassRedirectChecksPerRequest};
+  ASSERT_TRUE(http_test_server_.Start());
+
+  for (bool bypass : {true, false}) {
+    SCOPED_TRACE(testing::Message() << "bypass_redirect_checks=" << bypass);
+    TestNavigationURLLoaderDelegate delegate;
+    std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+    interceptors.push_back(std::make_unique<TestRedirectInterceptor>(
+        GURL("file:///"), /*bypass_redirect_checks=*/bypass));
+    auto loader =
+        CreateTestLoader(http_test_server_.GetURL("/echo"), std::string(),
+                         "GET", &delegate, blink::NavigationDownloadPolicy(),
+                         /*is_main_frame=*/true,
+                         /*upgrade_if_insecure=*/false,
+                         /*is_ad_tagged=*/false, std::move(interceptors));
+    loader->Start();
+    delegate.WaitForRequestFailed();
+    EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+    EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+    EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, delegate.net_error());
+  }
+}
+
+// When a browser-process proxy authorizes bypassing redirect checks via
+// authorizes bypassing redirect checks via
+// `NavigationHandle::SetBypassRedirectChecksForNextRedirect()`, the redirect is
+// allowed even if `IsSafeRedirectTarget()` would normally fail.
+TEST_F(NavigationURLLoaderImplTest,
+       PerRequestBypassRedirectChecksSucceedsWhenAuthorizedByProxy) {
+  base::test::ScopedFeatureList feature_list{
+      features::kBypassRedirectChecksPerRequest};
+  ASSERT_TRUE(http_test_server_.Start());
+
+  int64_t navigation_id = 0;
+  FrameTreeNodeId frame_tree_node_id;
+  TestNavigationURLLoaderDelegate delegate;
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::make_unique<TestRedirectInterceptor>(
+      GURL("file:///"), /*bypass_redirect_checks=*/true, &navigation_id,
+      &frame_tree_node_id));
+  auto loader =
+      CreateTestLoader(http_test_server_.GetURL("/echo"), std::string(), "GET",
+                       &delegate, blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  navigation_id = pending_navigation_->GetNavigationHandle()->GetNavigationId();
+  frame_tree_node_id =
+      pending_navigation_->GetNavigationHandle()->GetFrameTreeNodeId();
+  loader->Start();
+  delegate.WaitForRequestRedirected();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
 }
 
 // Tests that the Upgrade If Insecure flag is obeyed.

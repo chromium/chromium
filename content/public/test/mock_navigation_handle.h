@@ -280,6 +280,8 @@ class MockNavigationHandle : public NavigationHandle {
               ());
   MOCK_METHOD(bool, NeedsUrlLoader, ());
   MOCK_METHOD(bool, IsInitialWebUINavigation, ());
+  MOCK_METHOD(void, SetBypassRedirectChecksForNextRedirect, (bool));
+  MOCK_METHOD(bool, ConsumeBypassRedirectChecksForNextRedirect, ());
 
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(const base::android::JavaRef<jobject>&,
