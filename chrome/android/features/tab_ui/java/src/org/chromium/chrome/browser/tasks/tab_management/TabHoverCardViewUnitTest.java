@@ -566,4 +566,35 @@ public class TabHoverCardViewUnitTest {
         mTabHoverCardView.hide();
         verify(mHoveredTab).removeObserver(observer);
     }
+
+    @Test
+    public void getHoverCardWidthPx() {
+        // Window is large enough: returns default width.
+        mContext.getResources().getDisplayMetrics().widthPixels = mHoverCardWidth * 2;
+        assertEquals(
+                "Hover card width should be default dimen when window is large.",
+                mHoverCardWidth,
+                TabHoverCardView.getHoverCardWidthPx(mContext));
+
+        // Window is narrow: returns 90% of window width.
+        int narrowWindowWidth = mHoverCardWidth - 10;
+        mContext.getResources().getDisplayMetrics().widthPixels = narrowWindowWidth;
+        int expectedNarrowWidth = Math.round(0.9f * narrowWindowWidth);
+        assertEquals(
+                "Hover card width should be bounded by window width percent when window is narrow.",
+                expectedNarrowWidth,
+                TabHoverCardView.getHoverCardWidthPx(mContext));
+    }
+
+    @Test
+    public void onMeasure_EnforcesBoundedWidth() {
+        mContext.getResources().getDisplayMetrics().widthPixels = mHoverCardWidth * 2;
+        mTabHoverCardView.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        assertEquals(
+                "Measured width should match getHoverCardWidth.",
+                mHoverCardWidth,
+                mTabHoverCardView.getMeasuredWidth());
+    }
 }

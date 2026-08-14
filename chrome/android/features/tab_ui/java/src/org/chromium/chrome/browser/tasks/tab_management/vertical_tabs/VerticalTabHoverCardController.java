@@ -8,16 +8,13 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -209,6 +206,7 @@ public class VerticalTabHoverCardController {
             TabHoverCardView hoverCardView,
             boolean isPinnedTab,
             boolean isRailCollapsed) {
+        // 1. Calculate relative coordinates of the hovered tab view relative to the root view.
         View root = containerView.getRootView();
         int[] tabViewLocation = new int[2];
         int[] rootLocation = new int[2];
@@ -217,21 +215,7 @@ public class VerticalTabHoverCardController {
         float relativeX = tabViewLocation[0] - rootLocation[0];
         float relativeY = tabViewLocation[1] - rootLocation[1];
 
-        Context context = hoverCardView.getContext();
-        float hoverCardWidth = context.getResources().getDimension(R.dimen.tab_hover_card_width);
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        float windowWidthPx = displayMetrics.widthPixels;
-        hoverCardWidth =
-                Math.min(
-                        hoverCardWidth,
-                        TabHoverCardView.HOVER_CARD_MAX_WIDTH_PERCENT * windowWidthPx);
-
-        ViewGroup.LayoutParams layoutParams = hoverCardView.getLayoutParams();
-        if (layoutParams != null && hoverCardWidth != layoutParams.width) {
-            layoutParams.width = Math.round(hoverCardWidth);
-            hoverCardView.setLayoutParams(layoutParams);
-        }
-
+        // 2. Determine initial hover card position based on pinned and rail state.
         float hoverCardX;
         float hoverCardY;
         if (isPinnedTab && !isRailCollapsed) {
@@ -242,12 +226,13 @@ public class VerticalTabHoverCardController {
             hoverCardY = relativeY;
         }
 
+        // 3. Measure the hover card to obtain its height for dynamic content.
         hoverCardView.measure(
-                View.MeasureSpec.makeMeasureSpec(
-                        Math.round(hoverCardWidth), View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         float hoverCardHeight = hoverCardView.getMeasuredHeight();
 
+        // 4. Adjust the vertical position if the hover card extends beyond root view bounds.
         float parentHeight = root.getHeight();
         if (hoverCardY + hoverCardHeight > parentHeight) {
             hoverCardY = parentHeight - hoverCardHeight;

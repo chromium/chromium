@@ -14,7 +14,6 @@ import android.view.HapticFeedbackConstants;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
@@ -499,23 +498,9 @@ public class StripLayoutUtils {
         float windowWidthPx = displayMetrics.widthPixels;
         float windowWidthDp = windowWidthPx / displayDensity;
 
-        // 2. Determine the hover card width, making adjustments relative to the window width if
-        // applicable.
-        float hoverCardWidthPx = context.getResources().getDimension(R.dimen.tab_hover_card_width);
-
-        // Hover card width should be a maximum of 90% of the window width.
-        hoverCardWidthPx =
-                Math.min(
-                        hoverCardWidthPx,
-                        TabHoverCardView.HOVER_CARD_MAX_WIDTH_PERCENT * windowWidthPx);
+        // 2. Determine the hover card width.
+        float hoverCardWidthPx = TabHoverCardView.getHoverCardWidthPx(context);
         float hoverCardWidthDp = hoverCardWidthPx / displayDensity;
-        // Update the card LayoutParams if an adjustment on the current width is required.
-        var layoutParams = hoverCardView.getLayoutParams();
-        if (layoutParams != null && hoverCardWidthPx != layoutParams.width) {
-            hoverCardView.setLayoutParams(
-                    new CoordinatorLayout.LayoutParams(
-                            Math.round(hoverCardWidthPx), layoutParams.height));
-        }
 
         // 3. Determine the horizontal position of the hover card.
         float hoverCardXDp =

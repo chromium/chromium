@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
@@ -83,6 +84,19 @@ public class TabHoverCardView extends FrameLayout {
         return (int) (logarithmicFraction * scalingFactor) + MIN_HOVER_CARD_DELAY_MS;
     }
 
+    /**
+     * Get the width of the hover card in px, bounded by {@link #HOVER_CARD_MAX_WIDTH_PERCENT} of
+     * the window width.
+     *
+     * @param context The context used to load resources.
+     * @return The bounded hover card width in px.
+     */
+    public static @Px int getHoverCardWidthPx(Context context) {
+        float maxWidth = context.getResources().getDimension(R.dimen.tab_hover_card_width);
+        float windowWidthPx = context.getResources().getDisplayMetrics().widthPixels;
+        return Math.round(Math.min(maxWidth, HOVER_CARD_MAX_WIDTH_PERCENT * windowWidthPx));
+    }
+
     private ViewGroup mContentView;
     private TextView mTitleView;
     private TextView mUrlView;
@@ -112,6 +126,13 @@ public class TabHoverCardView extends FrameLayout {
         mMemoryUsageView = mContentView.findViewById(R.id.memory_usage);
         mThumbnailView = mContentView.findViewById(R.id.thumbnail);
         maybeUpdateBackgroundOnLowEndDevice();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int exactWidthSpec =
+                MeasureSpec.makeMeasureSpec(getHoverCardWidthPx(getContext()), MeasureSpec.EXACTLY);
+        super.onMeasure(exactWidthSpec, heightMeasureSpec);
     }
 
     /**
@@ -154,8 +175,7 @@ public class TabHoverCardView extends FrameLayout {
         setX(x);
         setY(y);
 
-        float width = getLayoutParams().width;
-        assert width > 0 : "Hover card width must be an explicit value.";
+        int width = getHoverCardWidthPx(getContext());
         updateThumbnail(hoveredTab, width);
 
         setVisibility(VISIBLE);

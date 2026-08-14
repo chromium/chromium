@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
@@ -23,7 +22,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -168,12 +166,6 @@ public class StripTabHoverCardPositionUnitTest {
         float[] position =
                 StripLayoutUtils.getHoverCardPosition(
                         mTabHoverCardView, true, 10f, TAB_WIDTH, STRIP_STACK_HEIGHT, 0f);
-        ArgumentCaptor<LayoutParams> captor = ArgumentCaptor.forClass(LayoutParams.class);
-        verify(mTabHoverCardView).setLayoutParams(captor.capture());
-        assertEquals(
-                "Card width is incorrect.",
-                Math.round(0.9f * (mHoverCardWidth - 1)),
-                captor.getValue().width);
         assertEquals("Card x position is incorrect.", 10f, position[0], 0f);
         assertEquals("Card y position is incorrect.", STRIP_STACK_HEIGHT, position[1], 0f);
     }
@@ -182,28 +174,17 @@ public class StripTabHoverCardPositionUnitTest {
     public void cardWidthAcrossWindowResizes() {
         // Set window width to be slightly smaller than the default card width.
         mContext.getResources().getDisplayMetrics().widthPixels = (int) (mHoverCardWidth - 1);
-        StripLayoutUtils.getHoverCardPosition(
-                mTabHoverCardView, false, 10f, TAB_WIDTH, STRIP_STACK_HEIGHT, 0f);
-
-        // Set window width to be big enough to accommodate the default card width.
-        mContext.getResources().getDisplayMetrics().widthPixels = (int) (mHoverCardWidth * 2);
-        // Last LayoutParams should reflect updated width.
-        when(mTabHoverCardView.getLayoutParams())
-                .thenReturn(new LayoutParams(Math.round(0.9f * (mHoverCardWidth - 1)), 200));
-        StripLayoutUtils.getHoverCardPosition(
-                mTabHoverCardView, false, 10f, TAB_WIDTH, STRIP_STACK_HEIGHT, 0f);
-
-        ArgumentCaptor<LayoutParams> captor = ArgumentCaptor.forClass(LayoutParams.class);
-        verify(mTabHoverCardView, times(2)).setLayoutParams(captor.capture());
-        var paramsList = captor.getAllValues();
         assertEquals(
                 "Card width within small window is incorrect.",
                 Math.round(0.9f * (mHoverCardWidth - 1)),
-                paramsList.get(0).width);
+                TabHoverCardView.getHoverCardWidthPx(mContext));
+
+        // Set window width to be big enough to accommodate the default card width.
+        mContext.getResources().getDisplayMetrics().widthPixels = (int) (mHoverCardWidth * 2);
         assertEquals(
                 "Card width within big window is incorrect.",
                 mHoverCardWidth,
-                paramsList.get(1).width);
+                TabHoverCardView.getHoverCardWidthPx(mContext));
     }
 
     @Test
