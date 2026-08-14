@@ -858,9 +858,6 @@ const char kCodeSignCloneCleanupProcess[] = "code-sign-clone-cleanup";
 // temporary directory that contains the clone. The full path will be
 // reconstructed by the cleanup process.
 const char kUniqueTempDirSuffix[] = "unique-temp-dir-suffix";
-
-// A process type that exits cleanly with code 0 without performing work.
-const char kNoOpForTestingProcess[] = "no-op-for-testing";
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
