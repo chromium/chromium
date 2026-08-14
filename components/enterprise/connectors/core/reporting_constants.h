@@ -222,46 +222,6 @@ std::string GetPayloadSizeUmaMetricName(EventCase event_case);
 
 std::string GetEventName(EventCase event_case);
 
-// Key names used with when building the dictionary to pass to the real-time
-// reporting API. Should be removed once the proto synced migration is complete.
-inline constexpr char kKeyTrigger[] = "trigger";
-inline constexpr char kKeyUrl[] = "url";
-inline constexpr char kKeyTabUrl[] = "tabUrl";
-inline constexpr char kKeySource[] = "source";
-inline constexpr char kKeyDestination[] = "destination";
-inline constexpr char kKeyDownloadDigestSha256[] = "downloadDigestSha256";
-inline constexpr char kKeyFileName[] = "fileName";
-inline constexpr char kKeyContentType[] = "contentType";
-inline constexpr char kKeyUnscannedReason[] = "unscannedReason";
-inline constexpr char kKeyContentSize[] = "contentSize";
-inline constexpr char kKeyIsFederated[] = "isFederated";
-inline constexpr char kKeyFederatedOrigin[] = "federatedOrigin";
-inline constexpr char kKeyLoginUserName[] = "loginUserName";
-inline constexpr char kKeyPasswordBreachIdentities[] = "identities";
-inline constexpr char kKeyPasswordBreachIdentitiesUrl[] = "url";
-inline constexpr char kKeyPasswordBreachIdentitiesUsername[] = "username";
-inline constexpr char kKeyClickedThrough[] = "clickedThrough";
-inline constexpr char kKeyContentTransferMethod[] = "contentTransferMethod";
-inline constexpr char kKeyThreatType[] = "threatType";
-inline constexpr char kKeyEventResult[] = "eventResult";
-inline constexpr char kKeyTriggeredRuleName[] = "ruleName";
-inline constexpr char kKeyTriggeredRuleId[] = "ruleId";
-inline constexpr char kKeyTriggeredRuleInfo[] = "triggeredRuleInfo";
-inline constexpr char kKeyUrlCategory[] = "urlCategory";
-inline constexpr char kKeyAction[] = "action";
-inline constexpr char kKeyHasWatermarking[] = "hasWatermarking";
-inline constexpr char kKeyReason[] = "reason";
-inline constexpr char kKeyScanId[] = "scanId";
-inline constexpr char kKeyNetErrorCode[] = "netErrorCode";
-inline constexpr char kKeyUserName[] = "userName";
-inline constexpr char kKeyIframeUrls[] = "iframeUrls";
-inline constexpr char kKeyIsPhishingUrl[] = "isPhishingUrl";
-inline constexpr char kKeyReferrers[] = "referrers";
-inline constexpr char kKeySourceWebAppSignedInAccount[] =
-    "sourceWebAppSignedInAccount";
-inline constexpr char kKeyWebAppSignedInAccount[] = "webAppSignedInAccount";
-inline constexpr char kKeyUserJustification[] = "userJustification";
-
 enum EnterpriseRealTimeUrlCheckMode : int {
   REAL_TIME_CHECK_DISABLED = 0,
   REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED = 1,
