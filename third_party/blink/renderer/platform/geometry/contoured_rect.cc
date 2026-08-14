@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -70,8 +71,8 @@ void ApplyOutsetAsTransform(FloatRoundedRect& rect,
 }  // namespace
 
 String ContouredRect::CornerCurvature::ToString() const {
-  return String::Format("tl:%.2f; tr:%.2f; bl:%.2f; br:%.2f", TopLeft(),
-                        TopRight(), BottomLeft(), BottomRight());
+  return Format("tl:{:.2f}; tr:{:.2f}; bl:{:.2f}; br:{:.2f}", TopLeft(),
+                TopRight(), BottomLeft(), BottomRight());
 }
 
 String ContouredRect::ToString() const {
@@ -166,10 +167,9 @@ Path ContouredRect::GetPath() const {
 }
 
 String ContouredRect::Corner::ToString() const {
-  return String::Format("Corner {%s|%s|%s|%s} k=%.2f",
-                        Start().ToString().c_str(), Outer().ToString().c_str(),
-                        End().ToString().c_str(), Center().ToString().c_str(),
-                        curvature_);
+  return Format("Corner {{{}|{}|{}|{}}} k={:.2f}", Start().ToString().c_str(),
+                Outer().ToString().c_str(), End().ToString().c_str(),
+                Center().ToString().c_str(), curvature_);
 }
 
 gfx::PointF ContouredRect::Corner::QuadraticControlPoint() const {

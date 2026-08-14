@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -919,7 +920,7 @@ void WebMediaPlayerMS::SetRate(double rate) {
 
 void WebMediaPlayerMS::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(String::Format("%s({volume=%.2f})", __func__, volume));
+  SendLogMessage(Format("{}({{volume={:.2f}}})", __func__, volume));
 
   volume_ = volume;
   if (!enabled_) {

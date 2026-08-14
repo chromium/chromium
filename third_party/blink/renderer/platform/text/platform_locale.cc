@@ -36,6 +36,7 @@
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -165,7 +166,7 @@ void DateTimeStringBuilder::VisitField(DateTimeFormat::FieldType field_type,
       } else {
         double second = date_.Second() + date_.Millisecond() / 1000.0;
         String zero_padded_second_string = ZeroPadString(
-            String::Format("%.03f", second), number_of_pattern_characters + 4);
+            Format("{:.3f}", second), number_of_pattern_characters + 4);
         builder_.Append(
             localizer_.ConvertToLocalizedNumber(zero_padded_second_string));
       }

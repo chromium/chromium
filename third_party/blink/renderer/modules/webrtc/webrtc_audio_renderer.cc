@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/webrtc/peer_connection_remote_audio_source.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 
@@ -484,8 +485,8 @@ void WebRtcAudioRenderer::Stop() {
         static_cast<int>(max_render_time_.InMicroseconds()),
         kRenderTimeHistogramMinMicroseconds,
         kRenderTimeHistogramMaxMicroseconds, 50);
-    SendLogMessage(String::Format("%s => (max_render_time=%.3f ms)", __func__,
-                                  max_render_time_.InMillisecondsF()));
+    SendLogMessage(Format("{} => (max_render_time={:.3f} ms)", __func__,
+                          max_render_time_.InMillisecondsF()));
     max_render_time_ = base::TimeDelta();
   }
 
@@ -498,7 +499,7 @@ void WebRtcAudioRenderer::Stop() {
 void WebRtcAudioRenderer::SetVolume(float volume) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(volume >= 0.0f && volume <= 1.0f);
-  SendLogMessage(String::Format("%s({volume=%.2f})", __func__, volume));
+  SendLogMessage(Format("{}({{volume={:.2f}}})", __func__, volume));
 
   playing_state_.set_volume(volume);
   OnPlayStateChanged(media_stream_descriptor_, &playing_state_);
@@ -706,8 +707,8 @@ void WebRtcAudioRenderer::UpdateSourceVolume(
   if (volume > 10.0f)
     volume = 10.0f;
 
-  SendLogMessage(String::Format("%s => (source volume changed to %.2f)",
-                                __func__, volume));
+  SendLogMessage(
+      Format("{} => (source volume changed to {:.2f})", __func__, volume));
   if (!signaling_thread_->BelongsToCurrentThread()) {
     // Libjingle hands out proxy objects in most cases, but the audio source
     // object is an exception (bug?).  So, to work around that, we need to make

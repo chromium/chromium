@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -89,13 +90,12 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
 
   SendLogMessage(
       __func__,
-      String::Format("({context.state=%s}, {context.sampleRate=%.0f}, "
-                     "{number_of_channels=%u}, {handler=0x%" PRIXPTR
-                     "}, [this=0x%" PRIXPTR "])",
-                     context.GetStateStringForLogMessage().c_str(),
-                     context.sampleRate(), number_of_channels,
-                     reinterpret_cast<uintptr_t>(&Handler()),
-                     reinterpret_cast<uintptr_t>(this)));
+      Format("({{context.state={}}}, {{context.sampleRate={:.0f}}}, "
+             "{{number_of_channels={}}}, {{handler=0x{:X}}}, [this=0x{:X}])",
+             context.GetStateStringForLogMessage().c_str(),
+             context.sampleRate(), number_of_channels,
+             reinterpret_cast<uintptr_t>(&Handler()),
+             reinterpret_cast<uintptr_t>(this)));
 }
 
 MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(

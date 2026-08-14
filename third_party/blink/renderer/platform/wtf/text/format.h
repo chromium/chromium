@@ -78,30 +78,30 @@ using FormatArgs = base::span<const FormatArg>;
 
 namespace internal {
 
-struct ParsedWidth {
-  uint32_t width = 0;
+struct ParsedInteger {
+  uint32_t value = 0;
   size_t next_index = 0;
 };
 
-// Common constexpr helper to parse width specifier.
-// Returns the parsed width and next index after digits, or std::nullopt if
-// width is out of bounds.
-// If no digits are present, returns width 0 and `start_index`.
+// Common constexpr helper to parse width or precision specifier.
+// Returns the parsed integer and next index after digits, or std::nullopt if
+// value is out of bounds.
+// If no digits are present, returns value 0 and `start_index`.
 template <typename StringType>
-constexpr std::optional<ParsedWidth> ParseWidth(
+constexpr std::optional<ParsedInteger> ParseInteger(
     const StringType& format,
     typename StringType::size_type start_index) {
   auto len = format.length();
   if (start_index >= len) {
-    return ParsedWidth{0, start_index};
+    return ParsedInteger{0, start_index};
   }
   // SAFETY: `start_index` is checked against `len`.
   auto first_ch = UNSAFE_BUFFERS(format[start_index]);
   if (!IsAsciiDigit(first_ch)) {
-    return ParsedWidth{0, start_index};
+    return ParsedInteger{0, start_index};
   }
 
-  base::CheckedNumeric<uint32_t> width = 0;
+  base::CheckedNumeric<uint32_t> value = 0;
   auto i = start_index;
   while (i < len) {
     // SAFETY: `i` is checked against `len` in the loop condition.
@@ -109,34 +109,49 @@ constexpr std::optional<ParsedWidth> ParseWidth(
     if (!IsAsciiDigit(ch)) {
       break;
     }
-    width = width * 10 + static_cast<uint32_t>(ch - '0');
-    if (!width.IsValid()) {
+    value = value * 10 + static_cast<uint32_t>(ch - '0');
+    if (!value.IsValid()) {
       return std::nullopt;
     }
     ++i;
   }
-  return ParsedWidth{width.ValueOrDefault(0), i};
+  return ParsedInteger{value.ValueOrDefault(0), i};
 }
 
 struct ParsedFormatSpec {
   uint32_t width = 0;
+  std::optional<uint32_t> precision;
   char type = '\0';
   size_t next_index = 0;
 };
 
-// Common constexpr helper to parse format specifier {:width[type]}.
+// Common constexpr helper to parse format specifier
+// {:[width][.precision][type]}.
 template <typename StringType>
 constexpr std::optional<ParsedFormatSpec> ParseFormatSpec(
     const StringType& format,
     typename StringType::size_type start_index) {
   using SizeType = typename StringType::size_type;
-  auto width_parsed = ParseWidth(format, start_index);
+  auto width_parsed = ParseInteger(format, start_index);
   if (!width_parsed.has_value()) {
     return std::nullopt;
   }
-  uint32_t width = width_parsed->width;
+  uint32_t width = width_parsed->value;
   SizeType i = static_cast<SizeType>(width_parsed->next_index);
   auto len = format.length();
+
+  std::optional<uint32_t> precision;
+  // SAFETY: `i` is checked against `len`.
+  if (i < len && UNSAFE_BUFFERS(format[i]) == '.') {
+    ++i;
+    auto precision_parsed = ParseInteger(format, i);
+    if (!precision_parsed.has_value() || precision_parsed->next_index == i) {
+      return std::nullopt;
+    }
+    precision = precision_parsed->value;
+    i = static_cast<SizeType>(precision_parsed->next_index);
+  }
+
   char type = '\0';
 
   if (i < len) {
@@ -159,7 +174,8 @@ constexpr std::optional<ParsedFormatSpec> ParseFormatSpec(
     return std::nullopt;
   }
 
-  return ParsedFormatSpec{.width = width, .type = type, .next_index = i};
+  return ParsedFormatSpec{
+      .width = width, .precision = precision, .type = type, .next_index = i};
 }
 
 }  // namespace internal
@@ -190,11 +206,12 @@ class FormatString {
             FormatStringError(
                 "Invalid format string: invalid format specifier");
           }
-          if (parsed->type != '\0') {
-            if (!CheckArgTypeAtIndex(brace_count, parsed->type)) {
+          if (parsed->precision.has_value() || parsed->type != '\0') {
+            if (!CheckArgTypeAtIndex(brace_count, parsed->type,
+                                     parsed->precision.has_value())) {
               FormatStringError(
                   "Invalid format string: argument type mismatch for type "
-                  "specifier");
+                  "specifier or precision");
             }
           }
           i = parsed->next_index;
@@ -222,7 +239,9 @@ class FormatString {
   }
 
  private:
-  static consteval bool CheckArgTypeAtIndex(size_t index, char type) {
+  static consteval bool CheckArgTypeAtIndex(size_t index,
+                                            char type,
+                                            bool has_precision) {
     size_t current = 0;
     bool valid = true;
     auto check = [&](auto dummy) {
@@ -239,6 +258,16 @@ class FormatString {
         } else if (type == 'e' || type == 'E' || type == 'f' || type == 'F' ||
                    type == 'g' || type == 'G') {
           valid = std::is_floating_point_v<RawT>;
+        }
+
+        if (has_precision) {
+          if (!std::is_floating_point_v<RawT>) {
+            valid = false;
+          }
+          if (type != '\0' && type != 'e' && type != 'E' && type != 'f' &&
+              type != 'F' && type != 'g' && type != 'G') {
+            valid = false;
+          }
         }
       }
       current++;
@@ -289,9 +318,11 @@ WTF_EXPORT StringBuilder& VFormatTo(StringBuilder& builder,
 //   convertible types.
 // - Placeholders: Unindexed `{}` or `{:}` and width-specified `{:width}` or
 //   zero-padded `{:0width}` (where width is a 32-bit unsigned integer) with
-//   optional type specifier `d`, `x`, `X`, `s`, `p`, `P`, `e`, `E`, `f`, `F`,
-//   `g`, `G` (e.g. `{:d}`, `{:08x}`, `{:p}`, `{:f}`, `{:E}`) are supported.
-//   Positional (e.g. `{0}`) format specifiers are currently not supported.
+//   an optional precision specifier `:.precision` (for floating-point types
+//   only), and an optional type specifier `d`, `x`, `X`, `s`, `p`, `P`, `e`,
+//   `E`, `f`, `F`, `g`, `G` (e.g. `{:d}`, `{:08x}`, `{:p}`, `{:.2f}`, `{:E}`)
+//   are supported. Positional (e.g. `{0}`) format specifiers are currently not
+//   supported.
 // - Escaping: `{{` outputs `{`, and `}}` outputs `}`.
 //
 // Supported Argument Types:
@@ -312,6 +343,10 @@ WTF_EXPORT StringBuilder& VFormatTo(StringBuilder& builder,
 //   String sum = blink::Format("{} + {} = {}", 1, 2, 3);
 //   // ==> "1 + 2 = 3"
 //
+//   // Precision for floating-point values:
+//   String pi = blink::Format("{:.2f}", 3.14159);
+//   // ==> "3.14"
+//
 //   // Escaping braces:
 //   String escaped = blink::Format("{{ {} }}", 42);
 //   // ==> "{ 42 }"
@@ -319,6 +354,7 @@ WTF_EXPORT StringBuilder& VFormatTo(StringBuilder& builder,
 // Compile-time Validation:
 // If the number of `{}` placeholders does not match the number of arguments,
 // or if braces are unclosed or unmatched, a compile-time error will be raised.
+// Specifying precision for non-floating-point types will also raise an error.
 template <typename... Args>
 inline String Format(FormatString<std::type_identity_t<Args>...> format,
                      Args&&... args) {

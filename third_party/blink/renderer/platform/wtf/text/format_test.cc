@@ -199,8 +199,8 @@ TEST(FormatTest, TypeSpecifierFloat) {
 
   EXPECT_EQ("3.141592653589793", Format("{:}", 3.141592653589793));
   EXPECT_EQ("3.141590", Format("{:f}", 3.14159));
-  EXPECT_EQ("3.14159e+0", Format("{:e}", 3.14159));
-  EXPECT_EQ("3.14159E+0", Format("{:E}", 3.14159));
+  EXPECT_EQ("3.14159e+00", Format("{:e}", 3.14159));
+  EXPECT_EQ("3.14159E+00", Format("{:E}", 3.14159));
 
   // Width and padding
   EXPECT_EQ("  3.141590", Format("{:10f}", 3.14159));
@@ -219,6 +219,20 @@ TEST(FormatTest, TypeSpecifierFloat) {
   EXPECT_EQ("NAN", Format("{:F}", kNaN));
   EXPECT_EQ("INF", Format("{:E}", kInfinity));
   EXPECT_EQ("NAN", Format("{:G}", kNaN));
+
+  // Precision
+  EXPECT_EQ("3.14", Format("{:.2f}", 3.14159));
+  EXPECT_EQ("3.1", Format("{:.2}", 3.14159));
+  EXPECT_EQ("3.142e+00", Format("{:.3e}", 3.14159));
+  EXPECT_EQ("3.14", Format("{:.3g}", 3.14159));
+  EXPECT_EQ("  3.14", Format("{:6.2f}", 3.14159));
+  EXPECT_EQ("003.14", Format("{:06.2f}", 3.14159));
+  EXPECT_EQ("3e+00", Format("{:.0e}", 3.14159));
+  EXPECT_EQ("3", Format("{:.0f}", 3.14159));
+  EXPECT_EQ("3", Format("{:.0g}", 3.14159));
+  EXPECT_EQ("3", Format("{:.1}", 3.14159));
+  EXPECT_EQ("0.567", Format("{:.6g}", 0.567));
+  EXPECT_EQ("150001", Format("{:.6g}", 150000.5));
 }
 
 TEST(FormatTest, TypeSpecifierDeathTest) {
@@ -264,6 +278,16 @@ TEST(FormatTest, TypeSpecifierDeathTest) {
 
   // Unsupported type specifier
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:z}", FormatArgs(int_args)), "");
+
+  // Precision specified for non-floating-point types
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2f}", FormatArgs(int_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2}", FormatArgs(int_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2s}", FormatArgs(str_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2}", FormatArgs(str_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2p}", FormatArgs(ptr_args)), "");
+
+  // Invalid precision specifier
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.}", FormatArgs(double_args)), "");
 }
 
 }  // namespace blink

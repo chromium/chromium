@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/transform_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -1200,14 +1201,13 @@ const LayoutResult* FragmentBuilder::Abort(LayoutResult::EStatus status) {
 
 String FragmentBuilder::ToString() const {
   StringBuilder builder;
-  builder.AppendFormat("FragmentBuilder %.2fx%.2f, Children %u\n",
-                       InlineSize().ToFloat(), BlockSize().ToFloat(),
-                       children_.size());
+  FormatTo(builder, "FragmentBuilder {:.2f}x{:.2f}, Children {}\n",
+           InlineSize().ToFloat(), BlockSize().ToFloat(), children_.size());
   for (auto& child : children_) {
     builder.Append(child.fragment->DumpFragmentTree(
         PhysicalFragment::DumpAll & ~PhysicalFragment::DumpHeaderText));
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 #endif

@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -142,15 +143,15 @@ String GetAudioContextLogString(const WebAudioLatencyHint& latency_hint,
   StringBuilder builder;
   builder.Append("({latency_hint=");
   builder.Append(LatencyCategoryToString(latency_hint.Category()));
-  builder.Append("}");
+  builder.Append('}');
   if (latency_hint.Category() == WebAudioLatencyHint::kCategoryExact) {
-    builder.AppendFormat(", {seconds=%.3f}", latency_hint.Seconds());
+    FormatTo(builder, ", {{seconds={:.3f}}}", latency_hint.Seconds());
   }
   if (sample_rate.has_value()) {
-    builder.AppendFormat(", {sample_rate=%.0f}", sample_rate.value());
+    FormatTo(builder, ", {{sample_rate={:.0f}}}", sample_rate.value());
   }
-  builder.Append(String(")"));
-  return builder.ToString();
+  builder.Append(')');
+  return builder.ReleaseString();
 }
 
 bool IsAudible(const AudioBus* rendered_data) {
@@ -676,8 +677,8 @@ AudioContext::AudioContext(LocalDOMWindow& window,
                                        .GetFramesPerBuffer()),
                static_cast<size_t>(renderQuantumSize()));
   base_latency_ = base_latency_frames / static_cast<double>(sampleRate());
-  SendLogMessage(__func__, String::Format("=> (base latency=%.3f seconds))",
-                                          base_latency_));
+  SendLogMessage(__func__,
+                 Format("=> (base latency={:.3f} seconds))", base_latency_));
 
   // Perform the initial permission check for the output latency precision.
   auto microphone_permission_name = mojom::blink::PermissionName::AUDIO_CAPTURE;

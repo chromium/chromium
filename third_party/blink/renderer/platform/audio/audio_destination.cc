@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -534,8 +535,8 @@ AudioDestination::AudioDestination(
   SendLogMessage(__func__,
                  StrCat({"=> (device callback buffer size=",
                          String::Number(callback_buffer_size_), " frames)"}));
-  SendLogMessage(__func__, String::Format("=> (device sample rate=%.0f Hz)",
-                                          web_audio_device_->SampleRate()));
+  SendLogMessage(__func__, Format("=> (device sample rate={:.0f} Hz)",
+                                  web_audio_device_->SampleRate()));
   if (is_output_buffer_bypassed_) {
     SendLogMessage(__func__, "Output buffer bypass: yes");
   } else {
@@ -568,10 +569,10 @@ AudioDestination::AudioDestination(
           ::features::kWebAudioRemoveAudioDestinationResampler) &&
       context_sample_rate_ != web_audio_device_->SampleRate()) {
     scale_factor = context_sample_rate_ / web_audio_device_->SampleRate();
-    SendLogMessage(__func__,
-                   String::Format("=> (resampling from %0.f Hz to %0.f Hz)",
-                                  context_sample_rate.value(),
-                                  web_audio_device_->SampleRate()));
+    SendLogMessage(
+        __func__,
+        Format("=> (resampling from {:.0f} Hz to {:.0f} Hz)",
+               context_sample_rate.value(), web_audio_device_->SampleRate()));
 
     // SincResampler requires at least `kMinRequestSize` input samples to
     // perform interpolation. For smaller render quanta this creates an
@@ -599,8 +600,8 @@ AudioDestination::AudioDestination(
   } else {
     SendLogMessage(
         __func__,
-        String::Format("=> (no resampling: context sample rate set to %0.f Hz)",
-                       context_sample_rate_));
+        Format("=> (no resampling: context sample rate set to {:.0f} Hz)",
+               context_sample_rate_));
   }
 
   // Record the sizes if we successfully created an output device.

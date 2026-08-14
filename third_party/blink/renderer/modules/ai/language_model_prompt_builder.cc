@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -870,10 +871,10 @@ void LanguageModelPromptBuilder::OnBitmapLoaded(PendingEntry* entry,
         execution_context->AddConsoleMessage(
             mojom::blink::ConsoleMessageSource::kJavaScript,
             mojom::blink::ConsoleMessageLevel::kWarning,
-            String::Format("Image input will be stretched from %.2f:1 to a "
-                           "square aspect ratio. "
-                           "This may adversely affect AI model comprehension.",
-                           aspect_ratio));
+            Format("Image input will be stretched from {:.2f}:1 to a square "
+                   "aspect ratio. This may adversely affect AI model "
+                   "comprehension.",
+                   aspect_ratio));
       }
     }
   }

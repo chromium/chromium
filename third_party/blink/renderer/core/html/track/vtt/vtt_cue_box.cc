@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -131,9 +132,9 @@ void VTTCueBox::ApplyCSSProperties(
     // of the way across the height of the video's rendering area, while
     // maintaining the relative positions of the boxes in boxes to each
     // other.
-    SetInlineStyleProperty(CSSPropertyID::kTransform,
-                           String::Format("translate(-%.2f%%, -%.2f%%)",
-                                          position.x(), position.y()));
+    SetInlineStyleProperty(
+        CSSPropertyID::kTransform,
+        Format("translate(-{:.2f}%, -{:.2f}%)", position.x(), position.y()));
     // Longhands of `white-space: pre`.
     SetInlineStyleProperty(CSSPropertyID::kWhiteSpaceCollapse,
                            CSSValueID::kPreserve);

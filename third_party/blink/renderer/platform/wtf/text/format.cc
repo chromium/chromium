@@ -92,22 +92,38 @@ void FormatDouble(double val,
                   char type,
                   bool zero_pad,
                   uint32_t width,
+                  std::optional<uint32_t> precision,
                   StringBuilder& builder) {
   // std::to_chars() is not yet approved for use in Chromium, so
   // we use double_conversion::DoubleToStringConverter instead.
-  double_conversion::DoubleToStringConverter converter(
-      double_conversion::DoubleToStringConverter::EMIT_POSITIVE_EXPONENT_SIGN,
-      "inf", "nan", 'e', -6, 12, 0, 0);
+  using D2SConverter = double_conversion::DoubleToStringConverter;
+  int flags = D2SConverter::EMIT_POSITIVE_EXPONENT_SIGN;
+  if (type == 'g' || type == 'G' || type == '\0') {
+    flags |= D2SConverter::NO_TRAILING_ZERO;
+  }
+  // The last argument is min_exponent_width. printf uses 2.
+  D2SConverter converter(flags, "inf", "nan", 'e', -4, 12, 6, 0, 2);
   char buffer[DoubleToStringConverter::kBufferSize];
   double_conversion::StringBuilder dc_builder(buffer, sizeof(buffer));
 
   bool success = false;
   if (type == 'e' || type == 'E') {
-    success = converter.ToExponential(val, -1, &dc_builder);
+    success = converter.ToExponential(val, precision.value_or(-1), &dc_builder);
   } else if (type == 'f' || type == 'F') {
-    success = converter.ToFixed(val, 6, &dc_builder);
+    success = converter.ToFixed(val, precision.value_or(6), &dc_builder);
   } else {
-    success = converter.ToShortest(val, &dc_builder);
+    if (precision.has_value()) {
+      if (precision.value() == 0) {
+        // For 'g' and 'G' formatting (which use ToPrecision), the precision
+        // represents the number of significant digits. A precision of 0 is
+        // treated as 1 by printf-like functions. Also, double_conversion's
+        // ToPrecision requires at least 1 digit (kMinPrecisionDigits).
+        precision = 1;
+      }
+      success = converter.ToPrecision(val, precision.value(), &dc_builder);
+    } else {
+      success = converter.ToShortest(val, &dc_builder);
+    }
   }
   CHECK(success) << "double_conversion failed";
 
@@ -157,6 +173,7 @@ StringBuilder& VFormatTo(StringBuilder& builder,
         ++i;
         uint32_t width = 0;
         bool zero_pad = false;
+        std::optional<uint32_t> precision;
         char type = '\0';
         // SAFETY: `i` is checked against `len`.
         if (UNSAFE_BUFFERS(format[i]) == ':') {
@@ -169,6 +186,7 @@ StringBuilder& VFormatTo(StringBuilder& builder,
           auto parsed = internal::ParseFormatSpec(format, i);
           CHECK(parsed.has_value()) << "Invalid format specifier";
           width = parsed->width;
+          precision = parsed->precision;
           type = parsed->type;
           i = static_cast<wtf_size_t>(parsed->next_index);
           CHECK_LT(i, len);
@@ -179,9 +197,11 @@ StringBuilder& VFormatTo(StringBuilder& builder,
         if (arg_index < args.size()) {
           const FormatArg& arg = args[arg_index++];
           std::visit(
-              [&builder, width, zero_pad, type](const auto& val) {
+              [&builder, width, zero_pad, precision, type](const auto& val) {
                 using T = std::decay_t<decltype(val)>;
                 if constexpr (std::is_same_v<T, int64_t>) {
+                  CHECK(!precision.has_value())
+                      << "Precision specified for non-floating-point type";
                   CHECK(type == '\0' || type == 'd' || type == 'x' ||
                         type == 'X')
                       << "Invalid type specifier for integer argument";
@@ -209,6 +229,8 @@ StringBuilder& VFormatTo(StringBuilder& builder,
                     }
                   }
                 } else if constexpr (std::is_same_v<T, uint64_t>) {
+                  CHECK(!precision.has_value())
+                      << "Precision specified for non-floating-point type";
                   CHECK(type == '\0' || type == 'd' || type == 'x' ||
                         type == 'X')
                       << "Invalid type specifier for unsigned integer argument";
@@ -225,13 +247,17 @@ StringBuilder& VFormatTo(StringBuilder& builder,
                         type == 'f' || type == 'F' || type == 'g' ||
                         type == 'G')
                       << "Invalid type specifier for double argument";
-                  FormatDouble(val, type, zero_pad, width, builder);
+                  FormatDouble(val, type, zero_pad, width, precision, builder);
                 } else if constexpr (std::is_same_v<T, StringView>) {
+                  CHECK(!precision.has_value())
+                      << "Precision specified for non-floating-point type";
                   CHECK(type == '\0' || type == 's')
                       << "Invalid type specifier for string argument";
                   builder.Append(val);
                   Pad(' ', width, val.length(), builder);
                 } else if constexpr (std::is_same_v<T, const void*>) {
+                  CHECK(!precision.has_value())
+                      << "Precision specified for non-floating-point type";
                   CHECK(type == '\0' || type == 'p' || type == 'P')
                       << "Invalid type specifier for pointer argument";
                   FormatPointer(val, type == 'P', zero_pad, width, builder);
