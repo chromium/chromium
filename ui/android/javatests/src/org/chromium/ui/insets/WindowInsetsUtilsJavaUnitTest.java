@@ -156,6 +156,33 @@ public class WindowInsetsUtilsJavaUnitTest {
 
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testGetBoundingRects_PostV_correctRects_multipleRectsConflict() {
+        var boundingRects =
+                List.of(
+                        new Rect(5, 0, 105, 59),
+                        new Rect(1838, 0, 1910, 59),
+                        new Rect(0, 0, 1920, 28));
+        var insets =
+                new WindowInsets.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.captionBar(),
+                                android.graphics.Insets.of(0, 59, 0, 0))
+                        .setBoundingRects(WindowInsetsCompat.Type.captionBar(), boundingRects)
+                        .setFrame(1920, 1080)
+                        .build();
+        assertEquals(
+                "All matching bounding rects should have been corrected to match the window frame.",
+                List.of(
+                        new Rect(0, 0, 105, 59),
+                        new Rect(1838, 0, 1920, 59),
+                        new Rect(0, 0, 1920, 28)),
+                WindowInsetsUtils.getBoundingRectsFromInsets(
+                        insets, WindowInsetsCompat.Type.captionBar()));
+    }
+
+    @Test
+    @SmallTest
     public void testGetWidestUnoccludedRect_NoBlockedRects() {
         Rect region = new Rect(0, 0, 600, 800);
         List<Rect> blocks = List.of();
