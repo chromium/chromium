@@ -8,8 +8,11 @@
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_debug_features.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
@@ -985,4 +988,35 @@ TEST_F(FormInputAccessoryMediatorTest, OpenAddressEditTriggered) {
   [mediator_ openEditForSuggestion:suggestion];
 
   EXPECT_OCMOCK_VERIFY(handler_);
+}
+
+// Tests that `updateWithNewWebState:` updates `atMemoryButtonHidden` on the
+// consumer.
+TEST_F(FormInputAccessoryMediatorTest,
+       UpdateWithNewWebStateSetsAtMemoryButtonHidden) {
+  OCMExpect([consumer_ setAtMemoryButtonHidden:YES]);
+
+  [mediator_ updateWithNewWebState:nullptr];
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that `updateWithNewWebState:` does not hide `atMemoryButtonHidden` when
+// AutofillAtMemory and SkipEligibility are enabled.
+TEST_F(FormInputAccessoryMediatorTest,
+       UpdateWithNewWebStateAtMemoryButtonNotHidden) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {autofill::features::kAutofillAtMemory,
+       autofill::features::debug::kAtMemorySkipEnablementChecks},
+      {});
+
+  autofill::TestAutofillClientIOS autofill_client(
+      web_state_list_.GetActiveWebState(), nil);
+
+  OCMExpect([consumer_ setAtMemoryButtonHidden:NO]);
+
+  [mediator_ updateWithNewWebState:web_state_list_.GetActiveWebState()];
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }

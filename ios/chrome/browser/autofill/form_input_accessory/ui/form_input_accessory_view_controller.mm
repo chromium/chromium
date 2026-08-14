@@ -154,6 +154,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
     _formInputAccessoryViewControllerDelegate =
         formInputAccessoryViewControllerDelegate;
     _keyboardWasClosed = YES;
+    _atMemoryButtonHidden = YES;
 
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
     [self registerForTraitChanges:traits

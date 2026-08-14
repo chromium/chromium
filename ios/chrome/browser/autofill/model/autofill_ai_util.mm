@@ -6,8 +6,10 @@
 
 #import "base/strings/string_util.h"
 #import "components/account_settings/account_setting_service.h"
+#import "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/core/browser/integrators/personal_context/personal_context_autofill_util.h"
 #import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -136,6 +138,13 @@ bool IsAutofillShoppingEnabled() {
 
 bool IsAutofillAtMemoryEnabled() {
   return base::FeatureList::IsEnabled(features::kAutofillAtMemory);
+}
+
+bool IsAutofillAtMemorySearchUIEnabled(const AutofillClient* client) {
+  if (!client) {
+    return false;
+  }
+  return MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, *client);
 }
 
 bool IsEnhancedAutofillEnabled(ProfileIOS* profile) {

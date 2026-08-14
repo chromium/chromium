@@ -47,8 +47,10 @@
 #import "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/personal_context/core/personal_context_eligibility_service.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "components/security_state/ios/security_state_utils.h"
+#import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
@@ -86,6 +88,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_first_run_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
@@ -93,6 +96,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -250,14 +254,14 @@ SingleFieldFillRouter& ChromeAutofillClientIOS::GetSingleFieldFillRouter() {
   return single_field_fill_router_;
 }
 
+personal_context::PersonalContextFirstRunService*
+ChromeAutofillClientIOS::GetPersonalContextFirstRunService() {
+  return IOSPersonalContextFirstRunServiceFactory::GetForProfile(profile_);
+}
+
 AutocompleteHistoryManager*
 ChromeAutofillClientIOS::GetAutocompleteHistoryManager() {
   return autocomplete_history_manager_;
-}
-
-autofill::AtMemoryQueryService*
-ChromeAutofillClientIOS::GetAtMemoryQueryService() {
-  return IOSAtMemoryQueryServiceFactory::GetForProfile(profile_);
 }
 
 void ChromeAutofillClientIOS::GetAiPageContent(
@@ -315,6 +319,25 @@ AutofillAiModelExecutor* ChromeAutofillClientIOS::GetAutofillAiModelExecutor() {
 optimization_guide::RemoteModelExecutor*
 ChromeAutofillClientIOS::GetRemoteModelExecutor() {
   return OptimizationGuideServiceFactory::GetForProfile(profile_);
+}
+
+autofill::AtMemoryQueryService*
+ChromeAutofillClientIOS::GetAtMemoryQueryService() {
+  return IOSAtMemoryQueryServiceFactory::GetForProfile(profile_);
+}
+
+personal_context::PersonalContextEligibilityState
+ChromeAutofillClientIOS::GetPersonalContextEligibilityState() const {
+  personal_context::PersonalContextEligibilityService* service =
+      GetPersonalContextEligibilityService();
+  return service ? service->GetEligibilityState()
+                 : personal_context::PersonalContextEligibilityState::
+                       kDisabledNotEligible;
+}
+
+personal_context::PersonalContextEligibilityService*
+ChromeAutofillClientIOS::GetPersonalContextEligibilityService() const {
+  return IOSPersonalContextEligibilityServiceFactory::GetForProfile(profile_);
 }
 
 PrefService* ChromeAutofillClientIOS::GetPrefs() {
@@ -411,6 +434,11 @@ translate::TranslateDriver* ChromeAutofillClientIOS::GetTranslateDriver() {
 GeoIpCountryCode ChromeAutofillClientIOS::GetVariationConfigCountryCode()
     const {
   return GeoIpCountryCode(GetCountryCodeFromVariations());
+}
+
+const subscription_eligibility::SubscriptionEligibilityService*
+ChromeAutofillClientIOS::GetSubscriptionEligibilityService() const {
+  return SubscriptionEligibilityServiceFactory::GetForProfile(profile_);
 }
 
 void ChromeAutofillClientIOS::ShowAutofillSettings(
@@ -830,11 +858,6 @@ void ChromeAutofillClientIOS::ShowAutofillAiSaveUpdateUI() {
 
   SaveEntityParams params = delegate->ExtractParams();
   [commands_handler_ showSaveEntityDialog:std::move(params)];
-}
-
-personal_context::PersonalContextFirstRunService*
-ChromeAutofillClientIOS::GetPersonalContextFirstRunService() {
-  return IOSPersonalContextFirstRunServiceFactory::GetForProfile(profile_);
 }
 
 }  // namespace autofill

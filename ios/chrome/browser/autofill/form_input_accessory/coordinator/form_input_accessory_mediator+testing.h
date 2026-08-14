@@ -20,6 +20,9 @@ class WebState;
 - (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
                           webState:(web::WebState*)webState;
 
+// Updates the mediator with a new active WebState.
+- (void)updateWithNewWebState:(web::WebState*)webState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_FORM_INPUT_ACCESSORY_COORDINATOR_FORM_INPUT_ACCESSORY_MEDIATOR_TESTING_H_

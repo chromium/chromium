@@ -17,6 +17,7 @@
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
@@ -287,7 +288,16 @@ bool IsStateless() {
         _webStateObserverBridge =
             std::make_unique<web::WebStateObserverBridge>(self);
         webState->AddObserver(_webStateObserverBridge.get());
+
+        autofill::AutofillClientIOS* client =
+            autofill::AutofillClientIOS::FromWebState(webState);
+        consumer.atMemoryButtonHidden =
+            !autofill::IsAutofillAtMemorySearchUIEnabled(client);
+      } else {
+        consumer.atMemoryButtonHidden = YES;
       }
+    } else {
+      consumer.atMemoryButtonHidden = YES;
     }
     _formNavigationHandler = [[FormInputAccessoryViewHandler alloc] init];
     _formNavigationHandler.webState = _webState;
@@ -332,8 +342,6 @@ bool IsStateless() {
       consumer.creditCardButtonHidden = YES;
       consumer.addressButtonHidden = YES;
     }
-    // TODO(crbug.com/522326512): Verify this visibility condition.
-    consumer.atMemoryButtonHidden = !autofill::IsAutofillAtMemoryEnabled();
     _reauthenticationModule = reauthenticationModule;
     _securityAlertHandler = securityAlertHandler;
 
@@ -757,9 +765,15 @@ bool IsStateless() {
       self.provider = tabHelper->GetAccessoryViewProvider();
     }
     _formNavigationHandler.webState = webState;
+
+    autofill::AutofillClientIOS* client =
+        autofill::AutofillClientIOS::FromWebState(webState);
+    self.consumer.atMemoryButtonHidden =
+        !autofill::IsAutofillAtMemorySearchUIEnabled(client);
   } else {
     self.webState = nullptr;
     self.provider = nil;
+    self.consumer.atMemoryButtonHidden = YES;
   }
 }
 
