@@ -273,7 +273,8 @@ void ContextualTasksExtensionHandler::SetActiveToolMode(omnibox::ToolMode tool,
 void ContextualTasksExtensionHandler::RecordToolSelectionAction(
     omnibox::ToolMode tool) {}
 void ContextualTasksExtensionHandler::SetActiveModelMode(
-    omnibox::ModelMode model) {
+    omnibox::ModelMode model,
+    bool is_set_by_aim) {
   active_model_ = model;
 }
 void ContextualTasksExtensionHandler::RecordModelSelectionAction(

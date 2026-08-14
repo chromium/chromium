@@ -750,9 +750,12 @@ suite('ContextualTasksComposeboxTest', () => {
         mockSearchboxPageHandler.getArgs('setActiveToolMode')[0];
     assertTrue(isSetByServer);
 
-    const modelMode =
+    const [modelMode] =
         await mockSearchboxPageHandler.whenCalled('setActiveModelMode');
     assertEquals(2, modelMode);
+    const [, isModelSetByAim] =
+        mockSearchboxPageHandler.getArgs('setActiveModelMode')[0];
+    assertTrue(isModelSetByAim);
     // Verify that it is in tool mode.
     assertTrue(contextualComposebox.inToolModeForTesting);
 

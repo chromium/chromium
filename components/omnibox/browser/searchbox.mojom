@@ -541,7 +541,8 @@ interface PageHandler {
                     bool is_set_by_server);
 
   // Called when a user enables a model.
-  SetActiveModelMode(composebox_query.mojom.ModelMode model);
+  SetActiveModelMode(composebox_query.mojom.ModelMode model,
+                     bool is_set_by_aim);
 
   // Activates a metrics funnel for the session.
   ActivateMetricsFunnel(string funnel_name);

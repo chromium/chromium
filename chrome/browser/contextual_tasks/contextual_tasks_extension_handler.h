@@ -111,7 +111,8 @@ class ContextualTasksExtensionHandler
                    bool is_voice_search) override;
   void SetActiveToolMode(omnibox::ToolMode tool,
                          bool is_set_by_server) override;
-  void SetActiveModelMode(omnibox::ModelMode model) override;
+  void SetActiveModelMode(omnibox::ModelMode model,
+                          bool is_set_by_aim) override;
 
   // These are stubs required to implement searchbox::mojom::PageHandler
   // (which is shared with Realbox) but are not used by the extension

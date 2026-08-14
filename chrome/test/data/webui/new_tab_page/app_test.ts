@@ -1410,7 +1410,7 @@ suite('NewTabPageAppTest', () => {
           assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
           assertEquals(
               ModelMode.kGeminiPro,
-              searchboxHandler.getArgs('setActiveModelMode')[0]);
+              searchboxHandler.getArgs('setActiveModelMode')[0][0]);
           assertEquals(1, searchboxHandler.getCallCount('addTabContext'));
           const [tabId, delayUpload] =
               searchboxHandler.getArgs('addTabContext')[0];
@@ -3316,7 +3316,7 @@ suite('NewTabPageAppTest', () => {
           assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
           assertEquals(
               ModelMode.kGeminiPro,
-              searchboxHandler.getArgs('setActiveModelMode')[0]);
+              searchboxHandler.getArgs('setActiveModelMode')[0][0]);
         });
 
     test(

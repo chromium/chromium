@@ -623,7 +623,9 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
           activeModel: modelMode as ModelMode,
         };
       }
-      this.searchboxHandler_.setActiveModelMode(modelMode as ModelMode);
+      this.searchboxHandler_.setActiveModelMode(
+          modelMode as ModelMode,
+          /*isSetByAim=*/ true);
     }
   }
 

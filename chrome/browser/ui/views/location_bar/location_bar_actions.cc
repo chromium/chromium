@@ -144,7 +144,8 @@ void SetOmniboxModelModeAndOpenAi(
   ContextualSearchboxHandler* const composebox_handler =
       omnibox_popup_ui ? omnibox_popup_ui->composebox_handler() : nullptr;
   if (composebox_handler) {
-    composebox_handler->SetActiveModelMode(model_mode);
+    composebox_handler->SetActiveModelMode(model_mode,
+                                           /*is_set_by_aim=*/false);
     composebox_handler->RecordModelSelectionAction(model_mode);
   }
   edit_model->OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);

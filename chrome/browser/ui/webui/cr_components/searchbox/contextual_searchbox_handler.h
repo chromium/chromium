@@ -278,7 +278,8 @@ class ContextualSearchboxHandler
   void SetActiveToolMode(omnibox::ToolMode tool,
                          bool is_set_by_server) override;
   void RecordToolSelectionAction(omnibox::ToolMode tool) override;
-  void SetActiveModelMode(omnibox::ModelMode model) override;
+  void SetActiveModelMode(omnibox::ModelMode model,
+                          bool is_set_by_aim) override;
   void RecordModelSelectionAction(omnibox::ModelMode model) override;
   void ActivateMetricsFunnel(const std::string& funnel_name) override;
 

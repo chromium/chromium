@@ -1355,7 +1355,8 @@ void ContextualSearchboxHandler::RecordModelSelectionAction(
   }
 }
 
-void ContextualSearchboxHandler::SetActiveModelMode(omnibox::ModelMode model) {
+void ContextualSearchboxHandler::SetActiveModelMode(omnibox::ModelMode model,
+                                                    bool is_set_by_aim) {
   if (!input_state_model_) {
     return;
   }

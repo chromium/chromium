@@ -238,7 +238,8 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
   handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
                               /*is_set_by_server=*/false);
   handler().RecordToolSelectionAction(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-  handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR,
+                               /*is_set_by_server=*/false);
   handler().RecordModelSelectionAction(
       omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   EXPECT_CALL(metrics_recorder(),
@@ -258,7 +259,8 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
   handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
                               /*is_set_by_server=*/false);
   handler().RecordToolSelectionAction(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-  handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO,
+                               /*is_set_by_server=*/false);
   handler().RecordModelSelectionAction(
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   EXPECT_CALL(metrics_recorder(),

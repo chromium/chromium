@@ -976,7 +976,8 @@ suite('ComposeboxMixinTest', () => {
         assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
         assertEquals(
             ModelMode.kGeminiRegular,
-            searchboxHandler.getArgs('setActiveModelMode')[0]);
+            searchboxHandler.getArgs('setActiveModelMode')[0][0]);
+        assertFalse(searchboxHandler.getArgs('setActiveModelMode')[0][1]);
       });
 
   test('navigates matches with ArrowDown and ArrowUp', async () => {
@@ -1454,7 +1455,8 @@ suite('ComposeboxMixinTest', () => {
     assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
     assertEquals(
         ModelMode.kGeminiPro,
-        searchboxHandler.getArgs('setActiveModelMode')[0]);
+        searchboxHandler.getArgs('setActiveModelMode')[0][0]);
+    assertFalse(searchboxHandler.getArgs('setActiveModelMode')[0][1]);
   });
 
   test('empty input computes canSubmitFilesAndInput as false', async () => {

@@ -1170,7 +1170,8 @@ export const ComposeboxEmbedderMixin =
           recordModelModeSelection(
               e.detail.model, this.composeboxSource, 'AimPopup');
           this.getSearchboxHandler().recordModelSelectionAction(e.detail.model);
-          this.getSearchboxHandler().setActiveModelMode(e.detail.model);
+          this.getSearchboxHandler().setActiveModelMode(
+              e.detail.model, /*isSetByAim=*/ false);
           this.updateInputPlaceholder();
         }
 
@@ -1428,7 +1429,8 @@ export const ComposeboxEmbedderMixin =
               this.inputState.allowedModels.length > 0) {
             model = this.inputState.allowedModels[0]!;
           }
-          this.getSearchboxHandler().setActiveModelMode(model);
+          this.getSearchboxHandler().setActiveModelMode(
+              model, /*isSetByAim=*/ false);
           this.updateInputPlaceholder();
 
           await this.updateComplete;
@@ -1856,12 +1858,12 @@ export const ComposeboxEmbedderMixin =
               (this.inputState.activeModel as ModelMode) !==
                   ModelMode.kUnspecified) {
             this.getSearchboxHandler().setActiveModelMode(
-                this.inputState.activeModel);
+                this.inputState.activeModel, /*isSetByAim=*/ false);
           } else if (
               this.inputState?.allowedModels &&
               this.inputState.allowedModels.length > 0) {
             this.getSearchboxHandler().setActiveModelMode(
-                this.inputState.allowedModels[0]!);
+                this.inputState.allowedModels[0]!, /*isSetByAim=*/ false);
           }
         }
 
@@ -1870,7 +1872,7 @@ export const ComposeboxEmbedderMixin =
             this.getSearchboxHandler().setActiveToolMode(
                 ToolMode.kUnspecified, /*isSetByServer=*/ false);
             this.getSearchboxHandler().setActiveModelMode(
-                ModelMode.kUnspecified);
+                ModelMode.kUnspecified, /*isSetByServer=*/ false);
           }
         }
 

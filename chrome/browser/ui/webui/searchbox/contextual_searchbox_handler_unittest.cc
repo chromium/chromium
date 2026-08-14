@@ -1694,7 +1694,8 @@ TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
           GetMetricsRecorderPtr(),
           &MockContextualSearchMetricsRecorder::RecordModelModeBase));
 
-  handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR,
+                               /*is_set_by_aim=*/false);
   handler().RecordModelSelectionAction(
       omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   mock_searchbox_page_.FlushForTesting();
