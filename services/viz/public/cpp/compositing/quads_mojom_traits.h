@@ -27,6 +27,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "mojo/public/cpp/bindings/deserialization_error.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "services/viz/public/cpp/compositing/filter_operation_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/filter_operations_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
@@ -561,8 +562,9 @@ struct StructTraits<viz::mojom::DrawQuadDataView, DrawQuadWithSharedQuadState> {
     return input.quad->needs_blending;
   }
 
-  static OptSharedQuadState sqs(const DrawQuadWithSharedQuadState& input) {
-    return {input.shared_quad_state};
+  static mojo::OptionalAsPointer<const viz::SharedQuadState> sqs(
+      const DrawQuadWithSharedQuadState& input) {
+    return mojo::OptionalAsPointer(input.shared_quad_state);
   }
 
   static const viz::DrawQuad& draw_quad_state(

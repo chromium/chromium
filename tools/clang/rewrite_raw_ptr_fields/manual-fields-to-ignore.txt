@@ -502,7 +502,6 @@ mojo::internal::MultiplexRouter::InterfaceEndpoint::client_
 mojo::internal::MultiplexRouter::InterfaceEndpoint::router_
 mojo::DrawQuadWithSharedQuadState::quad
 mojo::DrawQuadWithSharedQuadState::shared_quad_state
-mojo::OptSharedQuadState::sqs
 # crrev.com/c/5553525
 cc::PlaybackImageProvider::cache_
 # crrev.com/c/5552926
