@@ -29,6 +29,7 @@ namespace chrome::android {
 BASE_DECLARE_FEATURE(kAccountForSuppressedKeyboardInsets);
 BASE_DECLARE_FEATURE(kAccountPickerDialog);
 BASE_DECLARE_FEATURE(kActivateHistoryNavigationCoordinatorInGestureNavMode);
+BASE_DECLARE_FEATURE(kActorNotificationIntentRouting);
 BASE_DECLARE_FEATURE(kActorStepProgressNotification);
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2);
 BASE_DECLARE_FEATURE(kAllocInstanceIdIncreasedDefaultRange);
