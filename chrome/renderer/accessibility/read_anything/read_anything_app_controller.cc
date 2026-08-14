@@ -875,6 +875,12 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   ExecuteJavaScript("chrome.readingMode.showLoading();");
 
   if (model_.is_readability_next_distillation_method()) {
+    if (features::IsReadAnythingDistillerRefactorEnabled()) {
+      SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                               kDistillationInProgress);
+
+      page_handler_->RequestReadabilityDistillation();
+    }
     return;
   }
   DistillNewTree();

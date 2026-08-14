@@ -1585,15 +1585,18 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 
   if (use_readability) {
     readability_distillation_tree_change_start_time_ = base::TimeTicks::Now();
-    // We must emit `kDistillationInProgress` before sending the new tree ID
-    // to the renderer with page_->OnActiveAXTreeIDChanged. This ensures the
-    // renderer pauses its update processing
-    // (`ReadAnythingAppController::IsUpdateProcessingPaused() == true`) for the
-    // new tree. If we reverse this order, any A11y events arriving in the gap
-    // will be processed on an incomplete tree and cause a crash.
-    page_->OnReadabilityDistillationStateChanged(
-        read_anything::mojom::ReadAnythingDistillationState::
-            kDistillationInProgress);
+
+    if (!features::IsReadAnythingDistillerRefactorEnabled()) {
+      // We must emit `kDistillationInProgress` before sending the new tree ID
+      // to the renderer with page_->OnActiveAXTreeIDChanged. This ensures the
+      // renderer pauses its update processing
+      // (`ReadAnythingAppController::IsUpdateProcessingPaused() == true`) for
+      // the new tree. If we reverse this order, any A11y events arriving in the
+      // gap will be processed on an incomplete tree and cause a crash.
+      page_->OnReadabilityDistillationStateChanged(
+          read_anything::mojom::ReadAnythingDistillationState::
+              kDistillationInProgress);
+    }
   }
 
   // When IsReadAnythingWithReadabilityEnabled is true, we still send AX tree
@@ -1602,6 +1605,11 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
                                  /*is_pdf=*/false);
 
   if (use_readability) {
+    // This flag initiates a Readability Distillation in the renderer, so don't
+    // request a distillation here if it's enabled.
+    if (features::IsReadAnythingDistillerRefactorEnabled()) {
+      return;
+    }
     // Now that the renderer is prepped, request distillation. If this fails
     // synchronously, the renderer will correctly fall back to Screen2x for the
     // *new* tree.
