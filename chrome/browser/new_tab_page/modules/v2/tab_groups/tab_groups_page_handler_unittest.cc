@@ -25,9 +25,8 @@
 #include "components/search/ntp_features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_sync_bridge.h"
-#include "components/sync_device_info/device_info.h"
-#include "components/sync_device_info/device_info_sync_service.h"
-#include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_device_info/fake_device_info_sync_service.h"
+#include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_device_info/test_device_info_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -198,48 +197,6 @@ class MockTabGroupSyncService : public TabGroupSyncService {
 
 }  // namespace tab_groups
 
-namespace {
-
-class MockDeviceInfoTracker : public syncer::DeviceInfoTracker {
- public:
-  MOCK_METHOD(bool, IsSyncing, (), (const));
-  MOCK_METHOD(syncer::DeviceInfo*,
-              GetDeviceInfo,
-              (const std::string& client_id),
-              (const));
-  MOCK_METHOD(std::vector<const syncer::DeviceInfo*>,
-              GetAllDeviceInfo,
-              (),
-              (const));
-  MOCK_METHOD(std::vector<const syncer::DeviceInfo*>,
-              GetAllChromeDeviceInfo,
-              (),
-              (const));
-  MOCK_METHOD(void, AddObserver, (Observer * observer));
-  MOCK_METHOD(void, RemoveObserver, (Observer * observer));
-  MOCK_METHOD((absl::flat_hash_map<syncer::DeviceInfo::FormFactor, int>),
-              CountActiveDevicesByType,
-              (),
-              (const));
-  MOCK_METHOD(void, ForcePulseForTest, ());
-  MOCK_METHOD(bool,
-              IsRecentLocalCacheGuid,
-              (const std::string& cache_guid),
-              (const));
-};
-
-class MockDeviceInfoSyncService : public syncer::DeviceInfoSyncService {
- public:
-  MOCK_METHOD(syncer::LocalDeviceInfoProvider*, GetLocalDeviceInfoProvider, ());
-  MOCK_METHOD(syncer::DeviceInfoTracker*, GetDeviceInfoTracker, ());
-  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
-              GetControllerDelegate,
-              ());
-  MOCK_METHOD(void, RefreshLocalDeviceInfo, ());
-};
-
-}  // namespace
-
 class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   TabGroupsPageHandlerTest() = default;
@@ -259,23 +216,17 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
     mock_service_ = static_cast<tab_groups::MockTabGroupSyncService*>(
         tab_group_sync_service_factory->GetForProfile(profile()));
 
-    // Setup mock_device_info_sync_service_.
+    // Setup fake DeviceInfoSyncService.
     auto* device_info_sync_service_factory =
         DeviceInfoSyncServiceFactory::GetInstance();
     device_info_sync_service_factory->SetTestingFactory(
         profile(), base::BindRepeating([](content::BrowserContext* context)
                                            -> std::unique_ptr<KeyedService> {
-          return std::make_unique<
-              testing::NiceMock<MockDeviceInfoSyncService>>();
+          return std::make_unique<syncer::FakeDeviceInfoSyncService>();
         }));
-    mock_device_info_sync_service_ = static_cast<MockDeviceInfoSyncService*>(
-        device_info_sync_service_factory->GetForProfile(profile()));
-
-    // Setup mock_device_info_tracker_.
-    mock_device_info_tracker_ =
-        std::make_unique<testing::NiceMock<MockDeviceInfoTracker>>();
-    ON_CALL(*mock_device_info_sync_service_, GetDeviceInfoTracker())
-        .WillByDefault(testing::Return(mock_device_info_tracker_.get()));
+    fake_device_info_sync_service_ =
+        static_cast<syncer::FakeDeviceInfoSyncService*>(
+            device_info_sync_service_factory->GetForProfile(profile()));
 
     webui::SetBrowserWindowInterface(web_contents(),
                                      &mock_browser_window_interface_);
@@ -300,8 +251,7 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     owned_groups_.clear();
     saved_tab_groups_.clear();
-    mock_device_info_sync_service_ = nullptr;
-    mock_device_info_tracker_.reset();
+    fake_device_info_sync_service_ = nullptr;
     handler_.reset();
     tab_strip_model_.reset();
     mock_service_ = nullptr;
@@ -393,8 +343,8 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
   std::vector<const tab_groups::SavedTabGroup*> saved_tab_groups() {
     return saved_tab_groups_;
   }
-  MockDeviceInfoTracker* mock_device_info_tracker() {
-    return mock_device_info_tracker_.get();
+  syncer::FakeDeviceInfoTracker* fake_device_info_tracker() {
+    return fake_device_info_sync_service_->GetDeviceInfoTracker();
   }
   TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
 
@@ -409,10 +359,11 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
   std::vector<tab_groups::SavedTabGroup> owned_groups_;
   std::vector<const tab_groups::SavedTabGroup*> saved_tab_groups_;
 
-  raw_ptr<MockDeviceInfoSyncService> mock_device_info_sync_service_;
-  std::unique_ptr<MockDeviceInfoTracker> mock_device_info_tracker_;
+  raw_ptr<syncer::FakeDeviceInfoSyncService> fake_device_info_sync_service_;
 };
 
+// Tests that device name and update time are retrieved when DeviceInfo is
+// present.
 TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_WithDeviceInfo) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -430,13 +381,12 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_WithDeviceInfo) {
   std::vector<const tab_groups::SavedTabGroup*> groups_ptr;
   groups_ptr.push_back(&groups[0]);
 
-  // Set up the mock tracker to return a specific DeviceInfo for the given guid.
+  // Set up the fake tracker to return a specific DeviceInfo for the given guid.
   auto device_info = syncer::TestDeviceInfoBuilder()
                          .WithGuid(kCacheGuid)
                          .WithClientName(kDeviceName)
                          .Build();
-  ON_CALL(*mock_device_info_tracker(), GetDeviceInfo(kCacheGuid))
-      .WillByDefault(testing::Return(device_info.get()));
+  fake_device_info_tracker()->Add(std::move(device_info));
   EXPECT_CALL(*service(), ReadAllGroups())
       .WillRepeatedly(testing::Return(groups_ptr));
 
@@ -447,6 +397,7 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_WithDeviceInfo) {
   EXPECT_EQ(kDeviceName, result.value()[0]->device_name);
 }
 
+// Tests that device name is nullopt when DeviceInfo is not found in tracker.
 TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_DeviceInfoNotFound) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -462,9 +413,6 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_DeviceInfoNotFound) {
   std::vector<const tab_groups::SavedTabGroup*> groups_ptr;
   groups_ptr.push_back(&groups[0]);
 
-  // Set up mock tracker to return nullptr for the unknown guid.
-  ON_CALL(*mock_device_info_tracker(), GetDeviceInfo(kUnknownCacheGuid))
-      .WillByDefault(testing::Return(nullptr));
   EXPECT_CALL(*service(), ReadAllGroups())
       .WillRepeatedly(testing::Return(groups_ptr));
 
@@ -475,6 +423,7 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_DeviceInfoNotFound) {
   EXPECT_EQ(std::nullopt, result.value()[0]->device_name);
 }
 
+// Tests that device name is nullopt when tab group has no cache guid.
 TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_NoCacheGuid) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -488,7 +437,6 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_NoCacheGuid) {
   std::vector<const tab_groups::SavedTabGroup*> groups_ptr;
   groups_ptr.push_back(&groups[0]);
 
-  EXPECT_CALL(*mock_device_info_tracker(), GetDeviceInfo(testing::_)).Times(0);
   EXPECT_CALL(*service(), ReadAllGroups())
       .WillRepeatedly(testing::Return(groups_ptr));
 
@@ -499,6 +447,7 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_NoCacheGuid) {
   EXPECT_EQ(std::nullopt, result.value()[0]->device_name);
 }
 
+// Tests that device name is nullopt when cache guid matches local device.
 TEST_F(TabGroupsPageHandlerTest,
        GetSavedTabGroups_DoNotReturnDeviceNameForCurrentDevice) {
   base::test::ScopedFeatureList feature_list;
@@ -516,10 +465,12 @@ TEST_F(TabGroupsPageHandlerTest,
   std::vector<const tab_groups::SavedTabGroup*> groups_ptr;
   groups_ptr.push_back(&groups[0]);
 
-  ON_CALL(*mock_device_info_tracker(), IsRecentLocalCacheGuid(kLocalCacheGuid))
-      .WillByDefault(testing::Return(true));
-  EXPECT_CALL(*mock_device_info_tracker(), GetDeviceInfo(kLocalCacheGuid))
-      .Times(0);
+  auto local_device_info = syncer::TestDeviceInfoBuilder()
+                               .WithGuid(kLocalCacheGuid)
+                               .WithClientName("Local Device")
+                               .Build();
+  fake_device_info_tracker()->Add(std::move(local_device_info));
+  fake_device_info_tracker()->SetLocalCacheGuid(kLocalCacheGuid);
   EXPECT_CALL(*service(), ReadAllGroups())
       .WillRepeatedly(testing::Return(groups_ptr));
 
