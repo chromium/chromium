@@ -295,8 +295,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
                              .origin();
       }),
       NameOmniboxContentsView(kContentsView),
-      // Drag background area (draggable region at 10, 10).
-      DragMouseInView(kContentsView, gfx::Point(10, 10), gfx::Point(110, 110)),
+      DragMouseInView(kContentsView, gfx::Point(10, 5), gfx::Point(110, 5)),
       Check([&]() {
         views::Widget* widget = controller->ui_manager()->widget();
         return widget->GetWindowBoundsInScreen().origin() != initial_origin;
@@ -362,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
   const char kContentsView[] = "OmniboxContentsView";
   auto reposition_step = Steps(
       NameOmniboxContentsView(kContentsView),
-      DragMouseInView(kContentsView, gfx::Point(10, 10), gfx::Point(110, 110)),
+      DragMouseInView(kContentsView, gfx::Point(10, 5), gfx::Point(110, 5)),
       Do([&]() {
         dragged_origin = controller->ui_manager()
                              ->widget()

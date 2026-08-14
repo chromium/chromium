@@ -64,6 +64,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxEverywhereUIManager,
 
 namespace {
 
+// Fixed popup width (800px content + 48px horizontal shadow padding).
+constexpr int kPopupFixedWidth = 848;
+
 bool IsEphemeral() {
   bool is_ephemeral = false;
   if (g_browser_process && g_browser_process->local_state()) {
@@ -166,6 +169,9 @@ OmniboxEverywhereUIManager::widget_delegate() const {
 
 bool OmniboxEverywhereUIManager::IsPointInDraggableRegion(
     const gfx::Point& point) const {
+  // TODO(b/546065055): There's additional padding on the widget to support the
+  // shadow, which is draggable. This should be addressed to prevent dragging
+  // this area.
   return draggable_region_ && !draggable_region_->isEmpty() &&
          draggable_region_->contains(point.x(), point.y());
 }
@@ -199,8 +205,8 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
 
   if (web_contents()) {
     if (auto* rwhv = web_contents()->GetRenderWidgetHostView()) {
-      constexpr gfx::Size kAutoResizeMinSize(800, 50);
-      constexpr gfx::Size kAutoResizeMaxSize(800, 800);
+      constexpr gfx::Size kAutoResizeMinSize(kPopupFixedWidth, 50);
+      constexpr gfx::Size kAutoResizeMaxSize(kPopupFixedWidth, 800);
       rwhv->EnableAutoResize(kAutoResizeMinSize, kAutoResizeMaxSize);
     }
   }
@@ -274,7 +280,7 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
       display::Screen::Get()->GetDisplayNearestPoint(
           display::Screen::Get()->GetCursorScreenPoint());
   gfx::Rect work_area = target_display.work_area();
-  constexpr gfx::Size kDefaultPopupSize(864, 632);
+  constexpr gfx::Size kDefaultPopupSize(kPopupFixedWidth, 632);
   params.bounds = gfx::Rect(
       work_area.x() + (work_area.width() - kDefaultPopupSize.width()) / 2,
       work_area.y() + (work_area.height() - kDefaultPopupSize.height()) / 2,
@@ -472,11 +478,9 @@ void OmniboxEverywhereUIManager::ResizeDueToAutoResize(
     content::WebContents* source,
     const gfx::Size& new_size) {
   if (widget_) {
-    constexpr int kAutoResizeHeightPadding = 96;
     constexpr int kAutoResizeMinHeight = 56;
     gfx::Rect bounds = widget_->GetWindowBoundsInScreen();
-    bounds.set_height(std::max(new_size.height() + kAutoResizeHeightPadding,
-                               kAutoResizeMinHeight));
+    bounds.set_height(std::max(new_size.height(), kAutoResizeMinHeight));
     widget_->SetBounds(bounds);
   }
 }
