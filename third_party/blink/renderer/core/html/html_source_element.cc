@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_picture_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -98,9 +97,7 @@ Node::InsertionNotificationRequest HTMLSourceElement::InsertedInto(
                                    ? DynamicTo<HTMLPictureElement>(parent)
                                    : nullptr;
   if (html_picture_element) {
-    html_picture_element->SourceChanged(
-        ImageSourceChangeType::kAdded,
-        HTMLImageElement::ShouldResetImageReplacement(true));
+    html_picture_element->SourceChanged(ImageSourceChangeType::kAdded);
   }
   return kInsertionDone;
 }
@@ -115,9 +112,7 @@ void HTMLSourceElement::RemovedFrom(ContainerNode& removal_root) {
   if (auto* picture = DynamicTo<HTMLPictureElement>(parent)) {
     RemoveMediaQueryListListener();
     if (was_removed_from_parent) {
-      picture->SourceChanged(
-          ImageSourceChangeType::kRemoved,
-          HTMLImageElement::ShouldResetImageReplacement(true));
+      picture->SourceChanged(ImageSourceChangeType::kRemoved);
     }
   }
   HTMLElement::RemovedFrom(removal_root);
@@ -191,21 +186,14 @@ void HTMLSourceElement::ParseAttribute(
   if (name == html_names::kSrcsetAttr || name == html_names::kSizesAttr ||
       name == html_names::kMediaAttr || name == html_names::kTypeAttr) {
     if (auto* picture = DynamicTo<HTMLPictureElement>(parentElement())) {
-      // A change to the sizes attribute usually indicates a sizing change to
-      // the image, and we do not want to reset an active image replacement in
-      // that case.
-      picture->SourceChanged(ImageSourceChangeType::kAttribute,
-                             HTMLImageElement::ShouldResetImageReplacement(
-                                 name != html_names::kSizesAttr));
+      picture->SourceChanged(ImageSourceChangeType::kAttribute);
     }
   }
 }
 
 void HTMLSourceElement::NotifyMediaQueryChanged() {
   if (auto* picture = DynamicTo<HTMLPictureElement>(parentElement())) {
-    picture->SourceChanged(
-        ImageSourceChangeType::kMedia,
-        HTMLImageElement::ShouldResetImageReplacement(false));
+    picture->SourceChanged(ImageSourceChangeType::kMedia);
   }
 }
 

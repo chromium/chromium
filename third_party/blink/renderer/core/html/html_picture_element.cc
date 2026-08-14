@@ -18,18 +18,14 @@ namespace blink {
 HTMLPictureElement::HTMLPictureElement(Document& document)
     : HTMLElement(html_names::kPictureTag, document) {}
 
-void HTMLPictureElement::SourceChanged(
-    ImageSourceChangeType change_type,
-    HTMLImageElement::ShouldResetImageReplacement
-        should_reset_image_replacement) {
+void HTMLPictureElement::SourceChanged(ImageSourceChangeType change_type) {
   ImageLoader::UpdateFromElementBehavior update_behavior =
       change_type == ImageSourceChangeType::kMedia
           ? ImageLoader::kUpdateSizeChanged
           : ImageLoader::kUpdateNormal;
   for (HTMLImageElement& image_element :
        Traversal<HTMLImageElement>::ChildrenOf(*this)) {
-    image_element.SelectSourceURL(update_behavior,
-                                  should_reset_image_replacement);
+    image_element.SelectSourceURL(update_behavior);
   }
 }
 
