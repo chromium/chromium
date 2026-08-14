@@ -1123,6 +1123,24 @@ TEST_P(InputHandlerProxyTest, SnapFlingIgnoresFollowingGSUAndGSE) {
   VERIFY_AND_RESET_MOCKS();
 }
 
+TEST_P(InputHandlerProxyTest,
+       ScrollByForSnapFlingPopulatesUnconstrainedDeltas) {
+  gfx::Vector2dF fling_delta(10.f, 20.f);
+
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+      .WillOnce(
+          [fling_delta](const cc::ScrollState& scroll_state, base::TimeDelta) {
+            EXPECT_EQ(scroll_state.delta_x(), fling_delta.x());
+            EXPECT_EQ(scroll_state.delta_y(), fling_delta.y());
+            EXPECT_EQ(scroll_state.delta_x_unconstrained(), fling_delta.x());
+            EXPECT_EQ(scroll_state.delta_y_unconstrained(), fling_delta.y());
+            EXPECT_TRUE(scroll_state.is_in_inertial_phase());
+            return cc::InputHandlerScrollResult();
+          });
+
+  input_handler_->ScrollByForSnapFling(fling_delta);
+}
+
 TEST_P(InputHandlerProxyTest, FlingHitsConstraintCompletesEarly) {
   EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
       .WillOnce(testing::Return(kImplThreadScrollState));

@@ -53,6 +53,56 @@ const std::string kTouchActionFilterDataURL = R"HTML(
   <script>
     document.title='ready';
   </script>)HTML";
+
+const std::string kScrollAxisLockNoneSnapFlingDataURL = R"HTML(
+  <!DOCTYPE html>
+  <meta name='viewport' content='width=device-width'/>
+  <style>
+  body {
+    margin: 0;
+  }
+  .scroller {
+    width: 400px;
+    height: 400px;
+    overflow: scroll;
+    scroll-snap-type: both mandatory;
+    scroll-axis-lock: none;
+  }
+  .space {
+    width: 5000px;
+    height: 5000px;
+    position: relative;
+  }
+  .snap-area {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background-color: blue;
+    scroll-snap-align: start;
+  }
+  .area-a {
+    left: 0px;
+    top: 0px;
+  }
+  .area-b {
+    left: 400px;
+    top: 400px;
+  }
+  </style>
+  <div class="scroller">
+    <div class="space">
+      <div class="snap-area area-a"></div>
+      <div class="snap-area area-b"></div>
+    </div>
+  </div>
+  <script>
+    const scroller = document.querySelector('.scroller');
+    scroller.addEventListener('scrollend', () => {
+      document.title = 'scrollend';
+    });
+    document.title = 'ready';
+  </script>
+)HTML";
 }  // namespace
 
 namespace content {
@@ -563,6 +613,38 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
 
   EXPECT_EQ(
       0, EvalJs(root->current_frame_host(), "window.scrollY").ExtractDouble());
+}
+
+// Tests that a diagonal touch fling successfully snaps to a diagonal target
+// when scroll-axis-lock: none is active.
+IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
+                       TouchscreenFlingSnapAxisLockNone) {
+  LoadURL(kScrollAxisLockNoneSnapFlingDataURL);
+
+  // Fling diagonally.
+  gfx::Vector2dF fling_velocity(-4000.f, -4000.f);
+
+  // Watch for the 'scrollend' title change indicating the snap animation
+  // finished.
+  std::u16string scrollend_title(u"scrollend");
+  TitleWatcher watcher(shell()->web_contents(), scrollend_title);
+
+  // Inject the fling directly via RenderWidgetHost.
+  SimulateTouchscreenFling(GetWidgetHost(), nullptr, fling_velocity);
+
+  // Wait for the scrollend event to fire in JS.
+  std::ignore = watcher.WaitAndGetTitle();
+
+  // Verify we snapped to Target B (400, 400).
+  double scroll_x = EvalJs(GetRootNode()->current_frame_host(),
+                           "document.querySelector('.scroller').scrollLeft")
+                        .ExtractDouble();
+  double scroll_y = EvalJs(GetRootNode()->current_frame_host(),
+                           "document.querySelector('.scroller').scrollTop")
+                        .ExtractDouble();
+
+  EXPECT_NEAR(scroll_x, 400.0, 1.0);
+  EXPECT_NEAR(scroll_y, 400.0, 1.0);
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
