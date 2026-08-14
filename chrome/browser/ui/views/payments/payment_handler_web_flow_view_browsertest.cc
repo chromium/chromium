@@ -613,6 +613,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest,
                          payment_handler_contents));
   EXPECT_EQ(nullptr, permissions::PermissionRequestManager::FromWebContents(
                          payment_handler_contents));
+  EXPECT_NE(nullptr, PaymentHandlerWebFlowViewController::FromWebContents(
+                         payment_handler_contents));
+  EXPECT_EQ(nullptr, web_flow_controller->GetLocationIconView());
 
   std::string result = content::EvalJs(payment_handler_contents, R"(
     navigator.mediaDevices.getUserMedia({video: true})

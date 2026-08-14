@@ -64,6 +64,11 @@ class PaymentHandlerWebFlowViewController
       PaymentHandlerOpenWindowCallback first_navigation_complete_callback);
   ~PaymentHandlerWebFlowViewController() override;
 
+  static PaymentHandlerWebFlowViewController* FromWebContents(
+      content::WebContents* web_contents);
+
+  views::View* GetLocationIconView();
+
  private:
   class RoundedCornerViewClipper;
 

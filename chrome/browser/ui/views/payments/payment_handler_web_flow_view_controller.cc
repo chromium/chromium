@@ -36,6 +36,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
@@ -52,6 +53,36 @@
 
 namespace payments {
 namespace {
+
+// WebContentsUserData key for retrieving PaymentHandlerWebFlowViewController
+// from the payment handler's WebContents. Attached in FillContentView.
+class PaymentHandlerWebFlowViewControllerWebContentsWrapper
+    : public content::WebContentsUserData<
+          PaymentHandlerWebFlowViewControllerWebContentsWrapper> {
+ public:
+  PaymentHandlerWebFlowViewController* controller() {
+    return controller_.get();
+  }
+
+ private:
+  friend class content::WebContentsUserData<
+      PaymentHandlerWebFlowViewControllerWebContentsWrapper>;
+
+  PaymentHandlerWebFlowViewControllerWebContentsWrapper(
+      content::WebContents* web_contents,
+      base::WeakPtr<PaymentHandlerWebFlowViewController> controller)
+      : content::WebContentsUserData<
+            PaymentHandlerWebFlowViewControllerWebContentsWrapper>(
+            *web_contents),
+        controller_(std::move(controller)) {}
+
+  base::WeakPtr<PaymentHandlerWebFlowViewController> controller_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(
+    PaymentHandlerWebFlowViewControllerWebContentsWrapper);
 
 std::u16string GetPaymentHandlerDialogTitle(
     content::WebContents* web_contents) {
@@ -135,6 +166,23 @@ PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
   }
 }
 
+// static
+PaymentHandlerWebFlowViewController*
+PaymentHandlerWebFlowViewController::FromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  auto* wrapper =
+      PaymentHandlerWebFlowViewControllerWebContentsWrapper::FromWebContents(
+          web_contents);
+  return wrapper ? wrapper->controller() : nullptr;
+}
+
+views::View* PaymentHandlerWebFlowViewController::GetLocationIconView() {
+  return nullptr;
+}
+
 std::u16string PaymentHandlerWebFlowViewController::GetSheetTitle() {
   return GetPaymentHandlerDialogTitle(web_contents());
 }
@@ -167,6 +215,8 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   Observe(web_view->GetWebContents());
   PaymentHandlerNavigationThrottle::MarkPaymentHandlerWebContents(
       web_contents());
+  PaymentHandlerWebFlowViewControllerWebContentsWrapper::CreateForWebContents(
+      web_contents(), weak_ptr_factory_.GetWeakPtr());
   web_contents()->SetDelegate(this);
   content::WebContents* parent_tab_web_contents = state()->GetWebContents();
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/payments/core/features.h"
 #include "ui/base/interaction/element_highlighter.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -147,6 +150,20 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
                 pip_host->GetWidget()));
     return {views::BubbleAnchor(location_icon), kLocationIconElementId,
             views::BubbleBorder::TOP_LEFT};
+  }
+
+  // For Payment Handler windows anchor to the header location icon.
+  if (base::FeatureList::IsEnabled(
+          payments::features::kPaymentHandlerCameraAccessUx)) {
+    if (auto* payment_handler =
+            payments::PaymentHandlerWebFlowViewController::FromWebContents(
+                web_contents)) {
+      if (views::View* location_icon = payment_handler->GetLocationIconView()) {
+        return {views::BubbleAnchor(location_icon),
+                /*highlighted_element=*/std::nullopt,
+                views::BubbleBorder::TOP_LEFT};
+      }
+    }
   }
 
   return {};
