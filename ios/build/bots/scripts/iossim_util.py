@@ -21,7 +21,8 @@ import mac_util
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
 sys.path.append(
-    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
+  os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto'))
+)
 import measures
 
 
@@ -30,7 +31,8 @@ LOGGER = logging.getLogger(__name__)
 MAX_WAIT_TIME_TO_DELETE_RUNTIME = 60  # 60 seconds
 
 SIMULATOR_DEFAULT_PATH = os.path.expanduser(
-    '~/Library/Developer/CoreSimulator/Devices')
+  '~/Library/Developer/CoreSimulator/Devices'
+)
 SIMULATOR_CACHE_PATH = os.path.expanduser('~/Library/Developer/SimulatorCache')
 
 # TODO(crbug.com/40910268): remove Legacy Download once iOS 15.5 is deprecated
@@ -58,8 +60,10 @@ def get_simulator_list(path: str = None):
     path: (str) Path to be passed to '--set' option.
   """
   return json.loads(
-      subprocess.check_output(_compose_simctl_cmd(['list', '-j'],
-                                                  path)).decode('utf-8'))
+    subprocess.check_output(_compose_simctl_cmd(['list', '-j'], path)).decode(
+      'utf-8'
+    )
+  )
 
 
 def get_simulator(platform, version, out_dir=None, use_cache=False):
@@ -74,8 +78,9 @@ def get_simulator(platform, version, out_dir=None, use_cache=False):
   Returns:
     A udid of a simulator device.
   """
-  udids = get_simulator_udids_by_platform_and_version(platform, version,
-                                                      out_dir)
+  udids = get_simulator_udids_by_platform_and_version(
+    platform, version, out_dir
+  )
   if udids:
     return udids[0]
   return create_device_by_platform_and_version(platform, version, use_cache)
@@ -99,7 +104,7 @@ def get_simulator_device_type_by_platform(simulators, platform):
     if devicetype['name'] == platform:
       return devicetype['identifier']
   raise test_runner.SimulatorNotFoundError(
-      f'Not found device "{platform}" in devicetypes {simulators["devicetypes"]}'
+    f'Not found device "{platform}" in devicetypes {simulators["devicetypes"]}'
   )
 
 
@@ -108,33 +113,38 @@ def debug_missing_simulator(checked_runtimes, out_dir=None):
     return
   # where we looked and didn't find the given version
   checked_runtimes_path = os.path.join(
-      os.path.abspath(out_dir), 'checked_runtimes.json')
+    os.path.abspath(out_dir), 'checked_runtimes.json'
+  )
   with open(checked_runtimes_path, "w") as f:
     f.write(json.dumps(checked_runtimes, indent=2))
 
   # sanity check of 'xcrun simctl runtime list -j'
   runtimes_path = os.path.join(os.path.abspath(out_dir), 'runtimes.json')
   runtimes = subprocess.check_output(
-      ['xcrun', 'simctl', 'runtime', 'list', '-j']).decode('utf-8')
+    ['xcrun', 'simctl', 'runtime', 'list', '-j']
+  ).decode('utf-8')
   with open(runtimes_path, "w") as f:
     f.write(runtimes)
 
   # is the runtime DMG still mounted?
   coresim_volumes_path = os.path.join(
-      os.path.abspath(out_dir), 'coresim_volumes.txt')
+    os.path.abspath(out_dir), 'coresim_volumes.txt'
+  )
   target_vol_path = '/Library/Developer/CoreSimulator/Volumes'
   if os.path.exists(target_vol_path):
     coresim_volumes_list = os.listdir(target_vol_path)
     coresim_volumes_str = "\n".join(
-        coresim_volumes_list)  # Convert list to string
+      coresim_volumes_list
+    )  # Convert list to string
   else:
     coresim_volumes_str = "DIRECTORY MISSING"
   try:
     all_mounts = subprocess.check_output(['mount']).decode('utf-8')
     # Filter for the relevant lines in Python
     relevant_mounts = [
-        line for line in all_mounts.splitlines()
-        if '/Library/Developer/CoreSimulator/Volumes' in line
+      line
+      for line in all_mounts.splitlines()
+      if '/Library/Developer/CoreSimulator/Volumes' in line
     ]
     coresim_mounts_str = "\n".join(relevant_mounts)
   except subprocess.CalledProcessError as e:
@@ -147,10 +157,9 @@ def debug_missing_simulator(checked_runtimes, out_dir=None):
     f.write(coresim_mounts_str)
 
 
-def get_simulator_runtime_by_platform_and_version(simulators,
-                                                  platform,
-                                                  version,
-                                                  out_dir=None):
+def get_simulator_runtime_by_platform_and_version(
+  simulators, platform, version, out_dir=None
+):
   """Finds the simulator runtime identifier for a given platform and OS version.
 
   Args:
@@ -175,12 +184,16 @@ def get_simulator_runtime_by_platform_and_version(simulators,
       # Therefore, we should use startswith for substring match.
       if runtime['version'].startswith(version):
         version_found = True
-        if any(supported_device_type['name'] == platform
-               for supported_device_type in runtime['supportedDeviceTypes']):
+        if any(
+          supported_device_type['name'] == platform
+          for supported_device_type in runtime['supportedDeviceTypes']
+        ):
           return runtime.get('identifier') or runtime.get('runtimeIdentifier')
-    LOGGER.error(f'(attempt {attempt + 1} of {max_retries}) failed to find '
-                 f'simulator matching version: {version} and platform: '
-                 f'{platform}.')
+    LOGGER.error(
+      f'(attempt {attempt + 1} of {max_retries}) failed to find '
+      f'simulator matching version: {version} and platform: '
+      f'{platform}.'
+    )
     if version_found:
       LOGGER.error('Version found, but not platform.')
     if attempt + 1 < max_retries:
@@ -190,7 +203,8 @@ def get_simulator_runtime_by_platform_and_version(simulators,
   # TODO(crbug.com/454911750): remove debugging after bug is resolved
   debug_missing_simulator(runtimes, out_dir)
   raise test_runner.SimulatorNotFoundError(
-      f'Not found "{version}" SDK in runtimes {runtimes}')
+    f'Not found "{version}" SDK in runtimes {runtimes}'
+  )
 
 
 def get_simulator_runtime_by_device_udid(simulator_udid, path=None):
@@ -206,24 +220,24 @@ def get_simulator_runtime_by_device_udid(simulator_udid, path=None):
       if simulator_udid == device['udid']:
         return runtime
   raise test_runner.SimulatorNotFoundError(
-      f'Not found simulator with "{simulator_udid}" UDID in devices {simulator_list}'
+    f'Not found simulator with "{simulator_udid}" UDID in devices {simulator_list}'
   )
 
 
-def get_simulator_udids_by_platform_and_version(platform,
-                                                version,
-                                                out_dir=None,
-                                                path=None):
+def get_simulator_udids_by_platform_and_version(
+  platform, version, out_dir=None, path=None
+):
   """Gets list of simulators UDID based on platform name and iOS version.
 
-    Args:
-      platform: (str) A platform name, e.g. "iPhone 11"
-      version: (str) A version name, e.g. "13.2.2"
+  Args:
+    platform: (str) A platform name, e.g. "iPhone 11"
+    version: (str) A version name, e.g. "13.2.2"
   """
   simulators = get_simulator_list(path=path)
   devices = simulators['devices']
   sdk_id = get_simulator_runtime_by_platform_and_version(
-      simulators, platform, version, out_dir)
+    simulators, platform, version, out_dir
+  )
   results = []
   for device in devices.get(sdk_id, []):
     if device['name'] == _compose_simulator_name(platform, version):
@@ -238,12 +252,14 @@ def get_platform_type_by_platform(platform) -> constants.IOSPlatformType:
     Args:
       platform: (str) A platform name, e.g. "iPhone 11"
   """
-  device_type = get_simulator_device_type_by_platform(get_simulator_list(),
-                                                      platform)
+  device_type = get_simulator_device_type_by_platform(
+    get_simulator_list(), platform
+  )
   if device_type.startswith('com.apple.CoreSimulator.SimDeviceType.Apple-TV'):
     return constants.IOSPlatformType.TVOS
-  elif (device_type.startswith('com.apple.CoreSimulator.SimDeviceType.iPad') or
-        device_type.startswith('com.apple.CoreSimulator.SimDeviceType.iPhone')):
+  elif device_type.startswith(
+    'com.apple.CoreSimulator.SimDeviceType.iPad'
+  ) or device_type.startswith('com.apple.CoreSimulator.SimDeviceType.iPhone'):
     return constants.IOSPlatformType.IPHONEOS
   raise test_runner.UnsupportedDeviceTypeError(device_type)
 
@@ -255,20 +271,29 @@ def _create_device_by_platform_and_version(platform, version, path=None):
   simulators = get_simulator_list(path)
   device_type = get_simulator_device_type_by_platform(simulators, platform)
   runtime = get_simulator_runtime_by_platform_and_version(
-      simulators, platform, version)
+    simulators, platform, version
+  )
   try:
-    udid = subprocess.check_output(
-        _compose_simctl_cmd(['create', name, device_type, runtime],
-                            path)).decode('utf-8').rstrip()
+    udid = (
+      subprocess.check_output(
+        _compose_simctl_cmd(['create', name, device_type, runtime], path)
+      )
+      .decode('utf-8')
+      .rstrip()
+    )
     LOGGER.info('Created simulator in first attempt with UDID: %s', udid)
     # Sometimes above command fails to create a simulator. Verify it and retry
     # once if first attempt failed.
     if not is_device_with_udid_simulator(udid, path=path):
       # Try to delete once to avoid duplicate in case of race condition.
       delete_simulator_by_udid(udid, path=path)
-      udid = subprocess.check_output(
-          _compose_simctl_cmd(['create', name, device_type, runtime],
-                              path)).decode('utf-8').rstrip()
+      udid = (
+        subprocess.check_output(
+          _compose_simctl_cmd(['create', name, device_type, runtime], path)
+        )
+        .decode('utf-8')
+        .rstrip()
+      )
       LOGGER.info('Created simulator in second attempt with UDID: %s', udid)
     return udid
   except subprocess.CalledProcessError as e:
@@ -279,16 +304,18 @@ def _create_device_by_platform_and_version(platform, version, path=None):
 def create_device_by_platform_and_version(platform, version, use_cache=False):
   """Creates a simulator and returns UDID of it.
 
-    Args:
-      platform: (str) A platform name, e.g. "iPhone 11"
-      version: (str) A version name, e.g. "13.2.2"
-      use_cache: (bool) Whether to try to use a clone of a prebooted simulator
-        in the cache.
+  Args:
+    platform: (str) A platform name, e.g. "iPhone 11"
+    version: (str) A version name, e.g. "13.2.2"
+    use_cache: (bool) Whether to try to use a clone of a prebooted simulator
+      in the cache.
   """
   enabled_datapoint = measures.data_points('simulator_caching_enabled')
   if not use_cache:
-    LOGGER.info("Simulator caching not enabled. Creating disposable simulator "
-                "in the default set.")
+    LOGGER.info(
+      "Simulator caching not enabled. Creating disposable simulator "
+      "in the default set."
+    )
     enabled_datapoint.record(False)
     return _create_device_by_platform_and_version(platform, version)
 
@@ -297,10 +324,13 @@ def create_device_by_platform_and_version(platform, version, use_cache=False):
   # Ensure Cache Path Exists
   os.makedirs(SIMULATOR_CACHE_PATH, exist_ok=True)
 
-  LOGGER.info(f"Simulator caching is enabled. "
-              f"Checking if a {version} {platform} simulator is in cache")
+  LOGGER.info(
+    f"Simulator caching is enabled. "
+    f"Checking if a {version} {platform} simulator is in cache"
+  )
   cache_udids = get_simulator_udids_by_platform_and_version(
-      platform, version, path=SIMULATOR_CACHE_PATH)
+    platform, version, path=SIMULATOR_CACHE_PATH
+  )
 
   cache_hit_datapoint = measures.data_points('simulator_cache_hit')
   if cache_udids:
@@ -308,10 +338,11 @@ def create_device_by_platform_and_version(platform, version, use_cache=False):
     cache_hit_datapoint.record(True)
     with measures.time_consumption('Simulator clone', 'cache to working set'):
       udid = clone_simulator_by_udid(
-          cache_udids[0],
-          _compose_simulator_name(platform, version),
-          path=SIMULATOR_CACHE_PATH,
-          dest_path=SIMULATOR_DEFAULT_PATH)
+        cache_udids[0],
+        _compose_simulator_name(platform, version),
+        path=SIMULATOR_CACHE_PATH,
+        dest_path=SIMULATOR_DEFAULT_PATH,
+      )
     return udid
 
   cache_hit_datapoint.record(False)
@@ -320,27 +351,32 @@ def create_device_by_platform_and_version(platform, version, use_cache=False):
   max_attempts = 2
   for attempt in range(max_attempts):
     udid = _create_device_by_platform_and_version(
-        platform, version, path=SIMULATOR_CACHE_PATH)
+      platform, version, path=SIMULATOR_CACHE_PATH
+    )
 
     # Run first boot of the simulator to ensure that costly data migrations
     # have completed, then shutdown simulator so it can be cloned for future
     # use.
 
-    with measures.time_consumption('Simulator full boot', 'iossim_util',
-                                   'Pre launch for cache creation',
-                                   f'attempt {attempt}'):
+    with measures.time_consumption(
+      'Simulator full boot',
+      'iossim_util',
+      'Pre launch for cache creation',
+      f'attempt {attempt}',
+    ):
       booted = ensure_simulator_fully_booted(udid, path=SIMULATOR_CACHE_PATH)
     if booted:
       shutdown_simulator_by_udid(udid, path=SIMULATOR_CACHE_PATH)
       LOGGER.info(
-          f"Attempt {attempt} to create simulator and boot it succeeded. "
-          f"Cloning simulator into the default set.")
+        f"Attempt {attempt} to create simulator and boot it succeeded. "
+        f"Cloning simulator into the default set."
+      )
       with measures.time_consumption('Simulator clone', 'cache to working set'):
         udid = clone_simulator_by_udid(
-            udid,
-            _compose_simulator_name(platform, version),
-            path=SIMULATOR_CACHE_PATH,
-            dest_path=SIMULATOR_DEFAULT_PATH,
+          udid,
+          _compose_simulator_name(platform, version),
+          path=SIMULATOR_CACHE_PATH,
+          dest_path=SIMULATOR_DEFAULT_PATH,
         )
       return udid
     LOGGER.info(f"Attempt {attempt} to create simulator in cache failed.")
@@ -348,16 +384,16 @@ def create_device_by_platform_and_version(platform, version, use_cache=False):
     delete_simulator_by_udid(udid, path=SIMULATOR_CACHE_PATH)
   else:
     LOGGER.info(
-        f"Unable to create cached simulator in {max_attempts} attempts. "
-        f"Creating a disposable simulator in default set.")
+      f"Unable to create cached simulator in {max_attempts} attempts. "
+      f"Creating a disposable simulator in default set."
+    )
 
     return _create_device_by_platform_and_version(platform, version)
 
 
-def clone_simulator_by_udid(udid: str,
-                            name: str,
-                            path: str = None,
-                            dest_path: str = None):
+def clone_simulator_by_udid(
+  udid: str, name: str, path: str = None, dest_path: str = None
+):
   """Clones given simulator located at path into dest_path.
 
   Args:
@@ -395,7 +431,8 @@ def shutdown_simulator_by_udid(udid: str, path: str = None):
         LOGGER.info('Shutdown simulator %s ', device)
         if device['state'] != 'Shutdown':
           subprocess.check_call(
-              _compose_simctl_cmd(['shutdown', device['udid']], path))
+            _compose_simctl_cmd(['shutdown', device['udid']], path)
+          )
         break
       except subprocess.CalledProcessError as ex:
         LOGGER.error('Shutdown failed %s ', ex)
@@ -410,8 +447,8 @@ def delete_simulator_by_udid(udid, path: str = None):
   LOGGER.info('Deleting simulator %s', udid)
   try:
     subprocess.check_output(
-        _compose_simctl_cmd(['delete', udid], path=path),
-        stderr=subprocess.STDOUT).decode('utf-8')
+      _compose_simctl_cmd(['delete', udid], path=path), stderr=subprocess.STDOUT
+    ).decode('utf-8')
     is_device_with_udid_simulator.cache_clear()
   except subprocess.CalledProcessError as e:
     # Logging error instead of throwing so we don't cause failures in case
@@ -438,9 +475,13 @@ def get_home_directory(platform, version):
     platform: (str) A platform name, e.g. "iPhone 11"
     version: (str) A version name, e.g. "13.2.2"
   """
-  return subprocess.check_output(
-      ['xcrun', 'simctl', 'getenv',
-       get_simulator(platform, version), 'HOME']).decode('utf-8').rstrip()
+  return (
+    subprocess.check_output(
+      ['xcrun', 'simctl', 'getenv', get_simulator(platform, version), 'HOME']
+    )
+    .decode('utf-8')
+    .rstrip()
+  )
 
 
 def boot_simulator_if_not_booted(sim_udid, path=SIMULATOR_DEFAULT_PATH):
@@ -460,10 +501,11 @@ def boot_simulator_if_not_booted(sim_udid, path=SIMULATOR_DEFAULT_PATH):
       if device['state'] == 'Booted':
         return
       subprocess.check_output(
-          ['xcrun', 'simctl', '--set', path, 'boot', sim_udid]).decode('utf-8')
+        ['xcrun', 'simctl', '--set', path, 'boot', sim_udid]
+      ).decode('utf-8')
       return
   raise test_runner.SimulatorNotFoundError(
-      f'Not found simulator with "{sim_udid}" UDID in devices {simulator_list["devices"]}'
+    f'Not found simulator with "{sim_udid}" UDID in devices {simulator_list["devices"]}'
   )
 
 
@@ -509,14 +551,18 @@ def ensure_simulator_fully_booted(sim_udid: str, path=None, num_attempts=1):
   """
   if not is_device_with_udid_simulator(sim_udid, path=path):
     raise test_runner.SimulatorNotFoundError(
-        f"Not found simulator with UDID: {sim_udid}")
+      f"Not found simulator with UDID: {sim_udid}"
+    )
 
     # Ensure data migrations are run
-  cmd = _compose_simctl_cmd([
+  cmd = _compose_simctl_cmd(
+    [
       'bootstatus',
       sim_udid,
       '-bd',
-  ], path)
+    ],
+    path,
+  )
   runtime = get_simulator_runtime_by_device_udid(sim_udid, path=path)
   for boot_attempt in range(num_attempts):
     try:
@@ -527,14 +573,17 @@ def ensure_simulator_fully_booted(sim_udid: str, path=None, num_attempts=1):
       msg = f"Manually booting simulator timed out after 120 seconds."
       LOGGER.info(msg)
       msg_again = " again" if boot_attempt > 0 else ""
-      msg_action = "continuing" if boot_attempt == num_attempts - 1 else "retrying"
-      LOGGER.info(f"Failed to manually boot simulator{msg_again}. "
-                  f"Wiping simulator and {msg_action}.")
+      msg_action = (
+        "continuing" if boot_attempt == num_attempts - 1 else "retrying"
+      )
+      LOGGER.info(
+        f"Failed to manually boot simulator{msg_again}. "
+        f"Wiping simulator and {msg_action}."
+      )
       wipe_simulator_by_udid(sim_udid, path)
       test_runner.SimulatorTestRunner.kill_simulators()
 
   return False
-
 
 
 def get_app_data_directory(app_bundle_id, sim_udid):
@@ -544,9 +593,13 @@ def get_app_data_directory(app_bundle_id, sim_udid):
     app_bundle_id: (str) Bundle id of application.
     sim_udid: (str) UDID of the simulator.
   """
-  return subprocess.check_output(
-      ['xcrun', 'simctl', 'get_app_container', sim_udid, app_bundle_id,
-       'data']).decode('utf-8').rstrip()
+  return (
+    subprocess.check_output(
+      ['xcrun', 'simctl', 'get_app_container', sim_udid, app_bundle_id, 'data']
+    )
+    .decode('utf-8')
+    .rstrip()
+  )
 
 
 @functools.cache
@@ -587,13 +640,16 @@ def copy_trusted_certificate(cert_path, udid):
     if 'booted' not in str(e):
       # Logging error instead of throwing, so we don't cause failures in case
       # this was indeed failing to copy the cert.
-      message = f'Failed to boot simulator before installing cert. Error: {e.output}'
+      message = (
+        f'Failed to boot simulator before installing cert. Error: {e.output}'
+      )
       LOGGER.error(message)
       return
 
   try:
     subprocess.check_call(
-        ['xcrun', 'simctl', 'keychain', udid, 'add-root-cert', cert_path])
+      ['xcrun', 'simctl', 'keychain', udid, 'add-root-cert', cert_path]
+    )
     subprocess.check_call(['xcrun', 'simctl', 'shutdown', udid])
   except subprocess.CalledProcessError as e:
     message = f'Failed to install cert. Error: {e.output}'
@@ -603,16 +659,19 @@ def copy_trusted_certificate(cert_path, udid):
 def get_simulator_runtime_list():
   """Gets list of available simulator runtimes as a dictionary."""
   return json.loads(
-      subprocess.check_output(['xcrun', 'simctl', 'runtime', 'list',
-                               '-j']).decode('utf-8'))
+    subprocess.check_output(
+      ['xcrun', 'simctl', 'runtime', 'list', '-j']
+    ).decode('utf-8')
+  )
 
 
 def get_simulator_runtime_match_list():
   """Gets list of chosen simulator runtime for each simulator sdk type"""
   return json.loads(
-      subprocess.check_output(
-          ['xcrun', 'simctl', 'runtime', 'match', 'list',
-           '-j']).decode('utf-8'))
+    subprocess.check_output(
+      ['xcrun', 'simctl', 'runtime', 'match', 'list', '-j']
+    ).decode('utf-8')
+  )
 
 
 def get_simulator_runtime_info_by_build(runtime_build):
@@ -669,8 +728,9 @@ def get_simulator_runtime_info_by_id(identifier):
   return None
 
 
-def get_simulator_runtime_info(platform_type: constants.IOSPlatformType,
-                               platform_version: str):
+def get_simulator_runtime_info(
+  platform_type: constants.IOSPlatformType, platform_version: str
+):
   """Gets runtime object based on iOS version.
 
   Args:
@@ -703,14 +763,17 @@ def get_simulator_runtime_info(platform_type: constants.IOSPlatformType,
     # but the passed in version does not have a patch number (e.g. 17.0)
     # Therefore, we should use startswith for substring match.
     version = runtime.get('version')
-    if version and version.startswith(platform_version) and runtime.get(
-        'platformIdentifier') == platform_identifier:
+    if (
+      version
+      and version.startswith(platform_version)
+      and runtime.get('platformIdentifier') == platform_identifier
+    ):
       return runtime
   return None
 
 
 def is_simulator_runtime_builtin(runtime):
-  if (runtime is None or runtime['kind'] not in IOS_SIM_RUNTIME_BUILTIN_STATE):
+  if runtime is None or runtime['kind'] not in IOS_SIM_RUNTIME_BUILTIN_STATE:
     return False
   return True
 
@@ -740,7 +803,8 @@ def override_default_iphonesim_runtime(runtime_id, ios_version):
       break
   if overriding_build is None:
     LOGGER.debug(
-        'Unable to find the simulator runtime build number to override with...')
+      'Unable to find the simulator runtime build number to override with...'
+    )
     return
 
   # find the runtime build number to be overridden
@@ -749,11 +813,19 @@ def override_default_iphonesim_runtime(runtime_id, ios_version):
   sdk_build = sdks.get(iphone_sdk_key, {}).get("sdkBuild")
   if sdk_build is None:
     LOGGER.debug(
-        'Unable to find the simulator runtime build number to be overridden...')
+      'Unable to find the simulator runtime build number to be overridden...'
+    )
     return
   cmd = [
-      'xcrun', 'simctl', 'runtime', 'match', 'set', iphone_sdk_key,
-      overriding_build, '--sdkBuild', sdk_build
+    'xcrun',
+    'simctl',
+    'runtime',
+    'match',
+    'set',
+    iphone_sdk_key,
+    overriding_build,
+    '--sdkBuild',
+    sdk_build,
   ]
   LOGGER.debug(f'Overriding default runtime with command {cmd}')
   subprocess.check_call(cmd)
@@ -773,10 +845,13 @@ def delete_simulator_runtime(runtime_id, should_wait=False):
   except subprocess.CalledProcessError as e:
     # The error message contains "Cannot stage disk image" when trying to
     # delete a runtime that is already deleted.
-    if (b'Cannot stage disk image or bundle for delete' in e.output):
+    if b'Cannot stage disk image or bundle for delete' in e.output:
       LOGGER.warning(
-          'Error when deleting runtime %s. It may have been already deleted. '
-          'Error: %s', runtime_id, e.output.decode('utf-8', 'ignore'))
+        'Error when deleting runtime %s. It may have been already deleted. '
+        'Error: %s',
+        runtime_id,
+        e.output.decode('utf-8', 'ignore'),
+      )
       return
     else:
       raise
@@ -787,18 +862,19 @@ def delete_simulator_runtime(runtime_id, should_wait=False):
     runtime_to_delete = get_simulator_runtime_info_by_id(runtime_id)
     while runtime_to_delete is not None:
       LOGGER.debug(
-          f'Waiting for runtime to be deleted. Current state is {runtime_to_delete["state"]}'
+        f'Waiting for runtime to be deleted. Current state is {runtime_to_delete["state"]}'
       )
       time.sleep(1)
       time_waited += 1
-      if (time_waited > MAX_WAIT_TIME_TO_DELETE_RUNTIME):
+      if time_waited > MAX_WAIT_TIME_TO_DELETE_RUNTIME:
         raise test_runner_errors.SimRuntimeDeleteTimeoutError(runtime_id)
       runtime_to_delete = get_simulator_runtime_info_by_id(runtime_id)
     LOGGER.debug('Runtime successfully deleted!')
 
 
 def delete_least_recently_used_simulator_runtimes(
-    max_to_keep=constants.MAX_RUNTIME_KEPT_COUNT):
+  max_to_keep=constants.MAX_RUNTIME_KEPT_COUNT,
+):
   """Delete least recently used simulator runtimes.
 
   Delete simulator runtimes that are least recently used, based
@@ -812,25 +888,30 @@ def delete_least_recently_used_simulator_runtimes(
 
   runtimes = get_simulator_runtime_list()
   sorted_runtime_values = sorted(
-      runtimes.values(), key=lambda x: x.get("lastUsedAt", ""), reverse=True)
+    runtimes.values(), key=lambda x: x.get("lastUsedAt", ""), reverse=True
+  )
   sorted_runtimes = OrderedDict(
-      (item["identifier"], item) for item in sorted_runtime_values)
+    (item["identifier"], item) for item in sorted_runtime_values
+  )
 
   keep_count = 0
   for runtime_id, value in sorted_runtimes.items():
     if is_simulator_runtime_builtin(value):
       LOGGER.debug(
-          f'Built-in Runtime {runtime_id} with iOS {value["version"]} should not be deleted'
+        f'Built-in Runtime {runtime_id} with iOS {value["version"]} should not be deleted'
       )
       continue
     if keep_count < max_to_keep:
-      LOGGER.debug('Runtime %s should be kept. Current runtime count %s', value,
-                   keep_count)
+      LOGGER.debug(
+        'Runtime %s should be kept. Current runtime count %s', value, keep_count
+      )
       keep_count += 1
     else:
       LOGGER.debug(
-          'Runtime %s should be deleted due to exceeding max runtime count %s',
-          value, max_to_keep)
+        'Runtime %s should be deleted due to exceeding max runtime count %s',
+        value,
+        max_to_keep,
+      )
       delete_simulator_runtime(runtime_id, True)
       remove_stale_simulators_from_cache()
 
@@ -861,8 +942,8 @@ def remove_stale_simulators_from_cache():
 
   if os.path.isdir(SIMULATOR_CACHE_PATH):
     subprocess.check_call(
-        _compose_simctl_cmd(['delete', 'unavailable'],
-                            path=SIMULATOR_CACHE_PATH))
+      _compose_simctl_cmd(['delete', 'unavailable'], path=SIMULATOR_CACHE_PATH)
+    )
     is_device_with_udid_simulator.cache_clear()
 
 
@@ -915,7 +996,8 @@ def disable_hardware_keyboard(udid: str) -> None:
     udid: (str) UDID of the simulator to disable hw keyboard for.
   """
   path = os.path.expanduser(
-      '~/Library/Preferences/com.apple.iphonesimulator.plist')
+    '~/Library/Preferences/com.apple.iphonesimulator.plist'
+  )
   try:
     plist = {}
     if os.path.exists(path):
@@ -929,6 +1011,7 @@ def disable_hardware_keyboard(udid: str) -> None:
   except Exception:
     LOGGER.exception('Failed to disable hardware keyboard.')
 
+
 def disable_simulator_keyboard_tutorial(udid):
   """Disables keyboard tutorial for the given simulator.
 
@@ -941,38 +1024,97 @@ def disable_simulator_keyboard_tutorial(udid):
   boot_simulator_if_not_booted(udid)
 
   try:
-    subprocess.check_call([
-        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
-        'com.apple.keyboard.preferences', 'DidShowContinuousPathIntroduction',
-        '1'
-    ])
-    subprocess.check_call([
-        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
-        'com.apple.keyboard.preferences', 'KeyboardDidShowProductivityTutorial',
-        '1'
-    ])
-    subprocess.check_call([
-        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
-        'com.apple.keyboard.preferences', 'DidShowGestureKeyboardIntroduction',
-        '1'
-    ])
-    subprocess.check_call([
-        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+    subprocess.check_call(
+      [
+        'xcrun',
+        'simctl',
+        'spawn',
+        udid,
+        'defaults',
+        'write',
         'com.apple.keyboard.preferences',
-        'UIKeyboardDidShowInternationalInfoIntroduction', '1'
-    ])
-    subprocess.check_call([
-        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
-        'com.apple.keyboard.preferences', 'KeyboardAutocorrection', '0'
-    ])
-    subprocess.check_call([
-        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
-        'com.apple.keyboard.preferences', 'KeyboardPrediction', '0'
-    ])
-    subprocess.check_call([
-        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
-        'com.apple.keyboard.preferences', 'KeyboardShowPredictionBar', '0'
-    ])
+        'DidShowContinuousPathIntroduction',
+        '1',
+      ]
+    )
+    subprocess.check_call(
+      [
+        'xcrun',
+        'simctl',
+        'spawn',
+        udid,
+        'defaults',
+        'write',
+        'com.apple.keyboard.preferences',
+        'KeyboardDidShowProductivityTutorial',
+        '1',
+      ]
+    )
+    subprocess.check_call(
+      [
+        'xcrun',
+        'simctl',
+        'spawn',
+        udid,
+        'defaults',
+        'write',
+        'com.apple.keyboard.preferences',
+        'DidShowGestureKeyboardIntroduction',
+        '1',
+      ]
+    )
+    subprocess.check_call(
+      [
+        'xcrun',
+        'simctl',
+        'spawn',
+        udid,
+        'defaults',
+        'write',
+        'com.apple.keyboard.preferences',
+        'UIKeyboardDidShowInternationalInfoIntroduction',
+        '1',
+      ]
+    )
+    subprocess.check_call(
+      [
+        'xcrun',
+        'simctl',
+        'spawn',
+        udid,
+        'defaults',
+        'write',
+        'com.apple.keyboard.preferences',
+        'KeyboardAutocorrection',
+        '0',
+      ]
+    )
+    subprocess.check_call(
+      [
+        'xcrun',
+        'simctl',
+        'spawn',
+        udid,
+        'defaults',
+        'write',
+        'com.apple.keyboard.preferences',
+        'KeyboardPrediction',
+        '0',
+      ]
+    )
+    subprocess.check_call(
+      [
+        'xcrun',
+        'simctl',
+        'spawn',
+        udid,
+        'defaults',
+        'write',
+        'com.apple.keyboard.preferences',
+        'KeyboardShowPredictionBar',
+        '0',
+      ]
+    )
   except subprocess.CalledProcessError as e:
     message = f'Unable to disable keyboard tutorial: {e.stderr}'
     LOGGER.error(message)

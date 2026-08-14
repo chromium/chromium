@@ -10,7 +10,6 @@ import exception_utils
 
 
 class DeviceExceptionCheckerTest(unittest.TestCase):
-
   def setUp(self):
     self.exception_checker = exception_utils.DeviceExceptionChecker()
 
@@ -19,31 +18,40 @@ class DeviceExceptionCheckerTest(unittest.TestCase):
 
     self.exception_checker.check_line(log_message)
 
-    self.assertRaises(exception_utils.DeviceSetupNotCompleteError,
-                      self.exception_checker.throw_first)
+    self.assertRaises(
+      exception_utils.DeviceSetupNotCompleteError,
+      self.exception_checker.throw_first,
+    )
 
   def test_failed_to_install_embedded_profile_error_raised(self):
     log_message = "Recovery Suggestion: Failed to install embedded profile for"
 
     self.exception_checker.check_line(log_message)
 
-    self.assertRaises(exception_utils.FailedToInstallEmbeddedProfileError,
-                      self.exception_checker.throw_first)
+    self.assertRaises(
+      exception_utils.FailedToInstallEmbeddedProfileError,
+      self.exception_checker.throw_first,
+    )
 
   def test_developer_mode_disabled_error_raised(self):
-    log_message = ("name:iPhone, error:Developer Mode disabled To use iPhone" +
-                   " for development, enable Developer Mode in Settings → " +
-                   "Privacy & Security.")
+    log_message = (
+      "name:iPhone, error:Developer Mode disabled To use iPhone"
+      + " for development, enable Developer Mode in Settings → "
+      + "Privacy & Security."
+    )
 
     self.exception_checker.check_line(log_message)
 
-    self.assertRaises(exception_utils.DeveloperModeDisabledError,
-                      self.exception_checker.throw_first)
+    self.assertRaises(
+      exception_utils.DeveloperModeDisabledError,
+      self.exception_checker.throw_first,
+    )
 
 
 if __name__ == '__main__':
   logging.basicConfig(
-      format='[%(asctime)s:%(levelname)s] %(message)s',
-      level=logging.DEBUG,
-      datefmt='%I:%M:%S')
+    format='[%(asctime)s:%(levelname)s] %(message)s',
+    level=logging.DEBUG,
+    datefmt='%I:%M:%S',
+  )
   unittest.main()

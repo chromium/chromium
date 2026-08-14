@@ -13,7 +13,6 @@ import test_runner_test
 
 
 class TestIsMacOS13OrHigher(test_runner_test.TestCase):
-
   @patch('mac_util.version')
   def test_is_macos_13_or_higher_with_version_12(self, mock_version):
     mock_version.return_value = '12.0.0'
@@ -31,7 +30,6 @@ class TestIsMacOS13OrHigher(test_runner_test.TestCase):
 
 
 class TestRunCodesignCheck(test_runner_test.TestCase):
-
   @patch('subprocess.check_call')
   def test_run_codesign_check_succeeds(self, mock_check_call):
     mock_check_call.return_value = MagicMock()
@@ -49,23 +47,23 @@ class TestRunCodesignCheck(test_runner_test.TestCase):
 
 
 class TestKillUsbMuxd(test_runner_test.TestCase):
-
   @patch('subprocess.check_call')
   def test_run_kill_usbmuxd_succeeds(self, mock_check_call):
     mock_check_call.return_value = MagicMock()
     mac_util.kill_usbmuxd()
     mock_check_call.assert_called_with(
-        ['sudo', '/usr/bin/killall', '-v', 'usbmuxd'])
+      ['sudo', '/usr/bin/killall', '-v', 'usbmuxd']
+    )
 
 
 class TestStopUsbMuxd(test_runner_test.TestCase):
-
   @patch('subprocess.check_call')
   def test_run_stop_usbmuxd_succeeds(self, mock_check_call):
     mock_check_call.return_value = MagicMock()
     mac_util.stop_usbmuxd()
     mock_check_call.assert_called_with(
-        ['sudo', '/bin/launchctl', 'stop', 'com.apple.usbmuxd'])
+      ['sudo', '/bin/launchctl', 'stop', 'com.apple.usbmuxd']
+    )
 
 
 if __name__ == '__main__':

@@ -8,17 +8,18 @@ import os
 import shutil
 
 SIMULATORS_FOLDER = os.path.expanduser(
-    '~/Library/Developer/CoreSimulator/Devices')
+  '~/Library/Developer/CoreSimulator/Devices'
+)
 
 
 def move_raw_coverage_data(udid, isolated_output_dir):
   """Moves raw coverage data files(.profraw) from simulator shared resources
-     directory to isolated_output/profraw.
+  directory to isolated_output/profraw.
 
-     Args:
-       udid: (str) UDID of the simulator that just run the tests.
-       isolated_out_dir: (str) Isolated output directory of current isolated
-       shard.
+  Args:
+    udid: (str) UDID of the simulator that just run the tests.
+    isolated_out_dir: (str) Isolated output directory of current isolated
+    shard.
   """
   profraw_origin_dir = os.path.join(SIMULATORS_FOLDER, udid, "data")
   profraw_destination_dir = os.path.join(isolated_output_dir, "profraw")
@@ -35,6 +36,8 @@ def zip_and_remove_folder(dir_path):
     dir_path: (str) An absolute path to directory.
   """
   shutil.make_archive(
-      os.path.join(os.path.dirname(dir_path), os.path.basename(dir_path)),
-      'zip', dir_path)
+    os.path.join(os.path.dirname(dir_path), os.path.basename(dir_path)),
+    'zip',
+    dir_path,
+  )
   shutil.rmtree(dir_path)

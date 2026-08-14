@@ -29,21 +29,24 @@ class TestCoverageUtil(test_runner_test.TestCase):
     self.test_folder = os.path.join(os.getcwd(), "file_util_test_data")
     self.simulators_folder = os.path.join(self.test_folder, "Devices")
     self.existing_udid = "existing-udid"
-    self.existing_udid_folder = os.path.join(self.simulators_folder,
-                                             "existing-udid")
-    self.existing_udid_data_folder = os.path.join(self.simulators_folder,
-                                                  self.existing_udid, "data")
+    self.existing_udid_folder = os.path.join(
+      self.simulators_folder, "existing-udid"
+    )
+    self.existing_udid_data_folder = os.path.join(
+      self.simulators_folder, self.existing_udid, "data"
+    )
     if not os.path.exists(self.existing_udid_data_folder):
       os.makedirs(self.existing_udid_data_folder)
 
     self.profraw_file_name = "default.profraw"
-    self.origin_profraw_file_path = os.path.join(self.existing_udid_data_folder,
-                                                 self.profraw_file_name)
+    self.origin_profraw_file_path = os.path.join(
+      self.existing_udid_data_folder, self.profraw_file_name
+    )
 
     self.not_existing_udid = "not-existing-udid"
-    self.not_existing_udid_data_folder = os.path.join(self.simulators_folder,
-                                                      self.not_existing_udid,
-                                                      "data")
+    self.not_existing_udid_data_folder = os.path.join(
+      self.simulators_folder, self.not_existing_udid, "data"
+    )
     if os.path.exists(self.not_existing_udid_data_folder):
       shutil.rmtree(self.not_existing_udid_data_folder)
 
@@ -51,9 +54,9 @@ class TestCoverageUtil(test_runner_test.TestCase):
     if not os.path.exists(self.output_folder):
       os.makedirs(self.output_folder)
 
-    self.expected_profraw_output_path = os.path.join(self.output_folder,
-                                                     "profraw",
-                                                     self.profraw_file_name)
+    self.expected_profraw_output_path = os.path.join(
+      self.output_folder, "profraw", self.profraw_file_name
+    )
 
     self.mock(file_util, 'SIMULATORS_FOLDER', self.simulators_folder)
 

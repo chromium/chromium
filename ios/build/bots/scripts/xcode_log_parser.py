@@ -35,9 +35,10 @@ IPS_REGEX = re.compile(r'ios_.*chrome.+\.ips')
 # see: https://github.com/google/EarlGrey/blob/earlgrey2/TestLib/
 # DistantObject/GREYTestApplicationDistantObject.m
 CRASH_REGEX = re.compile(
-    r'(App crashed and disconnected\.)|'
-    r'(App process is hanging\.)|'
-    r'(Crash: ios_chrome_.+_eg2tests_module-Runner \(\d+\) )')
+  r'(App crashed and disconnected\.)|'
+  r'(App process is hanging\.)|'
+  r'(Crash: ios_chrome_.+_eg2tests_module-Runner \(\d+\) )'
+)
 
 
 def _sanitize_str(line):
@@ -85,9 +86,10 @@ def parse_passed_failed_tests_for_interrupted_run(output):
   _find_list_of_tests(failed_tests, failed_test_regex)
   result.add_test_names_status(passed_tests, TestStatus.PASS)
   result.add_test_names_status(
-      failed_tests,
-      TestStatus.FAIL,
-      test_log='Test failed in interrupted(timedout) run.')
+    failed_tests,
+    TestStatus.FAIL,
+    test_log='Test failed in interrupted(timedout) run.',
+  )
 
   LOGGER.info('%d passed tests for interrupted build.' % len(passed_tests))
   LOGGER.info('%d failed tests for interrupted build.' % len(failed_tests))
@@ -105,9 +107,12 @@ def format_test_case(test_case):
     (str) Test case id in format TestClass/TestMethod.
   """
   test_case = _sanitize_str(test_case)
-  test = test_case.replace('[', '').replace(']',
-                                            '').replace('-',
-                                                        '').replace(' ', '/')
+  test = (
+    test_case.replace('[', '')
+    .replace(']', '')
+    .replace('-', '')
+    .replace(' ', '/')
+  )
   return test
 
 
@@ -132,23 +137,28 @@ def copy_screenshots_for_failed_test(failure_message, test_case_folder):
 
 
 def test_crashed(root):
-  actionResultMetrics = root.get('actions',
-                                 {}).get('_values',
-                                         [{}])[0].get('actionResult',
-                                                      {}).get('metrics', {})
+  actionResultMetrics = (
+    root.get('actions', {})
+    .get('_values', [{}])[0]
+    .get('actionResult', {})
+    .get('metrics', {})
+  )
 
   # In case of test crash both numbers of run and failed tests are equal to 0.
   actionResultMetricsMissing = (
-      actionResultMetrics.get('testsCount', {}).get('_value', 0) == 0 and
-      actionResultMetrics.get('testsFailedCount', {}).get('_value', 0) == 0 and
-      actionResultMetrics.get('errorCount', {}).get('_value', 0) == 0)
+    actionResultMetrics.get('testsCount', {}).get('_value', 0) == 0
+    and actionResultMetrics.get('testsFailedCount', {}).get('_value', 0) == 0
+    and actionResultMetrics.get('errorCount', {}).get('_value', 0) == 0
+  )
   # After certain types of test failures action results metrics might be missing
   # but root metrics may still be present, indicating that some tests still
   # ran successfully and the entire test suite should not be considered crashed
   rootMetricsMissing = (
-      root.get('metrics', {}).get('testsCount', {}).get('_value', 0) == 0 and
-      root.get('metrics', {}).get('testsFailedCount', {}).get('_value', 0) == 0
-      and root.get('metrics', {}).get('errorCount', {}).get('_value', 0) == 0)
+    root.get('metrics', {}).get('testsCount', {}).get('_value', 0) == 0
+    and root.get('metrics', {}).get('testsFailedCount', {}).get('_value', 0)
+    == 0
+    and root.get('metrics', {}).get('errorCount', {}).get('_value', 0) == 0
+  )
   # if both metrics are missing then consider the test app to have crashed
   return actionResultMetricsMissing and rootMetricsMissing
 
@@ -156,9 +166,10 @@ def test_crashed(root):
 def xcode16_test_crashed(summary):
   """All of passed, failed and expectedly failed tests are equal to 0."""
   crashed = (
-      summary.get('failedTests', 0) == 0 and
-      summary.get('passedTests', 0) == 0 and
-      summary.get('expectedFailures', 0) == 0)
+    summary.get('failedTests', 0) == 0
+    and summary.get('passedTests', 0) == 0
+    and summary.get('expectedFailures', 0) == 0
+  )
   return crashed
 
 
@@ -168,19 +179,20 @@ def get_test_suites(summary, xcode_parallel_enabled):
   if xcode_parallel_enabled and xcode_util.using_xcode_16_or_higher():
     return summary['tests']['_values']
   return summary['tests']['_values'][0]['subtests']['_values'][0]['subtests'][
-      '_values']
+    '_values'
+  ]
 
 
 def duration_to_milliseconds(duration_str):
   """Converts a duration string (e.g., "11s", "3m 10s") to milliseconds.
 
-    Args:
-        duration_str: The duration string to convert.
+  Args:
+      duration_str: The duration string to convert.
 
-    Returns:
-        The duration in milliseconds (as a float), or None if the
-          format is invalid.
-    """
+  Returns:
+      The duration in milliseconds (as a float), or None if the
+        format is invalid.
+  """
 
   # Matches optional minutes and seconds
   pattern = r"(?:(\d+)m\s*)?(?:(\d+)s)?$"
@@ -240,12 +252,19 @@ class XcodeLogParser(object):
     if ref_id in reference_types:
       data = json.loads(XcodeLogParser._xcresulttool_get(xcresult_path))
       # Redefine ref_id to get only the reference data
-      ref_id = data['actions']['_values'][0]['actionResult'][
-          ref_id]['id']['_value']
+      ref_id = data['actions']['_values'][0]['actionResult'][ref_id]['id'][
+        '_value'
+      ]
     # If no ref_id then xcresulttool will use default(root) id.
     id_params = ['--id', ref_id] if ref_id else []
-    xcresult_command = ['xcresulttool', 'get', '--format', 'json',
-                        '--path', xcresult_path] + id_params
+    xcresult_command = [
+      'xcresulttool',
+      'get',
+      '--format',
+      'json',
+      '--path',
+      xcresult_path,
+    ] + id_params
     if xcode_util.using_xcode_16_or_higher():
       xcresult_command.append('--legacy')
     return subprocess.check_output(xcresult_command).decode('utf-8').strip()
@@ -274,17 +293,22 @@ class XcodeLogParser(object):
     if 'testFailureSummaries' not in actions_invocation_record['issues']:
       return result
     for failure_summary in actions_invocation_record['issues'][
-        'testFailureSummaries']['_values']:
+      'testFailureSummaries'
+    ]['_values']:
       test_case_id = format_test_case(failure_summary['testCaseName']['_value'])
       if test_case_id in excluded:
         continue
       error_line = _sanitize_str(
-          failure_summary['documentLocationInCreatingWorkspace'].get(
-              'url', {}).get('_value', ''))
-      fail_message = error_line + '\n' + _sanitize_str(
-          failure_summary['message']['_value'])
+        failure_summary['documentLocationInCreatingWorkspace']
+        .get('url', {})
+        .get('_value', '')
+      )
+      fail_message = (
+        error_line + '\n' + _sanitize_str(failure_summary['message']['_value'])
+      )
       result.add_test_result(
-          TestResult(test_case_id, TestStatus.FAIL, test_log=fail_message))
+        TestResult(test_case_id, TestStatus.FAIL, test_log=fail_message)
+      )
     return result
 
   @staticmethod
@@ -320,8 +344,9 @@ class XcodeLogParser(object):
     # look for logs printed during the failing test method
     formatted_test_name = test_result.name.replace('/', ' ')
     error_message_regex = (
-        rf'(Starting test: -\[{formatted_test_name}\].*?)'
-        rf'((Standard output and standard error from)|(Starting test: -)|(\Z))')
+      rf'(Starting test: -\[{formatted_test_name}\].*?)'
+      rf'((Standard output and standard error from)|(Starting test: -)|(\Z))'
+    )
     for file_path in files.values():
       with open(file_path, 'r') as f:
         contents = f.read()
@@ -333,9 +358,10 @@ class XcodeLogParser(object):
     log_file_names = ', '.join(files.keys())
     if not app_side_failure_message:
       failure_reason_missing = (
-          f'{constants.CRASH_MESSAGE}\n'
-          f'App side failure reason not found for {test_result.name}.\n'
-          f'For complete logs see {log_file_names} in Artifacts.\n')
+        f'{constants.CRASH_MESSAGE}\n'
+        f'App side failure reason not found for {test_result.name}.\n'
+        f'For complete logs see {log_file_names} in Artifacts.\n'
+      )
       return failure_reason_missing
 
     app_crashed_message = f'{constants.CRASH_MESSAGE}\n'
@@ -346,15 +372,17 @@ class XcodeLogParser(object):
     # omit layout constraint warnings since they can clutter logs and make the
     # actual reason why the app crashed difficult to find
     app_side_failure_message = re.sub(
-        r'Unable to simultaneously satisfy constraints.(.*?)'
-        r'may also be helpful',
-        constants.LAYOUT_CONSTRAINT_MSG,
-        app_side_failure_message,
-        flags=re.DOTALL)
+      r'Unable to simultaneously satisfy constraints.(.*?)'
+      r'may also be helpful',
+      constants.LAYOUT_CONSTRAINT_MSG,
+      app_side_failure_message,
+      flags=re.DOTALL,
+    )
 
     app_crashed_message += (
-        f'Showing logs from application under test. For complete logs see '
-        f'{log_file_names} in Artifacts.\n\n{app_side_failure_message}\n')
+      f'Showing logs from application under test. For complete logs see '
+      f'{log_file_names} in Artifacts.\n\n{app_side_failure_message}\n'
+    )
     return app_crashed_message
 
   @staticmethod
@@ -376,8 +404,9 @@ class XcodeLogParser(object):
     result = ResultCollection()
     # See TESTS_REF in xcode_log_parser_test.py for an example of |root|.
     root = json.loads(XcodeLogParser._xcresulttool_get(xcresult, 'testsRef'))
-    for summary in root['summaries']['_values'][0][
-        'testableSummaries']['_values']:
+    for summary in root['summaries']['_values'][0]['testableSummaries'][
+      '_values'
+    ]:
       if not summary['tests']:
         continue
       test_suites = get_test_suites(summary, xcode_parallel_enabled)
@@ -395,11 +424,14 @@ class XcodeLogParser(object):
             # Convert to milliseconds as int as used in |TestResult|.
             duration = int(float(duration) * 1000)
           if any(
-              test_name.endswith(suffix)
-              for suffix in SYSTEM_ERROR_TEST_NAME_SUFFIXES):
+            test_name.endswith(suffix)
+            for suffix in SYSTEM_ERROR_TEST_NAME_SUFFIXES
+          ):
             result.crashed = True
-            result.crash_message += 'System error in %s: %s\n' % (xcresult,
-                                                                  test_name)
+            result.crash_message += 'System error in %s: %s\n' % (
+              xcresult,
+              test_name,
+            )
             continue
           # If a test case was executed multiple times, there will be multiple
           # |test| objects of it. Each |test| corresponds to an execution of the
@@ -407,56 +439,71 @@ class XcodeLogParser(object):
           test_status_value = test['testStatus']['_value']
           if test_status_value == 'Success':
             result.add_test_result(
-                TestResult(test_name, TestStatus.PASS, duration=duration))
+              TestResult(test_name, TestStatus.PASS, duration=duration)
+            )
           elif test_status_value == 'Expected Failure':
             result.add_test_result(
-                TestResult(
-                    test_name,
-                    TestStatus.FAIL,
-                    expected_status=TestStatus.FAIL,
-                    duration=duration))
+              TestResult(
+                test_name,
+                TestStatus.FAIL,
+                expected_status=TestStatus.FAIL,
+                duration=duration,
+              )
+            )
           elif test_status_value == 'Skipped':
             result.add_test_result(
-                TestResult(
-                    test_name,
-                    TestStatus.SKIP,
-                    expected_status=TestStatus.SKIP,
-                    duration=duration))
+              TestResult(
+                test_name,
+                TestStatus.SKIP,
+                expected_status=TestStatus.SKIP,
+                duration=duration,
+              )
+            )
           else:
             result.add_test_result(
-                XcodeLogParser._create_failed_test_result(
-                    test_name, duration, xcresult, test, output_path))
+              XcodeLogParser._create_failed_test_result(
+                test_name, duration, xcresult, test, output_path
+              )
+            )
     return result
 
   @staticmethod
-  def _create_failed_test_result(test_name, duration, xcresult, test,
-                                 output_path):
+  def _create_failed_test_result(
+    test_name, duration, xcresult, test, output_path
+  ):
     test_result = TestResult(
-        test_name,
-        TestStatus.FAIL,
-        duration=duration,
-        test_log='Logs from "failureSummaries" in .xcresult:\n')
+      test_name,
+      TestStatus.FAIL,
+      duration=duration,
+      test_log='Logs from "failureSummaries" in .xcresult:\n',
+    )
     # Parse data for failed test by its id. See SINGLE_TEST_SUMMARY_REF
     # in xcode_log_parser_test.py for an example of |summary_ref|.
     summary_ref = json.loads(
-        XcodeLogParser._xcresulttool_get(xcresult,
-                                         test['summaryRef']['id']['_value']))
+      XcodeLogParser._xcresulttool_get(
+        xcresult, test['summaryRef']['id']['_value']
+      )
+    )
     # On rare occasions rootFailure doesn't have 'failureSummaries'.
     for failure in summary_ref.get('failureSummaries', {}).get('_values', []):
       file_name = _sanitize_str(failure.get('fileName', {}).get('_value', ''))
       line_number = _sanitize_str(
-          failure.get('lineNumber', {}).get('_value', ''))
+        failure.get('lineNumber', {}).get('_value', '')
+      )
       test_result.test_log += f'file: {file_name}, line: {line_number}\n'
 
       if CRASH_REGEX.search(failure['message']['_value']):
         test_result.test_log += XcodeLogParser._get_app_side_failure(
-            test_result, output_path)
+          test_result, output_path
+        )
       else:
-        test_result.test_log += _sanitize_str(
-            failure['message']['_value']) + '\n'
+        test_result.test_log += (
+          _sanitize_str(failure['message']['_value']) + '\n'
+        )
 
     attachments = XcodeLogParser._extract_artifacts_for_test(
-        test_name, summary_ref, xcresult)
+      test_name, summary_ref, xcresult
+    )
     test_result.attachments.update(attachments)
 
     return test_result
@@ -487,8 +534,9 @@ class XcodeLogParser(object):
     if not os.path.exists(output_path):
       overall_collected_result.crashed = True
       overall_collected_result.crash_message = (
-          '%s with staging data does not exist.\n' % output_path +
-          '\n'.join(output))
+        '%s with staging data does not exist.\n' % output_path
+        + '\n'.join(output)
+      )
       return overall_collected_result
 
     xcresult = output_path + _XCRESULT_SUFFIX
@@ -499,10 +547,11 @@ class XcodeLogParser(object):
     if not os.path.exists(xcresult):
       overall_collected_result.crashed = True
       overall_collected_result.crash_message = (
-          '%s with test results does not exist.\n' % xcresult +
-          '\n'.join(output))
+        '%s with test results does not exist.\n' % xcresult + '\n'.join(output)
+      )
       overall_collected_result.add_result_collection(
-          parse_passed_failed_tests_for_interrupted_run(output))
+        parse_passed_failed_tests_for_interrupted_run(output)
+      )
       file_util.zip_and_remove_folder(output_path)
       return overall_collected_result
 
@@ -511,17 +560,19 @@ class XcodeLogParser(object):
 
     XcodeLogParser.export_diagnostic_data(output_path)
 
-    if (test_crashed(root)):
+    if test_crashed(root):
       overall_collected_result.crashed = True
       overall_collected_result.crash_message = '0 tests executed!'
     else:
       overall_collected_result.add_result_collection(
-          XcodeLogParser._get_test_statuses(output_path,
-                                            xcode_parallel_enabled))
+        XcodeLogParser._get_test_statuses(output_path, xcode_parallel_enabled)
+      )
       # For some crashed tests info about error contained only in root node.
       overall_collected_result.add_result_collection(
-          XcodeLogParser._list_of_failed_tests(
-              root, excluded=overall_collected_result.all_test_names()))
+        XcodeLogParser._list_of_failed_tests(
+          root, excluded=overall_collected_result.all_test_names()
+        )
+      )
     # Remove the symbol link file.
     if os.path.islink(output_path):
       os.unlink(output_path)
@@ -553,9 +604,11 @@ class XcodeLogParser(object):
       return
 
     # See TESTS_REF['summaries']['_values'] in xcode_log_parser_test.py.
-    test_summaries = json.loads(
-        XcodeLogParser._xcresulttool_get(xcresult, 'testsRef')).get(
-            'summaries', {}).get('_values', [])
+    test_summaries = (
+      json.loads(XcodeLogParser._xcresulttool_get(xcresult, 'testsRef'))
+      .get('summaries', {})
+      .get('_values', [])
+    )
 
     test_summary_refs = {}
 
@@ -567,7 +620,9 @@ class XcodeLogParser(object):
               for test in test_case.get('subtests', {}).get('_values', []):
                 test_status_value = test['testStatus']['_value']
                 if test_status_value not in [
-                    'Success', 'Expected Failure', 'Skipped'
+                  'Success',
+                  'Expected Failure',
+                  'Skipped',
                 ]:
                   summary_ref = test['summaryRef']['id']['_value']
                   test_summary_refs[test['identifier']['_value']] = summary_ref
@@ -576,7 +631,8 @@ class XcodeLogParser(object):
       # See SINGLE_TEST_SUMMARY_REF in xcode_log_parser_test.py for an example
       # of |test_summary|.
       test_summary = json.loads(
-          XcodeLogParser._xcresulttool_get(xcresult, summary_ref_id))
+        XcodeLogParser._xcresulttool_get(xcresult, summary_ref_id)
+      )
       XcodeLogParser._extract_artifacts_for_test(test, test_summary, xcresult)
 
   @staticmethod
@@ -602,10 +658,12 @@ class XcodeLogParser(object):
     root = json.loads(XcodeLogParser._xcresulttool_get(xcresult))
     try:
       diagnostics_ref = root['actions']['_values'][0]['actionResult'][
-          'diagnosticsRef']['id']['_value']
+        'diagnosticsRef'
+      ]['id']['_value']
       diagnostic_folder = '%s_diagnostic' % xcresult
-      XcodeLogParser._export_data(xcresult, diagnostics_ref, 'directory',
-                                    diagnostic_folder)
+      XcodeLogParser._export_data(
+        xcresult, diagnostics_ref, 'directory', diagnostic_folder
+      )
       # Copy log files out of diagnostic_folder if any. Use |name_count| to
       # generate an index for same name files produced from Xcode parallel
       # testing.
@@ -614,8 +672,9 @@ class XcodeLogParser(object):
         for filename in files:
           if IPS_REGEX.match(filename):
             # TODO(crbug.com/378086419): Improve IPS crash report logging
-            crash_reports_dir = os.path.join(output_path, os.pardir,
-                                             'Crash Reports')
+            crash_reports_dir = os.path.join(
+              output_path, os.pardir, 'Crash Reports'
+            )
             os.makedirs(crash_reports_dir, exist_ok=True)
             output_filepath = os.path.join(crash_reports_dir, filename)
             # crash report files with the same name from previous attempt_#'s
@@ -624,11 +683,14 @@ class XcodeLogParser(object):
 
           if 'StandardOutputAndStandardError' in filename:
             file_index = name_count.get(filename, 0)
-            output_filename = (
-                '%s_simulator#%d_%s' %
-                (os.path.basename(output_path), file_index, filename))
-            output_filepath = os.path.join(output_path, os.pardir,
-                                           output_filename)
+            output_filename = '%s_simulator#%d_%s' % (
+              os.path.basename(output_path),
+              file_index,
+              filename,
+            )
+            output_filepath = os.path.join(
+              output_path, os.pardir, output_filename
+            )
             shutil.copy(os.path.join(root, filename), output_filepath)
             name_count[filename] = name_count.get(filename, 0) + 1
       file_util.zip_and_remove_folder(diagnostic_folder)
@@ -651,19 +713,25 @@ class XcodeLogParser(object):
       output_path: (str) An output location.
     """
     export_command = [
-        'xcresulttool', 'export', '--type', output_type, '--id', ref_id,
-        '--path', xcresult, '--output-path', output_path
+      'xcresulttool',
+      'export',
+      '--type',
+      output_type,
+      '--id',
+      ref_id,
+      '--path',
+      xcresult,
+      '--output-path',
+      output_path,
     ]
     if xcode_util.using_xcode_16_or_higher():
       export_command.append('--legacy')
     subprocess.check_output(export_command).decode('utf-8').strip()
 
   @staticmethod
-  def _extract_attachments(test,
-                           test_activities,
-                           xcresult,
-                           attachments,
-                           include_jpg=True):
+  def _extract_attachments(
+    test, test_activities, xcresult, attachments, include_jpg=True
+  ):
     """Exrtact attachments from xcresult folder for a single test result.
 
     Copies all attachments under test_activities and nested subactivities (if
@@ -690,16 +758,21 @@ class XcodeLogParser(object):
     for activity_summary in test_activities:
       if 'subactivities' in activity_summary:
         XcodeLogParser._extract_attachments(
-            test,
-            activity_summary.get('subactivities', {}).get('_values', []),
-            xcresult, attachments, include_jpg)
-      for attachment in activity_summary.get('attachments',
-                                             {}).get('_values', []):
+          test,
+          activity_summary.get('subactivities', {}).get('_values', []),
+          xcresult,
+          attachments,
+          include_jpg,
+        )
+      for attachment in activity_summary.get('attachments', {}).get(
+        '_values', []
+      ):
         raw_file_name = str(attachment['filename']['_value'])
         if 'payloadRef' not in attachment:
           LOGGER.warning(
-              'Unable to export attachment %s because payloadRef is undefined' %
-              raw_file_name)
+            'Unable to export attachment %s because payloadRef is undefined'
+            % raw_file_name
+          )
           continue
         payload_ref = attachment['payloadRef']['id']['_value']
         _, file_name_extension = os.path.splitext(raw_file_name)
@@ -707,15 +780,18 @@ class XcodeLogParser(object):
         if not include_jpg and file_name_extension in ['.jpg', '.jpeg']:
           continue
 
-        attachment_filename = (
-            '%s_%s_%s' %
-            (os.path.splitext(os.path.basename(xcresult))[0],
-             test.replace('/', '_'), raw_file_name))
+        attachment_filename = '%s_%s_%s' % (
+          os.path.splitext(os.path.basename(xcresult))[0],
+          test.replace('/', '_'),
+          raw_file_name,
+        )
         # Extracts attachment to the same folder containing xcresult.
         attachment_output_path = os.path.abspath(
-            os.path.join(xcresult, os.pardir, attachment_filename))
-        XcodeLogParser._export_data(xcresult, payload_ref, 'file',
-                                      attachment_output_path)
+          os.path.join(xcresult, os.pardir, attachment_filename)
+        )
+        XcodeLogParser._export_data(
+          xcresult, payload_ref, 'file', attachment_output_path
+        )
         attachments[attachment_filename] = attachment_output_path
 
   @staticmethod
@@ -736,18 +812,20 @@ class XcodeLogParser(object):
     # Extract all attachments except for screenshots from each step of the
     # test.
     XcodeLogParser._extract_attachments(
-        test,
-        summary_ref.get('activitySummaries', {}).get('_values', []),
-        xcresult,
-        attachments,
-        include_jpg=False)
+      test,
+      summary_ref.get('activitySummaries', {}).get('_values', []),
+      xcresult,
+      attachments,
+      include_jpg=False,
+    )
     # Extract all attachments of the failure step (applied to failed tests).
     XcodeLogParser._extract_attachments(
-        test,
-        summary_ref.get('failureSummaries', {}).get('_values', []),
-        xcresult,
-        attachments,
-        include_jpg=True)
+      test,
+      summary_ref.get('failureSummaries', {}).get('_values', []),
+      xcresult,
+      attachments,
+      include_jpg=True,
+    )
     return attachments
 
 
@@ -774,8 +852,14 @@ class Xcode16LogParser(object):
       os.environ['PATH'] += ':%s' % folder
 
     xcresult_command = [
-        'xcresulttool', 'get', 'test-results', 'summary', '--format', 'json',
-        '--path', xcresult_path
+      'xcresulttool',
+      'get',
+      'test-results',
+      'summary',
+      '--format',
+      'json',
+      '--path',
+      xcresult_path,
     ]
     return subprocess.check_output(xcresult_command).decode('utf-8').strip()
 
@@ -799,8 +883,14 @@ class Xcode16LogParser(object):
       os.environ['PATH'] += ':%s' % folder
 
     xcresult_command = [
-        'xcresulttool', 'get', 'test-results', 'tests', '--format', 'json',
-        '--path', xcresult_path
+      'xcresulttool',
+      'get',
+      'test-results',
+      'tests',
+      '--format',
+      'json',
+      '--path',
+      xcresult_path,
     ]
     return subprocess.check_output(xcresult_command).decode('utf-8').strip()
 
@@ -842,11 +932,13 @@ class Xcode16LogParser(object):
       if 'duration' in test:
         duration = duration_to_milliseconds(test['duration'])
       if any(
-          test_name.endswith(suffix)
-          for suffix in SYSTEM_ERROR_TEST_NAME_SUFFIXES):
+        test_name.endswith(suffix) for suffix in SYSTEM_ERROR_TEST_NAME_SUFFIXES
+      ):
         result.crashed = True
-        result.crash_message += 'System error in %s: %s\n' % (xcresult,
-                                                              test_name)
+        result.crash_message += 'System error in %s: %s\n' % (
+          xcresult,
+          test_name,
+        )
         continue
       # If a test case was executed multiple times, there will be multiple
       # |test| objects of it. Each |test| corresponds to an execution of the
@@ -854,35 +946,43 @@ class Xcode16LogParser(object):
       test_status_value = test['result']
       if test_status_value == 'Passed':
         result.add_test_result(
-            TestResult(test_name, TestStatus.PASS, duration=duration))
+          TestResult(test_name, TestStatus.PASS, duration=duration)
+        )
       elif test_status_value == 'Expected Failure':
         result.add_test_result(
-            TestResult(
-                test_name,
-                TestStatus.FAIL,
-                expected_status=TestStatus.FAIL,
-                duration=duration))
+          TestResult(
+            test_name,
+            TestStatus.FAIL,
+            expected_status=TestStatus.FAIL,
+            duration=duration,
+          )
+        )
       elif test_status_value == 'Skipped':
         result.add_test_result(
-            TestResult(
-                test_name,
-                TestStatus.SKIP,
-                expected_status=TestStatus.SKIP,
-                duration=duration))
+          TestResult(
+            test_name,
+            TestStatus.SKIP,
+            expected_status=TestStatus.SKIP,
+            duration=duration,
+          )
+        )
       else:
         result.add_test_result(
-            Xcode16LogParser._create_failed_test_result(test_name, duration,
-                                                        test, output_path,
-                                                        xcresult))
+          Xcode16LogParser._create_failed_test_result(
+            test_name, duration, test, output_path, xcresult
+          )
+        )
     return result
 
-  def _create_failed_test_result(test_name, duration, test, output_path,
-                                 xcresult):
+  def _create_failed_test_result(
+    test_name, duration, test, output_path, xcresult
+  ):
     test_result = TestResult(
-        test_name,
-        TestStatus.FAIL,
-        duration=duration,
-        test_log='Logs from "Failure Message" in .xcresult:\n')
+      test_name,
+      TestStatus.FAIL,
+      duration=duration,
+      test_log='Logs from "Failure Message" in .xcresult:\n',
+    )
 
     for failure in test['children']:
       if failure['nodeType'] != 'Failure Message':
@@ -890,12 +990,14 @@ class Xcode16LogParser(object):
 
       if CRASH_REGEX.search(failure['name']):
         test_result.test_log += XcodeLogParser._get_app_side_failure(
-            test_result, output_path)
+          test_result, output_path
+        )
       else:
         test_result.test_log += failure['name'] + '\n'
 
     attachments = Xcode16LogParser._extract_artifacts_for_test(
-        test_name, xcresult, only_failures=True)
+      test_name, xcresult, only_failures=True
+    )
     test_result.attachments.update(attachments)
 
     return test_result
@@ -923,8 +1025,9 @@ class Xcode16LogParser(object):
     if not os.path.exists(output_path):
       overall_collected_result.crashed = True
       overall_collected_result.crash_message = (
-          '%s with staging data does not exist.\n' % output_path +
-          '\n'.join(output))
+        '%s with staging data does not exist.\n' % output_path
+        + '\n'.join(output)
+      )
       return overall_collected_result
 
     xcresult = output_path + _XCRESULT_SUFFIX
@@ -935,10 +1038,11 @@ class Xcode16LogParser(object):
     if not os.path.exists(xcresult):
       overall_collected_result.crashed = True
       overall_collected_result.crash_message = (
-          '%s with test results does not exist.\n' % xcresult +
-          '\n'.join(output))
+        '%s with test results does not exist.\n' % xcresult + '\n'.join(output)
+      )
       overall_collected_result.add_result_collection(
-          parse_passed_failed_tests_for_interrupted_run(output))
+        parse_passed_failed_tests_for_interrupted_run(output)
+      )
       file_util.zip_and_remove_folder(output_path)
       return overall_collected_result
 
@@ -951,7 +1055,8 @@ class Xcode16LogParser(object):
       overall_collected_result.crash_message = '0 tests executed!'
     else:
       overall_collected_result.add_result_collection(
-          Xcode16LogParser._get_test_statuses(output_path))
+        Xcode16LogParser._get_test_statuses(output_path)
+      )
     # Remove the symbol link file.
     if os.path.islink(output_path):
       os.unlink(output_path)
@@ -994,8 +1099,13 @@ class Xcode16LogParser(object):
     diagnostic_folder = '%s_diagnostic' % xcresult
     try:
       export_command = [
-          'xcresulttool', 'export', 'diagnostics', '--path', xcresult,
-          '--output-path', diagnostic_folder
+        'xcresulttool',
+        'export',
+        'diagnostics',
+        '--path',
+        xcresult,
+        '--output-path',
+        diagnostic_folder,
       ]
       subprocess.check_output(export_command).decode('utf-8').strip()
       # Copy log files out of diagnostic_folder if any. Use |name_count| to
@@ -1006,8 +1116,9 @@ class Xcode16LogParser(object):
         for filename in files:
           if IPS_REGEX.match(filename):
             # TODO(crbug.com/378086419): Improve IPS crash report logging
-            crash_reports_dir = os.path.join(output_path, os.pardir,
-                                             'Crash Reports')
+            crash_reports_dir = os.path.join(
+              output_path, os.pardir, 'Crash Reports'
+            )
             os.makedirs(crash_reports_dir, exist_ok=True)
             output_filepath = os.path.join(crash_reports_dir, filename)
             # crash report files with the same name from previous attempt_#'s
@@ -1016,11 +1127,14 @@ class Xcode16LogParser(object):
 
           if 'StandardOutputAndStandardError' in filename:
             file_index = name_count.get(filename, 0)
-            output_filename = (
-                '%s_simulator#%d_%s' %
-                (os.path.basename(output_path), file_index, filename))
-            output_filepath = os.path.join(output_path, os.pardir,
-                                           output_filename)
+            output_filename = '%s_simulator#%d_%s' % (
+              os.path.basename(output_path),
+              file_index,
+              filename,
+            )
+            output_filepath = os.path.join(
+              output_path, os.pardir, output_filename
+            )
             shutil.copy(os.path.join(root, filename), output_filepath)
             name_count[filename] = name_count.get(filename, 0) + 1
       file_util.zip_and_remove_folder(diagnostic_folder)
@@ -1043,15 +1157,24 @@ class Xcode16LogParser(object):
           attachments to be stored in. Its length is also used as part of file
           name to avoid duplicated filename.
     """
-    attachment_foldername = ('%s_attachments' %
-                             (os.path.splitext(os.path.basename(xcresult))[0]))
+    attachment_foldername = (
+      '%s_attachments' % (os.path.splitext(os.path.basename(xcresult))[0])
+    )
     # Extracts attachment to the same folder containing xcresult.
     attachment_output_path = os.path.abspath(
-        os.path.join(xcresult, os.pardir, attachment_foldername, test))
+      os.path.join(xcresult, os.pardir, attachment_foldername, test)
+    )
     os.makedirs(attachment_output_path)
     export_command = [
-        'xcresulttool', 'export', 'attachments', '--test-id', test, '--path',
-        xcresult, '--output-path', attachment_output_path
+      'xcresulttool',
+      'export',
+      'attachments',
+      '--test-id',
+      test,
+      '--path',
+      xcresult,
+      '--output-path',
+      attachment_output_path,
     ]
     subprocess.check_output(export_command)
 
@@ -1064,15 +1187,19 @@ class Xcode16LogParser(object):
         return
       for attachment in data[0]['attachments']:
         is_mp4 = attachment['exportedFileName'].endswith('.mp4')
-        if only_failures and not attachment[
-            'isAssociatedWithFailure'] and not is_mp4:
+        if (
+          only_failures
+          and not attachment['isAssociatedWithFailure']
+          and not is_mp4
+        ):
           # Skip attachments not associated with failures, except for video
           # recording
           continue
         suggested_name = attachment['suggestedHumanReadableName']
         exported_file = attachment['exportedFileName']
-        attachments[suggested_name] = os.path.join(attachment_output_path,
-                                                   exported_file)
+        attachments[suggested_name] = os.path.join(
+          attachment_output_path, exported_file
+        )
 
   @staticmethod
   def _extract_artifacts_for_test(test, xcresult, only_failures=False):
@@ -1086,6 +1213,7 @@ class Xcode16LogParser(object):
       (dict) File basename to abs path mapping for extracted attachments.
     """
     attachments = {}
-    Xcode16LogParser._extract_attachments(test, xcresult, attachments,
-                                          only_failures)
+    Xcode16LogParser._extract_attachments(
+      test, xcresult, attachments, only_failures
+    )
     return attachments

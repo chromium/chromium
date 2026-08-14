@@ -18,7 +18,8 @@ if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
   CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
 
 PLUGIN_PROTOS_PATH = os.path.abspath(
-    os.path.join(CHROMIUM_SRC_DIR, 'ios/testing/plugin'))
+  os.path.join(CHROMIUM_SRC_DIR, 'ios/testing/plugin')
+)
 
 PLUGIN_SERVICE_WORKER_COUNT = 10
 # just picking a random port
@@ -28,9 +29,10 @@ REMOTE_PLUGIN_PROXY_PORT = '40000'
 # Max number of times a test case can be video recorded and saved to disk
 MAX_RECORDED_COUNT = 3
 # Options for enabling video recording on EG tests
-VIDEO_RECORDER_PLUGIN_OPTIONS = Enum('video_recorder_plugin_options',
-                                     {'failed_only': 1})
+VIDEO_RECORDER_PLUGIN_OPTIONS = Enum(
+  'video_recorder_plugin_options', {'failed_only': 1}
+)
 SIMULATOR_FOLDERS = [
-    os.path.expanduser('~/Library/Developer/CoreSimulator/Devices'),
-    os.path.expanduser('~/Library/Developer/XCTestDevices')
+  os.path.expanduser('~/Library/Developer/CoreSimulator/Devices'),
+  os.path.expanduser('~/Library/Developer/XCTestDevices'),
 ]

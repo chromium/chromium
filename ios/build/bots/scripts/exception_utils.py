@@ -10,12 +10,12 @@ DEVICE_SETUP_NOT_COMPLETE = 'Device setup is not yet complete'
 FAILED_TO_INSTALL_EMBEDDED_PROFILE = 'Failed to install embedded profile'
 DEVELOPER_MODE_DISABLED = 'Developer Mode disabled'
 
+
 class DeviceSetupNotCompleteError(Exception):
   """Device setup isn't complete"""
 
   def __init__(self):
-    super(DeviceSetupNotCompleteError,
-          self).__init__(DEVICE_SETUP_NOT_COMPLETE)
+    super(DeviceSetupNotCompleteError, self).__init__(DEVICE_SETUP_NOT_COMPLETE)
 
 
 class FailedToInstallEmbeddedProfileError(Exception):
@@ -26,8 +26,9 @@ class FailedToInstallEmbeddedProfileError(Exception):
   the network."""
 
   def __init__(self):
-    super(FailedToInstallEmbeddedProfileError,
-          self).__init__(FAILED_TO_INSTALL_EMBEDDED_PROFILE)
+    super(FailedToInstallEmbeddedProfileError, self).__init__(
+      FAILED_TO_INSTALL_EMBEDDED_PROFILE
+    )
 
 
 class DeveloperModeDisabledError(Exception):
@@ -38,14 +39,15 @@ class DeveloperModeDisabledError(Exception):
 
 
 DEVICE_EXCEPTIONS = {
-    DEVICE_SETUP_NOT_COMPLETE: DeviceSetupNotCompleteError,
-    FAILED_TO_INSTALL_EMBEDDED_PROFILE: FailedToInstallEmbeddedProfileError,
-    DEVELOPER_MODE_DISABLED: DeveloperModeDisabledError,
+  DEVICE_SETUP_NOT_COMPLETE: DeviceSetupNotCompleteError,
+  FAILED_TO_INSTALL_EMBEDDED_PROFILE: FailedToInstallEmbeddedProfileError,
+  DEVELOPER_MODE_DISABLED: DeveloperModeDisabledError,
 }
 
 
 class ExceptionChecker:
   """Base class containing log exception checking common to device & simulator"""
+
   exceptions: list[Exception]
 
   def __init__(self):
@@ -58,15 +60,14 @@ class ExceptionChecker:
     Args:
       line: (str) a line of log output to check for exceptions.
     """
-    #This method is a placeholder fo common functionality between sim and device
+    # This method is a placeholder fo common functionality between sim and device
     pass
 
   def throw_first(self):
     """Throws the first exception the exception checker encountered and prints
-        all other exceptions found.
+    all other exceptions found.
     """
     if len(self.exceptions) > 0:
-
       LOGGER.info('Printing all exceptions encountered')
       for exception in self.exceptions:
         LOGGER.info(f"Exception: {exception}")

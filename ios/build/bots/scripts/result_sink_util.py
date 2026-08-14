@@ -18,10 +18,12 @@ import constants
 # import protos for exceptions reporting
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
-sys.path.extend([
+sys.path.extend(
+  [
     os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')),
-    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/'))
-])
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/')),
+  ]
+)
 import measures
 import exception_recorder
 
@@ -36,19 +38,22 @@ VALID_STATUSES = {"PASS", "FAIL", "CRASH", "ABORT", "SKIP"}
 
 EXTENDED_PROPERTIES_KEY = 'extendedProperties'
 
+
 def format_exception_stacktrace(e: Exception):
   exception_trace = traceback.format_exception(type(e), e, e.__traceback__)
   return exception_trace
 
 
-def _compose_test_result(test_id,
-                         status,
-                         expected,
-                         duration=None,
-                         test_log=None,
-                         test_loc=None,
-                         tags=None,
-                         file_artifacts=None):
+def _compose_test_result(
+  test_id,
+  status,
+  expected,
+  duration=None,
+  test_log=None,
+  test_loc=None,
+  tags=None,
+  file_artifacts=None,
+):
   """Composes the test_result dict item to be posted to result sink.
 
   Args:
@@ -72,34 +77,30 @@ def _compose_test_result(test_id,
   file_artifacts = file_artifacts or {}
 
   assert status in VALID_STATUSES, (
-      '%s is not a valid status (one in %s) for ResultSink.' %
-      (status, VALID_STATUSES))
+    '%s is not a valid status (one in %s) for ResultSink.'
+    % (status, VALID_STATUSES)
+  )
 
   for tag in tags:
     assert len(tag) == 2, 'Items in tags should be length 2 tuples of strings'
-    assert isinstance(tag[0], str) and isinstance(
-        tag[1], str), ('Items in'
-                       'tags should be length 2 tuples of strings')
+    assert isinstance(tag[0], str) and isinstance(tag[1], str), (
+      'Items intags should be length 2 tuples of strings'
+    )
 
   test_result = {
-      'testId': test_id,
-      'status': status,
-      'expected': expected,
-      'tags': [{
-          'key': key,
-          'value': value
-      } for (key, value) in tags],
-      'testIdStructured': _get_struct_test_dict(test_id),
-      'testMetadata': {
-          'name': test_id,
-          'location': test_loc,
-      }
+    'testId': test_id,
+    'status': status,
+    'expected': expected,
+    'tags': [{'key': key, 'value': value} for (key, value) in tags],
+    'testIdStructured': _get_struct_test_dict(test_id),
+    'testMetadata': {
+      'name': test_id,
+      'location': test_loc,
+    },
   }
 
   test_result['artifacts'] = {
-      name: {
-          'filePath': file_artifacts[name]
-      } for name in file_artifacts
+    name: {'filePath': file_artifacts[name]} for name in file_artifacts
   }
   if test_log:
     message = ''
@@ -110,18 +111,18 @@ def _compose_test_result(test_id,
       # serializable in order for the eventual json.dumps to succeed
       message = base64.b64encode(test_log.encode('utf-8')).decode('utf-8')
     test_result['summaryHtml'] = '<text-artifact artifact-id="Test Log" />'
-    test_result['artifacts'].update({
-        'Test Log': {
-            'contents': message
-        },
-    })
+    test_result['artifacts'].update(
+      {
+        'Test Log': {'contents': message},
+      }
+    )
     # assign primary error message if the host app crashed
     if constants.CRASH_MESSAGE in test_log:
       primary_error_message = constants.CRASH_MESSAGE
       if constants.ASAN_ERROR in test_log:
         primary_error_message += f' {constants.ASAN_ERROR}'
       test_result['failureReason'] = {
-          'primaryErrorMessage': primary_error_message
+        'primaryErrorMessage': primary_error_message
       }
   if not test_result['artifacts']:
     test_result.pop('artifacts')
@@ -144,9 +145,9 @@ def _get_struct_test_dict(test_id):
   # Source comes from:
   # infra/go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
   struct_test_dict = {
-      'coarseName': None,  # Not used for gtests or xctests.
-      'fineName': None,
-      'caseNameComponents': [''],
+    'coarseName': None,  # Not used for gtests or xctests.
+    'fineName': None,
+    'caseNameComponents': [''],
   }
 
   found_match = False
@@ -187,7 +188,9 @@ def _get_struct_test_dict(test_id):
     elif not instantiation:
       struct_test_dict['caseNameComponents'] = ['%s/%s' % (name, case_id)]
     else:
-      struct_test_dict['caseNameComponents'] = ['%s/%s.%s' % (name, instantiation, case_id)]
+      struct_test_dict['caseNameComponents'] = [
+        '%s/%s.%s' % (name, instantiation, case_id)
+      ]
 
   # XCTests format.
   re_match = re.search(r'(.*)/(.*)', test_id)
@@ -218,23 +221,28 @@ class ResultSinkClient(object):
     self.sink = None
     luci_context_file = os.environ.get('LUCI_CONTEXT')
     if not luci_context_file:
-      logging.warning('LUCI_CONTEXT not found in environment. ResultDB'
-                      ' integration disabled.')
+      logging.warning(
+        'LUCI_CONTEXT not found in environment. ResultDB integration disabled.'
+      )
       return
 
     with open(luci_context_file) as f:
       self.sink = json.load(f).get('result_sink')
       if not self.sink:
-        logging.warning('ResultSink constants not found in LUCI context.'
-                        ' ResultDB integration disabled.')
+        logging.warning(
+          'ResultSink constants not found in LUCI context.'
+          ' ResultDB integration disabled.'
+        )
         return
 
-      self.url = ('http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults' %
-                  self.sink['address'])
+      self.url = (
+        'http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults'
+        % self.sink['address']
+      )
       self.headers = {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'ResultSink %s' % self.sink['auth_token'],
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'ResultSink %s' % self.sink['auth_token'],
       }
       self._session = requests.Session()
 
@@ -270,7 +278,8 @@ class ResultSinkClient(object):
     if not self.sink:
       return
     self._post_test_result(
-        _compose_test_result(test_id, status, expected, **kwargs))
+      _compose_test_result(test_id, status, expected, **kwargs)
+    )
 
   def _post_test_result(self, test_result):
     """Posts single test result to server.
@@ -282,15 +291,14 @@ class ResultSinkClient(object):
           https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
     """
     res = self._session.post(
-        url=self.url,
-        headers=self.headers,
-        data=json.dumps({'testResults': [test_result]}),
+      url=self.url,
+      headers=self.headers,
+      data=json.dumps({'testResults': [test_result]}),
     )
     res.raise_for_status()
 
   def post_extended_properties(self):
-    """Posts extended properties to server with retry.
-    """
+    """Posts extended properties to server with retry."""
     if not self.sink:
       return
     try_count = 0
@@ -331,16 +339,27 @@ class ResultSinkClient(object):
     # https://protobuf.dev/reference/protobuf/google.protobuf/#field-masks
     if exception_recorder.size() > 0:
       invocation[EXTENDED_PROPERTIES_KEY][
-          exception_recorder.EXCEPTION_OCCURRENCES_KEY] = \
-            exception_recorder.to_dict()
-      paths.append('%s.%s' % (EXTENDED_PROPERTIES_KEY,
-                              _to_camel_case(exception_recorder.EXCEPTION_OCCURRENCES_KEY)))
+        exception_recorder.EXCEPTION_OCCURRENCES_KEY
+      ] = exception_recorder.to_dict()
+      paths.append(
+        '%s.%s'
+        % (
+          EXTENDED_PROPERTIES_KEY,
+          _to_camel_case(exception_recorder.EXCEPTION_OCCURRENCES_KEY),
+        )
+      )
 
     if measures.size() > 0:
-      invocation[EXTENDED_PROPERTIES_KEY][measures.TEST_SCRIPT_METRICS_KEY] = \
+      invocation[EXTENDED_PROPERTIES_KEY][measures.TEST_SCRIPT_METRICS_KEY] = (
         measures.to_dict()
-      paths.append('%s.%s' %
-                   (EXTENDED_PROPERTIES_KEY, _to_camel_case(measures.TEST_SCRIPT_METRICS_KEY)))
+      )
+      paths.append(
+        '%s.%s'
+        % (
+          EXTENDED_PROPERTIES_KEY,
+          _to_camel_case(measures.TEST_SCRIPT_METRICS_KEY),
+        )
+      )
 
     req = {'invocation': invocation, 'updateMask': ','.join(paths)}
 
@@ -349,11 +368,12 @@ class ResultSinkClient(object):
     LOGGER.info(inv_data)
 
     updateInvo_url = (
-        'http://%s/prpc/luci.resultsink.v1.Sink/UpdateInvocation' %
-        self.sink['address'])
+      'http://%s/prpc/luci.resultsink.v1.Sink/UpdateInvocation'
+      % self.sink['address']
+    )
     res = self._session.post(
-        url=updateInvo_url,
-        headers=self.headers,
-        data=inv_data,
+      url=updateInvo_url,
+      headers=self.headers,
+      data=inv_data,
     )
     res.raise_for_status()

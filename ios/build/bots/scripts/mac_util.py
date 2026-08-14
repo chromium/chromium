@@ -21,30 +21,32 @@ def version():
     e.g. 13.2.1
   """
   cmd = [
-      'sw_vers',
-      '-productVersion',
+    'sw_vers',
+    '-productVersion',
   ]
 
   # output sample:
   # 13.2.1
-  output = subprocess.check_output(
-      cmd, stderr=subprocess.STDOUT).decode('utf-8')
+  output = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode(
+    'utf-8'
+  )
   return output
 
 
 def is_macos_13_or_higher():
   """Returns true if the current MacOS version is 13 or higher"""
   return distutils.version.LooseVersion(
-      '13.0') <= distutils.version.LooseVersion(version())
+    '13.0'
+  ) <= distutils.version.LooseVersion(version())
 
 
 def kill_usbmuxd():
   """kills the current usbmuxd process"""
   cmd = [
-      'sudo',
-      '/usr/bin/killall',
-      '-v',
-      'usbmuxd',
+    'sudo',
+    '/usr/bin/killall',
+    '-v',
+    'usbmuxd',
   ]
   subprocess.check_call(cmd)
 
@@ -52,10 +54,10 @@ def kill_usbmuxd():
 def stop_usbmuxd():
   """stops the current usbmuxd process"""
   cmd = [
-      'sudo',
-      '/bin/launchctl',
-      'stop',
-      'com.apple.usbmuxd',
+    'sudo',
+    '/bin/launchctl',
+    'stop',
+    'com.apple.usbmuxd',
   ]
   subprocess.check_call(cmd)
 
@@ -63,20 +65,21 @@ def stop_usbmuxd():
 def run_codesign_check(dir_path):
   """Runs codesign check on a directory
 
-    Returns:
-        success (boolean), error (subprocess.CalledProcessError)
-    """
+  Returns:
+      success (boolean), error (subprocess.CalledProcessError)
+  """
   try:
     cmd = [
-        'codesign',
-        '--verify',
-        '--verbose=9',
-        '--deep',
-        '--strict=all',
-        dir_path,
+      'codesign',
+      '--verify',
+      '--verbose=9',
+      '--deep',
+      '--strict=all',
+      dir_path,
     ]
     subprocess.check_call(
-        cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+      cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT
+    )
   except subprocess.CalledProcessError as e:
     return False, e
 

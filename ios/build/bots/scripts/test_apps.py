@@ -22,7 +22,8 @@ import xcode_util
 # an info file containing all the compiled tests for this test run
 # This should be on by default
 GENERATE_COMPILED_GTESTS_FILE_TEST_ARG = (
-    '--write-compiled-tests-json-to-writable-path')
+  '--write-compiled-tests-json-to-writable-path'
+)
 
 # crbug.com/407529445: longest filter length before we get
 # "Argument list too long" error. It's only an educated guess and the number
@@ -31,25 +32,26 @@ MAX_GTEST_FILTER_LENGTH = 4000
 
 
 def group_gtest_filter(
-    tests: List[str],
-    non_grouped_suites: Set[str],
-    no_grouping_limit: int = MAX_GTEST_FILTER_LENGTH) -> List[str]:
+  tests: List[str],
+  non_grouped_suites: Set[str],
+  no_grouping_limit: int = MAX_GTEST_FILTER_LENGTH,
+) -> List[str]:
   """
-    Groups a list of tests based on their test suites,
-    ignoring non_grouped_suites
+  Groups a list of tests based on their test suites,
+  ignoring non_grouped_suites
 
-    Args:
-        tests: A list of tests
-          (e.g., ["A.B", "A.C", "B.A", "B.B", "C.A", "C.D", "C.E"]).
-        non_grouped_suites: tests under non_grouped_suites will not be grouped.
-        no_grouping_limit: if the number of tests is smaller than the limit,
-          then there's no need to group the tests.
+  Args:
+      tests: A list of tests
+        (e.g., ["A.B", "A.C", "B.A", "B.B", "C.A", "C.D", "C.E"]).
+      non_grouped_suites: tests under non_grouped_suites will not be grouped.
+      no_grouping_limit: if the number of tests is smaller than the limit,
+        then there's no need to group the tests.
 
-    Returns:
-        A list of grouped test patterns for all but the tests
-          in non_grouped_suites, followed by the individual tests of
-          non_grouped_suites.
-        (e.g., ["A.*", "B.*", "C.A", "C.D", "C.E"]).
+  Returns:
+      A list of grouped test patterns for all but the tests
+        in non_grouped_suites, followed by the individual tests of
+        non_grouped_suites.
+      (e.g., ["A.*", "B.*", "C.A", "C.D", "C.E"]).
   """
   if not tests or len(tests) <= no_grouping_limit:
     return tests
@@ -117,12 +119,18 @@ def get_bundle_id(app_path):
   Args:
     app_path: (str) A path to app.
   """
-  return subprocess.check_output([
-      '/usr/libexec/PlistBuddy',
-      '-c',
-      'Print:CFBundleIdentifier',
-      os.path.join(app_path, 'Info.plist'),
-  ]).decode("utf-8").rstrip()
+  return (
+    subprocess.check_output(
+      [
+        '/usr/libexec/PlistBuddy',
+        '-c',
+        'Print:CFBundleIdentifier',
+        os.path.join(app_path, 'Info.plist'),
+      ]
+    )
+    .decode("utf-8")
+    .rstrip()
+  )
 
 
 def is_running_rosetta():
@@ -135,7 +143,8 @@ def is_running_rosetta():
   """
   if platform.system() == 'Darwin':
     translated = subprocess.check_output(
-        ['sysctl', '-i', '-b', 'sysctl.proc_translated'])
+      ['sysctl', '-i', '-b', 'sysctl.proc_translated']
+    )
     # "sysctl -b" is expected to return a 4-byte integer response. 1 means the
     # current process is running under Rosetta, 0 means it is not. On x86_64
     # machines, this variable does not exist at all, so "-i" is used to return a
@@ -144,6 +153,7 @@ def is_running_rosetta():
       return False
     return struct.unpack('i', translated)[0] > 0
   return False
+
 
 class GTestsApp(object):
   """Gtests app to run.
@@ -274,45 +284,52 @@ class GTestsApp(object):
 
     # Prepend the packaged frameworks only for XCUITests (which have a host
     # app).
-    if (self.xcode_platform_dir_name == 'iPhoneSimulator.platform' and
-        self.host_app_path):
+    if (
+      self.xcode_platform_dir_name == 'iPhoneSimulator.platform'
+      and self.host_app_path
+    ):
       frameworks_dir = os.path.join(self.test_app_path, 'Frameworks')
       dyld_library_paths.append(frameworks_dir)
       dyld_framework_paths.append(frameworks_dir)
 
     platform_dev_path = (
-        f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer')
+      f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer'
+    )
     dyld_library_paths.append(f'{platform_dev_path}/Library')
     dyld_framework_paths.append(f'{platform_dev_path}/Library/Frameworks')
     if self.xcode_platform_dir_name == 'iPhoneSimulator.platform':
       dyld_framework_paths.append(
-          f'{platform_dev_path}/Library/PrivateFrameworks')
+        f'{platform_dev_path}/Library/PrivateFrameworks'
+      )
 
     module_data = {
-        'TestBundlePath': self.test_app_path,
-        'TestHostPath': self.test_app_path,
-        'TestHostBundleIdentifier': get_bundle_id(self.test_app_path),
-        'TestingEnvironmentVariables': {
-            'DYLD_LIBRARY_PATH': ':'.join(dyld_library_paths),
-            'DYLD_FRAMEWORK_PATH': ':'.join(dyld_framework_paths),
-        }
+      'TestBundlePath': self.test_app_path,
+      'TestHostPath': self.test_app_path,
+      'TestHostBundleIdentifier': get_bundle_id(self.test_app_path),
+      'TestingEnvironmentVariables': {
+        'DYLD_LIBRARY_PATH': ':'.join(dyld_library_paths),
+        'DYLD_FRAMEWORK_PATH': ':'.join(dyld_framework_paths),
+      },
     }
 
     inserted_libs = self.inserted_libs.copy()
     inserted_libs.extend(self._additional_inserted_libs())
     if inserted_libs:
-      module_data['TestingEnvironmentVariables'][
-          'DYLD_INSERT_LIBRARIES'] = ':'.join(inserted_libs)
+      module_data['TestingEnvironmentVariables']['DYLD_INSERT_LIBRARIES'] = (
+        ':'.join(inserted_libs)
+      )
 
     xctestrun_data = {module: module_data}
     gtest_filter = []
 
     if self.included_tests or self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests,
-                                      self.crashed_tests)
+      gtest_filter = get_gtest_filter(
+        self.included_tests, self.excluded_tests, self.crashed_tests
+      )
       # Removed previous gtest-filter if exists.
-      self.test_args = [el for el in self.test_args
-                        if not el.startswith('--gtest_filter=')]
+      self.test_args = [
+        el for el in self.test_args if not el.startswith('--gtest_filter=')
+      ]
       self.test_args.append('--gtest_filter=%s' % gtest_filter)
 
     if self.repeat_count > 1:
@@ -326,17 +343,21 @@ class GTestsApp(object):
       xctestrun_data[module].update({'CommandLineArguments': self.test_args})
 
     if self.excluded_tests:
-      xctestrun_data[module].update({
+      xctestrun_data[module].update(
+        {
           'SkipTestIdentifiers': [
-              self._replace_multiple_slashes(x) for x in self.excluded_tests
+            self._replace_multiple_slashes(x) for x in self.excluded_tests
           ]
-      })
+        }
+      )
     if self.included_tests:
-      xctestrun_data[module].update({
+      xctestrun_data[module].update(
+        {
           'OnlyTestIdentifiers': [
-              self._replace_multiple_slashes(x) for x in self.included_tests
+            self._replace_multiple_slashes(x) for x in self.included_tests
           ]
-      })
+        }
+      )
     return xctestrun_data
 
   def command(self, out_dir, destination, clones):
@@ -358,7 +379,8 @@ class GTestsApp(object):
     cmd = []
     if is_running_rosetta():
       cmd.extend(['arch', '-arch', 'arm64'])
-    cmd.extend([
+    cmd.extend(
+      [
         'xcodebuild',
         'test-without-building',
         '-xctestrun',
@@ -369,12 +391,17 @@ class GTestsApp(object):
         out_dir,
         '-collect-test-diagnostics',
         'never',
-    ])
+      ]
+    )
     if clones > 1:
-      cmd.extend([
-          '-parallel-testing-enabled', 'YES', '-parallel-testing-worker-count',
-          str(clones)
-      ])
+      cmd.extend(
+        [
+          '-parallel-testing-enabled',
+          'YES',
+          '-parallel-testing-worker-count',
+          str(clones),
+        ]
+      )
     return cmd
 
 
@@ -389,8 +416,13 @@ class EgtestsApp(GTestsApp):
     excluded_tests: List of tests not to run.
   """
 
-  def __init__(self, egtests_app: str, all_eg_test_names: List[Tuple[str, str]],
-               platform_type: constants.IOSPlatformType, **kwargs):
+  def __init__(
+    self,
+    egtests_app: str,
+    all_eg_test_names: List[Tuple[str, str]],
+    platform_type: constants.IOSPlatformType,
+    **kwargs,
+  ):
     """Initialize Egtests.
 
     Args:
@@ -451,8 +483,10 @@ class EgtestsApp(GTestsApp):
     # (and in this case without the GTest framework). See crbug.com/361610467
     # for more details.
     if not self.host_app_path:
-      libs.append(f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
-                  'usr/lib/libXCTestBundleInject.dylib')
+      libs.append(
+        f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+        'usr/lib/libXCTestBundleInject.dylib'
+      )
 
     for child in os.listdir(self.test_app_path):
       if child.startswith('libclang_rt.asan'):
@@ -471,7 +505,8 @@ class EgtestsApp(GTestsApp):
         cmd += ['-test-iterations', str(self.repeat_count)]
       else:
         raise test_runner_errors.XcodeUnsupportedFeatureError(
-            'Test repeat is only supported in Xcode 13 or higher!')
+          'Test repeat is only supported in Xcode 13 or higher!'
+        )
     return cmd
 
   def fill_xctestrun_node(self, include_disabled=False):
@@ -483,13 +518,16 @@ class EgtestsApp(GTestsApp):
     xctestrun_data = super(EgtestsApp, self).fill_xctestrun_node()
     module_data = xctestrun_data[self.module_name + '_module']
     module_data['TestBundlePath'] = '__TESTHOST__%s' % xcode_util.xctest_path(
-        self.test_app_path)
-    module_data['TestingEnvironmentVariables'][
-        'XCInjectBundleInto'] = '__TESTHOST__/%s' % self.module_name
+      self.test_app_path
+    )
+    module_data['TestingEnvironmentVariables']['XCInjectBundleInto'] = (
+      '__TESTHOST__/%s' % self.module_name
+    )
 
     if include_disabled:
       module_data['TestingEnvironmentVariables'][
-          'RUN_DISABLED_EARL_GREY_TESTS'] = '1'
+        'RUN_DISABLED_EARL_GREY_TESTS'
+      ] = '1'
 
     if self.host_app_path:
       # Module data specific to EG2 tests
@@ -505,12 +543,13 @@ class EgtestsApp(GTestsApp):
         module_data['PreferredScreenCaptureFormat'] = 'screenshots'
       module_data['UITargetAppPath'] = '%s' % self.host_app_path
       module_data['UITargetAppBundleIdentifier'] = get_bundle_id(
-          self.host_app_path)
+        self.host_app_path
+      )
       # Special handling for Xcode10.2
       dependent_products = [
-          module_data['UITargetAppPath'],
-          module_data['TestBundlePath'],
-          module_data['TestHostPath']
+        module_data['UITargetAppPath'],
+        module_data['TestBundlePath'],
+        module_data['TestHostPath'],
       ]
       module_data['DependentProductPaths'] = dependent_products
     # Module data specific to EG1 tests
@@ -559,9 +598,9 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
     test_args.append('--enable-run-ios-unittests-with-xctest')
     kwargs['test_args'] = test_args
 
-    super(DeviceXCTestUnitTestsApp,
-          self).__init__(tests_app, constants.IOSPlatformType.IPHONEOS,
-                         **kwargs)
+    super(DeviceXCTestUnitTestsApp, self).__init__(
+      tests_app, constants.IOSPlatformType.IPHONEOS, **kwargs
+    )
 
   @property
   def xcode_platform_dir_name(self):
@@ -574,39 +613,34 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
       A node with filled required fields about tests.
     """
     xctestrun_data = {
-        'TestTargetName': {
-            'IsAppHostedTestBundle':
-                True,
-            'TestBundlePath':
-                '__TESTHOST__%s' % xcode_util.xctest_path(self.test_app_path),
-            'TestHostBundleIdentifier':
-                get_bundle_id(self.test_app_path),
-            'TestHostPath':
-                '%s' % self.test_app_path,
-            'TestingEnvironmentVariables': {
-                'DYLD_INSERT_LIBRARIES':
-                    '__TESTHOST__/Frameworks/libXCTestBundleInject.dylib',
-                'DYLD_LIBRARY_PATH':
-                    '__PLATFORMS__/iPhoneOS.platform/Developer/Library',
-                'DYLD_FRAMEWORK_PATH':
-                    '__PLATFORMS__/iPhoneOS.platform/Developer/'
-                    'Library/Frameworks',
-                'XCInjectBundleInto':
-                    '__TESTHOST__/%s' % self.module_name
-            }
-        }
+      'TestTargetName': {
+        'IsAppHostedTestBundle': True,
+        'TestBundlePath': '__TESTHOST__%s'
+        % xcode_util.xctest_path(self.test_app_path),
+        'TestHostBundleIdentifier': get_bundle_id(self.test_app_path),
+        'TestHostPath': '%s' % self.test_app_path,
+        'TestingEnvironmentVariables': {
+          'DYLD_INSERT_LIBRARIES': '__TESTHOST__/Frameworks/libXCTestBundleInject.dylib',
+          'DYLD_LIBRARY_PATH': '__PLATFORMS__/iPhoneOS.platform/Developer/Library',
+          'DYLD_FRAMEWORK_PATH': '__PLATFORMS__/iPhoneOS.platform/Developer/'
+          'Library/Frameworks',
+          'XCInjectBundleInto': '__TESTHOST__/%s' % self.module_name,
+        },
+      }
     }
 
     if self.env_vars:
       xctestrun_data['TestTargetName'].update(
-          {'EnvironmentVariables': self.env_vars})
+        {'EnvironmentVariables': self.env_vars}
+      )
 
     if self.included_tests or self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests,
-                                      self.crashed_tests)
+      gtest_filter = get_gtest_filter(
+        self.included_tests, self.excluded_tests, self.crashed_tests
+      )
       # Removed previous gtest-filter if exists.
       self.test_args = [
-          el for el in self.test_args if not el.startswith('--gtest_filter=')
+        el for el in self.test_args if not el.startswith('--gtest_filter=')
       ]
       self.test_args.append('--gtest_filter=%s' % gtest_filter)
 
@@ -617,7 +651,8 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
     self.test_args.append(GENERATE_COMPILED_GTESTS_FILE_TEST_ARG)
 
     xctestrun_data['TestTargetName'].update(
-        {'CommandLineArguments': self.test_args})
+      {'CommandLineArguments': self.test_args}
+    )
 
     return xctestrun_data
 
@@ -659,8 +694,9 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     test_args = list(kwargs.get('test_args') or [])
     test_args.append('--enable-run-ios-unittests-with-xctest')
     kwargs['test_args'] = test_args
-    super(SimulatorXCTestUnitTestsApp, self).__init__(tests_app, platform_type,
-                                                      **kwargs)
+    super(SimulatorXCTestUnitTestsApp, self).__init__(
+      tests_app, platform_type, **kwargs
+    )
 
   def fill_xctestrun_node(self):
     """Fills only required nodes for XCTest hosted unit tests in xctestrun file.
@@ -669,44 +705,40 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
       A node with filled required fields about tests.
     """
     xctestrun_data = {
-        'TestTargetName': {
-            'IsAppHostedTestBundle':
-                True,
-            'TestBundlePath':
-                '__TESTHOST__%s' % xcode_util.xctest_path(self.test_app_path),
-            'TestHostBundleIdentifier':
-                get_bundle_id(self.test_app_path),
-            'TestHostPath':
-                '%s' % self.test_app_path,
-            'TestingEnvironmentVariables': {
-                'DYLD_INSERT_LIBRARIES':
-                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
-                    'usr/lib/libXCTestBundleInject.dylib',
-                'DYLD_LIBRARY_PATH':
-                    '__TESTHOST__/Frameworks:'
-                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
-                    'Library',
-                'DYLD_FRAMEWORK_PATH':
-                    '__TESTHOST__/Frameworks:'
-                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
-                    'Library/Frameworks:'
-                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
-                    'Library/PrivateFrameworks',
-                'XCInjectBundleInto': '__TESTHOST__/%s' % self.module_name
-            }
-        }
+      'TestTargetName': {
+        'IsAppHostedTestBundle': True,
+        'TestBundlePath': '__TESTHOST__%s'
+        % xcode_util.xctest_path(self.test_app_path),
+        'TestHostBundleIdentifier': get_bundle_id(self.test_app_path),
+        'TestHostPath': '%s' % self.test_app_path,
+        'TestingEnvironmentVariables': {
+          'DYLD_INSERT_LIBRARIES': f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+          'usr/lib/libXCTestBundleInject.dylib',
+          'DYLD_LIBRARY_PATH': '__TESTHOST__/Frameworks:'
+          f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+          'Library',
+          'DYLD_FRAMEWORK_PATH': '__TESTHOST__/Frameworks:'
+          f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+          'Library/Frameworks:'
+          f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+          'Library/PrivateFrameworks',
+          'XCInjectBundleInto': '__TESTHOST__/%s' % self.module_name,
+        },
+      }
     }
 
     if self.env_vars:
       xctestrun_data['TestTargetName'].update(
-          {'EnvironmentVariables': self.env_vars})
+        {'EnvironmentVariables': self.env_vars}
+      )
 
     if self.included_tests or self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests,
-                                      self.crashed_tests)
+      gtest_filter = get_gtest_filter(
+        self.included_tests, self.excluded_tests, self.crashed_tests
+      )
       # Removed previous gtest-filter if exists.
       self.test_args = [
-          el for el in self.test_args if not el.startswith('--gtest_filter=')
+        el for el in self.test_args if not el.startswith('--gtest_filter=')
       ]
       self.test_args.append('--gtest_filter=%s' % gtest_filter)
 
@@ -717,6 +749,7 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     self.test_args.append(GENERATE_COMPILED_GTESTS_FILE_TEST_ARG)
 
     xctestrun_data['TestTargetName'].update(
-        {'CommandLineArguments': self.test_args})
+      {'CommandLineArguments': self.test_args}
+    )
 
     return xctestrun_data

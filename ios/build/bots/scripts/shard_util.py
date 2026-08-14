@@ -14,6 +14,7 @@ LOGGER = logging.getLogger(__name__)
 
 class ShardingError(test_runner_errors.Error):
   """Error related with sharding logic."""
+
   pass
 
 
@@ -22,8 +23,9 @@ class ExcessShardsError(ShardingError):
 
   def __init__(self, num_shards, num_test_cases):
     super(ExcessShardsError, self).__init__(
-        f'The test module is misconfigured to have more shards than test cases.'
-        f' Shards: {num_shards} Test Cases: {num_test_cases}')
+      f'The test module is misconfigured to have more shards than test cases.'
+      f' Shards: {num_shards} Test Cases: {num_test_cases}'
+    )
 
 
 def gtest_shard_index():
@@ -36,8 +38,9 @@ def gtest_total_shards():
   return int(os.getenv('GTEST_TOTAL_SHARDS', 1))
 
 
-def balance_into_sublists(test_counts: collections.Counter,
-                          total_shards: int) -> List[List[str]]:
+def balance_into_sublists(
+  test_counts: collections.Counter, total_shards: int
+) -> List[List[str]]:
   """Augment the result of otool into balanced sublists
 
   Args:
@@ -64,7 +67,7 @@ def balance_into_sublists(test_counts: collections.Counter,
     min_shard.test_classes.append(test_class)
     min_shard.size += number_of_test_methods
     LOGGER.debug(
-        f'{test_class} test case is allocated to shard {shards.index(min_shard)} with {number_of_test_methods} test methods'
+      f'{test_class} test case is allocated to shard {shards.index(min_shard)} with {number_of_test_methods} test methods'
     )
 
   sublists = [shard.test_classes for shard in shards]
@@ -73,23 +76,24 @@ def balance_into_sublists(test_counts: collections.Counter,
 
 def shard_eg_test_cases(all_eg_test_names: List[Tuple[str, str]]) -> List[str]:
   """Shard test cases into total_shards, and determine which test cases to
-    run for this shard.
+  run for this shard.
 
-    Raises:
-      ExcessShardsError: If there exist more shards than test_cases
+  Raises:
+    ExcessShardsError: If there exist more shards than test_cases
 
-    Args:
-        all_eg_test_names: A list of all EG test methods present in the
-          -Runner.app binary. Each list element is a tuple in the form
-          (test_case, test_method)
+  Args:
+      all_eg_test_names: A list of all EG test methods present in the
+        -Runner.app binary. Each list element is a tuple in the form
+        (test_case, test_method)
 
-    Returns: a list of test cases to execute on this shard
-    """
+  Returns: a list of test cases to execute on this shard
+  """
   shard_index = gtest_shard_index()
   total_shards = gtest_total_shards()
 
   test_counts = collections.Counter(
-      test_class for test_class, _ in all_eg_test_names)
+    test_class for test_class, _ in all_eg_test_names
+  )
 
   # Ensure shard and total shard is int
   shard_index = int(shard_index)

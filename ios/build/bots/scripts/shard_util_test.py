@@ -13,18 +13,18 @@ import shard_util
 # example output of
 # xcodebuild_runner.SimulatorParallelTestRunner.fetch_test_names
 _EXAMPLE_FETCH_TEST_NAMES_RESPONSE = [
-    ('CacheTestCase', 'testA'),
-    ('CacheTestCase', 'testB'),
-    ('CacheTestCase', 'testC'),
-    ('TabUITestCase', 'testD'),
-    ('TabUITestCase', 'testE'),
-    ('KeyboardTestCase', 'testF'),
-    ('PasswordManagerTestCase', 'testG'),
-    ('ToolBarTestCase', 'testH'),
-    # in this scenario PasswordManagerPasswordCheckupDisabledTestCase inherits
-    # from PasswordManagerTestCase so it will run testG
-    ('PasswordManagerPasswordCheckupDisabledTestCase', 'testI'),
-    ('PasswordManagerPasswordCheckupDisabledTestCase', 'testG'),
+  ('CacheTestCase', 'testA'),
+  ('CacheTestCase', 'testB'),
+  ('CacheTestCase', 'testC'),
+  ('TabUITestCase', 'testD'),
+  ('TabUITestCase', 'testE'),
+  ('KeyboardTestCase', 'testF'),
+  ('PasswordManagerTestCase', 'testG'),
+  ('ToolBarTestCase', 'testH'),
+  # in this scenario PasswordManagerPasswordCheckupDisabledTestCase inherits
+  # from PasswordManagerTestCase so it will run testG
+  ('PasswordManagerPasswordCheckupDisabledTestCase', 'testI'),
+  ('PasswordManagerPasswordCheckupDisabledTestCase', 'testG'),
 ]
 
 
@@ -34,7 +34,7 @@ class TestShardUtil(unittest.TestCase):
   def test_balance_into_sublists_debug(self):
     """Ensure the balancing algorithm works"""
     test_cases = [
-        test_case for (test_case, _) in _EXAMPLE_FETCH_TEST_NAMES_RESPONSE
+      test_case for (test_case, _) in _EXAMPLE_FETCH_TEST_NAMES_RESPONSE
     ]
     test_counts = collections.Counter(test_cases)
 
@@ -53,9 +53,9 @@ class TestShardUtil(unittest.TestCase):
     # [[TabUITestCase, KeyboardTestCase],
     # [PasswordManagerPasswordCheckupDisabledTestCase, PasswordManagerTestCase]]
     self.assertEqual(
-        sorted([len(sublists_3[0]),
-                len(sublists_3[1]),
-                len(sublists_3[2])]), [2, 2, 2])
+      sorted([len(sublists_3[0]), len(sublists_3[1]), len(sublists_3[2])]),
+      [2, 2, 2],
+    )
 
 
 if __name__ == '__main__':

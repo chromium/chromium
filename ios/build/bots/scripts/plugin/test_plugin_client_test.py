@@ -11,7 +11,8 @@ import mock
 # add plugin in order to import from that directory
 if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
   sys.path.append(
-      os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin'))
+    os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin')
+  )
 from test_plugin_client import TestPluginClient
 from plugin_constants import PLUGIN_PROTOS_PATH, PLUGIN_SERVICE_ADDRESS
 
@@ -21,7 +22,6 @@ import test_plugin_service_pb2_grpc
 
 
 class TestPluginClientTest(unittest.TestCase):
-
   def setUp(self):
     self.client = TestPluginClient(PLUGIN_SERVICE_ADDRESS)
     self.mock_channel_stub = mock.Mock()

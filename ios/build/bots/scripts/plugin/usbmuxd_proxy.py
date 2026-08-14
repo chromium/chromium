@@ -17,8 +17,14 @@ import time
 # add plugin in order to import from that directory
 if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
   sys.path.append(
-      os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin'))
-from plugin_constants import PLUGIN_PROTOS_PATH, PLUGIN_SERVICE_ADDRESS, PLUGIN_PROXY_SERVICE_PORT, REMOTE_PLUGIN_PROXY_PORT
+    os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin')
+  )
+from plugin_constants import (
+  PLUGIN_PROTOS_PATH,
+  PLUGIN_SERVICE_ADDRESS,
+  PLUGIN_PROXY_SERVICE_PORT,
+  REMOTE_PLUGIN_PROXY_PORT,
+)
 from test_plugin_client import TestPluginClient
 
 sys.path.append(PLUGIN_PROTOS_PATH)
@@ -29,10 +35,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 class PluginServiceProxyWrapper:
-
-  def __init__(self, plugin_service_address, plugin_proxy_service_port,
-               remote_proxy_port):
-    """ Wrapper for ptroxy service that handles usbmuxd requests/response
+  def __init__(
+    self, plugin_service_address, plugin_proxy_service_port, remote_proxy_port
+  ):
+    """Wrapper for ptroxy service that handles usbmuxd requests/response
 
     Args:
       plugin_service_address: address for the plugin service in
@@ -46,8 +52,10 @@ class PluginServiceProxyWrapper:
     self.remote_proxy_port = remote_proxy_port
     self.proxy_process_stop_flag = threading.Event()
     self.plugin_service_proxy = self.PluginServiceProxy(
-        plugin_service_address, plugin_proxy_service_port,
-        self.proxy_process_stop_flag)
+      plugin_service_address,
+      plugin_proxy_service_port,
+      self.proxy_process_stop_flag,
+    )
 
     # iproxy is the built-in service that forwards/receives data through usbmuxd
     self.iproxy_process = None
@@ -60,7 +68,8 @@ class PluginServiceProxyWrapper:
     self.iproxy_process = self.start_iproxy()
 
     self.proxy_process = threading.Thread(
-        target=self.plugin_service_proxy.start)
+      target=self.plugin_service_proxy.start
+    )
     self.proxy_process.start()
 
   def tear_down(self):
@@ -84,7 +93,8 @@ class PluginServiceProxyWrapper:
       self.proxy_process_stop_flag.clear()
 
     self.proxy_process = threading.Thread(
-        target=self.plugin_service_proxy.start)
+      target=self.plugin_service_proxy.start
+    )
     self.proxy_process.start()
 
   def start_iproxy(self):
@@ -98,10 +108,10 @@ class PluginServiceProxyWrapper:
     return process
 
   class PluginServiceProxy:
-
-    def __init__(self, plugin_service_address, plugin_proxy_service_port,
-                 stop_flag):
-      """ Proxy service that handles usbmuxd requests/response.
+    def __init__(
+      self, plugin_service_address, plugin_proxy_service_port, stop_flag
+    ):
+      """Proxy service that handles usbmuxd requests/response.
 
       The service is responsible for forwarding data received from usbmuxd
       to plugin service. It also forwards data received from plugin service
@@ -124,7 +134,8 @@ class PluginServiceProxyWrapper:
       sock = None
       try:
         LOGGER.info(
-            'Attemping to establish connection with remote proxy service...')
+          'Attemping to establish connection with remote proxy service...'
+        )
         received = ""
         # While loop to connect to remote proxy service
         # receiving a response means the connect is successful
@@ -138,13 +149,15 @@ class PluginServiceProxyWrapper:
             received = str(sock.recv(1024), "utf-8")
           except ConnectionResetError as e:
             LOGGER.error(
-                'unable to connect to remote device server, retrying...', e)
+              'unable to connect to remote device server, retrying...', e
+            )
             sock.close()
             sock = None
             # wait for 3 seconds before next retry
             time.sleep(3)
         LOGGER.info(
-            'Connection with remote proxy service is successfully established!')
+          'Connection with remote proxy service is successfully established!'
+        )
 
         # As long as the thread is not killed (stop flag is set),
         # the proxy service will run continuously to handle requests.
@@ -169,7 +182,7 @@ class PluginServiceProxyWrapper:
 
 # for testing purpose only when running locally
 if __name__ == '__main__':
-  server = PluginServiceProxyWrapper(PLUGIN_SERVICE_ADDRESS,
-                                     PLUGIN_PROXY_SERVICE_PORT,
-                                     REMOTE_PLUGIN_PROXY_PORT)
+  server = PluginServiceProxyWrapper(
+    PLUGIN_SERVICE_ADDRESS, PLUGIN_PROXY_SERVICE_PORT, REMOTE_PLUGIN_PROXY_PORT
+  )
   server.start()

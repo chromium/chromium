@@ -11,10 +11,12 @@ import gtest_utils
 from test_result_util import TestStatus
 
 FAILURES = [
-    'NavigationControllerTest.Reload',
-    'NavigationControllerTest/SpdyNetworkTransTest.Constructor/0',
-    'BadTest.TimesOut', 'MoreBadTest.TimesOutAndFails',
-    'SomeOtherTest.SwitchTypes', 'SomeOtherTest.FAILS_ThisTestTimesOut'
+  'NavigationControllerTest.Reload',
+  'NavigationControllerTest/SpdyNetworkTransTest.Constructor/0',
+  'BadTest.TimesOut',
+  'MoreBadTest.TimesOutAndFails',
+  'SomeOtherTest.SwitchTypes',
+  'SomeOtherTest.FAILS_ThisTestTimesOut',
 ]
 
 FAILS_FAILURES = ['SomeOtherTest.FAILS_Bar']
@@ -23,43 +25,55 @@ FLAKY_FAILURES = ['SomeOtherTest.FLAKY_Baz']
 CRASH_MESSAGE = ['Oops, this test crashed!']
 TIMEOUT_MESSAGE = 'Killed (timed out).'
 
-RELOAD_ERRORS = (r'C:\b\slave\chrome-release-snappy\build\chrome\browser'
-                 r'\navigation_controller_unittest.cc:381: Failure' + """
+RELOAD_ERRORS = (
+  r'C:\b\slave\chrome-release-snappy\build\chrome\browser'
+  r'\navigation_controller_unittest.cc:381: Failure'
+  + """
 Value of: -1
 Expected: contents->controller()->GetPendingEntryIndex()
 Which is: 0
 
-""")
+"""
+)
 
-SPDY_ERRORS = (r'C:\b\slave\chrome-release-snappy\build\chrome\browser'
-               r'\navigation_controller_unittest.cc:439: Failure' + """
+SPDY_ERRORS = (
+  r'C:\b\slave\chrome-release-snappy\build\chrome\browser'
+  r'\navigation_controller_unittest.cc:439: Failure'
+  + """
 Value of: -1
 Expected: contents->controller()->GetPendingEntryIndex()
 Which is: 0
 
-""")
+"""
+)
 
-SWITCH_ERRORS = (r'C:\b\slave\chrome-release-snappy\build\chrome\browser'
-                 r'\navigation_controller_unittest.cc:615: Failure' + """
+SWITCH_ERRORS = (
+  r'C:\b\slave\chrome-release-snappy\build\chrome\browser'
+  r'\navigation_controller_unittest.cc:615: Failure'
+  + """
 Value of: -1
 Expected: contents->controller()->GetPendingEntryIndex()
 Which is: 0
 
-""" + r'C:\b\slave\chrome-release-snappy\build\chrome\browser'
-                 r'\navigation_controller_unittest.cc:617: Failure' + """
+"""
+  + r'C:\b\slave\chrome-release-snappy\build\chrome\browser'
+  r'\navigation_controller_unittest.cc:617: Failure'
+  + """
 Value of: contents->controller()->GetPendingEntry()
   Actual: true
 Expected: false
 
-""")
+"""
+)
 
 # pylint: disable=line-too-long
 TIMEOUT_ERRORS = (
-    '[61613:263:0531/042613:2887943745568888:ERROR:/b/slave'
-    '/chromium-rel-mac-builder/build/src/chrome/browser/extensions'
-    '/extension_error_reporter.cc(56)] Extension error: Could not load extension '
-    'from \'extensions/api_test/geolocation/no_permission\'. Manifest file is '
-    'missing or unreadable.')
+  '[61613:263:0531/042613:2887943745568888:ERROR:/b/slave'
+  '/chromium-rel-mac-builder/build/src/chrome/browser/extensions'
+  '/extension_error_reporter.cc(56)] Extension error: Could not load extension '
+  'from \'extensions/api_test/geolocation/no_permission\'. Manifest file is '
+  'missing or unreadable.'
+)
 
 MOREBAD_ERRORS = """
 Value of: entry->page_type()
@@ -68,7 +82,7 @@ Expected: NavigationEntry::NORMAL_PAGE
 """
 
 TEST_DATA = (
-    """
+  """
 [==========] Running 7 tests from 3 test cases.
 [----------] Global test environment set-up.
 [----------] 1 test from HunspellTest
@@ -94,29 +108,33 @@ TEST_DATA = (
 [----------] 1 test from BadTest
 [ RUN      ] BadTest.TimesOut
 %(timeout_errors)s
-""" % {
-        'reload_errors': RELOAD_ERRORS,
-        'spdy_errors': SPDY_ERRORS,
-        'timeout_errors': TIMEOUT_ERRORS
-    } + '[0531/042642:ERROR:/b/slave/chromium-rel-mac-builder/build/src/chrome'
-    '/test/test_launcher/out_of_proc_test_runner.cc(79)] Test timeout (30000 ms) '
-    'exceeded for BadTest.TimesOut' + """
+"""
+  % {
+    'reload_errors': RELOAD_ERRORS,
+    'spdy_errors': SPDY_ERRORS,
+    'timeout_errors': TIMEOUT_ERRORS,
+  }
+  + '[0531/042642:ERROR:/b/slave/chromium-rel-mac-builder/build/src/chrome'
+  '/test/test_launcher/out_of_proc_test_runner.cc(79)] Test timeout (30000 ms) '
+  'exceeded for BadTest.TimesOut'
+  + """
 Handling SIGTERM.
 Successfully wrote to shutdown pipe, resetting signal handler.
-""" +
-    '[61613:19971:0531/042642:2887973024284693:INFO:/b/slave/chromium-rel-mac-'
-    'builder/build/src/chrome/browser/browser_main.cc(285)] Handling shutdown for '
-    'signal 15.' + """
+"""
+  + '[61613:19971:0531/042642:2887973024284693:INFO:/b/slave/chromium-rel-mac-'
+  'builder/build/src/chrome/browser/browser_main.cc(285)] Handling shutdown for '
+  'signal 15.'
+  + """
 
 [----------] 1 test from MoreBadTest
 [ RUN      ] MoreBadTest.TimesOutAndFails
 %(morebad_errors)s
-""" % {
-        'morebad_errors': MOREBAD_ERRORS
-    } +
-    '[0531/042642:ERROR:/b/slave/chromium-rel-mac-builder/build/src/chrome/test'
-    '/test_launcher/out_of_proc_test_runner.cc(79)] Test timeout (30000 ms) '
-    'exceeded for MoreBadTest.TimesOutAndFails' + """
+"""
+  % {'morebad_errors': MOREBAD_ERRORS}
+  + '[0531/042642:ERROR:/b/slave/chromium-rel-mac-builder/build/src/chrome/test'
+  '/test_launcher/out_of_proc_test_runner.cc(79)] Test timeout (30000 ms) '
+  'exceeded for MoreBadTest.TimesOutAndFails'
+  + """
 Handling SIGTERM.
 Successfully wrote to shutdown pipe, resetting signal handler.
 [  FAILED  ] MoreBadTest.TimesOutAndFails (31000 ms)
@@ -131,10 +149,11 @@ Successfully wrote to shutdown pipe, resetting signal handler.
 Some error message for a failing test.
 [  FAILED  ] SomeOtherTest.FAILS_Bar (40 ms)
 [ RUN      ] SomeOtherTest.FAILS_ThisTestTimesOut
-""" % {
-        'switch_errors': SWITCH_ERRORS
-    } + '[0521/041343:ERROR:test_launcher.cc(384)] Test timeout (5000 ms) '
-    'exceeded for SomeOtherTest.FAILS_ThisTestTimesOut' + """
+"""
+  % {'switch_errors': SWITCH_ERRORS}
+  + '[0521/041343:ERROR:test_launcher.cc(384)] Test timeout (5000 ms) '
+  'exceeded for SomeOtherTest.FAILS_ThisTestTimesOut'
+  + """
 [ RUN      ] SomeOtherTest.FLAKY_Baz
 Some error message for a flaky test.
 [  FAILED  ] SomeOtherTest.FLAKY_Baz (40 ms)
@@ -155,7 +174,8 @@ Some error message for a flaky test.
   YOU HAVE 2 FLAKY TESTS
 
 program finished with exit code 1
-""")
+"""
+)
 
 TEST_DATA_CRASH = """
 [==========] Running 7 tests from 3 test cases.
@@ -224,9 +244,7 @@ Suppression (error hash=#%(hash)s#):
    Memcheck:Leak
    fun:_Znw*
    fun:_ZN31NavigationControllerTest_Reload8TestBodyEv
-}""" % {
-    'hash': VALGRIND_HASH
-}
+}""" % {'hash': VALGRIND_HASH}
 
 TEST_DATA_VALGRIND = """
 [==========] Running 5 tests from 2 test cases.
@@ -256,10 +274,7 @@ TEST_DATA_VALGRIND = """
 ### END MEMORY TOOL REPORT (error hash=#%(hash)s#)
 program finished with exit code 255
 
-""" % {
-    'report': VALGRIND_REPORT,
-    'hash': VALGRIND_HASH
-}
+""" % {'report': VALGRIND_REPORT, 'hash': VALGRIND_HASH}
 
 FAILING_TESTS_OUTPUT = """
 Failing tests:
@@ -268,12 +283,12 @@ PrerenderBrowserTest.PrerenderHTML5VideoJs
 """
 
 FAILING_TESTS_EXPECTED = [
-    'ChromeRenderViewTest.FAILS_AllowDOMStorage',
-    'PrerenderBrowserTest.PrerenderHTML5VideoJs'
+  'ChromeRenderViewTest.FAILS_AllowDOMStorage',
+  'PrerenderBrowserTest.PrerenderHTML5VideoJs',
 ]
 
 TEST_DATA_SHARD_0 = (
-    """Note: This is test shard 1 of 30.
+  """Note: This is test shard 1 of 30.
 [==========] Running 6 tests from 3 test cases.
 [----------] Global test environment set-up.
 [----------] 1 test from HunspellTest
@@ -284,18 +299,19 @@ TEST_DATA_SHARD_0 = (
 [----------] 1 test from BadTest
 [ RUN      ] BadTest.TimesOut
 %(timeout_errors)s
-""" % {
-        'timeout_errors': TIMEOUT_ERRORS
-    } +
-    '[0531/042642:ERROR:/b/slave/chromium-rel-mac-builder/build/src/chrome/test'
-    '/test_launcher/out_of_proc_test_runner.cc(79)] Test timeout (30000 ms) '
-    'exceeded for BadTest.TimesOut' + """
+"""
+  % {'timeout_errors': TIMEOUT_ERRORS}
+  + '[0531/042642:ERROR:/b/slave/chromium-rel-mac-builder/build/src/chrome/test'
+  '/test_launcher/out_of_proc_test_runner.cc(79)] Test timeout (30000 ms) '
+  'exceeded for BadTest.TimesOut'
+  + """
 Handling SIGTERM.
 Successfully wrote to shutdown pipe, resetting signal handler.
-""" +
-    '[61613:19971:0531/042642:2887973024284693:INFO:/b/slave/chromium-rel-mac-'
-    'builder/build/src/chrome/browser/browser_main.cc(285)] Handling shutdown for '
-    'signal 15.' + """
+"""
+  + '[61613:19971:0531/042642:2887973024284693:INFO:/b/slave/chromium-rel-mac-'
+  'builder/build/src/chrome/browser/browser_main.cc(285)] Handling shutdown for '
+  'signal 15.'
+  + """
 
 [----------] 4 tests from SomeOtherTest
 [ RUN      ] SomeOtherTest.SwitchTypes
@@ -307,11 +323,11 @@ Successfully wrote to shutdown pipe, resetting signal handler.
 Some error message for a failing test.
 [  FAILED  ] SomeOtherTest.FAILS_Bar (40 ms)
 [ RUN      ] SomeOtherTest.FAILS_ThisTestTimesOut
-""" % {
-        'switch_errors': SWITCH_ERRORS
-    } +
-    '[0521/041343:ERROR:test_launcher.cc(384)] Test timeout (5000 ms) exceeded '
-    'for SomeOtherTest.FAILS_ThisTestTimesOut' + """
+"""
+  % {'switch_errors': SWITCH_ERRORS}
+  + '[0521/041343:ERROR:test_launcher.cc(384)] Test timeout (5000 ms) exceeded '
+  'for SomeOtherTest.FAILS_ThisTestTimesOut'
+  + """
 [ RUN      ] SomeOtherTest.FLAKY_Baz
 Some error message for a flaky test.
 [  FAILED  ] SomeOtherTest.FLAKY_Baz (40 ms)
@@ -328,10 +344,11 @@ Some error message for a flaky test.
   YOU HAVE 10 DISABLED TESTS
 
   YOU HAVE 2 FLAKY TESTS
-""")
+"""
+)
 
 TEST_DATA_SHARD_1 = (
-    """Note: This is test shard 13 of 30.
+  """Note: This is test shard 13 of 30.
 [==========] Running 5 tests from 2 test cases.
 [----------] Global test environment set-up.
 [----------] 4 tests from NavigationControllerTest
@@ -344,11 +361,11 @@ TEST_DATA_SHARD_1 = (
 [       OK ] NavigationControllerTest.Reload_GeneratesNewPage (22 ms)
 [ RUN      ] NavigationControllerTest/SpdyNetworkTransTest.Constructor/0
 %(spdy_errors)s
-""" % {
-        'reload_errors': RELOAD_ERRORS,
-        'spdy_errors': SPDY_ERRORS
-    } + '[  FAILED  ] NavigationControllerTest/SpdyNetworkTransTest.Constructor'
-    '/0 (2 ms)' + """
+"""
+  % {'reload_errors': RELOAD_ERRORS, 'spdy_errors': SPDY_ERRORS}
+  + '[  FAILED  ] NavigationControllerTest/SpdyNetworkTransTest.Constructor'
+  '/0 (2 ms)'
+  + """
 [----------] 4 tests from NavigationControllerTest (74 ms total)
 
   YOU HAVE 2 FLAKY TESTS
@@ -356,12 +373,12 @@ TEST_DATA_SHARD_1 = (
 [----------] 1 test from MoreBadTest
 [ RUN      ] MoreBadTest.TimesOutAndFails
 %(morebad_errors)s
-""" % {
-        'morebad_errors': MOREBAD_ERRORS
-    } +
-    '[0531/042642:ERROR:/b/slave/chromium-rel-mac-builder/build/src/chrome/test'
-    '/test_launcher/out_of_proc_test_runner.cc(79)] Test timeout (30000 ms) '
-    'exceeded for MoreBadTest.TimesOutAndFails' + """
+"""
+  % {'morebad_errors': MOREBAD_ERRORS}
+  + '[0531/042642:ERROR:/b/slave/chromium-rel-mac-builder/build/src/chrome/test'
+  '/test_launcher/out_of_proc_test_runner.cc(79)] Test timeout (30000 ms) '
+  'exceeded for MoreBadTest.TimesOutAndFails'
+  + """
 Handling SIGTERM.
 Successfully wrote to shutdown pipe, resetting signal handler.
 [  FAILED  ] MoreBadTest.TimesOutAndFails (31000 ms)
@@ -377,7 +394,8 @@ Successfully wrote to shutdown pipe, resetting signal handler.
   YOU HAVE 10 DISABLED TESTS
 
   YOU HAVE 2 FLAKY TESTS
-""")
+"""
+)
 
 TEST_DATA_SHARD_EXIT = 'program finished with exit code '
 
@@ -389,16 +407,17 @@ TEST_DATA_CRASH_SHARD = """Note: This is test shard 5 of 5.
 Oops, this test crashed!"""
 
 TEST_DATA_NESTED_RUNS = (
-    """
+  """
 [ 1/3] 1.0s Foo.Bar (45.5s)
 Note: Google Test filter = Foo.Bar
 [==========] Running 1 test from 1 test case.
 [----------] Global test environment set-up.
 [----------] 1 test from Foo, where TypeParam =
 [ RUN      ] Foo.Bar
-""" +
-    '[0725/050653:ERROR:test_launcher.cc(380)] Test timeout (45000 ms) exceeded '
-    'for Foo.Bar' + """
+"""
+  + '[0725/050653:ERROR:test_launcher.cc(380)] Test timeout (45000 ms) exceeded '
+  'for Foo.Bar'
+  + """
 Starting tests...
 IMPORTANT DEBUGGING NOTE: each test is run inside its own process.
 For debugging a test inside a debugger, use the
@@ -410,7 +429,8 @@ process mode).
 1 test failed (0 ignored)
 Failing tests:
 Foo.Bar
-[ 2/2] 2.00s Foo.Pass (1.0s)""")
+[ 2/2] 2.00s Foo.Pass (1.0s)"""
+)
 
 # Data generated with run_test_case.py
 TEST_DATA_RUN_TEST_CASE_FAIL = """
@@ -558,7 +578,6 @@ TEST_REPO = 'https://test'
 
 
 class TestGTestLogParserTests(unittest.TestCase):
-
   def testGTestLogParserNoSharding(self):
     # Tests for log parsing without sharding.
     parser = gtest_utils.GTestLogParser()
@@ -571,43 +590,54 @@ class TestGTestLogParserTests(unittest.TestCase):
 
     self.assertEqual(sorted(FAILURES), sorted(parser.FailedTests()))
     self.assertEqual(
-        sorted(FAILURES + FAILS_FAILURES),
-        sorted(parser.FailedTests(include_fails=True)))
+      sorted(FAILURES + FAILS_FAILURES),
+      sorted(parser.FailedTests(include_fails=True)),
+    )
     self.assertEqual(
-        sorted(FAILURES + FLAKY_FAILURES),
-        sorted(parser.FailedTests(include_flaky=True)))
+      sorted(FAILURES + FLAKY_FAILURES),
+      sorted(parser.FailedTests(include_flaky=True)),
+    )
     self.assertEqual(
-        sorted(FAILURES + FAILS_FAILURES + FLAKY_FAILURES),
-        sorted(parser.FailedTests(include_fails=True, include_flaky=True)))
+      sorted(FAILURES + FAILS_FAILURES + FLAKY_FAILURES),
+      sorted(parser.FailedTests(include_fails=True, include_flaky=True)),
+    )
 
     self.assertEqual(10, parser.DisabledTests())
     self.assertEqual(2, parser.FlakyTests())
 
     test_name = 'NavigationControllerTest.Reload'
-    self.assertEqual('\n'.join(['%s: ' % test_name, RELOAD_ERRORS]),
-                     '\n'.join(parser.FailureDescription(test_name)))
+    self.assertEqual(
+      '\n'.join(['%s: ' % test_name, RELOAD_ERRORS]),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['FAILURE'], parser.TriesForTest(test_name))
 
     test_name = 'NavigationControllerTest/SpdyNetworkTransTest.Constructor/0'
-    self.assertEqual('\n'.join(['%s: ' % test_name, SPDY_ERRORS]),
-                     '\n'.join(parser.FailureDescription(test_name)))
+    self.assertEqual(
+      '\n'.join(['%s: ' % test_name, SPDY_ERRORS]),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['FAILURE'], parser.TriesForTest(test_name))
 
     test_name = 'SomeOtherTest.SwitchTypes'
-    self.assertEqual('\n'.join(['%s: ' % test_name, SWITCH_ERRORS]),
-                     '\n'.join(parser.FailureDescription(test_name)))
+    self.assertEqual(
+      '\n'.join(['%s: ' % test_name, SWITCH_ERRORS]),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['FAILURE'], parser.TriesForTest(test_name))
 
     test_name = 'BadTest.TimesOut'
     self.assertEqual(
-        '\n'.join(['%s: ' % test_name, TIMEOUT_ERRORS, TIMEOUT_MESSAGE]),
-        '\n'.join(parser.FailureDescription(test_name)))
+      '\n'.join(['%s: ' % test_name, TIMEOUT_ERRORS, TIMEOUT_MESSAGE]),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['TIMEOUT'], parser.TriesForTest(test_name))
 
     test_name = 'MoreBadTest.TimesOutAndFails'
     self.assertEqual(
-        '\n'.join(['%s: ' % test_name, MOREBAD_ERRORS, TIMEOUT_MESSAGE]),
-        '\n'.join(parser.FailureDescription(test_name)))
+      '\n'.join(['%s: ' % test_name, MOREBAD_ERRORS, TIMEOUT_MESSAGE]),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['TIMEOUT'], parser.TriesForTest(test_name))
 
     self.assertEqual(['SUCCESS'], parser.TriesForTest('SomeOtherTest.Foo'))
@@ -615,8 +645,9 @@ class TestGTestLogParserTests(unittest.TestCase):
     # Same unit tests (when applicable) using ResultCollection
     collection = parser.GetResultCollection()
     self.assertEqual(
-        sorted(FAILURES + FAILS_FAILURES + FLAKY_FAILURES),
-        sorted(collection.never_expected_tests()))
+      sorted(FAILURES + FAILS_FAILURES + FLAKY_FAILURES),
+      sorted(collection.never_expected_tests()),
+    )
 
     self.assertEqual(len(collection.test_results), 12)
 
@@ -644,15 +675,17 @@ class TestGTestLogParserTests(unittest.TestCase):
 
       if name == 'BadTest.TimesOut':
         cover_set.add(name)
-        self.assertEqual('\n'.join([TIMEOUT_ERRORS, TIMEOUT_MESSAGE]),
-                         test_result.test_log)
+        self.assertEqual(
+          '\n'.join([TIMEOUT_ERRORS, TIMEOUT_MESSAGE]), test_result.test_log
+        )
         self.assertEqual(TestStatus.ABORT, test_result.status)
         self.assertEqual(None, test_result.duration)
 
       if name == 'MoreBadTest.TimesOutAndFails':
         cover_set.add(name)
-        self.assertEqual('\n'.join([MOREBAD_ERRORS, TIMEOUT_MESSAGE]),
-                         test_result.test_log)
+        self.assertEqual(
+          '\n'.join([MOREBAD_ERRORS, TIMEOUT_MESSAGE]), test_result.test_log
+        )
         self.assertEqual(TestStatus.ABORT, test_result.status)
         self.assertEqual(None, test_result.duration)
 
@@ -663,10 +696,12 @@ class TestGTestLogParserTests(unittest.TestCase):
         self.assertEqual(20, test_result.duration)
 
     test_list = [
-        'BadTest.TimesOut', 'MoreBadTest.TimesOutAndFails',
-        'NavigationControllerTest.Reload',
-        'NavigationControllerTest/SpdyNetworkTransTest.Constructor/0',
-        'SomeOtherTest.Foo', 'SomeOtherTest.SwitchTypes'
+      'BadTest.TimesOut',
+      'MoreBadTest.TimesOutAndFails',
+      'NavigationControllerTest.Reload',
+      'NavigationControllerTest/SpdyNetworkTransTest.Constructor/0',
+      'SomeOtherTest.Foo',
+      'SomeOtherTest.SwitchTypes',
     ]
     self.assertEqual(sorted(test_list), sorted(cover_set))
 
@@ -683,16 +718,19 @@ class TestGTestLogParserTests(unittest.TestCase):
 
     test_name = 'HunspellTest.Crashes'
     expected_log_lines = [
-        'Did not complete.',
-        'Potential test logs from crash until the end of test program:'
+      'Did not complete.',
+      'Potential test logs from crash until the end of test program:',
     ] + CRASH_MESSAGE
-    self.assertEqual('\n'.join(['%s: ' % test_name] + expected_log_lines),
-                     '\n'.join(parser.FailureDescription(test_name)))
+    self.assertEqual(
+      '\n'.join(['%s: ' % test_name] + expected_log_lines),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['UNKNOWN'], parser.TriesForTest(test_name))
 
     collection = parser.GetResultCollection()
     self.assertEqual(
-        set(['HunspellTest.Crashes']), collection.unexpected_tests())
+      set(['HunspellTest.Crashes']), collection.unexpected_tests()
+    )
     for result in collection.test_results:
       covered = False
       if result.name == 'HunspellTest.Crashes':
@@ -715,43 +753,54 @@ class TestGTestLogParserTests(unittest.TestCase):
 
     self.assertEqual(sorted(FAILURES), sorted(parser.FailedTests()))
     self.assertEqual(
-        sorted(FAILURES + FAILS_FAILURES),
-        sorted(parser.FailedTests(include_fails=True)))
+      sorted(FAILURES + FAILS_FAILURES),
+      sorted(parser.FailedTests(include_fails=True)),
+    )
     self.assertEqual(
-        sorted(FAILURES + FLAKY_FAILURES),
-        sorted(parser.FailedTests(include_flaky=True)))
+      sorted(FAILURES + FLAKY_FAILURES),
+      sorted(parser.FailedTests(include_flaky=True)),
+    )
     self.assertEqual(
-        sorted(FAILURES + FAILS_FAILURES + FLAKY_FAILURES),
-        sorted(parser.FailedTests(include_fails=True, include_flaky=True)))
+      sorted(FAILURES + FAILS_FAILURES + FLAKY_FAILURES),
+      sorted(parser.FailedTests(include_fails=True, include_flaky=True)),
+    )
 
     self.assertEqual(10, parser.DisabledTests())
     self.assertEqual(2, parser.FlakyTests())
 
     test_name = 'NavigationControllerTest.Reload'
-    self.assertEqual('\n'.join(['%s: ' % test_name, RELOAD_ERRORS]),
-                     '\n'.join(parser.FailureDescription(test_name)))
+    self.assertEqual(
+      '\n'.join(['%s: ' % test_name, RELOAD_ERRORS]),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['FAILURE'], parser.TriesForTest(test_name))
 
-    test_name = ('NavigationControllerTest/SpdyNetworkTransTest.Constructor/0')
-    self.assertEqual('\n'.join(['%s: ' % test_name, SPDY_ERRORS]),
-                     '\n'.join(parser.FailureDescription(test_name)))
+    test_name = 'NavigationControllerTest/SpdyNetworkTransTest.Constructor/0'
+    self.assertEqual(
+      '\n'.join(['%s: ' % test_name, SPDY_ERRORS]),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['FAILURE'], parser.TriesForTest(test_name))
 
     test_name = 'SomeOtherTest.SwitchTypes'
-    self.assertEqual('\n'.join(['%s: ' % test_name, SWITCH_ERRORS]),
-                     '\n'.join(parser.FailureDescription(test_name)))
+    self.assertEqual(
+      '\n'.join(['%s: ' % test_name, SWITCH_ERRORS]),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['FAILURE'], parser.TriesForTest(test_name))
 
     test_name = 'BadTest.TimesOut'
     self.assertEqual(
-        '\n'.join(['%s: ' % test_name, TIMEOUT_ERRORS, TIMEOUT_MESSAGE]),
-        '\n'.join(parser.FailureDescription(test_name)))
+      '\n'.join(['%s: ' % test_name, TIMEOUT_ERRORS, TIMEOUT_MESSAGE]),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['TIMEOUT'], parser.TriesForTest(test_name))
 
     test_name = 'MoreBadTest.TimesOutAndFails'
     self.assertEqual(
-        '\n'.join(['%s: ' % test_name, MOREBAD_ERRORS, TIMEOUT_MESSAGE]),
-        '\n'.join(parser.FailureDescription(test_name)))
+      '\n'.join(['%s: ' % test_name, MOREBAD_ERRORS, TIMEOUT_MESSAGE]),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['TIMEOUT'], parser.TriesForTest(test_name))
 
     self.assertEqual(['SUCCESS'], parser.TriesForTest('SomeOtherTest.Foo'))
@@ -759,8 +808,9 @@ class TestGTestLogParserTests(unittest.TestCase):
     # Same unit tests (when applicable) using ResultCollection
     collection = parser.GetResultCollection()
     self.assertEqual(
-        sorted(FAILURES + FAILS_FAILURES + FLAKY_FAILURES),
-        sorted(collection.never_expected_tests()))
+      sorted(FAILURES + FAILS_FAILURES + FLAKY_FAILURES),
+      sorted(collection.never_expected_tests()),
+    )
 
     self.assertEqual(len(collection.test_results), 12)
 
@@ -788,15 +838,17 @@ class TestGTestLogParserTests(unittest.TestCase):
 
       if name == 'BadTest.TimesOut':
         cover_set.add(name)
-        self.assertEqual('\n'.join([TIMEOUT_ERRORS, TIMEOUT_MESSAGE]),
-                         test_result.test_log)
+        self.assertEqual(
+          '\n'.join([TIMEOUT_ERRORS, TIMEOUT_MESSAGE]), test_result.test_log
+        )
         self.assertEqual(TestStatus.ABORT, test_result.status)
         self.assertEqual(None, test_result.duration)
 
       if name == 'MoreBadTest.TimesOutAndFails':
         cover_set.add(name)
-        self.assertEqual('\n'.join([MOREBAD_ERRORS, TIMEOUT_MESSAGE]),
-                         test_result.test_log)
+        self.assertEqual(
+          '\n'.join([MOREBAD_ERRORS, TIMEOUT_MESSAGE]), test_result.test_log
+        )
         self.assertEqual(TestStatus.ABORT, test_result.status)
         self.assertEqual(None, test_result.duration)
 
@@ -806,10 +858,12 @@ class TestGTestLogParserTests(unittest.TestCase):
         self.assertEqual(TestStatus.PASS, test_result.status)
 
     test_list = [
-        'BadTest.TimesOut', 'MoreBadTest.TimesOutAndFails',
-        'NavigationControllerTest.Reload',
-        'NavigationControllerTest/SpdyNetworkTransTest.Constructor/0',
-        'SomeOtherTest.Foo', 'SomeOtherTest.SwitchTypes'
+      'BadTest.TimesOut',
+      'MoreBadTest.TimesOutAndFails',
+      'NavigationControllerTest.Reload',
+      'NavigationControllerTest/SpdyNetworkTransTest.Constructor/0',
+      'SomeOtherTest.Foo',
+      'SomeOtherTest.SwitchTypes',
     ]
     self.assertEqual(sorted(test_list), sorted(cover_set))
 
@@ -826,16 +880,19 @@ class TestGTestLogParserTests(unittest.TestCase):
 
     test_name = 'HunspellTest.Crashes'
     expected_log_lines = [
-        'Did not complete.',
-        'Potential test logs from crash until the end of test program:'
+      'Did not complete.',
+      'Potential test logs from crash until the end of test program:',
     ] + CRASH_MESSAGE
-    self.assertEqual('\n'.join(['%s: ' % test_name] + expected_log_lines),
-                     '\n'.join(parser.FailureDescription(test_name)))
+    self.assertEqual(
+      '\n'.join(['%s: ' % test_name] + expected_log_lines),
+      '\n'.join(parser.FailureDescription(test_name)),
+    )
     self.assertEqual(['UNKNOWN'], parser.TriesForTest(test_name))
 
     collection = parser.GetResultCollection()
     self.assertEqual(
-        set(['HunspellTest.Crashes']), collection.unexpected_tests())
+      set(['HunspellTest.Crashes']), collection.unexpected_tests()
+    )
     for result in collection.test_results:
       covered = False
       if result.name == 'HunspellTest.Crashes':
@@ -857,15 +914,17 @@ class TestGTestLogParserTests(unittest.TestCase):
     self.assertEqual(0, parser.FlakyTests())
     self.assertEqual(['UNKNOWN'], parser.TriesForTest('Crash.Test'))
     self.assertEqual(['TIMEOUT'], parser.TriesForTest('TestFix.TestCase'))
-    self.assertEqual(['SUCCESS'],
-                     parser.TriesForTest(
-                         'WebSocketHandshakeHandlerSpdy3Test.RequestResponse'))
+    self.assertEqual(
+      ['SUCCESS'],
+      parser.TriesForTest('WebSocketHandshakeHandlerSpdy3Test.RequestResponse'),
+    )
 
     # Same unit tests (when applicable) using ResultCollection
     collection = parser.GetResultCollection()
     self.assertEqual(
-        sorted(['TestFix.TestCase', 'Crash.Test']),
-        sorted(collection.never_expected_tests()))
+      sorted(['TestFix.TestCase', 'Crash.Test']),
+      sorted(collection.never_expected_tests()),
+    )
 
     # To know that each condition branch in for loop is covered.
     cover_set = set()
@@ -884,8 +943,9 @@ class TestGTestLogParserTests(unittest.TestCase):
         self.assertEqual(TestStatus.PASS, test_result.status)
         self.assertEqual(1, test_result.duration)
     test_list = [
-        'Crash.Test', 'TestFix.TestCase',
-        'WebSocketHandshakeHandlerSpdy3Test.RequestResponse'
+      'Crash.Test',
+      'TestFix.TestCase',
+      'WebSocketHandshakeHandlerSpdy3Test.RequestResponse',
     ]
     self.assertEqual(test_list, sorted(cover_set))
 
@@ -901,15 +961,18 @@ class TestGTestLogParserTests(unittest.TestCase):
     self.assertEqual(['ProcessReaderLinux.AbortMessage'], parser.SkippedTests())
     self.assertEqual(0, parser.DisabledTests())
     self.assertEqual(0, parser.FlakyTests())
-    self.assertEqual(['SKIPPED'],
-                     parser.TriesForTest('ProcessReaderLinux.AbortMessage'))
+    self.assertEqual(
+      ['SKIPPED'], parser.TriesForTest('ProcessReaderLinux.AbortMessage')
+    )
 
     # Same unit tests (when applicable) using ResultCollection
     collection = parser.GetResultCollection()
-    self.assertEqual(['ProcessReaderLinux.AbortMessage'],
-                     sorted(
-                         collection.tests_by_expression(lambda tr: tr.status ==
-                                                        TestStatus.SKIP)))
+    self.assertEqual(
+      ['ProcessReaderLinux.AbortMessage'],
+      sorted(
+        collection.tests_by_expression(lambda tr: tr.status == TestStatus.SKIP)
+      ),
+    )
     self.assertEqual([], sorted(collection.unexpected_tests()))
 
     covered = False
@@ -927,19 +990,24 @@ class TestGTestLogParserTests(unittest.TestCase):
 
     self.assertEqual(0, len(parser.ParsingErrors()))
     self.assertEqual([], parser.RunningTests())
-    self.assertEqual(['SUIDSandboxUITest.testSUIDSandboxEnabled'],
-                     parser.FailedTests())
     self.assertEqual(
-        ['SUIDSandboxUITest.testSUIDSandboxEnabled: '],
-        parser.FailureDescription('SUIDSandboxUITest.testSUIDSandboxEnabled'))
+      ['SUIDSandboxUITest.testSUIDSandboxEnabled'], parser.FailedTests()
+    )
     self.assertEqual(
-        ['FAILURE'],
-        parser.TriesForTest('SUIDSandboxUITest.testSUIDSandboxEnabled'))
+      ['SUIDSandboxUITest.testSUIDSandboxEnabled: '],
+      parser.FailureDescription('SUIDSandboxUITest.testSUIDSandboxEnabled'),
+    )
+    self.assertEqual(
+      ['FAILURE'],
+      parser.TriesForTest('SUIDSandboxUITest.testSUIDSandboxEnabled'),
+    )
 
     # Same unit tests (when applicable) using ResultCollection
     collection = parser.GetResultCollection()
-    self.assertEqual(['SUIDSandboxUITest.testSUIDSandboxEnabled'],
-                     sorted(collection.failed_tests()))
+    self.assertEqual(
+      ['SUIDSandboxUITest.testSUIDSandboxEnabled'],
+      sorted(collection.failed_tests()),
+    )
 
     covered = False
     for test_result in collection.test_results:
@@ -959,19 +1027,24 @@ class TestGTestLogParserTests(unittest.TestCase):
 
     self.assertEqual(0, len(parser.ParsingErrors()))
     self.assertEqual([], parser.RunningTests())
-    self.assertEqual(['SUIDSandboxUITest.testSUIDSandboxEnabled'],
-                     parser.FailedTests())
     self.assertEqual(
-        ['SUIDSandboxUITest.testSUIDSandboxEnabled: ', '(junk)'],
-        parser.FailureDescription('SUIDSandboxUITest.testSUIDSandboxEnabled'))
+      ['SUIDSandboxUITest.testSUIDSandboxEnabled'], parser.FailedTests()
+    )
     self.assertEqual(
-        ['TIMEOUT'],
-        parser.TriesForTest('SUIDSandboxUITest.testSUIDSandboxEnabled'))
+      ['SUIDSandboxUITest.testSUIDSandboxEnabled: ', '(junk)'],
+      parser.FailureDescription('SUIDSandboxUITest.testSUIDSandboxEnabled'),
+    )
+    self.assertEqual(
+      ['TIMEOUT'],
+      parser.TriesForTest('SUIDSandboxUITest.testSUIDSandboxEnabled'),
+    )
 
     # Same unit tests (when applicable) using ResultCollection
     collection = parser.GetResultCollection()
-    self.assertEqual(['SUIDSandboxUITest.testSUIDSandboxEnabled'],
-                     sorted(collection.never_expected_tests()))
+    self.assertEqual(
+      ['SUIDSandboxUITest.testSUIDSandboxEnabled'],
+      sorted(collection.never_expected_tests()),
+    )
 
     covered = False
     for test_result in collection.test_results:
@@ -993,21 +1066,24 @@ class TestGTestLogParserTests(unittest.TestCase):
     self.assertEqual([], parser.RunningTests())
     self.assertEqual(['PickleTest.EncodeDecode'], parser.FailedTests())
     log_lines = [
-        'PickleTest.EncodeDecode: ',
-        '../../base/pickle_unittest.cc:69: Failure',
-        'Value of: false',
-        '  Actual: false',
-        'Expected: true',
+      'PickleTest.EncodeDecode: ',
+      '../../base/pickle_unittest.cc:69: Failure',
+      'Value of: false',
+      '  Actual: false',
+      'Expected: true',
     ]
-    self.assertEqual(log_lines,
-                     parser.FailureDescription('PickleTest.EncodeDecode'))
-    self.assertEqual(['FAILURE'],
-                     parser.TriesForTest('PickleTest.EncodeDecode'))
+    self.assertEqual(
+      log_lines, parser.FailureDescription('PickleTest.EncodeDecode')
+    )
+    self.assertEqual(
+      ['FAILURE'], parser.TriesForTest('PickleTest.EncodeDecode')
+    )
 
     # Same unit tests (when applicable) using ResultCollection
     collection = parser.GetResultCollection()
-    self.assertEqual(['PickleTest.EncodeDecode'],
-                     sorted(collection.never_expected_tests()))
+    self.assertEqual(
+      ['PickleTest.EncodeDecode'], sorted(collection.never_expected_tests())
+    )
 
     covered_count = 0
     for test_result in collection.test_results:
@@ -1046,7 +1122,8 @@ class TestGTestLogParserTests(unittest.TestCase):
 
     # Just a hack so that we can point the compiled file path to right place
     parser.compiled_tests_file_path = os.path.join(
-        os.getcwd(), parser.compiled_tests_file_path)
+      os.getcwd(), parser.compiled_tests_file_path
+    )
     parser.ParseAndPopulateTestResultLocations(TEST_REPO, False)
     collection = parser.GetResultCollection()
 
@@ -1076,7 +1153,8 @@ class TestGTestLogParserTests(unittest.TestCase):
 
     # Just a hack so that we can point the compiled file path to right place
     parser.compiled_tests_file_path = os.path.join(
-        os.getcwd(), parser.compiled_tests_file_path)
+      os.getcwd(), parser.compiled_tests_file_path
+    )
 
     host_file_path = parser.compiled_tests_file_path
     # setting it to None to make sure overriding the path arg really works
@@ -1111,7 +1189,8 @@ class TestGTestLogParserTests(unittest.TestCase):
 
     # Just a hack so that we can point the compiled file path to right place
     parser.compiled_tests_file_path = os.path.join(
-        os.getcwd(), parser.compiled_tests_file_path)
+      os.getcwd(), parser.compiled_tests_file_path
+    )
     parser.ParseAndPopulateTestResultLocations(TEST_REPO, True)
     collection = parser.GetResultCollection()
 
@@ -1144,8 +1223,9 @@ class TestGTestLogParserTests(unittest.TestCase):
     self.assertEqual(0, parser.DisabledTests())
     self.assertEqual(0, parser.FlakyTests())
     self.assertEqual(
-        ['TestFix.TestCase', 'TextPaintTimingDetectorTest.LargestTextPaint'],
-        parser.PassedTests())
+      ['TestFix.TestCase', 'TextPaintTimingDetectorTest.LargestTextPaint'],
+      parser.PassedTests(),
+    )
     collection = parser.GetResultCollection()
     self.assertFalse(collection.crashed)
 
@@ -1157,12 +1237,15 @@ class TestGTestLogParserTests(unittest.TestCase):
 
     self.assertEqual([], parser.ParsingErrors())
     self.assertEqual(['LoggingTest.CrashedTest'], parser.RunningTests())
-    self.assertEqual(['LoggingTest.FailedTest', 'LoggingTest.CrashedTest'],
-                     parser.FailedTests())
+    self.assertEqual(
+      ['LoggingTest.FailedTest', 'LoggingTest.CrashedTest'],
+      parser.FailedTests(),
+    )
     self.assertEqual(0, parser.DisabledTests())
     self.assertEqual(0, parser.FlakyTests())
-    self.assertEqual(['LoggingTest.StreamingWstringFindsCorrectOperator'],
-                     parser.PassedTests())
+    self.assertEqual(
+      ['LoggingTest.StreamingWstringFindsCorrectOperator'], parser.PassedTests()
+    )
     collection = parser.GetResultCollection()
     self.assertTrue(collection.crashed)
 

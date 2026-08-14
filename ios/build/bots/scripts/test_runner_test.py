@@ -41,7 +41,8 @@ class TestCase(unittest.TestCase):
       mock: The mock to install.
     """
     self._mocks.setdefault(obj, collections.OrderedDict()).setdefault(
-        member, getattr(obj, member))
+      member, getattr(obj, member)
+    )
     setattr(obj, member, mock)
 
   def unmock(self, obj, member):
@@ -70,28 +71,47 @@ class SimulatorTestRunnerTest(TestCase):
     super(SimulatorTestRunnerTest, self).setUp()
     self.mock(iossim_util, 'get_simulator', lambda *args, **kwargs: 'sim-UUID')
     self.mock(
-        iossim_util, 'get_platform_type_by_platform',
-        lambda platform: constants.IOSPlatformType.TVOS if platform.startswith(
-            'Apple TV') else constants.IOSPlatformType.IPHONEOS)
-    self.mock(iossim_util, 'ensure_simulator_fully_booted',
-              lambda *args, **kwargs: True)
-    self.mock(iossim_util, 'is_device_with_udid_simulator',
-              lambda *args, **kwargs: True)
-    self.mock(result_sink_util.ResultSinkClient,
-              'post', lambda *args, **kwargs: None)
+      iossim_util,
+      'get_platform_type_by_platform',
+      lambda platform: (
+        constants.IOSPlatformType.TVOS
+        if platform.startswith('Apple TV')
+        else constants.IOSPlatformType.IPHONEOS
+      ),
+    )
+    self.mock(
+      iossim_util, 'ensure_simulator_fully_booted', lambda *args, **kwargs: True
+    )
+    self.mock(
+      iossim_util, 'is_device_with_udid_simulator', lambda *args, **kwargs: True
+    )
+    self.mock(
+      result_sink_util.ResultSinkClient, 'post', lambda *args, **kwargs: None
+    )
 
-    self.mock(test_runner, 'get_current_xcode_info', lambda: {
-        'version': 'test version', 'build': 'test build', 'path': 'test/path'})
+    self.mock(
+      test_runner,
+      'get_current_xcode_info',
+      lambda: {
+        'version': 'test version',
+        'build': 'test build',
+        'path': 'test/path',
+      },
+    )
     self.mock(test_apps, 'get_bundle_id', lambda _: 'fake-bundle-id')
     self.mock(xcode_util, 'xctest_path', lambda _: 'fake-path')
     self.mock(test_apps.plistlib, 'dump', lambda _1, _2: '')
     self.mock(os.path, 'abspath', lambda path: f'/abs/path/to/{path}')
     self.mock(os.path, 'exists', lambda _: True)
-    self.mock(test_runner.TestRunner, 'set_sigterm_handler',
-      lambda self, handler: 0)
+    self.mock(
+      test_runner.TestRunner, 'set_sigterm_handler', lambda self, handler: 0
+    )
     self.mock(os, 'listdir', lambda _: [])
-    self.mock(test_apps.GTestsApp, 'fill_xctest_run',
-              lambda _, folder: f'/abs/path/to/{folder}')
+    self.mock(
+      test_apps.GTestsApp,
+      'fill_xctest_run',
+      lambda _, folder: f'/abs/path/to/{folder}',
+    )
 
   def test_app_not_found(self):
     """Ensures AppNotFoundError is raised."""
@@ -113,21 +133,21 @@ class SimulatorTestRunnerTest(TestCase):
 
     with self.assertRaises(test_runner.SimulatorNotFoundError):
       test_runner.SimulatorTestRunner(
-          'fake-app',
-          'fake-iossim',
-          'iPhone X',
-          '11.4',
-          'out-dir',
-      )
-
-  def test_init(self):
-    """Ensures instance is created."""
-    tr = test_runner.SimulatorTestRunner(
         'fake-app',
         'fake-iossim',
         'iPhone X',
         '11.4',
         'out-dir',
+      )
+
+  def test_init(self):
+    """Ensures instance is created."""
+    tr = test_runner.SimulatorTestRunner(
+      'fake-app',
+      'fake-iossim',
+      'iPhone X',
+      '11.4',
+      'out-dir',
     )
 
     self.assertTrue(tr)
@@ -142,12 +162,12 @@ class SimulatorTestRunnerTest(TestCase):
     mock_run.return_value = result
 
     tr = test_runner.SimulatorTestRunner(
-        'fake-app',
-        'fake-iossim',
-        'iPhone X',
-        '11.4',
-        'out-dir',
-        xctest=True,
+      'fake-app',
+      'fake-iossim',
+      'iPhone X',
+      '11.4',
+      'out-dir',
+      xctest=True,
     )
     with self.assertRaises(test_runner.AppLaunchError):
       tr.launch()
@@ -155,6 +175,7 @@ class SimulatorTestRunnerTest(TestCase):
 
   def test_relaunch(self):
     """Ensures test is relaunched on test crash until tests complete."""
+
     def set_up(self):
       return
 
@@ -163,15 +184,18 @@ class SimulatorTestRunnerTest(TestCase):
       if not any('retry_after_crash' in cmd_arg for cmd_arg in cmd):
         # First run, has no test filter supplied. Mock a crash.
         result = ResultCollection(
-            test_results=[TestResult('crash', TestStatus.CRASH)])
+          test_results=[TestResult('crash', TestStatus.CRASH)]
+        )
         result.crashed = True
         result.add_test_result(TestResult('pass', TestStatus.PASS))
         result.add_test_result(
-            TestResult('fail', TestStatus.FAIL, test_log='some logs'))
+          TestResult('fail', TestStatus.FAIL, test_log='some logs')
+        )
         return result
       else:
         return ResultCollection(
-            test_results=[TestResult('crash', TestStatus.PASS)])
+          test_results=[TestResult('crash', TestStatus.PASS)]
+        )
 
     def tear_down(self):
       return
@@ -181,11 +205,11 @@ class SimulatorTestRunnerTest(TestCase):
     self.mock(test_runner.SimulatorTestRunner, 'tear_down', tear_down)
 
     tr = test_runner.SimulatorTestRunner(
-        'fake-app',
-        'fake-iossim',
-        'iPhone X',
-        '11.4',
-        'out-dir',
+      'fake-app',
+      'fake-iossim',
+      'iPhone X',
+      '11.4',
+      'out-dir',
     )
     tr.launch()
     self.assertTrue(tr.logs)
@@ -199,12 +223,14 @@ class SimulatorTestRunnerTest(TestCase):
     test1_pass_result = TestResult('test1', TestStatus.PASS)
     test2_pass_result = TestResult('test2', TestStatus.PASS)
     result1 = ResultCollection(
-        test_results=[test1_fail_result, test2_fail_result])
+      test_results=[test1_fail_result, test2_fail_result]
+    )
     retry_result1 = ResultCollection(test_results=[test1_pass_result])
     retry_result2 = ResultCollection(test_results=[test2_pass_result])
     mock_run.side_effect = [result1, retry_result1, retry_result2]
     tr = test_runner.SimulatorTestRunner(
-        'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
+      'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3
+    )
     tr.launch()
     self.assertEqual(len(mock_run.mock_calls), 3)
     self.assertTrue(tr.logs)
@@ -227,11 +253,15 @@ class SimulatorTestRunnerTest(TestCase):
     test_retry1_result = ResultCollection(test_results=[test1_pass_result])
     test_retry2_result = ResultCollection(test_results=[test2_pass_result])
     mock_run.side_effect = [
-        initial_result, crash_retry1_result, crash_retry2_result,
-        test_retry1_result, test_retry2_result
+      initial_result,
+      crash_retry1_result,
+      crash_retry2_result,
+      test_retry1_result,
+      test_retry2_result,
     ]
     tr = test_runner.SimulatorTestRunner(
-        'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
+      'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3
+    )
     tr.launch()
     self.assertEqual(len(mock_run.mock_calls), 5)
     self.assertTrue(tr.test_results['interrupted'])
@@ -255,11 +285,15 @@ class SimulatorTestRunnerTest(TestCase):
     test_retry1_result = ResultCollection(test_results=[test1_pass_result])
     test_retry2_result = ResultCollection(test_results=[test2_pass_result])
     mock_run.side_effect = [
-        initial_result, crash_retry1_result, crash_retry2_result,
-        test_retry1_result, test_retry2_result
+      initial_result,
+      crash_retry1_result,
+      crash_retry2_result,
+      test_retry1_result,
+      test_retry2_result,
     ]
     tr = test_runner.SimulatorTestRunner(
-        'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
+      'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3
+    )
     tr.launch()
     self.assertEqual(len(mock_run.mock_calls), 5)
     self.assertFalse(tr.test_results['interrupted'])
@@ -277,16 +311,20 @@ class SimulatorTestRunnerTest(TestCase):
     test1_retry3_result.crashed = True
 
     mock_run.side_effect = [
-        initial_result, test1_retry1_result, test1_retry2_result,
-        test1_retry3_result
+      initial_result,
+      test1_retry1_result,
+      test1_retry2_result,
+      test1_retry3_result,
     ]
     tr = test_runner.SimulatorTestRunner(
-        'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
+      'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3
+    )
     tr.launch()
     self.assertEqual(len(mock_run.mock_calls), 4)
     self.assertFalse(tr.test_results['interrupted'])
-    self.assertEqual(tr.test_results['tests']['test1']['actual'],
-                     'FAIL FAIL FAIL SKIP')
+    self.assertEqual(
+      tr.test_results['tests']['test1']['actual'], 'FAIL FAIL FAIL SKIP'
+    )
     self.assertTrue(tr.logs)
 
   @mock.patch('test_runner.SimulatorTestRunner.tear_down')
@@ -299,7 +337,8 @@ class SimulatorTestRunnerTest(TestCase):
     initial_result.spawning_test_launcher = True
     mock_run.side_effect = [initial_result]
     tr = test_runner.SimulatorTestRunner(
-        'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
+      'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3
+    )
     tr.launch()
     self.assertEqual(len(mock_run.mock_calls), 1)
     self.assertTrue(tr.test_results['interrupted'])
@@ -314,27 +353,39 @@ class DeviceTestRunnerTest(TestCase):
     def install_xcode(build, mac_toolchain_cmd, xcode_app_path):
       return True
 
-    self.mock(result_sink_util.ResultSinkClient,
-              'post', lambda *args, **kwargs: None)
-    self.mock(test_runner, 'get_current_xcode_info', lambda: {
-        'version': 'test version', 'build': 'test build', 'path': 'test/path'})
+    self.mock(
+      result_sink_util.ResultSinkClient, 'post', lambda *args, **kwargs: None
+    )
+    self.mock(
+      test_runner,
+      'get_current_xcode_info',
+      lambda: {
+        'version': 'test version',
+        'build': 'test build',
+        'path': 'test/path',
+      },
+    )
     self.mock(test_runner, 'install_xcode', install_xcode)
-    self.mock(test_runner.subprocess,
-              'check_output', lambda _: b'fake-bundle-id')
+    self.mock(
+      test_runner.subprocess, 'check_output', lambda _: b'fake-bundle-id'
+    )
     self.mock(os.path, 'abspath', lambda path: f'/abs/path/to/{path}')
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(os, 'listdir', lambda _: [])
     self.mock(tempfile, 'mkstemp', lambda: '/tmp/tmp_file')
     self.tr = test_runner.DeviceTestRunner(
-        'fake-app',
-        'xcode-version',
-        'xcode-build',
-        'out-dir',
+      'fake-app',
+      'xcode-version',
+      'xcode-build',
+      'out-dir',
     )
     self.tr.xctestrun_data = {'TestTargetName': {}}
 
 
 if __name__ == '__main__':
-  logging.basicConfig(format='[%(asctime)s:%(levelname)s] %(message)s',
-    level=logging.DEBUG, datefmt='%I:%M:%S')
+  logging.basicConfig(
+    format='[%(asctime)s:%(levelname)s] %(message)s',
+    level=logging.DEBUG,
+    datefmt='%I:%M:%S',
+  )
   unittest.main()

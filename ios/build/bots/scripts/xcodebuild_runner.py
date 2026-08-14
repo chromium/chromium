@@ -30,14 +30,16 @@ import xcode_util
 # path in order to import from that directory
 if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
   sys.path.append(
-      os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin'))
+    os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin')
+  )
 from plugin_utils import init_plugins_from_args
 from test_plugin_service import TestPluginServicerWrapper, TestPluginServicer
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
 sys.path.append(
-    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
+  os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto'))
+)
 import measures
 
 LOGGER = logging.getLogger(__name__)
@@ -71,20 +73,22 @@ def terminate_process(proc):
 class LaunchCommand(object):
   """Stores xcodebuild test launching command."""
 
-  def __init__(self,
-               egtests_app,
-               udid,
-               clones,
-               retries,
-               readline_timeout,
-               exception_checker,
-               test_runner,
-               out_dir=os.path.basename(os.getcwd()),
-               use_clang_coverage=False,
-               env=None,
-               test_plugin_service=None,
-               cert_path=None,
-               ensure_fresh_simulators=True):
+  def __init__(
+    self,
+    egtests_app,
+    udid,
+    clones,
+    retries,
+    readline_timeout,
+    exception_checker,
+    test_runner,
+    out_dir=os.path.basename(os.getcwd()),
+    use_clang_coverage=False,
+    env=None,
+    test_plugin_service=None,
+    cert_path=None,
+    ensure_fresh_simulators=True,
+  ):
     """Initialize launch command.
 
     Args:
@@ -110,7 +114,8 @@ class LaunchCommand(object):
     """
     if not isinstance(egtests_app, test_apps.EgtestsApp):
       raise test_runner.AppNotFoundError(
-          'Parameter `egtests_app` is not EgtestsApp: %s' % egtests_app)
+        'Parameter `egtests_app` is not EgtestsApp: %s' % egtests_app
+      )
     self.egtests_app = egtests_app
     self.udid = udid
     self.clones = clones
@@ -135,15 +140,16 @@ class LaunchCommand(object):
       output - command output as list of strings.
     """
     proc = subprocess.Popen(
-        cmd,
-        env=self.env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+      cmd,
+      env=self.env,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.STDOUT,
     )
     return test_runner.print_process_output(
-        proc,
-        timeout=self.readline_timeout,
-        exception_checker=self.exception_checker)
+      proc,
+      timeout=self.readline_timeout,
+      exception_checker=self.exception_checker,
+    )
 
   def launch(self):
     """Launches tests using xcodebuild."""
@@ -166,35 +172,40 @@ class LaunchCommand(object):
         if self.cert_path:
           iossim_util.copy_trusted_certificate(self.cert_path, self.udid)
 
-        with measures.time_consumption('Simulator full boot',
-                                       'XcodeBuildRunner',
-                                       'Pre launch For testing',
-                                       f'Test attempt {attempt}'):
+        with measures.time_consumption(
+          'Simulator full boot',
+          'XcodeBuildRunner',
+          'Pre launch For testing',
+          f'Test attempt {attempt}',
+        ):
           iossim_util.ensure_simulator_fully_booted(self.udid, num_attempts=2)
-
 
         # ideally this should be the last step before running tests, because
         # it boots the simulator.
         iossim_util.disable_simulator_keyboard_tutorial(self.udid)
 
       outdir_attempt = os.path.join(self.out_dir, 'attempt_%d' % attempt)
-      cmd_list = self.egtests_app.command(outdir_attempt, 'id=%s' % self.udid,
-                                          clones)
-
+      cmd_list = self.egtests_app.command(
+        outdir_attempt, 'id=%s' % self.udid, clones
+      )
 
       # TODO(crbug.com/40606422): add heartbeat logging to xcodebuild_runner.
-      LOGGER.info('Start test attempt #%d for command [%s]' %
-                  (attempt, ' '.join(cmd_list)))
+      LOGGER.info(
+        'Start test attempt #%d for command [%s]'
+        % (attempt, ' '.join(cmd_list))
+      )
       output = self.launch_attempt(cmd_list)
 
       if xcode_util.using_xcode_16_or_higher():
         result = Xcode16LogParser.collect_test_results(outdir_attempt, output)
       else:
-        result = XcodeLogParser.collect_test_results(outdir_attempt, output,
-                                                     clones > 1)
+        result = XcodeLogParser.collect_test_results(
+          outdir_attempt, output, clones > 1
+        )
 
       tests_selected_at_runtime = _tests_decided_at_runtime(
-          self.egtests_app.test_app_path)
+        self.egtests_app.test_app_path
+      )
       # For most suites, only keep crash status from last attempt since retries
       # will cover any missing tests. For these decided at runtime, retain
       # crashes from all attempts and a dummy "crashed" result will be reported
@@ -202,14 +213,16 @@ class LaunchCommand(object):
       # TODO(crbug.com/40782444): Switch back to excluded tests and set
       # |overall_crash| to always True.
       overall_launch_command_result.add_result_collection(
-          result, overwrite_crash=not tests_selected_at_runtime)
+        result, overwrite_crash=not tests_selected_at_runtime
+      )
       result.report_to_result_sink()
 
       # If result represents a crash and simulator caching is enabled, purge the
       # simulator from the cache to ensure the cached simulator's state is not
       # the source of the crash.
       if result.crashed and iossim_util.is_device_with_udid_simulator(
-          self.udid):
+        self.udid
+      ):
         self.test_runner.delete_cached_simulator()
 
       tests_to_include = set()
@@ -217,12 +230,13 @@ class LaunchCommand(object):
       # sharding. For some suites, they are more than what's needed to run.
       if not tests_selected_at_runtime:
         tests_to_include = tests_to_include | (
-            running_tests - overall_launch_command_result.expected_tests())
+          running_tests - overall_launch_command_result.expected_tests()
+        )
       # Add failed tests from last rounds for runtime decided suites and device
       # suites.
       tests_to_include = (
-          tests_to_include
-          | overall_launch_command_result.never_expected_tests())
+        tests_to_include | overall_launch_command_result.never_expected_tests()
+      )
       # Do not retry ASan failures
       asan_failures = overall_launch_command_result.asan_failed_tests()
       if asan_failures:
@@ -237,11 +251,15 @@ class LaunchCommand(object):
       # If tests are not completed(interrupted or did not start) and there are
       # >= 20 remaining tests, run them with the same number of clones.
       # otherwise re-run with clones=1.
-      if (not result.crashed
-          # If need to re-run less than 20 tests, 1 shard should be enough.
-          or (len(running_tests) -
-              len(overall_launch_command_result.expected_tests()) <=
-              MAXIMUM_TESTS_PER_SHARD_FOR_RERUN)):
+      if (
+        not result.crashed
+        # If need to re-run less than 20 tests, 1 shard should be enough.
+        or (
+          len(running_tests)
+          - len(overall_launch_command_result.expected_tests())
+          <= MAXIMUM_TESTS_PER_SHARD_FOR_RERUN
+        )
+      ):
         clones = 1
 
     return overall_launch_command_result
@@ -250,8 +268,16 @@ class LaunchCommand(object):
 class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
   """Class for running simulator tests using xCode."""
 
-  def __init__(self, app_path, host_app_path, iossim_path, version, platform,
-               out_dir, **kwargs):
+  def __init__(
+    self,
+    app_path,
+    host_app_path,
+    iossim_path,
+    version,
+    platform,
+    out_dir,
+    **kwargs,
+  ):
     """Initializes a new instance of SimulatorParallelTestRunner class.
 
     Args:
@@ -283,9 +309,9 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       XCTestPlugInNotFoundError: If the .xctest PlugIn does not exist.
     """
     kwargs['retries'] = kwargs.get('retries') or 0
-    super(SimulatorParallelTestRunner,
-          self).__init__(app_path, iossim_path, platform, version, out_dir,
-                         **kwargs)
+    super(SimulatorParallelTestRunner, self).__init__(
+      app_path, iossim_path, platform, version, out_dir, **kwargs
+    )
     self.set_up()
     self.host_app_path = None
     if host_app_path != 'NO_PATH':
@@ -308,13 +334,16 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     # support as we have migrated to native xcode video recording.
     self.test_plugin_service = None
     enabled_plugins = init_plugins_from_args(
-        os.path.join(self.out_dir, self.udid), **kwargs)
-    if (len(enabled_plugins) > 0):
-      LOGGER.info('Number of enabled plugins are greater than 0, initiating' +
-                  'test plugin service... Enabled plugins are %s' %
-                  enabled_plugins)
+      os.path.join(self.out_dir, self.udid), **kwargs
+    )
+    if len(enabled_plugins) > 0:
+      LOGGER.info(
+        'Number of enabled plugins are greater than 0, initiating'
+        + 'test plugin service... Enabled plugins are %s' % enabled_plugins
+      )
       self.test_plugin_service = TestPluginServicerWrapper(
-          TestPluginServicer(enabled_plugins))
+        TestPluginServicer(enabled_plugins)
+      )
     else:
       LOGGER.info('No plugins are enabled, test plugin service will not start.')
 
@@ -347,8 +376,9 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
 
     return xctestrun
 
-  def fetch_test_names(self,
-                       include_disabled: bool = False) -> List[Tuple[str, str]]:
+  def fetch_test_names(
+    self, include_disabled: bool = False
+  ) -> List[Tuple[str, str]]:
     xctestrun = self._create_xctest_run_enum_tests(include_disabled)
     all_test_classes = []
     error_message = ""
@@ -356,46 +386,62 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
 
     # Preboot simulator and measure boot time
     if iossim_util.is_device_with_udid_simulator(self.udid):
-      with measures.time_consumption('Simulator full boot', 'XcodeBuildRunner',
-                                     'Pre launch for enumerate test cases'):
+      with measures.time_consumption(
+        'Simulator full boot',
+        'XcodeBuildRunner',
+        'Pre launch for enumerate test cases',
+      ):
         iossim_util.ensure_simulator_fully_booted(self.udid, num_attempts=2)
 
     for attempt in range(num_attempts):
       # reset error_message with each attempt
       error_message = ""
       enumerate_tests_json = os.path.join(
-          os.path.abspath(self.out_dir),
-          'enumerate_tests_%d.json' % int(time.time()))
+        os.path.abspath(self.out_dir),
+        'enumerate_tests_%d.json' % int(time.time()),
+      )
 
       cmd = [
-          "xcodebuild", "test-without-building", "-enumerate-tests",
-          "-xctestrun", xctestrun, "-destination",
-          'id=%s' % self.udid, "-test-enumeration-format", "json",
-          "-test-enumeration-output-path", enumerate_tests_json,
-          "-collect-test-diagnostics", "never"
+        "xcodebuild",
+        "test-without-building",
+        "-enumerate-tests",
+        "-xctestrun",
+        xctestrun,
+        "-destination",
+        'id=%s' % self.udid,
+        "-test-enumeration-format",
+        "json",
+        "-test-enumeration-output-path",
+        enumerate_tests_json,
+        "-collect-test-diagnostics",
+        "never",
       ]
       LOGGER.info(cmd)
 
       start = time.perf_counter()
       proc = subprocess.Popen(
-          cmd,
-          env=None,
-          stdout=subprocess.PIPE,
-          stderr=subprocess.STDOUT,
+        cmd,
+        env=None,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
       )
       test_runner.print_process_output(
-          proc,
-          timeout=self.readline_timeout,
-          exception_checker=self.exception_checker)
+        proc,
+        timeout=self.readline_timeout,
+        exception_checker=self.exception_checker,
+      )
       end = time.perf_counter()
       elapsed = end - start
-      LOGGER.info(f'xcodebuild -enumerate-tests (attempt {attempt + 1} of '
-                  f'{num_attempts}) completed in {elapsed:.2f} seconds')
+      LOGGER.info(
+        f'xcodebuild -enumerate-tests (attempt {attempt + 1} of '
+        f'{num_attempts}) completed in {elapsed:.2f} seconds'
+      )
 
       # enumerate_tests_json will not be written if return code is non-zero
       if not os.path.isfile(enumerate_tests_json):
-        LOGGER.error(f'xcodebuild -enumerate-tests failed to create '
-                     f'{enumerate_tests_json}')
+        LOGGER.error(
+          f'xcodebuild -enumerate-tests failed to create {enumerate_tests_json}'
+        )
         continue
 
       with open(enumerate_tests_json, "r") as f:
@@ -438,8 +484,10 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       # overwrite assignment to self.test_cases (that already occurred in parent
       # class) if we are running EG tests on multiple swarming shards
       if self.test_cases:
-        LOGGER.warning('Overwriting self.test_cases with sharded test cases. '
-                       'Original test cases: %s' % self.test_cases)
+        LOGGER.warning(
+          'Overwriting self.test_cases with sharded test cases. '
+          'Original test cases: %s' % self.test_cases
+        )
       self.test_cases = shard_util.shard_eg_test_cases(self.all_eg_test_names)
 
   def get_launch_env(self):
@@ -459,17 +507,18 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       An implementation of EgtestsApp for the runner.
     """
     return test_apps.EgtestsApp(
-        self.app_path,
-        self.all_eg_test_names,
-        self.platform_type,
-        xcode_platform_dir_name=self.xcode_platform_dir_name,
-        included_tests=self.test_cases,
-        env_vars=self.env_vars,
-        test_args=self.test_args,
-        release=self.release,
-        repeat_count=self.repeat_count,
-        host_app_path=self.host_app_path,
-        record_video_option=self.record_video_option)
+      self.app_path,
+      self.all_eg_test_names,
+      self.platform_type,
+      xcode_platform_dir_name=self.xcode_platform_dir_name,
+      included_tests=self.test_cases,
+      env_vars=self.env_vars,
+      test_args=self.test_args,
+      release=self.release,
+      repeat_count=self.repeat_count,
+      host_app_path=self.host_app_path,
+      record_video_option=self.record_video_option,
+    )
 
   def launch(self):
     """Launches tests using xcodebuild."""
@@ -477,18 +526,19 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       self.test_plugin_service.start_server()
     test_app = self.get_launch_test_app()
     launch_command = LaunchCommand(
-        test_app,
-        udid=self.udid,
-        clones=self.clones,
-        readline_timeout=self.readline_timeout,
-        retries=self.retries,
-        out_dir=os.path.join(self.out_dir, self.udid),
-        use_clang_coverage=(hasattr(self, 'use_clang_coverage') and
-                            self.use_clang_coverage),
-        env=self.get_launch_env(),
-        test_plugin_service=self.test_plugin_service,
-        exception_checker=self.exception_checker,
-        test_runner=weakref.proxy(self),  # avoid reference cycle
+      test_app,
+      udid=self.udid,
+      clones=self.clones,
+      readline_timeout=self.readline_timeout,
+      retries=self.retries,
+      out_dir=os.path.join(self.out_dir, self.udid),
+      use_clang_coverage=(
+        hasattr(self, 'use_clang_coverage') and self.use_clang_coverage
+      ),
+      env=self.get_launch_env(),
+      test_plugin_service=self.test_plugin_service,
+      exception_checker=self.exception_checker,
+      test_runner=weakref.proxy(self),  # avoid reference cycle
     )
 
     try:
@@ -502,12 +552,14 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
         if not self._should_skip_enumerate_tests():
           disabled_tests = self.fetch_test_names(include_disabled=True)
           test_app.disabled_tests = list(
-              map(lambda test: f'{test[0]}/{test[1]}', disabled_tests))
+            map(lambda test: f'{test[0]}/{test[1]}', disabled_tests)
+          )
           overall_result.add_and_report_test_names_status(
-              test_app.disabled_tests,
-              TestStatus.SKIP,
-              expected_status=TestStatus.SKIP,
-              test_log='Test disabled.')
+            test_app.disabled_tests,
+            TestStatus.SKIP,
+            expected_status=TestStatus.SKIP,
+            test_log='Test disabled.',
+          )
 
       # Deletes simulator used in the tests after tests end.
       if iossim_util.is_device_with_udid_simulator(self.udid):
@@ -522,25 +574,30 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
         # |all_tests_to_run| takes into consideration that only a subset of
         # tests may have run due to the test sharding logic in shard_util.py.
         all_tests_to_run = set(launch_command.egtests_app.get_all_tests())
-        unexpectedly_skipped = list(all_tests_to_run -
-                                    overall_result.all_test_names())
+        unexpectedly_skipped = list(
+          all_tests_to_run - overall_result.all_test_names()
+        )
         overall_result.add_and_report_test_names_status(
-            unexpectedly_skipped,
-            TestStatus.SKIP,
-            test_log=(
-                'The test is compiled in test target but was unexpectedly '
-                'not run or not finished.'))
+          unexpectedly_skipped,
+          TestStatus.SKIP,
+          test_log=(
+            'The test is compiled in test target but was unexpectedly '
+            'not run or not finished.'
+          ),
+        )
 
       # Add a final crash status to result collection. It will be reported as
       # part of step log in LUCI build.
       if unexpectedly_skipped or overall_result.crashed:
         overall_result.set_crashed_with_prefix(
-            crash_message_prefix_line=(
-                'Test application crash happened and may '
-                'result in missing tests:'))
+          crash_message_prefix_line=(
+            'Test application crash happened and may result in missing tests:'
+          )
+        )
 
       self.test_results = overall_result.standard_json_output(
-          path_delimiter='/')
+        path_delimiter='/'
+      )
       self.logs.update(overall_result.test_runner_logs())
 
       # Return False when:
@@ -548,8 +605,9 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       # or
       # - The overall status is crashed and tests are selected at runtime. (i.e.
       # runner is unable to know if all scheduled tests appear in result.)
-      return (not overall_result.never_expected_tests() and
-              not (tests_selected_at_runtime and overall_result.crashed))
+      return not overall_result.never_expected_tests() and not (
+        tests_selected_at_runtime and overall_result.crashed
+      )
     finally:
       self.tear_down()
 
@@ -570,15 +628,14 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       # delete current simulator
       iossim_util.delete_simulator_by_udid(self.udid)
       # create new simulator & update UDID
-      self.udid = iossim_util.get_simulator(self.platform, self.version,
-                                            self.out_dir,
-                                            self.use_simulator_cache)
+      self.udid = iossim_util.get_simulator(
+        self.platform, self.version, self.out_dir, self.use_simulator_cache
+      )
       return self.udid
 
     # wipe existing simulator
     iossim_util.wipe_simulator_by_udid(self.udid)
     return self.udid
-
 
   def tear_down(self):
     if self.test_plugin_service:
@@ -586,8 +643,9 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       self.test_plugin_service.tear_down()
 
 
-class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
-                            test_runner.DeviceTestRunner):
+class DeviceXcodeTestRunner(
+  SimulatorParallelTestRunner, test_runner.DeviceTestRunner
+):
   """Class for running tests on real device using xCode."""
 
   def __init__(self, app_path, host_app_path, out_dir, **kwargs):

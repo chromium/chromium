@@ -15,28 +15,35 @@ import test_runner_test
 
 FAKE_TEST_LOC = {'repo': 'https://test', 'fileName': '//test.cc'}
 PASSED_RESULT = TestResult(
-    'passed/test', TestStatus.PASS, duration=1233, test_log='Logs')
+  'passed/test', TestStatus.PASS, duration=1233, test_log='Logs'
+)
 PASSED_RESULT_WITH_LOC = TestResult(
-    'passed/test',
-    TestStatus.PASS,
-    duration=1233,
-    test_log='Logs',
-    test_loc=FAKE_TEST_LOC)
+  'passed/test',
+  TestStatus.PASS,
+  duration=1233,
+  test_log='Logs',
+  test_loc=FAKE_TEST_LOC,
+)
 FAILED_RESULT = TestResult(
-    'failed/test', TestStatus.FAIL, duration=1233, test_log='line1\nline2')
+  'failed/test', TestStatus.FAIL, duration=1233, test_log='line1\nline2'
+)
 FAILED_RESULT_DUPLICATE = TestResult(
-    'failed/test', TestStatus.FAIL, test_log='line3\nline4')
+  'failed/test', TestStatus.FAIL, test_log='line3\nline4'
+)
 DISABLED_RESULT = TestResult(
-    'disabled/test',
-    TestStatus.SKIP,
-    expected_status=TestStatus.SKIP,
-    attachments={'name': '/path/to/name'})
-UNEXPECTED_SKIPPED_RESULT = TestResult('unexpected/skipped_test',
-                                       TestStatus.SKIP)
+  'disabled/test',
+  TestStatus.SKIP,
+  expected_status=TestStatus.SKIP,
+  attachments={'name': '/path/to/name'},
+)
+UNEXPECTED_SKIPPED_RESULT = TestResult(
+  'unexpected/skipped_test', TestStatus.SKIP
+)
 CRASHED_RESULT = TestResult('crashed/test', TestStatus.CRASH)
 FLAKY_PASS_RESULT = TestResult('flaky/test', TestStatus.PASS)
 FLAKY_FAIL_RESULT = TestResult(
-    'flaky/test', TestStatus.FAIL, test_log='line1\nline2')
+  'flaky/test', TestStatus.FAIL, test_log='line1\nline2'
+)
 ABORTED_RESULT = TestResult('aborted/test', TestStatus.ABORT)
 
 
@@ -47,18 +54,18 @@ class UtilTest(test_runner_test.TestCase):
     """Tests _validate_kwargs."""
     with self.assertRaises(AssertionError) as context:
       TestResult('name', TestStatus.PASS, unknown='foo')
-    expected_message = ("Invalid keyword argument(s) in")
+    expected_message = "Invalid keyword argument(s) in"
     self.assertTrue(expected_message in str(context.exception))
     with self.assertRaises(AssertionError) as context:
       ResultCollection(test_log='foo')
-    expected_message = ("Invalid keyword argument(s) in")
+    expected_message = "Invalid keyword argument(s) in"
     self.assertTrue(expected_message in str(context.exception))
 
   def test_validate_test_status(self):
     """Tests exception raised from validation."""
     with self.assertRaises(TypeError) as context:
       test_result_util._validate_test_status('TIMEOUT')
-    expected_message = ('Invalid test status: TIMEOUT. Should be one of')
+    expected_message = 'Invalid test status: TIMEOUT. Should be one of'
     self.assertTrue(expected_message in str(context.exception))
 
   def test_to_standard_json_literal(self):
@@ -82,23 +89,31 @@ class TestResultTest(test_runner_test.TestCase):
 
   def test_compose_result_sink_tags(self):
     """Tests _compose_result_sink_tags."""
-    disabled_test_tags = [('test_name', 'disabled/test'),
-                          ('disabled_test', 'true')]
-    unexpected_skip_test_tags = [('test_name', 'unexpected/skipped_test'),
-                                 ('disabled_test', 'false')]
+    disabled_test_tags = [
+      ('test_name', 'disabled/test'),
+      ('disabled_test', 'true'),
+    ]
+    unexpected_skip_test_tags = [
+      ('test_name', 'unexpected/skipped_test'),
+      ('disabled_test', 'false'),
+    ]
     not_skip_test_tags = [('test_name', 'passed/test')]
 
     not_skip_test_result = PASSED_RESULT
-    self.assertEqual(not_skip_test_tags,
-                     not_skip_test_result._compose_result_sink_tags())
+    self.assertEqual(
+      not_skip_test_tags, not_skip_test_result._compose_result_sink_tags()
+    )
 
     disabled_test_result = DISABLED_RESULT
-    self.assertEqual(disabled_test_tags,
-                     disabled_test_result._compose_result_sink_tags())
+    self.assertEqual(
+      disabled_test_tags, disabled_test_result._compose_result_sink_tags()
+    )
 
     unexpected_skip_test_result = UNEXPECTED_SKIPPED_RESULT
-    self.assertEqual(unexpected_skip_test_tags,
-                     unexpected_skip_test_result._compose_result_sink_tags())
+    self.assertEqual(
+      unexpected_skip_test_tags,
+      unexpected_skip_test_result._compose_result_sink_tags(),
+    )
 
   @mock.patch('result_sink_util.ResultSinkClient.post')
   def test_report_to_result_sink(self, mock_post):
@@ -106,14 +121,15 @@ class TestResultTest(test_runner_test.TestCase):
     client = mock.MagicMock()
     disabled_test_result.report_to_result_sink(client)
     client.post.assert_called_with(
-        'disabled/test',
-        'SKIP',
-        True,
-        duration=None,
-        test_log='',
-        tags=[('test_name', 'disabled/test'), ('disabled_test', 'true')],
-        test_loc=None,
-        file_artifacts={'name': '/path/to/name'})
+      'disabled/test',
+      'SKIP',
+      True,
+      duration=None,
+      test_log='',
+      tags=[('test_name', 'disabled/test'), ('disabled_test', 'true')],
+      test_loc=None,
+      file_artifacts={'name': '/path/to/name'},
+    )
     # Duplicate calls will only report once.
     disabled_test_result.report_to_result_sink(client)
     self.assertEqual(client.post.call_count, 1)
@@ -124,27 +140,29 @@ class TestResultTest(test_runner_test.TestCase):
     client = mock.MagicMock()
     faileded_result.report_to_result_sink(client)
     client.post.assert_called_with(
-        'failed/test',
-        'FAIL',
-        False,
-        duration=1233,
-        file_artifacts={},
-        tags=[('test_name', 'failed/test')],
-        test_loc=None,
-        test_log='line1\nline2')
+      'failed/test',
+      'FAIL',
+      False,
+      duration=1233,
+      file_artifacts={},
+      tags=[('test_name', 'failed/test')],
+      test_loc=None,
+      test_log='line1\nline2',
+    )
 
     passed_result = PASSED_RESULT_WITH_LOC
     client = mock.MagicMock()
     passed_result.report_to_result_sink(client)
     client.post.assert_called_with(
-        'passed/test',
-        'PASS',
-        True,
-        duration=1233,
-        file_artifacts={},
-        tags=[('test_name', 'passed/test')],
-        test_loc=FAKE_TEST_LOC,
-        test_log='Logs')
+      'passed/test',
+      'PASS',
+      True,
+      duration=1233,
+      file_artifacts={},
+      tags=[('test_name', 'passed/test')],
+      test_loc=FAKE_TEST_LOC,
+      test_log='Logs',
+    )
 
 
 class ResultCollectionTest(test_runner_test.TestCase):
@@ -152,24 +170,32 @@ class ResultCollectionTest(test_runner_test.TestCase):
 
   def setUp(self):
     super(ResultCollectionTest, self).setUp()
-    self.full_collection = ResultCollection(test_results=[
-        PASSED_RESULT, FAILED_RESULT, FAILED_RESULT_DUPLICATE, DISABLED_RESULT,
-        UNEXPECTED_SKIPPED_RESULT, CRASHED_RESULT, FLAKY_PASS_RESULT,
-        FLAKY_FAIL_RESULT, ABORTED_RESULT
-    ])
+    self.full_collection = ResultCollection(
+      test_results=[
+        PASSED_RESULT,
+        FAILED_RESULT,
+        FAILED_RESULT_DUPLICATE,
+        DISABLED_RESULT,
+        UNEXPECTED_SKIPPED_RESULT,
+        CRASHED_RESULT,
+        FLAKY_PASS_RESULT,
+        FLAKY_FAIL_RESULT,
+        ABORTED_RESULT,
+      ]
+    )
 
   def test_init(self):
     """Tests class initialization."""
     collection = ResultCollection(
-        test_results=[
-            PASSED_RESULT, DISABLED_RESULT, UNEXPECTED_SKIPPED_RESULT
-        ],
-        crashed=True)
+      test_results=[PASSED_RESULT, DISABLED_RESULT, UNEXPECTED_SKIPPED_RESULT],
+      crashed=True,
+    )
     self.assertTrue(collection.crashed)
     self.assertEqual(collection.crash_message, '')
     self.assertEqual(
-        collection.test_results,
-        [PASSED_RESULT, DISABLED_RESULT, UNEXPECTED_SKIPPED_RESULT])
+      collection.test_results,
+      [PASSED_RESULT, DISABLED_RESULT, UNEXPECTED_SKIPPED_RESULT],
+    )
 
   def test_add_result(self):
     """Tests add_test_result."""
@@ -184,7 +210,8 @@ class ResultCollectionTest(test_runner_test.TestCase):
     collection.append_crash_message('Crash1')
 
     crashed_collection = ResultCollection(
-        test_results=[PASSED_RESULT], crashed=True)
+      test_results=[PASSED_RESULT], crashed=True
+    )
     crashed_collection.append_crash_message('Crash2')
 
     collection.add_result_collection(crashed_collection)
@@ -211,7 +238,8 @@ class ResultCollectionTest(test_runner_test.TestCase):
     self.assertFalse(collection.crashed)
 
     crashed_collection = ResultCollection(
-        test_results=[PASSED_RESULT], crashed=True)
+      test_results=[PASSED_RESULT], crashed=True
+    )
     crashed_collection.append_crash_message('Crash2')
 
     collection.add_result_collection(crashed_collection, ignore_crash=True)
@@ -223,8 +251,9 @@ class ResultCollectionTest(test_runner_test.TestCase):
     """Tests add_results."""
     collection = ResultCollection(test_results=[PASSED_RESULT])
     collection.add_results([FAILED_RESULT, DISABLED_RESULT])
-    self.assertEqual(collection.test_results,
-                     [PASSED_RESULT, FAILED_RESULT, DISABLED_RESULT])
+    self.assertEqual(
+      collection.test_results, [PASSED_RESULT, FAILED_RESULT, DISABLED_RESULT]
+    )
 
   def test_add_name_prefix_to_tests(self):
     """Tests add_name_prefix_to_tests."""
@@ -243,26 +272,31 @@ class ResultCollectionTest(test_runner_test.TestCase):
     collection.add_test_names_status(test_names, TestStatus.SKIP)
     disabled_test_names = ['test4', 'test5', 'test6']
     collection.add_test_names_status(
-        disabled_test_names, TestStatus.SKIP, expected_status=TestStatus.SKIP)
+      disabled_test_names, TestStatus.SKIP, expected_status=TestStatus.SKIP
+    )
     self.assertEqual(collection.test_results[0], PASSED_RESULT)
     unexpected_skipped = collection.tests_by_expression(
-        lambda t: not t.expected() and t.status == TestStatus.SKIP)
+      lambda t: not t.expected() and t.status == TestStatus.SKIP
+    )
     self.assertEqual(unexpected_skipped, set(['test1', 'test2', 'test3']))
-    self.assertEqual(collection.disabled_tests(),
-                     set(['test4', 'test5', 'test6']))
+    self.assertEqual(
+      collection.disabled_tests(), set(['test4', 'test5', 'test6'])
+    )
 
   @mock.patch('test_result_util.TestResult.report_to_result_sink')
   @mock.patch('result_sink_util.ResultSinkClient.close')
   @mock.patch('result_sink_util.ResultSinkClient.__init__', return_value=None)
-  def test_add_and_report_test_names_status(self, mock_sink_init,
-                                            mock_sink_close, mock_report):
+  def test_add_and_report_test_names_status(
+    self, mock_sink_init, mock_sink_close, mock_report
+  ):
     """Tests add_test_names_status."""
     test_names = ['test1', 'test2', 'test3']
     collection = ResultCollection(test_results=[PASSED_RESULT])
     collection.add_and_report_test_names_status(test_names, TestStatus.SKIP)
     self.assertEqual(collection.test_results[0], PASSED_RESULT)
     unexpected_skipped = collection.tests_by_expression(
-        lambda t: not t.expected() and t.status == TestStatus.SKIP)
+      lambda t: not t.expected() and t.status == TestStatus.SKIP
+    )
     self.assertEqual(unexpected_skipped, set(['test1', 'test2', 'test3']))
     self.assertEqual(1, len(mock_sink_init.mock_calls))
     self.assertEqual(3, len(mock_report.mock_calls))
@@ -274,50 +308,75 @@ class ResultCollectionTest(test_runner_test.TestCase):
     collection.append_crash_message('Crash message 1.')
     self.assertEqual(collection.crash_message, 'Crash message 1.')
     collection.append_crash_message('Crash message 2.')
-    self.assertEqual(collection.crash_message,
-                     'Crash message 1.\nCrash message 2.')
+    self.assertEqual(
+      collection.crash_message, 'Crash message 1.\nCrash message 2.'
+    )
 
   def test_tests_by_expression(self):
     """Tests tests_by_expression."""
     collection = self.full_collection
     exp = lambda result: result.status == TestStatus.SKIP
     skipped_tests = collection.tests_by_expression(exp)
-    self.assertEqual(skipped_tests,
-                     set(['unexpected/skipped_test', 'disabled/test']))
+    self.assertEqual(
+      skipped_tests, set(['unexpected/skipped_test', 'disabled/test'])
+    )
 
   def test_get_spcific_tests(self):
     """Tests getting sets of tests of specific status."""
     collection = self.full_collection
     self.assertEqual(
-        collection.all_test_names(),
-        set([
-            'passed/test', 'disabled/test', 'failed/test',
-            'unexpected/skipped_test', 'crashed/test', 'flaky/test',
-            'aborted/test'
-        ]))
+      collection.all_test_names(),
+      set(
+        [
+          'passed/test',
+          'disabled/test',
+          'failed/test',
+          'unexpected/skipped_test',
+          'crashed/test',
+          'flaky/test',
+          'aborted/test',
+        ]
+      ),
+    )
     self.assertEqual(collection.crashed_tests(), set(['crashed/test']))
     self.assertEqual(collection.disabled_tests(), set(['disabled/test']))
-    self.assertEqual(collection.expected_tests(),
-                     set(['passed/test', 'disabled/test', 'flaky/test']))
     self.assertEqual(
-        collection.unexpected_tests(),
-        set([
-            'failed/test', 'unexpected/skipped_test', 'crashed/test',
-            'flaky/test', 'aborted/test'
-        ]))
-    self.assertEqual(collection.passed_tests(),
-                     set(['passed/test', 'flaky/test']))
-    self.assertEqual(collection.failed_tests(),
-                     set(['failed/test', 'flaky/test']))
+      collection.expected_tests(),
+      set(['passed/test', 'disabled/test', 'flaky/test']),
+    )
+    self.assertEqual(
+      collection.unexpected_tests(),
+      set(
+        [
+          'failed/test',
+          'unexpected/skipped_test',
+          'crashed/test',
+          'flaky/test',
+          'aborted/test',
+        ]
+      ),
+    )
+    self.assertEqual(
+      collection.passed_tests(), set(['passed/test', 'flaky/test'])
+    )
+    self.assertEqual(
+      collection.failed_tests(), set(['failed/test', 'flaky/test'])
+    )
     self.assertEqual(collection.flaky_tests(), set(['flaky/test']))
     self.assertEqual(
-        collection.never_expected_tests(),
-        set([
-            'failed/test', 'unexpected/skipped_test', 'crashed/test',
-            'aborted/test'
-        ]))
-    self.assertEqual(collection.pure_expected_tests(),
-                     set(['passed/test', 'disabled/test']))
+      collection.never_expected_tests(),
+      set(
+        [
+          'failed/test',
+          'unexpected/skipped_test',
+          'crashed/test',
+          'aborted/test',
+        ]
+      ),
+    )
+    self.assertEqual(
+      collection.pure_expected_tests(), set(['passed/test', 'disabled/test'])
+    )
 
   def test_add_and_report_crash(self):
     """Tests add_and_report_crash."""
@@ -330,8 +389,9 @@ class ResultCollectionTest(test_runner_test.TestCase):
   @mock.patch('test_result_util.TestResult.report_to_result_sink')
   @mock.patch('result_sink_util.ResultSinkClient.close')
   @mock.patch('result_sink_util.ResultSinkClient.__init__', return_value=None)
-  def test_report_to_result_sink(self, mock_sink_init, mock_sink_close,
-                                 mock_report):
+  def test_report_to_result_sink(
+    self, mock_sink_init, mock_sink_close, mock_report
+  ):
     """Tests report_to_result_sink."""
     collection = copy.copy(self.full_collection)
     collection.report_to_result_sink()
@@ -345,47 +405,47 @@ class ResultCollectionTest(test_runner_test.TestCase):
   def test_standard_json_output(self, *args):
     """Tests standard_json_output."""
     passed_test_value = {
-        'expected': 'PASS',
-        'actual': 'PASS',
-        'shard': 0,
-        'is_unexpected': False
+      'expected': 'PASS',
+      'actual': 'PASS',
+      'shard': 0,
+      'is_unexpected': False,
     }
     failed_test_value = {
-        'expected': 'PASS',
-        'actual': 'FAIL FAIL',
-        'shard': 0,
-        'is_unexpected': True
+      'expected': 'PASS',
+      'actual': 'FAIL FAIL',
+      'shard': 0,
+      'is_unexpected': True,
     }
     disabled_test_value = {
-        'expected': 'SKIP',
-        'actual': 'SKIP',
-        'shard': 0,
-        'is_unexpected': False
+      'expected': 'SKIP',
+      'actual': 'SKIP',
+      'shard': 0,
+      'is_unexpected': False,
     }
     unexpected_skip_test_value = {
-        'expected': 'PASS',
-        'actual': 'SKIP',
-        'shard': 0,
-        'is_unexpected': True
+      'expected': 'PASS',
+      'actual': 'SKIP',
+      'shard': 0,
+      'is_unexpected': True,
     }
     crashed_test_value = {
-        'expected': 'PASS',
-        'actual': 'CRASH',
-        'shard': 0,
-        'is_unexpected': True
+      'expected': 'PASS',
+      'actual': 'CRASH',
+      'shard': 0,
+      'is_unexpected': True,
     }
     flaky_test_value = {
-        'expected': 'PASS',
-        'actual': 'PASS FAIL',
-        'shard': 0,
-        'is_unexpected': False,
-        'is_flaky': True
+      'expected': 'PASS',
+      'actual': 'PASS FAIL',
+      'shard': 0,
+      'is_unexpected': False,
+      'is_flaky': True,
     }
     aborted_test_value = {
-        'expected': 'PASS',
-        'actual': 'TIMEOUT',
-        'shard': 0,
-        'is_unexpected': True
+      'expected': 'PASS',
+      'actual': 'TIMEOUT',
+      'shard': 0,
+      'is_unexpected': True,
     }
     expected_tests = collections.OrderedDict()
     expected_tests['passed/test'] = passed_test_value
@@ -396,23 +456,24 @@ class ResultCollectionTest(test_runner_test.TestCase):
     expected_tests['flaky/test'] = flaky_test_value
     expected_tests['aborted/test'] = aborted_test_value
     expected_num_failures_by_type = {
-        'PASS': 2,
-        'FAIL': 1,
-        'CRASH': 1,
-        'SKIP': 2,
-        'TIMEOUT': 1
+      'PASS': 2,
+      'FAIL': 1,
+      'CRASH': 1,
+      'SKIP': 2,
+      'TIMEOUT': 1,
     }
     expected_json = {
-        'version': 3,
-        'path_delimiter': '/',
-        'seconds_since_epoch': 10000,
-        'interrupted': False,
-        'num_failures_by_type': expected_num_failures_by_type,
-        'tests': expected_tests
+      'version': 3,
+      'path_delimiter': '/',
+      'seconds_since_epoch': 10000,
+      'interrupted': False,
+      'num_failures_by_type': expected_num_failures_by_type,
+      'tests': expected_tests,
     }
     self.assertEqual(
-        self.full_collection.standard_json_output(path_delimiter='/'),
-        expected_json)
+      self.full_collection.standard_json_output(path_delimiter='/'),
+      expected_json,
+    )
 
   def test_test_runner_logs(self):
     """Test test_runner_logs."""
@@ -421,16 +482,20 @@ class ResultCollectionTest(test_runner_test.TestCase):
     expected_logs['disabled tests'] = ['disabled/test']
     flaky_logs = ['Failure log of attempt 1:', 'line1', 'line2']
     failed_logs = [
-        'Failure log of attempt 1:', 'line1', 'line2',
-        'Failure log of attempt 2:', 'line3', 'line4'
+      'Failure log of attempt 1:',
+      'line1',
+      'line2',
+      'Failure log of attempt 2:',
+      'line3',
+      'line4',
     ]
     no_logs = ['Failure log of attempt 1:', '']
     expected_logs['flaked tests'] = {'flaky/test': flaky_logs}
     expected_logs['failed tests'] = {
-        'failed/test': failed_logs,
-        'crashed/test': no_logs,
-        'unexpected/skipped_test': no_logs,
-        'aborted/test': no_logs
+      'failed/test': failed_logs,
+      'crashed/test': no_logs,
+      'unexpected/skipped_test': no_logs,
+      'aborted/test': no_logs,
     }
     expected_logs['failed/test'] = failed_logs
     expected_logs['unexpected/skipped_test'] = no_logs
@@ -439,9 +504,15 @@ class ResultCollectionTest(test_runner_test.TestCase):
     expected_logs['aborted/test'] = no_logs
     generated_logs = self.full_collection.test_runner_logs()
     keys = [
-        'passed tests', 'disabled tests', 'flaked tests', 'failed tests',
-        'failed/test', 'unexpected/skipped_test', 'flaky/test', 'crashed/test',
-        'aborted/test'
+      'passed tests',
+      'disabled tests',
+      'flaked tests',
+      'failed tests',
+      'failed/test',
+      'unexpected/skipped_test',
+      'flaky/test',
+      'crashed/test',
+      'aborted/test',
     ]
     for key in keys:
       self.assertEqual(generated_logs[key], expected_logs[key])
