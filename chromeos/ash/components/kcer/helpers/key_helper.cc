@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "crypto/obsolete/sha1.h"
+#include "crypto/openssl_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/x509_util_nss.h"
 #include "third_party/boringssl/src/include/openssl/asn1.h"
@@ -126,16 +127,11 @@ std::vector<uint8_t> GetEcPrivateKeyBytes(const EC_KEY* ec_key) {
 
 std::vector<uint8_t> GetEcParamsDer(const EC_KEY* ec_key) {
   bssl::ScopedCBB cbb;
-  uint8_t* ec_params_der = nullptr;
   const EC_GROUP* group = EC_KEY_get0_group(ec_key);
-  size_t ec_params_der_len = 0;
-  if (!CBB_init(cbb.get(), 0) || !EC_KEY_marshal_curve_name(cbb.get(), group) ||
-      !CBB_finish(cbb.get(), &ec_params_der, &ec_params_der_len)) {
+  if (!CBB_init(cbb.get(), 0) || !EC_KEY_marshal_curve_name(cbb.get(), group)) {
     return {};
   }
-  bssl::UniquePtr<uint8_t> der_deleter(ec_params_der);
-  return std::vector<uint8_t>(ec_params_der,
-                              UNSAFE_TODO(ec_params_der + ec_params_der_len));
+  return base::ToVector(crypto::CbbAsSpan(cbb.get()));
 }
 
 bool IsKeyEcType(const bssl::UniquePtr<EVP_PKEY>& key) {

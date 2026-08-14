@@ -10,6 +10,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/string_view_util.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
@@ -310,8 +311,6 @@ void SoftBindAttestationFlowImpl::OnCertificateSigned(
 
   bssl::ScopedCBB cbb;
   CBB signed_cert, signature, alg, alg_oid, alg_null;
-  uint8_t* signed_cert_bytes;
-  size_t signed_cert_len;
   if (!CBB_init(cbb.get(), 64) ||
       !CBB_add_asn1(cbb.get(), &signed_cert, CBS_ASN1_SEQUENCE) ||
       !CBB_add_bytes(&signed_cert,
@@ -326,19 +325,14 @@ void SoftBindAttestationFlowImpl::OnCertificateSigned(
       !CBB_add_bytes(&signature,
                      reinterpret_cast<const uint8_t*>(reply.signature().data()),
                      reply.signature().size()) ||
-      !CBB_flush(&signature) || !CBB_flush(&signed_cert) ||
-      !CBB_finish(cbb.get(), &signed_cert_bytes, &signed_cert_len)) {
+      !CBB_flush(cbb.get())) {
     LOG(ERROR) << "Could not sign attestation certificate";
     session->ReportFailure("couldNotSignCertCbb");
     return;
   }
-  std::string der_encoded_cert;
-  der_encoded_cert.assign(reinterpret_cast<char*>(signed_cert_bytes),
-                          signed_cert_len);
-  bssl::UniquePtr<uint8_t> delete_signed_cert_bytes(signed_cert_bytes);
   std::string pem_encoded_cert;
-  net::X509Certificate::GetPEMEncodedFromDER(der_encoded_cert,
-                                             &pem_encoded_cert);
+  net::X509Certificate::GetPEMEncodedFromDER(
+      base::as_string_view(crypto::CbbAsSpan(cbb.get())), &pem_encoded_cert);
 
   std::vector<std::string> cert_chain_with_leaf = {pem_encoded_cert};
 
@@ -439,8 +433,6 @@ bool SoftBindAttestationFlowImpl::GenerateLeafCert(
 
   bssl::ScopedCBB cbb;
   CBB cert, version, validity, alg, alg_oid, alg_null;
-  uint8_t* cert_bytes;
-  size_t cert_len;
   uint64_t serial_number;
   crypto::RandBytes(base::byte_span_from_ref(serial_number));
   if (!CBB_init(cbb.get(), 64) ||
@@ -476,17 +468,11 @@ bool SoftBindAttestationFlowImpl::GenerateLeafCert(
     return false;
   }
 
-  if (!CBB_flush(&cert)) {
+  if (!CBB_flush(cbb.get())) {
     return false;
   }
 
-  if (!CBB_finish(cbb.get(), &cert_bytes, &cert_len)) {
-    return false;
-  }
-
-  der_encoded_cert->assign(reinterpret_cast<char*>(cert_bytes), cert_len);
-  bssl::UniquePtr<uint8_t> delete_cert_bytes(cert_bytes);
-
+  der_encoded_cert->assign(base::as_string_view(crypto::CbbAsSpan(cbb.get())));
   return true;
 }
 

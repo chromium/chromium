@@ -13,6 +13,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "crypto/evp.h"
+#include "crypto/openssl_util.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
@@ -65,16 +66,11 @@ bool CBBAddGeneralizedTime(CBB* cbb, base::Time time) {
 
 // Finalizes the CBB to a std::string.
 std::string FinishCBB(CBB* cbb) {
-  size_t cbb_len;
-  uint8_t* cbb_bytes;
-
-  if (!CBB_finish(cbb, &cbb_bytes, &cbb_len)) {
-    ADD_FAILURE() << "CBB_finish() failed";
+  if (!CBB_flush(cbb)) {
+    ADD_FAILURE() << "CBB_flush() failed";
     return std::string();
   }
-
-  bssl::UniquePtr<uint8_t> delete_bytes(cbb_bytes);
-  return std::string(reinterpret_cast<char*>(cbb_bytes), cbb_len);
+  return std::string(base::as_string_view(crypto::CbbAsSpan(cbb)));
 }
 
 std::string PKeyToSPK(const EVP_PKEY* pkey) {

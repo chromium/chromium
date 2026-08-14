@@ -24,6 +24,7 @@
 #include "base/containers/to_vector.h"
 #include "base/numerics/checked_math.h"
 #include "chrome/updater/certificate_tag_internal.h"
+#include "crypto/openssl_util.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
@@ -417,8 +418,6 @@ std::optional<std::vector<uint8_t>> SetTagImpl(
   CBB cert, tbs_cert, version, spki, sigalg, sigalg_oid, validity, not_before,
       not_after, key_params, public_key, extensions_tag, extensions, extension,
       critical_flag, tag_cbb, oid, null, signature;
-  uint8_t* cbb_data = nullptr;
-  size_t cbb_len = 0;
   if (!CBB_add_asn1(&certs_cbb, &cert, CBS_ASN1_SEQUENCE) ||
       !CBB_add_asn1(&cert, &tbs_cert, CBS_ASN1_SEQUENCE) ||
       // version
@@ -476,20 +475,16 @@ std::optional<std::vector<uint8_t>> SetTagImpl(
       !CBB_add_bytes(&signature, reinterpret_cast<const uint8_t*>("\x00"), 2) ||
       // Copy signerInfos from the input PKCS#7 structure.
       !CopyASN1(&pkcs7_cbb, &pkcs7) || CBS_len(&pkcs7) != 0 ||
-      !CBB_finish(cbb.get(), &cbb_data, &cbb_len)) {
+      !CBB_flush(cbb.get())) {
     return std::nullopt;
   }
 
+  base::span<const uint8_t> cbb_span = crypto::CbbAsSpan(cbb.get());
   std::vector<uint8_t> ret;
-  const size_t padding = (8 - cbb_len % 8) % 8;
-  ret.reserve(cbb_len + padding);
-  // Copy the CBB result into a std::vector, padding to 8-byte alignment.
-  // SAFETY: the CBB data comes in from boringssl as a memory buffer; see
-  // https://commondatastorage.googleapis.com/chromium-boringssl-docs/bytestring.h.html#CBB_finish
-  UNSAFE_BUFFERS(ret.insert(ret.begin(), cbb_data, cbb_data + cbb_len));
+  const size_t padding = (8 - cbb_span.size() % 8) % 8;
+  ret.reserve(cbb_span.size() + padding);
+  ret.assign(cbb_span.begin(), cbb_span.end());
   ret.insert(ret.end(), padding, 0);
-  OPENSSL_free(cbb_data);
-
   return ret;
 }
 

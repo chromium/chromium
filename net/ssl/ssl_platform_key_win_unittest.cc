@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/test/task_environment.h"
 #include "crypto/evp.h"
+#include "crypto/openssl_util.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"
 #include "crypto/unexportable_key.h"
@@ -100,8 +102,6 @@ bool PKCS8ToBLOBForCAPI(base::span<const uint8_t> pkcs8,
   rsapubkey.bitlen = RSA_bits(rsa);
   rsapubkey.pubexp = BN_get_word(RSA_get0_e(rsa));
 
-  uint8_t* blob_data;
-  size_t blob_len;
   bssl::ScopedCBB cbb;
   if (!CBB_init(cbb.get(), sizeof(header) + sizeof(rsapubkey) + pkcs8.size()) ||
       !CBB_add_bytes(cbb.get(), reinterpret_cast<const uint8_t*>(&header),
@@ -121,16 +121,11 @@ bool PKCS8ToBLOBForCAPI(base::span<const uint8_t> pkcs8,
       !AddBIGNUMLittleEndian(cbb.get(), RSA_get0_iqmp(rsa),
                              rsapubkey.bitlen / 16) ||
       !AddBIGNUMLittleEndian(cbb.get(), RSA_get0_d(rsa),
-                             rsapubkey.bitlen / 8) ||
-      !CBB_finish(cbb.get(), &blob_data, &blob_len)) {
+                             rsapubkey.bitlen / 8)) {
     return false;
   }
 
-  // SAFETY: `CBB_finish` returns a buffer `blob_data` of length `blob_len`.
-  auto blob_span = UNSAFE_BUFFERS(base::span(blob_data, blob_len));
-
-  blob->assign(blob_span.begin(), blob_span.end());
-  OPENSSL_free(blob_data);
+  *blob = base::ToVector(crypto::CbbAsSpan(cbb.get()));
   return true;
 }
 
@@ -165,8 +160,6 @@ bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
     header.cbPrime1 = BN_num_bytes(RSA_get0_p(rsa));
     header.cbPrime2 = BN_num_bytes(RSA_get0_q(rsa));
 
-    uint8_t* blob_data;
-    size_t blob_len;
     bssl::ScopedCBB cbb;
     if (!CBB_init(cbb.get(), sizeof(header) + pkcs8.size()) ||
         !CBB_add_bytes(cbb.get(), reinterpret_cast<const uint8_t*>(&header),
@@ -178,16 +171,12 @@ bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
         !AddBIGNUMBigEndian(cbb.get(), RSA_get0_dmp1(rsa), header.cbPrime1) ||
         !AddBIGNUMBigEndian(cbb.get(), RSA_get0_dmq1(rsa), header.cbPrime2) ||
         !AddBIGNUMBigEndian(cbb.get(), RSA_get0_iqmp(rsa), header.cbPrime1) ||
-        !AddBIGNUMBigEndian(cbb.get(), RSA_get0_d(rsa), header.cbModulus) ||
-        !CBB_finish(cbb.get(), &blob_data, &blob_len)) {
+        !AddBIGNUMBigEndian(cbb.get(), RSA_get0_d(rsa), header.cbModulus)) {
       return false;
     }
 
     *blob_type = BCRYPT_RSAFULLPRIVATE_BLOB;
-    // SAFETY: `CBB_finish returns a buffer of `blob_len` bytes.
-    auto blob_span = UNSAFE_BUFFERS(base::span(blob_data, blob_len));
-    blob->assign(blob_span.begin(), blob_span.end());
-    OPENSSL_free(blob_data);
+    *blob = base::ToVector(crypto::CbbAsSpan(cbb.get()));
     return true;
   }
 
@@ -219,8 +208,6 @@ bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
     }
     header.cbKey = BN_num_bytes(EC_GROUP_get0_order(group));
 
-    uint8_t* blob_data;
-    size_t blob_len;
     bssl::ScopedCBB cbb;
     if (!CBB_init(cbb.get(), sizeof(header) + header.cbKey * 3) ||
         !CBB_add_bytes(cbb.get(), reinterpret_cast<const uint8_t*>(&header),
@@ -228,16 +215,12 @@ bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
         !AddBIGNUMBigEndian(cbb.get(), x.get(), header.cbKey) ||
         !AddBIGNUMBigEndian(cbb.get(), y.get(), header.cbKey) ||
         !AddBIGNUMBigEndian(cbb.get(), EC_KEY_get0_private_key(ec_key),
-                            header.cbKey) ||
-        !CBB_finish(cbb.get(), &blob_data, &blob_len)) {
+                            header.cbKey)) {
       return false;
     }
 
     *blob_type = BCRYPT_ECCPRIVATE_BLOB;
-    // SAFETY: `CBB_finish returns a buffer of `blob_len` bytes.
-    auto blob_span = UNSAFE_BUFFERS(base::span(blob_data, blob_len));
-    blob->assign(blob_span.begin(), blob_span.end());
-    OPENSSL_free(blob_data);
+    *blob = base::ToVector(crypto::CbbAsSpan(cbb.get()));
     return true;
   }
 

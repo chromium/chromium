@@ -30,6 +30,7 @@
 #include "crypto/evp.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
+#include "crypto/openssl_util.h"
 #include "crypto/sha2.h"
 #include "crypto/subtle_passkey.h"
 #include "net/base/hash_value.h"
@@ -134,30 +135,20 @@ bool CBBAddAsn1Element(CBB* cbb,
 
 // Finalizes the CBB to a std::string.
 std::string FinishCBB(CBB* cbb) {
-  size_t cbb_len;
-  uint8_t* cbb_bytes;
-
-  if (!CBB_finish(cbb, &cbb_bytes, &cbb_len)) {
-    ADD_FAILURE() << "CBB_finish() failed";
+  if (!CBB_flush(cbb)) {
+    ADD_FAILURE() << "CBB_flush() failed";
     return std::string();
   }
-
-  bssl::UniquePtr<uint8_t> delete_bytes(cbb_bytes);
-  return std::string(reinterpret_cast<char*>(cbb_bytes), cbb_len);
+  return std::string(base::as_string_view(crypto::CbbAsSpan(cbb)));
 }
 
 // Finalizes the CBB to a std::vector.
 std::vector<uint8_t> FinishCBBToVector(CBB* cbb) {
-  size_t cbb_len;
-  uint8_t* cbb_bytes;
-
-  if (!CBB_finish(cbb, &cbb_bytes, &cbb_len)) {
-    ADD_FAILURE() << "CBB_finish() failed";
+  if (!CBB_flush(cbb)) {
+    ADD_FAILURE() << "CBB_flush() failed";
     return {};
   }
-
-  bssl::UniquePtr<uint8_t> delete_bytes(cbb_bytes);
-  return std::vector<uint8_t>(cbb_bytes, UNSAFE_TODO(cbb_bytes + cbb_len));
+  return base::ToVector(crypto::CbbAsSpan(cbb));
 }
 
 // Makes a plants-05 log id out of ca_id and log_number.

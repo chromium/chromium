@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "crypto/hash.h"
+#include "crypto/openssl_util.h"
 #include "net/base/trace_constants.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -406,15 +407,12 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
     const std::vector<std::string>& acceptable_spki_hashes_for_cn) {
   std::string subject_hash;
   if (!utf8_common_name.empty()) {
-    CBB cbb, top_level, set, inner_seq, oid, cn;
-    uint8_t* x501_data;
-    size_t x501_len;
+    bssl::ScopedCBB cbb;
+    CBB top_level, set, inner_seq, oid, cn;
     static const uint8_t kCommonNameOID[] = {0x55, 0x04, 0x03};  // 2.5.4.3
 
-    CBB_zero(&cbb);
-
-    if (!CBB_init(&cbb, 32) ||
-        !CBB_add_asn1(&cbb, &top_level, CBS_ASN1_SEQUENCE) ||
+    if (!CBB_init(cbb.get(), 32) ||
+        !CBB_add_asn1(cbb.get(), &top_level, CBS_ASN1_SEQUENCE) ||
         !CBB_add_asn1(&top_level, &set, CBS_ASN1_SET) ||
         !CBB_add_asn1(&set, &inner_seq, CBS_ASN1_SEQUENCE) ||
         !CBB_add_asn1(&inner_seq, &oid, CBS_ASN1_OBJECT) ||
@@ -423,15 +421,13 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
         !CBB_add_bytes(
             &cn, reinterpret_cast<const uint8_t*>(utf8_common_name.data()),
             utf8_common_name.size()) ||
-        !CBB_finish(&cbb, &x501_data, &x501_len)) {
-      CBB_cleanup(&cbb);
+        !CBB_flush(cbb.get())) {
       return nullptr;
     }
 
     // SAFETY: x501_data is a pointer to data that is x501_len bytes in length
     subject_hash.assign(base::as_string_view(
-        crypto::hash::Sha256(UNSAFE_BUFFERS(base::span(x501_data, x501_len)))));
-    OPENSSL_free(x501_data);
+        crypto::hash::Sha256(crypto::CbbAsSpan(cbb.get()))));
   }
 
   auto crl_set = base::WrapRefCounted(new CRLSet());

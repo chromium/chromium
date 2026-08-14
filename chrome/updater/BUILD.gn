@@ -591,7 +591,10 @@ if (is_win || is_mac || is_linux) {
       "tag_internal.h",
     ]
 
-    deps = [ "//base" ]
+    deps = [
+      "//base",
+      "//crypto",
+    ]
   }
 
   source_set("public_util") {

@@ -44,13 +44,7 @@ base::span<const EVP_PKEY_ALG* const> SupportedEvpAlgorithms() {
 }
 
 std::vector<uint8_t> CBBToVector(CBB* cbb) {
-  uint8_t* data;
-  size_t len;
-  CHECK(CBB_finish(cbb, &data, &len));
-  std::vector<uint8_t> result =
-      base::ToVector(UNSAFE_BUFFERS(base::span(data, len)));
-  OPENSSL_free(data);
-  return result;
+  return base::ToVector(CbbAsSpan(cbb));
 }
 
 std::vector<uint8_t> ExportEVPPublicKey(EVP_PKEY* pkey) {
