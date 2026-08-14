@@ -245,6 +245,9 @@ void GlicE2ETest::SetUpInProcessBrowserTestFixture() {
 }
 
 void GlicE2ETest::TearDownOnMainThread() {
+  host_observation_.Reset();
+  active_instance_subscription_ = base::CallbackListSubscription();
+
   if (HasFailure()) {
     base::FilePath snapshot_path = SaveDesktopSnapshot();
     if (!snapshot_path.empty()) {
