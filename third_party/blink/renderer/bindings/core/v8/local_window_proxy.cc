@@ -83,47 +83,51 @@ namespace blink {
 
 namespace {
 
-// Direct Sockets is a conditional runtime-enabled feature whose exposure on the
-// window object is evaluated by V8 during the initial context creation (which
-// synchronously spawns an `about:blank` document).
-//
-// When a child window is opened in the same BrowsingContextGroup (reusing the
-// process), the initial `about:blank` document inherits the opener's origin but
-// does NOT inherit its browser-overridden RuntimeFeatureState. Since V8 reuses
-// this initial context when the window subsequently navigates same-origin, the
-// API exposure is never re-evaluated, leaving Direct Sockets permanently
-// disabled in the child window even after navigation commits.
-//
-// To prevent this state-loss, we synchronously inherit the `DirectSockets`
-// feature state from the same-origin opener context just before V8 generates
-// the bindings for the initial context.
-bool MaybeInheritDirectSocketsFromOpener(LocalFrame* frame) {
-  if (!frame) {
-    return false;
-  }
+LocalDOMWindow* GetOpenerWindowIfSameOrigin(LocalFrame* frame) {
+  DCHECK(frame);
   auto* opener_local_frame = DynamicTo<LocalFrame>(frame->Opener());
   if (!opener_local_frame) {
-    return false;
+    return nullptr;
   }
   LocalDOMWindow* opener_window = opener_local_frame->DomWindow();
   LocalDOMWindow* window = frame->DomWindow();
   if (!opener_window || !window) {
-    return false;
+    return nullptr;
   }
-
   if (!window->GetSecurityOrigin()->IsSameOriginWith(
           opener_window->GetSecurityOrigin())) {
+    return nullptr;
+  }
+  return opener_window;
+}
+
+// Conditional runtime-enabled features (like Direct Sockets) are
+// evaluated by V8 during the initial context creation (which synchronously
+// spawns an `about:blank` document).
+// API exposure is never re-evaluated, leaving features permanently disabled in
+// the child window even after navigation commits.
+//
+// To prevent this state-loss, we synchronously inherit runtime feature states
+// from the same-origin opener context just before V8 generates the bindings for
+// the initial context.
+bool MaybeInheritRuntimeFeaturesFromOpener(LocalFrame* frame) {
+  LocalDOMWindow* opener_window = GetOpenerWindowIfSameOrigin(frame);
+  if (!opener_window) {
     return false;
   }
 
-  if (RuntimeEnabledFeatures::DirectSocketsEnabled(opener_window)) {
-    if (auto* target_context =
-            window->GetRuntimeFeatureStateOverrideContext()) {
-      target_context->SetDirectSocketsForceEnabled();
-      return true;
-    }
+  auto* target_context =
+      frame->DomWindow()->GetRuntimeFeatureStateOverrideContext();
+  if (!target_context) {
+    return false;
   }
-  return false;
+
+  bool inherited = false;
+  if (RuntimeEnabledFeatures::DirectSocketsEnabled(opener_window)) {
+    target_context->SetDirectSocketsForceEnabled();
+    inherited = true;
+  }
+  return inherited;
 }
 
 // When a V8 context is created from a pre-compiled V8 Context Snapshot,
@@ -368,12 +372,11 @@ void LocalWindowProxy::InstallConditionalFeatures() {
     V8ContextSnapshot::InstallContextIndependentProps(script_state_);
   }
 
-  // Direct Sockets state must be inherited from the opener BEFORE the
+  // Runtime feature states must be inherited from the opener BEFORE the
   // unconditional Window wrapper warmup compilation below so that non-snapshot
-  // builds (like ChromeOS) compile the constructor with Direct Sockets natively
-  // active.
-  bool direct_sockets_inherited =
-      MaybeInheritDirectSocketsFromOpener(GetFrame());
+  // builds (like ChromeOS) compile the constructor with active features.
+  bool runtime_features_inherited =
+      MaybeInheritRuntimeFeaturesFromOpener(GetFrame());
 
   V8PerContextData* per_context_data = script_state_->PerContextData();
   std::ignore =
@@ -382,7 +385,7 @@ void LocalWindowProxy::InstallConditionalFeatures() {
   // On snapshot-based builds, the warmup above gets a cache hit on the
   // pre-compiled feature-less wrapper. We must force-reinstall the conditional
   // features AFTER warmup.
-  if (context_was_created_from_snapshot_ && direct_sockets_inherited) {
+  if (context_was_created_from_snapshot_ && runtime_features_inherited) {
     ForceReinstallConditionalFeaturesForWindow(script_state_);
   }
 
