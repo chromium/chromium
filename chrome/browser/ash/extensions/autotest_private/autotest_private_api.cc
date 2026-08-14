@@ -361,8 +361,6 @@ api::autotest_private::ShelfItemType GetShelfItemType(ash::ShelfItemType type) {
       return api::autotest_private::ShelfItemType::kBrowserShortcut;
     case ash::TYPE_APP:
       return api::autotest_private::ShelfItemType::kApp;
-    case ash::TYPE_UNPINNED_BROWSER_SHORTCUT:
-      return api::autotest_private::ShelfItemType::kUnpinnedBrowserShortcut;
     case ash::TYPE_DIALOG:
       return api::autotest_private::ShelfItemType::kDialog;
     case ash::TYPE_UNDEFINED:

@@ -25,7 +25,6 @@ int ShelfItemTypeToWeight(ShelfItemType type) {
     case TYPE_BROWSER_SHORTCUT:
       return 1;
     case TYPE_APP:
-    case TYPE_UNPINNED_BROWSER_SHORTCUT:
       return 2;
     case TYPE_DIALOG:
       return 3;

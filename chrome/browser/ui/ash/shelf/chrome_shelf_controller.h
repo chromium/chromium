@@ -362,7 +362,7 @@ class ChromeShelfController
   ash::ShelfItemStatus GetAppState(const std::string& app_id);
 
   // Create the Chrome browser shortcut ShelfItem.
-  void CreateBrowserShortcutItem(bool pinned);
+  void CreateBrowserShortcutItem();
 
   // Close all windowed V1 applications of a certain extension which was already
   // deleted.

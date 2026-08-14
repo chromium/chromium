@@ -17,7 +17,6 @@ enum ShelfItemType {
   "PinnedApp",
   "BrowserShortcut",
   "App",
-  "UnpinnedBrowserShortcut",
   "Dialog"
 };
 

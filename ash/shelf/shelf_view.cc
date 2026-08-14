@@ -169,7 +169,6 @@ bool ShelfButtonIsInDrag(const ShelfItemType item_type,
     case TYPE_PINNED_APP:
     case TYPE_BROWSER_SHORTCUT:
     case TYPE_APP:
-    case TYPE_UNPINNED_BROWSER_SHORTCUT:
       return static_cast<const ShelfAppButton*>(item_view)->state() &
              ShelfAppButton::STATE_DRAGGING;
     case TYPE_DIALOG:
@@ -757,7 +756,6 @@ void ShelfView::ButtonPressed(views::Button* sender,
     case TYPE_PINNED_APP:
     case TYPE_BROWSER_SHORTCUT:
     case TYPE_APP:
-    case TYPE_UNPINNED_BROWSER_SHORTCUT:
       base::RecordAction(base::UserMetricsAction("Launcher_ClickOnApp"));
       break;
 
@@ -999,7 +997,6 @@ views::View* ShelfView::CreateViewForItem(const ShelfItem& item) {
     case TYPE_PINNED_APP:
     case TYPE_BROWSER_SHORTCUT:
     case TYPE_APP:
-    case TYPE_UNPINNED_BROWSER_SHORTCUT:
     case TYPE_DIALOG: {
       ShelfAppButton* button = new ShelfAppButton(
           this, shelf_button_delegate_ ? shelf_button_delegate_.get() : this);
@@ -2371,7 +2368,6 @@ void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
     case TYPE_PINNED_APP:
     case TYPE_BROWSER_SHORTCUT:
     case TYPE_APP:
-    case TYPE_UNPINNED_BROWSER_SHORTCUT:
     case TYPE_DIALOG: {
       CHECK(views::IsViewClass<ShelfAppButton>(view));
       ShelfAppButton* button = static_cast<ShelfAppButton*>(view);

@@ -238,13 +238,6 @@ TEST_F(ShelfModelTest, AddIndices) {
   EXPECT_EQ(6, platform_app_index4);
 
   EXPECT_EQ(TYPE_BROWSER_SHORTCUT, model_->items()[2].type);
-
-  // TYPE_UNPINNED_BROWSER_SHORTCUT icons should behave similar to
-  // unpinned apps.
-  item.type = TYPE_UNPINNED_BROWSER_SHORTCUT;
-  item.id = ShelfID("unpinned_browser");
-  int unpinned_browser_index = AddAt(2, item);
-  EXPECT_EQ(6, unpinned_browser_index);
 }
 
 // Test that the indexes for the running applications are properly determined.
@@ -271,11 +264,6 @@ TEST_F(ShelfModelTest, FirstRunningAppIndex) {
   EXPECT_EQ(2, model_->FirstRunningAppIndex());
   item.id = ShelfID("app2");
   EXPECT_EQ(3, Add(item));
-  EXPECT_EQ(2, model_->FirstRunningAppIndex());
-
-  item.type = TYPE_UNPINNED_BROWSER_SHORTCUT;
-  item.id = ShelfID("unpinned browser");
-  EXPECT_EQ(4, Add(item));
   EXPECT_EQ(2, model_->FirstRunningAppIndex());
 }
 
