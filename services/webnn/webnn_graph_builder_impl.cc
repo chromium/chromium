@@ -49,11 +49,6 @@ namespace webnn {
 
 namespace {
 
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-// Use XNNPACK to accelerate TransposePendingPermutation.
-BASE_FEATURE(kWebNNUseXNNPackForConstantTransposeFolding,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 
 using DependentOperationsMap =
     base::flat_map<OperandId, base::flat_set<OperationId>>;
@@ -2695,15 +2690,6 @@ bool OperationValidationContext::ValidateOperation(
   }
 }
 
-uint32_t GetLinearOffset(base::span<const uint32_t> multi_dim_index,
-                         base::span<const uint32_t> strides) {
-  uint32_t offset = 0;
-  for (uint32_t i = 0; i < multi_dim_index.size(); ++i) {
-    offset += multi_dim_index[i] * strides[i];
-  }
-  return offset;
-}
-
 base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
 TransposePendingPermutation(
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&&
@@ -2730,105 +2716,13 @@ TransposePendingPermutation(
     for (uint32_t i = 0; i < rank; ++i) {
       inverse_permutation[permutation[i]] = i;
     }
-    auto& transposed_shape = descriptor.shape();
     base::FixedArray<uint32_t> original_shape(rank);
     for (uint32_t i = 0; i < rank; ++i) {
       original_shape[i] = descriptor.shape()[inverse_permutation[i]];
     }
 
-    std::vector<uint32_t> original_strides = CalculateStrides(original_shape);
-    std::vector<uint32_t> transposed_strides =
-        CalculateStrides(transposed_shape);
-
-    // Current logical index in transposed tensor.
-    base::FixedArray<uint32_t> transposed_idx(rank, 0);
-    base::FixedArray<uint32_t> original_idx(rank);
-
-    auto transposed_data = base::HeapArray<uint8_t>::Uninit(data.size());
-
-    bool use_xnnpack = false;
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-    if (base::FeatureList::IsEnabled(
-            kWebNNUseXNNPackForConstantTransposeFolding) &&
-        rank <= XNN_MAX_TENSOR_DIMS) {
-      use_xnnpack = true;
-    }
-#endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-
-    if (use_xnnpack) {
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-      base::FixedArray<size_t> shape(rank);
-      base::FixedArray<size_t> perm(rank);
-
-      // Use the original shape (not the transposed shape) for XNNPack.
-      for (uint32_t i = 0; i < rank; ++i) {
-        shape[i] = original_shape[i];
-        perm[i] = permutation[i];
-      }
-
-      switch (element_size) {
-        case 1: {
-          xnn_status status =
-              xnn_run_transpose_nd_x8(data.data(), transposed_data.data(), rank,
-                                      shape.data(), perm.data(), 0, nullptr);
-          CHECK_EQ(status, xnn_status_success);
-          break;
-        }
-        case 2: {
-          xnn_status status = xnn_run_transpose_nd_x16(
-              data.data(), transposed_data.data(), rank, shape.data(),
-              perm.data(), 0, nullptr);
-          CHECK_EQ(status, xnn_status_success);
-          break;
-        }
-        case 4: {
-          xnn_status status = xnn_run_transpose_nd_x32(
-              data.data(), transposed_data.data(), rank, shape.data(),
-              perm.data(), 0, nullptr);
-          CHECK_EQ(status, xnn_status_success);
-          break;
-        }
-        case 8: {
-          xnn_status status = xnn_run_transpose_nd_x64(
-              data.data(), transposed_data.data(), rank, shape.data(),
-              perm.data(), 0, nullptr);
-          CHECK_EQ(status, xnn_status_success);
-          break;
-        }
-        default:
-          NOTREACHED() << "Unsupported element size: " << element_size;
-      }
-#endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-    } else {
-      base::span<uint8_t> transposed_span = transposed_data.as_span();
-
-      // Loop through all elements in the transposed tensor.
-      for (size_t i = 0; i < descriptor.NumberOfElements(); ++i) {
-        for (size_t d = 0; d < rank; ++d) {
-          original_idx[d] = transposed_idx[inverse_permutation[d]];
-        }
-
-        uint32_t original_offset =
-            GetLinearOffset(original_idx, original_strides);
-        uint32_t transposed_offset =
-            GetLinearOffset(transposed_idx, transposed_strides);
-
-        transposed_span.subspan(transposed_offset * element_size, element_size)
-            .copy_from(
-                data.subspan(original_offset * element_size, element_size));
-
-        for (size_t dimension = rank; dimension-- > 0;) {
-          transposed_idx[dimension]++;
-          if (transposed_idx[dimension] < transposed_shape[dimension]) {
-            // Not overflowed, continue to next element.
-            break;
-          }
-          // Reset and carry over.
-          transposed_idx[dimension] = 0;
-        }
-      }
-    }
-    constant->SetData(std::move(transposed_data));
+    constant->SetData(
+        TransposeConstantData(data, original_shape, permutation, element_size));
   }
   return std::move(constant_operands);
 }

@@ -562,6 +562,14 @@ class GraphBuilderTflite final {
       const TensorInfo& input_tensor_info,
       base::span<const uint32_t> permutation);
 
+  // Serializes the rank-2 constant `operand_id` with its two axes
+  // exchanged, so that no TRANSPOSE operator is emitted for it. A
+  // float16 constant is followed by the DEQUANTIZE which unpacks it,
+  // so the returned index may be that operator's output rather than
+  // the constant.
+  base::expected<TensorIndex, std::string> SerializeTransposedConstant2D(
+      OperandId operand_id);
+
   // Serialize a sub graph (pow appending mul operation) for erf operation.
   base::expected<TensorIndex, std::string> SerializeSubGraphPowMul(
       base::span<const int32_t> input_dimensions,
