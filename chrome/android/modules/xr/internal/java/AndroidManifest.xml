@@ -21,7 +21,6 @@
     <application>
         <activity android:name="org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoPlaybackActivity"
                   android:exported="false"
-                  android:noHistory="true"
                   android:theme="@style/Theme.Chromium.Activity"
                   android:excludeFromRecents="true"
                   android:configChanges=

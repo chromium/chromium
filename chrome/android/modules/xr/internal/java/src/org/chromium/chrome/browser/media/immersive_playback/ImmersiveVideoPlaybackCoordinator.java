@@ -160,6 +160,13 @@ public class ImmersiveVideoPlaybackCoordinator
         mPlayerCoordinator.updatePlayerSize(width, height);
     }
 
+    /** Shows the playback control panel and restarts the auto-hide timer. */
+    public void showControlPanel() {
+        mControlCoordinator.show(getControlPanelParent());
+        updateControlPanel();
+        mAutoHideManager.startTimer();
+    }
+
     // =========================================================================
     // Delegate Implementations
     // =========================================================================
@@ -322,12 +329,6 @@ public class ImmersiveVideoPlaybackCoordinator
         } else {
             showControlPanel();
         }
-    }
-
-    private void showControlPanel() {
-        mControlCoordinator.show(getControlPanelParent());
-        updateControlPanel();
-        mAutoHideManager.startTimer();
     }
 
     private void hideControlPanel() {

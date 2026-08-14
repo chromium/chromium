@@ -27,7 +27,6 @@
         android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
         android:excludeFromRecents="true"
         android:exported="false"
-        android:noHistory="true"
         android:theme="@style/Theme.Chromium.Activity">
       <property android:name="android.window.PROPERTY_XR_ACTIVITY_START_MODE" android:value="XR_ACTIVITY_START_MODE_FULL_SPACE_MANAGED"/>
     </activity>  # DIFF-ANCHOR: 1f566b69

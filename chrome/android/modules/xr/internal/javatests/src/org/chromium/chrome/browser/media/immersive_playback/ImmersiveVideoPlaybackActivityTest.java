@@ -8,6 +8,7 @@ import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -229,6 +230,44 @@ public class ImmersiveVideoPlaybackActivityTest {
 
         activity.updateVideoSize(VIDEO_WIDTH, VIDEO_HEIGHT);
         verify(mCoordinatorMock).updatePlayerSize(VIDEO_WIDTH, VIDEO_HEIGHT);
+
+        testExitOn(activity, () -> activity.close());
+    }
+
+    /** Tests that onPauseWithNative pauses playback when native handle is initialized. */
+    @Test
+    @MediumTest
+    public void testPausePausesPlayback() throws Throwable {
+        ImmersiveVideoPlaybackActivity activity = startImmersiveVideoPlaybackActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onPauseWithNative());
+        verify(mNativeMock).togglePlayPause(NATIVE_OVERLAY, false);
+
+        testExitOn(activity, () -> activity.close());
+    }
+
+    /** Tests that onResumeWithNative shows the control panel. */
+    @Test
+    @MediumTest
+    public void testResumeShowsControlPanel() throws Throwable {
+        ImmersiveVideoPlaybackActivity activity = startImmersiveVideoPlaybackActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onResumeWithNative());
+        verify(mCoordinatorMock).showControlPanel();
+
+        testExitOn(activity, () -> activity.close());
+    }
+
+    /** Tests that subsequent onStart calls do not re-initialize the native handle. */
+    @Test
+    @MediumTest
+    public void testSubsequentStartDoesNotReinitializeNativeHandle() throws Throwable {
+        ImmersiveVideoPlaybackActivity activity = startImmersiveVideoPlaybackActivity();
+
+        verify(mNativeMock, times(1)).onActivityStart(eq(mNativeWindowToken), any(), any());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onStart());
+        verify(mNativeMock, times(1)).onActivityStart(eq(mNativeWindowToken), any(), any());
 
         testExitOn(activity, () -> activity.close());
     }

@@ -103,7 +103,9 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
             return;
         }
 
-        finishInitialize();
+        if (!isNativeHandleInitialized()) {
+            finishInitialize();
+        }
     }
 
     @Initializer
@@ -165,6 +167,22 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
             mPlaybackCoordinator = null;
         }
         mPendingState.reset();
+    }
+
+    @Override
+    public void onPauseWithNative() {
+        super.onPauseWithNative();
+        if (isNativeHandleInitialized()) {
+            togglePlayPause(/* toggleOn= */ false);
+        }
+    }
+
+    @Override
+    public void onResumeWithNative() {
+        super.onResumeWithNative();
+        if (mPlaybackCoordinator != null) {
+            mPlaybackCoordinator.showControlPanel();
+        }
     }
 
     @Override
