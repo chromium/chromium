@@ -60,6 +60,7 @@ class ReadAnythingController;
 class ReadAnythingSidePanelController;
 class RecordReplayPageActionController;
 class SearchPromotionNavigationObserver;
+class SecurityStateEventObserver;
 class SidePanelRegistry;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
@@ -435,6 +436,10 @@ class TabFeatures {
   // window-scoped extension side-panel manager.
   std::unique_ptr<extensions::ExtensionSidePanelManager>
       extension_side_panel_manager_;
+
+  // Security-state-driven side effects (known-interception disclosure,
+  // form-submission UKM).
+  std::unique_ptr<SecurityStateEventObserver> security_state_event_observer_;
 
   // Forwards tab-related events to sync.
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>

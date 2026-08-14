@@ -13,7 +13,6 @@
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -188,7 +187,6 @@ void SimpleWebViewDialog::Init() {
   // Create the security state model that the location bar model needs.
   content::WebContents* web_contents = GetWebViewWebContents();
   if (web_contents) {
-    ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
   }
   location_bar_model_ = std::make_unique<LocationBarModelImpl>(
       this, content::kMaxURLDisplayChars);

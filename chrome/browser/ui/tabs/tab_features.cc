@@ -44,6 +44,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
+#include "chrome/browser/ssl/security_state_event_observer.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -500,6 +501,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     web_app::WebAppTabHelper::Create(&tab, tab.GetContents());
   }
 
+  security_state_event_observer_ =
+      std::make_unique<SecurityStateEventObserver>(tab.GetContents());
+
   sync_sessions_router_ =
       std::make_unique<sync_sessions::SyncSessionsRouterTabHelper>(
           tab.GetContents(),
@@ -710,6 +714,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   zero_suggest_prefetch_tab_helper_ =
       std::make_unique<ZeroSuggestPrefetchTabHelper>(new_contents);
+
+  security_state_event_observer_ =
+      std::make_unique<SecurityStateEventObserver>(new_contents);
 
   sync_sessions_router_.reset();
   sync_sessions_router_ =

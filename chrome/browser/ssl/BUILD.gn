@@ -9,7 +9,6 @@ source_set("ssl") {
   public = [
     "ask_before_http_dialog_controller.h",
     "chrome_security_blocking_page_factory.h",
-    "chrome_security_state_tab_helper.h",
     "chrome_security_state_util.h",
     "connection_help_tab_helper.h",
     "daily_navigation_counter.h",
@@ -26,6 +25,7 @@ source_set("ssl") {
     "sct_reporting_service_factory.h",
     "secure_origin_policy_handler.h",
     "secure_origin_prefs_observer.h",
+    "security_state_event_observer.h",
     "ssl_client_certificate_selector.h",
     "ssl_config_service_manager.h",
     "ssl_error_controller_client.h",
@@ -93,7 +93,6 @@ source_set("impl") {
   sources = [
     "ask_before_http_dialog_controller.cc",
     "chrome_security_blocking_page_factory.cc",
-    "chrome_security_state_tab_helper.cc",
     "chrome_security_state_util.cc",
     "connection_help_tab_helper.cc",
     "daily_navigation_counter.cc",
@@ -110,6 +109,7 @@ source_set("impl") {
     "sct_reporting_service_factory.cc",
     "secure_origin_policy_handler.cc",
     "secure_origin_prefs_observer.cc",
+    "security_state_event_observer.cc",
     "ssl_config_service_manager.cc",
     "ssl_error_controller_client.cc",
     "stateful_ssl_host_state_delegate_factory.cc",
@@ -263,7 +263,6 @@ source_set("unit_tests") {
   sources = [
     "daily_navigation_counter_unittest.cc",
     "https_first_mode_settings_tracker_unittest.cc",
-    "security_state_tab_helper_unittest.cc",
     "ssl_config_service_manager_unittest.cc",
   ]
 
