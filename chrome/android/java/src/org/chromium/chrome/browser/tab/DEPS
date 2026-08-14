@@ -148,6 +148,7 @@ specific_include_rules = {
     "+components/url_formatter/android",
     "+components/navigation_interception/android/java/src/org/chromium/components/navigation_interception",
     "+components/prefs/android/java/src/org/chromium/components/prefs/PrefService.java",
+    "+components/prefs/android/java/src/org/chromium/components/prefs/PrefChangeRegistrar.java",
     "+components/security_state/content/android/java/src/org/chromium/components/security_state/SecurityStateModel.java",
     "+components/sensitive_content/android/java/src/org/chromium/components/sensitive_content/SensitiveContentClient.java",
     "+components/user_prefs/android/java/src/org/chromium/components/user_prefs/UserPrefs.java",

@@ -954,7 +954,8 @@ public class AutofillProvider {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         void init(AutofillProvider caller, WebContents webContents);
 
         void detachFromJavaAutofillProvider(long nativeAndroidAutofillProviderBridgeImpl);

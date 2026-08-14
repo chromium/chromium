@@ -812,6 +812,9 @@ bool AndroidAutofillProvider::ShowCredManSheet(
 }
 
 void AndroidAutofillProvider::MaybeInitKeyboardSuppressor() {
+  if (keyboard_suppressor_) {
+    return;
+  }
   keyboard_suppressor_ = std::make_unique<TouchToFillKeyboardSuppressor>(
       ContentAutofillClient::FromWebContents(web_contents()),
       base::BindRepeating(&AndroidAutofillProvider::WasBottomSheetJustShown,
